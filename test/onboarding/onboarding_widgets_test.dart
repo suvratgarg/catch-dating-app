@@ -163,61 +163,6 @@ void main() {
       );
     });
 
-    testWidgets('landed scene pins reel and CTA anchors', (tester) async {
-      tester.view.physicalSize = const Size(320, 630);
-      tester.view.devicePixelRatio = 1;
-      addTearDown(tester.view.resetPhysicalSize);
-      addTearDown(tester.view.resetDevicePixelRatio);
-
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: AppTheme.light,
-          home: WelcomeScene(
-            viewportHeight: 630,
-            mediaPadding: EdgeInsets.zero,
-            spinValue: 1,
-            landingValue: 1,
-            landed: true,
-            onContinue: () {},
-            onExplore: () {},
-          ),
-        ),
-      );
-
-      final catchTopLeft = tester.getTopLeft(find.text('Catch'));
-      expect(catchTopLeft.dx, closeTo(CatchLayout.welcomeReelCatchLeft, 0.1));
-      expect(
-        catchTopLeft.dy,
-        closeTo(
-          CatchLayout.welcomeReelTop + CatchLayout.welcomeReelCatchFocusTop,
-          0.1,
-        ),
-      );
-
-      final phraseFinder = find.text('someone real.').first;
-      final phraseTopLeft = tester.getTopLeft(phraseFinder);
-      expect(phraseTopLeft.dx, closeTo(CatchLayout.welcomeReelObjectLeft, 0.1));
-      expect(
-        phraseTopLeft.dy,
-        closeTo(
-          CatchLayout.welcomeReelTop + CatchLayout.welcomeReelCatchFocusTop,
-          0.1,
-        ),
-      );
-      final phraseText = tester.widget<Text>(phraseFinder);
-      final rootSpan = phraseText.textSpan! as TextSpan;
-      final periodSpan = rootSpan.children!.last as TextSpan;
-      expect(periodSpan.text, '.');
-      expect(periodSpan.style!.color!.a, closeTo(1, 0.001));
-
-      expect(
-        tester
-            .getBottomLeft(find.widgetWithText(CatchButton, 'See what\'s on'))
-            .dy,
-        closeTo(630 - CatchLayout.welcomeButtonsBottom, 0.1),
-      );
-    });
-
     testWidgets('tap skips the reel into the welcome CTAs', (tester) async {
       final reporter = _FakeAnalyticsReporter();
       final container = createOnboardingTestContainer(

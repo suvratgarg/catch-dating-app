@@ -10,8 +10,10 @@ Run it after token or base icon changes:
 dart run tool/branding/generate_native_brand_assets.dart
 ```
 
-`generate_catch_icon.swift` renders the consumer Catch launcher mark and the
-host lockup from the handoff source:
+`generate_catch_icon.swift` renders the consumer single-line `Catch_` launcher
+and splash mark from the bundled Archivo variable face at explicit `wght: 600`
+and `wdth: 78` axes. The orange `_` is a glyph in the same baseline lockup, not
+a separately stacked bar. The generator also renders the unchanged host lockup:
 
 ```bash
 swift tool/branding/generate_catch_icon.swift
@@ -44,10 +46,14 @@ It regenerates:
 - macOS `AppIcon-dev` and `AppIcon-staging` asset catalogs
 - macOS `AppIcon-host-dev`, `AppIcon-host-staging`, and
   `AppIcon-host-prod` asset catalogs
+- the independent `apps/consumer` production, dev, and staging Android/iOS
+  launcher resources
 - `tool/branding/native_branding.generated.json`
 
-Consumer production keeps using `assets/branding/catch_icon.png` and the
-default `AppIcon` catalogs until the base logo is intentionally redesigned.
+Consumer production uses `assets/branding/catch_icon.png`; the native-brand
+generator projects it into the default Android/iOS catalogs in
+`apps/consumer` and projects its ribboned variants into the dev/staging
+catalogs.
 Host production uses the two-line Catch Hosts icon as its base, through the
 generated `AppIcon-host-prod` catalogs and Android `hostProd` launcher
 resources. Dev and staging flavors use diagonal corner ribbons, so internal

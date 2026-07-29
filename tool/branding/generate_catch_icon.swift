@@ -23,6 +23,10 @@ private let roundInk = NSColor(hex: 0x16140F)
 private let roundLine = NSColor(hex: 0xD6D1C7).withAlphaComponent(0.55)
 private let blank = NSColor(hex: 0xD85A3C)
 private let hostSubInk = NSColor(hex: 0xBAB2A7)
+private let archivoWidth: CGFloat = 78
+private let archivoWeight: CGFloat = 600
+private let archivoWidthAxis = NSNumber(value: openTypeTag("wdth"))
+private let archivoWeightAxis = NSNumber(value: openTypeTag("wght"))
 
 private let androidIconSizes: [(folder: String, size: Int)] = [
   ("mipmap-mdpi", 48),
@@ -128,32 +132,46 @@ private func renderSplashMark(ink: NSColor, size: Int) -> NSBitmapImageRep {
 private func drawWordmark(ink: NSColor, size: Int) {
   let canvas = CGFloat(size)
   let fontSize = canvas * 0.258
-  let font =
-    NSFont(name: "Archivo-SemiBold", size: fontSize)
-    ?? NSFont(name: "ArchivoRoman-SemiBold", size: fontSize)
-    ?? NSFont.systemFont(ofSize: fontSize, weight: .semibold)
+  let font = consumerWordmarkFont(size: fontSize)
   let attributes: [NSAttributedString.Key: Any] = [
     .font: font,
     .foregroundColor: ink,
     .kern: 0,
   ]
-  let text = NSAttributedString(string: "Catch", attributes: attributes)
+  let text = NSMutableAttributedString(string: "Catch_", attributes: attributes)
+  text.addAttribute(
+    .foregroundColor,
+    value: blank,
+    range: NSRange(location: text.length - 1, length: 1)
+  )
   let textSize = text.size()
   let x = (canvas - textSize.width) / 2
-  let y = canvas * 0.42
+  let y = (canvas - textSize.height) / 2
   text.draw(at: NSPoint(x: x, y: y))
+}
 
-  let blankWidth = canvas * (30.0 / 92.0)
-  let blankHeight = max(canvas * (6.0 / 92.0), 2)
-  let blankBottom = canvas * (23.0 / 92.0)
-  let blankRect = NSRect(
-    x: (canvas - blankWidth) / 2,
-    y: blankBottom,
-    width: blankWidth,
-    height: blankHeight
+private func consumerWordmarkFont(size: CGFloat) -> NSFont {
+  guard let baseFont = NSFont(name: "ArchivoRoman-Regular", size: size) else {
+    fatalError("Unable to resolve registered Archivo variable font.")
+  }
+  let variations: [NSNumber: NSNumber] = [
+    archivoWidthAxis: NSNumber(value: Double(archivoWidth)),
+    archivoWeightAxis: NSNumber(value: Double(archivoWeight)),
+  ]
+  let descriptor = baseFont.fontDescriptor.addingAttributes(
+    [.variation: variations]
   )
-  blank.setFill()
-  NSBezierPath(roundedRect: blankRect, xRadius: blankHeight / 2, yRadius: blankHeight / 2).fill()
+  guard let font = NSFont(descriptor: descriptor, size: size) else {
+    fatalError("Unable to apply Archivo variable-font axes.")
+  }
+  guard
+    let applied = font.fontDescriptor.object(forKey: .variation) as? [NSNumber: NSNumber],
+    applied[archivoWidthAxis]?.doubleValue == Double(archivoWidth),
+    applied[archivoWeightAxis]?.doubleValue == Double(archivoWeight)
+  else {
+    fatalError("Consumer wordmark must resolve at Archivo wght 600 / wdth 78.")
+  }
+  return font
 }
 
 private func renderHostLogo(size: NSSize) -> NSBitmapImageRep {
@@ -308,5 +326,12 @@ private extension NSColor {
       blue: CGFloat(hex & 0xFF) / 255,
       alpha: 1
     )
+  }
+}
+
+private func openTypeTag(_ value: String) -> UInt32 {
+  precondition(value.utf8.count == 4, "OpenType tags must contain four bytes.")
+  return value.utf8.reduce(0) { partial, byte in
+    (partial << 8) | UInt32(byte)
   }
 }

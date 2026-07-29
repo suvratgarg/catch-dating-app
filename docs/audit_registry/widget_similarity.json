@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated": "2026-07-26",
+  "updated": "2026-07-29",
   "sourceOfTruth": {
     "generator": "tool/design/build_widget_similarity.mjs",
     "fingerprints": "artifacts/widget_dedupe/fingerprints.json",
@@ -84,51 +84,51 @@
     },
     {
       "hammingBucket": "45-49",
-      "pairs": 783,
+      "pairs": 784,
       "jaccardMin": 0,
-      "jaccardMean": 0.1452,
+      "jaccardMean": 0.1451,
       "jaccardMax": 0.4706
     },
     {
       "hammingBucket": "50-54",
-      "pairs": 1699,
+      "pairs": 1696,
       "jaccardMin": 0,
-      "jaccardMean": 0.0867,
+      "jaccardMean": 0.0869,
       "jaccardMax": 0.4412
     },
     {
       "hammingBucket": "55-59",
-      "pairs": 2899,
+      "pairs": 2904,
       "jaccardMin": 0,
-      "jaccardMean": 0.0531,
+      "jaccardMean": 0.0529,
       "jaccardMax": 0.2813
     },
     {
       "hammingBucket": "60-64",
-      "pairs": 3167,
+      "pairs": 3187,
       "jaccardMin": 0,
-      "jaccardMean": 0.0327,
+      "jaccardMean": 0.0326,
       "jaccardMax": 0.2381
     },
     {
       "hammingBucket": "65-69",
-      "pairs": 1965,
+      "pairs": 2000,
       "jaccardMin": 0,
       "jaccardMean": 0.0216,
       "jaccardMax": 0.2
     },
     {
       "hammingBucket": "70-74",
-      "pairs": 654,
+      "pairs": 663,
       "jaccardMin": 0,
-      "jaccardMean": 0.0132,
+      "jaccardMean": 0.0131,
       "jaccardMax": 0.1124
     },
     {
       "hammingBucket": "75-79",
       "pairs": 106,
       "jaccardMin": 0,
-      "jaccardMean": 0.0082,
+      "jaccardMean": 0.0083,
       "jaccardMax": 0.0816
     },
     {
@@ -147,7 +147,7 @@
     }
   ],
   "summary": {
-    "widgets": 968,
+    "widgets": 970,
     "fingerprintFailures": 1,
     "exactClusters": 2,
     "clusters": 43,
@@ -1439,6 +1439,32 @@
       "hasWidgetHelpers": false
     },
     {
+      "name": "CatchConsumerBootScreen",
+      "file": "lib/consumer_bootstrap.dart",
+      "role": "screen",
+      "shapeHash": "5309c1c369575446410aba20910298cf42f55dbaca760cd79836a2f8c2df348f",
+      "coarseShapeHash": "8d230a2c18a31aba148046f4b3014131ca0bf5dbf1924644151062c64f89d3ba",
+      "simhash128": "504ac3d9d0e2d59c9de36c759a90b422",
+      "tokenStreamLength": 75,
+      "coarseTokenStreamLength": 75,
+      "usageCountRaw": 4,
+      "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
+      "hasWidgetHelpers": false
+    },
+    {
+      "name": "CatchConsumerBootstrap",
+      "file": "lib/consumer_bootstrap.dart",
+      "role": "feature-adapter",
+      "shapeHash": "b68a021140e966062dcc47217dfe199f2ea8d09e67f40a8cc767acfc8366dd4c",
+      "coarseShapeHash": "6719c50b1d9c5eff8003f17a4326e47cbb78f03f2bfcf7ab42fa676d2ba3ab32",
+      "simhash128": "3e1b87bf578fd7bfb53c003da9fa09ff",
+      "tokenStreamLength": 27,
+      "coarseTokenStreamLength": 27,
+      "usageCountRaw": 2,
+      "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
+      "hasWidgetHelpers": false
+    },
+    {
       "name": "CatchControlShell",
       "file": "lib/core/widgets/catch_control_shell.dart",
       "role": "atom",
@@ -1707,7 +1733,7 @@
       "simhash128": "dcc5a121af90314eeff7e8274fd04e94",
       "tokenStreamLength": 12,
       "coarseTokenStreamLength": 12,
-      "usageCountRaw": 30,
+      "usageCountRaw": 31,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -3488,7 +3514,7 @@
       "simhash128": "bcd4411498d28ba5aed9f815e69955e2",
       "tokenStreamLength": 35,
       "coarseTokenStreamLength": 35,
-      "usageCountRaw": 10,
+      "usageCountRaw": 12,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -11634,11 +11660,11 @@
       "name": "ReelRow",
       "file": "lib/onboarding/presentation/pages/welcome_page.dart",
       "role": "composition",
-      "shapeHash": "b27554a349a6db11b1d797d6833851feb9ff5b5bb782f8979175ce7ad4a20d5c",
-      "coarseShapeHash": "a1a1136e7f603f2c0337d305f8ea0e62ba9183b9d16c93391cefed9256a90263",
-      "simhash128": "61668adddfc60afa4fc06ef1cbaa5de3",
-      "tokenStreamLength": 46,
-      "coarseTokenStreamLength": 46,
+      "shapeHash": "de7865d1bf5cf8de4b0c01ff208e4079b634f83d0f05f87696575a8f04c75b7f",
+      "coarseShapeHash": "2356e607485c146c4999cdb5dff0c10f332bd9cda68fd90072d4a61569bf908c",
+      "simhash128": "61e20ad8dec609790f812ed18ca8cea1",
+      "tokenStreamLength": 63,
+      "coarseTokenStreamLength": 63,
       "usageCountRaw": 4,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
@@ -12822,7 +12848,7 @@
       "simhash128": "7642cbc7f3a215bed1631c33d310d4f2",
       "tokenStreamLength": 49,
       "coarseTokenStreamLength": 49,
-      "usageCountRaw": 8,
+      "usageCountRaw": 9,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -12830,12 +12856,12 @@
       "name": "WelcomeScene",
       "file": "lib/onboarding/presentation/pages/welcome_page.dart",
       "role": "feature-adapter",
-      "shapeHash": "f8e2174af7a1ea6475e50311afaddfcde3de12c65bf93697f785bbeaba3094a3",
-      "coarseShapeHash": "7340945835078d82cfee7cd51ca44a8c69a77e1fbf1223f795f67473b881d57a",
-      "simhash128": "365aa1265eb0da6aedc2f895b4f29265",
-      "tokenStreamLength": 100,
-      "coarseTokenStreamLength": 100,
-      "usageCountRaw": 4,
+      "shapeHash": "a759b8cf7108e651db2da07b4d4841cfda6d7aab862a86871fc94cf398fc3789",
+      "coarseShapeHash": "959de8a6c7dda58b5dedb2f1e876ae9a7137b9cd5c701e23017cc9ca7401e0b8",
+      "simhash128": "125aa1265eb0db6ae5c0f895b4f29645",
+      "tokenStreamLength": 101,
+      "coarseTokenStreamLength": 101,
+      "usageCountRaw": 5,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -19505,7 +19531,7 @@
         "HostLoadingScreen",
         "PaymentConfirmationLoadingScreen"
       ],
-      "usageSum": 37,
+      "usageSum": 39,
       "scope": "mixed"
     },
     {

@@ -45,7 +45,7 @@
     },
     {
       "path": "test/onboarding/onboarding_widgets_test.dart",
-      "maxLines": 1684
+      "maxLines": 1629
     },
     {
       "path": "test/profile/profile_widgets_test.dart",

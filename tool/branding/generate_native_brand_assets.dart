@@ -6,8 +6,10 @@ import 'package:image/image.dart' as image;
 
 const _tokenPath = 'design_context_pack/design_system/tokens.json';
 const _baseIconPath = 'assets/branding/catch_icon.png';
+const _roundIconPath = 'assets/branding/catch_icon_round.png';
 const _hostIconPath = 'assets/branding/catch_hosts_icon.png';
 const _generatedIconDir = 'assets/branding/generated';
+const _consumerProjectRoot = 'apps/consumer';
 
 const _androidIconSizes = <String, int>{
   'mipmap-mdpi': 48,
@@ -68,6 +70,10 @@ void main() {
   if (baseIcon == null) {
     throw StateError('Could not decode $_baseIconPath.');
   }
+  final roundIcon = image.decodePng(File(_roundIconPath).readAsBytesSync());
+  if (roundIcon == null) {
+    throw StateError('Could not decode $_roundIconPath.');
+  }
   final hostIcon = image.decodePng(File(_hostIconPath).readAsBytesSync());
   if (hostIcon == null) {
     throw StateError('Could not decode $_hostIconPath.');
@@ -75,6 +81,8 @@ void main() {
 
   _syncPubspecTokens(tokens);
   _writeNativeBrandManifest(tokens);
+  _writeConsumerProductionAndroidIcons(baseIcon, roundIcon);
+  _writeConsumerProductionIosIconSet(baseIcon);
 
   for (final entry in _iconVariants.entries) {
     final variant = entry.value;
@@ -88,6 +96,14 @@ void main() {
     _writeAndroidIcons(variant.androidSourceSet, icon);
     _writeIosIconSet(variant, icon);
     _writeMacosIconSet(variant, icon);
+    if (variant.iconBase == _IconBase.consumer) {
+      _writeAndroidIcons(
+        variant.androidSourceSet,
+        icon,
+        projectRoot: _consumerProjectRoot,
+      );
+      _writeIosIconSet(variant, icon, projectRoot: _consumerProjectRoot);
+    }
   }
 
   _verifyPubspecTokens(tokens);
@@ -166,7 +182,11 @@ List<image.Point> _topLeftRibbonVertices(int depth, int band) {
   ];
 }
 
-void _writeAndroidIcons(String sourceSet, image.Image source) {
+void _writeAndroidIcons(
+  String sourceSet,
+  image.Image source, {
+  String projectRoot = '',
+}) {
   for (final entry in _androidIconSizes.entries) {
     final resized = image.copyResize(
       source,
@@ -175,20 +195,36 @@ void _writeAndroidIcons(String sourceSet, image.Image source) {
       interpolation: image.Interpolation.cubic,
     );
     _writePng(
-      'android/app/src/$sourceSet/res/${entry.key}/ic_launcher.png',
+      _projectPath(
+        projectRoot,
+        'android/app/src/$sourceSet/res/${entry.key}/ic_launcher.png',
+      ),
       resized,
     );
     _writePng(
-      'android/app/src/$sourceSet/res/${entry.key}/ic_launcher_round.png',
+      _projectPath(
+        projectRoot,
+        'android/app/src/$sourceSet/res/${entry.key}/ic_launcher_round.png',
+      ),
       resized,
     );
   }
 }
 
-void _writeIosIconSet(_IconVariant variant, image.Image source) {
-  final basePath = 'ios/Runner/Assets.xcassets/AppIcon.appiconset';
-  final outputPath =
-      'ios/Runner/Assets.xcassets/${variant.appleIconSet}.appiconset';
+void _writeIosIconSet(
+  _IconVariant variant,
+  image.Image source, {
+  String projectRoot = '',
+}) {
+  final opaqueSource = source.convert(numChannels: 3);
+  final basePath = _projectPath(
+    projectRoot,
+    'ios/Runner/Assets.xcassets/AppIcon.appiconset',
+  );
+  final outputPath = _projectPath(
+    projectRoot,
+    'ios/Runner/Assets.xcassets/${variant.appleIconSet}.appiconset',
+  );
   final contents = _readJsonMap('$basePath/Contents.json');
   final images = contents['images'] as List<dynamic>;
 
@@ -204,7 +240,7 @@ void _writeIosIconSet(_IconVariant variant, image.Image source) {
     _writePng(
       '$outputPath/$outputFilename',
       image.copyResize(
-        source,
+        opaqueSource,
         width: pixelSize,
         height: pixelSize,
         interpolation: image.Interpolation.cubic,
@@ -213,6 +249,54 @@ void _writeIosIconSet(_IconVariant variant, image.Image source) {
   }
 
   _writeJson('$outputPath/Contents.json', contents);
+}
+
+void _writeConsumerProductionAndroidIcons(
+  image.Image squareIcon,
+  image.Image roundIcon,
+) {
+  for (final entry in _androidIconSizes.entries) {
+    _writePng(
+      '$_consumerProjectRoot/android/app/src/main/res/${entry.key}/ic_launcher.png',
+      image.copyResize(
+        squareIcon,
+        width: entry.value,
+        height: entry.value,
+        interpolation: image.Interpolation.cubic,
+      ),
+    );
+    _writePng(
+      '$_consumerProjectRoot/android/app/src/main/res/${entry.key}/ic_launcher_round.png',
+      image.copyResize(
+        roundIcon,
+        width: entry.value,
+        height: entry.value,
+        interpolation: image.Interpolation.cubic,
+      ),
+    );
+  }
+}
+
+void _writeConsumerProductionIosIconSet(image.Image source) {
+  final opaqueSource = source.convert(numChannels: 3);
+  final outputPath =
+      '$_consumerProjectRoot/ios/Runner/Assets.xcassets/AppIcon.appiconset';
+  final contents = _readJsonMap('$outputPath/Contents.json');
+  final images = contents['images'] as List<dynamic>;
+  for (final item in images.cast<Map<String, dynamic>>()) {
+    final filename = item['filename'] as String?;
+    if (filename == null) continue;
+    final pixelSize = _applePixelSize(item);
+    _writePng(
+      '$outputPath/$filename',
+      image.copyResize(
+        opaqueSource,
+        width: pixelSize,
+        height: pixelSize,
+        interpolation: image.Interpolation.cubic,
+      ),
+    );
+  }
 }
 
 void _writeMacosIconSet(_IconVariant variant, image.Image source) {
@@ -274,8 +358,21 @@ void _writeNativeBrandManifest(_NativeBrandTokens tokens) {
         'ios/Runner/Assets.xcassets/${variant.appleIconSet}.appiconset',
       for (final variant in _iconVariants.values)
         'macos/Runner/Assets.xcassets/${variant.appleIconSet}.appiconset',
+      'apps/consumer/android/app/src/main/res/**/ic_launcher.png',
+      'apps/consumer/android/app/src/main/res/**/ic_launcher_round.png',
+      'apps/consumer/android/app/src/consumerDev/res/**/ic_launcher.png',
+      'apps/consumer/android/app/src/consumerDev/res/**/ic_launcher_round.png',
+      'apps/consumer/android/app/src/consumerStaging/res/**/ic_launcher.png',
+      'apps/consumer/android/app/src/consumerStaging/res/**/ic_launcher_round.png',
+      'apps/consumer/ios/Runner/Assets.xcassets/AppIcon.appiconset',
+      'apps/consumer/ios/Runner/Assets.xcassets/AppIcon-dev.appiconset',
+      'apps/consumer/ios/Runner/Assets.xcassets/AppIcon-staging.appiconset',
     ],
   });
+}
+
+String _projectPath(String projectRoot, String relativePath) {
+  return projectRoot.isEmpty ? relativePath : '$projectRoot/$relativePath';
 }
 
 void _syncPubspecTokens(_NativeBrandTokens tokens) {

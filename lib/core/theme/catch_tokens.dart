@@ -2216,6 +2216,8 @@ abstract final class CatchLayout {
       welcomeReelCatchLineTopOffset;
   static const double welcomeReelObjectLeft = 116.0;
   static const double welcomeReelObjectRight = 18.0;
+  static const double welcomeReelUnderlineGap = 2.0;
+  static const double welcomeReelUnderlineThickness = 4.0;
   static const double welcomeReelDimRange =
       welcomeReelRowHeight * CatchOpacity.welcomeReelDimDistanceRows;
   static const double welcomeBodyTop = 340.0;

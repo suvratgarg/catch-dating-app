@@ -74,7 +74,10 @@ class AppShell extends ConsumerWidget {
     if (isAuthenticated) {
       final router = GoRouter.of(context);
       final fcmInitialization = appShellFcmInitializationProvider(uid, router);
-      ref.watch(fcmInitialization);
+      // FCM initialization is a background side effect; its value is not part
+      // of the shell UI. Listening starts the provider and reports failures
+      // without rebuilding the keyed StatefulNavigationShell when the future
+      // completes.
       ref.listen(fcmInitialization, (previous, next) {
         if (!next.hasError) return;
         FlutterError.reportError(

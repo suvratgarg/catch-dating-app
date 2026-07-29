@@ -1,7 +1,7 @@
 ---
 doc_id: widget_catalog
-version: 2.5.660
-updated: 2026-07-23
+version: 2.5.663
+updated: 2026-07-29
 owner: recursive_audit_loop
 status: active
 ---
@@ -16,6 +16,27 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.663
+
+- `CatchConsumerBootstrap` now replaces its provider-free boot app root
+  atomically. The boot `MaterialApp` and initialized `MaterialApp.router` may
+  not overlap during handoff because router `GlobalKey` elements must finish
+  deactivation before the real app mounts.
+- Consumer `AppShell` now starts and observes FCM initialization through
+  `ref.listen` without watching its result. Background completion or failure
+  therefore cannot rebuild the keyed `StatefulNavigationShell` during the first
+  dashboard frame.
+
+### 2.5.661
+
+- Added the Consumer-only `CatchConsumerBootstrap` and
+  `CatchConsumerBootScreen`: startup initialization now runs behind the
+  provider-free Welcome reel, the native mark is removed only after its matching
+  Flutter frame paints, and routing stays unmounted until both gates complete.
+- `WelcomeScene` now supports suppressing logged-out landing content when reused
+  by the cold-start composition. `CatchStartupAnimationScope` prevents the
+  route-owned Welcome page from replaying the reel in the same app process.
 
 ### 2.5.659
 
@@ -6430,7 +6451,7 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `AppShell` | `lib/core/presentation/app_shell.dart:45` | Main consumer tab shell with adaptive Home / Explore / Chats / You navigation. Uses the shared `CatchTabBar` for both iOS and Android chrome, watches provider-backed connectivity for the offline app notice, initializes FCM through `appShellFcmInitializationProvider`, exposes active-tab state through `AppShellActiveTab`, and keeps Crashlytics/Analytics user IDs synced with auth state. A nonzero software-keyboard `viewInsets.bottom` suppresses authenticated navigation and the guest auth CTA, disables floating extend-body behavior, and publishes zero bottom obstruction; hardware keyboards do not hide the bar. Floating layouts keep the route body in a stable stack slot while removing only the navigation sibling, preserving the focused editor, text, and cursor selection across the keyboard transition. Shell-level streams stay limited to shell-wide UI such as auth, connectivity, FCM, and unread badges. |
+| `AppShell` | `lib/core/presentation/app_shell.dart:45` | Main consumer tab shell with adaptive Home / Explore / Chats / You navigation. Uses the shared `CatchTabBar` for both iOS and Android chrome, watches provider-backed connectivity for the offline app notice, initializes FCM through a side-effect-only `appShellFcmInitializationProvider` listener that cannot rebuild the keyed navigation shell, exposes active-tab state through `AppShellActiveTab`, and keeps Crashlytics/Analytics user IDs synced with auth state. A nonzero software-keyboard `viewInsets.bottom` suppresses authenticated navigation and the guest auth CTA, disables floating extend-body behavior, and publishes zero bottom obstruction; hardware keyboards do not hide the bar. Floating layouts keep the route body in a stable stack slot while removing only the navigation sibling, preserving the focused editor, text, and cursor selection across the keyboard transition. Shell-level streams stay limited to shell-wide UI such as auth, connectivity, FCM, and unread badges. |
 | `HostAppShell` | `lib/core/presentation/host_app_shell.dart:20` | Host tab shell for Today / Events / Inbox / Organizer. Reuses the consumer shell's FCM, connectivity, analytics, navigation primitive, software-keyboard suppression, stable focused-route layout, and zero-obstruction contract while preserving host destinations. |
 
 ### StatelessWidget
@@ -7061,6 +7082,8 @@ Widgetbook callers.
 
 | Widget | File | Purpose |
 |---|---|---|
+| `CatchConsumerBootstrap` | `lib/consumer_bootstrap.dart` | Consumer iOS/Android process-root state machine. Starts critical initialization concurrently with boot motion, removes the native splash through one decoded/painted-frame callback, mounts routing only after both gates complete, atomically replaces the boot `MaterialApp` so independent application roots never overlap, and converts startup failure into a retryable Catch error surface. Host/web/desktop do not adopt it. |
+| `CatchConsumerBootScreen` | `lib/consumer_bootstrap.dart` | Provider-free Consumer cold-start animation. First matches the generated native splash mark, fades into the existing Welcome reel, suppresses logged-out CTAs, supports reduced motion and tap-to-skip, and holds its landed state while initialization finishes. |
 | `WelcomePage` | `lib/onboarding/presentation/pages/welcome_page.dart:11` | Animated logged-out start/welcome screen registered as `screen.start.welcome` and reused by `screen.onboarding.flow` welcome entry. It follows the Splash -> Welcome handoff with fixed `Catch`, deterministic object reel landing on `someone real`, tap/reduced-motion skip, body copy, primary Continue with phone CTA, and secondary See what's on CTA. |
 
 ### ConsumerWidget
@@ -7073,9 +7096,9 @@ Widgetbook callers.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `WelcomeScene` | `lib/onboarding/presentation/pages/welcome_page.dart:225` | Provider-free Welcome splash scene. Positions the object reel, fixed `Catch` wordmark, landed body copy, and Continue / See what's on CTA stack from explicit viewport height, media padding, spin, landing, and landed values. |
+| `WelcomeScene` | `lib/onboarding/presentation/pages/welcome_page.dart:242` | Provider-free Welcome splash scene. Positions the object reel, fixed `Catch` word, landed body copy, and Continue / See what's on CTA stack from explicit viewport height, media padding, spin, landing, and landed values. The fixed word and focused phrase share an alphabetic baseline. Consumer cold boot sets `showLandingContent: false` to reuse the reel without mounting logged-out actions. |
 | `ReelBand` | `lib/onboarding/presentation/pages/welcome_page.dart:356` | Masked vertical object reel used by `WelcomeScene`. Converts spin/landing progress into a doubled phrase track, fade mask, and repeated `ReelRow` sequence landing deterministically on `someone real`. |
-| `ReelRow` | `lib/onboarding/presentation/pages/welcome_page.dart:429` | Single Welcome reel phrase row. Uses `WelcomePhrase` activity pigment, distance from the reel focus line, landing fade/cool progress, and focus underline/period styling to render each spinning or landed phrase. |
+| `ReelRow` | `lib/onboarding/presentation/pages/welcome_page.dart:429` | Single Welcome reel phrase row. Uses `WelcomePhrase` activity pigment, distance from the reel focus line, landing fade/cool progress, and focused-period styling. Its focused underline is a separate pigment rule below the text bounds rather than a font decoration on the shared baseline. |
 | `RevealEntrance` | `lib/onboarding/presentation/pages/welcome_page.dart:525` | Welcome landing reveal wrapper. Converts shared landing progress plus reveal order into opacity and vertical offset for body copy and CTA entrances. |
 | `OnboardingFormKeys` | `lib/onboarding/presentation/onboarding_form_keys.dart:4` | Stable semantic keys for onboarding form controls whose visible labels repeat across sections. |
 

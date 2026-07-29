@@ -1,14 +1,18 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/consumer_bootstrap.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/core/startup/catch_native_splash.dart';
+import 'package:catch_dating_app/core/startup/catch_startup_animation_scope.dart';
 import 'package:catch_dating_app/core/theme/catch_font_licenses.dart';
 import 'package:catch_dating_app/core/widgets/catch_framework_error_view.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/firebase_options.dart';
+import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
 import 'package:catch_dating_app/force_update/domain/app_version_config.dart';
 import 'package:catch_dating_app/launch_access/domain/launch_access_config.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -21,8 +25,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 Future<void> runCatchApp({
   required AppRole appRole,
@@ -36,9 +40,100 @@ Future<void> runCatchApp({
 
   final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   registerCatchFontLicenses();
-  if (!kIsWeb) {
-    FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  CatchNativeSplash.preserve(widgetsBinding: widgetsBinding);
+
+  if (_usesAnimatedConsumerBootstrap(
+    appRole: appRole,
+    isWeb: kIsWeb,
+    platform: defaultTargetPlatform,
+  )) {
+    late _InitializedCatchServices services;
+    runApp(
+      CatchConsumerBootstrap(
+        initialize: () async {
+          services = await _initializeCatchServices(
+            preloadAppPackageInfo: true,
+          );
+        },
+        initializedAppBuilder: (_) => ProviderScope(
+          overrides: [
+            appAnalyticsProvider.overrideWithValue(services.analytics),
+            errorLoggerProvider.overrideWithValue(services.errorLogger),
+            if (services.appPackageInfo != null)
+              appPackageInfoProvider.overrideWith(
+                (ref) => services.appPackageInfo!,
+              ),
+          ],
+          observers: [
+            _asyncErrorLogger(
+              errorLogger: services.errorLogger,
+              analytics: services.analytics,
+            ),
+          ],
+          child: CatchStartupAnimationScope(
+            consumerWelcomeReelPlayed: true,
+            child: app,
+          ),
+        ),
+        onNativeSplashReady: CatchNativeSplash.remove,
+      ),
+    );
+    return;
   }
+
+  final services = await _initializeCatchServices(preloadAppPackageInfo: false);
+  runApp(
+    ProviderScope(
+      overrides: [
+        appAnalyticsProvider.overrideWithValue(services.analytics),
+        errorLoggerProvider.overrideWithValue(services.errorLogger),
+      ],
+      observers: [
+        _asyncErrorLogger(
+          errorLogger: services.errorLogger,
+          analytics: services.analytics,
+        ),
+      ],
+      child: CatchStartupAnimationScope(
+        consumerWelcomeReelPlayed: false,
+        child: app,
+      ),
+    ),
+  );
+}
+
+AsyncErrorLogger _asyncErrorLogger({
+  required ErrorLogger errorLogger,
+  required AppAnalytics analytics,
+}) {
+  return AsyncErrorLogger(
+    errorLogger,
+    onBackendOperationFailed:
+        ({
+          required BackendErrorContext context,
+          required String errorCode,
+          required bool retryable,
+          required AppErrorSeverity severity,
+        }) {
+          analytics.logBackendOperationFailed(
+            context: context,
+            errorCode: errorCode,
+            retryable: retryable,
+            severity: severity,
+          );
+        },
+  );
+}
+
+typedef _InitializedCatchServices = ({
+  ErrorLogger errorLogger,
+  AppAnalytics analytics,
+  ({String version, String buildNumber})? appPackageInfo,
+});
+
+Future<_InitializedCatchServices> _initializeCatchServices({
+  required bool preloadAppPackageInfo,
+}) async {
   await _lockDeviceOrientation();
   final remoteConfigError = await _initializeFirebaseServices();
 
@@ -59,34 +154,38 @@ Future<void> runCatchApp({
 
   _registerErrorHandlers(errorLogger);
 
-  runApp(
-    ProviderScope(
-      overrides: [
-        appAnalyticsProvider.overrideWithValue(analytics),
-        errorLoggerProvider.overrideWithValue(errorLogger),
-      ],
-      observers: [
-        AsyncErrorLogger(
-          errorLogger,
-          onBackendOperationFailed:
-              ({
-                required BackendErrorContext context,
-                required String errorCode,
-                required bool retryable,
-                required AppErrorSeverity severity,
-              }) {
-                analytics.logBackendOperationFailed(
-                  context: context,
-                  errorCode: errorCode,
-                  retryable: retryable,
-                  severity: severity,
-                );
-              },
-        ),
-      ],
-      child: app,
-    ),
+  final packageInfo = preloadAppPackageInfo
+      ? await PackageInfo.fromPlatform()
+      : null;
+  return (
+    errorLogger: errorLogger,
+    analytics: analytics,
+    appPackageInfo: packageInfo == null
+        ? null
+        : (version: packageInfo.version, buildNumber: packageInfo.buildNumber),
   );
+}
+
+@visibleForTesting
+bool usesAnimatedConsumerBootstrap({
+  required AppRole appRole,
+  required bool isWeb,
+  required TargetPlatform platform,
+}) {
+  return _usesAnimatedConsumerBootstrap(
+    appRole: appRole,
+    isWeb: isWeb,
+    platform: platform,
+  );
+}
+
+bool _usesAnimatedConsumerBootstrap({
+  required AppRole appRole,
+  required bool isWeb,
+  required TargetPlatform platform,
+}) {
+  if (appRole != AppRole.consumer || isWeb) return false;
+  return platform == TargetPlatform.iOS || platform == TargetPlatform.android;
 }
 
 void _emitObservabilitySmokeIfRequested(
