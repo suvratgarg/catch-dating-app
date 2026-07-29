@@ -1,6 +1,6 @@
 {
-  "version": 122,
-  "updated": "2026-07-27",
+  "version": 123,
+  "updated": "2026-07-29",
   "owner": "agent_operating_model",
   "entries": [
     {
@@ -3881,6 +3881,31 @@
         "admin/README.md"
       ],
       "notes": "Operations work-item expiresAt is the event urgency authority. Event Intake records review decisions only; visibility cannot exceed the attributed organizer and publication remains separately governed."
+    },
+    {
+      "id": "REG-CONSUMER-BOOT-ROOT-HANDOFF-001",
+      "title": "Consumer cold boot destabilizes the keyed router shell during initialization handoff",
+      "status": "active",
+      "applies_to": [
+        "lib/consumer_bootstrap.dart",
+        "lib/core/presentation/app_shell.dart",
+        "test/core/consumer_bootstrap_test.dart",
+        "test/routing/app_shell_guest_cta_test.dart",
+        "docs/app_architecture.md",
+        "docs/design_parity/splash_welcome_spec.md"
+      ],
+      "symptom": "After the Consumer reel, fragments of the Welcome route remain clipped at the screen edge, Dashboard stays on a broken skeleton, and Flutter reports a duplicate StatefulNavigationShell GlobalKey followed by framework.dart `_elements.contains(element)`. The failure can be triggered either by overlapping the boot and router application roots or by rebuilding the keyed shell when background FCM initialization completes.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test test/core/consumer_bootstrap_test.dart test/routing/app_shell_guest_cta_test.dart",
+        "guardEvidence": "the handoff test proves exactly one MaterialApp exists across the root swap, while the shell test completes FCM initialization after Home mounts and proves the same adaptive scaffold widget and StatefulNavigationShell element remain mounted without a framework exception"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/design_parity/splash_welcome_spec.md",
+        "docs/widget_catalog.md"
+      ],
+      "notes": "Keep transition motion inside CatchConsumerBootScreen. Do not overlap the provider-free boot MaterialApp and initialized MaterialApp.router, and do not watch background-only service futures from the consumer AppShell when their result is not rendered."
     }
   ]
 }

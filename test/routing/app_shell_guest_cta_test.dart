@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chat_inbox_screen.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
@@ -7,6 +9,7 @@ import 'package:catch_dating_app/core/fcm_service.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_keys.dart';
+import 'package:catch_dating_app/core/presentation/catch_adaptive_tab_scaffold.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
@@ -299,6 +302,90 @@ void main() {
       AppShellBottomBarPlacement.anchored,
     );
   });
+
+  testWidgets(
+    'FCM completion does not rebuild the keyed consumer navigation shell',
+    (tester) async {
+      AppConfig.configureEntrypointRole(AppRole.consumer);
+      final initialization = Completer<void>();
+      var initializationStarted = false;
+      final router = GoRouter(
+        initialLocation: Routes.dashboardScreen.path,
+        routes: [
+          StatefulShellRoute.indexedStack(
+            builder: (_, _, navigationShell) =>
+                AppShell(navigationShell: navigationShell),
+            branches: [
+              _branch(Routes.dashboardScreen.path, 'Home screen loaded'),
+              _branch(Routes.exploreScreen.path, 'Explore screen loaded'),
+              _branch(Routes.matchesListScreen.path, 'Chats screen loaded'),
+              _branch(Routes.profileScreen.path, 'Profile screen loaded'),
+            ],
+          ),
+        ],
+      );
+      addTearDown(router.dispose);
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            uidProvider.overrideWithValue(const AsyncData<String?>('runner-1')),
+            appShellFcmInitializationProvider('runner-1', router).overrideWith((
+              ref,
+            ) async {
+              initializationStarted = true;
+              await initialization.future;
+            }),
+            totalUnreadCountProvider('runner-1').overrideWith((ref) => 0),
+            watchEventParticipationsForUserProvider(
+              'runner-1',
+            ).overrideWith((ref) => const Stream.empty()),
+            watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
+            appConnectivityProvider.overrideWithValue(
+              const AsyncData<List<ConnectivityResult>>([
+                ConnectivityResult.wifi,
+              ]),
+            ),
+            appAnalyticsProvider.overrideWithValue(
+              AppAnalytics(
+                reporter: _NoOpAnalyticsReporter(),
+                shouldCollect: false,
+              ),
+            ),
+          ],
+          child: MaterialApp.router(
+            theme: AppTheme.light.copyWith(platform: TargetPlatform.iOS),
+            routerConfig: router,
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(initializationStarted, isTrue);
+      expect(find.text('Home screen loaded'), findsOneWidget);
+      final scaffoldBefore = tester.widget<CatchAdaptiveTabScaffold>(
+        find.byType(CatchAdaptiveTabScaffold),
+      );
+      final shellElementBefore = tester.element(
+        find.byType(StatefulNavigationShell),
+      );
+
+      initialization.complete();
+      await tester.pump();
+
+      expect(
+        tester.widget<CatchAdaptiveTabScaffold>(
+          find.byType(CatchAdaptiveTabScaffold),
+        ),
+        same(scaffoldBefore),
+      );
+      expect(
+        tester.element(find.byType(StatefulNavigationShell)),
+        same(shellElementBefore),
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   testWidgets('authenticated iOS shell overlays the floating tab bar', (
     tester,

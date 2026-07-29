@@ -149,12 +149,12 @@ class _CatchConsumerBootstrapState extends State<CatchConsumerBootstrap> {
       );
     }
 
-    return AnimatedSwitcher(
-      duration: CatchMotion.base,
-      switchInCurve: CatchMotion.standardCurve,
-      switchOutCurve: CatchMotion.standardCurve,
-      child: child,
-    );
+    // Do not overlap the bootstrap MaterialApp with the initialized
+    // MaterialApp.router. Keeping two independent app roots alive during an
+    // AnimatedSwitcher transition can reactivate router GlobalKey elements
+    // while their old tree is still deactivating. Replace the root atomically;
+    // route-owned transitions begin only after the boot tree is gone.
+    return child;
   }
 }
 

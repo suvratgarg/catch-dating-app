@@ -1,6 +1,6 @@
 ---
 doc_id: splash_welcome_spec
-version: 1.1.1
+version: 1.1.2
 updated: 2026-07-29
 owner: design_parity_review
 status: implemented
@@ -195,7 +195,11 @@ to device; when in doubt match `reference/Splash-prototype.html`):
    removing the native splash;
 3. fades into `CatchConsumerBootScreen`, which reuses `WelcomeScene` without
    signed-out body/CTA content;
-4. keeps auth and routing unmounted until both initialization and motion finish;
+4. keeps auth and routing unmounted until both initialization and motion finish,
+   then atomically replaces the boot `MaterialApp` with the initialized
+   `MaterialApp.router` without overlapping independent application roots;
+   background service completion is listened to without rebuilding the keyed
+   consumer navigation shell;
 5. preloads package metadata so `ForceUpdateGate` resolves without flashing a
    second startup-loader frame;
 6. marks the process reel as played so route-owned `WelcomePage` lands without
@@ -231,7 +235,7 @@ Host, web, and desktop retain the prior startup behavior.
 | Part 4 focus/color math and band mask | aligned | `ReelRow` and `ReelBand` implement focus threshold, pigment mix, period opacity, dimming, and mask stops through tokens |
 | Part 4 landing and reduced motion | aligned | `WelcomePage` owns separate spin/landing controllers; tests cover reduced-motion/direct landed state and skip-to-CTA behavior |
 | Part 4 Widgetbook and appshot proof | aligned | `widgetbook/lib/onboarding/onboarding_use_cases.dart` has animated/landed/reduced-motion states; `/tmp/catch-splash-welcome-captures/start_welcome` holds light/dark captures from the recorded pass |
-| Part 5 Consumer cold-boot reel | aligned | `lib/consumer_bootstrap.dart` coordinates decoded first-frame handoff, reel/init completion, reduced motion, skip, retry, and delayed router mount; `test/core/consumer_bootstrap_test.dart` covers the state machine |
+| Part 5 Consumer cold-boot reel | aligned | `lib/consumer_bootstrap.dart` coordinates decoded first-frame handoff, reel/init completion, reduced motion, skip, retry, delayed router mount, and an atomic boot-root replacement; `lib/core/presentation/app_shell.dart` keeps background FCM completion from rebuilding the keyed consumer navigation shell; the focused bootstrap and shell tests cover both contracts |
 
 ## Acceptance
 

@@ -105,6 +105,37 @@ void main() {
     expect(find.text('Initialized app'), findsOneWidget);
   });
 
+  testWidgets('handoff never overlaps independent MaterialApp roots', (
+    tester,
+  ) async {
+    final initialization = Completer<void>();
+
+    await tester.pumpWidget(
+      CatchConsumerBootstrap(
+        initialize: () => initialization.future,
+        initializedAppBuilder: (_) =>
+            const MaterialApp(home: Text('Initialized app')),
+        onNativeSplashReady: () {},
+        playIntro: false,
+        prepareFirstFrame: _prepareFirstFrame,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(MaterialApp), findsOneWidget);
+    expect(find.byKey(CatchConsumerBootstrap.bootKey), findsOneWidget);
+
+    initialization.complete();
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.byType(MaterialApp), findsOneWidget);
+    expect(find.byKey(CatchConsumerBootstrap.bootKey), findsNothing);
+    expect(find.byKey(CatchConsumerBootstrap.initializedKey), findsOneWidget);
+    expect(find.text('Initialized app'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets(
     'bootstrap failure is retryable and never repeats native handoff',
     (tester) async {

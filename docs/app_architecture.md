@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.7.1
+version: 1.7.2
 updated: 2026-07-29
 owner: recursive_audit_loop
 status: active
@@ -458,6 +458,13 @@ body in the same stack position while removing only the navigation sibling, so
 the focused editable element, text, cursor selection, and keyboard connection
 survive the inset transition. A hardware keyboard leaves `viewInsets.bottom`
 at zero, so navigation remains available.
+
+Consumer shell initialization effects that do not render UI must use
+`ref.listen`, not `ref.watch`. In particular, completion or failure of
+`appShellFcmInitializationProvider` is reported as a side effect and must not
+rebuild the `StatefulNavigationShell`: go_router owns its `GlobalKey`, and
+forcing the keyed shell through an unrelated async rebuild can invalidate the
+first dashboard frame.
 
 ## Layout, Spacing, And UI Architecture
 
@@ -1862,6 +1869,12 @@ and initialization complete.
 - Auth restoration, profile loading, deep-link resolution, and router redirects
   begin only after initialization and boot motion finish, so they cannot dispose
   the cold-start animation midway through the handoff.
+- The boot `MaterialApp` and initialized `MaterialApp.router` must never overlap.
+  `CatchConsumerBootstrap` replaces the process root atomically after both gates
+  complete; a root-level `AnimatedSwitcher` can keep router `GlobalKey`
+  elements alive while the old tree deactivates and corrupt the first dashboard
+  frame. Motion belongs inside the provider-free boot scene, not around
+  independent application roots.
 - Consumer bootstrap preloads package metadata and overrides
   `appPackageInfoProvider` synchronously before mounting `ForceUpdateGate`.
   This prevents a second startup-loader frame after the reel.
