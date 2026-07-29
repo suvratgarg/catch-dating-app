@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.7.0
-updated: 2026-07-27
+version: 1.7.1
+updated: 2026-07-29
 owner: recursive_audit_loop
 status: active
 ---
@@ -1841,6 +1841,37 @@ Rules:
   and launcher resources are release-configuration concerns; current release
   evidence and remaining TestFlight/Play work live in
   `docs/release_operations.md`.
+
+### Consumer Cold-Start Composition
+
+Consumer iOS and Android cold starts mount `CatchConsumerBootstrap` before
+critical asynchronous initialization. The bootstrap owns the native-to-Flutter
+handoff and keeps the real app/router tree unmounted until both its boot motion
+and initialization complete.
+
+- `CatchNativeSplash` is the idempotent platform-effect seam. Consumer removes
+  the native surface only after the matching Flutter splash mark has decoded
+  and painted; Host keeps removal in the resolved force-update gate.
+- `CatchConsumerBootScreen` is provider-free and reuses `WelcomeScene` with
+  landing actions suppressed. `/start` still owns the complete logged-out
+  Welcome composition, but it no longer owns Consumer cold-start timing.
+- Critical services initialize concurrently with the boot reel. A fast startup
+  waits for the reel; a slow startup holds its deterministic landed state. An
+  initialization failure becomes a retryable Catch error surface rather than a
+  permanently preserved native splash.
+- Auth restoration, profile loading, deep-link resolution, and router redirects
+  begin only after initialization and boot motion finish, so they cannot dispose
+  the cold-start animation midway through the handoff.
+- Consumer bootstrap preloads package metadata and overrides
+  `appPackageInfoProvider` synchronously before mounting `ForceUpdateGate`.
+  This prevents a second startup-loader frame after the reel.
+- `CatchStartupAnimationScope` records that the process-level reel played.
+  Route-owned `WelcomePage` therefore renders its landed actions immediately
+  instead of replaying the same animation after routing starts.
+- Reduced-motion settings and tap-to-skip land the reel immediately. The
+  process bootstrap runs on cold launch only; app resume does not replay it.
+- Host, web, and desktop retain their existing startup behavior unless their
+  role-specific owner explicitly adopts a different boot composition.
 
 Host Inbox is the reference for sharing foundations without sharing product
 composition. Consumer `/chats` owns `ChatsListScreen`; Host `/host/inbox` owns

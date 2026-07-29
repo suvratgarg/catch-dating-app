@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-07-23T22:48:08.743Z",
+  "generatedAt": "2026-07-29T11:12:49.893Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
   },
   "summary": {
-    "useCases": 864,
-    "components": 813,
-    "stateCards": 1794,
+    "useCases": 866,
+    "components": 815,
+    "stateCards": 1796,
     "reviewCandidates": 44,
     "oversizedUseCases": 44,
     "multiUseCaseComponents": 45
@@ -17682,6 +17682,43 @@
       ]
     },
     {
+      "component": "CatchConsumerBootScreen",
+      "useCaseCount": 1,
+      "stateCardCount": 2,
+      "paths": [
+        "[P1 product surfaces]/Onboarding/Pages"
+      ],
+      "labels": [
+        "animated cold start",
+        "landed / reduced motion"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Consumer cold-start states",
+          "functionName": "consumerColdStartStates",
+          "file": "widgetbook/lib/onboarding/onboarding_use_cases.dart",
+          "path": "[P1 product surfaces]/Onboarding/Pages",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "animated cold start",
+              "normalizedLabel": "animated cold start"
+            },
+            {
+              "label": "landed / reduced motion",
+              "normalizedLabel": "landed reduced motion"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "CatchDetailSliverSectionList",
       "useCaseCount": 1,
       "stateCardCount": 2,
@@ -30198,6 +30235,31 @@
           "functionName": "catchAdaptiveTabScaffoldState",
           "file": "widgetbook/lib/shell/app_shell_use_cases.dart",
           "path": "[App shell]",
+          "stateCardCount": 0,
+          "stateCards": []
+        }
+      ]
+    },
+    {
+      "component": "CatchConsumerBootstrap",
+      "useCaseCount": 1,
+      "stateCardCount": 0,
+      "paths": [
+        "[P1 product surfaces]/Onboarding/Pages"
+      ],
+      "labels": [],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Consumer bootstrap lifecycle",
+          "functionName": "consumerBootstrapLifecycle",
+          "file": "widgetbook/lib/onboarding/onboarding_use_cases.dart",
+          "path": "[P1 product surfaces]/Onboarding/Pages",
           "stateCardCount": 0,
           "stateCards": []
         }

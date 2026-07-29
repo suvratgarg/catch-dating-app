@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/consumer_bootstrap.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -301,6 +302,47 @@ Widget welcomePageStates(BuildContext context) {
       ),
     ],
   );
+}
+
+@widgetbook.UseCase(
+  name: 'Consumer cold-start states',
+  type: CatchConsumerBootScreen,
+  path: '[P1 product surfaces]/Onboarding/Pages',
+)
+Widget consumerColdStartStates(BuildContext context) {
+  return _OnboardingCatalog(
+    title: 'CatchConsumerBootScreen',
+    children: const [
+      _StateCard(
+        label: 'animated cold start',
+        child: _DeviceFrame(
+          child: CatchConsumerBootScreen(
+            onFirstFlutterFrameReady: _noop,
+            onAnimationComplete: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'landed / reduced motion',
+        child: _DeviceFrame(
+          child: CatchConsumerBootScreen(
+            playIntro: false,
+            onFirstFlutterFrameReady: _noop,
+            onAnimationComplete: _noop,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Consumer bootstrap lifecycle',
+  type: CatchConsumerBootstrap,
+  path: '[P1 product surfaces]/Onboarding/Pages',
+)
+Widget consumerBootstrapLifecycle(BuildContext context) {
+  return consumerColdStartStates(context);
 }
 
 @widgetbook.UseCase(

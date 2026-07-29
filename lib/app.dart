@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/app_error_context.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/core/startup/catch_native_splash.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -17,7 +18,6 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/user_profile/data/profile_location_initializer.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -164,7 +164,7 @@ class _ForceUpdateGateState extends ConsumerState<ForceUpdateGate>
     if (_nativeSplashRemovalScheduled || kIsWeb) return;
     _nativeSplashRemovalScheduled = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      FlutterNativeSplash.remove();
+      CatchNativeSplash.remove();
     });
   }
 }

@@ -2,16 +2,17 @@ import 'dart:math' as math;
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
+import 'package:catch_dating_app/core/startup/catch_startup_animation_scope.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart' as app_router;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 
 class WelcomePage extends ConsumerStatefulWidget {
   const WelcomePage({super.key, this.playIntro = true});
@@ -96,7 +97,12 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
   }
 
   bool _shouldRenderLandedImmediately(BuildContext context) {
-    return !widget.playIntro || MediaQuery.of(context).disableAnimations;
+    return !widget.playIntro ||
+        MediaQuery.of(context).disableAnimations ||
+        (CatchStartupAnimationScope.maybeOf(
+              context,
+            )?.consumerWelcomeReelPlayed ??
+            false);
   }
 
   void _skip() {
@@ -249,6 +255,7 @@ class WelcomeScene extends StatelessWidget {
     required this.landed,
     required this.onContinue,
     required this.onExplore,
+    this.showLandingContent = true,
   });
 
   final double viewportHeight;
@@ -258,6 +265,7 @@ class WelcomeScene extends StatelessWidget {
   final bool landed;
   final VoidCallback onContinue;
   final VoidCallback onExplore;
+  final bool showLandingContent;
 
   @override
   Widget build(BuildContext context) {
@@ -314,7 +322,7 @@ class WelcomeScene extends StatelessWidget {
             ),
           ),
         ),
-        if (landed) ...[
+        if (landed && showLandingContent) ...[
           Positioned(
             left: CatchLayout.welcomeBodyHorizontalPadding,
             right: CatchLayout.welcomeBodyHorizontalPadding,

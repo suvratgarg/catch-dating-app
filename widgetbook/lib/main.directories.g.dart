@@ -8764,6 +8764,28 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Pages',
             children: [
               _widgetbook.WidgetbookComponent(
+                name: 'CatchConsumerBootScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Consumer cold-start states',
+                    builder:
+                        _widgetbook_workspace_onboarding_onboarding_use_cases
+                            .consumerColdStartStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CatchConsumerBootstrap',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Consumer bootstrap lifecycle',
+                    builder:
+                        _widgetbook_workspace_onboarding_onboarding_use_cases
+                            .consumerBootstrapLifecycle,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'GenderInterestPage',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(

@@ -10,6 +10,23 @@ import '../test_pump_helpers.dart';
 
 void main() {
   group('forceUpdateRequiredProvider', () {
+    test('preloaded package info resolves on the first provider read', () {
+      final container = ProviderContainer(
+        overrides: [
+          appVersionConfigProvider.overrideWithValue(const AppVersionConfig()),
+          appPackageInfoProvider.overrideWith(
+            (ref) => (version: '2.0.0', buildNumber: '99'),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final result = container.read(forceUpdateRequiredProvider);
+
+      expect(result.hasValue, isTrue);
+      expect(result.requireValue, isFalse);
+    });
+
     test('returns false when no gate is configured', () async {
       final container = ProviderContainer(
         overrides: [

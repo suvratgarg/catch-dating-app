@@ -1,18 +1,19 @@
 ---
 doc_id: splash_welcome_spec
-version: 1.0.2
-updated: 2026-07-06
+version: 1.1.0
+updated: 2026-07-29
 owner: design_parity_review
 status: implemented
 ---
 
 # Splash + Welcome — Boot Chrome Fix & Reel Parity Spec
 
-> **IMPLEMENTED 2026-07-07.** Parts 1–4 landed: the transparent splash mark
+> **IMPLEMENTED 2026-07-29.** Parts 1–4 landed: the transparent splash mark
 > is generated (`assets/branding/catch_splash_mark_light.png` — the
 > root-cause blocker is resolved), boot preserve/remove flow, retoned
-> startup screen, and welcome reel parity. Part 5 (cold-boot brand beat) was
-> deferred by design. Retained as the record.
+> startup screen, and welcome reel parity. Part 5 now runs the existing reel as
+> a Consumer-only cold-start experience while critical initialization proceeds
+> behind it. Host retains the static boot flow.
 
 Repo: `/Users/suvratgarg/Development/catch-dating-app/catch_dating_app`
 Design SoT: `~/Downloads/Catch Design System (2)/splash-welcome-handoff/`
@@ -29,24 +30,21 @@ source of truth when in doubt; `strings.json` = phrase bank;
    pubspec config (`#F4F4F1` light / `#0F0E10` dark — which ARE the exact
    `lightBg`/`darkBg` token values) was never (re)generated into the
    platform files.
-2. **Boot gap**: `runCatchApp` awaits orientation lock + full Firebase
-   init + error logger + analytics BEFORE `runApp`. The native splash
-   covers all of it — but nothing calls
-   `FlutterNativeSplash.preserve()/remove()`, so the handoff to Flutter is
-   uncontrolled.
-3. **First Flutter frames**: the force-update gate (`app.dart`) mounts
-   `CatchStartupLoadingScreen` — a `t.primary`-colored scaffold — until
-   remote config resolves, which is near-instant from cache. Result: white
-   native splash → ~1 frame of brand-color flash → home. That flash is the
-   "sometimes see a frame of it."
+2. **Consumer boot handoff**: `runCatchApp` mounts
+   `CatchConsumerBootstrap` before orientation/Firebase/logger/analytics awaits.
+   The first Flutter frame matches the generated native mark; the native
+   surface is removed only after that asset has decoded and the matching frame
+   has painted.
+3. **Concurrent startup**: `CatchConsumerBootScreen` fades from the native mark
+   into the existing Welcome reel while critical initialization proceeds. The
+   router mounts only after both the reel and initialization complete, so auth
+   restoration cannot dispose the animation mid-flight. Host keeps the existing
+   static native splash → force-update-gate handoff.
 
-The reel animation was never a boot asset: the handoff is **Splash →
-Welcome** — the signed-out landing sequence (its layout ends in the
-"Continue with phone" / "See what's on" CTA block). Its Dart transcription
-already exists at `lib/onboarding/presentation/pages/welcome_page.dart`
-(router `:308` + onboarding welcome step) and has unlimited play time
-there. Boot never gets a reel; the Welcome screen gets the pixel-accurate
-one.
+The Welcome reel remains the signed-out landing sequence when `WelcomePage` is
+mounted. Consumer cold boot reuses its provider-free `WelcomeScene` with landing
+actions suppressed; the animation is therefore above routing rather than owned
+by `/start`.
 
 Workflow: standard (AGENTS.md; verify with `rg`; per-part commits with
 pathspecs; focused tests + analyzer; sequential Flutter runs; catalog/
@@ -111,12 +109,10 @@ In `lib/app_bootstrap.dart` (`runCatchApp`):
 1. `final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();`
    then `FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);`
    BEFORE the awaits (package already in pubspec).
-2. Call `FlutterNativeSplash.remove()` at the first stable frame: in the
-   force-update gate widget, when the gate resolves to a non-loading
-   branch (allowed / update-required / error), via a post-frame callback
-   that fires exactly once. While the gate is still loading, the native
-   splash simply stays up — no Flutter loading chrome flashes at all for
-   fast boots.
+2. Call the idempotent `CatchNativeSplash.remove()` at the first stable frame.
+   Consumer removes it after its matching Flutter mark has decoded and painted;
+   Host removes it from the force-update gate when the gate resolves to a
+   non-loading branch (allowed / update-required / error).
 3. Web is out of scope (native splash preserve is mobile; leave web
    behavior unchanged).
 
@@ -182,12 +178,25 @@ to device; when in doubt match `reference/Splash-prototype.html`):
   bank = strings.json. Appshots (light) for the receipt; widgetbook
   states: spinning (static mid-frame acceptable), landed.
 
-## Part 5 — OPTIONAL cold-boot brand beat (deferred, owner call)
+## Part 5 — Consumer cold-boot reel `[codex]`
 
-If a boot brand moment is still wanted after Parts 1–3: cap it at a
-≤400ms fade-in of the mark on the bg frame (post-`remove()`), cold start
-only, never on resume, never a reel. NOT part of this spec's checklist —
-record as a backlog note only.
+`CatchConsumerBootstrap` mounts only for Consumer iOS/Android entrypoints. It:
+
+1. starts critical initialization and the boot experience concurrently;
+2. waits for the matching Flutter splash mark to decode and paint before
+   removing the native splash;
+3. fades into `CatchConsumerBootScreen`, which reuses `WelcomeScene` without
+   signed-out body/CTA content;
+4. keeps auth and routing unmounted until both initialization and motion finish;
+5. preloads package metadata so `ForceUpdateGate` resolves without flashing a
+   second startup-loader frame;
+6. marks the process reel as played so route-owned `WelcomePage` lands without
+   replaying it;
+7. lands immediately for reduced-motion users and exposes tap-to-skip;
+8. holds the landed reel if initialization runs long; and
+9. shows a retryable Catch error surface if bootstrap fails.
+
+Host, web, and desktop retain the prior startup behavior.
 
 ## Accepted Drift
 
@@ -205,7 +214,7 @@ record as a backlog note only.
 | Part 1 splash refs point to transparent marks while launcher icon stays opaque | aligned | `pubspec.yaml` keeps launcher `image_path` on `catch_icon.png` and splash `image`/`image_dark` on `catch_splash_mark_*` |
 | Part 1 regenerated native/web splash outputs and cold-launch evidence | aligned | `docs/audit_registry/passes.jsonl` pass ids `2026-07-06-splash-welcome-spec`, `2026-07-06-splash-native-appshots`, and `2026-07-06-splash-welcome-final-gates` |
 | Part 2 preserve native splash before startup awaits | aligned | `lib/app_bootstrap.dart` calls `FlutterNativeSplash.preserve` before orientation/Firebase/logger/analytics awaits |
-| Part 2 remove native splash after force-update gate resolves | aligned | `lib/app.dart` schedules one post-frame `FlutterNativeSplash.remove()` on allowed/update-required/error branches |
+| Part 2 idempotent native splash removal | aligned | `CatchNativeSplash` owns one platform removal; Consumer removes after the matching boot frame and Host removes after its force-update gate resolves |
 | Part 3 startup screen retone and delayed spinner | aligned | `CatchStartupLoadingScreen` uses `t.bg`, brightness-matched transparent splash marks, and `CatchMotion.startupIndicatorDelay`; covered by `test/core/catch_primitives_test.dart` |
 | Part 3 route-level loading no longer reuses startup screen | aligned | Host club create/edit loading routes use `HostClubEditorLoadingScreen`; widget catalog records startup as boot-only |
 | Part 4 Archivo type and motion/layout tokenization | aligned | `CatchTextStyles.welcomeReelHeadline`, `CatchTextStyles.welcomeIntroBody`, `CatchLayout`, and `CatchMotion` own the reel typography, geometry, and timing constants |
@@ -214,13 +223,14 @@ record as a backlog note only.
 | Part 4 focus/color math and band mask | aligned | `ReelRow` and `ReelBand` implement focus threshold, pigment mix, period opacity, dimming, and mask stops through tokens |
 | Part 4 landing and reduced motion | aligned | `WelcomePage` owns separate spin/landing controllers; tests cover reduced-motion/direct landed state and skip-to-CTA behavior |
 | Part 4 Widgetbook and appshot proof | aligned | `widgetbook/lib/onboarding/onboarding_use_cases.dart` has animated/landed/reduced-motion states; `/tmp/catch-splash-welcome-captures/start_welcome` holds light/dark captures from the recorded pass |
-| Part 5 cold-boot brand beat | deferred owner call | Optional by spec; no implementation required for closure |
+| Part 5 Consumer cold-boot reel | aligned | `lib/consumer_bootstrap.dart` coordinates decoded first-frame handoff, reel/init completion, reduced motion, skip, retry, and delayed router mount; `test/core/consumer_bootstrap_test.dart` covers the state machine |
 
 ## Acceptance
 
-- Cold launch: OS splash in correct brand colors (both registers) → app
-  content, with zero color flashes between; no spinner unless boot
-  exceeds 600ms.
+- Consumer cold launch: OS splash in correct brand colors (both registers) →
+  decoded matching Flutter mark → Welcome reel → routed app, with initialization
+  concurrent and routing hidden until stable.
+- Host cold launch remains OS splash → force-update gate → app content.
 - Force-update gate keeps working (update-required and error branches
   still render after `remove()`).
 - Welcome reel matches the prototype: condensed cut, geometry anchors,

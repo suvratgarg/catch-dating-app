@@ -6,6 +6,7 @@ import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
+import 'package:catch_dating_app/core/startup/catch_startup_animation_scope.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -160,6 +161,38 @@ void main() {
       expect(
         reporter.events.single.parameters,
         containsPair(AnalyticsParameters.splashMotion, 'reduced_motion'),
+      );
+    });
+
+    testWidgets('does not replay after the consumer cold-start reel', (
+      tester,
+    ) async {
+      final reporter = _FakeAnalyticsReporter();
+      final container = createOnboardingTestContainer(
+        appAnalytics: AppAnalytics(reporter: reporter, shouldCollect: true),
+      );
+      addTearDown(container.dispose);
+
+      await pumpOnboardingPage(
+        tester,
+        container: container,
+        child: const CatchStartupAnimationScope(
+          consumerWelcomeReelPlayed: true,
+          child: WelcomePage(),
+        ),
+      );
+
+      expect(
+        find.widgetWithText(CatchButton, 'Continue with phone'),
+        findsOneWidget,
+      );
+      expect(
+        find.widgetWithText(CatchButton, 'See what\'s on'),
+        findsOneWidget,
+      );
+      expect(
+        reporter.events.single.parameters,
+        containsPair(AnalyticsParameters.splashMotion, 'direct'),
       );
     });
 

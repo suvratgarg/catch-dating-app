@@ -1,7 +1,7 @@
 {
   "$schema": "./widget_classification.schema.json",
   "version": 2,
-  "updated": "2026-07-25",
+  "updated": "2026-07-29",
   "sourceOfTruth": {
     "scope": "Generated inventory for production Flutter widget and widget-state classes under lib/**. Widgetbook/test scaffolds are intentionally out of scope.",
     "canonicalContracts": "design/components/catch.components.json owns canonical global component contracts and governance metadata.",
@@ -10,44 +10,44 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1102,
-    "widgetClasses": 969,
-    "stateClasses": 133,
-    "publicClasses": 964,
-    "privateClasses": 138,
+    "total": 1106,
+    "widgetClasses": 971,
+    "stateClasses": 135,
+    "publicClasses": 966,
+    "privateClasses": 140,
     "byRole": {
       "atom": 57,
       "composition": 353,
-      "feature-adapter": 285,
+      "feature-adapter": 286,
       "pattern": 17,
-      "screen": 257,
-      "widget-state": 133
+      "screen": 258,
+      "widget-state": 135
     },
     "byDecision": {
       "keep-canonical-contract": 195,
-      "keep-public-cataloged": 704,
-      "keep-widget-state": 133,
+      "keep-public-cataloged": 706,
+      "keep-widget-state": 135,
       "review-catalog-coverage": 44,
       "review-promote-or-consolidate": 21,
       "review-promote-or-inline": 5
     },
     "byCatalogStatus": {
-      "cataloged": 665,
+      "cataloged": 667,
       "contracted": 195,
-      "not-applicable": 133,
+      "not-applicable": 135,
       "route-covered": 56,
       "uncataloged": 53
     },
     "conceptCount": 62,
     "memberClassCount": 116,
-    "compositionClassCount": 517,
-    "screenClassCount": 269,
+    "compositionClassCount": 518,
+    "screenClassCount": 270,
     "unclassifiedCount": 0,
     "byConceptRole": {
-      "composition": 517,
+      "composition": 518,
       "concept": 62,
       "member": 116,
-      "screen": 269
+      "screen": 270
     },
     "collisionGroupCount": 32,
     "collisions": [
@@ -365,8 +365,8 @@
       "conceptPrimariesCataloged": 62,
       "memberClasses": 116,
       "memberClassesCataloged": 116,
-      "compositionsCataloged": 469,
-      "screensCataloged": 213
+      "compositionsCataloged": 470,
+      "screensCataloged": 214
     }
   },
   "widgets": [
@@ -2731,6 +2731,122 @@
       "asyncOwnership": "screen-owned",
       "layoutOwnership": "page-safe-area-sliver",
       "actionOwnership": "navigation-and-controller-calls",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "_CatchConsumerBootScreenState",
+      "file": "lib/consumer_bootstrap.dart",
+      "classKind": "widget-state",
+      "baseClass": "State<CatchConsumerBootScreen>",
+      "visibility": "private",
+      "role": "widget-state",
+      "canonicalFamily": "state.catch_consumer_boot_screen",
+      "publicApi": false,
+      "catalogStatus": "not-applicable",
+      "contractId": null,
+      "conceptRole": null,
+      "conceptId": null,
+      "parentConceptId": null,
+      "qualifier": null,
+      "collisionKey": null,
+      "decisionRef": null,
+      "allowedDependencyLevel": "owning-widget-state",
+      "stateOwnership": "owning-widget-state",
+      "asyncOwnership": "owning-widget-state",
+      "layoutOwnership": "owning-widget-state",
+      "actionOwnership": "owning-widget-state",
+      "decision": "keep-widget-state",
+      "remediationOptions": [
+        "moveStateToController",
+        "routeThroughScreenState"
+      ],
+      "flags": []
+    },
+    {
+      "name": "_CatchConsumerBootstrapState",
+      "file": "lib/consumer_bootstrap.dart",
+      "classKind": "widget-state",
+      "baseClass": "State<CatchConsumerBootstrap>",
+      "visibility": "private",
+      "role": "widget-state",
+      "canonicalFamily": "state.catch_consumer_bootstrap",
+      "publicApi": false,
+      "catalogStatus": "not-applicable",
+      "contractId": null,
+      "conceptRole": null,
+      "conceptId": null,
+      "parentConceptId": null,
+      "qualifier": null,
+      "collisionKey": null,
+      "decisionRef": null,
+      "allowedDependencyLevel": "owning-widget-state",
+      "stateOwnership": "owning-widget-state",
+      "asyncOwnership": "owning-widget-state",
+      "layoutOwnership": "owning-widget-state",
+      "actionOwnership": "owning-widget-state",
+      "decision": "keep-widget-state",
+      "remediationOptions": [
+        "moveStateToController",
+        "routeThroughScreenState"
+      ],
+      "flags": []
+    },
+    {
+      "name": "CatchConsumerBootScreen",
+      "file": "lib/consumer_bootstrap.dart",
+      "classKind": "widget",
+      "baseClass": "StatefulWidget",
+      "visibility": "public",
+      "role": "screen",
+      "canonicalFamily": "screen.catch_consumer_boot_screen",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "conceptRole": "screen",
+      "conceptId": null,
+      "parentConceptId": null,
+      "qualifier": null,
+      "collisionKey": "consumer_boot_screen",
+      "decisionRef": "generated-rule:screen-boundary",
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "CatchConsumerBootstrap",
+      "file": "lib/consumer_bootstrap.dart",
+      "classKind": "widget",
+      "baseClass": "StatefulWidget",
+      "visibility": "public",
+      "role": "feature-adapter",
+      "canonicalFamily": "feature.consumer_bootstrap_dart.catch_consumer_bootstrap",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "conceptRole": "composition",
+      "conceptId": null,
+      "parentConceptId": null,
+      "qualifier": null,
+      "collisionKey": "consumer_bootstrap",
+      "decisionRef": "generated-rule:uncontracted-composition",
+      "allowedDependencyLevel": "feature-display-models",
+      "stateOwnership": "feature-display-state",
+      "asyncOwnership": "display-state-only",
+      "layoutOwnership": "feature-section-layout",
+      "actionOwnership": "feature-callbacks",
       "decision": "keep-public-cataloged",
       "remediationOptions": [
         "keepPublicCataloged",

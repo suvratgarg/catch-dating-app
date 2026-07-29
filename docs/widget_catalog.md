@@ -1,7 +1,7 @@
 ---
 doc_id: widget_catalog
-version: 2.5.660
-updated: 2026-07-23
+version: 2.5.661
+updated: 2026-07-29
 owner: recursive_audit_loop
 status: active
 ---
@@ -16,6 +16,16 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.661
+
+- Added the Consumer-only `CatchConsumerBootstrap` and
+  `CatchConsumerBootScreen`: startup initialization now runs behind the
+  provider-free Welcome reel, the native mark is removed only after its matching
+  Flutter frame paints, and routing stays unmounted until both gates complete.
+- `WelcomeScene` now supports suppressing logged-out landing content when reused
+  by the cold-start composition. `CatchStartupAnimationScope` prevents the
+  route-owned Welcome page from replaying the reel in the same app process.
 
 ### 2.5.659
 
@@ -7061,6 +7071,8 @@ Widgetbook callers.
 
 | Widget | File | Purpose |
 |---|---|---|
+| `CatchConsumerBootstrap` | `lib/consumer_bootstrap.dart` | Consumer iOS/Android process-root state machine. Starts critical initialization concurrently with boot motion, removes the native splash through one decoded/painted-frame callback, mounts routing only after both gates complete, and converts startup failure into a retryable Catch error surface. Host/web/desktop do not adopt it. |
+| `CatchConsumerBootScreen` | `lib/consumer_bootstrap.dart` | Provider-free Consumer cold-start animation. First matches the generated native splash mark, fades into the existing Welcome reel, suppresses logged-out CTAs, supports reduced motion and tap-to-skip, and holds its landed state while initialization finishes. |
 | `WelcomePage` | `lib/onboarding/presentation/pages/welcome_page.dart:11` | Animated logged-out start/welcome screen registered as `screen.start.welcome` and reused by `screen.onboarding.flow` welcome entry. It follows the Splash -> Welcome handoff with fixed `Catch`, deterministic object reel landing on `someone real`, tap/reduced-motion skip, body copy, primary Continue with phone CTA, and secondary See what's on CTA. |
 
 ### ConsumerWidget
@@ -7073,7 +7085,7 @@ Widgetbook callers.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `WelcomeScene` | `lib/onboarding/presentation/pages/welcome_page.dart:225` | Provider-free Welcome splash scene. Positions the object reel, fixed `Catch` wordmark, landed body copy, and Continue / See what's on CTA stack from explicit viewport height, media padding, spin, landing, and landed values. |
+| `WelcomeScene` | `lib/onboarding/presentation/pages/welcome_page.dart:242` | Provider-free Welcome splash scene. Positions the object reel, fixed `Catch` wordmark, landed body copy, and Continue / See what's on CTA stack from explicit viewport height, media padding, spin, landing, and landed values. Consumer cold boot sets `showLandingContent: false` to reuse the reel without mounting logged-out actions. |
 | `ReelBand` | `lib/onboarding/presentation/pages/welcome_page.dart:356` | Masked vertical object reel used by `WelcomeScene`. Converts spin/landing progress into a doubled phrase track, fade mask, and repeated `ReelRow` sequence landing deterministically on `someone real`. |
 | `ReelRow` | `lib/onboarding/presentation/pages/welcome_page.dart:429` | Single Welcome reel phrase row. Uses `WelcomePhrase` activity pigment, distance from the reel focus line, landing fade/cool progress, and focus underline/period styling to render each spinning or landed phrase. |
 | `RevealEntrance` | `lib/onboarding/presentation/pages/welcome_page.dart:525` | Welcome landing reveal wrapper. Converts shared landing progress plus reveal order into opacity and vertical offset for body copy and CTA entrances. |
