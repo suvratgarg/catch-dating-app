@@ -43,7 +43,7 @@
       "sources": ["apps/**", "lib/**", "assets/**", "android/**", "ios/**", "macos/**", "web/**", "pubspec.yaml", "pubspec.lock", "analysis_options.yaml", "build.yaml", "l10n.yaml"],
       "generatedOutputs": ["lib/l10n/**", "lib/core/schema_contracts/generated/**"],
       "consumers": ["test/**", "integration_test/**"],
-      "checks": ["meta:test-inventory", "design:tokens", "design:parity-gate"],
+      "checks": ["meta:test-inventory", "test:test-lifecycle", "test:flutter-test-size", "design:tokens", "design:parity-gate"],
       "ciWorkflows": [".github/workflows/flutter-ci.yml", ".github/workflows/visual-integration-ci.yml"]
     },
     {
@@ -52,7 +52,7 @@
       "sources": ["contracts/**", "functions/**", "firebase/**", "extensions/**", "analytics/**", "firebase.json", ".firebaserc", "firestore.indexes.json", "firestore.rules", "storage.rules"],
       "generatedOutputs": ["functions/src/shared/generated/**", "lib/core/schema_contracts/generated/**", "tool/contracts/generated/**", "admin/src/generated/**"],
       "consumers": ["lib/**", "admin/**", "website/**", "operations/**"],
-      "checks": ["contracts:validate-schemas", "contracts:generate-schemas", "contracts:generate-domain-classes"],
+      "checks": ["contracts:validate-schemas", "contracts:generate-schemas", "contracts:generate-domain-classes", "meta:test-inventory", "test:test-lifecycle"],
       "ciWorkflows": [".github/workflows/contracts-ci.yml", ".github/workflows/functions-ci.yml", ".github/workflows/firestore-rules-ci.yml"]
     },
     {
@@ -61,7 +61,7 @@
       "sources": ["admin/**", "website/**", "packages/web-ui/**", "packages/web-config/**", "design/admin/**", "design/website/**", "design/web-ui/**"],
       "generatedOutputs": ["admin/src/generated/**", "website/src/generated/**", "packages/web-config/generated/**"],
       "consumers": ["firebase.json", "artifacts/marketing/**"],
-      "checks": ["web:react-architecture-boundaries", "web:shared-ui-adoption"],
+      "checks": ["web:react-architecture-boundaries", "web:shared-ui-adoption", "meta:test-inventory", "test:test-lifecycle"],
       "ciWorkflows": [".github/workflows/react-surface-validation.yml", ".github/workflows/admin-website.yml", ".github/workflows/marketing-website.yml"]
     },
     {
@@ -79,7 +79,7 @@
       "sources": ["operations/**", "contracts/admin/**", "contracts/operations/**", "tool/organizer_intake/**", "tool/marketing/event_guide/**"],
       "generatedOutputs": ["operations/.state/**", "admin/src/generated/adminActionCatalog.ts", "functions/src/shared/generated/adminActionCatalog.ts", "tool/organizer_intake/generated/**"],
       "consumers": ["functions/src/admin/**", "functions/src/operations/**", "functions/scripts/operations/**", "admin/src/features/operations/**", "admin/src/shared/operations/**", "admin/src/features/intake/operations/**"],
-      "checks": ["operations:admin-action-catalog", "operations:boundaries", "operations:workflow-manifest"],
+      "checks": ["operations:admin-action-catalog", "operations:boundaries", "operations:workflow-manifest", "meta:test-inventory", "test:test-lifecycle"],
       "ciWorkflows": [".github/workflows/tools-ci.yml", ".github/workflows/functions-ci.yml"]
     },
     {
@@ -97,7 +97,7 @@
       "sources": [".github/**", "tool/**", "docs/**", "AGENTS.md", "CLAUDE.md", "PROJECT_CONTEXT.md", "README.md", "TESTS.md", "package.json", "package-lock.json", "dart_test.yaml", ".editorconfig", ".env.example", ".gitignore", ".metadata"],
       "generatedOutputs": ["docs/audit_registry/**", "TESTS.md"],
       "consumers": ["operations/**", "widgetbook/**", "integration_test/**", "test/**"],
-      "checks": ["meta:repository-root-hygiene", "meta:enforcement-integrity", "meta:test-inventory", "agent:readiness", "docs:version-monotonic"],
+      "checks": ["meta:repository-root-hygiene", "meta:enforcement-integrity", "meta:test-inventory", "test:test-lifecycle", "agent:readiness", "docs:version-monotonic"],
       "ciWorkflows": [".github/workflows/tools-ci.yml", ".github/workflows/visual-integration-ci.yml"]
     }
   ],
@@ -158,6 +158,17 @@
         ]
       },
       {
+        "id": "admin-tests",
+        "patterns": [
+          "admin/**/*.test.*",
+          "admin/**/*.spec.*"
+        ],
+        "targets": [
+          "admin",
+          "tools"
+        ]
+      },
+      {
         "id": "admin-react",
         "patterns": [
           "admin/**",
@@ -165,6 +176,17 @@
         ],
         "targets": [
           "admin"
+        ]
+      },
+      {
+        "id": "marketing-tests",
+        "patterns": [
+          "website/**/*.test.*",
+          "website/**/*.spec.*"
+        ],
+        "targets": [
+          "marketing",
+          "tools"
         ]
       },
       {
@@ -190,6 +212,19 @@
           "marketing",
           "tools"
         ]
+      },
+      {
+        "id": "functions-tests",
+        "patterns": [
+          "functions/src/**/*.test.ts",
+          "functions/test/*.test.cjs",
+          "functions/test/**/*.test.cjs"
+        ],
+        "targets": [
+          "functions",
+          "tools"
+        ],
+        "backendDeploy": true
       },
       {
         "id": "functions",
@@ -312,6 +347,17 @@
         ]
       },
       {
+        "id": "app-package-tests",
+        "patterns": [
+          "apps/consumer/test/**",
+          "apps/host/test/**"
+        ],
+        "targets": [
+          "flutter",
+          "tools"
+        ]
+      },
+      {
         "id": "host-flutter-source",
         "patterns": [
           "apps/host/**",
@@ -382,6 +428,7 @@
         ],
         "targets": [
           "flutter",
+          "tools",
           "visual_integration"
         ]
       },

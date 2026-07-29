@@ -275,6 +275,11 @@ workflow is missing, not necessarily that the rules changed incorrectly.
 
 ## Commands
 
+`npm --prefix functions test` builds TypeScript, then recursively discovers
+compiled `lib/**/*.test.js` and non-rules harness specs under
+`test/**/*.test.cjs`. New domain folders do not require a hand-maintained test
+script. Firestore and Storage rules stay in the emulator-owned lane below.
+
 ```bash
 npm --prefix functions run lint
 npm --prefix functions test

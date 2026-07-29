@@ -34,6 +34,10 @@ function runCli() {
     "Canonical test inventory exists.",
   );
   checkPath(
+    "docs/audit_registry/test_lifecycle.json",
+    "Test lifecycle and retirement policy exists.",
+  );
+  checkPath(
     "tool/agent/record_delegation_outcome.mjs",
     "Delegation outcome recorder exists.",
   );
@@ -120,6 +124,8 @@ function runCli() {
     "agent:readiness",
     "git:audit-merge-drops",
     "docs:version-monotonic",
+    "meta:test-inventory",
+    "test:test-lifecycle",
   ]) {
     check(toolIds.has(id), `Tool manifest includes ${id}.`);
   }

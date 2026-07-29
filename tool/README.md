@@ -87,14 +87,21 @@ appear in LCOV.
 at or below 1,200 lines. The exact reviewed legacy debt lives in
 `tool/test/flutter_test_size_baseline.json`; growth and stale reductions both
 fail so every improvement is ratcheted. `tool/test_inventory.mjs --check`
-remains the cross-surface filename inventory, and the agent readiness gate also
-performs that exact freshness proof.
+exhaustively classifies directly executable tests across Flutter, both app
+packages, Functions/rules, React, Operations, and tooling. Unknown test-shaped
+files fail closed.
+
+`tool/test/check_test_lifecycle.mjs` validates exceptional-test ownership,
+contract ids, review dates, sunset conditions, skips, the exact oversized
+baseline, and critical source-to-test obligations. It reports deleted source
+owners as retirement candidates but never removes tests.
 
 ```sh
 node --test tool/test/flutter_coverage_report.test.mjs
 node tool/test/flutter_coverage_report.mjs --lcov coverage/lcov.info
 node tool/test/check_flutter_test_size.mjs --check
 node tool/test_inventory.mjs --check
+node tool/test/check_test_lifecycle.mjs
 ```
 
 ## Analyzer-Backed UI Reports

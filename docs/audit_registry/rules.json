@@ -138,6 +138,47 @@
         }
       ]
     },
+    "TEST-LIFECYCLE-001": {
+      "title": "Every test has an owner and exceptional tests have an explicit sunset",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "app_architecture",
+        "version": "1.8.0"
+      },
+      "applies_to": [
+        "test/**",
+        "integration_test/**",
+        "apps/*/test/**",
+        "functions/src/**/*.test.ts",
+        "functions/test/**",
+        "operations/test/**",
+        "admin/**/*.{test,spec}.*",
+        "website/**/*.{test,spec}.*",
+        "packages/web-ui/**/*.{test,spec}.*",
+        "tool/**/*.{test,spec}.*",
+        "docs/audit_registry/test_inventory.json",
+        "docs/audit_registry/test_lifecycle.json",
+        "tool/test_inventory.mjs",
+        "tool/test/check_test_lifecycle.mjs"
+      ],
+      "instruction": "Inventory every executable first-party test and infer its behavioral owner. Compatibility, oversized, non-colocated, quarantined, and conditionally skipped tests require explicit lifecycle metadata, source anchors, review dates, and a truthful sunset condition. Missing source anchors become blocking retirement candidates; tests are never deleted automatically. Critical product boundaries must keep named source-to-test obligations.",
+      "sunset_when": [
+        "Never; test ownership and deliberate retirement remain permanent repository governance"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "test:test-lifecycle",
+          "stage": "scanner-gate",
+          "docAnchor": "TESTS.md#test-ownership-and-lifecycle"
+        }
+      ]
+    },
     "EXHIBIT-FRESHNESS-001": {
       "title": "Keep architecture exhibits fresh against their tracker anchors",
       "status": "active",
@@ -3258,6 +3299,6 @@
       ]
     }
   },
-  "version": "2.8.6",
-  "updated": "2026-07-24"
+  "version": "2.9.0",
+  "updated": "2026-07-29"
 }

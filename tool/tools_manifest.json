@@ -1407,6 +1407,34 @@
       }
     },
     {
+      "id": "test:test-lifecycle",
+      "category": "test",
+      "path": "tool/test/check_test_lifecycle.mjs",
+      "command": "node tool/test/check_test_lifecycle.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Validates exhaustive first-party test classification, exceptional-test lifecycle and sunset metadata, source-anchor retirement candidates, conditional skips, oversized-spec parity, and named critical test obligations.",
+      "checks": [
+        "node --check tool/test/check_test_lifecycle.mjs",
+        "node --test tool/test/check_test_lifecycle.test.mjs",
+        "node tool/test/check_test_lifecycle.mjs"
+      ],
+      "role": "gate",
+      "rules": [
+        "TEST-LIFECYCLE-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/test/check_test_lifecycle.test.mjs",
+        "contains": [
+          "known-bad missing owner anchor becomes a retirement candidate",
+          "known-bad oversized test without lifecycle metadata fails closed",
+          "known-bad skipped test without lifecycle metadata fails closed",
+          "known-bad executable test outside the inventory classifier fails closed"
+        ]
+      }
+    },
+    {
       "id": "contracts:generate-business-rules",
       "category": "contracts",
       "path": "tool/contracts/generate_business_rules.mjs",
@@ -5106,7 +5134,7 @@
       "safety": "local",
       "status": "active",
       "role": "generator",
-      "description": "Generates and drift-checks the Git-backed cross-surface test inventory.",
+      "description": "Generates and drift-checks the exhaustive Git-backed cross-surface test inventory with inferred behavioral ownership and lifecycle status.",
       "checks": [
         "node --test tool/test_inventory.test.mjs",
         "node tool/test_inventory.mjs --check"

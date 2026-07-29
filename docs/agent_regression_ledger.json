@@ -1,8 +1,41 @@
 {
-  "version": 122,
-  "updated": "2026-07-27",
+  "version": 123,
+  "updated": "2026-07-29",
   "owner": "agent_operating_model",
   "entries": [
+    {
+      "id": "REG-TEST-LIFECYCLE-001",
+      "title": "Obsolete, unowned, skipped, or undiscovered tests survive without review",
+      "status": "active",
+      "applies_to": [
+        "test/**",
+        "integration_test/**",
+        "apps/*/test/**",
+        "functions/src/**/*.test.ts",
+        "functions/test/**",
+        "operations/test/**",
+        "admin/**/*.{test,spec}.*",
+        "website/**/*.{test,spec}.*",
+        "packages/web-ui/**/*.{test,spec}.*",
+        "tool/**/*.{test,spec}.*",
+        "docs/audit_registry/test_inventory.json",
+        "docs/audit_registry/test_lifecycle.json",
+        "tool/test_inventory.mjs",
+        "tool/test/check_test_lifecycle.mjs"
+      ],
+      "symptom": "A first-party test is omitted from the canonical inventory or CI, a compatibility or quarantined test has no owner and sunset, an owner contract is removed while its test remains, or a critical app boundary silently loses its named coverage.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/test_inventory.test.mjs tool/test/check_test_lifecycle.test.mjs && node tool/test_inventory.mjs --check && node tool/test/check_test_lifecycle.mjs",
+        "guardEvidence": "known-bad fixtures fail for unclassified executable tests, missing owner anchors, absent oversized metadata, skipped tests without lifecycle state, and missing critical source-to-test obligations; the generated inventory must match the full Git-backed surface"
+      },
+      "owner_docs": [
+        "TESTS.md",
+        "docs/app_architecture.md",
+        "docs/audit_registry/README.md"
+      ],
+      "notes": "Ordinary ownership is inferred from paths. Explicit metadata is reserved for exceptions and temporary compatibility. Satisfied sunset conditions create review candidates and never delete tests automatically."
+    },
     {
       "id": "REG-ADMIN-LIVE-DATA-PARITY-001",
       "title": "Admin live routes drift from Firestore callables or package generated operational fixtures",
@@ -169,12 +202,13 @@
         "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
         "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
         "test/hosts/host_operations_screen_test.dart",
+        "test/hosts/host_operations_team_failures_tests.dart",
         "test/event_success/event_success_questionnaire_config_editor_test.dart"
       ],
       "symptom": "A page-level Save profile button returns, multiple custom questionnaire inputs render expanded at once, or switching/cancelling a field leaks uncommitted text.",
       "guard": {
         "type": "command",
-        "command": "flutter test test/hosts/host_operations_screen_test.dart test/event_success/event_success_questionnaire_config_editor_test.dart",
+        "command": "flutter test test/hosts/host_operations_screen_test.dart --plain-name \"Host team workspace edits active professional profile inline\" && flutter test test/event_success/event_success_questionnaire_config_editor_test.dart",
         "guardEvidence": "Host team workspace edits active professional profile inline"
       },
       "owner_docs": [
@@ -235,12 +269,13 @@
         "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
         "lib/hosts/presentation/host_event_manage_screen.dart",
         "lib/hosts/presentation/widgets/host_loading_skeletons.dart",
-        "lib/event_success/presentation/event_success_defaults_panel.dart"
+        "lib/event_success/presentation/event_success_defaults_panel.dart",
+        "test/hosts/host_operations_analytics_team_tests.dart"
       ],
       "symptom": "Skeleton content begins four pixels below the app bar/tab rail, or a headerless first field section paints an unexplained horizontal rule directly beneath Live event guide chrome.",
       "guard": {
         "type": "command",
-        "command": "flutter test test/hosts/host_operations_screen_test.dart && node tool/design/check_tab_root_scroll_contracts.mjs --check",
+        "command": "flutter test test/hosts/host_operations_screen_test.dart --plain-name \"Host analytics loading uses canonical section rhythm\" && node tool/design/check_tab_root_scroll_contracts.mjs --check",
         "guardEvidence": "Host analytics loading uses canonical section rhythm"
       },
       "owner_docs": [

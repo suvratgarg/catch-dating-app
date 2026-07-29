@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.7.0
-updated: 2026-07-27
+version: 1.8.0
+updated: 2026-07-29
 owner: recursive_audit_loop
 status: active
 ---
@@ -2007,6 +2007,23 @@ Test at the boundary that owns the behavior:
 Brittle tests are design feedback. If a test needs private finders, timing
 hacks, or duplicate-text counts, inspect whether the production seam should be
 more explicit.
+
+Test folders follow behavioral ownership rather than mirroring every production
+directory. Flutter feature behavior belongs under `test/<feature>/`; direct
+Consumer or Host composition and native-adapter behavior belongs under the
+corresponding `apps/<app>/test/`; cross-feature, integration, rules, and tooling
+contracts retain dedicated surfaces. Platform SDK wrappers should expose a
+narrow injectable gateway and pure payload mapper so tests exercise Catch's
+translation policy without recreating plugin internals.
+
+`docs/audit_registry/test_lifecycle.json` is the machine-readable lifecycle
+boundary. Ordinary tests remain inferred active. Compatibility, platform-only,
+quarantined, non-colocated, and oversized exceptions require owner paths,
+contract ids, review dates, and objective sunset conditions. Critical
+source-to-test obligations prevent app roots, native adapters, rules, workflow
+state machines, and registered React controllers from losing coverage during a
+move. Missing owners become review-blocking retirement candidates; they never
+trigger automatic deletion.
 
 Flutter LCOV is a visibility artifact, not an aggregate percentage gate.
 `tool/test/flutter_coverage_report.mjs` reports observed handwritten lines by

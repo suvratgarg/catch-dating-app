@@ -1,0 +1,738 @@
+part of 'catch_primitives_test.dart';
+
+void _registerCatchPrimitivesControlsTests() {
+  testWidgets('Catch map reveal opens a veil and respects reduced motion', (
+    tester,
+  ) async {
+    final animation = AnimationController(
+      vsync: tester,
+      duration: CatchMotion.slow,
+      value: 0.5,
+    );
+    addTearDown(animation.dispose);
+
+    Widget transition({required bool reduceMotion}) {
+      return _wrap(
+        MediaQuery(
+          data: MediaQueryData(disableAnimations: reduceMotion),
+          child: Builder(
+            builder: (context) => CatchMapRevealTransition(
+              animation: animation,
+              child: const Text('Map surface'),
+            ),
+          ),
+        ),
+      );
+    }
+
+    await tester.pumpWidget(transition(reduceMotion: false));
+    expect(find.byKey(const ValueKey('catch_map_reveal.veil')), findsOneWidget);
+    final mapRect = tester.getRect(find.text('Map surface'));
+    animation.value = 0.8;
+    await tester.pump();
+    expect(tester.getRect(find.text('Map surface')), mapRect);
+
+    await tester.pumpWidget(transition(reduceMotion: true));
+    expect(
+      find.byKey(const ValueKey('catch_map_reveal.reduced')),
+      findsOneWidget,
+    );
+    expect(find.byKey(const ValueKey('catch_map_reveal.veil')), findsNothing);
+  });
+
+  testWidgets('Catch typography does not inherit underline decoration', (
+    tester,
+  ) async {
+    late final List<TextStyle> styles;
+    late final TextStyle kicker;
+    late final TextStyle kickerLarge;
+    late final TextStyle monoCapsLabel;
+    late final TextStyle badgeCaps;
+
+    await tester.pumpWidget(
+      _wrap(
+        DefaultTextStyle.merge(
+          style: const TextStyle(decoration: TextDecoration.underline),
+          child: Builder(
+            builder: (context) {
+              styles = [
+                CatchTextStyles.display(context),
+                CatchTextStyles.headline(context),
+                CatchTextStyles.headlineS(context),
+                CatchTextStyles.eventTitle(context),
+                CatchTextStyles.consoleTitle(context),
+                CatchTextStyles.hint(context),
+                CatchTextStyles.titleL(context),
+                CatchTextStyles.name(context),
+                CatchTextStyles.bodyL(context),
+                CatchTextStyles.bodyS(context),
+                CatchTextStyles.labelL(context),
+                CatchTextStyles.monoLabel(context),
+                CatchTextStyles.monoLabelS(context),
+                CatchTextStyles.mono(context),
+                CatchTextStyles.badge(context),
+              ];
+              kicker = CatchTextStyles.kicker(context);
+              kickerLarge = CatchTextStyles.kickerLg(context);
+              monoCapsLabel = CatchTextStyles.monoCapsLabel(context);
+              badgeCaps = CatchTextStyles.badgeCaps(context);
+              return const Text('Typography sample');
+            },
+          ),
+        ),
+      ),
+    );
+
+    expect(styles.map((style) => style.decoration).toSet(), {
+      TextDecoration.none,
+    });
+    expect(styles.map((style) => style.letterSpacing).toSet(), {0});
+    expect(kicker.letterSpacing, 1.76);
+    expect(kickerLarge.letterSpacing, 2.16);
+    expect(monoCapsLabel.letterSpacing, 1.43);
+    expect(badgeCaps.letterSpacing, 0.72);
+  });
+
+  testWidgets('CatchKicker renders uppercase mono eyebrow sizes', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const CatchKicker(
+          label: 'Was at · Sundowner 5K',
+          color: Colors.red,
+          size: CatchKickerSize.lg,
+        ),
+      ),
+    );
+
+    final text = tester.widget<Text>(find.text('WAS AT · SUNDOWNER 5K'));
+    final context = tester.element(find.text('WAS AT · SUNDOWNER 5K'));
+    expect(text.style?.color, Colors.red);
+    expect(
+      text.style?.fontSize,
+      CatchTextStyles.kickerLg(context, color: Colors.red).fontSize,
+    );
+  });
+
+  testWidgets(
+    'CatchButton supports size, full width, tap, and loading states',
+    (tester) async {
+      var taps = 0;
+
+      await tester.pumpWidget(
+        _wrap(
+          SizedBox(
+            width: 240,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CatchButton(
+                  label: 'Join event',
+                  onPressed: () => taps++,
+                  size: CatchButtonSize.lg,
+                  fullWidth: true,
+                ),
+                const SizedBox(height: 12),
+                CatchButton(
+                  label: 'Loading',
+                  onPressed: () => taps++,
+                  isLoading: true,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      expect(
+        tester.getSize(find.widgetWithText(CatchButton, 'Join event')).height,
+        56,
+      );
+      expect(
+        tester.getSize(find.widgetWithText(CatchButton, 'Join event')).width,
+        240,
+      );
+      expect(find.byType(CatchButtonLabel), findsOneWidget);
+      expect(find.byType(CatchButtonLoadingDots), findsOneWidget);
+
+      await tester.tap(find.text('Join event'));
+      await tester.pump();
+      expect(taps, 1);
+
+      await tester.tap(
+        find.byWidgetPredicate(
+          (widget) => widget is CatchButton && widget.label == 'Loading',
+        ),
+      );
+      await tester.pump();
+      expect(taps, 1);
+      expect(find.text('Loading'), findsNothing);
+    },
+  );
+
+  testWidgets('CatchButton pairs primary activity accent with white ink', (
+    tester,
+  ) async {
+    const accent = Color(0xFF116466);
+
+    await tester.pumpWidget(
+      _wrap(
+        CatchButton(
+          key: const ValueKey('accent-button'),
+          label: 'Run crew',
+          onPressed: () {},
+          accentColor: accent,
+        ),
+      ),
+    );
+
+    final buttonFinder = find.byKey(const ValueKey('accent-button'));
+    final buttonBox = tester.widget<DecoratedBox>(
+      find.descendant(of: buttonFinder, matching: find.byType(DecoratedBox)),
+    );
+    final buttonLabel = tester.widget<Text>(
+      find.descendant(of: buttonFinder, matching: find.text('Run crew')),
+    );
+    final decoration = buttonBox.decoration as BoxDecoration;
+
+    expect(decoration.color, accent);
+    expect(buttonLabel.style?.color, CatchTokens.editorialWhite);
+  });
+
+  testWidgets(
+    'CatchBottomAction forwards activity accent to the primary button',
+    (tester) async {
+      const accent = Color(0xFF116466);
+
+      await tester.pumpWidget(
+        _wrap(
+          CatchBottomAction(
+            label: 'Join event',
+            onPressed: () {},
+            buttonAccentColor: accent,
+          ),
+        ),
+      );
+
+      expect(find.byType(CatchBottomAction), findsOneWidget);
+      final button = tester.widget<CatchButton>(
+        find.widgetWithText(CatchButton, 'Join event'),
+      );
+      expect(button.accentColor, accent);
+    },
+  );
+
+  testWidgets('CatchBottomAction renders catch line and footnote', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        CatchBottomAction(
+          label: 'Confirm',
+          onPressed: () {},
+          catchLine: 'free to join',
+          footnote: 'No charge until approval.',
+        ),
+      ),
+    );
+
+    expect(find.text('Confirm'), findsOneWidget);
+    expect(find.text('FREE TO JOIN'), findsOneWidget);
+    expect(find.text('No charge until approval.'), findsOneWidget);
+  });
+
+  testWidgets('CatchIconButton renders handoff icon button variants', (
+    tester,
+  ) async {
+    var taps = 0;
+
+    await tester.pumpWidget(
+      _wrap(
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CatchIconButton.icon(
+              key: const ValueKey('bordered-icon-button'),
+              icon: CatchIcons.search,
+              tooltip: 'Search events',
+              onTap: () => taps++,
+            ),
+            CatchIconButton.icon(
+              key: const ValueKey('active-icon-button'),
+              icon: CatchIcons.favoriteRounded,
+              active: true,
+              accent: CatchTokens.editorialLight.danger,
+              onTap: () {},
+            ),
+            CatchIconButton.icon(
+              key: const ValueKey('float-icon-button'),
+              icon: CatchIcons.close,
+              variant: CatchIconButtonVariant.float,
+              onTap: () {},
+            ),
+            CatchIconButton.icon(
+              key: const ValueKey('plain-icon-button'),
+              icon: CatchIcons.more,
+              variant: CatchIconButtonVariant.plain,
+              borderColor: CatchTokens.editorialLight.line2,
+              disabled: true,
+              onTap: () => taps++,
+            ),
+          ],
+        ),
+      ),
+    );
+
+    final borderedFinder = find.byKey(const ValueKey('bordered-icon-button'));
+    final floatFinder = find.byKey(const ValueKey('float-icon-button'));
+    final plainFinder = find.byKey(const ValueKey('plain-icon-button'));
+    final tokens = CatchTokens.of(tester.element(borderedFinder));
+    final borderedBox = tester.widget<DecoratedBox>(
+      find.descendant(of: borderedFinder, matching: find.byType(DecoratedBox)),
+    );
+    final activeIconTheme = tester.widget<IconTheme>(
+      find
+          .ancestor(
+            of: find.byIcon(CatchIcons.favoriteRounded),
+            matching: find.byType(IconTheme),
+          )
+          .first,
+    );
+    final floatBox = tester.widget<DecoratedBox>(
+      find.descendant(of: floatFinder, matching: find.byType(DecoratedBox)),
+    );
+    final plainBox = tester.widget<DecoratedBox>(
+      find.descendant(of: plainFinder, matching: find.byType(DecoratedBox)),
+    );
+
+    final borderedDecoration = borderedBox.decoration as BoxDecoration;
+    final floatDecoration = floatBox.decoration as BoxDecoration;
+    final plainDecoration = plainBox.decoration as BoxDecoration;
+
+    expect(
+      tester.getSize(borderedFinder),
+      const Size.square(CatchLayout.iconButtonSize),
+    );
+    expect(borderedDecoration.color, tokens.surface);
+    expect((borderedDecoration.border! as Border).top.color, tokens.line2);
+    expect(activeIconTheme.data.color, CatchTokens.editorialLight.danger);
+    expect(floatDecoration.color, isNot(tokens.surface));
+    expect(floatDecoration.boxShadow, CatchElevation.iconButtonFloat);
+    expect(plainDecoration.color, Colors.transparent);
+    expect((plainDecoration.border! as Border).top.color, tokens.line2);
+    expect(find.byTooltip('Search events'), findsOneWidget);
+
+    await tester.tap(find.byIcon(CatchIcons.search));
+    await tester.pump();
+    await tester.tap(find.byIcon(CatchIcons.more));
+    await tester.pump();
+
+    expect(taps, 1);
+  });
+
+  test(
+    'compact-control constructors reject invalid count and label states',
+    () {
+      expect(
+        () => CatchIconButton.counted(
+          icon: CatchIcons.notificationsRounded,
+          count: -1,
+        ),
+        throwsAssertionError,
+      );
+      expect(
+        () => CatchCountPill.label(label: '   ', onPressed: () {}),
+        throwsAssertionError,
+      );
+      expect(
+        () =>
+            CatchCountPill.label(label: 'Filters', count: -1, onPressed: () {}),
+        throwsAssertionError,
+      );
+    },
+  );
+
+  testWidgets(
+    'CatchIconButton.counted owns typed counts, target size, and semantics',
+    (tester) async {
+      var taps = 0;
+
+      await tester.pumpWidget(
+        _wrap(
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CatchIconButton.counted(
+                key: const ValueKey('zero-count-icon-button'),
+                icon: CatchIcons.notificationsNoneRounded,
+                count: 0,
+                tooltip: 'Notifications',
+                onTap: () => taps++,
+              ),
+              CatchIconButton.counted(
+                key: const ValueKey('counted-icon-button'),
+                icon: CatchIcons.tuneRounded,
+                count: 3,
+                tooltip: 'Filters, 3 active',
+                onTap: () => taps++,
+              ),
+              CatchIconButton.counted(
+                icon: CatchIcons.notificationsRounded,
+                count: 124,
+                tooltip: 'Notifications, 124 unread',
+                onTap: () {},
+              ),
+            ],
+          ),
+        ),
+      );
+
+      final counted = find.byKey(const ValueKey('counted-icon-button'));
+      final semantics = tester.widget<Semantics>(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is Semantics &&
+              widget.properties.label == 'Filters, 3 active',
+        ),
+      );
+
+      expect(find.text('0'), findsNothing);
+      expect(find.text('3'), findsOneWidget);
+      expect(find.text('99+'), findsOneWidget);
+      expect(
+        tester.getSize(counted),
+        const Size.square(CatchIconButton.defaultSize),
+      );
+      expect(semantics.properties.button, isTrue);
+      expect(semantics.properties.enabled, isTrue);
+
+      await tester.tap(counted);
+      await tester.pump();
+      expect(taps, 1);
+    },
+  );
+
+  testWidgets('CatchCountPill.label stays interactive and at least 44px', (
+    tester,
+  ) async {
+    var taps = 0;
+
+    await tester.pumpWidget(
+      _wrap(
+        CatchCountPill.label(
+          key: const ValueKey('labelled-count-pill'),
+          icon: CatchIcons.tuneRounded,
+          label: 'Filters',
+          count: 3,
+          semanticLabel: 'Filters, 3 active',
+          onPressed: () => taps++,
+        ),
+        textScale: 2,
+      ),
+    );
+
+    final pill = find.byKey(const ValueKey('labelled-count-pill'));
+    final semantics = tester.widget<Semantics>(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is Semantics &&
+            widget.properties.label == 'Filters, 3 active',
+      ),
+    );
+
+    expect(find.text('Filters'), findsOneWidget);
+    expect(find.text('3'), findsOneWidget);
+    expect(tester.getSize(pill).height, greaterThanOrEqualTo(44));
+    expect(
+      tester
+          .getRect(find.text('Filters'))
+          .overlaps(tester.getRect(find.text('3'))),
+      isFalse,
+    );
+    expect(semantics.properties.button, isTrue);
+    expect(semantics.properties.enabled, isTrue);
+
+    await tester.tap(pill);
+    await tester.pump();
+    expect(taps, 1);
+  });
+
+  testWidgets('CatchButton renders all catalog variants', (tester) async {
+    await tester.pumpWidget(
+      _wrap(
+        const Wrap(
+          children: [
+            CatchButton(label: 'Primary', onPressed: null),
+            CatchButton(
+              label: 'Secondary',
+              onPressed: null,
+              variant: CatchButtonVariant.secondary,
+            ),
+            CatchButton(
+              label: 'Ghost',
+              onPressed: null,
+              variant: CatchButtonVariant.ghost,
+            ),
+            CatchButton(
+              label: 'Danger',
+              onPressed: null,
+              variant: CatchButtonVariant.danger,
+            ),
+            CatchButton(
+              label: 'Light',
+              onPressed: null,
+              variant: CatchButtonVariant.light,
+              isInteractive: false,
+            ),
+          ],
+        ),
+      ),
+    );
+
+    expect(find.text('Primary'), findsOneWidget);
+    expect(find.text('Secondary'), findsOneWidget);
+    expect(find.text('Ghost'), findsOneWidget);
+    expect(find.text('Danger'), findsOneWidget);
+    expect(find.text('Light'), findsOneWidget);
+  });
+
+  testWidgets('CatchStepProgress renders count and full-width segments', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const SizedBox(
+          width: 320,
+          child: CatchStepProgress(
+            label: 'Profile setup',
+            currentStep: 1,
+            totalSteps: 5,
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('Profile setup'), findsOneWidget);
+    expect(find.text('2/5'), findsOneWidget);
+  });
+
+  testWidgets('CatchStepHeader renders AppBar anatomy and progress hairline', (
+    tester,
+  ) async {
+    var backTaps = 0;
+
+    await tester.pumpWidget(
+      _wrap(
+        CatchStepHeader(
+          title: 'Basics',
+          subtitle: 'South Bombay Runners',
+          kicker: 'Create event',
+          step: 2,
+          total: 5,
+          onBack: () => backTaps++,
+        ),
+      ),
+    );
+
+    final progress = tester.widget<FractionallySizedBox>(
+      find.descendant(
+        of: find.byType(CatchStepHeader),
+        matching: find.byType(FractionallySizedBox),
+      ),
+    );
+
+    expect(find.text('CREATE EVENT'), findsOneWidget);
+    expect(find.text('Basics'), findsOneWidget);
+    expect(find.text('South Bombay Runners'), findsOneWidget);
+    expect(find.text('STEP 2 OF 5'), findsOneWidget);
+    expect(find.byIcon(CatchIcons.arrowBackIosNewRounded), findsOneWidget);
+    expect(
+      tester
+          .getSize(
+            find.descendant(
+              of: find.byType(CatchStepHeader),
+              matching: find.byWidgetPredicate(
+                (widget) =>
+                    widget is SizedBox &&
+                    widget.height == CatchLayout.stepHeaderProgressHeight,
+              ),
+            ),
+          )
+          .height,
+      CatchLayout.stepHeaderProgressHeight,
+    );
+    expect(progress.widthFactor, 0.4);
+
+    await tester.tap(find.byIcon(CatchIcons.arrowBackIosNewRounded));
+    await tester.pump();
+
+    expect(backTaps, 1);
+  });
+
+  testWidgets('CatchStepHeader displays one-based progress copy', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(const CatchStepHeader(title: 'Schedule', step: 1, total: 3)),
+    );
+
+    expect(find.text('Schedule'), findsOneWidget);
+    expect(find.text('STEP 1 OF 3'), findsOneWidget);
+  });
+
+  testWidgets('CatchButton light variant stays legible in dark mode', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const CatchButton(
+          label: 'Light action',
+          onPressed: null,
+          variant: CatchButtonVariant.light,
+          isInteractive: false,
+        ),
+        theme: AppTheme.dark,
+      ),
+    );
+
+    final label = tester.widget<Text>(find.text('Light action'));
+
+    expect(label.style?.color, CatchTokens.editorialLight.ink);
+  });
+
+  testWidgets('CatchButton primary variant uses white text in dark mode', (
+    tester,
+  ) async {
+    var taps = 0;
+
+    await tester.pumpWidget(
+      _wrap(
+        CatchButton(label: 'Primary action', onPressed: () => taps++),
+        theme: AppTheme.dark,
+      ),
+    );
+
+    await tester.tap(find.text('Primary action'));
+    await tester.pump();
+
+    final label = tester.widget<Text>(find.text('Primary action'));
+
+    expect(taps, 1);
+    expect(label.style?.color, CatchTokens.editorialDark.primaryInk);
+  });
+
+  testWidgets('CatchTextButton applies token color and tap semantics', (
+    tester,
+  ) async {
+    var taps = 0;
+
+    await tester.pumpWidget(
+      _wrap(CatchTextButton(label: 'Retry', onPressed: () => taps++)),
+    );
+
+    await tester.tap(find.text('Retry'));
+    await tester.pump();
+
+    final label = tester.widget<Text>(find.text('Retry'));
+    expect(taps, 1);
+    expect(label.style?.color, CatchTokens.editorialLight.primary);
+  });
+
+  testWidgets('CatchTextButton keeps long localized labels constrained', (
+    tester,
+  ) async {
+    const plainLabel = 'Cancel this unexpectedly long localized action';
+    const leadingLabel = 'Saving this unexpectedly long localized action';
+
+    await tester.pumpWidget(
+      _wrap(
+        const Column(
+          children: [
+            SizedBox(
+              width: 132,
+              child: CatchTextButton(label: plainLabel, onPressed: null),
+            ),
+            SizedBox(
+              width: 132,
+              child: CatchTextButton(
+                label: leadingLabel,
+                onPressed: null,
+                leading: SizedBox.square(dimension: 12),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    expect(tester.takeException(), isNull);
+    expect(tester.getSize(find.text(plainLabel)).width, lessThanOrEqualTo(116));
+    expect(
+      tester.getSize(find.text(leadingLabel)).width,
+      lessThanOrEqualTo(98),
+    );
+    expect(
+      tester.widget<Text>(find.text(plainLabel)).overflow,
+      TextOverflow.ellipsis,
+    );
+    expect(
+      tester.widget<Text>(find.text(leadingLabel)).overflow,
+      TextOverflow.ellipsis,
+    );
+  });
+
+  testWidgets('CatchToggle emits the next value on tap', (tester) async {
+    bool? nextValue;
+
+    await tester.pumpWidget(
+      _wrap(
+        CatchToggle(
+          value: false,
+          semanticLabel: 'Push notifications',
+          onChanged: (value) => nextValue = value,
+        ),
+      ),
+    );
+
+    await tester.tap(find.byType(CatchToggle));
+    await tester.pump();
+
+    expect(nextValue, isTrue);
+  });
+
+  testWidgets(
+    'CatchOtpCodeField renders visible digits over one hidden input',
+    (tester) async {
+      final controller = TextEditingController();
+      addTearDown(controller.dispose);
+
+      await tester.pumpWidget(
+        _wrap(
+          StatefulBuilder(
+            builder: (context, setState) => CatchOtpCodeField(
+              inputKey: const ValueKey('otp-input'),
+              controller: controller,
+              autofocus: true,
+              onChanged: (_) => setState(() {}),
+              onSubmitted: (_) {},
+            ),
+          ),
+        ),
+      );
+
+      await tester.enterText(
+        find.byKey(const ValueKey('otp-input')),
+        '1234567',
+      );
+      await tester.pump();
+
+      expect(controller.text, '123456');
+      expect(find.byType(CatchCodeInputRow), findsOneWidget);
+      expect(find.byType(CatchCodeInputCell), findsNWidgets(6));
+      expect(find.text('1'), findsOneWidget);
+      expect(find.text('6'), findsOneWidget);
+      expect(find.text('7'), findsNothing);
+    },
+  );
+}

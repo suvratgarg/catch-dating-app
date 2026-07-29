@@ -4,7 +4,7 @@
     "lint": "eslint --ext .js,.ts src",
     "prebuild": "node scripts/clean-lib.cjs",
     "build": "tsc",
-    "test": "npm run build && node --test lib/admin/*.test.js lib/matching/*.test.js lib/marketplace/*.test.js lib/moderation/*.test.js lib/payments/*.test.js lib/places/*.test.js lib/profiles/*.test.js lib/reviews/*.test.js lib/clubs/*.test.js lib/organizers/*.test.js lib/events/*.test.js lib/eventSuccess/*.test.js lib/analytics/*.test.js lib/safety/*.test.js lib/search/*.test.js lib/demoOps/*.test.js lib/shared/*.test.js lib/waitlist/*.test.js test/callable-app-check.test.cjs test/callable-invokers.test.cjs test/operations-import-shadow-projection.test.cjs",
+    "test": "npm run build && node scripts/run-tests.cjs",
     "test:rules": "node --test --test-concurrency=1 test/firestore.rules.test.cjs test/storage.rules.test.cjs",
     "build:watch": "tsc --watch",
     "serve": "npm run build && firebase emulators:start --only functions",
@@ -30,7 +30,7 @@
     "firebase-functions": "^7.2.5",
     "google-auth-library": "^10.7.0",
     "razorpay": "^2.9.6",
-    "sharp": "^0.34.5"
+    "sharp": "^0.35.3"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.5",
@@ -41,12 +41,12 @@
     "eslint": "^9.39.4",
     "eslint-config-google": "^0.14.0",
     "eslint-plugin-import": "^2.32.0",
-    "firebase-functions-test": "^3.5.0",
     "json-schema-to-typescript": "^15.0.4",
     "typescript": "^6.0.3"
   },
   "overrides": {
     "@google-cloud/firestore": "^8.6.0",
+    "brace-expansion": "^5.0.8",
     "gaxios": "^7.1.5",
     "retry-request": "^8.0.3",
     "teeny-request": "^10.1.3",

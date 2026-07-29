@@ -235,6 +235,26 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+  app-package-tests:
+    name: Consumer & Host package tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: ./.github/actions/setup-flutter
+
+      - run: flutter pub get
+
+      - name: Consumer package tests
+        working-directory: apps/consumer
+        run: flutter test --concurrency=1
+
+      - name: Host package tests
+        working-directory: apps/host
+        run: flutter test --concurrency=1
+
   widgetbook:
     name: Widgetbook analyze & build
     runs-on: ubuntu-latest
@@ -262,6 +282,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - analysis-gates
+      - app-package-tests
       - flutter-coverage
       - flutter-test-shards
       - widgetbook
@@ -272,14 +293,16 @@ jobs:
       - name: Check Flutter CI results
         env:
           GATES_RESULT: ${{ needs['analysis-gates'].result }}
+          APP_PACKAGES_RESULT: ${{ needs['app-package-tests'].result }}
           COVERAGE_RESULT: ${{ needs['flutter-coverage'].result }}
           TESTS_RESULT: ${{ needs['flutter-test-shards'].result }}
           WIDGETBOOK_RESULT: ${{ needs.widgetbook.result }}
         run: |
           echo "analysis gates: ${GATES_RESULT}"
+          echo "app package tests: ${APP_PACKAGES_RESULT}"
           echo "coverage visibility: ${COVERAGE_RESULT}"
           echo "test shards: ${TESTS_RESULT}"
           echo "widgetbook: ${WIDGETBOOK_RESULT}"
-          if [[ "${GATES_RESULT}" != "success" || "${COVERAGE_RESULT}" != "success" || "${TESTS_RESULT}" != "success" || "${WIDGETBOOK_RESULT}" != "success" ]]; then
+          if [[ "${GATES_RESULT}" != "success" || "${APP_PACKAGES_RESULT}" != "success" || "${COVERAGE_RESULT}" != "success" || "${TESTS_RESULT}" != "success" || "${WIDGETBOOK_RESULT}" != "success" ]]; then
             exit 1
           fi

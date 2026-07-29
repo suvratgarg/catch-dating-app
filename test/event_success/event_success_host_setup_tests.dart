@@ -1,0 +1,803 @@
+part of 'event_success_live_screens_test.dart';
+
+void _registerEventSuccessHostSetupTests() {
+  testWidgets('question progress rail uses stage press without Material ink', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    try {
+      var selectedQuestion = -1;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: Center(
+              child: SizedBox(
+                width: 320,
+                child: QuestionProgressRail(
+                  activeIndex: 1,
+                  answeredCount: 2,
+                  questionCount: 3,
+                  onSelect: (index) => selectedQuestion = index,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byType(StageBouncyPress), findsNWidgets(3));
+      expect(find.byType(InkWell), findsNothing);
+      final activeNode = find.semantics.byLabel('Question 2').evaluate().single;
+      expect(
+        activeNode,
+        matchesSemantics(
+          label: 'Question 2',
+          hasSelectedState: true,
+          isSelected: true,
+          isButton: true,
+          hasEnabledState: true,
+          isEnabled: true,
+          hasTapAction: true,
+        ),
+      );
+
+      await tester.tap(find.text('3'));
+
+      expect(selectedQuestion, 2);
+    } finally {
+      semantics.dispose();
+    }
+  });
+
+  testWidgets('host screen exposes setup live mode and report tabs', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(430, 5000);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final event = buildEvent(bookedCount: 0, checkedInCount: 0);
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: EventSuccessHostPanel(
+                  event: event,
+                  plan: plan,
+                  planIsPersisted: true,
+                  roster: const EventParticipationRoster(
+                    bookedIds: ['a', 'b', 'c'],
+                    checkedInIds: ['a', 'b'],
+                    waitlistedIds: [],
+                  ),
+                  scorecard: const EventSuccessScorecard(
+                    bookedCount: 10,
+                    checkedInCount: 6,
+                    attendeesWhoMetTwoPlusPeople: 4,
+                    mutualMatchCount: 2,
+                    chatStartedCount: 1,
+                    averageWelcomeRating: 4.4,
+                    averageStructureRating: 4.1,
+                    safetyIncidentCount: 0,
+                    catchSentCount: 3,
+                    attendeesWhoCaughtSomeone: 2,
+                    catchRecipientCount: 3,
+                    catchRate: 1 / 3,
+                    feedbackResponseCount: 4,
+                  ),
+                  embedded: false,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('Setup'), findsWidgets);
+    expect(find.byType(CatchOptionGroup<EventSuccessHostTab>), findsOneWidget);
+    expect(find.byType(CatchTabRail<EventSuccessHostTab>), findsOneWidget);
+    expect(find.text('Target attendees'), findsOneWidget);
+    expect(find.text('How the room is grouped'), findsNothing);
+    expect(find.text('Your goal for the event'), findsOneWidget);
+    expect(find.text('YOUR PLAN'), findsOneWidget);
+    expect(find.text('WHEN PEOPLE ARRIVE'), findsOneWidget);
+    expect(find.text('DURING THE EVENT'), findsOneWidget);
+    expect(find.text('AFTER THE EVENT'), findsNothing);
+    expect(find.text('Save setup'), findsOneWidget);
+    // Only host-configurable modules are shown. Platform-owned attendance,
+    // safety, balancing, follow-up, and reporting stay active without
+    // duplicate setup controls.
+    expect(find.text('Attendance and live roster'), findsNothing);
+    expect(find.text('Safety layer'), findsNothing);
+    expect(find.text('Booking balance preview'), findsNothing);
+    expect(find.text('Welcome script'), findsOneWidget);
+    expect(find.text('Attendee feedback'), findsNothing);
+    expect(find.text('Host recap'), findsNothing);
+    expect(find.text('"Help me say hi" requests'), findsNothing);
+    expect(find.text('Suggested first-message openers'), findsNothing);
+    // Match clue questions is a first-class field, not nested in Advanced.
+    expect(find.text('Match clue questions'), findsOneWidget);
+
+    await tester.tap(find.text('Live'));
+    await pumpFeatureUi(tester);
+    expect(find.text('LIVE NOW'), findsOneWidget);
+    expect(find.byType(CatchStepProgress), findsOneWidget);
+    expect(find.text('Conversation cues'), findsOneWidget);
+    expect(find.text('Check guests in'), findsNothing);
+    expect(
+      find.byKey(const ValueKey('eventSuccessNextStepButton')),
+      findsOneWidget,
+    );
+
+    await tester.tap(find.text('Report'));
+    await pumpFeatureUi(tester);
+    expect(find.text('POST-EVENT HOST REPORT'), findsOneWidget);
+    expect(find.byType(CatchAnalyticsMetricGrid), findsWidgets);
+  });
+
+  testWidgets('host setup collapses to a read-only plan after bookings start', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(430, 1800);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final event = buildEvent(bookedCount: 1);
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: EventSuccessHostPanel(
+              event: event,
+              plan: plan,
+              planIsPersisted: true,
+              roster: const EventParticipationRoster(
+                bookedIds: ['runner-1'],
+                checkedInIds: [],
+                waitlistedIds: [],
+              ),
+              showTabs: false,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('Settings are locked'), findsOneWidget);
+    expect(find.text('YOUR PLAN'), findsOneWidget);
+    expect(find.text('Your goal for the event'), findsNothing);
+    expect(find.text('Save setup'), findsNothing);
+    expect(find.byType(EventSuccessSetupBody), findsNothing);
+  });
+
+  testWidgets('host setup preserves custom format interaction model on save', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(430, 5000);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final firestore = FakeFirebaseFirestore();
+    final format = EventFormatSnapshot.custom(
+      label: 'Salsa night',
+      interactionModel: EventInteractionModel.pairedRotations,
+    );
+    final event = buildEvent(
+      eventFormat: format,
+      capacityLimit: 24,
+      bookedCount: 0,
+      checkedInCount: 0,
+      waitlistedCount: 0,
+    );
+    final repository = EventSuccessRepository(firestore);
+    final plan = await repository.ensurePlanForEvent(event);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          uidProvider.overrideWith((ref) => Stream.value('host-1')),
+          eventSuccessRepositoryProvider.overrideWithValue(repository),
+        ],
+        child: Consumer(
+          builder: (context, ref, _) {
+            ref.watch(uidProvider);
+            return MaterialApp(
+              theme: AppTheme.light,
+              home: Scaffold(
+                body: SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: EventSuccessHostPanel(
+                      event: event,
+                      plan: plan,
+                      planIsPersisted: true,
+                      roster: EventParticipationRoster.empty(),
+                      onSaveSetup: (request) =>
+                          EventSuccessController.saveSetupMutation.run(
+                            ref,
+                            (tx) => tx
+                                .get(eventSuccessControllerProvider.notifier)
+                                .saveSetup(
+                                  plan: request.plan,
+                                  draft: request.draft,
+                                  attendeePrompt: request.attendeePrompt,
+                                ),
+                          ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+
+    expect(find.text('Salsa night'), findsWidgets);
+    expect(find.text('Paired rotations'), findsWidgets);
+    expect(find.text('Open activity'), findsNothing);
+    expect(plan.playbookId, EventSuccessPlaybookLibrary.pickleball.id);
+    expect(plan.structureConfig.unitKind, EventSuccessUnitKind.pairs);
+
+    await tester.tap(find.text('Save setup'));
+    await tester.pump();
+    await tester.pump();
+
+    final saved = await repository.fetchPlan(event.id);
+    expect(saved, isNotNull);
+    expect(saved!.playbookId, EventSuccessPlaybookLibrary.pickleball.id);
+    expect(
+      saved.selectedModuleIds,
+      contains(EventSuccessModuleCatalog.guidedRotations.id),
+    );
+    expect(
+      saved.selectedModuleIds,
+      contains(EventSuccessModuleCatalog.liveReveal.id),
+    );
+    expect(
+      saved.selectedModuleIds,
+      isNot(contains(EventSuccessModuleCatalog.microPods.id)),
+    );
+    expect(saved.structureConfig.unitKind, EventSuccessUnitKind.pairs);
+    expect(saved.structureConfig.unitSize, 2);
+    expect(saved.structureConfig.rotationIntervalMinutes, 15);
+  });
+
+  testWidgets('host live mode is unavailable until setup is saved', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(430, 1600);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final event = buildEvent();
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: EventSuccessHostPanel(
+                  event: event,
+                  plan: plan,
+                  planIsPersisted: false,
+                  roster: EventParticipationRoster.empty(),
+                  initialTab: EventSuccessHostTab.live,
+                  showTabs: false,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('Live mode needs saved setup'), findsOneWidget);
+    expect(find.text('Live host mode'), findsNothing);
+    expect(find.text('Next'), findsNothing);
+    expect(find.text('Mark live guide complete'), findsNothing);
+  });
+
+  testWidgets('host live guide skips live streams until setup is saved', (
+    tester,
+  ) async {
+    final event = buildEvent(id: 'event-unsaved-live-guide');
+    final rosterController = StreamController<EventParticipationRoster>();
+    final assignmentsController =
+        StreamController<List<EventSuccessAssignment>>();
+    final rotationAssignmentsController =
+        StreamController<List<EventSuccessAssignment>>();
+    final preferencesController =
+        StreamController<List<EventSuccessPreference>>();
+    final wingmanRequestsController =
+        StreamController<List<EventSuccessWingmanRequest>>();
+    addTearDown(() {
+      rosterController.close();
+      assignmentsController.close();
+      rotationAssignmentsController.close();
+      preferencesController.close();
+      wingmanRequestsController.close();
+    });
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          watchEventSuccessPlanProvider(
+            event.id,
+          ).overrideWith((ref) => Stream.value(null)),
+          watchEventParticipationRosterProvider(
+            event.id,
+          ).overrideWith((ref) => rosterController.stream),
+          watchEventSuccessAssignmentsProvider(
+            event.id,
+          ).overrideWith((ref) => assignmentsController.stream),
+          watchEventSuccessRotationAssignmentsProvider(
+            event.id,
+          ).overrideWith((ref) => rotationAssignmentsController.stream),
+          watchEventSuccessPreferencesProvider(
+            event.id,
+          ).overrideWith((ref) => preferencesController.stream),
+          watchEventSuccessWingmanRequestsProvider(
+            event.id,
+          ).overrideWith((ref) => wingmanRequestsController.stream),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: EventSuccessHostSection(
+              event: event,
+              initialTab: EventSuccessHostTab.live,
+              showTabs: false,
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.text('Live mode needs saved setup'), findsOneWidget);
+    expect(find.text('Live host mode'), findsNothing);
+  });
+
+  testWidgets('host section renders tab-shaped skeleton while guide loads', (
+    tester,
+  ) async {
+    final event = buildEvent(id: 'event-loading-host-guide');
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          watchEventSuccessPlanProvider(
+            event.id,
+          ).overrideWithValue(const AsyncLoading<EventSuccessPlan?>()),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: SafeArea(
+              child: EventSuccessHostSection(
+                event: event,
+                initialTab: EventSuccessHostTab.live,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.pump();
+
+    expect(find.byType(EventSuccessHostSectionSkeleton), findsOneWidget);
+    expect(find.byType(CatchSkeleton), findsWidgets);
+    expect(find.byType(CircularProgressIndicator), findsNothing);
+  });
+
+  test('host section state maps provider waves to status and retry intent', () {
+    final event = buildEvent(id: 'event-host-section-state');
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
+    const roster = EventParticipationRoster(
+      bookedIds: ['runner-1'],
+      checkedInIds: [],
+      waitlistedIds: [],
+    );
+
+    EventSuccessHostSectionState resolve({
+      CatchAsyncState<EventSuccessPlan?>? planState,
+      CatchAsyncState<EventParticipationRoster>? rosterState,
+      CatchAsyncState<EventSuccessScorecard?>? scorecardState,
+      CatchAsyncState<List<EventSuccessAssignment>>? assignmentsState,
+      CatchAsyncState<List<PublicProfile>>? assignmentProfilesState,
+      CatchAsyncState<List<EventSuccessAssignment>>? rotationAssignmentsState,
+      CatchAsyncState<List<PublicProfile>>? rotationProfilesState,
+      CatchAsyncState<List<EventSuccessPreference>>? preferencesState,
+      CatchAsyncState<List<EventSuccessWingmanRequest>>? wingmanRequestsState,
+      CatchAsyncState<List<PublicProfile>>? wingmanProfilesState,
+    }) {
+      return EventSuccessHostSectionState.resolve(
+        event: event,
+        now: event.startTime,
+        planState: planState ?? CatchAsyncState<EventSuccessPlan?>.data(plan),
+        rosterState: rosterState ?? const CatchAsyncState.data(roster),
+        scorecardState:
+            scorecardState ??
+            const CatchAsyncState<EventSuccessScorecard?>.data(null),
+        assignmentsState:
+            assignmentsState ??
+            const CatchAsyncState<List<EventSuccessAssignment>>.data([]),
+        assignmentParticipantProfilesState:
+            assignmentProfilesState ??
+            const CatchAsyncState<List<PublicProfile>>.data([]),
+        rotationAssignmentsState:
+            rotationAssignmentsState ??
+            const CatchAsyncState<List<EventSuccessAssignment>>.data([]),
+        rotationParticipantProfilesState:
+            rotationProfilesState ??
+            const CatchAsyncState<List<PublicProfile>>.data([]),
+        preferencesState:
+            preferencesState ??
+            const CatchAsyncState<List<EventSuccessPreference>>.data([]),
+        wingmanRequestsState:
+            wingmanRequestsState ??
+            const CatchAsyncState<List<EventSuccessWingmanRequest>>.data([]),
+        wingmanProfilesState:
+            wingmanProfilesState ??
+            const CatchAsyncState<List<PublicProfile>>.data([]),
+      );
+    }
+
+    expect(
+      resolve(
+        planState: const CatchAsyncState<EventSuccessPlan?>.loading(),
+      ).status,
+      EventSuccessHostSectionStatus.loading,
+    );
+
+    final unsaved = resolve(
+      planState: const CatchAsyncState<EventSuccessPlan?>.data(null),
+    );
+    expect(unsaved.status, EventSuccessHostSectionStatus.ready);
+    expect(unsaved.planIsPersisted, isFalse);
+    expect(unsaved.plan.eventId, event.id);
+
+    final rosterError = StateError('roster failed');
+    final rosterState = resolve(
+      rosterState: CatchAsyncState<EventParticipationRoster>.error(rosterError),
+    );
+    expect(rosterState.status, EventSuccessHostSectionStatus.error);
+    expect(rosterState.retryIntent, EventSuccessHostRetryIntent.roster);
+    expect(rosterState.error, same(rosterError));
+
+    final profileError = StateError('profiles failed');
+    expect(
+      resolve(
+        assignmentProfilesState: CatchAsyncState<List<PublicProfile>>.error(
+          profileError,
+        ),
+      ).retryIntent,
+      EventSuccessHostRetryIntent.assignmentParticipantProfiles,
+    );
+
+    final scorecardError = StateError('scorecard failed');
+    expect(
+      resolve(
+        scorecardState: CatchAsyncState<EventSuccessScorecard?>.error(
+          scorecardError,
+        ),
+      ).retryIntent,
+      EventSuccessHostRetryIntent.scorecard,
+    );
+  });
+
+  test(
+    'companion route state resolves core loading messages and ready data',
+    () {
+      final event = buildEvent(id: 'event-companion-route-state');
+      final plan = EventSuccessPlan.defaultForEvent(
+        event,
+        now: event.startTime,
+      );
+      final profile = buildUser();
+      final participation = buildEventParticipation(
+        event: event,
+        uid: 'runner-1',
+      );
+
+      final loading = EventSuccessCompanionRouteState.resolveCore(
+        l10n: _l10n,
+        eventState: const CatchAsyncState<Event?>.loading(),
+        initialEvent: null,
+        uidState: const CatchAsyncState<String?>.data('runner-1'),
+        profileState: null,
+        participationState: null,
+        planState: CatchAsyncState<EventSuccessPlan?>.data(plan),
+        referenceNow: event.startTime,
+      );
+      expect(loading.status, EventSuccessCompanionRouteStatus.loading);
+
+      final signedOut = EventSuccessCompanionRouteState.resolveCore(
+        l10n: _l10n,
+        eventState: CatchAsyncState<Event?>.data(event),
+        initialEvent: null,
+        uidState: const CatchAsyncState<String?>.data(null),
+        profileState: null,
+        participationState: null,
+        planState: CatchAsyncState<EventSuccessPlan?>.data(plan),
+        referenceNow: event.startTime,
+      );
+      expect(signedOut.status, EventSuccessCompanionRouteStatus.message);
+      expect(signedOut.message?.title, 'Sign in required');
+
+      final missingPlan = EventSuccessCompanionRouteState.resolveCore(
+        l10n: _l10n,
+        eventState: CatchAsyncState<Event?>.data(event),
+        initialEvent: null,
+        uidState: const CatchAsyncState<String?>.data('runner-1'),
+        profileState: CatchAsyncState<UserProfile?>.data(profile),
+        participationState: CatchAsyncState<EventParticipation?>.data(
+          participation,
+        ),
+        planState: const CatchAsyncState<EventSuccessPlan?>.data(null),
+        referenceNow: event.startTime,
+      );
+      expect(missingPlan.status, EventSuccessCompanionRouteStatus.message);
+      expect(missingPlan.message?.title, 'Companion not available');
+
+      final ready = EventSuccessCompanionRouteState.resolveCore(
+        l10n: _l10n,
+        eventState: CatchAsyncState<Event?>.data(event),
+        initialEvent: null,
+        uidState: const CatchAsyncState<String?>.data('runner-1'),
+        profileState: CatchAsyncState<UserProfile?>.data(profile),
+        participationState: CatchAsyncState<EventParticipation?>.data(
+          participation,
+        ),
+        planState: CatchAsyncState<EventSuccessPlan?>.data(plan),
+        referenceNow: event.startTime,
+      );
+      expect(ready.status, EventSuccessCompanionRouteStatus.ready);
+      expect(ready.event, event);
+      expect(ready.uid, 'runner-1');
+      expect(ready.profile, profile);
+      expect(ready.participation, participation);
+      expect(ready.plan, plan);
+    },
+  );
+
+  test('companion route state maps moment loading and retry intent', () {
+    final event = buildEvent(id: 'event-companion-moment-state');
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
+    final profile = buildUser();
+    final participation = buildEventParticipation(
+      event: event,
+      uid: 'runner-1',
+    );
+    final ready =
+        EventSuccessCompanionRouteState.resolveCore(
+              l10n: _l10n,
+              eventState: CatchAsyncState<Event?>.data(event),
+              initialEvent: null,
+              uidState: const CatchAsyncState<String?>.data('runner-1'),
+              profileState: CatchAsyncState<UserProfile?>.data(profile),
+              participationState: CatchAsyncState<EventParticipation?>.data(
+                participation,
+              ),
+              planState: CatchAsyncState<EventSuccessPlan?>.data(plan),
+              referenceNow: event.startTime,
+            )
+            .withArrivalMission(
+              const CatchAsyncState<EventSuccessArrivalMission?>.data(null),
+            )
+            .withCompatibilityResponse(
+              const CatchAsyncState<EventSuccessCompatibilityResponse?>.data(
+                null,
+              ),
+            );
+
+    final loading = ready.withMomentData(
+      feedbackState: const CatchAsyncState<EventSuccessFeedback?>.loading(),
+      preferenceState: const CatchAsyncState<EventSuccessPreference?>.data(
+        null,
+      ),
+      wingmanCandidatesState: const CatchAsyncState<List<PublicProfile>>.data(
+        [],
+      ),
+      wingmanRequestState:
+          const CatchAsyncState<EventSuccessWingmanRequest?>.data(null),
+      assignmentState: const CatchAsyncState<EventSuccessAssignment?>.data(
+        null,
+      ),
+      rotationState: const CatchAsyncState<EventSuccessAssignment?>.data(null),
+    );
+    expect(loading.status, EventSuccessCompanionRouteStatus.loading);
+
+    final error = StateError('preference failed');
+    final failed = ready.withMomentData(
+      feedbackState: const CatchAsyncState<EventSuccessFeedback?>.data(null),
+      preferenceState: CatchAsyncState<EventSuccessPreference?>.error(error),
+      wingmanCandidatesState: const CatchAsyncState<List<PublicProfile>>.data(
+        [],
+      ),
+      wingmanRequestState:
+          const CatchAsyncState<EventSuccessWingmanRequest?>.data(null),
+      assignmentState: const CatchAsyncState<EventSuccessAssignment?>.data(
+        null,
+      ),
+      rotationState: const CatchAsyncState<EventSuccessAssignment?>.data(null),
+    );
+    expect(failed.status, EventSuccessCompanionRouteStatus.error);
+    expect(failed.error, error);
+    expect(failed.retryIntent, EventSuccessCompanionRetryIntent.preference);
+  });
+
+  testWidgets('host report remains available for legacy module selections', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(430, 1600);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final event = buildEvent();
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime)
+        .copyWith(
+          selectedModuleIds: EventSuccessPlaybookLibrary.socialRun.moduleIds
+              .where((id) => id != EventSuccessModuleCatalog.hostAnalytics.id)
+              .toList(),
+        );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: EventSuccessHostPanel(
+                  event: event,
+                  plan: plan,
+                  planIsPersisted: true,
+                  roster: EventParticipationRoster.empty(),
+                  initialTab: EventSuccessHostTab.report,
+                  showTabs: false,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('Post-event insights are off'), findsNothing);
+    expect(find.text('Waiting for attendee feedback'), findsOneWidget);
+  });
+
+  testWidgets('host report summarizes live signal quality', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(430, 2200);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final event = buildEvent(bookedCount: 6, checkedInCount: 5);
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
+    final now = DateTime(2026, 5, 21, 8);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: EventSuccessHostPanel(
+                  event: event,
+                  plan: plan,
+                  planIsPersisted: true,
+                  roster: EventParticipationRoster.empty(),
+                  scorecard: const EventSuccessScorecard(
+                    bookedCount: 6,
+                    checkedInCount: 5,
+                    attendeesWhoMetTwoPlusPeople: 2,
+                    mutualMatchCount: 0,
+                    chatStartedCount: 0,
+                    averageWelcomeRating: 5,
+                    averageStructureRating: 4,
+                    safetyIncidentCount: 0,
+                    catchSentCount: 3,
+                    attendeesWhoCaughtSomeone: 2,
+                    catchRecipientCount: 3,
+                    catchRate: 0.4,
+                    feedbackResponseCount: 2,
+                  ),
+                  assignments: [
+                    _assignment(
+                      event: event,
+                      uid: 'runner-1',
+                      label: 'Pod A',
+                      now: now,
+                    ).copyWithPeerUids(['runner-2']),
+                  ],
+                  rotationAssignments: [
+                    _rotationAssignment(
+                      event: event,
+                      uid: 'runner-3',
+                      peerUid: 'runner-4',
+                      now: now,
+                      roundCount: 1,
+                    ),
+                  ],
+                  preferences: [
+                    EventSuccessPreference(
+                      id: eventSuccessPreferenceId(
+                        eventId: event.id,
+                        uid: 'runner-5',
+                      ),
+                      eventId: event.id,
+                      clubId: event.clubId,
+                      uid: 'runner-5',
+                      microPodsOptedOut: false,
+                      guidedRotationsOptedOut: true,
+                      createdAt: now,
+                      updatedAt: now,
+                    ),
+                  ],
+                  wingmanRequests: [
+                    _wingmanRequest(
+                      event: event,
+                      requesterUid: 'runner-1',
+                      targetUid: 'runner-2',
+                      now: now,
+                    ),
+                  ],
+                  initialTab: EventSuccessHostTab.report,
+                  showTabs: false,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('HOW RELIABLE IS THIS REPORT?'), findsOneWidget);
+    expect(find.text('Feedback'), findsOneWidget);
+    expect(find.text('Caught someone'), findsWidgets);
+    expect(find.text('People included'), findsOneWidget);
+    expect(find.text('Opted out'), findsOneWidget);
+    expect(find.text('Wingman help'), findsOneWidget);
+    expect(find.text('40%'), findsWidgets);
+    expect(find.text('80%'), findsWidgets);
+    expect(find.text('20%'), findsWidgets);
+    expect(find.text('2/5 feedback'), findsOneWidget);
+    expect(find.text('2 caught someone'), findsOneWidget);
+    expect(find.text('Catches sent'), findsOneWidget);
+    expect(find.text('4 assigned'), findsOneWidget);
+    expect(find.text('1 opted out'), findsOneWidget);
+    expect(find.text('1 host-help requests'), findsOneWidget);
+    expect(find.textContaining('Private notes'), findsOneWidget);
+    expect(find.text('WORKING WELL'), findsOneWidget);
+    expect(find.text('IMPROVE NEXT TIME'), findsOneWidget);
+  });
+}

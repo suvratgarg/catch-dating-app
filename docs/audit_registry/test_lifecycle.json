@@ -1,0 +1,250 @@
+{
+  "schemaVersion": 1,
+  "updated": "2026-07-29",
+  "owner": "test_architecture",
+  "reviewCadenceDays": 90,
+  "policy": {
+    "ordinaryLifecycle": "active",
+    "allowedLifecycles": [
+      "active",
+      "compatibility",
+      "platform_specific",
+      "quarantined",
+      "retire_candidate"
+    ],
+    "exceptionReasons": [
+      "compatibility",
+      "oversized",
+      "platform_specific",
+      "quarantined",
+      "non_colocated"
+    ],
+    "retirement": "Never delete automatically. A satisfied sunset condition or missing owner anchor creates a review-blocking retirement candidate."
+  },
+  "exceptionalTests": [
+    {
+      "path": "test/chats/chat_screen_test.dart",
+      "owner": "flutter/chats",
+      "lifecycle": "active",
+      "reason": "oversized",
+      "contractIds": ["FLUTTER-TEST-MAINTAINABILITY-001"],
+      "ownerPaths": ["lib/chats/presentation/chat_screen.dart"],
+      "sunsetWhen": "The spec is decomposed into behavior-owned files no larger than 1200 lines.",
+      "reviewBy": "2026-10-27"
+    },
+    {
+      "path": "test/core/widgets/catch_field/control_test.dart",
+      "owner": "flutter/core/widgets/catch_field",
+      "lifecycle": "active",
+      "reason": "oversized",
+      "contractIds": ["FLUTTER-TEST-MAINTAINABILITY-001"],
+      "ownerPaths": ["lib/core/widgets/catch_field_control.dart"],
+      "sunsetWhen": "The spec is reduced to no more than 1200 lines.",
+      "reviewBy": "2026-10-27"
+    },
+    {
+      "path": "test/core/widgets/catch_field/input_test.dart",
+      "owner": "flutter/core/widgets/catch_field",
+      "lifecycle": "active",
+      "reason": "oversized",
+      "contractIds": ["FLUTTER-TEST-MAINTAINABILITY-001"],
+      "ownerPaths": ["lib/core/widgets/catch_field.dart"],
+      "sunsetWhen": "The spec is reduced to no more than 1200 lines.",
+      "reviewBy": "2026-10-27"
+    },
+    {
+      "path": "test/events/event_detail_widgets_test.dart",
+      "owner": "flutter/events",
+      "lifecycle": "active",
+      "reason": "oversized",
+      "contractIds": ["FLUTTER-TEST-MAINTAINABILITY-001"],
+      "ownerPaths": ["lib/events/presentation/event_detail_screen.dart"],
+      "sunsetWhen": "The spec is decomposed into behavior-owned files no larger than 1200 lines.",
+      "reviewBy": "2026-10-27"
+    },
+    {
+      "path": "test/explore/explore_view_model_test.dart",
+      "owner": "flutter/explore",
+      "lifecycle": "active",
+      "reason": "oversized",
+      "contractIds": ["FLUTTER-TEST-MAINTAINABILITY-001"],
+      "ownerPaths": ["lib/explore/presentation/explore_view_model.dart"],
+      "sunsetWhen": "The spec is decomposed into behavior-owned files no larger than 1200 lines.",
+      "reviewBy": "2026-10-27"
+    },
+    {
+      "path": "test/hosts/host_create_event_screen_test.dart",
+      "owner": "flutter/hosts",
+      "lifecycle": "active",
+      "reason": "oversized",
+      "contractIds": ["FLUTTER-TEST-MAINTAINABILITY-001"],
+      "ownerPaths": ["lib/hosts/presentation/event_management"],
+      "sunsetWhen": "The spec is decomposed into behavior-owned files no larger than 1200 lines.",
+      "reviewBy": "2026-10-27"
+    },
+    {
+      "path": "test/onboarding/onboarding_widgets_test.dart",
+      "owner": "flutter/onboarding",
+      "lifecycle": "active",
+      "reason": "oversized",
+      "contractIds": ["FLUTTER-TEST-MAINTAINABILITY-001"],
+      "ownerPaths": ["lib/onboarding/presentation"],
+      "sunsetWhen": "The spec is decomposed into behavior-owned files no larger than 1200 lines.",
+      "reviewBy": "2026-10-27"
+    },
+    {
+      "path": "test/routing/router_redirect_test.dart",
+      "owner": "flutter/routing",
+      "lifecycle": "compatibility",
+      "reason": "compatibility",
+      "contractIds": ["APP-TARGET-IDENTITY-001"],
+      "ownerPaths": ["lib/routing/go_router.dart"],
+      "sunsetWhen": "The registered legacy Host route aliases are removed from the active route contract.",
+      "reviewBy": "2026-10-27"
+    },
+    {
+      "path": "test/force_update/app_version_config_provider_test.dart",
+      "owner": "flutter/force_update",
+      "lifecycle": "compatibility",
+      "reason": "compatibility",
+      "contractIds": ["APP-TARGET-IDENTITY-001"],
+      "ownerPaths": ["lib/force_update/data/app_version_config_provider.dart"],
+      "sunsetWhen": "The legacy unscoped Consumer force-update key is no longer read by production code.",
+      "reviewBy": "2026-10-27"
+    },
+    {
+      "path": "test/user_profile/user_profile_domain_test.dart",
+      "owner": "flutter/user_profile",
+      "lifecycle": "compatibility",
+      "reason": "compatibility",
+      "contractIds": ["SCHEMA-FIXTURE-001"],
+      "ownerPaths": ["lib/user_profile/domain/user_profile.dart"],
+      "sunsetWhen": "Production decoding no longer accepts the legacy bio and profile-photo fields.",
+      "reviewBy": "2026-10-27"
+    },
+    {
+      "path": "test/events/event_domain_test.dart",
+      "owner": "flutter/events",
+      "lifecycle": "compatibility",
+      "reason": "compatibility",
+      "contractIds": ["EVENT-POLICY-INDEV-001"],
+      "ownerPaths": ["lib/events/domain/event.dart"],
+      "sunsetWhen": "The documented legacy event compatibility view and repair window are retired.",
+      "reviewBy": "2026-10-27"
+    },
+    {
+      "path": "test/events/external_event_repository_test.dart",
+      "owner": "flutter/events",
+      "lifecycle": "compatibility",
+      "reason": "compatibility",
+      "contractIds": ["SCHEMA-FIXTURE-001"],
+      "ownerPaths": ["lib/events/domain/external_event.dart"],
+      "sunsetWhen": "All supported external-event records require canonical coordinates and the compatibility decoder is removed.",
+      "reviewBy": "2026-10-27"
+    },
+    {
+      "path": "test/organizers/organizer_authority_test.dart",
+      "owner": "flutter/organizers",
+      "lifecycle": "compatibility",
+      "reason": "compatibility",
+      "contractIds": ["ORGANIZER-AUTHORITY-001"],
+      "ownerPaths": ["lib/organizers/domain/organizer_authority.dart"],
+      "sunsetWhen": "Ownerless legacy organizer documents are no longer accepted by the production authority mapper.",
+      "reviewBy": "2026-10-27"
+    },
+    {
+      "path": "website/src/shared/api/joinWaitlistContract.test.ts",
+      "owner": "website/shared/api",
+      "lifecycle": "compatibility",
+      "reason": "compatibility",
+      "contractIds": ["PUBLIC-SURFACE-BEHAVIOR-001"],
+      "ownerPaths": ["website/src/shared/api/joinWaitlistContract.ts"],
+      "sunsetWhen": "The backend no longer accepts the legacy runner waitlist audience and the public contract removes it.",
+      "reviewBy": "2026-10-27"
+    },
+    {
+      "path": "functions/src/reviews/mutateReview.test.ts",
+      "owner": "functions/reviews",
+      "lifecycle": "compatibility",
+      "reason": "compatibility",
+      "contractIds": ["SCHEMA-FIXTURE-001"],
+      "ownerPaths": ["functions/src/reviews/mutateReview.ts"],
+      "sunsetWhen": "The canonical review target migration removes compatibility-target reads.",
+      "reviewBy": "2026-10-27"
+    },
+    {
+      "path": "tool/platform/verify_ios_release_identity.test.mjs",
+      "owner": "tool/platform",
+      "lifecycle": "platform_specific",
+      "reason": "platform_specific",
+      "contractIds": ["APP-TARGET-IDENTITY-001"],
+      "ownerPaths": ["tool/platform/verify_ios_release_identity.mjs"],
+      "sunsetWhen": "A platform-neutral plist/archive fixture replaces the macOS-only archive parser check.",
+      "reviewBy": "2026-10-27"
+    }
+  ],
+  "criticalObligations": [
+    {
+      "id": "consumer-health-adapter",
+      "owner": "app/consumer",
+      "sourcePaths": ["apps/consumer/lib/mobile_health_activity_client.dart"],
+      "testPaths": ["apps/consumer/test/mobile_health_activity_client_test.dart"],
+      "rationale": "Health platform capability, workout mapping, and unit conversion are Consumer-owned native boundary behavior."
+    },
+    {
+      "id": "consumer-payment-adapter",
+      "owner": "app/consumer",
+      "sourcePaths": ["apps/consumer/lib/razorpay_checkout_adapter.dart"],
+      "testPaths": ["apps/consumer/test/razorpay_checkout_adapter_test.dart"],
+      "rationale": "Native payment success, cancellation, and error payload translation must remain stable."
+    },
+    {
+      "id": "consumer-composition-root",
+      "owner": "app/consumer",
+      "sourcePaths": ["apps/consumer/lib/consumer_platform_app.dart"],
+      "testPaths": ["apps/consumer/test/consumer_platform_app_test.dart"],
+      "rationale": "The Consumer package must install only Consumer routing and Consumer-owned native providers."
+    },
+    {
+      "id": "host-composition-root",
+      "owner": "app/host",
+      "sourcePaths": ["apps/host/lib/host_platform_app.dart"],
+      "testPaths": ["apps/host/test/host_platform_app_test.dart"],
+      "rationale": "The Host package must install the Host router without Consumer-only plugins."
+    },
+    {
+      "id": "firestore-rules",
+      "owner": "firebase/rules",
+      "sourcePaths": ["firestore.rules"],
+      "testPaths": ["functions/test/firestore.rules.test.cjs"],
+      "rationale": "Firestore authorization changes require emulator-backed behavioral coverage."
+    },
+    {
+      "id": "storage-rules",
+      "owner": "firebase/rules",
+      "sourcePaths": ["storage.rules"],
+      "testPaths": ["functions/test/storage.rules.test.cjs"],
+      "rationale": "Storage authorization changes require emulator-backed behavioral coverage."
+    },
+    {
+      "id": "operations-workflow",
+      "owner": "operations",
+      "sourcePaths": ["operations/src/workflows/supply-intake/workflow.mjs"],
+      "testPaths": ["operations/test/workflow.test.mjs"],
+      "rationale": "The durable workflow state machine requires direct replay, lease, receipt, and terminal-state coverage."
+    },
+    {
+      "id": "react-controller-contracts",
+      "owner": "web",
+      "sourcePaths": [
+        "tool/web/react_controller_test_targets.json",
+        "tool/web/check_react_controller_test_targets.mjs"
+      ],
+      "testPaths": [
+        "admin/src/features/safety/controllers/useSafetyTriageController.test.tsx",
+        "website/src/features/waitlist/useWaitlistFormController.test.tsx"
+      ],
+      "rationale": "React controller and mutation coverage remains governed by the exhaustive target registry."
+    }
+  ]
+}

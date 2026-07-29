@@ -58,6 +58,22 @@ test("independent app package roots select only their owning role", () => {
   assert.deepEqual(consumerPlan.mobileReleaseRoles, ["consumer"]);
 });
 
+test("test-only changes select their owning suite and test governance", () => {
+  for (const [changedPath, owningTarget] of [
+    ["test/core/app_shell_test.dart", "flutter"],
+    ["apps/consumer/test/consumer_platform_app_test.dart", "flutter"],
+    ["functions/src/admin/adminAuth.test.ts", "functions"],
+    ["admin/src/app/App.test.tsx", "admin"],
+    ["website/src/content/contentContracts.test.ts", "marketing"],
+    ["packages/web-ui/src/primitives.test.tsx", "admin"],
+    ["operations/test/workflow.test.mjs", "operations"],
+  ]) {
+    const plan = planCi({changedPaths: [changedPath], ciPlanning: planning});
+    assert.equal(plan.enabled[owningTarget], true, changedPath);
+    assert.equal(plan.enabled.tools, true, changedPath);
+  }
+});
+
 test("shared Flutter source selects both mobile roles", () => {
   const plan = planCi({
     changedPaths: ["lib/core/config/app_config.dart"],

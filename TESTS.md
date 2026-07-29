@@ -7,15 +7,24 @@ node tool/test_inventory.mjs          # regenerate
 node tool/test_inventory.mjs --check  # fail on drift
 ```
 
-See [docs/audit_registry/test_inventory.json](docs/audit_registry/test_inventory.json) for counts and paths grouped into Flutter unit/widget, Flutter integration, Functions source, Firebase rules, Functions harness, React web, and repository-tooling tests.
+See [docs/audit_registry/test_inventory.json](docs/audit_registry/test_inventory.json)
+for every directly executable first-party test, its owning surface, inferred
+kind, and lifecycle. Discovery covers root Flutter unit/widget and integration
+tests, the Consumer and Host packages, Functions source/harness/rules tests,
+admin, marketing, shared React UI, Operations, and repository tooling. A
+test-shaped file that cannot be classified fails generation instead of silently
+falling outside CI.
 
 ## Standard suites
 
 ```sh
 flutter test
+flutter test --concurrency=1 --directory apps/consumer
+flutter test --concurrency=1 --directory apps/host
 bash tool/test_app_shell_integration.sh
 flutter test --concurrency=1 test/goldens
 node tool/run.mjs check test:flutter-test-size
+node tool/run.mjs check test:test-lifecycle
 (cd widgetbook && flutter analyze --no-fatal-warnings --no-fatal-infos && flutter build web --release)
 npm --prefix functions test
 npm --prefix functions run test:rules
@@ -24,6 +33,11 @@ node tool/run.mjs check --category meta
 ```
 
 Use focused tests while iterating, then run the owning surface's full gate before handoff. Never run multiple Flutter analyzer/test processes concurrently. Add regression coverage beside the owned surface and make recurring architectural rules enforceable through the tool manifest.
+
+Functions tests are discovered recursively from compiled
+`functions/lib/**/*.test.js` plus `functions/test/**/*.test.cjs`; rules specs
+remain in the emulator-owned `test:rules` lane. Adding a new nested Functions
+domain test therefore requires no script edit.
 
 `.github/workflows/flutter-ci.yml` compiles Widgetbook on every relevant Flutter
 change and publishes an LCOV plus feature-level Markdown coverage artifact.
@@ -36,6 +50,42 @@ artifacts. Pass a device id and scope to the runner—for example,
 `bash tool/test_app_shell_integration.sh macos all`—for an explicit native
 pass. Live Firebase/device evidence remains a release-runbook lane rather than
 being implied by repository integration tests.
+
+## Test ownership and lifecycle
+
+Tests mirror behavioral ownership, not the source tree mechanically. Use the
+nearest stable owner:
+
+- Flutter feature behavior lives under `test/<feature>/`; split large suites by
+  behavior or layer while retaining a shared Dart test library when fixtures
+  are genuinely common.
+- Consumer- and Host-only composition or native adapter behavior lives in the
+  corresponding `apps/<app>/test/` package.
+- React and Functions unit/component tests remain colocated with their owner
+  where that makes source-to-test navigation obvious.
+- Cross-feature contracts, integration flows, rules, and repository tooling
+  retain their own explicit top-level surfaces.
+
+Ordinary tests are inferred as active. Only compatibility, platform-specific,
+quarantined, non-colocated, or temporarily oversized tests receive explicit
+metadata in `docs/audit_registry/test_lifecycle.json`. Each exception must name
+an owner, durable contract id, live source anchor, objective sunset condition,
+and review date. Missing source anchors, overdue reviews, stale oversized
+entries, or unregistered skips fail `test:test-lifecycle`.
+
+The same registry holds critical source-to-test obligations for boundaries that
+must never disappear accidentally, including app composition roots, Consumer
+health/payment adapters, Firebase rules, durable Operations workflows, and
+React controller contracts. A removed owner or test creates a blocking
+retirement candidate. The gate never deletes tests automatically: deletion
+requires a reviewed decision that the production behavior and compatibility
+window are both gone.
+
+Review the registry at least every 90 days and whenever a feature, route,
+compatibility decoder, platform adapter, or source owner is removed. The review
+outcome is one of: keep active, split/repair, move to an explicit exceptional
+lifecycle, or delete with the owning behavior. Adding aliases or weakening an
+assertion solely to keep an obsolete test green is not a retirement mechanism.
 
 ## Coverage and test maintainability
 
@@ -69,6 +119,11 @@ node tool/test/check_flutter_test_size.mjs --write-baseline
 full-home-shell group lives in the same Dart test library through
 `dashboard_full_home_shell_tests.dart`, preserving private fixtures while making
 the focused spec independently navigable in failures.
+
+Explore, Event Success, core primitives, Host operations, and Profile use the
+same library-part pattern, organized by behavioral area. Their former five
+oversized entrypoints are now below the ceiling; each behavior part is also
+below the ceiling.
 
 Expected-error tests and deterministic captures should inject
 `ErrorLogger.silent(...)` or a recording `consoleSink`. Production defaults

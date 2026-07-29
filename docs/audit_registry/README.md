@@ -1,7 +1,7 @@
 ---
 doc_id: audit_registry
-version: 2.7.0
-updated: 2026-07-19
+version: 2.8.0
+updated: 2026-07-29
 owner: recursive_audit_loop
 status: active
 ---
@@ -26,6 +26,8 @@ Use this registry before reading long tracker docs. The goal is to answer:
 | `passes.jsonl` | Append-only pass receipts with scope, rules, commands, outcomes, and new debt. |
 | `rules.json` | Active/watch/archived rules used by recursive cleanup passes. |
 | `doc_versions.json` | Version metadata for durable docs that Codex reads repeatedly. |
+| `test_inventory.json` | Generated exhaustive inventory of executable first-party tests with category, behavioral owner, kind, and lifecycle. |
+| `test_lifecycle.json` | Reviewed exceptional-test expiry metadata plus critical source-to-test obligations and retirement-candidate policy. |
 | `backlog.json` | Active backlog, next-up order, stable debt ids, and scanner counts. |
 | `doc_summaries.json` | Compact read/skip policies for long docs. |
 | `agent_metrics.jsonl` | Append-only measurements for agent-readiness score, check counts, delegation outcomes, and workflow-quality trend events. |
@@ -105,6 +107,21 @@ node tool/run.mjs check --category meta
    queue for design/capture passes.
 
 3. Work in a focused batch and verify with scoped analyzer/tests/scanners.
+
+   For test architecture changes, regenerate the exhaustive inventory and
+   validate lifecycle metadata:
+
+   ```sh
+   node tool/test_inventory.mjs
+   node tool/test_inventory.mjs --check
+   node tool/test/check_flutter_test_size.mjs --check
+   node tool/test/check_test_lifecycle.mjs
+   ```
+
+   Ordinary test ownership is inferred. Explicit lifecycle records are reserved
+   for compatibility, platform-specific, quarantined, non-colocated, or
+   oversized exceptions. Review dates and source anchors make obsolete tests
+   visible; a missing owner blocks for review and is never auto-deleted.
 
    For widget-system work, regenerate and check the exhaustive role registry:
 
@@ -195,6 +212,13 @@ A pass is complete only when:
 Keep active instructions small. When a repeated concern is solved, move its rule
 from `active` to `watch`, then to `archived` after the sunset criteria are met.
 Archived rules remain searchable but should not be loaded into every pass.
+
+Review `test_lifecycle.json` on its declared cadence and whenever an owning
+feature, compatibility decoder, platform integration, or critical source path
+is removed. Resolve retirement candidates by proving the behavior is gone,
+updating or moving still-valid coverage, or deleting the obsolete test in the
+same reviewed change. Do not preserve obsolete tests through aliases, weakened
+assertions, or permanent skips.
 
 Long docs should expose version metadata and a short read policy at the top. Do
 not reread full historical snapshots unless the current task explicitly depends
