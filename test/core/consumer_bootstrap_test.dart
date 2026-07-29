@@ -9,6 +9,8 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../test_pump_helpers.dart';
+
 void main() {
   test('animated bootstrap is consumer mobile only', () {
     expect(
@@ -71,7 +73,8 @@ void main() {
     expect(find.text('Initialized app'), findsNothing);
     expect(find.byKey(CatchConsumerBootstrap.bootKey), findsOneWidget);
 
-    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(CatchConsumerBootScreen.tapTargetKey));
+    await _pumpConsumerBootstrap(tester);
 
     expect(find.text('Initialized app'), findsOneWidget);
     expect(nativeHandoffs, 1);
@@ -93,14 +96,14 @@ void main() {
         prepareFirstFrame: _prepareFirstFrame,
       ),
     );
-    await tester.pumpAndSettle();
+    await _pumpConsumerBootstrap(tester);
 
     expect(find.text('Initialized app'), findsNothing);
     expect(find.textContaining('someone real'), findsWidgets);
     expect(nativeHandoffs, 1);
 
     initialization.complete();
-    await tester.pumpAndSettle();
+    await _pumpConsumerBootstrap(tester);
 
     expect(find.text('Initialized app'), findsOneWidget);
   });
@@ -120,7 +123,7 @@ void main() {
         prepareFirstFrame: _prepareFirstFrame,
       ),
     );
-    await tester.pumpAndSettle();
+    await _pumpConsumerBootstrap(tester);
 
     expect(find.byType(MaterialApp), findsOneWidget);
     expect(find.byKey(CatchConsumerBootstrap.bootKey), findsOneWidget);
@@ -155,13 +158,13 @@ void main() {
           prepareFirstFrame: _prepareFirstFrame,
         ),
       );
-      await tester.pumpAndSettle();
+      await _pumpConsumerBootstrap(tester);
 
       expect(find.byKey(CatchConsumerBootstrap.failureKey), findsOneWidget);
       expect(find.widgetWithText(CatchButton, 'Try again'), findsOneWidget);
 
       await tester.tap(find.widgetWithText(CatchButton, 'Try again'));
-      await tester.pumpAndSettle();
+      await _pumpConsumerBootstrap(tester);
 
       expect(attempts, 2);
       expect(nativeHandoffs, 1);
@@ -189,7 +192,7 @@ void main() {
         ),
       ),
     );
-    await tester.pumpAndSettle();
+    await _pumpConsumerBootstrap(tester);
 
     expect(firstFrames, 1);
     expect(completions, 1);
@@ -203,3 +206,7 @@ void main() {
 }
 
 Future<void> _prepareFirstFrame(BuildContext context, String asset) async {}
+
+Future<void> _pumpConsumerBootstrap(WidgetTester tester) async {
+  await pumpFeatureUi(tester);
+}

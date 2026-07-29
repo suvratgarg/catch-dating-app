@@ -69,7 +69,7 @@ code { color: var(--fg); }
     "lib"
   ],
   "summary": {
-    "dartSourceFiles": 799,
+    "dartSourceFiles": 802,
     "providerNodes": 218,
     "generatedProviderNodes": 214,
     "manualProviderNodes": 4,
@@ -81,9 +81,9 @@ code { color: var(--fg); }
     "providerToProviderCallsites": 408,
     "uniqueProviderToProviderPairs": 324,
     "uniqueCrossFeatureProviderPairs": 163,
-    "consumerToStateCallsites": 752,
+    "consumerToStateCallsites": 755,
     "mutationReferenceCallsites": 204,
-    "unresolvedRefOperations": 14,
+    "unresolvedRefOperations": 13,
     "unresolvedInsideProviders": 0,
     "duplicateProviderNames": 0,
     "danglingProviderTargets": 0,
@@ -153,8 +153,8 @@ code { color: var(--fg); }
     "read": 208,
     "invalidate": 155,
     "mutation-run": 90,
-    "listen": 22,
-    "override": 20
+    "override": 23,
+    "listen": 22
   },
   "featurePairCounts": {
     "events -> events": 33,
@@ -4557,7 +4557,7 @@ code { color: var(--fg); }
       "id": "consumer:lib/app_bootstrap.dart#runCatchApp",
       "owner": "runCatchApp",
       "path": "lib/app_bootstrap.dart",
-      "line": 27,
+      "line": 31,
       "feature": "app",
       "layer": "app"
     },
@@ -6165,7 +6165,7 @@ code { color: var(--fg); }
       "id": "consumer:lib/onboarding/presentation/pages/welcome_page.dart#_WelcomePageState._logCta",
       "owner": "_WelcomePageState._logCta",
       "path": "lib/onboarding/presentation/pages/welcome_page.dart",
-      "line": 149,
+      "line": 155,
       "feature": "onboarding",
       "layer": "presentation"
     },
@@ -6173,7 +6173,7 @@ code { color: var(--fg); }
       "id": "consumer:lib/onboarding/presentation/pages/welcome_page.dart#_WelcomePageState._logShown",
       "owner": "_WelcomePageState._logShown",
       "path": "lib/onboarding/presentation/pages/welcome_page.dart",
-      "line": 126,
+      "line": 132,
       "feature": "onboarding",
       "layer": "presentation"
     },
@@ -6181,7 +6181,7 @@ code { color: var(--fg); }
       "id": "consumer:lib/onboarding/presentation/pages/welcome_page.dart#_WelcomePageState._logSkipped",
       "owner": "_WelcomePageState._logSkipped",
       "path": "lib/onboarding/presentation/pages/welcome_page.dart",
-      "line": 137,
+      "line": 143,
       "feature": "onboarding",
       "layer": "presentation"
     },
@@ -10310,7 +10310,25 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "override",
       "path": "lib/app_bootstrap.dart",
-      "line": 65
+      "line": 60
+    },
+    {
+      "source": "consumer:lib/app_bootstrap.dart#runCatchApp",
+      "sourceKind": "consumer",
+      "target": "appAnalyticsProvider",
+      "targetKind": "provider",
+      "operation": "override",
+      "path": "lib/app_bootstrap.dart",
+      "line": 88
+    },
+    {
+      "source": "consumer:lib/app_bootstrap.dart#runCatchApp",
+      "sourceKind": "consumer",
+      "target": "appPackageInfoProvider",
+      "targetKind": "provider",
+      "operation": "override",
+      "path": "lib/app_bootstrap.dart",
+      "line": 63
     },
     {
       "source": "consumer:lib/app_bootstrap.dart#runCatchApp",
@@ -10319,7 +10337,16 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "override",
       "path": "lib/app_bootstrap.dart",
-      "line": 66
+      "line": 61
+    },
+    {
+      "source": "consumer:lib/app_bootstrap.dart#runCatchApp",
+      "sourceKind": "consumer",
+      "target": "errorLoggerProvider",
+      "targetKind": "provider",
+      "operation": "override",
+      "path": "lib/app_bootstrap.dart",
+      "line": 89
     },
     {
       "source": "consumer:lib/auth/presentation/auth_screen.dart#AuthScreen.build",
@@ -11003,7 +11030,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/core/presentation/app_shell.dart",
-      "line": 92
+      "line": 95
     },
     {
       "source": "consumer:lib/core/presentation/app_shell.dart#AppShell.build",
@@ -11012,7 +11039,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/core/presentation/app_shell.dart",
-      "line": 125
+      "line": 128
     },
     {
       "source": "consumer:lib/core/presentation/app_shell.dart#AppShell.build",
@@ -11021,7 +11048,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/core/presentation/app_shell.dart",
-      "line": 128
+      "line": 131
     },
     {
       "source": "consumer:lib/core/presentation/app_shell.dart#AppShell.build",
@@ -11039,7 +11066,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "listen",
       "path": "lib/core/presentation/app_shell.dart",
-      "line": 117
+      "line": 120
     },
     {
       "source": "consumer:lib/core/presentation/app_shell.dart#AppShell.build",
@@ -11057,7 +11084,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "listen",
       "path": "lib/core/presentation/app_shell.dart",
-      "line": 89
+      "line": 92
     },
     {
       "source": "consumer:lib/core/presentation/app_shell.dart#AppShell.build",
@@ -11066,7 +11093,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/core/presentation/app_shell.dart",
-      "line": 129
+      "line": 132
     },
     {
       "source": "consumer:lib/core/presentation/host_app_shell.dart#HostAppShell.build",
@@ -16061,7 +16088,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/onboarding/presentation/pages/welcome_page.dart",
-      "line": 150
+      "line": 156
     },
     {
       "source": "consumer:lib/onboarding/presentation/pages/welcome_page.dart#_WelcomePageState._logShown",
@@ -16070,7 +16097,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/onboarding/presentation/pages/welcome_page.dart",
-      "line": 129
+      "line": 135
     },
     {
       "source": "consumer:lib/onboarding/presentation/pages/welcome_page.dart#_WelcomePageState._logSkipped",
@@ -16079,7 +16106,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/onboarding/presentation/pages/welcome_page.dart",
-      "line": 138
+      "line": 144
     },
     {
       "source": "consumer:lib/payments/presentation/payment_confirmation_screen.dart#PaymentConfirmationBodyController.build",
@@ -18832,18 +18859,10 @@ code { color: var(--fg); }
     {
       "source": "consumer:lib/core/presentation/app_shell.dart#AppShell.build",
       "sourceKind": "consumer",
-      "operation": "watch",
-      "reference": "fcmInitialization",
-      "path": "lib/core/presentation/app_shell.dart",
-      "line": 77
-    },
-    {
-      "source": "consumer:lib/core/presentation/app_shell.dart#AppShell.build",
-      "sourceKind": "consumer",
       "operation": "listen",
       "reference": "fcmInitialization",
       "path": "lib/core/presentation/app_shell.dart",
-      "line": 78
+      "line": 81
     },
     {
       "source": "consumer:lib/core/presentation/host_app_shell.dart#HostAppShell.build",
