@@ -84,42 +84,42 @@
     },
     {
       "hammingBucket": "45-49",
-      "pairs": 786,
+      "pairs": 784,
       "jaccardMin": 0,
-      "jaccardMean": 0.1448,
+      "jaccardMean": 0.1451,
       "jaccardMax": 0.4706
     },
     {
       "hammingBucket": "50-54",
-      "pairs": 1694,
+      "pairs": 1696,
       "jaccardMin": 0,
       "jaccardMean": 0.0869,
       "jaccardMax": 0.4412
     },
     {
       "hammingBucket": "55-59",
-      "pairs": 2902,
+      "pairs": 2904,
       "jaccardMin": 0,
-      "jaccardMean": 0.053,
+      "jaccardMean": 0.0529,
       "jaccardMax": 0.2813
     },
     {
       "hammingBucket": "60-64",
-      "pairs": 3190,
+      "pairs": 3187,
       "jaccardMin": 0,
       "jaccardMean": 0.0326,
       "jaccardMax": 0.2381
     },
     {
       "hammingBucket": "65-69",
-      "pairs": 1997,
+      "pairs": 2000,
       "jaccardMin": 0,
-      "jaccardMean": 0.0215,
+      "jaccardMean": 0.0216,
       "jaccardMax": 0.2
     },
     {
       "hammingBucket": "70-74",
-      "pairs": 665,
+      "pairs": 663,
       "jaccardMin": 0,
       "jaccardMean": 0.0131,
       "jaccardMax": 0.1124
@@ -1455,11 +1455,11 @@
       "name": "CatchConsumerBootstrap",
       "file": "lib/consumer_bootstrap.dart",
       "role": "feature-adapter",
-      "shapeHash": "974c04eff5f4bac3e1086024501dad6c2fb3169687753c15d5de86a3ea95b15a",
-      "coarseShapeHash": "5a08445179eec77f9638f3c9085d697fc1cab58c90691e93fa5a3c08ca76faef",
-      "simhash128": "ae9986b91f8f85af8f3dc13fa3da01ff",
-      "tokenStreamLength": 35,
-      "coarseTokenStreamLength": 35,
+      "shapeHash": "b68a021140e966062dcc47217dfe199f2ea8d09e67f40a8cc767acfc8366dd4c",
+      "coarseShapeHash": "6719c50b1d9c5eff8003f17a4326e47cbb78f03f2bfcf7ab42fa676d2ba3ab32",
+      "simhash128": "3e1b87bf578fd7bfb53c003da9fa09ff",
+      "tokenStreamLength": 27,
+      "coarseTokenStreamLength": 27,
       "usageCountRaw": 2,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
@@ -11660,11 +11660,11 @@
       "name": "ReelRow",
       "file": "lib/onboarding/presentation/pages/welcome_page.dart",
       "role": "composition",
-      "shapeHash": "3cfea4747313e157ba19b9dff5da41c6978a4bb01eebee361450cd329443758d",
-      "coarseShapeHash": "6b4550adb1e0b196abb6fa05eeb3b468cae90b58e93196342cc9c82d11733b22",
-      "simhash128": "616a8adcffc609790fc02ed18de0d5e1",
-      "tokenStreamLength": 64,
-      "coarseTokenStreamLength": 64,
+      "shapeHash": "de7865d1bf5cf8de4b0c01ff208e4079b634f83d0f05f87696575a8f04c75b7f",
+      "coarseShapeHash": "2356e607485c146c4999cdb5dff0c10f332bd9cda68fd90072d4a61569bf908c",
+      "simhash128": "61e20ad8dec609790f812ed18ca8cea1",
+      "tokenStreamLength": 63,
+      "coarseTokenStreamLength": 63,
       "usageCountRaw": 4,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
