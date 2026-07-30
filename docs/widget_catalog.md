@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.664
+version: 2.5.665
 updated: 2026-07-30
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,14 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.665
+
+- `CatchStartupLoadingScreen` now continues the correct product identity by
+  role: Consumer uses the transparent `Catch_` mark, while Host uses dedicated
+  light/dark `Catch Host` marks. The Host mark and launcher use the locked
+  Archivo `wght: 600` / `wdth: 78` axes, and Host continues directly to
+  Login/Home without mounting the Consumer Welcome reel.
 
 ### 2.5.664
 
@@ -6471,7 +6479,7 @@ Generated 2026-05-06.
 |---|---|---|
 | `AppShellActiveTab` | `lib/core/presentation/app_shell_active_tab.dart:10` | Inherited lifecycle and obstruction signal for indexed-stack tabs. Lets retained tab branches detect whether they are selected and consume `bottomOverlayInset` / safe-area-adjusted `bottomOverlayClearanceOf` without coupling feature screens to `StatefulNavigationShell` or recomputing shell geometry. The shells publish zero obstruction while software keyboards are visible. |
 | `AppShellNavigationBar` / `AppShellNavigationItem` | `lib/core/presentation/app_shell.dart:240` | Destination-driven shell adapter with stable key, platform icon mapping, and unread badge counts passed into `CatchTabBar`. Consumer uses Home / Explore / Chats / You; `HostAppShell` supplies Today / Events / Inbox / Organizer through the same primitive. |
-| `CatchStartupLoadingScreen` | `lib/core/widgets/catch_startup_loading_screen.dart:8` | Boot-only loading composition used by the force-update gate while the native splash is preserved. Matches the native splash background, keeps the Catch mark centered, and delays the canonical `CatchLoadingIndicator` so fast boots do not flash Flutter loading chrome. It is registered as `catch.startup_loading_screen`, not as an independent loading concept. |
+| `CatchStartupLoadingScreen` | `lib/core/widgets/catch_startup_loading_screen.dart:9` | Boot-only loading composition used by the force-update gate while the native splash is preserved. Matches the native splash background, keeps the role-specific Consumer `Catch_` or Host `Catch Host` mark centered, and delays the canonical `CatchLoadingIndicator` so fast boots do not flash Flutter loading chrome. It is registered as `catch.startup_loading_screen`, not as an independent loading concept. |
 
 ---
 
@@ -6594,7 +6602,7 @@ Widgetbook callers.
 | `CatchHorizontalRail` | `lib/core/widgets/catch_horizontal_rail.dart:13` | Section with a `CatchSectionHeader` title and a horizontally-scrolling rail of items. Embedded/chromeless by default so section containers own gutters and dividers; page-level rails opt into screen gutters and the section divider with `fullBleed: true`. Supports optional trailing content and explicit padding/divider overrides for reviewed exceptions. |
 | `CatchVerticalSection` | `lib/core/widgets/catch_vertical_section.dart:25` | Section with a `CatchSectionHeader` title and a vertical `ListView.separated` of items (non-scrollable, meant for embedding in a parent scroll view). |
 | `CatchLoadingIndicator` | `lib/core/widgets/catch_loading_indicator.dart:3` | Canonical `catch.loading_indicator` concept: a centered indeterminate `CircularProgressIndicator` for compact or unknown work where a content-shaped skeleton is not useful. |
-| `CatchStartupLoadingScreen` | `lib/core/widgets/catch_startup_loading_screen.dart:8` | Boot-only startup composition used by the force-update gate. It renders the native-splash background/mark continuation and only mounts `CatchLoadingIndicator` after `CatchMotion.startupIndicatorDelay`, so route and feature loading states must use content-shaped skeletons instead. Its formal contract is `catch.startup_loading_screen`. |
+| `CatchStartupLoadingScreen` | `lib/core/widgets/catch_startup_loading_screen.dart:9` | Boot-only startup composition used by the force-update gate. It renders the role-specific native-splash background/mark continuation—Consumer `Catch_` or Host `Catch Host`—and only mounts `CatchLoadingIndicator` after `CatchMotion.startupIndicatorDelay`, so route and feature loading states must use content-shaped skeletons instead. Its formal contract is `catch.startup_loading_screen`. |
 | `CatchFrameworkErrorView` | `lib/core/widgets/catch_framework_error_view.dart:11` | Branded fallback view used by `ErrorWidget.builder` for Flutter framework/build errors. Shows user-safe recovery copy and keeps debug exception details behind a tokenized `CatchSurface` disclosure in debug builds rather than Material expansion chrome. Keep separate from app-facing error surfaces because the normal widget tree may already be unstable. |
 | `CatchFrameworkErrorDebugDetails` | `lib/core/widgets/catch_framework_error_view.dart:86` | Direct debug disclosure renderer used by `CatchFrameworkErrorView`. Owns collapsed/expanded state, tokenized developer-detail chrome, and mono debug text while keeping framework-crash recovery separate from app-facing error surfaces. |
 | `CatchErrorIcon` | `lib/core/widgets/catch_error_icon.dart:7` | Shared branded error medallion used by framework and app-facing error surfaces. Treat as an atom composed by error surfaces, not a separate product component to review in Widgetbook. |

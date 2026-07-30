@@ -10,6 +10,8 @@
   },
   "generated": [
     "assets/branding/catch_hosts_icon.png",
+    "assets/branding/catch_host_splash_mark_light.png",
+    "assets/branding/catch_host_splash_mark_dark.png",
     "assets/branding/generated/catch_icon_dev.png",
     "assets/branding/generated/catch_icon_staging.png",
     "assets/branding/generated/catch_icon_host_dev.png",
@@ -44,6 +46,19 @@
     "apps/consumer/ios/Runner/Assets.xcassets/AppIcon.appiconset",
     "apps/consumer/ios/Runner/Assets.xcassets/AppIcon-dev.appiconset",
     "apps/consumer/ios/Runner/Assets.xcassets/AppIcon-staging.appiconset",
-    "apps/consumer/ios/Runner/Base.lproj/LaunchScreen.storyboard"
+    "apps/consumer/ios/Runner/Base.lproj/LaunchScreen.storyboard",
+    "apps/host/android/app/src/hostDev/res/**/ic_launcher.png",
+    "apps/host/android/app/src/hostDev/res/**/ic_launcher_round.png",
+    "apps/host/android/app/src/hostStaging/res/**/ic_launcher.png",
+    "apps/host/android/app/src/hostStaging/res/**/ic_launcher_round.png",
+    "apps/host/android/app/src/hostProd/res/**/ic_launcher.png",
+    "apps/host/android/app/src/hostProd/res/**/ic_launcher_round.png",
+    "apps/host/android/app/src/main/res/**/splash.png",
+    "apps/host/android/app/src/main/res/**/android12splash.png",
+    "apps/host/ios/Runner/Assets.xcassets/AppIcon-host-dev.appiconset",
+    "apps/host/ios/Runner/Assets.xcassets/AppIcon-host-staging.appiconset",
+    "apps/host/ios/Runner/Assets.xcassets/AppIcon-host-prod.appiconset",
+    "apps/host/ios/Runner/Assets.xcassets/LaunchImage.imageset",
+    "apps/host/ios/Runner/Base.lproj/LaunchScreen.storyboard"
   ]
 }

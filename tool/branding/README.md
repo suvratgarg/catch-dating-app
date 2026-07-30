@@ -13,7 +13,9 @@ dart run tool/branding/generate_native_brand_assets.dart
 `generate_catch_icon.swift` renders the consumer single-line `Catch_` launcher
 and splash mark from the bundled Archivo variable face at explicit `wght: 600`
 and `wdth: 78` axes. The orange `_` is a glyph in the same baseline lockup, not
-a separately stacked bar. The generator also renders the unchanged host lockup:
+a separately stacked bar. The generator renders the singular `Catch Host`
+launcher, logo, and light/dark splash marks from those same explicit Archivo
+axes; it must never fall back to a platform system font:
 
 ```bash
 swift tool/branding/generate_catch_icon.swift
@@ -26,6 +28,8 @@ It regenerates:
 - `assets/branding/catch_icon_round.png`
 - `assets/branding/catch_splash_mark_light.png`
 - `assets/branding/catch_splash_mark_dark.png`
+- `assets/branding/catch_host_splash_mark_light.png`
+- `assets/branding/catch_host_splash_mark_dark.png`
 - `assets/branding/catch_hosts_logo.png`
 - `assets/branding/catch_hosts_icon.png`
 - Android production round launcher icon resources
@@ -50,18 +54,22 @@ It regenerates:
   launcher resources
 - the Consumer-only iOS launch-screen constraints that place the generated
   `Catch_` alpha bounds at the Welcome reel's responsive `Catch` anchor
+- the Host iOS/Android centered launch assets and Host iOS launch-screen
+  storyboard
 - `tool/branding/native_branding.generated.json`
 
 Consumer production uses `assets/branding/catch_icon.png`; the native-brand
 generator projects it into the default Android/iOS catalogs in
 `apps/consumer` and projects its ribboned variants into the dev/staging
 catalogs.
-Host production uses the two-line Catch Hosts icon as its base, through the
+Host production uses the two-line `Catch Host` icon as its base, through the
 generated `AppIcon-host-prod` catalogs and Android `hostProd` launcher
-resources. Dev and staging flavors use diagonal corner ribbons, so internal
-builds stay visually distinct without covering the consumer or host wordmarks.
+resources. Host native and Flutter startup frames use the separate centered
+`Catch Host` light/dark splash marks and never mount the Consumer Welcome reel.
+Dev and staging flavors use diagonal corner ribbons, so internal builds stay
+visually distinct without covering the consumer or host wordmarks.
 
 `flutter_native_splash:create` owns the base launch-screen assets and may
 replace the storyboard. Run `generate_native_brand_assets.dart` after it so the
-Consumer-only responsive launch geometry is reapplied from source. Host launch
-geometry is deliberately unchanged.
+Consumer responsive launch geometry and the Host-specific centered
+storyboard/assets are reapplied from source.

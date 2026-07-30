@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -10,8 +11,21 @@ class CatchStartupLoadingScreen extends StatefulWidget {
 
   static const lightIconAsset = 'assets/branding/catch_splash_mark_light.png';
   static const darkIconAsset = 'assets/branding/catch_splash_mark_dark.png';
+  static const hostLightIconAsset =
+      'assets/branding/catch_host_splash_mark_light.png';
+  static const hostDarkIconAsset =
+      'assets/branding/catch_host_splash_mark_dark.png';
 
-  static String iconAssetForBrightness(Brightness brightness) {
+  static String iconAssetForBrightness(
+    Brightness brightness, {
+    AppRole? appRole,
+  }) {
+    final resolvedRole = appRole ?? AppConfig.appRole;
+    if (resolvedRole == AppRole.host) {
+      return brightness == Brightness.dark
+          ? hostDarkIconAsset
+          : hostLightIconAsset;
+    }
     return brightness == Brightness.dark ? darkIconAsset : lightIconAsset;
   }
 
@@ -59,9 +73,11 @@ class _CatchStartupLoadingScreenState extends State<CatchStartupLoadingScreen> {
                 iconAsset,
                 width: CatchLayout.startupLogoExtent,
                 height: CatchLayout.startupLogoExtent,
-                semanticLabel: context
-                    .l10n
-                    .coreCatchStartupLoadingScreenSemanticlabelCatch,
+                semanticLabel: AppConfig.appRole == AppRole.host
+                    ? context.l10n.appTitleHost
+                    : context
+                          .l10n
+                          .coreCatchStartupLoadingScreenSemanticlabelCatch,
               ),
             ),
             Center(

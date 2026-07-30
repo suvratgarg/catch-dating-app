@@ -11,6 +11,8 @@ private let squarePreviewURL = root.appendingPathComponent("assets/branding/catc
 private let roundIconURL = root.appendingPathComponent("assets/branding/catch_icon_round.png")
 private let splashMarkLightURL = root.appendingPathComponent("assets/branding/catch_splash_mark_light.png")
 private let splashMarkDarkURL = root.appendingPathComponent("assets/branding/catch_splash_mark_dark.png")
+private let hostSplashMarkLightURL = root.appendingPathComponent("assets/branding/catch_host_splash_mark_light.png")
+private let hostSplashMarkDarkURL = root.appendingPathComponent("assets/branding/catch_host_splash_mark_dark.png")
 private let hostLogoURL = root.appendingPathComponent("assets/branding/catch_hosts_logo.png")
 private let hostIconURL = root.appendingPathComponent("assets/branding/catch_hosts_icon.png")
 
@@ -22,6 +24,7 @@ private let roundBackground = NSColor(hex: 0xF4F4F1)
 private let roundInk = NSColor(hex: 0x16140F)
 private let roundLine = NSColor(hex: 0xD6D1C7).withAlphaComponent(0.55)
 private let blank = NSColor(hex: 0xD85A3C)
+private let hostLightSubInk = NSColor(hex: 0x544F47)
 private let hostSubInk = NSColor(hex: 0xBAB2A7)
 private let archivoWidth: CGFloat = 78
 private let archivoWeight: CGFloat = 600
@@ -51,6 +54,20 @@ writePNG(splashMarkLight, to: splashMarkLightURL)
 
 let splashMarkDark = renderSplashMark(ink: squareInk, size: iconSize)
 writePNG(splashMarkDark, to: splashMarkDarkURL)
+
+let hostSplashMarkLight = renderHostSplashMark(
+  catchInk: roundInk,
+  hostInk: hostLightSubInk,
+  size: iconSize
+)
+writePNG(hostSplashMarkLight, to: hostSplashMarkLightURL)
+
+let hostSplashMarkDark = renderHostSplashMark(
+  catchInk: squareInk,
+  hostInk: hostSubInk,
+  size: iconSize
+)
+writePNG(hostSplashMarkDark, to: hostSplashMarkDarkURL)
 
 let hostLogo = renderHostLogo(size: hostLogoSize)
 writePNG(hostLogo, to: hostLogoURL)
@@ -129,6 +146,45 @@ private func renderSplashMark(ink: NSColor, size: Int) -> NSBitmapImageRep {
   return bitmap
 }
 
+private func renderHostSplashMark(
+  catchInk: NSColor,
+  hostInk: NSColor,
+  size: Int
+) -> NSBitmapImageRep {
+  let bitmap = makeBitmap(size: size)
+  let context = NSGraphicsContext(bitmapImageRep: bitmap)!
+  NSGraphicsContext.saveGraphicsState()
+  NSGraphicsContext.current = context
+  defer {
+    NSGraphicsContext.restoreGraphicsState()
+  }
+
+  NSColor.clear.setFill()
+  NSRect(x: 0, y: 0, width: size, height: size).fill()
+
+  let canvas = CGFloat(size)
+  let font = hostFont(size: canvas * 0.175)
+  let catchText = NSAttributedString(
+    string: "Catch",
+    attributes: hostTextAttributes(font: font, color: catchInk)
+  )
+  let hostText = NSAttributedString(
+    string: "Host",
+    attributes: hostTextAttributes(font: font, color: hostInk)
+  )
+  let catchSize = catchText.size()
+  let hostSize = hostText.size()
+  let gap = canvas * 0.035
+  let totalWidth = catchSize.width + gap + hostSize.width
+  let x = (canvas - totalWidth) / 2
+  let y = (canvas - max(catchSize.height, hostSize.height)) / 2
+
+  catchText.draw(at: NSPoint(x: x, y: y))
+  hostText.draw(at: NSPoint(x: x + catchSize.width + gap, y: y))
+
+  return bitmap
+}
+
 private func drawWordmark(ink: NSColor, size: Int) {
   let canvas = CGFloat(size)
   let fontSize = canvas * 0.258
@@ -186,14 +242,14 @@ private func renderHostLogo(size: NSSize) -> NSBitmapImageRep {
   NSColor.clear.setFill()
   NSRect(origin: .zero, size: size).fill()
 
-  let fontSize = size.height * 0.58
+  let fontSize = size.height * 0.70
   let font = hostFont(size: fontSize)
   let catchText = NSAttributedString(
     string: "Catch",
     attributes: hostTextAttributes(font: font, color: squareInk)
   )
   let hostText = NSAttributedString(
-    string: "Hosts",
+    string: "Host",
     attributes: hostTextAttributes(font: font, color: hostSubInk)
   )
   let catchSize = catchText.size()
@@ -222,14 +278,14 @@ private func renderHostIcon(size: Int) -> NSBitmapImageRep {
   squareBackground.setFill()
   NSRect(x: 0, y: 0, width: size, height: size).fill()
 
-  let fontSize = canvas * 0.248
+  let fontSize = canvas * 0.29
   let font = hostFont(size: fontSize)
   let catchText = NSAttributedString(
     string: "Catch",
     attributes: hostTextAttributes(font: font, color: squareInk)
   )
   let hostText = NSAttributedString(
-    string: "Hosts",
+    string: "Host",
     attributes: hostTextAttributes(font: font, color: hostSubInk)
   )
   let catchSize = catchText.size()
@@ -245,11 +301,7 @@ private func renderHostIcon(size: Int) -> NSBitmapImageRep {
 }
 
 private func hostFont(size: CGFloat) -> NSFont {
-  NSFont(name: "Archivo-Bold", size: size)
-    ?? NSFont(name: "ArchivoRoman-Bold", size: size)
-    ?? NSFont(name: "Archivo-SemiBold", size: size)
-    ?? NSFont(name: "ArchivoRoman-SemiBold", size: size)
-    ?? NSFont.systemFont(ofSize: size, weight: .bold)
+  consumerWordmarkFont(size: size)
 }
 
 private func hostTextAttributes(font: NSFont, color: NSColor) -> [NSAttributedString.Key: Any] {

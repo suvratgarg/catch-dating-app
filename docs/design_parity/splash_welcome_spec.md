@@ -1,6 +1,6 @@
 ---
 doc_id: splash_welcome_spec
-version: 1.2.0
+version: 1.3.0
 updated: 2026-07-30
 owner: design_parity_review
 status: implemented
@@ -14,11 +14,13 @@ status: implemented
 > startup screen, and welcome reel parity. Part 5 now runs the existing reel as
 > a Consumer-only cold-start experience while critical initialization proceeds
 > behind it. The Consumer mark is the single-line `Catch_` lockup, rendered
-> from Archivo at explicit `wght: 600` / `wdth: 78` axes. Host retains the
-> static boot flow and its existing identity. Part 6 gives the Consumer's first
-> Flutter frame and reel one responsive focus slot, a literal `Catch ` space,
+> from Archivo at explicit `wght: 600` / `wdth: 78` axes. Part 6 gives the
+> Consumer's first Flutter frame and reel one responsive focus slot, a literal
+> `Catch ` space,
 > measured below-glyph underline geometry, and deterministic `the sunset 5K`
-> landing across supported phone sizes.
+> landing across supported phone sizes. Part 7 gives the separate Host product
+> its own singular `Catch Host` launcher and static splash identity in those
+> same explicit Archivo axes, with no reel and direct auth-aware routing.
 
 Repo: `/Users/suvratgarg/Development/catch-dating-app/catch_dating_app`
 Design SoT: `~/Downloads/Catch Design System (2)/splash-welcome-handoff/`
@@ -253,6 +255,26 @@ its exact fixed focus slot begins with the first Flutter-owned Consumer frame.
 The reel layout itself must remain correct on both platforms at every supported
 device size.
 
+## Part 7 — Host static launch identity `[codex]`
+
+The installable Host app has a distinct static launch contract:
+
+1. The launcher reads `Catch Host`, not `Catch Hosts`, in Archivo at explicit
+   `wght: 600` / `wdth: 78`. The generator must fail closed if those variable
+   axes cannot be applied; a system-font fallback is forbidden.
+2. Host light/dark splash masters are transparent, centered `Catch Host`
+   lockups generated separately from the opaque two-line launcher icon.
+3. `generate_native_brand_assets.dart` projects the Host launcher variants into
+   the installable Host iOS/Android target and restores the Host-centered iOS
+   storyboard plus light/dark platform splash drawables after any
+   `flutter_native_splash:create` run.
+4. `CatchStartupLoadingScreen` resolves the Host mark by `AppRole`, so the
+   force-update gate cannot flash the Consumer `Catch_` identity.
+5. Host never mounts `CatchConsumerBootstrap` or the Welcome reel. Its static
+   native splash remains preserved through initialization and the force-update
+   gate, then auth routing sends a signed-out user to Login and a signed-in
+   user to Host Home.
+
 ## Accepted Drift
 
 - `SPLASH-WELCOME-DEBT-001` (accepted 2026-07-06): the handoff's
@@ -282,6 +304,8 @@ device size.
 | Part 6 fixed focus lockup | aligned | `WelcomeFocusLockup` owns the single-baseline `Catch ${phrase}.` sentence and measured phrase-only underline; `ReelBand` hides the moving focus row while `WelcomeScene` paints the fixed overlay |
 | Part 6 static/reel anchor and responsive matrix | aligned | `CatchConsumerBootScreen` and `WelcomeScene` share `CatchLayout` anchor helpers; `test/core/consumer_bootstrap_test.dart` proves exact handoff coordinates and `test/onboarding/welcome_reel_handoff_test.dart` covers intermediate motion, 320–430pt widths, safe areas, and enlarged text |
 | Part 6 Consumer iOS native anchor | aligned | `tool/branding/generate_native_brand_assets.dart` owns the Consumer-only LaunchScreen constraints; the generated storyboard aligns the mark's alpha bounds to the same reference/safe-area/max-width equations without changing Host |
+| Part 7 Host launcher and splash identity | aligned | `tool/branding/generate_catch_icon.swift` applies the locked Archivo axes to singular `Catch Host`; `generate_native_brand_assets.dart` projects Host icon/splash assets into `apps/host`; `test/tooling/host_native_branding_test.dart` rejects fallback fonts, plural naming, clipped marks, and missing installable-target outputs |
+| Part 7 Host static routing handoff | aligned | `CatchStartupLoadingScreen` selects Host light/dark marks by role; `test/core/host_startup_branding_test.dart`, `test/core/consumer_bootstrap_test.dart`, and `test/routing/router_redirect_test.dart` prove no Host reel and direct Login/Home routing |
 
 ## Acceptance
 
@@ -290,7 +314,8 @@ device size.
   reel without a `Catch` position change → routed app, with initialization
   concurrent and routing hidden until stable. Android keeps the platform-owned
   centered OS splash and adopts the fixed anchor on the first Flutter frame.
-- Host cold launch remains OS splash → force-update gate → app content.
+- Host cold launch is centered static `Catch Host` → force-update gate →
+  Login or Host Home from auth state, with no Welcome reel.
 - Force-update gate keeps working (update-required and error branches
   still render after `remove()`).
 - Welcome reel matches the prototype: condensed cut, geometry anchors,

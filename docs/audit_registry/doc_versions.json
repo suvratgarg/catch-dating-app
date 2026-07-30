@@ -254,17 +254,17 @@
   },
   "widget_catalog": {
     "path": "docs/widget_catalog.md",
-    "version": "2.5.664",
+    "version": "2.5.665",
     "updated": "2026-07-30",
     "status": "active",
     "read_policy": "Use as widget inventory and update it when widget APIs, ownership models, sliver/tab structures, reusable design-system roles, action-effect/state adapters, or provider-free section boundaries materially change."
   },
   "splash_welcome_spec": {
     "path": "docs/design_parity/splash_welcome_spec.md",
-    "version": "1.2.0",
+    "version": "1.3.0",
     "updated": "2026-07-30",
     "status": "implemented",
-    "read_policy": "Use before changing native splash assets, Consumer boot handoff, Welcome reel motion, fixed focus geometry, responsive reel layout, or the Consumer-only initialization gate."
+    "read_policy": "Use before changing Consumer or Host native launcher/splash assets, Consumer boot handoff, Welcome reel motion, fixed focus geometry, responsive reel layout, the Consumer-only initialization gate, or Host static auth-aware launch routing."
   },
   "host_tooling_consolidation_tracker": {
     "path": "docs/host_tooling_consolidation_tracker.md",
@@ -289,7 +289,7 @@
   },
   "release_operations": {
     "path": "docs/release_operations.md",
-    "version": "1.14.1",
+    "version": "1.14.2",
     "updated": "2026-07-30",
     "status": "active",
     "read_policy": "Read before changing CI workflows, Firebase deploy ordering, release gates, environment setup, store readiness, app-shell integration coverage, host TestFlight setup, or release evidence."
