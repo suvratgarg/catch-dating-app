@@ -578,7 +578,7 @@ TextScaler _welcomeReelTextScaler(BuildContext context) {
 class ReelBand extends StatelessWidget {
   const ReelBand({
     super.key,
-    required this.viewportWidth,
+    this.viewportWidth = CatchLayout.welcomeReferenceWidth,
     required this.spinValue,
     required this.landingValue,
     required this.landed,

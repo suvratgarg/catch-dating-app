@@ -82,12 +82,7 @@ void main() {
           child: SizedBox(
             width: 320,
             height: 540,
-            child: ReelBand(
-              viewportWidth: 320,
-              spinValue: 0,
-              landingValue: 0,
-              landed: false,
-            ),
+            child: ReelBand(spinValue: 0, landingValue: 0, landed: false),
           ),
         ),
       );
