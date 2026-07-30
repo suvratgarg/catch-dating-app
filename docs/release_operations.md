@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 1.13.0
-updated: 2026-07-27
+version: 1.14.0
+updated: 2026-07-30
 owner: recursive_audit_loop
 status: active
 ---
@@ -170,7 +170,7 @@ The current workflows are:
 | `.github/workflows/marketing-website.yml` | Validates the marketing build and Playwright/axe Storybook accessibility contract, deploys the production Firebase Hosting `marketing` target, then requires a unique unknown production URL to return HTTP 404. |
 | `.github/workflows/admin-website.yml` | Validates and deploys the production Firebase Hosting `admin` target after matching changes land on `main`. |
 | `.github/workflows/release-readiness.yml` | Manual staging/prod release gate. |
-| `.github/workflows/mobile-internal-release.yml` | Impact-routed Consumer/Host signed artifact matrix; explicit manual dispatch owns TestFlight/Play mutation. |
+| `.github/workflows/mobile-internal-release.yml` | Impact-routed Consumer/Host signed artifact matrix; affected Consumer `main` pushes automatically upload to TestFlight, while Host TestFlight and all Play mutations remain explicit manual dispatches. |
 | `.github/workflows/observability-evidence.yml` | Manual Crashlytics and Analytics evidence capture. |
 | `.github/workflows/website-production-observability.yml` | Scheduled and manual production website status, canonical-metadata, and launch-content probes. |
 
@@ -433,8 +433,10 @@ Mobile artifacts remain separate from backend deployment. App-impacting pushes
 to `main` start `.github/workflows/mobile-internal-release.yml` only for the
 affected Consumer/Host roles. The approval-free, main-only `prod-mobile`
 environment supplies signing credentials and produces verified IPAs/AABs plus
-package-policy receipts. A push never uploads to TestFlight or Play. Store
-mutation requires a manual dispatch, `upload_to_internal=true`, and a recorded
+package-policy receipts. When the affected matrix includes Consumer, the
+Consumer iOS lane automatically uploads its verified IPA to TestFlight and
+waits for the exact build to reach `VALID`. Host TestFlight and every Play
+mutation require a manual dispatch, `upload_to_internal=true`, and a recorded
 release reason; Play additionally requires `GOOGLE_PLAY_UPLOAD_ENABLED=true`
 and remains restricted to the `qa` internal track.
 
@@ -1128,12 +1130,15 @@ workflow and two platform channels:
 
 Role-impacting `main` pushes create only the affected role matrix on separate
 runners under the approval-free `prod-mobile` environment. They build, sign,
-verify, size-audit, and retain artifacts without editing a store. A
-workflow-level non-cancelling concurrency group prevents overlapping signed
-artifact or store work, and both the workflow and environment reject any ref
-other than `refs/heads/main`. Manual dispatch can select one role/platform,
-build without uploading, or explicitly upload with a recorded reason. Public
-App Store or Play production promotion is never automatic in this workflow.
+verify, size-audit, and retain artifacts. The Consumer target additionally
+declares `release.automaticTestFlightOnMain=true`, so an affected Consumer iOS
+lane uploads the verified IPA and waits for App Store processing. Host keeps
+that target flag false and remains artifact-only on push. A workflow-level
+non-cancelling concurrency group prevents overlapping signed artifact or store
+work, and both the workflow and environment reject any ref other than
+`refs/heads/main`. Manual dispatch can select one role/platform, build without
+uploading, or explicitly upload with a recorded reason. Public App Store or
+Play production promotion is never automatic in this workflow.
 
 The GitHub workflow resolves scheme, configuration, bundle id, and entrypoint
 from the six-target manifest, then runs both platform gates before archiving:
@@ -1174,8 +1179,10 @@ Before archive, the workflow checks the proposed Apple build against the latest
 200 App Store Connect builds for that app. Canonical GitHub iOS releases use an
 18-digit `<UTC YYYYMMDD><8-digit GitHub run><2-digit attempt>` number, which is
 above the legacy date/build namespace and monotonic under the serialized
-workflow. After upload, the job waits for the exact build to reach App Store
-Connect `VALID` and persists a processing receipt.
+workflow. Whenever the resolved target policy requests upload—automatically for
+Consumer on an affected `main` push or explicitly through manual dispatch—the
+job waits for the exact build to reach App Store Connect `VALID` and persists a
+processing receipt.
 
 Android uses `100000 + workflow run number * 100 + attempt`; two reserved retry
 digits prevent adjacent-run collisions. The verifier uses checksum-pinned
@@ -1188,8 +1195,16 @@ debuggable, version-name, and version-code identity before any Play edit.
 Both roles have checked local/native composition, Firebase identity, distinct
 store identity, App Store Connect records, and manifest-resolved GitHub
 archive/upload paths. The workflow now proves both upload and App Store
-processing, but not TestFlight group assignment, install, or launch. Close
-`APP-TARGET-IOS-GITHUB-CUTOVER-001` only after:
+processing, but not TestFlight group assignment, install, or launch.
+`APP-TARGET-IOS-GITHUB-CUTOVER-001` remains open until the intended groups,
+installation, and launch proof are recorded.
+
+Consumer manual recovery run `30523657375` uploaded commit
+`1cf9739e858e3e458cf1bf70e10d0d496938defe` after PR `#133`; build
+`202607300000005101` reached App Store Connect `VALID`. The release-policy
+correction that follows this receipt restores automatic Consumer TestFlight
+upload for future role-impacting `main` pushes. This receipt proves processing,
+not tester-group assignment or installation.
 
 The pre-cutover Consumer dispatch `29161431098` successfully signed and archived
 `com.catchdates.app`, then stopped before export because Xcode's archive
@@ -1338,7 +1353,9 @@ check will reject any later build number that is not above the resulting build.
 ## GitHub-Only Migration Status
 
 The repo migration is implemented: one Actions workflow owns both roles,
-role-impacted signed iOS/Android artifacts, and manual guarded internal uploads.
+role-impacted signed iOS/Android artifacts, automatic Consumer TestFlight
+uploads on affected `main` pushes, and guarded manual Host TestFlight/Play
+uploads.
 
 iOS upload, processing, and legacy-owner retirement are externally complete.
 `APP-TARGET-IOS-GITHUB-CUTOVER-001` remains open only for TestFlight group plus
@@ -1370,6 +1387,8 @@ Already confirmed outside repository checks:
 - Consumer and Host GitHub build `202607110000000301` reached App Store Connect
   `VALID` from run `29168074271`; receipt-gated run `29168662623` then disabled
   both legacy Xcode Cloud workflows.
+- Consumer GitHub build `202607300000005101` from commit `1cf9739e` reached App
+  Store Connect `VALID` in recovery run `30523657375`.
 
 These still require human confirmation outside repository checks:
 

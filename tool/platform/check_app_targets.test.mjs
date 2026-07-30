@@ -171,14 +171,15 @@ function unifiedReleaseManifest() {
   manifest.releasePolicy = {
     owner: "github-actions",
     workflow: ".github/workflows/mobile-internal-release.yml",
-    trigger: "role-impacted-main-push-for-artifacts",
+    trigger: "role-impacted-main-push-for-artifacts-and-consumer-testflight",
     environment: "prod-mobile",
-    approvalMode: "manual-dispatch-for-store-mutation",
+    approvalMode: "consumer-testflight-automatic-otherwise-manual",
     branchPolicy: "main-only",
     roles: ["consumer", "host"],
     ios: {
       channel: "testflight",
-      uploadMode: "manual-dispatch",
+      uploadMode: "automatic-selected-roles-on-main-or-manual-dispatch",
+      automaticRoles: ["consumer"],
       signingStyle: "automatic",
       developmentIdentitySource: "reusable-ci-p12",
       distributionSigningStage: "export",
@@ -195,10 +196,14 @@ function unifiedReleaseManifest() {
     },
   };
   for (const target of manifest.targets.filter((candidate) => candidate.environment === "prod")) {
+    const automaticTestFlightOnMain = target.role === "consumer";
     target.release = {
       owner: "github-actions",
-      githubMode: "automatic-artifact-manual-upload",
+      githubMode: automaticTestFlightOnMain
+        ? "automatic-artifact-automatic-testflight"
+        : "automatic-artifact-manual-upload",
       githubWorkflow: ".github/workflows/mobile-internal-release.yml",
+      automaticTestFlightOnMain,
       googlePlayPackageName: target.android.applicationId,
       legacyXcodeCloudWorkflow: `${target.role} legacy`,
     };
@@ -222,9 +227,12 @@ jobs:
     run: |
       echo refs/heads/main
       roles='["consumer","host"]'
+      automatic_testflight_on_main="true"
       if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
-        upload_to_testflight="false"
+        upload_to_testflight="$automatic_testflight_on_main"
       fi
+      echo "release.automaticTestFlightOnMain"
+      echo "upload_to_testflight=$upload_to_testflight" >> "$GITHUB_OUTPUT"
   prod-ios:
     environment: prod-mobile
     strategy:
@@ -251,7 +259,7 @@ jobs:
           openssl x509 -in "$certificate_pem_path" -checkend 2592000 -noout
           security find-identity -v -p codesigning "$keychain_path"
       - name: Upload to TestFlight
-        if: \${{ github.event_name == 'workflow_dispatch' && inputs.upload_to_internal }}
+        if: \${{ steps.release-target.outputs.upload_to_testflight == 'true' }}
       - run: xcodebuild \\
           -workspace "$APP_PROJECT_ROOT/ios/Runner.xcworkspace" \\
           archive
@@ -271,6 +279,9 @@ jobs:
           --api-key "$ASC_KEY_ID" \\
           --api-issuer "$ASC_ISSUER_ID"
       - run: node tool/platform/verify_app_store_build.mjs
+        if: \${{ steps.release-target.outputs.upload_to_testflight == 'true' }}
+      - name: Upload TestFlight processing receipt
+        if: \${{ steps.release-target.outputs.upload_to_testflight == 'true' }}
       - name: Remove ephemeral iOS signing material
         if: \${{ always() }}
         run: security delete-keychain "$IOS_CI_KEYCHAIN_PATH"
@@ -298,6 +309,29 @@ test("release ownership accepts one GitHub matrix for both roles and platforms",
   const result = validateReleaseOwnership({manifest, workflowSource: unifiedWorkflow});
   assert.deepEqual(result.findings, []);
   assert.equal(result.warnings.length, 2);
+});
+
+test("release ownership rejects disabling Consumer automatic TestFlight upload", () => {
+  const manifest = unifiedReleaseManifest();
+  manifest.targets.find(
+    (target) => target.id === "consumer-prod",
+  ).release.automaticTestFlightOnMain = false;
+  const workflowSource = unifiedWorkflow.replace(
+    'upload_to_testflight="$automatic_testflight_on_main"',
+    'upload_to_testflight="false"',
+  );
+
+  const result = validateReleaseOwnership({manifest, workflowSource});
+  assert.ok(
+    result.findings.some((finding) =>
+      finding.includes("consumer-prod: automaticTestFlightOnMain must be true"),
+    ),
+  );
+  assert.ok(
+    result.findings.some((finding) =>
+      finding.includes("role-impacted main upload resolution"),
+    ),
+  );
 });
 
 test("release ownership rejects split or incomplete workflow ownership", () => {
