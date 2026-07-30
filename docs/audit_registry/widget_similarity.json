@@ -98,21 +98,21 @@
     },
     {
       "hammingBucket": "55-59",
-      "pairs": 2907,
+      "pairs": 2908,
       "jaccardMin": 0,
       "jaccardMean": 0.0529,
       "jaccardMax": 0.2813
     },
     {
       "hammingBucket": "60-64",
-      "pairs": 3192,
+      "pairs": 3190,
       "jaccardMin": 0,
       "jaccardMean": 0.0325,
       "jaccardMax": 0.2381
     },
     {
       "hammingBucket": "65-69",
-      "pairs": 1991,
+      "pairs": 1992,
       "jaccardMin": 0,
       "jaccardMean": 0.0214,
       "jaccardMax": 0.2
@@ -12843,11 +12843,11 @@
       "name": "WelcomeFocusLockup",
       "file": "lib/onboarding/presentation/pages/welcome_page.dart",
       "role": "feature-adapter",
-      "shapeHash": "f0194c1890e2acb52102e75ea3c6a515d2c7936e3e7177b3572c73b77573ebd6",
-      "coarseShapeHash": "f8103f011fa5b3ded2d68466869835b32fdbd5f570d3e0b72d4d98e788fc3561",
-      "simhash128": "745787516e938b79a54428199ecb9075",
-      "tokenStreamLength": 92,
-      "coarseTokenStreamLength": 92,
+      "shapeHash": "01f64bf4c9f7105fe2eb1a66f2e4feb8940b5790a161e57d5f77c9279c81d01c",
+      "coarseShapeHash": "7f3bef077439c4ff55253ea9e07350bcf073444146810e63d92e49d7e90cb857",
+      "simhash128": "7457a771eeb3cb79af15783996eb90f7",
+      "tokenStreamLength": 90,
+      "coarseTokenStreamLength": 90,
       "usageCountRaw": 5,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
