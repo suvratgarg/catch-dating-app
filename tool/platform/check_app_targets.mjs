@@ -168,16 +168,24 @@ export function validateReleaseOwnership({manifest, workflowSource}) {
   for (const [label, actual, expected] of [
     ["release owner", policy.owner, "github-actions"],
     ["release workflow", policy.workflow, workflow],
-    ["release trigger", policy.trigger, "role-impacted-main-push-for-artifacts"],
+    [
+      "release trigger",
+      policy.trigger,
+      "role-impacted-main-push-for-artifacts-and-consumer-testflight",
+    ],
     ["release environment", policy.environment, "prod-mobile"],
     [
       "release approval mode",
       policy.approvalMode,
-      "manual-dispatch-for-store-mutation",
+      "consumer-testflight-automatic-otherwise-manual",
     ],
     ["release branch policy", policy.branchPolicy, "main-only"],
     ["iOS channel", policy.ios?.channel, "testflight"],
-    ["iOS upload mode", policy.ios?.uploadMode, "manual-dispatch"],
+    [
+      "iOS upload mode",
+      policy.ios?.uploadMode,
+      "automatic-selected-roles-on-main-or-manual-dispatch",
+    ],
     ["iOS signing style", policy.ios?.signingStyle, "automatic"],
     [
       "iOS development identity source",
@@ -201,18 +209,30 @@ export function validateReleaseOwnership({manifest, workflowSource}) {
   if (JSON.stringify(policy.roles) !== JSON.stringify(expectedRoles)) {
     findings.push("release policy roles must be [consumer, host]");
   }
+  if (JSON.stringify(policy.ios?.automaticRoles) !== JSON.stringify(["consumer"])) {
+    findings.push("iOS automatic TestFlight roles must be [consumer]");
+  }
   if (!/^[A-F0-9]{64}$/u.test(policy.android?.uploadCertificateSha256 ?? "")) {
     findings.push("Android upload certificate SHA-256 must be a checked 64-digit hex value");
   }
 
   const prodTargets = (manifest.targets ?? []).filter((target) => target.environment === "prod");
   for (const target of prodTargets) {
+    const automaticTestFlightOnMain = target.role === "consumer";
+    const expectedGithubMode = automaticTestFlightOnMain
+      ? "automatic-artifact-automatic-testflight"
+      : "automatic-artifact-manual-upload";
     if (target.release?.owner !== "github-actions") {
       findings.push(`${target.id}: release owner must be github-actions`);
     }
-    if (target.release?.githubMode !== "automatic-artifact-manual-upload") {
+    if (target.release?.githubMode !== expectedGithubMode) {
       findings.push(
-        `${target.id}: githubMode must be automatic-artifact-manual-upload`,
+        `${target.id}: githubMode must be ${expectedGithubMode}`,
+      );
+    }
+    if (target.release?.automaticTestFlightOnMain !== automaticTestFlightOnMain) {
+      findings.push(
+        `${target.id}: automaticTestFlightOnMain must be ${automaticTestFlightOnMain}`,
       );
     }
     if (target.release?.githubWorkflow !== workflow) {
@@ -286,12 +306,20 @@ export function validateReleaseOwnership({manifest, workflowSource}) {
     ],
     ["TestFlight upload", /Upload to TestFlight/u],
     [
-      "push builds artifacts without TestFlight mutation",
-      /if \[\[ "\$GITHUB_EVENT_NAME" == "push" \]\]; then\s*upload_to_testflight="false"/u,
+      "target-configured automatic TestFlight policy",
+      /release\.automaticTestFlightOnMain/u,
     ],
     [
-      "manual TestFlight upload guard",
-      /Upload to TestFlight[\s\S]*?if:\s*\$\{\{\s*github\.event_name == 'workflow_dispatch' && inputs\.upload_to_internal\s*\}\}/u,
+      "role-impacted main upload resolution",
+      /if \[\[ "\$GITHUB_EVENT_NAME" == "push" \]\]; then\s*upload_to_testflight="\$automatic_testflight_on_main"/u,
+    ],
+    [
+      "resolved TestFlight upload output",
+      /echo "upload_to_testflight=\$upload_to_testflight" >> "\$GITHUB_OUTPUT"/u,
+    ],
+    [
+      "resolved TestFlight upload guard",
+      /Upload to TestFlight[\s\S]*?if:\s*\$\{\{\s*steps\.release-target\.outputs\.upload_to_testflight == 'true'\s*\}\}/u,
     ],
     ["automatic iOS distribution export", /xcodebuild\s*\\\s*\n\s*-exportArchive/u],
     [
@@ -335,6 +363,14 @@ export function validateReleaseOwnership({manifest, workflowSource}) {
   if (/CODE_SIGN_IDENTITY\s*=/u.test(workflowSource)) {
     findings.push(
       "mobile release workflow must defer CODE_SIGN_IDENTITY to Xcode automatic signing",
+    );
+  }
+  const resolvedUploadGuardCount = workflowSource.match(
+    /if:\s*\$\{\{\s*steps\.release-target\.outputs\.upload_to_testflight == 'true'\s*\}\}/gu,
+  )?.length ?? 0;
+  if (resolvedUploadGuardCount !== 3) {
+    findings.push(
+      `mobile release workflow must guard upload, processing, and receipt with the resolved TestFlight policy; found ${resolvedUploadGuardCount} guards`,
     );
   }
   const exportArchiveCount = workflowSource.match(/-exportArchive/gu)?.length ?? 0;

@@ -217,7 +217,8 @@ jobs:
       - name: Validate installable app-target contract
         run: node tool/run.mjs check platform:app-targets platform:app-package-graphs platform:verify-ios-release-identity
 
-      - name: Resolve release target
+      - id: release-target
+        name: Resolve release target
         env:
           APP_ROLE_INPUT: ${{ matrix.app_role }}
           UPLOAD_TO_INTERNAL_INPUT: ${{ inputs.upload_to_internal || 'false' }}
@@ -226,18 +227,22 @@ jobs:
 
           app_role="$APP_ROLE_INPUT"
           upload_to_testflight="$UPLOAD_TO_INTERNAL_INPUT"
-          if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
-            upload_to_testflight="false"
-          fi
 
           target_fields="$(node tool/platform/resolve_app_target.mjs \
             --role "$app_role" \
             --environment prod \
-            --fields id,projectRoot,ios.bundleId,ios.configurations.release,ios.scheme,release.appStoreConnectAppId)"
-          IFS=$'\t' read -r target_id app_project_root expected_bundle_id ios_configuration ios_scheme app_store_connect_app_id <<< "$target_fields"
+            --fields id,projectRoot,ios.bundleId,ios.configurations.release,ios.scheme,release.appStoreConnectAppId,release.automaticTestFlightOnMain)"
+          IFS=$'\t' read -r target_id app_project_root expected_bundle_id ios_configuration ios_scheme app_store_connect_app_id automatic_testflight_on_main <<< "$target_fields"
           if [[ -z "$target_id" || -z "$app_project_root" || -z "$expected_bundle_id" || -z "$ios_configuration" || -z "$ios_scheme" || -z "$app_store_connect_app_id" ]]; then
             echo "Could not resolve complete prod iOS target metadata for role '$app_role'."
             exit 1
+          fi
+          if [[ "$automatic_testflight_on_main" != "true" && "$automatic_testflight_on_main" != "false" ]]; then
+            echo "Prod iOS target '$target_id' must declare release.automaticTestFlightOnMain as true or false."
+            exit 1
+          fi
+          if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
+            upload_to_testflight="$automatic_testflight_on_main"
           fi
           archive_name="${target_id//-/_}"
           export_path="build/ios/export/$target_id"
@@ -263,6 +268,7 @@ jobs:
             echo "FLUTTER_BUILD_NAME=$build_name"
             echo "FLUTTER_BUILD_NUMBER=$build_number"
           } >> "$GITHUB_ENV"
+          echo "upload_to_testflight=$upload_to_testflight" >> "$GITHUB_OUTPUT"
 
       - name: Verify client callable dependencies
         run: |
@@ -539,7 +545,7 @@ jobs:
           retention-days: 14
 
       - name: Upload to TestFlight
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.upload_to_internal }}
+        if: ${{ steps.release-target.outputs.upload_to_testflight == 'true' }}
         run: |
           set -euo pipefail
           /usr/bin/shasum -a 256 --check "build/ios/release-evidence/${APP_ROLE}-ipa.sha256"
@@ -554,7 +560,7 @@ jobs:
             --api-issuer "$ASC_ISSUER_ID"
 
       - name: Verify TestFlight processing
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.upload_to_internal }}
+        if: ${{ steps.release-target.outputs.upload_to_testflight == 'true' }}
         run: |
           node tool/platform/verify_app_store_build.mjs \
             --app-id "$APP_STORE_CONNECT_APP_ID" \
@@ -567,7 +573,7 @@ jobs:
             --receipt "build/ios/release-evidence/${APP_ROLE}-testflight.json"
 
       - name: Upload TestFlight processing receipt
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.upload_to_internal }}
+        if: ${{ steps.release-target.outputs.upload_to_testflight == 'true' }}
         uses: actions/upload-artifact@v6
         with:
           name: catch-ios-${{ matrix.app_role }}-testflight-receipt

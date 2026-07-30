@@ -1,6 +1,6 @@
 {
-  "version": 123,
-  "updated": "2026-07-29",
+  "version": 124,
+  "updated": "2026-07-30",
   "owner": "agent_operating_model",
   "entries": [
     {
@@ -3278,27 +3278,29 @@
     },
     {
       "id": "REG-CI-IMPACT-BOUNDARY-001",
-      "title": "Unrelated monorepo changes trigger full mobile builds or store releases",
+      "title": "CI impact routing uploads unrelated apps or skips Consumer TestFlight",
       "status": "active",
       "applies_to": [
         ".github/workflows/ci.yml",
         ".github/workflows/app-build-matrix.yml",
         ".github/workflows/firebase-dev-deploy.yml",
         ".github/workflows/mobile-internal-release.yml",
+        "tool/app_targets.json",
         "tool/ci/plan_ci.mjs",
+        "tool/platform/check_app_targets.mjs",
         "tool/repository_root_manifest.json"
       ],
-      "symptom": "An Admin, marketing, documentation, backend-validation-only, or generated-schema-binding pull request compiles iOS and Android; a main-branch push produces signed mobile artifacts without affected runtime code, starts a dev Firebase deployment from validation flags alone, or uploads a build to TestFlight or Play without an explicit store-release request.",
+      "symptom": "An Admin, marketing, documentation, backend-validation-only, or generated-schema-binding pull request compiles iOS and Android; a main-branch push produces signed mobile artifacts without affected runtime code, starts a dev Firebase deployment from validation flags alone, skips the affected Consumer TestFlight upload, or automatically mutates Host TestFlight or Play.",
       "guard": {
         "type": "command",
-        "command": "node --test tool/ci/plan_ci.test.mjs && node tool/ci/plan_ci.mjs --paths admin/src/app/App.tsx --json",
-        "guardEvidence": "ordered path ownership selects only affected validation lanes and app roles, generated Dart schema bindings run Flutter validation without platform builds or release roles, backend validation and Firebase deploy authorization use separate outputs, unknown paths fail closed, CI-control changes run the full matrix without authorizing deployment, the stable Required CI aggregate always reports, and store mutation is manual-dispatch-only"
+        "command": "node --test tool/ci/plan_ci.test.mjs tool/platform/check_app_targets.test.mjs && node tool/ci/plan_ci.mjs --paths admin/src/app/App.tsx --json && node tool/platform/check_app_targets.mjs --check",
+        "guardEvidence": "ordered path ownership selects only affected validation lanes and app roles, generated Dart schema bindings run Flutter validation without platform builds or release roles, backend validation and Firebase deploy authorization use separate outputs, unknown paths fail closed, the stable Required CI aggregate always reports, affected Consumer main pushes resolve automatic TestFlight upload through the target manifest, and Host TestFlight plus Play remain manual"
       },
       "owner_docs": [
         "docs/release_operations.md",
         "docs/agent_operating_model.md"
       ],
-      "notes": "Validation impact, backend deployment, and mobile release authorization are separate. Contracts and generated Dart bindings may validate mobile consumers without authorizing platform builds or signed artifacts; CI-control changes may validate backend lanes without deploying them; shared mobile runtime changes select both app roles."
+      "notes": "Validation impact, backend deployment, and mobile release authorization are separate. Contracts and generated Dart bindings may validate mobile consumers without authorizing platform builds or signed artifacts; CI-control changes may validate backend lanes without deploying them; shared mobile runtime changes select both app roles, while only Consumer automatically mutates TestFlight."
     },
     {
       "id": "REG-DOC-INTEGRATION-STATE-001",
