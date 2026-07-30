@@ -978,10 +978,10 @@
       "command": "dart run tool/branding/generate_native_brand_assets.dart",
       "safety": "local-writes-generated",
       "status": "active",
-      "description": "Generates flavor-specific native launcher and splash brand assets from the design context token cache, including the Consumer-only responsive iOS launch-mark geometry.",
+      "description": "Generates flavor-specific native launcher and splash brand assets from the design context token cache, including Consumer responsive iOS launch geometry and Host-specific Archivo icon and centered splash assets.",
       "checks": [
         "dart analyze tool/branding/generate_native_brand_assets.dart",
-        "flutter test test/tooling/consumer_launch_screen_test.dart"
+        "flutter test test/tooling/consumer_launch_screen_test.dart test/tooling/host_native_branding_test.dart test/core/host_startup_branding_test.dart"
       ],
       "role": "generator"
     },

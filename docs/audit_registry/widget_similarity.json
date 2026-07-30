@@ -84,44 +84,44 @@
     },
     {
       "hammingBucket": "45-49",
-      "pairs": 784,
+      "pairs": 783,
       "jaccardMin": 0,
-      "jaccardMean": 0.1451,
+      "jaccardMean": 0.1453,
       "jaccardMax": 0.4706
     },
     {
       "hammingBucket": "50-54",
-      "pairs": 1697,
+      "pairs": 1698,
       "jaccardMin": 0,
       "jaccardMean": 0.0868,
       "jaccardMax": 0.4412
     },
     {
       "hammingBucket": "55-59",
-      "pairs": 2908,
+      "pairs": 2905,
       "jaccardMin": 0,
       "jaccardMean": 0.0529,
       "jaccardMax": 0.2813
     },
     {
       "hammingBucket": "60-64",
-      "pairs": 3190,
+      "pairs": 3193,
       "jaccardMin": 0,
       "jaccardMean": 0.0325,
       "jaccardMax": 0.2381
     },
     {
       "hammingBucket": "65-69",
-      "pairs": 1992,
+      "pairs": 1994,
       "jaccardMin": 0,
-      "jaccardMean": 0.0214,
+      "jaccardMean": 0.0215,
       "jaccardMax": 0.2
     },
     {
       "hammingBucket": "70-74",
-      "pairs": 664,
+      "pairs": 662,
       "jaccardMin": 0,
-      "jaccardMean": 0.013,
+      "jaccardMean": 0.0129,
       "jaccardMax": 0.1124
     },
     {
@@ -3509,11 +3509,11 @@
       "name": "CatchStartupLoadingScreen",
       "file": "lib/core/widgets/catch_startup_loading_screen.dart",
       "role": "composition",
-      "shapeHash": "f3e1efaeba6b1ea7189c56729b7b437e2043318697c562f7bf9f5fd829c00f63",
-      "coarseShapeHash": "45d433d8e440cd19c4181416f4190e597832bb21f07de37658086206ef52348b",
-      "simhash128": "bcd4411498d28ba5aed9f815e69955e2",
-      "tokenStreamLength": 35,
-      "coarseTokenStreamLength": 35,
+      "shapeHash": "ac9844db6ea808e752b852ca0be763d1a4642c601de8da855f62ad43d9da2485",
+      "coarseShapeHash": "6b0d4f252fea623b42a5e99864965d11e3ba0317d92271e264f1ec38b7a93f4f",
+      "simhash128": "b4c0410498d2cb44eec9f815828954a2",
+      "tokenStreamLength": 36,
+      "coarseTokenStreamLength": 36,
       "usageCountRaw": 11,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
@@ -15162,32 +15162,6 @@
     },
     {
       "rank": 38,
-      "a": "CatchStartupLoadingScreen",
-      "b": "PaymentConfirmationLoadingScreen",
-      "jaccard": 0.1404,
-      "containment": 0.25,
-      "score": 0.25,
-      "smallWidgetMultisetJaccard": 0,
-      "hamming": 55,
-      "flags": [
-        "cross-role"
-      ],
-      "detectors": [
-        "name"
-      ],
-      "signals": [],
-      "nameStems": [
-        "LoadingScreen"
-      ],
-      "visualHamming": null,
-      "selectionSources": [
-        "name-family"
-      ],
-      "absorbCandidate": true,
-      "decisionRefs": []
-    },
-    {
-      "rank": 39,
       "a": "CatchFieldCommitButton",
       "b": "CatchFieldRepeatButton",
       "jaccard": 0.119,
@@ -15202,6 +15176,32 @@
       "signals": [],
       "nameStems": [
         "FieldButton"
+      ],
+      "visualHamming": null,
+      "selectionSources": [
+        "name-family"
+      ],
+      "absorbCandidate": true,
+      "decisionRefs": []
+    },
+    {
+      "rank": 39,
+      "a": "CatchStartupLoadingScreen",
+      "b": "PaymentConfirmationLoadingScreen",
+      "jaccard": 0.1379,
+      "containment": 0.2424,
+      "score": 0.2424,
+      "smallWidgetMultisetJaccard": 0,
+      "hamming": 54,
+      "flags": [
+        "cross-role"
+      ],
+      "detectors": [
+        "name"
+      ],
+      "signals": [],
+      "nameStems": [
+        "LoadingScreen"
       ],
       "visualHamming": null,
       "selectionSources": [

@@ -1,5 +1,5 @@
 {
-  "version": 125,
+  "version": 126,
   "updated": "2026-07-30",
   "owner": "agent_operating_model",
   "entries": [
@@ -3937,6 +3937,37 @@
         "docs/widget_catalog.md"
       ],
       "notes": "Keep focus rendering in WelcomeFocusLockup and keep the matching moving ReelRow hidden at focus. Re-run generate_native_brand_assets.dart after flutter_native_splash:create so Consumer iOS keeps its generated native anchor. The OS-owned Android 12 splash remains system-centered; its exact responsive focus slot begins at the first Flutter-owned Consumer frame."
+    },
+    {
+      "id": "REG-HOST-NATIVE-BRANDING-001",
+      "title": "Host launcher or splash falls back to the wrong font or Consumer identity",
+      "status": "active",
+      "applies_to": [
+        "tool/branding/generate_catch_icon.swift",
+        "tool/branding/generate_native_brand_assets.dart",
+        "assets/branding/catch_host_splash_mark_*.png",
+        "assets/branding/catch_hosts_icon.png",
+        "apps/host/android/app/src/**",
+        "apps/host/ios/Runner/Assets.xcassets/**",
+        "apps/host/ios/Runner/Base.lproj/LaunchScreen.storyboard",
+        "lib/core/widgets/catch_startup_loading_screen.dart",
+        "test/core/host_startup_branding_test.dart",
+        "test/tooling/host_native_branding_test.dart",
+        "test/tooling/consumer_launch_screen_test.dart"
+      ],
+      "symptom": "The Host home-screen icon uses a platform bold fallback, reads Catch Hosts, the native splash shows the Consumer Catch_ mark, the force-update gate flashes a different product identity, or Host mounts the Consumer Welcome reel before Login/Home.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test test/tooling/host_native_branding_test.dart test/tooling/consumer_launch_screen_test.dart test/core/host_startup_branding_test.dart test/core/consumer_bootstrap_test.dart test/routing/router_redirect_test.dart",
+        "guardEvidence": "Host wordmarks use the locked Archivo axes and singular product name"
+      },
+      "owner_docs": [
+        "docs/design_language.md",
+        "docs/design_parity/splash_welcome_spec.md",
+        "docs/release_operations.md",
+        "docs/widget_catalog.md"
+      ],
+      "notes": "Generate the Swift masters first, then run generate_native_brand_assets.dart so the installable apps/host catalogs, drawables, and centered storyboard receive the same Host identity. Host remains a static native splash to force-update gate to auth-aware route; it never adopts CatchConsumerBootstrap."
     }
   ]
 }

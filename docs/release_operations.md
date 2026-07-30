@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 1.14.1
+version: 1.14.2
 updated: 2026-07-30
 owner: recursive_audit_loop
 status: active
@@ -107,8 +107,11 @@ opaque launcher icon; edit the generator and `pubspec.yaml`, then re-run the
 Swift generator and `flutter_native_splash:create`. Finally run
 `dart run tool/branding/generate_native_brand_assets.dart`: it reapplies the
 Consumer-only iOS responsive launch constraints that align `Catch_` with the
-Welcome reel. Never hand-edit that generated storyboard. Host launch geometry
-remains unchanged.
+Welcome reel and reapplies the Host-specific centered `Catch Host` launch
+storyboard/assets on the installable Host target. Never hand-edit those
+generated storyboards or platform drawables. The Host static mark uses Archivo
+at explicit `wght: 600` / `wdth: 78`, then hands directly to Host auth/home
+routing without a Welcome reel.
 
 ## Required PR Checks
 
@@ -1267,9 +1270,12 @@ Current cutover status:
 
 Current host icon status: host builds use generated `AppIcon-host-dev`,
 `AppIcon-host-staging`, and `AppIcon-host-prod` catalogs on iOS/macOS, plus
-Android `hostDev`, `hostStaging`, and `hostProd` launcher resources. Regenerate
-them with `dart run tool/branding/generate_native_brand_assets.dart` after
-native brand-token or base-icon changes.
+Android `hostDev`, `hostStaging`, and `hostProd` launcher resources. The
+two-line icon and centered light/dark splash read `Catch Host` in the same
+explicit Archivo `wght: 600` / `wdth: 78` voice as Consumer; there is no system
+font fallback and no plural `Hosts` product mark. Regenerate the Swift masters
+and then run `dart run tool/branding/generate_native_brand_assets.dart` after
+native brand-token, icon, or splash changes.
 
 ## Legacy Xcode Cloud State
 

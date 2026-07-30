@@ -18,8 +18,8 @@
     "catalogKeys": 2785,
     "usedKeys": 2785,
     "orphanedKeys": 0,
-    "usageReferences": 3053,
-    "catalogL10nReferences": 3053,
+    "usageReferences": 3054,
+    "catalogL10nReferences": 3054,
     "nonMessageL10nReferences": 1,
     "missingCatalogKeys": 0,
     "missingCatalogReferences": 0,
@@ -71,7 +71,7 @@
     {
       "key": "appTitleHost",
       "status": "used",
-      "usageCount": 2,
+      "usageCount": 3,
       "usages": [
         {
           "path": "lib/app.dart",
@@ -82,9 +82,14 @@
           "path": "lib/consumer_bootstrap.dart",
           "line": 140,
           "column": 37
+        },
+        {
+          "path": "lib/core/widgets/catch_startup_loading_screen.dart",
+          "line": 77,
+          "column": 36
         }
       ],
-      "l10nReferenceCount": 2,
+      "l10nReferenceCount": 3,
       "l10nReferences": [
         {
           "path": "lib/app.dart",
@@ -95,6 +100,11 @@
           "path": "lib/consumer_bootstrap.dart",
           "line": 140,
           "column": 37
+        },
+        {
+          "path": "lib/core/widgets/catch_startup_loading_screen.dart",
+          "line": 77,
+          "column": 36
         }
       ]
     },
@@ -6155,7 +6165,7 @@
       "usages": [
         {
           "path": "lib/core/widgets/catch_startup_loading_screen.dart",
-          "line": 90,
+          "line": 106,
           "column": 34
         }
       ],
@@ -6163,7 +6173,7 @@
       "l10nReferences": [
         {
           "path": "lib/core/widgets/catch_startup_loading_screen.dart",
-          "line": 90,
+          "line": 106,
           "column": 34
         }
       ]
@@ -6175,7 +6185,7 @@
       "usages": [
         {
           "path": "lib/core/widgets/catch_startup_loading_screen.dart",
-          "line": 78,
+          "line": 94,
           "column": 34
         }
       ],
@@ -6183,7 +6193,7 @@
       "l10nReferences": [
         {
           "path": "lib/core/widgets/catch_startup_loading_screen.dart",
-          "line": 78,
+          "line": 94,
           "column": 34
         }
       ]
@@ -6195,16 +6205,16 @@
       "usages": [
         {
           "path": "lib/core/widgets/catch_startup_loading_screen.dart",
-          "line": 64,
-          "column": 22
+          "line": 80,
+          "column": 28
         }
       ],
       "l10nReferenceCount": 1,
       "l10nReferences": [
         {
           "path": "lib/core/widgets/catch_startup_loading_screen.dart",
-          "line": 64,
-          "column": 22
+          "line": 80,
+          "column": 28
         }
       ]
     },
