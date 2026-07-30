@@ -465,9 +465,10 @@ class WelcomeFocusLockup extends StatelessWidget {
     );
     final textDirection = Directionality.of(context);
     final textScaler = _welcomeReelTextScaler(context);
+    final catchLabel = context.l10n.onboardingWelcomePageTextCatch;
     final phraseText = phrase == null ? null : '$phrase.';
     final children = <InlineSpan>[
-      TextSpan(text: 'Catch', style: style),
+      TextSpan(text: catchLabel, style: style),
       if (showBrandUnderscore)
         TextSpan(
           text: '_',
@@ -488,7 +489,7 @@ class WelcomeFocusLockup extends StatelessWidget {
       textScaler: textScaler,
       maxLines: 1,
     )..layout();
-    final phraseStart = phraseText == null ? null : 'Catch '.length;
+    final phraseStart = phraseText == null ? null : catchLabel.length + 1;
     final phraseBoxes = phraseStart == null
         ? const <TextBox>[]
         : painter.getBoxesForSelection(
@@ -512,7 +513,9 @@ class WelcomeFocusLockup extends StatelessWidget {
         : math.min(1.0, maxWidth / painter.width);
     final fittedWidth = painter.width * fitScale;
     final fittedHeight = contentHeight * fitScale;
-    final semanticLabel = phraseText == null ? 'Catch' : 'Catch $phraseText';
+    final semanticLabel = phraseText == null
+        ? catchLabel
+        : '$catchLabel $phraseText';
 
     return Semantics(
       label: semanticLabel,
