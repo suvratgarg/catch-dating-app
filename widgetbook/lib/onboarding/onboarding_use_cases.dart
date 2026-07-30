@@ -358,6 +358,7 @@ Widget welcomeSceneStates(BuildContext context) {
         label: 'spinning',
         child: _DeviceFrame(
           child: WelcomeScene(
+            viewportWidth: 320,
             viewportHeight: 760,
             mediaPadding: EdgeInsets.only(top: 44, bottom: 34),
             spinValue: 0.42,
@@ -372,6 +373,7 @@ Widget welcomeSceneStates(BuildContext context) {
         label: 'landed',
         child: _DeviceFrame(
           child: WelcomeScene(
+            viewportWidth: 320,
             viewportHeight: 760,
             mediaPadding: EdgeInsets.only(top: 44, bottom: 34),
             spinValue: 1,
@@ -379,6 +381,57 @@ Widget welcomeSceneStates(BuildContext context) {
             landed: true,
             onContinue: _noop,
             onExplore: _noop,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Welcome focus lockup states',
+  type: WelcomeFocusLockup,
+  path: '[P1 product surfaces]/Onboarding/Pages',
+)
+Widget welcomeFocusLockupStates(BuildContext context) {
+  final socialRun =
+      ActivityPalette.pigments[ActivityKind.socialRun] ??
+      ActivityPalette.pigments[ActivityKind.openActivity]!;
+  final maxWidth =
+      CatchLayout.welcomeReferenceWidth -
+      CatchLayout.welcomeReelCatchLeft -
+      CatchLayout.welcomeReelObjectRight;
+
+  return _OnboardingCatalog(
+    title: 'WelcomeFocusLockup',
+    children: [
+      _StateCard(
+        label: 'static Catch_ handoff',
+        child: ColoredBox(
+          color: CatchTokens.light.bg,
+          child: Padding(
+            padding: const EdgeInsets.all(CatchSpacing.s4),
+            child: WelcomeFocusLockup(
+              catchColor: CatchTokens.light.ink,
+              maxWidth: maxWidth,
+              showBrandUnderscore: true,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'fixed the sunset 5K focus',
+        child: ColoredBox(
+          color: CatchTokens.editorialDark.bg,
+          child: Padding(
+            padding: const EdgeInsets.all(CatchSpacing.s4),
+            child: WelcomeFocusLockup(
+              phrase: 'the sunset 5K',
+              catchColor: CatchTokens.editorialDark.ink,
+              maxWidth: maxWidth,
+              phraseColor: socialRun,
+              underlineColor: socialRun,
+            ),
           ),
         ),
       ),
@@ -401,7 +454,12 @@ Widget welcomeReelBandStates(BuildContext context) {
           color: CatchTokens.editorialDark.bg,
           child: const SizedBox(
             height: 360,
-            child: ReelBand(spinValue: 0.5, landingValue: 0, landed: false),
+            child: ReelBand(
+              viewportWidth: 320,
+              spinValue: 0.5,
+              landingValue: 0,
+              landed: false,
+            ),
           ),
         ),
       ),
@@ -411,7 +469,12 @@ Widget welcomeReelBandStates(BuildContext context) {
           color: CatchTokens.editorialDark.bg,
           child: const SizedBox(
             height: 360,
-            child: ReelBand(spinValue: 1, landingValue: 1, landed: true),
+            child: ReelBand(
+              viewportWidth: 320,
+              spinValue: 1,
+              landingValue: 1,
+              landed: true,
+            ),
           ),
         ),
       ),
@@ -435,6 +498,7 @@ Widget welcomeReelRowStates(BuildContext context) {
           child: const SizedBox(
             height: 92,
             child: ReelRow(
+              viewportWidth: 320,
               phrase: WelcomePhrase('the long table', ActivityKind.dinner),
               phraseIndex: 2,
               rowIndex: 2,
@@ -452,8 +516,9 @@ Widget welcomeReelRowStates(BuildContext context) {
           child: const SizedBox(
             height: 92,
             child: ReelRow(
-              phrase: WelcomePhrase('someone real', ActivityKind.socialRun),
-              phraseIndex: 11,
+              viewportWidth: 320,
+              phrase: WelcomePhrase('the sunset 5K', ActivityKind.socialRun),
+              phraseIndex: welcomeLandingIndex,
               rowIndex: 2,
               trackOffset: 0,
               landingValue: 1,

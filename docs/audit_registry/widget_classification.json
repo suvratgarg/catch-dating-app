@@ -1,7 +1,7 @@
 {
   "$schema": "./widget_classification.schema.json",
   "version": 2,
-  "updated": "2026-07-29",
+  "updated": "2026-07-30",
   "sourceOfTruth": {
     "scope": "Generated inventory for production Flutter widget and widget-state classes under lib/**. Widgetbook/test scaffolds are intentionally out of scope.",
     "canonicalContracts": "design/components/catch.components.json owns canonical global component contracts and governance metadata.",
@@ -10,29 +10,29 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1106,
-    "widgetClasses": 971,
+    "total": 1107,
+    "widgetClasses": 972,
     "stateClasses": 135,
-    "publicClasses": 966,
+    "publicClasses": 967,
     "privateClasses": 140,
     "byRole": {
       "atom": 57,
       "composition": 353,
-      "feature-adapter": 286,
+      "feature-adapter": 287,
       "pattern": 17,
       "screen": 258,
       "widget-state": 135
     },
     "byDecision": {
       "keep-canonical-contract": 195,
-      "keep-public-cataloged": 706,
+      "keep-public-cataloged": 707,
       "keep-widget-state": 135,
       "review-catalog-coverage": 44,
       "review-promote-or-consolidate": 21,
       "review-promote-or-inline": 5
     },
     "byCatalogStatus": {
-      "cataloged": 667,
+      "cataloged": 668,
       "contracted": 195,
       "not-applicable": 135,
       "route-covered": 56,
@@ -40,11 +40,11 @@
     },
     "conceptCount": 62,
     "memberClassCount": 116,
-    "compositionClassCount": 518,
+    "compositionClassCount": 519,
     "screenClassCount": 270,
     "unclassifiedCount": 0,
     "byConceptRole": {
-      "composition": 518,
+      "composition": 519,
       "concept": 62,
       "member": 116,
       "screen": 270
@@ -365,7 +365,7 @@
       "conceptPrimariesCataloged": 62,
       "memberClasses": 116,
       "memberClassesCataloged": 116,
-      "compositionsCataloged": 470,
+      "compositionsCataloged": 471,
       "screensCataloged": 214
     }
   },
@@ -28222,6 +28222,35 @@
       "parentConceptId": null,
       "qualifier": null,
       "collisionKey": "reveal_entrance",
+      "decisionRef": "generated-rule:uncontracted-composition",
+      "allowedDependencyLevel": "feature-display-models",
+      "stateOwnership": "feature-display-state",
+      "asyncOwnership": "display-state-only",
+      "layoutOwnership": "feature-section-layout",
+      "actionOwnership": "feature-callbacks",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "WelcomeFocusLockup",
+      "file": "lib/onboarding/presentation/pages/welcome_page.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "feature-adapter",
+      "canonicalFamily": "feature.onboarding.welcome_focus_lockup",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "conceptRole": "composition",
+      "conceptId": null,
+      "parentConceptId": null,
+      "qualifier": null,
+      "collisionKey": "welcome_focus_lockup",
       "decisionRef": "generated-rule:uncontracted-composition",
       "allowedDependencyLevel": "feature-display-models",
       "stateOwnership": "feature-display-state",

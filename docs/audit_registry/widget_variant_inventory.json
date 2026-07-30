@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-07-29T11:12:49.893Z",
+  "generatedAt": "2026-07-30T09:48:07.345Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
   },
   "summary": {
-    "useCases": 866,
-    "components": 815,
-    "stateCards": 1796,
+    "useCases": 867,
+    "components": 816,
+    "stateCards": 1798,
     "reviewCandidates": 44,
     "oversizedUseCases": 44,
     "multiUseCaseComponents": 45
@@ -22782,6 +22782,43 @@
             {
               "label": "selected and fallback",
               "normalizedLabel": "selected and fallback"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "WelcomeFocusLockup",
+      "useCaseCount": 1,
+      "stateCardCount": 2,
+      "paths": [
+        "[P1 product surfaces]/Onboarding/Pages"
+      ],
+      "labels": [
+        "fixed the sunset 5K focus",
+        "static Catch_ handoff"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Welcome focus lockup states",
+          "functionName": "welcomeFocusLockupStates",
+          "file": "widgetbook/lib/onboarding/onboarding_use_cases.dart",
+          "path": "[P1 product surfaces]/Onboarding/Pages",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "static Catch_ handoff",
+              "normalizedLabel": "static catch handoff"
+            },
+            {
+              "label": "fixed the sunset 5K focus",
+              "normalizedLabel": "fixed the sunset 5k focus"
             }
           ]
         }

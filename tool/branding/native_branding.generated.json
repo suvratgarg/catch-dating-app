@@ -43,6 +43,7 @@
     "apps/consumer/android/app/src/consumerStaging/res/**/ic_launcher_round.png",
     "apps/consumer/ios/Runner/Assets.xcassets/AppIcon.appiconset",
     "apps/consumer/ios/Runner/Assets.xcassets/AppIcon-dev.appiconset",
-    "apps/consumer/ios/Runner/Assets.xcassets/AppIcon-staging.appiconset"
+    "apps/consumer/ios/Runner/Assets.xcassets/AppIcon-staging.appiconset",
+    "apps/consumer/ios/Runner/Base.lproj/LaunchScreen.storyboard"
   ]
 }

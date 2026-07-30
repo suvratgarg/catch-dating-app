@@ -4,8 +4,10 @@ import 'package:catch_dating_app/app_bootstrap.dart';
 import 'package:catch_dating_app/consumer_bootstrap.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/welcome_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -99,7 +101,7 @@ void main() {
     await _pumpConsumerBootstrap(tester);
 
     expect(find.text('Initialized app'), findsNothing);
-    expect(find.textContaining('someone real'), findsWidgets);
+    expect(find.text('Catch the sunset 5K.'), findsOneWidget);
     expect(nativeHandoffs, 1);
 
     initialization.complete();
@@ -196,12 +198,63 @@ void main() {
 
     expect(firstFrames, 1);
     expect(completions, 1);
-    expect(find.textContaining('someone real'), findsWidgets);
+    expect(find.text('Catch the sunset 5K.'), findsOneWidget);
     expect(
       find.widgetWithText(CatchButton, 'Continue with phone'),
       findsNothing,
     );
     expect(find.widgetWithText(CatchButton, 'See what\'s on'), findsNothing);
+  });
+
+  testWidgets('static Catch_ and reel Catch share the exact device anchor', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(393, 852);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    const padding = EdgeInsets.only(top: 59, bottom: 34);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        theme: AppTheme.light,
+        darkTheme: AppTheme.dark,
+        home: MediaQuery(
+          data: const MediaQueryData(size: Size(393, 852), padding: padding),
+          child: CatchConsumerBootScreen(
+            onFirstFlutterFrameReady: () {},
+            onAnimationComplete: () {},
+            prepareFirstFrame: _prepareFirstFrame,
+          ),
+        ),
+      ),
+    );
+
+    final staticFinder = find.byKey(CatchConsumerBootScreen.markKey);
+    final reelFinder = find.byKey(WelcomeScene.catchWordKey);
+    expect(tester.getTopLeft(staticFinder), tester.getTopLeft(reelFinder));
+    expect(
+      tester.getTopLeft(staticFinder).dy,
+      closeTo(CatchLayout.welcomeReelCatchTopFor(padding), 0.1),
+    );
+
+    final staticText = tester.widget<Text>(
+      find.descendant(
+        of: staticFinder,
+        matching: find.byKey(WelcomeFocusLockup.textKey),
+      ),
+    );
+    final reelText = tester.widget<Text>(
+      find.descendant(
+        of: reelFinder,
+        matching: find.byKey(WelcomeFocusLockup.textKey),
+      ),
+    );
+    expect(staticText.textSpan!.toPlainText(), 'Catch_');
+    expect(reelText.textSpan!.toPlainText(), startsWith('Catch '));
+    expect(tester.takeException(), isNull);
   });
 }
 

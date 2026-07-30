@@ -1,5 +1,5 @@
 {
-  "version": 124,
+  "version": 125,
   "updated": "2026-07-30",
   "owner": "agent_operating_model",
   "entries": [
@@ -3908,6 +3908,35 @@
         "docs/widget_catalog.md"
       ],
       "notes": "Keep transition motion inside CatchConsumerBootScreen. Do not overlap the provider-free boot MaterialApp and initialized MaterialApp.router, and do not watch background-only service futures from the consumer AppShell when their result is not rendered."
+    },
+    {
+      "id": "REG-WELCOME-FOCUS-GEOMETRY-001",
+      "title": "Welcome focus phrase moves off the Catch baseline or clips by device size",
+      "status": "active",
+      "applies_to": [
+        "lib/consumer_bootstrap.dart",
+        "lib/core/theme/catch_tokens.dart",
+        "lib/onboarding/presentation/pages/welcome_page.dart",
+        "tool/branding/generate_native_brand_assets.dart",
+        "apps/consumer/ios/Runner/Base.lproj/LaunchScreen.storyboard",
+        "test/core/consumer_bootstrap_test.dart",
+        "test/onboarding/welcome_reel_handoff_test.dart",
+        "test/onboarding/onboarding_widgets_test.dart",
+        "test/tooling/consumer_launch_screen_test.dart",
+        "docs/design_parity/splash_welcome_spec.md",
+        "docs/widget_catalog.md"
+      ],
+      "symptom": "The Consumer iOS native or Flutter static Catch_ jumps when the reel begins, Catch touches the following phrase, the focused phrase rises above or falls below Catch, the underline collides with the baseline, a moving row receives focus treatment, the reel lands on the wrong phrase, or the focus sentence wraps or clips on a supported phone size.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test test/onboarding/welcome_reel_handoff_test.dart test/onboarding/onboarding_widgets_test.dart test/core/consumer_bootstrap_test.dart test/tooling/consumer_launch_screen_test.dart",
+        "guardEvidence": "the iOS launch test proves generated safe-area and max-width constraints without changing Host; the Flutter handoff test proves identical static/reel anchors; landed and intermediate-frame tests prove one literal space, a fixed shared baseline, phrase-only underline placement, the sunset 5K landing, and in-bounds rendering at 320, 375, 393, and 430pt widths with safe areas and enlarged text"
+      },
+      "owner_docs": [
+        "docs/design_parity/splash_welcome_spec.md",
+        "docs/widget_catalog.md"
+      ],
+      "notes": "Keep focus rendering in WelcomeFocusLockup and keep the matching moving ReelRow hidden at focus. Re-run generate_native_brand_assets.dart after flutter_native_splash:create so Consumer iOS keeps its generated native anchor. The OS-owned Android 12 splash remains system-centered; its exact responsive focus slot begins at the first Flutter-owned Consumer frame."
     }
   ]
 }

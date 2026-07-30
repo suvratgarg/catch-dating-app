@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/startup/catch_startup_animation_scope.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
@@ -6,7 +8,6 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/welcome_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'onboarding_test_helpers.dart';
@@ -55,6 +56,7 @@ void main() {
         MaterialApp(
           theme: AppTheme.light,
           home: WelcomeScene(
+            viewportWidth: 320,
             viewportHeight: 630,
             mediaPadding: EdgeInsets.zero,
             spinValue: 1,
@@ -77,49 +79,41 @@ void main() {
         ),
       );
 
-      final phraseFinder = find.byKey(ReelRow.focusedPhraseKey);
-      final phraseTopLeft = tester.getTopLeft(phraseFinder);
-      expect(phraseTopLeft.dx, closeTo(CatchLayout.welcomeReelObjectLeft, 0.1));
-      expect(
-        phraseTopLeft.dy,
-        closeTo(
-          CatchLayout.welcomeReelTop + CatchLayout.welcomeReelCatchFocusTop,
-          0.1,
-        ),
+      final focusTextFinder = find.descendant(
+        of: catchFinder,
+        matching: find.byKey(WelcomeFocusLockup.textKey),
       );
-      final phraseText = tester.widget<Text>(phraseFinder);
-      final rootSpan = phraseText.textSpan! as TextSpan;
-      final periodSpan = rootSpan.children!.last as TextSpan;
-      expect(periodSpan.text, '.');
-      expect(periodSpan.style!.color!.a, closeTo(1, 0.001));
+      final focusText = tester.widget<Text>(focusTextFinder);
+      final rootSpan = focusText.textSpan! as TextSpan;
+      expect(rootSpan.toPlainText(), 'Catch the sunset 5K.');
+      expect((rootSpan.children![1] as TextSpan).text, ' ');
+      expect((rootSpan.children!.last as TextSpan).text, 'the sunset 5K.');
+      expect(focusText.maxLines, 1);
       expect(
-        phraseText.style!.fontVariations,
+        focusText.style!.fontVariations,
         contains(const FontVariation('wdth', CatchFonts.archivoWidth)),
       );
 
-      final catchParagraph = tester.renderObject<RenderParagraph>(catchFinder);
-      final phraseParagraph = tester.renderObject<RenderParagraph>(
-        phraseFinder,
-      );
-      final catchBaseline =
-          catchTopLeft.dy +
-          catchParagraph.getDryBaseline(
-            catchParagraph.constraints,
-            TextBaseline.alphabetic,
-          )!;
-      final phraseBaseline =
-          phraseTopLeft.dy +
-          phraseParagraph.getDryBaseline(
-            phraseParagraph.constraints,
-            TextBaseline.alphabetic,
-          )!;
-      expect(phraseBaseline, closeTo(catchBaseline, 0.1));
+      final focusTextTopLeft = tester.getTopLeft(focusTextFinder);
+      expect(focusTextTopLeft.dy, closeTo(catchTopLeft.dy, 0.1));
 
-      final underlineFinder = find.byKey(ReelRow.focusedUnderlineKey);
-      expect(
-        tester.getTopLeft(underlineFinder).dy,
-        greaterThan(tester.getBottomLeft(phraseFinder).dy),
+      final underlineFinder = find.descendant(
+        of: catchFinder,
+        matching: find.byKey(WelcomeFocusLockup.underlineKey),
       );
+      final underlineRect = tester.getRect(underlineFinder);
+      expect(
+        underlineRect.top,
+        greaterThan(tester.getBottomLeft(focusTextFinder).dy),
+      );
+      expect(underlineRect.left, greaterThan(catchTopLeft.dx));
+      expect(
+        underlineRect.right,
+        lessThanOrEqualTo(
+          320 - CatchLayout.welcomeReelRightForWidth(320) + 0.1,
+        ),
+      );
+      expect(find.byKey(ReelRow.focusedUnderlineKey), findsNothing);
 
       expect(
         tester
@@ -127,6 +121,117 @@ void main() {
             .dy,
         closeTo(630 - CatchLayout.welcomeButtonsBottom, 0.1),
       );
+    });
+
+    testWidgets('spinning focus treatment stays pinned to the Catch baseline', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(393, 852);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      const padding = EdgeInsets.only(top: 59, bottom: 34);
+
+      for (final spinValue in <double>[0.12, 0.42, 0.73]) {
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: AppTheme.light,
+            home: WelcomeScene(
+              key: ValueKey<double>(spinValue),
+              viewportWidth: 393,
+              viewportHeight: 852,
+              mediaPadding: padding,
+              spinValue: spinValue,
+              landingValue: 0,
+              landed: false,
+              onContinue: () {},
+              onExplore: () {},
+            ),
+          ),
+        );
+
+        final lockupFinder = find.byKey(WelcomeScene.catchWordKey);
+        final textFinder = find.descendant(
+          of: lockupFinder,
+          matching: find.byKey(WelcomeFocusLockup.textKey),
+        );
+        final text = tester.widget<Text>(textFinder);
+        expect(text.textSpan!.toPlainText(), startsWith('Catch '));
+        expect(
+          tester.getTopLeft(lockupFinder).dy,
+          closeTo(CatchLayout.welcomeReelCatchTopFor(padding), 0.1),
+        );
+        expect(find.byKey(WelcomeFocusLockup.underlineKey), findsOneWidget);
+        expect(find.byKey(ReelRow.focusedUnderlineKey), findsNothing);
+        expect(tester.takeException(), isNull);
+      }
+    });
+
+    testWidgets('focus lockup fits supported phone widths and large text', (
+      tester,
+    ) async {
+      const devices = <({Size size, EdgeInsets padding})>[
+        (size: Size(320, 568), padding: EdgeInsets.only(top: 20)),
+        (size: Size(375, 667), padding: EdgeInsets.only(top: 20)),
+        (size: Size(393, 852), padding: EdgeInsets.only(top: 59, bottom: 34)),
+        (size: Size(430, 932), padding: EdgeInsets.only(top: 59, bottom: 34)),
+      ];
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      for (final device in devices) {
+        tester.view.physicalSize = device.size;
+        tester.view.devicePixelRatio = 1;
+        final sceneWidth = math.min(
+          device.size.width,
+          CatchLayout.welcomeMaxWidth,
+        );
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: AppTheme.light,
+            home: MediaQuery(
+              data: MediaQueryData(
+                size: device.size,
+                padding: device.padding,
+                textScaler: const TextScaler.linear(1.5),
+              ),
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: SizedBox(
+                  width: sceneWidth,
+                  height: device.size.height,
+                  child: WelcomeScene(
+                    viewportWidth: sceneWidth,
+                    viewportHeight: device.size.height,
+                    mediaPadding: device.padding,
+                    spinValue: 1,
+                    landingValue: 1,
+                    landed: true,
+                    showLandingContent: false,
+                    onContinue: () {},
+                    onExplore: () {},
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+
+        final lockupRect = tester.getRect(
+          find.byKey(WelcomeScene.catchWordKey),
+        );
+        expect(lockupRect.left, greaterThanOrEqualTo(0));
+        expect(lockupRect.right, lessThanOrEqualTo(device.size.width));
+        expect(lockupRect.top, greaterThanOrEqualTo(device.padding.top));
+        expect(
+          tester
+              .widget<Text>(find.byKey(WelcomeFocusLockup.textKey))
+              .textSpan!
+              .toPlainText(),
+          'Catch the sunset 5K.',
+        );
+        expect(tester.takeException(), isNull);
+      }
     });
   });
 }

@@ -1,21 +1,24 @@
 ---
 doc_id: splash_welcome_spec
-version: 1.1.2
-updated: 2026-07-29
+version: 1.2.0
+updated: 2026-07-30
 owner: design_parity_review
 status: implemented
 ---
 
 # Splash + Welcome — Boot Chrome Fix & Reel Parity Spec
 
-> **IMPLEMENTED 2026-07-29.** Parts 1–4 landed: the transparent splash mark
+> **IMPLEMENTED 2026-07-30.** Parts 1–4 landed: the transparent splash mark
 > is generated (`assets/branding/catch_splash_mark_light.png` — the
 > root-cause blocker is resolved), boot preserve/remove flow, retoned
 > startup screen, and welcome reel parity. Part 5 now runs the existing reel as
 > a Consumer-only cold-start experience while critical initialization proceeds
 > behind it. The Consumer mark is the single-line `Catch_` lockup, rendered
 > from Archivo at explicit `wght: 600` / `wdth: 78` axes. Host retains the
-> static boot flow and its existing identity.
+> static boot flow and its existing identity. Part 6 gives the Consumer's first
+> Flutter frame and reel one responsive focus slot, a literal `Catch ` space,
+> measured below-glyph underline geometry, and deterministic `the sunset 5K`
+> landing across supported phone sizes.
 
 Repo: `/Users/suvratgarg/Development/catch-dating-app/catch_dating_app`
 Design SoT: `~/Downloads/Catch Design System (2)/splash-welcome-handoff/`
@@ -34,9 +37,11 @@ source of truth when in doubt; `strings.json` = phrase bank;
    platform files.
 2. **Consumer boot handoff**: `runCatchApp` mounts
    `CatchConsumerBootstrap` before orientation/Firebase/logger/analytics awaits.
-   The first Flutter frame matches the generated native mark; the native
-   surface is removed only after that asset has decoded and the matching frame
-   has painted.
+   The OS launch surface remains platform-owned. Consumer iOS applies generated
+   safe-area/width-aware launch constraints so its static `Catch_` occupies the
+   same responsive anchor as the reel; the first app-owned Flutter frame uses
+   that anchor too. The native surface is removed only after the preparation
+   gate completes and that app-owned frame has painted.
 3. **Concurrent startup**: `CatchConsumerBootScreen` fades from the native mark
    into the existing Welcome reel while critical initialization proceeds. The
    router mounts only after both the reel and initialization complete, so auth
@@ -92,7 +97,9 @@ requirements; stop sharing one.
    → `catch_splash_mark_light.png` (image) / `catch_splash_mark_dark.png`
    (image_dark). Leave `flutter_launcher_icons: image_path` on the opaque
    `catch_icon.png` unchanged.
-3. Run `dart run flutter_native_splash:create`; commit regenerated platform
+3. Run `dart run flutter_native_splash:create`, then run
+   `dart run tool/branding/generate_native_brand_assets.dart` to reapply the
+   Consumer-only iOS responsive launch geometry; commit regenerated platform
    files. Confirm: iOS storyboard backgroundColor `0.956862745 0.956862745
    0.945098039` (#F4F4F1), a dark-variant asset exists, Android-12 sections
    regenerated (`android12splash.png` refreshed; night variants present),
@@ -210,6 +217,42 @@ to device; when in doubt match `reference/Splash-prototype.html`):
 
 Host, web, and desktop retain the prior startup behavior.
 
+## Part 6 — Fixed focus lockup and responsive handoff `[codex]`
+
+The Consumer boot handoff and every reel frame share one
+`WelcomeFocusLockup` contract:
+
+1. The static Flutter `Catch_` and reel `Catch` use the same `left`, `top`, and
+   right-bound calculations. `Catch` must not jump when the handoff begins.
+2. The focused copy is one single-line rich-text sentence:
+   `Catch` + one literal whitespace + phrase + period. The phrase is never
+   raised or lowered independently from `Catch`.
+3. The active phrase is painted in a fixed focus overlay. The corresponding
+   moving reel row is hidden while it crosses the focus window, so a phrase
+   cannot receive focus color or an underline while its baseline is still
+   moving.
+4. The underline is a separate rule measured from the phrase selection. Its
+   top edge is below the rendered line box, and its width excludes the terminal
+   period.
+5. The deterministic landing phrase is `the sunset 5K`, matching the approved
+   welcome-reel composition.
+6. Horizontal anchors scale from the 320pt reference contract and stop at the
+   canonical desktop-width values. The lockup preserves safe-area clearance,
+   keeps a minimum right inset, caps reel text scaling at 1.10, and scales the
+   complete sentence down as a unit before it can wrap or clip.
+7. Regression coverage must exercise intermediate spin values as well as the
+   landed endpoint, at 320×568, 375×667, 393×852, and 430×932 logical-pixel
+   viewports, including representative safe areas and requested 1.5 text
+   scaling.
+
+The native OS launch screen remains a separate platform layer. Consumer iOS
+uses generated Auto Layout inequalities plus preferred constraints to implement
+the same `max(referenceTop, safeTop + gap)` and centered max-width behavior as
+Flutter. Android 12+ system splash content is system-centered by contract, so
+its exact fixed focus slot begins with the first Flutter-owned Consumer frame.
+The reel layout itself must remain correct on both platforms at every supported
+device size.
+
 ## Accepted Drift
 
 - `SPLASH-WELCOME-DEBT-001` (accepted 2026-07-06): the handoff's
@@ -236,18 +279,24 @@ Host, web, and desktop retain the prior startup behavior.
 | Part 4 landing and reduced motion | aligned | `WelcomePage` owns separate spin/landing controllers; tests cover reduced-motion/direct landed state and skip-to-CTA behavior |
 | Part 4 Widgetbook and appshot proof | aligned | `widgetbook/lib/onboarding/onboarding_use_cases.dart` has animated/landed/reduced-motion states; `/tmp/catch-splash-welcome-captures/start_welcome` holds light/dark captures from the recorded pass |
 | Part 5 Consumer cold-boot reel | aligned | `lib/consumer_bootstrap.dart` coordinates decoded first-frame handoff, reel/init completion, reduced motion, skip, retry, delayed router mount, and an atomic boot-root replacement; `lib/core/presentation/app_shell.dart` keeps background FCM completion from rebuilding the keyed consumer navigation shell; the focused bootstrap and shell tests cover both contracts |
+| Part 6 fixed focus lockup | aligned | `WelcomeFocusLockup` owns the single-baseline `Catch ${phrase}.` sentence and measured phrase-only underline; `ReelBand` hides the moving focus row while `WelcomeScene` paints the fixed overlay |
+| Part 6 static/reel anchor and responsive matrix | aligned | `CatchConsumerBootScreen` and `WelcomeScene` share `CatchLayout` anchor helpers; `test/core/consumer_bootstrap_test.dart` proves exact handoff coordinates and `test/onboarding/welcome_reel_handoff_test.dart` covers intermediate motion, 320–430pt widths, safe areas, and enlarged text |
+| Part 6 Consumer iOS native anchor | aligned | `tool/branding/generate_native_brand_assets.dart` owns the Consumer-only LaunchScreen constraints; the generated storyboard aligns the mark's alpha bounds to the same reference/safe-area/max-width equations without changing Host |
 
 ## Acceptance
 
-- Consumer cold launch: OS splash in correct brand colors (both registers) →
-  decoded matching Flutter mark → Welcome reel → routed app, with initialization
-  concurrent and routing hidden until stable.
+- Consumer iOS cold launch: OS `Catch_` in correct brand colors and at the
+  responsive reel anchor → static Flutter `Catch_` at the same anchor → Welcome
+  reel without a `Catch` position change → routed app, with initialization
+  concurrent and routing hidden until stable. Android keeps the platform-owned
+  centered OS splash and adopts the fixed anchor on the first Flutter frame.
 - Host cold launch remains OS splash → force-update gate → app content.
 - Force-update gate keeps working (update-required and error branches
   still render after `remove()`).
 - Welcome reel matches the prototype: condensed cut, geometry anchors,
-  focus/dim/period math, band mask, strings.json bank, reduced-motion
-  landing.
+  fixed single-line focus slot, literal whitespace, phrase-only underline,
+  focus/dim/period math, band mask, strings.json bank, reduced-motion landing,
+  and responsive phone-size behavior.
 - Route-level loading no longer uses the startup screen.
 - Receipts: appshots (before/after native, welcome landed), parity
   checklist rows, catalog/doc_versions/passes stamps, readiness 100/100.

@@ -82,7 +82,12 @@ void main() {
           child: SizedBox(
             width: 320,
             height: 540,
-            child: ReelBand(spinValue: 0, landingValue: 0, landed: false),
+            child: ReelBand(
+              viewportWidth: 320,
+              spinValue: 0,
+              landingValue: 0,
+              landed: false,
+            ),
           ),
         ),
       );
@@ -93,6 +98,7 @@ void main() {
           .toList();
 
       expect(objects.last, 'someone real.');
+      expect(objects[welcomeLandingIndex], 'the sunset 5K.');
       expect(rendered, [...objects, ...objects]);
     });
 
@@ -117,8 +123,7 @@ void main() {
         find.widgetWithText(CatchButton, 'Continue with phone'),
         findsOneWidget,
       );
-      expect(find.text('Catch'), findsOneWidget);
-      expect(find.textContaining('someone real'), findsWidgets);
+      expect(find.text('Catch the sunset 5K.'), findsOneWidget);
       expect(find.text('RUN CLUB DATING'), findsNothing);
       expect(find.text('Love arrives\nat mile\nthree.'), findsNothing);
       expect(find.byType(TextButton), findsNothing);

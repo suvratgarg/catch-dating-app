@@ -160,9 +160,10 @@ class _CatchConsumerBootstrapState extends State<CatchConsumerBootstrap> {
 
 /// The animated Consumer cold-start surface shown above auth and routing.
 ///
-/// Its first Flutter frame matches the generated native splash. After that
-/// frame is confirmed painted, it fades into the existing Welcome reel and
-/// lands on the same deterministic phrase without mounting Welcome actions.
+/// Its first Flutter frame places the static `Catch_` lockup at the exact
+/// responsive anchor used by the Welcome reel. After that frame is confirmed
+/// painted, it fades into the moving reel without shifting `Catch` and lands on
+/// the same deterministic phrase without mounting Welcome actions.
 class CatchConsumerBootScreen extends StatefulWidget {
   const CatchConsumerBootScreen({
     super.key,
@@ -343,9 +344,6 @@ class _CatchConsumerBootScreenState extends State<CatchConsumerBootScreen>
   Widget build(BuildContext context) {
     final themeTokens = CatchTokens.of(context);
     const reelTokens = CatchTokens.editorialDark;
-    final iconAsset = CatchStartupLoadingScreen.iconAssetForBrightness(
-      Theme.of(context).brightness,
-    );
 
     return AnimatedBuilder(
       animation: _sceneListenable,
@@ -381,47 +379,60 @@ class _CatchConsumerBootScreenState extends State<CatchConsumerBootScreen>
                 key: CatchConsumerBootScreen.tapTargetKey,
                 behavior: HitTestBehavior.opaque,
                 onTap: _landed ? null : _skip,
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    IgnorePointer(
-                      child: Opacity(
-                        opacity: 1 - handoff,
-                        child: SafeArea(
-                          child: Center(
-                            child: Image.asset(
-                              iconAsset,
-                              key: CatchConsumerBootScreen.markKey,
-                              width: CatchLayout.startupLogoExtent,
-                              height: CatchLayout.startupLogoExtent,
-                              semanticLabel: context
-                                  .l10n
-                                  .coreCatchStartupLoadingScreenSemanticlabelCatch,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Opacity(
-                      opacity: handoff,
-                      child: LayoutBuilder(
-                        key: CatchConsumerBootScreen.reelKey,
-                        builder: (context, constraints) {
-                          final media = MediaQuery.of(context);
-                          final size = Size(
-                            constraints.maxWidth,
-                            constraints.maxHeight,
-                          );
-                          final sceneWidth = size.width
-                              .clamp(0, CatchLayout.welcomeMaxWidth)
-                              .toDouble();
+                child: LayoutBuilder(
+                  key: CatchConsumerBootScreen.reelKey,
+                  builder: (context, constraints) {
+                    final media = MediaQuery.of(context);
+                    final size = Size(
+                      constraints.maxWidth,
+                      constraints.maxHeight,
+                    );
+                    final sceneWidth = size.width
+                        .clamp(0, CatchLayout.welcomeMaxWidth)
+                        .toDouble();
+                    final catchLeft = CatchLayout.welcomeReelCatchLeftForWidth(
+                      sceneWidth,
+                    );
+                    final rightInset = CatchLayout.welcomeReelRightForWidth(
+                      sceneWidth,
+                    );
+                    final catchTop = CatchLayout.welcomeReelCatchTopFor(
+                      media.padding,
+                    );
 
-                          return Align(
-                            alignment: Alignment.topCenter,
-                            child: SizedBox(
-                              width: sceneWidth,
-                              height: size.height,
+                    return Align(
+                      alignment: Alignment.topCenter,
+                      child: SizedBox(
+                        width: sceneWidth,
+                        height: size.height,
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            IgnorePointer(
+                              child: Opacity(
+                                opacity: 1 - handoff,
+                                child: Stack(
+                                  children: [
+                                    Positioned(
+                                      key: CatchConsumerBootScreen.markKey,
+                                      left: catchLeft,
+                                      right: rightInset,
+                                      top: catchTop,
+                                      child: WelcomeFocusLockup(
+                                        catchColor: themeTokens.ink,
+                                        maxWidth:
+                                            sceneWidth - catchLeft - rightInset,
+                                        showBrandUnderscore: true,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Opacity(
+                              opacity: handoff,
                               child: WelcomeScene(
+                                viewportWidth: sceneWidth,
                                 viewportHeight: size.height,
                                 mediaPadding: media.padding,
                                 spinValue: _spinController.value,
@@ -432,11 +443,11 @@ class _CatchConsumerBootScreenState extends State<CatchConsumerBootScreen>
                                 onExplore: _skip,
                               ),
                             ),
-                          );
-                        },
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    );
+                  },
                 ),
               ),
             ),

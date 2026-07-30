@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "generatedFrom": "git ls-files --cached --others --exclude-standard",
   "generatedBy": "node tool/test_inventory.mjs",
-  "total": 597,
+  "total": 598,
   "categories": {
     "firebase_rules": {
       "count": 2,
@@ -24,7 +24,7 @@
       ]
     },
     "flutter_unit_widget": {
-      "count": 273,
+      "count": 274,
       "files": [
         "test/activity/activity_taxonomy_test.dart",
         "test/analytics/app_analytics_test.dart",
@@ -292,6 +292,7 @@
         "test/tooling/catch_ui_lints_mutation_pending_test.dart",
         "test/tooling/catch_ui_lints_raw_motion_test.dart",
         "test/tooling/catch_ui_lints_typography_test.dart",
+        "test/tooling/consumer_launch_screen_test.dart",
         "test/tooling/descriptive_option_field_contract_test.dart",
         "test/ui_captures/capture_runner_test.dart",
         "test/user_analytics/user_analytics_panel_test.dart",
