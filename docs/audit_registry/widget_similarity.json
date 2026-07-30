@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated": "2026-07-29",
+  "updated": "2026-07-30",
   "sourceOfTruth": {
     "generator": "tool/design/build_widget_similarity.mjs",
     "fingerprints": "artifacts/widget_dedupe/fingerprints.json",
@@ -91,44 +91,44 @@
     },
     {
       "hammingBucket": "50-54",
-      "pairs": 1696,
+      "pairs": 1697,
       "jaccardMin": 0,
-      "jaccardMean": 0.0869,
+      "jaccardMean": 0.0868,
       "jaccardMax": 0.4412
     },
     {
       "hammingBucket": "55-59",
-      "pairs": 2904,
+      "pairs": 2908,
       "jaccardMin": 0,
       "jaccardMean": 0.0529,
       "jaccardMax": 0.2813
     },
     {
       "hammingBucket": "60-64",
-      "pairs": 3187,
+      "pairs": 3190,
       "jaccardMin": 0,
-      "jaccardMean": 0.0326,
+      "jaccardMean": 0.0325,
       "jaccardMax": 0.2381
     },
     {
       "hammingBucket": "65-69",
-      "pairs": 2000,
+      "pairs": 1992,
       "jaccardMin": 0,
-      "jaccardMean": 0.0216,
+      "jaccardMean": 0.0214,
       "jaccardMax": 0.2
     },
     {
       "hammingBucket": "70-74",
-      "pairs": 663,
+      "pairs": 664,
       "jaccardMin": 0,
-      "jaccardMean": 0.0131,
+      "jaccardMean": 0.013,
       "jaccardMax": 0.1124
     },
     {
       "hammingBucket": "75-79",
-      "pairs": 106,
+      "pairs": 105,
       "jaccardMin": 0,
-      "jaccardMean": 0.0083,
+      "jaccardMean": 0.0082,
       "jaccardMax": 0.0816
     },
     {
@@ -147,7 +147,7 @@
     }
   ],
   "summary": {
-    "widgets": 970,
+    "widgets": 971,
     "fingerprintFailures": 1,
     "exactClusters": 2,
     "clusters": 43,
@@ -1442,11 +1442,11 @@
       "name": "CatchConsumerBootScreen",
       "file": "lib/consumer_bootstrap.dart",
       "role": "screen",
-      "shapeHash": "5309c1c369575446410aba20910298cf42f55dbaca760cd79836a2f8c2df348f",
-      "coarseShapeHash": "8d230a2c18a31aba148046f4b3014131ca0bf5dbf1924644151062c64f89d3ba",
-      "simhash128": "504ac3d9d0e2d59c9de36c759a90b422",
-      "tokenStreamLength": 75,
-      "coarseTokenStreamLength": 75,
+      "shapeHash": "a8f7beea8ed62de0dd4f7e05d646a4b7ab4bc7baf67ef55c01e4cd55aa21cee1",
+      "coarseShapeHash": "bdf2184bddf4da241e952868d8cda5f925d297fc961138c9e78b964389d4cc90",
+      "simhash128": "5642c3d9f0e20c9ad1e22cb5ba90b423",
+      "tokenStreamLength": 83,
+      "coarseTokenStreamLength": 83,
       "usageCountRaw": 4,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
@@ -3514,7 +3514,7 @@
       "simhash128": "bcd4411498d28ba5aed9f815e69955e2",
       "tokenStreamLength": 35,
       "coarseTokenStreamLength": 35,
-      "usageCountRaw": 12,
+      "usageCountRaw": 11,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -11647,11 +11647,11 @@
       "name": "ReelBand",
       "file": "lib/onboarding/presentation/pages/welcome_page.dart",
       "role": "feature-adapter",
-      "shapeHash": "44b116afb7418c445cad91792b4d447ecb422c40aa5f4ee1575ccdf5e980264c",
-      "coarseShapeHash": "3cc3fea4e389f361a852bd1fda826f64f4c49c8f97b5220de3279c9981d91c33",
-      "simhash128": "4ccd53cce70715783fb6fd3f8598fcbe",
-      "tokenStreamLength": 51,
-      "coarseTokenStreamLength": 51,
+      "shapeHash": "e9cf940db50be01a20b1e3633c1e895b339db74b3ac8d32a540c06bc1bfacabb",
+      "coarseShapeHash": "e19c6c259f91ef5783ae5311c7cf52172cdaf6ef49b417c87171c04a1113cf1a",
+      "simhash128": "6ccc53ece7470c583fe6fd3f8598e4be",
+      "tokenStreamLength": 53,
+      "coarseTokenStreamLength": 53,
       "usageCountRaw": 4,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
@@ -11660,11 +11660,11 @@
       "name": "ReelRow",
       "file": "lib/onboarding/presentation/pages/welcome_page.dart",
       "role": "composition",
-      "shapeHash": "de7865d1bf5cf8de4b0c01ff208e4079b634f83d0f05f87696575a8f04c75b7f",
-      "coarseShapeHash": "2356e607485c146c4999cdb5dff0c10f332bd9cda68fd90072d4a61569bf908c",
-      "simhash128": "61e20ad8dec609790f812ed18ca8cea1",
-      "tokenStreamLength": 63,
-      "coarseTokenStreamLength": 63,
+      "shapeHash": "c955a9e69aaab2a5c1a98d6f9533a33a89bdc14ed0bb9a69ea40055239aa39fd",
+      "coarseShapeHash": "286939bc74c7b43ab44990d1478903ee80238d4e0ec8a6249a22aae006ddde8f",
+      "simhash128": "61620ad8dec609798fc12ed18ca8cea1",
+      "tokenStreamLength": 64,
+      "coarseTokenStreamLength": 64,
       "usageCountRaw": 4,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
@@ -12840,14 +12840,27 @@
       "hasWidgetHelpers": false
     },
     {
+      "name": "WelcomeFocusLockup",
+      "file": "lib/onboarding/presentation/pages/welcome_page.dart",
+      "role": "feature-adapter",
+      "shapeHash": "01f64bf4c9f7105fe2eb1a66f2e4feb8940b5790a161e57d5f77c9279c81d01c",
+      "coarseShapeHash": "7f3bef077439c4ff55253ea9e07350bcf073444146810e63d92e49d7e90cb857",
+      "simhash128": "7457a771eeb3cb79af15783996eb90f7",
+      "tokenStreamLength": 90,
+      "coarseTokenStreamLength": 90,
+      "usageCountRaw": 5,
+      "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
+      "hasWidgetHelpers": false
+    },
+    {
       "name": "WelcomePage",
       "file": "lib/onboarding/presentation/pages/welcome_page.dart",
       "role": "screen",
-      "shapeHash": "56dc585222ac60b6e3f72cb3ecbc8a25a337172fcb34dfafb2fc93449a4f82a2",
-      "coarseShapeHash": "2715d580f2a36301338646b63778d5ea713e730c19d1b01edb3212f54ba53cc8",
-      "simhash128": "7642cbc7f3a215bed1631c33d310d4f2",
-      "tokenStreamLength": 49,
-      "coarseTokenStreamLength": 49,
+      "shapeHash": "104084aed281b06faaceb7491b410d9e5700fe30dfa21e0f3fd911b3decb1538",
+      "coarseShapeHash": "2d68f9fb2125b085363e76d212ba233b32aa53ae880ee43b247816c0af762414",
+      "simhash128": "7642cbcffba215bed1631d33d3d0d4f3",
+      "tokenStreamLength": 50,
+      "coarseTokenStreamLength": 50,
       "usageCountRaw": 9,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
@@ -12856,11 +12869,11 @@
       "name": "WelcomeScene",
       "file": "lib/onboarding/presentation/pages/welcome_page.dart",
       "role": "feature-adapter",
-      "shapeHash": "a759b8cf7108e651db2da07b4d4841cfda6d7aab862a86871fc94cf398fc3789",
-      "coarseShapeHash": "959de8a6c7dda58b5dedb2f1e876ae9a7137b9cd5c701e23017cc9ca7401e0b8",
-      "simhash128": "125aa1265eb0db6ae5c0f895b4f29645",
-      "tokenStreamLength": 101,
-      "coarseTokenStreamLength": 101,
+      "shapeHash": "f9e2067a41be5654458ae9fd4bb1fb470e057ae19de0ce7b74b9ee6719e55eff",
+      "coarseShapeHash": "8c94f0f3a0d97adf12222a828b0c9f89f900982c528dc1db05c483e03efdf912",
+      "simhash128": "b7dab52e55f04269eec3b89db590dae9",
+      "tokenStreamLength": 129,
+      "coarseTokenStreamLength": 129,
       "usageCountRaw": 5,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
@@ -19531,7 +19544,7 @@
         "HostLoadingScreen",
         "PaymentConfirmationLoadingScreen"
       ],
-      "usageSum": 39,
+      "usageSum": 38,
       "scope": "mixed"
     },
     {

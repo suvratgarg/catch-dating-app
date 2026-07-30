@@ -48,6 +48,8 @@ It regenerates:
   `AppIcon-host-prod` asset catalogs
 - the independent `apps/consumer` production, dev, and staging Android/iOS
   launcher resources
+- the Consumer-only iOS launch-screen constraints that place the generated
+  `Catch_` alpha bounds at the Welcome reel's responsive `Catch` anchor
 - `tool/branding/native_branding.generated.json`
 
 Consumer production uses `assets/branding/catch_icon.png`; the native-brand
@@ -58,3 +60,8 @@ Host production uses the two-line Catch Hosts icon as its base, through the
 generated `AppIcon-host-prod` catalogs and Android `hostProd` launcher
 resources. Dev and staging flavors use diagonal corner ribbons, so internal
 builds stay visually distinct without covering the consumer or host wordmarks.
+
+`flutter_native_splash:create` owns the base launch-screen assets and may
+replace the storyboard. Run `generate_native_brand_assets.dart` after it so the
+Consumer-only responsive launch geometry is reapplied from source. Host launch
+geometry is deliberately unchanged.

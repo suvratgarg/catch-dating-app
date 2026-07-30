@@ -8896,6 +8896,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'WelcomeFocusLockup',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Welcome focus lockup states',
+                    builder:
+                        _widgetbook_workspace_onboarding_onboarding_use_cases
+                            .welcomeFocusLockupStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'WelcomePage',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(

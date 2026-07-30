@@ -1,7 +1,7 @@
 ---
 doc_id: widget_catalog
-version: 2.5.663
-updated: 2026-07-29
+version: 2.5.664
+updated: 2026-07-30
 owner: recursive_audit_loop
 status: active
 ---
@@ -16,6 +16,17 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.664
+
+- `WelcomeFocusLockup` now owns the Consumer's static `Catch_` and animated
+  `Catch ${phrase}.` focus sentence. Both states use one responsive anchor,
+  explicit Archivo `wdth: 78`, one literal whitespace, and one measured
+  phrase-only underline below the text.
+- `WelcomeScene` paints the active phrase in that fixed slot while `ReelBand`
+  hides the corresponding moving row. The reel lands on `the sunset 5K` and
+  has explicit small/large-phone, safe-area, intermediate-motion, and enlarged
+  text coverage.
 
 ### 2.5.663
 
@@ -7083,8 +7094,8 @@ Widgetbook callers.
 | Widget | File | Purpose |
 |---|---|---|
 | `CatchConsumerBootstrap` | `lib/consumer_bootstrap.dart` | Consumer iOS/Android process-root state machine. Starts critical initialization concurrently with boot motion, removes the native splash through one decoded/painted-frame callback, mounts routing only after both gates complete, atomically replaces the boot `MaterialApp` so independent application roots never overlap, and converts startup failure into a retryable Catch error surface. Host/web/desktop do not adopt it. |
-| `CatchConsumerBootScreen` | `lib/consumer_bootstrap.dart` | Provider-free Consumer cold-start animation. First matches the generated native splash mark, fades into the existing Welcome reel, suppresses logged-out CTAs, supports reduced motion and tap-to-skip, and holds its landed state while initialization finishes. |
-| `WelcomePage` | `lib/onboarding/presentation/pages/welcome_page.dart:11` | Animated logged-out start/welcome screen registered as `screen.start.welcome` and reused by `screen.onboarding.flow` welcome entry. It follows the Splash -> Welcome handoff with fixed `Catch`, deterministic object reel landing on `someone real`, tap/reduced-motion skip, body copy, primary Continue with phone CTA, and secondary See what's on CTA. |
+| `CatchConsumerBootScreen` | `lib/consumer_bootstrap.dart` | Provider-free Consumer cold-start animation. Its app-owned static `Catch_` uses the exact responsive anchor of the reel's fixed `Catch`, then fades into the Welcome reel without shifting that word. It suppresses logged-out CTAs, supports reduced motion and tap-to-skip, and holds its landed state while initialization finishes. |
+| `WelcomePage` | `lib/onboarding/presentation/pages/welcome_page.dart:11` | Animated logged-out start/welcome screen registered as `screen.start.welcome` and reused by `screen.onboarding.flow` welcome entry. It follows the Splash -> Welcome handoff with a fixed single-line focus lockup, deterministic object reel landing on `the sunset 5K`, tap/reduced-motion skip, body copy, primary Continue with phone CTA, and secondary See what's on CTA. |
 
 ### ConsumerWidget
 
@@ -7096,9 +7107,10 @@ Widgetbook callers.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `WelcomeScene` | `lib/onboarding/presentation/pages/welcome_page.dart:242` | Provider-free Welcome splash scene. Positions the object reel, fixed `Catch` word, landed body copy, and Continue / See what's on CTA stack from explicit viewport height, media padding, spin, landing, and landed values. The fixed word and focused phrase share an alphabetic baseline. Consumer cold boot sets `showLandingContent: false` to reuse the reel without mounting logged-out actions. |
-| `ReelBand` | `lib/onboarding/presentation/pages/welcome_page.dart:356` | Masked vertical object reel used by `WelcomeScene`. Converts spin/landing progress into a doubled phrase track, fade mask, and repeated `ReelRow` sequence landing deterministically on `someone real`. |
-| `ReelRow` | `lib/onboarding/presentation/pages/welcome_page.dart:429` | Single Welcome reel phrase row. Uses `WelcomePhrase` activity pigment, distance from the reel focus line, landing fade/cool progress, and focused-period styling. Its focused underline is a separate pigment rule below the text bounds rather than a font decoration on the shared baseline. |
+| `WelcomeScene` | `lib/onboarding/presentation/pages/welcome_page.dart:242` | Provider-free Welcome splash scene. Positions the responsive reel, fixed `WelcomeFocusLockup`, landed body copy, and Continue / See what's on CTA stack from explicit viewport width/height, media padding, spin, landing, and landed values. Consumer cold boot sets `showLandingContent: false` to reuse the reel without mounting logged-out actions. |
+| `WelcomeFocusLockup` | `lib/onboarding/presentation/pages/welcome_page.dart` | Shared static/reel focus sentence. Paints `Catch_` for the app-owned static handoff or `Catch ${phrase}.` for reel focus as one non-wrapping Archivo `wdth: 78` line, preserves a literal space and shared baseline, measures the phrase glyph selection for a separate below-text underline, and scales the whole lockup to its responsive right boundary. |
+| `ReelBand` | `lib/onboarding/presentation/pages/welcome_page.dart:356` | Masked vertical object reel used by `WelcomeScene`. Converts spin/landing progress into a doubled phrase track, fade mask, and repeated `ReelRow` sequence landing deterministically on `the sunset 5K`; the focused moving row is hidden while the scene paints it in the fixed lockup. |
+| `ReelRow` | `lib/onboarding/presentation/pages/welcome_page.dart:429` | Single Welcome reel phrase row. Uses responsive insets, capped text scaling, `WelcomePhrase` activity pigment, distance from the reel focus line, and landing fade/cool progress. In `WelcomeScene`, it yields focus rendering to the fixed `WelcomeFocusLockup` so moving text cannot receive focus treatment. |
 | `RevealEntrance` | `lib/onboarding/presentation/pages/welcome_page.dart:525` | Welcome landing reveal wrapper. Converts shared landing progress plus reveal order into opacity and vertical offset for body copy and CTA entrances. |
 | `OnboardingFormKeys` | `lib/onboarding/presentation/onboarding_form_keys.dart:4` | Stable semantic keys for onboarding form controls whose visible labels repeat across sections. |
 

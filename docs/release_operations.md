@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 1.14.0
+version: 1.14.1
 updated: 2026-07-30
 owner: recursive_audit_loop
 status: active
@@ -104,7 +104,11 @@ on both `#F4F4F1` and `#0F0E10`; a baked app-icon tile is not an acceptable
 native splash image. The native splash mark is generated as transparent output
 by `tool/branding/generate_catch_icon.swift` and is a separate asset from the
 opaque launcher icon; edit the generator and `pubspec.yaml`, then re-run the
-Swift generator and `flutter_native_splash:create`.
+Swift generator and `flutter_native_splash:create`. Finally run
+`dart run tool/branding/generate_native_brand_assets.dart`: it reapplies the
+Consumer-only iOS responsive launch constraints that align `Catch_` with the
+Welcome reel. Never hand-edit that generated storyboard. Host launch geometry
+remains unchanged.
 
 ## Required PR Checks
 

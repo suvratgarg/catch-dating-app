@@ -18,8 +18,8 @@
     "catalogKeys": 2785,
     "usedKeys": 2785,
     "orphanedKeys": 0,
-    "usageReferences": 3054,
-    "catalogL10nReferences": 3054,
+    "usageReferences": 3053,
+    "catalogL10nReferences": 3053,
     "nonMessageL10nReferences": 1,
     "missingCatalogKeys": 0,
     "missingCatalogReferences": 0,
@@ -6191,26 +6191,16 @@
     {
       "key": "coreCatchStartupLoadingScreenSemanticlabelCatch",
       "status": "used",
-      "usageCount": 2,
+      "usageCount": 1,
       "usages": [
-        {
-          "path": "lib/consumer_bootstrap.dart",
-          "line": 399,
-          "column": 36
-        },
         {
           "path": "lib/core/widgets/catch_startup_loading_screen.dart",
           "line": 64,
           "column": 22
         }
       ],
-      "l10nReferenceCount": 2,
+      "l10nReferenceCount": 1,
       "l10nReferences": [
-        {
-          "path": "lib/consumer_bootstrap.dart",
-          "line": 399,
-          "column": 36
-        },
         {
           "path": "lib/core/widgets/catch_startup_loading_screen.dart",
           "line": 64,
@@ -49815,7 +49805,7 @@
       "usages": [
         {
           "path": "lib/onboarding/presentation/pages/welcome_page.dart",
-          "line": 362,
+          "line": 396,
           "column": 28
         }
       ],
@@ -49823,7 +49813,7 @@
       "l10nReferences": [
         {
           "path": "lib/onboarding/presentation/pages/welcome_page.dart",
-          "line": 362,
+          "line": 396,
           "column": 28
         }
       ]
@@ -49835,7 +49825,7 @@
       "usages": [
         {
           "path": "lib/onboarding/presentation/pages/welcome_page.dart",
-          "line": 375,
+          "line": 409,
           "column": 43
         }
       ],
@@ -49843,7 +49833,7 @@
       "l10nReferences": [
         {
           "path": "lib/onboarding/presentation/pages/welcome_page.dart",
-          "line": 375,
+          "line": 409,
           "column": 43
         }
       ]
@@ -49855,7 +49845,7 @@
       "usages": [
         {
           "path": "lib/consumer_bootstrap.dart",
-          "line": 378,
+          "line": 376,
           "column": 34
         },
         {
@@ -49868,7 +49858,7 @@
       "l10nReferences": [
         {
           "path": "lib/consumer_bootstrap.dart",
-          "line": 378,
+          "line": 376,
           "column": 34
         },
         {
@@ -49885,16 +49875,16 @@
       "usages": [
         {
           "path": "lib/onboarding/presentation/pages/welcome_page.dart",
-          "line": 321,
-          "column": 26
+          "line": 468,
+          "column": 37
         }
       ],
       "l10nReferenceCount": 1,
       "l10nReferences": [
         {
           "path": "lib/onboarding/presentation/pages/welcome_page.dart",
-          "line": 321,
-          "column": 26
+          "line": 468,
+          "column": 37
         }
       ]
     },
@@ -49905,7 +49895,7 @@
       "usages": [
         {
           "path": "lib/onboarding/presentation/pages/welcome_page.dart",
-          "line": 337,
+          "line": 371,
           "column": 30
         }
       ],
@@ -49913,7 +49903,7 @@
       "l10nReferences": [
         {
           "path": "lib/onboarding/presentation/pages/welcome_page.dart",
-          "line": 337,
+          "line": 371,
           "column": 30
         }
       ]
@@ -49955,12 +49945,12 @@
       "usages": [
         {
           "path": "lib/onboarding/presentation/pages/welcome_page.dart",
-          "line": 681,
+          "line": 894,
           "column": 41
         },
         {
           "path": "lib/onboarding/presentation/pages/welcome_page.dart",
-          "line": 684,
+          "line": 897,
           "column": 24
         }
       ],
@@ -49968,12 +49958,12 @@
       "l10nReferences": [
         {
           "path": "lib/onboarding/presentation/pages/welcome_page.dart",
-          "line": 681,
+          "line": 894,
           "column": 41
         },
         {
           "path": "lib/onboarding/presentation/pages/welcome_page.dart",
-          "line": 684,
+          "line": 897,
           "column": 24
         }
       ]
@@ -49985,7 +49975,7 @@
       "usages": [
         {
           "path": "lib/onboarding/presentation/pages/welcome_page.dart",
-          "line": 220,
+          "line": 221,
           "column": 36
         }
       ],
@@ -49993,7 +49983,7 @@
       "l10nReferences": [
         {
           "path": "lib/onboarding/presentation/pages/welcome_page.dart",
-          "line": 220,
+          "line": 221,
           "column": 36
         }
       ]
@@ -50025,7 +50015,7 @@
       "usages": [
         {
           "path": "lib/onboarding/presentation/pages/welcome_page.dart",
-          "line": 679,
+          "line": 892,
           "column": 40
         }
       ],
@@ -50033,7 +50023,7 @@
       "l10nReferences": [
         {
           "path": "lib/onboarding/presentation/pages/welcome_page.dart",
-          "line": 679,
+          "line": 892,
           "column": 40
         }
       ]
@@ -50065,7 +50055,7 @@
       "usages": [
         {
           "path": "lib/onboarding/presentation/pages/welcome_page.dart",
-          "line": 228,
+          "line": 229,
           "column": 36
         }
       ],
@@ -50073,7 +50063,7 @@
       "l10nReferences": [
         {
           "path": "lib/onboarding/presentation/pages/welcome_page.dart",
-          "line": 228,
+          "line": 229,
           "column": 36
         }
       ]

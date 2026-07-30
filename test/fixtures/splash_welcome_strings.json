@@ -1,6 +1,6 @@
 {
   "_comment": "Mirror of splash-welcome-handoff/strings.json for CI environments that do not have the external handoff folder.",
-  "landingIndex": 11,
+  "landingIndex": 4,
   "phrases": [
     { "object": "the 6:30 run", "activity": "social-run", "pigment": "#D85A3C" },
     { "object": "the long table", "activity": "dinner", "pigment": "#C44D6A" },

@@ -208,6 +208,7 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
                         width: sceneWidth,
                         height: size.height,
                         child: WelcomeScene(
+                          viewportWidth: sceneWidth,
                           viewportHeight: size.height,
                           mediaPadding: media.padding,
                           spinValue: _spinController.value,
@@ -248,6 +249,7 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
 class WelcomeScene extends StatelessWidget {
   const WelcomeScene({
     super.key,
+    required this.viewportWidth,
     required this.viewportHeight,
     required this.mediaPadding,
     required this.spinValue,
@@ -260,6 +262,7 @@ class WelcomeScene extends StatelessWidget {
 
   static const catchWordKey = ValueKey<String>('welcome-reel-catch-word');
 
+  final double viewportWidth;
   final double viewportHeight;
   final EdgeInsets mediaPadding;
   final double spinValue;
@@ -272,15 +275,30 @@ class WelcomeScene extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const tokens = CatchTokens.editorialDark;
-    final wheelTop = math.max(
-      CatchLayout.welcomeReelTop,
-      mediaPadding.top + CatchSpacing.s1,
-    );
+    final sceneWidth = viewportWidth;
+    final wheelTop = CatchLayout.welcomeReelTopFor(mediaPadding);
     final reelHeight = math.min(
       CatchLayout.welcomeReelHeight,
       math.max(0.0, viewportHeight - wheelTop),
     );
-    final catchTop = wheelTop + CatchLayout.welcomeReelCatchFocusTop;
+    final catchTop = CatchLayout.welcomeReelCatchTopFor(mediaPadding);
+    final catchLeft = CatchLayout.welcomeReelCatchLeftForWidth(sceneWidth);
+    final rightInset = CatchLayout.welcomeReelRightForWidth(sceneWidth);
+    final focusedPhraseIndex = welcomeFocusedPhraseIndex(
+      spinValue: spinValue,
+      landed: landed,
+    );
+    final focusedPhrase = welcomePhraseBank[focusedPhraseIndex];
+    final pigment =
+        ActivityPalette.pigments[focusedPhrase.activityKind] ??
+        ActivityPalette.pigments[ActivityKind.openActivity]!;
+    final colorCool = _durationProgress(
+      landingValue,
+      CatchMotion.welcomeTextCool,
+    );
+    final phraseColor = landed && focusedPhraseIndex == welcomeLandingIndex
+        ? Color.lerp(pigment, tokens.ink, colorCool)!
+        : pigment;
     final buttonsBottom = math.max(
       CatchLayout.welcomeButtonsBottom,
       mediaPadding.bottom + CatchSpacing.s4,
@@ -308,20 +326,36 @@ class WelcomeScene extends StatelessWidget {
           top: wheelTop,
           height: reelHeight,
           child: ReelBand(
+            viewportWidth: sceneWidth,
             spinValue: spinValue,
             landingValue: landingValue,
             landed: landed,
+            hideFocusedPhrase: true,
           ),
         ),
         Positioned(
-          left: CatchLayout.welcomeReelCatchLeft,
+          key: WelcomeScene.catchWordKey,
+          left: catchLeft,
+          right: rightInset,
           top: catchTop,
-          child: Text(
-            key: WelcomeScene.catchWordKey,
-            context.l10n.onboardingWelcomePageTextCatch,
-            style: CatchTextStyles.welcomeReelHeadline(
-              context,
-              color: tokens.ink,
+          child: AnimatedSwitcher(
+            duration: CatchMotion.fast,
+            switchInCurve: CatchMotion.easeOutCurve,
+            switchOutCurve: CatchMotion.easeInCubicCurve,
+            layoutBuilder: (currentChild, previousChildren) => Stack(
+              alignment: Alignment.topLeft,
+              clipBehavior: Clip.none,
+              children: [...previousChildren, ?currentChild],
+            ),
+            transitionBuilder: (child, animation) =>
+                FadeTransition(opacity: animation, child: child),
+            child: WelcomeFocusLockup(
+              key: ValueKey<int>(focusedPhraseIndex),
+              phrase: focusedPhrase.object,
+              catchColor: tokens.ink,
+              maxWidth: sceneWidth - catchLeft - rightInset,
+              phraseColor: phraseColor,
+              underlineColor: pigment,
             ),
           ),
         ),
@@ -392,17 +426,170 @@ class WelcomeScene extends StatelessWidget {
   }
 }
 
+/// The fixed grammatical focus slot shared by the Consumer boot handoff and
+/// the moving Welcome reel.
+///
+/// `Catch` and the active phrase are painted as one line with a literal space,
+/// so their alphabetic baseline cannot drift. The underline is positioned from
+/// the measured phrase glyph box and never participates in the text baseline.
+class WelcomeFocusLockup extends StatelessWidget {
+  const WelcomeFocusLockup({
+    super.key,
+    required this.catchColor,
+    required this.maxWidth,
+    this.phrase,
+    this.phraseColor,
+    this.underlineColor,
+    this.showBrandUnderscore = false,
+  }) : assert(
+         phrase == null || (phraseColor != null && underlineColor != null),
+       );
+
+  static const textKey = ValueKey<String>('welcome-focus-lockup-text');
+  static const underlineKey = ValueKey<String>(
+    'welcome-focus-lockup-underline',
+  );
+
+  final String? phrase;
+  final Color catchColor;
+  final double maxWidth;
+  final Color? phraseColor;
+  final Color? underlineColor;
+  final bool showBrandUnderscore;
+
+  @override
+  Widget build(BuildContext context) {
+    final style = CatchTextStyles.welcomeReelHeadline(
+      context,
+      color: catchColor,
+    );
+    final textDirection = Directionality.of(context);
+    final textScaler = _welcomeReelTextScaler(context);
+    final catchLabel = context.l10n.onboardingWelcomePageTextCatch;
+    final phraseText = phrase == null ? null : '$phrase.';
+    final children = <InlineSpan>[
+      TextSpan(text: catchLabel, style: style),
+      if (showBrandUnderscore)
+        TextSpan(
+          text: '_',
+          style: style.copyWith(color: CatchWelcomeColors.wordmarkBlank),
+        ),
+      if (phraseText != null) ...[
+        TextSpan(text: ' ', style: style),
+        TextSpan(
+          text: phraseText,
+          style: style.copyWith(color: phraseColor),
+        ),
+      ],
+    ];
+    final lockupSpan = TextSpan(children: children);
+    final painter = TextPainter(
+      text: lockupSpan,
+      textDirection: textDirection,
+      textScaler: textScaler,
+      maxLines: 1,
+    )..layout();
+    final phraseStart = phraseText == null ? null : catchLabel.length + 1;
+    final phraseBoxes = phraseStart == null
+        ? const <TextBox>[]
+        : painter.getBoxesForSelection(
+            TextSelection(
+              baseOffset: phraseStart,
+              // Keep the rule under the phrase glyphs, not the terminal period.
+              extentOffset: phraseStart + phrase!.length,
+            ),
+          );
+    final phraseBox = phraseBoxes.isEmpty ? null : phraseBoxes.first;
+    final underlineTop = painter.height + CatchLayout.welcomeReelUnderlineGap;
+    final contentHeight = phraseBox == null
+        ? painter.height
+        : math.max(
+            painter.height,
+            underlineTop + CatchLayout.welcomeReelUnderlineThickness,
+          );
+
+    final fitScale = painter.width <= 0
+        ? 1.0
+        : math.min(1.0, maxWidth / painter.width);
+    final fittedWidth = painter.width * fitScale;
+    final fittedHeight = contentHeight * fitScale;
+    final semanticLabel = phraseText == null
+        ? catchLabel
+        : '$catchLabel $phraseText';
+
+    return Semantics(
+      label: semanticLabel,
+      excludeSemantics: true,
+      child: SizedBox(
+        width: fittedWidth,
+        height: fittedHeight,
+        child: OverflowBox(
+          alignment: Alignment.topLeft,
+          minWidth: painter.width,
+          maxWidth: painter.width,
+          minHeight: contentHeight,
+          maxHeight: contentHeight,
+          child: Transform.scale(
+            scale: fitScale,
+            alignment: Alignment.topLeft,
+            child: SizedBox(
+              width: painter.width,
+              height: contentHeight,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Text.rich(
+                    key: WelcomeFocusLockup.textKey,
+                    lockupSpan,
+                    style: style,
+                    maxLines: 1,
+                    softWrap: false,
+                    overflow: TextOverflow.visible,
+                    textScaler: textScaler,
+                  ),
+                  if (phraseBox != null)
+                    Positioned(
+                      left: phraseBox.left,
+                      top: underlineTop,
+                      width: phraseBox.right - phraseBox.left,
+                      height: CatchLayout.welcomeReelUnderlineThickness,
+                      child: ColoredBox(
+                        key: WelcomeFocusLockup.underlineKey,
+                        color: underlineColor!,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+TextScaler _welcomeReelTextScaler(BuildContext context) {
+  final requestedScale = MediaQuery.textScalerOf(context).scale(1);
+  return TextScaler.linear(
+    requestedScale.clamp(1.0, CatchLayout.welcomeReelMaxTextScale),
+  );
+}
+
 class ReelBand extends StatelessWidget {
   const ReelBand({
     super.key,
+    this.viewportWidth = CatchLayout.welcomeReferenceWidth,
     required this.spinValue,
     required this.landingValue,
     required this.landed,
+    this.hideFocusedPhrase = false,
   });
 
+  final double viewportWidth;
   final double spinValue;
   final double landingValue;
   final bool landed;
+  final bool hideFocusedPhrase;
 
   @override
   Widget build(BuildContext context) {
@@ -448,12 +635,14 @@ class ReelBand extends StatelessWidget {
                       index += 1
                     )
                       ReelRow(
+                        viewportWidth: viewportWidth,
                         phrase: welcomePhraseBank[index],
                         phraseIndex: index,
                         rowIndex: copy * welcomePhraseBank.length + index,
                         trackOffset: offset,
                         landingValue: landingValue,
                         landed: landed,
+                        hideWhenFocused: hideFocusedPhrase,
                       ),
                 ],
               ),
@@ -468,12 +657,14 @@ class ReelBand extends StatelessWidget {
 class ReelRow extends StatelessWidget {
   const ReelRow({
     super.key,
+    required this.viewportWidth,
     required this.phrase,
     required this.phraseIndex,
     required this.rowIndex,
     required this.trackOffset,
     required this.landingValue,
     required this.landed,
+    this.hideWhenFocused = false,
   });
 
   static const focusedPhraseKey = ValueKey<String>(
@@ -483,12 +674,14 @@ class ReelRow extends StatelessWidget {
     'welcome-reel-focused-underline',
   );
 
+  final double viewportWidth;
   final WelcomePhrase phrase;
   final int phraseIndex;
   final int rowIndex;
   final double trackOffset;
   final double landingValue;
   final bool landed;
+  final bool hideWhenFocused;
 
   @override
   Widget build(BuildContext context) {
@@ -530,18 +723,23 @@ class ReelRow extends StatelessWidget {
     final rowOpacity = landed && !isLandingFocus
         ? dimOpacity * (1 - nonFocusFade)
         : dimOpacity;
-    final periodOpacity = inFocus ? 1.0 : 0.0;
+    final periodOpacity = inFocus && !hideWhenFocused ? 1.0 : 0.0;
     final style = CatchTextStyles.welcomeReelHeadline(
       context,
       color: textColor,
     );
 
+    final effectiveOpacity = hideWhenFocused && inFocus ? 0.0 : rowOpacity;
+
     return SizedBox(
       height: CatchLayout.welcomeReelRowHeight,
       child: Opacity(
-        opacity: rowOpacity.clamp(0, 1).toDouble(),
+        opacity: effectiveOpacity.clamp(0, 1).toDouble(),
         child: Padding(
-          padding: CatchInsets.welcomeReelRow,
+          padding: EdgeInsets.only(
+            left: CatchLayout.welcomeReelObjectLeftForWidth(viewportWidth),
+            right: CatchLayout.welcomeReelRightForWidth(viewportWidth),
+          ),
           child: Align(
             alignment: Alignment.topLeft,
             child: Stack(
@@ -564,8 +762,9 @@ class ReelRow extends StatelessWidget {
                   maxLines: 2,
                   overflow: TextOverflow.clip,
                   softWrap: true,
+                  textScaler: _welcomeReelTextScaler(context),
                 ),
-                if (inFocus)
+                if (inFocus && !hideWhenFocused)
                   Positioned(
                     key: focusedUnderlineKey,
                     left: 0,
@@ -622,6 +821,20 @@ double _welcomeTrackOffset({required double spinValue, required bool landed}) {
   return (endY * eased) % trackH;
 }
 
+int welcomeFocusedPhraseIndex({
+  required double spinValue,
+  required bool landed,
+}) {
+  final offset = _welcomeTrackOffset(spinValue: spinValue, landed: landed);
+  final centeredRow =
+      ((offset +
+                  CatchLayout.welcomeReelFocus -
+                  CatchLayout.welcomeReelRowHalfHeight) /
+              CatchLayout.welcomeReelRowHeight)
+          .round();
+  return centeredRow % welcomePhraseBank.length;
+}
+
 double _welcomeSpinEase(double progress, double curvePower) {
   if (progress <= 0) return 0;
   if (progress >= 1) return 1;
@@ -670,7 +883,7 @@ const welcomePhraseBank = <WelcomePhrase>[
   WelcomePhrase('someone real', ActivityKind.socialRun),
 ];
 
-const welcomeLandingIndex = 11;
+const welcomeLandingIndex = 4;
 
 String _authLocation(BuildContext context) {
   final from = _safeFrom(
