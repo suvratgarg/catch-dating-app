@@ -204,6 +204,13 @@ const schemaSpecs = [
       "crossPathsShowcaseEligibilityDocument.ts",
   },
   {
+    name: "CrossPathsSuggestionExposureDocument",
+    source: "firestore/cross_paths_suggestion_exposures.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "crossPathsSuggestionExposureDocument.ts",
+  },
+  {
     name: "EventBroadcastDocument",
     source: "firestore/event_broadcasts.schema.json",
     typeOutput: "functions/src/shared/generated/eventBroadcastDocument.ts",
@@ -864,6 +871,13 @@ const schemaSpecs = [
       "setCrossPathsEventConsentCallablePayload.ts",
   },
   {
+    name: "GetCrossPathsSuggestionsCallablePayload",
+    source: "callables/get_cross_paths_suggestions_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "getCrossPathsSuggestionsCallablePayload.ts",
+  },
+  {
     name: "CreateEventWaitlistOffersCallablePayload",
     source: "callables/create_event_waitlist_offers_payload.schema.json",
     typeOutput:
@@ -1196,6 +1210,14 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "setCrossPathsEventConsentCallableResponse.ts",
+  },
+  {
+    name: "GetCrossPathsSuggestionsCallableResponse",
+    source:
+      "callable_responses/get_cross_paths_suggestions_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "getCrossPathsSuggestionsCallableResponse.ts",
   },
   {
     name: "CreateProfileDecisionClientWrite",

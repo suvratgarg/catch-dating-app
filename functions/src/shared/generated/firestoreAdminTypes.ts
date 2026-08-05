@@ -2016,6 +2016,19 @@ export interface CrossPathsShowcaseEligibilityDocument {
 }
 
 /**
+ * Server-only, session-idempotent Cross Paths exposure receipt used for ranking fatigue. It contains no private preference values or roster projection.
+ */
+export interface CrossPathsSuggestionExposureDocument {
+  viewerUid: string;
+  candidateUid: string;
+  eventId: string;
+  sessionIdHash: string;
+  rankingVersion: number;
+  shownAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+}
+
+/**
  * Server-owned delivery receipt for an organizer event broadcast stored at eventBroadcasts/{broadcastId}.
  */
 export interface EventBroadcastDocument {

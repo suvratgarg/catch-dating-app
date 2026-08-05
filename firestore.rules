@@ -859,6 +859,12 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Exposure receipts are server-only ranking/fatigue inputs. A consumer
+    // must never infer who was eligible or who attends which event from them.
+    match /crossPathsSuggestionExposures/{exposureId} {
+      allow read, write: if false;
+    }
+
     // Server-owned event-announcement receipts contain frozen recipient and
     // per-delivery evidence. V1 exposes only the sanitized callable response.
     match /eventBroadcasts/{broadcastId} {

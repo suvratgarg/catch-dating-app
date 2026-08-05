@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.9.0
-updated: 2026-08-05
+version: 1.10.0
+updated: 2026-08-06
 owner: recursive_audit_loop
 status: active
 ---
@@ -347,6 +347,7 @@ Root-level edge/action documents are the source of truth for many-to-many state:
 | Event booking, waitlist, attendance, cancellation | `eventParticipations/{eventId_uid}` |
 | Cross Paths event visibility | `eventCrossPathsConsents/{eventId_uid}` |
 | Cross Paths showcase eligibility | server-only `crossPathsShowcaseEligibility/{uid}` |
+| Cross Paths suggestion exposure | server-only `crossPathsSuggestionExposures/{exposureId}` |
 | Saved events | `savedEvents/{uid_eventId}` |
 | Outgoing profile decisions | `profileDecisions/{uid}/outgoing/{targetId}` |
 | Match messages | `matches/{matchId}/messages/{messageId}` |
@@ -398,6 +399,20 @@ reviewers; support is read-only. Approval requires objective readiness and the
 complete checklist. Profile or rule changes invalidate approval at read time.
 Firestore rules deny every client read/write, and account deletion removes the
 record.
+
+Pre-event Cross Paths suggestions are owned by the App-Check-protected
+`getCrossPathsSuggestions` callable. Its typed request contains only a bounded
+set of current Explore event ids and an opaque session id. The server rechecks
+event availability, schedule conflicts, confirmed candidate participation,
+both consent gates, reciprocal preferences, showcase readiness, safety state,
+active matches, synthetic scope, and exposure fatigue. It returns at most two
+sanitized person/event projections plus a short-lived signed token; roster
+documents and private preference values never cross the callable boundary.
+`crossPathsSuggestionExposures/{exposureId}` is a deterministic server-only
+receipt used for seven-day fatigue and repeated-session stability. Firestore
+rules deny every client read/write, the document carries a 30-day expiry for
+the environment-owned Firestore TTL policy, and account deletion removes
+receipts where the member was viewer or candidate.
 
 Each device push token lives at
 `users/{uid}/pushInstallations/{installationId}` with `token`, `appRole`,

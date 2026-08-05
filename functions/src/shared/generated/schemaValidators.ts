@@ -39,6 +39,7 @@ import {EventInviteLinkDocument} from "./eventInviteLinkDocument";
 import {EventParticipationDocument} from "./eventParticipationDocument";
 import {EventCrossPathsConsentDocument} from "./eventCrossPathsConsentDocument";
 import {CrossPathsShowcaseEligibilityDocument} from "./crossPathsShowcaseEligibilityDocument";
+import {CrossPathsSuggestionExposureDocument} from "./crossPathsSuggestionExposureDocument";
 import {EventBroadcastDocument} from "./eventBroadcastDocument";
 import {EventWaitlistOfferDocument} from "./eventWaitlistOfferDocument";
 import {EventSuccessPlanDocument} from "./eventSuccessPlanDocument";
@@ -148,6 +149,7 @@ import {CancelEventCallablePayload} from "./cancelEventCallablePayload";
 import {DeleteEventCallablePayload} from "./deleteEventCallablePayload";
 import {EventIdCallablePayload} from "./eventIdCallablePayload";
 import {SetCrossPathsEventConsentCallablePayload} from "./setCrossPathsEventConsentCallablePayload";
+import {GetCrossPathsSuggestionsCallablePayload} from "./getCrossPathsSuggestionsCallablePayload";
 import {CreateEventWaitlistOffersCallablePayload} from "./createEventWaitlistOffersCallablePayload";
 import {CreateEventInviteLinkCallablePayload} from "./createEventInviteLinkCallablePayload";
 import {DisableEventInviteLinkCallablePayload} from "./disableEventInviteLinkCallablePayload";
@@ -199,6 +201,7 @@ import {WebsiteHostListingProjection} from "./websiteHostListingProjection";
 import {FetchEventSuccessWingmanCandidatesCallableResponse} from "./fetchEventSuccessWingmanCandidatesCallableResponse";
 import {FetchSwipeCandidatesCallableResponse} from "./fetchSwipeCandidatesCallableResponse";
 import {SetCrossPathsEventConsentCallableResponse} from "./setCrossPathsEventConsentCallableResponse";
+import {GetCrossPathsSuggestionsCallableResponse} from "./getCrossPathsSuggestionsCallableResponse";
 import {CreateProfileDecisionClientWrite} from "./createProfileDecisionClientWrite";
 import {CreateChatMessageClientWrite} from "./createChatMessageClientWrite";
 import {CreateSavedEventClientWrite} from "./createSavedEventClientWrite";
@@ -261,6 +264,7 @@ import {
   eventParticipationDocumentSchema,
   eventCrossPathsConsentDocumentSchema,
   crossPathsShowcaseEligibilityDocumentSchema,
+  crossPathsSuggestionExposureDocumentSchema,
   eventBroadcastDocumentSchema,
   eventWaitlistOfferDocumentSchema,
   eventSuccessPlanDocumentSchema,
@@ -370,6 +374,7 @@ import {
   deleteEventCallablePayloadSchema,
   eventIdCallablePayloadSchema,
   setCrossPathsEventConsentCallablePayloadSchema,
+  getCrossPathsSuggestionsCallablePayloadSchema,
   createEventWaitlistOffersCallablePayloadSchema,
   createEventInviteLinkCallablePayloadSchema,
   disableEventInviteLinkCallablePayloadSchema,
@@ -421,6 +426,7 @@ import {
   fetchEventSuccessWingmanCandidatesCallableResponseSchema,
   fetchSwipeCandidatesCallableResponseSchema,
   setCrossPathsEventConsentCallableResponseSchema,
+  getCrossPathsSuggestionsCallableResponseSchema,
   createProfileDecisionClientWriteSchema,
   createChatMessageClientWriteSchema,
   createSavedEventClientWriteSchema,
@@ -592,6 +598,10 @@ export const validateCrossPathsShowcaseEligibilityDocument:
   ValidateFunction<CrossPathsShowcaseEligibilityDocument> =
     ajv.compile(crossPathsShowcaseEligibilityDocumentSchema) as
       ValidateFunction<CrossPathsShowcaseEligibilityDocument>;
+export const validateCrossPathsSuggestionExposureDocument:
+  ValidateFunction<CrossPathsSuggestionExposureDocument> =
+    ajv.compile(crossPathsSuggestionExposureDocumentSchema) as
+      ValidateFunction<CrossPathsSuggestionExposureDocument>;
 export const validateEventBroadcastDocument:
   ValidateFunction<EventBroadcastDocument> =
     ajv.compile(eventBroadcastDocumentSchema) as
@@ -1028,6 +1038,10 @@ export const validateSetCrossPathsEventConsentCallablePayload:
   ValidateFunction<SetCrossPathsEventConsentCallablePayload> =
     ajv.compile(setCrossPathsEventConsentCallablePayloadSchema) as
       ValidateFunction<SetCrossPathsEventConsentCallablePayload>;
+export const validateGetCrossPathsSuggestionsCallablePayload:
+  ValidateFunction<GetCrossPathsSuggestionsCallablePayload> =
+    ajv.compile(getCrossPathsSuggestionsCallablePayloadSchema) as
+      ValidateFunction<GetCrossPathsSuggestionsCallablePayload>;
 export const validateCreateEventWaitlistOffersCallablePayload:
   ValidateFunction<CreateEventWaitlistOffersCallablePayload> =
     ajv.compile(createEventWaitlistOffersCallablePayloadSchema) as
@@ -1232,6 +1246,10 @@ export const validateSetCrossPathsEventConsentCallableResponse:
   ValidateFunction<SetCrossPathsEventConsentCallableResponse> =
     ajv.compile(setCrossPathsEventConsentCallableResponseSchema) as
       ValidateFunction<SetCrossPathsEventConsentCallableResponse>;
+export const validateGetCrossPathsSuggestionsCallableResponse:
+  ValidateFunction<GetCrossPathsSuggestionsCallableResponse> =
+    ajv.compile(getCrossPathsSuggestionsCallableResponseSchema) as
+      ValidateFunction<GetCrossPathsSuggestionsCallableResponse>;
 export const validateCreateProfileDecisionClientWrite:
   ValidateFunction<CreateProfileDecisionClientWrite> =
     ajv.compile(createProfileDecisionClientWriteSchema) as

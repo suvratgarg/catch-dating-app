@@ -150,7 +150,8 @@ The current contract layer covers:
 - profile patch payloads backed by typed Dart patch classes;
 - selected callable response payloads that the Flutter app decodes into typed
   client response objects, including the server-owned post-event candidate
-  projection returned by `fetchSwipeCandidates`;
+  projection returned by `fetchSwipeCandidates` and the roster-private
+  pre-event person/event suggestions returned by `getCrossPathsSuggestions`;
 - BigQuery table schemas for host analytics events and user profile exposure
   events consumed by analytics Functions and marts;
 - direct client-write operation payloads for contextual profile decisions,

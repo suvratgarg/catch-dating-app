@@ -15144,6 +15144,100 @@ export const crossPathsShowcaseEligibilityDocumentSchema: Record<string, unknown
   }
 } as const;
 
+export const crossPathsSuggestionExposureDocumentSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/cross_paths_suggestion_exposures.schema.json",
+  "title": "CrossPathsSuggestionExposureDocument",
+  "description": "Server-only, session-idempotent Cross Paths exposure receipt used for ranking fatigue. It contains no private preference values or roster projection.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "crossPathsSuggestionExposures",
+  "x-firestore-path": "crossPathsSuggestionExposures/{exposureId}",
+  "x-document-id-field": "id",
+  "x-owner": "getCrossPathsSuggestions callable",
+  "required": [
+    "viewerUid",
+    "candidateUid",
+    "eventId",
+    "sessionIdHash",
+    "rankingVersion",
+    "shownAt",
+    "expiresAt"
+  ],
+  "properties": {
+    "viewerUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "candidateUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "sessionIdHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "x-catch-ownership": "server-only"
+    },
+    "rankingVersion": {
+      "type": "integer",
+      "minimum": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "shownAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    }
+  }
+} as const;
+
 export const eventBroadcastDocumentSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/event_broadcasts.schema.json",
@@ -34640,6 +34734,38 @@ export const setCrossPathsEventConsentCallablePayloadSchema: Record<string, unkn
   }
 } as const;
 
+export const getCrossPathsSuggestionsCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_cross_paths_suggestions_payload.schema.json",
+  "title": "GetCrossPathsSuggestionsCallablePayload",
+  "description": "Bounded Explore context accepted by getCrossPathsSuggestions. Event ids must come from the caller's current Explore result set; the server revalidates every event.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventIds",
+    "sessionId"
+  ],
+  "properties": {
+    "eventIds": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 12,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      }
+    },
+    "sessionId": {
+      "type": "string",
+      "minLength": 16,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9._~-]+$"
+    }
+  }
+} as const;
+
 export const createEventWaitlistOffersCallablePayloadSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/create_event_waitlist_offers_payload.schema.json",
@@ -39312,6 +39438,667 @@ export const setCrossPathsEventConsentCallableResponseSchema: Record<string, unk
     "termsVersion": {
       "type": "integer",
       "minimum": 1
+    }
+  }
+} as const;
+
+export const getCrossPathsSuggestionsCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_cross_paths_suggestions_response.schema.json",
+  "title": "GetCrossPathsSuggestionsCallableResponse",
+  "description": "Roster-private Cross Paths suggestions. The response contains only sanitized person and event projections plus a short-lived server-signed token.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "rankingVersion",
+    "suggestions"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "rankingVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "suggestions": {
+      "type": "array",
+      "maxItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "person",
+          "event",
+          "reasonCodes",
+          "suggestionToken",
+          "tokenExpiresAt"
+        ],
+        "properties": {
+          "person": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "uid",
+              "name",
+              "age",
+              "gender",
+              "city",
+              "photoUrls",
+              "promptAnswers",
+              "relationshipGoal"
+            ],
+            "properties": {
+              "uid": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "age": {
+                "type": "integer",
+                "minimum": 18,
+                "maximum": 99
+              },
+              "gender": {
+                "type": "string",
+                "enum": [
+                  "man",
+                  "woman",
+                  "nonBinary",
+                  "other"
+                ]
+              },
+              "city": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120,
+                    "pattern": "^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*$"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "photoUrls": {
+                "type": "array",
+                "minItems": 3,
+                "maxItems": 6,
+                "items": {
+                  "type": "string",
+                  "format": "uri",
+                  "maxLength": 2048
+                }
+              },
+              "promptAnswers": {
+                "type": "array",
+                "minItems": 3,
+                "maxItems": 3,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "prompt",
+                    "answer"
+                  ],
+                  "properties": {
+                    "prompt": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 140
+                    },
+                    "answer": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 300
+                    }
+                  }
+                }
+              },
+              "relationshipGoal": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              }
+            }
+          },
+          "event": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "eventId",
+              "organizerId",
+              "startTime",
+              "endTime",
+              "meetingPoint",
+              "activityKind",
+              "photoUrl",
+              "viewerBookingStatus"
+            ],
+            "properties": {
+              "eventId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "organizerId": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "startTime": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "endTime": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "meetingPoint": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "activityKind": {
+                "type": "string",
+                "enum": [
+                  "socialRun",
+                  "running",
+                  "walking",
+                  "pickleball",
+                  "padel",
+                  "tennis",
+                  "badminton",
+                  "cycling",
+                  "spinClass",
+                  "yoga",
+                  "strengthTraining",
+                  "pubQuiz",
+                  "barCrawl",
+                  "dinner",
+                  "singlesMixer",
+                  "openActivity"
+                ]
+              },
+              "photoUrl": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "uri",
+                "maxLength": 2048
+              },
+              "viewerBookingStatus": {
+                "type": "string",
+                "enum": [
+                  "signedUp",
+                  "canBookNow"
+                ]
+              }
+            }
+          },
+          "reasonCodes": {
+            "type": "array",
+            "minItems": 4,
+            "maxItems": 5,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "enum": [
+                "attending_event",
+                "viewer_attending",
+                "booking_available",
+                "mutual_preferences",
+                "showcase_ready"
+              ]
+            }
+          },
+          "suggestionToken": {
+            "type": "string",
+            "minLength": 40,
+            "maxLength": 4096
+          },
+          "tokenExpiresAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "reasonCode": {
+      "type": "string",
+      "enum": [
+        "attending_event",
+        "viewer_attending",
+        "booking_available",
+        "mutual_preferences",
+        "showcase_ready"
+      ]
+    },
+    "promptAnswer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "prompt",
+        "answer"
+      ],
+      "properties": {
+        "prompt": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "answer": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        }
+      }
+    },
+    "person": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "uid",
+        "name",
+        "age",
+        "gender",
+        "city",
+        "photoUrls",
+        "promptAnswers",
+        "relationshipGoal"
+      ],
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "age": {
+          "type": "integer",
+          "minimum": 18,
+          "maximum": 99
+        },
+        "gender": {
+          "type": "string",
+          "enum": [
+            "man",
+            "woman",
+            "nonBinary",
+            "other"
+          ]
+        },
+        "city": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120,
+              "pattern": "^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "photoUrls": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 6,
+          "items": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 2048
+          }
+        },
+        "promptAnswers": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "prompt",
+              "answer"
+            ],
+            "properties": {
+              "prompt": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 140
+              },
+              "answer": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 300
+              }
+            }
+          }
+        },
+        "relationshipGoal": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        }
+      }
+    },
+    "event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "organizerId",
+        "startTime",
+        "endTime",
+        "meetingPoint",
+        "activityKind",
+        "photoUrl",
+        "viewerBookingStatus"
+      ],
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "organizerId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "startTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "endTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "meetingPoint": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "activityKind": {
+          "type": "string",
+          "enum": [
+            "socialRun",
+            "running",
+            "walking",
+            "pickleball",
+            "padel",
+            "tennis",
+            "badminton",
+            "cycling",
+            "spinClass",
+            "yoga",
+            "strengthTraining",
+            "pubQuiz",
+            "barCrawl",
+            "dinner",
+            "singlesMixer",
+            "openActivity"
+          ]
+        },
+        "photoUrl": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri",
+          "maxLength": 2048
+        },
+        "viewerBookingStatus": {
+          "type": "string",
+          "enum": [
+            "signedUp",
+            "canBookNow"
+          ]
+        }
+      }
+    },
+    "suggestion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "person",
+        "event",
+        "reasonCodes",
+        "suggestionToken",
+        "tokenExpiresAt"
+      ],
+      "properties": {
+        "person": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "uid",
+            "name",
+            "age",
+            "gender",
+            "city",
+            "photoUrls",
+            "promptAnswers",
+            "relationshipGoal"
+          ],
+          "properties": {
+            "uid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "age": {
+              "type": "integer",
+              "minimum": 18,
+              "maximum": 99
+            },
+            "gender": {
+              "type": "string",
+              "enum": [
+                "man",
+                "woman",
+                "nonBinary",
+                "other"
+              ]
+            },
+            "city": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120,
+                  "pattern": "^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "photoUrls": {
+              "type": "array",
+              "minItems": 3,
+              "maxItems": 6,
+              "items": {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 2048
+              }
+            },
+            "promptAnswers": {
+              "type": "array",
+              "minItems": 3,
+              "maxItems": 3,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "prompt",
+                  "answer"
+                ],
+                "properties": {
+                  "prompt": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 140
+                  },
+                  "answer": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 300
+                  }
+                }
+              }
+            },
+            "relationshipGoal": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            }
+          }
+        },
+        "event": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "eventId",
+            "organizerId",
+            "startTime",
+            "endTime",
+            "meetingPoint",
+            "activityKind",
+            "photoUrl",
+            "viewerBookingStatus"
+          ],
+          "properties": {
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "organizerId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "startTime": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "endTime": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "meetingPoint": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            "activityKind": {
+              "type": "string",
+              "enum": [
+                "socialRun",
+                "running",
+                "walking",
+                "pickleball",
+                "padel",
+                "tennis",
+                "badminton",
+                "cycling",
+                "spinClass",
+                "yoga",
+                "strengthTraining",
+                "pubQuiz",
+                "barCrawl",
+                "dinner",
+                "singlesMixer",
+                "openActivity"
+              ]
+            },
+            "photoUrl": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uri",
+              "maxLength": 2048
+            },
+            "viewerBookingStatus": {
+              "type": "string",
+              "enum": [
+                "signedUp",
+                "canBookNow"
+              ]
+            }
+          }
+        },
+        "reasonCodes": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 5,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "attending_event",
+              "viewer_attending",
+              "booking_available",
+              "mutual_preferences",
+              "showcase_ready"
+            ]
+          }
+        },
+        "suggestionToken": {
+          "type": "string",
+          "minLength": 40,
+          "maxLength": 4096
+        },
+        "tokenExpiresAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
     }
   }
 } as const;

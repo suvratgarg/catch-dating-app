@@ -948,6 +948,34 @@ describe("firestore.rules", () => {
       );
     });
 
+    it("keeps Cross Paths suggestion exposures server-only", async () => {
+      const exposure = {
+        viewerUid: "runner-1",
+        candidateUid: "runner-2",
+        eventId: "event-1",
+        sessionIdHash: "a".repeat(64),
+        rankingVersion: 1,
+        shownAt: Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z")),
+        expiresAt: Timestamp.fromDate(new Date("2026-05-31T10:00:00.000Z")),
+      };
+      await seed(["crossPathsSuggestionExposures", "exposure-1"], exposure);
+
+      await assertFails(getDoc(doc(
+        authedDb("runner-1"),
+        "crossPathsSuggestionExposures",
+        "exposure-1",
+      )));
+      await assertFails(getDocs(query(
+        collection(authedDb("runner-1"), "crossPathsSuggestionExposures"),
+        where("viewerUid", "==", "runner-1"),
+      )));
+      await assertFails(setDoc(doc(
+        authedDb("runner-1"),
+        "crossPathsSuggestionExposures",
+        "exposure-1",
+      ), exposure));
+    });
+
     it("keeps event broadcast delivery receipts server-only", async () => {
       await seed(["eventBroadcasts", "broadcast-1"], {
         eventId: "event-1",

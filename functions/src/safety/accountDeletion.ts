@@ -189,6 +189,7 @@ async function queueRelationshipCleanup(params: {
     queueClubMembershipCleanup(db, uid, now, writer),
     queueEventParticipationCleanup(db, uid, now, writer),
     queueCrossPathsConsentCleanup(db, uid, writer),
+    queueCrossPathsSuggestionExposureCleanup(db, uid, writer),
     queueSavedEventCleanup(db, uid, writer),
     queueSwipeCleanup(db, uid, writer),
     queueMatchCleanup(db, uid, now, writer),
@@ -299,6 +300,26 @@ async function queueCrossPathsConsentCleanup(
     .where("uid", "==", uid)
     .get();
   consents.forEach((doc) => writer.delete(doc.ref));
+}
+
+/** Deletes server-only suggestion receipts involving the account. */
+async function queueCrossPathsSuggestionExposureCleanup(
+  db: FirebaseFirestore.Firestore,
+  uid: string,
+  writer: BatchQueue
+) {
+  const [viewed, shown] = await Promise.all([
+    db.collection("crossPathsSuggestionExposures")
+      .where("viewerUid", "==", uid).get(),
+    db.collection("crossPathsSuggestionExposures")
+      .where("candidateUid", "==", uid).get(),
+  ]);
+  const seen = new Set<string>();
+  [...viewed.docs, ...shown.docs].forEach((doc) => {
+    if (seen.has(doc.ref.path)) return;
+    seen.add(doc.ref.path);
+    writer.delete(doc.ref);
+  });
 }
 
 /**

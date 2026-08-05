@@ -147,6 +147,8 @@ export {
 export {updateUserProfile} from "./profiles/updateUserProfile";
 export {setCrossPathsEventConsent} from
   "./crossPaths/setCrossPathsEventConsent";
+export {getCrossPathsSuggestions} from
+  "./crossPaths/getCrossPathsSuggestions";
 export {
   generateProfilePhotoThumbnail,
 } from "./profiles/generateProfilePhotoThumbnail";

@@ -94,6 +94,14 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
         status: "eligible",
         profileFingerprint: "a".repeat(64),
       },
+      "crossPathsSuggestionExposures/viewed": {
+        viewerUid: "runner-1",
+        candidateUid: "runner-2",
+      },
+      "crossPathsSuggestionExposures/shown": {
+        viewerUid: "runner-2",
+        candidateUid: "runner-1",
+      },
       "savedEvents/runner-1_run-1": {uid: "runner-1", eventId: "event-1"},
       "profileDecisions/runner-1/outgoing/runner-2": {
         swiperId: "runner-1",
@@ -256,6 +264,16 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
   assert.ok(
     harness.deletedPublicDocs.includes(
       "eventCrossPathsConsents/event-1_runner-1"
+    )
+  );
+  assert.ok(
+    harness.deletedPublicDocs.includes(
+      "crossPathsSuggestionExposures/viewed"
+    )
+  );
+  assert.ok(
+    harness.deletedPublicDocs.includes(
+      "crossPathsSuggestionExposures/shown"
     )
   );
   assert.ok(
