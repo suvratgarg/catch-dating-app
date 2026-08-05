@@ -1461,7 +1461,7 @@ select {
   font-size: 13px;
 }
 
-.cross-paths-showcase-filters button {
+.segmented-content-mobile button {
   white-space: nowrap;
 }
 
@@ -4655,7 +4655,7 @@ th {
     flex: 1;
   }
 
-  .cross-paths-showcase-filters button {
+  .segmented-content-mobile button {
     flex: 1 1 auto;
     min-width: 0;
     padding-inline: 6px;

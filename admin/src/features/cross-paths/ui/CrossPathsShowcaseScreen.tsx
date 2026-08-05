@@ -85,7 +85,7 @@ export function CrossPathsShowcaseWorkspace({
         <AdminToolbar>
           <SegmentedControl<CrossPathsShowcaseFilter>
             ariaLabel="Cross Paths showcase status"
-            className="cross-paths-showcase-filters"
+            mobileLayout="content"
             onChange={controller.setFilter}
             options={[
               {id: "needsReview", label: "Needs review"},
