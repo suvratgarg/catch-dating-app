@@ -86,7 +86,7 @@
     },
     {
       "file": "lib/cross_paths/presentation/cross_paths_event_consent_section.dart",
-      "line": 30,
+      "line": 31,
       "symbol": "toggle",
       "contract": "CatchContractConstraints .setCrossPathsEventConsentCallablePayloadEnabled",
       "contractValue": null,
