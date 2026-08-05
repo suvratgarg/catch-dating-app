@@ -84,16 +84,16 @@
     },
     {
       "hammingBucket": "45-49",
-      "pairs": 786,
+      "pairs": 787,
       "jaccardMin": 0,
-      "jaccardMean": 0.1454,
+      "jaccardMean": 0.1452,
       "jaccardMax": 0.4706
     },
     {
       "hammingBucket": "50-54",
       "pairs": 1714,
       "jaccardMin": 0,
-      "jaccardMean": 0.0871,
+      "jaccardMean": 0.0872,
       "jaccardMax": 0.4412
     },
     {
@@ -105,21 +105,21 @@
     },
     {
       "hammingBucket": "60-64",
-      "pairs": 3184,
+      "pairs": 3187,
       "jaccardMin": 0,
       "jaccardMean": 0.0324,
       "jaccardMax": 0.2381
     },
     {
       "hammingBucket": "65-69",
-      "pairs": 1988,
+      "pairs": 1983,
       "jaccardMin": 0,
       "jaccardMean": 0.0215,
       "jaccardMax": 0.2
     },
     {
       "hammingBucket": "70-74",
-      "pairs": 662,
+      "pairs": 663,
       "jaccardMin": 0,
       "jaccardMean": 0.0129,
       "jaccardMax": 0.1124
@@ -6109,11 +6109,11 @@
       "name": "EventDetailSocialSection",
       "file": "lib/events/presentation/widgets/event_detail_social_section.dart",
       "role": "composition",
-      "shapeHash": "b52c3a7bdd51084a7af47560b8d920f8fca3cc202b0ed68f9442c43eda818827",
-      "coarseShapeHash": "27183be810bde67c01cc33c5adf554e5c453a72b13cb8d32d4282c54c201aff5",
-      "simhash128": "13cb7ee634aadcbd169464583c64abc1",
-      "tokenStreamLength": 31,
-      "coarseTokenStreamLength": 31,
+      "shapeHash": "35857ebb25b310461abd5a31cf3bd90bc9c31982db5ec5744dff4a94dd5d747c",
+      "coarseShapeHash": "a2fd7b65c266062500ae13be6f2c625bbbcea58d332c794b4c878d051d41885e",
+      "simhash128": "13cb7ae634a2dcbc368064583c64abc1",
+      "tokenStreamLength": 30,
+      "coarseTokenStreamLength": 30,
       "usageCountRaw": 7,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
@@ -12921,11 +12921,11 @@
       "name": "WhoIsGoing",
       "file": "lib/events/presentation/widgets/who_is_going.dart",
       "role": "feature-adapter",
-      "shapeHash": "9292a0398ecc706092981c3d70b92b8acbc85b45078de6cc172c4651853c0b29",
-      "coarseShapeHash": "434119e3a89cad423fc7e3a3797944b1b76d022f3db4b9348ae231634c4f3d85",
-      "simhash128": "bbc60e4fb474e7cf3770ecf96fcdf34e",
-      "tokenStreamLength": 32,
-      "coarseTokenStreamLength": 32,
+      "shapeHash": "dd00e12fe516454dd4320c4100989b1ffe379e4c70f696f367b6c31c93d5ced5",
+      "coarseShapeHash": "f4b5339438e7c6901bacbf00e804671e42c7fd4a06613f1b41410f6e11ee7d04",
+      "simhash128": "f397c66fb1e5ceef04606cbd5def3ad4",
+      "tokenStreamLength": 15,
+      "coarseTokenStreamLength": 15,
       "usageCountRaw": 5,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
@@ -12934,11 +12934,11 @@
       "name": "WhoIsGoingContent",
       "file": "lib/events/presentation/widgets/who_is_going.dart",
       "role": "feature-adapter",
-      "shapeHash": "96ef751852fe7b6f7350a2942a1df3b1f32f1d17c6fc1eb98042089d2dbc5864",
-      "coarseShapeHash": "be54796a34ec199561a895f15bf51b21ba013e6cc6ed4870105474275b7cca76",
-      "simhash128": "2fecfabbed11b9922cd2c439aa4f9ca0",
-      "tokenStreamLength": 55,
-      "coarseTokenStreamLength": 55,
+      "shapeHash": "0c57bd5e10bbe9b576d4343db99b8a80b41b00493b1d9b13cf346898c84ef3ea",
+      "coarseShapeHash": "61fbfb08bafc66ef5e055508f9c5f1c4415cc1eabc77ca3ba0024120b5f9e47b",
+      "simhash128": "2bedbabbed81bd9a2cd2c479aa4f9ca5",
+      "tokenStreamLength": 54,
+      "coarseTokenStreamLength": 54,
       "usageCountRaw": 5,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
@@ -15278,6 +15278,32 @@
     },
     {
       "rank": 43,
+      "a": "EventDetailSocialSection",
+      "b": "EventReviewsSection",
+      "jaccard": 0.0714,
+      "containment": 0.1481,
+      "score": 0.1481,
+      "smallWidgetMultisetJaccard": 0,
+      "hamming": 63,
+      "flags": [],
+      "detectors": [
+        "name"
+      ],
+      "signals": [],
+      "nameStems": [
+        "EventSection"
+      ],
+      "visualHamming": null,
+      "selectionSources": [
+        "name-family"
+      ],
+      "absorbCandidate": true,
+      "decisionRefs": [
+        "ranked-pair: EventDetailSocialSection/EventReviewsSection"
+      ]
+    },
+    {
+      "rank": 44,
       "a": "CatchStepHeader",
       "b": "CreateClubStepHeader",
       "jaccard": 0.0182,
@@ -15299,32 +15325,6 @@
       ],
       "absorbCandidate": true,
       "decisionRefs": []
-    },
-    {
-      "rank": 44,
-      "a": "EventDetailSocialSection",
-      "b": "EventReviewsSection",
-      "jaccard": 0.069,
-      "containment": 0.1379,
-      "score": 0.1379,
-      "smallWidgetMultisetJaccard": 0,
-      "hamming": 63,
-      "flags": [],
-      "detectors": [
-        "name"
-      ],
-      "signals": [],
-      "nameStems": [
-        "EventSection"
-      ],
-      "visualHamming": null,
-      "selectionSources": [
-        "name-family"
-      ],
-      "absorbCandidate": true,
-      "decisionRefs": [
-        "ranked-pair: EventDetailSocialSection/EventReviewsSection"
-      ]
     },
     {
       "rank": 45,
@@ -19327,7 +19327,7 @@
       "containment": 0,
       "score": 0,
       "smallWidgetMultisetJaccard": 0,
-      "hamming": 70,
+      "hamming": 71,
       "flags": [],
       "detectors": [
         "name"
