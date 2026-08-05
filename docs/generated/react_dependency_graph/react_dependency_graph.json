@@ -19,16 +19,16 @@
     "nonLiteralDynamicImports": "report"
   },
   "summary": {
-    "scannedSourceModules": 351,
+    "scannedSourceModules": 359,
     "dependencyLeafNodes": 18,
-    "moduleNodes": 369,
-    "moduleEdges": 1269,
-    "runtimeModuleEdges": 996,
-    "typeOnlyModuleEdges": 273,
-    "dynamicImportEdges": 29,
+    "moduleNodes": 377,
+    "moduleEdges": 1288,
+    "runtimeModuleEdges": 1006,
+    "typeOnlyModuleEdges": 282,
+    "dynamicImportEdges": 30,
     "reExportEdges": 67,
-    "featureGroups": 33,
-    "featureDependencies": 100,
+    "featureGroups": 34,
+    "featureDependencies": 103,
     "crossSurfaceDependencies": 5,
     "externalPackages": 14,
     "unresolvedImports": 0,
@@ -183,6 +183,15 @@
       "stories": 0
     },
     {
+      "id": "admin:feature:cross-paths",
+      "surface": "admin",
+      "scope": "feature",
+      "feature": "cross-paths",
+      "modules": 4,
+      "tests": 1,
+      "stories": 0
+    },
+    {
       "id": "admin:feature:data-quality",
       "surface": "admin",
       "scope": "feature",
@@ -286,7 +295,7 @@
       "surface": "admin",
       "scope": "shared",
       "feature": null,
-      "modules": 72,
+      "modules": 76,
       "tests": 14,
       "stories": 0
     },
@@ -496,6 +505,28 @@
       ],
       "targetModules": [
         "admin/src/features/admin-roles/ui/AdminRoleManagementScreen.tsx"
+      ]
+    },
+    {
+      "id": "admin:app->admin:feature:cross-paths",
+      "source": "admin:app",
+      "target": "admin:feature:cross-paths",
+      "sourceSurface": "admin",
+      "sourceScope": "app",
+      "sourceFeature": null,
+      "targetSurface": "admin",
+      "targetScope": "feature",
+      "targetFeature": "cross-paths",
+      "edges": 1,
+      "runtimeEdges": 1,
+      "typeOnlyEdges": 0,
+      "dynamicImports": 1,
+      "reExports": 0,
+      "sourceModules": [
+        "admin/src/app/App.tsx"
+      ],
+      "targetModules": [
+        "admin/src/features/cross-paths/ui/CrossPathsShowcaseScreen.tsx"
       ]
     },
     {
@@ -829,6 +860,38 @@
         "admin/src/shared/query/queryKeys.ts",
         "admin/src/shared/test/queryHarness.tsx",
         "admin/src/shared/types/adminTypes.ts",
+        "admin/src/shared/ui/AdminPrimitives/index.ts"
+      ]
+    },
+    {
+      "id": "admin:feature:cross-paths->admin:shared",
+      "source": "admin:feature:cross-paths",
+      "target": "admin:shared",
+      "sourceSurface": "admin",
+      "sourceScope": "feature",
+      "sourceFeature": "cross-paths",
+      "targetSurface": "admin",
+      "targetScope": "shared",
+      "targetFeature": null,
+      "edges": 9,
+      "runtimeEdges": 5,
+      "typeOnlyEdges": 4,
+      "dynamicImports": 0,
+      "reExports": 0,
+      "sourceModules": [
+        "admin/src/features/cross-paths/api/crossPathsShowcaseRepository.ts",
+        "admin/src/features/cross-paths/controllers/useCrossPathsShowcaseController.test.tsx",
+        "admin/src/features/cross-paths/controllers/useCrossPathsShowcaseController.ts",
+        "admin/src/features/cross-paths/ui/CrossPathsShowcaseScreen.tsx"
+      ],
+      "targetModules": [
+        "admin/src/generated/contracts/adminListCrossPathsShowcaseCandidatesCallablePayload.ts",
+        "admin/src/generated/contracts/adminListCrossPathsShowcaseCandidatesCallableResponse.ts",
+        "admin/src/generated/contracts/adminSetCrossPathsShowcaseEligibilityCallablePayload.ts",
+        "admin/src/shared/api/adminApi.ts",
+        "admin/src/shared/pendingOperation.tsx",
+        "admin/src/shared/query/queryKeys.ts",
+        "admin/src/shared/test/queryHarness.tsx",
         "admin/src/shared/ui/AdminPrimitives/index.ts"
       ]
     },
@@ -1319,6 +1382,29 @@
         "admin/src/features/admin-roles/controllers/adminRolePolicies.ts",
         "admin/src/features/admin-roles/controllers/useAdminRoleManagementController.ts",
         "admin/src/features/admin-roles/ui/AdminRoleManagementScreen.tsx"
+      ]
+    },
+    {
+      "id": "admin:story->admin:feature:cross-paths",
+      "source": "admin:story",
+      "target": "admin:feature:cross-paths",
+      "sourceSurface": "admin",
+      "sourceScope": "support",
+      "sourceFeature": null,
+      "targetSurface": "admin",
+      "targetScope": "feature",
+      "targetFeature": "cross-paths",
+      "edges": 2,
+      "runtimeEdges": 1,
+      "typeOnlyEdges": 1,
+      "dynamicImports": 0,
+      "reExports": 0,
+      "sourceModules": [
+        "admin/src/stories/AdminRoutes.stories.tsx"
+      ],
+      "targetModules": [
+        "admin/src/features/cross-paths/controllers/useCrossPathsShowcaseController.ts",
+        "admin/src/features/cross-paths/ui/CrossPathsShowcaseScreen.tsx"
       ]
     },
     {
@@ -3131,10 +3217,10 @@
       "sourceLayer": "app",
       "targetSurface": "admin",
       "targetLayer": "feature",
-      "edges": 14,
-      "runtimeEdges": 13,
+      "edges": 15,
+      "runtimeEdges": 14,
       "typeOnlyEdges": 1,
-      "dynamicImports": 13,
+      "dynamicImports": 14,
       "reExports": 0,
       "sourceModules": [
         "admin/src/app/App.tsx"
@@ -3142,6 +3228,7 @@
       "targetModules": [
         "admin/src/features/access/ui/AccessReviewScreen.tsx",
         "admin/src/features/admin-roles/ui/AdminRoleManagementScreen.tsx",
+        "admin/src/features/cross-paths/ui/CrossPathsShowcaseScreen.tsx",
         "admin/src/features/data-quality/ui/DataQualityScreen.tsx",
         "admin/src/features/events/ui/EventPublishingScreen.tsx",
         "admin/src/features/finance/ui/FinanceOpsScreen.tsx",
@@ -3211,16 +3298,21 @@
       "sourceLayer": "feature",
       "targetSurface": "admin",
       "targetLayer": "generated",
-      "edges": 1,
+      "edges": 5,
       "runtimeEdges": 1,
-      "typeOnlyEdges": 0,
+      "typeOnlyEdges": 4,
       "dynamicImports": 0,
       "reExports": 0,
       "sourceModules": [
+        "admin/src/features/cross-paths/api/crossPathsShowcaseRepository.ts",
+        "admin/src/features/cross-paths/controllers/useCrossPathsShowcaseController.ts",
         "admin/src/features/operations/ui/AdminActionExecutionsScreen.tsx"
       ],
       "targetModules": [
-        "admin/src/generated/adminActionCatalog.ts"
+        "admin/src/generated/adminActionCatalog.ts",
+        "admin/src/generated/contracts/adminListCrossPathsShowcaseCandidatesCallablePayload.ts",
+        "admin/src/generated/contracts/adminListCrossPathsShowcaseCandidatesCallableResponse.ts",
+        "admin/src/generated/contracts/adminSetCrossPathsShowcaseEligibilityCallablePayload.ts"
       ]
     },
     {
@@ -3231,8 +3323,8 @@
       "sourceLayer": "feature",
       "targetSurface": "admin",
       "targetLayer": "shared",
-      "edges": 211,
-      "runtimeEdges": 141,
+      "edges": 216,
+      "runtimeEdges": 146,
       "typeOnlyEdges": 70,
       "dynamicImports": 0,
       "reExports": 4,
@@ -3246,6 +3338,10 @@
         "admin/src/features/admin-roles/controllers/useAdminRoleManagementController.test.tsx",
         "admin/src/features/admin-roles/controllers/useAdminRoleManagementController.ts",
         "admin/src/features/admin-roles/ui/AdminRoleManagementScreen.tsx",
+        "admin/src/features/cross-paths/api/crossPathsShowcaseRepository.ts",
+        "admin/src/features/cross-paths/controllers/useCrossPathsShowcaseController.test.tsx",
+        "admin/src/features/cross-paths/controllers/useCrossPathsShowcaseController.ts",
+        "admin/src/features/cross-paths/ui/CrossPathsShowcaseScreen.tsx",
         "admin/src/features/data-quality/api/dataQualityRepository.ts",
         "admin/src/features/data-quality/controllers/useDataQualityController.test.tsx",
         "admin/src/features/data-quality/controllers/useDataQualityController.ts",
@@ -3384,9 +3480,9 @@
       "sourceLayer": "shared",
       "targetSurface": "admin",
       "targetLayer": "generated",
-      "edges": 16,
+      "edges": 20,
       "runtimeEdges": 2,
-      "typeOnlyEdges": 14,
+      "typeOnlyEdges": 18,
       "dynamicImports": 0,
       "reExports": 0,
       "sourceModules": [
@@ -3405,10 +3501,14 @@
         "admin/src/generated/contracts/adminDecideSafetyTriageItemCallablePayload.ts",
         "admin/src/generated/contracts/adminDecideSafetyTriageItemCallableResponse.ts",
         "admin/src/generated/contracts/adminGetOverviewCallableResponse.ts",
+        "admin/src/generated/contracts/adminListCrossPathsShowcaseCandidatesCallablePayload.ts",
+        "admin/src/generated/contracts/adminListCrossPathsShowcaseCandidatesCallableResponse.ts",
         "admin/src/generated/contracts/adminRecordMarketingReviewDecisionCallablePayload.ts",
         "admin/src/generated/contracts/adminRecordMarketingReviewDecisionCallableResponse.ts",
         "admin/src/generated/contracts/adminSetAdminUserRolesCallablePayload.ts",
         "admin/src/generated/contracts/adminSetAdminUserRolesCallableResponse.ts",
+        "admin/src/generated/contracts/adminSetCrossPathsShowcaseEligibilityCallablePayload.ts",
+        "admin/src/generated/contracts/adminSetCrossPathsShowcaseEligibilityCallableResponse.ts",
         "admin/src/generated/validators/adminCallableValidators.ts"
       ]
     },
@@ -3469,9 +3569,9 @@
       "sourceLayer": "story",
       "targetSurface": "admin",
       "targetLayer": "feature",
-      "edges": 35,
-      "runtimeEdges": 25,
-      "typeOnlyEdges": 10,
+      "edges": 37,
+      "runtimeEdges": 26,
+      "typeOnlyEdges": 11,
       "dynamicImports": 0,
       "reExports": 0,
       "sourceModules": [
@@ -3483,6 +3583,8 @@
         "admin/src/features/admin-roles/controllers/adminRolePolicies.ts",
         "admin/src/features/admin-roles/controllers/useAdminRoleManagementController.ts",
         "admin/src/features/admin-roles/ui/AdminRoleManagementScreen.tsx",
+        "admin/src/features/cross-paths/controllers/useCrossPathsShowcaseController.ts",
+        "admin/src/features/cross-paths/ui/CrossPathsShowcaseScreen.tsx",
         "admin/src/features/data-quality/controllers/useDataQualityController.ts",
         "admin/src/features/data-quality/ui/DataQualityScreen.tsx",
         "admin/src/features/events/controllers/eventPublishingHelpers.ts",
@@ -4192,8 +4294,8 @@
     },
     {
       "package": "@tanstack/react-query",
-      "edges": 35,
-      "runtimeEdges": 35,
+      "edges": 36,
+      "runtimeEdges": 36,
       "typeOnlyEdges": 0,
       "dynamicImports": 0,
       "surfaces": [
@@ -4204,6 +4306,7 @@
         "admin/src/features/access/controllers/useAccessReviewController.test.tsx",
         "admin/src/features/access/controllers/useAccessReviewController.ts",
         "admin/src/features/admin-roles/controllers/useAdminRoleManagementController.ts",
+        "admin/src/features/cross-paths/controllers/useCrossPathsShowcaseController.ts",
         "admin/src/features/data-quality/controllers/useDataQualityController.ts",
         "admin/src/features/events/controllers/useEventPublishingController.test.tsx",
         "admin/src/features/events/controllers/useEventPublishingController.ts",
@@ -4240,8 +4343,8 @@
     },
     {
       "package": "@testing-library/react",
-      "edges": 34,
-      "runtimeEdges": 34,
+      "edges": 35,
+      "runtimeEdges": 35,
       "typeOnlyEdges": 0,
       "dynamicImports": 0,
       "surfaces": [
@@ -4253,6 +4356,7 @@
         "admin/src/app/App.test.tsx",
         "admin/src/features/access/controllers/useAccessReviewController.test.tsx",
         "admin/src/features/admin-roles/controllers/useAdminRoleManagementController.test.tsx",
+        "admin/src/features/cross-paths/controllers/useCrossPathsShowcaseController.test.tsx",
         "admin/src/features/data-quality/controllers/useDataQualityController.test.tsx",
         "admin/src/features/events/controllers/useEventPublishingController.test.tsx",
         "admin/src/features/finance/controllers/useFinanceOpsController.test.tsx",
@@ -4349,8 +4453,8 @@
     },
     {
       "package": "lucide-react",
-      "edges": 50,
-      "runtimeEdges": 50,
+      "edges": 51,
+      "runtimeEdges": 51,
       "typeOnlyEdges": 0,
       "dynamicImports": 0,
       "surfaces": [
@@ -4360,6 +4464,7 @@
         "admin/src/app/App.tsx",
         "admin/src/features/access/ui/AccessReviewScreen.tsx",
         "admin/src/features/admin-roles/ui/AdminRoleManagementScreen.tsx",
+        "admin/src/features/cross-paths/ui/CrossPathsShowcaseScreen.tsx",
         "admin/src/features/data-quality/ui/DataQualityScreen.tsx",
         "admin/src/features/events/ui/EventPublishingScreen.tsx",
         "admin/src/features/events/ui/eventPublishingDirectoryPanels.tsx",
@@ -4443,8 +4548,8 @@
     },
     {
       "package": "react",
-      "edges": 129,
-      "runtimeEdges": 66,
+      "edges": 131,
+      "runtimeEdges": 68,
       "typeOnlyEdges": 63,
       "dynamicImports": 0,
       "surfaces": [
@@ -4457,6 +4562,8 @@
         "admin/src/features/access/controllers/useAccessReviewController.test.tsx",
         "admin/src/features/access/controllers/useAccessReviewController.ts",
         "admin/src/features/admin-roles/controllers/useAdminRoleManagementController.ts",
+        "admin/src/features/cross-paths/controllers/useCrossPathsShowcaseController.ts",
+        "admin/src/features/cross-paths/ui/CrossPathsShowcaseScreen.tsx",
         "admin/src/features/data-quality/controllers/useDataQualityController.ts",
         "admin/src/features/events/controllers/useEventPublishingController.test.tsx",
         "admin/src/features/events/controllers/useEventPublishingController.ts",
@@ -4615,8 +4722,8 @@
     },
     {
       "package": "vitest",
-      "edges": 63,
-      "runtimeEdges": 63,
+      "edges": 64,
+      "runtimeEdges": 64,
       "typeOnlyEdges": 0,
       "dynamicImports": 0,
       "surfaces": [
@@ -4628,6 +4735,7 @@
         "admin/src/app/App.test.tsx",
         "admin/src/features/access/controllers/useAccessReviewController.test.tsx",
         "admin/src/features/admin-roles/controllers/useAdminRoleManagementController.test.tsx",
+        "admin/src/features/cross-paths/controllers/useCrossPathsShowcaseController.test.tsx",
         "admin/src/features/data-quality/controllers/useDataQualityController.test.tsx",
         "admin/src/features/events/controllers/useEventPublishingController.test.tsx",
         "admin/src/features/finance/controllers/useFinanceOpsController.test.tsx",
@@ -4831,6 +4939,54 @@
       "scope": "feature",
       "feature": "admin-roles",
       "group": "admin:feature:admin-roles",
+      "extension": ".tsx",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
+      "id": "admin/src/features/cross-paths/api/crossPathsShowcaseRepository.ts",
+      "surface": "admin",
+      "layer": "feature",
+      "scope": "feature",
+      "feature": "cross-paths",
+      "group": "admin:feature:cross-paths",
+      "extension": ".ts",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
+      "id": "admin/src/features/cross-paths/controllers/useCrossPathsShowcaseController.test.tsx",
+      "surface": "admin",
+      "layer": "feature",
+      "scope": "feature",
+      "feature": "cross-paths",
+      "group": "admin:feature:cross-paths",
+      "extension": ".tsx",
+      "scanned": true,
+      "test": true,
+      "story": false
+    },
+    {
+      "id": "admin/src/features/cross-paths/controllers/useCrossPathsShowcaseController.ts",
+      "surface": "admin",
+      "layer": "feature",
+      "scope": "feature",
+      "feature": "cross-paths",
+      "group": "admin:feature:cross-paths",
+      "extension": ".ts",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
+      "id": "admin/src/features/cross-paths/ui/CrossPathsShowcaseScreen.tsx",
+      "surface": "admin",
+      "layer": "feature",
+      "scope": "feature",
+      "feature": "cross-paths",
+      "group": "admin:feature:cross-paths",
       "extension": ".tsx",
       "scanned": true,
       "test": false,
@@ -6157,6 +6313,30 @@
       "story": false
     },
     {
+      "id": "admin/src/generated/contracts/adminListCrossPathsShowcaseCandidatesCallablePayload.ts",
+      "surface": "admin",
+      "layer": "generated",
+      "scope": "shared",
+      "feature": null,
+      "group": "admin:shared",
+      "extension": ".ts",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
+      "id": "admin/src/generated/contracts/adminListCrossPathsShowcaseCandidatesCallableResponse.ts",
+      "surface": "admin",
+      "layer": "generated",
+      "scope": "shared",
+      "feature": null,
+      "group": "admin:shared",
+      "extension": ".ts",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
       "id": "admin/src/generated/contracts/adminRecordMarketingReviewDecisionCallablePayload.ts",
       "surface": "admin",
       "layer": "generated",
@@ -6194,6 +6374,30 @@
     },
     {
       "id": "admin/src/generated/contracts/adminSetAdminUserRolesCallableResponse.ts",
+      "surface": "admin",
+      "layer": "generated",
+      "scope": "shared",
+      "feature": null,
+      "group": "admin:shared",
+      "extension": ".ts",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
+      "id": "admin/src/generated/contracts/adminSetCrossPathsShowcaseEligibilityCallablePayload.ts",
+      "surface": "admin",
+      "layer": "generated",
+      "scope": "shared",
+      "feature": null,
+      "group": "admin:shared",
+      "extension": ".ts",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
+      "id": "admin/src/generated/contracts/adminSetCrossPathsShowcaseEligibilityCallableResponse.ts",
       "surface": "admin",
       "layer": "generated",
       "scope": "shared",
@@ -9146,7 +9350,7 @@
       "specifier": "../shared/ui/AdminPrimitives",
       "kind": "import",
       "typeOnly": false,
-      "line": 33,
+      "line": 34,
       "column": 1
     },
     {
@@ -9155,7 +9359,7 @@
       "specifier": "../shared/api/firebase",
       "kind": "import",
       "typeOnly": false,
-      "line": 60,
+      "line": 61,
       "column": 1
     },
     {
@@ -9164,7 +9368,7 @@
       "specifier": "../shared/api/dataMode",
       "kind": "import",
       "typeOnly": false,
-      "line": 67,
+      "line": 68,
       "column": 1
     },
     {
@@ -9173,7 +9377,7 @@
       "specifier": "../shared/types/adminTypes",
       "kind": "import",
       "typeOnly": false,
-      "line": 68,
+      "line": 69,
       "column": 1
     },
     {
@@ -9182,7 +9386,7 @@
       "specifier": "../shared/feedback/AdminFeedbackContext",
       "kind": "import",
       "typeOnly": false,
-      "line": 73,
+      "line": 74,
       "column": 1
     },
     {
@@ -9191,7 +9395,7 @@
       "specifier": "../shared/pendingOperation",
       "kind": "import",
       "typeOnly": false,
-      "line": 74,
+      "line": 75,
       "column": 1
     },
     {
@@ -9200,7 +9404,7 @@
       "specifier": "../features/overview/ui/OverviewScreen",
       "kind": "import",
       "typeOnly": true,
-      "line": 75,
+      "line": 76,
       "column": 1
     },
     {
@@ -9209,7 +9413,7 @@
       "specifier": "../features/marketing/ui/MarketingOpsScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 96,
+      "line": 98,
       "column": 3
     },
     {
@@ -9218,7 +9422,7 @@
       "specifier": "../features/intake/ui/IntakeWorkspaceScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 102,
+      "line": 104,
       "column": 3
     },
     {
@@ -9227,7 +9431,7 @@
       "specifier": "../features/safety/ui/SafetyTriageScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 109,
+      "line": 111,
       "column": 3
     },
     {
@@ -9236,7 +9440,7 @@
       "specifier": "../features/access/ui/AccessReviewScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 114,
+      "line": 116,
       "column": 3
     },
     {
@@ -9245,7 +9449,7 @@
       "specifier": "../features/growth/ui/GrowthKpiScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 119,
+      "line": 121,
       "column": 3
     },
     {
@@ -9254,7 +9458,7 @@
       "specifier": "../features/finance/ui/FinanceOpsScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 124,
+      "line": 126,
       "column": 3
     },
     {
@@ -9263,7 +9467,7 @@
       "specifier": "../features/organizers/ui/OrganizerPublishingScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 129,
+      "line": 131,
       "column": 3
     },
     {
@@ -9272,7 +9476,7 @@
       "specifier": "../features/events/ui/EventPublishingScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 136,
+      "line": 138,
       "column": 3
     },
     {
@@ -9281,7 +9485,16 @@
       "specifier": "../features/users/ui/UserAnalyticsScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 141,
+      "line": 143,
+      "column": 3
+    },
+    {
+      "source": "admin/src/app/App.tsx",
+      "target": "admin/src/features/cross-paths/ui/CrossPathsShowcaseScreen.tsx",
+      "specifier": "../features/cross-paths/ui/CrossPathsShowcaseScreen",
+      "kind": "dynamic-import",
+      "typeOnly": false,
+      "line": 148,
       "column": 3
     },
     {
@@ -9290,7 +9503,7 @@
       "specifier": "../features/overview/ui/OverviewRouteScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 146,
+      "line": 153,
       "column": 3
     },
     {
@@ -9299,7 +9512,7 @@
       "specifier": "../features/data-quality/ui/DataQualityScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 151,
+      "line": 158,
       "column": 3
     },
     {
@@ -9308,7 +9521,7 @@
       "specifier": "../features/admin-roles/ui/AdminRoleManagementScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 156,
+      "line": 163,
       "column": 3
     },
     {
@@ -9317,7 +9530,7 @@
       "specifier": "../features/operations/ui/AdminActionExecutionsScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 163,
+      "line": 170,
       "column": 3
     },
     {
@@ -9552,6 +9765,114 @@
       "kind": "import",
       "typeOnly": false,
       "line": 40,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/cross-paths/api/crossPathsShowcaseRepository.ts",
+      "target": "admin/src/shared/api/adminApi.ts",
+      "specifier": "../../../shared/api/adminApi",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 1,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/cross-paths/api/crossPathsShowcaseRepository.ts",
+      "target": "admin/src/generated/contracts/adminListCrossPathsShowcaseCandidatesCallablePayload.ts",
+      "specifier": "../../../generated/contracts/adminListCrossPathsShowcaseCandidatesCallablePayload",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 5,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/cross-paths/api/crossPathsShowcaseRepository.ts",
+      "target": "admin/src/generated/contracts/adminSetCrossPathsShowcaseEligibilityCallablePayload.ts",
+      "specifier": "../../../generated/contracts/adminSetCrossPathsShowcaseEligibilityCallablePayload",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 7,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/cross-paths/controllers/useCrossPathsShowcaseController.test.tsx",
+      "target": "admin/src/shared/test/queryHarness.tsx",
+      "specifier": "../../../shared/test/queryHarness",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 3,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/cross-paths/controllers/useCrossPathsShowcaseController.test.tsx",
+      "target": "admin/src/features/cross-paths/controllers/useCrossPathsShowcaseController.ts",
+      "specifier": "./useCrossPathsShowcaseController",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 4,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/cross-paths/controllers/useCrossPathsShowcaseController.ts",
+      "target": "admin/src/generated/contracts/adminListCrossPathsShowcaseCandidatesCallableResponse.ts",
+      "specifier": "../../../generated/contracts/adminListCrossPathsShowcaseCandidatesCallableResponse",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 3,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/cross-paths/controllers/useCrossPathsShowcaseController.ts",
+      "target": "admin/src/generated/contracts/adminSetCrossPathsShowcaseEligibilityCallablePayload.ts",
+      "specifier": "../../../generated/contracts/adminSetCrossPathsShowcaseEligibilityCallablePayload",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 5,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/cross-paths/controllers/useCrossPathsShowcaseController.ts",
+      "target": "admin/src/shared/query/queryKeys.ts",
+      "specifier": "../../../shared/query/queryKeys",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 7,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/cross-paths/controllers/useCrossPathsShowcaseController.ts",
+      "target": "admin/src/shared/pendingOperation.tsx",
+      "specifier": "../../../shared/pendingOperation",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 8,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/cross-paths/controllers/useCrossPathsShowcaseController.ts",
+      "target": "admin/src/features/cross-paths/api/crossPathsShowcaseRepository.ts",
+      "specifier": "../api/crossPathsShowcaseRepository",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 10,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/cross-paths/ui/CrossPathsShowcaseScreen.tsx",
+      "target": "admin/src/shared/ui/AdminPrimitives/index.ts",
+      "specifier": "../../../shared/ui/AdminPrimitives",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 11,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/cross-paths/ui/CrossPathsShowcaseScreen.tsx",
+      "target": "admin/src/features/cross-paths/controllers/useCrossPathsShowcaseController.ts",
+      "specifier": "../controllers/useCrossPathsShowcaseController",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 30,
       "column": 1
     },
     {
@@ -13057,11 +13378,47 @@
     },
     {
       "source": "admin/src/shared/api/adminApi.ts",
+      "target": "admin/src/generated/contracts/adminListCrossPathsShowcaseCandidatesCallablePayload.ts",
+      "specifier": "../../generated/contracts/adminListCrossPathsShowcaseCandidatesCallablePayload",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 9,
+      "column": 1
+    },
+    {
+      "source": "admin/src/shared/api/adminApi.ts",
+      "target": "admin/src/generated/contracts/adminListCrossPathsShowcaseCandidatesCallableResponse.ts",
+      "specifier": "../../generated/contracts/adminListCrossPathsShowcaseCandidatesCallableResponse",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 11,
+      "column": 1
+    },
+    {
+      "source": "admin/src/shared/api/adminApi.ts",
+      "target": "admin/src/generated/contracts/adminSetCrossPathsShowcaseEligibilityCallablePayload.ts",
+      "specifier": "../../generated/contracts/adminSetCrossPathsShowcaseEligibilityCallablePayload",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 13,
+      "column": 1
+    },
+    {
+      "source": "admin/src/shared/api/adminApi.ts",
+      "target": "admin/src/generated/contracts/adminSetCrossPathsShowcaseEligibilityCallableResponse.ts",
+      "specifier": "../../generated/contracts/adminSetCrossPathsShowcaseEligibilityCallableResponse",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 15,
+      "column": 1
+    },
+    {
+      "source": "admin/src/shared/api/adminApi.ts",
       "target": "admin/src/shared/api/sampleData.ts",
       "specifier": "./sampleData",
       "kind": "import",
       "typeOnly": false,
-      "line": 9,
+      "line": 17,
       "column": 1
     },
     {
@@ -13070,7 +13427,7 @@
       "specifier": "./sampleOperationalData",
       "kind": "import",
       "typeOnly": false,
-      "line": 17,
+      "line": 25,
       "column": 1
     },
     {
@@ -13079,7 +13436,7 @@
       "specifier": "../operations/sampleIntakeOperations",
       "kind": "import",
       "typeOnly": false,
-      "line": 22,
+      "line": 30,
       "column": 1
     },
     {
@@ -13088,7 +13445,7 @@
       "specifier": "../operations/operationsTypes",
       "kind": "import",
       "typeOnly": true,
-      "line": 24,
+      "line": 32,
       "column": 1
     },
     {
@@ -13097,7 +13454,7 @@
       "specifier": "../types/adminTypes",
       "kind": "import",
       "typeOnly": false,
-      "line": 28,
+      "line": 36,
       "column": 1
     },
     {
@@ -14443,11 +14800,29 @@
     },
     {
       "source": "admin/src/stories/AdminRoutes.stories.tsx",
+      "target": "admin/src/features/cross-paths/controllers/useCrossPathsShowcaseController.ts",
+      "specifier": "../features/cross-paths/controllers/useCrossPathsShowcaseController",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 119,
+      "column": 1
+    },
+    {
+      "source": "admin/src/stories/AdminRoutes.stories.tsx",
+      "target": "admin/src/features/cross-paths/ui/CrossPathsShowcaseScreen.tsx",
+      "specifier": "../features/cross-paths/ui/CrossPathsShowcaseScreen",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 121,
+      "column": 1
+    },
+    {
+      "source": "admin/src/stories/AdminRoutes.stories.tsx",
       "target": "admin/src/shared/ui/AdminPrimitives/index.ts",
       "specifier": "../shared/ui/AdminPrimitives",
       "kind": "import",
       "typeOnly": false,
-      "line": 119,
+      "line": 123,
       "column": 1
     },
     {
@@ -20605,7 +20980,7 @@
       "specifier": "firebase/auth",
       "kind": "import",
       "typeOnly": false,
-      "line": 32,
+      "line": 33,
       "column": 1
     },
     {
@@ -20714,6 +21089,60 @@
       "kind": "import",
       "typeOnly": false,
       "line": 1,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/cross-paths/controllers/useCrossPathsShowcaseController.test.tsx",
+      "package": "@testing-library/react",
+      "specifier": "@testing-library/react",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 1,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/cross-paths/controllers/useCrossPathsShowcaseController.test.tsx",
+      "package": "vitest",
+      "specifier": "vitest",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 2,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/cross-paths/controllers/useCrossPathsShowcaseController.ts",
+      "package": "@tanstack/react-query",
+      "specifier": "@tanstack/react-query",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 1,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/cross-paths/controllers/useCrossPathsShowcaseController.ts",
+      "package": "react",
+      "specifier": "react",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 2,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/cross-paths/ui/CrossPathsShowcaseScreen.tsx",
+      "package": "react",
+      "specifier": "react",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 1,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/cross-paths/ui/CrossPathsShowcaseScreen.tsx",
+      "package": "lucide-react",
+      "specifier": "lucide-react",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 2,
       "column": 1
     },
     {
