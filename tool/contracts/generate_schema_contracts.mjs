@@ -197,6 +197,13 @@ const schemaSpecs = [
       "functions/src/shared/generated/eventCrossPathsConsentDocument.ts",
   },
   {
+    name: "CrossPathsShowcaseEligibilityDocument",
+    source: "firestore/cross_paths_showcase_eligibility.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "crossPathsShowcaseEligibilityDocument.ts",
+  },
+  {
     name: "EventBroadcastDocument",
     source: "firestore/event_broadcasts.schema.json",
     typeOutput: "functions/src/shared/generated/eventBroadcastDocument.ts",
@@ -685,6 +692,32 @@ const schemaSpecs = [
     source: "callables/admin_set_club_index_status_payload.schema.json",
     typeOutput:
       "functions/src/shared/generated/adminSetClubIndexStatusCallablePayload.ts",
+  },
+  {
+    name: "AdminListCrossPathsShowcaseCandidatesCallablePayload",
+    source:
+      "callables/" +
+      "admin_list_cross_paths_showcase_candidates_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "adminListCrossPathsShowcaseCandidatesCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/" +
+      "adminListCrossPathsShowcaseCandidatesCallablePayload.ts",
+    ],
+  },
+  {
+    name: "AdminSetCrossPathsShowcaseEligibilityCallablePayload",
+    source:
+      "callables/" +
+      "admin_set_cross_paths_showcase_eligibility_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "adminSetCrossPathsShowcaseEligibilityCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/" +
+      "adminSetCrossPathsShowcaseEligibilityCallablePayload.ts",
+    ],
   },
   {
     name: "AdminGetClubDetailsCallablePayload",
@@ -1387,6 +1420,32 @@ const schemaSpecs = [
     additionalTypeOutputs: [
       "admin/src/generated/contracts/" +
       "adminRecordMarketingReviewDecisionCallableResponse.ts",
+    ],
+  },
+  {
+    name: "AdminListCrossPathsShowcaseCandidatesCallableResponse",
+    source:
+      "callable_responses/" +
+      "admin_list_cross_paths_showcase_candidates_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "adminListCrossPathsShowcaseCandidatesCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/" +
+      "adminListCrossPathsShowcaseCandidatesCallableResponse.ts",
+    ],
+  },
+  {
+    name: "AdminSetCrossPathsShowcaseEligibilityCallableResponse",
+    source:
+      "callable_responses/" +
+      "admin_set_cross_paths_showcase_eligibility_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "adminSetCrossPathsShowcaseEligibilityCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/" +
+      "adminSetCrossPathsShowcaseEligibilityCallableResponse.ts",
     ],
   },
   {

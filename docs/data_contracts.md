@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.8.1
+version: 1.9.0
 updated: 2026-08-05
 owner: recursive_audit_loop
 status: active
@@ -346,6 +346,7 @@ Root-level edge/action documents are the source of truth for many-to-many state:
 | Organizer follow | `organizerFollows/{organizerId_uid}` |
 | Event booking, waitlist, attendance, cancellation | `eventParticipations/{eventId_uid}` |
 | Cross Paths event visibility | `eventCrossPathsConsents/{eventId_uid}` |
+| Cross Paths showcase eligibility | server-only `crossPathsShowcaseEligibility/{uid}` |
 | Saved events | `savedEvents/{uid_eventId}` |
 | Outgoing profile decisions | `profileDecisions/{uid}/outgoing/{targetId}` |
 | Match messages | `matches/{matchId}/messages/{messageId}` |
@@ -385,6 +386,18 @@ and upcoming, and the caller owns a current `signedUp` participation. Disable
 remains available after those preconditions disappear. Effective visibility is
 the conjunction of both consent values plus later server-owned eligibility;
 neither consent document alone authorizes an Explore identity.
+
+Cross Paths showcase eligibility is independently owned by the audited
+`adminSetCrossPathsShowcaseEligibility` callable. The record contains only
+`eligible`, `needsReview`, or `paused`, coarse reason codes, rule/review
+versions, a SHA-256 public-profile fingerprint, the neutral human-review
+checklist, reviewer identity/note, and timestamps. It never contains a numeric
+attractiveness or desirability score. `adminListCrossPathsShowcaseCandidates`
+projects bounded public-profile evidence plus effective status to authorized
+reviewers; support is read-only. Approval requires objective readiness and the
+complete checklist. Profile or rule changes invalidate approval at read time.
+Firestore rules deny every client read/write, and account deletion removes the
+record.
 
 Each device push token lives at
 `users/{uid}/pushInstallations/{installationId}` with `token`, `appRole`,

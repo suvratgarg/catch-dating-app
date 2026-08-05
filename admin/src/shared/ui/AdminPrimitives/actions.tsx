@@ -215,12 +215,14 @@ export function InlineTextField({
 export function SegmentedControl<T extends string>({
   ariaLabel,
   className = "",
+  mobileLayout = "equal",
   options,
   value,
   onChange,
 }: {
   ariaLabel: string;
   className?: string;
+  mobileLayout?: "content" | "equal";
   options: Array<{disabled?: boolean; id: T; label: ReactNode}>;
   value: T;
   onChange: (value: T) => void;
@@ -228,7 +230,11 @@ export function SegmentedControl<T extends string>({
   return (
     <ToggleGroupControl
       aria-label={ariaLabel}
-      className={`segmented ${className}`.trim()}
+      className={classNames(
+        "segmented",
+        mobileLayout === "content" && "segmented-content-mobile",
+        className
+      )}
     >
       {options.map((option) => (
         <ToggleButtonControl

@@ -46,6 +46,7 @@ Do not edit it by hand.
 | EventInviteLinkDocument | `firestore/event_invite_links.schema.json` | `functions/src/shared/generated/eventInviteLinkDocument.ts` |
 | EventParticipationDocument | `firestore/event_participations.schema.json` | `functions/src/shared/generated/eventParticipationDocument.ts` |
 | EventCrossPathsConsentDocument | `firestore/event_cross_paths_consents.schema.json` | `functions/src/shared/generated/eventCrossPathsConsentDocument.ts` |
+| CrossPathsShowcaseEligibilityDocument | `firestore/cross_paths_showcase_eligibility.schema.json` | `functions/src/shared/generated/crossPathsShowcaseEligibilityDocument.ts` |
 | EventBroadcastDocument | `firestore/event_broadcasts.schema.json` | `functions/src/shared/generated/eventBroadcastDocument.ts` |
 | EventWaitlistOfferDocument | `firestore/event_waitlist_offers.schema.json` | `functions/src/shared/generated/eventWaitlistOfferDocument.ts` |
 | EventSuccessPlanDocument | `firestore/event_success_plans.schema.json` | `functions/src/shared/generated/eventSuccessPlanDocument.ts` |
@@ -129,6 +130,8 @@ Do not edit it by hand.
 | AdminDecideOrganizerPolicyGapCallablePayload | `callables/admin_decide_organizer_policy_gap_payload.schema.json` | `functions/src/shared/generated/adminDecideOrganizerPolicyGapCallablePayload.ts` |
 | AdminResolveOrganizerEventLocationCallablePayload | `callables/admin_resolve_organizer_event_location_payload.schema.json` | `functions/src/shared/generated/adminResolveOrganizerEventLocationCallablePayload.ts` |
 | AdminSetClubIndexStatusCallablePayload | `callables/admin_set_club_index_status_payload.schema.json` | `functions/src/shared/generated/adminSetClubIndexStatusCallablePayload.ts` |
+| AdminListCrossPathsShowcaseCandidatesCallablePayload | `callables/admin_list_cross_paths_showcase_candidates_payload.schema.json` | `functions/src/shared/generated/adminListCrossPathsShowcaseCandidatesCallablePayload.ts` |
+| AdminSetCrossPathsShowcaseEligibilityCallablePayload | `callables/admin_set_cross_paths_showcase_eligibility_payload.schema.json` | `functions/src/shared/generated/adminSetCrossPathsShowcaseEligibilityCallablePayload.ts` |
 | AdminGetClubDetailsCallablePayload | `callables/admin_get_club_details_payload.schema.json` | `functions/src/shared/generated/adminGetClubDetailsCallablePayload.ts` |
 | AdminListClubDetailsCallablePayload | `callables/admin_list_club_details_payload.schema.json` | `functions/src/shared/generated/adminListClubDetailsCallablePayload.ts` |
 | AdminUpdateClubDetailsCallablePayload | `callables/admin_update_club_details_payload.schema.json` | `functions/src/shared/generated/adminUpdateClubDetailsCallablePayload.ts` |
@@ -226,6 +229,8 @@ Do not edit it by hand.
 | AdminCreateMarketingContentDraftCallableResponse | `callable_responses/admin_create_marketing_content_draft_response.schema.json` | `functions/src/shared/generated/adminCreateMarketingContentDraftCallableResponse.ts` |
 | AdminRecordMarketingReviewDecisionCallablePayload | `callables/admin_record_marketing_review_decision_payload.schema.json` | `functions/src/shared/generated/adminRecordMarketingReviewDecisionCallablePayload.ts` |
 | AdminRecordMarketingReviewDecisionCallableResponse | `callable_responses/admin_record_marketing_review_decision_response.schema.json` | `functions/src/shared/generated/adminRecordMarketingReviewDecisionCallableResponse.ts` |
+| AdminListCrossPathsShowcaseCandidatesCallableResponse | `callable_responses/admin_list_cross_paths_showcase_candidates_response.schema.json` | `functions/src/shared/generated/adminListCrossPathsShowcaseCandidatesCallableResponse.ts` |
+| AdminSetCrossPathsShowcaseEligibilityCallableResponse | `callable_responses/admin_set_cross_paths_showcase_eligibility_response.schema.json` | `functions/src/shared/generated/adminSetCrossPathsShowcaseEligibilityCallableResponse.ts` |
 | JoinWaitlistHTTPRequest | `http/join_waitlist_request.schema.json` | `functions/src/shared/generated/joinWaitlistHttpRequest.ts` |
 | JoinWaitlistHTTPResponse | `http/join_waitlist_response.schema.json` | `functions/src/shared/generated/joinWaitlistHttpResponse.ts` |
 
@@ -267,6 +272,7 @@ Do not edit it by hand.
 | `schemaEventInviteLinkDocumentSchema` | EventInviteLinkDocument | `firestore/event_invite_links.schema.json` | `lib/core/schema_contracts/generated/schemas/event_invite_link_document.g.dart` |
 | `schemaEventParticipationDocumentSchema` | EventParticipationDocument | `firestore/event_participations.schema.json` | `lib/core/schema_contracts/generated/schemas/event_participation_document.g.dart` |
 | `schemaEventCrossPathsConsentDocumentSchema` | EventCrossPathsConsentDocument | `firestore/event_cross_paths_consents.schema.json` | `lib/core/schema_contracts/generated/schemas/event_cross_paths_consent_document.g.dart` |
+| `schemaCrossPathsShowcaseEligibilityDocumentSchema` | CrossPathsShowcaseEligibilityDocument | `firestore/cross_paths_showcase_eligibility.schema.json` | `lib/core/schema_contracts/generated/schemas/cross_paths_showcase_eligibility_document.g.dart` |
 | `schemaEventBroadcastDocumentSchema` | EventBroadcastDocument | `firestore/event_broadcasts.schema.json` | `lib/core/schema_contracts/generated/schemas/event_broadcast_document.g.dart` |
 | `schemaEventWaitlistOfferDocumentSchema` | EventWaitlistOfferDocument | `firestore/event_waitlist_offers.schema.json` | `lib/core/schema_contracts/generated/schemas/event_waitlist_offer_document.g.dart` |
 | `schemaEventSuccessPlanDocumentSchema` | EventSuccessPlanDocument | `firestore/event_success_plans.schema.json` | `lib/core/schema_contracts/generated/schemas/event_success_plan_document.g.dart` |
@@ -350,6 +356,8 @@ Do not edit it by hand.
 | `schemaAdminDecideOrganizerPolicyGapCallablePayloadSchema` | AdminDecideOrganizerPolicyGapCallablePayload | `callables/admin_decide_organizer_policy_gap_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_decide_organizer_policy_gap_callable_payload.g.dart` |
 | `schemaAdminResolveOrganizerEventLocationCallablePayloadSchema` | AdminResolveOrganizerEventLocationCallablePayload | `callables/admin_resolve_organizer_event_location_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_resolve_organizer_event_location_callable_payload.g.dart` |
 | `schemaAdminSetClubIndexStatusCallablePayloadSchema` | AdminSetClubIndexStatusCallablePayload | `callables/admin_set_club_index_status_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_set_club_index_status_callable_payload.g.dart` |
+| `schemaAdminListCrossPathsShowcaseCandidatesCallablePayloadSchema` | AdminListCrossPathsShowcaseCandidatesCallablePayload | `callables/admin_list_cross_paths_showcase_candidates_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_list_cross_paths_showcase_candidates_callable_payload.g.dart` |
+| `schemaAdminSetCrossPathsShowcaseEligibilityCallablePayloadSchema` | AdminSetCrossPathsShowcaseEligibilityCallablePayload | `callables/admin_set_cross_paths_showcase_eligibility_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_set_cross_paths_showcase_eligibility_callable_payload.g.dart` |
 | `schemaAdminGetClubDetailsCallablePayloadSchema` | AdminGetClubDetailsCallablePayload | `callables/admin_get_club_details_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_get_club_details_callable_payload.g.dart` |
 | `schemaAdminListClubDetailsCallablePayloadSchema` | AdminListClubDetailsCallablePayload | `callables/admin_list_club_details_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_list_club_details_callable_payload.g.dart` |
 | `schemaAdminUpdateClubDetailsCallablePayloadSchema` | AdminUpdateClubDetailsCallablePayload | `callables/admin_update_club_details_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_update_club_details_callable_payload.g.dart` |
@@ -447,6 +455,8 @@ Do not edit it by hand.
 | `schemaAdminCreateMarketingContentDraftCallableResponseSchema` | AdminCreateMarketingContentDraftCallableResponse | `callable_responses/admin_create_marketing_content_draft_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_create_marketing_content_draft_callable_response.g.dart` |
 | `schemaAdminRecordMarketingReviewDecisionCallablePayloadSchema` | AdminRecordMarketingReviewDecisionCallablePayload | `callables/admin_record_marketing_review_decision_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_record_marketing_review_decision_callable_payload.g.dart` |
 | `schemaAdminRecordMarketingReviewDecisionCallableResponseSchema` | AdminRecordMarketingReviewDecisionCallableResponse | `callable_responses/admin_record_marketing_review_decision_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_record_marketing_review_decision_callable_response.g.dart` |
+| `schemaAdminListCrossPathsShowcaseCandidatesCallableResponseSchema` | AdminListCrossPathsShowcaseCandidatesCallableResponse | `callable_responses/admin_list_cross_paths_showcase_candidates_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_list_cross_paths_showcase_candidates_callable_response.g.dart` |
+| `schemaAdminSetCrossPathsShowcaseEligibilityCallableResponseSchema` | AdminSetCrossPathsShowcaseEligibilityCallableResponse | `callable_responses/admin_set_cross_paths_showcase_eligibility_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_set_cross_paths_showcase_eligibility_callable_response.g.dart` |
 | `schemaJoinWaitlistHTTPRequestSchema` | JoinWaitlistHTTPRequest | `http/join_waitlist_request.schema.json` | `lib/core/schema_contracts/generated/schemas/join_waitlist_http_request.g.dart` |
 | `schemaJoinWaitlistHTTPResponseSchema` | JoinWaitlistHTTPResponse | `http/join_waitlist_response.schema.json` | `lib/core/schema_contracts/generated/schemas/join_waitlist_http_response.g.dart` |
 
@@ -486,6 +496,8 @@ Do not edit it by hand.
 | AdminDecideOrganizerPolicyGapCallableRequest | AdminDecideOrganizerPolicyGapCallablePayload | `callables/admin_decide_organizer_policy_gap_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_decide_organizer_policy_gap_callable_request.g.dart` |
 | AdminResolveOrganizerEventLocationCallableRequest | AdminResolveOrganizerEventLocationCallablePayload | `callables/admin_resolve_organizer_event_location_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_resolve_organizer_event_location_callable_request.g.dart` |
 | AdminSetClubIndexStatusCallableRequest | AdminSetClubIndexStatusCallablePayload | `callables/admin_set_club_index_status_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_set_club_index_status_callable_request.g.dart` |
+| AdminListCrossPathsShowcaseCandidatesCallableRequest | AdminListCrossPathsShowcaseCandidatesCallablePayload | `callables/admin_list_cross_paths_showcase_candidates_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_list_cross_paths_showcase_candidates_callable_request.g.dart` |
+| AdminSetCrossPathsShowcaseEligibilityCallableRequest | AdminSetCrossPathsShowcaseEligibilityCallablePayload | `callables/admin_set_cross_paths_showcase_eligibility_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_set_cross_paths_showcase_eligibility_callable_request.g.dart` |
 | AdminGetClubDetailsCallableRequest | AdminGetClubDetailsCallablePayload | `callables/admin_get_club_details_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_get_club_details_callable_request.g.dart` |
 | AdminListClubDetailsCallableRequest | AdminListClubDetailsCallablePayload | `callables/admin_list_club_details_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_list_club_details_callable_request.g.dart` |
 | AdminGetOrganizerDetailsCallableRequest | AdminGetOrganizerDetailsCallablePayload | `callables/admin_get_organizer_details_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_get_organizer_details_callable_request.g.dart` |

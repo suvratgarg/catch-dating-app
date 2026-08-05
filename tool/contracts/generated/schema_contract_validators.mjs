@@ -37,6 +37,7 @@ import {
   eventInviteLinkDocumentSchema,
   eventParticipationDocumentSchema,
   eventCrossPathsConsentDocumentSchema,
+  crossPathsShowcaseEligibilityDocumentSchema,
   eventBroadcastDocumentSchema,
   eventWaitlistOfferDocumentSchema,
   eventSuccessPlanDocumentSchema,
@@ -120,6 +121,8 @@ import {
   adminDecideOrganizerPolicyGapCallablePayloadSchema,
   adminResolveOrganizerEventLocationCallablePayloadSchema,
   adminSetClubIndexStatusCallablePayloadSchema,
+  adminListCrossPathsShowcaseCandidatesCallablePayloadSchema,
+  adminSetCrossPathsShowcaseEligibilityCallablePayloadSchema,
   adminGetClubDetailsCallablePayloadSchema,
   adminListClubDetailsCallablePayloadSchema,
   adminUpdateClubDetailsCallablePayloadSchema,
@@ -217,6 +220,8 @@ import {
   adminCreateMarketingContentDraftCallableResponseSchema,
   adminRecordMarketingReviewDecisionCallablePayloadSchema,
   adminRecordMarketingReviewDecisionCallableResponseSchema,
+  adminListCrossPathsShowcaseCandidatesCallableResponseSchema,
+  adminSetCrossPathsShowcaseEligibilityCallableResponseSchema,
   joinWaitlistHTTPRequestSchema,
   joinWaitlistHTTPResponseSchema,
 } from "./schema_contract_registry.mjs";
@@ -277,6 +282,7 @@ export const validateEventPrivateAccessDocument = ajv.compile(eventPrivateAccess
 export const validateEventInviteLinkDocument = ajv.compile(eventInviteLinkDocumentSchema);
 export const validateEventParticipationDocument = ajv.compile(eventParticipationDocumentSchema);
 export const validateEventCrossPathsConsentDocument = ajv.compile(eventCrossPathsConsentDocumentSchema);
+export const validateCrossPathsShowcaseEligibilityDocument = ajv.compile(crossPathsShowcaseEligibilityDocumentSchema);
 export const validateEventBroadcastDocument = ajv.compile(eventBroadcastDocumentSchema);
 export const validateEventWaitlistOfferDocument = ajv.compile(eventWaitlistOfferDocumentSchema);
 export const validateEventSuccessPlanDocument = ajv.compile(eventSuccessPlanDocumentSchema);
@@ -360,6 +366,8 @@ export const validateAdminDecideOrganizerEventCandidateCallablePayload = ajv.com
 export const validateAdminDecideOrganizerPolicyGapCallablePayload = ajv.compile(adminDecideOrganizerPolicyGapCallablePayloadSchema);
 export const validateAdminResolveOrganizerEventLocationCallablePayload = ajv.compile(adminResolveOrganizerEventLocationCallablePayloadSchema);
 export const validateAdminSetClubIndexStatusCallablePayload = ajv.compile(adminSetClubIndexStatusCallablePayloadSchema);
+export const validateAdminListCrossPathsShowcaseCandidatesCallablePayload = ajv.compile(adminListCrossPathsShowcaseCandidatesCallablePayloadSchema);
+export const validateAdminSetCrossPathsShowcaseEligibilityCallablePayload = ajv.compile(adminSetCrossPathsShowcaseEligibilityCallablePayloadSchema);
 export const validateAdminGetClubDetailsCallablePayload = ajv.compile(adminGetClubDetailsCallablePayloadSchema);
 export const validateAdminListClubDetailsCallablePayload = ajv.compile(adminListClubDetailsCallablePayloadSchema);
 export const validateAdminUpdateClubDetailsCallablePayload = ajv.compile(adminUpdateClubDetailsCallablePayloadSchema);
@@ -457,6 +465,8 @@ export const validateAdminCreateMarketingContentDraftCallablePayload = ajv.compi
 export const validateAdminCreateMarketingContentDraftCallableResponse = ajv.compile(adminCreateMarketingContentDraftCallableResponseSchema);
 export const validateAdminRecordMarketingReviewDecisionCallablePayload = ajv.compile(adminRecordMarketingReviewDecisionCallablePayloadSchema);
 export const validateAdminRecordMarketingReviewDecisionCallableResponse = ajv.compile(adminRecordMarketingReviewDecisionCallableResponseSchema);
+export const validateAdminListCrossPathsShowcaseCandidatesCallableResponse = ajv.compile(adminListCrossPathsShowcaseCandidatesCallableResponseSchema);
+export const validateAdminSetCrossPathsShowcaseEligibilityCallableResponse = ajv.compile(adminSetCrossPathsShowcaseEligibilityCallableResponseSchema);
 export const validateJoinWaitlistHTTPRequest = ajv.compile(joinWaitlistHTTPRequestSchema);
 export const validateJoinWaitlistHTTPResponse = ajv.compile(joinWaitlistHTTPResponseSchema);
 

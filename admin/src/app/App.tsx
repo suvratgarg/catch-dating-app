@@ -21,6 +21,7 @@ import {
   CircleDollarSign,
   Database,
   FolderSearch,
+  HeartHandshake,
   LineChart,
   Lock,
   Megaphone,
@@ -79,6 +80,7 @@ type AdminNavId =
   | "overview"
   | "safety"
   | "access"
+  | "cross-paths"
   | "growth"
   | "marketing-ops"
   | "organizer-intake"
@@ -142,6 +144,11 @@ const UserAnalyticsScreen = lazy(() =>
     default: module.UserAnalyticsScreen,
   }))
 );
+const CrossPathsShowcaseScreen = lazy(() =>
+  import("../features/cross-paths/ui/CrossPathsShowcaseScreen").then(
+    (module) => ({default: module.CrossPathsShowcaseScreen})
+  )
+);
 const OverviewRouteScreen = lazy(() =>
   import("../features/overview/ui/OverviewRouteScreen").then((module) => ({
     default: module.OverviewRouteScreen,
@@ -183,6 +190,7 @@ const navigationGroups: Array<{
       {id: "overview", label: "Overview", icon: Activity},
       {id: "safety", label: "Safety", icon: ShieldAlert},
       {id: "access", label: "Launch access", icon: UserCheck},
+      {id: "cross-paths", label: "Cross Paths", icon: HeartHandshake},
     ],
   },
   {
@@ -227,6 +235,7 @@ const navRoleMap: Record<AdminNavId, readonly AdminRoleClaim[]> = {
   overview: adminRoleClaimKeys,
   safety: ["admin", "adminOwner", "safetyReviewer", "support"],
   access: ["admin", "adminOwner", "support"],
+  "cross-paths": ["admin", "adminOwner", "safetyReviewer", "support"],
   growth: ["adminOwner", "analyticsViewer"],
   "marketing-ops": ["admin", "adminOwner", "support"],
   "organizer-intake": ["admin", "adminOwner", "support"],
@@ -270,6 +279,7 @@ const adminSectionTitles: Record<AdminNavId, string> = {
   overview: "Overview",
   safety: "Safety",
   access: "Launch access",
+  "cross-paths": "Cross Paths showcase",
   growth: "Growth",
   "marketing-ops": "Marketing",
   "organizer-intake": "Intake",
@@ -809,6 +819,19 @@ function AdminRouteApp() {
             <UserAnalyticsScreen
               handoffRequestId={null}
               handoffUserId={null}
+              onError={setError}
+              onNotice={setNotice}
+            />
+          </Suspense>
+        ) : currentNav === "cross-paths" ? (
+          <Suspense fallback={
+            <AdminFeatureLoadingState label="Loading Cross Paths" />
+          }>
+            <CrossPathsShowcaseScreen
+              canDecide={mode === "sample" || hasAnyAdminRole(
+                adminRoles,
+                ["admin", "adminOwner", "safetyReviewer"]
+              )}
               onError={setError}
               onNotice={setNotice}
             />

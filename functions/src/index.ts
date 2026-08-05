@@ -195,6 +195,10 @@ export {
   adminSetClubIndexStatus,
 } from "./admin/clubIndexing";
 export {
+  adminListCrossPathsShowcaseCandidates,
+  adminSetCrossPathsShowcaseEligibility,
+} from "./admin/crossPathsShowcaseEligibility";
+export {
   adminGetClubDetails,
   adminGetOrganizerDetails,
   adminListClubDetails,

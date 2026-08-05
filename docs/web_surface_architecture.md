@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.10.2
-updated: 2026-07-27
+version: 0.10.3
+updated: 2026-08-05
 owner: web_platform
 status: active
 ---
@@ -50,9 +50,10 @@ Organizer Detail because it adds static canonical/noindex behavior, not another
 interactive workflow. Static legal/support and 404 routes remain explicit
 exclusions rather than synthetic zero-action product features.
 
-The Admin migration compiles all 14 registered route authorities across 12
-feature identities. Access Review, Role Management, Data Quality, Event
-Publishing, Finance Operations, Growth KPI, Marketing Operations, Organizer
+The Admin migration compiles all 15 registered route authorities across 13
+feature identities. Access Review, Role Management, Cross Paths Showcase,
+Data Quality, Event Publishing, Finance Operations, Growth KPI, Marketing
+Operations, Organizer
 Publishing, Safety Triage, and User Analytics each use one route projection.
 Intake and Overview each use two because Organizer Intake and the live Overview
 controller wrapper own independently reviewable states and actions. No Admin

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "catalogVersion": "1.0.0",
-  "updated": "2026-07-23",
+  "catalogVersion": "1.1.0",
+  "updated": "2026-08-05",
   "owner": "operations_platform",
   "program": "catch-admin",
   "actions": [
@@ -106,6 +106,32 @@
       "requestSchema": "contracts/callables/user_analytics_query_payload.schema.json",
       "summary": "Load the bounded analytics report for one exact user id.",
       "example": {"userId": "example-user", "rangePreset": "30d", "granularity": "day"}
+    },
+    {
+      "actionId": "cross-paths-showcase.list",
+      "callable": "adminListCrossPathsShowcaseCandidates",
+      "workflowIds": ["cross-paths-showcase"],
+      "guiPath": "/cross-paths",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": ["admin", "adminOwner", "safetyReviewer", "support"],
+      "requestSchema": "contracts/callables/admin_list_cross_paths_showcase_candidates_payload.schema.json",
+      "summary": "List a bounded, score-free Cross Paths showcase review queue from public profile projections.",
+      "example": {"status": "needsReview", "limit": 25}
+    },
+    {
+      "actionId": "cross-paths-showcase.set-eligibility",
+      "callable": "adminSetCrossPathsShowcaseEligibility",
+      "workflowIds": ["cross-paths-showcase"],
+      "guiPath": "/cross-paths",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": ["admin", "adminOwner", "safetyReviewer"],
+      "confirmation": "action-and-target",
+      "targetField": "uid",
+      "requestSchema": "contracts/callables/admin_set_cross_paths_showcase_eligibility_payload.schema.json",
+      "summary": "Record an audited, fingerprint-bound Cross Paths showcase eligibility decision without storing an attractiveness score.",
+      "example": {"uid": "example-user", "status": "needsReview", "reviewChecklist": {"primaryPortraitClear": false, "profileRepresentsCurrentMember": false, "showcasePolicyReviewed": true}, "reviewNote": "Fixture hold for profile follow-up."}
     },
     {
       "actionId": "marketing.get",
@@ -533,6 +559,7 @@
     {"workflowId": "events", "label": "Events", "guiPath": "/events", "actions": ["events.list", "events.get", "events.update"]},
     {"workflowId": "external-events", "label": "External events", "guiPath": "/events/external", "actions": ["external-events.list", "external-events.readiness", "external-events.publish", "external-events.takedown"]},
     {"workflowId": "users", "label": "Users", "guiPath": "/users", "actions": ["analytics.user"]},
+    {"workflowId": "cross-paths-showcase", "label": "Cross Paths showcase", "guiPath": "/cross-paths", "actions": ["cross-paths-showcase.list", "cross-paths-showcase.set-eligibility"]},
     {"workflowId": "finance", "label": "Finance", "guiPath": "/finance", "actions": ["overview.get", "analytics.host"], "blockedCapabilities": ["retry_payment", "refund", "payout_mutation", "settlement_mutation"]},
     {"workflowId": "data-quality", "label": "Data quality", "guiPath": "/quality", "actions": ["overview.get", "analytics.host", "marketing.get", "event-intake.get", "external-events.readiness"]},
     {"workflowId": "admin-roles", "label": "Admin roles", "guiPath": "/admin-roles", "actions": ["admin-roles.list", "admin-roles.get", "admin-roles.set"]},

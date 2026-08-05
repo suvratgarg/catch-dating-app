@@ -1461,6 +1461,10 @@ select {
   font-size: 13px;
 }
 
+.segmented-content-mobile button {
+  white-space: nowrap;
+}
+
 .segmented button.selected {
   background: #15171a;
   color: #ffffff;
@@ -4605,6 +4609,21 @@ th {
   }
 }
 
+.admin-profile-photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
+  gap: 8px;
+}
+
+.admin-profile-photo-grid img {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
 @media (max-width: 520px) {
   .intake-stage-rail {
     width: 100%;
@@ -4634,6 +4653,12 @@ th {
 
   .segmented button {
     flex: 1;
+  }
+
+  .segmented-content-mobile button {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding-inline: 6px;
   }
 
   .publishing-loadbar .ghost-button,

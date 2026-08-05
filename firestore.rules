@@ -853,6 +853,12 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Reviewed showcase eligibility is server-only. Suggestions receive only
+    // a sanitized callable projection after consent and safety checks.
+    match /crossPathsShowcaseEligibility/{uid} {
+      allow read, write: if false;
+    }
+
     // Server-owned event-announcement receipts contain frozen recipient and
     // per-delivery evidence. V1 exposes only the sanitized callable response.
     match /eventBroadcasts/{broadcastId} {

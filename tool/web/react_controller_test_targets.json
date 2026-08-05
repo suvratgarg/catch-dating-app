@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "version": 7,
-  "updated": "2026-07-23",
+  "version": 8,
+  "updated": "2026-08-05",
   "owner": "web_surface_architecture",
   "statuses": {
     "required": "A behavior test must exist and import the target hook.",
@@ -17,6 +17,11 @@
     {
       "source": "admin/src/features/admin-roles/controllers/useAdminRoleManagementController.ts",
       "test": "admin/src/features/admin-roles/controllers/useAdminRoleManagementController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/cross-paths/controllers/useCrossPathsShowcaseController.ts",
+      "test": "admin/src/features/cross-paths/controllers/useCrossPathsShowcaseController.test.tsx",
       "status": "required"
     },
     {
