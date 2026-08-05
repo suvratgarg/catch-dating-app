@@ -84,51 +84,51 @@
     },
     {
       "hammingBucket": "45-49",
-      "pairs": 793,
+      "pairs": 792,
       "jaccardMin": 0,
-      "jaccardMean": 0.1447,
+      "jaccardMean": 0.1448,
       "jaccardMax": 0.4706
     },
     {
       "hammingBucket": "50-54",
-      "pairs": 1719,
+      "pairs": 1717,
       "jaccardMin": 0,
-      "jaccardMean": 0.0869,
+      "jaccardMean": 0.087,
       "jaccardMax": 0.4412
     },
     {
       "hammingBucket": "55-59",
-      "pairs": 2906,
+      "pairs": 2903,
       "jaccardMin": 0,
-      "jaccardMean": 0.0529,
+      "jaccardMean": 0.053,
       "jaccardMax": 0.2813
     },
     {
       "hammingBucket": "60-64",
-      "pairs": 3192,
+      "pairs": 3194,
       "jaccardMin": 0,
       "jaccardMean": 0.0324,
       "jaccardMax": 0.2381
     },
     {
       "hammingBucket": "65-69",
-      "pairs": 1979,
+      "pairs": 1986,
       "jaccardMin": 0,
       "jaccardMean": 0.0215,
       "jaccardMax": 0.2
     },
     {
       "hammingBucket": "70-74",
-      "pairs": 674,
+      "pairs": 669,
       "jaccardMin": 0,
       "jaccardMean": 0.0129,
       "jaccardMax": 0.1124
     },
     {
       "hammingBucket": "75-79",
-      "pairs": 103,
+      "pairs": 105,
       "jaccardMin": 0,
-      "jaccardMean": 0.0081,
+      "jaccardMean": 0.0084,
       "jaccardMax": 0.0816
     },
     {
@@ -5797,11 +5797,11 @@
       "name": "EventDetailBody",
       "file": "lib/events/presentation/widgets/event_detail_body.dart",
       "role": "composition",
-      "shapeHash": "2add626cc0ad9b6d33482eb360996057d23882e5c1c1c114eced8d240be857ed",
-      "coarseShapeHash": "db2c83d1422ee8fa9f46f627a045409fb1994998eeeddbaf66ecbe89b9f86612",
-      "simhash128": "5632b61ff9e97407e8a78677fcc1c5d3",
-      "tokenStreamLength": 73,
-      "coarseTokenStreamLength": 73,
+      "shapeHash": "8e47d8181514623758239a90f4b51f8ea62a7118af2811ea603cfc48fa022ae3",
+      "coarseShapeHash": "82d0e4021c3598e6f9bd3cca1defb0120621c1de1214732f24b65c8491e549a7",
+      "simhash128": "4622be1fb9f97407e8a78637fc81c5d3",
+      "tokenStreamLength": 74,
+      "coarseTokenStreamLength": 74,
       "usageCountRaw": 11,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
@@ -6109,11 +6109,11 @@
       "name": "EventDetailScreen",
       "file": "lib/events/presentation/event_detail_screen.dart",
       "role": "screen",
-      "shapeHash": "69e9c3496a05884727622da6a6183cfcd4e32aa8633474f29f310f74d2dd0911",
-      "coarseShapeHash": "1a6488157da25a197548bb0af7cc97903ad8aaf9343b1f0fd48973d1da988de6",
-      "simhash128": "d493727ff766bcb23db5a2148329b95e",
-      "tokenStreamLength": 136,
-      "coarseTokenStreamLength": 136,
+      "shapeHash": "797ea001f97957235f258e9e3a43d389b083943fa4b549e5652e366b79ace760",
+      "coarseShapeHash": "8910919dc3ac81e7793db943220dd50af4e1deb42cb4875219ddff6fe3ac2427",
+      "simhash128": "c493726df766bab23db5a214c229b15e",
+      "tokenStreamLength": 137,
+      "coarseTokenStreamLength": 137,
       "usageCountRaw": 17,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
@@ -15367,11 +15367,11 @@
       "rank": 46,
       "a": "EventDetailBody",
       "b": "EventMapLoadingBody",
-      "jaccard": 0.0114,
+      "jaccard": 0.0111,
       "containment": 0.05,
       "score": 0.05,
       "smallWidgetMultisetJaccard": 0,
-      "hamming": 52,
+      "hamming": 55,
       "flags": [
         "cross-role"
       ],
@@ -15577,7 +15577,7 @@
       "containment": 0,
       "score": 0,
       "smallWidgetMultisetJaccard": 0,
-      "hamming": 67,
+      "hamming": 66,
       "flags": [],
       "detectors": [
         "name"
@@ -18463,11 +18463,11 @@
       "rank": 164,
       "a": "ClubDetailScreen",
       "b": "EventDetailScreen",
-      "jaccard": 0.0741,
+      "jaccard": 0.0734,
       "containment": 0.2,
       "score": 0.2,
       "smallWidgetMultisetJaccard": 0,
-      "hamming": 54,
+      "hamming": 56,
       "flags": [],
       "detectors": [
         "name"
