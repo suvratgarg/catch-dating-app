@@ -16,15 +16,15 @@ void main() {
   ) async {
     final fixture = _fixture();
     var profileTaps = 0;
-    ExploreEventItem? selectedEvent;
+    var eventTaps = 0;
 
     await _pumpCard(
       tester,
       CrossPathsExploreCard(
         suggestion: fixture.suggestion,
-        eventItem: fixture.eventItem,
+        event: fixture.eventItem.event,
         onProfileSelected: () => profileTaps += 1,
-        onEventSelected: (item) => selectedEvent = item,
+        onEventSelected: () => eventTaps += 1,
       ),
     );
 
@@ -37,12 +37,12 @@ void main() {
     await tester.tap(find.text('Rhea, 29'));
     await tester.pump();
     expect(profileTaps, 1);
-    expect(selectedEvent, isNull);
+    expect(eventTaps, 0);
 
     await tester.ensureVisible(find.text('See the event'));
     await tester.tap(find.text('See the event'));
     await tester.pump();
-    expect(selectedEvent?.event.id, fixture.eventItem.event.id);
+    expect(eventTaps, 1);
   });
 
   testWidgets('card remains overflow-free at text scale 2', (tester) async {
@@ -56,9 +56,9 @@ void main() {
       tester,
       CrossPathsExploreCard(
         suggestion: fixture.suggestion,
-        eventItem: fixture.eventItem,
+        event: fixture.eventItem.event,
         onProfileSelected: () {},
-        onEventSelected: (_) {},
+        onEventSelected: () {},
       ),
       textScaler: const TextScaler.linear(2),
     );
@@ -77,7 +77,7 @@ void main() {
       tester,
       CrossPathsExploreCard(
         suggestion: fixture.suggestion,
-        eventItem: fixture.eventItem,
+        event: fixture.eventItem.event,
         onImpression: () => impressions += 1,
       ),
     );
@@ -107,8 +107,8 @@ void main() {
               alignment: Alignment.bottomCenter,
               child: CrossPathsProfilePreviewSheet(
                 suggestion: fixture.suggestion,
-                eventItem: fixture.eventItem,
-                onEventSelected: (_) {},
+                event: fixture.eventItem.event,
+                onEventSelected: () {},
               ),
             ),
           ),

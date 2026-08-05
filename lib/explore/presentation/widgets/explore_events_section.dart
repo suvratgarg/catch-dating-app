@@ -21,6 +21,15 @@ export 'package:catch_dating_app/explore/presentation/widgets/explore_club_cards
 export 'package:catch_dating_app/explore/presentation/widgets/explore_event_rows.dart';
 export 'package:catch_dating_app/explore/presentation/widgets/explore_events_status_slivers.dart';
 
+typedef CrossPathsProfileSelected =
+    void Function(CrossPathsSuggestion suggestion, ExploreEventItem eventItem);
+typedef CrossPathsImpression =
+    void Function(
+      CrossPathsSuggestion suggestion,
+      ExploreEventItem eventItem,
+      int position,
+    );
+
 final EdgeInsets _exploreEventsErrorPadding = CatchInsets.pageBody.copyWith(
   top: CatchSpacing.s3,
   bottom: CatchSpacing.s3,
@@ -330,14 +339,14 @@ List<Widget> _exploreContentSlivers(
               ExploreMixedPersonCard(:final suggestion, :final eventItem) =>
                 CrossPathsExploreCard(
                   suggestion: suggestion,
-                  eventItem: eventItem,
+                  event: eventItem.event,
                   onProfileSelected: onCrossPathsProfileSelected == null
                       ? null
                       : () =>
                             onCrossPathsProfileSelected(suggestion, eventItem),
                   onEventSelected: onEventSelected == null
                       ? null
-                      : (item) => onEventSelected(item, 'cross_paths'),
+                      : () => onEventSelected(eventItem, 'cross_paths'),
                   onImpression: onCrossPathsImpression == null
                       ? null
                       : () => onCrossPathsImpression(

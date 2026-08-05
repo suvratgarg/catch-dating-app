@@ -295,8 +295,8 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
         showCrossPathsProfilePreview(
           context: context,
           suggestion: suggestion,
-          eventItem: eventItem,
-          onEventSelected: (item) => openEvent(item, 'cross_paths_profile'),
+          event: eventItem.event,
+          onEventSelected: () => openEvent(eventItem, 'cross_paths_profile'),
         ),
       );
     }

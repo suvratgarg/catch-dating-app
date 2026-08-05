@@ -3,7 +3,7 @@
   "source": "test/ui_captures/catalog/screen_capture_catalog.dart",
   "coverage": {
     "routes": 52,
-    "captures": 608,
+    "captures": 610,
     "statusCounts": {
       "excluded": 6,
       "captured": 36,
@@ -3965,6 +3965,40 @@
         "dark": "dark/explore_joined_clubs.png"
       },
       "whatItIs": "Explore Joined Clubs",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "explore_cross_paths_person",
+      "routes": [
+        "exploreScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/explore_cross_paths_person.png",
+        "dark": "dark/explore_cross_paths_person.png"
+      },
+      "whatItIs": "Explore Cross Paths Person",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "explore_cross_paths_profile_preview",
+      "routes": [
+        "exploreScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/explore_cross_paths_profile_preview.png",
+        "dark": "dark/explore_cross_paths_profile_preview.png"
+      },
+      "whatItIs": "Explore Cross Paths Profile Preview",
       "keepChangeNotes": ""
     },
     {

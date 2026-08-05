@@ -79,26 +79,26 @@
       "hammingBucket": "40-44",
       "pairs": 308,
       "jaccardMin": 0,
-      "jaccardMean": 0.2249,
+      "jaccardMean": 0.2246,
       "jaccardMax": 0.5
     },
     {
       "hammingBucket": "45-49",
-      "pairs": 800,
+      "pairs": 796,
       "jaccardMin": 0,
-      "jaccardMean": 0.1442,
+      "jaccardMean": 0.1444,
       "jaccardMax": 0.4706
     },
     {
       "hammingBucket": "50-54",
-      "pairs": 1731,
+      "pairs": 1737,
       "jaccardMin": 0,
       "jaccardMean": 0.0872,
       "jaccardMax": 0.4412
     },
     {
       "hammingBucket": "55-59",
-      "pairs": 2944,
+      "pairs": 2940,
       "jaccardMin": 0,
       "jaccardMean": 0.0531,
       "jaccardMax": 0.2813
@@ -107,22 +107,22 @@
       "hammingBucket": "60-64",
       "pairs": 3235,
       "jaccardMin": 0,
-      "jaccardMean": 0.0327,
+      "jaccardMean": 0.0326,
       "jaccardMax": 0.2381
     },
     {
       "hammingBucket": "65-69",
-      "pairs": 2011,
+      "pairs": 2015,
       "jaccardMin": 0,
-      "jaccardMean": 0.0217,
+      "jaccardMean": 0.0218,
       "jaccardMax": 0.2
     },
     {
       "hammingBucket": "70-74",
-      "pairs": 678,
+      "pairs": 676,
       "jaccardMin": 0,
-      "jaccardMean": 0.0134,
-      "jaccardMax": 0.1505
+      "jaccardMean": 0.0133,
+      "jaccardMax": 0.1304
     },
     {
       "hammingBucket": "75-79",
@@ -5225,11 +5225,11 @@
       "name": "CrossPathsEventContextCard",
       "file": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
       "role": "composition",
-      "shapeHash": "a0a8d2bc0a3e79b3a62648ae4fc10754fb3c446a89b8e3535f987ff6074593e7",
-      "coarseShapeHash": "9493936466628d29202be4409e57f5159e1760a9000ed309c0ab7c5b42fddac5",
-      "simhash128": "2ac3ced925999ede8b4eac980112fb1e",
-      "tokenStreamLength": 54,
-      "coarseTokenStreamLength": 54,
+      "shapeHash": "7cd07fecaff0d29c82fd71f9a8ac491c5a3e7f44bdb54b615ce8879ffa362036",
+      "coarseShapeHash": "4e7c6e7e0f4ebb33eb0077ea76f0149e62588622bd7ffc6664ca140e5b67021a",
+      "simhash128": "aa47eed905b9bede0b5eadd80952fb9f",
+      "tokenStreamLength": 51,
+      "coarseTokenStreamLength": 51,
       "usageCountRaw": 3,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
@@ -5238,9 +5238,9 @@
       "name": "CrossPathsExploreCard",
       "file": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
       "role": "composition",
-      "shapeHash": "960b35e0d017362fb8a88640b38f1c04e1048e5ea2c569fc883cecca2304c6fe",
-      "coarseShapeHash": "c67dbad36d16f6158a227e14ef9666b0cfcfafe8e1c506fd69b96b6117a917cf",
-      "simhash128": "131b619ad4ad94ea468d9f976c80e537",
+      "shapeHash": "267d6d5ff45d3f51c6cbb2ed867abf9b8cb4c6ccacdc5cca54c036fbae82c27a",
+      "coarseShapeHash": "c96bb10c56d4d3032d79b8155232733e0a538bf13eab265589f8a376346e88f2",
+      "simhash128": "151b619ad42f50e24f859f973c01f517",
       "tokenStreamLength": 41,
       "coarseTokenStreamLength": 41,
       "usageCountRaw": 4,
@@ -5251,9 +5251,9 @@
       "name": "CrossPathsProfilePreviewSheet",
       "file": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
       "role": "composition",
-      "shapeHash": "b24e928709eda1034a37af8361d098ea9d1ec5481d4a9e7d474ba015358610f0",
-      "coarseShapeHash": "a042f4d88182c2f679d4983221f569c53f028178c91c0e17d9987e8dae025997",
-      "simhash128": "594ddd8d9f9bdaba264ae7f9fe7aade0",
+      "shapeHash": "012def2b6503808f71df9291885d9dd1b186ddd64d72396bf5911e46b87b9f1f",
+      "coarseShapeHash": "5366555411db01537ad25a8c87ff4914242a41b14f69ab87c7a47b70e12e4f34",
+      "simhash128": "494fdd8d1f9bdaba225ae779fe7aad80",
       "tokenStreamLength": 53,
       "coarseTokenStreamLength": 53,
       "usageCountRaw": 3,
@@ -17626,30 +17626,6 @@
     },
     {
       "rank": 130,
-      "a": "CrossPathsEventContextCard",
-      "b": "LiveStepContextCard",
-      "jaccard": 0.1373,
-      "containment": 0.4667,
-      "score": 0.4667,
-      "smallWidgetMultisetJaccard": 0,
-      "hamming": 59,
-      "flags": [],
-      "detectors": [
-        "name"
-      ],
-      "signals": [],
-      "nameStems": [
-        "ContextCard"
-      ],
-      "visualHamming": null,
-      "selectionSources": [
-        "name-family"
-      ],
-      "absorbCandidate": false,
-      "decisionRefs": []
-    },
-    {
-      "rank": 131,
       "a": "HostEventSummaryRow",
       "b": "HostManageMetaRow",
       "jaccard": 0.119,
@@ -17673,7 +17649,7 @@
       "decisionRefs": []
     },
     {
-      "rank": 132,
+      "rank": 131,
       "a": "CompanionPaperScaffold",
       "b": "CompanionStageScaffold",
       "jaccard": 0.2727,
@@ -17699,7 +17675,7 @@
       ]
     },
     {
-      "rank": 133,
+      "rank": 132,
       "a": "HostClubsScaffold",
       "b": "HostEventsScaffold",
       "jaccard": 0.1469,
@@ -17725,7 +17701,7 @@
       ]
     },
     {
-      "rank": 134,
+      "rank": 133,
       "a": "EventSuccessPromptCard",
       "b": "StagePromptCard",
       "jaccard": 0.1429,
@@ -17751,7 +17727,7 @@
       ]
     },
     {
-      "rank": 135,
+      "rank": 134,
       "a": "HostBroadcastComposerSheet",
       "b": "HostTeamAddHostSheet",
       "jaccard": 0.1341,
@@ -17775,7 +17751,7 @@
       "decisionRefs": []
     },
     {
-      "rank": 136,
+      "rank": 135,
       "a": "RecapHeroSkeleton",
       "b": "RecapStatSkeleton",
       "jaccard": 0.1739,
@@ -17801,7 +17777,7 @@
       ]
     },
     {
-      "rank": 137,
+      "rank": 136,
       "a": "ExploreEventsEmptySliver",
       "b": "ExploreEventsLoadingSliver",
       "jaccard": 0.16,
@@ -17825,6 +17801,30 @@
       "decisionRefs": [
         "ranked-pair: ExploreEventsEmptySliver/ExploreEventsLoadingSliver"
       ]
+    },
+    {
+      "rank": 137,
+      "a": "CrossPathsEventContextCard",
+      "b": "LiveStepContextCard",
+      "jaccard": 0.1224,
+      "containment": 0.4,
+      "score": 0.4,
+      "smallWidgetMultisetJaccard": 0,
+      "hamming": 60,
+      "flags": [],
+      "detectors": [
+        "name"
+      ],
+      "signals": [],
+      "nameStems": [
+        "ContextCard"
+      ],
+      "visualHamming": null,
+      "selectionSources": [
+        "name-family"
+      ],
+      "absorbCandidate": false,
+      "decisionRefs": []
     },
     {
       "rank": 138,
@@ -18910,30 +18910,6 @@
     },
     {
       "rank": 180,
-      "a": "CrossPathsEventContextCard",
-      "b": "CrossPathsExploreCard",
-      "jaccard": 0.0513,
-      "containment": 0.1026,
-      "score": 0.1026,
-      "smallWidgetMultisetJaccard": 0,
-      "hamming": 62,
-      "flags": [],
-      "detectors": [
-        "name"
-      ],
-      "signals": [],
-      "nameStems": [
-        "CrossCard"
-      ],
-      "visualHamming": null,
-      "selectionSources": [
-        "name-family"
-      ],
-      "absorbCandidate": false,
-      "decisionRefs": []
-    },
-    {
-      "rank": 181,
       "a": "ChatConversationsList",
       "b": "ChatMessageList",
       "jaccard": 0.0294,
@@ -18959,7 +18935,7 @@
       ]
     },
     {
-      "rank": 182,
+      "rank": 181,
       "a": "HostOrganizerMetricGrid",
       "b": "HostReportSignalGrid",
       "jaccard": 0.04,
@@ -18983,7 +18959,7 @@
       "decisionRefs": []
     },
     {
-      "rank": 183,
+      "rank": 182,
       "a": "ProfileInlinePromptEntryEditor",
       "b": "ProfileInlineRangeEditor",
       "jaccard": 0.037,
@@ -19009,7 +18985,7 @@
       ]
     },
     {
-      "rank": 184,
+      "rank": 183,
       "a": "ProfilePhoto",
       "b": "RecapProfilePhoto",
       "jaccard": 0.037,
@@ -19037,7 +19013,7 @@
       ]
     },
     {
-      "rank": 185,
+      "rank": 184,
       "a": "ClubHostSection",
       "b": "EventSuccessHostSection",
       "jaccard": 0.029,
@@ -19063,7 +19039,7 @@
       "decisionRefs": []
     },
     {
-      "rank": 186,
+      "rank": 185,
       "a": "PublicProfileBody",
       "b": "PublicProfileScreenBody",
       "jaccard": 0.0357,
@@ -19087,7 +19063,7 @@
       "decisionRefs": []
     },
     {
-      "rank": 187,
+      "rank": 186,
       "a": "CatchRosterActionCell",
       "b": "CatchRosterTileCell",
       "jaccard": 0.0286,
@@ -19111,6 +19087,30 @@
       "decisionRefs": [
         "n215-roster-cell"
       ]
+    },
+    {
+      "rank": 187,
+      "a": "CrossPathsEventContextCard",
+      "b": "CrossPathsExploreCard",
+      "jaccard": 0.026,
+      "containment": 0.0513,
+      "score": 0.0513,
+      "smallWidgetMultisetJaccard": 0,
+      "hamming": 66,
+      "flags": [],
+      "detectors": [
+        "name"
+      ],
+      "signals": [],
+      "nameStems": [
+        "CrossCard"
+      ],
+      "visualHamming": null,
+      "selectionSources": [
+        "name-family"
+      ],
+      "absorbCandidate": false,
+      "decisionRefs": []
     },
     {
       "rank": 188,

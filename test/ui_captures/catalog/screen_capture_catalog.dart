@@ -10195,8 +10195,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         alignment: Alignment.bottomCenter,
         child: CrossPathsProfilePreviewSheet(
           suggestion: _exploreCrossPathsSuggestion,
-          eventItem: _memberDiscoveryItems[2],
-          onEventSelected: (_) {},
+          event: _memberDiscoveryItems[2].event,
+          onEventSelected: () {},
         ),
       ),
     ),

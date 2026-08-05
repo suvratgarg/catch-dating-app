@@ -23,6 +23,8 @@ import 'package:catch_dating_app/core/presentation/app_shell.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_keys.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
+import 'package:catch_dating_app/cross_paths/data/cross_paths_feature_config_provider.dart';
+import 'package:catch_dating_app/cross_paths/domain/cross_paths_feature_config.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/events/data/event_check_in_location_service.dart';
 import 'package:catch_dating_app/events/data/event_discovery_repository.dart';
@@ -93,6 +95,9 @@ Future<void> pumpCatchAppShell(
       key: UniqueKey(),
       overrides: [
         initialAppLocationProvider.overrideWithValue(initialRoute),
+        crossPathsFeatureConfigProvider.overrideWithValue(
+          CrossPathsFeatureConfig.disabled,
+        ),
         ...overrides.cast(),
       ],
       child: MyApp(routerProvider: goRouterProvider),

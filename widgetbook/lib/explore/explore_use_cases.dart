@@ -425,9 +425,9 @@ Widget crossPathsExploreCardStates(BuildContext context) {
             padding: CatchInsets.pageBody,
             child: CrossPathsExploreCard(
               suggestion: _crossPathsSuggestion,
-              eventItem: _feedItems[1],
+              event: _feedItems[1].event,
               onProfileSelected: _noop,
-              onEventSelected: (_) {},
+              onEventSelected: _noop,
             ),
           ),
         ),
@@ -453,8 +453,8 @@ Widget crossPathsEventContextStates(BuildContext context) {
             padding: CatchInsets.pageBody,
             child: CrossPathsEventContextCard(
               suggestion: _crossPathsSuggestion,
-              eventItem: _feedItems[1],
-              onEventSelected: (_) {},
+              event: _feedItems[1].event,
+              onEventSelected: _noop,
             ),
           ),
         ),
@@ -480,8 +480,8 @@ Widget crossPathsProfilePreviewStates(BuildContext context) {
             alignment: Alignment.bottomCenter,
             child: CrossPathsProfilePreviewSheet(
               suggestion: _crossPathsSuggestion,
-              eventItem: _feedItems[1],
-              onEventSelected: (_) {},
+              event: _feedItems[1].event,
+              onEventSelected: _noop,
             ),
           ),
         ),

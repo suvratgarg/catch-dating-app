@@ -13,37 +13,27 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_suggestion.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
-import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_surface.dart';
 import 'package:flutter/material.dart';
 
-typedef CrossPathsEventSelected = void Function(ExploreEventItem item);
-typedef CrossPathsProfileSelected =
-    void Function(CrossPathsSuggestion suggestion, ExploreEventItem eventItem);
-typedef CrossPathsImpression =
-    void Function(
-      CrossPathsSuggestion suggestion,
-      ExploreEventItem eventItem,
-      int position,
-    );
-
 class CrossPathsExploreCard extends StatefulWidget {
   const CrossPathsExploreCard({
     super.key,
     required this.suggestion,
-    required this.eventItem,
+    required this.event,
     this.onProfileSelected,
     this.onEventSelected,
     this.onImpression,
   });
 
   final CrossPathsSuggestion suggestion;
-  final ExploreEventItem eventItem;
+  final Event event;
   final VoidCallback? onProfileSelected;
-  final CrossPathsEventSelected? onEventSelected;
+  final VoidCallback? onEventSelected;
   final VoidCallback? onImpression;
 
   @override
@@ -128,7 +118,7 @@ class _CrossPathsExploreCardState extends State<CrossPathsExploreCard> {
         gapH10,
         CrossPathsEventContextCard(
           suggestion: suggestion,
-          eventItem: widget.eventItem,
+          event: widget.event,
           onEventSelected: widget.onEventSelected,
         ),
       ],
@@ -140,20 +130,19 @@ class CrossPathsEventContextCard extends StatelessWidget {
   const CrossPathsEventContextCard({
     super.key,
     required this.suggestion,
-    required this.eventItem,
+    required this.event,
     this.onEventSelected,
     this.compact = false,
   });
 
   final CrossPathsSuggestion suggestion;
-  final ExploreEventItem eventItem;
-  final CrossPathsEventSelected? onEventSelected;
+  final Event event;
+  final VoidCallback? onEventSelected;
   final bool compact;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final event = eventItem.event;
     final firstName = crossPathsFirstName(suggestion.profile.name);
     final visual = eventActivityVisual(event.activityKind, context: context);
     final dateTimeLabel = context.l10n.crossPathsExploreCardEventDateTime(
@@ -213,9 +202,7 @@ class CrossPathsEventContextCard extends StatelessWidget {
             size: CatchButtonSize.sm,
             variant: CatchButtonVariant.secondary,
             fullWidth: true,
-            onPressed: onEventSelected == null
-                ? null
-                : () => onEventSelected!(eventItem),
+            onPressed: onEventSelected,
           ),
         ],
       ),
@@ -226,17 +213,17 @@ class CrossPathsEventContextCard extends StatelessWidget {
 Future<void> showCrossPathsProfilePreview({
   required BuildContext context,
   required CrossPathsSuggestion suggestion,
-  required ExploreEventItem eventItem,
-  required CrossPathsEventSelected onEventSelected,
+  required Event event,
+  required VoidCallback onEventSelected,
 }) {
   return showCatchBottomSheet<void>(
     context: context,
     builder: (sheetContext) => CrossPathsProfilePreviewSheet(
       suggestion: suggestion,
-      eventItem: eventItem,
-      onEventSelected: (item) {
+      event: event,
+      onEventSelected: () {
         Navigator.of(sheetContext).pop();
-        onEventSelected(item);
+        onEventSelected();
       },
     ),
   );
@@ -246,13 +233,13 @@ class CrossPathsProfilePreviewSheet extends StatelessWidget {
   const CrossPathsProfilePreviewSheet({
     super.key,
     required this.suggestion,
-    required this.eventItem,
+    required this.event,
     required this.onEventSelected,
   });
 
   final CrossPathsSuggestion suggestion;
-  final ExploreEventItem eventItem;
-  final CrossPathsEventSelected onEventSelected;
+  final Event event;
+  final VoidCallback onEventSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -309,7 +296,7 @@ class CrossPathsProfilePreviewSheet extends StatelessWidget {
                 padding: CatchInsets.pageBody.copyWith(top: CatchSpacing.s2),
                 child: CrossPathsEventContextCard(
                   suggestion: suggestion,
-                  eventItem: eventItem,
+                  event: event,
                   onEventSelected: onEventSelected,
                   compact: true,
                 ),

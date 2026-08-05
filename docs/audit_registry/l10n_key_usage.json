@@ -6765,7 +6765,7 @@
       "usages": [
         {
           "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-          "line": 211,
+          "line": 200,
           "column": 33
         }
       ],
@@ -6773,7 +6773,7 @@
       "l10nReferences": [
         {
           "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-          "line": 211,
+          "line": 200,
           "column": 33
         }
       ]
@@ -6785,7 +6785,7 @@
       "usages": [
         {
           "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-          "line": 186,
+          "line": 175,
           "column": 28
         }
       ],
@@ -6793,7 +6793,7 @@
       "l10nReferences": [
         {
           "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-          "line": 186,
+          "line": 175,
           "column": 28
         }
       ]
@@ -6805,7 +6805,7 @@
       "usages": [
         {
           "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-          "line": 159,
+          "line": 148,
           "column": 40
         }
       ],
@@ -6813,7 +6813,7 @@
       "l10nReferences": [
         {
           "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-          "line": 159,
+          "line": 148,
           "column": 40
         }
       ]
@@ -6825,7 +6825,7 @@
       "usages": [
         {
           "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-          "line": 121,
+          "line": 111,
           "column": 36
         }
       ],
@@ -6833,7 +6833,7 @@
       "l10nReferences": [
         {
           "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-          "line": 121,
+          "line": 111,
           "column": 36
         }
       ]
@@ -6845,7 +6845,7 @@
       "usages": [
         {
           "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-          "line": 105,
+          "line": 95,
           "column": 24
         }
       ],
@@ -6853,7 +6853,7 @@
       "l10nReferences": [
         {
           "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-          "line": 105,
+          "line": 95,
           "column": 24
         }
       ]
@@ -6865,7 +6865,7 @@
       "usages": [
         {
           "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-          "line": 124,
+          "line": 114,
           "column": 32
         }
       ],
@@ -6873,7 +6873,7 @@
       "l10nReferences": [
         {
           "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-          "line": 124,
+          "line": 114,
           "column": 32
         }
       ]
@@ -6885,7 +6885,7 @@
       "usages": [
         {
           "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-          "line": 96,
+          "line": 86,
           "column": 10
         }
       ],
@@ -6893,7 +6893,7 @@
       "l10nReferences": [
         {
           "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-          "line": 96,
+          "line": 86,
           "column": 10
         }
       ]
@@ -6905,7 +6905,7 @@
       "usages": [
         {
           "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-          "line": 284,
+          "line": 271,
           "column": 40
         }
       ],
@@ -6913,7 +6913,7 @@
       "l10nReferences": [
         {
           "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-          "line": 284,
+          "line": 271,
           "column": 40
         }
       ]
@@ -6925,7 +6925,7 @@
       "usages": [
         {
           "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-          "line": 292,
+          "line": 279,
           "column": 42
         }
       ],
@@ -6933,7 +6933,7 @@
       "l10nReferences": [
         {
           "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-          "line": 292,
+          "line": 279,
           "column": 42
         }
       ]

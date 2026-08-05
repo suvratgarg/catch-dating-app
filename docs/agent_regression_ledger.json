@@ -1,8 +1,31 @@
 {
-  "version": 127,
+  "version": 128,
   "updated": "2026-08-05",
   "owner": "agent_operating_model",
   "entries": [
+    {
+      "id": "REG-CROSS-PATHS-TEST-ROLLOUT-001",
+      "title": "Cross Paths rollout providers destabilize app-shell integration builds",
+      "status": "active",
+      "applies_to": [
+        "lib/cross_paths/data/cross_paths_feature_config_provider.dart",
+        "lib/explore/presentation/explore_cross_paths_provider.dart",
+        "integration_test/support/app_shell_test_harness.dart",
+        "test/integration/**",
+        "tool/test_app_shell_integration.sh"
+      ],
+      "symptom": "A feature-gated Cross Paths provider reaches Firebase Remote Config or the suggestion callable in deterministic app-shell tests, causing Riverpod to invalidate the provider scope during Explore or Event Detail build and fail unrelated route flows.",
+      "guard": {
+        "type": "command",
+        "command": "bash tool/test_app_shell_integration.sh",
+        "guardEvidence": "the shared app-shell harness overrides Cross Paths rollout configuration to the fail-closed disabled value and all deterministic route suites pass"
+      },
+      "owner_docs": [
+        "docs/cross_paths.md",
+        "docs/app_architecture.md"
+      ],
+      "notes": "Any new global rollout provider required by Explore or Event Detail must receive a deterministic fail-closed override in the shared app-shell harness before it is read by those routes."
+    },
     {
       "id": "REG-ADMIN-LIVE-DATA-PARITY-001",
       "title": "Admin live routes drift from Firestore callables or package generated operational fixtures",
