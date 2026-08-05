@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 1.14.2
-updated: 2026-07-30
+version: 1.15.0
+updated: 2026-08-06
 owner: recursive_audit_loop
 status: active
 ---
@@ -336,6 +336,25 @@ Algolia index settings must allow the function filters:
 - Events index: make `discoveryCityName` filterable/facetable and store
   `startTimeEpoch` as a numeric attribute.
 
+## Cross Paths Suggestion Signing And Expiry
+
+The server-owned `getCrossPathsSuggestions` callable binds one environment-
+specific Firebase Secret Manager value:
+
+- `CROSS_PATHS_SUGGESTION_SIGNING_KEY`
+
+Use at least 32 random bytes, encoded as a secret string, and use different
+material in dev, staging, and prod. Rotating it intentionally invalidates every
+outstanding ten-minute suggestion token. Never place the value in Remote
+Config, a client build, repository files, or CI logs. Verify secret metadata
+without printing the value before deploying the callable.
+
+Configure a Firestore TTL policy on
+`crossPathsSuggestionExposures.expiresAt` before enabling the feature in an
+environment. The callable writes a 30-day expiry, but the field does not delete
+documents by itself until that environment policy exists. Account deletion
+independently deletes exposure receipts involving the member.
+
 ## Required Secrets
 
 Build workflows need environment-specific Google Maps SDK secrets. Do not rely
@@ -668,7 +687,8 @@ Before rules or Functions depend on them, each Firebase/GCP environment needs:
 
 - Cloud Vision API enabled for photo moderation.
 - `config/cities` Firestore document with `cityNames` and full city objects.
-- Firestore TTL policy on `rateLimits.expiresAt`.
+- Firestore TTL policies on `rateLimits.expiresAt` and, before enabling Cross
+  Paths, `crossPathsSuggestionExposures.expiresAt`.
 - Firebase Functions secrets for payment, maps/places, and any other
   environment-owned provider keys.
 - Google Maps SDK/Places APIs enabled and key restrictions configured as

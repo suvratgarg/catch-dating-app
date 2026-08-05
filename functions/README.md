@@ -44,6 +44,7 @@ options when specific functions need higher or lower limits.
 | `fetchEventSuccessWingmanCandidates` / `submitEventSuccessWingmanRequest` / `withdrawEventSuccessWingmanRequest` | `src/eventSuccess/` | Wingman candidate and request workflow |
 | `fetchSwipeCandidates` | `src/matching/` | Resolve privacy-filtered post-event matching candidates without exposing event rosters |
 | `setCrossPathsEventConsent` | `src/crossPaths/` | Store or revoke private event-level Cross Paths consent after confirmed booking |
+| `getCrossPathsSuggestions` | `src/crossPaths/` | Resolve bounded, consent-safe pre-event Explore suggestions without exposing rosters or private preferences |
 | `createEventReview` / `updateEventReview` / `deleteEventReview` | `src/reviews/` | Review mutation surface |
 | `createPublicOrganizerReview` / `listPublicOrganizerReviews` | `src/reviews/` | Create or list reviews against canonical organizers |
 | `updateUserProfile` | `src/profiles/` | Profile patch callable with generated contract validation |

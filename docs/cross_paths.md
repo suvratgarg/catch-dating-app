@@ -1,7 +1,7 @@
 ---
 doc_id: cross_paths
-version: 1.3.0
-updated: 2026-08-05
+version: 1.4.0
+updated: 2026-08-06
 owner: product (approved direction 2026-08-05)
 status: implementation-in-progress
 ---
@@ -566,7 +566,7 @@ contracts. A proposed name does not exist merely because this spec names it.
 | Human/automated showcase eligibility | server-only `crossPathsShowcaseEligibility/{uid}` | Implemented, reviewed and fingerprint-bound |
 | Event invitation | `crossPathsInvitations/{eventId_senderUid}` | Proposed Phase 2 |
 | Accepted event plan | event-and-pair-scoped conversation with `conversationType: crossPathsEventPlan` | Proposed Phase 2 |
-| Exposure/fatigue state | server-only projection or analytics store, never a public user field | Proposed Phase 1 |
+| Exposure/fatigue state | server-only `crossPathsSuggestionExposures/{exposureId}` | Implemented, session-idempotent and client-denied |
 
 `crossPathsShowcaseEligibility` stores only operational status and reason codes
 such as `eligible`, `needsReview`, or `paused`, plus rule/review version and
@@ -584,7 +584,7 @@ write the eligibility record.
 
 ### Callable/API seams
 
-1. `getCrossPathsSuggestions`
+1. `getCrossPathsSuggestions` — implemented
    - accepts a bounded set of Explore event ids and an opaque session id;
    - revalidates event discoverability and viewer availability;
    - resolves rosters, consent, reciprocal preferences, safety, readiness,
@@ -593,6 +593,19 @@ write the eligibility record.
    - returns a sanitized person/event projection, reason codes, ranking version,
      and short-lived signed suggestion token;
    - never returns a roster or private preference values.
+
+The implemented suggestion resolver accepts at most 12 current Explore event
+ids, rechecks the six-hour lead time and 14-day horizon, rejects gated, full,
+and waitlist-only events for an unbooked viewer, and reuses the canonical event
+policy and schedule-conflict engines. Candidate identities are resolved only
+on the server from confirmed participations. Global and event consent,
+fingerprint-bound showcase approval, reciprocal age/gender preferences,
+blocks, open reports, pending moderation flags, existing matches, synthetic
+scope, and seven-day exposure caps all fail closed. The response contains at
+most two sanitized person/event projections and a ten-minute HMAC-signed token.
+Deterministic exposure receipts make a repeated session request idempotent;
+rules deny all client access and account deletion removes receipts in either
+role.
 2. `setCrossPathsEventConsent` — implemented
    - acts only for the caller;
    - validates the global opt-in, active future event, and current confirmed
@@ -623,6 +636,7 @@ Functions tests.
 - `eventCrossPathsConsents`: caller may read their own state; writes are
   callable-owned.
 - `crossPathsShowcaseEligibility`: no consumer client reads/writes.
+- `crossPathsSuggestionExposures`: no consumer client reads/writes.
 - `crossPathsInvitations`: sender and recipient may read; no direct writes.
 - event-plan conversation/messages: participants may read; messages may be
   created only while the plan is active, unexpired, and unblocked.
@@ -752,15 +766,17 @@ rules, Settings/Event Detail controls, the callable, and two fail-closed Remote
 Config defaults now exist. The score-free showcase evaluator, server-only
 eligibility document, role-gated list/decision callables, audit log, account
 deletion cleanup, rules denial, and dedicated Admin review workspace also now
-exist. This does not complete Phase 0: the Explore suggestion contract, legal
-privacy-policy approval, and synthetic seed policy remain outstanding.
+exist. The batched server suggestion contract now adds canonical event
+availability, safety/consent/readiness filtering, deterministic fatigue,
+sanitized output, and signed tokens. Phase 0 still requires external legal
+privacy-policy approval and the synthetic seed policy.
 
 - [x] Land/reuse the person-Polaroid and organizer-poster migration.
 - [x] Introduce feature flags with fail-closed defaults.
 - [x] Generalize showcase readiness away from running-only completeness.
 - [x] Add global and per-event consent contracts and Settings/event controls.
 - [x] Add reviewed showcase-eligibility operations for launch supply.
-- [ ] Build the server-owned batched suggestion callable.
+- [x] Build the server-owned batched suggestion callable.
 - [x] Migrate post-event Catch candidate resolution off client roster reads.
 - [x] Restrict Firestore participation reads and prove rules under emulators.
 - [ ] Seed consent/eligibility only for synthetic internal/demo profiles.

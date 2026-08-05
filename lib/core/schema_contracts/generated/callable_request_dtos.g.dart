@@ -71,6 +71,7 @@ export 'callables/disable_event_invite_link_callable_request.g.dart';
 export 'callables/event_id_callable_request.g.dart';
 export 'callables/event_join_request_decision_callable_request.g.dart';
 export 'callables/explore_search_callable_request.g.dart';
+export 'callables/get_cross_paths_suggestions_callable_request.g.dart';
 export 'callables/host_analytics_query_callable_request.g.dart';
 export 'callables/list_public_club_reviews_callable_request.g.dart';
 export 'callables/list_public_organizer_reviews_callable_request.g.dart';

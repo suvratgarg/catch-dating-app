@@ -9042,6 +9042,72 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const crossPathsSuggestionExposureDocumentCandidateUid = CatchContractFieldConstraints(
+    path: 'crossPathsSuggestionExposureDocument.candidateUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const crossPathsSuggestionExposureDocumentEventId = CatchContractFieldConstraints(
+    path: 'crossPathsSuggestionExposureDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const crossPathsSuggestionExposureDocumentExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'crossPathsSuggestionExposureDocument.expiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const crossPathsSuggestionExposureDocumentExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'crossPathsSuggestionExposureDocument.expiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const crossPathsSuggestionExposureDocumentRankingVersion = CatchContractFieldConstraints(
+    path: 'crossPathsSuggestionExposureDocument.rankingVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const crossPathsSuggestionExposureDocumentSessionIdHash = CatchContractFieldConstraints(
+    path: 'crossPathsSuggestionExposureDocument.sessionIdHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const crossPathsSuggestionExposureDocumentShownAtNanoseconds = CatchContractFieldConstraints(
+    path: 'crossPathsSuggestionExposureDocument.shownAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const crossPathsSuggestionExposureDocumentShownAtSeconds = CatchContractFieldConstraints(
+    path: 'crossPathsSuggestionExposureDocument.shownAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const crossPathsSuggestionExposureDocumentViewerUid = CatchContractFieldConstraints(
+    path: 'crossPathsSuggestionExposureDocument.viewerUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const deleteClubCallablePayloadClubId = CatchContractFieldConstraints(
     path: 'deleteClubCallablePayload.clubId',
     maxLength: 180,
@@ -14187,6 +14253,233 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const getCrossPathsSuggestionsCallablePayloadEventIds = CatchContractFieldConstraints(
+    path: 'getCrossPathsSuggestionsCallablePayload.eventIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 1,
+    maxItems: 12,
+    uniqueItems: true,
+  );
+
+  static const getCrossPathsSuggestionsCallablePayloadEventIdsItems = CatchContractFieldConstraints(
+    path: 'getCrossPathsSuggestionsCallablePayload.eventIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getCrossPathsSuggestionsCallablePayloadSessionId = CatchContractFieldConstraints(
+    path: 'getCrossPathsSuggestionsCallablePayload.sessionId',
+    maxLength: 128,
+    minLength: 16,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9._~-]+\$',
+  );
+
+  static const getCrossPathsSuggestionsCallableResponseRankingVersion = CatchContractFieldConstraints(
+    path: 'getCrossPathsSuggestionsCallableResponse.rankingVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const getCrossPathsSuggestionsCallableResponseSchemaVersion = CatchContractFieldConstraints(
+    path: 'getCrossPathsSuggestionsCallableResponse.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const getCrossPathsSuggestionsCallableResponseSuggestions = CatchContractFieldConstraints(
+    path: 'getCrossPathsSuggestionsCallableResponse.suggestions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 2,
+  );
+
+  static const getCrossPathsSuggestionsCallableResponseSuggestionsItemsEventActivityKind = CatchContractFieldConstraints(
+    path: 'getCrossPathsSuggestionsCallableResponse.suggestions.items.event.activityKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['socialRun', 'running', 'walking', 'pickleball', 'padel', 'tennis', 'badminton', 'cycling', 'spinClass', 'yoga', 'strengthTraining', 'pubQuiz', 'barCrawl', 'dinner', 'singlesMixer', 'openActivity'],
+  );
+
+  static const getCrossPathsSuggestionsCallableResponseSuggestionsItemsEventEndTime = CatchContractFieldConstraints(
+    path: 'getCrossPathsSuggestionsCallableResponse.suggestions.items.event.endTime',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const getCrossPathsSuggestionsCallableResponseSuggestionsItemsEventEventId = CatchContractFieldConstraints(
+    path: 'getCrossPathsSuggestionsCallableResponse.suggestions.items.event.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getCrossPathsSuggestionsCallableResponseSuggestionsItemsEventMeetingPoint = CatchContractFieldConstraints(
+    path: 'getCrossPathsSuggestionsCallableResponse.suggestions.items.event.meetingPoint',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getCrossPathsSuggestionsCallableResponseSuggestionsItemsEventOrganizerId = CatchContractFieldConstraints(
+    path: 'getCrossPathsSuggestionsCallableResponse.suggestions.items.event.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const getCrossPathsSuggestionsCallableResponseSuggestionsItemsEventPhotoUrl = CatchContractFieldConstraints(
+    path: 'getCrossPathsSuggestionsCallableResponse.suggestions.items.event.photoUrl',
+    maxLength: 2048,
+    valueTypes: <String>['string'],
+    format: 'uri',
+  );
+
+  static const getCrossPathsSuggestionsCallableResponseSuggestionsItemsEventStartTime = CatchContractFieldConstraints(
+    path: 'getCrossPathsSuggestionsCallableResponse.suggestions.items.event.startTime',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const getCrossPathsSuggestionsCallableResponseSuggestionsItemsEventViewerBookingStatus = CatchContractFieldConstraints(
+    path: 'getCrossPathsSuggestionsCallableResponse.suggestions.items.event.viewerBookingStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['signedUp', 'canBookNow'],
+  );
+
+  static const getCrossPathsSuggestionsCallableResponseSuggestionsItemsPersonAge = CatchContractFieldConstraints(
+    path: 'getCrossPathsSuggestionsCallableResponse.suggestions.items.person.age',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 18,
+    maximum: 99,
+  );
+
+  static const getCrossPathsSuggestionsCallableResponseSuggestionsItemsPersonCity = CatchContractFieldConstraints(
+    path: 'getCrossPathsSuggestionsCallableResponse.suggestions.items.person.city',
+    maxLength: 120,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*\$',
+  );
+
+  static const getCrossPathsSuggestionsCallableResponseSuggestionsItemsPersonGender = CatchContractFieldConstraints(
+    path: 'getCrossPathsSuggestionsCallableResponse.suggestions.items.person.gender',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['man', 'woman', 'nonBinary', 'other'],
+  );
+
+  static const getCrossPathsSuggestionsCallableResponseSuggestionsItemsPersonName = CatchContractFieldConstraints(
+    path: 'getCrossPathsSuggestionsCallableResponse.suggestions.items.person.name',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getCrossPathsSuggestionsCallableResponseSuggestionsItemsPersonPhotoUrls = CatchContractFieldConstraints(
+    path: 'getCrossPathsSuggestionsCallableResponse.suggestions.items.person.photoUrls',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 3,
+    maxItems: 6,
+  );
+
+  static const getCrossPathsSuggestionsCallableResponseSuggestionsItemsPersonPhotoUrlsItems = CatchContractFieldConstraints(
+    path: 'getCrossPathsSuggestionsCallableResponse.suggestions.items.person.photoUrls.items',
+    maxLength: 2048,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'uri',
+  );
+
+  static const getCrossPathsSuggestionsCallableResponseSuggestionsItemsPersonPromptAnswers = CatchContractFieldConstraints(
+    path: 'getCrossPathsSuggestionsCallableResponse.suggestions.items.person.promptAnswers',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 3,
+    maxItems: 3,
+  );
+
+  static const getCrossPathsSuggestionsCallableResponseSuggestionsItemsPersonPromptAnswersItemsAnswer = CatchContractFieldConstraints(
+    path: 'getCrossPathsSuggestionsCallableResponse.suggestions.items.person.promptAnswers.items.answer',
+    maxLength: 300,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getCrossPathsSuggestionsCallableResponseSuggestionsItemsPersonPromptAnswersItemsPrompt = CatchContractFieldConstraints(
+    path: 'getCrossPathsSuggestionsCallableResponse.suggestions.items.person.promptAnswers.items.prompt',
+    maxLength: 140,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getCrossPathsSuggestionsCallableResponseSuggestionsItemsPersonRelationshipGoal = CatchContractFieldConstraints(
+    path: 'getCrossPathsSuggestionsCallableResponse.suggestions.items.person.relationshipGoal',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getCrossPathsSuggestionsCallableResponseSuggestionsItemsPersonUid = CatchContractFieldConstraints(
+    path: 'getCrossPathsSuggestionsCallableResponse.suggestions.items.person.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getCrossPathsSuggestionsCallableResponseSuggestionsItemsReasonCodes = CatchContractFieldConstraints(
+    path: 'getCrossPathsSuggestionsCallableResponse.suggestions.items.reasonCodes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['attending_event', 'viewer_attending', 'booking_available', 'mutual_preferences', 'showcase_ready'],
+    minItems: 4,
+    maxItems: 5,
+    uniqueItems: true,
+  );
+
+  static const getCrossPathsSuggestionsCallableResponseSuggestionsItemsReasonCodesItems = CatchContractFieldConstraints(
+    path: 'getCrossPathsSuggestionsCallableResponse.suggestions.items.reasonCodes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['attending_event', 'viewer_attending', 'booking_available', 'mutual_preferences', 'showcase_ready'],
+  );
+
+  static const getCrossPathsSuggestionsCallableResponseSuggestionsItemsSuggestionToken = CatchContractFieldConstraints(
+    path: 'getCrossPathsSuggestionsCallableResponse.suggestions.items.suggestionToken',
+    maxLength: 4096,
+    minLength: 40,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getCrossPathsSuggestionsCallableResponseSuggestionsItemsTokenExpiresAt = CatchContractFieldConstraints(
+    path: 'getCrossPathsSuggestionsCallableResponse.suggestions.items.tokenExpiresAt',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
   );
 
   static const hostAnalyticsCallableResponseDataQuality = CatchContractFieldConstraints(
@@ -28972,6 +29265,15 @@ abstract final class CatchContractConstraints {
     'crossPathsShowcaseEligibilityDocument.status': crossPathsShowcaseEligibilityDocumentStatus,
     'crossPathsShowcaseEligibilityDocument.updatedAt._nanoseconds': crossPathsShowcaseEligibilityDocumentUpdatedAtNanoseconds,
     'crossPathsShowcaseEligibilityDocument.updatedAt._seconds': crossPathsShowcaseEligibilityDocumentUpdatedAtSeconds,
+    'crossPathsSuggestionExposureDocument.candidateUid': crossPathsSuggestionExposureDocumentCandidateUid,
+    'crossPathsSuggestionExposureDocument.eventId': crossPathsSuggestionExposureDocumentEventId,
+    'crossPathsSuggestionExposureDocument.expiresAt._nanoseconds': crossPathsSuggestionExposureDocumentExpiresAtNanoseconds,
+    'crossPathsSuggestionExposureDocument.expiresAt._seconds': crossPathsSuggestionExposureDocumentExpiresAtSeconds,
+    'crossPathsSuggestionExposureDocument.rankingVersion': crossPathsSuggestionExposureDocumentRankingVersion,
+    'crossPathsSuggestionExposureDocument.sessionIdHash': crossPathsSuggestionExposureDocumentSessionIdHash,
+    'crossPathsSuggestionExposureDocument.shownAt._nanoseconds': crossPathsSuggestionExposureDocumentShownAtNanoseconds,
+    'crossPathsSuggestionExposureDocument.shownAt._seconds': crossPathsSuggestionExposureDocumentShownAtSeconds,
+    'crossPathsSuggestionExposureDocument.viewerUid': crossPathsSuggestionExposureDocumentViewerUid,
     'deleteClubCallablePayload.clubId': deleteClubCallablePayloadClubId,
     'deletedUserTombstoneDocument.completedAt._nanoseconds': deletedUserTombstoneDocumentCompletedAtNanoseconds,
     'deletedUserTombstoneDocument.completedAt._seconds': deletedUserTombstoneDocumentCompletedAtSeconds,
@@ -29682,6 +29984,35 @@ abstract final class CatchContractConstraints {
     'functionEventReceiptDocument.handler': functionEventReceiptDocumentHandler,
     'functionEventReceiptDocument.matchId': functionEventReceiptDocumentMatchId,
     'functionEventReceiptDocument.messageId': functionEventReceiptDocumentMessageId,
+    'getCrossPathsSuggestionsCallablePayload.eventIds': getCrossPathsSuggestionsCallablePayloadEventIds,
+    'getCrossPathsSuggestionsCallablePayload.eventIds.items': getCrossPathsSuggestionsCallablePayloadEventIdsItems,
+    'getCrossPathsSuggestionsCallablePayload.sessionId': getCrossPathsSuggestionsCallablePayloadSessionId,
+    'getCrossPathsSuggestionsCallableResponse.rankingVersion': getCrossPathsSuggestionsCallableResponseRankingVersion,
+    'getCrossPathsSuggestionsCallableResponse.schemaVersion': getCrossPathsSuggestionsCallableResponseSchemaVersion,
+    'getCrossPathsSuggestionsCallableResponse.suggestions': getCrossPathsSuggestionsCallableResponseSuggestions,
+    'getCrossPathsSuggestionsCallableResponse.suggestions.items.event.activityKind': getCrossPathsSuggestionsCallableResponseSuggestionsItemsEventActivityKind,
+    'getCrossPathsSuggestionsCallableResponse.suggestions.items.event.endTime': getCrossPathsSuggestionsCallableResponseSuggestionsItemsEventEndTime,
+    'getCrossPathsSuggestionsCallableResponse.suggestions.items.event.eventId': getCrossPathsSuggestionsCallableResponseSuggestionsItemsEventEventId,
+    'getCrossPathsSuggestionsCallableResponse.suggestions.items.event.meetingPoint': getCrossPathsSuggestionsCallableResponseSuggestionsItemsEventMeetingPoint,
+    'getCrossPathsSuggestionsCallableResponse.suggestions.items.event.organizerId': getCrossPathsSuggestionsCallableResponseSuggestionsItemsEventOrganizerId,
+    'getCrossPathsSuggestionsCallableResponse.suggestions.items.event.photoUrl': getCrossPathsSuggestionsCallableResponseSuggestionsItemsEventPhotoUrl,
+    'getCrossPathsSuggestionsCallableResponse.suggestions.items.event.startTime': getCrossPathsSuggestionsCallableResponseSuggestionsItemsEventStartTime,
+    'getCrossPathsSuggestionsCallableResponse.suggestions.items.event.viewerBookingStatus': getCrossPathsSuggestionsCallableResponseSuggestionsItemsEventViewerBookingStatus,
+    'getCrossPathsSuggestionsCallableResponse.suggestions.items.person.age': getCrossPathsSuggestionsCallableResponseSuggestionsItemsPersonAge,
+    'getCrossPathsSuggestionsCallableResponse.suggestions.items.person.city': getCrossPathsSuggestionsCallableResponseSuggestionsItemsPersonCity,
+    'getCrossPathsSuggestionsCallableResponse.suggestions.items.person.gender': getCrossPathsSuggestionsCallableResponseSuggestionsItemsPersonGender,
+    'getCrossPathsSuggestionsCallableResponse.suggestions.items.person.name': getCrossPathsSuggestionsCallableResponseSuggestionsItemsPersonName,
+    'getCrossPathsSuggestionsCallableResponse.suggestions.items.person.photoUrls': getCrossPathsSuggestionsCallableResponseSuggestionsItemsPersonPhotoUrls,
+    'getCrossPathsSuggestionsCallableResponse.suggestions.items.person.photoUrls.items': getCrossPathsSuggestionsCallableResponseSuggestionsItemsPersonPhotoUrlsItems,
+    'getCrossPathsSuggestionsCallableResponse.suggestions.items.person.promptAnswers': getCrossPathsSuggestionsCallableResponseSuggestionsItemsPersonPromptAnswers,
+    'getCrossPathsSuggestionsCallableResponse.suggestions.items.person.promptAnswers.items.answer': getCrossPathsSuggestionsCallableResponseSuggestionsItemsPersonPromptAnswersItemsAnswer,
+    'getCrossPathsSuggestionsCallableResponse.suggestions.items.person.promptAnswers.items.prompt': getCrossPathsSuggestionsCallableResponseSuggestionsItemsPersonPromptAnswersItemsPrompt,
+    'getCrossPathsSuggestionsCallableResponse.suggestions.items.person.relationshipGoal': getCrossPathsSuggestionsCallableResponseSuggestionsItemsPersonRelationshipGoal,
+    'getCrossPathsSuggestionsCallableResponse.suggestions.items.person.uid': getCrossPathsSuggestionsCallableResponseSuggestionsItemsPersonUid,
+    'getCrossPathsSuggestionsCallableResponse.suggestions.items.reasonCodes': getCrossPathsSuggestionsCallableResponseSuggestionsItemsReasonCodes,
+    'getCrossPathsSuggestionsCallableResponse.suggestions.items.reasonCodes.items': getCrossPathsSuggestionsCallableResponseSuggestionsItemsReasonCodesItems,
+    'getCrossPathsSuggestionsCallableResponse.suggestions.items.suggestionToken': getCrossPathsSuggestionsCallableResponseSuggestionsItemsSuggestionToken,
+    'getCrossPathsSuggestionsCallableResponse.suggestions.items.tokenExpiresAt': getCrossPathsSuggestionsCallableResponseSuggestionsItemsTokenExpiresAt,
     'hostAnalyticsCallableResponse.dataQuality': hostAnalyticsCallableResponseDataQuality,
     'hostAnalyticsCallableResponse.dataQuality.items.detail': hostAnalyticsCallableResponseDataQualityItemsDetail,
     'hostAnalyticsCallableResponse.dataQuality.items.id': hostAnalyticsCallableResponseDataQualityItemsId,

@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "generatedFrom": "git ls-files --cached --others --exclude-standard",
   "generatedBy": "node tool/test_inventory.mjs",
-  "total": 609,
+  "total": 610,
   "categories": {
     "firebase_rules": {
       "count": 2,
@@ -317,7 +317,7 @@
       ]
     },
     "functions_source": {
-      "count": 101,
+      "count": 102,
       "files": [
         "functions/src/admin/accessApplications.test.ts",
         "functions/src/admin/adminActionExecutions.test.ts",
@@ -358,6 +358,7 @@
         "functions/src/clubs/mutateClub.test.ts",
         "functions/src/clubs/syncClubMemberStats.test.ts",
         "functions/src/clubs/syncClubNextEvent.test.ts",
+        "functions/src/crossPaths/getCrossPathsSuggestions.test.ts",
         "functions/src/crossPaths/setCrossPathsEventConsent.test.ts",
         "functions/src/crossPaths/showcaseEligibility.test.ts",
         "functions/src/demoOps/suvbot.test.ts",
