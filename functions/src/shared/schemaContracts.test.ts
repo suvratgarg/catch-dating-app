@@ -24,6 +24,7 @@ import {
   validateDeleteSavedEventClientWrite,
   validateDeletedUserTombstoneDocument,
   validateFunctionEventReceiptDocument,
+  validateFetchSwipeCandidatesCallableResponse,
   validateMarkNotificationReadClientWrite,
   validateMarkEventAttendanceCallablePayload,
   validateMarkEventAttendanceCallableResponse,
@@ -320,6 +321,10 @@ test("generated schema validators accept valid contract fixtures", () => {
   assertValid(
     validateMarkEventAttendanceCallableResponse as Validator,
     readFixture("fixtures/valid/mark_event_attendance_response.json")
+  );
+  assertValid(
+    validateFetchSwipeCandidatesCallableResponse as Validator,
+    readFixture("fixtures/valid/fetch_swipe_candidates_response.json")
   );
   assertValid(
     validateSelfCheckInAttendanceCallablePayload as Validator,

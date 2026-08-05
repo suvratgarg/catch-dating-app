@@ -957,6 +957,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaFetchEventSuccessWingmanCandidatesCallableResponseSchema,
   ),
   SchemaContractDefinition(
+    name: 'FetchSwipeCandidatesCallableResponse',
+    source: 'callable_responses/fetch_swipe_candidates_response.schema.json',
+    schema: schemaFetchSwipeCandidatesCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
     name: 'CreateProfileDecisionClientWrite',
     source: 'client_writes/create_profile_decision.schema.json',
     schema: schemaCreateProfileDecisionClientWriteSchema,
@@ -1267,6 +1272,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'ExploreSearchCallableResponse': schemaExploreSearchCallableResponseSchema,
   'WebsiteHostListingProjection': schemaWebsiteHostListingProjectionSchema,
   'FetchEventSuccessWingmanCandidatesCallableResponse': schemaFetchEventSuccessWingmanCandidatesCallableResponseSchema,
+  'FetchSwipeCandidatesCallableResponse': schemaFetchSwipeCandidatesCallableResponseSchema,
   'CreateProfileDecisionClientWrite': schemaCreateProfileDecisionClientWriteSchema,
   'CreateChatMessageClientWrite': schemaCreateChatMessageClientWriteSchema,
   'CreateSavedEventClientWrite': schemaCreateSavedEventClientWriteSchema,
@@ -1482,6 +1488,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'callable_responses/explore_search_response.schema.json': schemaExploreSearchCallableResponseSchema,
   'public/website_host_listing_projection.schema.json': schemaWebsiteHostListingProjectionSchema,
   'callable_responses/fetch_event_success_wingman_candidates_response.schema.json': schemaFetchEventSuccessWingmanCandidatesCallableResponseSchema,
+  'callable_responses/fetch_swipe_candidates_response.schema.json': schemaFetchSwipeCandidatesCallableResponseSchema,
   'client_writes/create_profile_decision.schema.json': schemaCreateProfileDecisionClientWriteSchema,
   'client_writes/create_chat_message.schema.json': schemaCreateChatMessageClientWriteSchema,
   'client_writes/create_saved_event.schema.json': schemaCreateSavedEventClientWriteSchema,

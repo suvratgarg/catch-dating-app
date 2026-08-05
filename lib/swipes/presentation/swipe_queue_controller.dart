@@ -8,16 +8,15 @@ import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/data/swipe_candidate_repository.dart';
 import 'package:catch_dating_app/swipes/data/swipe_repository.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
-import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'swipe_queue_controller.g.dart';
 
 const _swipeQueueLoadContext = BackendErrorContext(
-  service: BackendService.firestore,
+  service: BackendService.functions,
   action: 'load swipe candidates',
-  resource: 'swipe_candidates',
+  resource: 'fetchSwipeCandidates',
 );
 
 // keepalive: swipe load timeout is stable queue policy used by the async
@@ -61,18 +60,10 @@ class SwipeQueueNotifier extends _$SwipeQueueNotifier {
       timeout,
     );
     if (currentUserId == null) return [];
-
-    final currentUser = await _loadStep(
-      ref
-          .read(userProfileRepositoryProvider)
-          .fetchUserProfile(uid: currentUserId),
-      timeout,
-    );
-    if (currentUser == null) return [];
     final candidates = await _loadStep(
       ref
           .read(swipeCandidateRepositoryProvider)
-          .fetchCandidates(eventId: eventId, currentUser: currentUser),
+          .fetchCandidates(eventId: eventId),
       timeout,
     );
     if (vibeIds.isEmpty) return candidates;
@@ -95,9 +86,7 @@ class SwipeQueueNotifier extends _$SwipeQueueNotifier {
     final profiles = state.value;
     if (profiles == null || profiles.isEmpty) return;
 
-    final currentUserId =
-        ref.read(watchUserProfileProvider).asData?.value?.uid ??
-        ref.read(uidProvider).asData?.value;
+    final currentUserId = ref.read(uidProvider).asData?.value;
     final target = profiles.first;
 
     if (currentUserId == null) return;

@@ -170,7 +170,7 @@
   },
   "cross_paths": {
     "path": "docs/cross_paths.md",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "updated": "2026-08-05",
     "status": "active",
     "read_policy": "Read before implementing or changing people recommendations in Explore, Cross Paths visibility and consent, showcase eligibility/ranking, event-scoped invitations, temporary event plans, related roster privacy, capacity behavior, analytics, or rollout gates."
@@ -219,17 +219,17 @@
   },
   "data_contracts": {
     "path": "docs/data_contracts.md",
-    "version": "1.7.0",
-    "updated": "2026-07-27",
+    "version": "1.8.0",
+    "updated": "2026-08-05",
     "status": "active",
     "read_policy": "Read before Firestore rules or query/index changes, Functions mutation boundaries, schema-source tooling, Dart/TypeScript model generation, callable validation schemas, seed validation, relationship documents, data migrations, or rules test execution."
   },
   "backend_operation_catalog": {
     "path": "docs/backend_operation_catalog.md",
-    "version": "1.5.0",
-    "updated": "2026-07-27",
+    "version": "1.6.0",
+    "updated": "2026-08-05",
     "status": "active",
-    "read_policy": "Read before changing repository writes, callable interfaces, trigger-owned projections, server-only collections, Firestore rules for write paths, or notification fan-out."
+    "read_policy": "Read before changing repository reads or writes, callable interfaces, trigger-owned projections, server-only collections, Firestore rules for read/write paths, or notification fan-out."
   },
   "operations_platform": {
     "path": "docs/operations_platform.md",

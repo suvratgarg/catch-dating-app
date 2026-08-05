@@ -75,7 +75,7 @@ final class EventRecapViewModelProvider
 }
 
 String _$eventRecapViewModelHash() =>
-    r'4ad09975f9b1acd783e77d3b8f6d04a0f2114ee6';
+    r'bff076031742fec3cbc7620a4ea8bab71b4fbb19';
 
 final class EventRecapViewModelFamily extends $Family
     with $FunctionalFamilyOverride<AsyncValue<EventRecapViewModel?>, String> {

@@ -64,6 +64,7 @@ export const fixtureSchemaCases = Object.freeze([
   ["valid/explore_search_response.json", "exploreSearchCallableResponseSchema"],
   ["valid/external_event_doc.json", "externalEventDocumentSchema"],
   ["valid/fetch_event_success_wingman_candidates_response.json", "fetchEventSuccessWingmanCandidatesCallableResponseSchema"],
+  ["valid/fetch_swipe_candidates_response.json", "fetchSwipeCandidatesCallableResponseSchema"],
   ["valid/function_event_receipt_doc.json", "functionEventReceiptDocumentSchema"],
   ["valid/host_profile_doc.json", "hostProfileDocumentSchema"],
   ["valid/join_waitlist_request_host.json", "joinWaitlistHTTPRequestSchema"],

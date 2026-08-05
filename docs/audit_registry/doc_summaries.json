@@ -51,7 +51,7 @@
       ]
     },
     "docs/cross_paths.md": {
-      "purpose": "Approved product and technical contract for consent-safe people recommendations in Explore, showcase readiness and ranking, event-scoped invitations, temporary event plans, capacity and waitlist boundaries, privacy, analytics, and phased rollout.",
+      "purpose": "Approved product and technical contract for consent-safe people recommendations in Explore, showcase readiness and ranking, event-scoped invitations, temporary event plans, capacity and waitlist boundaries, privacy, analytics, phased rollout, and the implemented Phase 0 post-event roster-privacy receipt.",
       "read_when": [
         "Implementing or changing Cross Paths people recommendations in Explore",
         "Changing Cross Paths consent, showcase eligibility, ranking, invitation, event-plan, capacity, safety, analytics, or rollout behavior",
@@ -287,7 +287,7 @@
       ]
     },
     "docs/data_contracts.md": {
-      "purpose": "Firestore document shape, Cloud Functions write ownership, read/query and index discipline, schema tooling, relationship documents, organizer claim documents, migration policy, and rules-test workflow.",
+      "purpose": "Firestore document shape, Cloud Functions write ownership, read/query and index discipline including event-roster privacy, schema tooling, relationship documents, organizer claim documents, migration policy, and rules-test workflow.",
       "read_when": [
         "Changing Firestore rules",
         "Changing repository-owned Firestore queries or composite indexes",
@@ -307,7 +307,7 @@
       ]
     },
     "docs/backend_operation_catalog.md": {
-      "purpose": "Human-readable backend write ownership catalog covering direct client writes, callable-owned mutations, organizer claim/index/review-response operations, trigger-owned projections, server-only collections, and notification starting points.",
+      "purpose": "Human-readable backend operation catalog covering direct client writes, callable-owned mutations and privacy-safe reads, organizer claim/index/review-response operations, trigger-owned projections, server-only collections, and notification starting points.",
       "read_when": [
         "Changing a repository write or callable interface",
         "Changing Firestore rules for a write path",

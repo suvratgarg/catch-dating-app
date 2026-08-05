@@ -13,6 +13,7 @@ const schemaEventIdCallablePayloadSchema = <String, Object?>{
     'cancelEventSignUp',
     'deleteEvent',
     'fetchEventSuccessWingmanCandidates',
+    'fetchSwipeCandidates',
     'generateEventSuccessPods',
     'generateEventSuccessRotations',
     'acceptEventWaitlistOffer',

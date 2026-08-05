@@ -118,6 +118,7 @@ export 'external_event_blocker_resolution.g.dart';
 export 'external_event_document.g.dart';
 export 'external_event_publication_receipt_document.g.dart';
 export 'fetch_event_success_wingman_candidates_callable_response.g.dart';
+export 'fetch_swipe_candidates_callable_response.g.dart';
 export 'function_event_receipt_document.g.dart';
 export 'host_analytics_callable_response.g.dart';
 export 'host_analytics_event.g.dart';

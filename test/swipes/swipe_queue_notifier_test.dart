@@ -8,8 +8,6 @@ import 'package:catch_dating_app/swipes/data/swipe_candidate_repository.dart';
 import 'package:catch_dating_app/swipes/data/swipe_repository.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_queue_controller.dart';
-import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
-import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -32,33 +30,17 @@ class FakeSwipeRecordRepository extends Fake implements SwipeRepository {
 
 class FakeSwipeCandidateRepository extends Fake
     implements SwipeCandidateRepository {
-  FakeSwipeCandidateRepository([this.candidates = const []]);
+  FakeSwipeCandidateRepository([
+    this.candidates = const [],
+    this.loadCompleter,
+  ]);
 
   final List<PublicProfile> candidates;
+  final Completer<List<PublicProfile>>? loadCompleter;
 
   @override
-  Future<List<PublicProfile>> fetchCandidates({
-    required String eventId,
-    required currentUser,
-  }) async => candidates;
-}
-
-class HangingUserProfileRepository extends Fake
-    implements UserProfileRepository {
-  @override
-  Future<UserProfile?> fetchUserProfile({required String? uid}) =>
-      Completer<UserProfile?>().future;
-}
-
-class LoadedUserProfileRepository extends Fake
-    implements UserProfileRepository {
-  LoadedUserProfileRepository(this.profile);
-
-  final UserProfile? profile;
-
-  @override
-  Future<UserProfile?> fetchUserProfile({required String? uid}) async =>
-      profile;
+  Future<List<PublicProfile>> fetchCandidates({required String eventId}) =>
+      loadCompleter?.future ?? Future.value(candidates);
 }
 
 void main() {
@@ -79,7 +61,6 @@ void main() {
         overrides: [
           isObviouslyOfflineProvider.overrideWithValue(false),
           uidProvider.overrideWith((ref) => Stream.value(null)),
-          watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
           authRepositoryProvider.overrideWithValue(authRepository),
           swipeRepositoryProvider.overrideWith((ref) => swipeRepository),
           swipeCandidateRepositoryProvider.overrideWith(
@@ -117,9 +98,6 @@ void main() {
           overrides: [
             isObviouslyOfflineProvider.overrideWithValue(false),
             uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-            watchUserProfileProvider.overrideWith(
-              (ref) => Stream.value(buildUser()),
-            ),
             authRepositoryProvider.overrideWithValue(authRepository),
             swipeRepositoryProvider.overrideWith((ref) => swipeRepository),
             swipeCandidateRepositoryProvider.overrideWith(
@@ -165,9 +143,6 @@ void main() {
         overrides: [
           isObviouslyOfflineProvider.overrideWithValue(false),
           uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-          watchUserProfileProvider.overrideWith(
-            (ref) => Stream.value(buildUser()),
-          ),
           authRepositoryProvider.overrideWithValue(authRepository),
           swipeRepositoryProvider.overrideWith((ref) => swipeRepository),
           swipeCandidateRepositoryProvider.overrideWith(
@@ -223,9 +198,6 @@ void main() {
           overrides: [
             isObviouslyOfflineProvider.overrideWithValue(false),
             uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-            watchUserProfileProvider.overrideWith(
-              (ref) => Stream.value(buildUser()),
-            ),
             authRepositoryProvider.overrideWithValue(authRepository),
             swipeRepositoryProvider.overrideWith((ref) => swipeRepository),
             swipeCandidateRepositoryProvider.overrideWith(
@@ -273,6 +245,7 @@ void main() {
     );
 
     test('surfaces a retryable timeout instead of loading forever', () async {
+      final hangingCandidates = Completer<List<PublicProfile>>();
       final container = ProviderContainer(
         overrides: [
           isObviouslyOfflineProvider.overrideWithValue(false),
@@ -280,11 +253,8 @@ void main() {
             const Duration(milliseconds: 1),
           ),
           uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-          userProfileRepositoryProvider.overrideWithValue(
-            HangingUserProfileRepository(),
-          ),
           swipeCandidateRepositoryProvider.overrideWith(
-            (ref) => candidateRepository,
+            (ref) => FakeSwipeCandidateRepository(const [], hangingCandidates),
           ),
         ],
       );
@@ -315,9 +285,6 @@ void main() {
         overrides: [
           isObviouslyOfflineProvider.overrideWithValue(true),
           uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-          userProfileRepositoryProvider.overrideWithValue(
-            HangingUserProfileRepository(),
-          ),
           swipeCandidateRepositoryProvider.overrideWith(
             (ref) => candidateRepository,
           ),
@@ -352,9 +319,6 @@ void main() {
         overrides: [
           appConnectivityProvider.overrideWith((ref) => connectivity.stream),
           uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-          userProfileRepositoryProvider.overrideWithValue(
-            LoadedUserProfileRepository(buildUser()),
-          ),
           swipeCandidateRepositoryProvider.overrideWith(
             (ref) => FakeSwipeCandidateRepository([
               buildPublicProfile(uid: 'runner-2'),

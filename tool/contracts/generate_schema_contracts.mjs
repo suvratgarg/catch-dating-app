@@ -1137,6 +1137,12 @@ const schemaSpecs = [
       "fetchEventSuccessWingmanCandidatesCallableResponse.ts",
   },
   {
+    name: "FetchSwipeCandidatesCallableResponse",
+    source: "callable_responses/fetch_swipe_candidates_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/fetchSwipeCandidatesCallableResponse.ts",
+  },
+  {
     name: "CreateProfileDecisionClientWrite",
     source: "client_writes/create_profile_decision.schema.json",
     typeOutput:

@@ -191,6 +191,7 @@ import {
   exploreSearchCallableResponseSchema,
   websiteHostListingProjectionSchema,
   fetchEventSuccessWingmanCandidatesCallableResponseSchema,
+  fetchSwipeCandidatesCallableResponseSchema,
   createProfileDecisionClientWriteSchema,
   createChatMessageClientWriteSchema,
   createSavedEventClientWriteSchema,
@@ -427,6 +428,7 @@ export const validateExploreSearchCallablePayload = ajv.compile(exploreSearchCal
 export const validateExploreSearchCallableResponse = ajv.compile(exploreSearchCallableResponseSchema);
 export const validateWebsiteHostListingProjection = ajv.compile(websiteHostListingProjectionSchema);
 export const validateFetchEventSuccessWingmanCandidatesCallableResponse = ajv.compile(fetchEventSuccessWingmanCandidatesCallableResponseSchema);
+export const validateFetchSwipeCandidatesCallableResponse = ajv.compile(fetchSwipeCandidatesCallableResponseSchema);
 export const validateCreateProfileDecisionClientWrite = ajv.compile(createProfileDecisionClientWriteSchema);
 export const validateCreateChatMessageClientWrite = ajv.compile(createChatMessageClientWriteSchema);
 export const validateCreateSavedEventClientWrite = ajv.compile(createSavedEventClientWriteSchema);

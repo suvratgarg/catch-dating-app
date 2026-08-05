@@ -13629,6 +13629,22 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const fetchSwipeCandidatesCallableResponseProfiles = CatchContractFieldConstraints(
+    path: 'fetchSwipeCandidatesCallableResponse.profiles',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 1000,
+  );
+
+  static const fetchSwipeCandidatesCallableResponseProfilesItemsUid = CatchContractFieldConstraints(
+    path: 'fetchSwipeCandidatesCallableResponse.profiles.items.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const functionEventReceiptDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
     path: 'functionEventReceiptDocument.createdAt._nanoseconds',
     required: true,
@@ -29030,6 +29046,8 @@ abstract final class CatchContractConstraints {
     'externalEventPublicationReceiptDocument.targetPath': externalEventPublicationReceiptDocumentTargetPath,
     'fetchEventSuccessWingmanCandidatesCallableResponse.profiles': fetchEventSuccessWingmanCandidatesCallableResponseProfiles,
     'fetchEventSuccessWingmanCandidatesCallableResponse.profiles.items.uid': fetchEventSuccessWingmanCandidatesCallableResponseProfilesItemsUid,
+    'fetchSwipeCandidatesCallableResponse.profiles': fetchSwipeCandidatesCallableResponseProfiles,
+    'fetchSwipeCandidatesCallableResponse.profiles.items.uid': fetchSwipeCandidatesCallableResponseProfilesItemsUid,
     'functionEventReceiptDocument.createdAt._nanoseconds': functionEventReceiptDocumentCreatedAtNanoseconds,
     'functionEventReceiptDocument.createdAt._seconds': functionEventReceiptDocumentCreatedAtSeconds,
     'functionEventReceiptDocument.eventId': functionEventReceiptDocumentEventId,

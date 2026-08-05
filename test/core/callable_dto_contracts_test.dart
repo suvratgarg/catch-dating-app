@@ -41,6 +41,7 @@ import 'package:catch_dating_app/locations/data/places_callable_responses.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/payments/data/payment_callable_requests.dart';
 import 'package:catch_dating_app/payments/data/payment_callable_responses.dart';
+import 'package:catch_dating_app/swipes/data/swipe_candidate_callable_response.dart';
 import 'package:catch_dating_app/user_analytics/data/user_analytics_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
@@ -405,6 +406,16 @@ void main() {
         'Subrath',
       );
       _expectValid(
+        'FetchSwipeCandidatesCallableResponse',
+        wingmanCandidatesResponse,
+      );
+      expect(
+        FetchSwipeCandidatesCallableResponse.fromCallableData(
+          wingmanCandidatesResponse,
+        ).profiles.single.name,
+        'Subrath',
+      );
+      _expectValid(
         'ListSuvbotDemoActionsCallableResponse',
         suvbotActionsResponse,
       );
@@ -475,6 +486,12 @@ void main() {
             FetchEventSuccessWingmanCandidatesCallableResponse.fromCallableData(
               <String, Object?>{},
             ),
+        throwsStateError,
+      );
+      expect(
+        () => FetchSwipeCandidatesCallableResponse.fromCallableData(
+          <String, Object?>{},
+        ),
         throwsStateError,
       );
       expect(

@@ -1,9 +1,8 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_participation.dart';
-import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
+import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
+import 'package:catch_dating_app/swipes/data/swipe_candidate_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'event_recap_view_model.g.dart';
@@ -25,20 +24,16 @@ AsyncValue<EventRecapViewModel?> eventRecapViewModel(Ref ref, String eventId) {
   return buildEventRecapViewModel(
     eventAsync: ref.watch(watchEventProvider(eventId)),
     uidAsync: ref.watch(uidProvider),
-    participationsAsync: ref.watch(
-      watchEventParticipationsForEventProvider(eventId),
-    ),
+    candidatesAsync: ref.watch(swipeCandidatesProvider(eventId)),
   );
 }
 
 AsyncValue<EventRecapViewModel?> buildEventRecapViewModel({
   required AsyncValue<Event?> eventAsync,
   required AsyncValue<String?> uidAsync,
-  required AsyncValue<List<EventParticipation>> participationsAsync,
+  required AsyncValue<List<PublicProfile>> candidatesAsync,
 }) {
-  if (eventAsync.isLoading ||
-      uidAsync.isLoading ||
-      participationsAsync.isLoading) {
+  if (eventAsync.isLoading || uidAsync.isLoading || candidatesAsync.isLoading) {
     return const AsyncLoading();
   }
 
@@ -54,10 +49,10 @@ AsyncValue<EventRecapViewModel?> buildEventRecapViewModel({
       uidAsync.stackTrace ?? StackTrace.current,
     );
   }
-  if (participationsAsync.hasError) {
+  if (candidatesAsync.hasError) {
     return AsyncError(
-      participationsAsync.error!,
-      participationsAsync.stackTrace ?? StackTrace.current,
+      candidatesAsync.error!,
+      candidatesAsync.stackTrace ?? StackTrace.current,
     );
   }
 
@@ -65,10 +60,8 @@ AsyncValue<EventRecapViewModel?> buildEventRecapViewModel({
   if (event == null) return const AsyncData(null);
 
   final currentUid = uidAsync.asData?.value;
-  final roster = EventParticipationRoster.fromParticipations(
-    participationsAsync.asData?.value ?? const [],
-  );
-  final attendeeIds = roster.checkedInIds
+  final attendeeIds = (candidatesAsync.asData?.value ?? const <PublicProfile>[])
+      .map((profile) => profile.uid)
       .where((uid) => uid != currentUid)
       .toList(growable: false);
 
@@ -76,7 +69,7 @@ AsyncValue<EventRecapViewModel?> buildEventRecapViewModel({
     EventRecapViewModel(
       event: event,
       attendeeIds: List.unmodifiable(attendeeIds),
-      checkedInCount: roster.checkedInCount,
+      checkedInCount: event.attendedCount,
     ),
   );
 }

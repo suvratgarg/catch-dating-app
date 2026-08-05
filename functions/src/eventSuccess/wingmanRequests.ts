@@ -5,7 +5,6 @@ import {
   EventDocument,
   EventParticipationDocument,
   Gender,
-  PublicProfileDocument,
   UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {requireAuth} from "../shared/auth";
@@ -23,6 +22,11 @@ import {appCheckCallableOptions} from "../shared/callableOptions";
 import {normalizeEventIdPayload} from "../events/eventPayloadNormalization";
 import {cohortIdForUser, cohortIds} from "../events/eventPolicy";
 import {blockDocId} from "../safety/blocking";
+import {
+  CandidatePublicProfile,
+  fetchCandidatePublicProfiles,
+  fetchUidsBlockedWithViewer,
+} from "../shared/candidateVisibility";
 
 const WINGMAN_REQUESTS_MODULE_ID = "wingman_requests";
 
@@ -53,8 +57,6 @@ interface ExistingWingmanRequestDocument {
   createdAt?: unknown;
 }
 
-type WingmanCandidateProfile = PublicProfileDocument & {uid: string};
-
 const defaultDeps: WingmanRequestDeps = {
   firestore: () => admin.firestore(),
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
@@ -66,12 +68,12 @@ const defaultDeps: WingmanRequestDeps = {
  * Fetches host-help candidates for the caller from server-owned eligibility.
  * @param {CallableRequest<unknown>} request Callable request.
  * @param {WingmanRequestDeps} deps Injectable dependencies for tests.
- * @return {Promise<{profiles: WingmanCandidateProfile[]}>} Candidate profiles.
+ * @return {Promise<{profiles: CandidatePublicProfile[]}>} Candidate profiles.
  */
 export async function fetchEventSuccessWingmanCandidatesHandler(
   request: CallableRequest<unknown>,
   deps: WingmanRequestDeps = defaultDeps
-): Promise<{profiles: WingmanCandidateProfile[]}> {
+): Promise<{profiles: CandidatePublicProfile[]}> {
   const viewerUid = requireAuth(request);
   const data = validateCallableWithAjv<EventIdCallablePayload>(
     request,
@@ -138,62 +140,9 @@ export async function fetchEventSuccessWingmanCandidatesHandler(
 
   const blockedUids = await fetchUidsBlockedWithViewer(db, viewerUid);
   const visibleIds = candidateIds.filter((uid) => !blockedUids.has(uid));
-  const profiles = await fetchCandidateProfiles(db, visibleIds);
+  const profiles = await fetchCandidatePublicProfiles(db, visibleIds);
 
   return {profiles};
-}
-
-/**
- * Loads every uid on either side of a block edge with the viewer using two
- * queries, instead of a per-candidate pair of document reads.
- * @param {FirebaseFirestore.Firestore} db Firestore instance.
- * @param {string} viewerUid Caller user id.
- * @return {Promise<Set<string>>} Uids the viewer blocks or is blocked by.
- */
-async function fetchUidsBlockedWithViewer(
-  db: FirebaseFirestore.Firestore,
-  viewerUid: string
-): Promise<Set<string>> {
-  const [outgoing, incoming] = await Promise.all([
-    db.collection("blocks").where("blockerUserId", "==", viewerUid).get(),
-    db.collection("blocks").where("blockedUserId", "==", viewerUid).get(),
-  ]);
-  const blocked = new Set<string>();
-  for (const doc of outgoing.docs) {
-    const blockedUserId = doc.data()?.blockedUserId;
-    if (typeof blockedUserId === "string") blocked.add(blockedUserId);
-  }
-  for (const doc of incoming.docs) {
-    const blockerUserId = doc.data()?.blockerUserId;
-    if (typeof blockerUserId === "string") blocked.add(blockerUserId);
-  }
-  return blocked;
-}
-
-/**
- * Loads candidate public profiles with one parallel read per uid, instead of
- * a sequential per-candidate await.
- * @param {FirebaseFirestore.Firestore} db Firestore instance.
- * @param {string[]} uids Visible candidate uids.
- * @return {Promise<WingmanCandidateProfile[]>} Existing candidate profiles.
- */
-async function fetchCandidateProfiles(
-  db: FirebaseFirestore.Firestore,
-  uids: string[]
-): Promise<WingmanCandidateProfile[]> {
-  const snaps = await Promise.all(
-    uids.map((uid) => db.collection("publicProfiles").doc(uid).get())
-  );
-  const profiles: WingmanCandidateProfile[] = [];
-  snaps.forEach((snap, index) => {
-    if (!snap.exists) return;
-    const profile = requireDoc<PublicProfileDocument>(
-      snap,
-      "PublicProfileDocument"
-    );
-    profiles.push({uid: uids[index], ...profile});
-  });
-  return profiles;
 }
 
 /**

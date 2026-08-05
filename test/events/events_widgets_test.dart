@@ -16,7 +16,6 @@ import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_progress.dart';
-import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
@@ -33,7 +32,7 @@ import 'package:catch_dating_app/events/shared/map_pin_tile.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/when_step.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/locations/shared/catch_map_preview.dart';
-import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
+import 'package:catch_dating_app/swipes/data/swipe_candidate_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -980,21 +979,9 @@ void main() {
     });
 
     testWidgets('who is going shows the empty upcoming state', (tester) async {
-      final fakeParticipationRepository = FakeEventParticipationRepository();
-
       await pumpEventsTestApp(
         tester,
-        Scaffold(
-          body: WhoIsGoing(
-            event: buildEvent(bookedCount: 0),
-            userProfile: buildUser(),
-          ),
-        ),
-        overrides: [
-          eventParticipationRepositoryProvider.overrideWith(
-            (ref) => fakeParticipationRepository,
-          ),
-        ],
+        Scaffold(body: WhoIsGoing(event: buildEvent(bookedCount: 0))),
       );
 
       expect(find.text("Who's going"), findsOneWidget);
@@ -1007,45 +994,31 @@ void main() {
     testWidgets(
       'who is going loads profiles and shows overflow for past events',
       (tester) async {
-        final fakePublicProfileRepository = FakePublicProfileRepository()
-          ..profiles = List.generate(
+        final candidateRepository = FakeSwipeCandidateRepository(
+          List.generate(
             7,
             (index) =>
                 buildPublicProfile(uid: 'runner-$index', name: 'Runner $index'),
-          );
-        final fakeParticipationRepository = FakeEventParticipationRepository();
+          ),
+        );
         final event = buildEvent(
           startTime: DateTime.now().subtract(const Duration(hours: 2)),
           endTime: DateTime.now().subtract(const Duration(hours: 1)),
-          bookedCount: 1,
+          checkedInCount: 8,
         );
-        fakeParticipationRepository.eventParticipations[event.id] =
-            List.generate(
-              8,
-              (index) => buildEventParticipation(
-                event: event,
-                uid: 'runner-$index',
-                createdAt: DateTime(2026, 5, 6, 7, index),
-              ),
-            );
 
         await pumpEventsTestApp(
           tester,
-          Scaffold(
-            body: WhoIsGoing(event: event, userProfile: buildUser()),
-          ),
+          Scaffold(body: WhoIsGoing(event: event)),
           overrides: [
-            publicProfileRepositoryProvider.overrideWith(
-              (ref) => fakePublicProfileRepository,
-            ),
-            eventParticipationRepositoryProvider.overrideWith(
-              (ref) => fakeParticipationRepository,
+            swipeCandidateRepositoryProvider.overrideWith(
+              (ref) => candidateRepository,
             ),
           ],
         );
         await tester.pump();
 
-        expect(fakePublicProfileRepository.lastRequestedUids, hasLength(7));
+        expect(candidateRepository.lastEventId, event.id);
         expect(find.text('8/20'), findsOneWidget);
         expect(find.text('+1'), findsOneWidget);
         expect(

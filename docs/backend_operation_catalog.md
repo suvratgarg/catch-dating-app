@@ -1,7 +1,7 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.5.0
-updated: 2026-07-27
+version: 1.6.0
+updated: 2026-08-05
 owner: recursive_audit_loop
 status: active
 ---
@@ -186,6 +186,7 @@ is `docs/migrations/clubs_to_organizers.md`.
 | `leaveEventWaitlist` | Callable | `EventRepository.leaveWaitlist` | `eventParticipations/{eventId_uid}`, `events/{eventId}.waitlistedCount` | Rate-limited before transaction work; marks the caller's waitlist edge cancelled. |
 | `markEventAttendance` | Callable | `EventRepository.markAttendance` | `eventParticipations/{eventId_uid}`, `events/{eventId}.checkedInCount` | Host-only attendance toggle. |
 | `selfCheckInAttendance` | Callable | `EventRepository.selfCheckInAttendance` | `eventParticipations/{eventId_uid}`, `events/{eventId}.checkedInCount` | Participant self-check only; verifies sign-up and the time window, then requires exact structured or legacy coordinates and enforces proximity. Missing event coordinates fail closed. |
+| `fetchSwipeCandidates` | Callable | `SwipeCandidateRepository`, Event Recap, post-event attendee avatars | `events/{eventId}`, `eventParticipations`, `users`, `publicProfiles`, `profileDecisions`, `blocks` (read only) | App-Check-protected, rate-limited post-event resolver. Fails closed outside the 24-hour Catch window or without attended viewer state, and returns only public projections that pass reciprocal gender/age preferences, prior-decision exclusion, and blocks in both directions. Raw roster identities are never returned. |
 | `onSwipeCreated` | Firestore trigger on `profileDecisions/{uid}/outgoing/{targetId}` create | Backend | `matches/{matchId}` | Deterministic match ID; creates a match only for reciprocal likes. Writes `eventIds` so a match can track every shared event over time. If a legacy pair-only id is occupied by a `clubHostInquiry`, the dating match uses a separate deterministic opaque id so organizer-support messages can never be converted into dating chat history. |
 | `onMatchCreated` | Firestore trigger on `matches/{matchId}` create | Backend | `notifications/{uid}/items/{notificationId}`, FCM | Writes deterministic match activity notifications for both participants and sends push notifications when tokens exist. |
 | `onMessageCreated` | Firestore trigger on `matches/{matchId}/messages/{messageId}` create | Backend | `matches/{matchId}`, `functionEventReceipts/{receiptId}`, `notifications/{uid}/items/{notificationId}`, FCM | Idempotency receipt prevents duplicate metadata writes; writes unread as a 0/1 conversation flag for the recipient and clears the sender's unread flag. Deterministic notification ID prevents duplicate activity rows. Only dating matches refresh Event Success scorecards or emit participant chat-signal facts; event-scoped Host inquiries retain notification behavior without contaminating mutual-match, chat-started, or invite-link connection metrics. |
@@ -235,7 +236,7 @@ is `docs/migrations/clubs_to_organizers.md`.
 | `organizers/{organizerId}.status`, archive fields, and type audit fields | Organizer mutation callables | Direct client writes denied. |
 | `events/{eventId}.bookedCount`, `waitlistedCount`, `checkedInCount`, `genderCounts` | Booking, waitlist, attendance, payment callables | Direct client writes denied. |
 | `events/{eventId}.status`, `cancelledAt`, `cancellationReason` | `createEvent` / `cancelEvent` / `deleteEvent` callables | Direct client writes denied. |
-| `eventParticipations/{eventId_uid}` | Booking, waitlist, attendance, cancellation, account deletion callables. Event detail reads current-viewer CTA/review state from this edge; shared signed-up/attended event streams query it by user/status; host attendance management, swipe candidate generation, and event recap derive roster/check-in state from event participation statuses. | Direct client writes denied. |
+| `eventParticipations/{eventId_uid}` | Booking, waitlist, attendance, cancellation, account deletion callables. Event detail and shared event streams read only the current viewer's edge(s); authorized event hosts retain managed-roster access. `fetchSwipeCandidates` owns identified post-event discovery for the swipe deck, Event Recap, and attendee-avatar enrichment. | Direct client writes denied. Reads allow only the participant's own edge or an authorized host for that event; arbitrary authenticated roster enumeration is denied. |
 | `eventBroadcasts/{broadcastId}` | `sendEventBroadcast` callable and account-deletion cleanup | Server-only operational receipt. Direct client reads and writes are denied; clients receive only sanitized callable response counts. `expiresAt` requires a 90-day Firestore TTL policy. |
 | `hostAnalyticsSnapshots/{uid}_{scopeHash}` | `getHostAnalytics` callable and account-deletion cleanup | Server-only 15-minute response cache. Identity includes the authenticated uid, current authorized clubs, absolute local-day range, granularity, preset, and IANA timezone; direct client reads and writes are denied and `expiresAt` has a Firestore TTL policy. |
 | `payments/{paymentId}` | Payment verification/cancel callables | Direct client writes denied. |

@@ -1,6 +1,6 @@
 {
-  "version": 126,
-  "updated": "2026-07-30",
+  "version": 127,
+  "updated": "2026-08-05",
   "owner": "agent_operating_model",
   "entries": [
     {
@@ -3968,6 +3968,37 @@
         "docs/widget_catalog.md"
       ],
       "notes": "Generate the Swift masters first, then run generate_native_brand_assets.dart so the installable apps/host catalogs, drawables, and centered storyboard receive the same Host identity. Host remains a static native splash to force-update gate to auth-aware route; it never adopts CatchConsumerBootstrap."
+    },
+    {
+      "id": "REG-EVENT-ROSTER-PRIVACY-001",
+      "title": "Consumer discovery can enumerate an event roster or bypass server eligibility",
+      "status": "active",
+      "applies_to": [
+        "firestore.rules",
+        "functions/src/matching/fetchSwipeCandidates.ts",
+        "functions/src/shared/candidateVisibility.ts",
+        "functions/test/firestore.rules.test.cjs",
+        "lib/swipes/data/swipe_candidate_repository.dart",
+        "lib/swipes/presentation/event_recap_view_model.dart",
+        "lib/events/presentation/widgets/event_hype_avatar_stack.dart",
+        "test/swipes/**",
+        "test/events/event_hype_avatar_stack_test.dart",
+        "docs/cross_paths.md",
+        "docs/data_contracts.md",
+        "docs/backend_operation_catalog.md"
+      ],
+      "symptom": "An arbitrary authenticated consumer can query signed-up, waitlisted, or attended event participation edges, or a swipe, recap, attendee-avatar, or Explore people surface derives identified candidates from a client-side roster join instead of a purpose-specific server response.",
+      "guard": {
+        "type": "command",
+        "command": "firebase emulators:exec --only firestore,storage \"npm --prefix functions run test:rules\" && npm --prefix functions run build && node --test functions/lib/matching/fetchSwipeCandidates.test.js && flutter test test/swipes/swipe_candidate_repository_test.dart test/swipes/event_recap_screen_test.dart test/events/event_hype_avatar_stack_test.dart",
+        "guardEvidence": "rules tests deny unrelated roster documents and collection queries while preserving own-edge and current-host access; callable tests prove attended-window, reciprocal-preference, decision, and bidirectional-block filtering; Flutter tests prove consumer candidate surfaces use the callable-backed repository"
+      },
+      "owner_docs": [
+        "docs/cross_paths.md",
+        "docs/data_contracts.md",
+        "docs/backend_operation_catalog.md"
+      ],
+      "notes": "Event documents expose callable-owned aggregate counts for anonymous volume. Identified post-event profiles are a server-owned projection; Cross Paths Explore consent and showcase eligibility remain separate Phase 0 work."
     }
   ]
 }

@@ -3,13 +3,12 @@ import 'dart:async';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
-import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/public_profile/data/public_profiles_lookup.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/swipes/data/swipe_candidate_repository.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
 import 'package:flutter/material.dart';
@@ -34,9 +33,9 @@ void main() {
           watchEventProvider(
             'loading-event',
           ).overrideWith((ref) => eventController.stream),
-          watchEventParticipationsForEventProvider(
+          swipeCandidatesProvider(
             'loading-event',
-          ).overrideWithValue(const AsyncData<List<EventParticipation>>([])),
+          ).overrideWithValue(const AsyncData<List<PublicProfile>>([])),
         ],
         child: MaterialApp(
           theme: AppTheme.light,
@@ -53,7 +52,7 @@ void main() {
     expect(find.byKey(SwipeKeys.openCatchesDeckButton), findsNothing);
   });
 
-  testWidgets('EventRecapScreen builds roster from participation edges', (
+  testWidgets('EventRecapScreen builds roster from server-owned candidates', (
     tester,
   ) async {
     final endedAt = DateTime.now().subtract(const Duration(hours: 3));
@@ -61,7 +60,7 @@ void main() {
       id: 'recap-event',
       startTime: endedAt.subtract(const Duration(hours: 1)),
       endTime: endedAt,
-      checkedInCount: 1,
+      checkedInCount: 3,
     );
 
     await tester.pumpWidget(
@@ -71,32 +70,11 @@ void main() {
           watchEventProvider(
             event.id,
           ).overrideWith((ref) => Stream.value(event)),
-          watchEventParticipationsForEventProvider(event.id).overrideWith(
-            (ref) => Stream.value([
-              buildEventParticipation(
-                event: event,
-                uid: 'runner-1',
-                status: EventParticipationStatus.attended,
-                createdAt: DateTime(2026, 5, 6, 7, 1),
-              ),
-              buildEventParticipation(
-                event: event,
-                uid: 'runner-2',
-                status: EventParticipationStatus.attended,
-                createdAt: DateTime(2026, 5, 6, 7, 2),
-              ),
-              buildEventParticipation(
-                event: event,
-                uid: 'runner-3',
-                status: EventParticipationStatus.attended,
-                createdAt: DateTime(2026, 5, 6, 7, 3),
-              ),
-              buildEventParticipation(
-                event: event,
-                uid: 'runner-4',
-                createdAt: DateTime(2026, 5, 6, 7, 4),
-              ),
-            ]),
+          swipeCandidatesProvider(event.id).overrideWith(
+            (ref) async => [
+              buildPublicProfile(uid: 'runner-2'),
+              buildPublicProfile(uid: 'runner-3'),
+            ],
           ),
           publicProfilesByIdsProvider(
             PublicProfilesQuery(['runner-2', 'runner-3']),
@@ -135,18 +113,9 @@ void main() {
           watchEventProvider(
             event.id,
           ).overrideWithValue(AsyncData<Event?>(event)),
-          watchEventParticipationsForEventProvider(event.id).overrideWithValue(
-            AsyncData<List<EventParticipation>>([
-              buildEventParticipation(
-                event: event,
-                uid: 'runner-1',
-                status: EventParticipationStatus.attended,
-              ),
-              buildEventParticipation(
-                event: event,
-                uid: 'runner-2',
-                status: EventParticipationStatus.attended,
-              ),
+          swipeCandidatesProvider(event.id).overrideWithValue(
+            AsyncData<List<PublicProfile>>([
+              buildPublicProfile(uid: 'runner-2'),
             ]),
           ),
           publicProfilesByIdsProvider(
@@ -186,18 +155,9 @@ void main() {
           watchEventProvider(
             event.id,
           ).overrideWithValue(AsyncData<Event?>(event)),
-          watchEventParticipationsForEventProvider(event.id).overrideWithValue(
-            AsyncData<List<EventParticipation>>([
-              buildEventParticipation(
-                event: event,
-                uid: 'runner-1',
-                status: EventParticipationStatus.attended,
-              ),
-              buildEventParticipation(
-                event: event,
-                uid: 'runner-2',
-                status: EventParticipationStatus.attended,
-              ),
+          swipeCandidatesProvider(event.id).overrideWithValue(
+            AsyncData<List<PublicProfile>>([
+              buildPublicProfile(uid: 'runner-2'),
             ]),
           ),
           publicProfilesByIdsProvider(
@@ -244,24 +204,11 @@ void main() {
           watchEventProvider(
             event.id,
           ).overrideWith((ref) => Stream.value(event)),
-          watchEventParticipationsForEventProvider(event.id).overrideWith(
-            (ref) => Stream.value([
-              buildEventParticipation(
-                event: event,
-                uid: 'runner-1',
-                status: EventParticipationStatus.attended,
-              ),
-              buildEventParticipation(
-                event: event,
-                uid: 'runner-2',
-                status: EventParticipationStatus.attended,
-              ),
-              buildEventParticipation(
-                event: event,
-                uid: 'runner-3',
-                status: EventParticipationStatus.attended,
-              ),
-            ]),
+          swipeCandidatesProvider(event.id).overrideWith(
+            (ref) async => [
+              buildPublicProfile(uid: 'runner-2'),
+              buildPublicProfile(uid: 'runner-3'),
+            ],
           ),
           publicProfilesByIdsProvider(
             PublicProfilesQuery(['runner-2', 'runner-3']),
@@ -338,24 +285,11 @@ void main() {
           watchEventProvider(
             event.id,
           ).overrideWith((ref) => Stream.value(event)),
-          watchEventParticipationsForEventProvider(event.id).overrideWith(
-            (ref) => Stream.value([
-              buildEventParticipation(
-                event: event,
-                uid: 'runner-1',
-                status: EventParticipationStatus.attended,
-              ),
-              buildEventParticipation(
-                event: event,
-                uid: 'runner-2',
-                status: EventParticipationStatus.attended,
-              ),
-              buildEventParticipation(
-                event: event,
-                uid: 'runner-3',
-                status: EventParticipationStatus.attended,
-              ),
-            ]),
+          swipeCandidatesProvider(event.id).overrideWith(
+            (ref) async => [
+              buildPublicProfile(uid: 'runner-2'),
+              buildPublicProfile(uid: 'runner-3'),
+            ],
           ),
           publicProfilesByIdsProvider(
             PublicProfilesQuery(['runner-2', 'runner-3']),

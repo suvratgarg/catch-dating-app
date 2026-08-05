@@ -24,6 +24,7 @@ import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart'
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
+import 'package:catch_dating_app/swipes/data/swipe_candidate_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -246,6 +247,7 @@ PublicProfile buildPublicProfile({
   List<ProfilePromptAnswer>? profilePrompts,
   Gender gender = Gender.man,
   List<String> photoUrls = const [],
+  List<String> photoThumbnailUrls = const [],
   int runPreferencesVersion = currentRunPreferencesVersion,
 }) {
   return PublicProfile(
@@ -256,7 +258,11 @@ PublicProfile buildPublicProfile({
         profilePrompts ??
         normalizeProfilePromptAnswers(const [], legacyBio: bio),
     gender: gender,
-    profilePhotos: _profilePhotosFromUrls(uid: uid, photoUrls: photoUrls),
+    profilePhotos: _profilePhotosFromUrls(
+      uid: uid,
+      photoUrls: photoUrls,
+      photoThumbnailUrls: photoThumbnailUrls,
+    ),
     activityPreferences: _activityPreferences(version: runPreferencesVersion),
   );
 }
@@ -268,6 +274,7 @@ ActivityPreferences _activityPreferences({required int version}) {
 List<ProfilePhoto> _profilePhotosFromUrls({
   required String uid,
   required List<String> photoUrls,
+  List<String> photoThumbnailUrls = const [],
 }) {
   return [
     for (final indexed in photoUrls.indexed)
@@ -276,6 +283,10 @@ List<ProfilePhoto> _profilePhotosFromUrls({
         url: indexed.$2,
         storagePath: 'test-profiles/$uid/${indexed.$1}.jpg',
         now: DateTime(2026),
+      ).copyWith(
+        thumbnailUrl: indexed.$1 < photoThumbnailUrls.length
+            ? photoThumbnailUrls[indexed.$1]
+            : indexed.$2,
       ),
   ];
 }
@@ -764,6 +775,20 @@ class FakePublicProfileRepository extends Fake
     lastRequestedUids = uids;
     fetchPublicProfilesCalls.add(List.unmodifiable(uids));
     return profiles;
+  }
+}
+
+class FakeSwipeCandidateRepository extends Fake
+    implements SwipeCandidateRepository {
+  FakeSwipeCandidateRepository([this.candidates = const []]);
+
+  final List<PublicProfile> candidates;
+  String? lastEventId;
+
+  @override
+  Future<List<PublicProfile>> fetchCandidates({required String eventId}) async {
+    lastEventId = eventId;
+    return candidates;
   }
 }
 
