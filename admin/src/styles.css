@@ -1459,6 +1459,7 @@ select {
   color: var(--muted);
   cursor: pointer;
   font-size: 13px;
+  white-space: nowrap;
 }
 
 .segmented button.selected {
@@ -4648,7 +4649,9 @@ th {
   }
 
   .segmented button {
-    flex: 1;
+    flex: 1 1 auto;
+    min-width: 0;
+    padding-inline: 6px;
   }
 
   .publishing-loadbar .ghost-button,
