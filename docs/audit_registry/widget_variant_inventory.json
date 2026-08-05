@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-08-05T11:01:52.807Z",
+  "generatedAt": "2026-08-05T15:14:06.241Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
   },
   "summary": {
-    "useCases": 870,
-    "components": 817,
-    "stateCards": 1808,
+    "useCases": 871,
+    "components": 818,
+    "stateCards": 1813,
     "reviewCandidates": 45,
     "oversizedUseCases": 44,
     "multiUseCaseComponents": 47
@@ -2063,6 +2063,105 @@
       ]
     },
     {
+      "component": "SettingsScreen",
+      "useCaseCount": 2,
+      "stateCardCount": 12,
+      "paths": [
+        "[P3 utility surfaces]/Settings"
+      ],
+      "labels": [
+        "Cross Paths global opt-in",
+        "blocked accounts error",
+        "blocked accounts list",
+        "blocked accounts loading",
+        "delete account error",
+        "delete account pending",
+        "preference save error",
+        "preference save pending",
+        "profile loading",
+        "profile-backed account",
+        "sign out pending",
+        "unblock user error"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "large-state-matrix",
+          "split-across-use-cases"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Mutation states",
+          "functionName": "settingsMutationStates",
+          "file": "widgetbook/lib/utility/p3_utility_use_cases.dart",
+          "path": "[P3 utility surfaces]/Settings",
+          "stateCardCount": 6,
+          "stateCards": [
+            {
+              "label": "preference save pending",
+              "normalizedLabel": "preference save pending"
+            },
+            {
+              "label": "preference save error",
+              "normalizedLabel": "preference save error"
+            },
+            {
+              "label": "delete account pending",
+              "normalizedLabel": "delete account pending"
+            },
+            {
+              "label": "delete account error",
+              "normalizedLabel": "delete account error"
+            },
+            {
+              "label": "sign out pending",
+              "normalizedLabel": "sign out pending"
+            },
+            {
+              "label": "unblock user error",
+              "normalizedLabel": "unblock user error"
+            }
+          ]
+        },
+        {
+          "name": "Screen states",
+          "functionName": "settingsScreenStates",
+          "file": "widgetbook/lib/utility/p3_utility_use_cases.dart",
+          "path": "[P3 utility surfaces]/Settings",
+          "stateCardCount": 6,
+          "stateCards": [
+            {
+              "label": "profile-backed account",
+              "normalizedLabel": "profile backed account"
+            },
+            {
+              "label": "Cross Paths global opt-in",
+              "normalizedLabel": "cross paths global opt in"
+            },
+            {
+              "label": "profile loading",
+              "normalizedLabel": "profile loading"
+            },
+            {
+              "label": "blocked accounts loading",
+              "normalizedLabel": "blocked accounts loading"
+            },
+            {
+              "label": "blocked accounts error",
+              "normalizedLabel": "blocked accounts error"
+            },
+            {
+              "label": "blocked accounts list",
+              "normalizedLabel": "blocked accounts list"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "EventSuccessCompanionRouteScreen",
       "useCaseCount": 1,
       "stateCardCount": 12,
@@ -2343,99 +2442,6 @@
             {
               "label": "overflow badge",
               "normalizedLabel": "overflow badge"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "SettingsScreen",
-      "useCaseCount": 2,
-      "stateCardCount": 11,
-      "paths": [
-        "[P3 utility surfaces]/Settings"
-      ],
-      "labels": [
-        "blocked accounts error",
-        "blocked accounts list",
-        "blocked accounts loading",
-        "delete account error",
-        "delete account pending",
-        "preference save error",
-        "preference save pending",
-        "profile loading",
-        "profile-backed account",
-        "sign out pending",
-        "unblock user error"
-      ],
-      "review": {
-        "needsReview": true,
-        "reasons": [
-          "split-across-use-cases"
-        ],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Mutation states",
-          "functionName": "settingsMutationStates",
-          "file": "widgetbook/lib/utility/p3_utility_use_cases.dart",
-          "path": "[P3 utility surfaces]/Settings",
-          "stateCardCount": 6,
-          "stateCards": [
-            {
-              "label": "preference save pending",
-              "normalizedLabel": "preference save pending"
-            },
-            {
-              "label": "preference save error",
-              "normalizedLabel": "preference save error"
-            },
-            {
-              "label": "delete account pending",
-              "normalizedLabel": "delete account pending"
-            },
-            {
-              "label": "delete account error",
-              "normalizedLabel": "delete account error"
-            },
-            {
-              "label": "sign out pending",
-              "normalizedLabel": "sign out pending"
-            },
-            {
-              "label": "unblock user error",
-              "normalizedLabel": "unblock user error"
-            }
-          ]
-        },
-        {
-          "name": "Screen states",
-          "functionName": "settingsScreenStates",
-          "file": "widgetbook/lib/utility/p3_utility_use_cases.dart",
-          "path": "[P3 utility surfaces]/Settings",
-          "stateCardCount": 5,
-          "stateCards": [
-            {
-              "label": "profile-backed account",
-              "normalizedLabel": "profile backed account"
-            },
-            {
-              "label": "profile loading",
-              "normalizedLabel": "profile loading"
-            },
-            {
-              "label": "blocked accounts loading",
-              "normalizedLabel": "blocked accounts loading"
-            },
-            {
-              "label": "blocked accounts error",
-              "normalizedLabel": "blocked accounts error"
-            },
-            {
-              "label": "blocked accounts list",
-              "normalizedLabel": "blocked accounts list"
             }
           ]
         }
@@ -6480,6 +6486,105 @@
       ]
     },
     {
+      "component": "SettingsScreen",
+      "useCaseCount": 2,
+      "stateCardCount": 12,
+      "paths": [
+        "[P3 utility surfaces]/Settings"
+      ],
+      "labels": [
+        "Cross Paths global opt-in",
+        "blocked accounts error",
+        "blocked accounts list",
+        "blocked accounts loading",
+        "delete account error",
+        "delete account pending",
+        "preference save error",
+        "preference save pending",
+        "profile loading",
+        "profile-backed account",
+        "sign out pending",
+        "unblock user error"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "large-state-matrix",
+          "split-across-use-cases"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Mutation states",
+          "functionName": "settingsMutationStates",
+          "file": "widgetbook/lib/utility/p3_utility_use_cases.dart",
+          "path": "[P3 utility surfaces]/Settings",
+          "stateCardCount": 6,
+          "stateCards": [
+            {
+              "label": "preference save pending",
+              "normalizedLabel": "preference save pending"
+            },
+            {
+              "label": "preference save error",
+              "normalizedLabel": "preference save error"
+            },
+            {
+              "label": "delete account pending",
+              "normalizedLabel": "delete account pending"
+            },
+            {
+              "label": "delete account error",
+              "normalizedLabel": "delete account error"
+            },
+            {
+              "label": "sign out pending",
+              "normalizedLabel": "sign out pending"
+            },
+            {
+              "label": "unblock user error",
+              "normalizedLabel": "unblock user error"
+            }
+          ]
+        },
+        {
+          "name": "Screen states",
+          "functionName": "settingsScreenStates",
+          "file": "widgetbook/lib/utility/p3_utility_use_cases.dart",
+          "path": "[P3 utility surfaces]/Settings",
+          "stateCardCount": 6,
+          "stateCards": [
+            {
+              "label": "profile-backed account",
+              "normalizedLabel": "profile backed account"
+            },
+            {
+              "label": "Cross Paths global opt-in",
+              "normalizedLabel": "cross paths global opt in"
+            },
+            {
+              "label": "profile loading",
+              "normalizedLabel": "profile loading"
+            },
+            {
+              "label": "blocked accounts loading",
+              "normalizedLabel": "blocked accounts loading"
+            },
+            {
+              "label": "blocked accounts error",
+              "normalizedLabel": "blocked accounts error"
+            },
+            {
+              "label": "blocked accounts list",
+              "normalizedLabel": "blocked accounts list"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "EventSuccessCompanionRouteScreen",
       "useCaseCount": 1,
       "stateCardCount": 12,
@@ -6760,99 +6865,6 @@
             {
               "label": "overflow badge",
               "normalizedLabel": "overflow badge"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "SettingsScreen",
-      "useCaseCount": 2,
-      "stateCardCount": 11,
-      "paths": [
-        "[P3 utility surfaces]/Settings"
-      ],
-      "labels": [
-        "blocked accounts error",
-        "blocked accounts list",
-        "blocked accounts loading",
-        "delete account error",
-        "delete account pending",
-        "preference save error",
-        "preference save pending",
-        "profile loading",
-        "profile-backed account",
-        "sign out pending",
-        "unblock user error"
-      ],
-      "review": {
-        "needsReview": true,
-        "reasons": [
-          "split-across-use-cases"
-        ],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Mutation states",
-          "functionName": "settingsMutationStates",
-          "file": "widgetbook/lib/utility/p3_utility_use_cases.dart",
-          "path": "[P3 utility surfaces]/Settings",
-          "stateCardCount": 6,
-          "stateCards": [
-            {
-              "label": "preference save pending",
-              "normalizedLabel": "preference save pending"
-            },
-            {
-              "label": "preference save error",
-              "normalizedLabel": "preference save error"
-            },
-            {
-              "label": "delete account pending",
-              "normalizedLabel": "delete account pending"
-            },
-            {
-              "label": "delete account error",
-              "normalizedLabel": "delete account error"
-            },
-            {
-              "label": "sign out pending",
-              "normalizedLabel": "sign out pending"
-            },
-            {
-              "label": "unblock user error",
-              "normalizedLabel": "unblock user error"
-            }
-          ]
-        },
-        {
-          "name": "Screen states",
-          "functionName": "settingsScreenStates",
-          "file": "widgetbook/lib/utility/p3_utility_use_cases.dart",
-          "path": "[P3 utility surfaces]/Settings",
-          "stateCardCount": 5,
-          "stateCards": [
-            {
-              "label": "profile-backed account",
-              "normalizedLabel": "profile backed account"
-            },
-            {
-              "label": "profile loading",
-              "normalizedLabel": "profile loading"
-            },
-            {
-              "label": "blocked accounts loading",
-              "normalizedLabel": "blocked accounts loading"
-            },
-            {
-              "label": "blocked accounts error",
-              "normalizedLabel": "blocked accounts error"
-            },
-            {
-              "label": "blocked accounts list",
-              "normalizedLabel": "blocked accounts list"
             }
           ]
         }
@@ -13677,6 +13689,53 @@
             {
               "label": "full review module",
               "normalizedLabel": "full review module"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CrossPathsEventConsentSection",
+      "useCaseCount": 1,
+      "stateCardCount": 4,
+      "paths": [
+        "[Event Detail]/Sections"
+      ],
+      "labels": [
+        "available and off",
+        "enabled",
+        "loading",
+        "text scale 2"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Cross Paths consent states",
+          "functionName": "crossPathsEventConsentStates",
+          "file": "widgetbook/lib/events/event_detail_use_cases.dart",
+          "path": "[Event Detail]/Sections",
+          "stateCardCount": 4,
+          "stateCards": [
+            {
+              "label": "available and off",
+              "normalizedLabel": "available and off"
+            },
+            {
+              "label": "enabled",
+              "normalizedLabel": "enabled"
+            },
+            {
+              "label": "loading",
+              "normalizedLabel": "loading"
+            },
+            {
+              "label": "text scale 2",
+              "normalizedLabel": "text scale 2"
             }
           ]
         }
