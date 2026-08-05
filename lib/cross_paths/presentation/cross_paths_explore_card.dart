@@ -22,10 +22,7 @@ import 'package:flutter/material.dart';
 
 typedef CrossPathsEventSelected = void Function(ExploreEventItem item);
 typedef CrossPathsProfileSelected =
-    void Function(
-      CrossPathsSuggestion suggestion,
-      ExploreEventItem eventItem,
-    );
+    void Function(CrossPathsSuggestion suggestion, ExploreEventItem eventItem);
 
 class CrossPathsExploreCard extends StatelessWidget {
   const CrossPathsExploreCard({
@@ -70,15 +67,12 @@ class CrossPathsExploreCard extends StatelessWidget {
               onTap: onProfileSelected,
               showArrow: true,
               media: primaryPhotoUrl == null
-                  ? const CatchNetworkImageFallback(
-                      icon: CatchIcons.personOutlined,
-                    )
+                  ? CatchNetworkImageFallback(icon: CatchIcons.personOutlined)
                   : CatchNetworkImage(primaryPhotoUrl),
               kicker: context.l10n.crossPathsExploreCardLabelCrossPaths,
               name: '$firstName, ${profile.age}',
-              meta: context
-                  .l10n
-                  .crossPathsExploreCardReasonCompatibleAtThisEvent,
+              meta:
+                  context.l10n.crossPathsExploreCardReasonCompatibleAtThisEvent,
             ),
           ),
         ),
@@ -246,9 +240,8 @@ class CrossPathsProfilePreviewSheet extends StatelessWidget {
                         CatchIconButton.icon(
                           icon: CatchIcons.closeRounded,
                           variant: CatchIconButtonVariant.plain,
-                          tooltip: context
-                              .l10n
-                              .crossPathsProfilePreviewTooltipClose,
+                          tooltip:
+                              context.l10n.crossPathsProfilePreviewTooltipClose,
                           onTap: () => Navigator.of(context).pop(),
                         ),
                       ],
@@ -260,15 +253,12 @@ class CrossPathsProfilePreviewSheet extends StatelessWidget {
                 child: ProfileSurface(
                   profile: suggestion.profile,
                   mode: ProfileSurfaceMode.publicProfile,
-                  bottomPadding: CatchSpacing.s6,
                 ),
               ),
               SafeArea(
                 top: false,
                 child: Padding(
-                  padding: CatchInsets.pageBody.copyWith(
-                    top: CatchSpacing.s2,
-                  ),
+                  padding: CatchInsets.pageBody.copyWith(top: CatchSpacing.s2),
                   child: CrossPathsEventContextCard(
                     suggestion: suggestion,
                     eventItem: eventItem,

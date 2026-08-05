@@ -264,13 +264,15 @@ execute.
 
 Explore social proof must not create profile reads per event row. The discovery
 ticket may render `signedUpCount` through veiled activity avatars using the
-shared Event Detail privacy contract. Cross Paths now has a private global and
-per-event consent source, but that source is permission rather than discovery
-data. Identified people still require the server-owned batched suggestion seam,
-showcase eligibility, reciprocal filtering, and exposure controls defined in
-`docs/cross_paths.md`; until those exist, Explore renders no people from consent
-documents. Organizer cards may reuse already-loaded organizer-manager and
-aggregate rating data through shared identity atoms.
+shared Event Detail privacy contract. Cross Paths consumes a single private,
+server-owned batched suggestion response that revalidates layered consent,
+showcase eligibility, reciprocal preferences, safety, actionable event state,
+and exposure caps. `ExploreScreen` treats that response as optional enrichment:
+errors, unknown versions, expired tokens, search, map, or missing event matches
+resolve to no identifiable people without blocking the event feed. Consent
+documents remain permission inputs and are never queried as a roster or direct
+suggestion source. Organizer cards may reuse already-loaded organizer-manager
+and aggregate rating data through shared identity atoms.
 
 ## Dependency Direction
 
@@ -2342,6 +2344,9 @@ Reference files:
 - `lib/cross_paths/domain/cross_paths_feature_config.dart`
 - `lib/cross_paths/data/cross_paths_feature_config_provider.dart`
 - `lib/cross_paths/data/cross_paths_repository.dart`
+- `lib/cross_paths/domain/cross_paths_suggestion.dart`
+- `lib/explore/presentation/explore_cross_paths_provider.dart`
+- `lib/cross_paths/presentation/cross_paths_explore_card.dart`
 - `lib/cross_paths/presentation/cross_paths_event_consent_controller.dart`
 - `lib/cross_paths/presentation/cross_paths_event_consent_state.dart`
 - `lib/cross_paths/presentation/cross_paths_event_consent_section.dart`
@@ -2349,11 +2354,11 @@ Reference files:
 - `functions/src/crossPaths/setCrossPathsEventConsent.ts`
 - `test/cross_paths/cross_paths_event_consent_section_test.dart`
 
-Use layered consent for a future identifiable people surface: a private
-default-false global preference is the master permission, a deterministic
-caller-scoped edge is the event permission, and the server still owns all
-effective-eligibility decisions. Consent records are inputs to a later
-suggestion resolver; they are never themselves a roster or suggestion source.
+Use layered consent for an identifiable people surface: a private default-false
+global preference is the master permission, a deterministic caller-scoped edge
+is the event permission, and the server owns all effective-eligibility and
+ranking decisions. Consent records are inputs to `getCrossPathsSuggestions`;
+they are never themselves a roster or suggestion source.
 
 The Event Detail reference gate is intentionally fail-closed:
 
@@ -2404,8 +2409,14 @@ Preserve these boundaries in later adopters:
   active future event, deterministic participation identity, and `signedUp`
   state before enabling;
 - disable remains callable-owned and available after eligibility disappears;
-- Explore must consume only a later sanitized batched suggestion response that
-  independently revalidates effective consent and eligibility.
+- Explore consumes only the sanitized, versioned, short-lived batched response
+  from `getCrossPathsSuggestions`; it never joins participation, profile,
+  preference, block, or eligibility collections on the client;
+- `ExploreFeedSectionState` receives provider-free suggestion values, preserves
+  the associated event ticket, and enforces the first-eight event-majority and
+  no-adjacent-non-event composition contract;
+- `CrossPathsExploreCard` keeps the canonical person Polaroid person-only and
+  owns adjacent event context plus distinct profile/event actions.
 
 ### Exhibit ARCH-SCREEN-001: Feature Screen Boundary
 

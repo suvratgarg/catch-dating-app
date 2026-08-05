@@ -5833,13 +5833,6 @@
     "x-owner": "product",
     "x-surface": "cross_paths.presentation.explore_card"
   },
-  "crossPathsExploreCardActionViewProfile": "View profile",
-  "@crossPathsExploreCardActionViewProfile": {
-    "description": "Accessible action label for opening the sanitized Cross Paths profile preview.",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "cross_paths.presentation.explore_card"
-  },
   "crossPathsExploreCardActionSeeEvent": "See the event",
   "@crossPathsExploreCardActionSeeEvent": {
     "description": "Action that opens the associated first-party Event Detail screen.",
@@ -5847,7 +5840,7 @@
     "x-owner": "product",
     "x-surface": "cross_paths.presentation.explore_card"
   },
-  "crossPathsExploreCardSemanticsViewProfile": "View {firstName}'s profile",
+  "crossPathsExploreCardSemanticsViewProfile": "View {firstName}’s profile",
   "@crossPathsExploreCardSemanticsViewProfile": {
     "description": "Screen-reader label for the person target on a Cross Paths card.",
     "placeholders": {"firstName": {"type": "String"}},

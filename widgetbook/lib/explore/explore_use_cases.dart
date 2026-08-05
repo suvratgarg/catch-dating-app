@@ -16,6 +16,7 @@ import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:catch_dating_app/cross_paths/cross_paths.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/external_event.dart';
@@ -227,6 +228,49 @@ final _externalFeedItem = ExploreExternalEventItem(
   distanceFromUserKm: 2.4,
 );
 
+final _crossPathsSuggestion = CrossPathsSuggestion.fromCallableData({
+  'person': {
+    'uid': 'widgetbook-cross-paths-rhea',
+    'name': 'Rhea Kapoor',
+    'age': 29,
+    'gender': 'woman',
+    'city': 'in-mh-mumbai',
+    'photoUrls': const [
+      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=1200',
+      'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=1200',
+      'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=1200',
+    ],
+    'promptAnswers': const [
+      {'prompt': 'A perfect event', 'answer': 'A sunset walk and good chai'},
+      {
+        'prompt': 'Typical Sunday',
+        'answer': 'Coffee, a long read, then dinner',
+      },
+      {'prompt': 'Together we could', 'answer': 'Try every new place in town'},
+    ],
+    'relationshipGoal': 'relationship',
+  },
+  'event': {
+    'eventId': 'widgetbook-long-table-dinner',
+    'organizerId': 'widgetbook-long-table-club',
+    'startTime': '2026-06-24T14:30:00.000Z',
+    'endTime': '2026-06-24T16:30:00.000Z',
+    'meetingPoint': 'Kala Ghoda table room',
+    'activityKind': 'dinner',
+    'photoUrl': null,
+    'viewerBookingStatus': 'canBookNow',
+  },
+  'reasonCodes': const [
+    'attending_event',
+    'booking_available',
+    'mutual_preferences',
+    'showcase_ready',
+  ],
+  'suggestionToken':
+      'widgetbook-token-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+  'tokenExpiresAt': '2027-06-24T14:20:00.000Z',
+});
+
 @widgetbook.UseCase(
   name: 'Screen states',
   type: ExploreScreen,
@@ -356,6 +400,63 @@ Widget exploreBodyStates(BuildContext context) {
         label: 'mixed body',
         child: _SliverFrame(
           child: _ExploreScope(child: const _ExploreBodySliverPreview()),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Cross Paths person card',
+  type: CrossPathsExploreCard,
+  path: '[Explore]/Sections',
+)
+Widget crossPathsExploreCardStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'CrossPathsExploreCard',
+    catalogId: 'card.person.cross_paths',
+    children: [
+      _StateCard(
+        label: 'bookable event',
+        description:
+            'Person Polaroid with separate, prospective event context and action.',
+        child: _DeviceFrame(
+          child: SingleChildScrollView(
+            padding: CatchInsets.pageBody,
+            child: CrossPathsExploreCard(
+              suggestion: _crossPathsSuggestion,
+              eventItem: _feedItems[1],
+              onProfileSelected: _noop,
+              onEventSelected: (_) {},
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Cross Paths profile preview',
+  type: CrossPathsProfilePreviewSheet,
+  path: '[Explore]/Sections',
+)
+Widget crossPathsProfilePreviewStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'CrossPathsProfilePreviewSheet',
+    catalogId: 'overlay.person.cross_paths_profile',
+    children: [
+      _StateCard(
+        label: 'sanitized profile with event context',
+        child: _DeviceFrame(
+          child: Align(
+            alignment: Alignment.bottomCenter,
+            child: CrossPathsProfilePreviewSheet(
+              suggestion: _crossPathsSuggestion,
+              eventItem: _feedItems[1],
+              onEventSelected: (_) {},
+            ),
+          ),
         ),
       ),
     ],

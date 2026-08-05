@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
@@ -44,12 +45,7 @@ Future<List<CrossPathsSuggestion>> exploreCrossPathsSuggestions(Ref ref) async {
   final feed = ref.watch(exploreFeedViewModelProvider).asData?.value;
   if (feed == null || feed.items.isEmpty) return const [];
 
-  final eventIds = <String>[
-    for (final item in feed.items)
-      if (item.availability?.canBookNow == true ||
-          item.availability?.status == ViewerEventAvailabilityStatus.joined)
-        item.event.id,
-  ].take(maximumCrossPathsExploreEventIds).toList(growable: false);
+  final eventIds = crossPathsExploreEventIds(feed);
   if (eventIds.isEmpty) return const [];
 
   final response = await ref
@@ -59,9 +55,29 @@ Future<List<CrossPathsSuggestion>> exploreCrossPathsSuggestions(Ref ref) async {
         sessionId: ref.watch(crossPathsExploreSessionIdProvider),
       );
   final eventIdSet = eventIds.toSet();
-  return List.unmodifiable(
+  final now = DateTime.now();
+  final suggestions = List<CrossPathsSuggestion>.unmodifiable(
     response.suggestions
-        .where((suggestion) => eventIdSet.contains(suggestion.event.eventId))
+        .where(
+          (suggestion) =>
+              eventIdSet.contains(suggestion.event.eventId) &&
+              suggestion.tokenExpiresAt.isAfter(now),
+        )
         .take(maximumCrossPathsExploreSuggestions),
   );
+  if (suggestions.isNotEmpty) {
+    final earliestExpiry = suggestions
+        .map((suggestion) => suggestion.tokenExpiresAt)
+        .reduce((left, right) => left.isBefore(right) ? left : right);
+    final timer = Timer(earliestExpiry.difference(now), ref.invalidateSelf);
+    ref.onDispose(timer.cancel);
+  }
+  return suggestions;
 }
+
+List<String> crossPathsExploreEventIds(ExploreFeedViewModel feed) => <String>[
+  for (final item in feed.items)
+    if (item.availability?.canBookNow == true ||
+        item.availability?.status == ViewerEventAvailabilityStatus.joined)
+      item.event.id,
+].take(maximumCrossPathsExploreEventIds).toList(growable: false);

@@ -73,17 +73,39 @@ class CrossPathsSuggestion {
     final event = _stringMap(json['event'], 'suggestion.event');
     final uid = _requiredString(person, 'uid');
     final photoUrls = _stringList(person['photoUrls'], 'person.photoUrls');
+    _requireLengthBetween(photoUrls, 3, 6, 'person.photoUrls');
     final promptValues = _objectList(
       person['promptAnswers'],
       'person.promptAnswers',
     );
+    _requireLengthBetween(promptValues, 3, 3, 'person.promptAnswers');
+    final age = _requiredInt(person, 'age');
+    if (age < 18 || age > 99) {
+      throw const FormatException('person.age must be between 18 and 99.');
+    }
+    final reasonCodes = _stringList(
+      json['reasonCodes'],
+      'suggestion.reasonCodes',
+    );
+    _requireLengthBetween(reasonCodes, 4, 5, 'suggestion.reasonCodes');
+    if (reasonCodes.toSet().length != reasonCodes.length) {
+      throw const FormatException(
+        'suggestion.reasonCodes must contain unique values.',
+      );
+    }
+    final suggestionToken = _requiredString(json, 'suggestionToken');
+    if (suggestionToken.length < 40 || suggestionToken.length > 4096) {
+      throw const FormatException(
+        'suggestion.suggestionToken has an invalid length.',
+      );
+    }
     final now = DateTime.fromMillisecondsSinceEpoch(0, isUtc: true);
 
     return CrossPathsSuggestion(
       profile: PublicProfile(
         uid: uid,
         name: _requiredString(person, 'name'),
-        age: _requiredInt(person, 'age'),
+        age: age,
         gender: _enumByName(
           Gender.values,
           _requiredString(person, 'gender'),
@@ -119,9 +141,10 @@ class CrossPathsSuggestion {
               );
             }(),
         ],
-        relationshipGoal: _nullableEnumByName(
+        relationshipGoal: _enumByName(
           RelationshipGoal.values,
           _requiredString(person, 'relationshipGoal'),
+          'person.relationshipGoal',
         ),
       ),
       event: CrossPathsSuggestionEvent(
@@ -140,11 +163,10 @@ class CrossPathsSuggestion {
           _requiredString(event, 'viewerBookingStatus'),
         ),
       ),
-      reasonCodes: _stringList(
-        json['reasonCodes'],
-        'suggestion.reasonCodes',
-      ).map(CrossPathsSuggestionReason.fromWire).toList(growable: false),
-      suggestionToken: _requiredString(json, 'suggestionToken'),
+      reasonCodes: reasonCodes
+          .map(CrossPathsSuggestionReason.fromWire)
+          .toList(growable: false),
+      suggestionToken: suggestionToken,
       tokenExpiresAt: _requiredDateTime(json, 'tokenExpiresAt'),
     );
   }
@@ -176,9 +198,10 @@ class CrossPathsSuggestionsResponse {
         '$schemaVersion/$rankingVersion',
       );
     }
-    final suggestions = _objectList(json['suggestions'], 'suggestions')
-        .map(CrossPathsSuggestion.fromCallableData)
-        .toList(growable: false);
+    final suggestions = _objectList(
+      json['suggestions'],
+      'suggestions',
+    ).map(CrossPathsSuggestion.fromCallableData).toList(growable: false);
     if (suggestions.length > 2) {
       throw const FormatException(
         'Cross Paths response exceeded the two-suggestion contract.',
@@ -207,12 +230,14 @@ List<Object?> _objectList(Object? value, String field) {
 }
 
 List<String> _stringList(Object? value, String field) =>
-    _objectList(value, field).map((item) {
-      if (item is! String || item.trim().isEmpty) {
-        throw FormatException('$field must contain non-empty strings.');
-      }
-      return item;
-    }).toList(growable: false);
+    _objectList(value, field)
+        .map((item) {
+          if (item is! String || item.trim().isEmpty) {
+            throw FormatException('$field must contain non-empty strings.');
+          }
+          return item;
+        })
+        .toList(growable: false);
 
 String _requiredString(Map<String, dynamic> json, String key) {
   final value = json[key];
@@ -241,18 +266,21 @@ DateTime _requiredDateTime(Map<String, dynamic> json, String key) {
   return parsed;
 }
 
-T _enumByName<T extends Enum>(
-  Iterable<T> values,
-  String name,
-  String field,
-) => values.firstWhere(
-  (value) => value.name == name,
-  orElse: () => throw FormatException('$field has an unsupported value.'),
-);
+T _enumByName<T extends Enum>(Iterable<T> values, String name, String field) =>
+    values.firstWhere(
+      (value) => value.name == name,
+      orElse: () => throw FormatException('$field has an unsupported value.'),
+    );
 
-T? _nullableEnumByName<T extends Enum>(Iterable<T> values, String name) {
-  for (final value in values) {
-    if (value.name == name) return value;
+void _requireLengthBetween(
+  List<Object?> values,
+  int minimum,
+  int maximum,
+  String field,
+) {
+  if (values.length < minimum || values.length > maximum) {
+    throw FormatException(
+      '$field must contain between $minimum and $maximum items.',
+    );
   }
-  return null;
 }

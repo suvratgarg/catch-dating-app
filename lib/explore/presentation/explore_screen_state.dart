@@ -529,16 +529,12 @@ class ExploreFeedSectionState {
       windowRequest: viewModel.windowRequest,
     );
     final crossPathsEventIds = {
-      for (final suggestion in crossPathsSuggestions)
-        suggestion.event.eventId,
+      for (final suggestion in crossPathsSuggestions) suggestion.event.eventId,
     };
     final candidateThisWeekItems = showThisWeekList
-        ? topExploreThisWeekRecommendations(
-            bodyItems,
-            now: now,
-          ).where(
-            (item) => !crossPathsEventIds.contains(item.event.id),
-          ).toList(growable: false)
+        ? topExploreThisWeekRecommendations(bodyItems, now: now)
+              .where((item) => !crossPathsEventIds.contains(item.event.id))
+              .toList(growable: false)
         : const <ExploreEventItem>[];
     final thisWeekItems =
         candidateThisWeekItems.length >=
@@ -913,7 +909,8 @@ void _insertCrossPathsPeople(
     while (placementIndex < cards.length) {
       final card = cards[placementIndex];
       final isTimed = _isExploreTimedCard(card);
-      final sameDay = card.startTime != null &&
+      final sameDay =
+          card.startTime != null &&
           DateUtils.dateOnly(card.startTime!) == eventDay;
       final timedSeen = cards
           .take(placementIndex + 1)
@@ -921,8 +918,8 @@ void _insertCrossPathsPeople(
           .length;
       final hasMinimumTickets = inserted > 0 || timedSeen >= 2;
       final insertAt = placementIndex + 1;
-      final nextIsNonEvent = insertAt < cards.length &&
-          !_isExploreTimedCard(cards[insertAt]);
+      final nextIsNonEvent =
+          insertAt < cards.length && !_isExploreTimedCard(cards[insertAt]);
       if (isTimed &&
           sameDay &&
           hasMinimumTickets &&
@@ -930,10 +927,7 @@ void _insertCrossPathsPeople(
           !nextIsNonEvent) {
         cards.insert(
           insertAt,
-          ExploreMixedPersonCard(
-            suggestion: suggestion,
-            eventItem: eventItem,
-          ),
+          ExploreMixedPersonCard(suggestion: suggestion, eventItem: eventItem),
         );
         inserted += 1;
         // Require at least one subsequent event before another person card.

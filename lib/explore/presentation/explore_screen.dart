@@ -207,7 +207,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     }
 
     void openEvent(ExploreEventItem item, String source) {
-      if (source == 'cross_paths') {
+      if (source.startsWith('cross_paths')) {
         ref
             .read(appAnalyticsProvider)
             .logEvent(

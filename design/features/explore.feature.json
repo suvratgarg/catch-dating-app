@@ -1,12 +1,12 @@
 {
   "$schema": "./feature_contract.schema.json",
   "version": 2,
-  "updated": "2026-07-23",
+  "updated": "2026-08-05",
   "id": "feature.explore",
   "name": "Explore",
   "owner": "explore",
   "status": "pilot",
-  "description": "Orchestrates organizer discovery across Flutter and marketing-web projections without duplicating the owning screen, route, component, data, or preview registries.",
+  "description": "Orchestrates event-first discovery with consent-safe people and organizer interleaves across Flutter, plus organizer discovery on marketing web, without duplicating owning screen, route, component, data, or preview registries.",
   "surfaces": [
     {
       "id": "consumer_flutter",
@@ -16,9 +16,9 @@
         "id": "screen.explore.discovery"
       },
       "actionScope": {
-        "included": "Empty-result recovery actions represented by ExploreDiscoveryEmptyAction.",
+        "included": "Empty-result recovery actions represented by ExploreDiscoveryEmptyAction plus consent-safe Cross Paths profile-preview and associated-event navigation.",
         "excluded": [
-          "Search entry, city and filter editing, organizer follow/sign-in, map interaction, event or organizer navigation, and membership mutations retain their existing owners and verification paths."
+          "Search entry, city and filter editing, organizer follow/sign-in, map interaction, ordinary event or organizer navigation, and membership mutations retain their existing owners and verification paths."
         ]
       },
       "bindings": {
@@ -32,6 +32,12 @@
             "language": "dart",
             "file": "lib/explore/presentation/explore_screen_state.dart",
             "symbol": "ExploreDiscoveryEmptyAction"
+          },
+          {
+            "id": "cross_paths_discovery",
+            "language": "dart",
+            "file": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
+            "symbol": "CrossPathsExploreCard"
           }
         ],
         "componentContracts": [
@@ -42,6 +48,7 @@
           "catch.event_card",
           "catch.field",
           "catch.icon_button",
+          "catch.person_polaroid",
           "catch.surface",
           "catch.top_bar"
         ],
@@ -50,7 +57,9 @@
           "contracts/firestore/clubs.schema.json",
           "contracts/firestore/events.schema.json",
           "contracts/firestore/external_events.schema.json",
-          "contracts/firestore/organizers.schema.json"
+          "contracts/firestore/organizers.schema.json",
+          "contracts/callables/get_cross_paths_suggestions_payload.schema.json",
+          "contracts/callable_responses/get_cross_paths_suggestions_response.schema.json"
         ]
       },
       "dimensions": {
@@ -103,6 +112,13 @@
           "values": [
             "none",
             "pin"
+          ]
+        },
+        "people": {
+          "default": "hidden",
+          "values": [
+            "hidden",
+            "suggested"
           ]
         },
         "accessibility": {
@@ -177,6 +193,46 @@
             }
           ],
           "description": "Clears both search and filters as one recovery transition for the current Explore state."
+        },
+        {
+          "id": "view_cross_paths_profile",
+          "owner": "cross_paths_discovery",
+          "codeValue": "onProfileSelected",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "routeInstanceId",
+            "candidateId",
+            "eventId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "cross_paths_profile_preview"
+              ]
+            }
+          ],
+          "description": "Opens the server-sanitized Cross Paths profile preview for one suggested person without exposing the event roster."
+        },
+        {
+          "id": "open_cross_paths_event",
+          "owner": "cross_paths_discovery",
+          "codeValue": "onEventSelected",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "routeInstanceId",
+            "eventId"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.event.detail"
+              }
+            }
+          ],
+          "description": "Opens the exact first-party event associated with a consent-safe Cross Paths suggestion."
         }
       ],
       "scenarios": [
@@ -272,6 +328,37 @@
           "actionCases": [
             {
               "id": "default"
+            }
+          ]
+        },
+        {
+          "id": "cross_paths_suggestion",
+          "stateId": "cross_paths_suggestion",
+          "dimensions": {
+            "people": "suggested"
+          },
+          "actionCases": [
+            {
+              "id": "bookable_event",
+              "enabledActions": [
+                "view_cross_paths_profile",
+                "open_cross_paths_event"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "cross_paths_profile_preview",
+          "stateId": "cross_paths_profile_preview",
+          "dimensions": {
+            "people": "suggested"
+          },
+          "actionCases": [
+            {
+              "id": "associated_event",
+              "enabledActions": [
+                "open_cross_paths_event"
+              ]
             }
           ]
         },

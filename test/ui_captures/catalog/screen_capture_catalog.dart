@@ -57,6 +57,8 @@ import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/cross_paths/domain/cross_paths_suggestion.dart';
+import 'package:catch_dating_app/cross_paths/presentation/cross_paths_explore_card.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_controller.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
@@ -102,6 +104,7 @@ import 'package:catch_dating_app/events/shared/event_detail_route_transition.dar
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/explore/data/explore_recommendations_repository.dart';
+import 'package:catch_dating_app/explore/presentation/explore_cross_paths_provider.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_map_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
@@ -753,6 +756,37 @@ final _memberDiscoveryItems = [
       },
     ),
 ];
+final _exploreCrossPathsSuggestion = CrossPathsSuggestion(
+  profile:
+      buildPublicProfile(
+        uid: 'capture-cross-paths-rhea',
+        name: 'Rhea Kapoor',
+        age: 29,
+        gender: Gender.woman,
+        bio: 'Sunset walks, small tables, and conversations worth staying for.',
+      ).copyWith(
+        relationshipGoal: RelationshipGoal.relationship,
+        activityPreferences: const ActivityPreferences(),
+      ),
+  event: CrossPathsSuggestionEvent(
+    eventId: _memberDiscoveryEvents[2].id,
+    organizerId: _memberDiscoveryEvents[2].clubId,
+    startTime: _memberDiscoveryEvents[2].startTime,
+    endTime: _memberDiscoveryEvents[2].endTime,
+    meetingPoint: _memberDiscoveryEvents[2].meetingPoint,
+    activityKind: _memberDiscoveryEvents[2].activityKind,
+    photoUrl: null,
+    viewerBookingStatus: CrossPathsViewerBookingStatus.canBookNow,
+  ),
+  reasonCodes: const [
+    CrossPathsSuggestionReason.attendingEvent,
+    CrossPathsSuggestionReason.bookingAvailable,
+    CrossPathsSuggestionReason.mutualPreferences,
+    CrossPathsSuggestionReason.showcaseReady,
+  ],
+  suggestionToken: 'capture-cross-paths-token-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+  tokenExpiresAt: DateTime(2031),
+);
 final _unclaimedDiscoveryClub = _captureFixtures
     .captureClub(
       id: 'club-discovery-unclaimed',
@@ -802,6 +836,7 @@ List<Object> _exploreProviderOverrides({
   AsyncValue<ExploreFeedViewModel>? feed,
   String? uid = _captureViewerUid,
   Set<String> joinedClubIds = const <String>{},
+  List<CrossPathsSuggestion>? crossPathsSuggestions,
   DeviceLocation Function()? deviceLocationBuilder,
 }) {
   final effectiveSourceClubs =
@@ -835,6 +870,9 @@ List<Object> _exploreProviderOverrides({
     exploreSourceClubsProvider.overrideWithValue(effectiveSourceClubs),
     exploreClubsViewModelProvider.overrideWithValue(effectiveViewModel),
     exploreFeedViewModelProvider.overrideWithValue(effectiveFeed),
+    exploreCrossPathsSuggestionsProvider.overrideWithValue(
+      AsyncData(crossPathsSuggestions ?? const <CrossPathsSuggestion>[]),
+    ),
   ];
 }
 
@@ -846,6 +884,14 @@ NetworkException _exploreOfflineException({required String action}) {
       resource: 'explore',
     ),
   );
+}
+
+Future<void> _driveExploreToCrossPaths(WidgetTester tester) async {
+  await tester.scrollUntilVisible(
+    find.byKey(const ValueKey('cross-paths-card-capture-cross-paths-rhea')),
+    420,
+  );
+  await tester.pumpAndSettle();
 }
 
 Widget _exploreCapture({
@@ -10128,6 +10174,31 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       joinedClubIds: {_memberDiscoveryClubs.first.id},
     ),
     builder: (context) => _exploreCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'explore_cross_paths_person',
+    routeIds: const <String>['exploreScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _exploreProviderOverrides(
+      crossPathsSuggestions: [_exploreCrossPathsSuggestion],
+    ),
+    drive: _driveExploreToCrossPaths,
+    builder: (context) => _exploreCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'explore_cross_paths_profile_preview',
+    routeIds: const <String>['exploreScreen'],
+    device: CaptureDevice.reviewTall,
+    builder: (context) => Scaffold(
+      body: Align(
+        alignment: Alignment.bottomCenter,
+        child: CrossPathsProfilePreviewSheet(
+          suggestion: _exploreCrossPathsSuggestion,
+          eventItem: _memberDiscoveryItems[2],
+          onEventSelected: (_) {},
+        ),
+      ),
+    ),
   ),
   ScreenCaptureEntry(
     id: 'explore_loading',

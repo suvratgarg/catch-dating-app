@@ -4388,6 +4388,26 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CrossPathsExploreCard',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Cross Paths person card',
+                builder: _widgetbook_workspace_explore_explore_use_cases
+                    .crossPathsExploreCardStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CrossPathsProfilePreviewSheet',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Cross Paths profile preview',
+                builder: _widgetbook_workspace_explore_explore_use_cases
+                    .crossPathsProfilePreviewStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'EventTypeBrowseContent',
             useCases: [
               _widgetbook.WidgetbookUseCase(
