@@ -1459,6 +1459,9 @@ select {
   color: var(--muted);
   cursor: pointer;
   font-size: 13px;
+}
+
+.cross-paths-showcase-filters button {
   white-space: nowrap;
 }
 
@@ -4649,6 +4652,10 @@ th {
   }
 
   .segmented button {
+    flex: 1;
+  }
+
+  .cross-paths-showcase-filters button {
     flex: 1 1 auto;
     min-width: 0;
     padding-inline: 6px;
