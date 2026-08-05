@@ -192,6 +192,7 @@ import {ExploreSearchCallablePayload} from "./exploreSearchCallablePayload";
 import {ExploreSearchCallableResponse} from "./exploreSearchCallableResponse";
 import {WebsiteHostListingProjection} from "./websiteHostListingProjection";
 import {FetchEventSuccessWingmanCandidatesCallableResponse} from "./fetchEventSuccessWingmanCandidatesCallableResponse";
+import {FetchSwipeCandidatesCallableResponse} from "./fetchSwipeCandidatesCallableResponse";
 import {CreateProfileDecisionClientWrite} from "./createProfileDecisionClientWrite";
 import {CreateChatMessageClientWrite} from "./createChatMessageClientWrite";
 import {CreateSavedEventClientWrite} from "./createSavedEventClientWrite";
@@ -405,6 +406,7 @@ import {
   exploreSearchCallableResponseSchema,
   websiteHostListingProjectionSchema,
   fetchEventSuccessWingmanCandidatesCallableResponseSchema,
+  fetchSwipeCandidatesCallableResponseSchema,
   createProfileDecisionClientWriteSchema,
   createChatMessageClientWriteSchema,
   createSavedEventClientWriteSchema,
@@ -1186,6 +1188,10 @@ export const validateFetchEventSuccessWingmanCandidatesCallableResponse:
   ValidateFunction<FetchEventSuccessWingmanCandidatesCallableResponse> =
     ajv.compile(fetchEventSuccessWingmanCandidatesCallableResponseSchema) as
       ValidateFunction<FetchEventSuccessWingmanCandidatesCallableResponse>;
+export const validateFetchSwipeCandidatesCallableResponse:
+  ValidateFunction<FetchSwipeCandidatesCallableResponse> =
+    ajv.compile(fetchSwipeCandidatesCallableResponseSchema) as
+      ValidateFunction<FetchSwipeCandidatesCallableResponse>;
 export const validateCreateProfileDecisionClientWrite:
   ValidateFunction<CreateProfileDecisionClientWrite> =
     ajv.compile(createProfileDecisionClientWriteSchema) as

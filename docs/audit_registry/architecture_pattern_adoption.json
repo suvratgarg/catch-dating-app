@@ -1,5 +1,5 @@
 {
-  "version": "1.7.0",
+  "version": "1.7.1",
   "updated": "2026-08-05",
   "sourceOfTruth": "docs/app_architecture.md#reference-implementation-workflow",
   "purpose": "Tracks architecture reference exhibits, prototype files, adopter files, candidate status, and back-propagation obligations so migrations stay aligned with the latest pattern.",
@@ -1598,8 +1598,14 @@
           "lastReviewedPass": "2026-07-16-generated-provider-families"
         },
         {
+          "path": "lib/swipes/data/swipe_candidate_repository.dart",
+          "role": "generated Future provider family keyed by event id that resolves server-owned post-event candidate projections without exposing the attendance roster",
+          "status": "aligned",
+          "lastReviewedPass": "2026-08-05-cross-paths-phase0-roster-privacy"
+        },
+        {
           "path": "test/architecture/generated_provider_family_test.dart",
-          "role": "ProviderContainer proof that equivalent query keys and generated override contracts remain stable across all four adopters",
+          "role": "ProviderContainer proof that equivalent query keys and generated override contracts remain stable across the reference adopters",
           "status": "aligned",
           "lastReviewedPass": "2026-07-16-generated-provider-families"
         }
@@ -1613,7 +1619,7 @@
       "requiredBackPropagation": "When a handwritten feature-owned async provider family is migrated, preserve its provider name, family call shape, value-equality key semantics, lifecycle, .future access, and override contracts; regenerate adjacent output and remove the matching planned manual-provider review decision.",
       "requiredChecks": [
         "flutter test test/architecture/generated_provider_family_test.dart",
-        "flutter analyze --no-fatal-infos lib/clubs/data/club_name_lookup.dart lib/event_success/event_success_companion_clock.dart lib/explore/data/explore_recommendations_repository.dart lib/public_profile/data/public_profiles_lookup.dart test/architecture/generated_provider_family_test.dart",
+        "flutter analyze --no-fatal-infos lib/clubs/data/club_name_lookup.dart lib/event_success/event_success_companion_clock.dart lib/explore/data/explore_recommendations_repository.dart lib/public_profile/data/public_profiles_lookup.dart lib/swipes/data/swipe_candidate_repository.dart test/architecture/generated_provider_family_test.dart",
         "dart run tool/architecture/provider_graph.dart --check",
         "node tool/architecture/check_app_architecture_exhibits.mjs"
       ],

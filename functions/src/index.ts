@@ -102,6 +102,7 @@ export {
   requestOrganizerClaim,
 } from "./organizers/organizerClaims";
 export {onSwipeCreated} from "./matching/onSwipeCreated";
+export {fetchSwipeCandidates} from "./matching/fetchSwipeCandidates";
 export {onMatchCreated} from "./matching/onMatchCreated";
 export {onMessageCreated} from "./matching/onMessageCreated";
 export {

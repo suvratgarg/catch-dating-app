@@ -937,10 +937,7 @@ class FakeShellSwipeCandidateRepository implements SwipeCandidateRepository {
   final List<PublicProfile> candidates;
 
   @override
-  Future<List<PublicProfile>> fetchCandidates({
-    required String eventId,
-    required UserProfile currentUser,
-  }) async {
+  Future<List<PublicProfile>> fetchCandidates({required String eventId}) async {
     return candidates;
   }
 }

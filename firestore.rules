@@ -840,7 +840,6 @@ service cloud.firestore {
       allow read: if isAuthed()
         && (
           resource.data.uid == request.auth.uid
-          || resource.data.status in ['signedUp', 'waitlisted', 'attended']
           || isClubHostForEvent(resource.data.eventId)
         );
       allow write: if false;

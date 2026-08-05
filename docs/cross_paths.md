@@ -1,6 +1,6 @@
 ---
 doc_id: cross_paths
-version: 1.0.0
+version: 1.1.0
 updated: 2026-08-05
 owner: product (approved direction 2026-08-05)
 status: ready-for-implementation
@@ -715,6 +715,16 @@ create selection bias.
 ## Delivery phases
 
 ### Phase 0 — Privacy and eligibility foundation
+
+Implementation receipt (2026-08-05): the first privacy slice is implemented.
+The existing post-event swipe deck, Event Recap, and identified post-event
+avatar enrichment now resolve candidates through the server-owned
+`fetchSwipeCandidates` callable. Consumer roster reads are restricted to the
+member's own edge, organizer roster access remains intact, and the callable
+enforces the Catch window, viewer attendance, reciprocal preferences, prior
+decisions, and blocks in both directions. This does not complete Phase 0:
+feature flags, Cross Paths consent, showcase eligibility, the Explore
+suggestion contract, and synthetic seed policy remain outstanding.
 
 - Land/reuse the person-Polaroid and organizer-poster migration.
 - Introduce the feature flag with fail-closed defaults.

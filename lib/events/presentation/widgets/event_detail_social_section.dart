@@ -54,7 +54,6 @@ class EventDetailSocialSection extends StatelessWidget {
           child: canShowMemberContext
               ? WhoIsGoing(
                   event: event,
-                  userProfile: profile,
                   surfaceStyle: surfaceStyle,
                   showHeader: false,
                   showCatchWindowStatus: false,

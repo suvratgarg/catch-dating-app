@@ -66,7 +66,7 @@ final class EventHypeAvatarsProvider
   }
 }
 
-String _$eventHypeAvatarsHash() => r'a1c88bf9c2cd7f004be0fc93dccd649633ecd181';
+String _$eventHypeAvatarsHash() => r'3362a90e892ecd87fde884647e75ce81fbcee5a9';
 
 final class EventHypeAvatarsFamily extends $Family
     with

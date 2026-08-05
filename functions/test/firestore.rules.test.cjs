@@ -808,7 +808,7 @@ describe("firestore.rules", () => {
       );
     });
 
-    it("allows participants, hosts, and authenticated roster viewers to read active event participation edges", async () => {
+    it("allows only participants and hosts to read event participation edges", async () => {
       await seed(["clubs", "club-1"], club());
       await seed(["events", "event-1"], event());
       await seed(
@@ -822,7 +822,7 @@ describe("firestore.rules", () => {
       await assertSucceeds(
         getDoc(doc(authedDb("host-1"), "eventParticipations", "event-1_runner-1")),
       );
-      await assertSucceeds(
+      await assertFails(
         getDoc(doc(authedDb("runner-3"), "eventParticipations", "event-1_runner-1")),
       );
       await assertFails(
@@ -910,7 +910,7 @@ describe("firestore.rules", () => {
       );
     });
 
-    it("allows authenticated users to query active event rosters", async () => {
+    it("denies attendee-roster queries to unrelated authenticated users", async () => {
       await seed(["clubs", "club-1"], club());
       await seed(["events", "event-1"], event());
       await seed(
@@ -927,10 +927,19 @@ describe("firestore.rules", () => {
         }),
       );
 
-      await assertSucceeds(
+      await assertFails(
         getDocs(
           query(
             collection(authedDb("runner-3"), "eventParticipations"),
+            where("eventId", "==", "event-1"),
+            where("status", "in", ["signedUp", "waitlisted", "attended"]),
+          ),
+        ),
+      );
+      await assertSucceeds(
+        getDocs(
+          query(
+            collection(authedDb("host-1"), "eventParticipations"),
             where("eventId", "==", "event-1"),
             where("status", "in", ["signedUp", "waitlisted", "attended"]),
           ),

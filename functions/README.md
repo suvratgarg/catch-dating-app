@@ -42,6 +42,7 @@ options when specific functions need higher or lower limits.
 | `generateEventSuccessPods` | `src/eventSuccess/` | Generate event-success pod suggestions |
 | `generateEventSuccessRotations` / `overrideEventSuccessRotations` | `src/eventSuccess/` | Generate or override event-success rotations |
 | `fetchEventSuccessWingmanCandidates` / `submitEventSuccessWingmanRequest` / `withdrawEventSuccessWingmanRequest` | `src/eventSuccess/` | Wingman candidate and request workflow |
+| `fetchSwipeCandidates` | `src/matching/` | Resolve privacy-filtered post-event matching candidates without exposing event rosters |
 | `createEventReview` / `updateEventReview` / `deleteEventReview` | `src/reviews/` | Review mutation surface |
 | `createPublicOrganizerReview` / `listPublicOrganizerReviews` | `src/reviews/` | Create or list reviews against canonical organizers |
 | `updateUserProfile` | `src/profiles/` | Profile patch callable with generated contract validation |

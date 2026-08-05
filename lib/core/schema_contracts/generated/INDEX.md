@@ -200,6 +200,7 @@ Do not edit it by hand.
 | ExploreSearchCallableResponse | `callable_responses/explore_search_response.schema.json` | `functions/src/shared/generated/exploreSearchCallableResponse.ts` |
 | WebsiteHostListingProjection | `public/website_host_listing_projection.schema.json` | `functions/src/shared/generated/websiteHostListingProjection.ts` |
 | FetchEventSuccessWingmanCandidatesCallableResponse | `callable_responses/fetch_event_success_wingman_candidates_response.schema.json` | `functions/src/shared/generated/fetchEventSuccessWingmanCandidatesCallableResponse.ts` |
+| FetchSwipeCandidatesCallableResponse | `callable_responses/fetch_swipe_candidates_response.schema.json` | `functions/src/shared/generated/fetchSwipeCandidatesCallableResponse.ts` |
 | CreateProfileDecisionClientWrite | `client_writes/create_profile_decision.schema.json` | `functions/src/shared/generated/createProfileDecisionClientWrite.ts` |
 | CreateChatMessageClientWrite | `client_writes/create_chat_message.schema.json` | `functions/src/shared/generated/createChatMessageClientWrite.ts` |
 | CreateSavedEventClientWrite | `client_writes/create_saved_event.schema.json` | `functions/src/shared/generated/createSavedEventClientWrite.ts` |
@@ -417,6 +418,7 @@ Do not edit it by hand.
 | `schemaExploreSearchCallableResponseSchema` | ExploreSearchCallableResponse | `callable_responses/explore_search_response.schema.json` | `lib/core/schema_contracts/generated/schemas/explore_search_callable_response.g.dart` |
 | `schemaWebsiteHostListingProjectionSchema` | WebsiteHostListingProjection | `public/website_host_listing_projection.schema.json` | `lib/core/schema_contracts/generated/schemas/website_host_listing_projection.g.dart` |
 | `schemaFetchEventSuccessWingmanCandidatesCallableResponseSchema` | FetchEventSuccessWingmanCandidatesCallableResponse | `callable_responses/fetch_event_success_wingman_candidates_response.schema.json` | `lib/core/schema_contracts/generated/schemas/fetch_event_success_wingman_candidates_callable_response.g.dart` |
+| `schemaFetchSwipeCandidatesCallableResponseSchema` | FetchSwipeCandidatesCallableResponse | `callable_responses/fetch_swipe_candidates_response.schema.json` | `lib/core/schema_contracts/generated/schemas/fetch_swipe_candidates_callable_response.g.dart` |
 | `schemaCreateProfileDecisionClientWriteSchema` | CreateProfileDecisionClientWrite | `client_writes/create_profile_decision.schema.json` | `lib/core/schema_contracts/generated/schemas/create_profile_decision_client_write.g.dart` |
 | `schemaCreateChatMessageClientWriteSchema` | CreateChatMessageClientWrite | `client_writes/create_chat_message.schema.json` | `lib/core/schema_contracts/generated/schemas/create_chat_message_client_write.g.dart` |
 | `schemaCreateSavedEventClientWriteSchema` | CreateSavedEventClientWrite | `client_writes/create_saved_event.schema.json` | `lib/core/schema_contracts/generated/schemas/create_saved_event_client_write.g.dart` |

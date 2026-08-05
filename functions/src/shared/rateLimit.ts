@@ -109,6 +109,7 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   markEventAttendance: {maxRequests: 30, windowMs: 60 * 1000},
   // 5/min
   selfCheckInAttendance: {maxRequests: 5, windowMs: 60 * 1000},
+  fetchSwipeCandidates: {maxRequests: 30, windowMs: 60 * 1000},
   fetchEventSuccessWingmanCandidates: {maxRequests: 30, windowMs: 60 * 1000},
   submitEventSuccessWingmanRequest: {maxRequests: 10, windowMs: 60 * 1000},
   withdrawEventSuccessWingmanRequest: {maxRequests: 10, windowMs: 60 * 1000},

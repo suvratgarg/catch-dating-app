@@ -490,7 +490,7 @@
       "dartModel": "lib/events/domain/event_participation.dart",
       "rulesTestFile": "functions/test/firestore.rules.test.cjs",
       "owner": "booking, waitlist, attendance, cancellation, and account-deletion callables",
-      "read": "participant, club host, or authenticated users for attended edges",
+      "read": "participant own edge or authorized event host only; candidate discovery is callable-owned",
       "write": "server only",
       "exportedFunctions": [
         "signUpForFreeEvent",
@@ -503,10 +503,12 @@
         "declineEventWaitlistOffer",
         "markEventAttendance",
         "selfCheckInAttendance",
+        "fetchSwipeCandidates",
         "requestAccountDeletion"
       ],
       "migrationNotes": [
-        "Owns signed-up, waitlisted, attended, cancelled, and deleted event roster state; events documents retain only callable-owned aggregate counts."
+        "Owns signed-up, waitlisted, attended, cancelled, and deleted event roster state; events documents retain only callable-owned aggregate counts.",
+        "As of 2026-08-05, consumer roster enumeration is denied. Post-event candidate identity is resolved by fetchSwipeCandidates after attendance, window, reciprocal-preference, prior-decision, and block checks."
       ]
     },
     {

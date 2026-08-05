@@ -14,12 +14,12 @@ import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
-import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/data/public_profiles_lookup.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/swipes/data/swipe_candidate_repository.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_screen_state.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_view_model.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
@@ -107,7 +107,7 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
 
   void _retry(EventRecapRetryIntent intent) {
     ref.invalidate(watchEventProvider(intent.eventId));
-    ref.invalidate(watchEventParticipationsForEventProvider(intent.eventId));
+    ref.invalidate(swipeCandidatesProvider(intent.eventId));
     ref.invalidate(uidProvider);
     ref.invalidate(eventRecapViewModelProvider(intent.eventId));
   }

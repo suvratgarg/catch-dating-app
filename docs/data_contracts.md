@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.7.0
-updated: 2026-07-27
+version: 1.8.0
+updated: 2026-08-05
 owner: recursive_audit_loop
 status: active
 ---
@@ -361,6 +361,16 @@ Direct client writes are still allowed only for narrow owner-owned actions that
 rules can prove locally: onboarding drafts, saved events, outgoing profile decisions,
 match-scoped chat messages, own unread reset, own notification `readAt`, and
 own FCM token. Multi-document product writes belong in callables or triggers.
+
+Raw `eventParticipations` reads are equally narrow: a participant may read
+their own deterministic edge, and an authorized event host may read the roster
+for an event they manage. Consumer discovery surfaces must not query a whole event
+roster. Post-event Catch, Event Recap, and identified post-event avatar
+enrichment use the App-Check-protected `fetchSwipeCandidates` callable, which
+returns only public profile projections after the server verifies the
+24-hour window, viewer attendance, reciprocal gender and age preferences,
+prior decisions, and blocks in both directions. Anonymous attendee volume is
+rendered from callable-owned event aggregates instead of roster enumeration.
 
 Each device push token lives at
 `users/{uid}/pushInstallations/{installationId}` with `token`, `appRole`,

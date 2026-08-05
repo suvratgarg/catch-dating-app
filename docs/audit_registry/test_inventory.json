@@ -24,7 +24,7 @@
       ]
     },
     "flutter_unit_widget": {
-      "count": 278,
+      "count": 277,
       "files": [
         "test/activity/activity_taxonomy_test.dart",
         "test/analytics/app_analytics_test.dart",
@@ -280,7 +280,6 @@
         "test/swipes/profile_surface_contract_test.dart",
         "test/swipes/profile_view_mapper_test.dart",
         "test/swipes/swipe_action_buttons_test.dart",
-        "test/swipes/swipe_candidate_repository_preferences_test.dart",
         "test/swipes/swipe_candidate_repository_test.dart",
         "test/swipes/swipe_empty_content_test.dart",
         "test/swipes/swipe_hub_screen_test.dart",
@@ -315,7 +314,7 @@
       ]
     },
     "functions_source": {
-      "count": 97,
+      "count": 98,
       "files": [
         "functions/src/admin/accessApplications.test.ts",
         "functions/src/admin/adminActionExecutions.test.ts",
@@ -375,6 +374,7 @@
         "functions/src/events/waitlistOffers.test.ts",
         "functions/src/marketplace/eventSuccessScorecards.test.ts",
         "functions/src/marketplace/participantSignals.test.ts",
+        "functions/src/matching/fetchSwipeCandidates.test.ts",
         "functions/src/matching/onMatchCreated.test.ts",
         "functions/src/matching/onMessageCreated.test.ts",
         "functions/src/matching/onSwipeCreated.test.ts",

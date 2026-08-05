@@ -2937,7 +2937,6 @@ Widget eventHypeAvatarStackState(BuildContext context) {
   return EventHypeAvatarStack(
     eventId: _event.id,
     totalCount: 12,
-    viewerInterestedInGenders: _viewer.interestedInGenders,
     avatarItems: _avatarItems,
     obscured: false,
     showOverflowCount: true,
@@ -2961,7 +2960,7 @@ Widget whoIsGoingStates(BuildContext context) {
           event: _event,
           roster: _roster(),
           avatarItems: _avatarItems,
-          child: WhoIsGoing(event: _event, userProfile: _viewer),
+          child: WhoIsGoing(event: _event),
         ),
       ),
       _StateCard(
@@ -2969,7 +2968,7 @@ Widget whoIsGoingStates(BuildContext context) {
         child: _EventScope(
           event: _emptyEvent,
           roster: EventParticipationRoster.empty(),
-          child: WhoIsGoing(event: _emptyEvent, userProfile: _viewer),
+          child: WhoIsGoing(event: _emptyEvent),
         ),
       ),
     ],
@@ -2990,26 +2989,23 @@ Widget whoIsGoingContentStates(BuildContext context) {
         label: 'upcoming roster',
         child: WhoIsGoingContent(
           event: _event,
-          roster: _roster(),
+          totalCount: _event.signedUpCount,
           avatarItems: _avatarItems,
-          userProfile: _viewer,
         ),
       ),
       _StateCard(
         label: 'empty roster',
         child: WhoIsGoingContent(
           event: _emptyEvent,
-          roster: EventParticipationRoster.empty(),
-          userProfile: _viewer,
+          totalCount: 0,
         ),
       ),
       _StateCard(
         label: 'post-event closed window',
         child: WhoIsGoingContent(
           event: _pastEvent,
-          roster: _roster(event: _pastEvent, count: 5),
+          totalCount: 5,
           avatarItems: _avatarItems.take(5).toList(growable: false),
-          userProfile: _viewer,
           showHeader: false,
         ),
       ),
@@ -3157,7 +3153,6 @@ class _EventScope extends StatelessWidget {
   Widget build(BuildContext context) {
     final avatarQuery = EventHypeAvatarQuery(
       eventId: event.id,
-      viewerInterestedInGenders: _viewer.interestedInGenders,
       limit: 7,
     );
     final avatars = avatarItems;
@@ -3246,7 +3241,6 @@ class _RouteFrame extends StatelessWidget {
   Widget build(BuildContext context) {
     final avatarQuery = EventHypeAvatarQuery(
       eventId: _event.id,
-      viewerInterestedInGenders: _viewer.interestedInGenders,
       limit: 7,
     );
 

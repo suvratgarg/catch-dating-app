@@ -1,22 +1,16 @@
-import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_hype_avatar_stack.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
-import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -44,7 +38,6 @@ class WhoIsGoing extends ConsumerWidget {
   const WhoIsGoing({
     super.key,
     required this.event,
-    required this.userProfile,
     this.surfaceStyle,
     this.showHeader = true,
     this.showCatchWindowStatus = true,
@@ -52,7 +45,6 @@ class WhoIsGoing extends ConsumerWidget {
   });
 
   final Event event;
-  final UserProfile userProfile;
   final EventDetailSurfaceStyle? surfaceStyle;
   final bool showHeader;
   final bool showCatchWindowStatus;
@@ -61,59 +53,29 @@ class WhoIsGoing extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final referenceNow = now ?? DateTime.now();
-    final rosterAsync = ref.watch(
-      watchEventParticipationRosterProvider(event.id),
-    );
-
-    return CatchAsyncValueView<EventParticipationRoster>(
-      value: rosterAsync,
-      onRetry: () =>
-          ref.invalidate(watchEventParticipationRosterProvider(event.id)),
-      loadingBuilder: (_) => WhoIsGoingContent(
-        event: event,
-        roster: EventParticipationRoster.empty(),
-        userProfile: userProfile,
-        fallbackTotal: event.signedUpCount,
-        surfaceStyle: surfaceStyle,
-        showHeader: showHeader,
-        showCatchWindowStatus: showCatchWindowStatus,
-        now: referenceNow,
-      ),
-      errorBuilder: (_, e, _) => CatchInlineErrorState.fromError(
-        e,
-        context: AppErrorContext.event,
-        compact: true,
-        onRetry: () =>
-            ref.invalidate(watchEventParticipationRosterProvider(event.id)),
-      ),
-      builder: (context, roster) {
-        final avatarItems =
-            event.isUpcomingAt(referenceNow) || roster.bookedCount <= 0
-            ? null
-            : ref
-                  .watch(
-                    eventHypeAvatarsProvider(
-                      EventHypeAvatarQuery(
-                        eventId: event.id,
-                        viewerInterestedInGenders:
-                            userProfile.interestedInGenders,
-                        limit: _whoIsGoingAvatarLimit,
-                      ),
-                    ),
-                  )
-                  .asData
-                  ?.value;
-        return WhoIsGoingContent(
-          event: event,
-          roster: roster,
-          userProfile: userProfile,
-          avatarItems: avatarItems,
-          surfaceStyle: surfaceStyle,
-          showHeader: showHeader,
-          showCatchWindowStatus: showCatchWindowStatus,
-          now: referenceNow,
-        );
-      },
+    final isUpcoming = event.isUpcomingAt(referenceNow);
+    final totalCount = isUpcoming ? event.signedUpCount : event.attendedCount;
+    final avatarItems = isUpcoming || totalCount <= 0
+        ? null
+        : ref
+              .watch(
+                eventHypeAvatarsProvider(
+                  EventHypeAvatarQuery(
+                    eventId: event.id,
+                    limit: _whoIsGoingAvatarLimit,
+                  ),
+                ),
+              )
+              .asData
+              ?.value;
+    return WhoIsGoingContent(
+      event: event,
+      totalCount: totalCount,
+      avatarItems: avatarItems,
+      surfaceStyle: surfaceStyle,
+      showHeader: showHeader,
+      showCatchWindowStatus: showCatchWindowStatus,
+      now: referenceNow,
     );
   }
 }
@@ -122,10 +84,8 @@ class WhoIsGoingContent extends StatelessWidget {
   const WhoIsGoingContent({
     super.key,
     required this.event,
-    required this.roster,
-    required this.userProfile,
+    required this.totalCount,
     this.avatarItems,
-    this.fallbackTotal,
     this.surfaceStyle,
     this.showHeader = true,
     this.showCatchWindowStatus = true,
@@ -133,10 +93,8 @@ class WhoIsGoingContent extends StatelessWidget {
   });
 
   final Event event;
-  final EventParticipationRoster roster;
-  final UserProfile userProfile;
+  final int totalCount;
   final List<CatchPersonAvatarItem>? avatarItems;
-  final int? fallbackTotal;
   final EventDetailSurfaceStyle? surfaceStyle;
   final bool showHeader;
   final bool showCatchWindowStatus;
@@ -145,7 +103,7 @@ class WhoIsGoingContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final total = fallbackTotal ?? roster.bookedCount;
+    final total = totalCount;
     final referenceNow = now ?? DateTime.now();
     final isUpcoming = event.isUpcomingAt(referenceNow);
     final hasActiveSwipeWindow = hasOpenSwipeWindow(event, now: referenceNow);
@@ -193,7 +151,6 @@ class WhoIsGoingContent extends StatelessWidget {
           EventHypeAvatarStack(
             eventId: event.id,
             totalCount: total,
-            viewerInterestedInGenders: userProfile.interestedInGenders,
             avatarItems: avatarItems,
             activityKind: event.activityKind,
             size: 44,
