@@ -1,5 +1,5 @@
 {
-  "version": "1.7.1",
+  "version": "1.8.1",
   "updated": "2026-08-05",
   "sourceOfTruth": "docs/app_architecture.md#reference-implementation-workflow",
   "purpose": "Tracks architecture reference exhibits, prototype files, adopter files, candidate status, and back-propagation obligations so migrations stay aligned with the latest pattern.",
@@ -2037,6 +2037,104 @@
       "notes": "Frozen snapshot is the default for one submitted form or route action, including external platform launches. Versioned editing and independently keyed concurrency are explicit variants, not implicit exceptions. Phone Authentication is the reference; Member Onboarding, Matching Preferences, Host Organizer Create, Host Event Edit, Reviews, Account Settings, Event Location Map, Marketing forms, and the Admin console are aligned adopters. Admin deliberately uses one global exclusive lease because operator writes and submitted queries share navigation, feedback, query-cache, and selection surfaces; the small throughput trade-off prevents cross-workspace ambiguity."
     },
     {
+      "id": "ARCH-CROSS-PATHS-CONSENT-001",
+      "name": "Fail-closed layered consent",
+      "status": "reference",
+      "architectureExhibit": "docs/app_architecture.md#exhibit-arch-cross-paths-consent-001-fail-closed-layered-consent",
+      "prototypeFiles": [
+        "lib/cross_paths/cross_paths.dart",
+        "lib/cross_paths/domain/cross_paths_feature_config.dart",
+        "lib/cross_paths/data/cross_paths_feature_config_provider.dart",
+        "lib/cross_paths/data/cross_paths_repository.dart",
+        "lib/cross_paths/presentation/cross_paths_event_consent_controller.dart",
+        "lib/cross_paths/presentation/cross_paths_event_consent_state.dart",
+        "lib/cross_paths/presentation/cross_paths_event_consent_section.dart",
+        "functions/src/crossPaths/setCrossPathsEventConsent.ts",
+        "test/cross_paths/cross_paths_contract_test.dart",
+        "test/cross_paths/cross_paths_event_consent_section_test.dart",
+        "functions/src/crossPaths/setCrossPathsEventConsent.test.ts"
+      ],
+      "adopters": [
+        {
+          "path": "lib/cross_paths/cross_paths.dart",
+          "role": "sanctioned public presentation seam for provider-free Cross Paths state and section APIs",
+          "status": "aligned",
+          "lastReviewedPass": "2026-08-05-cross-paths-phase0-consent-ci-repair"
+        },
+        {
+          "path": "lib/safety/presentation/settings_screen.dart and lib/safety/presentation/settings_controller.dart",
+          "role": "typed private global-consent control hidden behind the fail-closed consent-controls rollout flag",
+          "status": "aligned",
+          "lastReviewedPass": "2026-08-05-cross-paths-phase0-consent"
+        },
+        {
+          "path": "lib/events/presentation/event_detail_screen.dart and lib/events/presentation/widgets/event_detail_body.dart",
+          "role": "route-owned rollout, caller-scoped consent read, mutation, error listener, state adaptation, and explicit Event Detail composition boundary",
+          "status": "aligned",
+          "lastReviewedPass": "2026-08-05-cross-paths-phase0-consent"
+        },
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_event_consent_state.dart",
+          "role": "provider-free eligibility and display-state adapter",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-08-05-cross-paths-phase0-consent"
+        },
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_event_consent_section.dart",
+          "role": "provider-free state-and-callback-only Event Detail renderer",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-08-05-cross-paths-phase0-consent"
+        },
+        {
+          "path": "lib/cross_paths/data/cross_paths_repository.dart",
+          "role": "caller-scoped consent read plus callable-only write seam; never an attendee-roster source",
+          "status": "aligned",
+          "lastReviewedPass": "2026-08-05-cross-paths-phase0-consent"
+        },
+        {
+          "path": "functions/src/crossPaths/setCrossPathsEventConsent.ts and firestore.rules",
+          "role": "server-owned enablement validation, revocation persistence, own-edge reads, and direct-write denial",
+          "status": "aligned",
+          "lastReviewedPass": "2026-08-05-cross-paths-phase0-consent"
+        },
+        {
+          "path": "test/cross_paths and functions/src/crossPaths/setCrossPathsEventConsent.test.ts and functions/test/firestore.rules.test.cjs",
+          "role": "default-off, visibility-gate, callable precondition, revocation, and read/write authorization proof",
+          "status": "aligned",
+          "lastReviewedPass": "2026-08-05-cross-paths-phase0-consent"
+        }
+      ],
+      "candidateQueue": [
+        {
+          "id": "ARCH-CROSS-PATHS-CONSENT-001-SUGGESTION-CONSUMER",
+          "path": "lib/explore and proposed getCrossPathsSuggestions callable",
+          "reason": "Explore may adopt effective consent only through a sanitized server-owned suggestion response that also enforces showcase, reciprocal, safety, event, and fatigue rules.",
+          "detectedBy": "2026-08-05-cross-paths-phase0-consent",
+          "addedPass": "2026-08-05-cross-paths-phase0-consent"
+        },
+        {
+          "id": "ARCH-CROSS-PATHS-CONSENT-001-INVITATION-INVALIDATION",
+          "path": "proposed Cross Paths invitation workflow",
+          "reason": "When invitations exist, revocation must invalidate pending invitations in the same server-owned workflow without adding a client write path.",
+          "detectedBy": "2026-08-05-cross-paths-phase0-consent",
+          "addedPass": "2026-08-05-cross-paths-phase0-consent"
+        }
+      ],
+      "exceptions": [],
+      "requiredBackPropagation": "When Cross Paths consent terms, global preference semantics, event-edge fields, enablement preconditions, rollout flags, or revocation behavior change, update the JSON schemas, generated Dart and TypeScript contracts, callable, Firestore rules, Settings and Event Detail adopters, disclosure copy, focused tests, docs/cross_paths.md, and this exhibit in one pass.",
+      "requiredChecks": [
+        "./tool/check_data_contract.sh",
+        "flutter test test/cross_paths/cross_paths_contract_test.dart test/cross_paths/cross_paths_event_consent_section_test.dart test/safety/settings_screen_test.dart test/events/event_detail_widgets_test.dart",
+        "npm --prefix functions run lint && npm --prefix functions run build && node --test functions/lib/crossPaths/setCrossPathsEventConsent.test.js",
+        "bash tool/check_catch_ui_lints.sh",
+        "node tool/architecture/check_app_architecture_exhibits.mjs",
+        "node tool/agent/check_agent_readiness.mjs"
+      ],
+      "notes": "This reference establishes permission storage and controls only. Both flags remain off by default, no Explore identity is returned, and external privacy-policy approval is required before enabling the controls beyond internal review."
+    },
+    {
       "id": "ARCH-ENTITY-MATERIAL-001",
       "name": "Entity material composition",
       "status": "reference",
@@ -2114,7 +2212,7 @@
         {
           "id": "ARCH-ENTITY-MATERIAL-001-CROSS-PATHS-CONSENT",
           "path": "design/screens/catch.screens.json#section.explore.feed",
-          "reason": "Cross Paths remains unbuilt because there is no consent-safe relationship source for identifiable attendee discovery. Person-polaroid availability does not authorize that data surface.",
+          "reason": "Cross Paths consent now exists, but Explore still lacks the server-owned batched suggestion and showcase-eligibility sources required for identifiable attendee discovery. Person-polaroid availability and consent documents alone do not authorize that data surface.",
           "status": "blocked_product"
         }
       ],

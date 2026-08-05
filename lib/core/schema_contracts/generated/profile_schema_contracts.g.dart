@@ -911,6 +911,9 @@ const schemaUpdateUserProfileCallablePayloadSchema =
         'prefsShowOnMap': <String, Object?>{
           'type': 'boolean',
         },
+        'prefsShowInCrossPaths': <String, Object?>{
+          'type': 'boolean',
+        },
       },
     },
   },

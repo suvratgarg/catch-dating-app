@@ -20,6 +20,7 @@ import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/confirm_danger_dialog.dart';
+import 'package:catch_dating_app/cross_paths/data/cross_paths_feature_config_provider.dart';
 import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/data/public_profiles_lookup.dart';
@@ -182,6 +183,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final crossPathsConfig = ref.watch(crossPathsFeatureConfigProvider);
     final t = CatchTokens.of(context);
     final packageInfo = ref.watch(appPackageInfoProvider).asData?.value;
     final version = packageInfo?.version ?? '—';
@@ -503,6 +505,27 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         onUnblock: _unblockUser,
                       ),
                       children: [
+                        if (crossPathsConfig.consentControlsEnabled)
+                          CatchField.toggle(
+                            key: SettingsKeys.showInCrossPathsSwitch,
+                            contract: CatchContractConstraints
+                                .updateUserProfilePatchPrefsShowInCrossPaths,
+                            title: context
+                                .l10n
+                                .safetySettingsScreenTitleShowInCrossPaths,
+                            body: context
+                                .l10n
+                                .safetySettingsScreenBodyShowInCrossPaths,
+                            icon: CatchIcons.favoriteBorderRounded,
+                            value: state.preferences.showInCrossPaths,
+                            onChanged: operationPending
+                                ? null
+                                : (value) => _savePref(
+                                    preference:
+                                        SettingsPreference.showInCrossPaths,
+                                    value: value,
+                                  ),
+                          ),
                         CatchField.read(
                           title: context
                               .l10n

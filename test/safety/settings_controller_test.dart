@@ -45,6 +45,30 @@ void main() {
   });
 
   test(
+    'Cross Paths preference uses the private global-consent field',
+    () async {
+      final userRepository = _SettingsUserProfileRepository();
+      final container = ProviderContainer(
+        overrides: [
+          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+          userProfileRepositoryProvider.overrideWith((ref) => userRepository),
+        ],
+      );
+      addTearDown(container.dispose);
+      await _primeUidProvider(container);
+
+      await container
+          .read(settingsControllerProvider.notifier)
+          .savePreference(
+            preference: SettingsPreference.showInCrossPaths,
+            value: true,
+          );
+
+      expect(userRepository.updatedFields, {'prefsShowInCrossPaths': true});
+    },
+  );
+
+  test(
     'one active settings write freezes every controller write domain',
     () async {
       final updateCompleter = Completer<void>();

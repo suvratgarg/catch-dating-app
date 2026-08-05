@@ -845,6 +845,62 @@ describe("firestore.rules", () => {
       );
     });
 
+    it("keeps Cross Paths consent private and callable-owned", async () => {
+      const consent = {
+        eventId: "event-1",
+        uid: "runner-1",
+        enabled: true,
+        termsVersion: 1,
+        consentedAt: Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z")),
+        updatedAt: Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z")),
+        revokedAt: null,
+        source: "event_detail",
+      };
+      await seed(
+        ["eventCrossPathsConsents", "event-1_runner-1"],
+        consent,
+      );
+
+      await assertSucceeds(
+        getDoc(
+          doc(
+            authedDb("runner-1"),
+            "eventCrossPathsConsents",
+            "event-1_runner-1",
+          ),
+        ),
+      );
+      await assertFails(
+        getDoc(
+          doc(
+            authedDb("runner-2"),
+            "eventCrossPathsConsents",
+            "event-1_runner-1",
+          ),
+        ),
+      );
+      await assertSucceeds(
+        getDocs(
+          query(
+            collection(authedDb("runner-2"), "eventCrossPathsConsents"),
+            where("eventId", "==", "event-404"),
+            where("uid", "==", "runner-2"),
+            limit(1),
+          ),
+        ),
+      );
+      await assertFails(
+        setDoc(
+          doc(
+            authedDb("runner-1"),
+            "eventCrossPathsConsents",
+            "event-1_runner-1",
+          ),
+          consent,
+        ),
+      );
+    });
+
     it("keeps event broadcast delivery receipts server-only", async () => {
       await seed(["eventBroadcasts", "broadcast-1"], {
         eventId: "event-1",

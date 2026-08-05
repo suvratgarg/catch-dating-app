@@ -1,0 +1,171 @@
+import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
+import 'package:catch_dating_app/cross_paths/data/cross_paths_feature_config_provider.dart';
+import 'package:catch_dating_app/cross_paths/data/cross_paths_repository.dart';
+import 'package:catch_dating_app/cross_paths/domain/cross_paths_event_consent.dart';
+import 'package:catch_dating_app/cross_paths/domain/cross_paths_feature_config.dart';
+import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
+import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
+import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
+import 'package:catch_dating_app/payments/data/payment_repository.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import '../clubs/clubs_test_helpers.dart' show FakeClubsRepository;
+import '../events/events_test_helpers.dart';
+
+void main() {
+  group('Cross Paths Event Detail integration', () {
+    testWidgets('renders route-owned consent when eligible', (tester) async {
+      final event = buildEvent(
+        startTime: DateTime.now().add(const Duration(days: 1)),
+        endTime: DateTime.now().add(const Duration(days: 1, hours: 2)),
+      );
+      final profile = buildUser().copyWith(prefsShowInCrossPaths: true);
+
+      await pumpEventsTestApp(
+        tester,
+        EventDetailScreen(
+          enableMapNetworkTiles: false,
+          clubId: event.clubId,
+          eventId: event.id,
+        ),
+        overrides: [
+          crossPathsFeatureConfigProvider.overrideWithValue(
+            const CrossPathsFeatureConfig(
+              consentControlsEnabled: true,
+              exploreSuggestionsEnabled: false,
+            ),
+          ),
+          clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
+          eventDetailViewModelProvider(event.id).overrideWith(
+            (ref) => AsyncData(
+              EventDetailViewModel(
+                event: event,
+                userProfile: profile,
+                reviews: const [],
+                isAuthenticated: true,
+                isHost: false,
+                isSaved: false,
+                participation: _participation(
+                  eventId: event.id,
+                  uid: profile.uid,
+                ),
+              ),
+            ),
+          ),
+          watchCrossPathsEventConsentProvider(
+            event.id,
+            profile.uid,
+          ).overrideWith((ref) => Stream.value(null)),
+          watchEventSuccessPlanProvider(
+            event.id,
+          ).overrideWith((ref) => Stream.value(null)),
+          paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
+        ],
+      );
+      await tester.pump();
+
+      await _scrollUntilVisible(tester, find.text('Meet people at this event'));
+      expect(find.textContaining('not a public attendee list'), findsOneWidget);
+    });
+
+    testWidgets('keeps an existing consent revocable', (tester) async {
+      final event = buildEvent(
+        startTime: DateTime.now().add(const Duration(days: 1)),
+        endTime: DateTime.now().add(const Duration(days: 1, hours: 2)),
+      );
+      final profile = buildUser().copyWith(prefsShowInCrossPaths: false);
+      final now = DateTime.now();
+
+      await pumpEventsTestApp(
+        tester,
+        EventDetailScreen(
+          enableMapNetworkTiles: false,
+          clubId: event.clubId,
+          eventId: event.id,
+        ),
+        overrides: [
+          crossPathsFeatureConfigProvider.overrideWithValue(
+            const CrossPathsFeatureConfig(
+              consentControlsEnabled: true,
+              exploreSuggestionsEnabled: false,
+            ),
+          ),
+          clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
+          eventDetailViewModelProvider(event.id).overrideWith(
+            (ref) => AsyncData(
+              EventDetailViewModel(
+                event: event,
+                userProfile: profile,
+                reviews: const [],
+                isAuthenticated: true,
+                isHost: false,
+                isSaved: false,
+                participation: null,
+              ),
+            ),
+          ),
+          watchCrossPathsEventConsentProvider(
+            event.id,
+            profile.uid,
+          ).overrideWith(
+            (ref) => Stream.value(
+              CrossPathsEventConsent(
+                eventId: event.id,
+                uid: profile.uid,
+                enabled: true,
+                termsVersion: currentCrossPathsTermsVersion,
+                consentedAt: now,
+                updatedAt: now,
+                revokedAt: null,
+                source: CrossPathsConsentSource.eventDetail.wireValue,
+              ),
+            ),
+          ),
+          paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
+        ],
+      );
+      await tester.pump();
+
+      await _scrollUntilVisible(tester, find.text('Meet people at this event'));
+      expect(
+        find.byKey(const ValueKey('cross_paths.event_consent.toggle')),
+        findsOneWidget,
+      );
+    });
+  });
+}
+
+Future<void> _scrollUntilVisible(WidgetTester tester, Finder finder) async {
+  final scrollView = find.byKey(
+    const ValueKey<String>('event_detail.scroll_view'),
+  );
+  for (var attempt = 0; attempt < 40; attempt += 1) {
+    if (finder.evaluate().isNotEmpty) {
+      await tester.ensureVisible(finder.first);
+      await tester.pump();
+      return;
+    }
+    await tester.drag(scrollView, const Offset(0, -240));
+    await tester.pump();
+  }
+  throw TestFailure('Could not reveal $finder.');
+}
+
+EventParticipation _participation({
+  required String eventId,
+  required String uid,
+}) {
+  final now = DateTime(2026);
+  return EventParticipation(
+    id: eventParticipationId(eventId: eventId, uid: uid),
+    eventId: eventId,
+    clubId: 'club-1',
+    uid: uid,
+    status: EventParticipationStatus.signedUp,
+    createdAt: now,
+    updatedAt: now,
+  );
+}

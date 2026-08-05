@@ -1,7 +1,7 @@
 {
   "version": 1,
   "generatedFrom": "design/components/catch.components.json",
-  "registryUpdated": "2026-07-21",
+  "registryUpdated": "2026-08-05",
   "codeToComponents": {
     "catch_async_requires_retry": [
       "catch.async_value"

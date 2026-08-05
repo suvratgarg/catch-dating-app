@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.8.0
+version: 1.8.1
 updated: 2026-08-05
 owner: recursive_audit_loop
 status: active
@@ -345,6 +345,7 @@ Root-level edge/action documents are the source of truth for many-to-many state:
 | Organizer owner/manager seat | `organizerTeamMemberships/{organizerId_uid}` |
 | Organizer follow | `organizerFollows/{organizerId_uid}` |
 | Event booking, waitlist, attendance, cancellation | `eventParticipations/{eventId_uid}` |
+| Cross Paths event visibility | `eventCrossPathsConsents/{eventId_uid}` |
 | Saved events | `savedEvents/{uid_eventId}` |
 | Outgoing profile decisions | `profileDecisions/{uid}/outgoing/{targetId}` |
 | Match messages | `matches/{matchId}/messages/{messageId}` |
@@ -371,6 +372,19 @@ returns only public profile projections after the server verifies the
 24-hour window, viewer attendance, reciprocal gender and age preferences,
 prior decisions, and blocks in both directions. Anonymous attendee volume is
 rendered from callable-owned event aggregates instead of roster enumeration.
+
+Cross Paths visibility is a two-part, private consent contract. The optional
+`users/{uid}.prefsShowInCrossPaths` master preference resolves to false when
+missing and is never projected into `publicProfiles`. The deterministic
+`eventCrossPathsConsents/{eventId_uid}` edge records the per-event choice,
+terms version, source, and consent/revocation timestamps. A caller may read only
+their own edge; direct writes are denied. The App-Check-protected
+`setCrossPathsEventConsent` callable is the sole writer and allows enablement
+only when the private global preference is explicitly true, the event is active
+and upcoming, and the caller owns a current `signedUp` participation. Disable
+remains available after those preconditions disappear. Effective visibility is
+the conjunction of both consent values plus later server-owned eligibility;
+neither consent document alone authorizes an Explore identity.
 
 Each device push token lives at
 `users/{uid}/pushInstallations/{installationId}` with `token`, `appRole`,

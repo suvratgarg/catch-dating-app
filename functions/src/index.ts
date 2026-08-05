@@ -145,6 +145,8 @@ export {
   syncPublicProfile,
 } from "./profiles/syncPublicProfile";
 export {updateUserProfile} from "./profiles/updateUserProfile";
+export {setCrossPathsEventConsent} from
+  "./crossPaths/setCrossPathsEventConsent";
 export {
   generateProfilePhotoThumbnail,
 } from "./profiles/generateProfilePhotoThumbnail";

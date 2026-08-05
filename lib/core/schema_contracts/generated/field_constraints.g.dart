@@ -9009,6 +9009,84 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const eventCrossPathsConsentDocumentConsentedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventCrossPathsConsentDocument.consentedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventCrossPathsConsentDocumentConsentedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventCrossPathsConsentDocument.consentedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventCrossPathsConsentDocumentEnabled = CatchContractFieldConstraints(
+    path: 'eventCrossPathsConsentDocument.enabled',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventCrossPathsConsentDocumentEventId = CatchContractFieldConstraints(
+    path: 'eventCrossPathsConsentDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventCrossPathsConsentDocumentRevokedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventCrossPathsConsentDocument.revokedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventCrossPathsConsentDocumentRevokedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventCrossPathsConsentDocument.revokedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventCrossPathsConsentDocumentSource = CatchContractFieldConstraints(
+    path: 'eventCrossPathsConsentDocument.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['booking_success', 'event_detail', 'settings'],
+  );
+
+  static const eventCrossPathsConsentDocumentTermsVersion = CatchContractFieldConstraints(
+    path: 'eventCrossPathsConsentDocument.termsVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const eventCrossPathsConsentDocumentUid = CatchContractFieldConstraints(
+    path: 'eventCrossPathsConsentDocument.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventCrossPathsConsentDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventCrossPathsConsentDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventCrossPathsConsentDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventCrossPathsConsentDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const eventDocumentAdminSearchSortKey = CatchContractFieldConstraints(
     path: 'eventDocument.adminSearch.sortKey',
     maxLength: 160,
@@ -22438,6 +22516,55 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['boolean'],
   );
 
+  static const setCrossPathsEventConsentCallablePayloadEnabled = CatchContractFieldConstraints(
+    path: 'setCrossPathsEventConsentCallablePayload.enabled',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const setCrossPathsEventConsentCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'setCrossPathsEventConsentCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setCrossPathsEventConsentCallablePayloadSource = CatchContractFieldConstraints(
+    path: 'setCrossPathsEventConsentCallablePayload.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['booking_success', 'event_detail', 'settings'],
+  );
+
+  static const setCrossPathsEventConsentCallablePayloadTermsVersion = CatchContractFieldConstraints(
+    path: 'setCrossPathsEventConsentCallablePayload.termsVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const setCrossPathsEventConsentCallableResponseEnabled = CatchContractFieldConstraints(
+    path: 'setCrossPathsEventConsentCallableResponse.enabled',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const setCrossPathsEventConsentCallableResponseEventId = CatchContractFieldConstraints(
+    path: 'setCrossPathsEventConsentCallableResponse.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setCrossPathsEventConsentCallableResponseTermsVersion = CatchContractFieldConstraints(
+    path: 'setCrossPathsEventConsentCallableResponse.termsVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
   static const setOrganizerNotificationPreferenceCallablePayloadEnabled = CatchContractFieldConstraints(
     path: 'setOrganizerNotificationPreferenceCallablePayload.enabled',
     required: true,
@@ -24753,6 +24880,11 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['boolean'],
   );
 
+  static const updateUserProfilePatchPrefsShowInCrossPaths = CatchContractFieldConstraints(
+    path: 'updateUserProfilePatch.prefsShowInCrossPaths',
+    valueTypes: <String>['boolean'],
+  );
+
   static const updateUserProfilePatchPrefsShowOnMap = CatchContractFieldConstraints(
     path: 'updateUserProfilePatch.prefsShowOnMap',
     valueTypes: <String>['boolean'],
@@ -25828,6 +25960,11 @@ abstract final class CatchContractConstraints {
   static const userProfileDocumentPrefsRunStatusUpdates = CatchContractFieldConstraints(
     path: 'userProfileDocument.prefsRunStatusUpdates',
     required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const userProfileDocumentPrefsShowInCrossPaths = CatchContractFieldConstraints(
+    path: 'userProfileDocument.prefsShowInCrossPaths',
     valueTypes: <String>['boolean'],
   );
 
@@ -28406,6 +28543,17 @@ abstract final class CatchContractConstraints {
     'eventBroadcastDocument.title': eventBroadcastDocumentTitle,
     'eventBroadcastDocument.updatedAt._nanoseconds': eventBroadcastDocumentUpdatedAtNanoseconds,
     'eventBroadcastDocument.updatedAt._seconds': eventBroadcastDocumentUpdatedAtSeconds,
+    'eventCrossPathsConsentDocument.consentedAt._nanoseconds': eventCrossPathsConsentDocumentConsentedAtNanoseconds,
+    'eventCrossPathsConsentDocument.consentedAt._seconds': eventCrossPathsConsentDocumentConsentedAtSeconds,
+    'eventCrossPathsConsentDocument.enabled': eventCrossPathsConsentDocumentEnabled,
+    'eventCrossPathsConsentDocument.eventId': eventCrossPathsConsentDocumentEventId,
+    'eventCrossPathsConsentDocument.revokedAt._nanoseconds': eventCrossPathsConsentDocumentRevokedAtNanoseconds,
+    'eventCrossPathsConsentDocument.revokedAt._seconds': eventCrossPathsConsentDocumentRevokedAtSeconds,
+    'eventCrossPathsConsentDocument.source': eventCrossPathsConsentDocumentSource,
+    'eventCrossPathsConsentDocument.termsVersion': eventCrossPathsConsentDocumentTermsVersion,
+    'eventCrossPathsConsentDocument.uid': eventCrossPathsConsentDocumentUid,
+    'eventCrossPathsConsentDocument.updatedAt._nanoseconds': eventCrossPathsConsentDocumentUpdatedAtNanoseconds,
+    'eventCrossPathsConsentDocument.updatedAt._seconds': eventCrossPathsConsentDocumentUpdatedAtSeconds,
     'eventDocument.adminSearch.sortKey': eventDocumentAdminSearchSortKey,
     'eventDocument.adminSearch.tokens': eventDocumentAdminSearchTokens,
     'eventDocument.adminSearch.tokens.items': eventDocumentAdminSearchTokensItems,
@@ -30281,6 +30429,13 @@ abstract final class CatchContractConstraints {
     'sendEventBroadcastCallableResponse.status': sendEventBroadcastCallableResponseStatus,
     'setClubNotificationPreferenceCallablePayload.clubId': setClubNotificationPreferenceCallablePayloadClubId,
     'setClubNotificationPreferenceCallablePayload.enabled': setClubNotificationPreferenceCallablePayloadEnabled,
+    'setCrossPathsEventConsentCallablePayload.enabled': setCrossPathsEventConsentCallablePayloadEnabled,
+    'setCrossPathsEventConsentCallablePayload.eventId': setCrossPathsEventConsentCallablePayloadEventId,
+    'setCrossPathsEventConsentCallablePayload.source': setCrossPathsEventConsentCallablePayloadSource,
+    'setCrossPathsEventConsentCallablePayload.termsVersion': setCrossPathsEventConsentCallablePayloadTermsVersion,
+    'setCrossPathsEventConsentCallableResponse.enabled': setCrossPathsEventConsentCallableResponseEnabled,
+    'setCrossPathsEventConsentCallableResponse.eventId': setCrossPathsEventConsentCallableResponseEventId,
+    'setCrossPathsEventConsentCallableResponse.termsVersion': setCrossPathsEventConsentCallableResponseTermsVersion,
     'setOrganizerNotificationPreferenceCallablePayload.enabled': setOrganizerNotificationPreferenceCallablePayloadEnabled,
     'setOrganizerNotificationPreferenceCallablePayload.organizerId': setOrganizerNotificationPreferenceCallablePayloadOrganizerId,
     'setReviewResponseCallablePayload.message': setReviewResponseCallablePayloadMessage,
@@ -30605,6 +30760,7 @@ abstract final class CatchContractConstraints {
     'updateUserProfilePatch.prefsMessages': updateUserProfilePatchPrefsMessages,
     'updateUserProfilePatch.prefsNewCatches': updateUserProfilePatchPrefsNewCatches,
     'updateUserProfilePatch.prefsRunStatusUpdates': updateUserProfilePatchPrefsRunStatusUpdates,
+    'updateUserProfilePatch.prefsShowInCrossPaths': updateUserProfilePatchPrefsShowInCrossPaths,
     'updateUserProfilePatch.prefsShowOnMap': updateUserProfilePatchPrefsShowOnMap,
     'updateUserProfilePatch.prefsWeeklyDigest': updateUserProfilePatchPrefsWeeklyDigest,
     'updateUserProfilePatch.profileComplete': updateUserProfilePatchProfileComplete,
@@ -30756,6 +30912,7 @@ abstract final class CatchContractConstraints {
     'userProfileDocument.prefsMessages': userProfileDocumentPrefsMessages,
     'userProfileDocument.prefsNewCatches': userProfileDocumentPrefsNewCatches,
     'userProfileDocument.prefsRunStatusUpdates': userProfileDocumentPrefsRunStatusUpdates,
+    'userProfileDocument.prefsShowInCrossPaths': userProfileDocumentPrefsShowInCrossPaths,
     'userProfileDocument.prefsShowOnMap': userProfileDocumentPrefsShowOnMap,
     'userProfileDocument.prefsWeeklyDigest': userProfileDocumentPrefsWeeklyDigest,
     'userProfileDocument.profileComplete': userProfileDocumentProfileComplete,

@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "3b754b211a623cfa8f52f188217e74ac309c032a0eb72567fe14218191598c4c",
+  "sourceDigest": "b8839cd7e6a77350c6aef9f415d79365645b76757033987e6fcc80faa3f81398",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -46,12 +46,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "3b754b211a623cfa8f52f188217e74ac309c032a0eb72567fe14218191598c4c",
-    "contractDigest": "3b754b211a623cfa8f52f188217e74ac309c032a0eb72567fe14218191598c4c"
+    "digest": "b8839cd7e6a77350c6aef9f415d79365645b76757033987e6fcc80faa3f81398",
+    "contractDigest": "b8839cd7e6a77350c6aef9f415d79365645b76757033987e6fcc80faa3f81398"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "1827404943f98b2a271f49d7bb39351d9554cb37702728c6aa96ae941ea9f2a4",
+    "handoffRequestDigest": "aebc07bd0f2aff88dba805ed0e92dd4238dcd48fd8e92ed9ac46a4c34cc605d3",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -84,7 +84,7 @@
   },
   "metrics": {
     "contractCount": 71,
-    "publicClassCount": 202,
+    "publicClassCount": 203,
     "conceptCount": 65,
     "memberCount": 120,
     "membersPerConcept": 1.85,
@@ -93,7 +93,7 @@
       "composition": 3,
       "concept": 65,
       "member": 120,
-      "screen": 14
+      "screen": 15
     },
     "collisionCount": 33,
     "collisions": [
@@ -2065,7 +2065,7 @@
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
       "figmaExpectedPropertyCount": 2,
-      "figmaExpectedPropertyDigest": "e50a519095e12af3def46c6c0884a24163fb19feafe3b5336489080c1a5b2085",
+      "figmaExpectedPropertyDigest": "7318e425af24b535e63c4be7ea93e275aaace9f013f1d8b3efb0f6ef6afee032",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -2073,7 +2073,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Event Detail Sections",
       "claudeAllowed": true,
-      "contractDigest": "02098d618eebebbc68a24a6346c573d3240d6e219c8af56bd5b01fd58553cb70"
+      "contractDigest": "63ca21a64ee9ef60a481f8a54db045559cf0700c47de42f4be2477a465afe361"
     },
     {
       "contractId": "catch.notification_row",

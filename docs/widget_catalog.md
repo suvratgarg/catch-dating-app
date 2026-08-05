@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.666
+version: 2.5.667
 updated: 2026-08-05
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,17 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.667
+
+- Cataloged `CrossPathsEventConsentSection` as the provider-free, publicly
+  exported consent renderer composed by Event Detail. It accepts explicit
+  `CrossPathsEventConsentSectionState`, callback, heading-color, and
+  divider-color values; provider reads, eligibility, and mutations remain
+  route-owned.
+- The canonical Event Detail Widgetbook preview covers hidden, loading, off,
+  on, pending, unavailable, and text-scale states. The section uses
+  `CatchSection.fieldRows` and the schema-bound `CatchField.toggle` contract.
 
 ### 2.5.666
 

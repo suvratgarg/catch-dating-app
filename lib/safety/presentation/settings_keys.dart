@@ -1,6 +1,9 @@
 import 'package:flutter/widgets.dart';
 
 abstract final class SettingsKeys {
+  static const showInCrossPathsSwitch = ValueKey(
+    'settings.showInCrossPaths.switch',
+  );
   static const showOnMapSwitch = ValueKey('settings.showOnMap.switch');
   static const newCatchesSwitch = ValueKey('settings.newCatches.switch');
   static const messagesSwitch = ValueKey('settings.messages.switch');

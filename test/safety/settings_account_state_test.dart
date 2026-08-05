@@ -63,7 +63,21 @@ void main() {
     expect(updated.weeklyDigest, isTrue);
     expect(updated.newCatches, preferences.newCatches);
     expect(updated.showOnMap, preferences.showOnMap);
+    expect(updated.showInCrossPaths, preferences.showInCrossPaths);
   });
+
+  test(
+    'Cross Paths consent defaults off and maps only explicit profile opt-in',
+    () {
+      const defaults = SettingsPreferenceValues.defaults();
+      final optedIn = SettingsPreferenceValues.fromProfile(
+        buildUser().copyWith(prefsShowInCrossPaths: true),
+      );
+
+      expect(defaults.showInCrossPaths, isFalse);
+      expect(optedIn.showInCrossPaths, isTrue);
+    },
+  );
 
   test(
     'reports a surface-wide operation while any write domain is pending',

@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_cross_paths_consents.schema.json",
+  "title": "EventCrossPathsConsentDocument",
+  "description": "Private per-user Cross Paths consent edge stored at eventCrossPathsConsents/{eventId_uid} and written only by setCrossPathsEventConsent.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventCrossPathsConsents",
+  "x-firestore-path": "eventCrossPathsConsents/{consentId}",
+  "x-document-id-field": "id",
+  "x-owner": "setCrossPathsEventConsent callable",
+  "required": ["eventId", "uid", "enabled", "termsVersion", "consentedAt", "updatedAt", "revokedAt", "source"],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "callable-owned"},
+    "uid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "callable-owned"},
+    "enabled": {"type": "boolean", "x-catch-ownership": "callable-owned"},
+    "termsVersion": {"type": "integer", "minimum": 1, "x-catch-ownership": "callable-owned"},
+    "consentedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp", "x-catch-ownership": "callable-owned"},
+    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "callable-owned"},
+    "revokedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp", "x-catch-ownership": "callable-owned"},
+    "source": {"type": "string", "enum": ["booking_success", "event_detail", "settings"], "x-catch-ownership": "callable-owned"}
+  }
+}

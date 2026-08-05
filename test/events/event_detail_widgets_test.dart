@@ -2157,7 +2157,7 @@ Future<void> _scrollEventDetailUntilVisible(
     await tester.drag(scrollView, const Offset(0, -240));
     await tester.pump();
   }
-  throw TestFailure('Could not reveal ${finder.description}.');
+  throw TestFailure('Could not reveal $finder.');
 }
 
 EventParticipation _participation({

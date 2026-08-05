@@ -191,6 +191,12 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/eventParticipationDocument.ts",
   },
   {
+    name: "EventCrossPathsConsentDocument",
+    source: "firestore/event_cross_paths_consents.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventCrossPathsConsentDocument.ts",
+  },
+  {
     name: "EventBroadcastDocument",
     source: "firestore/event_broadcasts.schema.json",
     typeOutput: "functions/src/shared/generated/eventBroadcastDocument.ts",
@@ -817,6 +823,14 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/eventIdCallablePayload.ts",
   },
   {
+    name: "SetCrossPathsEventConsentCallablePayload",
+    source:
+      "callables/set_cross_paths_event_consent_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "setCrossPathsEventConsentCallablePayload.ts",
+  },
+  {
     name: "CreateEventWaitlistOffersCallablePayload",
     source: "callables/create_event_waitlist_offers_payload.schema.json",
     typeOutput:
@@ -1141,6 +1155,14 @@ const schemaSpecs = [
     source: "callable_responses/fetch_swipe_candidates_response.schema.json",
     typeOutput:
       "functions/src/shared/generated/fetchSwipeCandidatesCallableResponse.ts",
+  },
+  {
+    name: "SetCrossPathsEventConsentCallableResponse",
+    source:
+      "callable_responses/set_cross_paths_event_consent_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "setCrossPathsEventConsentCallableResponse.ts",
   },
   {
     name: "CreateProfileDecisionClientWrite",

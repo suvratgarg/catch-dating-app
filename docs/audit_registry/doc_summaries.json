@@ -1,5 +1,5 @@
 {
-  "version": "4.7.0",
+  "version": "4.7.1",
   "updated": "2026-08-05",
   "owner": "recursive_audit_loop",
   "summaries": {
@@ -51,7 +51,7 @@
       ]
     },
     "docs/cross_paths.md": {
-      "purpose": "Approved product and technical contract for consent-safe people recommendations in Explore, showcase readiness and ranking, event-scoped invitations, temporary event plans, capacity and waitlist boundaries, privacy, analytics, phased rollout, and the implemented Phase 0 post-event roster-privacy receipt.",
+      "purpose": "Approved product and technical contract for consent-safe people recommendations in Explore, showcase readiness and ranking, event-scoped invitations, temporary event plans, capacity and waitlist boundaries, privacy, analytics, phased rollout, and the implemented Phase 0 roster-privacy plus global/per-event-consent receipts.",
       "read_when": [
         "Implementing or changing Cross Paths people recommendations in Explore",
         "Changing Cross Paths consent, showcase eligibility, ranking, invitation, event-plan, capacity, safety, analytics, or rollout behavior",

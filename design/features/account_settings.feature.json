@@ -1,7 +1,7 @@
 {
   "$schema": "./feature_contract.schema.json",
   "version": 2,
-  "updated": "2026-07-23",
+  "updated": "2026-08-05",
   "id": "feature.account_settings",
   "name": "Account Settings",
   "owner": "safety",
@@ -140,7 +140,7 @@
             {"kind": "surface_state", "stateIds": ["notification_preferences", "preference_save_error", "privacy_safety_defaults"]},
             {"kind": "side_effect", "id": "user_profile.update_preference"}
           ],
-          "description": "Optimistically changes one of the seven supported notification or map-visibility preferences and rolls back on failure."
+          "description": "Optimistically changes one supported notification, map-visibility, or feature-gated global Cross Paths preference and rolls back on failure."
         },
         {
           "id": "retry_blocked_accounts",

@@ -745,6 +745,11 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
       'type': 'boolean',
       'x-catch-ownership': 'client-writable',
     },
+    'prefsShowInCrossPaths': <String, Object?>{
+      'type': 'boolean',
+      'description': 'Private global consent gate for Cross Paths. Missing values resolve to false and this field must never be copied to publicProfiles.',
+      'x-catch-ownership': 'client-writable',
+    },
     'fcmToken': <String, Object?>{
       'type': 'string',
       'x-catch-ownership': 'client-runtime-writable',

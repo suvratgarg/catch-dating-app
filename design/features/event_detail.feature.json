@@ -1,7 +1,7 @@
 {
   "$schema": "./feature_contract.schema.json",
   "version": 2,
-  "updated": "2026-07-24",
+  "updated": "2026-08-05",
   "id": "feature.event_detail",
   "name": "Event Detail",
   "owner": "events",
@@ -16,7 +16,7 @@
         "id": "screen.event.detail"
       },
       "actionScope": {
-        "included": "Booking-dock actions represented by EventDetailBookingDockAction plus opening the exact-location child projection.",
+        "included": "Booking-dock actions represented by EventDetailBookingDockAction, the signed-up member's event-level Cross Paths consent mutation, and opening the exact-location child projection.",
         "excluded": [
           "Navigation chrome, sharing, saving, calendar, companion, organizer, messaging, authentication, and profile-completion actions remain owned and verified by their existing route and widget contracts.",
           "Directions and exact-location child-route recovery belong to the Event Location Map projection below."
@@ -39,6 +39,12 @@
             "language": "dart",
             "file": "lib/events/presentation/event_detail_screen.dart",
             "symbol": "EventDetailScreen"
+          },
+          {
+            "id": "cross_paths_event_consent",
+            "language": "dart",
+            "file": "lib/cross_paths/presentation/cross_paths_event_consent_controller.dart",
+            "symbol": "CrossPathsEventConsentController"
           }
         ],
         "componentContracts": [
@@ -51,9 +57,12 @@
           "contracts/client_writes/create_saved_event.schema.json",
           "contracts/client_writes/delete_saved_event.schema.json",
           "contracts/firestore/event_participations.schema.json",
+          "contracts/firestore/event_cross_paths_consents.schema.json",
           "contracts/firestore/event_waitlist_offers.schema.json",
           "contracts/firestore/events.schema.json",
-          "contracts/firestore/saved_events.schema.json"
+          "contracts/firestore/saved_events.schema.json",
+          "contracts/callables/set_cross_paths_event_consent_payload.schema.json",
+          "contracts/callable_responses/set_cross_paths_event_consent_response.schema.json"
         ]
       },
       "dimensions": {
@@ -96,6 +105,16 @@
             "cancelled"
           ]
         },
+        "cross_paths_consent": {
+          "default": "hidden",
+          "values": [
+            "hidden",
+            "loading",
+            "off",
+            "on",
+            "unavailable"
+          ]
+        },
         "mutation": {
           "default": "idle",
           "values": [
@@ -105,7 +124,9 @@
             "book_failed",
             "cancel_failed",
             "book_succeeded",
-            "cancel_succeeded"
+            "cancel_succeeded",
+            "cross_paths_consent_pending",
+            "cross_paths_consent_failed"
           ]
         },
         "accessibility": {
@@ -235,6 +256,27 @@
           "description": "Declines one active waitlist offer without creating another offer action."
         },
         {
+          "id": "set_cross_paths_event_consent",
+          "owner": "cross_paths_event_consent",
+          "codeValue": "setConsent",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "eventId",
+            "enabled",
+            "termsVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "booking_signed_up"
+              ]
+            }
+          ],
+          "description": "Updates the caller's deterministic event-consent edge through the App-Check-protected callable; enablement is limited to an opted-in member with a confirmed future booking."
+        },
+        {
           "id": "open_location_map",
           "owner": "event_detail_route",
           "codeValue": "eventLocationMapScreen",
@@ -318,7 +360,35 @@
         "booking_signed_up": {
           "dimensions": {"participation": "signed_up"},
           "actionCases": [
-            {"id": "signed_up", "enabledActions": ["cancel_booking", "open_location_map"]}
+            {"id": "signed_up", "enabledActions": ["cancel_booking", "open_location_map"]},
+            {
+              "id": "cross_paths_available_off",
+              "dimensions": {"cross_paths_consent": "off"},
+              "enabledActions": ["cancel_booking", "set_cross_paths_event_consent", "open_location_map"]
+            },
+            {
+              "id": "cross_paths_available_on",
+              "dimensions": {"cross_paths_consent": "on"},
+              "enabledActions": ["cancel_booking", "set_cross_paths_event_consent", "open_location_map"]
+            },
+            {
+              "id": "cross_paths_loading",
+              "dimensions": {"cross_paths_consent": "loading"},
+              "enabledActions": ["cancel_booking", "open_location_map"],
+              "disabledActions": ["set_cross_paths_event_consent"]
+            },
+            {
+              "id": "cross_paths_pending",
+              "dimensions": {"cross_paths_consent": "off", "mutation": "cross_paths_consent_pending"},
+              "enabledActions": ["cancel_booking", "open_location_map"],
+              "disabledActions": ["set_cross_paths_event_consent"]
+            },
+            {
+              "id": "cross_paths_unavailable",
+              "dimensions": {"cross_paths_consent": "unavailable", "mutation": "cross_paths_consent_failed"},
+              "enabledActions": ["cancel_booking", "open_location_map"],
+              "disabledActions": ["set_cross_paths_event_consent"]
+            }
           ]
         },
         "booking_pending": {

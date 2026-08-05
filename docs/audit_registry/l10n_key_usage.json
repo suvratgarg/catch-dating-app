@@ -15,16 +15,16 @@
     ]
   },
   "summary": {
-    "catalogKeys": 2785,
-    "usedKeys": 2785,
+    "catalogKeys": 2791,
+    "usedKeys": 2791,
     "orphanedKeys": 0,
-    "usageReferences": 3054,
-    "catalogL10nReferences": 3054,
+    "usageReferences": 3060,
+    "catalogL10nReferences": 3060,
     "nonMessageL10nReferences": 1,
     "missingCatalogKeys": 0,
     "missingCatalogReferences": 0,
-    "scannedDartFiles": 792,
-    "excludedGeneratedDartFiles": 503
+    "scannedDartFiles": 800,
+    "excludedGeneratedDartFiles": 510
   },
   "orphanedKeys": [],
   "nonMessageL10nReferences": [
@@ -6675,6 +6675,86 @@
           "path": "lib/core/widgets/ordered_photo_picker.dart",
           "line": 256,
           "column": 36
+        }
+      ]
+    },
+    {
+      "key": "crossPathsEventConsentSectionBodyConsentDisclosure",
+      "status": "used",
+      "usageCount": 1,
+      "usages": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_event_consent_section.dart",
+          "line": 38,
+          "column": 30
+        }
+      ],
+      "l10nReferenceCount": 1,
+      "l10nReferences": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_event_consent_section.dart",
+          "line": 38,
+          "column": 30
+        }
+      ]
+    },
+    {
+      "key": "crossPathsEventConsentSectionBodyConsentUnavailable",
+      "status": "used",
+      "usageCount": 1,
+      "usages": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_event_consent_section.dart",
+          "line": 45,
+          "column": 30
+        }
+      ],
+      "l10nReferenceCount": 1,
+      "l10nReferences": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_event_consent_section.dart",
+          "line": 45,
+          "column": 30
+        }
+      ]
+    },
+    {
+      "key": "crossPathsEventConsentSectionTitleCrossPaths",
+      "status": "used",
+      "usageCount": 1,
+      "usages": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_event_consent_section.dart",
+          "line": 27,
+          "column": 27
+        }
+      ],
+      "l10nReferenceCount": 1,
+      "l10nReferences": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_event_consent_section.dart",
+          "line": 27,
+          "column": 27
+        }
+      ]
+    },
+    {
+      "key": "crossPathsEventConsentSectionTitleMeetPeopleAtThisEvent",
+      "status": "used",
+      "usageCount": 1,
+      "usages": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_event_consent_section.dart",
+          "line": 37,
+          "column": 16
+        }
+      ],
+      "l10nReferenceCount": 1,
+      "l10nReferences": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_event_consent_section.dart",
+          "line": 37,
+          "column": 16
         }
       ]
     },
@@ -22525,7 +22605,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/widgets/event_detail_body.dart",
-          "line": 165,
+          "line": 171,
           "column": 34
         }
       ],
@@ -22533,7 +22613,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/widgets/event_detail_body.dart",
-          "line": 165,
+          "line": 171,
           "column": 34
         }
       ]
@@ -22545,7 +22625,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/widgets/event_detail_body.dart",
-          "line": 301,
+          "line": 313,
           "column": 35
         }
       ],
@@ -22553,7 +22633,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/widgets/event_detail_body.dart",
-          "line": 301,
+          "line": 313,
           "column": 35
         }
       ]
@@ -22565,7 +22645,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/widgets/event_detail_body.dart",
-          "line": 300,
+          "line": 312,
           "column": 28
         }
       ],
@@ -22573,7 +22653,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/widgets/event_detail_body.dart",
-          "line": 300,
+          "line": 312,
           "column": 28
         }
       ]
@@ -22585,7 +22665,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/widgets/event_detail_body.dart",
-          "line": 163,
+          "line": 169,
           "column": 36
         }
       ],
@@ -22593,7 +22673,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/widgets/event_detail_body.dart",
-          "line": 163,
+          "line": 169,
           "column": 36
         }
       ]
@@ -22605,7 +22685,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/widgets/event_detail_body.dart",
-          "line": 324,
+          "line": 336,
           "column": 27
         }
       ],
@@ -22613,7 +22693,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/widgets/event_detail_body.dart",
-          "line": 324,
+          "line": 336,
           "column": 27
         }
       ]
@@ -22625,7 +22705,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/widgets/event_detail_body.dart",
-          "line": 162,
+          "line": 168,
           "column": 34
         }
       ],
@@ -22633,7 +22713,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/widgets/event_detail_body.dart",
-          "line": 162,
+          "line": 168,
           "column": 34
         }
       ]
@@ -22645,7 +22725,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/widgets/event_detail_body.dart",
-          "line": 299,
+          "line": 311,
           "column": 29
         }
       ],
@@ -22653,7 +22733,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/widgets/event_detail_body.dart",
-          "line": 299,
+          "line": 311,
           "column": 29
         }
       ]
@@ -22665,7 +22745,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/widgets/event_detail_body.dart",
-          "line": 370,
+          "line": 382,
           "column": 31
         },
         {
@@ -22678,7 +22758,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/widgets/event_detail_body.dart",
-          "line": 370,
+          "line": 382,
           "column": 31
         },
         {
@@ -22695,7 +22775,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/widgets/event_detail_body.dart",
-          "line": 385,
+          "line": 397,
           "column": 32
         }
       ],
@@ -22703,7 +22783,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/widgets/event_detail_body.dart",
-          "line": 385,
+          "line": 397,
           "column": 32
         }
       ]
@@ -24665,17 +24745,17 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 264,
-          "column": 30
+          "line": 299,
+          "column": 32
         },
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 274,
-          "column": 30
+          "line": 309,
+          "column": 32
         },
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 401,
+          "line": 446,
           "column": 28
         }
       ],
@@ -24683,17 +24763,17 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 264,
-          "column": 30
+          "line": 299,
+          "column": 32
         },
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 274,
-          "column": 30
+          "line": 309,
+          "column": 32
         },
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 401,
+          "line": 446,
           "column": 28
         }
       ]
@@ -24705,17 +24785,17 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 258,
-          "column": 30
+          "line": 293,
+          "column": 32
         },
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 265,
-          "column": 30
+          "line": 300,
+          "column": 32
         },
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 392,
+          "line": 437,
           "column": 28
         }
       ],
@@ -24723,17 +24803,17 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 258,
-          "column": 30
+          "line": 293,
+          "column": 32
         },
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 265,
-          "column": 30
+          "line": 300,
+          "column": 32
         },
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 392,
+          "line": 437,
           "column": 28
         }
       ]
@@ -24745,12 +24825,12 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 314,
-          "column": 30
+          "line": 358,
+          "column": 20
         },
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 433,
+          "line": 478,
           "column": 28
         }
       ],
@@ -24758,12 +24838,12 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 314,
-          "column": 30
+          "line": 358,
+          "column": 20
         },
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 433,
+          "line": 478,
           "column": 28
         }
       ]
@@ -24775,12 +24855,12 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 126,
+          "line": 131,
           "column": 33
         },
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 464,
+          "line": 509,
           "column": 29
         }
       ],
@@ -24788,12 +24868,12 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 126,
+          "line": 131,
           "column": 33
         },
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 464,
+          "line": 509,
           "column": 29
         }
       ]
@@ -25415,12 +25495,12 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 125,
+          "line": 130,
           "column": 31
         },
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 463,
+          "line": 508,
           "column": 27
         }
       ],
@@ -25428,12 +25508,12 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 125,
+          "line": 130,
           "column": 31
         },
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 463,
+          "line": 508,
           "column": 27
         }
       ]
@@ -25445,7 +25525,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 699,
+          "line": 744,
           "column": 28
         }
       ],
@@ -25453,7 +25533,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 699,
+          "line": 744,
           "column": 28
         }
       ]
@@ -25465,7 +25545,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 199,
+          "line": 231,
           "column": 28
         }
       ],
@@ -25473,7 +25553,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 199,
+          "line": 231,
           "column": 28
         }
       ]
@@ -25485,7 +25565,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 191,
+          "line": 223,
           "column": 28
         }
       ],
@@ -25493,7 +25573,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 191,
+          "line": 223,
           "column": 28
         }
       ]
@@ -25505,7 +25585,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 700,
+          "line": 745,
           "column": 34
         }
       ],
@@ -25513,7 +25593,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 700,
+          "line": 745,
           "column": 34
         }
       ]
@@ -25525,12 +25605,12 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 683,
+          "line": 728,
           "column": 20
         },
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 710,
+          "line": 755,
           "column": 22
         }
       ],
@@ -25538,12 +25618,12 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 683,
+          "line": 728,
           "column": 20
         },
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 710,
+          "line": 755,
           "column": 22
         }
       ]
@@ -25555,7 +25635,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 512,
+          "line": 557,
           "column": 34
         }
       ],
@@ -25563,7 +25643,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 512,
+          "line": 557,
           "column": 34
         }
       ]
@@ -25575,7 +25655,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 511,
+          "line": 556,
           "column": 34
         }
       ],
@@ -25583,7 +25663,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 511,
+          "line": 556,
           "column": 34
         }
       ]
@@ -25595,7 +25675,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 495,
+          "line": 540,
           "column": 10
         }
       ],
@@ -25603,7 +25683,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 495,
+          "line": 540,
           "column": 10
         }
       ]
@@ -25615,12 +25695,12 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 92,
+          "line": 96,
           "column": 22
         },
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 99,
+          "line": 103,
           "column": 10
         }
       ],
@@ -25628,12 +25708,12 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 92,
+          "line": 96,
           "column": 22
         },
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 99,
+          "line": 103,
           "column": 10
         }
       ]
@@ -25645,7 +25725,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 687,
+          "line": 732,
           "column": 20
         }
       ],
@@ -25653,7 +25733,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 687,
+          "line": 732,
           "column": 20
         }
       ]
@@ -52695,7 +52775,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 226,
+          "line": 228,
           "column": 49
         }
       ],
@@ -52703,7 +52783,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 226,
+          "line": 228,
           "column": 49
         }
       ]
@@ -52715,7 +52795,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 307,
+          "line": 309,
           "column": 32
         }
       ],
@@ -52723,7 +52803,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 307,
+          "line": 309,
           "column": 32
         }
       ]
@@ -52735,7 +52815,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 590,
+          "line": 613,
           "column": 46
         }
       ],
@@ -52743,7 +52823,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 590,
+          "line": 613,
           "column": 46
         }
       ]
@@ -52755,7 +52835,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 292,
+          "line": 294,
           "column": 32
         }
       ],
@@ -52763,7 +52843,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 292,
+          "line": 294,
           "column": 32
         }
       ]
@@ -52775,7 +52855,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 381,
+          "line": 383,
           "column": 36
         }
       ],
@@ -52783,7 +52863,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 381,
+          "line": 383,
           "column": 36
         }
       ]
@@ -52795,7 +52875,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 365,
+          "line": 367,
           "column": 36
         }
       ],
@@ -52803,7 +52883,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 365,
+          "line": 367,
           "column": 36
         }
       ]
@@ -52815,7 +52895,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 614,
+          "line": 637,
           "column": 46
         }
       ],
@@ -52823,7 +52903,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 614,
+          "line": 637,
           "column": 46
         }
       ]
@@ -52835,7 +52915,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 321,
+          "line": 323,
           "column": 32
         }
       ],
@@ -52843,7 +52923,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 321,
+          "line": 323,
           "column": 32
         }
       ]
@@ -52855,7 +52935,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 519,
+          "line": 542,
           "column": 32
         }
       ],
@@ -52863,8 +52943,28 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 519,
+          "line": 542,
           "column": 32
+        }
+      ]
+    },
+    {
+      "key": "safetySettingsScreenBodyShowInCrossPaths",
+      "status": "used",
+      "usageCount": 1,
+      "usages": [
+        {
+          "path": "lib/safety/presentation/settings_screen.dart",
+          "line": 518,
+          "column": 34
+        }
+      ],
+      "l10nReferenceCount": 1,
+      "l10nReferences": [
+        {
+          "path": "lib/safety/presentation/settings_screen.dart",
+          "line": 518,
+          "column": 34
         }
       ]
     },
@@ -52875,7 +52975,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 349,
+          "line": 351,
           "column": 36
         }
       ],
@@ -52883,7 +52983,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 349,
+          "line": 351,
           "column": 36
         }
       ]
@@ -52895,7 +52995,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 167,
+          "line": 168,
           "column": 20
         }
       ],
@@ -52903,7 +53003,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 167,
+          "line": 168,
           "column": 20
         }
       ]
@@ -52915,7 +53015,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 863,
+          "line": 886,
           "column": 29
         }
       ],
@@ -52923,7 +53023,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 863,
+          "line": 886,
           "column": 29
         }
       ]
@@ -52935,7 +53035,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 761,
+          "line": 784,
           "column": 32
         }
       ],
@@ -52943,7 +53043,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 761,
+          "line": 784,
           "column": 32
         }
       ]
@@ -52955,7 +53055,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 710,
+          "line": 733,
           "column": 33
         }
       ],
@@ -52963,7 +53063,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 710,
+          "line": 733,
           "column": 33
         }
       ]
@@ -52975,7 +53075,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 97,
+          "line": 98,
           "column": 29
         }
       ],
@@ -52983,7 +53083,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 97,
+          "line": 98,
           "column": 29
         }
       ]
@@ -52995,7 +53095,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 660,
+          "line": 683,
           "column": 38
         }
       ],
@@ -53003,7 +53103,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 660,
+          "line": 683,
           "column": 38
         }
       ]
@@ -53015,7 +53115,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 581,
+          "line": 604,
           "column": 43
         }
       ],
@@ -53023,7 +53123,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 581,
+          "line": 604,
           "column": 43
         }
       ]
@@ -53035,7 +53135,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 266,
+          "line": 268,
           "column": 43
         }
       ],
@@ -53043,7 +53143,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 266,
+          "line": 268,
           "column": 43
         }
       ]
@@ -53055,7 +53155,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 709,
+          "line": 732,
           "column": 31
         }
       ],
@@ -53063,7 +53163,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 709,
+          "line": 732,
           "column": 31
         }
       ]
@@ -53075,7 +53175,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 509,
+          "line": 532,
           "column": 32
         }
       ],
@@ -53083,7 +53183,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 509,
+          "line": 532,
           "column": 32
         }
       ]
@@ -53095,7 +53195,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 318,
+          "line": 320,
           "column": 44
         }
       ],
@@ -53103,7 +53203,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 318,
+          "line": 320,
           "column": 44
         }
       ]
@@ -53115,7 +53215,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 465,
+          "line": 467,
           "column": 32
         }
       ],
@@ -53123,7 +53223,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 465,
+          "line": 467,
           "column": 32
         }
       ]
@@ -53135,7 +53235,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 96,
+          "line": 97,
           "column": 27
         }
       ],
@@ -53143,7 +53243,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 96,
+          "line": 97,
           "column": 27
         }
       ]
@@ -53155,7 +53255,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 565,
+          "line": 588,
           "column": 32
         }
       ],
@@ -53163,7 +53263,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 565,
+          "line": 588,
           "column": 32
         }
       ]
@@ -53175,7 +53275,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 339,
+          "line": 341,
           "column": 42
         }
       ],
@@ -53183,7 +53283,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 339,
+          "line": 341,
           "column": 42
         }
       ]
@@ -53195,7 +53295,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 281,
+          "line": 283,
           "column": 47
         }
       ],
@@ -53203,7 +53303,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 281,
+          "line": 283,
           "column": 47
         }
       ]
@@ -53215,7 +53315,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 481,
+          "line": 483,
           "column": 32
         }
       ],
@@ -53223,7 +53323,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 481,
+          "line": 483,
           "column": 32
         }
       ]
@@ -53235,7 +53335,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 448,
+          "line": 450,
           "column": 32
         }
       ],
@@ -53243,7 +53343,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 448,
+          "line": 450,
           "column": 32
         }
       ]
@@ -53255,7 +53355,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 346,
+          "line": 348,
           "column": 36
         }
       ],
@@ -53263,7 +53363,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 346,
+          "line": 348,
           "column": 36
         }
       ]
@@ -53275,7 +53375,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 432,
+          "line": 434,
           "column": 32
         }
       ],
@@ -53283,7 +53383,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 432,
+          "line": 434,
           "column": 32
         }
       ]
@@ -53295,7 +53395,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 362,
+          "line": 364,
           "column": 36
         }
       ],
@@ -53303,7 +53403,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 362,
+          "line": 364,
           "column": 36
         }
       ]
@@ -53315,7 +53415,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 378,
+          "line": 380,
           "column": 36
         }
       ],
@@ -53323,7 +53423,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 378,
+          "line": 380,
           "column": 36
         }
       ]
@@ -53335,7 +53435,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 588,
+          "line": 611,
           "column": 34
         }
       ],
@@ -53343,7 +53443,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 588,
+          "line": 611,
           "column": 34
         }
       ]
@@ -53355,7 +53455,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 644,
+          "line": 667,
           "column": 47
         }
       ],
@@ -53363,7 +53463,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 644,
+          "line": 667,
           "column": 47
         }
       ]
@@ -53375,7 +53475,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 416,
+          "line": 418,
           "column": 47
         }
       ],
@@ -53383,7 +53483,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 416,
+          "line": 418,
           "column": 47
         }
       ]
@@ -53395,7 +53495,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 759,
+          "line": 782,
           "column": 35
         }
       ],
@@ -53403,7 +53503,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 759,
+          "line": 782,
           "column": 35
         }
       ]
@@ -53415,7 +53515,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 394,
+          "line": 396,
           "column": 40
         }
       ],
@@ -53423,7 +53523,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 394,
+          "line": 396,
           "column": 40
         }
       ]
@@ -53435,7 +53535,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 304,
+          "line": 306,
           "column": 32
         }
       ],
@@ -53443,7 +53543,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 304,
+          "line": 306,
           "column": 32
         }
       ]
@@ -53455,7 +53555,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 276,
+          "line": 278,
           "column": 44
         }
       ],
@@ -53463,7 +53563,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 276,
+          "line": 278,
           "column": 44
         }
       ]
@@ -53475,7 +53575,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 542,
+          "line": 565,
           "column": 34
         }
       ],
@@ -53483,7 +53583,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 542,
+          "line": 565,
           "column": 34
         }
       ]
@@ -53495,7 +53595,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 495,
+          "line": 497,
           "column": 40
         }
       ],
@@ -53503,7 +53603,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 495,
+          "line": 497,
           "column": 40
         }
       ]
@@ -53515,7 +53615,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 402,
+          "line": 404,
           "column": 32
         }
       ],
@@ -53523,7 +53623,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 402,
+          "line": 404,
           "column": 32
         }
       ]
@@ -53535,7 +53635,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 289,
+          "line": 291,
           "column": 32
         }
       ],
@@ -53543,7 +53643,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 289,
+          "line": 291,
           "column": 32
         }
       ]
@@ -53555,7 +53655,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 241,
+          "line": 243,
           "column": 33
         }
       ],
@@ -53563,8 +53663,28 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 241,
+          "line": 243,
           "column": 33
+        }
+      ]
+    },
+    {
+      "key": "safetySettingsScreenTitleShowInCrossPaths",
+      "status": "used",
+      "usageCount": 1,
+      "usages": [
+        {
+          "path": "lib/safety/presentation/settings_screen.dart",
+          "line": 515,
+          "column": 34
+        }
+      ],
+      "l10nReferenceCount": 1,
+      "l10nReferences": [
+        {
+          "path": "lib/safety/presentation/settings_screen.dart",
+          "line": 515,
+          "column": 34
         }
       ]
     },
@@ -53575,7 +53695,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 527,
+          "line": 550,
           "column": 44
         }
       ],
@@ -53583,7 +53703,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 527,
+          "line": 550,
           "column": 44
         }
       ]
@@ -53595,7 +53715,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 612,
+          "line": 635,
           "column": 49
         }
       ],
@@ -53603,7 +53723,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 612,
+          "line": 635,
           "column": 49
         }
       ]
@@ -53615,7 +53735,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 634,
+          "line": 657,
           "column": 47
         }
       ],
@@ -53623,7 +53743,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 634,
+          "line": 657,
           "column": 47
         }
       ]
@@ -53635,7 +53755,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 516,
+          "line": 539,
           "column": 32
         }
       ],
@@ -53643,7 +53763,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 516,
+          "line": 539,
           "column": 32
         }
       ]
@@ -53660,7 +53780,7 @@
         },
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 98,
+          "line": 99,
           "column": 34
         }
       ],
@@ -53673,7 +53793,7 @@
         },
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 98,
+          "line": 99,
           "column": 34
         }
       ]

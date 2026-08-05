@@ -2855,6 +2855,29 @@ class AppLocalizationsEn extends AppLocalizations {
   String get safetySettingsScreenTitleWhoCanSeeYou => 'Who can see you';
 
   @override
+  String get safetySettingsScreenTitleShowInCrossPaths =>
+      'Show me in Cross Paths';
+
+  @override
+  String get safetySettingsScreenBodyShowInCrossPaths =>
+      'Allow Catch to suggest your profile to compatible members at events you separately opt into.';
+
+  @override
+  String get crossPathsEventConsentSectionTitleCrossPaths => 'Cross Paths';
+
+  @override
+  String get crossPathsEventConsentSectionTitleMeetPeopleAtThisEvent =>
+      'Meet people at this event';
+
+  @override
+  String get crossPathsEventConsentSectionBodyConsentDisclosure =>
+      'Your profile and plan to attend may be shown to compatible Catch members for this event, and they may send a limited invitation. This is not a public attendee list. You can turn it off before the event; safety and cancellation controls still apply.';
+
+  @override
+  String get crossPathsEventConsentSectionBodyConsentUnavailable =>
+      'Cross Paths settings are unavailable right now. Try again shortly.';
+
+  @override
   String get safetySettingsScreenBodyRunnersOnMyEvents =>
       'Runners on my events';
 

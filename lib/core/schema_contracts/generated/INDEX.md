@@ -45,6 +45,7 @@ Do not edit it by hand.
 | EventPrivateAccessDocument | `firestore/event_private_access.schema.json` | `functions/src/shared/generated/eventPrivateAccessDocument.ts` |
 | EventInviteLinkDocument | `firestore/event_invite_links.schema.json` | `functions/src/shared/generated/eventInviteLinkDocument.ts` |
 | EventParticipationDocument | `firestore/event_participations.schema.json` | `functions/src/shared/generated/eventParticipationDocument.ts` |
+| EventCrossPathsConsentDocument | `firestore/event_cross_paths_consents.schema.json` | `functions/src/shared/generated/eventCrossPathsConsentDocument.ts` |
 | EventBroadcastDocument | `firestore/event_broadcasts.schema.json` | `functions/src/shared/generated/eventBroadcastDocument.ts` |
 | EventWaitlistOfferDocument | `firestore/event_waitlist_offers.schema.json` | `functions/src/shared/generated/eventWaitlistOfferDocument.ts` |
 | EventSuccessPlanDocument | `firestore/event_success_plans.schema.json` | `functions/src/shared/generated/eventSuccessPlanDocument.ts` |
@@ -151,6 +152,7 @@ Do not edit it by hand.
 | CancelEventCallablePayload | `callables/cancel_event_payload.schema.json` | `functions/src/shared/generated/cancelEventCallablePayload.ts` |
 | DeleteEventCallablePayload | `callables/delete_event_payload.schema.json` | `functions/src/shared/generated/deleteEventCallablePayload.ts` |
 | EventIdCallablePayload | `callables/event_id_payload.schema.json` | `functions/src/shared/generated/eventIdCallablePayload.ts` |
+| SetCrossPathsEventConsentCallablePayload | `callables/set_cross_paths_event_consent_payload.schema.json` | `functions/src/shared/generated/setCrossPathsEventConsentCallablePayload.ts` |
 | CreateEventWaitlistOffersCallablePayload | `callables/create_event_waitlist_offers_payload.schema.json` | `functions/src/shared/generated/createEventWaitlistOffersCallablePayload.ts` |
 | CreateEventInviteLinkCallablePayload | `callables/create_event_invite_link_payload.schema.json` | `functions/src/shared/generated/createEventInviteLinkCallablePayload.ts` |
 | DisableEventInviteLinkCallablePayload | `callables/disable_event_invite_link_payload.schema.json` | `functions/src/shared/generated/disableEventInviteLinkCallablePayload.ts` |
@@ -201,6 +203,7 @@ Do not edit it by hand.
 | WebsiteHostListingProjection | `public/website_host_listing_projection.schema.json` | `functions/src/shared/generated/websiteHostListingProjection.ts` |
 | FetchEventSuccessWingmanCandidatesCallableResponse | `callable_responses/fetch_event_success_wingman_candidates_response.schema.json` | `functions/src/shared/generated/fetchEventSuccessWingmanCandidatesCallableResponse.ts` |
 | FetchSwipeCandidatesCallableResponse | `callable_responses/fetch_swipe_candidates_response.schema.json` | `functions/src/shared/generated/fetchSwipeCandidatesCallableResponse.ts` |
+| SetCrossPathsEventConsentCallableResponse | `callable_responses/set_cross_paths_event_consent_response.schema.json` | `functions/src/shared/generated/setCrossPathsEventConsentCallableResponse.ts` |
 | CreateProfileDecisionClientWrite | `client_writes/create_profile_decision.schema.json` | `functions/src/shared/generated/createProfileDecisionClientWrite.ts` |
 | CreateChatMessageClientWrite | `client_writes/create_chat_message.schema.json` | `functions/src/shared/generated/createChatMessageClientWrite.ts` |
 | CreateSavedEventClientWrite | `client_writes/create_saved_event.schema.json` | `functions/src/shared/generated/createSavedEventClientWrite.ts` |
@@ -263,6 +266,7 @@ Do not edit it by hand.
 | `schemaEventPrivateAccessDocumentSchema` | EventPrivateAccessDocument | `firestore/event_private_access.schema.json` | `lib/core/schema_contracts/generated/schemas/event_private_access_document.g.dart` |
 | `schemaEventInviteLinkDocumentSchema` | EventInviteLinkDocument | `firestore/event_invite_links.schema.json` | `lib/core/schema_contracts/generated/schemas/event_invite_link_document.g.dart` |
 | `schemaEventParticipationDocumentSchema` | EventParticipationDocument | `firestore/event_participations.schema.json` | `lib/core/schema_contracts/generated/schemas/event_participation_document.g.dart` |
+| `schemaEventCrossPathsConsentDocumentSchema` | EventCrossPathsConsentDocument | `firestore/event_cross_paths_consents.schema.json` | `lib/core/schema_contracts/generated/schemas/event_cross_paths_consent_document.g.dart` |
 | `schemaEventBroadcastDocumentSchema` | EventBroadcastDocument | `firestore/event_broadcasts.schema.json` | `lib/core/schema_contracts/generated/schemas/event_broadcast_document.g.dart` |
 | `schemaEventWaitlistOfferDocumentSchema` | EventWaitlistOfferDocument | `firestore/event_waitlist_offers.schema.json` | `lib/core/schema_contracts/generated/schemas/event_waitlist_offer_document.g.dart` |
 | `schemaEventSuccessPlanDocumentSchema` | EventSuccessPlanDocument | `firestore/event_success_plans.schema.json` | `lib/core/schema_contracts/generated/schemas/event_success_plan_document.g.dart` |
@@ -369,6 +373,7 @@ Do not edit it by hand.
 | `schemaCancelEventCallablePayloadSchema` | CancelEventCallablePayload | `callables/cancel_event_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/cancel_event_callable_payload.g.dart` |
 | `schemaDeleteEventCallablePayloadSchema` | DeleteEventCallablePayload | `callables/delete_event_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/delete_event_callable_payload.g.dart` |
 | `schemaEventIdCallablePayloadSchema` | EventIdCallablePayload | `callables/event_id_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/event_id_callable_payload.g.dart` |
+| `schemaSetCrossPathsEventConsentCallablePayloadSchema` | SetCrossPathsEventConsentCallablePayload | `callables/set_cross_paths_event_consent_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/set_cross_paths_event_consent_callable_payload.g.dart` |
 | `schemaCreateEventWaitlistOffersCallablePayloadSchema` | CreateEventWaitlistOffersCallablePayload | `callables/create_event_waitlist_offers_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/create_event_waitlist_offers_callable_payload.g.dart` |
 | `schemaCreateEventInviteLinkCallablePayloadSchema` | CreateEventInviteLinkCallablePayload | `callables/create_event_invite_link_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/create_event_invite_link_callable_payload.g.dart` |
 | `schemaDisableEventInviteLinkCallablePayloadSchema` | DisableEventInviteLinkCallablePayload | `callables/disable_event_invite_link_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/disable_event_invite_link_callable_payload.g.dart` |
@@ -419,6 +424,7 @@ Do not edit it by hand.
 | `schemaWebsiteHostListingProjectionSchema` | WebsiteHostListingProjection | `public/website_host_listing_projection.schema.json` | `lib/core/schema_contracts/generated/schemas/website_host_listing_projection.g.dart` |
 | `schemaFetchEventSuccessWingmanCandidatesCallableResponseSchema` | FetchEventSuccessWingmanCandidatesCallableResponse | `callable_responses/fetch_event_success_wingman_candidates_response.schema.json` | `lib/core/schema_contracts/generated/schemas/fetch_event_success_wingman_candidates_callable_response.g.dart` |
 | `schemaFetchSwipeCandidatesCallableResponseSchema` | FetchSwipeCandidatesCallableResponse | `callable_responses/fetch_swipe_candidates_response.schema.json` | `lib/core/schema_contracts/generated/schemas/fetch_swipe_candidates_callable_response.g.dart` |
+| `schemaSetCrossPathsEventConsentCallableResponseSchema` | SetCrossPathsEventConsentCallableResponse | `callable_responses/set_cross_paths_event_consent_response.schema.json` | `lib/core/schema_contracts/generated/schemas/set_cross_paths_event_consent_callable_response.g.dart` |
 | `schemaCreateProfileDecisionClientWriteSchema` | CreateProfileDecisionClientWrite | `client_writes/create_profile_decision.schema.json` | `lib/core/schema_contracts/generated/schemas/create_profile_decision_client_write.g.dart` |
 | `schemaCreateChatMessageClientWriteSchema` | CreateChatMessageClientWrite | `client_writes/create_chat_message.schema.json` | `lib/core/schema_contracts/generated/schemas/create_chat_message_client_write.g.dart` |
 | `schemaCreateSavedEventClientWriteSchema` | CreateSavedEventClientWrite | `client_writes/create_saved_event.schema.json` | `lib/core/schema_contracts/generated/schemas/create_saved_event_client_write.g.dart` |
@@ -501,6 +507,7 @@ Do not edit it by hand.
 | CancelEventCallableRequest | CancelEventCallablePayload | `callables/cancel_event_payload.schema.json` | `lib/core/schema_contracts/generated/callables/cancel_event_callable_request.g.dart` |
 | DeleteEventCallableRequest | DeleteEventCallablePayload | `callables/delete_event_payload.schema.json` | `lib/core/schema_contracts/generated/callables/delete_event_callable_request.g.dart` |
 | EventIdCallableRequest | EventIdCallablePayload | `callables/event_id_payload.schema.json` | `lib/core/schema_contracts/generated/callables/event_id_callable_request.g.dart` |
+| SetCrossPathsEventConsentCallableRequest | SetCrossPathsEventConsentCallablePayload | `callables/set_cross_paths_event_consent_payload.schema.json` | `lib/core/schema_contracts/generated/callables/set_cross_paths_event_consent_callable_request.g.dart` |
 | CreateEventWaitlistOffersCallableRequest | CreateEventWaitlistOffersCallablePayload | `callables/create_event_waitlist_offers_payload.schema.json` | `lib/core/schema_contracts/generated/callables/create_event_waitlist_offers_callable_request.g.dart` |
 | CreateEventInviteLinkCallableRequest | CreateEventInviteLinkCallablePayload | `callables/create_event_invite_link_payload.schema.json` | `lib/core/schema_contracts/generated/callables/create_event_invite_link_callable_request.g.dart` |
 | DisableEventInviteLinkCallableRequest | DisableEventInviteLinkCallablePayload | `callables/disable_event_invite_link_payload.schema.json` | `lib/core/schema_contracts/generated/callables/disable_event_invite_link_callable_request.g.dart` |

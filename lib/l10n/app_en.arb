@@ -5748,6 +5748,48 @@
     "x-owner": "product",
     "x-surface": "safety.presentation.settings_screen"
   },
+  "safetySettingsScreenTitleShowInCrossPaths": "Show me in Cross Paths",
+  "@safetySettingsScreenTitleShowInCrossPaths": {
+    "description": "Privacy setting that gives global consent for eligible Cross Paths event suggestions.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "safety.presentation.settings_screen"
+  },
+  "safetySettingsScreenBodyShowInCrossPaths": "Allow Catch to suggest your profile to compatible members at events you separately opt into.",
+  "@safetySettingsScreenBodyShowInCrossPaths": {
+    "description": "Explains that global Cross Paths consent does not opt the member into every event.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "safety.presentation.settings_screen"
+  },
+  "crossPathsEventConsentSectionTitleCrossPaths": "Cross Paths",
+  "@crossPathsEventConsentSectionTitleCrossPaths": {
+    "description": "Section label for event-level Cross Paths consent.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "cross_paths.presentation.event_consent"
+  },
+  "crossPathsEventConsentSectionTitleMeetPeopleAtThisEvent": "Meet people at this event",
+  "@crossPathsEventConsentSectionTitleMeetPeopleAtThisEvent": {
+    "description": "Event-level Cross Paths consent toggle title.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "cross_paths.presentation.event_consent"
+  },
+  "crossPathsEventConsentSectionBodyConsentDisclosure": "Your profile and plan to attend may be shown to compatible Catch members for this event, and they may send a limited invitation. This is not a public attendee list. You can turn it off before the event; safety and cancellation controls still apply.",
+  "@crossPathsEventConsentSectionBodyConsentDisclosure": {
+    "description": "Consent disclosure shown before a member enables Cross Paths for one booked event.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "cross_paths.presentation.event_consent"
+  },
+  "crossPathsEventConsentSectionBodyConsentUnavailable": "Cross Paths settings are unavailable right now. Try again shortly.",
+  "@crossPathsEventConsentSectionBodyConsentUnavailable": {
+    "description": "Inline recovery copy when private event consent cannot be loaded.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "cross_paths.presentation.event_consent"
+  },
   "safetySettingsScreenBodyRunnersOnMyEvents": "Runners on my events",
   "@safetySettingsScreenBodyRunnersOnMyEvents": {
     "description": "Product copy used by lib/safety/presentation/settings_screen.dart (body).",

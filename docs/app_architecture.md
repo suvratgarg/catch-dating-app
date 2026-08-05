@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.7.3
+version: 1.8.1
 updated: 2026-08-05
 owner: recursive_audit_loop
 status: active
@@ -264,10 +264,13 @@ execute.
 
 Explore social proof must not create profile reads per event row. The discovery
 ticket may render `signedUpCount` through veiled activity avatars using the
-shared Event Detail privacy contract. Identified people, mutuals, or Cross Paths
-require an explicit consent-safe relationship source and batched provider seam;
-without one, keep the proposal retired. Organizer cards may reuse already-loaded
-organizer-manager and aggregate rating data through shared identity atoms.
+shared Event Detail privacy contract. Cross Paths now has a private global and
+per-event consent source, but that source is permission rather than discovery
+data. Identified people still require the server-owned batched suggestion seam,
+showcase eligibility, reciprocal filtering, and exposure controls defined in
+`docs/cross_paths.md`; until those exist, Explore renders no people from consent
+documents. Organizer cards may reuse already-loaded organizer-manager and
+aggregate rating data through shared identity atoms.
 
 ## Dependency Direction
 
@@ -2325,9 +2328,84 @@ child: CatchPersonPolaroid(
 
 Context such as organizer authority, reactions, or eventual event overlap is
 passed as overlay/adjacent composition and must remain source-backed. In
-particular, the unbuilt Cross Paths rail does not become valid merely because
-the person-polaroid component exists; identifiable attendees still require an
-approved relationship and consent source.
+particular, the Cross Paths consent controls do not make an Explore rail valid
+merely because the person-polaroid component exists; identifiable attendees
+still require a sanitized server-owned suggestion response.
+
+### Exhibit ARCH-CROSS-PATHS-CONSENT-001: Fail-Closed Layered Consent
+
+<!-- exhibit-freshness: ARCH-CROSS-PATHS-CONSENT-001 source=docs/audit_registry/architecture_pattern_adoption.json owner=recursive_audit_loop -->
+
+Reference files:
+
+- `lib/cross_paths/cross_paths.dart`
+- `lib/cross_paths/domain/cross_paths_feature_config.dart`
+- `lib/cross_paths/data/cross_paths_feature_config_provider.dart`
+- `lib/cross_paths/data/cross_paths_repository.dart`
+- `lib/cross_paths/presentation/cross_paths_event_consent_controller.dart`
+- `lib/cross_paths/presentation/cross_paths_event_consent_state.dart`
+- `lib/cross_paths/presentation/cross_paths_event_consent_section.dart`
+- `lib/safety/presentation/settings_screen.dart`
+- `functions/src/crossPaths/setCrossPathsEventConsent.ts`
+- `test/cross_paths/cross_paths_event_consent_section_test.dart`
+
+Use layered consent for a future identifiable people surface: a private
+default-false global preference is the master permission, a deterministic
+caller-scoped edge is the event permission, and the server still owns all
+effective-eligibility decisions. Consent records are inputs to a later
+suggestion resolver; they are never themselves a roster or suggestion source.
+
+The Event Detail reference gate is intentionally fail-closed:
+
+```dart
+final crossPathsEligible = crossPathsEventConsentEligible(
+  rolloutEnabled: crossPathsConfig.consentControlsEnabled,
+  event: vm.event,
+  participation: vm.participation,
+  userProfile: vm.userProfile,
+  now: now,
+);
+final crossPathsConsentReadable =
+    crossPathsConfig.consentControlsEnabled && vm.userProfile != null;
+final crossPathsConsentAsync = crossPathsConsentReadable
+    ? ref.watch(
+        watchCrossPathsEventConsentProvider(
+          vm.event.id,
+          vm.userProfile!.uid,
+        ),
+      )
+    : null;
+final crossPathsConsentState = crossPathsEventConsentSectionStateFrom(
+  eligibleToEnable: crossPathsEligible,
+  loaded: crossPathsConsentAsync?.hasValue == true,
+  enabled: crossPathsConsentAsync?.asData?.value?.enabled == true,
+  pending: crossPathsConsentMutation.isPending,
+  unavailable: crossPathsConsentAsync?.hasError == true,
+);
+```
+
+Preserve these boundaries in later adopters:
+
+- both Remote Config defaults are false, and configuration read failures return
+  the disabled state;
+- a missing global field, missing event edge, loading state, or read failure
+  never resolves to enabled;
+- an existing enabled event edge remains caller-readable and revocable after
+  booking or global eligibility disappears, while an ineligible disabled edge
+  remains hidden;
+- Event Detail owns provider reads and mutation orchestration; its body and
+  `CrossPathsEventConsentSection` receive provider-free state and callbacks;
+- cross-feature presentation imports route through
+  `lib/cross_paths/cross_paths.dart`; the reusable section accepts neutral
+  presentation values and never imports Event Detail internals;
+- Settings writes the private master through the typed user-profile patch;
+- the client queries only the caller's own event edge and never writes it;
+- the App-Check-protected callable revalidates the master preference, terms,
+  active future event, deterministic participation identity, and `signedUp`
+  state before enabling;
+- disable remains callable-owned and available after eligibility disappears;
+- Explore must consume only a later sanitized batched suggestion response that
+  independently revalidates effective consent and eligibility.
 
 ### Exhibit ARCH-SCREEN-001: Feature Screen Boundary
 

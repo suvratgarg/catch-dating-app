@@ -19,6 +19,20 @@ void main() {
     interestedInGenders: const [Gender.woman],
   );
 
+  test('missing Cross Paths preference defaults to private', () {
+    final user = UserProfile.fromJson({
+      'uid': 'user-1',
+      'name': 'Runner',
+      'dateOfBirth': Timestamp.fromDate(DateTime(1995)),
+      'gender': 'man',
+      'phoneNumber': '+910000000000',
+      'profileComplete': true,
+      'interestedInGenders': ['woman'],
+    });
+
+    expect(user.prefsShowInCrossPaths, isFalse);
+  });
+
   group('UserProfile.ageOn', () {
     test('#21 birthday earlier this year — full year counted', () {
       // DOB = Jan 1, (today.year - 30). Birthday has already passed this year.

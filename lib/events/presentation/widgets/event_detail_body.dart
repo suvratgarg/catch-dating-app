@@ -2,12 +2,13 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_host_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/cross_paths/cross_paths.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';
@@ -62,6 +63,9 @@ class EventDetailBody extends StatelessWidget {
     this.presentationMode = EventDetailPresentationMode.standard,
     this.heroTag,
     this.enableMapNetworkTiles = true,
+    this.crossPathsConsentState =
+        const CrossPathsEventConsentSectionState.hidden(),
+    this.onCrossPathsConsentChanged,
   });
 
   final Event event;
@@ -96,6 +100,8 @@ class EventDetailBody extends StatelessWidget {
   final EventDetailPresentationMode presentationMode;
   final Object? heroTag;
   final bool enableMapNetworkTiles;
+  final CrossPathsEventConsentSectionState crossPathsConsentState;
+  final ValueChanged<bool>? onCrossPathsConsentChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -172,6 +178,12 @@ class EventDetailBody extends StatelessWidget {
                         alpha: CatchOpacity.eventDetailLightBorder,
                       ),
               ),
+            CrossPathsEventConsentSection(
+              state: crossPathsConsentState,
+              onChanged: onCrossPathsConsentChanged,
+              headingColor: style.headingColor,
+              dividerColor: style.dividerColor,
+            ),
             EventDetailHostsSection(
               event: event,
               state: hostState,

@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.components.schema.json",
   "version": 4,
-  "updated": "2026-07-21",
+  "updated": "2026-08-05",
   "sourceOfTruth": {
     "behavior": "Flutter implementations in lib/core/widgets/catch_*.dart own runtime behavior, accessibility, layout, and state.",
     "tokens": "design/tokens/catch.tokens.json owns primitive token values; generated Dart/CSS and Figma variables mirror it.",
@@ -11003,7 +11003,7 @@
       "name": "EventDetailSections",
       "status": "active",
       "kind": "screen-contract",
-      "summary": "Event Detail screen-section contract that groups the event-specific hero, ticket facts, overview primitives, host/social sections, companion prompt, and booking dock under one Catch-owned handoff boundary.",
+      "summary": "Event Detail screen-section contract that groups the event-specific hero, ticket facts, overview primitives, host/social sections, consent-safe Cross Paths control, companion prompt, and booking dock under one Catch-owned handoff boundary.",
       "dart": {
         "symbol": "EventDetailBody",
         "file": "lib/events/presentation/widgets/event_detail_body.dart",
@@ -11048,6 +11048,13 @@
             "dartType": "EventDetailHostState"
           },
           {
+            "name": "crossPathsConsentState",
+            "type": "object",
+            "required": false,
+            "dartType": "CrossPathsEventConsentSectionState",
+            "notes": "Route-resolved, fail-closed consent display state. Hidden by default."
+          },
+          {
             "name": "presentationMode",
             "type": "enum",
             "required": false,
@@ -11063,7 +11070,7 @@
             "name": "callbacks",
             "type": "object",
             "required": true,
-            "notes": "Route-owned save/share/calendar/location/club/message/companion/retry callbacks."
+            "notes": "Route-owned save/share/calendar/location/club/message/companion/retry/Cross Paths consent callbacks."
           }
         ],
         "states": [
@@ -11078,6 +11085,11 @@
           "host-hidden",
           "host-loading",
           "host-content",
+          "cross-paths-hidden",
+          "cross-paths-loading",
+          "cross-paths-off",
+          "cross-paths-on",
+          "cross-paths-unavailable",
           "booking-eligible",
           "booking-waitlist",
           "booking-booked",
@@ -11107,6 +11119,14 @@
               "catch.person_avatar",
               "catch.section",
               "catch.surface"
+            ]
+          },
+          {
+            "name": "crossPathsConsent",
+            "kind": "event-detail-consent-section",
+            "allowedComponents": [
+              "catch.field",
+              "catch.section"
             ]
           },
           {
@@ -11304,6 +11324,25 @@
             }
           },
           {
+            "id": "catch.event_detail_sections.cross_paths_consent",
+            "symbol": "CrossPathsEventConsentSection",
+            "file": "lib/cross_paths/presentation/cross_paths_event_consent_section.dart",
+            "summary": "Provider-free Event Detail renderer for hidden, loading, enabled, disabled, pending, and unavailable event-consent states resolved by the route.",
+            "states": [
+              "hidden",
+              "loading",
+              "off",
+              "on",
+              "pending",
+              "unavailable",
+              "text-scale-2"
+            ],
+            "governance": {
+              "conceptRole": "screen",
+              "decisionRef": "contract-kind:screen-contract"
+            }
+          },
+          {
             "id": "catch.event_detail_sections.companion_entry",
             "symbol": "EventCompanionEntry",
             "file": "lib/events/presentation/widgets/event_detail_body.dart",
@@ -11364,6 +11403,7 @@
           "catch.button",
           "catch.detail_media",
           "catch.event_card",
+          "catch.field",
           "catch.icon_button",
           "catch.person_avatar",
           "catch.section",
