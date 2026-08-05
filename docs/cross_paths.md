@@ -792,16 +792,17 @@ eligibility.
 Implementation receipt (2026-08-05): the mixed-feed person card, sanitized
 profile preview, event-majority/no-adjacent-non-event rules, no-search/no-map
 gates, current-event association, token expiry, and Event Detail routing are
-implemented behind the default-off Explore suggestions flag. Profile-open and
-event-open analytics are wired. Impression and booking-attribution analytics,
-production seed supply, legal copy approval, signing-key/TTL operations, and a
+implemented behind the default-off Explore suggestions flag. Qualified card
+impression, profile-open, event-open, booking-started, and booking-completed
+analytics are wired without emitting the signed token or candidate identity.
+Production seed supply, legal copy approval, signing-key/TTL operations, and a
 small-market flag cohort remain before live enablement.
 
 - [x] Add Cross Paths mixed-feed card and profile preview.
 - [x] Enforce the Explore modality budget and no-search/no-map constraints.
 - [x] Link every Polaroid to one still-actionable event.
 - [x] Route unbooked viewers through the existing Event Detail/booking flow.
-- [ ] Instrument exposure, profile-open, event-open, and booking conversion.
+- [x] Instrument exposure, profile-open, event-open, and booking conversion.
 - [ ] Launch to a small market/flag cohort with manual showcase curation.
 
 No invitation is delivered in this phase.

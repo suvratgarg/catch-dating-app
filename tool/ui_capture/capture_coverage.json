@@ -236,10 +236,12 @@
         "explore_filters_active",
         "explore_joined_clubs",
         "explore_unclaimed_host_projection",
+        "explore_cross_paths_person",
+        "explore_cross_paths_profile_preview",
         "explore_text_scale_2",
         "explore_reduced_motion"
       ],
-      "reason": "Explore discovery route captures now cover populated, signed-in joined clubs, worst-case bright cover contrast, loading, source error, feed error, offline, empty city, no-search, no-filter, active search, active filters, unclaimed host projection, text-scale, and reduced-motion states."
+      "reason": "Explore discovery route captures now cover populated, signed-in joined clubs, worst-case bright cover contrast, loading, source error, feed error, offline, empty city, no-search, no-filter, active search, active filters, unclaimed host projection, Cross Paths person and profile-preview states, text-scale, and reduced-motion states."
     },
     {
       "routeId": "exploreMapScreen",

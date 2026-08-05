@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.667
+version: 2.5.668
 updated: 2026-08-05
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,21 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.668
+
+- Cataloged `CrossPathsExploreCard` as the provider-free Explore composition
+  that keeps `CatchPersonPolaroid` person-only while adding separate,
+  source-backed event context, profile/event actions, and a mount-time
+  impression callback. The old standalone `CatchCrossPathsCard` proposal stays
+  retired.
+- Cataloged `CrossPathsProfilePreviewSheet` as the sanitized existing-profile
+  presentation with persistent associated-event context. Suggestion fetching,
+  eligibility, expiry, analytics deduplication, and navigation remain
+  route/provider owned.
+- Cataloged `CrossPathsEventContextCard` as the reusable event-context leaf
+  shared by the Explore card and profile preview; it keeps event navigation a
+  callback and does not imply an invitation.
 
 ### 2.5.667
 
@@ -6916,6 +6931,9 @@ Widgetbook callers.
 | `CatchesHubHeader` | `lib/swipes/presentation/swipe_hub_screen.dart:152` | Header row for the Catches hub: "CATCHES" section header, "After the event" title, and heart icon treatment. |
 | `CatchesIntroCard` | `lib/swipes/presentation/swipe_hub_screen.dart:185` | Gradient hero card promoting the 24-hour catch window from `CatchesHubEventRow` display data: intro copy, countdown label, roster count, and "Start catching" CTA. The parent `CatchSurface` owns tap handling; the solid-white CTA is a non-interactive `CatchButtonVariant.light` display label so accessibility and color pairing stay correct. |
 | `CatchPersonPolaroid` | `lib/core/widgets/catch_person_polaroid.dart` | Canonical person material. Frames portrait media in a white instant-photo mat with activity-colored kicker, identity caption, optional meta, and an optional media overlay for contextual actions such as Catches reactions. It represents the person only; event overlap remains a separate ticket-stub composition. |
+| `CrossPathsExploreCard` | `lib/cross_paths/presentation/cross_paths_explore_card.dart` | Provider-free Explore composition for one sanitized Cross Paths suggestion. Reuses `CatchPersonPolaroid`, keeps associated event context/actions adjacent, and reports a callback-only mount impression without owning analytics or data access. |
+| `CrossPathsEventContextCard` | `lib/cross_paths/presentation/cross_paths_explore_card.dart` | Provider-free associated-event leaf used by the Explore card and profile preview. It renders truthful person-to-event context and a separate Event Detail callback without owning booking or invitation behavior. |
+| `CrossPathsProfilePreviewSheet` | `lib/cross_paths/presentation/cross_paths_explore_card.dart` | Sanitized profile-preview overlay that reuses `ProfileSurface` and pins the associated first-party event action below it. It does not create a chat, invitation, match, or roster read. |
 | `ProfileHeroWidget` | `lib/swipes/shared/profile_surface/catch_profile_view.dart:127` | Profile reference adopter for `CatchPersonPolaroid`. Supplies graded/fallback profile media, activity-colored kicker, name/age, meta line, and optional Catches reaction overlay without owning profile data mapping. |
 | `ProfilePhoto` | `lib/swipes/shared/profile_surface/catch_profile_view.dart:214` | Profile media renderer. Shows a graded real photo when present, otherwise falls back to the activity artwork for the profile's kicker activity. |
 | `ProfileSectionView` | `lib/swipes/shared/profile_surface/catch_profile_view.dart:238` | Public section dispatcher for `ProfileSection` display models. Routes compatibility, prompt, running, facts, and photo sections to their named renderers, passes the resolved activity descriptor into activity-pigmented sections, and adds section reaction controls only when the parent Catches surface supplies `onReact`. |

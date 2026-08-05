@@ -64,6 +64,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
   bool? _wasExploreTabActive;
   bool _reentryRefreshQueued = false;
   bool _guestJoinedFilterResetQueued = false;
+  final Set<String> _loggedCrossPathsImpressions = <String>{};
   Timer? _initialLoadDeadline;
   bool _initialLoadTimedOut = false;
 
@@ -207,7 +208,14 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     }
 
     void openEvent(ExploreEventItem item, String source) {
+      CrossPathsSuggestion? crossPathsSuggestion;
       if (source.startsWith('cross_paths')) {
+        for (final suggestion in crossPathsSuggestions) {
+          if (suggestion.event.eventId == item.event.id) {
+            crossPathsSuggestion = suggestion;
+            break;
+          }
+        }
         ref
             .read(appAnalyticsProvider)
             .logEvent(
@@ -215,6 +223,14 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
               parameters: {
                 AnalyticsParameters.eventId: item.event.id,
                 AnalyticsParameters.surface: 'explore',
+                AnalyticsParameters.viewerBookingStatus:
+                    crossPathsSuggestion?.event.viewerBookingStatus.name,
+                AnalyticsParameters.rankingVersion:
+                    crossPathsSuggestion?.rankingVersion,
+                AnalyticsParameters.reasonCodes: crossPathsSuggestion
+                    ?.reasonCodes
+                    .map((reason) => reason.wireValue)
+                    .join(','),
               },
             );
       }
@@ -242,6 +258,16 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
           transition: EventDetailRouteTransition.ticketCard,
           presentationMode: EventDetailPresentationMode.ticket,
           heroTag: eventTicketHeroTag(item.event.id, source),
+          attribution: crossPathsSuggestion == null
+              ? null
+              : EventDetailAttribution(
+                  source: EventDetailAttributionSource.crossPaths,
+                  suggestionToken: crossPathsSuggestion.suggestionToken,
+                  rankingVersion: crossPathsSuggestion.rankingVersion,
+                  reasonCodes: crossPathsSuggestion.reasonCodes
+                      .map((reason) => reason.wireValue)
+                      .toList(growable: false),
+                ),
         ),
       );
     }
@@ -259,6 +285,10 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
               AnalyticsParameters.surface: 'explore',
               AnalyticsParameters.viewerBookingStatus:
                   suggestion.event.viewerBookingStatus.name,
+              AnalyticsParameters.rankingVersion: suggestion.rankingVersion,
+              AnalyticsParameters.reasonCodes: suggestion.reasonCodes
+                  .map((reason) => reason.wireValue)
+                  .join(','),
             },
           );
       unawaited(
@@ -269,6 +299,30 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
           onEventSelected: (item) => openEvent(item, 'cross_paths_profile'),
         ),
       );
+    }
+
+    void logCrossPathsImpression(
+      CrossPathsSuggestion suggestion,
+      ExploreEventItem eventItem,
+      int position,
+    ) {
+      if (!_loggedCrossPathsImpressions.add(suggestion.suggestionToken)) return;
+      ref
+          .read(appAnalyticsProvider)
+          .logEvent(
+            AnalyticsEvents.crossPathsImpression,
+            parameters: {
+              AnalyticsParameters.eventId: eventItem.event.id,
+              AnalyticsParameters.surface: 'explore',
+              AnalyticsParameters.position: position,
+              AnalyticsParameters.viewerBookingStatus:
+                  suggestion.event.viewerBookingStatus.name,
+              AnalyticsParameters.rankingVersion: suggestion.rankingVersion,
+              AnalyticsParameters.reasonCodes: suggestion.reasonCodes
+                  .map((reason) => reason.wireValue)
+                  .join(','),
+            },
+          );
     }
 
     void openExternalEvent(ExploreExternalEventItem item) {
@@ -417,6 +471,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
               onEventSelected: openEvent,
               crossPathsSuggestions: crossPathsSuggestions,
               onCrossPathsProfileSelected: openCrossPathsProfile,
+              onCrossPathsImpression: logCrossPathsImpression,
               onExternalEventOpened: openExternalEvent,
               onClubSelected: openClub,
               promoteFeaturedItem: showFeaturedCover,
@@ -445,6 +500,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                 onEventSelected: openEvent,
                 crossPathsSuggestions: crossPathsSuggestions,
                 onCrossPathsProfileSelected: openCrossPathsProfile,
+                onCrossPathsImpression: logCrossPathsImpression,
                 onExternalEventOpened: openExternalEvent,
                 onClubSelected: openClub,
                 promoteFeaturedItem: showFeaturedCover,

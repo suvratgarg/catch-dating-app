@@ -79,54 +79,54 @@
       "hammingBucket": "40-44",
       "pairs": 308,
       "jaccardMin": 0,
-      "jaccardMean": 0.2247,
+      "jaccardMean": 0.2249,
       "jaccardMax": 0.5
     },
     {
       "hammingBucket": "45-49",
-      "pairs": 792,
+      "pairs": 800,
       "jaccardMin": 0,
-      "jaccardMean": 0.1448,
+      "jaccardMean": 0.1442,
       "jaccardMax": 0.4706
     },
     {
       "hammingBucket": "50-54",
-      "pairs": 1717,
+      "pairs": 1731,
       "jaccardMin": 0,
-      "jaccardMean": 0.087,
+      "jaccardMean": 0.0872,
       "jaccardMax": 0.4412
     },
     {
       "hammingBucket": "55-59",
-      "pairs": 2903,
+      "pairs": 2944,
       "jaccardMin": 0,
-      "jaccardMean": 0.053,
+      "jaccardMean": 0.0531,
       "jaccardMax": 0.2813
     },
     {
       "hammingBucket": "60-64",
-      "pairs": 3194,
+      "pairs": 3235,
       "jaccardMin": 0,
-      "jaccardMean": 0.0324,
+      "jaccardMean": 0.0327,
       "jaccardMax": 0.2381
     },
     {
       "hammingBucket": "65-69",
-      "pairs": 1986,
+      "pairs": 2011,
       "jaccardMin": 0,
-      "jaccardMean": 0.0215,
+      "jaccardMean": 0.0217,
       "jaccardMax": 0.2
     },
     {
       "hammingBucket": "70-74",
-      "pairs": 669,
+      "pairs": 678,
       "jaccardMin": 0,
-      "jaccardMean": 0.0129,
-      "jaccardMax": 0.1124
+      "jaccardMean": 0.0134,
+      "jaccardMax": 0.1505
     },
     {
       "hammingBucket": "75-79",
-      "pairs": 105,
+      "pairs": 106,
       "jaccardMin": 0,
       "jaccardMean": 0.0084,
       "jaccardMax": 0.0816
@@ -147,14 +147,14 @@
     }
   ],
   "summary": {
-    "widgets": 973,
+    "widgets": 976,
     "fingerprintFailures": 1,
     "exactClusters": 2,
     "clusters": 42,
     "structuralEdges": 63,
     "smallWidgetEdges": 31,
     "rankedPairs": 200,
-    "nameFamilies": 197,
+    "nameFamilies": 199,
     "relatedEdges": 21,
     "screenClusters": 10,
     "skippedTrivial": 115,
@@ -1239,7 +1239,7 @@
       "simhash128": "79095f2724c3be0f11d9901d105a7bf7",
       "tokenStreamLength": 10,
       "coarseTokenStreamLength": 10,
-      "usageCountRaw": 9,
+      "usageCountRaw": 10,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -1278,7 +1278,7 @@
       "simhash128": "e5d8cc04bb9be224ebe7cc9766399b67",
       "tokenStreamLength": 97,
       "coarseTokenStreamLength": 97,
-      "usageCountRaw": 186,
+      "usageCountRaw": 187,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -2396,7 +2396,7 @@
       "simhash128": "ec9e0e0bb2d3ecbdae6fa4fbc46ccc1a",
       "tokenStreamLength": 58,
       "coarseTokenStreamLength": 58,
-      "usageCountRaw": 87,
+      "usageCountRaw": 88,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -2695,7 +2695,7 @@
       "simhash128": "faf0fb0f57fa5998ba238cb73cb1b274",
       "tokenStreamLength": 8,
       "coarseTokenStreamLength": 8,
-      "usageCountRaw": 22,
+      "usageCountRaw": 23,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -2747,7 +2747,7 @@
       "simhash128": "7f1e5b0be023a1ca28bbdcb520a74be1",
       "tokenStreamLength": 8,
       "coarseTokenStreamLength": 8,
-      "usageCountRaw": 19,
+      "usageCountRaw": 20,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -2760,7 +2760,7 @@
       "simhash128": "204c6a9ecc7ac4aa64eae906b3ac6562",
       "tokenStreamLength": 10,
       "coarseTokenStreamLength": 10,
-      "usageCountRaw": 5,
+      "usageCountRaw": 6,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -2994,7 +2994,7 @@
       "simhash128": "3feb7bbed092d7bfb65fec553729a385",
       "tokenStreamLength": 67,
       "coarseTokenStreamLength": 67,
-      "usageCountRaw": 8,
+      "usageCountRaw": 9,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -3618,7 +3618,7 @@
       "simhash128": "7dc9d929c8a5c9bf3e46c41ff06fdd21",
       "tokenStreamLength": 100,
       "coarseTokenStreamLength": 100,
-      "usageCountRaw": 260,
+      "usageCountRaw": 262,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": true
     },
@@ -5222,6 +5222,45 @@
       "hasWidgetHelpers": false
     },
     {
+      "name": "CrossPathsEventContextCard",
+      "file": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
+      "role": "composition",
+      "shapeHash": "a0a8d2bc0a3e79b3a62648ae4fc10754fb3c446a89b8e3535f987ff6074593e7",
+      "coarseShapeHash": "9493936466628d29202be4409e57f5159e1760a9000ed309c0ab7c5b42fddac5",
+      "simhash128": "2ac3ced925999ede8b4eac980112fb1e",
+      "tokenStreamLength": 54,
+      "coarseTokenStreamLength": 54,
+      "usageCountRaw": 3,
+      "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
+      "hasWidgetHelpers": false
+    },
+    {
+      "name": "CrossPathsExploreCard",
+      "file": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
+      "role": "composition",
+      "shapeHash": "960b35e0d017362fb8a88640b38f1c04e1048e5ea2c569fc883cecca2304c6fe",
+      "coarseShapeHash": "c67dbad36d16f6158a227e14ef9666b0cfcfafe8e1c506fd69b96b6117a917cf",
+      "simhash128": "131b619ad4ad94ea468d9f976c80e537",
+      "tokenStreamLength": 41,
+      "coarseTokenStreamLength": 41,
+      "usageCountRaw": 4,
+      "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
+      "hasWidgetHelpers": false
+    },
+    {
+      "name": "CrossPathsProfilePreviewSheet",
+      "file": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
+      "role": "composition",
+      "shapeHash": "b24e928709eda1034a37af8361d098ea9d1ec5481d4a9e7d474ba015358610f0",
+      "coarseShapeHash": "a042f4d88182c2f679d4983221f569c53f028178c91c0e17d9987e8dae025997",
+      "simhash128": "594ddd8d9f9bdaba264ae7f9fe7aade0",
+      "tokenStreamLength": 53,
+      "coarseTokenStreamLength": 53,
+      "usageCountRaw": 3,
+      "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
+      "hasWidgetHelpers": false
+    },
+    {
       "name": "CustomQuestionnaireFields",
       "file": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
       "role": "feature-adapter",
@@ -5581,7 +5620,7 @@
       "simhash128": "601db814d6adc7bcbeceed51f1a53d22",
       "tokenStreamLength": 16,
       "coarseTokenStreamLength": 16,
-      "usageCountRaw": 10,
+      "usageCountRaw": 11,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -6109,11 +6148,11 @@
       "name": "EventDetailScreen",
       "file": "lib/events/presentation/event_detail_screen.dart",
       "role": "screen",
-      "shapeHash": "797ea001f97957235f258e9e3a43d389b083943fa4b549e5652e366b79ace760",
-      "coarseShapeHash": "8910919dc3ac81e7793db943220dd50af4e1deb42cb4875219ddff6fe3ac2427",
-      "simhash128": "c493726df766bab23db5a214c229b15e",
-      "tokenStreamLength": 137,
-      "coarseTokenStreamLength": 137,
+      "shapeHash": "3ec03abcc0569569126578b95a4ba77095d24924edc7c300014cc8a39260368d",
+      "coarseShapeHash": "84b1093e126ef27ad2342fcf97227eb9fe81e4155ce63d4cf09ab23dd56aa249",
+      "simhash128": "c493724d3764b8b215a5a214c228b15f",
+      "tokenStreamLength": 144,
+      "coarseTokenStreamLength": 144,
       "usageCountRaw": 17,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
@@ -7487,11 +7526,11 @@
       "name": "ExploreScreen",
       "file": "lib/explore/presentation/explore_screen.dart",
       "role": "screen",
-      "shapeHash": "20d702e16c1b73edea5555307ab2cc4e4c768aa6cdd91e9efc76e63d50cf0836",
-      "coarseShapeHash": "6769e2d88b7601d3e80fe11e6c4e214c29a84d7114b166f22bed3b56fcb022c4",
-      "simhash128": "e22c837bebbea5b96f47e005e04adbbf",
-      "tokenStreamLength": 163,
-      "coarseTokenStreamLength": 163,
+      "shapeHash": "a703fd900e01f8771f8921460ca3689038aa613c196694f3222a77e3393a66fe",
+      "coarseShapeHash": "3cdea88ef229c7d58ebe37498e46972b744bd2f6a93a7838f6491594cff22686",
+      "simhash128": "c465c27bc3baa5a9c646e085e04acbbe",
+      "tokenStreamLength": 186,
+      "coarseTokenStreamLength": 186,
       "usageCountRaw": 11,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
@@ -10963,7 +11002,7 @@
       "simhash128": "cfefaff8be932ffcda35b210afdb5e65",
       "tokenStreamLength": 17,
       "coarseTokenStreamLength": 17,
-      "usageCountRaw": 100,
+      "usageCountRaw": 101,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -11197,7 +11236,7 @@
       "simhash128": "091b5aca4cd243d2a6286e55a4a35038",
       "tokenStreamLength": 16,
       "coarseTokenStreamLength": 16,
-      "usageCountRaw": 7,
+      "usageCountRaw": 8,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -17587,6 +17626,30 @@
     },
     {
       "rank": 130,
+      "a": "CrossPathsEventContextCard",
+      "b": "LiveStepContextCard",
+      "jaccard": 0.1373,
+      "containment": 0.4667,
+      "score": 0.4667,
+      "smallWidgetMultisetJaccard": 0,
+      "hamming": 59,
+      "flags": [],
+      "detectors": [
+        "name"
+      ],
+      "signals": [],
+      "nameStems": [
+        "ContextCard"
+      ],
+      "visualHamming": null,
+      "selectionSources": [
+        "name-family"
+      ],
+      "absorbCandidate": false,
+      "decisionRefs": []
+    },
+    {
+      "rank": 131,
       "a": "HostEventSummaryRow",
       "b": "HostManageMetaRow",
       "jaccard": 0.119,
@@ -17610,7 +17673,7 @@
       "decisionRefs": []
     },
     {
-      "rank": 131,
+      "rank": 132,
       "a": "CompanionPaperScaffold",
       "b": "CompanionStageScaffold",
       "jaccard": 0.2727,
@@ -17636,7 +17699,7 @@
       ]
     },
     {
-      "rank": 132,
+      "rank": 133,
       "a": "HostClubsScaffold",
       "b": "HostEventsScaffold",
       "jaccard": 0.1469,
@@ -17662,7 +17725,7 @@
       ]
     },
     {
-      "rank": 133,
+      "rank": 134,
       "a": "EventSuccessPromptCard",
       "b": "StagePromptCard",
       "jaccard": 0.1429,
@@ -17688,7 +17751,7 @@
       ]
     },
     {
-      "rank": 134,
+      "rank": 135,
       "a": "HostBroadcastComposerSheet",
       "b": "HostTeamAddHostSheet",
       "jaccard": 0.1341,
@@ -17712,7 +17775,7 @@
       "decisionRefs": []
     },
     {
-      "rank": 135,
+      "rank": 136,
       "a": "RecapHeroSkeleton",
       "b": "RecapStatSkeleton",
       "jaccard": 0.1739,
@@ -17738,7 +17801,7 @@
       ]
     },
     {
-      "rank": 136,
+      "rank": 137,
       "a": "ExploreEventsEmptySliver",
       "b": "ExploreEventsLoadingSliver",
       "jaccard": 0.16,
@@ -17764,7 +17827,7 @@
       ]
     },
     {
-      "rank": 137,
+      "rank": 138,
       "a": "ExploreExternalEventRow",
       "b": "ExploreFeedClubRow",
       "jaccard": 0.2,
@@ -17790,7 +17853,7 @@
       ]
     },
     {
-      "rank": 138,
+      "rank": 139,
       "a": "ProfileSurfaceHeroSkeleton",
       "b": "RecapHeroSkeleton",
       "jaccard": 0.1765,
@@ -17816,7 +17879,7 @@
       "decisionRefs": []
     },
     {
-      "rank": 139,
+      "rank": 140,
       "a": "PaymentCheckoutSheet",
       "b": "PaymentReceiptSheet",
       "jaccard": 0.1441,
@@ -17842,7 +17905,7 @@
       ]
     },
     {
-      "rank": 140,
+      "rank": 141,
       "a": "RotationOverridePairEditor",
       "b": "RotationOverrideRoundEditor",
       "jaccard": 0.0889,
@@ -17868,7 +17931,7 @@
       ]
     },
     {
-      "rank": 141,
+      "rank": 142,
       "a": "ClubPostHomeCard",
       "b": "ClubShareCard",
       "jaccard": 0.1806,
@@ -17892,7 +17955,7 @@
       "decisionRefs": []
     },
     {
-      "rank": 142,
+      "rank": 143,
       "a": "BookingConflictEventRow",
       "b": "ExploreExternalEventRow",
       "jaccard": 0.1753,
@@ -17918,7 +17981,7 @@
       ]
     },
     {
-      "rank": 143,
+      "rank": 144,
       "a": "HostAnalyticsReportSkeleton",
       "b": "UserAnalyticsReportSkeleton",
       "jaccard": 0.038,
@@ -17944,7 +18007,7 @@
       ]
     },
     {
-      "rank": 144,
+      "rank": 145,
       "a": "PaymentHistoryScreen",
       "b": "ReviewsHistoryScreen",
       "jaccard": 0.1569,
@@ -17970,7 +18033,7 @@
       ]
     },
     {
-      "rank": 145,
+      "rank": 146,
       "a": "AttendeeQaControls",
       "b": "ManualQaControls",
       "jaccard": 0.129,
@@ -17996,7 +18059,7 @@
       ]
     },
     {
-      "rank": 146,
+      "rank": 147,
       "a": "PaperProgressRail",
       "b": "QuestionProgressRail",
       "jaccard": 0.0896,
@@ -18022,7 +18085,7 @@
       ]
     },
     {
-      "rank": 147,
+      "rank": 148,
       "a": "ClubDetailLoadingSliverBody",
       "b": "ClubDetailSliverBody",
       "jaccard": 0.0632,
@@ -18047,7 +18110,7 @@
       "decisionRefs": []
     },
     {
-      "rank": 148,
+      "rank": 149,
       "a": "ClubReviewsSection",
       "b": "EventReviewsSection",
       "jaccard": 0.0526,
@@ -18073,7 +18136,7 @@
       ]
     },
     {
-      "rank": 149,
+      "rank": 150,
       "a": "HostAnalyticsReportView",
       "b": "UserAnalyticsReportView",
       "jaccard": 0.0769,
@@ -18099,7 +18162,7 @@
       ]
     },
     {
-      "rank": 150,
+      "rank": 151,
       "a": "WingmanCandidateRow",
       "b": "WingmanRequestHostRow",
       "jaccard": 0.1364,
@@ -18125,7 +18188,7 @@
       ]
     },
     {
-      "rank": 151,
+      "rank": 152,
       "a": "HostAnalyticsTrendPanel",
       "b": "UserAnalyticsTrendPanel",
       "jaccard": 0.1235,
@@ -18151,7 +18214,7 @@
       ]
     },
     {
-      "rank": 152,
+      "rank": 153,
       "a": "CreateClubScreen",
       "b": "CreateEventScreen",
       "jaccard": 0.1404,
@@ -18177,7 +18240,7 @@
       ]
     },
     {
-      "rank": 153,
+      "rank": 154,
       "a": "EventSuccessQuestionnaireConfigEditor",
       "b": "EventSuccessStructureConfigEditor",
       "jaccard": 0.1429,
@@ -18203,7 +18266,7 @@
       ]
     },
     {
-      "rank": 154,
+      "rank": 155,
       "a": "HostAnalyticsMetricGridSkeleton",
       "b": "VibeGridSkeleton",
       "jaccard": 0.125,
@@ -18231,7 +18294,7 @@
       ]
     },
     {
-      "rank": 155,
+      "rank": 156,
       "a": "ProfilePhotosSection",
       "b": "ProfilePhotosSkeletonSection",
       "jaccard": 0.12,
@@ -18255,7 +18318,7 @@
       "decisionRefs": []
     },
     {
-      "rank": 156,
+      "rank": 157,
       "a": "CatchFormRangeRowEditor",
       "b": "CatchFormTextRowEditor",
       "jaccard": 0.1053,
@@ -18279,7 +18342,7 @@
       "decisionRefs": []
     },
     {
-      "rank": 157,
+      "rank": 158,
       "a": "EventPolicyLabScreen",
       "b": "EventSuccessLabScreen",
       "jaccard": 0.1014,
@@ -18306,7 +18369,33 @@
       ]
     },
     {
-      "rank": 158,
+      "rank": 159,
+      "a": "ClubDetailScreen",
+      "b": "EventDetailScreen",
+      "jaccard": 0.0901,
+      "containment": 0.25,
+      "score": 0.25,
+      "smallWidgetMultisetJaccard": 0,
+      "hamming": 54,
+      "flags": [],
+      "detectors": [
+        "name"
+      ],
+      "signals": [],
+      "nameStems": [
+        "DetailScreen"
+      ],
+      "visualHamming": null,
+      "selectionSources": [
+        "name-family"
+      ],
+      "absorbCandidate": false,
+      "decisionRefs": [
+        "ranked-pair: ClubDetailScreen/EventDetailScreen"
+      ]
+    },
+    {
+      "rank": 160,
       "a": "CatchesProfileReviewSkeleton",
       "b": "CatchesTopOverlaySkeleton",
       "jaccard": 0.0732,
@@ -18332,7 +18421,7 @@
       ]
     },
     {
-      "rank": 159,
+      "rank": 161,
       "a": "PaperExpectationCard",
       "b": "PaperPrivacyCard",
       "jaccard": 0.125,
@@ -18358,7 +18447,7 @@
       ]
     },
     {
-      "rank": 160,
+      "rank": 162,
       "a": "DraftPickerSheet",
       "b": "ExploreCityPickerSheet",
       "jaccard": 0.0893,
@@ -18384,7 +18473,7 @@
       ]
     },
     {
-      "rank": 161,
+      "rank": 163,
       "a": "MicroPodCard",
       "b": "MicroPodsHostCard",
       "jaccard": 0.0989,
@@ -18410,7 +18499,7 @@
       ]
     },
     {
-      "rank": 162,
+      "rank": 164,
       "a": "ChatBlastComposerSheet",
       "b": "HostBroadcastComposerSheet",
       "jaccard": 0.1028,
@@ -18436,7 +18525,7 @@
       ]
     },
     {
-      "rank": 163,
+      "rank": 165,
       "a": "ClubHostRow",
       "b": "ClubIndexRow",
       "jaccard": 0.1048,
@@ -18460,33 +18549,7 @@
       "decisionRefs": []
     },
     {
-      "rank": 164,
-      "a": "ClubDetailScreen",
-      "b": "EventDetailScreen",
-      "jaccard": 0.0734,
-      "containment": 0.2,
-      "score": 0.2,
-      "smallWidgetMultisetJaccard": 0,
-      "hamming": 56,
-      "flags": [],
-      "detectors": [
-        "name"
-      ],
-      "signals": [],
-      "nameStems": [
-        "DetailScreen"
-      ],
-      "visualHamming": null,
-      "selectionSources": [
-        "name-family"
-      ],
-      "absorbCandidate": false,
-      "decisionRefs": [
-        "ranked-pair: ClubDetailScreen/EventDetailScreen"
-      ]
-    },
-    {
-      "rank": 165,
+      "rank": 166,
       "a": "HostAnalyticsEventList",
       "b": "HostEventParticipantsList",
       "jaccard": 0.0714,
@@ -18510,7 +18573,7 @@
       "decisionRefs": []
     },
     {
-      "rank": 166,
+      "rank": 167,
       "a": "EventLocationMapScreen",
       "b": "ExploreMapScreen",
       "jaccard": 0.0842,
@@ -18536,7 +18599,7 @@
       ]
     },
     {
-      "rank": 167,
+      "rank": 168,
       "a": "PaymentConfirmationScreen",
       "b": "PaymentHistoryScreen",
       "jaccard": 0.087,
@@ -18562,7 +18625,7 @@
       ]
     },
     {
-      "rank": 168,
+      "rank": 169,
       "a": "PaymentConfirmationBodyController",
       "b": "PaymentPendingCheckoutController",
       "jaccard": 0.0588,
@@ -18588,7 +18651,7 @@
       ]
     },
     {
-      "rank": 169,
+      "rank": 170,
       "a": "ExploreCityPickerSheet",
       "b": "ExploreFilterSheet",
       "jaccard": 0.058,
@@ -18614,7 +18677,7 @@
       ]
     },
     {
-      "rank": 170,
+      "rank": 171,
       "a": "EditHostedEventRouteScreen",
       "b": "EditHostedEventScreen",
       "jaccard": 0.0274,
@@ -18640,7 +18703,7 @@
       ]
     },
     {
-      "rank": 171,
+      "rank": 172,
       "a": "CalendarStatsHeaderSkeleton",
       "b": "CalendarWeekStripSkeleton",
       "jaccard": 0.0541,
@@ -18664,7 +18727,7 @@
       "decisionRefs": []
     },
     {
-      "rank": 172,
+      "rank": 173,
       "a": "CreateEventScreen",
       "b": "EditHostedEventScreen",
       "jaccard": 0.0741,
@@ -18690,7 +18753,7 @@
       ]
     },
     {
-      "rank": 173,
+      "rank": 174,
       "a": "EventActionCardHeader",
       "b": "ShareCardHeader",
       "jaccard": 0.0682,
@@ -18716,7 +18779,7 @@
       ]
     },
     {
-      "rank": 174,
+      "rank": 175,
       "a": "CalendarDateHeader",
       "b": "CalendarStatsHeader",
       "jaccard": 0.0577,
@@ -18742,7 +18805,7 @@
       ]
     },
     {
-      "rank": 175,
+      "rank": 176,
       "a": "EventPolicyScenarioPicker",
       "b": "EventSuccessTabPicker",
       "jaccard": 0.0333,
@@ -18770,7 +18833,7 @@
       ]
     },
     {
-      "rank": 176,
+      "rank": 177,
       "a": "ActivitySection",
       "b": "ClubActivitySection",
       "jaccard": 0.0476,
@@ -18796,7 +18859,7 @@
       ]
     },
     {
-      "rank": 177,
+      "rank": 178,
       "a": "UserAnalyticsPanel",
       "b": "UserAnalyticsTrendPanel",
       "jaccard": 0.0364,
@@ -18820,7 +18883,7 @@
       "decisionRefs": []
     },
     {
-      "rank": 178,
+      "rank": 179,
       "a": "DashboardErrorScreen",
       "b": "ForceUpdateCheckErrorScreen",
       "jaccard": 0.0196,
@@ -18846,7 +18909,31 @@
       ]
     },
     {
-      "rank": 179,
+      "rank": 180,
+      "a": "CrossPathsEventContextCard",
+      "b": "CrossPathsExploreCard",
+      "jaccard": 0.0513,
+      "containment": 0.1026,
+      "score": 0.1026,
+      "smallWidgetMultisetJaccard": 0,
+      "hamming": 62,
+      "flags": [],
+      "detectors": [
+        "name"
+      ],
+      "signals": [],
+      "nameStems": [
+        "CrossCard"
+      ],
+      "visualHamming": null,
+      "selectionSources": [
+        "name-family"
+      ],
+      "absorbCandidate": false,
+      "decisionRefs": []
+    },
+    {
+      "rank": 181,
       "a": "ChatConversationsList",
       "b": "ChatMessageList",
       "jaccard": 0.0294,
@@ -18872,7 +18959,7 @@
       ]
     },
     {
-      "rank": 180,
+      "rank": 182,
       "a": "HostOrganizerMetricGrid",
       "b": "HostReportSignalGrid",
       "jaccard": 0.04,
@@ -18896,7 +18983,7 @@
       "decisionRefs": []
     },
     {
-      "rank": 181,
+      "rank": 183,
       "a": "ProfileInlinePromptEntryEditor",
       "b": "ProfileInlineRangeEditor",
       "jaccard": 0.037,
@@ -18922,7 +19009,7 @@
       ]
     },
     {
-      "rank": 182,
+      "rank": 184,
       "a": "ProfilePhoto",
       "b": "RecapProfilePhoto",
       "jaccard": 0.037,
@@ -18950,7 +19037,7 @@
       ]
     },
     {
-      "rank": 183,
+      "rank": 185,
       "a": "ClubHostSection",
       "b": "EventSuccessHostSection",
       "jaccard": 0.029,
@@ -18976,7 +19063,7 @@
       "decisionRefs": []
     },
     {
-      "rank": 184,
+      "rank": 186,
       "a": "PublicProfileBody",
       "b": "PublicProfileScreenBody",
       "jaccard": 0.0357,
@@ -19000,7 +19087,7 @@
       "decisionRefs": []
     },
     {
-      "rank": 185,
+      "rank": 187,
       "a": "CatchRosterActionCell",
       "b": "CatchRosterTileCell",
       "jaccard": 0.0286,
@@ -19026,7 +19113,7 @@
       ]
     },
     {
-      "rank": 186,
+      "rank": 188,
       "a": "ProfileScreen",
       "b": "PublicProfileScreen",
       "jaccard": 0.0123,
@@ -19050,7 +19137,7 @@
       "decisionRefs": []
     },
     {
-      "rank": 187,
+      "rank": 189,
       "a": "PaymentHistorySkeleton",
       "b": "PaymentHistoryTileSkeleton",
       "jaccard": 0,
@@ -19074,7 +19161,7 @@
       "decisionRefs": []
     },
     {
-      "rank": 188,
+      "rank": 190,
       "a": "HostAnalyticsEventTile",
       "b": "HostCapacityTile",
       "jaccard": 0,
@@ -19100,7 +19187,7 @@
       "decisionRefs": []
     },
     {
-      "rank": 189,
+      "rank": 191,
       "a": "ProfileSectionView",
       "b": "ProfileTabScrollView",
       "jaccard": 0,
@@ -19128,7 +19215,7 @@
       ]
     },
     {
-      "rank": 190,
+      "rank": 192,
       "a": "HostRosterFilterHeader",
       "b": "HostTodayHeader",
       "jaccard": 0,
@@ -19152,7 +19239,7 @@
       "decisionRefs": []
     },
     {
-      "rank": 191,
+      "rank": 193,
       "a": "EventPhotoHeroSurface",
       "b": "EventSuccessHeroSurface",
       "jaccard": 0,
@@ -19177,7 +19264,7 @@
       "decisionRefs": []
     },
     {
-      "rank": 192,
+      "rank": 194,
       "a": "AttendedEventTile",
       "b": "HostAnalyticsEventTile",
       "jaccard": 0,
@@ -19203,7 +19290,7 @@
       ]
     },
     {
-      "rank": 193,
+      "rank": 195,
       "a": "CatchesHubStateView",
       "b": "HostCreateEventRouteStateView",
       "jaccard": 0,
@@ -19227,7 +19314,7 @@
       "decisionRefs": []
     },
     {
-      "rank": 194,
+      "rank": 196,
       "a": "EventActionCard",
       "b": "HostEmptyActionCard",
       "jaccard": 0,
@@ -19253,7 +19340,7 @@
       ]
     },
     {
-      "rank": 195,
+      "rank": 197,
       "a": "EventAgendaTile",
       "b": "EventDetailPhotoStripTile",
       "jaccard": 0,
@@ -19279,7 +19366,7 @@
       ]
     },
     {
-      "rank": 196,
+      "rank": 198,
       "a": "EventSuccessDefaultsPanel",
       "b": "EventSuccessHostPanel",
       "jaccard": 0,
@@ -19307,7 +19394,7 @@
       ]
     },
     {
-      "rank": 197,
+      "rank": 199,
       "a": "EventSuccessHostTabBody",
       "b": "SelfProfileTabBody",
       "jaccard": 0,
@@ -19333,7 +19420,7 @@
       "decisionRefs": []
     },
     {
-      "rank": 198,
+      "rank": 200,
       "a": "GuestWhoIsGoing",
       "b": "WhoIsGoing",
       "jaccard": 0,
@@ -19357,56 +19444,6 @@
       "decisionRefs": [
         "n171-is-going"
       ]
-    },
-    {
-      "rank": 199,
-      "a": "HostAnalyticsDualBar",
-      "b": "HostRosterSearchBar",
-      "jaccard": 0,
-      "containment": 0,
-      "score": 0,
-      "smallWidgetMultisetJaccard": 0,
-      "hamming": 63,
-      "flags": [],
-      "detectors": [
-        "name"
-      ],
-      "signals": [],
-      "nameStems": [
-        "HostBar"
-      ],
-      "visualHamming": null,
-      "selectionSources": [
-        "name-family"
-      ],
-      "absorbCandidate": false,
-      "decisionRefs": []
-    },
-    {
-      "rank": 200,
-      "a": "HostAnalyticsReportView",
-      "b": "HostCreateEventRouteStateView",
-      "jaccard": 0,
-      "containment": 0,
-      "score": 0,
-      "smallWidgetMultisetJaccard": 0,
-      "hamming": 68,
-      "flags": [
-        "cross-role"
-      ],
-      "detectors": [
-        "name"
-      ],
-      "signals": [],
-      "nameStems": [
-        "HostView"
-      ],
-      "visualHamming": null,
-      "selectionSources": [
-        "name-family"
-      ],
-      "absorbCandidate": false,
-      "decisionRefs": []
     }
   ],
   "nameFamilies": [
@@ -20415,7 +20452,7 @@
         "ProfilePhoto",
         "RecapProfilePhoto"
       ],
-      "usageSum": 100,
+      "usageSum": 101,
       "scope": "mixed"
     },
     {
@@ -21211,7 +21248,29 @@
       "scope": "screen"
     },
     {
-      "id": "n145-event-picker",
+      "id": "n145-context-card",
+      "stem": "ContextCard",
+      "stemType": "final-two",
+      "members": [
+        "CrossPathsEventContextCard",
+        "LiveStepContextCard"
+      ],
+      "usageSum": 7,
+      "scope": "widget"
+    },
+    {
+      "id": "n146-cross-card",
+      "stem": "CrossCard",
+      "stemType": "outer",
+      "members": [
+        "CrossPathsEventContextCard",
+        "CrossPathsExploreCard"
+      ],
+      "usageSum": 7,
+      "scope": "widget"
+    },
+    {
+      "id": "n147-event-picker",
       "stem": "EventPicker",
       "stemType": "outer",
       "members": [
@@ -21222,7 +21281,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n146-history-list",
+      "id": "n148-history-list",
       "stem": "HistoryList",
       "stemType": "final-two",
       "members": [
@@ -21233,7 +21292,7 @@
       "scope": "screen"
     },
     {
-      "id": "n147-host-sheet",
+      "id": "n149-host-sheet",
       "stem": "HostSheet",
       "stemType": "outer",
       "members": [
@@ -21244,7 +21303,7 @@
       "scope": "widget"
     },
     {
-      "id": "n148-host-summary",
+      "id": "n150-host-summary",
       "stem": "HostSummary",
       "stemType": "outer",
       "members": [
@@ -21255,7 +21314,7 @@
       "scope": "widget"
     },
     {
-      "id": "n149-host-view",
+      "id": "n151-host-view",
       "stem": "HostView",
       "stemType": "outer",
       "members": [
@@ -21266,7 +21325,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n150-is-going",
+      "id": "n152-is-going",
       "stem": "IsGoing",
       "stemType": "final-two",
       "members": [
@@ -21277,7 +21336,7 @@
       "scope": "widget"
     },
     {
-      "id": "n151-page-body",
+      "id": "n153-page-body",
       "stem": "PageBody",
       "stemType": "final-two",
       "members": [
@@ -21288,7 +21347,7 @@
       "scope": "widget"
     },
     {
-      "id": "n152-paper-row",
+      "id": "n154-paper-row",
       "stem": "PaperRow",
       "stemType": "outer",
       "members": [
@@ -21299,7 +21358,7 @@
       "scope": "widget"
     },
     {
-      "id": "n153-payment-body",
+      "id": "n155-payment-body",
       "stem": "PaymentBody",
       "stemType": "outer",
       "members": [
@@ -21310,7 +21369,7 @@
       "scope": "screen"
     },
     {
-      "id": "n154-prompt-card",
+      "id": "n156-prompt-card",
       "stem": "PromptCard",
       "stemType": "final-two",
       "members": [
@@ -21321,7 +21380,7 @@
       "scope": "widget"
     },
     {
-      "id": "n155-report-skeleton",
+      "id": "n157-report-skeleton",
       "stem": "ReportSkeleton",
       "stemType": "final-two",
       "members": [
@@ -21332,7 +21391,7 @@
       "scope": "widget"
     },
     {
-      "id": "n156-required-screen",
+      "id": "n158-required-screen",
       "stem": "RequiredScreen",
       "stemType": "final-two",
       "members": [
@@ -21343,7 +21402,7 @@
       "scope": "screen"
     },
     {
-      "id": "n157-schedule-card",
+      "id": "n159-schedule-card",
       "stem": "ScheduleCard",
       "stemType": "final-two",
       "members": [
@@ -21354,7 +21413,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n158-skeleton-section",
+      "id": "n160-skeleton-section",
       "stem": "SkeletonSection",
       "stemType": "final-two",
       "members": [
@@ -21365,7 +21424,7 @@
       "scope": "widget"
     },
     {
-      "id": "n159-summary-card",
+      "id": "n161-summary-card",
       "stem": "SummaryCard",
       "stemType": "final-two",
       "members": [
@@ -21376,7 +21435,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n160-trend-panel",
+      "id": "n162-trend-panel",
       "stem": "TrendPanel",
       "stemType": "final-two",
       "members": [
@@ -21387,7 +21446,7 @@
       "scope": "widget"
     },
     {
-      "id": "n161-celebration-icon",
+      "id": "n163-celebration-icon",
       "stem": "CelebrationIcon",
       "stemType": "final-two",
       "members": [
@@ -21398,7 +21457,7 @@
       "scope": "widget"
     },
     {
-      "id": "n162-club-list",
+      "id": "n164-club-list",
       "stem": "ClubList",
       "stemType": "outer",
       "members": [
@@ -21409,7 +21468,7 @@
       "scope": "widget"
     },
     {
-      "id": "n163-details-card",
+      "id": "n165-details-card",
       "stem": "DetailsCard",
       "stemType": "final-two",
       "members": [
@@ -21420,7 +21479,7 @@
       "scope": "widget"
     },
     {
-      "id": "n164-event-line",
+      "id": "n166-event-line",
       "stem": "EventLine",
       "stemType": "outer",
       "members": [
@@ -21431,7 +21490,7 @@
       "scope": "screen"
     },
     {
-      "id": "n165-event-row",
+      "id": "n167-event-row",
       "stem": "EventRow",
       "stemType": "outer",
       "members": [
@@ -21442,7 +21501,7 @@
       "scope": "screen"
     },
     {
-      "id": "n166-history-skeleton",
+      "id": "n168-history-skeleton",
       "stem": "HistorySkeleton",
       "stemType": "final-two",
       "members": [
@@ -21453,7 +21512,7 @@
       "scope": "screen"
     },
     {
-      "id": "n167-host-bar",
+      "id": "n169-host-bar",
       "stem": "HostBar",
       "stemType": "outer",
       "members": [
@@ -21464,7 +21523,7 @@
       "scope": "widget"
     },
     {
-      "id": "n168-host-grid",
+      "id": "n170-host-grid",
       "stem": "HostGrid",
       "stemType": "outer",
       "members": [
@@ -21475,7 +21534,7 @@
       "scope": "widget"
     },
     {
-      "id": "n169-host-shell",
+      "id": "n171-host-shell",
       "stem": "HostShell",
       "stemType": "outer",
       "members": [
@@ -21486,7 +21545,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n170-override-sheet",
+      "id": "n172-override-sheet",
       "stem": "OverrideSheet",
       "stemType": "final-two",
       "members": [
@@ -21497,7 +21556,7 @@
       "scope": "widget"
     },
     {
-      "id": "n171-payment-skeleton",
+      "id": "n173-payment-skeleton",
       "stem": "PaymentSkeleton",
       "stemType": "outer",
       "members": [
@@ -21508,7 +21567,7 @@
       "scope": "screen"
     },
     {
-      "id": "n172-policy-card",
+      "id": "n174-policy-card",
       "stem": "PolicyCard",
       "stemType": "final-two",
       "members": [
@@ -21519,7 +21578,7 @@
       "scope": "screen"
     },
     {
-      "id": "n173-progress-rail",
+      "id": "n175-progress-rail",
       "stem": "ProgressRail",
       "stemType": "final-two",
       "members": [
@@ -21530,7 +21589,7 @@
       "scope": "widget"
     },
     {
-      "id": "n174-qa-controls",
+      "id": "n176-qa-controls",
       "stem": "QaControls",
       "stemType": "final-two",
       "members": [
@@ -21541,7 +21600,7 @@
       "scope": "screen"
     },
     {
-      "id": "n175-read-card",
+      "id": "n177-read-card",
       "stem": "ReadCard",
       "stemType": "outer",
       "members": [
@@ -21552,7 +21611,7 @@
       "scope": "screen"
     },
     {
-      "id": "n176-rotation-editor",
+      "id": "n178-rotation-editor",
       "stem": "RotationEditor",
       "stemType": "outer",
       "members": [
@@ -21563,7 +21622,7 @@
       "scope": "widget"
     },
     {
-      "id": "n177-round-editor",
+      "id": "n179-round-editor",
       "stem": "RoundEditor",
       "stemType": "final-two",
       "members": [
@@ -21574,7 +21633,7 @@
       "scope": "widget"
     },
     {
-      "id": "n178-scroll-view",
+      "id": "n180-scroll-view",
       "stem": "ScrollView",
       "stemType": "final-two",
       "members": [
@@ -21585,7 +21644,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n179-stage-line",
+      "id": "n181-stage-line",
       "stem": "StageLine",
       "stemType": "outer",
       "members": [
@@ -21596,7 +21655,7 @@
       "scope": "widget"
     },
     {
-      "id": "n180-wingman-row",
+      "id": "n182-wingman-row",
       "stem": "WingmanRow",
       "stemType": "outer",
       "members": [
@@ -21607,7 +21666,7 @@
       "scope": "widget"
     },
     {
-      "id": "n181-explore-card",
+      "id": "n183-explore-card",
       "stem": "ExploreCard",
       "stemType": "outer",
       "members": [
@@ -21618,7 +21677,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n182-host-header",
+      "id": "n184-host-header",
       "stem": "HostHeader",
       "stemType": "outer",
       "members": [
@@ -21629,7 +21688,7 @@
       "scope": "widget"
     },
     {
-      "id": "n183-tile-skeleton",
+      "id": "n185-tile-skeleton",
       "stem": "TileSkeleton",
       "stemType": "final-two",
       "members": [
@@ -21640,7 +21699,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n184-card-header",
+      "id": "n186-card-header",
       "stem": "CardHeader",
       "stemType": "final-two",
       "members": [
@@ -21651,7 +21710,7 @@
       "scope": "widget"
     },
     {
-      "id": "n185-error-screen",
+      "id": "n187-error-screen",
       "stem": "ErrorScreen",
       "stemType": "final-two",
       "members": [
@@ -21662,7 +21721,7 @@
       "scope": "screen"
     },
     {
-      "id": "n186-event-cta",
+      "id": "n188-event-cta",
       "stem": "EventCta",
       "stemType": "outer",
       "members": [
@@ -21673,7 +21732,7 @@
       "scope": "widget"
     },
     {
-      "id": "n187-loading-card",
+      "id": "n189-loading-card",
       "stem": "LoadingCard",
       "stemType": "final-two",
       "members": [
@@ -21684,7 +21743,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n188-profile-view",
+      "id": "n190-profile-view",
       "stem": "ProfileView",
       "stemType": "outer",
       "members": [
@@ -21695,7 +21754,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n189-saved-sliver",
+      "id": "n191-saved-sliver",
       "stem": "SavedSliver",
       "stemType": "outer",
       "members": [
@@ -21706,7 +21765,7 @@
       "scope": "screen"
     },
     {
-      "id": "n190-screen-loading",
+      "id": "n192-screen-loading",
       "stem": "ScreenLoading",
       "stemType": "final-two",
       "members": [
@@ -21717,7 +21776,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n191-grid-skeleton",
+      "id": "n193-grid-skeleton",
       "stem": "GridSkeleton",
       "stemType": "final-two",
       "members": [
@@ -21728,7 +21787,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n192-roster-cell",
+      "id": "n194-roster-cell",
       "stem": "RosterCell",
       "stemType": "outer",
       "members": [
@@ -21739,7 +21798,7 @@
       "scope": "widget"
     },
     {
-      "id": "n193-state-view",
+      "id": "n195-state-view",
       "stem": "StateView",
       "stemType": "final-two",
       "members": [
@@ -21750,7 +21809,7 @@
       "scope": "screen"
     },
     {
-      "id": "n194-stat-skeleton",
+      "id": "n196-stat-skeleton",
       "stem": "StatSkeleton",
       "stemType": "final-two",
       "members": [
@@ -21761,7 +21820,7 @@
       "scope": "screen"
     },
     {
-      "id": "n195-companion-skeleton",
+      "id": "n197-companion-skeleton",
       "stem": "CompanionSkeleton",
       "stemType": "outer",
       "members": [
@@ -21772,7 +21831,7 @@
       "scope": "screen"
     },
     {
-      "id": "n196-preview-body",
+      "id": "n198-preview-body",
       "stem": "PreviewBody",
       "stemType": "outer",
       "members": [
@@ -21783,7 +21842,7 @@
       "scope": "screen"
     },
     {
-      "id": "n197-recap-skeleton",
+      "id": "n199-recap-skeleton",
       "stem": "RecapSkeleton",
       "stemType": "outer",
       "members": [

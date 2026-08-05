@@ -65,9 +65,13 @@ class CrossPathsSuggestion {
     required this.reasonCodes,
     required this.suggestionToken,
     required this.tokenExpiresAt,
+    this.rankingVersion = 1,
   });
 
-  factory CrossPathsSuggestion.fromCallableData(Object? value) {
+  factory CrossPathsSuggestion.fromCallableData(
+    Object? value, {
+    int rankingVersion = 1,
+  }) {
     final json = _stringMap(value, 'suggestion');
     final person = _stringMap(json['person'], 'suggestion.person');
     final event = _stringMap(json['event'], 'suggestion.event');
@@ -168,6 +172,7 @@ class CrossPathsSuggestion {
           .toList(growable: false),
       suggestionToken: suggestionToken,
       tokenExpiresAt: _requiredDateTime(json, 'tokenExpiresAt'),
+      rankingVersion: rankingVersion,
     );
   }
 
@@ -176,6 +181,7 @@ class CrossPathsSuggestion {
   final List<CrossPathsSuggestionReason> reasonCodes;
   final String suggestionToken;
   final DateTime tokenExpiresAt;
+  final int rankingVersion;
 
   bool get viewerIsBooked =>
       event.viewerBookingStatus == CrossPathsViewerBookingStatus.signedUp;
@@ -198,10 +204,14 @@ class CrossPathsSuggestionsResponse {
         '$schemaVersion/$rankingVersion',
       );
     }
-    final suggestions = _objectList(
-      json['suggestions'],
-      'suggestions',
-    ).map(CrossPathsSuggestion.fromCallableData).toList(growable: false);
+    final suggestions = _objectList(json['suggestions'], 'suggestions')
+        .map(
+          (value) => CrossPathsSuggestion.fromCallableData(
+            value,
+            rankingVersion: rankingVersion,
+          ),
+        )
+        .toList(growable: false);
     if (suggestions.length > 2) {
       throw const FormatException(
         'Cross Paths response exceeded the two-suggestion contract.',

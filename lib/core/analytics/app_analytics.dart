@@ -222,8 +222,11 @@ abstract final class AnalyticsEvents {
   static const clubViewed = 'club_viewed';
   static const clubJoined = 'club_joined';
   static const exploreEventOpened = 'explore_event_opened';
-  static const crossPathsProfileOpened = 'cross_paths_profile_opened';
-  static const crossPathsEventOpened = 'cross_paths_event_opened';
+  static const crossPathsImpression = 'cross_paths_impression';
+  static const crossPathsProfileOpened = 'cross_paths_profile_open';
+  static const crossPathsEventOpened = 'cross_paths_event_open';
+  static const crossPathsBookingStarted = 'cross_paths_booking_started';
+  static const crossPathsBookingCompleted = 'cross_paths_booking_completed';
   static const exploreMapEventSelected = 'explore_map_event_selected';
   static const homeOpened = 'home_opened';
   static const homeModuleImpression = 'home_module_impression';
@@ -265,6 +268,9 @@ abstract final class AnalyticsParameters {
   static const availabilityStatus = 'availability_status';
   static const exploreSource = 'explore_source';
   static const viewerBookingStatus = 'viewer_booking_status';
+  static const position = 'position';
+  static const rankingVersion = 'ranking_version';
+  static const reasonCodes = 'reason_codes';
   static const distanceKm = 'distance_km';
   static const homeState = 'state';
   static const homeModule = 'module';

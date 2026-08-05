@@ -86,6 +86,20 @@ void main() {
     expect(AnalyticsEvents.hostEventCreated, 'host_event_created');
   });
 
+  test('uses the approved Cross Paths funnel event names', () {
+    expect(AnalyticsEvents.crossPathsImpression, 'cross_paths_impression');
+    expect(AnalyticsEvents.crossPathsProfileOpened, 'cross_paths_profile_open');
+    expect(AnalyticsEvents.crossPathsEventOpened, 'cross_paths_event_open');
+    expect(
+      AnalyticsEvents.crossPathsBookingStarted,
+      'cross_paths_booking_started',
+    );
+    expect(
+      AnalyticsEvents.crossPathsBookingCompleted,
+      'cross_paths_booking_completed',
+    );
+  });
+
   test('route observer records unique route names', () {
     final reporter = _FakeAnalyticsReporter();
     final analytics = AppAnalytics(reporter: reporter, shouldCollect: true);

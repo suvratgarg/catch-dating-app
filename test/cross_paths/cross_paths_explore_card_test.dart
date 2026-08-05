@@ -66,6 +66,59 @@ void main() {
     expect(tester.takeException(), isNull);
     expect(find.text('See the event'), findsOneWidget);
   });
+
+  testWidgets('reports one impression when the lazy feed card mounts', (
+    tester,
+  ) async {
+    final fixture = _fixture();
+    var impressions = 0;
+
+    await _pumpCard(
+      tester,
+      CrossPathsExploreCard(
+        suggestion: fixture.suggestion,
+        eventItem: fixture.eventItem,
+        onImpression: () => impressions += 1,
+      ),
+    );
+    await tester.pump();
+
+    expect(impressions, 1);
+  });
+
+  testWidgets('profile preview remains overflow-free at text scale 2', (
+    tester,
+  ) async {
+    final fixture = _fixture();
+    tester.view.physicalSize = const Size(430, 1400);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: MediaQuery(
+          data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+          child: Scaffold(
+            body: Align(
+              alignment: Alignment.bottomCenter,
+              child: CrossPathsProfilePreviewSheet(
+                suggestion: fixture.suggestion,
+                eventItem: fixture.eventItem,
+                onEventSelected: (_) {},
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(tester.takeException(), isNull);
+  });
 }
 
 Future<void> _pumpCard(
@@ -134,8 +187,16 @@ Future<void> _pumpCard(
     'suggestionToken': 'tttttttttttttttttttttttttttttttttttttttt.token',
     'tokenExpiresAt': '2026-08-08T17:00:00.000Z',
   });
+  final displaySuggestion = CrossPathsSuggestion(
+    profile: suggestion.profile.copyWith(profilePhotos: const []),
+    event: suggestion.event,
+    reasonCodes: suggestion.reasonCodes,
+    suggestionToken: suggestion.suggestionToken,
+    tokenExpiresAt: suggestion.tokenExpiresAt,
+    rankingVersion: suggestion.rankingVersion,
+  );
   return (
-    suggestion: suggestion,
+    suggestion: displaySuggestion,
     eventItem: ExploreEventItem(event: event, club: club),
   );
 }

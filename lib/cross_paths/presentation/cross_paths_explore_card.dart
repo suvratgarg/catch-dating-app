@@ -23,24 +23,73 @@ import 'package:flutter/material.dart';
 typedef CrossPathsEventSelected = void Function(ExploreEventItem item);
 typedef CrossPathsProfileSelected =
     void Function(CrossPathsSuggestion suggestion, ExploreEventItem eventItem);
+typedef CrossPathsImpression =
+    void Function(
+      CrossPathsSuggestion suggestion,
+      ExploreEventItem eventItem,
+      int position,
+    );
 
-class CrossPathsExploreCard extends StatelessWidget {
+class CrossPathsExploreCard extends StatefulWidget {
   const CrossPathsExploreCard({
     super.key,
     required this.suggestion,
     required this.eventItem,
     this.onProfileSelected,
     this.onEventSelected,
+    this.onImpression,
   });
 
   final CrossPathsSuggestion suggestion;
   final ExploreEventItem eventItem;
   final VoidCallback? onProfileSelected;
   final CrossPathsEventSelected? onEventSelected;
+  final VoidCallback? onImpression;
+
+  @override
+  State<CrossPathsExploreCard> createState() => _CrossPathsExploreCardState();
+}
+
+class _CrossPathsExploreCardState extends State<CrossPathsExploreCard> {
+  String? _reportedImpressionKey;
+
+  @override
+  void initState() {
+    super.initState();
+    _scheduleImpression();
+  }
+
+  @override
+  void didUpdateWidget(covariant CrossPathsExploreCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.suggestion.suggestionToken !=
+            widget.suggestion.suggestionToken ||
+        oldWidget.onImpression != widget.onImpression) {
+      _scheduleImpression();
+    }
+  }
+
+  void _scheduleImpression() {
+    final impressionKey = widget.suggestion.suggestionToken;
+    if (widget.onImpression == null ||
+        _reportedImpressionKey == impressionKey) {
+      return;
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted ||
+          widget.onImpression == null ||
+          _reportedImpressionKey == widget.suggestion.suggestionToken) {
+        return;
+      }
+      _reportedImpressionKey = widget.suggestion.suggestionToken;
+      widget.onImpression!();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final suggestion = widget.suggestion;
     final profile = suggestion.profile;
     final firstName = crossPathsFirstName(profile.name);
     final profileSemantics = context.l10n
@@ -59,12 +108,12 @@ class CrossPathsExploreCard extends StatelessWidget {
         ),
         gapH8,
         Semantics(
-          button: onProfileSelected != null,
+          button: widget.onProfileSelected != null,
           label: profileSemantics,
-          onTap: onProfileSelected,
+          onTap: widget.onProfileSelected,
           child: ExcludeSemantics(
             child: CatchPersonPolaroid(
-              onTap: onProfileSelected,
+              onTap: widget.onProfileSelected,
               showArrow: true,
               media: primaryPhotoUrl == null
                   ? CatchNetworkImageFallback(icon: CatchIcons.personOutlined)
@@ -79,8 +128,8 @@ class CrossPathsExploreCard extends StatelessWidget {
         gapH10,
         CrossPathsEventContextCard(
           suggestion: suggestion,
-          eventItem: eventItem,
-          onEventSelected: onEventSelected,
+          eventItem: widget.eventItem,
+          onEventSelected: widget.onEventSelected,
         ),
       ],
     );
@@ -140,7 +189,10 @@ class CrossPathsEventContextCard extends StatelessWidget {
                           ),
                       maxLines: compact ? 1 : 2,
                       overflow: TextOverflow.ellipsis,
-                      style: CatchTextStyles.titleS(context, color: t.ink),
+                      style: CatchTextStyles.sectionTitle(
+                        context,
+                        color: t.ink,
+                      ),
                     ),
                     gapH4,
                     Text(
@@ -207,68 +259,63 @@ class CrossPathsProfilePreviewSheet extends StatelessWidget {
     final t = CatchTokens.of(context);
     return FractionallySizedBox(
       heightFactor: 0.94,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: t.bg,
-          borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(CatchLayout.sheetTopRadius),
-          ),
+      child: CatchSurface(
+        backgroundColor: t.bg,
+        borderWidth: 0,
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(CatchLayout.sheetTopRadius),
         ),
-        child: ClipRRect(
-          borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(CatchLayout.sheetTopRadius),
-          ),
-          child: Column(
-            children: [
-              Padding(
-                padding: CatchInsets.pageHorizontal.copyWith(
-                  top: CatchSpacing.s2,
-                  bottom: CatchSpacing.s2,
-                ),
-                child: Column(
-                  children: [
-                    const CatchBottomSheetGrabber(),
-                    gapH8,
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            context.l10n.crossPathsProfilePreviewTitle,
-                            style: CatchTextStyles.titleL(context),
-                          ),
-                        ),
-                        CatchIconButton.icon(
-                          icon: CatchIcons.closeRounded,
-                          variant: CatchIconButtonVariant.plain,
-                          tooltip:
-                              context.l10n.crossPathsProfilePreviewTooltipClose,
-                          onTap: () => Navigator.of(context).pop(),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+        clipBehavior: Clip.hardEdge,
+        child: Column(
+          children: [
+            Padding(
+              padding: CatchInsets.pageHorizontal.copyWith(
+                top: CatchSpacing.s2,
+                bottom: CatchSpacing.s2,
               ),
-              Expanded(
-                child: ProfileSurface(
-                  profile: suggestion.profile,
-                  mode: ProfileSurfaceMode.publicProfile,
-                ),
-              ),
-              SafeArea(
-                top: false,
-                child: Padding(
-                  padding: CatchInsets.pageBody.copyWith(top: CatchSpacing.s2),
-                  child: CrossPathsEventContextCard(
-                    suggestion: suggestion,
-                    eventItem: eventItem,
-                    onEventSelected: onEventSelected,
-                    compact: true,
+              child: Column(
+                children: [
+                  const CatchBottomSheetGrabber(),
+                  gapH8,
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          context.l10n.crossPathsProfilePreviewTitle,
+                          style: CatchTextStyles.titleL(context),
+                        ),
+                      ),
+                      CatchIconButton.icon(
+                        icon: CatchIcons.closeRounded,
+                        variant: CatchIconButtonVariant.plain,
+                        tooltip:
+                            context.l10n.crossPathsProfilePreviewTooltipClose,
+                        onTap: () => Navigator.of(context).pop(),
+                      ),
+                    ],
                   ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: ProfileSurface(
+                profile: suggestion.profile,
+                mode: ProfileSurfaceMode.publicProfile,
+              ),
+            ),
+            SafeArea(
+              top: false,
+              child: Padding(
+                padding: CatchInsets.pageBody.copyWith(top: CatchSpacing.s2),
+                child: CrossPathsEventContextCard(
+                  suggestion: suggestion,
+                  eventItem: eventItem,
+                  onEventSelected: onEventSelected,
+                  compact: true,
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

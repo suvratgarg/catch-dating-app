@@ -437,6 +437,33 @@ Widget crossPathsExploreCardStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Cross Paths event context',
+  type: CrossPathsEventContextCard,
+  path: '[Explore]/Sections',
+)
+Widget crossPathsEventContextStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'CrossPathsEventContextCard',
+    catalogId: 'card.event.cross_paths_context',
+    children: [
+      _StateCard(
+        label: 'bookable associated event',
+        child: _DeviceFrame(
+          child: Padding(
+            padding: CatchInsets.pageBody,
+            child: CrossPathsEventContextCard(
+              suggestion: _crossPathsSuggestion,
+              eventItem: _feedItems[1],
+              onEventSelected: (_) {},
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Cross Paths profile preview',
   type: CrossPathsProfilePreviewSheet,
   path: '[Explore]/Sections',

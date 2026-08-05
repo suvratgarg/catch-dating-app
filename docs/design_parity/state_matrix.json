@@ -920,14 +920,16 @@
             "lib/explore/presentation/explore_screen.dart",
             "lib/explore/presentation/explore_screen_state.dart",
             "lib/explore/presentation/explore_view_model.dart",
-            "lib/explore/presentation/explore_feed_view_model.dart",
-            "lib/explore/presentation/widgets/explore_header.dart",
+        "lib/explore/presentation/explore_feed_view_model.dart",
+        "lib/explore/presentation/explore_cross_paths_provider.dart",
+        "lib/explore/presentation/widgets/explore_header.dart",
             "lib/explore/presentation/widgets/explore_filter_rail.dart",
             "lib/explore/presentation/widgets/explore_body.dart",
             "lib/explore/presentation/widgets/explore_events_section.dart",
             "lib/explore/presentation/widgets/explore_list.dart",
             "lib/explore/presentation/widgets/explore_event_type_browse_grid.dart",
-            "lib/explore/presentation/widgets/catch_cover_story.dart"
+        "lib/explore/presentation/widgets/catch_cover_story.dart",
+        "lib/cross_paths/presentation/cross_paths_explore_card.dart"
           ],
           "componentIds": [
             "catch.button",
@@ -937,9 +939,10 @@
             "catch.cover_story",
             "catch.event_card",
             "catch.field",
-            "catch.icon_button",
-            "catch.index_row",
-            "catch.surface",
+        "catch.icon_button",
+        "catch.index_row",
+        "catch.person_polaroid",
+        "catch.surface",
             "catch.top_bar"
           ],
           "captureIds": [
@@ -955,8 +958,10 @@
             "explore_offline",
             "explore_search_query",
             "explore_filters_active",
-            "explore_unclaimed_host_projection",
-            "explore_text_scale_2",
+        "explore_unclaimed_host_projection",
+        "explore_cross_paths_person",
+        "explore_cross_paths_profile_preview",
+        "explore_text_scale_2",
             "explore_reduced_motion",
             "explore_map",
             "explore_map_selected_pin",
@@ -1154,8 +1159,8 @@
                 "test/explore/explore_widgets_test.dart"
               ]
             },
-            {
-              "id": "unclaimed_host_projection",
+        {
+          "id": "unclaimed_host_projection",
               "kind": "populated",
               "status": "captured",
               "captureIds": [
@@ -1169,10 +1174,42 @@
                 "test/clubs/clubs_repository_test.dart",
                 "test/explore/explore_view_model_test.dart"
               ],
-              "notes": "Captured a null hostUserId/hostName organizer record; Explore search/display paths must stay null-tolerant for unclaimed organizer profiles."
-            },
-            {
-              "id": "map_route",
+          "notes": "Captured a null hostUserId/hostName organizer record; Explore search/display paths must stay null-tolerant for unclaimed organizer profiles."
+        },
+        {
+          "id": "cross_paths_suggestion",
+          "kind": "populated",
+          "status": "captured",
+          "captureIds": [
+            "explore_cross_paths_person"
+          ],
+          "previewIds": [
+            "CrossPathsExploreCard/Cross Paths person card",
+            "CrossPathsEventContextCard/Cross Paths event context"
+          ],
+          "tests": [
+            "test/cross_paths/cross_paths_explore_card_test.dart",
+            "test/explore/explore_widgets_test.dart"
+          ],
+          "notes": "Captured the consent-safe Cross Paths person Polaroid with its separate event context and independent profile and event actions."
+        },
+        {
+          "id": "cross_paths_profile_preview",
+          "kind": "populated",
+          "status": "captured",
+          "captureIds": [
+            "explore_cross_paths_profile_preview"
+          ],
+          "previewIds": [
+            "CrossPathsProfilePreviewSheet/Cross Paths profile preview"
+          ],
+          "tests": [
+            "test/cross_paths/cross_paths_explore_card_test.dart"
+          ],
+          "notes": "Captured the bounded profile preview with no contact details, attendee roster, or invitation controls and with persistent event context."
+        },
+        {
+          "id": "map_route",
               "kind": "populated",
               "status": "captured",
               "captureIds": [
@@ -1260,7 +1297,7 @@
             {
               "id": "DP-EXPLORE-001",
               "status": "closed",
-              "nextAction": "Closed by the screen-local Explore section registry plus formal component mappings: catch.cover_story for CoverStory, catch.count_pill for CountPill/map launcher, catch.event_card for DateTicket/EventTicket roles, and catch.organizer_poster for organizer spotlights. The catalog-only CrossPathsCard proposal remains retired because it has no consent-safe relationship source; catch.person_polaroid is limited to approved person/profile surfaces."
+          "nextAction": "Closed by the screen-local Explore section registry plus formal component mappings: catch.cover_story for CoverStory, catch.count_pill for CountPill/map launcher, catch.event_card for DateTicket/EventTicket roles, catch.organizer_poster for organizer spotlights, and catch.person_polaroid for server-ranked, consent-safe Cross Paths profiles."
             },
             {
               "id": "DP-EXPLORE-002",
