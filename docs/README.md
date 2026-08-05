@@ -1,7 +1,7 @@
 ---
 doc_id: docs_index
-version: 4.9.0
-updated: 2026-07-25
+version: 4.10.0
+updated: 2026-08-05
 owner: recursive_audit_loop
 status: active
 ---
@@ -66,6 +66,7 @@ section unless the task requires a full historical audit.
 | Clubs-to-organizers migration | `migrations/clubs_to_organizers.md`, `../contracts/migrations/clubs_to_organizers.json` | Organizer subtype taxonomy, canonical/compatibility authority map, dry-run/apply order, parity evidence, recovery, and legacy retirement boundary. |
 | Backend operation ownership | `backend_operation_catalog.md` | Human-readable catalog of direct client writes, callable-owned mutations, trigger-owned projections, server-only collections, and notification starting points. |
 | Event success | `event_success.md` | Live event-success architecture, product guardrails, Firestore contracts, manual QA, participant metrics, and open product decisions. |
+| Cross Paths | `cross_paths.md` | Approved people-in-Explore, consent, showcase-readiness, invitation, temporary event-plan, capacity, privacy, ranking, analytics, and phased-delivery contract. |
 | Location stack | `location_stack_plan.md` | Google Maps/Places, location permissions, run coordinates, check-in geofencing, map navigation, and current map/demo readiness. |
 | Demo data seeding | `demo_data_seeding.md` | Demo seeding scenarios, warm account workflows, demo ops, cleanup/reset commands, and validation workflow. |
 | Sales demo persona cohorts | `sales_demo_persona_cohorts.md` | Cohort scope, NYC and India persona-library decisions, roster reuse policy, and city overlay rules for high-fidelity sales demos. |

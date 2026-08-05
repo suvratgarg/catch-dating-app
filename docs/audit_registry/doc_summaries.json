@@ -1,6 +1,6 @@
 {
-  "version": "4.6.1",
-  "updated": "2026-07-26",
+  "version": "4.7.0",
+  "updated": "2026-08-05",
   "owner": "recursive_audit_loop",
   "summaries": {
     "PROJECT_CONTEXT.md": {
@@ -48,6 +48,18 @@
       ],
       "skip_when": [
         "A trivial one-off command does not touch repo workflow"
+      ]
+    },
+    "docs/cross_paths.md": {
+      "purpose": "Approved product and technical contract for consent-safe people recommendations in Explore, showcase readiness and ranking, event-scoped invitations, temporary event plans, capacity and waitlist boundaries, privacy, analytics, and phased rollout.",
+      "read_when": [
+        "Implementing or changing Cross Paths people recommendations in Explore",
+        "Changing Cross Paths consent, showcase eligibility, ranking, invitation, event-plan, capacity, safety, analytics, or rollout behavior",
+        "Changing event-roster access because of pre-event or post-event people discovery"
+      ],
+      "skip_when": [
+        "Only changing generic Explore event or organizer presentation with no people-discovery impact",
+        "Only changing the shared person Polaroid visual API without Cross Paths behavior"
       ]
     },
     "docs/ai_first_workflow_guide.md": {
