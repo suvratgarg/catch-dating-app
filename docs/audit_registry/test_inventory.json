@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "generatedFrom": "git ls-files --cached --others --exclude-standard",
   "generatedBy": "node tool/test_inventory.mjs",
-  "total": 601,
+  "total": 602,
   "categories": {
     "firebase_rules": {
       "count": 2,
@@ -24,7 +24,7 @@
       ]
     },
     "flutter_unit_widget": {
-      "count": 277,
+      "count": 278,
       "files": [
         "test/activity/activity_taxonomy_test.dart",
         "test/analytics/app_analytics_test.dart",
@@ -53,6 +53,7 @@
         "test/chats/message_bubble_test.dart",
         "test/chats/suvbot_controller_test.dart",
         "test/chats/suvbot_repository_test.dart",
+        "test/clubs/catch_organizer_poster_test.dart",
         "test/clubs/club_detail_dock_test.dart",
         "test/clubs/club_detail_read_only_preview_test.dart",
         "test/clubs/club_draft_repository_test.dart",

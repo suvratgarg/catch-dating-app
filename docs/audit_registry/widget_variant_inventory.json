@@ -1,16 +1,16 @@
 {
-  "generatedAt": "2026-07-30T09:48:07.345Z",
+  "generatedAt": "2026-08-05T11:01:52.807Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
   },
   "summary": {
-    "useCases": 867,
-    "components": 816,
-    "stateCards": 1798,
-    "reviewCandidates": 44,
+    "useCases": 870,
+    "components": 817,
+    "stateCards": 1808,
+    "reviewCandidates": 45,
     "oversizedUseCases": 44,
-    "multiUseCaseComponents": 45
+    "multiUseCaseComponents": 47
   },
   "reviewCandidates": [
     {
@@ -3756,6 +3756,103 @@
             {
               "label": "semantic-button",
               "normalizedLabel": "semantic button"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CatchOrganizerPoster",
+      "useCaseCount": 2,
+      "stateCardCount": 8,
+      "paths": [
+        "[Club Discovery]/Cards",
+        "[Core primitives]/Media"
+      ],
+      "labels": [
+        "editorial paper",
+        "editorial-paper",
+        "minimal paper",
+        "minimal-paper",
+        "photo ink",
+        "photo-ink",
+        "split signal",
+        "split-signal"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "duplicate-state-labels",
+          "split-across-use-cases"
+        ],
+        "duplicateLabels": [
+          {
+            "label": "editorial paper",
+            "count": 2
+          },
+          {
+            "label": "photo ink",
+            "count": 2
+          },
+          {
+            "label": "split signal",
+            "count": 2
+          },
+          {
+            "label": "minimal paper",
+            "count": 2
+          }
+        ],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Poster states",
+          "functionName": "catchOrganizerPosterStates",
+          "file": "widgetbook/lib/clubs/club_detail_use_cases.dart",
+          "path": "[Club Discovery]/Cards",
+          "stateCardCount": 4,
+          "stateCards": [
+            {
+              "label": "editorial paper",
+              "normalizedLabel": "editorial paper"
+            },
+            {
+              "label": "photo ink",
+              "normalizedLabel": "photo ink"
+            },
+            {
+              "label": "split signal",
+              "normalizedLabel": "split signal"
+            },
+            {
+              "label": "minimal paper",
+              "normalizedLabel": "minimal paper"
+            }
+          ]
+        },
+        {
+          "name": "Contract states",
+          "functionName": "catchOrganizerPosterContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Media",
+          "stateCardCount": 4,
+          "stateCards": [
+            {
+              "label": "editorial-paper",
+              "normalizedLabel": "editorial paper"
+            },
+            {
+              "label": "photo-ink",
+              "normalizedLabel": "photo ink"
+            },
+            {
+              "label": "split-signal",
+              "normalizedLabel": "split signal"
+            },
+            {
+              "label": "minimal-paper",
+              "normalizedLabel": "minimal paper"
             }
           ]
         }
@@ -8076,6 +8173,103 @@
             {
               "label": "semantic-button",
               "normalizedLabel": "semantic button"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CatchOrganizerPoster",
+      "useCaseCount": 2,
+      "stateCardCount": 8,
+      "paths": [
+        "[Club Discovery]/Cards",
+        "[Core primitives]/Media"
+      ],
+      "labels": [
+        "editorial paper",
+        "editorial-paper",
+        "minimal paper",
+        "minimal-paper",
+        "photo ink",
+        "photo-ink",
+        "split signal",
+        "split-signal"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "duplicate-state-labels",
+          "split-across-use-cases"
+        ],
+        "duplicateLabels": [
+          {
+            "label": "editorial paper",
+            "count": 2
+          },
+          {
+            "label": "photo ink",
+            "count": 2
+          },
+          {
+            "label": "split signal",
+            "count": 2
+          },
+          {
+            "label": "minimal paper",
+            "count": 2
+          }
+        ],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Poster states",
+          "functionName": "catchOrganizerPosterStates",
+          "file": "widgetbook/lib/clubs/club_detail_use_cases.dart",
+          "path": "[Club Discovery]/Cards",
+          "stateCardCount": 4,
+          "stateCards": [
+            {
+              "label": "editorial paper",
+              "normalizedLabel": "editorial paper"
+            },
+            {
+              "label": "photo ink",
+              "normalizedLabel": "photo ink"
+            },
+            {
+              "label": "split signal",
+              "normalizedLabel": "split signal"
+            },
+            {
+              "label": "minimal paper",
+              "normalizedLabel": "minimal paper"
+            }
+          ]
+        },
+        {
+          "name": "Contract states",
+          "functionName": "catchOrganizerPosterContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Media",
+          "stateCardCount": 4,
+          "stateCards": [
+            {
+              "label": "editorial-paper",
+              "normalizedLabel": "editorial paper"
+            },
+            {
+              "label": "photo-ink",
+              "normalizedLabel": "photo ink"
+            },
+            {
+              "label": "split-signal",
+              "normalizedLabel": "split signal"
+            },
+            {
+              "label": "minimal-paper",
+              "normalizedLabel": "minimal paper"
             }
           ]
         }
@@ -14595,6 +14789,58 @@
       ]
     },
     {
+      "component": "CatchPersonPolaroid",
+      "useCaseCount": 2,
+      "stateCardCount": 3,
+      "paths": [
+        "[Core primitives]/Media",
+        "[P1 product surfaces]/Catches/Sections"
+      ],
+      "labels": [
+        "profile identity",
+        "reactable",
+        "read-only"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Contract states",
+          "functionName": "catchPersonPolaroidContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Media",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "read-only",
+              "normalizedLabel": "read only"
+            },
+            {
+              "label": "reactable",
+              "normalizedLabel": "reactable"
+            }
+          ]
+        },
+        {
+          "name": "Person polaroid states",
+          "functionName": "catchPersonPolaroidStates",
+          "file": "widgetbook/lib/catches/catches_use_cases.dart",
+          "path": "[P1 product surfaces]/Catches/Sections",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "profile identity",
+              "normalizedLabel": "profile identity"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "CatchScreenHeaderTitle",
       "useCaseCount": 2,
       "stateCardCount": 3,
@@ -19125,43 +19371,6 @@
       ]
     },
     {
-      "component": "ClubPolaroidArtwork",
-      "useCaseCount": 1,
-      "stateCardCount": 2,
-      "paths": [
-        "[Club Discovery]/Cards"
-      ],
-      "labels": [
-        "compact",
-        "standard"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Artwork states",
-          "functionName": "clubPolaroidArtworkStates",
-          "file": "widgetbook/lib/clubs/club_detail_use_cases.dart",
-          "path": "[Club Discovery]/Cards",
-          "stateCardCount": 2,
-          "stateCards": [
-            {
-              "label": "standard",
-              "normalizedLabel": "standard"
-            },
-            {
-              "label": "compact",
-              "normalizedLabel": "compact"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "ClubPostHomeCard",
       "useCaseCount": 1,
       "stateCardCount": 2,
@@ -20605,43 +20814,6 @@
       ]
     },
     {
-      "component": "ExploreClubPolaroidCard",
-      "useCaseCount": 1,
-      "stateCardCount": 2,
-      "paths": [
-        "[Explore]/Cards"
-      ],
-      "labels": [
-        "fallback artwork",
-        "image-backed club"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Club polaroid states",
-          "functionName": "exploreClubPolaroidCardStates",
-          "file": "widgetbook/lib/explore/explore_use_cases.dart",
-          "path": "[Explore]/Cards",
-          "stateCardCount": 2,
-          "stateCards": [
-            {
-              "label": "image-backed club",
-              "normalizedLabel": "image backed club"
-            },
-            {
-              "label": "fallback artwork",
-              "normalizedLabel": "fallback artwork"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "ExploreClubTags",
       "useCaseCount": 1,
       "stateCardCount": 2,
@@ -20895,6 +21067,43 @@
             {
               "label": "active filters",
               "normalizedLabel": "active filters"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "ExploreOrganizerPosterCard",
+      "useCaseCount": 1,
+      "stateCardCount": 2,
+      "paths": [
+        "[Explore]/Cards"
+      ],
+      "labels": [
+        "fallback artwork",
+        "image-backed club"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Organizer poster states",
+          "functionName": "exploreOrganizerPosterCardStates",
+          "file": "widgetbook/lib/explore/explore_use_cases.dart",
+          "path": "[Explore]/Cards",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "image-backed club",
+              "normalizedLabel": "image backed club"
+            },
+            {
+              "label": "fallback artwork",
+              "normalizedLabel": "fallback artwork"
             }
           ]
         }
@@ -21413,6 +21622,43 @@
             {
               "label": "read only",
               "normalizedLabel": "read only"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "OrganizerPosterArtwork",
+      "useCaseCount": 1,
+      "stateCardCount": 2,
+      "paths": [
+        "[Club Discovery]/Cards"
+      ],
+      "labels": [
+        "compact",
+        "standard"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Poster artwork states",
+          "functionName": "organizerPosterArtworkStates",
+          "file": "widgetbook/lib/clubs/club_detail_use_cases.dart",
+          "path": "[Club Discovery]/Cards",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "standard",
+              "normalizedLabel": "standard"
+            },
+            {
+              "label": "compact",
+              "normalizedLabel": "compact"
             }
           ]
         }
@@ -24777,38 +25023,6 @@
             {
               "label": "default",
               "normalizedLabel": "default"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "CatchPolaroid",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[Club Discovery]/Cards"
-      ],
-      "labels": [
-        "with footer"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Polaroid states",
-          "functionName": "catchPolaroidStates",
-          "file": "widgetbook/lib/clubs/club_detail_use_cases.dart",
-          "path": "[Club Discovery]/Cards",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "with footer",
-              "normalizedLabel": "with footer"
             }
           ]
         }
