@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-07-22",
+  "updated": "2026-08-05",
   "sourceOfTruth": {
     "componentContracts": "design/components/catch.components.json",
     "classification": "docs/audit_registry/widget_classification.json",
@@ -11,49 +11,49 @@
   },
   "totals": {
     "baselineTopLevelConceptProxy": 64,
-    "topLevelContracts": 69,
-    "concepts": 63,
-    "conceptDelta": -1,
-    "publicContractClasses": 198,
-    "productionWidgetAndStateClasses": 1107,
-    "members": 118,
-    "membersPerConcept": 1.87,
+    "topLevelContracts": 71,
+    "concepts": 65,
+    "conceptDelta": 1,
+    "publicContractClasses": 202,
+    "productionWidgetAndStateClasses": 1108,
+    "members": 120,
+    "membersPerConcept": 1.85,
     "unclassifiedContractEntries": 0,
     "unclassifiedProductionEntries": 0,
     "unresolvedCollisionFamilies": 2,
     "ownerReviewQueueSize": 3
   },
   "ledgerCoverage": {
-    "normalizedMemberSetCoveredClusters": 41,
-    "totalClusters": 43,
+    "normalizedMemberSetCoveredClusters": 40,
+    "totalClusters": 42,
     "unresolvedClusters": 2,
-    "rankedPairsCovered": 144,
+    "rankedPairsCovered": 142,
     "totalRankedPairs": 200,
-    "unresolvedRankedPairs": 56,
+    "unresolvedRankedPairs": 58,
     "decisionsIndexed": 315
   },
   "widgetbookEvidence": {
-    "completeConcepts": 62,
-    "totalInstantiatedConcepts": 62,
-    "coveredMembers": 116,
-    "totalMembers": 116
+    "completeConcepts": 64,
+    "totalInstantiatedConcepts": 64,
+    "coveredMembers": 118,
+    "totalMembers": 118
   },
   "figmaMappings": {
     "current": 0,
     "stale": 0,
-    "missing": 69,
+    "missing": 71,
     "propertyDrift": 0,
     "variableBound": 0,
     "reviewSnapshots": 0
   },
   "claudeContext": {
     "status": "current",
-    "digest": "98807e76fc77e202fe3280ad8d35a848784f9f3b1015b17dcfd6b8397c47a3b4",
-    "contractDigest": "98807e76fc77e202fe3280ad8d35a848784f9f3b1015b17dcfd6b8397c47a3b4"
+    "digest": "3b754b211a623cfa8f52f188217e74ac309c032a0eb72567fe14218191598c4c",
+    "contractDigest": "3b754b211a623cfa8f52f188217e74ac309c032a0eb72567fe14218191598c4c"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "bae38cc9704320b5195ab5267eea5daaadd2178b5da6afcd85b378c10d01ec08",
+    "handoffRequestDigest": "1827404943f98b2a271f49d7bb39351d9554cb37702728c6aa96ae941ea9f2a4",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -275,7 +275,7 @@
     {
       "requirement": "1. Reconcile the existing decision ledger",
       "status": "pending",
-      "evidence": "41/43 exact normalized-member-set cluster decisions"
+      "evidence": "40/42 exact normalized-member-set cluster decisions"
     },
     {
       "requirement": "2. Prove all four vertical-slice outcomes",
@@ -300,7 +300,7 @@
     {
       "requirement": "6. Report concept and class counts separately",
       "status": "proven",
-      "evidence": "63 concepts, 198 contracted public classes, 1107 production widget/state classes"
+      "evidence": "65 concepts, 202 contracted public classes, 1108 production widget/state classes"
     },
     {
       "requirement": "7. Complete live Figma/Claude Badge + Field round trip",
@@ -310,7 +310,7 @@
     {
       "requirement": "8. Reduce remaining work to a bounded queue",
       "status": "proven",
-      "evidence": "3 generated owner/live gates and 56 advisory ranked-pair candidates"
+      "evidence": "3 generated owner/live gates and 58 advisory ranked-pair candidates"
     }
   ]
 }

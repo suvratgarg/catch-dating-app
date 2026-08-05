@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/clubs/shared/catch_polaroid.dart';
+import 'package:catch_dating_app/clubs/shared/catch_organizer_poster.dart';
 import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +20,7 @@ class CatchClubCover extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final url = club.primaryClubPhotoUrl?.trim();
-    final fallback = ClubPolaroidArtwork(club: club, compact: compact);
+    final fallback = OrganizerPosterArtwork(club: club, compact: compact);
     if (url == null || url.isEmpty) return fallback;
     return CatchGradedImage(
       child: CatchNetworkImage(

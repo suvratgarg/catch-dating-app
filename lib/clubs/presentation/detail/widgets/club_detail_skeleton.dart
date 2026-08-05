@@ -79,7 +79,7 @@ class ClubHeroLoadingSkeleton extends StatelessWidget {
         child: CatchSurface(
           height: CatchLayout.clubDetailHeroLoadingExtent,
           borderColor: t.line,
-          radius: CatchLayout.clubPolaroidRadius,
+          radius: CatchLayout.organizerPosterRadius,
           elevation: CatchSurfaceElevation.card,
           backgroundColor: t.surface,
           padding: CatchInsets.contentDense,
@@ -92,7 +92,7 @@ class ClubHeroLoadingSkeleton extends StatelessWidget {
                   width: double.infinity,
                   height: double.infinity,
                   borderRadius: BorderRadius.circular(
-                    CatchLayout.clubPolaroidMediaRadius,
+                    CatchLayout.organizerPosterMediaRadius,
                   ),
                 ),
               ),

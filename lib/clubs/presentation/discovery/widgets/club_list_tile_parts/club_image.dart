@@ -25,7 +25,7 @@ class ClubImage extends StatelessWidget {
       imageUrl = club.imageUrl ?? club.profileImageUrl;
     }
 
-    final placeholder = ClubPolaroidArtwork(
+    final placeholder = OrganizerPosterArtwork(
       club: club,
       compact: fallbackCompact,
     );

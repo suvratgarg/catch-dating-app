@@ -22,7 +22,7 @@ import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_share_ca
 import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_avatar_rail.dart';
 import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_discover_list.dart';
 import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_list_tile.dart';
-import 'package:catch_dating_app/clubs/shared/catch_polaroid.dart';
+import 'package:catch_dating_app/clubs/shared/catch_organizer_poster.dart';
 import 'package:catch_dating_app/clubs/shared/club_identity_atoms.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
@@ -918,23 +918,59 @@ Widget membershipTrailingStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Polaroid states',
-  type: CatchPolaroid,
+  name: 'Poster states',
+  type: CatchOrganizerPoster,
   path: '[Club Discovery]/Cards',
 )
-Widget catchPolaroidStates(BuildContext context) {
+Widget catchOrganizerPosterStates(BuildContext context) {
   return _CatalogScreen(
-    title: 'CatchPolaroid',
-    catalogId: 'card.club.polaroid',
+    title: 'CatchOrganizerPoster',
+    catalogId: 'card.organizer.poster',
     children: [
       _StateCard(
-        label: 'with footer',
-        child: CatchPolaroid(
-          media: ClubPolaroidArtwork(club: _club),
-          caption: 'WED 6:45 AM',
+        label: 'editorial paper',
+        child: CatchOrganizerPoster(
+          media: OrganizerPosterArtwork(club: _club),
+          kicker: 'Run club · Mumbai',
           title: _club.name,
-          subtitle: _club.description,
+          tagline: _club.description,
+          meta: 'Every Wednesday · 6:45 AM',
           footer: ClubTagWrap(tags: visibleClubTags(_club, limit: 3)),
+        ),
+      ),
+      _StateCard(
+        label: 'photo ink',
+        child: CatchOrganizerPoster(
+          media: OrganizerPosterArtwork(club: _club),
+          kicker: 'Run club · Mumbai',
+          title: _club.name,
+          tagline: _club.description,
+          meta: 'Every Wednesday · 6:45 AM',
+          layout: OrganizerPosterLayout.photo,
+          treatment: OrganizerPosterTreatment.ink,
+        ),
+      ),
+      _StateCard(
+        label: 'split signal',
+        child: CatchOrganizerPoster(
+          media: OrganizerPosterArtwork(club: _club),
+          kicker: 'Run club · Mumbai',
+          title: _club.name,
+          tagline: _club.description,
+          meta: 'Every Wednesday · 6:45 AM',
+          layout: OrganizerPosterLayout.split,
+          treatment: OrganizerPosterTreatment.signal,
+        ),
+      ),
+      _StateCard(
+        label: 'minimal paper',
+        child: CatchOrganizerPoster(
+          media: OrganizerPosterArtwork(club: _club),
+          kicker: 'Run club · Mumbai',
+          title: _club.name,
+          tagline: _club.description,
+          meta: 'Every Wednesday · 6:45 AM',
+          layout: OrganizerPosterLayout.minimal,
         ),
       ),
     ],
@@ -942,27 +978,27 @@ Widget catchPolaroidStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Artwork states',
-  type: ClubPolaroidArtwork,
+  name: 'Poster artwork states',
+  type: OrganizerPosterArtwork,
   path: '[Club Discovery]/Cards',
 )
-Widget clubPolaroidArtworkStates(BuildContext context) {
+Widget organizerPosterArtworkStates(BuildContext context) {
   return _CatalogScreen(
-    title: 'ClubPolaroidArtwork',
-    catalogId: 'card.club.polaroid_artwork',
+    title: 'OrganizerPosterArtwork',
+    catalogId: 'card.organizer.poster_artwork',
     children: [
       _StateCard(
         label: 'standard',
         child: AspectRatio(
           aspectRatio: 1,
-          child: ClubPolaroidArtwork(club: _club),
+          child: OrganizerPosterArtwork(club: _club),
         ),
       ),
       _StateCard(
         label: 'compact',
         child: SizedBox.square(
           dimension: 120,
-          child: ClubPolaroidArtwork(club: _minimalClub, compact: true),
+          child: OrganizerPosterArtwork(club: _minimalClub, compact: true),
         ),
       ),
     ],
@@ -1430,7 +1466,7 @@ Widget clubHeroModuleStates(BuildContext context) {
           height: 460,
           child: ClubHeroModule(
             club: _club,
-            variant: ClubHeroVariant.polaroid,
+            variant: ClubHeroVariant.poster,
             mediaHeight: 280,
             captionExtent: CatchLayout.clubDetailHeroCaptionExtent,
             kickerLabel: 'BANDRA · MUMBAI',
@@ -1458,7 +1494,7 @@ Widget clubHeroModuleStates(BuildContext context) {
           height: 420,
           child: ClubHeroModule(
             club: _minimalClub,
-            variant: ClubHeroVariant.polaroid,
+            variant: ClubHeroVariant.poster,
             mediaHeight: 220,
             captionExtent: CatchLayout.clubDetailHeroCaptionExtent,
             kickerLabel: 'DINNER · MUMBAI',

@@ -311,7 +311,7 @@ Widget _exploreMixedFeedCard(
       item: item,
       onExternalEventOpened: onExternalEventOpened,
     ),
-    ExploreMixedClubSpotlightCard(:final club) => ExploreClubPolaroidCard(
+    ExploreMixedClubSpotlightCard(:final club) => ExploreOrganizerPosterCard(
       club: club,
       onClubSelected: onClubSelected,
     ),

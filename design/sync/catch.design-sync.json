@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updated": "2026-07-22",
+  "updated": "2026-08-05",
   "sourceOfTruth": {
     "behavior": "Flutter sources named by design/components/catch.components.json",
     "componentContracts": "design/components/catch.components.json",
@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "98807e76fc77e202fe3280ad8d35a848784f9f3b1015b17dcfd6b8397c47a3b4",
+  "sourceDigest": "3b754b211a623cfa8f52f188217e74ac309c032a0eb72567fe14218191598c4c",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -46,12 +46,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "98807e76fc77e202fe3280ad8d35a848784f9f3b1015b17dcfd6b8397c47a3b4",
-    "contractDigest": "98807e76fc77e202fe3280ad8d35a848784f9f3b1015b17dcfd6b8397c47a3b4"
+    "digest": "3b754b211a623cfa8f52f188217e74ac309c032a0eb72567fe14218191598c4c",
+    "contractDigest": "3b754b211a623cfa8f52f188217e74ac309c032a0eb72567fe14218191598c4c"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "bae38cc9704320b5195ab5267eea5daaadd2178b5da6afcd85b378c10d01ec08",
+    "handoffRequestDigest": "1827404943f98b2a271f49d7bb39351d9554cb37702728c6aa96ae941ea9f2a4",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,19 +83,19 @@
     }
   },
   "metrics": {
-    "contractCount": 69,
-    "publicClassCount": 198,
-    "conceptCount": 63,
-    "memberCount": 118,
-    "membersPerConcept": 1.87,
+    "contractCount": 71,
+    "publicClassCount": 202,
+    "conceptCount": 65,
+    "memberCount": 120,
+    "membersPerConcept": 1.85,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
-      "concept": 63,
-      "member": 118,
+      "concept": 65,
+      "member": 120,
       "screen": 14
     },
-    "collisionCount": 32,
+    "collisionCount": 33,
     "collisions": [
       {
         "key": "catch.async_value",
@@ -285,6 +285,14 @@
         ]
       },
       {
+        "key": "catch.organizer_poster",
+        "symbols": [
+          "CatchOrganizerPoster",
+          "ExploreOrganizerPosterCard",
+          "OrganizerPosterArtwork"
+        ]
+      },
+      {
         "key": "catch.person_avatar",
         "symbols": [
           "CatchActivityInitialsPlaceholder",
@@ -409,20 +417,20 @@
       }
     ],
     "naming": {
-      "canonicalConceptNames": 62,
+      "canonicalConceptNames": 64,
       "documentedConceptNameExceptions": 1,
       "undocumentedConceptNameExceptions": 0
     },
     "figmaMappingStates": {
-      "missing": 69
+      "missing": 71
     },
     "figmaPropertyDriftCount": 0,
     "figmaVariableBoundMappings": 0,
     "figmaReviewSnapshotMappings": 0,
     "codeConnectMappingStates": {
-      "planned": 69
+      "planned": 71
     },
-    "claudeAllowed": 69,
+    "claudeAllowed": 71,
     "claudeContextState": "current",
     "claudeDesignReceiptState": "missing",
     "figmaMappedConcepts": 0
@@ -2282,6 +2290,60 @@
       "claudeHandoffName": "IndexRow",
       "claudeAllowed": true,
       "contractDigest": "9fe1df8656180aab0ee12e4d8f94fdab26946d85fa111cae4d3d68a38eb603c2"
+    },
+    {
+      "contractId": "catch.organizer_poster",
+      "conceptRole": "concept",
+      "conceptId": "catch.organizer_poster",
+      "dartSymbol": "CatchOrganizerPoster",
+      "dartFile": "lib/clubs/shared/catch_organizer_poster.dart",
+      "figmaName": "Catch/OrganizerPoster",
+      "figmaDeclaredStatus": "unmapped",
+      "figmaDeclaredUrl": null,
+      "figmaStatus": "missing",
+      "figmaUrl": null,
+      "figmaNodeId": null,
+      "figmaComponentKey": null,
+      "figmaVariableBindingCount": 0,
+      "figmaVariableBindingDigest": null,
+      "figmaReviewSnapshot": null,
+      "figmaExpectedPropertyCount": 8,
+      "figmaExpectedPropertyDigest": "43400830c1b732729ce6258c43691d741c434e724e6531c1eb61676e1b78585f",
+      "figmaActualPropertyCount": 0,
+      "figmaActualPropertyDigest": null,
+      "figmaDrift": [],
+      "codeConnectStatus": "planned",
+      "codeConnectTemplate": null,
+      "claudeHandoffName": "OrganizerPoster",
+      "claudeAllowed": true,
+      "contractDigest": "c13c583a55101c4c85ea6c0c7da02cc409e24206aa238a0f5f8b42397312ae53"
+    },
+    {
+      "contractId": "catch.person_polaroid",
+      "conceptRole": "concept",
+      "conceptId": "catch.person_polaroid",
+      "dartSymbol": "CatchPersonPolaroid",
+      "dartFile": "lib/core/widgets/catch_person_polaroid.dart",
+      "figmaName": "Catch/PersonPolaroid",
+      "figmaDeclaredStatus": "unmapped",
+      "figmaDeclaredUrl": null,
+      "figmaStatus": "missing",
+      "figmaUrl": null,
+      "figmaNodeId": null,
+      "figmaComponentKey": null,
+      "figmaVariableBindingCount": 0,
+      "figmaVariableBindingDigest": null,
+      "figmaReviewSnapshot": null,
+      "figmaExpectedPropertyCount": 5,
+      "figmaExpectedPropertyDigest": "3eb7325863f83b0631ebcf8400f6359d45848065dd7318e60f50c5077d2637ee",
+      "figmaActualPropertyCount": 0,
+      "figmaActualPropertyDigest": null,
+      "figmaDrift": [],
+      "codeConnectStatus": "planned",
+      "codeConnectTemplate": null,
+      "claudeHandoffName": "PersonPolaroid",
+      "claudeAllowed": true,
+      "contractDigest": "438dbf1d82f7bca0b008e30691ef205a7e25d8f6bf900d32ac877a1451f63117"
     },
     {
       "contractId": "catch.club_cover",

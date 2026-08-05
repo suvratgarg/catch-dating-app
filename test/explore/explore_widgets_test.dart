@@ -16,7 +16,7 @@ import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_hero_app
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_schedule_section.dart';
 import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_list_tile.dart';
 import 'package:catch_dating_app/clubs/shared/catch_club_cover.dart';
-import 'package:catch_dating_app/clubs/shared/catch_polaroid.dart';
+import 'package:catch_dating_app/clubs/shared/catch_organizer_poster.dart';
 import 'package:catch_dating_app/clubs/shared/club_transition_tags.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/app_config.dart';
@@ -29,7 +29,6 @@ import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_fonts.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -330,37 +329,6 @@ void main() {
   tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
 
   group('Explore and club discovery widgets', () {
-    testWidgets('CatchPolaroid uses handoff title and arrow defaults', (
-      tester,
-    ) async {
-      await pumpTestApp(
-        tester,
-        CatchPolaroid(
-          media: const ColoredBox(color: Colors.black),
-          caption: 'CLUB TO KNOW',
-          title: 'Neighbourhood Club',
-          onTap: () {},
-        ),
-      );
-
-      final title = tester.widget<Text>(find.text('Neighbourhood Club'));
-      expect(title.style?.fontSize, CatchDisplayStep.s.size);
-      expect(title.style?.fontStyle, isNot(FontStyle.italic));
-      expect(find.byIcon(CatchIcons.forwardArrow), findsOneWidget);
-
-      await pumpTestApp(
-        tester,
-        const CatchPolaroid(
-          media: ColoredBox(color: Colors.black),
-          caption: 'CLUB TO KNOW',
-          title: 'Neighbourhood Club',
-          showArrow: false,
-        ),
-      );
-
-      expect(find.byIcon(CatchIcons.forwardArrow), findsNothing);
-    });
-
     testWidgets('ExploreList shows the empty state when there are no clubs', (
       tester,
     ) async {
@@ -1394,7 +1362,7 @@ void main() {
           home: Scaffold(
             body: SizedBox(
               width: 360,
-              child: ExploreClubPolaroidCard(
+              child: ExploreOrganizerPosterCard(
                 club: club,
                 onClubSelected: (_) {},
               ),
@@ -1447,7 +1415,7 @@ void main() {
       );
     });
 
-    testWidgets('Explore club card and detail hero share media padding', (
+    testWidgets('Explore and detail use the same organizer poster material', (
       tester,
     ) async {
       final club = buildClub(
@@ -1471,10 +1439,10 @@ void main() {
       );
       await tester.pump();
 
-      final cardPadding = tester.widget<Padding>(
-        find.byKey(const ValueKey('explore-club-polaroid-padding')),
+      final cardPoster = tester.widget<CatchOrganizerPoster>(
+        find.byType(CatchOrganizerPoster),
       );
-      expect(cardPadding.padding, clubInteractionMediaPadding);
+      expect(cardPoster.layout, OrganizerPosterLayout.editorial);
 
       await tester.pumpWidget(
         MaterialApp(
@@ -1489,11 +1457,15 @@ void main() {
       await _pumpClubUi(tester);
 
       final detailPadding = tester.widget<Padding>(
-        find.byKey(const ValueKey('club-detail-hero-polaroid-padding')),
+        find.byKey(const ValueKey('club-detail-hero-poster-padding')),
       );
-      expect(detailPadding.padding, cardPadding.padding);
+      expect(detailPadding.padding, clubInteractionMediaPadding);
+      final detailPoster = tester.widget<CatchOrganizerPoster>(
+        find.byType(CatchOrganizerPoster),
+      );
+      expect(detailPoster.layout, cardPoster.layout);
       expect(
-        find.byKey(const ValueKey('club-detail-hero-polaroid-frame')),
+        find.byKey(const ValueKey('club-detail-hero-poster-frame')),
         findsOneWidget,
       );
     });
@@ -2428,7 +2400,7 @@ void main() {
         expect(find.text('Bandra, Mumbai'), findsOneWidget);
         expect(find.text('4.8'), findsNothing);
         expect(
-          find.byKey(const ValueKey('club-detail-hero-polaroid-frame')),
+          find.byKey(const ValueKey('club-detail-hero-poster-frame')),
           findsOneWidget,
         );
 
@@ -2440,7 +2412,7 @@ void main() {
     );
 
     testWidgets(
-      'ClubHeroAppBar keeps long title location in the polaroid caption',
+      'ClubHeroAppBar keeps long title location in the poster copy block',
       (tester) async {
         tester.view.devicePixelRatio = 1;
         tester.view.physicalSize = const Size(402, 874);
@@ -2475,17 +2447,17 @@ void main() {
         );
         await _pumpClubUi(tester);
 
-        final polaroidFrame = find.byKey(
-          const ValueKey('club-detail-hero-polaroid-frame'),
+        final posterFrame = find.byKey(
+          const ValueKey('club-detail-hero-poster-frame'),
         );
         final title = find.text('Vijay Nagar Event Collective');
         final location = find.text('Vijay Nagar, Indore');
 
-        expect(polaroidFrame, findsOneWidget);
+        expect(posterFrame, findsOneWidget);
         expect(title, findsOneWidget);
         expect(location, findsOneWidget);
         expect(
-          find.descendant(of: polaroidFrame, matching: title),
+          find.descendant(of: posterFrame, matching: title),
           findsOneWidget,
         );
 
@@ -2537,7 +2509,7 @@ void main() {
       await _pumpClubUi(tester);
 
       final heroFrame = find.byKey(
-        const ValueKey('club-detail-hero-polaroid-frame'),
+        const ValueKey('club-detail-hero-poster-frame'),
       );
       final heroLocation = find.descendant(
         of: heroFrame,
@@ -2566,7 +2538,7 @@ void main() {
         ),
       );
 
-      expect(find.byType(ClubPolaroidArtwork), findsOneWidget);
+      expect(find.byType(OrganizerPosterArtwork), findsOneWidget);
       expect(find.text('MM'), findsNothing);
       expect(find.text('Morning Miles'), findsOneWidget);
       expect(find.text('Bandra, Mumbai'), findsOneWidget);
@@ -2709,7 +2681,7 @@ void main() {
         ),
       );
 
-      expect(find.byType(ClubPolaroidArtwork), findsWidgets);
+      expect(find.byType(OrganizerPosterArtwork), findsWidgets);
       expect(find.text('NC'), findsNothing);
       expect(find.byIcon(CatchIcons.locationOnRounded), findsOneWidget);
       // Index rows use the area/city/member line as the mono meta row; the
@@ -3208,7 +3180,7 @@ void main() {
       await tester.drag(find.byType(CustomScrollView), const Offset(0, -900));
       await _pumpClubUi(tester);
 
-      await tester.tap(find.text('START'));
+      await tester.tap(find.text('START').last);
       await _pumpClubUi(tester);
 
       expect(find.text('Event event-42'), findsOneWidget);
@@ -3257,7 +3229,7 @@ void main() {
 
       expect(find.text('Organizer directory'), findsOneWidget);
       expect(find.text('Pace Social'), findsWidgets);
-      expect(find.byType(ExploreClubPolaroidCard), findsOneWidget);
+      expect(find.byType(ExploreOrganizerPosterCard), findsOneWidget);
       await tester.drag(find.byType(CustomScrollView), const Offset(0, -280));
       await _pumpClubUi(tester);
       expect(_catchButtonWithLabel('Follow'), findsOneWidget);
@@ -5352,8 +5324,7 @@ void main() {
               .widget<CatchField>(
                 find.byWidgetPredicate(
                   (widget) =>
-                      widget is CatchField &&
-                      widget.title == 'Organizer name',
+                      widget is CatchField && widget.title == 'Organizer name',
                 ),
               )
               .enabled,

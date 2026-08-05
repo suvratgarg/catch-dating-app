@@ -1901,11 +1901,12 @@ abstract final class CatchLayout {
   static const double settingsRowChevronIconSize = CatchIcon.xs;
   static const double clubProfileImagePickerExtent = 120.0;
   static const double clubCoverThumbnailExtent = 64.0;
-  static const double clubPolaroidRadius = CatchSpacing.micro6;
-  static const double clubPolaroidMediaRadius = CatchSpacing.micro3;
+  static const double organizerPosterRadius = CatchSpacing.micro6;
+  static const double organizerPosterMediaRadius = CatchSpacing.micro3;
+  static const double organizerPosterMinimalMediaHeight = 104.0;
+  static const double personPolaroidRadius = CatchSpacing.micro6;
+  static const double personPolaroidMediaRadius = CatchSpacing.micro3;
   static const double clubCoverCompactMediaRadius = CatchRadius.md;
-  static const double polaroidBodyReserve = 108.0;
-  static const double polaroidBodyReserveWithFooter = 212.0;
   static const double eventTypeTileMaxWidth = 340.0;
   static const double eventTypeTileSingleColumnHeight = 88.0;
   static const double eventTypeTileTwoColumnHeight = 72.0;
@@ -2347,6 +2348,7 @@ abstract final class CatchAspectRatio {
   static const double standardPhoto = 4 / 3;
   static const double portrait4x5 = 4 / 5;
   static const double portrait3x4 = 3 / 4;
+  static const double organizerPoster = portrait3x4;
   static const double profileSlotFeedback = 112 / 150;
   static const double eventRecapVibeTile = 0.74;
 }

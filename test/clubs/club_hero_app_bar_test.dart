@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_hero_app_bar.dart';
 import 'package:catch_dating_app/clubs/shared/catch_club_cover.dart';
-import 'package:catch_dating_app/clubs/shared/catch_polaroid.dart';
+import 'package:catch_dating_app/clubs/shared/catch_organizer_poster.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -19,46 +19,46 @@ void main() {
 
       expect(
         clubHeroVariantFor(buildClub(clubPhotos: [clubPhoto])),
-        ClubHeroVariant.polaroid,
+        ClubHeroVariant.poster,
       );
       expect(
         clubHeroVariantFor(buildClub(imageUrl: 'https://example.com/old.jpg')),
-        ClubHeroVariant.polaroid,
+        ClubHeroVariant.poster,
       );
       expect(
         clubHeroVariantFor(buildClub(logoPhoto: logoPhoto)),
         ClubHeroVariant.masthead,
       );
-      expect(clubHeroVariantFor(buildClub()), ClubHeroVariant.polaroid);
+      expect(clubHeroVariantFor(buildClub()), ClubHeroVariant.poster);
     });
 
-    testWidgets('photo clubs render the polaroid hero shell', (tester) async {
+    testWidgets('photo clubs render the poster hero shell', (tester) async {
       final club = buildClub(clubPhotos: [_photo('cover', 0)]);
 
       await _pumpHeroModule(tester, club, clubHeroVariantFor(club));
 
-      expect(find.byType(CatchPolaroid), findsOneWidget);
+      expect(find.byType(CatchOrganizerPoster), findsOneWidget);
       expect(find.byType(CatchClubCover), findsOneWidget);
-      expect(find.byType(ClubPolaroidArtwork), findsOneWidget);
+      expect(find.byType(OrganizerPosterArtwork), findsOneWidget);
       expect(
-        find.byKey(const ValueKey('club-detail-hero-polaroid-frame')),
+        find.byKey(const ValueKey('club-detail-hero-poster-frame')),
         findsOneWidget,
       );
       expect(find.text('Stride Social'), findsOneWidget);
       expect(find.text('Bandra, Mumbai'), findsOneWidget);
     });
 
-    testWidgets('clubs without photos render artwork in the polaroid shell', (
+    testWidgets('clubs without photos render artwork in the poster shell', (
       tester,
     ) async {
       final club = buildClub();
 
       await _pumpHeroModule(tester, club, clubHeroVariantFor(club));
 
-      expect(find.byType(CatchPolaroid), findsOneWidget);
-      expect(find.byType(ClubPolaroidArtwork), findsOneWidget);
+      expect(find.byType(CatchOrganizerPoster), findsOneWidget);
+      expect(find.byType(OrganizerPosterArtwork), findsOneWidget);
       expect(
-        find.byKey(const ValueKey('club-detail-hero-polaroid-frame')),
+        find.byKey(const ValueKey('club-detail-hero-poster-frame')),
         findsOneWidget,
       );
     });
@@ -79,8 +79,8 @@ void main() {
         findsOneWidget,
       );
       expect(find.byType(CatchPersonAvatar), findsOneWidget);
-      expect(find.byType(CatchPolaroid), findsNothing);
-      expect(find.byType(ClubPolaroidArtwork), findsNothing);
+      expect(find.byType(CatchOrganizerPoster), findsNothing);
+      expect(find.byType(OrganizerPosterArtwork), findsNothing);
       expect(find.text('Stride Social'), findsOneWidget);
     });
 

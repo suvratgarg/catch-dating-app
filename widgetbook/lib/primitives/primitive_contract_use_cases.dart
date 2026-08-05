@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/shared/catch_club_cover.dart';
+import 'package:catch_dating_app/clubs/shared/catch_organizer_poster.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_input_bar.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -53,6 +54,7 @@ import 'package:catch_dating_app/core/widgets/catch_option_card.dart';
 import 'package:catch_dating_app/core/widgets/catch_otp_code_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_page_dots.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
+import 'package:catch_dating_app/core/widgets/catch_person_polaroid.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_privacy_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
@@ -981,6 +983,134 @@ Widget catchClubCoverContractStates(BuildContext context) {
         child: SizedBox.square(
           dimension: 72,
           child: CatchClubCover(club: fallbackClub, compact: true),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchOrganizerPoster,
+  path: '[Core primitives]/Media',
+)
+Widget catchOrganizerPosterContractStates(BuildContext context) {
+  final club = Club(
+    id: 'contract-organizer-poster',
+    name: 'Sea Face Social',
+    description: 'Bombay moves together.',
+    location: 'Mumbai',
+    area: 'Bandra',
+    createdAt: DateTime(2026),
+  );
+  Widget poster({
+    OrganizerPosterLayout layout = OrganizerPosterLayout.editorial,
+    OrganizerPosterTreatment treatment = OrganizerPosterTreatment.paper,
+  }) {
+    return CatchOrganizerPoster(
+      media: OrganizerPosterArtwork(club: club),
+      kicker: 'Run club · Mumbai',
+      title: club.name,
+      tagline: club.description,
+      meta: 'Every Saturday · 6:30 AM',
+      layout: layout,
+      treatment: treatment,
+    );
+  }
+
+  return _ContractScreen(
+    title: 'CatchOrganizerPoster',
+    contractId: 'catch.organizer_poster',
+    states: const [
+      'editorial-paper',
+      'photo-ink',
+      'split-signal',
+      'minimal-paper',
+      'photo',
+      'fallback-artwork',
+      'with-footer',
+      'long-copy',
+    ],
+    children: [
+      _StateCard(label: 'editorial-paper', child: poster()),
+      _StateCard(
+        label: 'photo-ink',
+        child: poster(
+          layout: OrganizerPosterLayout.photo,
+          treatment: OrganizerPosterTreatment.ink,
+        ),
+      ),
+      _StateCard(
+        label: 'split-signal',
+        child: poster(
+          layout: OrganizerPosterLayout.split,
+          treatment: OrganizerPosterTreatment.signal,
+        ),
+      ),
+      _StateCard(
+        label: 'minimal-paper',
+        child: poster(layout: OrganizerPosterLayout.minimal),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchPersonPolaroid,
+  path: '[Core primitives]/Media',
+)
+Widget catchPersonPolaroidContractStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+  return _ContractScreen(
+    title: 'CatchPersonPolaroid',
+    contractId: 'catch.person_polaroid',
+    states: const [
+      'photo',
+      'fallback-artwork',
+      'read-only',
+      'reactable',
+      'long-copy',
+      'text-scale',
+    ],
+    children: [
+      _StateCard(
+        label: 'read-only',
+        child: CatchPersonPolaroid(
+          media: ColoredBox(
+            color: t.primarySoft,
+            child: Icon(
+              CatchIcons.personRounded,
+              size: CatchSpacing.s16,
+              color: t.primary,
+            ),
+          ),
+          kicker: 'Was at · Sundowner 5K',
+          name: 'Maya, 29',
+          meta: 'Designer · Bandra',
+        ),
+      ),
+      _StateCard(
+        label: 'reactable',
+        child: CatchPersonPolaroid(
+          media: ColoredBox(
+            color: t.raised,
+            child: Icon(
+              CatchIcons.personRounded,
+              size: CatchSpacing.s16,
+              color: t.ink3,
+            ),
+          ),
+          mediaOverlay: Align(
+            alignment: Alignment.topRight,
+            child: Padding(
+              padding: CatchInsets.contentDense,
+              child: CatchBadge.solid(label: 'LIKE'),
+            ),
+          ),
+          kicker: 'Crossed paths',
+          name: 'A long profile name, 31',
+          meta: 'Runner · Lower Parel',
         ),
       ),
     ],

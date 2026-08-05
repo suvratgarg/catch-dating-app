@@ -1164,23 +1164,25 @@ Widget exploreExternalEventRowStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Club polaroid states',
-  type: ExploreClubPolaroidCard,
+  name: 'Organizer poster states',
+  type: ExploreOrganizerPosterCard,
   path: '[Explore]/Cards',
 )
-Widget exploreClubPolaroidCardStates(BuildContext context) {
+Widget exploreOrganizerPosterCardStates(BuildContext context) {
   return _CatalogScreen(
-    title: 'ExploreClubPolaroidCard',
-    catalogId: 'card.explore.feed.club_polaroid',
+    title: 'ExploreOrganizerPosterCard',
+    catalogId: 'card.explore.feed.organizer_poster',
     children: [
       _StateCard(
         label: 'image-backed club',
-        child: AbsorbPointer(child: ExploreClubPolaroidCard(club: _clubs[1])),
+        child: AbsorbPointer(
+          child: ExploreOrganizerPosterCard(club: _clubs[1]),
+        ),
       ),
       _StateCard(
         label: 'fallback artwork',
         child: AbsorbPointer(
-          child: ExploreClubPolaroidCard(
+          child: ExploreOrganizerPosterCard(
             club: _clubs[2].copyWith(imageUrl: null),
           ),
         ),
@@ -1256,10 +1258,7 @@ Widget exploreClubTagsStates(BuildContext context) {
       _StateCard(
         label: 'visible tags',
         child: ExploreClubTags(
-          state: ExploreClubCardState.from(
-            _clubs[0],
-            l10n: context.l10n,
-          ),
+          state: ExploreClubCardState.from(_clubs[0], l10n: context.l10n),
         ),
       ),
       _StateCard(

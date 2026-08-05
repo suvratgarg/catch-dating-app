@@ -33,7 +33,7 @@
     },
     {
       "path": "test/explore/explore_widgets_test.dart",
-      "maxLines": 5582
+      "maxLines": 5553
     },
     {
       "path": "test/hosts/host_create_event_screen_test.dart",

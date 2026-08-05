@@ -1,6 +1,6 @@
 {
-  "version": "1.6.0",
-  "updated": "2026-07-25",
+  "version": "1.7.0",
+  "updated": "2026-08-05",
   "sourceOfTruth": "docs/app_architecture.md#reference-implementation-workflow",
   "purpose": "Tracks architecture reference exhibits, prototype files, adopter files, candidate status, and back-propagation obligations so migrations stay aligned with the latest pattern.",
   "patterns": [
@@ -2029,6 +2029,99 @@
         "node tool/agent/check_agent_readiness.mjs"
       ],
       "notes": "Frozen snapshot is the default for one submitted form or route action, including external platform launches. Versioned editing and independently keyed concurrency are explicit variants, not implicit exceptions. Phone Authentication is the reference; Member Onboarding, Matching Preferences, Host Organizer Create, Host Event Edit, Reviews, Account Settings, Event Location Map, Marketing forms, and the Admin console are aligned adopters. Admin deliberately uses one global exclusive lease because operator writes and submitted queries share navigation, feedback, query-cache, and selection surfaces; the small throughput trade-off prevents cross-workspace ambiguity."
+    },
+    {
+      "id": "ARCH-ENTITY-MATERIAL-001",
+      "name": "Entity material composition",
+      "status": "reference",
+      "screenInventory": "design/screens/catch.screens.json",
+      "architectureExhibit": "docs/app_architecture.md#exhibit-arch-entity-material-001-entity-material-composition",
+      "prototypeFiles": [
+        "lib/clubs/shared/catch_organizer_poster.dart",
+        "lib/core/widgets/catch_person_polaroid.dart",
+        "lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart",
+        "lib/swipes/shared/profile_surface/catch_profile_view.dart",
+        "test/clubs/club_hero_app_bar_test.dart",
+        "test/swipes/profile_surface_contract_test.dart",
+        "widgetbook/lib/clubs/club_detail_use_cases.dart",
+        "widgetbook/lib/catches/catches_use_cases.dart"
+      ],
+      "adopters": [
+        {
+          "path": "lib/clubs/shared/catch_organizer_poster.dart",
+          "role": "canonical provider-free organizer poster canvas with four bounded layouts, three treatments, media/overlay/footer slots, and deterministic no-photo artwork",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-08-05-entity-material-reference"
+        },
+        {
+          "path": "lib/explore/presentation/widgets/explore_club_cards.dart",
+          "role": "Explore organizer-poster reference adopter with source-backed authority, host, rating, member, and tag composition",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-08-05-entity-material-reference"
+        },
+        {
+          "path": "lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart",
+          "role": "Organizer Detail poster reference adopter with route-owned share/back actions outside the provider-free poster module",
+          "status": "aligned",
+          "lastReviewedPass": "2026-08-05-entity-material-reference"
+        },
+        {
+          "path": "lib/core/widgets/catch_person_polaroid.dart",
+          "role": "canonical provider-free person polaroid with portrait media, identity caption, optional context overlay, and callback-only interaction",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-08-05-entity-material-reference"
+        },
+        {
+          "path": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
+          "role": "consent-safe production person-polaroid reference adopter for Catches, Profile Preview, and Public Profile",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-08-05-entity-material-reference"
+        },
+        {
+          "path": "design/components/catch.components.json",
+          "role": "canonical component contracts for catch.organizer_poster and catch.person_polaroid",
+          "status": "aligned",
+          "lastReviewedPass": "2026-08-05-entity-material-reference"
+        }
+      ],
+      "candidateQueue": [
+        {
+          "id": "ARCH-ENTITY-MATERIAL-001-HOST-POSTER-RECIPE",
+          "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
+          "reason": "Phase 2 must add a schema-first persisted poster recipe plus a guided host editor; do not expose a save action until repository, rules, migration, and preview contracts exist.",
+          "detectedBy": "poster-polaroid-migration-20260805",
+          "addedPass": "2026-08-05-entity-material-reference"
+        },
+        {
+          "id": "ARCH-ENTITY-MATERIAL-001-SHARE-POSTER",
+          "path": "lib/clubs/presentation/detail/widgets/club_share_card.dart",
+          "reason": "Share media uses OrganizerPosterArtwork for fallback but has not yet adopted the complete poster recipe/layout canvas.",
+          "detectedBy": "poster-polaroid-migration-20260805",
+          "addedPass": "2026-08-05-entity-material-reference"
+        }
+      ],
+      "exceptions": [
+        {
+          "id": "ARCH-ENTITY-MATERIAL-001-CROSS-PATHS-CONSENT",
+          "path": "design/screens/catch.screens.json#section.explore.feed",
+          "reason": "Cross Paths remains unbuilt because there is no consent-safe relationship source for identifiable attendee discovery. Person-polaroid availability does not authorize that data surface.",
+          "status": "blocked_product"
+        }
+      ],
+      "requiredBackPropagation": "When entity material roles, poster layouts/treatments, person-polaroid anatomy, or context-overlay ownership changes, update the design language, component contracts, Explore and Organizer Detail adopters, shared Profile adopter, Widgetbook states, focused widget tests, and this exhibit before migrating another surface.",
+      "requiredChecks": [
+        "flutter test --concurrency=1 test/clubs/club_hero_app_bar_test.dart test/explore/explore_widgets_test.dart test/swipes/profile_surface_contract_test.dart test/swipes/profile_card_widget_test.dart",
+        "node tool/design/check_component_contracts.mjs --check",
+        "node tool/design/check_screen_contracts.mjs --check",
+        "node tool/architecture/check_app_architecture_exhibits.mjs",
+        "bash tool/check_catch_ui_lints.sh",
+        "node tool/agent/check_agent_readiness.mjs"
+      ],
+      "notes": "The reference slice changes live Explore, Organizer Detail, Profile Preview, Public Profile, and Catches presentation without adding a fake persistence path. Host recipe persistence/editor and share-poster adoption remain explicit candidates."
     }
   ]
 }

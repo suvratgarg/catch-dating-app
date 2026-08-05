@@ -1,7 +1,7 @@
 ---
 doc_id: design_language
-version: 1.5.9
-updated: 2026-07-21
+version: 1.6.0
+updated: 2026-08-05
 owner: ui_elevation_initiative
 status: active — identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
 ---
@@ -56,7 +56,7 @@ discipline (grid, whitespace, hairlines, tracked labels, muted grading) but our
 
 The base system is **paper + ink**. Neutral surfaces (profile, chat, onboarding,
 settings, forms) use **no decorative color at all**. Light is the browse/forms register;
-**dark is reserved for "wow" surfaces** (event spotlight, profile hero) and is
+**dark is reserved for "wow" surfaces** (event spotlight and celebration) and is
 first-class.
 
 | Role (`CatchTokens`) | Light | Dark (wow) | Notes |
@@ -172,8 +172,8 @@ IBM Plex Mono, and names/controls/prose to the platform system font. App UI call
 
 ## 6. Metaphors
 
-**Presentation tiers (ratified 2026-07-05):** every entity material (event
-ticket, club polaroid, person card) ships in at least two tiers — a **hero**
+**Presentation tiers (ratified 2026-08-05):** every entity material (event
+ticket, organizer poster, person polaroid) ships in at least two tiers — a **hero**
 form for surfaces where the entity earns attention, detail, and vertical
 space (detail heroes, featured cards, cover moments), and a **condensed**
 form for long lists and date-grouped rails (DateTicket rows, index rows).
@@ -184,11 +184,20 @@ tiers within one list.
   notches, perforation, Hero card→detail) is strong, award-adjacent craft. Refine: the
   fixed `eventTicketMediaHeight = 136` → aspect-ratio/constraint (Dynamic Type); push
   the ticket-stub typography (serial/time treatment).
-- **Polaroid → clubs: already built, needs naming + extending.** The cover-photo club
-  tile (`_DirectoryPhotoCard`) *is* a polaroid — white inset frame, framed photo, IBM
-  Plex Mono caption, and upright Archivo `clubDisplay` name. Extract a `CatchPolaroid` primitive, and give the
-  **no-cover** variant (`_DirectoryIdentityCard`) the polaroid treatment too (caption +
-  activity art in the frame) so "no photo" looks intentional.
+- **Poster → organizers: canonical.** Organizers announce a recurring scene;
+  `CatchOrganizerPoster` is the shared material for Explore spotlight and Club
+  Detail identity. Its bounded recipe exposes four layouts (`editorial`,
+  `photo`, `split`, `minimal`) and three treatments (`paper`, `ink`, `signal`).
+  Consumer surfaces use `editorial` + `paper` until a persisted host recipe is
+  approved. Real cover photography or deterministic `OrganizerPosterArtwork`
+  fills the media lane, while provenance/authority remains explicit overlay
+  state rather than being implied by visual polish.
+- **Polaroid → people: canonical.** `CatchPersonPolaroid` reserves the instant
+  photograph for a person: portrait media, quiet identity caption, and optional
+  context overlay. The shared Profile hero is the reference adopter. A future
+  Cross Paths rail may attach the relevant event-ticket stub, but it must not
+  expose identifiable attendees until its relationship and consent source is
+  approved.
 
 ---
 
@@ -203,9 +212,9 @@ Containers mark **objects and actions, never information**. A bordered or
 filled surface in product UI must pass at least one of:
 
 - **R1 · Collection object** — a peer in a set you browse or choose among
-  (feed tickets, club polaroids, recommendation cards, photo slots). The
+  (feed tickets, organizer posters, person polaroids, photo slots). The
   container is the object's material; material marks type (events are
-  tickets, clubs are polaroids, people are plain cards).
+  tickets, organizers are posters, people are polaroids).
 - **R2 · Actionable module** — tappable as a whole, or carrying a CTA
   cluster owned by exactly this content (booking dock, callout card, task
   card, QR panel).
