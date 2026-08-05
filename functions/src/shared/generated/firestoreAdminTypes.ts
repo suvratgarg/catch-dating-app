@@ -718,6 +718,10 @@ export interface UserProfileDocument {
   prefsClubUpdates: boolean;
   prefsWeeklyDigest: boolean;
   prefsShowOnMap: boolean;
+  /**
+   * Private global consent gate for Cross Paths. Missing values resolve to false and this field must never be copied to publicProfiles.
+   */
+  prefsShowInCrossPaths?: boolean;
   fcmToken?: string;
   deleted?: boolean;
   deletedAt?: FirebaseFirestore.Timestamp | null;
@@ -1961,6 +1965,20 @@ export interface EventParticipationDocument {
    * Server time when invite attribution was first attached to the roster edge.
    */
   inviteCapturedAt?: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Private per-user Cross Paths consent edge stored at eventCrossPathsConsents/{eventId_uid} and written only by setCrossPathsEventConsent.
+ */
+export interface EventCrossPathsConsentDocument {
+  eventId: string;
+  uid: string;
+  enabled: boolean;
+  termsVersion: number;
+  consentedAt: FirebaseFirestore.Timestamp | null;
+  updatedAt: FirebaseFirestore.Timestamp;
+  revokedAt: FirebaseFirestore.Timestamp | null;
+  source: "booking_success" | "event_detail" | "settings";
 }
 
 /**

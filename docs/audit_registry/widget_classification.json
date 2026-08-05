@@ -10,21 +10,21 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1108,
-    "widgetClasses": 973,
+    "total": 1109,
+    "widgetClasses": 974,
     "stateClasses": 135,
-    "publicClasses": 968,
+    "publicClasses": 969,
     "privateClasses": 140,
     "byRole": {
       "atom": 57,
-      "composition": 356,
+      "composition": 357,
       "feature-adapter": 285,
       "pattern": 17,
       "screen": 258,
       "widget-state": 135
     },
     "byDecision": {
-      "keep-canonical-contract": 199,
+      "keep-canonical-contract": 200,
       "keep-public-cataloged": 704,
       "keep-widget-state": 135,
       "review-catalog-coverage": 44,
@@ -33,7 +33,7 @@
     },
     "byCatalogStatus": {
       "cataloged": 665,
-      "contracted": 199,
+      "contracted": 200,
       "not-applicable": 135,
       "route-covered": 56,
       "uncataloged": 53
@@ -41,13 +41,13 @@
     "conceptCount": 64,
     "memberClassCount": 118,
     "compositionClassCount": 516,
-    "screenClassCount": 270,
+    "screenClassCount": 271,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 516,
       "concept": 64,
       "member": 118,
-      "screen": 270
+      "screen": 271
     },
     "collisionGroupCount": 33,
     "collisions": [
@@ -374,7 +374,7 @@
       "memberClasses": 118,
       "memberClassesCataloged": 118,
       "compositionsCataloged": 468,
-      "screensCataloged": 214
+      "screensCataloged": 215
     }
   },
   "widgets": [
@@ -10155,6 +10155,35 @@
       "stateOwnership": "local-ui-only",
       "asyncOwnership": "none",
       "layoutOwnership": "internal-only",
+      "actionOwnership": "callbacks-only",
+      "decision": "keep-canonical-contract",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "CrossPathsEventConsentSection",
+      "file": "lib/cross_paths/presentation/cross_paths_event_consent_section.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.event_detail_sections",
+      "publicApi": true,
+      "catalogStatus": "contracted",
+      "contractId": "catch.event_detail_sections.cross_paths_consent",
+      "conceptRole": "screen",
+      "conceptId": null,
+      "parentConceptId": null,
+      "qualifier": null,
+      "collisionKey": "cross_paths_event_consent_section",
+      "decisionRef": "contract-kind:screen-contract",
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
       "decision": "keep-canonical-contract",
       "remediationOptions": [

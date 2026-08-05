@@ -238,7 +238,7 @@ service cloud.firestore {
           // Notification / discovery preferences
           'prefsNewCatches', 'prefsMessages', 'prefsEventReminders',
           'prefsRunStatusUpdates', 'prefsClubUpdates',
-          'prefsWeeklyDigest', 'prefsShowOnMap',
+          'prefsWeeklyDigest', 'prefsShowOnMap', 'prefsShowInCrossPaths',
           // Runtime fields
           'fcmToken',
           // Server-owned lifecycle fields. These must be tolerated on existing
@@ -336,6 +336,7 @@ service cloud.firestore {
         && data.prefsClubUpdates is bool
         && data.prefsWeeklyDigest is bool
         && data.prefsShowOnMap is bool
+        && optionalBool(data, 'prefsShowInCrossPaths')
         // Runtime fields (optional)
         && optionalString(data, 'fcmToken')
         && optionalBool(data, 'deleted')
@@ -842,6 +843,13 @@ service cloud.firestore {
           resource.data.uid == request.auth.uid
           || isClubHostForEvent(resource.data.eventId)
         );
+      allow write: if false;
+    }
+
+    // Cross Paths consent is private to the caller. Server callables own all
+    // writes so eligibility and terms-version checks cannot be bypassed.
+    match /eventCrossPathsConsents/{consentId} {
+      allow read: if isAuthed() && resource.data.uid == request.auth.uid;
       allow write: if false;
     }
 

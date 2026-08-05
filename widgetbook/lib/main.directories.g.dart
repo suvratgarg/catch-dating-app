@@ -3503,6 +3503,16 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Sections',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'CrossPathsEventConsentSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Cross Paths consent states',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .crossPathsEventConsentStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'EmptyRosterMessage',
             useCases: [
               _widgetbook.WidgetbookUseCase(

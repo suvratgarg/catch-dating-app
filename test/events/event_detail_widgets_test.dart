@@ -13,6 +13,10 @@ import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
 import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/cross_paths/data/cross_paths_feature_config_provider.dart';
+import 'package:catch_dating_app/cross_paths/data/cross_paths_repository.dart';
+import 'package:catch_dating_app/cross_paths/domain/cross_paths_event_consent.dart';
+import 'package:catch_dating_app/cross_paths/domain/cross_paths_feature_config.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/events/data/event_calendar_links.dart';
@@ -331,6 +335,135 @@ void main() {
       expect(find.textContaining('Attendance matters'), findsOneWidget);
       expect(find.text('What to expect'), findsNothing);
       expect(find.text('Booking policy'), findsNothing);
+    });
+
+    testWidgets('renders route-owned Cross Paths consent when eligible', (
+      tester,
+    ) async {
+      final event = buildEvent(
+        startTime: DateTime.now().add(const Duration(days: 1)),
+        endTime: DateTime.now().add(const Duration(days: 1, hours: 2)),
+      );
+      final profile = buildUser().copyWith(prefsShowInCrossPaths: true);
+
+      await pumpEventsTestApp(
+        tester,
+        EventDetailScreen(
+          enableMapNetworkTiles: false,
+          clubId: event.clubId,
+          eventId: event.id,
+        ),
+        overrides: [
+          crossPathsFeatureConfigProvider.overrideWithValue(
+            const CrossPathsFeatureConfig(
+              consentControlsEnabled: true,
+              exploreSuggestionsEnabled: false,
+            ),
+          ),
+          clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
+          eventDetailViewModelProvider(event.id).overrideWith(
+            (ref) => AsyncData(
+              EventDetailViewModel(
+                event: event,
+                userProfile: profile,
+                reviews: const [],
+                isAuthenticated: true,
+                isHost: false,
+                isSaved: false,
+                participation: _participation(
+                  eventId: event.id,
+                  uid: profile.uid,
+                ),
+              ),
+            ),
+          ),
+          watchCrossPathsEventConsentProvider(
+            event.id,
+            profile.uid,
+          ).overrideWith((ref) => Stream.value(null)),
+          watchEventSuccessPlanProvider(
+            event.id,
+          ).overrideWith((ref) => Stream.value(null)),
+          paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
+        ],
+      );
+      await tester.pump();
+
+      await _scrollEventDetailUntilVisible(
+        tester,
+        find.text('Meet people at this event'),
+      );
+      expect(find.textContaining('not a public attendee list'), findsOneWidget);
+    });
+
+    testWidgets('keeps an existing Cross Paths consent revocable', (
+      tester,
+    ) async {
+      final event = buildEvent(
+        startTime: DateTime.now().add(const Duration(days: 1)),
+        endTime: DateTime.now().add(const Duration(days: 1, hours: 2)),
+      );
+      final profile = buildUser().copyWith(prefsShowInCrossPaths: false);
+      final now = DateTime.now();
+
+      await pumpEventsTestApp(
+        tester,
+        EventDetailScreen(
+          enableMapNetworkTiles: false,
+          clubId: event.clubId,
+          eventId: event.id,
+        ),
+        overrides: [
+          crossPathsFeatureConfigProvider.overrideWithValue(
+            const CrossPathsFeatureConfig(
+              consentControlsEnabled: true,
+              exploreSuggestionsEnabled: false,
+            ),
+          ),
+          clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
+          eventDetailViewModelProvider(event.id).overrideWith(
+            (ref) => AsyncData(
+              EventDetailViewModel(
+                event: event,
+                userProfile: profile,
+                reviews: const [],
+                isAuthenticated: true,
+                isHost: false,
+                isSaved: false,
+                participation: null,
+              ),
+            ),
+          ),
+          watchCrossPathsEventConsentProvider(
+            event.id,
+            profile.uid,
+          ).overrideWith(
+            (ref) => Stream.value(
+              CrossPathsEventConsent(
+                eventId: event.id,
+                uid: profile.uid,
+                enabled: true,
+                termsVersion: currentCrossPathsTermsVersion,
+                consentedAt: now,
+                updatedAt: now,
+                revokedAt: null,
+                source: CrossPathsConsentSource.eventDetail.wireValue,
+              ),
+            ),
+          ),
+          paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
+        ],
+      );
+      await tester.pump();
+
+      await _scrollEventDetailUntilVisible(
+        tester,
+        find.text('Meet people at this event'),
+      );
+      expect(
+        find.byKey(const ValueKey('cross_paths.event_consent.toggle')),
+        findsOneWidget,
+      );
     });
   });
 
@@ -2157,7 +2290,7 @@ Future<void> _scrollEventDetailUntilVisible(
     await tester.drag(scrollView, const Offset(0, -240));
     await tester.pump();
   }
-  throw TestFailure('Could not reveal ${finder.description}.');
+  throw TestFailure('Could not reveal $finder.');
 }
 
 EventParticipation _participation({

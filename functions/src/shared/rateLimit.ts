@@ -122,6 +122,7 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   unblockUser: {maxRequests: 10, windowMs: 60 * 1000},
   // 60/min because profile editing can save one field per sheet interaction.
   updateUserProfile: {maxRequests: 60, windowMs: 60 * 1000},
+  setCrossPathsEventConsent: {maxRequests: 30, windowMs: 60 * 1000},
   // 3/hour
   createClub: {maxRequests: 3, windowMs: 60 * 60 * 1000},
   createOrganizer: {maxRequests: 3, windowMs: 60 * 60 * 1000},

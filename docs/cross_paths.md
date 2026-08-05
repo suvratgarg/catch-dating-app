@@ -1,9 +1,9 @@
 ---
 doc_id: cross_paths
-version: 1.1.0
+version: 1.2.0
 updated: 2026-08-05
 owner: product (approved direction 2026-08-05)
-status: ready-for-implementation
+status: implementation-in-progress
 ---
 
 # Cross Paths — Explore People + Event Invitation Spec
@@ -144,23 +144,19 @@ parallel systems:
    viewer-specific event availability. The Cross Paths provider should enrich
    this feed through one batched, feature-owned seam.
 
-### Required correction before launch
+### Roster privacy foundation (implemented)
 
-Current Firestore rules permit any authenticated user to read active
-`eventParticipations` documents in `signedUp`, `waitlisted`, or `attended`
-states. The current post-event candidate repository also reads a whole event
-roster on the client.
+`CROSS-PATHS-PRIVACY-001` was closed on 2026-08-05. Firestore rules now allow
+a member to read only their own deterministic `eventParticipations` edge while
+an authorized organizer retains access to the roster they manage. The existing
+post-event Catch deck, Event Recap, and identified attendee-avatar enrichment
+resolve candidates through the App-Check-protected `fetchSwipeCandidates`
+callable instead of reading a whole roster on the client.
 
-`CROSS-PATHS-PRIVACY-001` is a Phase 0 launch blocker:
-
-- move identified attendee resolution for both the existing post-event Catch
-  flow and new Cross Paths flow behind server-owned, purpose-specific reads;
-- change participation rules so a member can read only their own edge and an
-  authorized organizer can read the roster they manage;
-- prove that arbitrary authenticated users cannot enumerate event attendees;
-- run the Firestore rules suite under the required emulators.
-
-Cross Paths must never launch on top of the current broad roster-read rule.
+The emulator rules suite proves own-edge and organizer reads while denying
+arbitrary authenticated roster enumeration. New Cross Paths work must preserve
+this boundary: all identified attendee joins remain server-owned and
+purpose-specific.
 
 ## Experience contract
 
@@ -340,24 +336,27 @@ placements. This is a configuration default, not a permanent policy constant.
 
 ### Global consent
 
-Add a private user preference equivalent to
-`prefsShowInCrossPaths: boolean`.
+Phase 0 implements the private optional preference
+`users/{uid}.prefsShowInCrossPaths: boolean` through the typed
+`updateUserProfile` patch contract.
 
 - Existing users and users missing the field resolve to `false`.
-- Add the field through an optional-on-read, default-false migration and
-  backfill before making it contract-required; it must never default to true.
-- The setting lives under Settings → Privacy & Safety.
+- The field remains optional-on-read and default-false; no affirmative backfill
+  is permitted.
+- The setting lives under Settings → Privacy & Safety and is hidden while the
+  consent-controls rollout flag is off.
 - Turning it off immediately suppresses all future discovery.
 - Turning it on does not itself opt the user into any event.
 - The field must not be projected into `publicProfiles/{uid}`.
 
 ### Per-event consent
 
-Consent for a specific event is stored as a deterministic relationship edge,
-proposed as `eventCrossPathsConsents/{eventId_uid}`. It is not an array on the
-user, event, or participation document.
+Consent for a specific event is stored as the deterministic relationship edge
+`eventCrossPathsConsents/{eventId_uid}`. It is not an array on the user, event,
+or participation document. The caller may read only their own edge and cannot
+write it directly.
 
-Proposed fields:
+Implemented fields:
 
 | Field | Meaning |
 |---|---|
@@ -369,9 +368,13 @@ Proposed fields:
 | `revokedAt` | Latest revocation time, nullable |
 | `source` | `booking_success`, `event_detail`, or `settings` |
 
-The per-event control is offered after a confirmed booking and on the member's
-event detail/booking management surface. Consent may be revoked without
-cancelling the event booking.
+The first Phase 0 control is on Event Detail for an upcoming, active event after
+a confirmed booking. The App-Check-protected `setCrossPathsEventConsent`
+callable revalidates the private global preference, current terms version,
+active future event, deterministic participation identity, and `signedUp`
+status before enabling. Revocation remains available at the callable even if
+the booking or global preference later disappears, and does not cancel the
+event booking.
 
 Effective visibility is:
 
@@ -380,6 +383,9 @@ Effective visibility is:
 Revoking visibility invalidates pending invitations and removes future
 recommendations. It does not silently cancel an already accepted plan; the
 member receives a separate, explicit action for that.
+
+Pending invitations and accepted plans do not exist yet. Their later callables
+must add that invalidation behavior to the same server-owned consent workflow.
 
 ### Disclosure
 
@@ -394,6 +400,10 @@ Consent copy must say that:
 
 The privacy policy and in-app privacy explanation must be updated before the
 feature flag is enabled outside internal/demo environments.
+
+The exact in-app disclosure is implemented on Event Detail. Legal/privacy
+policy review remains an external launch blocker, so both bundled Remote Config
+defaults stay off.
 
 Invitation state is always visible in-app while the member remains opted in.
 Phase 2 should add a dedicated Cross Paths invitation push preference rather
@@ -542,21 +552,21 @@ The later contract must include:
 
 Until that contract exists, Cross Paths never changes admission.
 
-## Proposed backend and data ownership
+## Backend and data ownership
 
-All names in this section are proposed implementation contracts. They do not
-exist merely because this spec names them.
+This section distinguishes implemented Phase 0 contracts from later proposed
+contracts. A proposed name does not exist merely because this spec names it.
 
 ### Relationship documents
 
-| Relationship | Proposed source |
-|---|---|
-| Global visibility master | private `users/{uid}.prefsShowInCrossPaths` |
-| Per-event consent | `eventCrossPathsConsents/{eventId_uid}` |
-| Human/automated showcase eligibility | server-only `crossPathsShowcaseEligibility/{uid}` |
-| Event invitation | `crossPathsInvitations/{eventId_senderUid}` |
-| Accepted event plan | event-and-pair-scoped conversation with `conversationType: crossPathsEventPlan` |
-| Exposure/fatigue state | server-only projection or analytics store, never a public user field |
+| Relationship | Source | Status |
+|---|---|---|
+| Global visibility master | private `users/{uid}.prefsShowInCrossPaths` | Implemented, optional/default-off |
+| Per-event consent | `eventCrossPathsConsents/{eventId_uid}` | Implemented, callable-owned |
+| Human/automated showcase eligibility | server-only `crossPathsShowcaseEligibility/{uid}` | Proposed next Phase 0 slice |
+| Event invitation | `crossPathsInvitations/{eventId_senderUid}` | Proposed Phase 2 |
+| Accepted event plan | event-and-pair-scoped conversation with `conversationType: crossPathsEventPlan` | Proposed Phase 2 |
+| Exposure/fatigue state | server-only projection or analytics store, never a public user field | Proposed Phase 1 |
 
 `crossPathsShowcaseEligibility` stores only operational status and reason codes
 such as `eligible`, `needsReview`, or `paused`, plus rule/review version and
@@ -573,11 +583,13 @@ timestamps. It must not store a numeric attractiveness label.
    - returns a sanitized person/event projection, reason codes, ranking version,
      and short-lived signed suggestion token;
    - never returns a roster or private preference values.
-2. `setCrossPathsEventConsent`
+2. `setCrossPathsEventConsent` — implemented
    - acts only for the caller;
-   - validates a current confirmed participation when enabling;
+   - validates the global opt-in, active future event, and current confirmed
+     participation when enabling;
    - records terms version and source;
-   - invalidates pending invitations on disable.
+   - preserves revocation access after eligibility disappears;
+   - must invalidate pending invitations on disable once invitations exist.
 3. `sendCrossPathsInvitation`
    - validates the suggestion token and all send preconditions;
    - creates the deterministic invitation transactionally;
@@ -612,15 +624,17 @@ the roster cannot be reconstructed by changing query predicates.
 
 ### Flutter ownership
 
-Create a feature root such as `lib/cross_paths/` with normal domain, data, and
+The implemented `lib/cross_paths/` feature root uses normal domain, data, and
 presentation boundaries:
 
-- domain models: sanitized suggestion, consent state, invitation state, event
-  plan state, ranking reason enum;
-- data repository: callable requests and caller-owned invitation/plan streams;
-- providers/controllers: batched Explore enrichment, consent mutations,
-  invitation mutations, and frozen pending-request snapshots;
-- presentation: feature-specific composition around `CatchPersonPolaroid`;
+- domain models currently own feature flags and consent state; suggestion,
+  invitation, event-plan, and ranking models remain future slices;
+- the data repository currently owns the consent callable and caller-scoped
+  consent stream;
+- providers/controllers currently own fail-closed rollout flags and consent
+  mutation orchestration;
+- presentation currently owns the Event Detail consent section; later
+  composition around `CatchPersonPolaroid` remains blocked on suggestions;
 - Explore remains the route/provider boundary and receives provider-free mixed
   feed card state;
 - shared person and event materials stay in their existing owners.
@@ -716,25 +730,28 @@ create selection bias.
 
 ### Phase 0 — Privacy and eligibility foundation
 
-Implementation receipt (2026-08-05): the first privacy slice is implemented.
+Implementation receipt (2026-08-05): the first two privacy slices are
+implemented.
 The existing post-event swipe deck, Event Recap, and identified post-event
 avatar enrichment now resolve candidates through the server-owned
 `fetchSwipeCandidates` callable. Consumer roster reads are restricted to the
 member's own edge, organizer roster access remains intact, and the callable
 enforces the Catch window, viewer attendance, reciprocal preferences, prior
-decisions, and blocks in both directions. This does not complete Phase 0:
-feature flags, Cross Paths consent, showcase eligibility, the Explore
-suggestion contract, and synthetic seed policy remain outstanding.
+decisions, and blocks in both directions. Global and per-event consent schemas,
+rules, Settings/Event Detail controls, the callable, and two fail-closed Remote
+Config defaults now exist. This does not complete Phase 0: showcase
+eligibility, the Explore suggestion contract, legal privacy-policy approval,
+and synthetic seed policy remain outstanding.
 
-- Land/reuse the person-Polaroid and organizer-poster migration.
-- Introduce the feature flag with fail-closed defaults.
-- Generalize showcase readiness away from running-only completeness.
-- Add global and per-event consent contracts and Settings/event controls.
-- Add reviewed showcase-eligibility operations for launch supply.
-- Build the server-owned batched suggestion callable.
-- Migrate post-event Catch candidate resolution off client roster reads.
-- Restrict Firestore participation reads and prove rules under emulators.
-- Seed consent/eligibility only for synthetic internal/demo profiles.
+- [x] Land/reuse the person-Polaroid and organizer-poster migration.
+- [x] Introduce feature flags with fail-closed defaults.
+- [ ] Generalize showcase readiness away from running-only completeness.
+- [x] Add global and per-event consent contracts and Settings/event controls.
+- [ ] Add reviewed showcase-eligibility operations for launch supply.
+- [ ] Build the server-owned batched suggestion callable.
+- [x] Migrate post-event Catch candidate resolution off client roster reads.
+- [x] Restrict Firestore participation reads and prove rules under emulators.
+- [ ] Seed consent/eligibility only for synthetic internal/demo profiles.
 
 Exit gate: arbitrary authenticated users cannot enumerate event rosters, and a
 suggestion cannot be returned without effective consent and reciprocal

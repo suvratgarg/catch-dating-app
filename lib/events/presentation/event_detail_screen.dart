@@ -13,6 +13,10 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
+import 'package:catch_dating_app/cross_paths/data/cross_paths_feature_config_provider.dart';
+import 'package:catch_dating_app/cross_paths/data/cross_paths_repository.dart';
+import 'package:catch_dating_app/cross_paths/presentation/cross_paths_event_consent_controller.dart';
+import 'package:catch_dating_app/cross_paths/presentation/cross_paths_event_consent_state.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/events/data/event_calendar_links.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -118,6 +122,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
     final resolvedClubId = vm?.event.clubId ?? widget.clubId;
     final clubAsync = ref.watch(fetchClubProvider(resolvedClubId));
     final isHostApp = AppConfig.appRole.isHost;
+    final crossPathsConfig = ref.watch(crossPathsFeatureConfigProvider);
 
     if (vm != null) {
       if (vm.event.clubId != widget.clubId) {
@@ -143,6 +148,33 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
       );
       final saveMutation = ref.watch(
         EventDetailController.toggleSavedEventMutation,
+      );
+      final crossPathsConsentMutation = ref.watch(
+        CrossPathsEventConsentController.setConsentMutation,
+      );
+      final crossPathsEligible = crossPathsEventConsentEligible(
+        rolloutEnabled: crossPathsConfig.consentControlsEnabled,
+        event: vm.event,
+        participation: vm.participation,
+        userProfile: vm.userProfile,
+        now: now,
+      );
+      final crossPathsConsentReadable =
+          crossPathsConfig.consentControlsEnabled && vm.userProfile != null;
+      final crossPathsConsentAsync = crossPathsConsentReadable
+          ? ref.watch(
+              watchCrossPathsEventConsentProvider(
+                vm.event.id,
+                vm.userProfile!.uid,
+              ),
+            )
+          : null;
+      final crossPathsConsentState = crossPathsEventConsentSectionStateFrom(
+        eligibleToEnable: crossPathsEligible,
+        loaded: crossPathsConsentAsync?.hasValue == true,
+        enabled: crossPathsConsentAsync?.asData?.value?.enabled == true,
+        pending: crossPathsConsentMutation.isPending,
+        unavailable: crossPathsConsentAsync?.hasError == true,
       );
       final share = ref.watch(externalShareControllerProvider);
       final calendar = ref.watch(eventCalendarControllerProvider);
@@ -215,114 +247,127 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
       return CatchMutationErrorListener(
         mutation: EventDetailController.toggleSavedEventMutation,
         errorContext: AppErrorContext.event,
-        child: Scaffold(
-          backgroundColor: style.pageBackground,
-          body: EventDetailBody(
-            event: vm.event,
-            userProfile: vm.userProfile,
-            clubId: widget.clubId,
-            reviews: vm.reviews,
-            isAuthenticated: vm.isAuthenticated,
-            sectionVisibility: sectionVisibility,
-            isSaved: vm.isSaved,
-            participation: vm.participation,
-            savePending: saveMutation.isPending,
-            surfaceStyle: style,
-            onBack: () => Navigator.of(context).pop(),
-            onShare: shareEvent,
-            showAddToCalendar: _canAddEventToCalendar(
+        child: CatchMutationErrorListener(
+          mutation: CrossPathsEventConsentController.setConsentMutation,
+          errorContext: AppErrorContext.event,
+          child: Scaffold(
+            backgroundColor: style.pageBackground,
+            body: EventDetailBody(
               event: vm.event,
-              participation: vm.participation,
-              isHost: sectionVisibility.renderSocialAsHost,
-              now: now,
-            ),
-            onAddToCalendar: (buttonContext) => unawaited(
-              _addEventToCalendar(buttonContext, vm.event, calendar),
-            ),
-            onToggleSaved: () => _toggleSavedEvent(
-              context,
-              event: vm.event,
-              clubId: widget.clubId,
               userProfile: vm.userProfile,
-              isAuthenticated: vm.isAuthenticated,
-              isSaved: vm.isSaved,
-              now: now,
-            ),
-            companionState: companionState,
-            hostState: hostState,
-            socialState: socialState,
-            informationState: informationState,
-            onLocationTap: () => context.pushNamed(
-              Routes.eventLocationMapScreen.name,
-              pathParameters: {
-                context.l10n.eventsEventDetailScreenBodyEventid: vm.event.id,
-              },
-            ),
-            onOpenCompanion: () => context.pushNamed(
-              Routes.eventSuccessCompanionScreen.name,
-              pathParameters: {
-                context.l10n.eventsEventDetailScreenBodyClubid: widget.clubId,
-                context.l10n.eventsEventDetailScreenBodyEventid: vm.event.id,
-              },
-              extra: vm.event,
-            ),
-            onRetryCompanion: () =>
-                ref.invalidate(watchEventSuccessPlanProvider(vm.event.id)),
-            onViewClub: (clubId) => context.pushNamed(
-              eventDetailOrganizerRouteFor(isHostApp: isHostApp).name,
-              pathParameters: {
-                context.l10n.eventsEventDetailScreenBodyClubid: clubId,
-              },
-            ),
-            onMessageHost: (clubId, hostUid) => unawaited(
-              _messageHost(
-                context,
-                clubId: clubId,
-                hostUid: hostUid,
-                eventId: widget.eventId,
-              ),
-            ),
-            onRetryHosts: () =>
-                ref.invalidate(fetchClubProvider(vm.event.clubId)),
-            inviteCode: widget.inviteCode,
-            inviteLinkId: widget.inviteLinkId,
-            now: now,
-            presentationMode: widget.presentationMode,
-            heroTag: widget.heroTag,
-            enableMapNetworkTiles: widget.enableMapNetworkTiles,
-          ),
-          bottomNavigationBar: _eventDetailBottomNavigationBar(
-            event: vm.event,
-            userProfile: vm.userProfile,
-            clubId: widget.clubId,
-            isAuthenticated: vm.isAuthenticated,
-            isSaved: vm.isSaved,
-            isHosted: vm.isHost,
-            isClubMember: vm.isClubMember,
-            participation: vm.participation,
-            organizerCapabilities:
-                clubAsync.asData?.value?.supplyCapabilities ??
-                const OrganizerSupplyCapabilities.unclaimedReadOnly(
-                  claimable: false,
-                ),
-            inviteCode: widget.inviteCode,
-            inviteLinkId: widget.inviteLinkId,
-            now: now,
-            darkSurface: isSpotlightDark,
-            sectionVisibility: sectionVisibility,
-            completeProfileLabel:
-                context.l10n.eventsEventDetailScreenLabelCompleteBookingProfile,
-            onGuestBook: () => _openEventSignIn(
-              context,
               clubId: widget.clubId,
-              eventId: vm.event.id,
+              reviews: vm.reviews,
+              isAuthenticated: vm.isAuthenticated,
+              sectionVisibility: sectionVisibility,
+              isSaved: vm.isSaved,
+              participation: vm.participation,
+              savePending: saveMutation.isPending,
+              surfaceStyle: style,
+              onBack: () => Navigator.of(context).pop(),
+              onShare: shareEvent,
+              showAddToCalendar: _canAddEventToCalendar(
+                event: vm.event,
+                participation: vm.participation,
+                isHost: sectionVisibility.renderSocialAsHost,
+                now: now,
+              ),
+              onAddToCalendar: (buttonContext) => unawaited(
+                _addEventToCalendar(buttonContext, vm.event, calendar),
+              ),
+              onToggleSaved: () => _toggleSavedEvent(
+                context,
+                event: vm.event,
+                clubId: widget.clubId,
+                userProfile: vm.userProfile,
+                isAuthenticated: vm.isAuthenticated,
+                isSaved: vm.isSaved,
+                now: now,
+              ),
+              companionState: companionState,
+              hostState: hostState,
+              socialState: socialState,
+              informationState: informationState,
+              onLocationTap: () => context.pushNamed(
+                Routes.eventLocationMapScreen.name,
+                pathParameters: {
+                  context.l10n.eventsEventDetailScreenBodyEventid: vm.event.id,
+                },
+              ),
+              onOpenCompanion: () => context.pushNamed(
+                Routes.eventSuccessCompanionScreen.name,
+                pathParameters: {
+                  context.l10n.eventsEventDetailScreenBodyClubid: widget.clubId,
+                  context.l10n.eventsEventDetailScreenBodyEventid: vm.event.id,
+                },
+                extra: vm.event,
+              ),
+              onRetryCompanion: () =>
+                  ref.invalidate(watchEventSuccessPlanProvider(vm.event.id)),
+              onViewClub: (clubId) => context.pushNamed(
+                eventDetailOrganizerRouteFor(isHostApp: isHostApp).name,
+                pathParameters: {
+                  context.l10n.eventsEventDetailScreenBodyClubid: clubId,
+                },
+              ),
+              onMessageHost: (clubId, hostUid) => unawaited(
+                _messageHost(
+                  context,
+                  clubId: clubId,
+                  hostUid: hostUid,
+                  eventId: widget.eventId,
+                ),
+              ),
+              onRetryHosts: () =>
+                  ref.invalidate(fetchClubProvider(vm.event.clubId)),
               inviteCode: widget.inviteCode,
               inviteLinkId: widget.inviteLinkId,
+              now: now,
+              presentationMode: widget.presentationMode,
+              heroTag: widget.heroTag,
+              enableMapNetworkTiles: widget.enableMapNetworkTiles,
+              crossPathsConsentState: crossPathsConsentState,
+              onCrossPathsConsentChanged: (enabled) =>
+                  CrossPathsEventConsentController.setConsentMutation.run(
+                    ref,
+                    (tx) => tx
+                        .get(crossPathsEventConsentControllerProvider.notifier)
+                        .setConsent(eventId: vm.event.id, enabled: enabled),
+                  ),
             ),
-            onCompleteProfile: () => _openEventProfileCompletion(
-              context,
+            bottomNavigationBar: _eventDetailBottomNavigationBar(
+              event: vm.event,
+              userProfile: vm.userProfile,
               clubId: widget.clubId,
-              eventId: vm.event.id,
+              isAuthenticated: vm.isAuthenticated,
+              isSaved: vm.isSaved,
+              isHosted: vm.isHost,
+              isClubMember: vm.isClubMember,
+              participation: vm.participation,
+              organizerCapabilities:
+                  clubAsync.asData?.value?.supplyCapabilities ??
+                  const OrganizerSupplyCapabilities.unclaimedReadOnly(
+                    claimable: false,
+                  ),
+              inviteCode: widget.inviteCode,
+              inviteLinkId: widget.inviteLinkId,
+              now: now,
+              darkSurface: isSpotlightDark,
+              sectionVisibility: sectionVisibility,
+              completeProfileLabel: context
+                  .l10n
+                  .eventsEventDetailScreenLabelCompleteBookingProfile,
+              onGuestBook: () => _openEventSignIn(
+                context,
+                clubId: widget.clubId,
+                eventId: vm.event.id,
+                inviteCode: widget.inviteCode,
+                inviteLinkId: widget.inviteLinkId,
+              ),
+              onCompleteProfile: () => _openEventProfileCompletion(
+                context,
+                clubId: widget.clubId,
+                eventId: vm.event.id,
+              ),
             ),
           ),
         ),

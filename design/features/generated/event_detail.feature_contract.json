@@ -2,8 +2,8 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/event_detail.feature.json",
-  "generatedFor": "2026-07-24",
-  "sourceDigest": "sha256:02b67ce10a852696111604db53ab443c86ec59717c3b9d7730ee92abe733bbe8",
+  "generatedFor": "2026-08-05",
+  "sourceDigest": "sha256:a29f998838dcfee56909f8906a8e8781f548a4a3f111111a4221a291efdfce43",
   "resolvedDigest": "sha256:1dc2355420eeeef0e665b7d89e8158fe446c9eb4fdf68faf8b3915bf7c8e7abb",
   "feature": {
     "id": "feature.event_detail",
@@ -16,8 +16,8 @@
     "surfaces": 3,
     "states": 30,
     "scenarios": 30,
-    "actionCases": 45,
-    "actions": 14,
+    "actionCases": 50,
+    "actions": 15,
     "captures": 33,
     "previews": 13,
     "testFiles": 7,
@@ -32,7 +32,7 @@
         "id": "screen.event.detail"
       },
       "actionScope": {
-        "included": "Booking-dock actions represented by EventDetailBookingDockAction plus opening the exact-location child projection.",
+        "included": "Booking-dock actions represented by EventDetailBookingDockAction, the signed-up member's event-level Cross Paths consent mutation, and opening the exact-location child projection.",
         "excluded": [
           "Navigation chrome, sharing, saving, calendar, companion, organizer, messaging, authentication, and profile-completion actions remain owned and verified by their existing route and widget contracts.",
           "Directions and exact-location child-route recovery belong to the Event Location Map projection below."
@@ -55,6 +55,12 @@
             "language": "dart",
             "file": "lib/events/presentation/event_detail_screen.dart",
             "symbol": "EventDetailScreen"
+          },
+          {
+            "id": "cross_paths_event_consent",
+            "language": "dart",
+            "file": "lib/cross_paths/presentation/cross_paths_event_consent_controller.dart",
+            "symbol": "CrossPathsEventConsentController"
           }
         ],
         "componentContracts": [
@@ -67,16 +73,19 @@
           "contracts/client_writes/create_saved_event.schema.json",
           "contracts/client_writes/delete_saved_event.schema.json",
           "contracts/firestore/event_participations.schema.json",
+          "contracts/firestore/event_cross_paths_consents.schema.json",
           "contracts/firestore/event_waitlist_offers.schema.json",
           "contracts/firestore/events.schema.json",
-          "contracts/firestore/saved_events.schema.json"
+          "contracts/firestore/saved_events.schema.json",
+          "contracts/callables/set_cross_paths_event_consent_payload.schema.json",
+          "contracts/callable_responses/set_cross_paths_event_consent_response.schema.json"
         ]
       },
       "coverage": {
         "states": 15,
         "scenarios": 15,
-        "actionCases": 24,
-        "actions": 7,
+        "actionCases": 29,
+        "actions": 8,
         "captures": 24,
         "previews": 6,
         "testFiles": 3,
@@ -122,6 +131,16 @@
             "cancelled"
           ]
         },
+        "cross_paths_consent": {
+          "default": "hidden",
+          "values": [
+            "hidden",
+            "loading",
+            "off",
+            "on",
+            "unavailable"
+          ]
+        },
         "mutation": {
           "default": "idle",
           "values": [
@@ -131,7 +150,9 @@
             "book_failed",
             "cancel_failed",
             "book_succeeded",
-            "cancel_succeeded"
+            "cancel_succeeded",
+            "cross_paths_consent_pending",
+            "cross_paths_consent_failed"
           ]
         },
         "accessibility": {
@@ -267,6 +288,28 @@
           "implementationStatus": "implemented"
         },
         {
+          "id": "set_cross_paths_event_consent",
+          "owner": "cross_paths_event_consent",
+          "codeValue": "setConsent",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "eventId",
+            "enabled",
+            "termsVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "booking_signed_up"
+              ]
+            }
+          ],
+          "description": "Updates the caller's deterministic event-consent edge through the App-Check-protected callable; enablement is limited to an opted-in member with a confirmed future booking.",
+          "implementationStatus": "implemented"
+        },
+        {
           "id": "open_location_map",
           "owner": "event_detail_route",
           "codeValue": "eventLocationMapScreen",
@@ -300,6 +343,7 @@
             "viewer": "member",
             "presentation": "standard",
             "participation": "eligible",
+            "cross_paths_consent": "hidden",
             "mutation": "idle",
             "accessibility": "standard"
           },
@@ -322,6 +366,7 @@
                 "viewer": "member",
                 "presentation": "standard",
                 "participation": "eligible",
+                "cross_paths_consent": "hidden",
                 "mutation": "idle",
                 "accessibility": "standard"
               },
@@ -335,6 +380,7 @@
                   "leave_waitlist",
                   "accept_waitlist_offer",
                   "decline_waitlist_offer",
+                  "set_cross_paths_event_consent",
                   "open_location_map"
                 ]
               }
@@ -351,6 +397,7 @@
             "viewer": "member",
             "presentation": "standard",
             "participation": "eligible",
+            "cross_paths_consent": "hidden",
             "mutation": "idle",
             "accessibility": "standard"
           },
@@ -373,6 +420,7 @@
                 "viewer": "member",
                 "presentation": "standard",
                 "participation": "eligible",
+                "cross_paths_consent": "hidden",
                 "mutation": "idle",
                 "accessibility": "standard"
               },
@@ -386,6 +434,7 @@
                   "leave_waitlist",
                   "accept_waitlist_offer",
                   "decline_waitlist_offer",
+                  "set_cross_paths_event_consent",
                   "open_location_map"
                 ]
               }
@@ -402,6 +451,7 @@
             "viewer": "member",
             "presentation": "standard",
             "participation": "eligible",
+            "cross_paths_consent": "hidden",
             "mutation": "idle",
             "accessibility": "standard"
           },
@@ -424,6 +474,7 @@
                 "viewer": "member",
                 "presentation": "standard",
                 "participation": "eligible",
+                "cross_paths_consent": "hidden",
                 "mutation": "idle",
                 "accessibility": "standard"
               },
@@ -437,6 +488,7 @@
                   "leave_waitlist",
                   "accept_waitlist_offer",
                   "decline_waitlist_offer",
+                  "set_cross_paths_event_consent",
                   "open_location_map"
                 ]
               }
@@ -453,6 +505,7 @@
             "viewer": "member",
             "presentation": "standard",
             "participation": "eligible",
+            "cross_paths_consent": "hidden",
             "mutation": "idle",
             "accessibility": "standard"
           },
@@ -476,6 +529,7 @@
                 "viewer": "member",
                 "presentation": "standard",
                 "participation": "eligible",
+                "cross_paths_consent": "hidden",
                 "mutation": "idle",
                 "accessibility": "standard"
               },
@@ -490,7 +544,8 @@
                   "join_waitlist",
                   "leave_waitlist",
                   "accept_waitlist_offer",
-                  "decline_waitlist_offer"
+                  "decline_waitlist_offer",
+                  "set_cross_paths_event_consent"
                 ]
               }
             }
@@ -506,6 +561,7 @@
             "viewer": "member",
             "presentation": "ticket",
             "participation": "eligible",
+            "cross_paths_consent": "hidden",
             "mutation": "idle",
             "accessibility": "standard"
           },
@@ -530,6 +586,7 @@
                 "viewer": "member",
                 "presentation": "ticket",
                 "participation": "eligible",
+                "cross_paths_consent": "hidden",
                 "mutation": "idle",
                 "accessibility": "standard"
               },
@@ -544,7 +601,8 @@
                   "join_waitlist",
                   "leave_waitlist",
                   "accept_waitlist_offer",
-                  "decline_waitlist_offer"
+                  "decline_waitlist_offer",
+                  "set_cross_paths_event_consent"
                 ]
               }
             }
@@ -560,6 +618,7 @@
             "viewer": "member",
             "presentation": "spotlight_dark",
             "participation": "eligible",
+            "cross_paths_consent": "hidden",
             "mutation": "idle",
             "accessibility": "standard"
           },
@@ -583,6 +642,7 @@
                 "viewer": "member",
                 "presentation": "spotlight_dark",
                 "participation": "eligible",
+                "cross_paths_consent": "hidden",
                 "mutation": "idle",
                 "accessibility": "standard"
               },
@@ -597,7 +657,8 @@
                   "join_waitlist",
                   "leave_waitlist",
                   "accept_waitlist_offer",
-                  "decline_waitlist_offer"
+                  "decline_waitlist_offer",
+                  "set_cross_paths_event_consent"
                 ]
               }
             }
@@ -613,6 +674,7 @@
             "viewer": "guest",
             "presentation": "standard",
             "participation": "eligible",
+            "cross_paths_consent": "hidden",
             "mutation": "idle",
             "accessibility": "standard"
           },
@@ -637,6 +699,7 @@
                 "viewer": "guest",
                 "presentation": "standard",
                 "participation": "eligible",
+                "cross_paths_consent": "hidden",
                 "mutation": "idle",
                 "accessibility": "standard"
               },
@@ -651,7 +714,8 @@
                   "join_waitlist",
                   "leave_waitlist",
                   "accept_waitlist_offer",
-                  "decline_waitlist_offer"
+                  "decline_waitlist_offer",
+                  "set_cross_paths_event_consent"
                 ]
               }
             }
@@ -667,6 +731,7 @@
             "viewer": "host",
             "presentation": "standard",
             "participation": "eligible",
+            "cross_paths_consent": "hidden",
             "mutation": "idle",
             "accessibility": "standard"
           },
@@ -690,6 +755,7 @@
                 "viewer": "host",
                 "presentation": "standard",
                 "participation": "eligible",
+                "cross_paths_consent": "hidden",
                 "mutation": "idle",
                 "accessibility": "standard"
               },
@@ -704,7 +770,8 @@
                   "join_waitlist",
                   "leave_waitlist",
                   "accept_waitlist_offer",
-                  "decline_waitlist_offer"
+                  "decline_waitlist_offer",
+                  "set_cross_paths_event_consent"
                 ]
               }
             }
@@ -720,6 +787,7 @@
             "viewer": "member",
             "presentation": "standard",
             "participation": "signed_up",
+            "cross_paths_consent": "hidden",
             "mutation": "idle",
             "accessibility": "standard"
           },
@@ -744,6 +812,7 @@
                 "viewer": "member",
                 "presentation": "standard",
                 "participation": "signed_up",
+                "cross_paths_consent": "hidden",
                 "mutation": "idle",
                 "accessibility": "standard"
               },
@@ -753,6 +822,145 @@
                   "open_location_map"
                 ],
                 "disabled": [],
+                "notAllowed": [
+                  "book",
+                  "join_waitlist",
+                  "leave_waitlist",
+                  "accept_waitlist_offer",
+                  "decline_waitlist_offer",
+                  "set_cross_paths_event_consent"
+                ]
+              }
+            },
+            {
+              "id": "cross_paths_available_off",
+              "dimensions": {
+                "load": "ready",
+                "viewer": "member",
+                "presentation": "standard",
+                "participation": "signed_up",
+                "cross_paths_consent": "off",
+                "mutation": "idle",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "cancel_booking",
+                  "set_cross_paths_event_consent",
+                  "open_location_map"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "book",
+                  "join_waitlist",
+                  "leave_waitlist",
+                  "accept_waitlist_offer",
+                  "decline_waitlist_offer"
+                ]
+              }
+            },
+            {
+              "id": "cross_paths_available_on",
+              "dimensions": {
+                "load": "ready",
+                "viewer": "member",
+                "presentation": "standard",
+                "participation": "signed_up",
+                "cross_paths_consent": "on",
+                "mutation": "idle",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "cancel_booking",
+                  "set_cross_paths_event_consent",
+                  "open_location_map"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "book",
+                  "join_waitlist",
+                  "leave_waitlist",
+                  "accept_waitlist_offer",
+                  "decline_waitlist_offer"
+                ]
+              }
+            },
+            {
+              "id": "cross_paths_loading",
+              "dimensions": {
+                "load": "ready",
+                "viewer": "member",
+                "presentation": "standard",
+                "participation": "signed_up",
+                "cross_paths_consent": "loading",
+                "mutation": "idle",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "cancel_booking",
+                  "open_location_map"
+                ],
+                "disabled": [
+                  "set_cross_paths_event_consent"
+                ],
+                "notAllowed": [
+                  "book",
+                  "join_waitlist",
+                  "leave_waitlist",
+                  "accept_waitlist_offer",
+                  "decline_waitlist_offer"
+                ]
+              }
+            },
+            {
+              "id": "cross_paths_pending",
+              "dimensions": {
+                "load": "ready",
+                "viewer": "member",
+                "presentation": "standard",
+                "participation": "signed_up",
+                "cross_paths_consent": "off",
+                "mutation": "cross_paths_consent_pending",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "cancel_booking",
+                  "open_location_map"
+                ],
+                "disabled": [
+                  "set_cross_paths_event_consent"
+                ],
+                "notAllowed": [
+                  "book",
+                  "join_waitlist",
+                  "leave_waitlist",
+                  "accept_waitlist_offer",
+                  "decline_waitlist_offer"
+                ]
+              }
+            },
+            {
+              "id": "cross_paths_unavailable",
+              "dimensions": {
+                "load": "ready",
+                "viewer": "member",
+                "presentation": "standard",
+                "participation": "signed_up",
+                "cross_paths_consent": "unavailable",
+                "mutation": "cross_paths_consent_failed",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "cancel_booking",
+                  "open_location_map"
+                ],
+                "disabled": [
+                  "set_cross_paths_event_consent"
+                ],
                 "notAllowed": [
                   "book",
                   "join_waitlist",
@@ -774,6 +982,7 @@
             "viewer": "member",
             "presentation": "standard",
             "participation": "eligible",
+            "cross_paths_consent": "hidden",
             "mutation": "idle",
             "accessibility": "standard"
           },
@@ -798,6 +1007,7 @@
                 "viewer": "member",
                 "presentation": "standard",
                 "participation": "eligible",
+                "cross_paths_consent": "hidden",
                 "mutation": "book_pending",
                 "accessibility": "standard"
               },
@@ -813,7 +1023,8 @@
                   "join_waitlist",
                   "leave_waitlist",
                   "accept_waitlist_offer",
-                  "decline_waitlist_offer"
+                  "decline_waitlist_offer",
+                  "set_cross_paths_event_consent"
                 ]
               }
             },
@@ -824,6 +1035,7 @@
                 "viewer": "member",
                 "presentation": "standard",
                 "participation": "signed_up",
+                "cross_paths_consent": "hidden",
                 "mutation": "cancel_pending",
                 "accessibility": "standard"
               },
@@ -839,7 +1051,8 @@
                   "join_waitlist",
                   "leave_waitlist",
                   "accept_waitlist_offer",
-                  "decline_waitlist_offer"
+                  "decline_waitlist_offer",
+                  "set_cross_paths_event_consent"
                 ]
               }
             }
@@ -855,6 +1068,7 @@
             "viewer": "member",
             "presentation": "standard",
             "participation": "eligible",
+            "cross_paths_consent": "hidden",
             "mutation": "idle",
             "accessibility": "standard"
           },
@@ -881,6 +1095,7 @@
                 "viewer": "member",
                 "presentation": "standard",
                 "participation": "eligible",
+                "cross_paths_consent": "hidden",
                 "mutation": "book_failed",
                 "accessibility": "standard"
               },
@@ -895,7 +1110,8 @@
                   "join_waitlist",
                   "leave_waitlist",
                   "accept_waitlist_offer",
-                  "decline_waitlist_offer"
+                  "decline_waitlist_offer",
+                  "set_cross_paths_event_consent"
                 ]
               }
             },
@@ -906,6 +1122,7 @@
                 "viewer": "member",
                 "presentation": "standard",
                 "participation": "signed_up",
+                "cross_paths_consent": "hidden",
                 "mutation": "cancel_failed",
                 "accessibility": "standard"
               },
@@ -920,7 +1137,8 @@
                   "join_waitlist",
                   "leave_waitlist",
                   "accept_waitlist_offer",
-                  "decline_waitlist_offer"
+                  "decline_waitlist_offer",
+                  "set_cross_paths_event_consent"
                 ]
               }
             },
@@ -931,6 +1149,7 @@
                 "viewer": "member",
                 "presentation": "standard",
                 "participation": "signed_up",
+                "cross_paths_consent": "hidden",
                 "mutation": "book_succeeded",
                 "accessibility": "standard"
               },
@@ -945,7 +1164,8 @@
                   "join_waitlist",
                   "leave_waitlist",
                   "accept_waitlist_offer",
-                  "decline_waitlist_offer"
+                  "decline_waitlist_offer",
+                  "set_cross_paths_event_consent"
                 ]
               }
             },
@@ -956,6 +1176,7 @@
                 "viewer": "member",
                 "presentation": "standard",
                 "participation": "eligible",
+                "cross_paths_consent": "hidden",
                 "mutation": "cancel_succeeded",
                 "accessibility": "standard"
               },
@@ -970,7 +1191,8 @@
                   "join_waitlist",
                   "leave_waitlist",
                   "accept_waitlist_offer",
-                  "decline_waitlist_offer"
+                  "decline_waitlist_offer",
+                  "set_cross_paths_event_consent"
                 ]
               }
             }
@@ -986,6 +1208,7 @@
             "viewer": "member",
             "presentation": "standard",
             "participation": "eligible",
+            "cross_paths_consent": "hidden",
             "mutation": "idle",
             "accessibility": "standard"
           },
@@ -1014,6 +1237,7 @@
                 "viewer": "member",
                 "presentation": "standard",
                 "participation": "waitlisted",
+                "cross_paths_consent": "hidden",
                 "mutation": "idle",
                 "accessibility": "standard"
               },
@@ -1028,7 +1252,8 @@
                   "cancel_booking",
                   "join_waitlist",
                   "accept_waitlist_offer",
-                  "decline_waitlist_offer"
+                  "decline_waitlist_offer",
+                  "set_cross_paths_event_consent"
                 ]
               }
             },
@@ -1039,6 +1264,7 @@
                 "viewer": "member",
                 "presentation": "standard",
                 "participation": "waitlist_offer",
+                "cross_paths_consent": "hidden",
                 "mutation": "idle",
                 "accessibility": "standard"
               },
@@ -1053,7 +1279,8 @@
                   "book",
                   "cancel_booking",
                   "join_waitlist",
-                  "leave_waitlist"
+                  "leave_waitlist",
+                  "set_cross_paths_event_consent"
                 ]
               }
             },
@@ -1064,6 +1291,7 @@
                 "viewer": "member",
                 "presentation": "standard",
                 "participation": "full",
+                "cross_paths_consent": "hidden",
                 "mutation": "idle",
                 "accessibility": "standard"
               },
@@ -1078,7 +1306,8 @@
                   "cancel_booking",
                   "leave_waitlist",
                   "accept_waitlist_offer",
-                  "decline_waitlist_offer"
+                  "decline_waitlist_offer",
+                  "set_cross_paths_event_consent"
                 ]
               }
             },
@@ -1089,6 +1318,7 @@
                 "viewer": "member",
                 "presentation": "standard",
                 "participation": "attended",
+                "cross_paths_consent": "hidden",
                 "mutation": "idle",
                 "accessibility": "standard"
               },
@@ -1103,7 +1333,8 @@
                   "join_waitlist",
                   "leave_waitlist",
                   "accept_waitlist_offer",
-                  "decline_waitlist_offer"
+                  "decline_waitlist_offer",
+                  "set_cross_paths_event_consent"
                 ]
               }
             },
@@ -1114,6 +1345,7 @@
                 "viewer": "member",
                 "presentation": "standard",
                 "participation": "past",
+                "cross_paths_consent": "hidden",
                 "mutation": "idle",
                 "accessibility": "standard"
               },
@@ -1128,7 +1360,8 @@
                   "join_waitlist",
                   "leave_waitlist",
                   "accept_waitlist_offer",
-                  "decline_waitlist_offer"
+                  "decline_waitlist_offer",
+                  "set_cross_paths_event_consent"
                 ]
               }
             },
@@ -1139,6 +1372,7 @@
                 "viewer": "member",
                 "presentation": "standard",
                 "participation": "cancelled",
+                "cross_paths_consent": "hidden",
                 "mutation": "idle",
                 "accessibility": "standard"
               },
@@ -1153,7 +1387,8 @@
                   "join_waitlist",
                   "leave_waitlist",
                   "accept_waitlist_offer",
-                  "decline_waitlist_offer"
+                  "decline_waitlist_offer",
+                  "set_cross_paths_event_consent"
                 ]
               }
             }
@@ -1169,6 +1404,7 @@
             "viewer": "member",
             "presentation": "standard",
             "participation": "eligible",
+            "cross_paths_consent": "hidden",
             "mutation": "idle",
             "accessibility": "standard"
           },
@@ -1191,6 +1427,7 @@
                 "viewer": "member",
                 "presentation": "standard",
                 "participation": "eligible",
+                "cross_paths_consent": "hidden",
                 "mutation": "idle",
                 "accessibility": "standard"
               },
@@ -1204,6 +1441,7 @@
                   "leave_waitlist",
                   "accept_waitlist_offer",
                   "decline_waitlist_offer",
+                  "set_cross_paths_event_consent",
                   "open_location_map"
                 ]
               }
@@ -1220,6 +1458,7 @@
             "viewer": "member",
             "presentation": "standard",
             "participation": "eligible",
+            "cross_paths_consent": "hidden",
             "mutation": "idle",
             "accessibility": "text_scale_2"
           },
@@ -1242,6 +1481,7 @@
                 "viewer": "member",
                 "presentation": "standard",
                 "participation": "eligible",
+                "cross_paths_consent": "hidden",
                 "mutation": "idle",
                 "accessibility": "text_scale_2"
               },
@@ -1256,7 +1496,8 @@
                   "join_waitlist",
                   "leave_waitlist",
                   "accept_waitlist_offer",
-                  "decline_waitlist_offer"
+                  "decline_waitlist_offer",
+                  "set_cross_paths_event_consent"
                 ]
               }
             }
@@ -1272,6 +1513,7 @@
             "viewer": "member",
             "presentation": "standard",
             "participation": "eligible",
+            "cross_paths_consent": "hidden",
             "mutation": "idle",
             "accessibility": "reduced_motion"
           },
@@ -1294,6 +1536,7 @@
                 "viewer": "member",
                 "presentation": "standard",
                 "participation": "eligible",
+                "cross_paths_consent": "hidden",
                 "mutation": "idle",
                 "accessibility": "reduced_motion"
               },
@@ -1308,7 +1551,8 @@
                   "join_waitlist",
                   "leave_waitlist",
                   "accept_waitlist_offer",
-                  "decline_waitlist_offer"
+                  "decline_waitlist_offer",
+                  "set_cross_paths_event_consent"
                 ]
               }
             }

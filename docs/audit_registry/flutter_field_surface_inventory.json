@@ -7,7 +7,7 @@
     "routeInventory": "tool/ui_capture/route_inventory.json",
     "routeInventorySha256": "b605280f1f822c4d88fc38d301700d18a7694a9aef8fa4f3ca8dd0aa31c6ace7",
     "screenContracts": "design/screens/catch.screens.json",
-    "screenContractsSha256": "8be654c155ab7fcf29a9214e2a83d34c2d1d4626c1b401489e31a17a4079a050"
+    "screenContractsSha256": "beac95a95d4592bc4fda9ec963a1a3114ea6660fd76cbafb93d3f7f323f5f3e4"
   },
   "summary": {
     "candidateCount": 10,

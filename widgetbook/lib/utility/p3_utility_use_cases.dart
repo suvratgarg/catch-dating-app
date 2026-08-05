@@ -38,6 +38,8 @@ import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart
 import 'package:catch_dating_app/image_uploads/shared/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/shared/profile_photo_editor_screen.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
+import 'package:catch_dating_app/cross_paths/data/cross_paths_feature_config_provider.dart';
+import 'package:catch_dating_app/cross_paths/domain/cross_paths_feature_config.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_slot.dart';
 import 'package:catch_dating_app/labs/design_fixtures/profile_surface_fixtures.dart';
 import 'package:catch_dating_app/labs/design_fixtures/utility_surface_fixtures.dart';
@@ -2344,6 +2346,22 @@ Widget settingsScreenStates(BuildContext context) {
         ),
       ),
       _StateCard(
+        label: 'Cross Paths global opt-in',
+        child: _DeviceFrame(
+          child: _SettingsScope(
+            profileStream: Stream.value(
+              _viewer.copyWith(prefsShowInCrossPaths: true),
+            ),
+            blockedUsersStream: Stream.value(const <BlockedUser>[]),
+            crossPathsConfig: const CrossPathsFeatureConfig(
+              consentControlsEnabled: true,
+              exploreSuggestionsEnabled: false,
+            ),
+            child: const SettingsScreen(),
+          ),
+        ),
+      ),
+      _StateCard(
         label: 'profile loading',
         child: _DeviceFrame(
           child: _SettingsScope(
@@ -3864,12 +3882,14 @@ class _SettingsScope extends StatelessWidget {
     this.profileStream,
     this.blockedUsersStream,
     this.publicProfiles = const {},
+    this.crossPathsConfig = CrossPathsFeatureConfig.disabled,
   });
 
   final Widget child;
   final Stream<UserProfile?>? profileStream;
   final Stream<List<BlockedUser>>? blockedUsersStream;
   final Map<String, PublicProfile> publicProfiles;
+  final CrossPathsFeatureConfig crossPathsConfig;
 
   @override
   Widget build(BuildContext context) {
@@ -3888,6 +3908,7 @@ class _SettingsScope extends StatelessWidget {
         publicProfilesByIdsProvider(
           query,
         ).overrideWith((ref) async => publicProfiles),
+        crossPathsFeatureConfigProvider.overrideWithValue(crossPathsConfig),
         externalUrlLauncherProvider.overrideWithValue(_noopLauncher),
       ],
       child: child,

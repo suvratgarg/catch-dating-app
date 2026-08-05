@@ -84,6 +84,12 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
         status: "signedUp",
         genderAtSignup: "woman",
       },
+      "eventCrossPathsConsents/event-1_runner-1": {
+        eventId: "event-1",
+        uid: "runner-1",
+        enabled: true,
+        termsVersion: 1,
+      },
       "savedEvents/runner-1_run-1": {uid: "runner-1", eventId: "event-1"},
       "profileDecisions/runner-1/outgoing/runner-2": {
         swiperId: "runner-1",
@@ -192,6 +198,7 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
     "runningReasons",
     "preferredRunTimes",
     "runPreferencesVersion",
+    "prefsShowInCrossPaths",
     "fcmToken",
   ]) {
     assert.equal(hasOwn(data, field), true);
@@ -236,6 +243,11 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
   );
   assert.ok(
     harness.deletedPublicDocs.includes("savedEvents/runner-1_run-1")
+  );
+  assert.ok(
+    harness.deletedPublicDocs.includes(
+      "eventCrossPathsConsents/event-1_runner-1"
+    )
   );
   assert.ok(
     harness.deletedPublicDocs.includes(

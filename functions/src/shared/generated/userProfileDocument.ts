@@ -134,6 +134,10 @@ export interface UserProfileDocument {
   prefsClubUpdates: boolean;
   prefsWeeklyDigest: boolean;
   prefsShowOnMap: boolean;
+  /**
+   * Private global consent gate for Cross Paths. Missing values resolve to false and this field must never be copied to publicProfiles.
+   */
+  prefsShowInCrossPaths?: boolean;
   fcmToken?: string;
   deleted?: boolean;
   deletedAt?: {

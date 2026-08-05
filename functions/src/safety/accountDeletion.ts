@@ -132,6 +132,7 @@ export async function requestAccountDeletionHandler(
     runningReasons: admin.firestore.FieldValue.delete(),
     preferredRunTimes: admin.firestore.FieldValue.delete(),
     runPreferencesVersion: admin.firestore.FieldValue.delete(),
+    prefsShowInCrossPaths: admin.firestore.FieldValue.delete(),
     fcmToken: admin.firestore.FieldValue.delete(),
   }, {merge: true});
 
@@ -186,6 +187,7 @@ async function queueRelationshipCleanup(params: {
   await Promise.all([
     queueClubMembershipCleanup(db, uid, now, writer),
     queueEventParticipationCleanup(db, uid, now, writer),
+    queueCrossPathsConsentCleanup(db, uid, writer),
     queueSavedEventCleanup(db, uid, writer),
     queueSwipeCleanup(db, uid, writer),
     queueMatchCleanup(db, uid, now, writer),
@@ -283,6 +285,19 @@ async function queueEventParticipationCleanup(
       );
     }
   });
+}
+
+/** Deletes private Cross Paths consent edges owned by the account. */
+async function queueCrossPathsConsentCleanup(
+  db: FirebaseFirestore.Firestore,
+  uid: string,
+  writer: BatchQueue
+) {
+  const consents = await db
+    .collection("eventCrossPathsConsents")
+    .where("uid", "==", uid)
+    .get();
+  consents.forEach((doc) => writer.delete(doc.ref));
 }
 
 /**

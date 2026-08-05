@@ -39,6 +39,7 @@ final class SettingsProfileState {
 
 final class SettingsPreferenceValues {
   const SettingsPreferenceValues({
+    required this.showInCrossPaths,
     required this.showOnMap,
     required this.newCatches,
     required this.messages,
@@ -49,7 +50,8 @@ final class SettingsPreferenceValues {
   });
 
   const SettingsPreferenceValues.defaults()
-    : showOnMap = true,
+    : showInCrossPaths = false,
+      showOnMap = true,
       newCatches = true,
       messages = true,
       eventReminders = true,
@@ -59,6 +61,7 @@ final class SettingsPreferenceValues {
 
   factory SettingsPreferenceValues.fromProfile(UserProfile profile) {
     return SettingsPreferenceValues(
+      showInCrossPaths: profile.prefsShowInCrossPaths,
       showOnMap: profile.prefsShowOnMap,
       newCatches: profile.prefsNewCatches,
       messages: profile.prefsMessages,
@@ -69,6 +72,7 @@ final class SettingsPreferenceValues {
     );
   }
 
+  final bool showInCrossPaths;
   final bool showOnMap;
   final bool newCatches;
   final bool messages;
@@ -79,6 +83,7 @@ final class SettingsPreferenceValues {
 
   bool valueFor(SettingsPreference preference) {
     return switch (preference) {
+      SettingsPreference.showInCrossPaths => showInCrossPaths,
       SettingsPreference.showOnMap => showOnMap,
       SettingsPreference.newCatches => newCatches,
       SettingsPreference.messages => messages,
@@ -94,7 +99,18 @@ final class SettingsPreferenceValues {
     bool value,
   ) {
     return switch (preference) {
+      SettingsPreference.showInCrossPaths => SettingsPreferenceValues(
+        showInCrossPaths: value,
+        showOnMap: showOnMap,
+        newCatches: newCatches,
+        messages: messages,
+        eventReminders: eventReminders,
+        eventStatusUpdates: eventStatusUpdates,
+        clubUpdates: clubUpdates,
+        weeklyDigest: weeklyDigest,
+      ),
       SettingsPreference.showOnMap => SettingsPreferenceValues(
+        showInCrossPaths: showInCrossPaths,
         showOnMap: value,
         newCatches: newCatches,
         messages: messages,
@@ -104,6 +120,7 @@ final class SettingsPreferenceValues {
         weeklyDigest: weeklyDigest,
       ),
       SettingsPreference.newCatches => SettingsPreferenceValues(
+        showInCrossPaths: showInCrossPaths,
         showOnMap: showOnMap,
         newCatches: value,
         messages: messages,
@@ -113,6 +130,7 @@ final class SettingsPreferenceValues {
         weeklyDigest: weeklyDigest,
       ),
       SettingsPreference.messages => SettingsPreferenceValues(
+        showInCrossPaths: showInCrossPaths,
         showOnMap: showOnMap,
         newCatches: newCatches,
         messages: value,
@@ -122,6 +140,7 @@ final class SettingsPreferenceValues {
         weeklyDigest: weeklyDigest,
       ),
       SettingsPreference.eventReminders => SettingsPreferenceValues(
+        showInCrossPaths: showInCrossPaths,
         showOnMap: showOnMap,
         newCatches: newCatches,
         messages: messages,
@@ -131,6 +150,7 @@ final class SettingsPreferenceValues {
         weeklyDigest: weeklyDigest,
       ),
       SettingsPreference.eventStatusUpdates => SettingsPreferenceValues(
+        showInCrossPaths: showInCrossPaths,
         showOnMap: showOnMap,
         newCatches: newCatches,
         messages: messages,
@@ -140,6 +160,7 @@ final class SettingsPreferenceValues {
         weeklyDigest: weeklyDigest,
       ),
       SettingsPreference.clubUpdates => SettingsPreferenceValues(
+        showInCrossPaths: showInCrossPaths,
         showOnMap: showOnMap,
         newCatches: newCatches,
         messages: messages,
@@ -149,6 +170,7 @@ final class SettingsPreferenceValues {
         weeklyDigest: weeklyDigest,
       ),
       SettingsPreference.weeklyDigest => SettingsPreferenceValues(
+        showInCrossPaths: showInCrossPaths,
         showOnMap: showOnMap,
         newCatches: newCatches,
         messages: messages,

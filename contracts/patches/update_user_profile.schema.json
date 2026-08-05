@@ -249,6 +249,9 @@
         },
         "prefsShowOnMap": {
           "type": "boolean"
+        },
+        "prefsShowInCrossPaths": {
+          "type": "boolean"
         }
       }
     }

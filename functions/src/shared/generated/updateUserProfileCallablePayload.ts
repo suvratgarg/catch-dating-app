@@ -120,5 +120,6 @@ export interface UpdateUserProfileCallablePayload {
     prefsClubUpdates?: boolean;
     prefsWeeklyDigest?: boolean;
     prefsShowOnMap?: boolean;
+    prefsShowInCrossPaths?: boolean;
   };
 }

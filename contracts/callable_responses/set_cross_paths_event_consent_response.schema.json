@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/set_cross_paths_event_consent_response.schema.json",
+  "title": "SetCrossPathsEventConsentCallableResponse",
+  "description": "Sanitized response returned by setCrossPathsEventConsent.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["eventId", "enabled", "termsVersion"],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "enabled": {"type": "boolean"},
+    "termsVersion": {"type": "integer", "minimum": 1}
+  }
+}

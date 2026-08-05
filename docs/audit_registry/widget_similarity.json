@@ -84,51 +84,51 @@
     },
     {
       "hammingBucket": "45-49",
-      "pairs": 787,
+      "pairs": 793,
       "jaccardMin": 0,
-      "jaccardMean": 0.1452,
+      "jaccardMean": 0.1447,
       "jaccardMax": 0.4706
     },
     {
       "hammingBucket": "50-54",
-      "pairs": 1714,
+      "pairs": 1719,
       "jaccardMin": 0,
-      "jaccardMean": 0.0872,
+      "jaccardMean": 0.0869,
       "jaccardMax": 0.4412
     },
     {
       "hammingBucket": "55-59",
-      "pairs": 2896,
+      "pairs": 2906,
       "jaccardMin": 0,
-      "jaccardMean": 0.0531,
+      "jaccardMean": 0.0529,
       "jaccardMax": 0.2813
     },
     {
       "hammingBucket": "60-64",
-      "pairs": 3187,
+      "pairs": 3192,
       "jaccardMin": 0,
       "jaccardMean": 0.0324,
       "jaccardMax": 0.2381
     },
     {
       "hammingBucket": "65-69",
-      "pairs": 1983,
+      "pairs": 1979,
       "jaccardMin": 0,
       "jaccardMean": 0.0215,
       "jaccardMax": 0.2
     },
     {
       "hammingBucket": "70-74",
-      "pairs": 663,
+      "pairs": 674,
       "jaccardMin": 0,
       "jaccardMean": 0.0129,
       "jaccardMax": 0.1124
     },
     {
       "hammingBucket": "75-79",
-      "pairs": 106,
+      "pairs": 103,
       "jaccardMin": 0,
-      "jaccardMean": 0.0082,
+      "jaccardMean": 0.0081,
       "jaccardMax": 0.0816
     },
     {
@@ -147,7 +147,7 @@
     }
   ],
   "summary": {
-    "widgets": 972,
+    "widgets": 973,
     "fingerprintFailures": 1,
     "exactClusters": 2,
     "clusters": 42,
@@ -2721,7 +2721,7 @@
       "simhash128": "a548507fc3af050a1f0ba274f75eab12",
       "tokenStreamLength": 2,
       "coarseTokenStreamLength": 2,
-      "usageCountRaw": 16,
+      "usageCountRaw": 17,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -3280,7 +3280,7 @@
       "simhash128": "8401595db0f9a199be08e45976489d15",
       "tokenStreamLength": 290,
       "coarseTokenStreamLength": 290,
-      "usageCountRaw": 191,
+      "usageCountRaw": 192,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": true
     },
@@ -5209,6 +5209,19 @@
       "hasWidgetHelpers": false
     },
     {
+      "name": "CrossPathsEventConsentSection",
+      "file": "lib/cross_paths/presentation/cross_paths_event_consent_section.dart",
+      "role": "composition",
+      "shapeHash": "efd77eebc48bbe0764ec6900658ec922257181ed0f445af05a963ca5368531d6",
+      "coarseShapeHash": "8dad6c1a82917e625296b8d317529836fcb58831d3f29a8925df7a7f7b20c740",
+      "simhash128": "32594a4bf33298988da63e32c813ff73",
+      "tokenStreamLength": 11,
+      "coarseTokenStreamLength": 11,
+      "usageCountRaw": 4,
+      "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
+      "hasWidgetHelpers": false
+    },
+    {
       "name": "CustomQuestionnaireFields",
       "file": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
       "role": "feature-adapter",
@@ -5784,11 +5797,11 @@
       "name": "EventDetailBody",
       "file": "lib/events/presentation/widgets/event_detail_body.dart",
       "role": "composition",
-      "shapeHash": "8cb120b47e354a7c18e3b99609541ec5f94b37002618ef7ef8d93941da702ef5",
-      "coarseShapeHash": "6fbdc7e7917d4a6ed181d7f965668e6d4cf3df0520b99775d350d221e8417a60",
-      "simhash128": "7622b63fbbf9740fe8a7a637fdc1c5d3",
-      "tokenStreamLength": 69,
-      "coarseTokenStreamLength": 69,
+      "shapeHash": "2add626cc0ad9b6d33482eb360996057d23882e5c1c1c114eced8d240be857ed",
+      "coarseShapeHash": "db2c83d1422ee8fa9f46f627a045409fb1994998eeeddbaf66ecbe89b9f86612",
+      "simhash128": "5632b61ff9e97407e8a78677fcc1c5d3",
+      "tokenStreamLength": 73,
+      "coarseTokenStreamLength": 73,
       "usageCountRaw": 11,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
@@ -6096,11 +6109,11 @@
       "name": "EventDetailScreen",
       "file": "lib/events/presentation/event_detail_screen.dart",
       "role": "screen",
-      "shapeHash": "2803f8d05e25ee5b801446cdf01ad1addb6c00022241dd3443fe1c303eb494bc",
-      "coarseShapeHash": "887674575e32423d62e2346a5ac31f46321330487c0fb98602ab3ffac44aae9b",
-      "simhash128": "c493727fa7e6b8ba3dbda21c8329b95f",
-      "tokenStreamLength": 125,
-      "coarseTokenStreamLength": 125,
+      "shapeHash": "69e9c3496a05884727622da6a6183cfcd4e32aa8633474f29f310f74d2dd0911",
+      "coarseShapeHash": "1a6488157da25a197548bb0af7cc97903ad8aaf9343b1f0fd48973d1da988de6",
+      "simhash128": "d493727ff766bcb23db5a2148329b95e",
+      "tokenStreamLength": 136,
+      "coarseTokenStreamLength": 136,
       "usageCountRaw": 17,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
@@ -12159,7 +12172,7 @@
       "simhash128": "4738f38d41145a763e0867bbf001c496",
       "tokenStreamLength": 20,
       "coarseTokenStreamLength": 20,
-      "usageCountRaw": 22,
+      "usageCountRaw": 23,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -12206,12 +12219,12 @@
       "name": "SettingsScreen",
       "file": "lib/safety/presentation/settings_screen.dart",
       "role": "screen",
-      "shapeHash": "c7185df5ffd3e4ba1161ce24f3f80768d3c4592ac90e017fa840ac97f4085e61",
-      "coarseShapeHash": "51e5b807ab0d2887e121dcdd2f46f9ce5212f8669e783ac526666880b60b94ed",
+      "shapeHash": "5baaa16e9c96ee6bfc064553dcf0f29f726340d782205979e2fe4e8c6512f303",
+      "coarseShapeHash": "573fbb2775910d8ccac9fecd5950938d622724eb781ffe177994069e0dacdba0",
       "simhash128": "60e8feade047dbaea35aebfdbc0eefb3",
-      "tokenStreamLength": 194,
-      "coarseTokenStreamLength": 194,
-      "usageCountRaw": 16,
+      "tokenStreamLength": 198,
+      "coarseTokenStreamLength": 198,
+      "usageCountRaw": 17,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -15354,11 +15367,11 @@
       "rank": 46,
       "a": "EventDetailBody",
       "b": "EventMapLoadingBody",
-      "jaccard": 0.0118,
+      "jaccard": 0.0114,
       "containment": 0.05,
       "score": 0.05,
       "smallWidgetMultisetJaccard": 0,
-      "hamming": 48,
+      "hamming": 52,
       "flags": [
         "cross-role"
       ],
@@ -15564,7 +15577,7 @@
       "containment": 0,
       "score": 0,
       "smallWidgetMultisetJaccard": 0,
-      "hamming": 69,
+      "hamming": 67,
       "flags": [],
       "detectors": [
         "name"
@@ -18450,11 +18463,11 @@
       "rank": 164,
       "a": "ClubDetailScreen",
       "b": "EventDetailScreen",
-      "jaccard": 0.0784,
+      "jaccard": 0.0741,
       "containment": 0.2,
       "score": 0.2,
       "smallWidgetMultisetJaccard": 0,
-      "hamming": 53,
+      "hamming": 54,
       "flags": [],
       "detectors": [
         "name"

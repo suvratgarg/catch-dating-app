@@ -20,6 +20,8 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
+import 'package:catch_dating_app/cross_paths/presentation/cross_paths_event_consent_section.dart';
+import 'package:catch_dating_app/cross_paths/presentation/cross_paths_event_consent_state.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
@@ -642,6 +644,45 @@ Widget eventDescriptionState(BuildContext context) {
       description:
           'A low-pressure morning plan with a clear route, relaxed pace, and coffee after.',
     ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Cross Paths consent states',
+  type: CrossPathsEventConsentSection,
+  path: '[Event Detail]/Sections',
+)
+Widget crossPathsEventConsentStates(BuildContext context) {
+  Widget state({bool enabled = false, bool loaded = true}) => IgnorePointer(
+    child: CrossPathsEventConsentSection(
+      state: CrossPathsEventConsentSectionState(
+        visible: true,
+        enabled: enabled,
+        loaded: loaded,
+        pending: false,
+        unavailable: false,
+      ),
+      onChanged: _noopBool,
+    ),
+  );
+
+  return _CatalogScreen(
+    title: 'CrossPathsEventConsentSection',
+    catalogId: 'section.event.cross_paths_consent',
+    children: [
+      _StateCard(label: 'available and off', child: state()),
+      _StateCard(label: 'enabled', child: state(enabled: true)),
+      _StateCard(label: 'loading', child: state(loaded: false)),
+      _StateCard(
+        label: 'text scale 2',
+        child: MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: const TextScaler.linear(2)),
+          child: state(),
+        ),
+      ),
+    ],
   );
 }
 
@@ -2995,10 +3036,7 @@ Widget whoIsGoingContentStates(BuildContext context) {
       ),
       _StateCard(
         label: 'empty roster',
-        child: WhoIsGoingContent(
-          event: _emptyEvent,
-          totalCount: 0,
-        ),
+        child: WhoIsGoingContent(event: _emptyEvent, totalCount: 0),
       ),
       _StateCard(
         label: 'post-event closed window',
@@ -3151,10 +3189,7 @@ class _EventScope extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final avatarQuery = EventHypeAvatarQuery(
-      eventId: event.id,
-      limit: 7,
-    );
+    final avatarQuery = EventHypeAvatarQuery(eventId: event.id, limit: 7);
     final avatars = avatarItems;
     return ProviderScope(
       overrides: [
@@ -3239,10 +3274,7 @@ class _RouteFrame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final avatarQuery = EventHypeAvatarQuery(
-      eventId: _event.id,
-      limit: 7,
-    );
+    final avatarQuery = EventHypeAvatarQuery(eventId: _event.id, limit: 7);
 
     return _DeviceFrame(
       child: ProviderScope(
@@ -3642,5 +3674,7 @@ void _noop() {}
 void _noopContext(BuildContext context) {}
 
 void _noopString(String value) {}
+
+void _noopBool(bool value) {}
 
 void _noopMessageHost(String clubId, String hostUid) {}

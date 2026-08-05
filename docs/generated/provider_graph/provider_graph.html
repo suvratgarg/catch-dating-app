@@ -69,20 +69,20 @@ code { color: var(--fg); }
     "lib"
   ],
   "summary": {
-    "dartSourceFiles": 805,
-    "providerNodes": 219,
-    "generatedProviderNodes": 215,
+    "dartSourceFiles": 812,
+    "providerNodes": 223,
+    "generatedProviderNodes": 219,
     "manualProviderNodes": 4,
     "aliasProviderNodes": 0,
-    "keepAliveNodes": 66,
-    "familyNodes": 84,
-    "mutationNodes": 83,
+    "keepAliveNodes": 68,
+    "familyNodes": 85,
+    "mutationNodes": 84,
     "consumerNodes": 251,
-    "providerToProviderCallsites": 402,
-    "uniqueProviderToProviderPairs": 318,
-    "uniqueCrossFeatureProviderPairs": 157,
-    "consumerToStateCallsites": 752,
-    "mutationReferenceCallsites": 204,
+    "providerToProviderCallsites": 407,
+    "uniqueProviderToProviderPairs": 323,
+    "uniqueCrossFeatureProviderPairs": 160,
+    "consumerToStateCallsites": 757,
+    "mutationReferenceCallsites": 206,
     "unresolvedRefOperations": 13,
     "unresolvedInsideProviders": 0,
     "duplicateProviderNames": 0,
@@ -117,6 +117,7 @@ code { color: var(--fg); }
     "reviews": 6,
     "public_profile": 5,
     "user_profile": 5,
+    "cross_paths": 4,
     "dashboard": 4,
     "force_update": 4,
     "launch_access": 4,
@@ -133,8 +134,8 @@ code { color: var(--fg); }
     "locations": 1
   },
   "providersByLayer": {
-    "data": 126,
-    "presentation": 63,
+    "data": 129,
+    "presentation": 64,
     "core": 19,
     "routing": 4,
     "shared": 3,
@@ -143,16 +144,16 @@ code { color: var(--fg); }
     "exceptions": 1
   },
   "providerEdgesByOperation": {
-    "watch": 251,
-    "read": 143,
+    "watch": 255,
+    "read": 144,
     "invalidate": 6,
     "listen": 2
   },
   "consumerEdgesByOperation": {
-    "watch": 256,
+    "watch": 260,
     "read": 208,
     "invalidate": 153,
-    "mutation-run": 90,
+    "mutation-run": 91,
     "override": 23,
     "listen": 22
   },
@@ -183,6 +184,7 @@ code { color: var(--fg); }
     "chats -> core": 3,
     "chats -> matches": 3,
     "core -> exceptions": 3,
+    "cross_paths -> core": 3,
     "dashboard -> dashboard": 3,
     "hosts -> events": 3,
     "hosts -> hosts": 3,
@@ -195,6 +197,7 @@ code { color: var(--fg); }
     "chats -> public_profile": 2,
     "clubs -> auth": 2,
     "clubs -> exceptions": 2,
+    "cross_paths -> cross_paths": 2,
     "dashboard -> events": 2,
     "dashboard -> notifications": 2,
     "event_success -> core": 2,
@@ -257,9 +260,9 @@ code { color: var(--fg); }
     "user_profile -> image_uploads": 1
   },
   "layerPairCounts": {
-    "presentation -> data": 113,
-    "data -> data": 94,
-    "data -> core": 45,
+    "presentation -> data": 114,
+    "data -> data": 95,
+    "data -> core": 48,
     "presentation -> presentation": 33,
     "presentation -> core": 10,
     "core -> core": 6,
@@ -355,7 +358,7 @@ code { color: var(--fg); }
   "topUniqueFanIn": [
     {
       "name": "firebaseFirestoreProvider",
-      "degree": 24
+      "degree": 25
     },
     {
       "name": "eventSuccessRepositoryProvider",
@@ -363,7 +366,7 @@ code { color: var(--fg); }
     },
     {
       "name": "firebaseFunctionsProvider",
-      "degree": 15
+      "degree": 16
     },
     {
       "name": "clubsRepositoryProvider",
@@ -465,6 +468,12 @@ code { color: var(--fg); }
         "providers": 22,
         "mutations": 0,
         "consumers": 7
+      },
+      {
+        "id": "cross_paths",
+        "providers": 4,
+        "mutations": 1,
+        "consumers": 0
       },
       {
         "id": "dashboard",
@@ -709,6 +718,16 @@ code { color: var(--fg); }
         "source": "core",
         "target": "exceptions",
         "uniqueProviderPairs": 3
+      },
+      {
+        "source": "cross_paths",
+        "target": "core",
+        "uniqueProviderPairs": 3
+      },
+      {
+        "source": "cross_paths",
+        "target": "cross_paths",
+        "uniqueProviderPairs": 2
       },
       {
         "source": "dashboard",
@@ -1743,6 +1762,42 @@ code { color: var(--fg); }
       "keepAlive": false,
       "family": false,
       "returnType": "void"
+    },
+    {
+      "id": "provider:crossPathsEventConsentControllerProvider",
+      "name": "crossPathsEventConsentControllerProvider",
+      "kind": "generated-class",
+      "path": "lib/cross_paths/presentation/cross_paths_event_consent_controller.dart",
+      "line": 7,
+      "feature": "cross_paths",
+      "layer": "presentation",
+      "keepAlive": false,
+      "family": false,
+      "returnType": "void"
+    },
+    {
+      "id": "provider:crossPathsFeatureConfigProvider",
+      "name": "crossPathsFeatureConfigProvider",
+      "kind": "generated-function",
+      "path": "lib/cross_paths/data/cross_paths_feature_config_provider.dart",
+      "line": 8,
+      "feature": "cross_paths",
+      "layer": "data",
+      "keepAlive": true,
+      "family": false,
+      "returnType": "CrossPathsFeatureConfig"
+    },
+    {
+      "id": "provider:crossPathsRepositoryProvider",
+      "name": "crossPathsRepositoryProvider",
+      "kind": "generated-function",
+      "path": "lib/cross_paths/data/cross_paths_repository.dart",
+      "line": 66,
+      "feature": "cross_paths",
+      "layer": "data",
+      "keepAlive": true,
+      "family": false,
+      "returnType": "CrossPathsRepository"
     },
     {
       "id": "provider:currentUserFollowedClubIdsProvider",
@@ -2996,7 +3051,7 @@ code { color: var(--fg); }
       "name": "settingsControllerProvider",
       "kind": "generated-class",
       "path": "lib/safety/presentation/settings_controller.dart",
-      "line": 55,
+      "line": 59,
       "feature": "safety",
       "layer": "presentation",
       "keepAlive": false,
@@ -3350,6 +3405,18 @@ code { color: var(--fg); }
       "keepAlive": false,
       "family": true,
       "returnType": "Stream<List<ChatMessage>>"
+    },
+    {
+      "id": "provider:watchCrossPathsEventConsentProvider",
+      "name": "watchCrossPathsEventConsentProvider",
+      "kind": "generated-function",
+      "path": "lib/cross_paths/data/cross_paths_repository.dart",
+      "line": 72,
+      "feature": "cross_paths",
+      "layer": "data",
+      "keepAlive": false,
+      "family": true,
+      "returnType": "Stream<CrossPathsEventConsent?>"
     },
     {
       "id": "provider:watchEventInviteLinksProvider",
@@ -4022,6 +4089,14 @@ code { color: var(--fg); }
       "layer": "presentation"
     },
     {
+      "id": "mutation:CrossPathsEventConsentController.setConsentMutation",
+      "name": "CrossPathsEventConsentController.setConsentMutation",
+      "path": "lib/cross_paths/presentation/cross_paths_event_consent_controller.dart",
+      "line": 10,
+      "feature": "cross_paths",
+      "layer": "presentation"
+    },
+    {
       "id": "mutation:EventBookingController.acceptWaitlistOfferMutation",
       "name": "EventBookingController.acceptWaitlistOfferMutation",
       "path": "lib/events/presentation/event_booking_controller.dart",
@@ -4481,7 +4556,7 @@ code { color: var(--fg); }
       "id": "mutation:SettingsController.requestAccountDeletionMutation",
       "name": "SettingsController.requestAccountDeletionMutation",
       "path": "lib/safety/presentation/settings_controller.dart",
-      "line": 62,
+      "line": 66,
       "feature": "safety",
       "layer": "presentation"
     },
@@ -4489,7 +4564,7 @@ code { color: var(--fg); }
       "id": "mutation:SettingsController.savePreferenceMutation",
       "name": "SettingsController.savePreferenceMutation",
       "path": "lib/safety/presentation/settings_controller.dart",
-      "line": 61,
+      "line": 65,
       "feature": "safety",
       "layer": "presentation"
     },
@@ -4497,7 +4572,7 @@ code { color: var(--fg); }
       "id": "mutation:SettingsController.unblockUserMutation",
       "name": "SettingsController.unblockUserMutation",
       "path": "lib/safety/presentation/settings_controller.dart",
-      "line": 63,
+      "line": 67,
       "feature": "safety",
       "layer": "presentation"
     },
@@ -4563,7 +4638,7 @@ code { color: var(--fg); }
       "id": "consumer:lib/app_bootstrap.dart#runCatchApp",
       "owner": "runCatchApp",
       "path": "lib/app_bootstrap.dart",
-      "line": 31,
+      "line": 32,
       "feature": "app",
       "layer": "app"
     },
@@ -5091,7 +5166,7 @@ code { color: var(--fg); }
       "id": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState._messageHost",
       "owner": "_EventDetailScreenState._messageHost",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 525,
+      "line": 570,
       "feature": "events",
       "layer": "presentation"
     },
@@ -5099,7 +5174,7 @@ code { color: var(--fg); }
       "id": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState._recordInviteLinkOpen",
       "owner": "_EventDetailScreenState._recordInviteLinkOpen",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 88,
+      "line": 92,
       "feature": "events",
       "layer": "presentation"
     },
@@ -5107,7 +5182,7 @@ code { color: var(--fg); }
       "id": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState._toggleSavedEvent",
       "owner": "_EventDetailScreenState._toggleSavedEvent",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 474,
+      "line": 519,
       "feature": "events",
       "layer": "presentation"
     },
@@ -5115,7 +5190,7 @@ code { color: var(--fg); }
       "id": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
       "owner": "_EventDetailScreenState.build",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 113,
+      "line": 117,
       "feature": "events",
       "layer": "presentation"
     },
@@ -6347,7 +6422,7 @@ code { color: var(--fg); }
       "id": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState._confirmDeleteAccount",
       "owner": "_SettingsScreenState._confirmDeleteAccount",
       "path": "lib/safety/presentation/settings_screen.dart",
-      "line": 91,
+      "line": 92,
       "feature": "safety",
       "layer": "presentation"
     },
@@ -6355,7 +6430,7 @@ code { color: var(--fg); }
       "id": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState._openExternal",
       "owner": "_SettingsScreenState._openExternal",
       "path": "lib/safety/presentation/settings_screen.dart",
-      "line": 127,
+      "line": 128,
       "feature": "safety",
       "layer": "presentation"
     },
@@ -6363,7 +6438,7 @@ code { color: var(--fg); }
       "id": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState._openHostApp",
       "owner": "_SettingsScreenState._openHostApp",
       "path": "lib/safety/presentation/settings_screen.dart",
-      "line": 136,
+      "line": 137,
       "feature": "safety",
       "layer": "presentation"
     },
@@ -6371,7 +6446,7 @@ code { color: var(--fg); }
       "id": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState._operationPending",
       "owner": "_SettingsScreenState._operationPending",
       "path": "lib/safety/presentation/settings_screen.dart",
-      "line": 51,
+      "line": 52,
       "feature": "safety",
       "layer": "presentation"
     },
@@ -6379,7 +6454,7 @@ code { color: var(--fg); }
       "id": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState._savePref",
       "owner": "_SettingsScreenState._savePref",
       "path": "lib/safety/presentation/settings_screen.dart",
-      "line": 58,
+      "line": 59,
       "feature": "safety",
       "layer": "presentation"
     },
@@ -6387,7 +6462,7 @@ code { color: var(--fg); }
       "id": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState._signOut",
       "owner": "_SettingsScreenState._signOut",
       "path": "lib/safety/presentation/settings_screen.dart",
-      "line": 114,
+      "line": 115,
       "feature": "safety",
       "layer": "presentation"
     },
@@ -6395,7 +6470,7 @@ code { color: var(--fg); }
       "id": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState._unblockUser",
       "owner": "_SettingsScreenState._unblockUser",
       "path": "lib/safety/presentation/settings_screen.dart",
-      "line": 171,
+      "line": 172,
       "feature": "safety",
       "layer": "presentation"
     },
@@ -6403,7 +6478,7 @@ code { color: var(--fg); }
       "id": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState.build",
       "owner": "_SettingsScreenState.build",
       "path": "lib/safety/presentation/settings_screen.dart",
-      "line": 183,
+      "line": 184,
       "feature": "safety",
       "layer": "presentation"
     },
@@ -7282,6 +7357,42 @@ code { color: var(--fg); }
       "operation": "read",
       "path": "lib/hosts/presentation/event_management/create/create_event_draft_controller.dart",
       "line": 40
+    },
+    {
+      "source": "crossPathsEventConsentControllerProvider",
+      "sourceKind": "provider",
+      "target": "crossPathsRepositoryProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/cross_paths/presentation/cross_paths_event_consent_controller.dart",
+      "line": 16
+    },
+    {
+      "source": "crossPathsFeatureConfigProvider",
+      "sourceKind": "provider",
+      "target": "firebaseRemoteConfigProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/cross_paths/data/cross_paths_feature_config_provider.dart",
+      "line": 11
+    },
+    {
+      "source": "crossPathsRepositoryProvider",
+      "sourceKind": "provider",
+      "target": "firebaseFirestoreProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/cross_paths/data/cross_paths_repository.dart",
+      "line": 68
+    },
+    {
+      "source": "crossPathsRepositoryProvider",
+      "sourceKind": "provider",
+      "target": "firebaseFunctionsProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/cross_paths/data/cross_paths_repository.dart",
+      "line": 69
     },
     {
       "source": "currentUserFollowedClubIdsProvider",
@@ -9405,7 +9516,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/safety/presentation/settings_controller.dart",
-      "line": 95
+      "line": 99
     },
     {
       "source": "settingsControllerProvider",
@@ -9414,7 +9525,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/safety/presentation/settings_controller.dart",
-      "line": 94
+      "line": 98
     },
     {
       "source": "settingsControllerProvider",
@@ -9423,7 +9534,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/safety/presentation/settings_controller.dart",
-      "line": 100
+      "line": 104
     },
     {
       "source": "settingsControllerProvider",
@@ -9432,7 +9543,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/safety/presentation/settings_controller.dart",
-      "line": 84
+      "line": 88
     },
     {
       "source": "suvbotActionsProvider",
@@ -9748,6 +9859,15 @@ code { color: var(--fg); }
       "operation": "watch",
       "path": "lib/chats/data/conversation_repository.dart",
       "line": 103
+    },
+    {
+      "source": "watchCrossPathsEventConsentProvider",
+      "sourceKind": "provider",
+      "target": "crossPathsRepositoryProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/cross_paths/data/cross_paths_repository.dart",
+      "line": 77
     },
     {
       "source": "watchEventInviteLinksProvider",
@@ -10262,7 +10382,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "override",
       "path": "lib/app_bootstrap.dart",
-      "line": 60
+      "line": 61
     },
     {
       "source": "consumer:lib/app_bootstrap.dart#runCatchApp",
@@ -10271,7 +10391,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "override",
       "path": "lib/app_bootstrap.dart",
-      "line": 88
+      "line": 89
     },
     {
       "source": "consumer:lib/app_bootstrap.dart#runCatchApp",
@@ -10280,7 +10400,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "override",
       "path": "lib/app_bootstrap.dart",
-      "line": 63
+      "line": 64
     },
     {
       "source": "consumer:lib/app_bootstrap.dart#runCatchApp",
@@ -10289,7 +10409,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "override",
       "path": "lib/app_bootstrap.dart",
-      "line": 61
+      "line": 62
     },
     {
       "source": "consumer:lib/app_bootstrap.dart#runCatchApp",
@@ -10298,7 +10418,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "override",
       "path": "lib/app_bootstrap.dart",
-      "line": 89
+      "line": 90
     },
     {
       "source": "consumer:lib/auth/presentation/auth_screen.dart#AuthScreen.build",
@@ -12530,7 +12650,7 @@ code { color: var(--fg); }
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 531
+      "line": 576
     },
     {
       "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState._recordInviteLinkOpen",
@@ -12539,7 +12659,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 104
+      "line": 108
     },
     {
       "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState._toggleSavedEvent",
@@ -12548,7 +12668,7 @@ code { color: var(--fg); }
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 498
+      "line": 543
     },
     {
       "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState._toggleSavedEvent",
@@ -12557,7 +12677,25 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 517
+      "line": 562
+    },
+    {
+      "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
+      "sourceKind": "consumer",
+      "target": "CrossPathsEventConsentController.setConsentMutation",
+      "targetKind": "mutation",
+      "operation": "mutation-run",
+      "path": "lib/events/presentation/event_detail_screen.dart",
+      "line": 330
+    },
+    {
+      "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
+      "sourceKind": "consumer",
+      "target": "CrossPathsEventConsentController.setConsentMutation",
+      "targetKind": "mutation",
+      "operation": "watch",
+      "path": "lib/events/presentation/event_detail_screen.dart",
+      "line": 152
     },
     {
       "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
@@ -12566,7 +12704,7 @@ code { color: var(--fg); }
       "targetKind": "mutation",
       "operation": "listen",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 187
+      "line": 219
     },
     {
       "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
@@ -12575,7 +12713,7 @@ code { color: var(--fg); }
       "targetKind": "mutation",
       "operation": "listen",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 195
+      "line": 227
     },
     {
       "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
@@ -12584,7 +12722,16 @@ code { color: var(--fg); }
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 144
+      "line": 149
+    },
+    {
+      "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
+      "sourceKind": "consumer",
+      "target": "crossPathsFeatureConfigProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/events/presentation/event_detail_screen.dart",
+      "line": 125
     },
     {
       "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
@@ -12593,7 +12740,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 148
+      "line": 180
     },
     {
       "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
@@ -12602,48 +12749,12 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 458
+      "line": 503
     },
     {
       "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
       "sourceKind": "consumer",
       "target": "eventDetailViewModelProvider",
-      "targetKind": "provider",
-      "operation": "watch",
-      "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 115
-    },
-    {
-      "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
-      "sourceKind": "consumer",
-      "target": "externalShareControllerProvider",
-      "targetKind": "provider",
-      "operation": "watch",
-      "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 147
-    },
-    {
-      "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
-      "sourceKind": "consumer",
-      "target": "fetchClubProvider",
-      "targetKind": "provider",
-      "operation": "invalidate",
-      "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 286
-    },
-    {
-      "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
-      "sourceKind": "consumer",
-      "target": "fetchClubProvider",
-      "targetKind": "provider",
-      "operation": "invalidate",
-      "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 412
-    },
-    {
-      "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
-      "sourceKind": "consumer",
-      "target": "fetchClubProvider",
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/presentation/event_detail_screen.dart",
@@ -12652,11 +12763,56 @@ code { color: var(--fg); }
     {
       "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
       "sourceKind": "consumer",
+      "target": "externalShareControllerProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/events/presentation/event_detail_screen.dart",
+      "line": 179
+    },
+    {
+      "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
+      "sourceKind": "consumer",
+      "target": "fetchClubProvider",
+      "targetKind": "provider",
+      "operation": "invalidate",
+      "path": "lib/events/presentation/event_detail_screen.dart",
+      "line": 321
+    },
+    {
+      "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
+      "sourceKind": "consumer",
+      "target": "fetchClubProvider",
+      "targetKind": "provider",
+      "operation": "invalidate",
+      "path": "lib/events/presentation/event_detail_screen.dart",
+      "line": 457
+    },
+    {
+      "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
+      "sourceKind": "consumer",
+      "target": "fetchClubProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/events/presentation/event_detail_screen.dart",
+      "line": 123
+    },
+    {
+      "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
+      "sourceKind": "consumer",
       "target": "uidProvider",
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 116
+      "line": 120
+    },
+    {
+      "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
+      "sourceKind": "consumer",
+      "target": "watchCrossPathsEventConsentProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/events/presentation/event_detail_screen.dart",
+      "line": 165
     },
     {
       "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
@@ -12665,7 +12821,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 270
+      "line": 305
     },
     {
       "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
@@ -12674,7 +12830,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 397
+      "line": 442
     },
     {
       "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
@@ -12683,7 +12839,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 158
+      "line": 190
     },
     {
       "source": "consumer:lib/events/presentation/event_location_map_screen.dart#_EventLocationMapRouteScreenState._openDirections",
@@ -16454,7 +16610,7 @@ code { color: var(--fg); }
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/safety/presentation/settings_screen.dart",
-      "line": 103
+      "line": 104
     },
     {
       "source": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState._openExternal",
@@ -16463,7 +16619,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/safety/presentation/settings_screen.dart",
-      "line": 131
+      "line": 132
     },
     {
       "source": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState._openHostApp",
@@ -16472,12 +16628,21 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/safety/presentation/settings_screen.dart",
-      "line": 140
+      "line": 141
     },
     {
       "source": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState._operationPending",
       "sourceKind": "consumer",
       "target": "AuthSessionController.signOutMutation",
+      "targetKind": "mutation",
+      "operation": "read",
+      "path": "lib/safety/presentation/settings_screen.dart",
+      "line": 56
+    },
+    {
+      "source": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState._operationPending",
+      "sourceKind": "consumer",
+      "target": "SettingsController.requestAccountDeletionMutation",
       "targetKind": "mutation",
       "operation": "read",
       "path": "lib/safety/presentation/settings_screen.dart",
@@ -16486,7 +16651,7 @@ code { color: var(--fg); }
     {
       "source": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState._operationPending",
       "sourceKind": "consumer",
-      "target": "SettingsController.requestAccountDeletionMutation",
+      "target": "SettingsController.savePreferenceMutation",
       "targetKind": "mutation",
       "operation": "read",
       "path": "lib/safety/presentation/settings_screen.dart",
@@ -16495,20 +16660,11 @@ code { color: var(--fg); }
     {
       "source": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState._operationPending",
       "sourceKind": "consumer",
-      "target": "SettingsController.savePreferenceMutation",
-      "targetKind": "mutation",
-      "operation": "read",
-      "path": "lib/safety/presentation/settings_screen.dart",
-      "line": 53
-    },
-    {
-      "source": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState._operationPending",
-      "sourceKind": "consumer",
       "target": "SettingsController.unblockUserMutation",
       "targetKind": "mutation",
       "operation": "read",
       "path": "lib/safety/presentation/settings_screen.dart",
-      "line": 56
+      "line": 57
     },
     {
       "source": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState._savePref",
@@ -16517,7 +16673,7 @@ code { color: var(--fg); }
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/safety/presentation/settings_screen.dart",
-      "line": 74
+      "line": 75
     },
     {
       "source": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState._signOut",
@@ -16526,7 +16682,7 @@ code { color: var(--fg); }
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/safety/presentation/settings_screen.dart",
-      "line": 118
+      "line": 119
     },
     {
       "source": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState._unblockUser",
@@ -16535,7 +16691,7 @@ code { color: var(--fg); }
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/safety/presentation/settings_screen.dart",
-      "line": 174
+      "line": 175
     },
     {
       "source": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState.build",
@@ -16544,7 +16700,7 @@ code { color: var(--fg); }
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/safety/presentation/settings_screen.dart",
-      "line": 217
+      "line": 219
     },
     {
       "source": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState.build",
@@ -16553,7 +16709,7 @@ code { color: var(--fg); }
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/safety/presentation/settings_screen.dart",
-      "line": 214
+      "line": 216
     },
     {
       "source": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState.build",
@@ -16562,7 +16718,7 @@ code { color: var(--fg); }
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/safety/presentation/settings_screen.dart",
-      "line": 211
+      "line": 213
     },
     {
       "source": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState.build",
@@ -16571,7 +16727,7 @@ code { color: var(--fg); }
       "targetKind": "mutation",
       "operation": "listen",
       "path": "lib/safety/presentation/settings_screen.dart",
-      "line": 224
+      "line": 226
     },
     {
       "source": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState.build",
@@ -16580,12 +16736,21 @@ code { color: var(--fg); }
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/safety/presentation/settings_screen.dart",
-      "line": 218
+      "line": 220
     },
     {
       "source": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState.build",
       "sourceKind": "consumer",
       "target": "appPackageInfoProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/safety/presentation/settings_screen.dart",
+      "line": 188
+    },
+    {
+      "source": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState.build",
+      "sourceKind": "consumer",
+      "target": "crossPathsFeatureConfigProvider",
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/safety/presentation/settings_screen.dart",
@@ -16598,7 +16763,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/safety/presentation/settings_screen.dart",
-      "line": 194
+      "line": 196
     },
     {
       "source": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState.build",
@@ -16607,34 +16772,34 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/safety/presentation/settings_screen.dart",
-      "line": 502
+      "line": 504
     },
     {
       "source": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState.build",
       "sourceKind": "consumer",
       "target": "watchBlockedUsersProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/safety/presentation/settings_screen.dart",
+      "line": 192
+    },
+    {
+      "source": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState.build",
+      "sourceKind": "consumer",
+      "target": "watchUserProfileProvider",
+      "targetKind": "provider",
+      "operation": "invalidate",
+      "path": "lib/safety/presentation/settings_screen.dart",
+      "line": 273
+    },
+    {
+      "source": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState.build",
+      "sourceKind": "consumer",
+      "target": "watchUserProfileProvider",
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/safety/presentation/settings_screen.dart",
       "line": 190
-    },
-    {
-      "source": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState.build",
-      "sourceKind": "consumer",
-      "target": "watchUserProfileProvider",
-      "targetKind": "provider",
-      "operation": "invalidate",
-      "path": "lib/safety/presentation/settings_screen.dart",
-      "line": 271
-    },
-    {
-      "source": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState.build",
-      "sourceKind": "consumer",
-      "target": "watchUserProfileProvider",
-      "targetKind": "provider",
-      "operation": "watch",
-      "path": "lib/safety/presentation/settings_screen.dart",
-      "line": 188
     },
     {
       "source": "consumer:lib/swipes/presentation/event_recap_screen.dart#_EventRecapScreenState._retry",
@@ -17572,7 +17737,7 @@ code { color: var(--fg); }
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 531
+      "line": 576
     },
     {
       "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState._toggleSavedEvent",
@@ -17581,7 +17746,25 @@ code { color: var(--fg); }
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 498
+      "line": 543
+    },
+    {
+      "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
+      "sourceKind": "consumer",
+      "target": "CrossPathsEventConsentController.setConsentMutation",
+      "targetKind": "mutation",
+      "operation": "mutation-run",
+      "path": "lib/events/presentation/event_detail_screen.dart",
+      "line": 330
+    },
+    {
+      "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
+      "sourceKind": "consumer",
+      "target": "CrossPathsEventConsentController.setConsentMutation",
+      "targetKind": "mutation",
+      "operation": "watch",
+      "path": "lib/events/presentation/event_detail_screen.dart",
+      "line": 152
     },
     {
       "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
@@ -17590,7 +17773,7 @@ code { color: var(--fg); }
       "targetKind": "mutation",
       "operation": "listen",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 187
+      "line": 219
     },
     {
       "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
@@ -17599,7 +17782,7 @@ code { color: var(--fg); }
       "targetKind": "mutation",
       "operation": "listen",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 195
+      "line": 227
     },
     {
       "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
@@ -17608,7 +17791,7 @@ code { color: var(--fg); }
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 144
+      "line": 149
     },
     {
       "source": "consumer:lib/events/presentation/widgets/event_detail_cta.dart#EventDetailCta.build",
@@ -18553,12 +18736,21 @@ code { color: var(--fg); }
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/safety/presentation/settings_screen.dart",
-      "line": 103
+      "line": 104
     },
     {
       "source": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState._operationPending",
       "sourceKind": "consumer",
       "target": "AuthSessionController.signOutMutation",
+      "targetKind": "mutation",
+      "operation": "read",
+      "path": "lib/safety/presentation/settings_screen.dart",
+      "line": 56
+    },
+    {
+      "source": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState._operationPending",
+      "sourceKind": "consumer",
+      "target": "SettingsController.requestAccountDeletionMutation",
       "targetKind": "mutation",
       "operation": "read",
       "path": "lib/safety/presentation/settings_screen.dart",
@@ -18567,7 +18759,7 @@ code { color: var(--fg); }
     {
       "source": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState._operationPending",
       "sourceKind": "consumer",
-      "target": "SettingsController.requestAccountDeletionMutation",
+      "target": "SettingsController.savePreferenceMutation",
       "targetKind": "mutation",
       "operation": "read",
       "path": "lib/safety/presentation/settings_screen.dart",
@@ -18576,20 +18768,11 @@ code { color: var(--fg); }
     {
       "source": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState._operationPending",
       "sourceKind": "consumer",
-      "target": "SettingsController.savePreferenceMutation",
-      "targetKind": "mutation",
-      "operation": "read",
-      "path": "lib/safety/presentation/settings_screen.dart",
-      "line": 53
-    },
-    {
-      "source": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState._operationPending",
-      "sourceKind": "consumer",
       "target": "SettingsController.unblockUserMutation",
       "targetKind": "mutation",
       "operation": "read",
       "path": "lib/safety/presentation/settings_screen.dart",
-      "line": 56
+      "line": 57
     },
     {
       "source": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState._savePref",
@@ -18598,7 +18781,7 @@ code { color: var(--fg); }
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/safety/presentation/settings_screen.dart",
-      "line": 74
+      "line": 75
     },
     {
       "source": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState._signOut",
@@ -18607,7 +18790,7 @@ code { color: var(--fg); }
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/safety/presentation/settings_screen.dart",
-      "line": 118
+      "line": 119
     },
     {
       "source": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState._unblockUser",
@@ -18616,7 +18799,7 @@ code { color: var(--fg); }
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/safety/presentation/settings_screen.dart",
-      "line": 174
+      "line": 175
     },
     {
       "source": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState.build",
@@ -18625,7 +18808,7 @@ code { color: var(--fg); }
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/safety/presentation/settings_screen.dart",
-      "line": 217
+      "line": 219
     },
     {
       "source": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState.build",
@@ -18634,7 +18817,7 @@ code { color: var(--fg); }
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/safety/presentation/settings_screen.dart",
-      "line": 214
+      "line": 216
     },
     {
       "source": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState.build",
@@ -18643,7 +18826,7 @@ code { color: var(--fg); }
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/safety/presentation/settings_screen.dart",
-      "line": 211
+      "line": 213
     },
     {
       "source": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState.build",
@@ -18652,7 +18835,7 @@ code { color: var(--fg); }
       "targetKind": "mutation",
       "operation": "listen",
       "path": "lib/safety/presentation/settings_screen.dart",
-      "line": 224
+      "line": 226
     },
     {
       "source": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState.build",
@@ -18661,7 +18844,7 @@ code { color: var(--fg); }
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/safety/presentation/settings_screen.dart",
-      "line": 218
+      "line": 220
     },
     {
       "source": "consumer:lib/swipes/presentation/filters_screen.dart#_FiltersScreenState._save",

@@ -80,6 +80,10 @@
           {
             "file": "lib/events/presentation/widgets/event_detail_body.dart",
             "symbol": "EventDetailBody"
+          },
+          {
+            "file": "lib/cross_paths/presentation/cross_paths_event_consent_state.dart",
+            "symbol": "CrossPathsEventConsentSectionState"
           }
         ],
         "mutationOwners": [
@@ -94,9 +98,13 @@
           {
             "file": "lib/events/data/event_calendar_links.dart",
             "symbol": "EventCalendarController"
+          },
+          {
+            "file": "lib/cross_paths/presentation/cross_paths_event_consent_controller.dart",
+            "symbol": "CrossPathsEventConsentController"
           }
         ],
-        "notes": "The route screen already reads the aggregate view model, but EventDetailBody still derives visibility, navigation intents, mutation listeners, host lookup, and private section widgets."
+        "notes": "EventDetailScreen owns the aggregate view model, route-level provider reads, mutation listeners, navigation intents, host/companion/social adapters, and the fail-closed Cross Paths consent read/mutation. EventDetailBody and CrossPathsEventConsentSection receive explicit provider-free state and callbacks."
       },
       "designRefs": [
         {
@@ -132,7 +140,7 @@
           "kind": "repo",
           "status": "available",
           "path": "design/components/catch.components.json",
-          "notes": "`catch.event_detail_sections` groups Event Detail hero, ticket facts, overview primitives, host/social sections, companion prompt, booking dock, and avatar stack without promoting event-only compounds to reusable primitives."
+          "notes": "`catch.event_detail_sections` groups Event Detail hero, ticket facts, overview primitives, host/social sections, the Cross Paths event-consent control, companion prompt, booking dock, and avatar stack without promoting event-only compounds to reusable primitives."
         },
         {
           "id": "repo.event-detail-feature-contract",
@@ -878,6 +886,38 @@
             "migration": "Make review access an explicit adapter field and avoid having the section recompute attendance rules."
           },
           {
+            "id": "section.event.cross_paths_consent",
+            "name": "Cross Paths event consent",
+            "status": "implemented_local",
+            "layer": "section",
+            "claudeComponents": [
+              "Section"
+            ],
+            "flutter": {
+              "file": "lib/cross_paths/presentation/cross_paths_event_consent_section.dart",
+              "symbol": "CrossPathsEventConsentSection"
+            },
+            "currentOwner": "EventDetailScreen + CrossPathsEventConsentSection",
+            "targetOwner": "route-owned consent state plus provider-free Event Detail section",
+            "dependencies": [
+              "catch.field",
+              "catch.section"
+            ],
+            "states": [
+              "hidden",
+              "loading",
+              "off",
+              "on",
+              "pending",
+              "unavailable",
+              "text_scale_2"
+            ],
+            "previewIds": [
+              "CrossPathsEventConsentSection/Cross Paths consent states"
+            ],
+            "migration": "Implemented behind a default-off flag. EventDetailScreen resolves effective local visibility, owns the caller-scoped provider and callable mutation, and passes explicit state/callbacks to the provider-free section."
+          },
+          {
             "id": "section.event.companion_invite",
             "name": "Companion and invite prompts",
             "status": "implemented_local",
@@ -945,17 +985,17 @@
         {
           "id": "DS-EVENT-DETAIL-001",
           "status": "closed",
-          "nextAction": "`catch.event_detail_sections` is now the canonical screen-contract registry entry for Event Detail hero, ticket facts, overview primitives, host/social sections, companion prompt, booking dock, and avatar stack; reusable primitives stay in their existing shared contracts."
+          "nextAction": "`catch.event_detail_sections` is now the canonical screen-contract registry entry for Event Detail hero, ticket facts, overview primitives, host/social sections, Cross Paths event consent, companion prompt, booking dock, and avatar stack; reusable primitives stay in their existing shared contracts."
         },
         {
           "id": "DS-EVENT-DETAIL-002",
           "status": "closed",
-          "nextAction": "Widgetbook entries now cover EventDetailHeroAppBar, TicketStub, Overview, HintList, Itinerary, PhotoStrip, MapCard, MechanismList, HostCard, WhoIsGoing/social proof, Reviews, companion/invite prompts, and provider-free EventBookingDock states."
+          "nextAction": "Widgetbook entries now cover EventDetailHeroAppBar, TicketStub, Overview, HintList, Itinerary, PhotoStrip, MapCard, MechanismList, HostCard, WhoIsGoing/social proof, Reviews, Cross Paths event consent, companion/invite prompts, and provider-free EventBookingDock states."
         },
         {
           "id": "DS-EVENT-DETAIL-003",
           "status": "closed",
-          "nextAction": "Host lookup, companion plan lookup, booking dock mode, body section visibility, invite-loop visibility, host-app bottom-nav visibility, and social/review access now map through provider-free EventDetailHostState, EventDetailCompanionState, EventDetailBookingDockState, EventDetailSectionVisibilityState, and EventDetailSocialState."
+          "nextAction": "Host lookup, companion plan lookup, Cross Paths consent, booking dock mode, body section visibility, invite-loop visibility, host-app bottom-nav visibility, and social/review access now map through provider-free EventDetailHostState, EventDetailCompanionState, CrossPathsEventConsentSectionState, EventDetailBookingDockState, EventDetailSectionVisibilityState, and EventDetailSocialState."
         },
         {
           "id": "DS-EVENT-DETAIL-004",
@@ -22587,7 +22627,7 @@
           "kind": "repo",
           "status": "available",
           "path": "test/safety/settings_screen_test.dart",
-          "notes": "Settings tests cover profile-backed account rows, optimistic preference writes/rollback, blocked user unblock, history rows, host-app handoff, sign-out, and delete-account confirmation."
+          "notes": "Settings tests cover profile-backed account rows, optimistic preference writes/rollback including the feature-gated default-off Cross Paths master preference, blocked user unblock, history rows, host-app handoff, sign-out, and delete-account confirmation."
         },
         {
           "id": "claude.settings-account",
@@ -23159,10 +23199,13 @@
             ],
             "states": [
               "privacy_safety_defaults",
+              "cross_paths_global_consent_hidden",
+              "cross_paths_global_consent_off",
+              "cross_paths_global_consent_on",
               "blocked_accounts_loading_error",
               "delete_account_flow"
             ],
-            "migration": "Keep safety row layout reusable while SettingsController owns destructive and privacy mutations.",
+            "migration": "Keep safety row layout reusable while SettingsController owns destructive and privacy mutations. The Cross Paths master row remains hidden unless the consent-controls rollout flag is enabled, and missing profile values resolve off.",
             "previewIds": [
               "SettingsScreen/Screen states",
               "CatchConfirmDialog/Contract states",

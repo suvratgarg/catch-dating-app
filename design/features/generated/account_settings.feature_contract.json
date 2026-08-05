@@ -2,8 +2,8 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/account_settings.feature.json",
-  "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:395b1839d97b5e3c026f0a75899ee3e75950cf008d11aea0c78cc6535ebfba86",
+  "generatedFor": "2026-08-05",
+  "sourceDigest": "sha256:4e879e7fb4b342b3693e495c026c5dc25080e48ecd4c94bdad23ae161de40db7",
   "resolvedDigest": "sha256:500bf37173807343555a5ccfd6434e7a87fcf5a5aed673ac8cc71a505111e2ca",
   "feature": {
     "id": "feature.account_settings",
@@ -292,7 +292,7 @@
               "id": "user_profile.update_preference"
             }
           ],
-          "description": "Optimistically changes one of the seven supported notification or map-visibility preferences and rolls back on failure.",
+          "description": "Optimistically changes one supported notification, map-visibility, or feature-gated global Cross Paths preference and rolls back on failure.",
           "implementationStatus": "implemented"
         },
         {

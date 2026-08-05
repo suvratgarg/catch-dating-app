@@ -10,6 +10,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'settings_controller.g.dart';
 
 enum SettingsPreference {
+  showInCrossPaths('prefsShowInCrossPaths'),
   showOnMap('prefsShowOnMap'),
   newCatches('prefsNewCatches'),
   messages('prefsMessages'),
@@ -27,6 +28,9 @@ enum SettingsPreference {
   /// preference → field mapping explicit and compile-checked.
   UpdateUserProfilePatch patch(bool value) {
     return switch (this) {
+      SettingsPreference.showInCrossPaths => UpdateUserProfilePatch(
+        prefsShowInCrossPaths: value,
+      ),
       SettingsPreference.showOnMap => UpdateUserProfilePatch(
         prefsShowOnMap: value,
       ),

@@ -5438,6 +5438,11 @@ export const userProfileDocumentSchema = {
       "type": "boolean",
       "x-catch-ownership": "client-writable"
     },
+    "prefsShowInCrossPaths": {
+      "type": "boolean",
+      "description": "Private global consent gate for Cross Paths. Missing values resolve to false and this field must never be copied to publicProfiles.",
+      "x-catch-ownership": "client-writable"
+    },
     "fcmToken": {
       "type": "string",
       "x-catch-ownership": "client-runtime-writable"
@@ -14859,6 +14864,138 @@ export const eventParticipationDocumentSchema = {
   }
 };
 
+export const eventCrossPathsConsentDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_cross_paths_consents.schema.json",
+  "title": "EventCrossPathsConsentDocument",
+  "description": "Private per-user Cross Paths consent edge stored at eventCrossPathsConsents/{eventId_uid} and written only by setCrossPathsEventConsent.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventCrossPathsConsents",
+  "x-firestore-path": "eventCrossPathsConsents/{consentId}",
+  "x-document-id-field": "id",
+  "x-owner": "setCrossPathsEventConsent callable",
+  "required": [
+    "eventId",
+    "uid",
+    "enabled",
+    "termsVersion",
+    "consentedAt",
+    "updatedAt",
+    "revokedAt",
+    "source"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "enabled": {
+      "type": "boolean",
+      "x-catch-ownership": "callable-owned"
+    },
+    "termsVersion": {
+      "type": "integer",
+      "minimum": 1,
+      "x-catch-ownership": "callable-owned"
+    },
+    "consentedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "revokedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "booking_success",
+        "event_detail",
+        "settings"
+      ],
+      "x-catch-ownership": "callable-owned"
+    }
+  }
+};
+
 export const eventBroadcastDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/event_broadcasts.schema.json",
@@ -23782,6 +23919,9 @@ export const updateUserProfileCallablePayloadSchema = {
           "type": "boolean"
         },
         "prefsShowOnMap": {
+          "type": "boolean"
+        },
+        "prefsShowInCrossPaths": {
           "type": "boolean"
         }
       }
@@ -34207,6 +34347,43 @@ export const eventIdCallablePayloadSchema = {
   }
 };
 
+export const setCrossPathsEventConsentCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/set_cross_paths_event_consent_payload.schema.json",
+  "title": "SetCrossPathsEventConsentCallablePayload",
+  "description": "Callable payload accepted by setCrossPathsEventConsent.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "enabled",
+    "termsVersion",
+    "source"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "enabled": {
+      "type": "boolean"
+    },
+    "termsVersion": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "booking_success",
+        "event_detail",
+        "settings"
+      ]
+    }
+  }
+};
+
 export const createEventWaitlistOffersCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/create_event_waitlist_offers_payload.schema.json",
@@ -38851,6 +39028,34 @@ export const fetchSwipeCandidatesCallableResponseSchema = {
           }
         }
       }
+    }
+  }
+};
+
+export const setCrossPathsEventConsentCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/set_cross_paths_event_consent_response.schema.json",
+  "title": "SetCrossPathsEventConsentCallableResponse",
+  "description": "Sanitized response returned by setCrossPathsEventConsent.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "enabled",
+    "termsVersion"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "enabled": {
+      "type": "boolean"
+    },
+    "termsVersion": {
+      "type": "integer",
+      "minimum": 1
     }
   }
 };

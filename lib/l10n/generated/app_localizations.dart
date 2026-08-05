@@ -4966,6 +4966,42 @@ abstract class AppLocalizations {
   /// **'Who can see you'**
   String get safetySettingsScreenTitleWhoCanSeeYou;
 
+  /// Privacy setting that gives global consent for eligible Cross Paths event suggestions.
+  ///
+  /// In en, this message translates to:
+  /// **'Show me in Cross Paths'**
+  String get safetySettingsScreenTitleShowInCrossPaths;
+
+  /// Explains that global Cross Paths consent does not opt the member into every event.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow Catch to suggest your profile to compatible members at events you separately opt into.'**
+  String get safetySettingsScreenBodyShowInCrossPaths;
+
+  /// Section label for event-level Cross Paths consent.
+  ///
+  /// In en, this message translates to:
+  /// **'Cross Paths'**
+  String get crossPathsEventConsentSectionTitleCrossPaths;
+
+  /// Event-level Cross Paths consent toggle title.
+  ///
+  /// In en, this message translates to:
+  /// **'Meet people at this event'**
+  String get crossPathsEventConsentSectionTitleMeetPeopleAtThisEvent;
+
+  /// Consent disclosure shown before a member enables Cross Paths for one booked event.
+  ///
+  /// In en, this message translates to:
+  /// **'Your profile and plan to attend may be shown to compatible Catch members for this event, and they may send a limited invitation. This is not a public attendee list. You can turn it off before the event; safety and cancellation controls still apply.'**
+  String get crossPathsEventConsentSectionBodyConsentDisclosure;
+
+  /// Inline recovery copy when private event consent cannot be loaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Cross Paths settings are unavailable right now. Try again shortly.'**
+  String get crossPathsEventConsentSectionBodyConsentUnavailable;
+
   /// Product copy used by lib/safety/presentation/settings_screen.dart (body).
   ///
   /// In en, this message translates to:
