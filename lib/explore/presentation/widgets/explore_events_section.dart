@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_day_section_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_mono_label.dart';
+import 'package:catch_dating_app/cross_paths/cross_paths.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
@@ -41,6 +42,8 @@ List<Widget> buildExploreEventsSlivers(
   ValueChanged<ExploreTimeFilter>? onSetTimeFilter,
   ExploreEventSelected? onEventSelected,
   ValueChanged<ExploreExternalEventItem>? onExternalEventOpened,
+  List<CrossPathsSuggestion> crossPathsSuggestions = const [],
+  CrossPathsProfileSelected? onCrossPathsProfileSelected,
   ValueChanged<Club>? onClubSelected,
   bool pinnedDayHeaders = true,
   bool promoteFeaturedItem = false,
@@ -112,6 +115,8 @@ List<Widget> buildExploreEventsSlivers(
               now: now,
               onEventSelected: onEventSelected,
               onExternalEventOpened: onExternalEventOpened,
+              crossPathsSuggestions: crossPathsSuggestions,
+              onCrossPathsProfileSelected: onCrossPathsProfileSelected,
               onClubSelected: onClubSelected,
             );
     }(),
@@ -134,6 +139,8 @@ class ExploreEventsSection extends StatelessWidget {
     this.onSetTimeFilter,
     this.onEventSelected,
     this.onExternalEventOpened,
+    this.crossPathsSuggestions = const [],
+    this.onCrossPathsProfileSelected,
     this.onClubSelected,
   });
 
@@ -146,6 +153,8 @@ class ExploreEventsSection extends StatelessWidget {
   final ValueChanged<ExploreTimeFilter>? onSetTimeFilter;
   final ExploreEventSelected? onEventSelected;
   final ValueChanged<ExploreExternalEventItem>? onExternalEventOpened;
+  final List<CrossPathsSuggestion> crossPathsSuggestions;
+  final CrossPathsProfileSelected? onCrossPathsProfileSelected;
   final ValueChanged<Club>? onClubSelected;
 
   @override
@@ -161,6 +170,8 @@ class ExploreEventsSection extends StatelessWidget {
       onSetTimeFilter: onSetTimeFilter,
       onEventSelected: onEventSelected,
       onExternalEventOpened: onExternalEventOpened,
+      crossPathsSuggestions: crossPathsSuggestions,
+      onCrossPathsProfileSelected: onCrossPathsProfileSelected,
       onClubSelected: onClubSelected,
       pinnedDayHeaders: false,
     );
@@ -180,6 +191,8 @@ List<Widget> _exploreContentSlivers(
   required DateTime? now,
   required ExploreEventSelected? onEventSelected,
   required ValueChanged<ExploreExternalEventItem>? onExternalEventOpened,
+  required List<CrossPathsSuggestion> crossPathsSuggestions,
+  required CrossPathsProfileSelected? onCrossPathsProfileSelected,
   required ValueChanged<Club>? onClubSelected,
 }) {
   final effectiveCandidateClubs = withDebugSyntheticExploreClubs(
@@ -212,6 +225,7 @@ List<Widget> _exploreContentSlivers(
     showThisWeekList: showThisWeekList,
     promoteFeaturedItem: promoteFeaturedItem,
     now: now,
+    crossPathsSuggestions: crossPathsSuggestions,
   );
   if (sectionState.isEmpty) {
     return const [SliverToBoxAdapter(child: SizedBox.shrink())];
@@ -285,6 +299,7 @@ List<Widget> _exploreContentSlivers(
             index,
             onEventSelected: onEventSelected,
             onExternalEventOpened: onExternalEventOpened,
+            onCrossPathsProfileSelected: onCrossPathsProfileSelected,
             onClubSelected: onClubSelected,
           ),
         ),
@@ -299,6 +314,7 @@ Widget _exploreMixedFeedCard(
   int index, {
   required ExploreEventSelected? onEventSelected,
   required ValueChanged<ExploreExternalEventItem>? onExternalEventOpened,
+  required CrossPathsProfileSelected? onCrossPathsProfileSelected,
   required ValueChanged<Club>? onClubSelected,
 }) {
   return switch (cards[index]) {
@@ -319,5 +335,16 @@ Widget _exploreMixedFeedCard(
       club: club,
       onClubSelected: onClubSelected,
     ),
+    ExploreMixedPersonCard(:final suggestion, :final eventItem) =>
+      CrossPathsExploreCard(
+        suggestion: suggestion,
+        eventItem: eventItem,
+        onProfileSelected: onCrossPathsProfileSelected == null
+            ? null
+            : () => onCrossPathsProfileSelected(suggestion, eventItem),
+        onEventSelected: onEventSelected == null
+            ? null
+            : (item) => onEventSelected(item, 'cross_paths'),
+      ),
   };
 }

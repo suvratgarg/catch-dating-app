@@ -5790,6 +5790,85 @@
     "x-owner": "product",
     "x-surface": "cross_paths.presentation.event_consent"
   },
+  "crossPathsExploreCardLabelPeopleYouCouldMeet": "People you could meet",
+  "@crossPathsExploreCardLabelPeopleYouCouldMeet": {
+    "description": "Editorial label above an opted-in person suggestion in Explore.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "cross_paths.presentation.explore_card"
+  },
+  "crossPathsExploreCardLabelCrossPaths": "Cross Paths",
+  "@crossPathsExploreCardLabelCrossPaths": {
+    "description": "Feature kicker on the person Polaroid.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "cross_paths.presentation.explore_card"
+  },
+  "crossPathsExploreCardReasonCompatibleAtThisEvent": "A compatible person at this event",
+  "@crossPathsExploreCardReasonCompatibleAtThisEvent": {
+    "description": "Coarse, privacy-safe compatibility reason for an Explore person suggestion.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "cross_paths.presentation.explore_card"
+  },
+  "crossPathsExploreCardContextPersonGoingToEvent": "{firstName} is going to {eventTitle}",
+  "@crossPathsExploreCardContextPersonGoingToEvent": {
+    "description": "Prospective event context shown outside the person Polaroid.",
+    "placeholders": {
+      "firstName": {"type": "String"},
+      "eventTitle": {"type": "String"}
+    },
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "cross_paths.presentation.explore_card"
+  },
+  "crossPathsExploreCardEventDateTime": "{date} at {time}",
+  "@crossPathsExploreCardEventDateTime": {
+    "description": "Date and time for the event attached to a person suggestion.",
+    "placeholders": {
+      "date": {"type": "String"},
+      "time": {"type": "String"}
+    },
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "cross_paths.presentation.explore_card"
+  },
+  "crossPathsExploreCardActionViewProfile": "View profile",
+  "@crossPathsExploreCardActionViewProfile": {
+    "description": "Accessible action label for opening the sanitized Cross Paths profile preview.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "cross_paths.presentation.explore_card"
+  },
+  "crossPathsExploreCardActionSeeEvent": "See the event",
+  "@crossPathsExploreCardActionSeeEvent": {
+    "description": "Action that opens the associated first-party Event Detail screen.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "cross_paths.presentation.explore_card"
+  },
+  "crossPathsExploreCardSemanticsViewProfile": "View {firstName}'s profile",
+  "@crossPathsExploreCardSemanticsViewProfile": {
+    "description": "Screen-reader label for the person target on a Cross Paths card.",
+    "placeholders": {"firstName": {"type": "String"}},
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "cross_paths.presentation.explore_card"
+  },
+  "crossPathsProfilePreviewTitle": "Cross Paths profile",
+  "@crossPathsProfilePreviewTitle": {
+    "description": "Title for the event-tied person profile preview.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "cross_paths.presentation.profile_preview"
+  },
+  "crossPathsProfilePreviewTooltipClose": "Close profile",
+  "@crossPathsProfilePreviewTooltipClose": {
+    "description": "Tooltip for closing the Cross Paths profile preview.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "cross_paths.presentation.profile_preview"
+  },
   "safetySettingsScreenBodyRunnersOnMyEvents": "Runners on my events",
   "@safetySettingsScreenBodyRunnersOnMyEvents": {
     "description": "Product copy used by lib/safety/presentation/settings_screen.dart (body).",
