@@ -40,8 +40,9 @@ import {
   candidateMarketLabel,
   initialsForLabel,
   marketLabelForSlug,
-  organizerIntakeAgeDays as ageDays,
-  organizerIntakeAgeLabel as ageLabel,
+  organizerCandidateChecklistRows,
+  organizerCandidateQueueItem,
+  organizerCandidateStatus,
   organizerEntityEntryId,
   organizerEntityQueueItem,
   organizerItemStatus,
@@ -66,9 +67,11 @@ const organizerTypeOptions = [
 function OrganizerTaskWorkbench({
   controller,
   onShowDiagnostics,
+  nowMs = Date.now(),
 }: {
   controller: OrganizerIntakeController;
   onShowDiagnostics: () => void;
+  nowMs?: number;
 }) {
   const {
     availability,
@@ -684,7 +687,8 @@ function OrganizerTaskWorkbench({
               Boolean(
                 entry.candidate.draftLink ||
                 localOrganizerDrafts[entry.candidate.candidateId]
-              )
+              ),
+              nowMs
             );
           return {
             ...queueItem,
@@ -999,108 +1003,6 @@ function workbenchEntrySearchText(entry: OrganizerWorkbenchEntry) {
     ...(candidate.reviewContext?.formats ?? []),
     ...(candidate.reviewContext?.sources ?? []),
   ].filter(Boolean).join(" ").toLocaleLowerCase();
-}
-
-function organizerCandidateQueueItem(
-  candidate: Intake.OrganizerSearchCandidate,
-  duplicateCandidateIds: Set<string>,
-  hasDraft = Boolean(candidate.draftLink)
-) {
-  const status = organizerCandidateStatus(
-    candidate,
-    duplicateCandidateIds,
-    hasDraft
-  );
-  return {
-    age: ageLabel(candidate.observedAt),
-    ageDays: ageDays(candidate.observedAt),
-    blocker: organizerCandidateChecklistRows(candidate, duplicateCandidateIds)
-      .find((row) => !row.passed)?.label ?? "—",
-    blockerKey: organizerCandidateChecklistRows(candidate, duplicateCandidateIds)
-      .find((row) => !row.passed)?.id ?? null,
-    description: `${candidate.platform} · ${candidateMarketLabel(candidate)}`,
-    id: `candidate:${candidate.candidateId}`,
-    initials: initialsForLabel(candidate.title),
-    kind: "Candidate",
-    market: candidateMarketLabel(candidate),
-    meta: candidate.reviewContext ?
-      `${candidate.reviewContext.recordStatus.replaceAll("_", " ")} · verified ${candidate.reviewContext.verifiedAt ?? "date unavailable"}` :
-      `#${candidate.rank} · ${candidate.reviewAction.replaceAll("_", " ")}`,
-    source: candidate.platform,
-    status: status.label,
-    statusTone: status.tone,
-    title: candidate.title,
-  };
-}
-
-function organizerCandidateStatus(
-  candidate: Intake.OrganizerSearchCandidate,
-  duplicateCandidateIds: Set<string>,
-  hasDraft = Boolean(candidate.draftLink)
-): {label: string; tone: "neutral" | "warning" | "danger" | "success"} {
-  if (hasDraft) {
-    return {label: "draft created", tone: "success"};
-  }
-  if (duplicateCandidateIds.has(candidate.candidateId)) {
-    return {label: "duplicate key", tone: "danger"};
-  }
-  if (candidate.existingEntityMatches.length > 0) {
-    return {label: "matched", tone: "success"};
-  }
-  if (!candidate.normalizedKey) {
-    return {label: "needs identity", tone: "danger"};
-  }
-  if (candidate.diagnostics.length > 0) {
-    return {label: "needs review", tone: "warning"};
-  }
-  if (candidate.reviewContext?.recordStatus === "review_now") {
-    return {label: "review now", tone: "success"};
-  }
-  return {label: "new lead", tone: "neutral"};
-}
-
-function organizerCandidateChecklistRows(
-  candidate: Intake.OrganizerSearchCandidate,
-  duplicateCandidateIds: Set<string>
-) {
-  const duplicateKey = duplicateCandidateIds.has(candidate.candidateId);
-  const ownershipConfirmed =
-    candidate.suggestedSurface.confidence.ownership === "high";
-  return [
-    {
-      id: "market",
-      label: "Pilot market assigned",
-      meta: candidateMarketLabel(candidate),
-      passed: Boolean(candidate.queryIntent.marketSlug),
-    },
-    {
-      id: "source",
-      label: "Source URL captured",
-      meta: candidate.platform,
-      passed: Boolean(candidate.canonicalUrl),
-    },
-    {
-      id: "identity",
-      label: "Unique identity key",
-      meta: duplicateKey ?
-        "collides with another candidate" :
-        candidate.normalizedKey ?? "missing",
-      passed: Boolean(candidate.normalizedKey) && !duplicateKey,
-    },
-    {
-      id: "ownership",
-      label: "Organizer ownership confirmed",
-      meta: ownershipConfirmed ? "confirmed" : "manual review required",
-      passed: ownershipConfirmed,
-    },
-    {
-      id: "review-context",
-      label: "Reviewed intake evidence",
-      meta: candidate.reviewContext?.verifiedAt ??
-        "No reviewed shortlist context",
-      passed: Boolean(candidate.reviewContext?.verifiedAt),
-    },
-  ];
 }
 
 function organizerCandidateEvidenceRows(

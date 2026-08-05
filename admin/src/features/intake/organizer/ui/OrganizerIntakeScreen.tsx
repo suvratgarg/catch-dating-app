@@ -57,14 +57,17 @@ function OrganizerIntakeLoadedScreen() {
 
 export function OrganizerIntakeWorkspace({
   controller,
+  nowMs,
 }: {
   controller: OrganizerIntakeController;
+  nowMs?: number;
 }) {
   const [showDiagnostics, setShowDiagnostics] = useState(false);
   if (!showDiagnostics) {
     return (
       <organizerIntakeWorkbench.OrganizerTaskWorkbench
         controller={controller}
+        nowMs={nowMs}
         onShowDiagnostics={() => setShowDiagnostics(true)}
       />
     );
@@ -73,6 +76,7 @@ export function OrganizerIntakeWorkspace({
     return (
       <organizerIntakeWorkbench.OrganizerTaskWorkbench
         controller={controller}
+        nowMs={nowMs}
         onShowDiagnostics={() => setShowDiagnostics(false)}
       />
     );

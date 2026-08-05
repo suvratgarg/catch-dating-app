@@ -50,19 +50,125 @@ export function marketLabelForSlug(slug: string) {
 }
 
 export function organizerIntakeAgeDays(
-  value: string | null | undefined
+  value: string | null | undefined,
+  nowMs = Date.now()
 ) {
   if (!value) return null;
   const timestamp = Date.parse(value);
   if (!Number.isFinite(timestamp)) return null;
-  return Math.max(0, Math.floor((Date.now() - timestamp) / 86_400_000));
+  return Math.max(0, Math.floor((nowMs - timestamp) / 86_400_000));
 }
 
 export function organizerIntakeAgeLabel(
-  value: string | null | undefined
+  value: string | null | undefined,
+  nowMs = Date.now()
 ) {
-  const days = organizerIntakeAgeDays(value);
+  const days = organizerIntakeAgeDays(value, nowMs);
   return days === null ? "—" : days === 0 ? "Today" : `${days}d`;
+}
+
+export function organizerCandidateQueueItem(
+  candidate: Intake.OrganizerSearchCandidate,
+  duplicateCandidateIds: Set<string>,
+  hasDraft = Boolean(candidate.draftLink),
+  nowMs = Date.now()
+) {
+  const status = organizerCandidateStatus(
+    candidate,
+    duplicateCandidateIds,
+    hasDraft
+  );
+  const checklist = organizerCandidateChecklistRows(
+    candidate,
+    duplicateCandidateIds
+  );
+  const blocker = checklist.find((row) => !row.passed);
+  return {
+    age: organizerIntakeAgeLabel(candidate.observedAt, nowMs),
+    ageDays: organizerIntakeAgeDays(candidate.observedAt, nowMs),
+    blocker: blocker?.label ?? "—",
+    blockerKey: blocker?.id ?? null,
+    description: `${candidate.platform} · ${candidateMarketLabel(candidate)}`,
+    id: `candidate:${candidate.candidateId}`,
+    initials: initialsForLabel(candidate.title),
+    kind: "Candidate",
+    market: candidateMarketLabel(candidate),
+    meta: candidate.reviewContext ?
+      `${candidate.reviewContext.recordStatus.replaceAll("_", " ")} · verified ${candidate.reviewContext.verifiedAt ?? "date unavailable"}` :
+      `#${candidate.rank} · ${candidate.reviewAction.replaceAll("_", " ")}`,
+    source: candidate.platform,
+    status: status.label,
+    statusTone: status.tone,
+    title: candidate.title,
+  };
+}
+
+export function organizerCandidateStatus(
+  candidate: Intake.OrganizerSearchCandidate,
+  duplicateCandidateIds: Set<string>,
+  hasDraft = Boolean(candidate.draftLink)
+): {label: string; tone: "neutral" | "warning" | "danger" | "success"} {
+  if (hasDraft) return {label: "draft created", tone: "success"};
+  if (duplicateCandidateIds.has(candidate.candidateId)) {
+    return {label: "duplicate key", tone: "danger"};
+  }
+  if (candidate.existingEntityMatches.length > 0) {
+    return {label: "matched", tone: "success"};
+  }
+  if (!candidate.normalizedKey) {
+    return {label: "needs identity", tone: "danger"};
+  }
+  if (candidate.diagnostics.length > 0) {
+    return {label: "needs review", tone: "warning"};
+  }
+  if (candidate.reviewContext?.recordStatus === "review_now") {
+    return {label: "review now", tone: "success"};
+  }
+  return {label: "new lead", tone: "neutral"};
+}
+
+export function organizerCandidateChecklistRows(
+  candidate: Intake.OrganizerSearchCandidate,
+  duplicateCandidateIds: Set<string>
+) {
+  const duplicateKey = duplicateCandidateIds.has(candidate.candidateId);
+  const ownershipConfirmed =
+    candidate.suggestedSurface.confidence.ownership === "high";
+  return [
+    {
+      id: "market",
+      label: "Pilot market assigned",
+      meta: candidateMarketLabel(candidate),
+      passed: Boolean(candidate.queryIntent.marketSlug),
+    },
+    {
+      id: "source",
+      label: "Source URL captured",
+      meta: candidate.platform,
+      passed: Boolean(candidate.canonicalUrl),
+    },
+    {
+      id: "identity",
+      label: "Unique identity key",
+      meta: duplicateKey ?
+        "collides with another candidate" :
+        candidate.normalizedKey ?? "missing",
+      passed: Boolean(candidate.normalizedKey) && !duplicateKey,
+    },
+    {
+      id: "ownership",
+      label: "Organizer ownership confirmed",
+      meta: ownershipConfirmed ? "confirmed" : "manual review required",
+      passed: ownershipConfirmed,
+    },
+    {
+      id: "review-context",
+      label: "Reviewed intake evidence",
+      meta: candidate.reviewContext?.verifiedAt ??
+        "No reviewed shortlist context",
+      passed: Boolean(candidate.reviewContext?.verifiedAt),
+    },
+  ];
 }
 
 export function organizerEntityQueueItem(

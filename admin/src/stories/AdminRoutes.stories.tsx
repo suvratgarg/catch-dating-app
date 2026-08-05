@@ -517,6 +517,7 @@ const organizerIntakeController: OrganizerIntakeController = {
     noop();
   },
 };
+const organizerIntakePreviewNowMs = Date.parse("2026-07-27T12:00:00.000Z");
 const marketingOpsBridge =
   structuredClone(sampleMarketingOpsBridge) as MarketingOpsController["bridge"];
 const marketingOpsSelectedDraft =
@@ -1667,7 +1668,10 @@ const renderEventIntakeWorkspace = () => (
 
 const renderOrganizerIntakeWorkspace = () => (
   <AdminWorkspace>
-    <OrganizerIntakeWorkspace controller={organizerIntakeController} />
+    <OrganizerIntakeWorkspace
+      controller={organizerIntakeController}
+      nowMs={organizerIntakePreviewNowMs}
+    />
   </AdminWorkspace>
 );
 
@@ -1726,7 +1730,12 @@ const renderIntakeWorkspace = () => (
       activeWorkspace="events"
       eventsContent={<EventIntakePreviewWorkspace controller={eventIntakeController} />}
       operationsContent={<IntakeOperationsPreviewWorkspace controller={intakeOperationsController} />}
-      organizersContent={<OrganizerIntakeWorkspace controller={organizerIntakeController} />}
+      organizersContent={(
+        <OrganizerIntakeWorkspace
+          controller={organizerIntakeController}
+          nowMs={organizerIntakePreviewNowMs}
+        />
+      )}
       onWorkspaceChange={noop}
     />
   </AdminWorkspace>
