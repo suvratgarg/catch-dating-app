@@ -4,19 +4,19 @@
     "lib"
   ],
   "summary": {
-    "dartSourceFiles": 803,
-    "providerNodes": 218,
-    "generatedProviderNodes": 214,
+    "dartSourceFiles": 805,
+    "providerNodes": 219,
+    "generatedProviderNodes": 215,
     "manualProviderNodes": 4,
     "aliasProviderNodes": 0,
     "keepAliveNodes": 66,
-    "familyNodes": 83,
+    "familyNodes": 84,
     "mutationNodes": 83,
     "consumerNodes": 251,
-    "providerToProviderCallsites": 408,
-    "uniqueProviderToProviderPairs": 324,
-    "uniqueCrossFeatureProviderPairs": 163,
-    "consumerToStateCallsites": 755,
+    "providerToProviderCallsites": 402,
+    "uniqueProviderToProviderPairs": 318,
+    "uniqueCrossFeatureProviderPairs": 157,
+    "consumerToStateCallsites": 752,
     "mutationReferenceCallsites": 204,
     "unresolvedRefOperations": 13,
     "unresolvedInsideProviders": 0,
@@ -47,9 +47,9 @@
     "hosts": 16,
     "chats": 10,
     "payments": 9,
+    "swipes": 7,
     "auth": 6,
     "reviews": 6,
-    "swipes": 6,
     "public_profile": 5,
     "user_profile": 5,
     "dashboard": 4,
@@ -68,7 +68,7 @@
     "locations": 1
   },
   "providersByLayer": {
-    "data": 125,
+    "data": 126,
     "presentation": 63,
     "core": 19,
     "routing": 4,
@@ -78,21 +78,21 @@
     "exceptions": 1
   },
   "providerEdgesByOperation": {
-    "watch": 255,
-    "read": 145,
+    "watch": 251,
+    "read": 143,
     "invalidate": 6,
     "listen": 2
   },
   "consumerEdgesByOperation": {
-    "watch": 257,
+    "watch": 256,
     "read": 208,
-    "invalidate": 155,
+    "invalidate": 153,
     "mutation-run": 90,
     "override": 23,
     "listen": 22
   },
   "featurePairCounts": {
-    "events -> events": 33,
+    "events -> events": 32,
     "explore -> explore": 26,
     "clubs -> clubs": 21,
     "event_success -> event_success": 16,
@@ -107,14 +107,13 @@
     "explore -> core": 5,
     "payments -> payments": 5,
     "reviews -> reviews": 5,
+    "swipes -> swipes": 5,
     "user_profile -> user_profile": 5,
     "auth -> explore": 4,
     "events -> clubs": 4,
     "explore -> auth": 4,
     "explore -> user_profile": 4,
     "hosts -> clubs": 4,
-    "swipes -> events": 4,
-    "swipes -> swipes": 4,
     "user_profile -> core": 4,
     "chats -> core": 3,
     "chats -> matches": 3,
@@ -125,7 +124,7 @@
     "matches -> matches": 3,
     "public_profile -> public_profile": 3,
     "safety -> core": 3,
-    "swipes -> user_profile": 3,
+    "swipes -> core": 3,
     "chats -> auth": 2,
     "chats -> clubs": 2,
     "chats -> public_profile": 2,
@@ -135,7 +134,6 @@
     "dashboard -> notifications": 2,
     "event_success -> core": 2,
     "events -> exceptions": 2,
-    "events -> public_profile": 2,
     "events -> user_profile": 2,
     "force_update -> core": 2,
     "force_update -> force_update": 2,
@@ -151,7 +149,6 @@
     "safety -> auth": 2,
     "safety -> safety": 2,
     "swipes -> auth": 2,
-    "swipes -> core": 2,
     "auth -> core": 1,
     "auth -> onboarding": 1,
     "chats -> events": 1,
@@ -167,7 +164,9 @@
     "event_success -> public_profile": 1,
     "events -> auth": 1,
     "events -> payments": 1,
+    "events -> public_profile": 1,
     "events -> reviews": 1,
+    "events -> swipes": 1,
     "health_activity -> exceptions": 1,
     "image_uploads -> core": 1,
     "image_uploads -> exceptions": 1,
@@ -184,8 +183,8 @@
     "public_profile -> safety": 1,
     "public_profile -> user_profile": 1,
     "safety -> user_profile": 1,
-    "swipes -> public_profile": 1,
-    "swipes -> safety": 1,
+    "swipes -> events": 1,
+    "swipes -> user_profile": 1,
     "user_analytics -> core": 1,
     "user_analytics -> user_analytics": 1,
     "user_profile -> auth": 1,
@@ -193,9 +192,9 @@
     "user_profile -> image_uploads": 1
   },
   "layerPairCounts": {
-    "presentation -> data": 116,
-    "data -> data": 98,
-    "data -> core": 44,
+    "presentation -> data": 113,
+    "data -> data": 94,
+    "data -> core": 45,
     "presentation -> presentation": 33,
     "presentation -> core": 10,
     "core -> core": 6,
@@ -236,10 +235,6 @@
       "degree": 7
     },
     {
-      "name": "swipeQueueNotifierProvider",
-      "degree": 7
-    },
-    {
       "name": "eventMapViewModelProvider",
       "degree": 6
     },
@@ -252,7 +247,7 @@
       "degree": 5
     },
     {
-      "name": "swipeCandidateRepositoryProvider",
+      "name": "swipeQueueNotifierProvider",
       "degree": 5
     },
     {
@@ -286,6 +281,10 @@
     {
       "name": "eventDetailControllerProvider",
       "degree": 3
+    },
+    {
+      "name": "eventRecapViewModelProvider",
+      "degree": 3
     }
   ],
   "topUniqueFanIn": [
@@ -298,7 +297,7 @@
       "degree": 16
     },
     {
-      "name": "eventRepositoryProvider",
+      "name": "firebaseFunctionsProvider",
       "degree": 15
     },
     {
@@ -306,7 +305,7 @@
       "degree": 14
     },
     {
-      "name": "firebaseFunctionsProvider",
+      "name": "eventRepositoryProvider",
       "degree": 14
     },
     {
@@ -315,7 +314,7 @@
     },
     {
       "name": "watchUserProfileProvider",
-      "degree": 13
+      "degree": 12
     },
     {
       "name": "errorLoggerProvider",
@@ -323,15 +322,7 @@
     },
     {
       "name": "userProfileRepositoryProvider",
-      "degree": 8
-    },
-    {
-      "name": "eventParticipationRepositoryProvider",
-      "degree": 6
-    },
-    {
-      "name": "publicProfileRepositoryProvider",
-      "degree": 6
+      "degree": 7
     },
     {
       "name": "authRepositoryProvider",
@@ -343,10 +334,6 @@
     },
     {
       "name": "reviewsRepositoryProvider",
-      "degree": 5
-    },
-    {
-      "name": "safetyRepositoryProvider",
       "degree": 5
     },
     {
@@ -362,11 +349,23 @@
       "degree": 4
     },
     {
+      "name": "eventParticipationRepositoryProvider",
+      "degree": 4
+    },
+    {
       "name": "exploreFiltersProvider",
       "degree": 4
     },
     {
       "name": "imageUploadRepositoryProvider",
+      "degree": 4
+    },
+    {
+      "name": "publicProfileRepositoryProvider",
+      "degree": 4
+    },
+    {
+      "name": "safetyRepositoryProvider",
       "degree": 4
     }
   ],
@@ -518,7 +517,7 @@
       },
       {
         "id": "swipes",
-        "providers": 6,
+        "providers": 7,
         "mutations": 1,
         "consumers": 10
       },
@@ -714,7 +713,7 @@
       {
         "source": "events",
         "target": "events",
-        "uniqueProviderPairs": 33
+        "uniqueProviderPairs": 32
       },
       {
         "source": "events",
@@ -729,11 +728,16 @@
       {
         "source": "events",
         "target": "public_profile",
-        "uniqueProviderPairs": 2
+        "uniqueProviderPairs": 1
       },
       {
         "source": "events",
         "target": "reviews",
+        "uniqueProviderPairs": 1
+      },
+      {
+        "source": "events",
+        "target": "swipes",
         "uniqueProviderPairs": 1
       },
       {
@@ -969,32 +973,22 @@
       {
         "source": "swipes",
         "target": "core",
-        "uniqueProviderPairs": 2
+        "uniqueProviderPairs": 3
       },
       {
         "source": "swipes",
         "target": "events",
-        "uniqueProviderPairs": 4
-      },
-      {
-        "source": "swipes",
-        "target": "public_profile",
-        "uniqueProviderPairs": 1
-      },
-      {
-        "source": "swipes",
-        "target": "safety",
         "uniqueProviderPairs": 1
       },
       {
         "source": "swipes",
         "target": "swipes",
-        "uniqueProviderPairs": 4
+        "uniqueProviderPairs": 5
       },
       {
         "source": "swipes",
         "target": "user_profile",
-        "uniqueProviderPairs": 3
+        "uniqueProviderPairs": 1
       },
       {
         "source": "user_analytics",
@@ -1296,7 +1290,7 @@
       "name": "attendeeProfilesProvider",
       "kind": "generated-function",
       "path": "lib/events/presentation/widgets/who_is_going.dart",
-      "line": 28,
+      "line": 22,
       "feature": "events",
       "layer": "presentation",
       "keepAlive": false,
@@ -1893,7 +1887,7 @@
       "name": "eventHypeAvatarsProvider",
       "kind": "generated-function",
       "path": "lib/events/presentation/widgets/event_hype_avatar_stack.dart",
-      "line": 44,
+      "line": 28,
       "feature": "events",
       "layer": "presentation",
       "keepAlive": false,
@@ -1929,7 +1923,7 @@
       "name": "eventRecapViewModelProvider",
       "kind": "generated-function",
       "path": "lib/swipes/presentation/event_recap_view_model.dart",
-      "line": 23,
+      "line": 22,
       "feature": "swipes",
       "layer": "presentation",
       "keepAlive": false,
@@ -2985,7 +2979,7 @@
       "name": "swipeCandidateRepositoryProvider",
       "kind": "generated-function",
       "path": "lib/swipes/data/swipe_candidate_repository.dart",
-      "line": 146,
+      "line": 37,
       "feature": "swipes",
       "layer": "data",
       "keepAlive": false,
@@ -2993,11 +2987,23 @@
       "returnType": "SwipeCandidateRepository"
     },
     {
+      "id": "provider:swipeCandidatesProvider",
+      "name": "swipeCandidatesProvider",
+      "kind": "generated-function",
+      "path": "lib/swipes/data/swipe_candidate_repository.dart",
+      "line": 41,
+      "feature": "swipes",
+      "layer": "data",
+      "keepAlive": false,
+      "family": true,
+      "returnType": "Future<List<PublicProfile>>"
+    },
+    {
       "id": "provider:swipeQueueLoadTimeoutProvider",
       "name": "swipeQueueLoadTimeoutProvider",
       "kind": "generated-function",
       "path": "lib/swipes/presentation/swipe_queue_controller.dart",
-      "line": 25,
+      "line": 24,
       "feature": "swipes",
       "layer": "presentation",
       "keepAlive": true,
@@ -3009,7 +3015,7 @@
       "name": "swipeQueueNotifierProvider",
       "kind": "generated-class",
       "path": "lib/swipes/presentation/swipe_queue_controller.dart",
-      "line": 29,
+      "line": 28,
       "feature": "swipes",
       "layer": "presentation",
       "keepAlive": false,
@@ -5132,7 +5138,7 @@
       "id": "consumer:lib/events/presentation/widgets/who_is_going.dart#WhoIsGoing.build",
       "owner": "WhoIsGoing.build",
       "path": "lib/events/presentation/widgets/who_is_going.dart",
-      "line": 61,
+      "line": 53,
       "feature": "events",
       "layer": "presentation"
     },
@@ -6544,7 +6550,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/presentation/widgets/who_is_going.dart",
-      "line": 34
+      "line": 28
     },
     {
       "source": "authControllerProvider",
@@ -7566,20 +7572,11 @@
     {
       "source": "eventHypeAvatarsProvider",
       "sourceKind": "provider",
-      "target": "eventParticipationRepositoryProvider",
+      "target": "swipeCandidateRepositoryProvider",
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/presentation/widgets/event_hype_avatar_stack.dart",
-      "line": 49
-    },
-    {
-      "source": "eventHypeAvatarsProvider",
-      "sourceKind": "provider",
-      "target": "publicProfileRepositoryProvider",
-      "targetKind": "provider",
-      "operation": "watch",
-      "path": "lib/events/presentation/widgets/event_hype_avatar_stack.dart",
-      "line": 59
+      "line": 33
     },
     {
       "source": "eventMapViewModelProvider",
@@ -7647,7 +7644,7 @@
     {
       "source": "eventRecapViewModelProvider",
       "sourceKind": "provider",
-      "target": "uidProvider",
+      "target": "swipeCandidatesProvider",
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/swipes/presentation/event_recap_view_model.dart",
@@ -7656,11 +7653,11 @@
     {
       "source": "eventRecapViewModelProvider",
       "sourceKind": "provider",
-      "target": "watchEventParticipationsForEventProvider",
+      "target": "uidProvider",
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/swipes/presentation/event_recap_view_model.dart",
-      "line": 28
+      "line": 26
     },
     {
       "source": "eventRecapViewModelProvider",
@@ -7669,7 +7666,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/swipes/presentation/event_recap_view_model.dart",
-      "line": 26
+      "line": 25
     },
     {
       "source": "eventRepositoryProvider",
@@ -9402,47 +9399,20 @@
     {
       "source": "swipeCandidateRepositoryProvider",
       "sourceKind": "provider",
-      "target": "eventParticipationRepositoryProvider",
+      "target": "firebaseFunctionsProvider",
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/swipes/data/swipe_candidate_repository.dart",
-      "line": 150
+      "line": 39
     },
     {
-      "source": "swipeCandidateRepositoryProvider",
+      "source": "swipeCandidatesProvider",
       "sourceKind": "provider",
-      "target": "eventRepositoryProvider",
+      "target": "swipeCandidateRepositoryProvider",
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/swipes/data/swipe_candidate_repository.dart",
-      "line": 149
-    },
-    {
-      "source": "swipeCandidateRepositoryProvider",
-      "sourceKind": "provider",
-      "target": "publicProfileRepositoryProvider",
-      "targetKind": "provider",
-      "operation": "watch",
-      "path": "lib/swipes/data/swipe_candidate_repository.dart",
-      "line": 152
-    },
-    {
-      "source": "swipeCandidateRepositoryProvider",
-      "sourceKind": "provider",
-      "target": "safetyRepositoryProvider",
-      "targetKind": "provider",
-      "operation": "watch",
-      "path": "lib/swipes/data/swipe_candidate_repository.dart",
-      "line": 153
-    },
-    {
-      "source": "swipeCandidateRepositoryProvider",
-      "sourceKind": "provider",
-      "target": "swipeRepositoryProvider",
-      "targetKind": "provider",
-      "operation": "watch",
-      "path": "lib/swipes/data/swipe_candidate_repository.dart",
-      "line": 151
+      "line": 42
     },
     {
       "source": "swipeQueueNotifierProvider",
@@ -9451,7 +9421,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/swipes/presentation/swipe_queue_controller.dart",
-      "line": 52
+      "line": 51
     },
     {
       "source": "swipeQueueNotifierProvider",
@@ -9460,7 +9430,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/swipes/presentation/swipe_queue_controller.dart",
-      "line": 73
+      "line": 64
     },
     {
       "source": "swipeQueueNotifierProvider",
@@ -9469,7 +9439,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/swipes/presentation/swipe_queue_controller.dart",
-      "line": 58
+      "line": 57
     },
     {
       "source": "swipeQueueNotifierProvider",
@@ -9478,7 +9448,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/swipes/presentation/swipe_queue_controller.dart",
-      "line": 113
+      "line": 102
     },
     {
       "source": "swipeQueueNotifierProvider",
@@ -9487,7 +9457,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/swipes/presentation/swipe_queue_controller.dart",
-      "line": 100
+      "line": 89
     },
     {
       "source": "swipeQueueNotifierProvider",
@@ -9496,25 +9466,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/swipes/presentation/swipe_queue_controller.dart",
-      "line": 60
-    },
-    {
-      "source": "swipeQueueNotifierProvider",
-      "sourceKind": "provider",
-      "target": "userProfileRepositoryProvider",
-      "targetKind": "provider",
-      "operation": "read",
-      "path": "lib/swipes/presentation/swipe_queue_controller.dart",
-      "line": 66
-    },
-    {
-      "source": "swipeQueueNotifierProvider",
-      "sourceKind": "provider",
-      "target": "watchUserProfileProvider",
-      "targetKind": "provider",
-      "operation": "read",
-      "path": "lib/swipes/presentation/swipe_queue_controller.dart",
-      "line": 99
+      "line": 59
     },
     {
       "source": "swipeRepositoryProvider",
@@ -12981,34 +12933,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/presentation/widgets/who_is_going.dart",
-      "line": 93
-    },
-    {
-      "source": "consumer:lib/events/presentation/widgets/who_is_going.dart#WhoIsGoing.build",
-      "sourceKind": "consumer",
-      "target": "watchEventParticipationRosterProvider",
-      "targetKind": "provider",
-      "operation": "invalidate",
-      "path": "lib/events/presentation/widgets/who_is_going.dart",
-      "line": 71
-    },
-    {
-      "source": "consumer:lib/events/presentation/widgets/who_is_going.dart#WhoIsGoing.build",
-      "sourceKind": "consumer",
-      "target": "watchEventParticipationRosterProvider",
-      "targetKind": "provider",
-      "operation": "invalidate",
-      "path": "lib/events/presentation/widgets/who_is_going.dart",
-      "line": 87
-    },
-    {
-      "source": "consumer:lib/events/presentation/widgets/who_is_going.dart#WhoIsGoing.build",
-      "sourceKind": "consumer",
-      "target": "watchEventParticipationRosterProvider",
-      "targetKind": "provider",
-      "operation": "watch",
-      "path": "lib/events/presentation/widgets/who_is_going.dart",
-      "line": 64
+      "line": 60
     },
     {
       "source": "consumer:lib/explore/presentation/explore_map_screen.dart#_ExploreMapScreenState._activateOrCycleDistance",
@@ -16658,20 +16583,20 @@
     {
       "source": "consumer:lib/swipes/presentation/event_recap_screen.dart#_EventRecapScreenState._retry",
       "sourceKind": "consumer",
+      "target": "swipeCandidatesProvider",
+      "targetKind": "provider",
+      "operation": "invalidate",
+      "path": "lib/swipes/presentation/event_recap_screen.dart",
+      "line": 110
+    },
+    {
+      "source": "consumer:lib/swipes/presentation/event_recap_screen.dart#_EventRecapScreenState._retry",
+      "sourceKind": "consumer",
       "target": "uidProvider",
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/swipes/presentation/event_recap_screen.dart",
       "line": 111
-    },
-    {
-      "source": "consumer:lib/swipes/presentation/event_recap_screen.dart#_EventRecapScreenState._retry",
-      "sourceKind": "consumer",
-      "target": "watchEventParticipationsForEventProvider",
-      "targetKind": "provider",
-      "operation": "invalidate",
-      "path": "lib/swipes/presentation/event_recap_screen.dart",
-      "line": 110
     },
     {
       "source": "consumer:lib/swipes/presentation/event_recap_screen.dart#_EventRecapScreenState._retry",
