@@ -12637,6 +12637,374 @@
       }
     },
     {
+      "id": "catch.organizer_poster",
+      "waiver": {
+        "reason": "Entity-material placement is governed by ARCH-ENTITY-MATERIAL-001 and the design-language metaphor contract.",
+        "owner": "design_system",
+        "expires": "2026-12-31"
+      },
+      "name": "CatchOrganizerPoster",
+      "status": "active",
+      "kind": "composite",
+      "summary": "Canonical organizer material with editorial, photo, split, and minimal layouts plus paper, ink, and signal treatments.",
+      "dart": {
+        "symbol": "CatchOrganizerPoster",
+        "file": "lib/clubs/shared/catch_organizer_poster.dart",
+        "constructors": [
+          "CatchOrganizerPoster"
+        ]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/OrganizerPoster",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "OrganizerPoster",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "media",
+            "type": "widget",
+            "required": true,
+            "dartType": "Widget"
+          },
+          {
+            "name": "kicker",
+            "type": "string",
+            "required": true,
+            "dartType": "String"
+          },
+          {
+            "name": "title",
+            "type": "string",
+            "required": true,
+            "dartType": "String"
+          },
+          {
+            "name": "tagline",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "meta",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "footer",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?"
+          },
+          {
+            "name": "mediaOverlay",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?"
+          },
+          {
+            "name": "onTap",
+            "type": "callback",
+            "required": false,
+            "dartType": "VoidCallback?"
+          },
+          {
+            "name": "layout",
+            "type": "enum",
+            "required": false,
+            "default": "editorial",
+            "dartType": "OrganizerPosterLayout",
+            "values": [
+              "editorial",
+              "photo",
+              "split",
+              "minimal"
+            ]
+          },
+          {
+            "name": "treatment",
+            "type": "enum",
+            "required": false,
+            "default": "paper",
+            "dartType": "OrganizerPosterTreatment",
+            "values": [
+              "paper",
+              "ink",
+              "signal"
+            ]
+          },
+          {
+            "name": "showArrow",
+            "type": "bool",
+            "required": false,
+            "default": true,
+            "dartType": "bool"
+          }
+        ],
+        "states": [
+          "editorial-paper",
+          "photo-ink",
+          "split-signal",
+          "minimal-paper",
+          "photo",
+          "fallback-artwork",
+          "with-footer",
+          "long-copy"
+        ],
+        "slots": [
+          {
+            "name": "media",
+            "kind": "required-media-widget"
+          },
+          {
+            "name": "mediaOverlay",
+            "kind": "optional-overlay-widget"
+          },
+          {
+            "name": "footer",
+            "kind": "optional-footer-widget"
+          }
+        ],
+        "tokens": [
+          "space.s2",
+          "space.s3",
+          "space.s4",
+          "theme.light.color.primary",
+          "theme.light.color.surface",
+          "theme.light.color.raised",
+          "theme.light.color.ink"
+        ],
+        "dartRoles": [
+          "OrganizerPosterLayout",
+          "OrganizerPosterTreatment",
+          "OrganizerPosterArtwork",
+          "CatchClubCover",
+          "CatchSurface"
+        ],
+        "goldens": [],
+        "members": [
+          {
+            "id": "catch.organizer_poster.artwork",
+            "symbol": "OrganizerPosterArtwork",
+            "file": "lib/clubs/shared/catch_organizer_poster.dart",
+            "summary": "Deterministic no-photo organizer artwork used by poster and compact cover states.",
+            "states": [
+              "standard",
+              "compact"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.organizer_poster",
+              "parentConceptId": "catch.organizer_poster",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.organizer_poster"
+            }
+          },
+          {
+            "id": "catch.organizer_poster.explore",
+            "symbol": "ExploreOrganizerPosterCard",
+            "file": "lib/explore/presentation/widgets/explore_club_cards.dart",
+            "summary": "Explore spotlight adopter that composes organizer authority, rating, host identity, and tags into the canonical poster.",
+            "states": [
+              "photo",
+              "fallback",
+              "claimed",
+              "source-backed"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.organizer_poster",
+              "parentConceptId": "catch.organizer_poster",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.organizer_poster"
+            }
+          }
+        ]
+      },
+      "handoff": {
+        "allowedChildren": [
+          "catch.club_cover",
+          "catch.surface"
+        ],
+        "notes": [
+          "Organizer identity uses this poster family; do not rebuild poster layouts in Explore, Club Detail, Host, or share surfaces.",
+          "Host customization may select only the registered layout and treatment enums until a broader recipe contract is approved."
+        ]
+      },
+      "governance": {
+        "role": "composition",
+        "canonicalFamily": "catch.organizer_poster",
+        "publicApi": true,
+        "stateOwnership": "display-state-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "slot-layout",
+        "actionOwnership": "callbacks-only",
+        "allowedDependencyLevel": "primitives-and-slots",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.organizer_poster"
+      },
+      "surfaces": {
+        "flutter": "CatchOrganizerPoster"
+      }
+    },
+    {
+      "id": "catch.person_polaroid",
+      "waiver": {
+        "reason": "Entity-material placement is governed by ARCH-ENTITY-MATERIAL-001 and the design-language metaphor contract.",
+        "owner": "design_system",
+        "expires": "2026-12-31"
+      },
+      "name": "CatchPersonPolaroid",
+      "status": "active",
+      "kind": "composite",
+      "summary": "Canonical portrait-first person material with a quiet identity caption lane and optional contextual overlay.",
+      "dart": {
+        "symbol": "CatchPersonPolaroid",
+        "file": "lib/core/widgets/catch_person_polaroid.dart",
+        "constructors": [
+          "CatchPersonPolaroid"
+        ]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/PersonPolaroid",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "PersonPolaroid",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "media",
+            "type": "widget",
+            "required": true,
+            "dartType": "Widget"
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "required": true,
+            "dartType": "String"
+          },
+          {
+            "name": "kicker",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "meta",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "mediaOverlay",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?"
+          },
+          {
+            "name": "accentColor",
+            "type": "color",
+            "required": false,
+            "dartType": "Color?"
+          },
+          {
+            "name": "onTap",
+            "type": "callback",
+            "required": false,
+            "dartType": "VoidCallback?"
+          },
+          {
+            "name": "showArrow",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          }
+        ],
+        "states": [
+          "photo",
+          "fallback-artwork",
+          "read-only",
+          "reactable",
+          "long-copy",
+          "text-scale"
+        ],
+        "slots": [
+          {
+            "name": "media",
+            "kind": "required-media-widget"
+          },
+          {
+            "name": "mediaOverlay",
+            "kind": "optional-overlay-widget"
+          }
+        ],
+        "tokens": [
+          "space.s2",
+          "space.s3",
+          "theme.light.color.primary",
+          "theme.light.color.surface",
+          "theme.light.color.ink"
+        ],
+        "dartRoles": [
+          "ProfileHeroWidget",
+          "ProfilePhoto",
+          "CatchSurface"
+        ],
+        "goldens": []
+      },
+      "handoff": {
+        "allowedChildren": [
+          "catch.surface"
+        ],
+        "notes": [
+          "The polaroid represents a person only. Event overlap or relationship context belongs in an overlay or surrounding ticket-stub composition.",
+          "Do not plant identifiable people in Explore without a consent-safe relationship source."
+        ]
+      },
+      "governance": {
+        "role": "composition",
+        "canonicalFamily": "catch.person_polaroid",
+        "publicApi": true,
+        "stateOwnership": "display-state-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "slot-layout",
+        "actionOwnership": "callbacks-only",
+        "allowedDependencyLevel": "primitives-and-slots",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.person_polaroid"
+      },
+      "surfaces": {
+        "flutter": "CatchPersonPolaroid"
+      }
+    },
+    {
       "id": "catch.club_cover",
       "waiver": {
         "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
@@ -12708,7 +13076,7 @@
           "Club.primaryClubPhotoUrl",
           "CatchGradedImage",
           "CatchNetworkImage",
-          "ClubPolaroidArtwork"
+          "OrganizerPosterArtwork"
         ],
         "goldens": []
       },

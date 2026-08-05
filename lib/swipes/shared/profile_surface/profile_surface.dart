@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/catch_profile_view.dart';
@@ -163,36 +164,35 @@ class ProfileSurfaceHeroSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: const BorderRadius.vertical(
-        bottom: Radius.circular(CatchRadius.profileHeroBottom),
-      ),
-      child: AspectRatio(
-        aspectRatio: CatchAspectRatio.portrait4x5,
-        child: Stack(
-          fit: StackFit.expand,
+    final t = CatchTokens.of(context);
+    return Padding(
+      padding: CatchInsets.pageHorizontal.copyWith(top: CatchSpacing.s3),
+      child: CatchSurface(
+        borderColor: t.line,
+        radius: CatchLayout.personPolaroidRadius,
+        elevation: CatchSurfaceElevation.card,
+        backgroundColor: t.surface,
+        padding: CatchInsets.contentDense,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            CatchSkeleton.box(
-              width: double.infinity,
-              height: double.infinity,
-              borderRadius: BorderRadius.zero,
-            ),
-            Positioned(
-              left: CatchSpacing.s5,
-              right: CatchSpacing.s5,
-              bottom: CatchSpacing.s6,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
-                  gapH10,
-                  CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
-                  gapH8,
-                  CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
-                ],
+            AspectRatio(
+              aspectRatio: CatchAspectRatio.portrait4x5,
+              child: CatchSkeleton.box(
+                width: double.infinity,
+                height: double.infinity,
+                borderRadius: BorderRadius.circular(
+                  CatchLayout.personPolaroidMediaRadius,
+                ),
               ),
             ),
+            gapH10,
+            CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
+            gapH6,
+            CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
+            gapH6,
+            CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
           ],
         ),
       ),

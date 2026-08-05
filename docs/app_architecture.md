@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.7.2
-updated: 2026-07-29
+version: 1.7.3
+updated: 2026-08-05
 owner: recursive_audit_loop
 status: active
 ---
@@ -2247,6 +2247,87 @@ must carry an `exhibit-freshness` marker naming its tracker source and owner.
 `node tool/architecture/check_app_architecture_exhibits.mjs` checks those
 markers, verifies the tracker points back to the current doc anchor, and rejects
 known stale snippets from prior reference shapes.
+
+### Exhibit ARCH-ENTITY-MATERIAL-001: Entity Material Composition
+
+<!-- exhibit-freshness: ARCH-ENTITY-MATERIAL-001 source=docs/audit_registry/architecture_pattern_adoption.json owner=recursive_audit_loop -->
+
+Reference files:
+
+- `lib/clubs/shared/catch_organizer_poster.dart`
+- `lib/core/widgets/catch_person_polaroid.dart`
+- `lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart`
+- `lib/swipes/shared/profile_surface/catch_profile_view.dart`
+- `design/components/catch.components.json`
+- `widgetbook/lib/clubs/club_detail_use_cases.dart`
+- `widgetbook/lib/catches/catches_use_cases.dart`
+
+Entity material is a presentation contract, not feature-local decoration:
+events use the ticket family, organizer identity uses
+`CatchOrganizerPoster`, and person identity uses `CatchPersonPolaroid`.
+Feature widgets provide typed display copy, media, overlays, and callbacks;
+the canonical material owns shape, layout variants, treatment, and spacing.
+Do not duplicate a poster or polaroid canvas inside a screen.
+
+The Organizer Detail reference composition is:
+
+```dart
+child: CatchOrganizerPoster(
+  media: CatchClubCover(
+    club: club,
+    semanticLabel: context.l10n
+        .clubsClubHeroAppBarSemanticlabelNameCoverPhoto(
+          name: club.name,
+        ),
+  ),
+  kicker: kickerLabel,
+  title: club.name,
+  meta: locationLabel,
+  titleMaxLines: 2,
+  showArrow: false,
+),
+```
+
+The shared Profile reference composition is:
+
+```dart
+child: CatchPersonPolaroid(
+  media: ProfilePhoto(
+    image: data.heroPhoto,
+    activity: data.kickerActivity,
+  ),
+  mediaOverlay: onReact != null && reaction != null
+      ? Stack(
+          children: [
+            Positioned(
+              top: CatchSpacing.s3,
+              right: CatchSpacing.s3,
+              child: ProfileReactionControls(
+                target: reaction,
+                onReact: onReact!,
+                style: ProfileReactionControlsStyle.overlay,
+                enabled: reactionsEnabled,
+                isPending: reactionsPending,
+              ),
+            ),
+          ],
+        )
+      : null,
+  kicker: data.kicker,
+  accentColor: accent,
+  name: context.l10n.swipesCatchProfileViewTextNameAge(
+    name: data.name,
+    age: data.age,
+  ),
+  meta: data.metaLine,
+),
+```
+
+Context such as organizer authority, reactions, or eventual event overlap is
+passed as overlay/adjacent composition and must remain source-backed. In
+particular, the unbuilt Cross Paths rail does not become valid merely because
+the person-polaroid component exists; identifiable attendees still require an
+approved relationship and consent source.
 
 ### Exhibit ARCH-SCREEN-001: Feature Screen Boundary
 

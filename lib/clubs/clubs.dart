@@ -43,7 +43,7 @@ export 'presentation/detail/widgets/club_share_card.dart'; // public-api: shared
 export 'presentation/discovery/widgets/club_avatar_rail.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/discovery/widgets/club_discover_list.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/discovery/widgets/club_list_tile.dart'; // public-api: shared presentation component used outside this feature
-export 'shared/catch_polaroid.dart';
+export 'shared/catch_organizer_poster.dart';
 export 'shared/club_identity_atoms.dart';
 export 'shared/club_transition_tags.dart';
 

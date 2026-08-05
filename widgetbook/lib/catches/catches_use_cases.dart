@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_person_polaroid.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -748,13 +749,40 @@ Widget profileHeroWidgetStates(BuildContext context) {
     children: [
       _StateCard(
         label: 'read only',
-        child: _SectionFrame(height: 520, child: ProfileHeroWidget(data: data)),
+        child: _SectionFrame(
+          height: CatchLayout.maxContentWidth + CatchSpacing.s16,
+          child: ProfileHeroWidget(data: data),
+        ),
       ),
       _StateCard(
         label: 'reactable',
         child: _SectionFrame(
-          height: 520,
+          height: CatchLayout.maxContentWidth + CatchSpacing.s16,
           child: ProfileHeroWidget(data: data, onReact: _noopReaction),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Person polaroid states',
+  type: CatchPersonPolaroid,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget catchPersonPolaroidStates(BuildContext context) {
+  final data = _profileView(context);
+  return _CatchesCatalog(
+    title: 'CatchPersonPolaroid',
+    contractId: 'card.person.polaroid',
+    children: [
+      _StateCard(
+        label: 'profile identity',
+        child: CatchPersonPolaroid(
+          media: ProfilePhoto(image: data.heroPhoto),
+          kicker: data.kicker,
+          name: '${data.name}, ${data.age}',
+          meta: data.metaLine,
         ),
       ),
     ],

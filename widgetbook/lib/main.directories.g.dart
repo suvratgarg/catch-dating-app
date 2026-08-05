@@ -546,12 +546,12 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Cards',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchPolaroid',
+            name: 'CatchOrganizerPoster',
             useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Polaroid states',
+                name: 'Poster states',
                 builder: _widgetbook_workspace_clubs_club_detail_use_cases
-                    .catchPolaroidStates,
+                    .catchOrganizerPosterStates,
               ),
             ],
           ),
@@ -566,12 +566,12 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ClubPolaroidArtwork',
+            name: 'OrganizerPosterArtwork',
             useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Artwork states',
+                name: 'Poster artwork states',
                 builder: _widgetbook_workspace_clubs_club_detail_use_cases
-                    .clubPolaroidArtworkStates,
+                    .organizerPosterArtworkStates,
               ),
             ],
           ),
@@ -2519,6 +2519,28 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CatchOrganizerPoster',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchOrganizerPosterContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchPersonPolaroid',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchPersonPolaroidContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchScrim',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -4096,22 +4118,22 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ExploreClubPolaroidCard',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Club polaroid states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
-                    .exploreClubPolaroidCardStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'ExploreClubTags',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Club tags states',
                 builder: _widgetbook_workspace_explore_explore_use_cases
                     .exploreClubTagsStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ExploreOrganizerPosterCard',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Organizer poster states',
+                builder: _widgetbook_workspace_explore_explore_use_cases
+                    .exploreOrganizerPosterCardStates,
               ),
             ],
           ),
@@ -4638,6 +4660,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'Tile states',
                     builder: _widgetbook_workspace_catches_catches_use_cases
                         .attendedEventTileStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CatchPersonPolaroid',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Person polaroid states',
+                    builder: _widgetbook_workspace_catches_catches_use_cases
+                        .catchPersonPolaroidStates,
                   ),
                 ],
               ),

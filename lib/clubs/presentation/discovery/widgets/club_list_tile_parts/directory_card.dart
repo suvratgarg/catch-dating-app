@@ -34,7 +34,7 @@ class ClubIndexRow extends StatelessWidget {
               decoration: BoxDecoration(
                 color: t.surface,
                 borderRadius: BorderRadius.circular(
-                  CatchLayout.clubPolaroidRadius,
+                  CatchLayout.organizerPosterRadius,
                 ),
                 border: Border.all(color: t.line),
               ),
@@ -42,7 +42,7 @@ class ClubIndexRow extends StatelessWidget {
                 padding: const EdgeInsets.all(CatchSpacing.micro3),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(
-                    CatchLayout.clubPolaroidMediaRadius,
+                    CatchLayout.organizerPosterMediaRadius,
                   ),
                   child: SizedBox.square(
                     dimension: CatchSpacing.s16,

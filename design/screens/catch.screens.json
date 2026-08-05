@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.screens.schema.json",
   "version": 1,
-  "updated": "2026-07-23",
+  "updated": "2026-08-05",
   "sourceOfTruth": {
     "purpose": "Screen contracts connect route state, controller ownership, section composition, captures, and design references.",
     "tokens": "Foundation values remain in design/tokens/catch.tokens.json.",
@@ -2285,7 +2285,7 @@
             "claudeComponents": [
               "CoverStory",
               "DateTicket",
-              "ClubPolaroid"
+              "OrganizerPoster"
             ],
             "flutter": {
               "file": "lib/explore/presentation/widgets/explore_events_section.dart",
@@ -2297,12 +2297,13 @@
               "catch.button",
               "catch.cover_story",
               "catch.event_card",
+              "catch.organizer_poster",
               "catch.surface"
             ],
             "states": [
               "cover_story",
               "event_row",
-              "club_polaroid",
+              "organizer_poster",
               "club_row",
               "search_filtered",
               "empty"
@@ -2310,7 +2311,7 @@
             "previewIds": [
               "ExploreEventsSection/Feed states"
             ],
-            "migration": "ExploreFeedSectionState owns mixed feed card selection, result-count copy, club intermix ranking, and This Week promotion. ExploreCoverStoryState owns the ranked cover-story identity and availability-aware CTA copy with an injected clock for tests. Explore event tickets reuse the consent-safe veiled attendee stack, while ExploreClubCardState owns host and rating context for the mixed-feed polaroid and row. DateTicket/EventTicket handoff roles map to the registered event-card/date-ticket family; the retired map/peek ticket adapters are deleted and replacement selected-card coverage is tracked by handoff item 1.B5. ClubPolaroid stays screen-section local through ExploreClubPolaroidCard plus ClubPolaroidArtwork until a second screen needs the same card contract. The catalog-only CrossPathsCard proposal was retired because no relationship or consent source existed."
+            "migration": "ExploreFeedSectionState owns mixed feed card selection, result-count copy, organizer intermix ranking, and This Week promotion. ExploreCoverStoryState owns the ranked cover-story identity and availability-aware CTA copy with an injected clock for tests. Explore event tickets reuse the consent-safe veiled attendee stack, while ExploreClubCardState owns host and rating context for the mixed-feed organizer poster and row. DateTicket/EventTicket roles map to catch.event_card; organizer spotlights map to catch.organizer_poster through ExploreOrganizerPosterCard. The catalog-only CrossPathsCard proposal remains retired because no consent-safe relationship source exists; people use catch.person_polaroid only on approved profile surfaces."
           },
           {
             "id": "section.explore.cover_story",
@@ -2472,7 +2473,7 @@
         {
           "id": "DS-EXPLORE-001",
           "status": "closed",
-          "nextAction": "Closed by registering Explore browse chrome, filter rail, mixed feed, cover story, map launcher, map route, empty/error, and activity-grid sections in the screen registry, while mapping reusable handoff compounds to formal component contracts: catch.cover_story, catch.count_pill, and catch.event_card. DateTicket/EventTicket roles map to catch.event_card ticket states; ClubPolaroid remains section-local through ExploreClubPolaroidCard and ClubPolaroidArtwork until reuse justifies a global component contract."
+          "nextAction": "Closed by registering Explore browse chrome, filter rail, mixed feed, cover story, map launcher, map route, empty/error, and activity-grid sections in the screen registry, while mapping reusable compounds to formal component contracts: catch.cover_story, catch.count_pill, catch.event_card, and catch.organizer_poster. DateTicket/EventTicket roles map to catch.event_card ticket states; organizer spotlight roles map to ExploreOrganizerPosterCard and the catch.organizer_poster family."
         },
         {
           "id": "DS-EXPLORE-002",

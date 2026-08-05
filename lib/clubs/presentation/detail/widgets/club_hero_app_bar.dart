@@ -4,7 +4,7 @@ import 'dart:math' as math;
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_share_card.dart';
 import 'package:catch_dating_app/clubs/shared/catch_club_cover.dart';
-import 'package:catch_dating_app/clubs/shared/catch_polaroid.dart';
+import 'package:catch_dating_app/clubs/shared/catch_organizer_poster.dart';
 import 'package:catch_dating_app/clubs/shared/club_transition_tags.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/external_share.dart';
@@ -24,21 +24,21 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 typedef ClubShareHandler =
     Future<void> Function(BuildContext context, Club club);
 
-enum ClubHeroVariant { polaroid, masthead, full }
+enum ClubHeroVariant { poster, masthead, full }
 
 enum ClubHeroPresentationMode { route, embeddedReadOnlyPreview }
 
 @visibleForTesting
 ClubHeroVariant clubHeroVariantFor(Club club) {
   if (club.primaryClubPhotoUrl != null) {
-    return ClubHeroVariant.polaroid;
+    return ClubHeroVariant.poster;
   }
   if (_clubHeroLogoUrl(club) != null) {
     return ClubHeroVariant.masthead;
   }
   // The DS ClubHero also defines a full variant, but there is no product or
   // domain trigger for it yet; production selection keeps it unreachable.
-  return ClubHeroVariant.polaroid;
+  return ClubHeroVariant.poster;
 }
 
 final EdgeInsets _clubHeroLeadingPadding = CatchInsets.pageHorizontal.copyWith(
@@ -288,7 +288,7 @@ class ClubHeroModule extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final module = switch (variant) {
-      ClubHeroVariant.polaroid => _buildPolaroid(context),
+      ClubHeroVariant.poster => _buildPoster(context),
       ClubHeroVariant.masthead => _buildMasthead(context),
       ClubHeroVariant.full => _buildFull(context),
     };
@@ -300,14 +300,14 @@ class ClubHeroModule extends StatelessWidget {
     );
   }
 
-  Padding _buildPolaroid(BuildContext context) {
+  Padding _buildPoster(BuildContext context) {
     return Padding(
-      key: const ValueKey('club-detail-hero-polaroid-padding'),
+      key: const ValueKey('club-detail-hero-poster-padding'),
       padding: clubInteractionMediaPadding,
       child: SizedBox(
-        key: const ValueKey('club-detail-hero-polaroid-frame'),
+        key: const ValueKey('club-detail-hero-poster-frame'),
         height: mediaHeight + captionExtent,
-        child: CatchPolaroid(
+        child: CatchOrganizerPoster(
           media: CatchClubCover(
             club: club,
             semanticLabel: context.l10n
@@ -315,8 +315,9 @@ class ClubHeroModule extends StatelessWidget {
                   name: club.name,
                 ),
           ),
-          caption: locationLabel,
+          kicker: kickerLabel,
           title: club.name,
+          meta: locationLabel,
           titleMaxLines: 2,
           showArrow: false,
         ),
@@ -335,7 +336,7 @@ class ClubHeroModule extends StatelessWidget {
         key: const ValueKey('club-detail-hero-masthead'),
         height: mediaHeight + captionExtent,
         borderColor: t.line,
-        radius: CatchLayout.clubPolaroidRadius,
+        radius: CatchLayout.organizerPosterRadius,
         backgroundColor: t.surface,
         padding: CatchInsets.tileContent,
         child: Column(

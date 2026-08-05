@@ -1,7 +1,7 @@
 ---
 doc_id: widget_concept_report
 version: 2.0.0
-updated: 2026-07-22
+updated: 2026-08-05
 owner: widget_consolidation
 status: generated
 generated_by: tool/design/build_widget_concept_report.mjs
@@ -18,32 +18,32 @@ design-sync manifest. Do not edit it by hand. The machine-readable companion is
 
 | Measure | Before | Current | Interpretation |
 |---|---:|---:|---|
-| Top-level contract entries | 64 | 69 | Contracts may remain useful without claiming concept identity. |
-| Independent concepts | 64 proxy | 63 | 1 fewer than the old top-level proxy (1.56%); count accuracy, not reduction, is the objective. |
-| Contracted public widget classes | — | 198 | Primaries and members are counted separately from concepts. |
-| Member APIs | — | 118 (1.87 per concept) | Public seams do not inflate concept count. |
+| Top-level contract entries | 64 | 71 | Contracts may remain useful without claiming concept identity. |
+| Independent concepts | 64 proxy | 65 | -1 fewer than the old top-level proxy (-1.56%); count accuracy, not reduction, is the objective. |
+| Contracted public widget classes | — | 202 | Primaries and members are counted separately from concepts. |
+| Member APIs | — | 120 (1.85 per concept) | Public seams do not inflate concept count. |
 | Unclassified contracted entries | — | 0 | Must remain zero. |
-| Production widget/state classes | — | 1107 | Exhaustive generated inventory. |
-| Instantiated concept primaries | — | 62 | One contracted primary is not a runtime Widget declaration. |
-| Public member widget classes | — | 116 | Role is inherited from the component contract. |
-| Public composition widget classes | — | 519 | Excluded from concept count. |
+| Production widget/state classes | — | 1108 | Exhaustive generated inventory. |
+| Instantiated concept primaries | — | 64 | One contracted primary is not a runtime Widget declaration. |
+| Public member widget classes | — | 118 | Role is inherited from the component contract. |
+| Public composition widget classes | — | 516 | Excluded from concept count. |
 | Public screen widget classes | — | 270 | Excluded from concept count. |
 | Unclassified public widgets | — | 0 | Must remain zero. |
-| Widgetbook-complete concept primaries | — | 62/62 | Evidence is role-derived. |
-| Widgetbook-covered member classes | — | 116/116 | Reviewed directly or under the parent family. |
+| Widgetbook-complete concept primaries | — | 64/64 | Evidence is role-derived. |
+| Widgetbook-covered member classes | — | 118/118 | Reviewed directly or under the parent family. |
 | Owner/live gate queue | — | 3 | Unresolved semantic decisions and externally gated design-tool proof appear here. |
 
 ## Collision and ledger coverage
 
 | Measure | Current |
 |---|---:|
-| Derived contracted collision groups | 32 |
-| Production collision groups | 32 |
-| Structural similarity clusters | 43 |
-| Clusters with exact normalized-member-set decisions | 41/43 |
+| Derived contracted collision groups | 33 |
+| Production collision groups | 33 |
+| Structural similarity clusters | 42 |
+| Clusters with exact normalized-member-set decisions | 40/42 |
 | Unresolved collision families | 2 |
-| Ranked pairs covered by a ledger decision | 144/200 |
-| Unresolved ranked pairs | 56 |
+| Ranked pairs covered by a ledger decision | 142/200 |
+| Unresolved ranked pairs | 58 |
 | Ledger decisions indexed | 315 |
 
 Similarity is discovery evidence only. A collision or unresolved pair is a
@@ -81,13 +81,13 @@ renderer consolidations are measured separately from concept count.
 |---|---:|
 | Figma current mappings | 0 |
 | Figma stale mappings | 0 |
-| Figma missing mappings | 69 |
+| Figma missing mappings | 71 |
 | Figma property drift findings | 0 |
 | Figma mappings with variable-bound evidence | 0 |
 | Figma review snapshots | 0 |
 | Code Connect mapped contracts | 0 |
-| Code Connect planned contracts | 69 |
-| Claude-allowed contracts | 69 |
+| Code Connect planned contracts | 71 |
+| Claude-allowed contracts | 71 |
 | Claude context status | current |
 | Claude Design receipt status | missing |
 
@@ -105,14 +105,14 @@ publish snapshot, plan tier, and generated mappings satisfy the prerequisites.
 
 | Requirement | Status | Authoritative evidence |
 |---|---|---|
-| 1. Reconcile the existing decision ledger | pending | 41/43 exact normalized-member-set cluster decisions |
+| 1. Reconcile the existing decision ledger | pending | 40/42 exact normalized-member-set cluster decisions |
 | 2. Prove all four vertical-slice outcomes | proven | Generated per-family deltas plus role-derived Widgetbook evidence cover member, separation, composition/recipe, and decompression cases |
 | 3. Resolve owner-gated semantic decisions | proven | 0 unresolved semantic owner question(s) |
 | 4. Verify accepted changes and stamp receipts | proven | Focused checks and audit receipt widget-concept-owner-decisions-2026-07-19 are recorded |
 | 5. Give every cataloged entry exactly one governed role | proven | 0 unclassified contracts and 0 unclassified production entries |
-| 6. Report concept and class counts separately | proven | 63 concepts, 198 contracted public classes, 1107 production widget/state classes |
+| 6. Report concept and class counts separately | proven | 65 concepts, 202 contracted public classes, 1108 production widget/state classes |
 | 7. Complete live Figma/Claude Badge + Field round trip | pending | awaiting-figma-file-approval; Code Connect blocked-plan-tier; Claude context current; Claude Design receipt missing |
-| 8. Reduce remaining work to a bounded queue | proven | 3 generated owner/live gates and 56 advisory ranked-pair candidates |
+| 8. Reduce remaining work to a bounded queue | proven | 3 generated owner/live gates and 58 advisory ranked-pair candidates |
 
 The proposal is not complete while any row is `pending`. The local semantic
 implementation and the live, published Badge + Field evidence are independent

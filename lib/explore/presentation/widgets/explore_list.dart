@@ -217,7 +217,7 @@ class ClubDirectorySkeletonCard extends StatelessWidget {
             decoration: BoxDecoration(
               color: t.surface,
               borderRadius: BorderRadius.circular(
-                CatchLayout.clubPolaroidRadius,
+                CatchLayout.organizerPosterRadius,
               ),
               border: Border.all(color: t.line),
             ),

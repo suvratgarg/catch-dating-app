@@ -11,28 +11,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets(
-    'hero formats profile identity and keeps no-activity kicker ink',
-    (tester) async {
-      await _setProfileViewport(tester);
-      await tester.pumpWidget(
-        _profileHarness(
-          const ProfileView(
-            name: 'Maya',
-            age: 29,
-            kicker: 'was at · sundowner 5k',
-            metaLine: 'designer · bandra',
-          ),
+  testWidgets('hero formats profile identity in the person-polaroid material', (
+    tester,
+  ) async {
+    await _setProfileViewport(tester);
+    await tester.pumpWidget(
+      _profileHarness(
+        const ProfileView(
+          name: 'Maya',
+          age: 29,
+          kicker: 'was at · sundowner 5k',
+          metaLine: 'designer · bandra',
         ),
-      );
+      ),
+    );
 
-      expect(find.text('Maya, 29'), findsOneWidget);
-      expect(find.text('DESIGNER · BANDRA'), findsOneWidget);
+    expect(find.text('Maya, 29'), findsOneWidget);
+    expect(find.text('DESIGNER · BANDRA'), findsOneWidget);
 
-      final kicker = tester.widget<Text>(find.text('WAS AT · SUNDOWNER 5K'));
-      expect(kicker.style?.color, CatchTokens.editorialDark.ink);
-    },
-  );
+    final kicker = tester.widget<Text>(find.text('WAS AT · SUNDOWNER 5K'));
+    expect(kicker.style?.color, CatchTokens.editorialLight.primary);
+    expect(find.byKey(const ValueKey('person-polaroid')), findsOneWidget);
+  });
 
   testWidgets('profile body uses DS metric strip, hint rows, and chips', (
     tester,

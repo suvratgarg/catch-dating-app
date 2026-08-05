@@ -51,9 +51,15 @@ void main() {
       );
       expect(find.text('5:00-7:00/km'), findsWidgets);
       expect(find.text('RUNNING RHYTHM'), findsOneWidget);
-      await tester.drag(
-        find.byKey(CatchProfileView.scrollViewKey),
-        const Offset(0, -360),
+      await tester.scrollUntilVisible(
+        find.text('DETAILS'),
+        300,
+        scrollable: find
+            .descendant(
+              of: find.byKey(CatchProfileView.scrollViewKey),
+              matching: find.byType(Scrollable),
+            )
+            .first,
       );
       await tester.pump();
       expect(find.text('DETAILS'), findsOneWidget);
@@ -268,9 +274,15 @@ void main() {
         find.text('A PERFECT EVENT WITH ME LOOKS LIKE...'),
         findsOneWidget,
       );
-      await tester.drag(
-        find.byKey(CatchProfileView.scrollViewKey),
-        const Offset(0, -360),
+      await tester.scrollUntilVisible(
+        find.text('DETAILS'),
+        300,
+        scrollable: find
+            .descendant(
+              of: find.byKey(CatchProfileView.scrollViewKey),
+              matching: find.byType(Scrollable),
+            )
+            .first,
       );
       await tester.pump();
       expect(find.text('DETAILS'), findsOneWidget);

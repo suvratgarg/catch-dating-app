@@ -1,7 +1,7 @@
 {
   "$schema": "./state_matrix.schema.json",
   "version": 1,
-  "updated": "2026-07-23",
+  "updated": "2026-08-05",
   "requiredStateKinds": [
     "loading",
     "populated",
@@ -1260,7 +1260,7 @@
             {
               "id": "DP-EXPLORE-001",
               "status": "closed",
-              "nextAction": "Closed by the screen-local Explore section registry plus formal component mappings: catch.cover_story for CoverStory, catch.count_pill for CountPill/map launcher, and catch.event_card for DateTicket/EventTicket-style ticket/card roles. The catalog-only CrossPathsCard proposal was retired because it had no consent-safe relationship source. ClubPolaroid remains section-local through ExploreClubPolaroidCard and ClubPolaroidArtwork until reuse justifies a global component contract."
+              "nextAction": "Closed by the screen-local Explore section registry plus formal component mappings: catch.cover_story for CoverStory, catch.count_pill for CountPill/map launcher, catch.event_card for DateTicket/EventTicket roles, and catch.organizer_poster for organizer spotlights. The catalog-only CrossPathsCard proposal remains retired because it has no consent-safe relationship source; catch.person_polaroid is limited to approved person/profile surfaces."
             },
             {
               "id": "DP-EXPLORE-002",

@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/shared/catch_club_cover.dart';
-import 'package:catch_dating_app/clubs/shared/catch_polaroid.dart';
+import 'package:catch_dating_app/clubs/shared/catch_organizer_poster.dart';
 import 'package:catch_dating_app/clubs/shared/club_identity_atoms.dart';
 import 'package:catch_dating_app/clubs/shared/club_transition_tags.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
@@ -16,8 +16,8 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/organizers/organizers.dart';
 import 'package:flutter/material.dart';
 
-class ExploreClubPolaroidCard extends StatelessWidget {
-  const ExploreClubPolaroidCard({
+class ExploreOrganizerPosterCard extends StatelessWidget {
+  const ExploreOrganizerPosterCard({
     super.key,
     required this.club,
     this.onClubSelected,
@@ -34,9 +34,8 @@ class ExploreClubPolaroidCard extends StatelessWidget {
     final onTap = isSynthetic || onClubSelected == null
         ? null
         : () => onClubSelected!(club);
-    final card = CatchPolaroid(
+    final card = CatchOrganizerPoster(
       onTap: onTap,
-      paddingKey: const ValueKey('explore-club-polaroid-padding'),
       media: CatchClubCover(club: club),
       mediaOverlay: Stack(
         children: [
@@ -54,10 +53,9 @@ class ExploreClubPolaroidCard extends StatelessWidget {
           ),
         ],
       ),
-      caption: state.caption,
-      captionColor: t.ink3,
+      kicker: state.caption,
       title: state.title,
-      subtitle: state.supportingLabel,
+      tagline: state.supportingLabel,
       showArrow: onTap != null,
       footer: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,

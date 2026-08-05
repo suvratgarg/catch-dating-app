@@ -6,7 +6,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
-import 'package:catch_dating_app/core/widgets/catch_scrim.dart';
+import 'package:catch_dating_app/core/widgets/catch_person_polaroid.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
@@ -16,7 +16,7 @@ import 'package:catch_dating_app/swipes/shared/profile_surface/profile_view.dart
 import 'package:flutter/material.dart';
 
 /// PHASE 2 — the flagship profile surface, in the locked editorial language:
-/// a DARK "wow" hero on a graded photo, Archivo voice, IBM Plex Mono data,
+/// a person-polaroid hero on a graded photo, Archivo voice, IBM Plex Mono data,
 /// proseL reading text, hairlines over boxes. Color = activity (the kicker +
 /// reaction affordances borrow the meeting activity's pigment).
 ///
@@ -122,7 +122,7 @@ class CatchProfileView extends StatelessWidget {
   }
 }
 
-// ── Hero (always-dark "wow" surface) ──────────────────────────────────────────
+// ── Hero (person-polaroid surface) ────────────────────────────────────────────
 
 class ProfileHeroWidget extends StatelessWidget {
   const ProfileHeroWidget({
@@ -142,72 +142,39 @@ class ProfileHeroWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dark = CatchTokens.editorialDark;
-    final kickerColor = accent ?? dark.ink;
     final reaction = data.heroReaction;
 
-    return ClipRRect(
-      borderRadius: const BorderRadius.vertical(
-        bottom: Radius.circular(CatchRadius.profileHeroBottom),
-      ),
-      child: AspectRatio(
-        aspectRatio: CatchAspectRatio.portrait4x5,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            ProfilePhoto(image: data.heroPhoto, activity: data.kickerActivity),
-            CatchScrim.heroTint(base: dark.bg),
-            if (onReact != null && reaction != null)
-              Positioned(
-                top: CatchSpacing.s4,
-                right: CatchSpacing.s4,
-                child: ProfileReactionControls(
-                  target: reaction,
-                  onReact: onReact!,
-                  style: ProfileReactionControlsStyle.overlay,
-                  enabled: reactionsEnabled,
-                  isPending: reactionsPending,
-                ),
-              ),
-            Positioned(
-              left: CatchSpacing.s5,
-              right: CatchSpacing.s5,
-              bottom: CatchSpacing.s6,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (data.kicker != null)
-                    Text(
-                      data.kicker!.toUpperCase(),
-                      style: CatchTextStyles.kicker(
-                        context,
-                        color: kickerColor,
-                      ),
-                    ),
-                  gapH8,
-                  Text(
-                    context.l10n.swipesCatchProfileViewTextNameAge(
-                      name: data.name,
-                      age: data.age,
-                    ),
-                    style: CatchTextStyles.display(context, color: dark.ink),
-                  ),
-                  if (data.metaLine != null) ...[
-                    gapH10,
-                    Text(
-                      data.metaLine!.toUpperCase(),
-                      style: CatchTextStyles.numericMeta(
-                        context,
-                        color: dark.ink2,
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-          ],
+    return Padding(
+      padding: CatchInsets.pageHorizontal.copyWith(top: CatchSpacing.s3),
+      child: CatchPersonPolaroid(
+        media: ProfilePhoto(
+          image: data.heroPhoto,
+          activity: data.kickerActivity,
         ),
+        mediaOverlay: onReact != null && reaction != null
+            ? Stack(
+                children: [
+                  Positioned(
+                    top: CatchSpacing.s3,
+                    right: CatchSpacing.s3,
+                    child: ProfileReactionControls(
+                      target: reaction,
+                      onReact: onReact!,
+                      style: ProfileReactionControlsStyle.overlay,
+                      enabled: reactionsEnabled,
+                      isPending: reactionsPending,
+                    ),
+                  ),
+                ],
+              )
+            : null,
+        kicker: data.kicker,
+        accentColor: accent,
+        name: context.l10n.swipesCatchProfileViewTextNameAge(
+          name: data.name,
+          age: data.age,
+        ),
+        meta: data.metaLine,
       ),
     );
   }

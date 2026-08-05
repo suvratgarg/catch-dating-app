@@ -1,7 +1,7 @@
 ---
 doc_id: claude_widgetbook_inventory
-version: 0.1.13
-updated: 2026-07-16
+version: 0.1.14
+updated: 2026-08-05
 owner: product_design_parity
 status: active
 ---
@@ -692,7 +692,7 @@ they still need inventory tracking until the direct/alias mapping is settled.
 | `CheckoutSheet` | `_CheckoutSheet` | Private source-backed candidate in `lib/payments/presentation/payment_confirmation_screen.dart`; currently covered through Payment Confirmation route states, not a standalone component entry. |
 | `ClubDock` | `CatchClubDock` | Source-backed Widgetbook entry added under `[P1 product surfaces]/Club detail`; code comment explicitly maps the design-system `ClubDock`. |
 | `ClubHero` | `ClubHeroAppBar` | Source-backed Widgetbook entry added under `[P1 product surfaces]/Club detail`; direct hero-vs-app-bar naming remains an alias decision. |
-| `ClubPolaroid` | `ClubPolaroidArtwork` / `CatchPolaroid` | Source-backed local candidate used by club directory/share visuals; standalone Widgetbook entry still pending. |
+| `ClubPolaroid` | `CatchOrganizerPoster` / `OrganizerPosterArtwork` | Deliberately remapped to the organizer-poster metaphor. The formal `catch.organizer_poster` contract and Widgetbook states cover editorial, photo, split, minimal, and fallback artwork; people now own the separate `CatchPersonPolaroid` material. |
 | `ContactRow` | `_ContactRow` | Private source-backed candidate in `lib/clubs/presentation/detail/widgets/club_detail_body.dart`; reusable contract decision pending because the current widget is club-detail private. |
 | `ConflictSheet` | `BookingConflictSheet` | Source-backed Widgetbook entry added under `[Event Detail]/Sheets`; capacity/sold-out is not part of the current primitive API. |
 | `ConversationTopBar` | `CatchTopBar.identity` | Source-backed Widgetbook entry added under `[P1 product surfaces]/Matches and chat/Primitives`; alias still needs formal component-contract decision. |
