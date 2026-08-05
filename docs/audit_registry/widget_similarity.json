@@ -1174,7 +1174,7 @@
       "simhash128": "76bb7f5feb39d1ea7fdcbc3df0dfdd7e",
       "tokenStreamLength": 12,
       "coarseTokenStreamLength": 12,
-      "usageCountRaw": 32,
+      "usageCountRaw": 31,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -2448,7 +2448,7 @@
       "simhash128": "5cd54bd7df37b74eb7f3ed2adbf9ef90",
       "tokenStreamLength": 9,
       "coarseTokenStreamLength": 9,
-      "usageCountRaw": 26,
+      "usageCountRaw": 25,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -13013,7 +13013,7 @@
     {
       "id": "c001-error-state",
       "rank": 1,
-      "score": 252,
+      "score": 248.5,
       "cohesion": 0.875,
       "absorbCandidate": true,
       "nameSignal": "ErrorState",
@@ -19995,7 +19995,7 @@
         "CatchInlineErrorState",
         "CatchSliverErrorState"
       ],
-      "usageSum": 85,
+      "usageSum": 84,
       "scope": "widget"
     },
     {
