@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 const currentCrossPathsTermsVersion = 1;
 
 enum CrossPathsConsentSource {
@@ -22,21 +20,6 @@ final class CrossPathsEventConsent {
     required this.revokedAt,
     required this.source,
   });
-
-  factory CrossPathsEventConsent.fromJson(Map<String, dynamic> json) {
-    DateTime? nullableTimestamp(Object? value) =>
-        value is Timestamp ? value.toDate() : null;
-    return CrossPathsEventConsent(
-      eventId: json['eventId'] as String? ?? '',
-      uid: json['uid'] as String? ?? '',
-      enabled: json['enabled'] == true,
-      termsVersion: json['termsVersion'] as int? ?? 0,
-      consentedAt: nullableTimestamp(json['consentedAt']),
-      updatedAt: nullableTimestamp(json['updatedAt']),
-      revokedAt: nullableTimestamp(json['revokedAt']),
-      source: json['source'] as String? ?? '',
-    );
-  }
 
   final String eventId;
   final String uid;

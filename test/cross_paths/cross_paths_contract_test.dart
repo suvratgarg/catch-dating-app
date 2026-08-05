@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/cross_paths/data/cross_paths_repository.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_event_consent.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_feature_config.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -15,7 +16,7 @@ void main() {
 
   test('event consent ids and timestamps decode deterministically', () {
     final updatedAt = Timestamp.fromDate(DateTime.utc(2026, 8, 5));
-    final consent = CrossPathsEventConsent.fromJson({
+    final consent = crossPathsEventConsentFromFirestore({
       'eventId': 'event-1',
       'uid': 'runner-1',
       'enabled': true,

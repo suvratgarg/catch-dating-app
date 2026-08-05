@@ -1,5 +1,5 @@
 {
-  "version": "1.8.0",
+  "version": "1.8.1",
   "updated": "2026-08-05",
   "sourceOfTruth": "docs/app_architecture.md#reference-implementation-workflow",
   "purpose": "Tracks architecture reference exhibits, prototype files, adopter files, candidate status, and back-propagation obligations so migrations stay aligned with the latest pattern.",
@@ -2042,6 +2042,7 @@
       "status": "reference",
       "architectureExhibit": "docs/app_architecture.md#exhibit-arch-cross-paths-consent-001-fail-closed-layered-consent",
       "prototypeFiles": [
+        "lib/cross_paths/cross_paths.dart",
         "lib/cross_paths/domain/cross_paths_feature_config.dart",
         "lib/cross_paths/data/cross_paths_feature_config_provider.dart",
         "lib/cross_paths/data/cross_paths_repository.dart",
@@ -2054,6 +2055,12 @@
         "functions/src/crossPaths/setCrossPathsEventConsent.test.ts"
       ],
       "adopters": [
+        {
+          "path": "lib/cross_paths/cross_paths.dart",
+          "role": "sanctioned public presentation seam for provider-free Cross Paths state and section APIs",
+          "status": "aligned",
+          "lastReviewedPass": "2026-08-05-cross-paths-phase0-consent-ci-repair"
+        },
         {
           "path": "lib/safety/presentation/settings_screen.dart and lib/safety/presentation/settings_controller.dart",
           "role": "typed private global-consent control hidden behind the fail-closed consent-controls rollout flag",

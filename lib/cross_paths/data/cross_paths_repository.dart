@@ -11,6 +11,23 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'cross_paths_repository.g.dart';
 
+CrossPathsEventConsent crossPathsEventConsentFromFirestore(
+  Map<String, dynamic> json,
+) {
+  DateTime? nullableTimestamp(Object? value) =>
+      value is Timestamp ? value.toDate() : null;
+  return CrossPathsEventConsent(
+    eventId: json['eventId'] as String? ?? '',
+    uid: json['uid'] as String? ?? '',
+    enabled: json['enabled'] == true,
+    termsVersion: json['termsVersion'] as int? ?? 0,
+    consentedAt: nullableTimestamp(json['consentedAt']),
+    updatedAt: nullableTimestamp(json['updatedAt']),
+    revokedAt: nullableTimestamp(json['revokedAt']),
+    source: json['source'] as String? ?? '',
+  );
+}
+
 class CrossPathsRepository {
   const CrossPathsRepository(this._db, this._functions);
 
@@ -30,7 +47,7 @@ class CrossPathsRepository {
         .snapshots()
         .map(
           (snapshot) => snapshot.docs.isNotEmpty
-              ? CrossPathsEventConsent.fromJson(snapshot.docs.first.data())
+              ? crossPathsEventConsentFromFirestore(snapshot.docs.first.data())
               : null,
         ),
     context: const BackendErrorContext(
@@ -63,6 +80,7 @@ class CrossPathsRepository {
   );
 }
 
+// keepalive: Shared by event-detail consent listeners and mutation calls.
 @Riverpod(keepAlive: true)
 CrossPathsRepository crossPathsRepository(Ref ref) => CrossPathsRepository(
   ref.watch(firebaseFirestoreProvider),

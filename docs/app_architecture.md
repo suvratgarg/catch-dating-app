@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.8.0
+version: 1.8.1
 updated: 2026-08-05
 owner: recursive_audit_loop
 status: active
@@ -2338,6 +2338,7 @@ still require a sanitized server-owned suggestion response.
 
 Reference files:
 
+- `lib/cross_paths/cross_paths.dart`
 - `lib/cross_paths/domain/cross_paths_feature_config.dart`
 - `lib/cross_paths/data/cross_paths_feature_config_provider.dart`
 - `lib/cross_paths/data/cross_paths_repository.dart`
@@ -2364,7 +2365,9 @@ final crossPathsEligible = crossPathsEventConsentEligible(
   userProfile: vm.userProfile,
   now: now,
 );
-final crossPathsConsentAsync = crossPathsEligible
+final crossPathsConsentReadable =
+    crossPathsConfig.consentControlsEnabled && vm.userProfile != null;
+final crossPathsConsentAsync = crossPathsConsentReadable
     ? ref.watch(
         watchCrossPathsEventConsentProvider(
           vm.event.id,
@@ -2373,7 +2376,7 @@ final crossPathsConsentAsync = crossPathsEligible
       )
     : null;
 final crossPathsConsentState = crossPathsEventConsentSectionStateFrom(
-  eligible: crossPathsEligible,
+  eligibleToEnable: crossPathsEligible,
   loaded: crossPathsConsentAsync?.hasValue == true,
   enabled: crossPathsConsentAsync?.asData?.value?.enabled == true,
   pending: crossPathsConsentMutation.isPending,
@@ -2387,8 +2390,14 @@ Preserve these boundaries in later adopters:
   the disabled state;
 - a missing global field, missing event edge, loading state, or read failure
   never resolves to enabled;
+- an existing enabled event edge remains caller-readable and revocable after
+  booking or global eligibility disappears, while an ineligible disabled edge
+  remains hidden;
 - Event Detail owns provider reads and mutation orchestration; its body and
   `CrossPathsEventConsentSection` receive provider-free state and callbacks;
+- cross-feature presentation imports route through
+  `lib/cross_paths/cross_paths.dart`; the reusable section accepts neutral
+  presentation values and never imports Event Detail internals;
 - Settings writes the private master through the typed user-profile patch;
 - the client queries only the caller's own event edge and never writes it;
 - the App-Check-protected callable revalidates the master preference, terms,
