@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "generatedFrom": "git ls-files --cached --others --exclude-standard",
   "generatedBy": "node tool/test_inventory.mjs",
-  "total": 606,
+  "total": 609,
   "categories": {
     "firebase_rules": {
       "count": 2,
@@ -317,7 +317,7 @@
       ]
     },
     "functions_source": {
-      "count": 99,
+      "count": 101,
       "files": [
         "functions/src/admin/accessApplications.test.ts",
         "functions/src/admin/adminActionExecutions.test.ts",
@@ -326,6 +326,7 @@
         "functions/src/admin/clubClaimReview.test.ts",
         "functions/src/admin/clubDetails.test.ts",
         "functions/src/admin/clubIndexing.test.ts",
+        "functions/src/admin/crossPathsShowcaseEligibility.test.ts",
         "functions/src/admin/eventDetails.test.ts",
         "functions/src/admin/eventIntakeDashboard.test.ts",
         "functions/src/admin/eventIntakeReview.test.ts",
@@ -358,6 +359,7 @@
         "functions/src/clubs/syncClubMemberStats.test.ts",
         "functions/src/clubs/syncClubNextEvent.test.ts",
         "functions/src/crossPaths/setCrossPathsEventConsent.test.ts",
+        "functions/src/crossPaths/showcaseEligibility.test.ts",
         "functions/src/demoOps/suvbot.test.ts",
         "functions/src/eventSuccess/assignmentOptimizer.test.ts",
         "functions/src/eventSuccess/assignmentPrimitiveControls.test.ts",
@@ -570,11 +572,12 @@
       ]
     },
     "web": {
-      "count": 71,
+      "count": 72,
       "files": [
         "admin/src/app/App.test.tsx",
         "admin/src/features/access/controllers/useAccessReviewController.test.tsx",
         "admin/src/features/admin-roles/controllers/useAdminRoleManagementController.test.tsx",
+        "admin/src/features/cross-paths/controllers/useCrossPathsShowcaseController.test.tsx",
         "admin/src/features/data-quality/controllers/useDataQualityController.test.tsx",
         "admin/src/features/events/controllers/useEventPublishingController.test.tsx",
         "admin/src/features/finance/controllers/useFinanceOpsController.test.tsx",

@@ -901,6 +901,53 @@ describe("firestore.rules", () => {
       );
     });
 
+    it("denies all client access to Cross Paths showcase eligibility", async () => {
+      const eligibility = {
+        status: "eligible",
+        reasonCodes: [],
+        ruleVersion: 1,
+        reviewVersion: 1,
+        profileFingerprint: "a".repeat(64),
+        reviewChecklist: {
+          primaryPortraitClear: true,
+          profileRepresentsCurrentMember: true,
+          showcasePolicyReviewed: true,
+        },
+        reviewNote: "Launch review complete.",
+        reviewedByUid: "reviewer-1",
+        reviewedAt: Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z")),
+        updatedAt: Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z")),
+      };
+      await seed(
+        ["crossPathsShowcaseEligibility", "runner-1"],
+        eligibility,
+      );
+
+      await assertFails(
+        getDoc(doc(
+          authedDb("runner-1"),
+          "crossPathsShowcaseEligibility",
+          "runner-1",
+        )),
+      );
+      await assertFails(
+        getDocs(collection(
+          authedDb("runner-1"),
+          "crossPathsShowcaseEligibility",
+        )),
+      );
+      await assertFails(
+        setDoc(
+          doc(
+            authedDb("runner-1"),
+            "crossPathsShowcaseEligibility",
+            "runner-1",
+          ),
+          eligibility,
+        ),
+      );
+    });
+
     it("keeps event broadcast delivery receipts server-only", async () => {
       await seed(["eventBroadcasts", "broadcast-1"], {
         eventId: "event-1",

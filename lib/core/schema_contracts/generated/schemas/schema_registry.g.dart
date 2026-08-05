@@ -187,6 +187,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaEventCrossPathsConsentDocumentSchema,
   ),
   SchemaContractDefinition(
+    name: 'CrossPathsShowcaseEligibilityDocument',
+    source: 'firestore/cross_paths_showcase_eligibility.schema.json',
+    schema: schemaCrossPathsShowcaseEligibilityDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'EventBroadcastDocument',
     source: 'firestore/event_broadcasts.schema.json',
     schema: schemaEventBroadcastDocumentSchema,
@@ -600,6 +605,16 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     name: 'AdminSetClubIndexStatusCallablePayload',
     source: 'callables/admin_set_club_index_status_payload.schema.json',
     schema: schemaAdminSetClubIndexStatusCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'AdminListCrossPathsShowcaseCandidatesCallablePayload',
+    source: 'callables/admin_list_cross_paths_showcase_candidates_payload.schema.json',
+    schema: schemaAdminListCrossPathsShowcaseCandidatesCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'AdminSetCrossPathsShowcaseEligibilityCallablePayload',
+    source: 'callables/admin_set_cross_paths_showcase_eligibility_payload.schema.json',
+    schema: schemaAdminSetCrossPathsShowcaseEligibilityCallablePayloadSchema,
   ),
   SchemaContractDefinition(
     name: 'AdminGetClubDetailsCallablePayload',
@@ -1087,6 +1102,16 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaAdminRecordMarketingReviewDecisionCallableResponseSchema,
   ),
   SchemaContractDefinition(
+    name: 'AdminListCrossPathsShowcaseCandidatesCallableResponse',
+    source: 'callable_responses/admin_list_cross_paths_showcase_candidates_response.schema.json',
+    schema: schemaAdminListCrossPathsShowcaseCandidatesCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'AdminSetCrossPathsShowcaseEligibilityCallableResponse',
+    source: 'callable_responses/admin_set_cross_paths_showcase_eligibility_response.schema.json',
+    schema: schemaAdminSetCrossPathsShowcaseEligibilityCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
     name: 'JoinWaitlistHTTPRequest',
     source: 'http/join_waitlist_request.schema.json',
     schema: schemaJoinWaitlistHTTPRequestSchema,
@@ -1133,6 +1158,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'EventInviteLinkDocument': schemaEventInviteLinkDocumentSchema,
   'EventParticipationDocument': schemaEventParticipationDocumentSchema,
   'EventCrossPathsConsentDocument': schemaEventCrossPathsConsentDocumentSchema,
+  'CrossPathsShowcaseEligibilityDocument': schemaCrossPathsShowcaseEligibilityDocumentSchema,
   'EventBroadcastDocument': schemaEventBroadcastDocumentSchema,
   'EventWaitlistOfferDocument': schemaEventWaitlistOfferDocumentSchema,
   'EventSuccessPlanDocument': schemaEventSuccessPlanDocumentSchema,
@@ -1216,6 +1242,8 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'AdminDecideOrganizerPolicyGapCallablePayload': schemaAdminDecideOrganizerPolicyGapCallablePayloadSchema,
   'AdminResolveOrganizerEventLocationCallablePayload': schemaAdminResolveOrganizerEventLocationCallablePayloadSchema,
   'AdminSetClubIndexStatusCallablePayload': schemaAdminSetClubIndexStatusCallablePayloadSchema,
+  'AdminListCrossPathsShowcaseCandidatesCallablePayload': schemaAdminListCrossPathsShowcaseCandidatesCallablePayloadSchema,
+  'AdminSetCrossPathsShowcaseEligibilityCallablePayload': schemaAdminSetCrossPathsShowcaseEligibilityCallablePayloadSchema,
   'AdminGetClubDetailsCallablePayload': schemaAdminGetClubDetailsCallablePayloadSchema,
   'AdminListClubDetailsCallablePayload': schemaAdminListClubDetailsCallablePayloadSchema,
   'AdminUpdateClubDetailsCallablePayload': schemaAdminUpdateClubDetailsCallablePayloadSchema,
@@ -1313,6 +1341,8 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'AdminCreateMarketingContentDraftCallableResponse': schemaAdminCreateMarketingContentDraftCallableResponseSchema,
   'AdminRecordMarketingReviewDecisionCallablePayload': schemaAdminRecordMarketingReviewDecisionCallablePayloadSchema,
   'AdminRecordMarketingReviewDecisionCallableResponse': schemaAdminRecordMarketingReviewDecisionCallableResponseSchema,
+  'AdminListCrossPathsShowcaseCandidatesCallableResponse': schemaAdminListCrossPathsShowcaseCandidatesCallableResponseSchema,
+  'AdminSetCrossPathsShowcaseEligibilityCallableResponse': schemaAdminSetCrossPathsShowcaseEligibilityCallableResponseSchema,
   'JoinWaitlistHTTPRequest': schemaJoinWaitlistHTTPRequestSchema,
   'JoinWaitlistHTTPResponse': schemaJoinWaitlistHTTPResponseSchema,
 };
@@ -1352,6 +1382,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'firestore/event_invite_links.schema.json': schemaEventInviteLinkDocumentSchema,
   'firestore/event_participations.schema.json': schemaEventParticipationDocumentSchema,
   'firestore/event_cross_paths_consents.schema.json': schemaEventCrossPathsConsentDocumentSchema,
+  'firestore/cross_paths_showcase_eligibility.schema.json': schemaCrossPathsShowcaseEligibilityDocumentSchema,
   'firestore/event_broadcasts.schema.json': schemaEventBroadcastDocumentSchema,
   'firestore/event_waitlist_offers.schema.json': schemaEventWaitlistOfferDocumentSchema,
   'firestore/event_success_plans.schema.json': schemaEventSuccessPlanDocumentSchema,
@@ -1435,6 +1466,8 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'callables/admin_decide_organizer_policy_gap_payload.schema.json': schemaAdminDecideOrganizerPolicyGapCallablePayloadSchema,
   'callables/admin_resolve_organizer_event_location_payload.schema.json': schemaAdminResolveOrganizerEventLocationCallablePayloadSchema,
   'callables/admin_set_club_index_status_payload.schema.json': schemaAdminSetClubIndexStatusCallablePayloadSchema,
+  'callables/admin_list_cross_paths_showcase_candidates_payload.schema.json': schemaAdminListCrossPathsShowcaseCandidatesCallablePayloadSchema,
+  'callables/admin_set_cross_paths_showcase_eligibility_payload.schema.json': schemaAdminSetCrossPathsShowcaseEligibilityCallablePayloadSchema,
   'callables/admin_get_club_details_payload.schema.json': schemaAdminGetClubDetailsCallablePayloadSchema,
   'callables/admin_list_club_details_payload.schema.json': schemaAdminListClubDetailsCallablePayloadSchema,
   'callables/admin_update_club_details_payload.schema.json': schemaAdminUpdateClubDetailsCallablePayloadSchema,
@@ -1532,6 +1565,8 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'callable_responses/admin_create_marketing_content_draft_response.schema.json': schemaAdminCreateMarketingContentDraftCallableResponseSchema,
   'callables/admin_record_marketing_review_decision_payload.schema.json': schemaAdminRecordMarketingReviewDecisionCallablePayloadSchema,
   'callable_responses/admin_record_marketing_review_decision_response.schema.json': schemaAdminRecordMarketingReviewDecisionCallableResponseSchema,
+  'callable_responses/admin_list_cross_paths_showcase_candidates_response.schema.json': schemaAdminListCrossPathsShowcaseCandidatesCallableResponseSchema,
+  'callable_responses/admin_set_cross_paths_showcase_eligibility_response.schema.json': schemaAdminSetCrossPathsShowcaseEligibilityCallableResponseSchema,
   'http/join_waitlist_request.schema.json': schemaJoinWaitlistHTTPRequestSchema,
   'http/join_waitlist_response.schema.json': schemaJoinWaitlistHTTPResponseSchema,
 };

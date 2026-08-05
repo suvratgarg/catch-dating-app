@@ -1,6 +1,6 @@
 ---
 doc_id: cross_paths
-version: 1.2.0
+version: 1.3.0
 updated: 2026-08-05
 owner: product (approved direction 2026-08-05)
 status: implementation-in-progress
@@ -563,7 +563,7 @@ contracts. A proposed name does not exist merely because this spec names it.
 |---|---|---|
 | Global visibility master | private `users/{uid}.prefsShowInCrossPaths` | Implemented, optional/default-off |
 | Per-event consent | `eventCrossPathsConsents/{eventId_uid}` | Implemented, callable-owned |
-| Human/automated showcase eligibility | server-only `crossPathsShowcaseEligibility/{uid}` | Proposed next Phase 0 slice |
+| Human/automated showcase eligibility | server-only `crossPathsShowcaseEligibility/{uid}` | Implemented, reviewed and fingerprint-bound |
 | Event invitation | `crossPathsInvitations/{eventId_senderUid}` | Proposed Phase 2 |
 | Accepted event plan | event-and-pair-scoped conversation with `conversationType: crossPathsEventPlan` | Proposed Phase 2 |
 | Exposure/fatigue state | server-only projection or analytics store, never a public user field | Proposed Phase 1 |
@@ -571,6 +571,16 @@ contracts. A proposed name does not exist merely because this spec names it.
 `crossPathsShowcaseEligibility` stores only operational status and reason codes
 such as `eligible`, `needsReview`, or `paused`, plus rule/review version and
 timestamps. It must not store a numeric attractiveness label.
+
+The implemented activity-neutral evaluator checks public-profile existence,
+three approved usable photos, three completed prompts, relationship goal,
+media integrity, and photo moderation. The dedicated `/cross-paths` Admin
+workspace then requires a human checklist and audited note. Approval is bound
+to a SHA-256 fingerprint of the complete current public profile; any later
+profile change or rule-version change resolves the effective state back to
+`needsReview`. Support may inspect the bounded queue, while only Admin, Admin
+Owner, and Safety Reviewer roles may decide. Consumer clients cannot read or
+write the eligibility record.
 
 ### Callable/API seams
 
@@ -730,8 +740,8 @@ create selection bias.
 
 ### Phase 0 — Privacy and eligibility foundation
 
-Implementation receipt (2026-08-05): the first two privacy slices are
-implemented.
+Implementation receipt (2026-08-05): the privacy slices and reviewed showcase
+eligibility slice are implemented.
 The existing post-event swipe deck, Event Recap, and identified post-event
 avatar enrichment now resolve candidates through the server-owned
 `fetchSwipeCandidates` callable. Consumer roster reads are restricted to the
@@ -739,15 +749,17 @@ member's own edge, organizer roster access remains intact, and the callable
 enforces the Catch window, viewer attendance, reciprocal preferences, prior
 decisions, and blocks in both directions. Global and per-event consent schemas,
 rules, Settings/Event Detail controls, the callable, and two fail-closed Remote
-Config defaults now exist. This does not complete Phase 0: showcase
-eligibility, the Explore suggestion contract, legal privacy-policy approval,
-and synthetic seed policy remain outstanding.
+Config defaults now exist. The score-free showcase evaluator, server-only
+eligibility document, role-gated list/decision callables, audit log, account
+deletion cleanup, rules denial, and dedicated Admin review workspace also now
+exist. This does not complete Phase 0: the Explore suggestion contract, legal
+privacy-policy approval, and synthetic seed policy remain outstanding.
 
 - [x] Land/reuse the person-Polaroid and organizer-poster migration.
 - [x] Introduce feature flags with fail-closed defaults.
-- [ ] Generalize showcase readiness away from running-only completeness.
+- [x] Generalize showcase readiness away from running-only completeness.
 - [x] Add global and per-event consent contracts and Settings/event controls.
-- [ ] Add reviewed showcase-eligibility operations for launch supply.
+- [x] Add reviewed showcase-eligibility operations for launch supply.
 - [ ] Build the server-owned batched suggestion callable.
 - [x] Migrate post-event Catch candidate resolution off client roster reads.
 - [x] Restrict Firestore participation reads and prove rules under emulators.

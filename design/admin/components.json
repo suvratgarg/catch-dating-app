@@ -1,7 +1,7 @@
 {
   "$schema": "./admin.components.schema.json",
-  "version": 37,
-  "updated": "2026-07-24",
+  "version": 38,
+  "updated": "2026-08-05",
   "owner": "admin_dashboard",
   "sourceOfTruth": {
     "architecture": "docs/web_surface_architecture.md",
@@ -39,6 +39,9 @@
       "workspace_safety_triage",
       "route_user_analytics",
       "workspace_user_analytics",
+      "route_cross_paths_showcase",
+      "workspace_cross_paths_showcase",
+      "shared_admin_profile_photo_grid",
       "workspace_event_intake"
     ],
     "previewKinds": [
@@ -644,6 +647,51 @@
         ]
       },
       "notes": "Prop-driven Safety case workspace renders one record at a time with back navigation, evidence, assignment, and existing audited reviewed/dismissed mutations; successful decisions return to the list route."
+    },
+    {
+      "id": "route_cross_paths_showcase",
+      "kind": "route",
+      "owner": "features/cross-paths",
+      "source": "admin/src/features/cross-paths/ui/CrossPathsShowcaseScreen.tsx",
+      "exportName": "CrossPathsShowcaseScreen",
+      "css": ["admin/src/styles.css"],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "CrossPathsShowcaseRouteStory",
+        "states": ["queue", "review-decision"]
+      },
+      "notes": "Role-gated route wrapper loads the bounded score-free showcase queue and keeps all server mutations behind the pending-operation guard."
+    },
+    {
+      "id": "workspace_cross_paths_showcase",
+      "kind": "workspace",
+      "owner": "features/cross-paths",
+      "source": "admin/src/features/cross-paths/ui/CrossPathsShowcaseScreen.tsx",
+      "exportName": "CrossPathsShowcaseWorkspace",
+      "css": ["admin/src/styles.css"],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "CrossPathsShowcaseWorkspaceStory",
+        "states": ["queue", "review-decision"]
+      },
+      "notes": "Prop-driven reviewer workspace shows public profile evidence, coarse objective blockers, fingerprint state, and audited approve, hold, or pause decisions."
+    },
+    {
+      "id": "shared_admin_profile_photo_grid",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/media.tsx",
+      "exportName": "AdminProfilePhotoGrid",
+      "css": ["admin/src/styles.css"],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "AdminProfilePhotoGridStory",
+        "states": ["three-photos"]
+      },
+      "notes": "Shared read-only photo grid for bounded public-profile evidence in admin review workspaces."
     },
     {
       "id": "route_user_analytics",

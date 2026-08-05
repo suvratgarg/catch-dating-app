@@ -1982,6 +1982,40 @@ export interface EventCrossPathsConsentDocument {
 }
 
 /**
+ * Server-only reviewed eligibility record for showing one member in Cross Paths. It stores coarse readiness reasons and a profile fingerprint, never an attractiveness score.
+ */
+export interface CrossPathsShowcaseEligibilityDocument {
+  status: "eligible" | "needsReview" | "paused";
+  /**
+   * @maxItems 12
+   */
+  reasonCodes: (
+    | "insufficient_photos"
+    | "incomplete_prompts"
+    | "missing_relationship_goal"
+    | "broken_media"
+    | "photo_moderation_pending"
+    | "photo_moderation_rejected"
+    | "public_profile_missing"
+    | "profile_changed"
+    | "reviewer_hold"
+    | "manual_pause"
+  )[];
+  ruleVersion: number;
+  reviewVersion: number;
+  profileFingerprint: string;
+  reviewChecklist: {
+    primaryPortraitClear: boolean;
+    profileRepresentsCurrentMember: boolean;
+    showcasePolicyReviewed: boolean;
+  };
+  reviewNote: string;
+  reviewedByUid: string;
+  reviewedAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
  * Server-owned delivery receipt for an organizer event broadcast stored at eventBroadcasts/{broadcastId}.
  */
 export interface EventBroadcastDocument {

@@ -38,6 +38,7 @@ import {EventPrivateAccessDocument} from "./eventPrivateAccessDocument";
 import {EventInviteLinkDocument} from "./eventInviteLinkDocument";
 import {EventParticipationDocument} from "./eventParticipationDocument";
 import {EventCrossPathsConsentDocument} from "./eventCrossPathsConsentDocument";
+import {CrossPathsShowcaseEligibilityDocument} from "./crossPathsShowcaseEligibilityDocument";
 import {EventBroadcastDocument} from "./eventBroadcastDocument";
 import {EventWaitlistOfferDocument} from "./eventWaitlistOfferDocument";
 import {EventSuccessPlanDocument} from "./eventSuccessPlanDocument";
@@ -121,6 +122,8 @@ import {AdminDecideOrganizerEventCandidateCallablePayload} from "./adminDecideOr
 import {AdminDecideOrganizerPolicyGapCallablePayload} from "./adminDecideOrganizerPolicyGapCallablePayload";
 import {AdminResolveOrganizerEventLocationCallablePayload} from "./adminResolveOrganizerEventLocationCallablePayload";
 import {AdminSetClubIndexStatusCallablePayload} from "./adminSetClubIndexStatusCallablePayload";
+import {AdminListCrossPathsShowcaseCandidatesCallablePayload} from "./adminListCrossPathsShowcaseCandidatesCallablePayload";
+import {AdminSetCrossPathsShowcaseEligibilityCallablePayload} from "./adminSetCrossPathsShowcaseEligibilityCallablePayload";
 import {AdminGetClubDetailsCallablePayload} from "./adminGetClubDetailsCallablePayload";
 import {AdminListClubDetailsCallablePayload} from "./adminListClubDetailsCallablePayload";
 import {AdminUpdateClubDetailsCallablePayload} from "./adminUpdateClubDetailsCallablePayload";
@@ -218,6 +221,8 @@ import {AdminCreateMarketingContentDraftCallablePayload} from "./adminCreateMark
 import {AdminCreateMarketingContentDraftCallableResponse} from "./adminCreateMarketingContentDraftCallableResponse";
 import {AdminRecordMarketingReviewDecisionCallablePayload} from "./adminRecordMarketingReviewDecisionCallablePayload";
 import {AdminRecordMarketingReviewDecisionCallableResponse} from "./adminRecordMarketingReviewDecisionCallableResponse";
+import {AdminListCrossPathsShowcaseCandidatesCallableResponse} from "./adminListCrossPathsShowcaseCandidatesCallableResponse";
+import {AdminSetCrossPathsShowcaseEligibilityCallableResponse} from "./adminSetCrossPathsShowcaseEligibilityCallableResponse";
 import {JoinWaitlistHTTPRequest} from "./joinWaitlistHttpRequest";
 import {JoinWaitlistHTTPResponse} from "./joinWaitlistHttpResponse";
 import {
@@ -255,6 +260,7 @@ import {
   eventInviteLinkDocumentSchema,
   eventParticipationDocumentSchema,
   eventCrossPathsConsentDocumentSchema,
+  crossPathsShowcaseEligibilityDocumentSchema,
   eventBroadcastDocumentSchema,
   eventWaitlistOfferDocumentSchema,
   eventSuccessPlanDocumentSchema,
@@ -338,6 +344,8 @@ import {
   adminDecideOrganizerPolicyGapCallablePayloadSchema,
   adminResolveOrganizerEventLocationCallablePayloadSchema,
   adminSetClubIndexStatusCallablePayloadSchema,
+  adminListCrossPathsShowcaseCandidatesCallablePayloadSchema,
+  adminSetCrossPathsShowcaseEligibilityCallablePayloadSchema,
   adminGetClubDetailsCallablePayloadSchema,
   adminListClubDetailsCallablePayloadSchema,
   adminUpdateClubDetailsCallablePayloadSchema,
@@ -435,6 +443,8 @@ import {
   adminCreateMarketingContentDraftCallableResponseSchema,
   adminRecordMarketingReviewDecisionCallablePayloadSchema,
   adminRecordMarketingReviewDecisionCallableResponseSchema,
+  adminListCrossPathsShowcaseCandidatesCallableResponseSchema,
+  adminSetCrossPathsShowcaseEligibilityCallableResponseSchema,
   joinWaitlistHTTPRequestSchema,
   joinWaitlistHTTPResponseSchema,
 } from "./schemaRegistry";
@@ -578,6 +588,10 @@ export const validateEventCrossPathsConsentDocument:
   ValidateFunction<EventCrossPathsConsentDocument> =
     ajv.compile(eventCrossPathsConsentDocumentSchema) as
       ValidateFunction<EventCrossPathsConsentDocument>;
+export const validateCrossPathsShowcaseEligibilityDocument:
+  ValidateFunction<CrossPathsShowcaseEligibilityDocument> =
+    ajv.compile(crossPathsShowcaseEligibilityDocumentSchema) as
+      ValidateFunction<CrossPathsShowcaseEligibilityDocument>;
 export const validateEventBroadcastDocument:
   ValidateFunction<EventBroadcastDocument> =
     ajv.compile(eventBroadcastDocumentSchema) as
@@ -910,6 +924,14 @@ export const validateAdminSetClubIndexStatusCallablePayload:
   ValidateFunction<AdminSetClubIndexStatusCallablePayload> =
     ajv.compile(adminSetClubIndexStatusCallablePayloadSchema) as
       ValidateFunction<AdminSetClubIndexStatusCallablePayload>;
+export const validateAdminListCrossPathsShowcaseCandidatesCallablePayload:
+  ValidateFunction<AdminListCrossPathsShowcaseCandidatesCallablePayload> =
+    ajv.compile(adminListCrossPathsShowcaseCandidatesCallablePayloadSchema) as
+      ValidateFunction<AdminListCrossPathsShowcaseCandidatesCallablePayload>;
+export const validateAdminSetCrossPathsShowcaseEligibilityCallablePayload:
+  ValidateFunction<AdminSetCrossPathsShowcaseEligibilityCallablePayload> =
+    ajv.compile(adminSetCrossPathsShowcaseEligibilityCallablePayloadSchema) as
+      ValidateFunction<AdminSetCrossPathsShowcaseEligibilityCallablePayload>;
 export const validateAdminGetClubDetailsCallablePayload:
   ValidateFunction<AdminGetClubDetailsCallablePayload> =
     ajv.compile(adminGetClubDetailsCallablePayloadSchema) as
@@ -1298,6 +1320,14 @@ export const validateAdminRecordMarketingReviewDecisionCallableResponse:
   ValidateFunction<AdminRecordMarketingReviewDecisionCallableResponse> =
     ajv.compile(adminRecordMarketingReviewDecisionCallableResponseSchema) as
       ValidateFunction<AdminRecordMarketingReviewDecisionCallableResponse>;
+export const validateAdminListCrossPathsShowcaseCandidatesCallableResponse:
+  ValidateFunction<AdminListCrossPathsShowcaseCandidatesCallableResponse> =
+    ajv.compile(adminListCrossPathsShowcaseCandidatesCallableResponseSchema) as
+      ValidateFunction<AdminListCrossPathsShowcaseCandidatesCallableResponse>;
+export const validateAdminSetCrossPathsShowcaseEligibilityCallableResponse:
+  ValidateFunction<AdminSetCrossPathsShowcaseEligibilityCallableResponse> =
+    ajv.compile(adminSetCrossPathsShowcaseEligibilityCallableResponseSchema) as
+      ValidateFunction<AdminSetCrossPathsShowcaseEligibilityCallableResponse>;
 export const validateJoinWaitlistHTTPRequest:
   ValidateFunction<JoinWaitlistHTTPRequest> =
     ajv.compile(joinWaitlistHTTPRequestSchema) as

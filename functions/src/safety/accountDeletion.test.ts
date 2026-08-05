@@ -90,6 +90,10 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
         enabled: true,
         termsVersion: 1,
       },
+      "crossPathsShowcaseEligibility/runner-1": {
+        status: "eligible",
+        profileFingerprint: "a".repeat(64),
+      },
       "savedEvents/runner-1_run-1": {uid: "runner-1", eventId: "event-1"},
       "profileDecisions/runner-1/outgoing/runner-2": {
         swiperId: "runner-1",
@@ -205,6 +209,11 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
   }
 
   assert.ok(harness.deletedPublicDocs.includes("publicProfiles/runner-1"));
+  assert.ok(
+    harness.deletedPublicDocs.includes(
+      "crossPathsShowcaseEligibility/runner-1"
+    )
+  );
   assert.ok(
     harness.setWrites.some((write) =>
       write.path === "organizerFollows/club-1_runner-1" &&

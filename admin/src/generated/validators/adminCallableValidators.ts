@@ -28,6 +28,7 @@ const model = {
     "adminListActionExecutions",
     "adminListAdminRoleAssignments",
     "adminListClubClaimRequests",
+    "adminListCrossPathsShowcaseCandidates",
     "adminListEventDetails",
     "adminListExternalEventDetails",
     "adminListIntakeOperations",
@@ -39,6 +40,7 @@ const model = {
     "adminResolveOrganizerEventLocation",
     "adminSetAdminUserRoles",
     "adminSetClubIndexStatus",
+    "adminSetCrossPathsShowcaseEligibility",
     "adminTakedownExternalEvent",
     "adminUpdateEventDetails",
     "adminUpdateOrganizerDetails"
@@ -2304,6 +2306,54 @@ const model = {
     },
     {
       "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_list_cross_paths_showcase_candidates_payload.schema.json",
+      "title": "AdminListCrossPathsShowcaseCandidatesCallablePayload",
+      "description": "Callable payload for a bounded, role-gated Cross Paths showcase review queue.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "uid": {
+          "anyOf": [
+            {
+              "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "status": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "all",
+            "eligible",
+            "needsReview",
+            "paused",
+            null
+          ]
+        },
+        "cursor": {
+          "anyOf": [
+            {
+              "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
       "$id": "https://catch.app/contracts/callables/admin_list_event_details_payload.schema.json",
       "title": "AdminListEventDetailsCallablePayload",
       "description": "Callable payload accepted by adminListEventDetails. This lists canonical events/{eventId} rows for the admin event publishing workspace.",
@@ -3442,6 +3492,58 @@ const model = {
     },
     {
       "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_set_cross_paths_showcase_eligibility_payload.schema.json",
+      "title": "AdminSetCrossPathsShowcaseEligibilityCallablePayload",
+      "description": "Callable payload for an audited human Cross Paths showcase eligibility decision.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "uid",
+        "status",
+        "reviewChecklist",
+        "reviewNote"
+      ],
+      "properties": {
+        "uid": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "eligible",
+            "needsReview",
+            "paused"
+          ]
+        },
+        "reviewChecklist": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "primaryPortraitClear",
+            "profileRepresentsCurrentMember",
+            "showcasePolicyReviewed"
+          ],
+          "properties": {
+            "primaryPortraitClear": {
+              "type": "boolean"
+            },
+            "profileRepresentsCurrentMember": {
+              "type": "boolean"
+            },
+            "showcasePolicyReviewed": {
+              "type": "boolean"
+            }
+          }
+        },
+        "reviewNote": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
       "$id": "https://catch.app/contracts/callables/admin_takedown_external_event_payload.schema.json",
       "title": "AdminTakedownExternalEventCallablePayload",
       "description": "Callable payload accepted by adminTakedownExternalEvent. Dry-run validates and receipts a reviewed takedown; apply removes the external event from discovery without deleting audit history.",
@@ -4533,6 +4635,229 @@ const model = {
             "updatedAt": {
               "type": "string",
               "format": "date-time"
+            }
+          }
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callable_responses/admin_list_cross_paths_showcase_candidates_response.schema.json",
+      "title": "AdminListCrossPathsShowcaseCandidatesCallableResponse",
+      "description": "Bounded admin-safe projection of public profiles and their server-only Cross Paths showcase review state.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "generatedAt",
+        "candidates",
+        "nextCursor"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1
+        },
+        "generatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "candidates": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "$ref": "#/definitions/candidate"
+          }
+        },
+        "nextCursor": {
+          "anyOf": [
+            {
+              "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "definitions": {
+        "reasonCode": {
+          "type": "string",
+          "enum": [
+            "insufficient_photos",
+            "incomplete_prompts",
+            "missing_relationship_goal",
+            "broken_media",
+            "photo_moderation_pending",
+            "photo_moderation_rejected",
+            "public_profile_missing",
+            "profile_changed",
+            "reviewer_hold",
+            "manual_pause"
+          ]
+        },
+        "candidate": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "uid",
+            "name",
+            "age",
+            "gender",
+            "city",
+            "photoUrls",
+            "promptAnswers",
+            "relationshipGoal",
+            "automaticStatus",
+            "automaticReasonCodes",
+            "storedStatus",
+            "effectiveStatus",
+            "effectiveReasonCodes",
+            "profileFingerprint",
+            "reviewedByUid",
+            "reviewedAt",
+            "reviewNote"
+          ],
+          "properties": {
+            "uid": {
+              "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+            },
+            "name": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "age": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 18,
+              "maximum": 99
+            },
+            "gender": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 40
+            },
+            "city": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 80
+            },
+            "photoUrls": {
+              "type": "array",
+              "maxItems": 6,
+              "items": {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 2048
+              }
+            },
+            "promptAnswers": {
+              "type": "array",
+              "maxItems": 3,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "prompt",
+                  "answer"
+                ],
+                "properties": {
+                  "prompt": {
+                    "type": "string",
+                    "maxLength": 140
+                  },
+                  "answer": {
+                    "type": "string",
+                    "maxLength": 300
+                  }
+                }
+              }
+            },
+            "relationshipGoal": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 80
+            },
+            "automaticStatus": {
+              "type": "string",
+              "enum": [
+                "ready",
+                "blocked"
+              ]
+            },
+            "automaticReasonCodes": {
+              "type": "array",
+              "maxItems": 7,
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/definitions/reasonCode"
+              }
+            },
+            "storedStatus": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "eligible",
+                "needsReview",
+                "paused",
+                null
+              ]
+            },
+            "effectiveStatus": {
+              "type": "string",
+              "enum": [
+                "eligible",
+                "needsReview",
+                "paused"
+              ]
+            },
+            "effectiveReasonCodes": {
+              "type": "array",
+              "maxItems": 12,
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/definitions/reasonCode"
+              }
+            },
+            "profileFingerprint": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "reviewedByUid": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 128
+            },
+            "reviewedAt": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time"
+            },
+            "reviewNote": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
             }
           }
         }
@@ -6486,6 +6811,72 @@ const model = {
     },
     {
       "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callable_responses/admin_set_cross_paths_showcase_eligibility_response.schema.json",
+      "title": "AdminSetCrossPathsShowcaseEligibilityCallableResponse",
+      "description": "Validated result of one audited Cross Paths showcase eligibility decision.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "uid",
+        "status",
+        "reasonCodes",
+        "profileFingerprint",
+        "ruleVersion",
+        "reviewVersion",
+        "reviewedAt"
+      ],
+      "properties": {
+        "uid": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "eligible",
+            "needsReview",
+            "paused"
+          ]
+        },
+        "reasonCodes": {
+          "type": "array",
+          "maxItems": 12,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "insufficient_photos",
+              "incomplete_prompts",
+              "missing_relationship_goal",
+              "broken_media",
+              "photo_moderation_pending",
+              "photo_moderation_rejected",
+              "public_profile_missing",
+              "profile_changed",
+              "reviewer_hold",
+              "manual_pause"
+            ]
+          }
+        },
+        "profileFingerprint": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "ruleVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "reviewVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "reviewedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
       "$id": "https://catch.app/contracts/callable_responses/host_analytics_response.schema.json",
       "title": "HostAnalyticsCallableResponse",
       "description": "Shared aggregate analytics response returned by host and admin analytics callables. Values are aggregate-only and host-safe.",
@@ -7447,6 +7838,7 @@ const model = {
     "adminListActionExecutions": "https://catch.app/contracts/callables/admin_list_action_executions_payload.schema.json",
     "adminListAdminRoleAssignments": "https://catch.app/contracts/callables/admin_list_admin_role_assignments_payload.schema.json",
     "adminListClubClaimRequests": "https://catch.app/contracts/callables/admin_list_club_claim_requests_payload.schema.json",
+    "adminListCrossPathsShowcaseCandidates": "https://catch.app/contracts/callables/admin_list_cross_paths_showcase_candidates_payload.schema.json",
     "adminListEventDetails": "https://catch.app/contracts/callables/admin_list_event_details_payload.schema.json",
     "adminListExternalEventDetails": "https://catch.app/contracts/callables/admin_list_external_event_details_payload.schema.json",
     "adminListIntakeOperations": "https://catch.app/contracts/callables/admin_list_intake_operations_payload.schema.json",
@@ -7458,6 +7850,7 @@ const model = {
     "adminResolveOrganizerEventLocation": "https://catch.app/contracts/callables/admin_resolve_organizer_event_location_payload.schema.json",
     "adminSetAdminUserRoles": "https://catch.app/contracts/callables/admin_set_admin_user_roles_payload.schema.json",
     "adminSetClubIndexStatus": "https://catch.app/contracts/callables/admin_set_club_index_status_payload.schema.json",
+    "adminSetCrossPathsShowcaseEligibility": "https://catch.app/contracts/callables/admin_set_cross_paths_showcase_eligibility_payload.schema.json",
     "adminTakedownExternalEvent": "https://catch.app/contracts/callables/admin_takedown_external_event_payload.schema.json",
     "adminUpdateEventDetails": "https://catch.app/contracts/callables/admin_update_event_details_payload.schema.json",
     "adminUpdateOrganizerDetails": "https://catch.app/contracts/callables/admin_update_organizer_details_payload.schema.json"
@@ -7487,6 +7880,7 @@ const model = {
     "adminListActionExecutions": "https://catch.app/contracts/callable_responses/admin_list_action_executions_response.schema.json",
     "adminListAdminRoleAssignments": "https://catch.app/contracts/admin_runtime/adminListAdminRoleAssignments_response.schema.json",
     "adminListClubClaimRequests": "https://catch.app/contracts/admin_runtime/adminListClubClaimRequests_response.schema.json",
+    "adminListCrossPathsShowcaseCandidates": "https://catch.app/contracts/callable_responses/admin_list_cross_paths_showcase_candidates_response.schema.json",
     "adminListEventDetails": "https://catch.app/contracts/admin_runtime/adminListEventDetails_response.schema.json",
     "adminListExternalEventDetails": "https://catch.app/contracts/admin_runtime/adminListExternalEventDetails_response.schema.json",
     "adminListIntakeOperations": "https://catch.app/contracts/callable_responses/admin_list_intake_operations_response.schema.json",
@@ -7498,6 +7892,7 @@ const model = {
     "adminResolveOrganizerEventLocation": "https://catch.app/contracts/admin_runtime/adminResolveOrganizerEventLocation_response.schema.json",
     "adminSetAdminUserRoles": "https://catch.app/contracts/callable_responses/admin_set_admin_user_roles_response.schema.json",
     "adminSetClubIndexStatus": "https://catch.app/contracts/admin_runtime/adminSetClubIndexStatus_response.schema.json",
+    "adminSetCrossPathsShowcaseEligibility": "https://catch.app/contracts/callable_responses/admin_set_cross_paths_showcase_eligibility_response.schema.json",
     "adminTakedownExternalEvent": "https://catch.app/contracts/admin_runtime/adminTakedownExternalEvent_response.schema.json",
     "adminUpdateEventDetails": "https://catch.app/contracts/admin_runtime/adminUpdateEventDetails_response.schema.json",
     "adminUpdateOrganizerDetails": "https://catch.app/contracts/admin_runtime/adminUpdateOrganizerDetails_response.schema.json"
@@ -7527,6 +7922,7 @@ const model = {
     "adminListActionExecutions",
     "adminListAdminRoleAssignments",
     "adminListClubClaimRequests",
+    "adminListCrossPathsShowcaseCandidates",
     "adminListEventDetails",
     "adminListExternalEventDetails",
     "adminListIntakeOperations",
@@ -7538,6 +7934,7 @@ const model = {
     "adminResolveOrganizerEventLocation",
     "adminSetAdminUserRoles",
     "adminSetClubIndexStatus",
+    "adminSetCrossPathsShowcaseEligibility",
     "adminTakedownExternalEvent",
     "adminUpdateEventDetails",
     "adminUpdateOrganizerDetails"
@@ -7552,9 +7949,11 @@ const model = {
     "adminGetOverview",
     "adminGetUserAnalytics",
     "adminListActionExecutions",
+    "adminListCrossPathsShowcaseCandidates",
     "adminListIntakeOperations",
     "adminRecordMarketingReviewDecision",
-    "adminSetAdminUserRoles"
+    "adminSetAdminUserRoles",
+    "adminSetCrossPathsShowcaseEligibility"
   ]
 } as const;
 const ajv = new Ajv({allErrors: true, strict: false, validateSchema: false});

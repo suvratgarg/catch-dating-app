@@ -78,6 +78,7 @@ export async function requestAccountDeletionHandler(
 
   const writer = new BatchQueue(db);
   writer.delete(db.collection("publicProfiles").doc(uid));
+  writer.delete(db.collection("crossPathsShowcaseEligibility").doc(uid));
 
   await queueRelationshipCleanup({
     db,

@@ -1689,6 +1689,219 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const adminListCrossPathsShowcaseCandidatesCallablePayloadCursor = CatchContractFieldConstraints(
+    path: 'adminListCrossPathsShowcaseCandidatesCallablePayload.cursor',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCrossPathsShowcaseCandidatesCallablePayloadLimit = CatchContractFieldConstraints(
+    path: 'adminListCrossPathsShowcaseCandidatesCallablePayload.limit',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 50,
+  );
+
+  static const adminListCrossPathsShowcaseCandidatesCallablePayloadStatus = CatchContractFieldConstraints(
+    path: 'adminListCrossPathsShowcaseCandidatesCallablePayload.status',
+    valueTypes: <String>['string'],
+    enumValues: <String>['all', 'eligible', 'needsReview', 'paused'],
+  );
+
+  static const adminListCrossPathsShowcaseCandidatesCallablePayloadUid = CatchContractFieldConstraints(
+    path: 'adminListCrossPathsShowcaseCandidatesCallablePayload.uid',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCrossPathsShowcaseCandidatesCallableResponseCandidates = CatchContractFieldConstraints(
+    path: 'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 50,
+  );
+
+  static const adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsAge = CatchContractFieldConstraints(
+    path: 'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.age',
+    valueTypes: <String>['integer'],
+    minimum: 18,
+    maximum: 99,
+  );
+
+  static const adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsAutomaticReasonCodes = CatchContractFieldConstraints(
+    path: 'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.automaticReasonCodes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['insufficient_photos', 'incomplete_prompts', 'missing_relationship_goal', 'broken_media', 'photo_moderation_pending', 'photo_moderation_rejected', 'public_profile_missing', 'profile_changed', 'reviewer_hold', 'manual_pause'],
+    maxItems: 7,
+    uniqueItems: true,
+  );
+
+  static const adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsAutomaticReasonCodesItems = CatchContractFieldConstraints(
+    path: 'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.automaticReasonCodes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['insufficient_photos', 'incomplete_prompts', 'missing_relationship_goal', 'broken_media', 'photo_moderation_pending', 'photo_moderation_rejected', 'public_profile_missing', 'profile_changed', 'reviewer_hold', 'manual_pause'],
+  );
+
+  static const adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsAutomaticStatus = CatchContractFieldConstraints(
+    path: 'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.automaticStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['ready', 'blocked'],
+  );
+
+  static const adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsCity = CatchContractFieldConstraints(
+    path: 'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.city',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsEffectiveReasonCodes = CatchContractFieldConstraints(
+    path: 'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.effectiveReasonCodes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['insufficient_photos', 'incomplete_prompts', 'missing_relationship_goal', 'broken_media', 'photo_moderation_pending', 'photo_moderation_rejected', 'public_profile_missing', 'profile_changed', 'reviewer_hold', 'manual_pause'],
+    maxItems: 12,
+    uniqueItems: true,
+  );
+
+  static const adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsEffectiveReasonCodesItems = CatchContractFieldConstraints(
+    path: 'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.effectiveReasonCodes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['insufficient_photos', 'incomplete_prompts', 'missing_relationship_goal', 'broken_media', 'photo_moderation_pending', 'photo_moderation_rejected', 'public_profile_missing', 'profile_changed', 'reviewer_hold', 'manual_pause'],
+  );
+
+  static const adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsEffectiveStatus = CatchContractFieldConstraints(
+    path: 'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.effectiveStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['eligible', 'needsReview', 'paused'],
+  );
+
+  static const adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsGender = CatchContractFieldConstraints(
+    path: 'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.gender',
+    maxLength: 40,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsName = CatchContractFieldConstraints(
+    path: 'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.name',
+    maxLength: 80,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsPhotoUrls = CatchContractFieldConstraints(
+    path: 'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.photoUrls',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 6,
+  );
+
+  static const adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsPhotoUrlsItems = CatchContractFieldConstraints(
+    path: 'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.photoUrls.items',
+    maxLength: 2048,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'uri',
+  );
+
+  static const adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsProfileFingerprint = CatchContractFieldConstraints(
+    path: 'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.profileFingerprint',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsPromptAnswers = CatchContractFieldConstraints(
+    path: 'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.promptAnswers',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 3,
+  );
+
+  static const adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsPromptAnswersItemsAnswer = CatchContractFieldConstraints(
+    path: 'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.promptAnswers.items.answer',
+    maxLength: 300,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsPromptAnswersItemsPrompt = CatchContractFieldConstraints(
+    path: 'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.promptAnswers.items.prompt',
+    maxLength: 140,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsRelationshipGoal = CatchContractFieldConstraints(
+    path: 'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.relationshipGoal',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsReviewedAt = CatchContractFieldConstraints(
+    path: 'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.reviewedAt',
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsReviewedByUid = CatchContractFieldConstraints(
+    path: 'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.reviewedByUid',
+    maxLength: 128,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsReviewNote = CatchContractFieldConstraints(
+    path: 'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.reviewNote',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsStoredStatus = CatchContractFieldConstraints(
+    path: 'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.storedStatus',
+    valueTypes: <String>['string'],
+    enumValues: <String>['eligible', 'needsReview', 'paused'],
+  );
+
+  static const adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsUid = CatchContractFieldConstraints(
+    path: 'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCrossPathsShowcaseCandidatesCallableResponseGeneratedAt = CatchContractFieldConstraints(
+    path: 'adminListCrossPathsShowcaseCandidatesCallableResponse.generatedAt',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const adminListCrossPathsShowcaseCandidatesCallableResponseNextCursor = CatchContractFieldConstraints(
+    path: 'adminListCrossPathsShowcaseCandidatesCallableResponse.nextCursor',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListCrossPathsShowcaseCandidatesCallableResponseSchemaVersion = CatchContractFieldConstraints(
+    path: 'adminListCrossPathsShowcaseCandidatesCallableResponse.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const adminListEventDetailsCallablePayloadActivityKind = CatchContractFieldConstraints(
     path: 'adminListEventDetailsCallablePayload.activityKind',
     valueTypes: <String>['string'],
@@ -2668,6 +2881,107 @@ abstract final class CatchContractConstraints {
   static const adminSetClubIndexStatusCallablePayloadReviewNote = CatchContractFieldConstraints(
     path: 'adminSetClubIndexStatusCallablePayload.reviewNote',
     maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminSetCrossPathsShowcaseEligibilityCallablePayloadReviewChecklistPrimaryPortraitClear = CatchContractFieldConstraints(
+    path: 'adminSetCrossPathsShowcaseEligibilityCallablePayload.reviewChecklist.primaryPortraitClear',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminSetCrossPathsShowcaseEligibilityCallablePayloadReviewChecklistProfileRepresentsCurrentMember = CatchContractFieldConstraints(
+    path: 'adminSetCrossPathsShowcaseEligibilityCallablePayload.reviewChecklist.profileRepresentsCurrentMember',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminSetCrossPathsShowcaseEligibilityCallablePayloadReviewChecklistShowcasePolicyReviewed = CatchContractFieldConstraints(
+    path: 'adminSetCrossPathsShowcaseEligibilityCallablePayload.reviewChecklist.showcasePolicyReviewed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminSetCrossPathsShowcaseEligibilityCallablePayloadReviewNote = CatchContractFieldConstraints(
+    path: 'adminSetCrossPathsShowcaseEligibilityCallablePayload.reviewNote',
+    maxLength: 1000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminSetCrossPathsShowcaseEligibilityCallablePayloadStatus = CatchContractFieldConstraints(
+    path: 'adminSetCrossPathsShowcaseEligibilityCallablePayload.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['eligible', 'needsReview', 'paused'],
+  );
+
+  static const adminSetCrossPathsShowcaseEligibilityCallablePayloadUid = CatchContractFieldConstraints(
+    path: 'adminSetCrossPathsShowcaseEligibilityCallablePayload.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminSetCrossPathsShowcaseEligibilityCallableResponseProfileFingerprint = CatchContractFieldConstraints(
+    path: 'adminSetCrossPathsShowcaseEligibilityCallableResponse.profileFingerprint',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const adminSetCrossPathsShowcaseEligibilityCallableResponseReasonCodes = CatchContractFieldConstraints(
+    path: 'adminSetCrossPathsShowcaseEligibilityCallableResponse.reasonCodes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['insufficient_photos', 'incomplete_prompts', 'missing_relationship_goal', 'broken_media', 'photo_moderation_pending', 'photo_moderation_rejected', 'public_profile_missing', 'profile_changed', 'reviewer_hold', 'manual_pause'],
+    maxItems: 12,
+    uniqueItems: true,
+  );
+
+  static const adminSetCrossPathsShowcaseEligibilityCallableResponseReasonCodesItems = CatchContractFieldConstraints(
+    path: 'adminSetCrossPathsShowcaseEligibilityCallableResponse.reasonCodes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['insufficient_photos', 'incomplete_prompts', 'missing_relationship_goal', 'broken_media', 'photo_moderation_pending', 'photo_moderation_rejected', 'public_profile_missing', 'profile_changed', 'reviewer_hold', 'manual_pause'],
+  );
+
+  static const adminSetCrossPathsShowcaseEligibilityCallableResponseReviewedAt = CatchContractFieldConstraints(
+    path: 'adminSetCrossPathsShowcaseEligibilityCallableResponse.reviewedAt',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const adminSetCrossPathsShowcaseEligibilityCallableResponseReviewVersion = CatchContractFieldConstraints(
+    path: 'adminSetCrossPathsShowcaseEligibilityCallableResponse.reviewVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const adminSetCrossPathsShowcaseEligibilityCallableResponseRuleVersion = CatchContractFieldConstraints(
+    path: 'adminSetCrossPathsShowcaseEligibilityCallableResponse.ruleVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const adminSetCrossPathsShowcaseEligibilityCallableResponseStatus = CatchContractFieldConstraints(
+    path: 'adminSetCrossPathsShowcaseEligibilityCallableResponse.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['eligible', 'needsReview', 'paused'],
+  );
+
+  static const adminSetCrossPathsShowcaseEligibilityCallableResponseUid = CatchContractFieldConstraints(
+    path: 'adminSetCrossPathsShowcaseEligibilityCallableResponse.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
     valueTypes: <String>['string'],
   );
 
@@ -8619,6 +8933,113 @@ abstract final class CatchContractConstraints {
     maxLength: 3,
     minLength: 3,
     valueTypes: <String>['string'],
+  );
+
+  static const crossPathsShowcaseEligibilityDocumentProfileFingerprint = CatchContractFieldConstraints(
+    path: 'crossPathsShowcaseEligibilityDocument.profileFingerprint',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const crossPathsShowcaseEligibilityDocumentReasonCodes = CatchContractFieldConstraints(
+    path: 'crossPathsShowcaseEligibilityDocument.reasonCodes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['insufficient_photos', 'incomplete_prompts', 'missing_relationship_goal', 'broken_media', 'photo_moderation_pending', 'photo_moderation_rejected', 'public_profile_missing', 'profile_changed', 'reviewer_hold', 'manual_pause'],
+    maxItems: 12,
+    uniqueItems: true,
+  );
+
+  static const crossPathsShowcaseEligibilityDocumentReasonCodesItems = CatchContractFieldConstraints(
+    path: 'crossPathsShowcaseEligibilityDocument.reasonCodes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['insufficient_photos', 'incomplete_prompts', 'missing_relationship_goal', 'broken_media', 'photo_moderation_pending', 'photo_moderation_rejected', 'public_profile_missing', 'profile_changed', 'reviewer_hold', 'manual_pause'],
+  );
+
+  static const crossPathsShowcaseEligibilityDocumentReviewChecklistPrimaryPortraitClear = CatchContractFieldConstraints(
+    path: 'crossPathsShowcaseEligibilityDocument.reviewChecklist.primaryPortraitClear',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const crossPathsShowcaseEligibilityDocumentReviewChecklistProfileRepresentsCurrentMember = CatchContractFieldConstraints(
+    path: 'crossPathsShowcaseEligibilityDocument.reviewChecklist.profileRepresentsCurrentMember',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const crossPathsShowcaseEligibilityDocumentReviewChecklistShowcasePolicyReviewed = CatchContractFieldConstraints(
+    path: 'crossPathsShowcaseEligibilityDocument.reviewChecklist.showcasePolicyReviewed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const crossPathsShowcaseEligibilityDocumentReviewedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'crossPathsShowcaseEligibilityDocument.reviewedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const crossPathsShowcaseEligibilityDocumentReviewedAtSeconds = CatchContractFieldConstraints(
+    path: 'crossPathsShowcaseEligibilityDocument.reviewedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const crossPathsShowcaseEligibilityDocumentReviewedByUid = CatchContractFieldConstraints(
+    path: 'crossPathsShowcaseEligibilityDocument.reviewedByUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const crossPathsShowcaseEligibilityDocumentReviewNote = CatchContractFieldConstraints(
+    path: 'crossPathsShowcaseEligibilityDocument.reviewNote',
+    maxLength: 1000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const crossPathsShowcaseEligibilityDocumentReviewVersion = CatchContractFieldConstraints(
+    path: 'crossPathsShowcaseEligibilityDocument.reviewVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const crossPathsShowcaseEligibilityDocumentRuleVersion = CatchContractFieldConstraints(
+    path: 'crossPathsShowcaseEligibilityDocument.ruleVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const crossPathsShowcaseEligibilityDocumentStatus = CatchContractFieldConstraints(
+    path: 'crossPathsShowcaseEligibilityDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['eligible', 'needsReview', 'paused'],
+  );
+
+  static const crossPathsShowcaseEligibilityDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'crossPathsShowcaseEligibilityDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const crossPathsShowcaseEligibilityDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'crossPathsShowcaseEligibilityDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
   );
 
   static const deleteClubCallablePayloadClubId = CatchContractFieldConstraints(
@@ -27516,6 +27937,36 @@ abstract final class CatchContractConstraints {
     'adminListClubDetailsCallablePayload.limit': adminListClubDetailsCallablePayloadLimit,
     'adminListClubDetailsCallablePayload.publishStatus': adminListClubDetailsCallablePayloadPublishStatus,
     'adminListClubDetailsCallablePayload.query': adminListClubDetailsCallablePayloadQuery,
+    'adminListCrossPathsShowcaseCandidatesCallablePayload.cursor': adminListCrossPathsShowcaseCandidatesCallablePayloadCursor,
+    'adminListCrossPathsShowcaseCandidatesCallablePayload.limit': adminListCrossPathsShowcaseCandidatesCallablePayloadLimit,
+    'adminListCrossPathsShowcaseCandidatesCallablePayload.status': adminListCrossPathsShowcaseCandidatesCallablePayloadStatus,
+    'adminListCrossPathsShowcaseCandidatesCallablePayload.uid': adminListCrossPathsShowcaseCandidatesCallablePayloadUid,
+    'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates': adminListCrossPathsShowcaseCandidatesCallableResponseCandidates,
+    'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.age': adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsAge,
+    'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.automaticReasonCodes': adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsAutomaticReasonCodes,
+    'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.automaticReasonCodes.items': adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsAutomaticReasonCodesItems,
+    'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.automaticStatus': adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsAutomaticStatus,
+    'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.city': adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsCity,
+    'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.effectiveReasonCodes': adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsEffectiveReasonCodes,
+    'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.effectiveReasonCodes.items': adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsEffectiveReasonCodesItems,
+    'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.effectiveStatus': adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsEffectiveStatus,
+    'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.gender': adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsGender,
+    'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.name': adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsName,
+    'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.photoUrls': adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsPhotoUrls,
+    'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.photoUrls.items': adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsPhotoUrlsItems,
+    'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.profileFingerprint': adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsProfileFingerprint,
+    'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.promptAnswers': adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsPromptAnswers,
+    'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.promptAnswers.items.answer': adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsPromptAnswersItemsAnswer,
+    'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.promptAnswers.items.prompt': adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsPromptAnswersItemsPrompt,
+    'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.relationshipGoal': adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsRelationshipGoal,
+    'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.reviewedAt': adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsReviewedAt,
+    'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.reviewedByUid': adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsReviewedByUid,
+    'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.reviewNote': adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsReviewNote,
+    'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.storedStatus': adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsStoredStatus,
+    'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates.items.uid': adminListCrossPathsShowcaseCandidatesCallableResponseCandidatesItemsUid,
+    'adminListCrossPathsShowcaseCandidatesCallableResponse.generatedAt': adminListCrossPathsShowcaseCandidatesCallableResponseGeneratedAt,
+    'adminListCrossPathsShowcaseCandidatesCallableResponse.nextCursor': adminListCrossPathsShowcaseCandidatesCallableResponseNextCursor,
+    'adminListCrossPathsShowcaseCandidatesCallableResponse.schemaVersion': adminListCrossPathsShowcaseCandidatesCallableResponseSchemaVersion,
     'adminListEventDetailsCallablePayload.activityKind': adminListEventDetailsCallablePayloadActivityKind,
     'adminListEventDetailsCallablePayload.citySlug': adminListEventDetailsCallablePayloadCitySlug,
     'adminListEventDetailsCallablePayload.citySlugs': adminListEventDetailsCallablePayloadCitySlugs,
@@ -27660,6 +28111,20 @@ abstract final class CatchContractConstraints {
     'adminSetClubIndexStatusCallablePayload.clubId': adminSetClubIndexStatusCallablePayloadClubId,
     'adminSetClubIndexStatusCallablePayload.indexStatus': adminSetClubIndexStatusCallablePayloadIndexStatus,
     'adminSetClubIndexStatusCallablePayload.reviewNote': adminSetClubIndexStatusCallablePayloadReviewNote,
+    'adminSetCrossPathsShowcaseEligibilityCallablePayload.reviewChecklist.primaryPortraitClear': adminSetCrossPathsShowcaseEligibilityCallablePayloadReviewChecklistPrimaryPortraitClear,
+    'adminSetCrossPathsShowcaseEligibilityCallablePayload.reviewChecklist.profileRepresentsCurrentMember': adminSetCrossPathsShowcaseEligibilityCallablePayloadReviewChecklistProfileRepresentsCurrentMember,
+    'adminSetCrossPathsShowcaseEligibilityCallablePayload.reviewChecklist.showcasePolicyReviewed': adminSetCrossPathsShowcaseEligibilityCallablePayloadReviewChecklistShowcasePolicyReviewed,
+    'adminSetCrossPathsShowcaseEligibilityCallablePayload.reviewNote': adminSetCrossPathsShowcaseEligibilityCallablePayloadReviewNote,
+    'adminSetCrossPathsShowcaseEligibilityCallablePayload.status': adminSetCrossPathsShowcaseEligibilityCallablePayloadStatus,
+    'adminSetCrossPathsShowcaseEligibilityCallablePayload.uid': adminSetCrossPathsShowcaseEligibilityCallablePayloadUid,
+    'adminSetCrossPathsShowcaseEligibilityCallableResponse.profileFingerprint': adminSetCrossPathsShowcaseEligibilityCallableResponseProfileFingerprint,
+    'adminSetCrossPathsShowcaseEligibilityCallableResponse.reasonCodes': adminSetCrossPathsShowcaseEligibilityCallableResponseReasonCodes,
+    'adminSetCrossPathsShowcaseEligibilityCallableResponse.reasonCodes.items': adminSetCrossPathsShowcaseEligibilityCallableResponseReasonCodesItems,
+    'adminSetCrossPathsShowcaseEligibilityCallableResponse.reviewedAt': adminSetCrossPathsShowcaseEligibilityCallableResponseReviewedAt,
+    'adminSetCrossPathsShowcaseEligibilityCallableResponse.reviewVersion': adminSetCrossPathsShowcaseEligibilityCallableResponseReviewVersion,
+    'adminSetCrossPathsShowcaseEligibilityCallableResponse.ruleVersion': adminSetCrossPathsShowcaseEligibilityCallableResponseRuleVersion,
+    'adminSetCrossPathsShowcaseEligibilityCallableResponse.status': adminSetCrossPathsShowcaseEligibilityCallableResponseStatus,
+    'adminSetCrossPathsShowcaseEligibilityCallableResponse.uid': adminSetCrossPathsShowcaseEligibilityCallableResponseUid,
     'adminTakedownExternalEventCallablePayload.checklist.downstreamVisibilityReviewed': adminTakedownExternalEventCallablePayloadChecklistDownstreamVisibilityReviewed,
     'adminTakedownExternalEventCallablePayload.checklist.sourceStatusReviewed': adminTakedownExternalEventCallablePayloadChecklistSourceStatusReviewed,
     'adminTakedownExternalEventCallablePayload.checklist.takedownAuthorityReviewed': adminTakedownExternalEventCallablePayloadChecklistTakedownAuthorityReviewed,
@@ -28492,6 +28957,21 @@ abstract final class CatchContractConstraints {
     'createStripeCheckoutSessionCallablePayload.inviteLinkId': createStripeCheckoutSessionCallablePayloadInviteLinkId,
     'createStripeHostOnboardingLinkCallablePayload.country': createStripeHostOnboardingLinkCallablePayloadCountry,
     'createStripeHostOnboardingLinkCallablePayload.defaultCurrency': createStripeHostOnboardingLinkCallablePayloadDefaultCurrency,
+    'crossPathsShowcaseEligibilityDocument.profileFingerprint': crossPathsShowcaseEligibilityDocumentProfileFingerprint,
+    'crossPathsShowcaseEligibilityDocument.reasonCodes': crossPathsShowcaseEligibilityDocumentReasonCodes,
+    'crossPathsShowcaseEligibilityDocument.reasonCodes.items': crossPathsShowcaseEligibilityDocumentReasonCodesItems,
+    'crossPathsShowcaseEligibilityDocument.reviewChecklist.primaryPortraitClear': crossPathsShowcaseEligibilityDocumentReviewChecklistPrimaryPortraitClear,
+    'crossPathsShowcaseEligibilityDocument.reviewChecklist.profileRepresentsCurrentMember': crossPathsShowcaseEligibilityDocumentReviewChecklistProfileRepresentsCurrentMember,
+    'crossPathsShowcaseEligibilityDocument.reviewChecklist.showcasePolicyReviewed': crossPathsShowcaseEligibilityDocumentReviewChecklistShowcasePolicyReviewed,
+    'crossPathsShowcaseEligibilityDocument.reviewedAt._nanoseconds': crossPathsShowcaseEligibilityDocumentReviewedAtNanoseconds,
+    'crossPathsShowcaseEligibilityDocument.reviewedAt._seconds': crossPathsShowcaseEligibilityDocumentReviewedAtSeconds,
+    'crossPathsShowcaseEligibilityDocument.reviewedByUid': crossPathsShowcaseEligibilityDocumentReviewedByUid,
+    'crossPathsShowcaseEligibilityDocument.reviewNote': crossPathsShowcaseEligibilityDocumentReviewNote,
+    'crossPathsShowcaseEligibilityDocument.reviewVersion': crossPathsShowcaseEligibilityDocumentReviewVersion,
+    'crossPathsShowcaseEligibilityDocument.ruleVersion': crossPathsShowcaseEligibilityDocumentRuleVersion,
+    'crossPathsShowcaseEligibilityDocument.status': crossPathsShowcaseEligibilityDocumentStatus,
+    'crossPathsShowcaseEligibilityDocument.updatedAt._nanoseconds': crossPathsShowcaseEligibilityDocumentUpdatedAtNanoseconds,
+    'crossPathsShowcaseEligibilityDocument.updatedAt._seconds': crossPathsShowcaseEligibilityDocumentUpdatedAtSeconds,
     'deleteClubCallablePayload.clubId': deleteClubCallablePayloadClubId,
     'deletedUserTombstoneDocument.completedAt._nanoseconds': deletedUserTombstoneDocumentCompletedAtNanoseconds,
     'deletedUserTombstoneDocument.completedAt._seconds': deletedUserTombstoneDocumentCompletedAtSeconds,

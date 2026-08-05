@@ -498,6 +498,14 @@
       "priority": "P2",
       "reason": "Compiled User Analytics contract covers exact-uid aggregate reporting, validated scope, partial/empty states, and retry.",
       "featureContract": "feature.admin_user_analytics"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_cross_paths_showcase",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Cross Paths showcase review covers score-free readiness, bounded queue inspection, role-gated decisions, and fingerprint invalidation.",
+      "featureContract": "feature.admin_cross_paths_showcase"
     }
   ]
 }

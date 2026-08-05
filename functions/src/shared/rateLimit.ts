@@ -155,6 +155,14 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   adminGetClubDetails: {maxRequests: 60, windowMs: 60 * 1000},
   adminListClubDetails: {maxRequests: 60, windowMs: 60 * 1000},
   adminSetClubIndexStatus: {maxRequests: 30, windowMs: 60 * 1000},
+  adminListCrossPathsShowcaseCandidates: {
+    maxRequests: 60,
+    windowMs: 60 * 1000,
+  },
+  adminSetCrossPathsShowcaseEligibility: {
+    maxRequests: 30,
+    windowMs: 60 * 1000,
+  },
   adminGetEventDetails: {maxRequests: 60, windowMs: 60 * 1000},
   adminListEventDetails: {maxRequests: 60, windowMs: 60 * 1000},
   adminListExternalEventDetails: {maxRequests: 60, windowMs: 60 * 1000},

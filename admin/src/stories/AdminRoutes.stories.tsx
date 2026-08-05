@@ -116,6 +116,10 @@ import {
   type UserAnalyticsController,
 } from "../features/users/controllers/useUserAnalyticsController";
 import {UserAnalyticsWorkspace} from "../features/users/ui/UserAnalyticsScreen";
+import type {CrossPathsShowcaseController} from
+  "../features/cross-paths/controllers/useCrossPathsShowcaseController";
+import {CrossPathsShowcaseWorkspace} from
+  "../features/cross-paths/ui/CrossPathsShowcaseScreen";
 import {AdminWorkspace} from "../shared/ui/AdminPrimitives";
 
 const overview = initialOverviewSnapshot();
@@ -1383,6 +1387,51 @@ const userAnalyticsController: UserAnalyticsController = {
   },
 };
 
+function profilePhotoFixture(index: number): string {
+  const palette = ["#efd3c4", "#d7e6df", "#d8d5ec"];
+  const background = palette[index % palette.length];
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 400"><rect width="320" height="400" fill="${background}"/><circle cx="160" cy="145" r="72" fill="#5d4650"/><path d="M55 400c8-102 55-156 105-156s97 54 105 156" fill="#8c6777"/></svg>`;
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+}
+
+const crossPathsShowcaseController: CrossPathsShowcaseController = {
+  candidates: [{
+    uid: "user-rhea",
+    name: "Rhea",
+    age: 28,
+    gender: "woman",
+    city: "mumbai",
+    photoUrls: [0, 1, 2].map(profilePhotoFixture),
+    promptAnswers: [
+      {prompt: "Ideal Sunday", answer: "A long walk and dosa."},
+      {prompt: "Together we could", answer: "Try every quiz night."},
+      {prompt: "I am known for", answer: "Making the plan happen."},
+    ],
+    relationshipGoal: "longTermRelationship",
+    automaticStatus: "ready",
+    automaticReasonCodes: [],
+    storedStatus: null,
+    effectiveStatus: "needsReview",
+    effectiveReasonCodes: [],
+    profileFingerprint: "a".repeat(64),
+    reviewedByUid: null,
+    reviewedAt: null,
+    reviewNote: null,
+  }],
+  cursor: null,
+  decide: async () => true,
+  errorMessage: null,
+  filter: "needsReview",
+  generatedAt: "2026-08-05T10:00:00.000Z",
+  isLoading: false,
+  isMutating: false,
+  loadNext: () => undefined,
+  nextCursor: null,
+  pendingUid: null,
+  refresh: async () => undefined,
+  setFilter: () => undefined,
+};
+
 const meta = {
   title: "Admin Dashboard/Routes",
   parameters: {
@@ -1759,6 +1808,15 @@ const renderUserAnalyticsWorkspace = () => (
   </AdminWorkspace>
 );
 
+const renderCrossPathsShowcaseWorkspace = () => (
+  <AdminWorkspace>
+    <CrossPathsShowcaseWorkspace
+      canDecide
+      controller={crossPathsShowcaseController}
+    />
+  </AdminWorkspace>
+);
+
 const renderAdminRoleWorkspace = () => (
   <AdminWorkspace>
     <AdminRoleManagementWorkspace controller={adminRoleController} />
@@ -2091,6 +2149,28 @@ export const UserAnalyticsWorkspaceStory: Story = {
     },
   },
   render: renderUserAnalyticsWorkspace,
+};
+
+export const CrossPathsShowcaseRouteStory: Story = {
+  name: "Cross Paths Showcase",
+  parameters: {
+    catchComponent: {
+      id: "route_cross_paths_showcase",
+      states: ["queue", "review-decision"],
+    },
+  },
+  render: renderCrossPathsShowcaseWorkspace,
+};
+
+export const CrossPathsShowcaseWorkspaceStory: Story = {
+  name: "Cross Paths Showcase Workspace",
+  parameters: {
+    catchComponent: {
+      id: "workspace_cross_paths_showcase",
+      states: ["queue", "review-decision"],
+    },
+  },
+  render: renderCrossPathsShowcaseWorkspace,
 };
 
 export const AdminRoleManagementRouteStory: Story = {

@@ -14996,6 +14996,153 @@ export const eventCrossPathsConsentDocumentSchema = {
   }
 };
 
+export const crossPathsShowcaseEligibilityDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/cross_paths_showcase_eligibility.schema.json",
+  "title": "CrossPathsShowcaseEligibilityDocument",
+  "description": "Server-only reviewed eligibility record for showing one member in Cross Paths. It stores coarse readiness reasons and a profile fingerprint, never an attractiveness score.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "crossPathsShowcaseEligibility",
+  "x-firestore-path": "crossPathsShowcaseEligibility/{uid}",
+  "x-document-id-field": "uid",
+  "x-owner": "adminSetCrossPathsShowcaseEligibility callable",
+  "required": [
+    "status",
+    "reasonCodes",
+    "ruleVersion",
+    "reviewVersion",
+    "profileFingerprint",
+    "reviewChecklist",
+    "reviewNote",
+    "reviewedByUid",
+    "reviewedAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": [
+        "eligible",
+        "needsReview",
+        "paused"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "reasonCodes": {
+      "type": "array",
+      "maxItems": 12,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "insufficient_photos",
+          "incomplete_prompts",
+          "missing_relationship_goal",
+          "broken_media",
+          "photo_moderation_pending",
+          "photo_moderation_rejected",
+          "public_profile_missing",
+          "profile_changed",
+          "reviewer_hold",
+          "manual_pause"
+        ]
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "ruleVersion": {
+      "type": "integer",
+      "minimum": 1,
+      "x-catch-ownership": "callable-owned"
+    },
+    "reviewVersion": {
+      "type": "integer",
+      "minimum": 1,
+      "x-catch-ownership": "callable-owned"
+    },
+    "profileFingerprint": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "reviewChecklist": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "primaryPortraitClear",
+        "profileRepresentsCurrentMember",
+        "showcasePolicyReviewed"
+      ],
+      "properties": {
+        "primaryPortraitClear": {
+          "type": "boolean"
+        },
+        "profileRepresentsCurrentMember": {
+          "type": "boolean"
+        },
+        "showcasePolicyReviewed": {
+          "type": "boolean"
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "reviewNote": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000,
+      "x-catch-ownership": "callable-owned"
+    },
+    "reviewedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "reviewedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    }
+  }
+};
+
 export const eventBroadcastDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/event_broadcasts.schema.json",
@@ -31114,6 +31261,114 @@ export const adminSetClubIndexStatusCallablePayloadSchema = {
   }
 };
 
+export const adminListCrossPathsShowcaseCandidatesCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_list_cross_paths_showcase_candidates_payload.schema.json",
+  "title": "AdminListCrossPathsShowcaseCandidatesCallablePayload",
+  "description": "Callable payload for a bounded, role-gated Cross Paths showcase review queue.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "uid": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "status": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "all",
+        "eligible",
+        "needsReview",
+        "paused",
+        null
+      ]
+    },
+    "cursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50
+    }
+  }
+};
+
+export const adminSetCrossPathsShowcaseEligibilityCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_set_cross_paths_showcase_eligibility_payload.schema.json",
+  "title": "AdminSetCrossPathsShowcaseEligibilityCallablePayload",
+  "description": "Callable payload for an audited human Cross Paths showcase eligibility decision.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "uid",
+    "status",
+    "reviewChecklist",
+    "reviewNote"
+  ],
+  "properties": {
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "eligible",
+        "needsReview",
+        "paused"
+      ]
+    },
+    "reviewChecklist": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "primaryPortraitClear",
+        "profileRepresentsCurrentMember",
+        "showcasePolicyReviewed"
+      ],
+      "properties": {
+        "primaryPortraitClear": {
+          "type": "boolean"
+        },
+        "profileRepresentsCurrentMember": {
+          "type": "boolean"
+        },
+        "showcasePolicyReviewed": {
+          "type": "boolean"
+        }
+      }
+    },
+    "reviewNote": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    }
+  }
+};
+
 export const adminGetClubDetailsCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/admin_get_club_details_payload.schema.json",
@@ -41162,6 +41417,515 @@ export const adminRecordMarketingReviewDecisionCallableResponseSchema = {
       "type": "string",
       "pattern": "^marketingReviewDecisions/[^/]+$",
       "maxLength": 260
+    }
+  }
+};
+
+export const adminListCrossPathsShowcaseCandidatesCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_list_cross_paths_showcase_candidates_response.schema.json",
+  "title": "AdminListCrossPathsShowcaseCandidatesCallableResponse",
+  "description": "Bounded admin-safe projection of public profiles and their server-only Cross Paths showcase review state.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "generatedAt",
+    "candidates",
+    "nextCursor"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "candidates": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "uid",
+          "name",
+          "age",
+          "gender",
+          "city",
+          "photoUrls",
+          "promptAnswers",
+          "relationshipGoal",
+          "automaticStatus",
+          "automaticReasonCodes",
+          "storedStatus",
+          "effectiveStatus",
+          "effectiveReasonCodes",
+          "profileFingerprint",
+          "reviewedByUid",
+          "reviewedAt",
+          "reviewNote"
+        ],
+        "properties": {
+          "uid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "age": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 18,
+            "maximum": 99
+          },
+          "gender": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 40
+          },
+          "city": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 80
+          },
+          "photoUrls": {
+            "type": "array",
+            "maxItems": 6,
+            "items": {
+              "type": "string",
+              "format": "uri",
+              "maxLength": 2048
+            }
+          },
+          "promptAnswers": {
+            "type": "array",
+            "maxItems": 3,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "prompt",
+                "answer"
+              ],
+              "properties": {
+                "prompt": {
+                  "type": "string",
+                  "maxLength": 140
+                },
+                "answer": {
+                  "type": "string",
+                  "maxLength": 300
+                }
+              }
+            }
+          },
+          "relationshipGoal": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 80
+          },
+          "automaticStatus": {
+            "type": "string",
+            "enum": [
+              "ready",
+              "blocked"
+            ]
+          },
+          "automaticReasonCodes": {
+            "type": "array",
+            "maxItems": 7,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "enum": [
+                "insufficient_photos",
+                "incomplete_prompts",
+                "missing_relationship_goal",
+                "broken_media",
+                "photo_moderation_pending",
+                "photo_moderation_rejected",
+                "public_profile_missing",
+                "profile_changed",
+                "reviewer_hold",
+                "manual_pause"
+              ]
+            }
+          },
+          "storedStatus": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "eligible",
+              "needsReview",
+              "paused",
+              null
+            ]
+          },
+          "effectiveStatus": {
+            "type": "string",
+            "enum": [
+              "eligible",
+              "needsReview",
+              "paused"
+            ]
+          },
+          "effectiveReasonCodes": {
+            "type": "array",
+            "maxItems": 12,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "enum": [
+                "insufficient_photos",
+                "incomplete_prompts",
+                "missing_relationship_goal",
+                "broken_media",
+                "photo_moderation_pending",
+                "photo_moderation_rejected",
+                "public_profile_missing",
+                "profile_changed",
+                "reviewer_hold",
+                "manual_pause"
+              ]
+            }
+          },
+          "profileFingerprint": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "reviewedByUid": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 128
+          },
+          "reviewedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "reviewNote": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 1000
+          }
+        }
+      }
+    },
+    "nextCursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "definitions": {
+    "reasonCode": {
+      "type": "string",
+      "enum": [
+        "insufficient_photos",
+        "incomplete_prompts",
+        "missing_relationship_goal",
+        "broken_media",
+        "photo_moderation_pending",
+        "photo_moderation_rejected",
+        "public_profile_missing",
+        "profile_changed",
+        "reviewer_hold",
+        "manual_pause"
+      ]
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "uid",
+        "name",
+        "age",
+        "gender",
+        "city",
+        "photoUrls",
+        "promptAnswers",
+        "relationshipGoal",
+        "automaticStatus",
+        "automaticReasonCodes",
+        "storedStatus",
+        "effectiveStatus",
+        "effectiveReasonCodes",
+        "profileFingerprint",
+        "reviewedByUid",
+        "reviewedAt",
+        "reviewNote"
+      ],
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "age": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 18,
+          "maximum": 99
+        },
+        "gender": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "city": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 80
+        },
+        "photoUrls": {
+          "type": "array",
+          "maxItems": 6,
+          "items": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 2048
+          }
+        },
+        "promptAnswers": {
+          "type": "array",
+          "maxItems": 3,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "prompt",
+              "answer"
+            ],
+            "properties": {
+              "prompt": {
+                "type": "string",
+                "maxLength": 140
+              },
+              "answer": {
+                "type": "string",
+                "maxLength": 300
+              }
+            }
+          }
+        },
+        "relationshipGoal": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 80
+        },
+        "automaticStatus": {
+          "type": "string",
+          "enum": [
+            "ready",
+            "blocked"
+          ]
+        },
+        "automaticReasonCodes": {
+          "type": "array",
+          "maxItems": 7,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "insufficient_photos",
+              "incomplete_prompts",
+              "missing_relationship_goal",
+              "broken_media",
+              "photo_moderation_pending",
+              "photo_moderation_rejected",
+              "public_profile_missing",
+              "profile_changed",
+              "reviewer_hold",
+              "manual_pause"
+            ]
+          }
+        },
+        "storedStatus": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "eligible",
+            "needsReview",
+            "paused",
+            null
+          ]
+        },
+        "effectiveStatus": {
+          "type": "string",
+          "enum": [
+            "eligible",
+            "needsReview",
+            "paused"
+          ]
+        },
+        "effectiveReasonCodes": {
+          "type": "array",
+          "maxItems": 12,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "insufficient_photos",
+              "incomplete_prompts",
+              "missing_relationship_goal",
+              "broken_media",
+              "photo_moderation_pending",
+              "photo_moderation_rejected",
+              "public_profile_missing",
+              "profile_changed",
+              "reviewer_hold",
+              "manual_pause"
+            ]
+          }
+        },
+        "profileFingerprint": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "reviewedByUid": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 128
+        },
+        "reviewedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "reviewNote": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
+        }
+      }
+    }
+  }
+};
+
+export const adminSetCrossPathsShowcaseEligibilityCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_set_cross_paths_showcase_eligibility_response.schema.json",
+  "title": "AdminSetCrossPathsShowcaseEligibilityCallableResponse",
+  "description": "Validated result of one audited Cross Paths showcase eligibility decision.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "uid",
+    "status",
+    "reasonCodes",
+    "profileFingerprint",
+    "ruleVersion",
+    "reviewVersion",
+    "reviewedAt"
+  ],
+  "properties": {
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "eligible",
+        "needsReview",
+        "paused"
+      ]
+    },
+    "reasonCodes": {
+      "type": "array",
+      "maxItems": 12,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "insufficient_photos",
+          "incomplete_prompts",
+          "missing_relationship_goal",
+          "broken_media",
+          "photo_moderation_pending",
+          "photo_moderation_rejected",
+          "public_profile_missing",
+          "profile_changed",
+          "reviewer_hold",
+          "manual_pause"
+        ]
+      }
+    },
+    "profileFingerprint": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "ruleVersion": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "reviewVersion": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "reviewedAt": {
+      "type": "string",
+      "format": "date-time"
     }
   }
 };
