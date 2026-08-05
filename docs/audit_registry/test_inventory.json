@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "generatedFrom": "git ls-files --cached --others --exclude-standard",
   "generatedBy": "node tool/test_inventory.mjs",
-  "total": 600,
+  "total": 601,
   "categories": {
     "firebase_rules": {
       "count": 2,
@@ -24,7 +24,7 @@
       ]
     },
     "flutter_unit_widget": {
-      "count": 276,
+      "count": 277,
       "files": [
         "test/activity/activity_taxonomy_test.dart",
         "test/analytics/app_analytics_test.dart",
@@ -180,6 +180,7 @@
         "test/force_update/version_test.dart",
         "test/goldens/catch_golden_file_comparator_test.dart",
         "test/goldens/design_system_sheet_test.dart",
+        "test/goldens/entity_material_test.dart",
         "test/goldens/profile_view_test.dart",
         "test/goldens/tab_bar_test.dart",
         "test/health_activity/health_activity_repository_test.dart",
