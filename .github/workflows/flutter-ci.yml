@@ -132,15 +132,6 @@ jobs:
             /tmp/catch-ui-composition.json
           if-no-files-found: error
 
-      - name: Sizing doctrine check
-        run: bash tool/check_sizing.sh
-
-      - name: UI local-constant wrappers check
-        run: bash tool/check_ui_local_constant_wrappers.sh
-
-      - name: UI allow-debt gate
-        run: bash tool/check_ui_allow_debt.sh
-
       # Schema/codegen drift is covered by Contracts CI, which installs the
       # Node dependencies required by the schema generator.
 

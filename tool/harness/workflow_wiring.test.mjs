@@ -12,6 +12,12 @@ const workflow = (name) => repositorySnapshot.readText(
   {required: true},
 );
 const retiredPlanner = ["plan", "ci.mjs"].join("_");
+const retiredUiWrapperNames = [
+  "check_sizing.sh",
+  "check_ui_allow_debt.sh",
+  "check_ui_local_constant_wrappers.sh",
+  "check_ui_system_raw_values.sh",
+];
 const toolPreflightCheckoutClosure = [
   "/tool/",
   "/.github/actions/load-toolchain/action.yml",
@@ -44,6 +50,36 @@ function literalSparsePaths(step) {
     .split("\n")
     .map((line) => line.trim());
 }
+
+test("Flutter UI lint wiring uses one analyzer census and no legacy wrappers", () => {
+  const flutter = workflow("flutter-ci.yml");
+  assert.equal(
+    [...flutter.matchAll(/dart analyze --format machine/gu)].length,
+    1,
+  );
+  assert.match(flutter, /check_catch_ui_lint_drift\.sh --check/u);
+  for (const retired of retiredUiWrapperNames) {
+    assert.doesNotMatch(flutter, new RegExp(retired.replace(".", "\\."), "u"));
+  }
+});
+
+test("retired UI wrapper names have no live guidance consumers", () => {
+  const guidancePaths = repositorySnapshot.listFiles().filter((relativePath) =>
+    relativePath === "AGENTS.md" ||
+    relativePath === "tool/README.md" ||
+    relativePath === "design_context_pack/design_system/design_language.txt" ||
+    (relativePath.startsWith("docs/") && relativePath.endsWith(".md"))
+  );
+  const sources = repositorySnapshot.readTexts(guidancePaths, {required: true});
+  const offenders = [];
+  for (const relativePath of guidancePaths) {
+    const source = sources.get(relativePath);
+    for (const retired of retiredUiWrapperNames) {
+      if (source.includes(retired)) offenders.push(`${relativePath}: ${retired}`);
+    }
+  }
+  assert.deepEqual(offenders, []);
+});
 
 test("required CI consumes every bounded Harness v2 target", () => {
   const ci = workflow("ci.yml");

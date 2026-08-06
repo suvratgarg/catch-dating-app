@@ -85,6 +85,9 @@ test("task paths are canonical and sparse paths cannot escape", () => {
   assert.throws(() => normalizeSparsePaths(["lib/**"]), /explicit tracked path/u);
   const paths = normalizeSparsePaths(["lib/user_profile/", "functions/src/index.ts"]);
   assert.ok(paths.includes("/AGENTS.md"));
+  assert.ok(paths.includes("/analysis_options.yaml"));
+  assert.ok(paths.includes("/pubspec.lock"));
+  assert.ok(paths.includes("/pubspec.yaml"));
   assert.ok(paths.includes("/lib/user_profile/"));
   assert.ok(paths.includes("/functions/src/index.ts"));
 

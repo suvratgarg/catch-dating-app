@@ -2,9 +2,8 @@
 #
 # Catch UI lint drift helper.
 #
-# Replaces the retired design-token scanner count mode for the migrated
-# color/text-style/font rules. Enforcement lives in dart analyze; this script
-# is only the aggregate reporting layer.
+# Replaces retired diagnostic-specific UI/design wrappers. Enforcement lives
+# in dart analyze; this script is the focused-report and aggregate-ratchet layer.
 set -euo pipefail
 
 usage() {

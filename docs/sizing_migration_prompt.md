@@ -1,7 +1,7 @@
 ---
 doc_id: sizing_migration_prompt
-version: 1.0.0
-updated: 2026-05-30
+version: 1.0.1
+updated: 2026-08-06
 owner: ui_elevation_initiative
 status: reference — reusable agent prompt
 ---
@@ -12,9 +12,10 @@ Reusable prompt for handing the **fixed-dimension → constraint** migration to 
 capable model (use **Sonnet**, not Haiku — the media-vs-cap-vs-art judgment is the
 hard part). Pairs with the doctrine in
 [`app_architecture.md` → "Sizing And Constraints"](app_architecture.md) and the
-scanner `tool/check_sizing.sh`.
+`catch_no_raw_content_dimension` analyzer diagnostic.
 
-> **Check first:** `bash tool/check_sizing.sh --count`. If it prints `0`, there is
+> **Check first:** `bash tool/check_catch_ui_lint_drift.sh --code
+> catch_no_raw_content_dimension --label 'sizing doctrine' --count`. If it prints `0`, there is
 > nothing to do (the doctrine is already satisfied on this branch). Point the agent
 > at a branch/PR where the count is non-zero.
 
@@ -25,15 +26,16 @@ Copy everything below into the agent task:
 ````markdown
 # Task: convert hardcoded UI dimensions to constraints (Catch Flutter app)
 
-Drive `tool/check_sizing.sh` to a clean exit (0) by converting hardcoded content
+Drive the focused `catch_no_raw_content_dimension` report to a clean exit (0)
+by converting hardcoded content
 dimensions to constraint-based layout, so the UI scales across phone sizes and
 Dynamic Type. Source-of-truth: `docs/app_architecture.md → "Sizing And Constraints"`
 (read it first). Work in small batches; verify constantly.
 
 ## Step 1 — see the work
 ```bash
-bash tool/check_sizing.sh --count     # how many candidates (if 0, STOP — done)
-bash tool/check_sizing.sh             # lists every finding as file:line:code, exits 1
+bash tool/check_catch_ui_lint_drift.sh --code catch_no_raw_content_dimension --label 'sizing doctrine' --count
+bash tool/check_catch_ui_lint_drift.sh --code catch_no_raw_content_dimension --label 'sizing doctrine'
 ```
 The scanner flags, under `lib/` (excluding `lib/core/theme/**`, `lib/labs/**`,
 `*explore_concept*`, generated `*.g.dart`/`*.freezed.dart`):
@@ -101,7 +103,7 @@ genuinely fixed art — never to silence the scanner.
 
 ## Step 3 — hard rules (read these; they're how this goes wrong)
 - **Do not hide a raw number in a private constant** to dodge the scanner —
-  `static const _cardHeight = 120;` is caught by `tool/check_ui_local_constant_wrappers.sh`.
+  `static const _cardHeight = 120;` is caught by `catch_no_local_design_constant`.
   Route to a token or a constraint, not a local const.
 - **Do not blanket-annotate.** If you used `// sizing:allow:` more than a couple of
   times in a file, you're probably escape-hatching things that should be constraints. Re-check.
@@ -113,15 +115,15 @@ genuinely fixed art — never to silence the scanner.
 ## Step 4 — verify (after every 5–10 files, and at the end)
 ```bash
 flutter analyze                         # must stay clean
-bash tool/check_sizing.sh --count       # should trend toward 0
-bash tool/check_ui_local_constant_wrappers.sh   # must say "No ... targets found"
+bash tool/check_catch_ui_lint_drift.sh --code catch_no_raw_content_dimension --label 'sizing doctrine' --count
+bash tool/check_catch_ui_lint_drift.sh --code catch_no_local_design_constant --label 'local design constants'
 flutter test --concurrency=1            # at the end — no new failures vs. baseline
 ```
 If you touched a screen, sanity-check it at text scale 1.0 / 1.5 / 2.0 in light + dark.
 
 ## Definition of done
-- `bash tool/check_sizing.sh` exits 0.
-- `tool/check_ui_local_constant_wrappers.sh` reports no targets.
+- the focused `catch_no_raw_content_dimension` report exits 0.
+- the focused `catch_no_local_design_constant` report exits 0.
 - `flutter analyze` clean; no NEW test failures vs. the pre-change baseline.
 - No `// sizing:allow:` used except for genuinely fixed art, each with a specific reason.
 ````

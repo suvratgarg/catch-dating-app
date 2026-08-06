@@ -17,6 +17,7 @@ const TEMP_ROOTS = [...new Set([
 ].map((entry) => resolvePhysicalPath(entry)))];
 
 export const taskSparseAnchorPaths = Object.freeze([
+  "/analysis_options.yaml",
   "/AGENTS.md",
   "/docs/README.md",
   "/docs/agent_operating_model.md",
@@ -24,6 +25,8 @@ export const taskSparseAnchorPaths = Object.freeze([
   "/docs/agent_skills/",
   "/docs/audit_registry/doc_versions.json",
   "/docs/audit_registry/rules.json",
+  "/pubspec.lock",
+  "/pubspec.yaml",
   "/tool/agent/",
   "/tool/architecture/check_dependency_direction.mjs",
   "/tool/docs/check_doc_version_monotonic.mjs",

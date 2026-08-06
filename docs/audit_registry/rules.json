@@ -1040,13 +1040,8 @@
           "docAnchor": "docs/widget_catalog.md"
         },
         {
-          "tool": "scanner:ui-local-constant-wrappers",
-          "stage": "analyzer-warning",
-          "docAnchor": "docs/app_architecture.md#token-tier-model"
-        },
-        {
-          "tool": "scanner:ui-system-raw-values",
-          "stage": "manual",
+          "tool": "lint:catch-ui-drift",
+          "stage": "scanner-ratchet",
           "docAnchor": "docs/app_architecture.md#token-tier-model"
         },
         {
@@ -1125,21 +1120,6 @@
         {
           "tool": "architecture:ui-composition-contracts",
           "stage": "scanner-ratchet",
-          "docAnchor": "docs/app_architecture.md#ui-analyzer-lint-policy"
-        },
-        {
-          "tool": "scanner:ui-allow-debt",
-          "stage": "analyzer-warning",
-          "docAnchor": "docs/app_architecture.md#ui-analyzer-lint-policy"
-        },
-        {
-          "tool": "scanner:sizing",
-          "stage": "analyzer-warning",
-          "docAnchor": "docs/app_architecture.md#ui-analyzer-lint-policy"
-        },
-        {
-          "tool": "scanner:ui-local-constant-wrappers",
-          "stage": "analyzer-warning",
           "docAnchor": "docs/app_architecture.md#ui-analyzer-lint-policy"
         },
         {
@@ -1265,8 +1245,8 @@
       ],
       "enforcement": [
         {
-          "tool": "scanner:sizing",
-          "stage": "analyzer-warning",
+          "tool": "lint:catch-ui-drift",
+          "stage": "scanner-ratchet",
           "docAnchor": "docs/app_architecture.md#sizing-and-constraints"
         },
         {
@@ -3259,6 +3239,6 @@
       ]
     }
   },
-  "version": "2.8.7",
+  "version": "2.8.8",
   "updated": "2026-08-06"
 }

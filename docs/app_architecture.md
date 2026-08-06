@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.8.1
-updated: 2026-08-05
+version: 1.8.2
+updated: 2026-08-06
 owner: recursive_audit_loop
 status: active
 ---
@@ -565,11 +565,13 @@ Catch must scale across phone sizes and Dynamic Type. Prefer constraints over
 constant dimensions. Hardcoded heights/widths that wrap content are the main
 cause of clipping at large text scales and cramped or stretched layouts.
 
-`tool/check_sizing.sh` flags fixed `height`/`width`/`dimension` named args,
-fixed `Size(...)`, `BoxConstraints.tight*/expand`, and dimension-like
-`const double` declarations under `lib/`, except the design-system scale,
-generated code, and retired sandboxes. A finding is cleared by converting it or
-annotating the same line:
+The `catch_no_raw_content_dimension` and `catch_no_local_design_constant`
+analyzer diagnostics flag fixed `height`/`width`/`dimension` arguments,
+fixed `Size(...)`, tight/expanding constraints, and local dimension wrappers
+under handwritten `lib/`, except the design-system scale and generated code.
+The canonical drift helper owns both focused reports and the decrease-only
+repository baseline. A finding is cleared by converting it or annotating the
+same line:
 
 ```dart
 // sizing:allow: <reason>
@@ -790,10 +792,6 @@ bash tool/check_catch_ui_lint_drift.sh --all --json /private/tmp/catch-ui-lint-d
 node tool/design/build_lint_enforcement_tables.mjs --check
 node tool/design/check_component_enforcement_coverage.mjs
 dart run tool/architecture/check_ui_composition_contracts.dart --check
-bash tool/check_sizing.sh --count
-bash tool/check_ui_local_constant_wrappers.sh --summary
-bash tool/check_ui_system_raw_values.sh --count
-bash tool/check_ui_allow_debt.sh --summary
 flutter analyze --no-fatal-infos
 ```
 

@@ -1,7 +1,7 @@
 ---
 doc_id: ui_elevation_implementation
-version: 2.2.2
-updated: 2026-07-15
+version: 2.2.3
+updated: 2026-08-06
 owner: ui_elevation_initiative
 status: active # mechanical execution checklist for implementing agents
 ---
@@ -32,7 +32,7 @@ point size). `eventDisplay` still keeps `FontStyle.italic` by default (the ticke
 
 **Reusable agent prompts** for the mechanical sweeps (hand to a cheaper model; the matching
 gate is the deterministic definition of done): [`sizing_migration_prompt.md`](sizing_migration_prompt.md)
-(→ `check_sizing.sh`) and [`design_token_migration_prompt.md`](design_token_migration_prompt.md)
+(→ `catch_no_raw_content_dimension`) and [`design_token_migration_prompt.md`](design_token_migration_prompt.md)
 (→ Catch UI analyzer lints / `check_catch_ui_lint_drift.sh`).
 
 **Visual QA + regression:** the [UI capture pipeline](plans/ui_capture_pipeline_plan.md) — one
@@ -241,17 +241,17 @@ value), run the Widgetbook foundation/component contract surfaces plus the live 
 app re-skins in light + dark with no stranded color outside the allowlist. `flutter analyze`
 clean; tests green.
 
-## Task 1b — Sizing/constraint doctrine + Dynamic Type  🟡 doctrine + scanner + migration DONE (`check_sizing.sh` green, wired in CI); remaining: ticket-rail overflow fix + Dynamic-Type spot-check ⬜
+## Task 1b — Sizing/constraint doctrine + Dynamic Type  🟡 doctrine + analyzer migration DONE (drift gate green, wired in CI); remaining: ticket-rail overflow fix + Dynamic-Type spot-check ⬜
 
 **✅ Already landed:**
 - **Doctrine written** — `docs/app_architecture.md` → "Sizing And Constraints" (allowed-constant
   allowlist, banned→preferred table, `CatchLayout.maxContentWidth` clamp, Dynamic-Type rule, and a
   numbered **deterministic conversion algorithm**).
-- **Scanner written** — `tool/check_sizing.sh` (portable `perl`+`find`; no ripgrep/GNU-grep needed).
-  Flags fixed `height`/`width`/`dimension`, `Size(...)`, `BoxConstraints.tight*/expand`, and
-  dimension-like `const double` decls under `lib/` (auto-exempts `1`px/`0`, `lib/core/theme/**`,
-  generated code, `lib/labs/**`, `explore_concept`). Escape hatch: `// sizing:allow: <reason>`.
-- **Scanner written** — `tool/check_ui_local_constant_wrappers.sh`. Flags the scanner-bypass pattern
+- **Analyzer rule written** — `catch_no_raw_content_dimension` flags fixed
+  `height`/`width`/`dimension`, `Size(...)`, tight/expanding constraints, and dimension-like
+  declarations under handwritten `lib/`; the canonical drift helper owns counts and the ratchet.
+  Escape hatch: `// sizing:allow: <reason>`.
+- **Analyzer rule written** — `catch_no_local_design_constant` flags the scanner-bypass pattern
   where feature/presentation files move raw UI values into private file-local constants such as
   `_cardHeight = 120`, `_pillRadius = 12`, `_shadowColor = Color(...)`, or `_motionDuration =
   Duration(...)`. These must route through `CatchSpacing`, `CatchRadius`, `CatchIcon`,
@@ -261,10 +261,10 @@ clean; tests green.
 **⬜ The migration (mechanical):**
 1. **Add `CatchLayout.maxContentWidth`** (≈ 600) to `lib/core/theme/catch_tokens.dart` (it lives in
    the allowlisted theme dir).
-2. **Baseline:** `./tool/check_sizing.sh` currently reports **~186 candidates**. Work the list with
+2. **Baseline:** run the focused `catch_no_raw_content_dimension` report. Work the list with
    the doctrine's 8-step algorithm — convert each, or annotate `// sizing:allow: <reason>` for
    genuinely fixed art. Re-run until it exits `0`.
-   Also run `./tool/check_ui_local_constant_wrappers.sh`; a zero sizing count is not clean if raw
+   Also run the focused `catch_no_local_design_constant` report; a zero sizing count is not clean if raw
    dimensions/colors/durations were hidden in private constants.
 3. **Flagship fix — the ticket:** in `event_ticket_surface.dart` the consts
    `eventTicketMediaHeight = 136`, `eventTicketDividerHeight`, `eventTicketNotchRadius`,
@@ -275,9 +275,9 @@ clean; tests green.
    aligned. Verify the notch visually in light + dark.
 4. **Dynamic Type:** after the scanner is clean, walk every touched screen at text scale
    **1.0/1.5/2.0** — no clip/overflow.
-5. **Wire `tool/check_sizing.sh` into CI** next to the other gates (see Task 1d / `release_operations.md`).
+5. **Keep `tool/check_catch_ui_lint_drift.sh --check` wired in CI**; do not add diagnostic-specific wrapper steps.
 
-**DoD:** `tool/check_sizing.sh` exits `0` (every fixed dim converted or annotated); ticket media is
+**DoD:** the focused `catch_no_raw_content_dimension` report exits `0` (every fixed dim converted or annotated); ticket media is
 constraint-based with an aligned notch; no overflow at text scale 2.0; scanner runs in CI.
 
 ## Task 1c — Motion spec  ⬜
@@ -401,12 +401,9 @@ more precision before CI enforcement.
    This implementation doc says those tasks are done. Keep `design_language.md` as the why/source of
    identity truth, but update its state so no one redoes completed work.
 
-3. **`tool/check_sizing.sh` is useful but too noisy to wire into CI unchanged.**
-   It currently reports the documented 186 findings, but several are false positives or allowed
-   cases: text-style `height: 0.98`, `copyWith(height:)`, border widths, stroke widths, and fractional
-   sheet-size constants. The doctrine says stroke/border widths are allowed, so the scanner should
-   exempt them before becoming a failing CI gate. Otherwise it will create annotation churn instead
-   of enforcing real responsive-layout improvements.
+3. **The historical sizing-scanner critique is resolved.**
+   The broad regex wrapper was replaced by `catch_no_raw_content_dimension`; seeded analyzer
+   fixtures and the shared decrease-only drift gate now own its signal and CI behavior.
 
 4. **The ticket sizing task is partly stale.**
    `eventTicketMediaHeight = 136` is already removed from code; the remaining ticket constants are

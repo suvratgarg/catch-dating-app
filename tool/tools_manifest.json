@@ -1113,103 +1113,14 @@
       "role": "gate",
       "baseline": "tool/audit/catch_ui_lint_drift_baseline.json",
       "rules": [
-        "UI-LINT-001"
+        "UI-LINT-001",
+        "DESIGN-TOKENS-001",
+        "RESPONSIVE-LAYOUT-001"
       ],
       "vacuityProof": {
         "type": "self-test",
         "command": "bash tool/check_catch_ui_lint_drift.sh --self-test"
       }
-    },
-    {
-      "id": "scanner:sizing",
-      "category": "lint",
-      "path": "tool/check_sizing.sh",
-      "command": "bash tool/check_sizing.sh",
-      "safety": "local",
-      "status": "active",
-      "description": "Reports catch_no_raw_content_dimension diagnostics from the Catch UI analyzer plugin.",
-      "checks": [
-        "bash -n tool/check_sizing.sh",
-        "bash tool/check_sizing.sh"
-      ],
-      "role": "gate",
-      "rules": [
-        "UI-LINT-001",
-        "RESPONSIVE-LAYOUT-001"
-      ],
-      "vacuityProof": {
-        "type": "probe-harness",
-        "path": "tool/check_catch_ui_lints.sh",
-        "diagnostics": [
-          "catch_no_raw_content_dimension"
-        ]
-      }
-    },
-    {
-      "id": "scanner:ui-allow-debt",
-      "category": "lint",
-      "path": "tool/check_ui_allow_debt.sh",
-      "command": "bash tool/check_ui_allow_debt.sh",
-      "safety": "local",
-      "status": "active",
-      "description": "Reports catch_no_allow_debt diagnostics from the Catch UI analyzer plugin.",
-      "checks": [
-        "bash -n tool/check_ui_allow_debt.sh",
-        "bash tool/check_ui_allow_debt.sh"
-      ],
-      "role": "gate",
-      "rules": [
-        "UI-LINT-001"
-      ],
-      "vacuityProof": {
-        "type": "probe-harness",
-        "path": "tool/check_catch_ui_lints.sh",
-        "diagnostics": [
-          "catch_no_allow_debt"
-        ]
-      }
-    },
-    {
-      "id": "scanner:ui-local-constant-wrappers",
-      "category": "lint",
-      "path": "tool/check_ui_local_constant_wrappers.sh",
-      "command": "bash tool/check_ui_local_constant_wrappers.sh",
-      "safety": "local",
-      "status": "active",
-      "description": "Reports catch_no_local_design_constant diagnostics from the Catch UI analyzer plugin.",
-      "checks": [
-        "bash -n tool/check_ui_local_constant_wrappers.sh",
-        "bash tool/check_ui_local_constant_wrappers.sh"
-      ],
-      "role": "gate",
-      "rules": [
-        "UI-LINT-001",
-        "DESIGN-TOKENS-001"
-      ],
-      "vacuityProof": {
-        "type": "probe-harness",
-        "path": "tool/check_catch_ui_lints.sh",
-        "diagnostics": [
-          "catch_no_local_design_constant"
-        ]
-      }
-    },
-    {
-      "id": "scanner:ui-system-raw-values",
-      "category": "lint",
-      "path": "tool/check_ui_system_raw_values.sh",
-      "command": "bash tool/check_ui_system_raw_values.sh",
-      "safety": "local",
-      "status": "active",
-      "description": "Reports migrated UI-system raw-value diagnostics from the Catch UI analyzer plugin.",
-      "checks": [
-        "bash -n tool/check_ui_system_raw_values.sh",
-        "bash tool/check_ui_system_raw_values.sh --count"
-      ],
-      "role": "finder",
-      "rules": [
-        "DESIGN-TOKENS-001"
-      ]
     },
     {
       "id": "lint:catch-ui-drift-ratchet-engine",

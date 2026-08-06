@@ -1,7 +1,7 @@
 ---
 doc_id: design_token_migration_prompt
-version: 1.0.0
-updated: 2026-06-01
+version: 1.0.1
+updated: 2026-08-06
 owner: ui_elevation_initiative
 status: reference — reusable agent prompt + DoD gate
 ---
@@ -116,7 +116,7 @@ or directly above the raw color expression.
 - **Light AND dark must be correct.** Read tokens; never bake a dark hex. Verify
   both `ThemeMode.light` and `ThemeMode.dark`.
 - **Don't hide a hex in a private constant** (`static const _cardBg = Color(0x…)`)
-  to dodge the scanner — that's caught by `tool/check_ui_local_constant_wrappers.sh`.
+  to dodge the scanner — `catch_no_local_design_constant` catches that pattern.
 - **Don't blanket-annotate.** `// token:allow:` is for theme-independent art only.
   If a file has more than a couple, you're escape-hatching things that should be tokens.
 - **Behavior-preserving:** pick the token whose value matches the old color's
@@ -126,7 +126,7 @@ or directly above the raw color expression.
 ## Step 4 — verify (after every 5–10 files, and at the end)
 ```bash
 bash tool/check_catch_ui_lint_drift.sh --count      # trend to 0
-bash tool/check_ui_local_constant_wrappers.sh       # must report no targets
+bash tool/check_catch_ui_lint_drift.sh --code catch_no_local_design_constant --label 'local design constants'
 flutter analyze                                     # must stay clean
 flutter test --concurrency=1                        # at the end — no new failures vs. baseline
 ```
@@ -134,7 +134,7 @@ Spot-check any touched screen in light + dark.
 
 ## Definition of done
 - `bash tool/check_catch_ui_lint_drift.sh` exits 0.
-- `tool/check_ui_local_constant_wrappers.sh` reports no targets.
+- the focused `catch_no_local_design_constant` report exits 0.
 - `flutter analyze` clean; no NEW test failures vs. the pre-change baseline.
 - `// token:allow:` used only for theme-independent art, each with a specific reason.
 ````

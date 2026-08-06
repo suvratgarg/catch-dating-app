@@ -1,7 +1,7 @@
 ---
 doc_id: tooling-platform-consolidation-tracker
-version: 1.3
-updated: 2026-06-02
+version: 1.4
+updated: 2026-08-06
 owner: engineering
 dri: TBD
 status: remaining_work
@@ -34,8 +34,8 @@ only the work that is not implemented, not landed, or not verified.
 - Contract generator check-mode work is implemented.
 - Design-token shell scanners `tool/check_design_tokens.sh` and
   `tool/check_raw_color_sweep.sh` are gone in the current worktree.
-- `check_ui_local_constant_wrappers.sh --summary` and
-  `check_ui_allow_debt.sh --summary` both return `0`.
+- Diagnostic-specific UI wrappers are retired; filtered inspection and the
+  aggregate ratchet now share `tool/check_catch_ui_lint_drift.sh`.
 - Legacy design preview tools no longer reference the retired Electric Sunset/Nitron
   exploration names.
 - `seed-world` now consumes the checked sales demo persona profile projection for
@@ -106,6 +106,7 @@ node tool/marketing/export_app_screenshots.mjs --check-design-json
 node tool/marketing/sync_website_media.mjs --check
 node tool/check_remote_ops_manifest.mjs --check
 node tool/design/build_context_pack.mjs --check
-bash tool/check_ui_local_constant_wrappers.sh --summary
-bash tool/check_ui_allow_debt.sh --summary
+bash tool/check_catch_ui_lint_drift.sh --code catch_no_local_design_constant --summary
+bash tool/check_catch_ui_lint_drift.sh --code catch_no_allow_debt --summary
+bash tool/check_catch_ui_lint_drift.sh --check
 ```

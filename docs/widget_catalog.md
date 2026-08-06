@@ -1,7 +1,7 @@
 ---
 doc_id: widget_catalog
-version: 2.5.668
-updated: 2026-08-05
+version: 2.5.669
+updated: 2026-08-06
 owner: recursive_audit_loop
 status: active
 ---
@@ -4629,8 +4629,9 @@ a feature section here only when auditing that feature's widget surface.
   `ProfileSurface` routes Catches + preview + public profile through it. The legacy
   `ScrollableProfile` + section widgets are superseded.
 - New anti-drift analyzer rules (`catch_no_raw_color`, `catch_no_raw_text_style`,
-  `catch_no_raw_font_drift`) join `check_sizing.sh` +
-  `check_ui_local_constant_wrappers.sh` in CI.
+  `catch_no_raw_font_drift`, `catch_no_raw_content_dimension`, and
+  `catch_no_local_design_constant`) share one analyzer census and one
+  decrease-only drift ratchet in CI.
 
 ### 2.5.159
 
