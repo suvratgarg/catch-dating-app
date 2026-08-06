@@ -49,7 +49,31 @@ node tool/ci/plan_ci.mjs --full --json
 The planner uses first-match rules so a Host-only source can select Host while
 shared Flutter source selects both roles. CI-control changes run the full
 validation matrix. Unmapped paths fail before any conditional lane can be
-mistaken for success. This graph is the canonical cross-root integration map.
+mistaken for success. This v1 graph remains the authoritative CI map until the
+Harness v2 shadow comparison meets the cutover thresholds.
+
+Harness v2 models one terminal classification or component owner per path,
+then expands through explicit dependency edges. It is intentionally shadow-only:
+it cannot change required CI outputs, and dependency-expanded components cannot
+authorize deploy or release operations. Compile-codegen runs only declared,
+deterministic, network-free check commands.
+
+```sh
+node tool/harness.mjs validate
+node tool/harness.mjs coverage --json
+node tool/harness.mjs explain --paths lib/features/explore/presentation/explore_page.dart --json
+node tool/harness.mjs shadow --base origin/main --mode pr --json
+node tool/harness.mjs check --affected --paths contracts/firestore/users.schema.json
+node tool/harness.mjs check --affected --dry-run --paths contracts/firestore/users.schema.json
+node tool/harness.mjs generate --affected --check --paths contracts/firestore/users.schema.json
+```
+
+Unknown or ambiguous v2 ownership is a shadow finding while v1 is authoritative;
+the same condition fails `check` and `generate` closed. The authored graph and
+compile-codegen allowlist live in `tool/harness/component_graph.json`. `check`
+executes the selected manifest checks unless `--dry-run` is present. Full-graph
+validation and full safe-codegen are restricted to nightly mode; write commands
+remain disabled while Harness v2 is shadow-only.
 
 ## Layout
 
@@ -65,6 +89,8 @@ mistaken for success. This graph is the canonical cross-root integration map.
 - `design/`: visual review and design-preview entrypoints.
 - `env/`: checked-in Dart define files for app environments.
 - `firebase/`: Firebase project/config helper scripts.
+- `harness/`: Harness v2 shadow component graph, safe compile-codegen catalog,
+  planner kernel, and fixtures.
 - `lib/`: shared Node helper modules for repo paths, CLI parsing, and Firebase project selection.
 - Completed one-time migration tools are retired after prod verification; historical
   evidence lives in the audit registry and migration contract metadata.

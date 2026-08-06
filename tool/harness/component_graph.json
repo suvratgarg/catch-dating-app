@@ -1,0 +1,765 @@
+{
+  "$schema": "./component_graph.schema.json",
+  "version": "0.1.0",
+  "status": "shadow",
+  "modes": ["pr", "merge_group", "main", "nightly", "release"],
+  "targets": [
+    "admin",
+    "contracts",
+    "doc_state",
+    "docs",
+    "firestore_rules",
+    "flutter",
+    "flutter_build_android",
+    "flutter_build_ios",
+    "flutter_build_web",
+    "flutter_web_smoke",
+    "functions",
+    "marketing",
+    "operations",
+    "policy_docs",
+    "tools",
+    "visual_integration"
+  ],
+  "operationProfiles": {
+    "docs": {
+      "direct": {
+        "pr": {"ciTargets": ["docs"], "checkIds": ["docs:version-monotonic"]},
+        "merge_group": {"ciTargets": ["docs"], "checkIds": ["docs:version-monotonic"]},
+        "main": {"ciTargets": ["docs"], "checkIds": ["docs:version-monotonic"]},
+        "nightly": {"ciTargets": ["docs"], "checkIds": ["docs:version-monotonic"]}
+      },
+      "affected": {}
+    },
+    "policy": {
+      "direct": {
+        "pr": {"ciTargets": ["policy_docs"], "checkIds": ["agent:readiness"]},
+        "merge_group": {"ciTargets": ["policy_docs"], "checkIds": ["agent:readiness"]},
+        "main": {"ciTargets": ["policy_docs"], "checkIds": ["agent:readiness"]},
+        "nightly": {"ciTargets": ["policy_docs"], "checkIds": ["agent:readiness"]}
+      },
+      "affected": {}
+    },
+    "harness-full": {
+      "direct": {
+        "pr": {"ciTargets": ["admin", "contracts", "doc_state", "firestore_rules", "flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "functions", "marketing", "operations", "tools", "visual_integration"], "checkIds": ["agent:harness-v2"]},
+        "merge_group": {"ciTargets": ["admin", "contracts", "doc_state", "firestore_rules", "flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "functions", "marketing", "operations", "tools", "visual_integration"], "checkIds": ["agent:harness-v2"]},
+        "main": {"ciTargets": ["admin", "contracts", "doc_state", "firestore_rules", "flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "functions", "marketing", "operations", "tools", "visual_integration"], "checkIds": ["agent:harness-v2"]},
+        "nightly": {"ciTargets": ["admin", "contracts", "doc_state", "firestore_rules", "flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "functions", "marketing", "operations", "tools", "visual_integration"], "checkIds": ["agent:harness-v2"]}
+      },
+      "affected": {}
+    },
+    "contracts-source": {
+      "direct": {
+        "pr": {"ciTargets": ["contracts"], "checkIds": ["contracts:generate-schemas", "contracts:validate-schemas"]},
+        "merge_group": {"ciTargets": ["contracts"], "checkIds": ["contracts:generate-schemas", "contracts:validate-schemas"]},
+        "main": {"ciTargets": ["contracts"], "deployGroups": ["backend-contracts"]},
+        "nightly": {"ciTargets": ["contracts"], "checkIds": ["contracts:generate-schemas", "contracts:validate-schemas"]},
+        "release": {"deployGroups": ["backend-contracts"]}
+      },
+      "affected": {}
+    },
+    "contracts-doc": {
+      "direct": {
+        "pr": {"ciTargets": ["contracts"]},
+        "merge_group": {"ciTargets": ["contracts"]},
+        "main": {"ciTargets": ["contracts"]},
+        "nightly": {"ciTargets": ["contracts"]}
+      },
+      "affected": {}
+    },
+    "generated-flutter-contract": {
+      "direct": {
+        "pr": {"ciTargets": ["flutter"]},
+        "merge_group": {"ciTargets": ["flutter"]},
+        "main": {"ciTargets": ["flutter"]},
+        "nightly": {"ciTargets": ["flutter"]}
+      },
+      "affected": {}
+    },
+    "functions-source": {
+      "direct": {
+        "pr": {"ciTargets": ["functions"]},
+        "merge_group": {"ciTargets": ["functions"]},
+        "main": {"ciTargets": ["functions"], "deployGroups": ["functions"]},
+        "nightly": {"ciTargets": ["functions"]},
+        "release": {"deployGroups": ["functions"]}
+      },
+      "affected": {
+        "pr": {"ciTargets": ["functions"]},
+        "merge_group": {"ciTargets": ["functions"]},
+        "main": {"ciTargets": ["functions"]},
+        "nightly": {"ciTargets": ["functions"]}
+      }
+    },
+    "functions-doc": {
+      "direct": {
+        "pr": {"ciTargets": ["functions"]},
+        "merge_group": {"ciTargets": ["functions"]},
+        "main": {"ciTargets": ["functions"]},
+        "nightly": {"ciTargets": ["functions"]}
+      },
+      "affected": {}
+    },
+    "rules-source": {
+      "direct": {
+        "pr": {"ciTargets": ["contracts", "firestore_rules", "functions"]},
+        "merge_group": {"ciTargets": ["contracts", "firestore_rules", "functions"]},
+        "main": {"ciTargets": ["contracts", "firestore_rules", "functions"], "deployGroups": ["firestore-indexes", "firestore-rules", "storage-rules"]},
+        "nightly": {"ciTargets": ["contracts", "firestore_rules", "functions"]},
+        "release": {"deployGroups": ["firestore-indexes", "firestore-rules", "storage-rules"]}
+      },
+      "affected": {
+        "pr": {"ciTargets": ["firestore_rules"]},
+        "merge_group": {"ciTargets": ["firestore_rules"]},
+        "main": {"ciTargets": ["firestore_rules"]},
+        "nightly": {"ciTargets": ["firestore_rules"]}
+      }
+    },
+    "admin-source": {
+      "direct": {
+        "pr": {"ciTargets": ["admin"]},
+        "merge_group": {"ciTargets": ["admin"]},
+        "main": {"ciTargets": ["admin"]},
+        "nightly": {"ciTargets": ["admin"]}
+      },
+      "affected": {
+        "pr": {"ciTargets": ["admin"]},
+        "merge_group": {"ciTargets": ["admin"]},
+        "main": {"ciTargets": ["admin"]},
+        "nightly": {"ciTargets": ["admin"]}
+      }
+    },
+    "marketing-source": {
+      "direct": {
+        "pr": {"ciTargets": ["marketing"]},
+        "merge_group": {"ciTargets": ["marketing"]},
+        "main": {"ciTargets": ["marketing"]},
+        "nightly": {"ciTargets": ["marketing"]}
+      },
+      "affected": {
+        "pr": {"ciTargets": ["marketing"]},
+        "merge_group": {"ciTargets": ["marketing"]},
+        "main": {"ciTargets": ["marketing"]},
+        "nightly": {"ciTargets": ["marketing"]}
+      }
+    },
+    "web-shared": {
+      "direct": {
+        "pr": {"ciTargets": ["tools"]},
+        "merge_group": {"ciTargets": ["tools"]},
+        "main": {"ciTargets": ["tools"]},
+        "nightly": {"ciTargets": ["tools"]}
+      },
+      "affected": {}
+    },
+    "app-shared": {
+      "direct": {
+        "pr": {"ciTargets": ["flutter"]},
+        "merge_group": {"ciTargets": ["flutter"]},
+        "main": {"ciTargets": ["flutter_build_android", "flutter_build_ios", "flutter_build_web"], "releaseRoles": ["consumer", "host"]},
+        "nightly": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]},
+        "release": {"buildTargets": ["consumer-android", "consumer-ios", "consumer-web", "host-android", "host-ios", "host-web"], "releaseRoles": ["consumer", "host"]}
+      },
+      "affected": {}
+    },
+    "app-l10n-source": {
+      "direct": {
+        "pr": {"ciTargets": ["flutter", "flutter_web_smoke"], "buildTargets": ["consumer-web-smoke", "host-web-smoke"]},
+        "merge_group": {"ciTargets": ["flutter", "flutter_web_smoke"], "buildTargets": ["consumer-web-smoke", "host-web-smoke"]},
+        "main": {"ciTargets": ["flutter_build_android", "flutter_build_ios", "flutter_build_web"], "releaseRoles": ["consumer", "host"]},
+        "nightly": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]},
+        "release": {"buildTargets": ["consumer-android", "consumer-ios", "consumer-web", "host-android", "host-ios", "host-web"], "releaseRoles": ["consumer", "host"]}
+      },
+      "affected": {}
+    },
+    "app-l10n-config": {
+      "direct": {
+        "pr": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "tools", "visual_integration"]},
+        "merge_group": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "tools", "visual_integration"]},
+        "main": {"ciTargets": ["flutter_build_android", "flutter_build_ios", "flutter_build_web", "tools"], "releaseRoles": ["consumer", "host"]},
+        "nightly": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "tools", "visual_integration"]},
+        "release": {"buildTargets": ["consumer-android", "consumer-ios", "consumer-web", "host-android", "host-ios", "host-web"], "releaseRoles": ["consumer", "host"]}
+      },
+      "affected": {}
+    },
+    "app-host": {
+      "direct": {
+        "pr": {"ciTargets": ["flutter", "flutter_web_smoke"], "buildTargets": ["host-web-smoke"]},
+        "merge_group": {"ciTargets": ["flutter", "flutter_web_smoke"], "buildTargets": ["host-web-smoke"]},
+        "main": {"ciTargets": ["flutter_build_android", "flutter_build_ios", "flutter_build_web"], "releaseRoles": ["host"]},
+        "nightly": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]},
+        "release": {"buildTargets": ["host-android", "host-ios", "host-web"], "releaseRoles": ["host"]}
+      },
+      "affected": {
+        "pr": {"ciTargets": ["flutter_web_smoke"], "buildTargets": ["host-web-smoke"]},
+        "merge_group": {"ciTargets": ["flutter_web_smoke"], "buildTargets": ["host-web-smoke"]},
+        "nightly": {"ciTargets": ["flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]}
+      }
+    },
+    "app-consumer": {
+      "direct": {
+        "pr": {"ciTargets": ["flutter", "flutter_web_smoke"], "buildTargets": ["consumer-web-smoke"]},
+        "merge_group": {"ciTargets": ["flutter", "flutter_web_smoke"], "buildTargets": ["consumer-web-smoke"]},
+        "main": {"ciTargets": ["flutter_build_android", "flutter_build_ios", "flutter_build_web"], "releaseRoles": ["consumer"]},
+        "nightly": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]},
+        "release": {"buildTargets": ["consumer-android", "consumer-ios", "consumer-web"], "releaseRoles": ["consumer"]}
+      },
+      "affected": {
+        "pr": {"ciTargets": ["flutter_web_smoke"], "buildTargets": ["consumer-web-smoke"]},
+        "merge_group": {"ciTargets": ["flutter_web_smoke"], "buildTargets": ["consumer-web-smoke"]},
+        "nightly": {"ciTargets": ["flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]}
+      }
+    },
+    "flutter-contract-consumer": {
+      "direct": {},
+      "affected": {
+        "pr": {"ciTargets": ["flutter"]},
+        "merge_group": {"ciTargets": ["flutter"]},
+        "main": {"ciTargets": ["flutter"]},
+        "nightly": {"ciTargets": ["flutter"]}
+      }
+    },
+    "operations-contract-consumer": {
+      "direct": {},
+      "affected": {
+        "pr": {"ciTargets": ["operations"]},
+        "merge_group": {"ciTargets": ["operations"]},
+        "main": {"ciTargets": ["operations"]},
+        "nightly": {"ciTargets": ["operations"]}
+      }
+    },
+    "operations-doc": {
+      "direct": {
+        "pr": {"ciTargets": ["functions", "operations", "tools"]},
+        "merge_group": {"ciTargets": ["functions", "operations", "tools"]},
+        "main": {"ciTargets": ["functions", "operations", "tools"]},
+        "nightly": {"ciTargets": ["functions", "operations", "tools"]}
+      },
+      "affected": {}
+    },
+    "flutter-tests": {
+      "direct": {
+        "pr": {"ciTargets": ["flutter", "visual_integration"]},
+        "merge_group": {"ciTargets": ["flutter", "visual_integration"]},
+        "main": {"ciTargets": ["flutter", "visual_integration"]},
+        "nightly": {"ciTargets": ["flutter", "visual_integration"]}
+      },
+      "affected": {}
+    },
+    "flutter-design": {
+      "direct": {
+        "pr": {"ciTargets": ["flutter", "tools", "visual_integration"]},
+        "merge_group": {"ciTargets": ["flutter", "tools", "visual_integration"]},
+        "main": {"ciTargets": ["flutter", "tools", "visual_integration"]},
+        "nightly": {"ciTargets": ["flutter", "tools", "visual_integration"]}
+      },
+      "affected": {}
+    },
+    "native-host-android": {
+      "direct": {
+        "pr": {"ciTargets": ["flutter_build_android"]},
+        "merge_group": {"ciTargets": ["flutter_build_android"]},
+        "main": {"ciTargets": ["flutter_build_android"], "releaseRoles": ["host"]},
+        "nightly": {"ciTargets": ["flutter_build_android"]},
+        "release": {"buildTargets": ["host-android"], "releaseRoles": ["host"]}
+      },
+      "affected": {}
+    },
+    "native-consumer-android": {
+      "direct": {
+        "pr": {"ciTargets": ["flutter_build_android"]},
+        "merge_group": {"ciTargets": ["flutter_build_android"]},
+        "main": {"ciTargets": ["flutter_build_android"], "releaseRoles": ["consumer"]},
+        "nightly": {"ciTargets": ["flutter_build_android"]},
+        "release": {"buildTargets": ["consumer-android"], "releaseRoles": ["consumer"]}
+      },
+      "affected": {}
+    },
+    "native-shared-android": {
+      "direct": {
+        "pr": {"ciTargets": ["flutter_build_android"]},
+        "merge_group": {"ciTargets": ["flutter_build_android"]},
+        "main": {"ciTargets": ["flutter_build_android"], "releaseRoles": ["consumer", "host"]},
+        "nightly": {"ciTargets": ["flutter_build_android"]},
+        "release": {"buildTargets": ["consumer-android", "host-android"], "releaseRoles": ["consumer", "host"]}
+      },
+      "affected": {}
+    },
+    "native-shared-ios": {
+      "direct": {
+        "pr": {"ciTargets": ["flutter_build_ios"]},
+        "merge_group": {"ciTargets": ["flutter_build_ios"]},
+        "main": {"ciTargets": ["flutter_build_ios"], "releaseRoles": ["consumer", "host"]},
+        "nightly": {"ciTargets": ["flutter_build_ios"]},
+        "release": {"buildTargets": ["consumer-ios", "host-ios"], "releaseRoles": ["consumer", "host"]}
+      },
+      "affected": {}
+    },
+    "native-host-ios": {
+      "direct": {
+        "pr": {"ciTargets": ["flutter_build_ios"]},
+        "merge_group": {"ciTargets": ["flutter_build_ios"]},
+        "main": {"ciTargets": ["flutter_build_ios"], "releaseRoles": ["host"]},
+        "nightly": {"ciTargets": ["flutter_build_ios"]},
+        "release": {"buildTargets": ["host-ios"], "releaseRoles": ["host"]}
+      },
+      "affected": {}
+    },
+    "native-consumer-ios": {
+      "direct": {
+        "pr": {"ciTargets": ["flutter_build_ios"]},
+        "merge_group": {"ciTargets": ["flutter_build_ios"]},
+        "main": {"ciTargets": ["flutter_build_ios"], "releaseRoles": ["consumer"]},
+        "nightly": {"ciTargets": ["flutter_build_ios"]},
+        "release": {"buildTargets": ["consumer-ios"], "releaseRoles": ["consumer"]}
+      },
+      "affected": {}
+    },
+    "native-host-web": {
+      "direct": {
+        "pr": {"ciTargets": ["flutter", "flutter_build_web", "visual_integration"], "buildTargets": ["host-web"]},
+        "merge_group": {"ciTargets": ["flutter", "flutter_build_web", "visual_integration"], "buildTargets": ["host-web"]},
+        "main": {"ciTargets": ["flutter_build_web"], "releaseRoles": ["host"]},
+        "nightly": {"ciTargets": ["flutter", "flutter_build_web", "visual_integration"]},
+        "release": {"buildTargets": ["host-web"], "releaseRoles": ["host"]}
+      },
+      "affected": {}
+    },
+    "native-consumer-web": {
+      "direct": {
+        "pr": {"ciTargets": ["flutter", "flutter_build_web", "visual_integration"], "buildTargets": ["consumer-web"]},
+        "merge_group": {"ciTargets": ["flutter", "flutter_build_web", "visual_integration"], "buildTargets": ["consumer-web"]},
+        "main": {"ciTargets": ["flutter_build_web"], "releaseRoles": ["consumer"]},
+        "nightly": {"ciTargets": ["flutter", "flutter_build_web", "visual_integration"]},
+        "release": {"buildTargets": ["consumer-web"], "releaseRoles": ["consumer"]}
+      },
+      "affected": {}
+    },
+    "app-host-dependencies": {
+      "direct": {
+        "pr": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]},
+        "merge_group": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]},
+        "main": {"ciTargets": ["flutter_build_android", "flutter_build_ios", "flutter_build_web"], "releaseRoles": ["host"]},
+        "nightly": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]},
+        "release": {"buildTargets": ["host-android", "host-ios", "host-web"], "releaseRoles": ["host"]}
+      },
+      "affected": {}
+    },
+    "app-consumer-dependencies": {
+      "direct": {
+        "pr": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]},
+        "merge_group": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]},
+        "main": {"ciTargets": ["flutter_build_android", "flutter_build_ios", "flutter_build_web"], "releaseRoles": ["consumer"]},
+        "nightly": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]},
+        "release": {"buildTargets": ["consumer-android", "consumer-ios", "consumer-web"], "releaseRoles": ["consumer"]}
+      },
+      "affected": {}
+    },
+    "other-flutter-platforms": {
+      "direct": {
+        "pr": {"ciTargets": ["flutter", "flutter_build_web", "visual_integration"]},
+        "merge_group": {"ciTargets": ["flutter", "flutter_build_web", "visual_integration"]},
+        "main": {"ciTargets": ["flutter", "flutter_build_web", "visual_integration"], "releaseRoles": ["consumer", "host"]},
+        "nightly": {"ciTargets": ["flutter", "flutter_build_web", "visual_integration"]},
+        "release": {"buildTargets": ["consumer-web", "host-web"], "releaseRoles": ["consumer", "host"]}
+      },
+      "affected": {}
+    },
+    "app-dependencies": {
+      "direct": {
+        "pr": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]},
+        "merge_group": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]},
+        "main": {"ciTargets": ["flutter_build_android", "flutter_build_ios", "flutter_build_web"], "releaseRoles": ["consumer", "host"]},
+        "nightly": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]},
+        "release": {"buildTargets": ["consumer-android", "consumer-ios", "consumer-web", "host-android", "host-ios", "host-web"], "releaseRoles": ["consumer", "host"]}
+      },
+      "affected": {}
+    },
+    "flutter-tooling": {
+      "direct": {
+        "pr": {"ciTargets": ["flutter", "tools"]},
+        "merge_group": {"ciTargets": ["flutter", "tools"]},
+        "main": {"ciTargets": ["flutter", "tools"]},
+        "nightly": {"ciTargets": ["flutter", "tools"]}
+      },
+      "affected": {}
+    },
+    "other-packages": {
+      "direct": {
+        "pr": {"ciTargets": ["admin", "flutter", "marketing", "tools"]},
+        "merge_group": {"ciTargets": ["admin", "flutter", "marketing", "tools"]},
+        "main": {"ciTargets": ["admin", "flutter", "marketing", "tools"]},
+        "nightly": {"ciTargets": ["admin", "flutter", "marketing", "tools"]}
+      },
+      "affected": {}
+    },
+    "node-workspace": {
+      "direct": {
+        "pr": {"ciTargets": ["admin", "functions", "marketing", "operations", "tools"]},
+        "merge_group": {"ciTargets": ["admin", "functions", "marketing", "operations", "tools"]},
+        "main": {"ciTargets": ["admin", "functions", "marketing", "operations", "tools"]},
+        "nightly": {"ciTargets": ["admin", "functions", "marketing", "operations", "tools"]}
+      },
+      "affected": {}
+    },
+    "repo-tooling": {
+      "direct": {
+        "pr": {"ciTargets": ["tools"]},
+        "merge_group": {"ciTargets": ["tools"]},
+        "main": {"ciTargets": ["tools"]},
+        "nightly": {"ciTargets": ["tools"]}
+      },
+      "affected": {}
+    },
+    "mobile-build-control": {
+      "direct": {
+        "pr": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "tools", "visual_integration"]},
+        "merge_group": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "tools", "visual_integration"]},
+        "main": {"ciTargets": ["flutter_build_android", "flutter_build_ios", "flutter_build_web", "tools"], "releaseRoles": ["consumer", "host"]},
+        "nightly": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "tools", "visual_integration"]},
+        "release": {"buildTargets": ["consumer-android", "consumer-ios", "consumer-web", "host-android", "host-ios", "host-web"], "releaseRoles": ["consumer", "host"]}
+      },
+      "affected": {}
+    },
+    "firebase-config": {
+      "direct": {
+        "pr": {"ciTargets": ["admin", "contracts", "firestore_rules", "functions", "marketing"]},
+        "merge_group": {"ciTargets": ["admin", "contracts", "firestore_rules", "functions", "marketing"]},
+        "main": {"ciTargets": ["admin", "contracts", "firestore_rules", "functions", "marketing"], "deployGroups": ["firebase-config"]},
+        "nightly": {"ciTargets": ["admin", "contracts", "firestore_rules", "functions", "marketing"]},
+        "release": {"deployGroups": ["firebase-config"]}
+      },
+      "affected": {}
+    },
+    "firebase-host-android": {
+      "direct": {
+        "pr": {"ciTargets": ["flutter_build_android", "tools"]},
+        "merge_group": {"ciTargets": ["flutter_build_android", "tools"]},
+        "main": {"ciTargets": ["flutter_build_android", "tools"], "releaseRoles": ["host"]},
+        "nightly": {"ciTargets": ["flutter_build_android", "tools"]},
+        "release": {"buildTargets": ["host-android"], "releaseRoles": ["host"]}
+      },
+      "affected": {}
+    },
+    "firebase-host-ios": {
+      "direct": {
+        "pr": {"ciTargets": ["flutter_build_ios", "tools"]},
+        "merge_group": {"ciTargets": ["flutter_build_ios", "tools"]},
+        "main": {"ciTargets": ["flutter_build_ios", "tools"], "releaseRoles": ["host"]},
+        "nightly": {"ciTargets": ["flutter_build_ios", "tools"]},
+        "release": {"buildTargets": ["host-ios"], "releaseRoles": ["host"]}
+      },
+      "affected": {}
+    },
+    "firebase-consumer-android": {
+      "direct": {
+        "pr": {"ciTargets": ["flutter_build_android", "tools"]},
+        "merge_group": {"ciTargets": ["flutter_build_android", "tools"]},
+        "main": {"ciTargets": ["flutter_build_android", "tools"], "releaseRoles": ["consumer"]},
+        "nightly": {"ciTargets": ["flutter_build_android", "tools"]},
+        "release": {"buildTargets": ["consumer-android"], "releaseRoles": ["consumer"]}
+      },
+      "affected": {}
+    },
+    "firebase-consumer-ios": {
+      "direct": {
+        "pr": {"ciTargets": ["flutter_build_ios", "tools"]},
+        "merge_group": {"ciTargets": ["flutter_build_ios", "tools"]},
+        "main": {"ciTargets": ["flutter_build_ios", "tools"], "releaseRoles": ["consumer"]},
+        "nightly": {"ciTargets": ["flutter_build_ios", "tools"]},
+        "release": {"buildTargets": ["consumer-ios"], "releaseRoles": ["consumer"]}
+      },
+      "affected": {}
+    },
+    "analytics-source": {
+      "direct": {
+        "pr": {"ciTargets": ["operations", "tools"]},
+        "merge_group": {"ciTargets": ["operations", "tools"]},
+        "main": {"ciTargets": ["operations", "tools"]},
+        "nightly": {"ciTargets": ["operations", "tools"]}
+      },
+      "affected": {}
+    },
+    "content-shared": {
+      "direct": {
+        "pr": {"ciTargets": ["flutter", "flutter_web_smoke"], "buildTargets": ["consumer-web-smoke", "host-web-smoke"]},
+        "merge_group": {"ciTargets": ["flutter", "flutter_web_smoke"], "buildTargets": ["consumer-web-smoke", "host-web-smoke"]},
+        "main": {"ciTargets": ["flutter_build_android", "flutter_build_ios", "flutter_build_web"], "releaseRoles": ["consumer", "host"]},
+        "nightly": {"ciTargets": ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]},
+        "release": {"buildTargets": ["consumer-android", "consumer-ios", "consumer-web", "host-android", "host-ios", "host-web"], "releaseRoles": ["consumer", "host"]}
+      },
+      "affected": {}
+    },
+    "content-notification": {
+      "direct": {
+        "pr": {"ciTargets": ["functions"]},
+        "merge_group": {"ciTargets": ["functions"]},
+        "main": {"ciTargets": ["functions"], "deployGroups": ["functions"]},
+        "nightly": {"ciTargets": ["functions"]},
+        "release": {"deployGroups": ["functions"]}
+      },
+      "affected": {}
+    },
+    "content-native": {
+      "direct": {
+        "pr": {"ciTargets": ["flutter_build_ios"]},
+        "merge_group": {"ciTargets": ["flutter_build_ios"]},
+        "main": {"ciTargets": ["flutter_build_ios"], "releaseRoles": ["consumer", "host"]},
+        "nightly": {"ciTargets": ["flutter_build_ios"]},
+        "release": {"buildTargets": ["consumer-ios", "host-ios"], "releaseRoles": ["consumer", "host"]}
+      },
+      "affected": {}
+    }
+  },
+  "classifications": [
+    {
+      "id": "generated-flutter-contract-binding",
+      "paths": {"include": ["lib/core/schema_contracts/generated/**"]},
+      "components": ["contracts.generated.flutter"],
+      "terminal": true
+    },
+    {
+      "id": "generated-functions-contract-binding",
+      "paths": {"include": ["functions/src/shared/generated/**"]},
+      "components": ["contracts.generated.functions"],
+      "terminal": true
+    },
+    {
+      "id": "generated-admin-contract-binding",
+      "paths": {"include": ["admin/src/generated/**"]},
+      "components": ["contracts.generated.admin"],
+      "terminal": true
+    },
+    {
+      "id": "generated-marketing-binding",
+      "paths": {"include": ["website/src/generated/**"]},
+      "components": ["contracts.generated.marketing"],
+      "terminal": true
+    },
+    {
+      "id": "generated-tool-contract-binding",
+      "paths": {"include": ["tool/contracts/generated/**"]},
+      "components": ["contracts.generated.tools"],
+      "terminal": true
+    },
+    {
+      "id": "generated-flutter-l10n-binding",
+      "paths": {"include": ["lib/l10n/generated/**"]},
+      "components": ["app.generated.l10n"],
+      "terminal": true
+    },
+    {
+      "id": "design-runtime-doc",
+      "paths": {"include": ["design/*.md", "design/**/*.md", "design_context_pack/*.md", "design_context_pack/**/*.md", "widgetbook/*.md", "widgetbook/**/*.md", "artifacts/*.md", "artifacts/**/*.md"]},
+      "components": ["app.design-doc"],
+      "terminal": true
+    },
+    {
+      "id": "agent-policy",
+      "paths": {
+        "include": ["AGENTS.md", "CLAUDE.md", "PROJECT_CONTEXT.md", "docs/agent_operating_model.md", "docs/agent_skills/**", "tool/README.md"]
+      },
+      "components": ["policy.agent"],
+      "terminal": true
+    },
+    {
+      "id": "functions-doc-contract",
+      "paths": {"include": ["functions/README.md"]},
+      "components": ["backend.functions-doc"],
+      "terminal": true
+    },
+    {
+      "id": "contracts-doc-contract",
+      "paths": {"include": ["contracts/README.md", "contracts/*/README.md"]},
+      "components": ["contracts.doc"],
+      "terminal": true
+    },
+    {
+      "id": "operations-workflow-doc-contract",
+      "paths": {"include": ["operations/README.md", "operations/**/README.md"]},
+      "components": ["operations.workflow-doc"],
+      "terminal": true
+    },
+    {
+      "id": "notification-copy-source",
+      "paths": {"include": ["copy/notifications_en.json", "tool/copy/sync_notification_copy.mjs"]},
+      "components": ["content.notification"],
+      "terminal": true
+    },
+    {
+      "id": "native-copy-source",
+      "paths": {"include": ["copy/native_en.json", "tool/copy/sync_native_copy.mjs"]},
+      "components": ["content.native"],
+      "terminal": true
+    },
+    {
+      "id": "event-success-copy-source",
+      "paths": {"include": ["copy/event_success_questionnaires_en.json", "tool/copy/sync_event_success_questionnaires.mjs"]},
+      "components": ["content.event-success"],
+      "terminal": true
+    },
+    {
+      "id": "structured-copy-source",
+      "paths": {"include": ["copy/structured_domain_copy_en.json", "tool/copy/sync_structured_domain_copy.dart", "tool/copy/templates/structured_domain_copy/**"]},
+      "components": ["content.structured"],
+      "terminal": true
+    },
+    {
+      "id": "ordinary-doc",
+      "paths": {
+        "include": ["docs/**", "**/*.md", "README.md", "TESTS.md"],
+        "exclude": ["AGENTS.md", "CLAUDE.md", "PROJECT_CONTEXT.md", "docs/agent_operating_model.md", "docs/agent_skills/**", "tool/README.md", "functions/README.md", "contracts/README.md", "contracts/*/README.md", "operations/README.md", "operations/**/README.md", "lib/core/schema_contracts/generated/**", "functions/src/shared/generated/**", "admin/src/generated/**", "website/src/generated/**", "tool/contracts/generated/**", "lib/l10n/generated/**", "design/*.md", "design/**/*.md", "design_context_pack/*.md", "design_context_pack/**/*.md", "widgetbook/*.md", "widgetbook/**/*.md", "artifacts/*.md", "artifacts/**/*.md"]
+      },
+      "components": ["docs.ordinary"],
+      "terminal": true
+    }
+  ],
+  "components": [
+    {"id": "docs.ordinary", "owner": "documentation", "risk": "low", "operationProfile": "docs", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Ordinary prose with no executable-policy ownership."},
+    {"id": "policy.agent", "owner": "agent_operating_model", "risk": "high", "operationProfile": "policy", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Agent instructions and workflow policy."},
+    {"id": "repo.harness", "owner": "repository_tooling", "risk": "high", "operationProfile": "harness-full", "pathType": "component", "ownedPaths": {"include": [".github/**", "tool/ci/**", "tool/harness/**", "tool/harness.mjs", "tool/repository_root_manifest.json", "tool/tools_manifest.json"]}, "dependsOn": [], "alsoAffects": [], "description": "Harness control plane; v1 full validation remains authoritative during shadow."},
+    {"id": "contracts.source", "owner": "backend_platform", "risk": "high", "operationProfile": "contracts-source", "pathType": "component", "ownedPaths": {"include": ["contracts/**"], "exclude": ["contracts/README.md", "contracts/*/README.md"]}, "dependsOn": [], "alsoAffects": [], "description": "Authored cross-stack contracts."},
+    {"id": "contracts.doc", "owner": "backend_platform", "risk": "standard", "operationProfile": "contracts-doc", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Contract inventory and operational documentation."},
+    {"id": "contracts.generated.flutter", "owner": "backend_platform", "risk": "standard", "operationProfile": "generated-flutter-contract", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Tracked generated Flutter schema bindings validate their consumer but never authorize release."},
+    {"id": "contracts.generated.functions", "owner": "backend_platform", "risk": "standard", "operationProfile": "functions-doc", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Tracked generated Functions bindings validate Functions without upstream deploy authority."},
+    {"id": "contracts.generated.admin", "owner": "backend_platform", "risk": "standard", "operationProfile": "admin-source", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Tracked generated admin bindings validate only their direct consumer."},
+    {"id": "contracts.generated.marketing", "owner": "web_platform", "risk": "standard", "operationProfile": "marketing-source", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Tracked generated marketing data validates only its direct consumer."},
+    {"id": "contracts.generated.tools", "owner": "backend_platform", "risk": "standard", "operationProfile": "repo-tooling", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Tracked generated tool bindings validate repository tooling without upstream deployment."},
+    {"id": "app.generated.l10n", "owner": "app_platform", "risk": "standard", "operationProfile": "generated-flutter-contract", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Tracked generated localization bindings validate Flutter without authorizing release."},
+    {"id": "app.design-doc", "owner": "design_system", "risk": "standard", "operationProfile": "flutter-design", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Design runtime and capture documentation keeps design validation rather than the ordinary docs lane."},
+    {"id": "content.notification", "owner": "content_system", "risk": "high", "operationProfile": "content-notification", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Notification catalog and deterministic Functions projection."},
+    {"id": "content.native", "owner": "content_system", "risk": "high", "operationProfile": "content-native", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Native permission catalog and deterministic shared iOS projection."},
+    {"id": "content.event-success", "owner": "content_system", "risk": "standard", "operationProfile": "content-shared", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Event Success questionnaire catalog and deterministic Flutter projection."},
+    {"id": "content.structured", "owner": "content_system", "risk": "standard", "operationProfile": "content-shared", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Structured domain-copy catalog, templates, and deterministic Flutter projections."},
+    {"id": "backend.functions", "owner": "backend_platform", "risk": "high", "operationProfile": "functions-source", "pathType": "component", "ownedPaths": {"include": ["functions/**"], "exclude": ["functions/README.md", "functions/src/shared/generated/**"]}, "dependsOn": ["contracts.source"], "alsoAffects": [], "description": "Handwritten Cloud Functions source."},
+    {"id": "backend.functions-doc", "owner": "backend_platform", "risk": "standard", "operationProfile": "functions-doc", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Functions export inventory contract."},
+    {"id": "backend.rules", "owner": "backend_platform", "risk": "high", "operationProfile": "rules-source", "pathType": "component", "ownedPaths": {"include": ["firestore.rules", "storage.rules", "firestore.indexes.json", "extensions/**"]}, "dependsOn": ["contracts.source"], "alsoAffects": [], "description": "Firestore/Storage policy and index configuration."},
+    {"id": "web.shared", "owner": "web_platform", "risk": "standard", "operationProfile": "web-shared", "pathType": "component", "ownedPaths": {"include": ["packages/web-ui/**", "design/web-ui/**", "design/components/**"]}, "dependsOn": [], "alsoAffects": [], "description": "Shared React primitives consumed by admin and marketing."},
+    {"id": "web.admin", "owner": "web_platform", "risk": "standard", "operationProfile": "admin-source", "pathType": "component", "ownedPaths": {"include": ["admin/**", "design/admin/**"], "exclude": ["admin/src/generated/**"]}, "dependsOn": ["contracts.source", "web.shared"], "alsoAffects": [], "description": "Admin React surface."},
+    {"id": "web.marketing", "owner": "web_platform", "risk": "standard", "operationProfile": "marketing-source", "pathType": "component", "ownedPaths": {"include": ["website/**", "design/website/**", "packages/web-config/**"], "exclude": ["website/src/generated/**"]}, "dependsOn": ["contracts.source", "web.shared"], "alsoAffects": [], "description": "Marketing React surface."},
+    {"id": "app.shared", "owner": "app_platform", "risk": "standard", "operationProfile": "app-shared", "pathType": "component", "ownedPaths": {"include": ["lib/**"], "exclude": ["lib/hosts/**", "lib/main_host*.dart", "lib/main_consumer*.dart", "lib/core/schema_contracts/generated/**", "lib/l10n/generated/**", "lib/l10n/app_en.arb"]}, "dependsOn": [], "alsoAffects": [], "description": "Shared Flutter product source used by both installable roles."},
+    {"id": "app.l10n-source", "owner": "app_platform", "risk": "standard", "operationProfile": "app-l10n-source", "pathType": "component", "ownedPaths": {"include": ["lib/l10n/app_en.arb"]}, "dependsOn": [], "alsoAffects": [], "description": "Authored Flutter localization catalog and its deterministic generated outputs."},
+    {"id": "app.l10n-config", "owner": "app_platform", "risk": "high", "operationProfile": "app-l10n-config", "pathType": "component", "ownedPaths": {"include": ["l10n.yaml"]}, "dependsOn": [], "alsoAffects": [], "description": "Localization generation configuration with app-wide build impact."},
+    {"id": "app.host", "owner": "app_platform", "risk": "standard", "operationProfile": "app-host", "pathType": "component", "ownedPaths": {"include": ["apps/host/**", "lib/hosts/**", "lib/main_host*.dart"], "exclude": ["apps/host/android/**", "apps/host/ios/**", "apps/host/web/**", "apps/host/pubspec.yaml", "apps/host/.metadata", "apps/host/analysis_options.yaml", "apps/host/assets", "apps/host/firebase"]}, "dependsOn": ["app.shared"], "alsoAffects": [], "description": "Host role Flutter source and release consumer."},
+    {"id": "app.consumer", "owner": "app_platform", "risk": "standard", "operationProfile": "app-consumer", "pathType": "component", "ownedPaths": {"include": ["apps/consumer/**", "lib/main_consumer*.dart"], "exclude": ["apps/consumer/android/**", "apps/consumer/ios/**", "apps/consumer/web/**", "apps/consumer/pubspec.yaml", "apps/consumer/.metadata", "apps/consumer/analysis_options.yaml", "apps/consumer/assets", "apps/consumer/firebase"]}, "dependsOn": ["app.shared"], "alsoAffects": [], "description": "Consumer role Flutter source and release consumer."},
+    {"id": "app.host.native.android", "owner": "app_platform", "risk": "high", "operationProfile": "native-host-android", "pathType": "component", "ownedPaths": {"include": ["apps/host/android/**"]}, "dependsOn": [], "alsoAffects": [], "description": "Host package Android project and native assets."},
+    {"id": "app.host.native.ios", "owner": "app_platform", "risk": "high", "operationProfile": "native-host-ios", "pathType": "component", "ownedPaths": {"include": ["apps/host/ios/**"]}, "dependsOn": [], "alsoAffects": [], "description": "Host package iOS project, signing, and native assets."},
+    {"id": "app.host.native.web", "owner": "app_platform", "risk": "high", "operationProfile": "native-host-web", "pathType": "component", "ownedPaths": {"include": ["apps/host/web/**"]}, "dependsOn": [], "alsoAffects": [], "description": "Host package web shell and Firebase messaging worker."},
+    {"id": "app.host.dependencies", "owner": "app_platform", "risk": "high", "operationProfile": "app-host-dependencies", "pathType": "component", "ownedPaths": {"include": ["apps/host/pubspec.yaml", "apps/host/.metadata", "apps/host/analysis_options.yaml", "apps/host/assets", "apps/host/firebase"]}, "dependsOn": [], "alsoAffects": [], "description": "Host package dependency and generated-project boundary."},
+    {"id": "app.consumer.native.android", "owner": "app_platform", "risk": "high", "operationProfile": "native-consumer-android", "pathType": "component", "ownedPaths": {"include": ["apps/consumer/android/**"]}, "dependsOn": [], "alsoAffects": [], "description": "Consumer package Android project and native assets."},
+    {"id": "app.consumer.native.ios", "owner": "app_platform", "risk": "high", "operationProfile": "native-consumer-ios", "pathType": "component", "ownedPaths": {"include": ["apps/consumer/ios/**"]}, "dependsOn": [], "alsoAffects": [], "description": "Consumer package iOS project, signing, and native assets."},
+    {"id": "app.consumer.native.web", "owner": "app_platform", "risk": "high", "operationProfile": "native-consumer-web", "pathType": "component", "ownedPaths": {"include": ["apps/consumer/web/**"]}, "dependsOn": [], "alsoAffects": [], "description": "Consumer package web shell and Firebase messaging worker."},
+    {"id": "app.consumer.dependencies", "owner": "app_platform", "risk": "high", "operationProfile": "app-consumer-dependencies", "pathType": "component", "ownedPaths": {"include": ["apps/consumer/pubspec.yaml", "apps/consumer/.metadata", "apps/consumer/analysis_options.yaml", "apps/consumer/assets", "apps/consumer/firebase"]}, "dependsOn": [], "alsoAffects": [], "description": "Consumer package dependency and generated-project boundary."},
+    {"id": "app.contract-consumer", "owner": "app_platform", "risk": "standard", "operationProfile": "flutter-contract-consumer", "pathType": "consumer", "dependsOn": ["contracts.source"], "alsoAffects": [], "description": "Flutter contract validation without build or release authority."},
+    {"id": "operations.contract-consumer", "owner": "operations_platform", "risk": "standard", "operationProfile": "operations-contract-consumer", "pathType": "consumer", "dependsOn": ["contracts.source"], "alsoAffects": [], "description": "Operations contract validation consumer."},
+    {"id": "operations.workflow-doc", "owner": "operations_platform", "risk": "standard", "operationProfile": "operations-doc", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Workflow README content that participates in operations validation."},
+    {"id": "operations.source", "owner": "operations_platform", "risk": "standard", "operationProfile": "operations-doc", "pathType": "component", "ownedPaths": {"include": ["operations/**"], "exclude": ["operations/**/README.md"]}, "dependsOn": [], "alsoAffects": [], "description": "Durable operations workflows and their validation surface."},
+    {"id": "app.tests", "owner": "app_platform", "risk": "standard", "operationProfile": "flutter-tests", "pathType": "component", "ownedPaths": {"include": ["test/**", "integration_test/**"]}, "dependsOn": [], "alsoAffects": [], "description": "Flutter unit, widget, golden, and integration tests."},
+    {"id": "app.design", "owner": "design_system", "risk": "standard", "operationProfile": "flutter-design", "pathType": "component", "ownedPaths": {"include": ["design/**", "design_context_pack/**", "widgetbook/**", "artifacts/**"], "exclude": ["design/admin/**", "design/website/**", "design/web-ui/**", "design/components/**"]}, "dependsOn": [], "alsoAffects": [], "description": "Flutter design contracts, Widgetbook, capture inputs, and visual baselines."},
+    {"id": "app.native.android.host", "owner": "app_platform", "risk": "high", "operationProfile": "native-host-android", "pathType": "component", "ownedPaths": {"include": ["android/app/src/host*/**"]}, "dependsOn": [], "alsoAffects": [], "description": "Host-only Android native configuration and branding."},
+    {"id": "app.native.android.consumer", "owner": "app_platform", "risk": "high", "operationProfile": "native-consumer-android", "pathType": "component", "ownedPaths": {"include": ["android/app/src/consumer*/**"]}, "dependsOn": [], "alsoAffects": [], "description": "Consumer-only Android native configuration and branding."},
+    {"id": "app.native.android.shared", "owner": "app_platform", "risk": "high", "operationProfile": "native-shared-android", "pathType": "component", "ownedPaths": {"include": ["android/**"], "exclude": ["android/app/src/host*/**", "android/app/src/consumer*/**"]}, "dependsOn": [], "alsoAffects": [], "description": "Shared Android build and runtime configuration."},
+    {"id": "app.native.ios", "owner": "app_platform", "risk": "high", "operationProfile": "native-shared-ios", "pathType": "component", "ownedPaths": {"include": ["ios/**"]}, "dependsOn": [], "alsoAffects": [], "description": "Shared iOS project, flavors, signing metadata, and native copy."},
+    {"id": "app.platform.other", "owner": "app_platform", "risk": "standard", "operationProfile": "other-flutter-platforms", "pathType": "component", "ownedPaths": {"include": ["macos/**", "web/**"]}, "dependsOn": [], "alsoAffects": [], "description": "Flutter web and desktop platform shells."},
+    {"id": "app.dependencies", "owner": "app_platform", "risk": "high", "operationProfile": "app-dependencies", "pathType": "component", "ownedPaths": {"include": ["assets/**", "packages/phosphor_flutter/**", "pubspec.yaml", "pubspec.lock"]}, "dependsOn": [], "alsoAffects": [], "description": "Shared app assets and dependency resolution used by both installable roles."},
+    {"id": "repo.flutter-tooling", "owner": "repository_tooling", "risk": "high", "operationProfile": "flutter-tooling", "pathType": "component", "ownedPaths": {"include": ["packages/catch_ui_lints/**"]}, "dependsOn": [], "alsoAffects": [], "description": "Catch analyzer and Flutter tooling packages."},
+    {"id": "repo.other-packages", "owner": "repository_tooling", "risk": "high", "operationProfile": "other-packages", "pathType": "component", "ownedPaths": {"include": ["packages/**"], "exclude": ["packages/catch_ui_lints/**", "packages/phosphor_flutter/**", "packages/web-config/**", "packages/web-ui/**"]}, "dependsOn": [], "alsoAffects": [], "description": "Cross-surface packages without a narrower component owner."},
+    {"id": "repo.node-workspace", "owner": "repository_tooling", "risk": "high", "operationProfile": "node-workspace", "pathType": "component", "ownedPaths": {"include": ["package.json", "package-lock.json"]}, "dependsOn": [], "alsoAffects": [], "description": "Root Node workspace dependency and script control plane."},
+    {"id": "app.build-control", "owner": "app_platform", "risk": "high", "operationProfile": "mobile-build-control", "pathType": "component", "ownedPaths": {"include": ["analysis_options.yaml", "build.yaml", "dart_test.yaml", ".metadata", "tool/app_targets.json", "tool/env/dart_defines/**", "tool/flutter_with_env.sh", "tool/platform/configure_apple_flavors.rb", "tool/use_firebase_environment.sh", "tool/validate_firebase_environment.sh"]}, "dependsOn": [], "alsoAffects": [], "description": "Flutter analysis, generation, environment, and multi-role build control."},
+    {"id": "repo.tooling", "owner": "repository_tooling", "risk": "standard", "operationProfile": "repo-tooling", "pathType": "component", "ownedPaths": {"include": ["tool/**"], "exclude": ["tool/ci/**", "tool/harness/**", "tool/harness.mjs", "tool/repository_root_manifest.json", "tool/tools_manifest.json", "tool/contracts/generated/**", "tool/app_targets.json", "tool/env/dart_defines/**", "tool/flutter_with_env.sh", "tool/platform/configure_apple_flavors.rb", "tool/use_firebase_environment.sh", "tool/validate_firebase_environment.sh"]}, "dependsOn": [], "alsoAffects": [], "description": "Repository checks, generators, and bounded operational utilities."},
+    {"id": "infra.firebase.host-android", "owner": "backend_platform", "risk": "high", "operationProfile": "firebase-host-android", "pathType": "component", "ownedPaths": {"include": ["firebase/*/host/android/**"]}, "dependsOn": [], "alsoAffects": [], "description": "Environment-specific Host Android Firebase configuration."},
+    {"id": "infra.firebase.host-ios", "owner": "backend_platform", "risk": "high", "operationProfile": "firebase-host-ios", "pathType": "component", "ownedPaths": {"include": ["firebase/*/host/ios/**"]}, "dependsOn": [], "alsoAffects": [], "description": "Environment-specific Host iOS Firebase configuration."},
+    {"id": "infra.firebase.consumer-android", "owner": "backend_platform", "risk": "high", "operationProfile": "firebase-consumer-android", "pathType": "component", "ownedPaths": {"include": ["firebase/*/android/**"]}, "dependsOn": [], "alsoAffects": [], "description": "Environment-specific Consumer Android Firebase configuration."},
+    {"id": "infra.firebase.consumer-ios", "owner": "backend_platform", "risk": "high", "operationProfile": "firebase-consumer-ios", "pathType": "component", "ownedPaths": {"include": ["firebase/*/ios/**"]}, "dependsOn": [], "alsoAffects": [], "description": "Environment-specific Consumer iOS Firebase configuration."},
+    {"id": "infra.firebase", "owner": "backend_platform", "risk": "high", "operationProfile": "firebase-config", "pathType": "component", "ownedPaths": {"include": [".firebaserc", "firebase.json", "firebase/**"], "exclude": ["firebase/*/host/android/**", "firebase/*/host/ios/**", "firebase/*/android/**", "firebase/*/ios/**"]}, "dependsOn": [], "alsoAffects": [], "description": "Firebase project aliases, deploy configuration, and non-mobile environment metadata."},
+    {"id": "analytics.source", "owner": "analytics_platform", "risk": "standard", "operationProfile": "analytics-source", "pathType": "component", "ownedPaths": {"include": ["analytics/**"]}, "dependsOn": [], "alsoAffects": [], "description": "Analytics DDL and mart refresh SQL."},
+    {"id": "repo.metadata", "owner": "repository_tooling", "risk": "standard", "operationProfile": "repo-tooling", "pathType": "component", "ownedPaths": {"include": [".editorconfig", ".env.example", ".gitignore"]}, "dependsOn": [], "alsoAffects": [], "description": "Repository-local editor, environment example, and ignore metadata."}
+  ],
+  "compileCodegen": [
+    {
+      "id": "contracts.schema-projections",
+      "owner": "backend_platform",
+      "inputs": ["contracts/**/*.json", "tool/contracts/generate_schema_contracts.mjs"],
+      "outputs": ["lib/core/schema_contracts/generated/**", "functions/src/shared/generated/**", "admin/src/generated/contracts/**", "website/src/generated/contracts/**", "tool/contracts/generated/**"],
+      "checkCommand": "node tool/contracts/generate_schema_contracts.mjs --check",
+      "writeCommand": "node tool/contracts/generate_schema_contracts.mjs",
+      "platforms": ["darwin", "linux"],
+      "deterministic": true,
+      "network": false,
+      "timeoutSeconds": 180
+    },
+    {
+      "id": "admin.callable-validators",
+      "owner": "web_platform",
+      "inputs": ["contracts/callables/**", "contracts/callable_responses/**", "contracts/shared/**", "admin/src/shared/api/adminApi.ts", "admin/scripts/generateCallableValidators.mjs"],
+      "outputs": ["admin/src/generated/validators/adminCallableValidators.ts"],
+      "checkCommand": "npm --workspace catch-admin run check:callable-validators",
+      "writeCommand": "npm --workspace catch-admin run generate:callable-validators",
+      "platforms": ["darwin", "linux"],
+      "deterministic": true,
+      "network": false,
+      "timeoutSeconds": 60
+    },
+    {
+      "id": "flutter.l10n",
+      "owner": "app_platform",
+      "inputs": ["lib/l10n/app_en.arb", "l10n.yaml", "tool/harness/lib/check_flutter_l10n_generated.mjs"],
+      "outputs": ["lib/l10n/generated/app_localizations.dart", "lib/l10n/generated/app_localizations_en.dart"],
+      "checkCommand": "node tool/harness/lib/check_flutter_l10n_generated.mjs --check",
+      "writeCommand": "flutter gen-l10n",
+      "platforms": ["darwin", "linux"],
+      "deterministic": true,
+      "network": false,
+      "timeoutSeconds": 120
+    },
+    {
+      "id": "copy.notification",
+      "owner": "content_system",
+      "inputs": ["copy/notifications_en.json", "tool/copy/sync_notification_copy.mjs"],
+      "outputs": ["functions/src/shared/generated/notificationCopyEn.ts"],
+      "checkCommand": "node tool/copy/sync_notification_copy.mjs --check",
+      "writeCommand": "node tool/copy/sync_notification_copy.mjs --write",
+      "platforms": ["darwin", "linux"],
+      "deterministic": true,
+      "network": false,
+      "timeoutSeconds": 60
+    },
+    {
+      "id": "copy.native",
+      "owner": "content_system",
+      "inputs": ["copy/native_en.json", "tool/copy/sync_native_copy.mjs"],
+      "outputs": ["ios/Runner/Info.plist", "ios/Runner/en.lproj/InfoPlist.strings"],
+      "checkCommand": "node tool/copy/sync_native_copy.mjs --check",
+      "writeCommand": "node tool/copy/sync_native_copy.mjs --write",
+      "platforms": ["darwin", "linux"],
+      "deterministic": true,
+      "network": false,
+      "timeoutSeconds": 60
+    },
+    {
+      "id": "copy.event-success-questionnaires",
+      "owner": "content_system",
+      "inputs": ["copy/event_success_questionnaires_en.json", "tool/copy/sync_event_success_questionnaires.mjs"],
+      "outputs": ["lib/event_success/domain/event_success_compatibility_response/questionnaire_packs.dart"],
+      "checkCommand": "node tool/copy/sync_event_success_questionnaires.mjs --check",
+      "writeCommand": "node tool/copy/sync_event_success_questionnaires.mjs --write",
+      "platforms": ["darwin", "linux"],
+      "deterministic": true,
+      "network": false,
+      "timeoutSeconds": 60
+    },
+    {
+      "id": "copy.structured-domain",
+      "owner": "content_system",
+      "inputs": ["copy/structured_domain_copy_en.json", "tool/copy/sync_structured_domain_copy.dart", "tool/copy/templates/structured_domain_copy/**"],
+      "outputs": ["lib/l10n/generated/structured_domain_copy.g.dart", "lib/event_success/domain/event_success_coach.dart", "lib/event_success/domain/event_success_playbooks/library.dart", "lib/event_success/domain/event_success_playbooks/modules.dart", "lib/event_success/domain/event_success_playbooks/metrics.dart", "lib/event_policies/domain/event_policy/cancellation.dart", "lib/event_policies/domain/event_policy/cohort.dart", "lib/event_policies/domain/event_policy/settlement.dart"],
+      "checkCommand": "dart run tool/copy/sync_structured_domain_copy.dart --check",
+      "writeCommand": "dart run tool/copy/sync_structured_domain_copy.dart --write",
+      "platforms": ["darwin", "linux"],
+      "deterministic": true,
+      "network": false,
+      "timeoutSeconds": 120
+    }
+  ]
+}

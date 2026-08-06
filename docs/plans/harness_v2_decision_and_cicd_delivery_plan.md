@@ -1,6 +1,6 @@
 ---
 doc_id: harness_v2_decision_and_cicd_delivery_plan
-version: 0.3.0
+version: 0.3.2
 updated: 2026-08-06
 owner: agent_operating_model
 status: execution-in-progress
@@ -314,14 +314,35 @@ ordinary product PRs. They are not committed as a new metrics product.
 
 | Signal | 2026-08-06 baseline | Initial target |
 |---|---:|---:|
-| Ordinary Flutter presentation path | 6 CI targets, both app roles | Flutter validation + 1 affected-role web smoke |
-| Flutter suite executions per PR | 2 | 1 |
+| Ordinary Flutter presentation path | 6 CI targets, 16 active jobs, ≈88m47s runner time on the sampled run | 2 targets; ≤45 runner-minutes median |
+| Ordinary documentation path | 2 targets, 11 jobs, 39m44s aggregate runner time and 17m42s wall-clock on sampled PR #138 | 1 docs lane; ≤3 jobs and <5 runner-minutes |
+| Broad Cross Paths PRs (7-run sample) | 20m48s median / 38m24s p95 wall-clock; 145m19s median / 174m49s p95 runner time | ≥40% p95 wall-clock and ≥50% runner-time reduction after 10 comparable PRs |
+| Flutter suite executions per PR | 2; serial coverage rerun median 14m44s | 1 |
 | Website builds per affected main merge, per surface | 3 | 2 total: source validation + one deployable production build; 0 deploy rebuilds |
-| Backend validation after already-green CI | workflow validation plus Firebase predeploy reruns | deploy-specific readiness/smoke only |
+| Duplicate website validation on sampled merge | Admin 12m45s + 12m58s; Marketing 7m27s + 7m28s; ≈20m26s repeated validation before the Firebase rebuild | 0 repeated validation and 0 deploy rebuilds |
+| Backend validation after already-green CI | workflow validation plus Firebase predeploy reruns; sampled missing-secret failure surfaced ≈2m21s into the job | deploy-specific readiness/smoke only; known missing prerequisite in <30s |
 | Active entries labeled `role: generator` | 61, including remote/deploy commands | 0 implicitly trusted; only explicit affected compile-codegen entries |
 | Audit registry | 382,694 lines; 68/73 recent commits touched it | 0 registry files in ordinary product PRs |
 | Worktrees | 36 registered; one already prunable; ≈24 GB reported | no temp-path, prunable, unpushed-unique, or unowned worktrees after owner-approved reap |
 | Latest backend deploy attempts | 2/2 failed after expensive validation on missing Cross Paths secret | missing declared prerequisites fail before expensive validation |
+
+### Checkpoint 1 — shadow kernel (2026-08-06)
+
+| Signal | First graph draft | Current shadow result |
+|---|---:|---:|
+| Tracked-path ownership | 3,485 / 7,294 (47.8%) | 7,302 / 7,302 (100%); 0 unknown, 0 ambiguous |
+| Ordinary shared Flutter selection | 6 v1 targets | 2 v2 targets (−66.7%); v1 still authoritative |
+| Host-only Flutter selection | 5 v1 targets | 2 v2 targets (−60%); v1 still authoritative |
+| Authored contract selection | 7 v1 consumer targets | 7 v2 consumer targets; no deploy permission from affected edges |
+| Explicit safe compile-codegen | 0 v2 declarations | 7 allowlisted declarations; full check suite 5.71s generator time / 10.1s command wall-clock, all passing locally |
+| Kernel behavioral verification | No v2 suite | 30 / 30 focused tests passing, including fail-closed CLI, path ownership, affected edges, and disposable l10n freshness |
+| Shadow event coverage | local PR explanation only | `pr`, `merge_group`, `main`, and nightly full modes; CI artifact/summary wiring added without changing fanout |
+
+The 47.8% ownership draft was rejected before workflow wiring because a graph
+that silently falls back for more than half the repository cannot support a
+safe cutover. Reaching exact tracked-path ownership is a prerequisite, not a
+reason to trust the operational edges: v1/v2 replay and the high-risk parity
+gate remain outstanding.
 
 Durable outcomes are PR wall-clock p50/p95 and escaped defects. Record the
 baseline from the ten most recent comparable PRs and compare after ten v2 PRs.

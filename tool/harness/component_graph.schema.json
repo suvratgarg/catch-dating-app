@@ -1,0 +1,197 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://catch.app/tool/harness/component_graph.schema.json",
+  "title": "Catch Harness v2 component graph",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "status",
+    "modes",
+    "targets",
+    "operationProfiles",
+    "classifications",
+    "components",
+    "compileCodegen"
+  ],
+  "properties": {
+    "$schema": {"type": "string"},
+    "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "status": {"enum": ["shadow", "required"]},
+    "modes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"enum": ["pr", "merge_group", "main", "nightly", "release"]}
+    },
+    "targets": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "operationProfiles": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {"$ref": "#/$defs/operationProfile"}
+    },
+    "classifications": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/classification"}
+    },
+    "components": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/component"}
+    },
+    "compileCodegen": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/codegen"}
+    }
+  },
+  "$defs": {
+    "pathSet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["include"],
+      "properties": {
+        "include": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "exclude": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "classification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "paths", "components", "terminal"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "paths": {"$ref": "#/$defs/pathSet"},
+        "components": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "terminal": {"const": true}
+      }
+    },
+    "component": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "owner",
+        "risk",
+        "operationProfile",
+        "dependsOn",
+        "alsoAffects",
+        "pathType"
+      ],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "owner": {"type": "string", "minLength": 1},
+        "risk": {"enum": ["low", "standard", "high"]},
+        "operationProfile": {"type": "string", "minLength": 1},
+        "pathType": {"enum": ["terminal", "component", "consumer"]},
+        "ownedPaths": {"$ref": "#/$defs/pathSet"},
+        "dependsOn": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "alsoAffects": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "description": {"type": "string", "minLength": 1}
+      }
+    },
+    "operationProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["direct", "affected"],
+      "properties": {
+        "direct": {"$ref": "#/$defs/modeOperations"},
+        "affected": {"$ref": "#/$defs/modeOperations"}
+      }
+    },
+    "modeOperations": {
+      "type": "object",
+      "additionalProperties": {"$ref": "#/$defs/operation"}
+    },
+    "operation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ciTargets": {"$ref": "#/$defs/stringSet"},
+        "checkIds": {"$ref": "#/$defs/stringSet"},
+        "codegenIds": {"$ref": "#/$defs/stringSet"},
+        "buildTargets": {"$ref": "#/$defs/stringSet"},
+        "deployGroups": {"$ref": "#/$defs/stringSet"},
+        "releaseRoles": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"enum": ["consumer", "host"]}
+        }
+      }
+    },
+    "stringSet": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "codegen": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "owner",
+        "inputs",
+        "outputs",
+        "checkCommand",
+        "writeCommand",
+        "platforms",
+        "deterministic",
+        "network",
+        "timeoutSeconds"
+      ],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "owner": {"type": "string", "minLength": 1},
+        "inputs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "outputs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "checkCommand": {"type": "string", "minLength": 1},
+        "writeCommand": {"type": "string", "minLength": 1},
+        "platforms": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"enum": ["darwin", "linux", "win32"]}
+        },
+        "deterministic": {"const": true},
+        "network": {"const": false},
+        "timeoutSeconds": {"type": "integer", "minimum": 1, "maximum": 600}
+      }
+    }
+  }
+}
