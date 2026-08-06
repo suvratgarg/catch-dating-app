@@ -38,42 +38,36 @@ executing a platform-incompatible command.
 `tool/repository_root_manifest.json#relationships` to their source, generated
 output, and consumer surfaces. It reports the owning checks and workflows,
 fails when any changed path is unmapped, and runs the union of manifest checks
-with `--check`. The same manifest's `ciPlanning` section resolves stable CI
-targets, role-selective app builds, and mobile-release eligibility:
+with `--check`. The Harness component graph independently resolves stable CI
+targets, role-selective app builds, deployment groups, and mobile-release
+eligibility:
 
 ```sh
-node tool/ci/plan_ci.mjs --base origin/main --head HEAD --json
-node tool/ci/plan_ci.mjs --full --json
+node tool/harness.mjs plan --base origin/main --head HEAD --mode pr --json
+node tool/harness.mjs plan --full --mode nightly --json
 ```
 
-The planner uses first-match rules so a Host-only source can select Host while
-shared Flutter source selects both roles. CI-control changes run the full
-validation matrix. Unmapped paths fail before any conditional lane can be
-mistaken for success. This v1 graph remains the authoritative CI map until the
-Harness v2 shadow comparison meets the cutover thresholds.
-
-Harness v2 models one terminal classification or component owner per path,
-then expands through explicit dependency edges. It is intentionally shadow-only:
-it cannot change required CI outputs, and dependency-expanded components cannot
-authorize deploy or release operations. Compile-codegen runs only declared,
+Harness models exactly one terminal classification or component owner per path,
+then expands through explicit dependency edges. Unmapped or ambiguous paths fail
+before any conditional lane can be mistaken for success. Only direct ownership
+can authorize deploy or release operations; dependency expansion may add
+validation but never mutation. Compile-codegen runs only declared,
 deterministic, network-free check commands.
 
 ```sh
 node tool/harness.mjs validate
 node tool/harness.mjs coverage --json
 node tool/harness.mjs explain --paths lib/features/explore/presentation/explore_page.dart --json
-node tool/harness.mjs shadow --base origin/main --mode pr --json
+node tool/harness.mjs plan --base origin/main --mode pr --json
 node tool/harness.mjs check --affected --paths contracts/firestore/users.schema.json
 node tool/harness.mjs check --affected --dry-run --paths contracts/firestore/users.schema.json
 node tool/harness.mjs generate --affected --check --paths contracts/firestore/users.schema.json
 ```
 
-Unknown or ambiguous v2 ownership is a shadow finding while v1 is authoritative;
-the same condition fails `check` and `generate` closed. The authored graph and
-compile-codegen allowlist live in `tool/harness/component_graph.json`. `check`
-executes the selected manifest checks unless `--dry-run` is present. Full-graph
-validation and full safe-codegen are restricted to nightly mode; write commands
-remain disabled while Harness v2 is shadow-only.
+The authored graph and compile-codegen allowlist live in
+`tool/harness/component_graph.json`. `check` executes the selected manifest
+checks unless `--dry-run` is present. Full-graph validation and full
+safe-codegen are restricted to nightly mode; write commands remain disabled.
 
 ## Layout
 
@@ -89,7 +83,7 @@ remain disabled while Harness v2 is shadow-only.
 - `design/`: visual review and design-preview entrypoints.
 - `env/`: checked-in Dart define files for app environments.
 - `firebase/`: Firebase project/config helper scripts.
-- `harness/`: Harness v2 shadow component graph, safe compile-codegen catalog,
+- `harness/`: authoritative component graph, safe compile-codegen catalog,
   planner kernel, and fixtures.
 - `lib/`: shared Node helper modules for repo paths, CLI parsing, and Firebase project selection.
 - Completed one-time migration tools are retired after prod verification; historical

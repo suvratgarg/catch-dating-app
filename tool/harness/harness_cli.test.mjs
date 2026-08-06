@@ -1,10 +1,10 @@
 import assert from "node:assert/strict";
 import {spawnSync} from "node:child_process";
 import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import test from "node:test";
 import {
-  authoritativeShadowFailure,
-  buildShadowReport,
   executeCheckIds,
   formatGithubOutputs,
   main,
@@ -14,9 +14,6 @@ import {
 
 const graph = JSON.parse(
   fs.readFileSync(new URL("./component_graph.json", import.meta.url), "utf8"),
-);
-const rootManifest = JSON.parse(
-  fs.readFileSync(new URL("../repository_root_manifest.json", import.meta.url), "utf8"),
 );
 
 test("check executes by default and dry-run must be explicit", () => {
@@ -175,14 +172,33 @@ test("plan CLI fails closed before writing outputs for an unknown path", () => {
   assert.equal(fs.existsSync(outputPath), false);
 });
 
-test("shadow reports remain governed by authoritative v1 mapping", () => {
-  const report = buildShadowReport({
-    changedPaths: ["README.md"],
-    graph,
-    rootManifest,
-    mode: "pr",
+test("plan CLI writes parseable bounded outputs for an owned path", (context) => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-harness-output-"));
+  context.after(() => fs.rmSync(directory, {recursive: true, force: true}));
+  const outputPath = path.join(directory, "github-output");
+  let exitCode = 0;
+  main({
+    args: [
+      "plan",
+      "--paths",
+      "README.md",
+      "--github-output",
+      outputPath,
+      "--json",
+    ],
+    setExitCode(status) {
+      exitCode = status;
+    },
   });
-  assert.deepEqual(report.v1Plan.unmatchedPaths, ["README.md"]);
-  assert.equal(report.v2Plan.complete, true);
-  assert.equal(authoritativeShadowFailure(report), true);
+  const outputs = Object.fromEntries(
+    fs.readFileSync(outputPath, "utf8")
+      .trim()
+      .split("\n")
+      .map((line) => line.split(/=(.*)/s).slice(0, 2)),
+  );
+  assert.equal(exitCode, 0);
+  assert.equal(outputs.docs, "true");
+  assert.equal(outputs.flutter, "false");
+  assert.deepEqual(JSON.parse(outputs.app_roles), []);
+  assert.equal(outputs.complete, "true");
 });
