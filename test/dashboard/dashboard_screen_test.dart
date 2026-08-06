@@ -810,7 +810,8 @@ void main() {
     testWidgets('notifications screen renders grouped notification rows', (
       tester,
     ) async {
-      final now = DateTime.now().subtract(const Duration(minutes: 5));
+      final current = DateTime.now();
+      final now = DateTime(current.year, current.month, current.day, 12);
       final today = _activityNotification(
         id: 'today',
         uid: 'runner-1',
