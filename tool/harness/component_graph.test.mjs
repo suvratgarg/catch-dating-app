@@ -44,11 +44,11 @@ test("CI checkout requirements keep planner and docs narrow with a full fallback
     coneMode: false,
     timeoutMinutes: 3,
     paths: [
-      "tool/harness.mjs",
-      "tool/harness/component_graph.json",
-      "tool/harness/lib/component_graph.mjs",
-      "tool/lib/repo_paths.mjs",
-      "tool/tools_manifest.json",
+      "/tool/harness.mjs",
+      "/tool/harness/component_graph.json",
+      "/tool/harness/lib/component_graph.mjs",
+      "/tool/lib/repo_paths.mjs",
+      "/tool/tools_manifest.json",
     ],
   });
   assert.deepEqual(resolveTargetCheckout({graph, target: "docs"}), {
@@ -57,8 +57,8 @@ test("CI checkout requirements keep planner and docs narrow with a full fallback
     coneMode: false,
     timeoutMinutes: 3,
     paths: [
-      "docs/audit_registry/doc_versions.json",
-      "tool/docs/check_doc_version_monotonic.mjs",
+      "/docs/audit_registry/doc_versions.json",
+      "/tool/docs/check_doc_version_monotonic.mjs",
     ],
   });
   assert.deepEqual(resolveTargetCheckout({graph, target: "policy_docs"}), {
@@ -105,30 +105,30 @@ test("CI checkout requirements reject unsafe narrowing", () => {
     {
       name: "absolute path",
       mutate(value) {
-        value.ciCheckout.targetOverrides.docs.paths[0] = "/etc/passwd";
+        value.ciCheckout.targetOverrides.docs.paths[0] = "etc/passwd";
       },
-      expected: "unsafe or non-canonical path",
+      expected: "unsafe or non-canonical root pattern",
     },
     {
       name: "path traversal",
       mutate(value) {
-        value.ciCheckout.targetOverrides.docs.paths[0] = "docs/../secret";
+        value.ciCheckout.targetOverrides.docs.paths[0] = "/docs/../secret";
       },
-      expected: "unsafe or non-canonical path",
+      expected: "unsafe or non-canonical root pattern",
     },
     {
       name: "negated path",
       mutate(value) {
-        value.ciCheckout.targetOverrides.docs.paths[0] = "!docs/private";
+        value.ciCheckout.targetOverrides.docs.paths[0] = "/!docs/private";
       },
-      expected: "unsafe or non-canonical path",
+      expected: "unsafe or non-canonical root pattern",
     },
     {
       name: "multiline path",
       mutate(value) {
-        value.ciCheckout.targetOverrides.docs.paths[0] = "docs/safe\nunsafe";
+        value.ciCheckout.targetOverrides.docs.paths[0] = "/docs/safe\nunsafe";
       },
-      expected: "unsafe or non-canonical path",
+      expected: "unsafe or non-canonical root pattern",
     },
     {
       name: "invalid timeout",
@@ -140,7 +140,7 @@ test("CI checkout requirements reject unsafe narrowing", () => {
     {
       name: "sparse fields on full checkout",
       mutate(value) {
-        value.ciCheckout.default.paths = ["README.md"];
+        value.ciCheckout.default.paths = ["/README.md"];
       },
       expected: "only valid for sparse checkout",
     },

@@ -59,8 +59,8 @@ test("bounded plan outputs contain no changed-path inventory", () => {
       coneMode: false,
       timeoutMinutes: 3,
       paths: [
-        "docs/audit_registry/doc_versions.json",
-        "tool/docs/check_doc_version_monotonic.mjs",
+        "/docs/audit_registry/doc_versions.json",
+        "/tool/docs/check_doc_version_monotonic.mjs",
       ],
     },
   );
