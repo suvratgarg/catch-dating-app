@@ -5,6 +5,7 @@ import test from "node:test";
 import {
   deriveAppRoles,
   planAffected,
+  resolveTargetCheckout,
   runCodegenChecks,
   selectCompileCodegen,
   summarizeCoverage,
@@ -33,6 +34,125 @@ test("component graph validates and affected edges cannot authorize release", ()
       assert.deepEqual(operation.deployGroups ?? [], []);
       assert.deepEqual(operation.releaseRoles ?? [], []);
     }
+  }
+});
+
+test("CI checkout requirements keep planner and docs narrow with a full fallback", () => {
+  assert.deepEqual(graph.ciCheckout.planner, {
+    mode: "sparse",
+    fetchDepth: 0,
+    coneMode: false,
+    timeoutMinutes: 3,
+    paths: [
+      "tool/harness.mjs",
+      "tool/harness/component_graph.json",
+      "tool/harness/lib/component_graph.mjs",
+      "tool/lib/repo_paths.mjs",
+      "tool/tools_manifest.json",
+    ],
+  });
+  assert.deepEqual(resolveTargetCheckout({graph, target: "docs"}), {
+    mode: "sparse",
+    fetchDepth: 0,
+    coneMode: false,
+    timeoutMinutes: 3,
+    paths: [
+      "docs/audit_registry/doc_versions.json",
+      "tool/docs/check_doc_version_monotonic.mjs",
+    ],
+  });
+  assert.deepEqual(resolveTargetCheckout({graph, target: "policy_docs"}), {
+    mode: "full",
+    fetchDepth: 0,
+    timeoutMinutes: 3,
+  });
+});
+
+test("CI checkout requirements reject unsafe narrowing", () => {
+  const cases = [
+    {
+      name: "unknown target",
+      mutate(value) {
+        value.ciCheckout.targetOverrides.unknown = clone(
+          value.ciCheckout.targetOverrides.docs,
+        );
+      },
+      expected: "unknown CI target",
+    },
+    {
+      name: "narrow default",
+      mutate(value) {
+        value.ciCheckout.default = clone(value.ciCheckout.targetOverrides.docs);
+      },
+      expected: "undeclared targets widen safely",
+    },
+    {
+      name: "empty paths",
+      mutate(value) {
+        value.ciCheckout.targetOverrides.docs.paths = [];
+      },
+      expected: "must not be empty",
+    },
+    {
+      name: "duplicate paths",
+      mutate(value) {
+        value.ciCheckout.targetOverrides.docs.paths.push(
+          value.ciCheckout.targetOverrides.docs.paths[0],
+        );
+      },
+      expected: "contains duplicate",
+    },
+    {
+      name: "absolute path",
+      mutate(value) {
+        value.ciCheckout.targetOverrides.docs.paths[0] = "/etc/passwd";
+      },
+      expected: "unsafe or non-canonical path",
+    },
+    {
+      name: "path traversal",
+      mutate(value) {
+        value.ciCheckout.targetOverrides.docs.paths[0] = "docs/../secret";
+      },
+      expected: "unsafe or non-canonical path",
+    },
+    {
+      name: "negated path",
+      mutate(value) {
+        value.ciCheckout.targetOverrides.docs.paths[0] = "!docs/private";
+      },
+      expected: "unsafe or non-canonical path",
+    },
+    {
+      name: "multiline path",
+      mutate(value) {
+        value.ciCheckout.targetOverrides.docs.paths[0] = "docs/safe\nunsafe";
+      },
+      expected: "unsafe or non-canonical path",
+    },
+    {
+      name: "invalid timeout",
+      mutate(value) {
+        value.ciCheckout.targetOverrides.docs.timeoutMinutes = 11;
+      },
+      expected: "integer from 1 through 10",
+    },
+    {
+      name: "sparse fields on full checkout",
+      mutate(value) {
+        value.ciCheckout.default.paths = ["README.md"];
+      },
+      expected: "only valid for sparse checkout",
+    },
+  ];
+
+  for (const fixture of cases) {
+    const invalid = clone(graph);
+    fixture.mutate(invalid);
+    assert.ok(
+      validateComponentGraph(invalid).some((error) => error.includes(fixture.expected)),
+      fixture.name,
+    );
   }
 });
 
