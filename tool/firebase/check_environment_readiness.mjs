@@ -15,6 +15,7 @@ const capabilityPattern = /^[a-z][a-z0-9-]*$/u;
 const secretNamePattern = /^[A-Z][A-Z0-9_]*$/u;
 const resourceNamePattern = /^[A-Za-z][A-Za-z0-9_-]*$/u;
 const projectIdPattern = /^[a-z][a-z0-9-]{4,28}[a-z0-9]$/u;
+const metadataCommandTimeoutMs = 15_000;
 
 export class ReadinessUsageError extends Error {
   constructor(message) {
@@ -105,6 +106,8 @@ export function validateEnvironmentReadinessManifest(
   const requirements = Array.isArray(manifest?.requirements)
     ? manifest.requirements
     : [];
+  const selectorDeployTargets = manifest?.selectors?.deployTargets;
+  const selectorCapabilities = manifest?.selectors?.capabilities;
   if (manifest?.version !== 1) {
     errors.push("version must be 1.");
   }
@@ -123,6 +126,30 @@ export function validateEnvironmentReadinessManifest(
   }
   if (requirements.length === 0) {
     errors.push("requirements must be a non-empty array.");
+  }
+  validateStringArray({
+    errors,
+    key: "selectors.deployTargets",
+    label: "manifest",
+    value: selectorDeployTargets,
+  });
+  validateStringArray({
+    errors,
+    key: "selectors.capabilities",
+    label: "manifest",
+    value: selectorCapabilities,
+  });
+  const knownDeployTargets = new Set(selectorDeployTargets ?? []);
+  const knownCapabilities = new Set(selectorCapabilities ?? []);
+  for (const target of knownDeployTargets) {
+    if (!deployTargetPattern.test(target)) {
+      errors.push(`manifest: invalid deploy selector ${target}.`);
+    }
+  }
+  for (const capability of knownCapabilities) {
+    if (!capabilityPattern.test(capability)) {
+      errors.push(`manifest: invalid capability selector ${capability}.`);
+    }
   }
 
   const ids = new Set();
@@ -222,12 +249,17 @@ export function validateEnvironmentReadinessManifest(
         } else if (target.startsWith("functions:") &&
             functionTargets && !functionTargets.has(target)) {
           errors.push(`${label}: Function target is not exported: ${target}.`);
+        } else if (!target.startsWith("functions:") &&
+            !knownDeployTargets.has(target)) {
+          errors.push(`${label}: undeclared deploy selector ${target}.`);
         }
       }
       for (const capability of capabilities) {
         if (typeof capability !== "string" ||
             !capabilityPattern.test(capability)) {
           errors.push(`${label}: invalid capability ${capability}.`);
+        } else if (!knownCapabilities.has(capability)) {
+          errors.push(`${label}: undeclared capability selector ${capability}.`);
         }
       }
     }
@@ -239,8 +271,8 @@ export function validateEnvironmentReadinessManifest(
         errors.push(`${label}: duplicate secret ${requirement.name}.`);
       }
       manifestSecrets.add(requirement.name);
-      if (!acceptedStates.includes("ENABLED")) {
-        errors.push(`${label}: secret versions must accept ENABLED.`);
+      if (acceptedStates.length !== 1 || acceptedStates[0] !== "ENABLED") {
+        errors.push(`${label}: secret versions must accept only ENABLED.`);
       }
     } else if (requirement.kind === "firestore-ttl") {
       if (!resourceNamePattern.test(requirement.collectionGroup ?? "")) {
@@ -249,8 +281,8 @@ export function validateEnvironmentReadinessManifest(
       if (!resourceNamePattern.test(requirement.field ?? "")) {
         errors.push(`${label}: invalid TTL field.`);
       }
-      if (!acceptedStates.includes("ACTIVE")) {
-        errors.push(`${label}: Firestore TTL must accept ACTIVE.`);
+      if (acceptedStates.length !== 1 || acceptedStates[0] !== "ACTIVE") {
+        errors.push(`${label}: Firestore TTL must accept only ACTIVE.`);
       }
     }
   }
@@ -364,13 +396,43 @@ export function selectReadinessRequirements({
     .sort((left, right) => left.id.localeCompare(right.id));
 }
 
+export function validateReadinessSelectors({
+  capabilities = [],
+  functionTargets,
+  manifest,
+  targets = [],
+}) {
+  const knownTargets = new Set(manifest.selectors.deployTargets);
+  const knownCapabilities = new Set(manifest.selectors.capabilities);
+  for (const target of targets) {
+    if (target.startsWith("functions:")) {
+      if (!functionTargets.has(target)) {
+        throw new ReadinessUsageError(
+          `Unknown Firebase Function deploy target: ${target}.`,
+        );
+      }
+    } else if (!knownTargets.has(target)) {
+      throw new ReadinessUsageError(
+        `Unknown Firebase deploy target: ${target}.`,
+      );
+    }
+  }
+  for (const capability of capabilities) {
+    if (!knownCapabilities.has(capability)) {
+      throw new ReadinessUsageError(
+        `Unknown environment capability: ${capability}.`,
+      );
+    }
+  }
+}
+
 export function buildProjectIdentityCommand(projectId) {
   validateProjectId(projectId);
   return metadataOnlyCommand([
     "projects",
     "describe",
     projectId,
-    "--format=json(projectId,projectNumber,lifecycleState)",
+    "--format=json(projectId,lifecycleState)",
     "--quiet",
   ]);
 }
@@ -387,7 +449,7 @@ export function buildRequirementCommand({projectId, requirement}) {
       `--project=${projectId}`,
       "--filter=state=ENABLED",
       "--limit=1",
-      "--format=json(name,state,createTime)",
+      "--format=json(state)",
       "--quiet",
     ];
   } else if (requirement.kind === "firestore-ttl") {
@@ -472,7 +534,6 @@ export function classifyProjectIdentity({projectId, result}) {
     kind: "project-identity",
     metadata: {
       lifecycleState: payload.lifecycleState,
-      projectNumber: String(payload.projectNumber ?? ""),
     },
     reason: "project-active",
     resource: projectId,
@@ -520,10 +581,8 @@ export function classifyRequirementResult({requirement, result}) {
       id: requirement.id,
       kind: requirement.kind,
       metadata: compactObject({
-        createTime: version.createTime,
         enabledVersionPresent: true,
         state: version.state,
-        versionId: String(version.name ?? "").split("/").at(-1),
       }),
       reason: "enabled-version-present",
       resource,
@@ -555,8 +614,8 @@ export function classifyRequirementResult({requirement, result}) {
 }
 
 export function exitCodeForResults(results) {
-  if (results.some((result) => result.status === "not-ready")) return 1;
   if (results.some((result) => result.status === "unknown")) return 2;
+  if (results.some((result) => result.status === "not-ready")) return 1;
   return 0;
 }
 
@@ -603,6 +662,7 @@ export function runEnvironmentReadiness({
       projectId,
       ready: exitCode === 0,
       results,
+      selectedRequirementCount: requirements.length,
       status: statusForExitCode(exitCode),
     });
   }
@@ -636,6 +696,7 @@ export function executeReadinessCli(argv, dependencies = {}) {
   const manifest = dependencies.manifest ?? readJsonFile(manifestPath, readFile);
 
   let validationOptions = {};
+  let functionTargets = dependencies.functionTargets ?? new Set();
   if (dependencies.repositoryValidation !== false) {
     const sourceRoot = path.join(repoRoot, "functions/src");
     const sources = dependencies.sources ?? readTypescriptSources({
@@ -648,9 +709,10 @@ export function executeReadinessCli(argv, dependencies = {}) {
       path.join(sourceRoot, "index.ts"),
       "utf8",
     );
+    functionTargets = parseFirebaseFunctionTargets(indexSource);
     validationOptions = {
       discoveredSecrets: declarations.names,
-      functionTargets: parseFirebaseFunctionTargets(indexSource),
+      functionTargets,
       sourcePathExists: (sourcePath) => pathExists(path.join(repoRoot, sourcePath)),
       unsupportedSecretDeclarations: declarations.unsupported,
     };
@@ -674,6 +736,13 @@ export function executeReadinessCli(argv, dependencies = {}) {
       report,
     };
   }
+
+  validateReadinessSelectors({
+    capabilities: args.capabilities,
+    functionTargets,
+    manifest,
+    targets: args.targets,
+  });
 
   const firebaseRcPath = dependencies.firebaseRcPath ?? path.join(
     repoRoot,
@@ -728,7 +797,12 @@ function executeMetadataCommand(spec, runCommand) {
 function defaultRunCommand(spec) {
   const result = spawnSync(spec.command, spec.args, {
     encoding: "utf8",
+    env: {
+      ...process.env,
+      CLOUDSDK_CORE_DISABLE_PROMPTS: "1",
+    },
     shell: false,
+    timeout: metadataCommandTimeoutMs,
   });
   return normalizeCommandResult(result);
 }
@@ -749,7 +823,9 @@ function classifyCommandFailure(result) {
     return {
       reason: result.error.code === "ENOENT"
         ? "gcloud-unavailable"
-        : "metadata-command-error",
+        : result.error.code === "ETIMEDOUT"
+          ? "metadata-command-timeout"
+          : "metadata-command-error",
       status: "unknown",
     };
   }
@@ -892,7 +968,8 @@ function formatReport(report, json) {
   for (const environment of report.environments) {
     lines.push(
       `${environment.status.toUpperCase().padEnd(9)} ` +
-      `${environment.environment}: ${environment.projectId}`,
+      `${environment.environment}: ${environment.projectId} ` +
+      `(${environment.selectedRequirementCount} prerequisite(s))`,
     );
     for (const result of environment.results) {
       lines.push(

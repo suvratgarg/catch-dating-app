@@ -353,6 +353,22 @@ recorded as separate release evidence.
 
 ### Firebase deploy and client-callable gates
 
+`tool/firebase/environment_readiness.json` declares target-specific remote
+prerequisites. Its checker is offline by default in the tool manifest and can
+run a metadata-only live probe after OIDC authentication. The live probe
+resolves project ids from `.firebaserc`, lists enabled secret-version metadata
+and Firestore TTL policy state, never accesses secret payloads, and has no apply
+mode:
+
+```sh
+node tool/firebase/check_environment_readiness.mjs --manifest-only
+node tool/firebase/check_environment_readiness.mjs \
+  --env staging --targets functions:getCrossPathsSuggestions
+```
+
+Both Firebase deployment workflows run this gate before runtime setup,
+dependency installation, Firebase CLI installation, and backend validation.
+
 `tool/firebase/plan_firebase_deploy_targets.mjs` is the pure planner behind
 `tool/deploy_firebase_targets.sh`. It validates target syntax, expands logical
 Functions from source exports, keeps exact `functions:<name>` targets in the

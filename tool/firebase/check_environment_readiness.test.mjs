@@ -18,6 +18,7 @@ import {
   runEnvironmentReadiness,
   selectReadinessRequirements,
   validateEnvironmentReadinessManifest,
+  validateReadinessSelectors,
 } from "./check_environment_readiness.mjs";
 
 const testDir = path.dirname(fileURLToPath(import.meta.url));
@@ -150,16 +151,55 @@ test("target and capability filtering selects only relevant prerequisites", () =
     ).length,
     10,
   );
+  assert.equal(selected("dev", ["functions"]).length, 11);
   assert.deepEqual(
     selected("dev", ["functions:getCrossPathsSuggestions"])
-      .map((entry) => entry.name),
-    ["CROSS_PATHS_SUGGESTION_SIGNING_KEY"],
+      .map((entry) => entry.id),
+    [
+      "firestore.ttl.cross-paths-suggestion-exposures",
+      "functions.secret.cross-paths-suggestion-signing-key",
+    ],
   );
   assert.deepEqual(
     selected("dev", [], ["cross-paths"]).map((entry) => entry.id),
     ["firestore.ttl.cross-paths-suggestion-exposures"],
   );
   assert.deepEqual(selected("dev", ["hosting"]), []);
+});
+
+test("unknown selectors fail closed while exported no-prerequisite targets remain valid", () => {
+  const functionTargets = new Set([
+    "functions:createEvent",
+    "functions:getCrossPathsSuggestions",
+  ]);
+  assert.doesNotThrow(() => validateReadinessSelectors({
+    capabilities: [],
+    functionTargets,
+    manifest,
+    targets: ["functions:createEvent", "hosting"],
+  }));
+  assert.throws(
+    () => validateReadinessSelectors({
+      capabilities: [],
+      functionTargets,
+      manifest,
+      targets: ["functions:typo"],
+    }),
+    (error) => error.exitCode === 64 && /Unknown Firebase Function/u.test(
+      error.message,
+    ),
+  );
+  assert.throws(
+    () => validateReadinessSelectors({
+      capabilities: ["typo"],
+      functionTargets,
+      manifest,
+      targets: [],
+    }),
+    (error) => error.exitCode === 64 && /Unknown environment capability/u.test(
+      error.message,
+    ),
+  );
 });
 
 test("gcloud command construction is metadata-only and forbids secret access", () => {
@@ -222,7 +262,10 @@ test("secret metadata classification never returns payload fields", () => {
     },
   });
   assert.equal(ready.status, "ready");
-  assert.equal(ready.metadata.versionId, "7");
+  assert.deepEqual(ready.metadata, {
+    enabledVersionPresent: true,
+    state: "ENABLED",
+  });
   assert.doesNotMatch(JSON.stringify(ready), /must-never-escape/u);
 
   const absent = classifyRequirementResult({
@@ -285,7 +328,7 @@ test("result aggregation preserves confirmed-not-ready versus unknown exits", ()
   assert.equal(exitCodeForResults([
     {status: "unknown"},
     {status: "not-ready"},
-  ]), 1);
+  ]), 2);
 });
 
 test("injected runner receives resolved project and returns a known-missing exit", () => {
@@ -367,6 +410,31 @@ test("live CLI distinguishes ready from indeterminate metadata", () => {
   assert.equal(unknownExecution.report.status, "unknown");
 });
 
+test("metadata timeout remains indeterminate and deployment-blocking", () => {
+  const execution = executeReadinessCli(
+    ["--env", "dev", "--targets", "functions:exploreSearch"],
+    {
+      repoRoot,
+      runCommand: (spec) => {
+        if (spec.args[0] === "projects") {
+          return readyProjectMetadata(spec.args[2]);
+        }
+        return {
+          error: {code: "ETIMEDOUT"},
+          status: null,
+          stderr: "",
+          stdout: "",
+        };
+      },
+    },
+  );
+  assert.equal(execution.exitCode, 2);
+  assert.equal(execution.report.status, "unknown");
+  assert.ok(execution.report.environments[0].results
+    .filter((result) => result.kind === "secret-version")
+    .every((result) => result.reason === "metadata-command-timeout"));
+});
+
 test("project identity mismatch is confirmed not-ready", () => {
   const result = classifyProjectIdentity({
     projectId: "catchdates-dev",
@@ -391,6 +459,52 @@ test("minimal manifest validation rejects duplicate ids", () => {
     () => validateEnvironmentReadinessManifest(duplicate),
     (error) => error.exitCode === 64 && /duplicate id/u.test(error.message),
   );
+});
+
+test("manifest accepts only terminal prerequisite states", () => {
+  const unsafeSecret = structuredClone(manifest);
+  unsafeSecret.requirements[0].acceptedStates.push("DISABLED");
+  assert.throws(
+    () => validateEnvironmentReadinessManifest(unsafeSecret),
+    /must accept only ENABLED/u,
+  );
+
+  const unsafeTtl = structuredClone(manifest);
+  unsafeTtl.requirements.find((entry) => entry.kind === "firestore-ttl")
+    .acceptedStates.push("CREATING");
+  assert.throws(
+    () => validateEnvironmentReadinessManifest(unsafeTtl),
+    /must accept only ACTIVE/u,
+  );
+});
+
+test("deploy workflows run readiness before dependency installation", () => {
+  for (const workflowPath of [
+    ".github/workflows/firebase-dev-deploy.yml",
+    ".github/workflows/firebase-deploy.yml",
+  ]) {
+    const source = fs.readFileSync(path.join(repoRoot, workflowPath), "utf8");
+    const auth = source.indexOf("name: Authenticate to Google Cloud");
+    const readiness = source.indexOf(
+      "name: Verify Firebase environment prerequisites",
+    );
+    assert.ok(auth >= 0, `${workflowPath} authenticates before probing`);
+    assert.ok(readiness > auth, `${workflowPath} probes after authentication`);
+    for (const expensiveStep of [
+      "id: toolchain",
+      "uses: actions/setup-node@v6",
+      "uses: actions/setup-java@v5",
+      "run: npm --prefix functions ci",
+      "run: npm install -g firebase-tools@",
+      "name: Contract check",
+    ]) {
+      const expensiveIndex = source.indexOf(expensiveStep);
+      assert.ok(
+        expensiveIndex > readiness,
+        `${workflowPath} runs readiness before ${expensiveStep}`,
+      );
+    }
+  }
 });
 
 function readyMetadataRunner(spec) {

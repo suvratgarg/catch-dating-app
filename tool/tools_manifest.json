@@ -2032,6 +2032,29 @@
       ]
     },
     {
+      "id": "firebase:environment-readiness",
+      "category": "firebase",
+      "path": "tool/firebase/check_environment_readiness.mjs",
+      "command": "node tool/firebase/check_environment_readiness.mjs --manifest-only",
+      "safety": "local-with-optional-remote-readonly",
+      "status": "active",
+      "description": "Fails Firebase deploys before dependency installation when target-specific Secret Manager metadata, Firestore TTL policy, project identity, or probe authority is missing; never reads secret payloads.",
+      "checks": [
+        "node --check tool/firebase/check_environment_readiness.mjs",
+        "node --test tool/firebase/check_environment_readiness.test.mjs",
+        "node tool/firebase/check_environment_readiness.mjs --manifest-only"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/firebase/check_environment_readiness.test.mjs",
+        "contains": [
+          "secret metadata classification never returns payload fields",
+          "deploy workflows run readiness before dependency installation"
+        ]
+      }
+    },
+    {
       "id": "firebase:function-targets",
       "category": "firebase",
       "path": "tool/firebase/list_firebase_function_targets.mjs",

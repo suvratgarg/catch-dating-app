@@ -85,8 +85,8 @@
   },
   "agent_regression_ledger": {
     "path": "docs/agent_regression_ledger.json",
-    "version": "125",
-    "updated": "2026-07-30",
+    "version": "131",
+    "updated": "2026-08-06",
     "status": "active",
     "read_policy": "Use before touching a scope with hard-won prior fixes; context packs surface matching active/watch regression guards, including section-ownership drift, parallel-delegation ownership, enforcement-integrity drift, and reconciliation merges that can hide dropped conflict-resolution intent."
   },
@@ -296,8 +296,8 @@
   },
   "release_operations": {
     "path": "docs/release_operations.md",
-    "version": "1.14.2",
-    "updated": "2026-07-30",
+    "version": "1.17.0",
+    "updated": "2026-08-06",
     "status": "active",
     "read_policy": "Read before changing CI workflows, Firebase deploy ordering, release gates, environment setup, store readiness, app-shell integration coverage, host TestFlight setup, or release evidence."
   },

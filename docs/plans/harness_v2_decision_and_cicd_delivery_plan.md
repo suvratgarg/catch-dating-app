@@ -1,6 +1,6 @@
 ---
 doc_id: harness_v2_decision_and_cicd_delivery_plan
-version: 0.3.2
+version: 0.3.3
 updated: 2026-08-06
 owner: agent_operating_model
 status: execution-in-progress
@@ -330,7 +330,7 @@ ordinary product PRs. They are not committed as a new metrics product.
 
 | Signal | First graph draft | Current shadow result |
 |---|---:|---:|
-| Tracked-path ownership | 3,485 / 7,294 (47.8%) | 7,302 / 7,302 (100%); 0 unknown, 0 ambiguous |
+| Tracked-path ownership | 3,485 / 7,294 (47.8%) | 7,305 / 7,305 (100%); 0 unknown, 0 ambiguous |
 | Ordinary shared Flutter selection | 6 v1 targets | 2 v2 targets (−66.7%); v1 still authoritative |
 | Host-only Flutter selection | 5 v1 targets | 2 v2 targets (−60%); v1 still authoritative |
 | Authored contract selection | 7 v1 consumer targets | 7 v2 consumer targets; no deploy permission from affected edges |
@@ -343,6 +343,24 @@ that silently falls back for more than half the repository cannot support a
 safe cutover. Reaching exact tracked-path ownership is a prerequisite, not a
 reason to trust the operational edges: v1/v2 replay and the high-risk parity
 gate remain outstanding.
+
+### Checkpoint 2 — deployment readiness (2026-08-06)
+
+| Signal | Baseline | Current result |
+|---|---:|---:|
+| Functions secret declaration coverage | No deploy-time source-of-truth reconciliation | 10 / 10 literal `defineSecret` declarations mapped to target-aware requirements |
+| Cross Paths expiry prerequisite | Missing TTL discovered during/after deploy work | 1 / 1 declared TTL policy checked with the four owning Function targets |
+| Failure position | Known missing secret surfaced ≈2m21s into the sampled deploy job | Authenticated broad-Functions probe itself fails in 12.10s locally and now precedes setup/install/validation work that consumed ≈128s (90.8%) of the sampled path; first GitHub end-to-end timing remains pending |
+| Secret exposure surface | Ad hoc CLI inspection | 3 metadata-only `gcloud` command families; 0 payload-access commands; no apply mode |
+| Behavioral verification | No dedicated suite | 17 / 17 focused readiness tests passing, including workflow-order, selector fail-closed, timeout, terminal-state, and payload-redaction guards |
+
+The dev probe currently reports the Cross Paths signing secret and TTL policy
+as not ready. That is expected environment truth, not a reason to weaken the
+gate: deployment remains blocked until those prerequisites are deliberately
+provisioned. The exact Cross Paths target probe returned that result in 4.47s;
+the broader automatic Functions-deploy probe checked all 11 target-selected
+prerequisites in 12.10s. GitHub checkout and OIDC timing will be measured on the
+first shadow/preflight workflow run.
 
 Durable outcomes are PR wall-clock p50/p95 and escaped defects. Record the
 baseline from the ten most recent comparable PRs and compare after ten v2 PRs.

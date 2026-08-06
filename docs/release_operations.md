@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 1.16.0
+version: 1.17.0
 updated: 2026-08-06
 owner: recursive_audit_loop
 status: active
@@ -34,6 +34,34 @@ Functions Node engine, or an Apple-native workflow runner drifts. Keep the
 Apple runner major aligned with the minimum Xcode major. `connectivity_plus`
 7.x requires Xcode 26.1.1 or newer, so the native build, release, and hosted
 visual-smoke workflows use `macos-26`.
+
+## Firebase Environment Readiness
+
+Every Firebase deploy workflow runs the target-aware metadata preflight after
+OIDC authentication and before Node/Java setup, dependency installation,
+Firebase CLI installation, or repeated backend validation:
+
+```sh
+node tool/firebase/check_environment_readiness.mjs --manifest-only
+node tool/firebase/check_environment_readiness.mjs \
+  --env dev \
+  --targets functions,firestore:indexes,firestore:rules,storage
+```
+
+`tool/firebase/environment_readiness.json` is the source of truth for enabled
+Secret Manager versions and Firestore TTL policies required by deploy targets.
+The offline mode reconciles every literal Functions `defineSecret` declaration,
+exported Function target, and owning source path. The live mode resolves project
+ids only from `.firebaserc` and permits three metadata-only `gcloud` command
+families: project describe, secret-version list, and Firestore TTL list. It has
+no apply mode and never accesses or prints secret payloads.
+
+Confirmed missing state exits `1`; authentication, authorization, unavailable
+tooling, or malformed metadata exits `2`; invalid invocation exits `64`. All
+non-zero results block deployment. Add a requirement in the same change that
+introduces a new `defineSecret`, TTL-dependent capability, or deploy-time
+project prerequisite. A missing prerequisite must fail before dependency
+installation; do not move this gate into Firebase predeploy hooks.
 
 ## Storage Rules Cross-Service Readiness
 
