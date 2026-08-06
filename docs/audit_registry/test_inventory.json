@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "generatedFrom": "git ls-files --cached --others --exclude-standard",
   "generatedBy": "node tool/test_inventory.mjs",
-  "total": 622,
+  "total": 624,
   "categories": {
     "firebase_rules": {
       "count": 2,
@@ -24,7 +24,7 @@
       ]
     },
     "flutter_unit_widget": {
-      "count": 286,
+      "count": 287,
       "files": [
         "test/activity/activity_taxonomy_test.dart",
         "test/analytics/app_analytics_test.dart",
@@ -298,6 +298,7 @@
         "test/swipes/swipe_window_test.dart",
         "test/tool/audit_inventory_policy_test.dart",
         "test/tool/audit_registry_gap_classifier_test.dart",
+        "test/tool/audit_registry_paths_test.dart",
         "test/tool/provider_graph_test.dart",
         "test/tool/ui_composition_contracts_test.dart",
         "test/tooling/catch_ui_lints_mutation_pending_test.dart",
@@ -432,7 +433,7 @@
       ]
     },
     "tooling": {
-      "count": 148,
+      "count": 149,
       "files": [
         "tool/admin/generate_admin_action_catalog.test.mjs",
         "tool/agent/check_agent_readiness.test.mjs",
@@ -515,6 +516,7 @@
         "tool/harness/component_graph.test.mjs",
         "tool/harness/harness_cli.test.mjs",
         "tool/harness/workflow_wiring.test.mjs",
+        "tool/lib/tool_impact.test.mjs",
         "tool/lib/widget_cleanup_ratchet.test.mjs",
         "tool/marketing/website_meta_contract.test.mjs",
         "tool/organizer_intake/apply_pending_decision_answers.test.mjs",

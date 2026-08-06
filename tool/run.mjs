@@ -12,6 +12,12 @@ import {
   matchesGlob,
   planAffected,
 } from "./harness/lib/component_graph.mjs";
+import {
+  duplicateCanonicalFullPathOverrides,
+  formatAffectedToolGithubOutputs,
+  hasExecutableChecks,
+  planAffectedToolChecks,
+} from "./lib/tool_impact.mjs";
 
 const manifestPath = fromRepo("tool/tools_manifest.json");
 const componentGraphPath = fromRepo("tool/harness/component_graph.json");
@@ -27,6 +33,8 @@ if (command === "help" || command === "--help" || command === "-h") {
   checkTools(argv);
 } else if (command === "impacted") {
   impactedTools(argv);
+} else if (command === "affected-tools") {
+  affectedToolChecks(argv);
 } else if (command === "run" || command === "exec") {
   runTool(argv);
 } else {
@@ -71,7 +79,7 @@ function checkTools(args) {
   const {category, ids, manifestOnly} = parseCheckArgs(args);
   const manifest = loadManifest();
   const tools = selectTools(manifest, {category, ids});
-  const errors = validateManifest(manifest);
+  const errors = validateManifest(manifest, loadComponentGraph());
 
   if (errors.length > 0) {
     console.error("Tool manifest validation failed:");
@@ -215,6 +223,64 @@ function impactedTools(args) {
   runChecks(tools);
 }
 
+function affectedToolChecks(args) {
+  const options = parseAffectedToolArgs(args);
+  const manifest = loadManifest();
+  const componentGraph = loadComponentGraph();
+  const errors = validateManifest(manifest, componentGraph);
+  if (errors.length > 0) {
+    console.error("Tool manifest validation failed:");
+    for (const error of errors) console.error(`- ${error}`);
+    process.exitCode = 1;
+    return;
+  }
+
+  const changedPaths = options.paths ?? changedPathsSince(options.base);
+  const plan = planAffectedToolChecks({
+    changedPaths,
+    manifest,
+    componentGraph,
+    mode: options.mode,
+    full: options.full,
+  });
+  if (options.githubOutput) {
+    fs.appendFileSync(
+      options.githubOutput,
+      formatAffectedToolGithubOutputs(plan),
+      "utf8",
+    );
+  }
+
+  if (options.json || !options.check) {
+    console.log(JSON.stringify(plan, null, 2));
+  } else {
+    console.log(`Affected tool mode: ${plan.mode}`);
+    console.log(`Affected tool checks: ${plan.toolIds.join(", ") || "none"}`);
+  }
+
+  if (!options.check) return;
+  if (plan.mode === "full") {
+    console.error(
+      "Affected-tool planning selected full mode; run the full category matrix.",
+    );
+    process.exitCode = 1;
+    return;
+  }
+  const tools = selectTools(manifest, {ids: plan.toolIds});
+  const missingIds = plan.toolIds.filter(
+    (id) => !tools.some((tool) => tool.id === id),
+  );
+  if (missingIds.length > 0) {
+    console.error(
+      `Affected-tool plan references inactive or unknown tool ids: ${missingIds.join(", ")}`,
+    );
+    process.exitCode = 1;
+    return;
+  }
+  requireSelection(tools, {ids: plan.toolIds});
+  runChecks(tools);
+}
+
 function changedPathsSince(base) {
   const commands = [
     ["diff", "--name-only", `${base}...HEAD`],
@@ -276,7 +342,7 @@ function runTool(args) {
   process.exit(result.status ?? 1);
 }
 
-function validateManifest(manifest) {
+function validateManifest(manifest, componentGraph) {
   const errors = [];
   const ids = new Set();
   const paths = new Set();
@@ -288,6 +354,11 @@ function validateManifest(manifest) {
     for (const error of validateToolPlatforms(tool)) {
       errors.push(`${tool.id ?? "<missing>"}: ${error}`);
     }
+    validateStringArrayField(tool.impactPaths, `${tool.id}.impactPaths`, errors);
+    validateStringArrayField(tool.alsoCheckIds, `${tool.id}.alsoCheckIds`, errors);
+    if (tool.status === "active" && !hasExecutableChecks(tool)) {
+      errors.push(`${tool.id ?? "<missing>"} is active but defines no checks.`);
+    }
     if (tool.id && ids.has(tool.id)) errors.push(`Duplicate tool id: ${tool.id}`);
     if (tool.id) ids.add(tool.id);
     if (tool.path) {
@@ -295,6 +366,59 @@ function validateManifest(manifest) {
       if (!fs.existsSync(fromRepo(tool.path))) {
         errors.push(`${tool.id}: missing path ${tool.path}`);
       }
+    }
+  }
+
+  if (
+    manifest.ciImpact == null ||
+    typeof manifest.ciImpact !== "object" ||
+    Array.isArray(manifest.ciImpact)
+  ) {
+    errors.push("Manifest is missing ciImpact configuration.");
+  } else {
+    validateStringArrayField(
+      manifest.ciImpact.mandatoryCheckIds,
+      "ciImpact.mandatoryCheckIds",
+      errors,
+      {required: true, nonEmpty: true},
+    );
+    validateStringArrayField(
+      manifest.ciImpact.additionalFullPaths,
+      "ciImpact.additionalFullPaths",
+      errors,
+      {required: true, nonEmpty: true},
+    );
+  }
+
+  try {
+    const duplicates = duplicateCanonicalFullPathOverrides({
+      manifest,
+      componentGraph,
+    });
+    if (duplicates.length > 0) {
+      errors.push(
+        `ciImpact.additionalFullPaths duplicates canonical repo.harness paths: ${duplicates.join(", ")}`,
+      );
+    }
+  } catch (error) {
+    errors.push(error.message);
+  }
+
+  const activeById = new Map(
+    manifest.tools
+      .filter((tool) => tool.status === "active")
+      .map((tool) => [tool.id, tool]),
+  );
+  const referencedIds = [
+    ...(manifest.ciImpact?.mandatoryCheckIds ?? []),
+    ...manifest.tools.flatMap((tool) => tool.alsoCheckIds ?? []),
+  ];
+  for (const id of new Set(referencedIds)) {
+    const tool = activeById.get(id);
+    if (!tool) {
+      errors.push(`Affected-tool metadata references inactive or unknown id: ${id}`);
+    } else if (!Array.isArray(tool.checks) || tool.checks.length === 0) {
+      errors.push(`Affected-tool metadata references id without checks: ${id}`);
     }
   }
 
@@ -306,6 +430,10 @@ function validateManifest(manifest) {
   }
 
   return errors;
+}
+
+function loadComponentGraph() {
+  return JSON.parse(fs.readFileSync(componentGraphPath, "utf8"));
 }
 
 function discoverManagedScripts() {
@@ -335,11 +463,30 @@ function walk(dir, files) {
 
 function selectTools(manifest, {category, ids = []} = {}) {
   return manifest.tools.filter((tool) => {
+    if (tool.status !== "active") return false;
     if (category && tool.category !== category) return false;
     if (ids.length > 0 && !ids.includes(tool.id)) return false;
-    if (ids.length === 0 && tool.status !== "active") return false;
     return true;
   });
+}
+
+function validateStringArrayField(
+  value,
+  label,
+  errors,
+  {required = false, nonEmpty = false} = {},
+) {
+  if (value == null && !required) return;
+  if (!Array.isArray(value) || value.some((entry) => typeof entry !== "string" || entry === "")) {
+    errors.push(`${label} must be an array of non-empty strings.`);
+    return;
+  }
+  if (nonEmpty && value.length === 0) {
+    errors.push(`${label} must not be empty.`);
+  }
+  if (new Set(value).size !== value.length) {
+    errors.push(`${label} must not contain duplicates.`);
+  }
 }
 
 function parseListArgs(args) {
@@ -374,6 +521,23 @@ function parseImpactedArgs(args) {
   };
 }
 
+function parseAffectedToolArgs(args) {
+  const pathsValue = valueAfter(args, "--paths");
+  return {
+    base: valueAfter(args, "--base") ?? "origin/main",
+    paths: pathsValue == null ? null : pathsValue
+      .split(",")
+      .map((value) => value.trim())
+      .filter(Boolean)
+      .sort(),
+    json: args.includes("--json"),
+    check: args.includes("--check"),
+    full: args.includes("--full"),
+    mode: valueAfter(args, "--mode") ?? "pr",
+    githubOutput: valueAfter(args, "--github-output"),
+  };
+}
+
 function valueAfter(args, flag) {
   const index = args.indexOf(flag);
   if (index === -1) return null;
@@ -395,12 +559,15 @@ Commands:
   list [--category name] [--json]
   check [--category name] [--manifest-only] [tool-id ...]
   impacted [--base ref | --paths a,b] [--json] [--check]
+  affected-tools [--base ref | --paths a,b] [--mode mode] [--full] [--json] [--check]
+    [--github-output path]
   run <tool-id> [args...]
 
 Examples:
   node tool/run.mjs list --category data
   node tool/run.mjs check --manifest-only
   node tool/run.mjs impacted --base origin/main --check
+  node tool/run.mjs affected-tools --base origin/main --check
   node tool/run.mjs run demo:ops list-commands
 `);
 }

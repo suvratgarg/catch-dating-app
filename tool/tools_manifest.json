@@ -1,6 +1,26 @@
 {
   "version": 1,
   "updated": "2026-08-06",
+  "ciImpact": {
+    "mandatoryCheckIds": [
+      "agent:readiness",
+      "docs:version-monotonic",
+      "meta:enforcement-integrity",
+      "meta:repository-root-hygiene",
+      "meta:test-inventory"
+    ],
+    "additionalFullPaths": [
+      "functions/package.json",
+      "functions/package-lock.json",
+      "package.json",
+      "package-lock.json",
+      "pubspec.yaml",
+      "pubspec.lock",
+      "tool/lib/**",
+      "tool/run.mjs",
+      "tool/run.test.mjs"
+    ]
+  },
   "tools": [
     {
       "id": "tool:runner",
@@ -16,18 +36,25 @@
       ],
       "checks": [
         "node --check tool/run.mjs",
-        "node --test tool/run.test.mjs"
+        "node --test tool/run.test.mjs tool/lib/tool_impact.test.mjs"
       ],
       "vacuityProof": {
         "type": "test",
         "path": "tool/run.test.mjs",
         "contains": [
           "filtered checks fail when a category matches no tools",
+          "direct checks cannot select inactive tool ids",
           "platform-specific tools run only on declared operating systems",
           "impact routing reports the owning relationship and checks",
           "impact routing includes field inventory for Flutter design consumers",
           "impact routing fails closed for an unmapped changed path",
-          "impact routing includes untracked files"
+          "impact routing includes untracked files",
+          "affected-tool routing selects the checker and mandatory guards",
+          "affected-tool routing ignores companion files owned by other lanes",
+          "affected-tool routing cannot ignore declared full-impact companions",
+          "affected-tool routing fails closed for any unmapped lane input",
+          "affected-tool routing keeps control-plane and explicit full runs full",
+          "active tool entries cannot be vacuous"
         ]
       }
     },
@@ -91,6 +118,9 @@
       "id": "docs:version-monotonic",
       "category": "audit",
       "path": "tool/docs/check_doc_version_monotonic.mjs",
+      "impactPaths": [
+        "tool/docs/check_doc_version_monotonic.test.mjs"
+      ],
       "command": "node tool/docs/check_doc_version_monotonic.mjs --base origin/main",
       "safety": "local-readonly",
       "status": "active",
@@ -249,12 +279,18 @@
       "id": "audit:registry",
       "category": "audit",
       "path": "tool/audit_registry.dart",
+      "impactPaths": [
+        "tool/lib/audit_registry_paths.dart",
+        "test/tool/audit_registry_paths_test.dart"
+      ],
       "command": "dart tool/audit_registry.dart",
       "safety": "local",
       "status": "active",
       "description": "Maintains the recursive audit registry.",
       "checks": [
-        "dart analyze tool/audit_registry.dart"
+        "flutter analyze --no-fatal-infos tool/audit_registry.dart tool/lib/audit_registry_paths.dart test/tool/audit_registry_paths_test.dart",
+        "flutter test test/tool/audit_registry_paths_test.dart",
+        "dart tool/audit_registry.dart refresh --check"
       ],
       "role": "generator"
     },
@@ -4345,7 +4381,10 @@
       "command": "flutter run -t tool/design/design_personality_preview_app.dart",
       "safety": "local-ui",
       "status": "active",
-      "description": "Legacy preview app for locked light, dark event, and activity editorial identity checks."
+      "description": "Legacy preview app for locked light, dark event, and activity editorial identity checks.",
+      "checks": [
+        "flutter analyze --no-fatal-infos tool/design/design_personality_preview_app.dart"
+      ]
     },
     {
       "id": "design:render-personality",
@@ -4354,7 +4393,10 @@
       "command": "dart tool/design/render_design_personality_previews.dart",
       "safety": "local-writes-assets",
       "status": "active",
-      "description": "Renders legacy locked identity preview strips."
+      "description": "Renders legacy locked identity preview strips.",
+      "checks": [
+        "flutter analyze --no-fatal-infos tool/design/render_design_personality_previews.dart"
+      ]
     },
     {
       "id": "design:visual-review",
@@ -4363,7 +4405,10 @@
       "command": "flutter run -t tool/design/visual_review_app.dart",
       "safety": "local-ui",
       "status": "active",
-      "description": "Visual review app entrypoint."
+      "description": "Visual review app entrypoint.",
+      "checks": [
+        "flutter analyze --no-fatal-infos tool/design/visual_review_app.dart"
+      ]
     },
     {
       "id": "audit:fn-rate-limits",
