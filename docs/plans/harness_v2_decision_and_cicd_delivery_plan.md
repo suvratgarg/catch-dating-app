@@ -1,6 +1,6 @@
 ---
 doc_id: harness_v2_decision_and_cicd_delivery_plan
-version: 0.3.22
+version: 0.3.23
 updated: 2026-08-06
 owner: agent_operating_model
 status: execution-in-progress
@@ -733,18 +733,18 @@ Issue discovered during this tranche:
 | Analyzer authority | Four 204-line compatibility scripts only translated historical command names into filters over `check_catch_ui_lint_drift.sh`. Their four manifest tools and rule bindings made one analyzer policy look like five separate enforcement systems. | The wrappers and manifest entries are deleted. `lint:catch-ui-drift` now directly binds `UI-LINT-001`, `DESIGN-TOKENS-001`, and `RESPONSIVE-LAYOUT-001`; current docs use the canonical ratchet or explicit `--code` filters. No alias layer replaces the wrappers. |
 | CI work | Full Tools execution could launch the repository-wide analyzer through the canonical drift tool and again through each of four wrappers. Flutter CI also repeated three wrapper parser/gate steps after already caching one analyzer census. | Full Tools falls from five analyzer launches to one, an 80% reduction. Flutter CI keeps exactly one machine census and the shared warning/ratchet projections while deleting three redundant wrapper steps. A workflow regression test proves one census, the canonical `--check`, and absence of all four retired names. |
 | Executable proof | Wrapper-level manifest and rule entries could disappear without proving canonical coverage remained, while sparse materialization could hide active docs that still invoked them. | 22/22 focused workflow, lifecycle, parser, and ratchet tests pass. A full-index guidance test now finds zero live wrapper references even when files are sparse-omitted. Manifest validation passes; enforcement remains 83 active rules and falls from 96 to 92 bound tools exactly because four aliases are gone; readiness passes 4,990/4,990. The generated design-language projection is byte-identical to its source at SHA-256 `2eaa85cff776b41d65ffbaa45f481ffa6ec4aa1cd2d0b2e2a31cd06b71e2ab3a`. |
-| Task root isolation | The sparse task contained a Flutter-backed generator but omitted the root `pubspec` sentinels. Because task worktrees are nested under the primary repository, Flutter walked upward and began dependency resolution in the protected dirty checkout. | No new primary diff was created. Every future task now anchors `pubspec.yaml`, `pubspec.lock`, and `analysis_options.yaml`, and the lifecycle regression test pins them. `H2-TRANSITION-022` records project-root escape as a correctness defect, not a dependency warning. |
-| Broker timing | Compatibility cleanup previously happened in shared full checkouts. | `task start` created and pushed a 17.7 MB sparse worktree in 3.44s. The deterministic documentation slice and manifest are synchronized here; the monolithic Flutter-backed pack check remains a fresh 256 MiB task canary after this root-sentinel fix is committed, with no shared dependency symlink. |
+| Task root isolation | The sparse task contained a Flutter-backed generator but omitted the root `pubspec` sentinels. Because task worktrees are nested under the primary repository, Flutter walked upward and began dependency resolution in the protected dirty checkout. | No new primary diff was created. Every future task now anchors `pubspec.yaml`, `pubspec.lock`, and `analysis_options.yaml`, and the lifecycle regression test pins them. A fresh task from commit `7e3f80514` materialized all three at its own root, resolved that exact path through Git and Flutter, passed the full generated-pack check and canonical UI ratchet, stayed clean, and finished healthy. `H2-TRANSITION-022` is closed. |
+| Broker timing | Compatibility cleanup previously happened in shared full checkouts. | The cleanup task started at 17.7 MB in 3.44s; commit `7e3f80514` took 0.36s and pushed in 6.71s. The fresh canary started in 7.89s at 38.4 MB tracked, resolved cached dependencies in 6.46s, passed the monolithic pack check in 27.12s and the warm single analyzer ratchet in 29.20s, then passed doctor in 1.31s and terminal closeout in 1.32s. Its compiled footprint was 174.2 MB against a 256 MiB budget, with no shared dependency symlink. |
 | Line accounting | The seven prior cleanup/safety commits were cumulatively net −126,742 lines. | The complete 28-file wrapper deletion, live-reference repair, generated projection, Harness guard, tests, registries, checkpoint, and audit receipt is +203/−473, net −270. The eight cleanup/safety commits are cumulatively net −127,012 lines. |
 
 Issue discovered during this tranche:
 
-- `H2-TRANSITION-022` — nested task worktrees must contain project-root
+- `H2-TRANSITION-022` — closed in Checkpoint 17. Nested task worktrees must contain project-root
   sentinels before any toolchain command runs. Otherwise Flutter can traverse
   into the parent primary checkout and resolve or generate files there. Anchor
   `pubspec.yaml`, `pubspec.lock`, and `analysis_options.yaml` in every task,
   retain the shared-dependency-symlink prohibition, and prove a fresh task sees
-  its own root before claiming isolated execution.
+  its own root before claiming isolated execution; the fresh canary now does.
 
 Durable outcomes are PR wall-clock p50/p95 and escaped defects. Record the
 baseline from the ten most recent comparable PRs and compare after ten v2 PRs.
