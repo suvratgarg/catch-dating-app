@@ -124,6 +124,54 @@ test("tools fanout selects exactly one affected or full execution path", () => {
   }
 });
 
+test("affected tools install only planner-declared setup requirements", () => {
+  const tools = workflow("tools-ci.yml");
+  assert.match(
+    tools,
+    /repository_view: \$\{\{ steps\.impact\.outputs\.repository_view \}\}/,
+  );
+  assert.match(
+    tools,
+    /setup_requirements: \$\{\{ steps\.impact\.outputs\.setup_requirements \}\}/,
+  );
+  const affectedJob = tools.match(
+    /  affected-tools:\n(?<body>[\s\S]*?)\n  tool-buckets:/u,
+  )?.groups?.body;
+  assert.ok(affectedJob, "affected-tools job must remain present");
+  assert.match(affectedJob, /- uses: actions\/setup-node@v6/u);
+  assert.match(
+    affectedJob,
+    /cache: \$\{\{ \(contains\(fromJSON\(needs\.preflight\.outputs\.setup_requirements\), 'root-npm'\) \|\| contains\(fromJSON\(needs\.preflight\.outputs\.setup_requirements\), 'functions-npm'\)\) && 'npm' \|\| '' \}\}/u,
+  );
+  for (const [stepMarker, requirement] of [
+    ["uses: ./.github/actions/setup-flutter", "flutter"],
+    ["name: Install scanner dependencies", "ripgrep"],
+    ["run: flutter pub get", "flutter-pub"],
+    ["run: npm ci", "root-npm"],
+    ["run: npm --prefix functions ci", "functions-npm"],
+    ["name: Install marketing design browser", "playwright"],
+  ]) {
+    const step = affectedJob.match(
+      new RegExp(
+        `      - ${escapeRegex(stepMarker)}(?<body>[\\s\\S]*?)(?=\\n      - |$)`,
+        "u",
+      ),
+    )?.groups?.body;
+    assert.ok(step != null, `${stepMarker} step must remain present`);
+    assert.match(
+      step,
+      new RegExp(
+        `if: \\$\\{\\{ contains\\(fromJSON\\(needs\\.preflight\\.outputs\\.setup_requirements\\), '${requirement}'\\) \\}\\}`,
+        "u",
+      ),
+    );
+  }
+});
+
+function escapeRegex(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
+}
+
 test("web smoke compiles dev roles without compiling production web", () => {
   const builds = workflow("app-build-matrix.yml");
   assert.match(builds, /inputs\.build_web \|\| inputs\.web_smoke/);
