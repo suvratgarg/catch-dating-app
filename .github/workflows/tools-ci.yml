@@ -42,6 +42,8 @@ jobs:
     timeout-minutes: 5
     outputs:
       tool_mode: ${{ steps.impact.outputs.tool_mode }}
+      repository_view: ${{ steps.impact.outputs.repository_view }}
+      setup_requirements: ${{ steps.impact.outputs.setup_requirements }}
 
     steps:
       - uses: actions/checkout@v6
@@ -54,10 +56,6 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
-          cache: npm
-          cache-dependency-path: |
-            package-lock.json
-            functions/package-lock.json
 
       - name: Check CI toolchain pins
         run: bash tool/ci/check_toolchain_consistency.sh
@@ -121,23 +119,29 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
-          cache: npm
+          cache: ${{ (contains(fromJSON(needs.preflight.outputs.setup_requirements), 'root-npm') || contains(fromJSON(needs.preflight.outputs.setup_requirements), 'functions-npm')) && 'npm' || '' }}
           cache-dependency-path: |
             package-lock.json
             functions/package-lock.json
 
       - uses: ./.github/actions/setup-flutter
+        if: ${{ contains(fromJSON(needs.preflight.outputs.setup_requirements), 'flutter') }}
 
       - name: Install scanner dependencies
+        if: ${{ contains(fromJSON(needs.preflight.outputs.setup_requirements), 'ripgrep') }}
         run: sudo apt-get update && sudo apt-get install -y ripgrep
 
       - run: flutter pub get
+        if: ${{ contains(fromJSON(needs.preflight.outputs.setup_requirements), 'flutter-pub') }}
 
       - run: npm ci
+        if: ${{ contains(fromJSON(needs.preflight.outputs.setup_requirements), 'root-npm') }}
 
       - run: npm --prefix functions ci
+        if: ${{ contains(fromJSON(needs.preflight.outputs.setup_requirements), 'functions-npm') }}
 
       - name: Install marketing design browser
+        if: ${{ contains(fromJSON(needs.preflight.outputs.setup_requirements), 'playwright') }}
         run: npx playwright install --with-deps chromium
 
       - name: Check affected tools

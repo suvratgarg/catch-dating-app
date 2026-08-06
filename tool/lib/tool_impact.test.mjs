@@ -7,6 +7,9 @@ import {
   formatAffectedToolGithubOutputs,
   hasExecutableChecks,
   planAffectedToolChecks,
+  projectToolCiRequirements,
+  supportedToolSetupRequirements,
+  validateToolCiRequirements,
 } from "./tool_impact.mjs";
 
 const productionGraph = JSON.parse(
@@ -31,6 +34,7 @@ function manifest(tools, overrides = {}) {
         path: "tool/guard.mjs",
         status: "active",
         checks: ["node tool/guard.mjs"],
+        ciRequirements: {repositoryView: "index", setup: ["node"]},
       },
       ...tools,
     ],
@@ -224,11 +228,132 @@ test("explicit full remains full and affected outputs stay bounded", () => {
   assert.equal(plan.mode, "full");
   assert.equal(
     formatAffectedToolGithubOutputs(plan),
-    "tool_mode=full\naffected=false\nfull=true\n",
+    "tool_mode=full\naffected=false\nfull=true\nrepository_view=full\n" +
+      `setup_requirements=${JSON.stringify(supportedToolSetupRequirements)}\n`,
   );
   assert.throws(
     () => formatAffectedToolGithubOutputs({complete: false, mode: "affected"}),
     /incomplete affected-tool plan/u,
+  );
+});
+
+test("CI requirements default to the full setup and union in canonical order", () => {
+  assert.deepEqual(projectToolCiRequirements([{id: "legacy"}]), {
+    repositoryView: "full",
+    setup: [...supportedToolSetupRequirements],
+  });
+  assert.deepEqual(projectToolCiRequirements([
+    {
+      id: "node-only",
+      ciRequirements: {repositoryView: "index", setup: ["node"]},
+    },
+    {
+      id: "flutter-check",
+      ciRequirements: {
+        repositoryView: "index",
+        setup: ["flutter-pub", "node", "flutter"],
+      },
+    },
+  ]), {
+    repositoryView: "index",
+    setup: ["node", "flutter", "flutter-pub"],
+  });
+});
+
+test("affected plans broaden safely across unannotated and transitive tools", () => {
+  const legacyDependency = manifest([
+    {
+      id: "owner",
+      path: "tool/owner.mjs",
+      status: "active",
+      checks: ["node tool/owner.mjs"],
+      impactPaths: ["tool/owner.mjs"],
+      alsoCheckIds: ["legacy"],
+      ciRequirements: {repositoryView: "index", setup: ["node"]},
+    },
+    {
+      id: "legacy",
+      path: "tool/legacy.mjs",
+      status: "active",
+      checks: ["node tool/legacy.mjs"],
+    },
+  ]);
+  const broadened = planAffectedToolChecks({
+    changedPaths: ["tool/owner.mjs"],
+    manifest: legacyDependency,
+    componentGraph: componentGraph(),
+  });
+  assert.equal(broadened.mode, "affected");
+  assert.deepEqual(broadened.toolIds, ["guard", "legacy", "owner"]);
+  assert.equal(broadened.repositoryView, "full");
+  assert.deepEqual(broadened.setupRequirements, supportedToolSetupRequirements);
+
+  const annotatedDependency = structuredClone(legacyDependency);
+  annotatedDependency.tools.find((tool) => tool.id === "legacy").ciRequirements = {
+    repositoryView: "index",
+    setup: ["node", "root-npm", "playwright"],
+  };
+  const unioned = planAffectedToolChecks({
+    changedPaths: ["tool/owner.mjs"],
+    manifest: annotatedDependency,
+    componentGraph: componentGraph(),
+  });
+  assert.equal(unioned.repositoryView, "index");
+  assert.deepEqual(unioned.setupRequirements, ["node", "root-npm", "playwright"]);
+});
+
+test("CI requirement declarations reject typos and unsafe dependency gaps", () => {
+  assert.deepEqual(validateToolCiRequirements({id: "legacy"}), []);
+  assert.match(
+    validateToolCiRequirements({ciRequirements: null}).join("\n"),
+    /must be an object/u,
+  );
+  const invalid = validateToolCiRequirements({
+    id: "invalid",
+    ciRequirements: {
+      repositoryView: "working-tree",
+      setup: ["playwright", "playwright", "mystery"],
+      typo: true,
+    },
+  }).join("\n");
+  assert.match(invalid, /unknown fields: typo/u);
+  assert.match(invalid, /repositoryView must be full or index/u);
+  assert.match(invalid, /must not contain duplicates/u);
+  assert.match(invalid, /unknown requirements: mystery/u);
+  assert.match(invalid, /must include node/u);
+  assert.match(invalid, /playwright requires root-npm/u);
+  assert.match(
+    validateToolCiRequirements({
+      ciRequirements: {
+        repositoryView: "index",
+        setup: ["node", "flutter-pub"],
+      },
+    }).join("\n"),
+    /flutter-pub requires flutter/u,
+  );
+});
+
+test("GitHub output projection rejects unsafe or noncanonical setup claims", () => {
+  const base = {
+    complete: true,
+    mode: "affected",
+    repositoryView: "index",
+    setupRequirements: ["node"],
+  };
+  for (const setupRequirements of [
+    ["node", "node"],
+    ["flutter", "node"],
+    ["node", "flutter-pub"],
+    ["node", "playwright"],
+  ]) {
+    assert.throws(
+      () => formatAffectedToolGithubOutputs({...base, setupRequirements}),
+      /invalid affected-tool CI requirements/u,
+    );
+  }
+  assert.throws(
+    () => formatAffectedToolGithubOutputs({...base, mode: "full"}),
+    /invalid affected-tool CI requirements/u,
   );
 });
 
