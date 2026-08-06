@@ -1,6 +1,6 @@
 ---
 doc_id: harness_v2_decision_and_cicd_delivery_plan
-version: 0.3.12
+version: 0.3.13
 updated: 2026-08-06
 owner: agent_operating_model
 status: execution-in-progress
@@ -383,7 +383,11 @@ Issues discovered during the rehearsal:
 
 - `H2-TRANSITION-001` — worktree creation has no disk-space or materialization
   budget. `harness task start` must preflight capacity and either create a
-  scope-appropriate sparse checkout or refuse before a partial checkout.
+  scope-appropriate sparse checkout or refuse before a partial checkout. The
+  integration rehearsal reproduced the failure at 71% after 3.20s with only
+  268 MiB free; the equivalent bounded worktree materialized 699 files / 26 MB
+  in about 0.3s. A focused test later reproduced the same failure while trying
+  to create a redundant full fixture checkout.
 - `H2-TRANSITION-002` — a selected `tool/run.mjs check <id>` validates path
   existence for every manifest entry. Sparse tasks therefore need unrelated
   source directories, while doc-version and root-hygiene gates treat
@@ -400,8 +404,11 @@ Issues discovered during the rehearsal:
 - `H2-TRANSITION-004` — the current audit stamp snapshots global dirty
   documentation state, so a Harness-only pass attempted to absorb an unrelated
   organizer-document version. The contaminated registry update was not
-  committed. Phase 2 must replace global snapshot stamping with scoped,
-  immutable CI evidence before ordinary parallel work can be pleasant.
+  committed. The ten-commit integration rehearsal then stopped twice on four
+  path-level conflicts in the shared audit ledgers (`agent_metrics.jsonl` and
+  `passes.jsonl` once each; generated `files.jsonl` twice). Phase 2 must replace
+  global snapshot stamping with scoped, immutable CI evidence before ordinary
+  parallel work can be pleasant.
 - `H2-TRANSITION-005` — the audit registry treated sparse disk materialization
   as repository truth. `File.existsSync` filtering attempted to shrink
   `files.jsonl` from 7,232 to 3,570 rows; an unmaterialized policy manifest
@@ -424,6 +431,11 @@ Issues discovered during the rehearsal:
   evidence replay took 0.33s. The protocol keeps integration safe; it does not
   remove the coordination tax. Dependent squash-only PRs should be serialized,
   or an explicit stack tool must automatically restack descendants.
+  The complete checkout/snapshot/setup stack was subsequently replayed twice:
+  both the pushed branch and detached rerere replay produced tree
+  `92a5c9b6e1122c74ffd3a902fafc46731b8f8a7d` with zero diff. Rerere restored
+  only the reviewed ledger resolutions; explicit staging and continuation
+  remained required.
 - `H2-TRANSITION-007` — the outer component graph selected the correct Tools
   lane, but the reusable workflow still launched six category buckets, each
   installing Flutter, root npm, Functions npm, and scanner dependencies. The
@@ -563,6 +575,24 @@ Issue discovered during this tranche:
   union after mandatory and `alsoCheckIds` expansion, widen absent metadata to
   today's full behavior, reject malformed metadata, and keep full mode on the
   full setup. `REG-HARNESS-AFFECTED-SETUP-001` makes this contract executable.
+
+### Checkpoint 8 — deterministic integration rehearsal (2026-08-06)
+
+| Signal | Measured result |
+|---|---|
+| Capacity | A full worktree failed at 71% after 3.20s with 268 MiB free. The replacement root-anchored sparse worktree materialized 699 files / 26 MB in about 0.3s. No unrelated worktree or dirty organizer file was removed. |
+| Composition | Ten reviewed commits from the checkout, repository-snapshot, and affected-setup tranches form a 33-path union. The integrated tree has zero missing or unexpected paths, and every branch-owned source blob matches its reviewed tip. |
+| Shared evidence | The replay stopped twice on four path-level shared-ledger conflicts. Append-only evidence was semantically unioned and `files.jsonl` regenerated to 7,237 entries rather than choosing either stale side. |
+| Determinism | Pushed branch `d62e0f8f4` and detached rerere replay `cf95b727b` both resolve to tree `92a5c9b6e1122c74ffd3a902fafc46731b8f8a7d`; `git diff --exit-code` reports no difference. |
+| Local Git operations | The ten replay operations took 2.05s total, 0.11s median, and 0.05–0.56s each. These are Git command durations and exclude investigation and manual-resolution wall time. |
+| Preservation pushes | Ten bounded pushes took 25.76s total, 2.17s median, and 1.74–4.30s each. Every replayed unit was remotely preserved before the next unit began. |
+| External status | GitHub Actions remained in a major outage, so this checkpoint proves local composition and remote preservation only. No new CI or live-runtime claim is inferred. |
+
+This rehearsal strengthens `H2-TRANSITION-001`, `H2-TRANSITION-004`, and
+`H2-TRANSITION-006`; it does not introduce another overlapping transition id.
+The next implementation slice consumes the already-projected repository view
+and must reduce checkout materialization without partial-clone filtering or a
+shallower history.
 
 Durable outcomes are PR wall-clock p50/p95 and escaped defects. Record the
 baseline from the ten most recent comparable PRs and compare after ten v2 PRs.
