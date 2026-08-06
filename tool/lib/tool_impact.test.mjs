@@ -18,6 +18,9 @@ import {
 const productionGraph = JSON.parse(
   fs.readFileSync(new URL("../harness/component_graph.json", import.meta.url), "utf8"),
 );
+const productionManifest = JSON.parse(
+  fs.readFileSync(new URL("../tools_manifest.json", import.meta.url), "utf8"),
+);
 
 function componentGraph() {
   return productionGraph;
@@ -67,6 +70,29 @@ test("primary and declared impact paths select their active owner plus guards", 
     assert.equal(plan.mode, "affected");
     assert.deepEqual(plan.toolIds, ["docs-check", "guard"]);
   }
+});
+
+test("widget variant changes stay index-only with Node setup", () => {
+  const widgetbookPlan = planAffectedToolChecks({
+    changedPaths: ["widgetbook/lib/example.dart"],
+    manifest: productionManifest,
+    componentGraph: componentGraph(),
+  });
+  assert.equal(widgetbookPlan.mode, "affected");
+  assert.equal(widgetbookPlan.repositoryView, "index");
+  assert.deepEqual(widgetbookPlan.setupRequirements, ["node"]);
+  assert.ok(widgetbookPlan.toolIds.includes("design:widget-variant-inventory"));
+
+  const finderPlan = planAffectedToolChecks({
+    changedPaths: ["tool/design/generate_widget_variant_inventory.mjs"],
+    manifest: productionManifest,
+    componentGraph: componentGraph(),
+  });
+  assert.equal(finderPlan.mode, "affected");
+  assert.equal(finderPlan.repositoryView, "index");
+  assert.deepEqual(finderPlan.setupRequirements, ["node"]);
+  assert.ok(finderPlan.toolIds.includes("design:widget-variant-inventory"));
+  assert.ok(finderPlan.toolIds.includes("design:widgetbook-compare-server"));
 });
 
 test("transitive check dependencies are selected once", () => {
