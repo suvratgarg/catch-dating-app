@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {fromRepo} from "./lib/repo_paths.mjs";
+import {createRepositorySnapshot} from "./lib/repository_snapshot.mjs";
 
 const allowedStages = new Set([
   "manual",
@@ -60,15 +60,18 @@ if (isCliEntrypoint) {
   }
 }
 
-export function checkEnforcementIntegrity({root}) {
+export function checkEnforcementIntegrity({
+  root,
+  snapshot = createRepositorySnapshot({root}),
+}) {
   const errors = [];
-  const rulesPath = path.join(root, "docs/audit_registry/rules.json");
-  const manifestPath = path.join(root, "tool/tools_manifest.json");
-  const metricsPath = path.join(root, "docs/audit_registry/agent_metrics.jsonl");
-  const regressionLedgerPath = path.join(root, "docs/agent_regression_ledger.json");
-  const rulesDocument = readJson(rulesPath);
-  const manifest = readJson(manifestPath);
-  const metrics = readJsonLines(metricsPath);
+  const rulesPath = "docs/audit_registry/rules.json";
+  const manifestPath = "tool/tools_manifest.json";
+  const metricsPath = "docs/audit_registry/agent_metrics.jsonl";
+  const regressionLedgerPath = "docs/agent_regression_ledger.json";
+  const rulesDocument = snapshot.readJson(rulesPath, {required: true});
+  const manifest = snapshot.readJson(manifestPath, {required: true});
+  const metrics = readJsonLines(snapshot, metricsPath);
 
   const rules = Object.entries(rulesDocument.rules ?? {}).map(([id, value]) => ({
     id,
@@ -84,7 +87,7 @@ export function checkEnforcementIntegrity({root}) {
     if (!activeRuleStatuses.has(rule.status)) continue;
     validateRuleMetadata({
       rule,
-      root,
+      snapshot,
       toolsById,
       errors,
     });
@@ -96,7 +99,7 @@ export function checkEnforcementIntegrity({root}) {
       validateRuleEnforcementEntry({
         entry,
         rule,
-        root,
+        snapshot,
         toolsById,
         toolsByPath,
         errors,
@@ -129,11 +132,10 @@ export function checkEnforcementIntegrity({root}) {
         }
       }
     }
-    validateToolMetadata({tool, root, metrics, errors});
+    validateToolMetadata({tool, snapshot, metrics, errors});
   }
 
-  for (const scriptPath of discoverArchitectureScripts(root)) {
-    const relativePath = normalizePath(path.relative(root, scriptPath));
+  for (const relativePath of discoverArchitectureScripts(snapshot)) {
     const tool = toolsByPath.get(relativePath);
     if (!tool) continue;
     if (tool.status !== "active") continue;
@@ -143,7 +145,7 @@ export function checkEnforcementIntegrity({root}) {
   }
 
   validateRegressionLedgerGuards({
-    root,
+    snapshot,
     ledgerPath: regressionLedgerPath,
     errors,
   });
@@ -156,9 +158,9 @@ export function checkEnforcementIntegrity({root}) {
   };
 }
 
-function validateRegressionLedgerGuards({root, ledgerPath, errors}) {
-  if (!fs.existsSync(ledgerPath)) return;
-  const ledger = readJson(ledgerPath);
+function validateRegressionLedgerGuards({snapshot, ledgerPath, errors}) {
+  if (!snapshot.exists(ledgerPath)) return;
+  const ledger = snapshot.readJson(ledgerPath, {required: true});
   for (const entry of ledger.entries ?? []) {
     if (entry?.status !== "active") continue;
     const command = entry.guard?.command;
@@ -175,14 +177,13 @@ function validateRegressionLedgerGuards({root, ledgerPath, errors}) {
       continue;
     }
 
-    const targetPath = path.join(root, flutterTest[1]);
     validateRepoFile({
-      root,
+      snapshot,
       filePath: flutterTest[1],
       owner: entry.id,
       errors,
     });
-    const targetSource = readTextIfExists(targetPath);
+    const targetSource = readTextIfExists(snapshot, flutterTest[1]);
     if (!targetSource.includes(guardEvidence)) {
       errors.push(
         `${entry.id}: guardEvidence not found in ${flutterTest[1]}: ${guardEvidence}`,
@@ -194,7 +195,7 @@ function validateRegressionLedgerGuards({root, ledgerPath, errors}) {
 function validateRuleEnforcementEntry({
   entry,
   rule,
-  root,
+  snapshot,
   toolsById,
   toolsByPath,
   errors,
@@ -209,7 +210,7 @@ function validateRuleEnforcementEntry({
   if (!entry.docAnchor) {
     errors.push(`${rule.id}: enforcement entry is missing docAnchor.`);
   } else {
-    validateDocAnchor({root, docAnchor: entry.docAnchor, owner: rule.id, errors});
+    validateDocAnchor({snapshot, docAnchor: entry.docAnchor, owner: rule.id, errors});
   }
 
   if (entry.stage !== "manual" && entry.stage !== "prose" && entry.stage !== "retired") {
@@ -226,12 +227,12 @@ function validateRuleEnforcementEntry({
       errors.push(`${rule.id}: tool ${tool.id} is missing reverse rules mapping.`);
     }
     if (entry.baseline) {
-      validateRepoFile({root, filePath: entry.baseline, owner: rule.id, errors});
+      validateRepoFile({snapshot, filePath: entry.baseline, owner: rule.id, errors});
     }
   }
 }
 
-function validateRuleMetadata({rule, root, toolsById, errors}) {
+function validateRuleMetadata({rule, snapshot, toolsById, errors}) {
   if (!allowedRuleKinds.has(rule.kind)) {
     errors.push(`${rule.id}: active rule has invalid or missing kind.`);
   }
@@ -245,7 +246,7 @@ function validateRuleMetadata({rule, root, toolsById, errors}) {
 
   const satisfiedSignals = [];
   for (const signal of rule.sunset_signals) {
-    const result = evaluateSunsetSignal({signal, rule, root, toolsById, errors});
+    const result = evaluateSunsetSignal({signal, rule, snapshot, toolsById, errors});
     if (result?.satisfied) satisfiedSignals.push(result.label);
   }
 
@@ -257,7 +258,7 @@ function validateRuleMetadata({rule, root, toolsById, errors}) {
   }
 }
 
-function evaluateSunsetSignal({signal, rule, root, toolsById, errors}) {
+function evaluateSunsetSignal({signal, rule, snapshot, toolsById, errors}) {
   if (signal == null || typeof signal !== "object" || Array.isArray(signal)) {
     errors.push(`${rule.id}: sunset signal must be an object.`);
     return null;
@@ -284,17 +285,16 @@ function evaluateSunsetSignal({signal, rule, root, toolsById, errors}) {
       );
       return null;
     }
-    const baselinePath = path.join(root, signal.baseline);
     validateRepoFile({
-      root,
+      snapshot,
       filePath: signal.baseline,
       owner: rule.id,
       errors,
     });
-    if (!fs.existsSync(baselinePath)) {
+    if (!snapshot.exists(signal.baseline)) {
       return {satisfied: false, label: `baseline-empty:${signal.baseline}`};
     }
-    const baseline = readJson(baselinePath);
+    const baseline = snapshot.readJson(signal.baseline, {required: true});
     return {
       satisfied: baselineCountForSignal(baseline, signal.countKey) === 0,
       label: `baseline-empty:${signal.baseline}:${signal.countKey}`,
@@ -330,7 +330,7 @@ function isValidSunsetReview(review) {
   );
 }
 
-function validateToolMetadata({tool, root, metrics, errors}) {
+function validateToolMetadata({tool, snapshot, metrics, errors}) {
   if (requiresExplicitRole(tool) && tool.role == null) {
     errors.push(`${tool.id}: active checked tool must declare role.`);
   }
@@ -343,24 +343,24 @@ function validateToolMetadata({tool, root, metrics, errors}) {
         `${tool.id}: ${tool.role} tool needs a manifest check that can execute the guard, not only syntax/count/help checks.`,
       );
     }
-    validateVacuityProof({tool, root, errors});
+    validateVacuityProof({tool, snapshot, errors});
   }
   if (tool.baseline) {
-    validateRepoFile({root, filePath: tool.baseline, owner: tool.id, errors});
-    validateBaselineMetric({tool, root, metrics, errors});
+    validateRepoFile({snapshot, filePath: tool.baseline, owner: tool.id, errors});
+    validateBaselineMetric({tool, snapshot, metrics, errors});
   }
 }
 
-function validateVacuityProof({tool, root, errors}) {
+function validateVacuityProof({tool, snapshot, errors}) {
   const proof = tool.vacuityProof;
   if (proof == null) {
     errors.push(`${tool.id}: ${tool.role} tool is missing vacuityProof.`);
     return;
   }
   if (proof.type === "test") {
-    validateRepoFile({root, filePath: proof.path, owner: tool.id, errors});
+    validateRepoFile({snapshot, filePath: proof.path, owner: tool.id, errors});
     if (Array.isArray(proof.contains)) {
-      const source = readTextIfExists(path.join(root, proof.path));
+      const source = readTextIfExists(snapshot, proof.path);
       for (const text of proof.contains) {
         if (!source.includes(text)) {
           errors.push(`${tool.id}: vacuity test ${proof.path} does not contain ${text}.`);
@@ -370,8 +370,8 @@ function validateVacuityProof({tool, root, errors}) {
     return;
   }
   if (proof.type === "probe-harness") {
-    validateRepoFile({root, filePath: proof.path, owner: tool.id, errors});
-    const source = readTextIfExists(path.join(root, proof.path));
+    validateRepoFile({snapshot, filePath: proof.path, owner: tool.id, errors});
+    const source = readTextIfExists(snapshot, proof.path);
     for (const diagnostic of proof.diagnostics ?? []) {
       if (!source.includes(diagnostic)) {
         errors.push(
@@ -394,8 +394,8 @@ function validateVacuityProof({tool, root, errors}) {
   errors.push(`${tool.id}: unsupported vacuityProof type ${proof.type}.`);
 }
 
-function validateBaselineMetric({tool, root, metrics, errors}) {
-  const baseline = readJson(path.join(root, tool.baseline));
+function validateBaselineMetric({tool, snapshot, metrics, errors}) {
+  const baseline = snapshot.readJson(tool.baseline, {required: true});
   const requiredReceipt = baselineReceiptFields(baseline);
   if (requiredReceipt == null) return;
   const matchingMetrics = metrics.filter((entry) => {
@@ -485,10 +485,9 @@ function toolForEntry(entry, toolsById, toolsByPath) {
   return toolsById.get(entry.tool) ?? toolsByPath.get(entry.tool) ?? null;
 }
 
-function validateDocAnchor({root, docAnchor, owner, errors}) {
+function validateDocAnchor({snapshot, docAnchor, owner, errors}) {
   const [filePath, fragment] = String(docAnchor).split("#");
-  const absolutePath = path.join(root, filePath);
-  if (!fs.existsSync(absolutePath)) {
+  if (!snapshot.exists(filePath)) {
     errors.push(`${owner}: docAnchor file does not exist: ${filePath}.`);
     return;
   }
@@ -497,7 +496,7 @@ function validateDocAnchor({root, docAnchor, owner, errors}) {
     errors.push(`${owner}: docAnchor fragments are supported only for markdown files.`);
     return;
   }
-  const source = fs.readFileSync(absolutePath, "utf8");
+  const source = snapshot.readText(filePath, {required: true});
   const anchors = new Set();
   for (const line of source.split(/\r?\n/u)) {
     const match = /^(#{1,6})\s+(.+)$/u.exec(line);
@@ -518,38 +517,30 @@ function slugifyHeading(heading) {
     .replace(/\s+/gu, "-");
 }
 
-function validateRepoFile({root, filePath, owner, errors}) {
-  if (!fs.existsSync(path.join(root, filePath))) {
+function validateRepoFile({snapshot, filePath, owner, errors}) {
+  if (!snapshot.exists(filePath)) {
     errors.push(`${owner}: referenced file does not exist: ${filePath}.`);
   }
 }
 
-function discoverArchitectureScripts(root) {
-  const directory = path.join(root, "tool/architecture");
-  if (!fs.existsSync(directory)) return [];
-  return fs
-    .readdirSync(directory)
-    .filter((entry) => entry.endsWith(".mjs") && !entry.endsWith(".test.mjs"))
-    .map((entry) => path.join(directory, entry));
+function discoverArchitectureScripts(snapshot) {
+  return snapshot.listFiles({prefix: "tool/architecture/"})
+    .filter((relativePath) => {
+      const name = relativePath.slice("tool/architecture/".length);
+      return !name.includes("/") && name.endsWith(".mjs") &&
+        !name.endsWith(".test.mjs");
+    });
 }
 
-function readJson(filePath) {
-  return JSON.parse(fs.readFileSync(filePath, "utf8"));
-}
-
-function readJsonLines(filePath) {
-  if (!fs.existsSync(filePath)) return [];
-  return fs
-    .readFileSync(filePath, "utf8")
+function readJsonLines(snapshot, filePath) {
+  const source = snapshot.readText(filePath);
+  if (source == null) return [];
+  return source
     .split(/\r?\n/u)
     .filter((line) => line.trim().length > 0)
     .map((line) => JSON.parse(line));
 }
 
-function readTextIfExists(filePath) {
-  return fs.existsSync(filePath) ? fs.readFileSync(filePath, "utf8") : "";
-}
-
-function normalizePath(filePath) {
-  return filePath.split(path.sep).join("/");
+function readTextIfExists(snapshot, filePath) {
+  return snapshot.readText(filePath) ?? "";
 }

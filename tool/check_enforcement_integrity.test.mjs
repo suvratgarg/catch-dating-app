@@ -2,8 +2,13 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import {execFileSync} from "node:child_process";
 import test from "node:test";
-import {checkEnforcementIntegrity} from "./check_enforcement_integrity.mjs";
+import {checkEnforcementIntegrity as checkWithRepositorySnapshot} from "./check_enforcement_integrity.mjs";
+
+function checkEnforcementIntegrity({root}) {
+  return checkWithRepositorySnapshot({root, snapshot: fixtureSnapshot(root)});
+}
 
 test("passes with manual and tool-backed enforcement", () => {
   const root = createFixture({
@@ -618,6 +623,48 @@ test("validates flutter regression guard evidence literals", () => {
   assert.match(errors, /REG-TEST-002: guardEvidence not found/u);
 });
 
+test("produces the same result after fixture files become sparse omitted", (context) => {
+  const root = createFixture({
+    rules: {
+      "TOOLED-001": {
+        ...manualRule(),
+        enforcement: [{
+          tool: "audit:sample",
+          stage: "scanner-gate",
+          docAnchor: "docs/app_architecture.md#error-scanners",
+        }],
+      },
+    },
+    tools: [gateTool({
+      id: "audit:sample",
+      path: "tool/architecture/check_sample.mjs",
+      command: "node tool/architecture/check_sample.mjs",
+      rules: ["TOOLED-001"],
+      proofPath: "tool/architecture/check_sample.test.mjs",
+      proofContains: ["flags bad input"],
+    })],
+    docs: {"docs/app_architecture.md": "# App Architecture\n\n### Error Scanners\n"},
+    files: {
+      "tool/architecture/check_sample.mjs": "#!/usr/bin/env node\n",
+      "tool/architecture/check_sample.test.mjs": "flags bad input\n",
+    },
+  });
+  context.after(() => fs.rmSync(root, {recursive: true, force: true}));
+  git(root, ["init", "-q"]);
+  git(root, ["config", "user.email", "snapshot@example.com"]);
+  git(root, ["config", "user.name", "Snapshot Test"]);
+  git(root, ["add", "."]);
+  git(root, ["commit", "-qm", "fixture"]);
+
+  const full = checkWithRepositorySnapshot({root});
+  git(root, ["sparse-checkout", "init", "--no-cone"]);
+  git(root, ["sparse-checkout", "set", "--no-cone", "/tool/"]);
+  const sparse = checkWithRepositorySnapshot({root});
+
+  assert.deepEqual(sparse, full);
+  assert.equal(fs.existsSync(path.join(root, "docs/audit_registry/rules.json")), false);
+});
+
 function createFixture({
   rules,
   tools = [],
@@ -698,4 +745,41 @@ function writeFile(root, relativePath, contents) {
   const file = path.join(root, relativePath);
   fs.mkdirSync(path.dirname(file), {recursive: true});
   fs.writeFileSync(file, contents);
+}
+
+function fixtureSnapshot(root) {
+  return {
+    exists(relativePath) {
+      return fs.existsSync(path.join(root, relativePath));
+    },
+    listFiles({prefix = ""} = {}) {
+      return walkFiles(root).filter((relativePath) => relativePath.startsWith(prefix));
+    },
+    readJson(relativePath, {required = false} = {}) {
+      const source = this.readText(relativePath, {required});
+      return source == null ? null : JSON.parse(source);
+    },
+    readText(relativePath, {required = false} = {}) {
+      const absolutePath = path.join(root, relativePath);
+      if (!fs.existsSync(absolutePath)) {
+        if (required) throw new Error(`Required fixture path is missing: ${relativePath}`);
+        return null;
+      }
+      return fs.readFileSync(absolutePath, "utf8");
+    },
+  };
+}
+
+function walkFiles(root, directory = root) {
+  const files = [];
+  for (const entry of fs.readdirSync(directory, {withFileTypes: true})) {
+    const absolutePath = path.join(directory, entry.name);
+    if (entry.isDirectory()) files.push(...walkFiles(root, absolutePath));
+    else if (entry.isFile()) files.push(path.relative(root, absolutePath).split(path.sep).join("/"));
+  }
+  return files.sort();
+}
+
+function git(root, args) {
+  execFileSync("git", args, {cwd: root, stdio: "pipe"});
 }

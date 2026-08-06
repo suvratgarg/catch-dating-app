@@ -3,9 +3,9 @@ import fs from "node:fs";
 import path from "node:path";
 import {execFileSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
+import {createRepositorySnapshot} from "./lib/repository_snapshot.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const manifestPath = path.join(repoRoot, "tool/repository_root_manifest.json");
 
 export function matchesPattern(name, pattern) {
   const escaped = pattern.replace(/[.+^${}()|[\]\\]/g, "\\$&").replaceAll("*", ".*").replaceAll("?", ".");
@@ -40,7 +40,13 @@ export function matchesImpactPath(value, pattern) {
   return new RegExp(`^${escaped}$`).test(value);
 }
 
-export function relationshipViolations({manifest, toolIds, root, trackedPaths = []}) {
+export function relationshipViolations({
+  manifest,
+  toolIds,
+  root,
+  snapshot = null,
+  trackedPaths = [],
+}) {
   const errors = [];
   const relationshipIds = new Set();
   for (const relationship of manifest.relationships ?? []) {
@@ -62,7 +68,7 @@ export function relationshipViolations({manifest, toolIds, root, trackedPaths = 
       if (!toolIds.has(toolId)) errors.push(`${relationship.id}: unknown tool ${toolId}`);
     }
     for (const workflow of relationship.ciWorkflows ?? []) {
-      if (!fs.existsSync(path.join(root, workflow))) {
+      if (!(snapshot?.exists(workflow) ?? fs.existsSync(path.join(root, workflow)))) {
         errors.push(`${relationship.id}: missing CI workflow ${workflow}`);
       }
     }
@@ -87,15 +93,19 @@ export function relationshipViolations({manifest, toolIds, root, trackedPaths = 
   return errors;
 }
 
-function git(args, options = {}) {
-  return execFileSync("git", args, {cwd: repoRoot, encoding: "utf8", ...options}).trim();
+function git(args, {cwd = repoRoot, ...options} = {}) {
+  return execFileSync("git", args, {cwd, encoding: "utf8", ...options}).trim();
 }
 
-export function checkRepository({root = repoRoot, checkGit = true} = {}) {
-  const manifest = JSON.parse(fs.readFileSync(path.join(root, "tool/repository_root_manifest.json"), "utf8"));
-  const toolsManifest = JSON.parse(fs.readFileSync(path.join(root, "tool/tools_manifest.json"), "utf8"));
+export function checkRepository({
+  root = repoRoot,
+  checkGit = true,
+  snapshot = createRepositorySnapshot({root}),
+} = {}) {
+  const manifest = snapshot.readJson("tool/repository_root_manifest.json", {required: true});
+  const toolsManifest = snapshot.readJson("tool/tools_manifest.json", {required: true});
   const errors = [];
-  const rootNames = fs.readdirSync(root).sort();
+  const rootNames = snapshot.listRootEntries().map(({name}) => name);
   for (const name of rootNames) {
     const matches = classify(name, manifest);
     if (matches.length !== 1) errors.push(`${name}: expected exactly one classification, found ${matches.length}`);
@@ -104,7 +114,7 @@ export function checkRepository({root = repoRoot, checkGit = true} = {}) {
   for (const entry of [...manifest.entries, ...manifest.patterns]) {
     if (!manifest.ownerVocabulary.includes(entry.owner)) errors.push(`${entry.names?.join(",") ?? entry.pattern}: unknown owner ${entry.owner}`);
     if (!entry.recovery) errors.push(`${entry.names?.join(",") ?? entry.pattern}: missing recovery command or guidance`);
-    if (entry.kind === "curated-artifact" && (!entry.consumer || !fs.existsSync(path.join(root, entry.consumer)))) {
+    if (entry.kind === "curated-artifact" && (!entry.consumer || !snapshot.exists(entry.consumer))) {
       errors.push(`${entry.names?.join(",")}: curated artifact lacks an existing consumer manifest`);
     }
   }
@@ -113,31 +123,36 @@ export function checkRepository({root = repoRoot, checkGit = true} = {}) {
       errors.push(`${target.path}: cleanup target overlaps protected path`);
     }
   }
-  const trackedPaths = checkGit && root === repoRoot ?
-    git(["ls-files"]).split("\n").filter(Boolean) : [];
+  const trackedPaths = checkGit ?
+    git(["ls-files"], {cwd: root}).split("\n").filter(Boolean) : [];
   errors.push(...relationshipViolations({
     manifest,
     toolIds: new Set((toolsManifest.tools ?? []).map((tool) => tool.id)),
     root,
+    snapshot,
     trackedPaths,
   }));
-  if (checkGit && root === repoRoot) {
-    const trackedIgnored = git(["ls-files", "-ci", "--exclude-standard"]);
+  if (checkGit) {
+    const trackedIgnored = git(["ls-files", "-ci", "--exclude-standard"], {cwd: root});
     if (trackedIgnored) errors.push(`tracked files are also ignored:\n${trackedIgnored}`);
     for (const name of rootNames) {
       const [entry] = classify(name, manifest);
       if (!entry) continue;
-      const tracked = Boolean(git(["ls-files", "--cached", "--others", "--exclude-standard", "--", name]));
+      const tracked = Boolean(git(
+        ["ls-files", "--cached", "--others", "--exclude-standard", "--", name],
+        {cwd: root},
+      ));
       let ignored = false;
-      try { execFileSync("git", ["check-ignore", "-q", "--", name], {cwd: repoRoot}); ignored = true; } catch {}
+      try { execFileSync("git", ["check-ignore", "-q", "--", name], {cwd: root}); ignored = true; } catch {}
       if (entry.expectation === "tracked" && !tracked) errors.push(`${name}: expected tracked content`);
       if (entry.expectation === "ignored" && !ignored) errors.push(`${name}: expected Git ignore coverage`);
       if (entry.expectation === "ignored-or-unmanaged" && tracked) errors.push(`${name}: protected local entry must not be tracked`);
     }
-    const markdownFiles = git(["ls-files", "*.md"]).split("\n").filter(Boolean);
+    const markdownFiles = git(["ls-files", "*.md"], {cwd: root}).split("\n").filter(Boolean);
     for (const relative of markdownFiles) {
-      if (!fs.existsSync(path.join(repoRoot, relative))) continue;
-      const violations = portableLinkViolations(fs.readFileSync(path.join(repoRoot, relative), "utf8"));
+      const source = snapshot.readText(relative);
+      if (source == null) continue;
+      const violations = portableLinkViolations(source);
       for (const destination of violations) errors.push(`${relative}: non-portable Markdown link ${destination}`);
     }
   }
