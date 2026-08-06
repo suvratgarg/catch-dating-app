@@ -1,6 +1,6 @@
 ---
 doc_id: docs_index
-version: 4.14.1
+version: 4.14.2
 updated: 2026-08-07
 owner: recursive_audit_loop
 status: active
@@ -42,7 +42,7 @@ section unless the task requires a full historical audit.
 |---|---|---|
 | Agent execution harness | `../AGENTS.md`, `agent_operating_model.md`, `agent_regression_ledger.json`, `agent_skills/` | Canonical AI-agent entrypoint, execution modes, parent-led Git/worktree delegation protocol, regression guards, project-local skills, readiness workflow, and metrics recording for deterministic Catch cleanup/refactor/design work. |
 | AI-first workflow implementation guide | `ai_first_workflow_guide.md` | Shareable companion guide explaining how the agent entrypoint, context packs, docs registry, rules, scanners, lints, generated registries, audit receipts, CI gates, and readiness metrics combine into the Catch AI-first workflow. Descriptive only; canonical rules remain in owner docs. |
-| Flutter app architecture | `app_architecture.md`, `audit_registry/architecture_pattern_adoption.json`, `generated/provider_graph/README.md` | Canonical feature/layer/screen/controller/repository/async/error/UI layout/scroll/sizing/widget ownership spec for `lib/**`, plus the generated Riverpod provider topology and reviewed relationship candidates; read before broad app architecture or code-organization work. Architecture rollouts must prototype one reference implementation, copy the exhibit into `app_architecture.md`, and track adopters/variants/exceptions in the JSON tracker. |
+| Flutter app architecture | `app_architecture.md`, `audit_registry/architecture_pattern_adoption.json`, `../tool/architecture/provider_graph_reviews.json` | Canonical feature/layer/screen/controller/repository/async/error/UI layout/scroll/sizing/widget ownership spec for `lib/**`, plus the live Riverpod topology gate and authored relationship decisions; read before broad app architecture or code-organization work. Architecture rollouts must prototype one reference implementation, copy the exhibit into `app_architecture.md`, and track adopters/variants/exceptions in the JSON tracker. |
 | Widget inventory and reusable widget guidance | `widget_catalog.md` | Current catalog of Flutter widgets, primitive APIs, feature ownership notes, and its compact maintenance contract. Git and audit receipts own catalog history. |
 | Visual identity / design language | `design_language.md` | Locked editorial identity — palette (B&W base + activity color), typography (Archivo/platform system/IBM Plex Mono), photo grading, ticket/polaroid metaphors, exploration log, and the UI elevation roadmap. |
 | Design parity state matrix, inventory, and composition migration | `design_parity/` | Feature-by-feature design-spec parity matrix plus Claude Design to Widgetbook inventory and layered composition migration spec connecting screens, states, captures, component contracts, previews, lints, token specimens, and visual-diff gaps. |

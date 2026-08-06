@@ -114,6 +114,27 @@ test("l10n usage changes keep the full source view with Node-only setup", () => 
   }
 });
 
+test("provider graph changes keep a bounded Flutter source closure", () => {
+  for (const changedPath of [
+    "tool/architecture/provider_graph.dart",
+    "tool/architecture/provider_graph_reviews.json",
+  ]) {
+    const plan = planAffectedToolChecks({
+      changedPaths: [changedPath],
+      manifest: productionManifest,
+      componentGraph: componentGraph(),
+    });
+    assert.equal(plan.mode, "affected", changedPath);
+    assert.equal(plan.repositoryView, "full", changedPath);
+    assert.deepEqual(
+      plan.setupRequirements,
+      ["node", "flutter", "flutter-pub"],
+      changedPath,
+    );
+    assert.ok(plan.toolIds.includes("audit:provider-graph"), changedPath);
+  }
+});
+
 test("transitive check dependencies are selected once", () => {
   const fixture = manifest([
     {

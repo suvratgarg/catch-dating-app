@@ -27,10 +27,17 @@ const retiredDerivedAuditPaths = [
   "tool/scan_widget_antipatterns.py",
   "tool/migrate_widget_functions.py",
 ];
+const retiredProviderGraphPaths = [
+  "docs/generated/provider_graph/README.md",
+  "docs/generated/provider_graph/provider_graph.html",
+  "docs/generated/provider_graph/provider_graph.json",
+  "docs/generated/provider_graph/provider_graph.mmd",
+];
 const liveAuditAuthorityPaths = [
   "AGENTS.md",
   "docs/README.md",
   "docs/agent_operating_model.md",
+  "docs/app_architecture.md",
   "docs/audit_registry/README.md",
   "docs/audit_registry/backlog.json",
   "docs/audit_registry/doc_versions.json",
@@ -155,6 +162,23 @@ test("retired derived audit artifacts stay out of live authorities", () => {
       if (source.includes(retiredName)) {
         offenders.push(`${relativePath}: ${retiredName}`);
       }
+    }
+  }
+  assert.deepEqual(offenders, []);
+});
+
+test("retired provider graph snapshots stay absent from live authorities", () => {
+  for (const relativePath of retiredProviderGraphPaths) {
+    assert.equal(repositorySnapshot.exists(relativePath), false, relativePath);
+  }
+  const sources = repositorySnapshot.readTexts(liveAuditAuthorityPaths, {
+    required: true,
+  });
+  const offenders = [];
+  for (const relativePath of liveAuditAuthorityPaths) {
+    const source = sources.get(relativePath);
+    if (source.includes("docs/generated/provider_graph")) {
+      offenders.push(relativePath);
     }
   }
   assert.deepEqual(offenders, []);

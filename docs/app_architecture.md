@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.8.3
+version: 1.8.4
 updated: 2026-08-07
 owner: recursive_audit_loop
 status: active
@@ -338,25 +338,28 @@ Temporary exceptions require an override comment described in
 
 ## Provider Topology Graph
 
-Riverpod topology is a checked source contract, not an inferred diagram kept by
-hand. `tool/architecture/provider_graph.dart` parses handwritten Dart sources
-and generates the complete provider, family, consumer, override, alias,
-Mutation, and dependency inventory under `docs/generated/provider_graph/`.
+Riverpod topology is a live checked source contract, not a committed diagram or
+snapshot. `tool/architecture/provider_graph.dart` parses handwritten Dart
+sources and derives the complete provider, family, consumer, override, alias,
+Mutation, and dependency inventory when the gate runs.
 
 Use these commands after adding, removing, renaming, or changing dependencies
 of a provider:
 
 ```sh
-dart run tool/architecture/provider_graph.dart --write
 dart run tool/architecture/provider_graph.dart --check
+dart run tool/architecture/provider_graph.dart --summary
+dart run tool/architecture/provider_graph.dart --json
 ```
 
 `tool/architecture/provider_graph_reviews.json` owns explicit decisions for
 cross-feature edges, high-fan-out providers, aliases, and intentional manual
-provider exceptions. The check rejects stale generated artifacts, dangling or
-duplicate provider nodes, unresolved internal references, reactive cycles,
-unreviewed candidates, and stale review decisions. Feature-owned async
-providers should follow the generated family reference in
+provider exceptions; it is the only durable provider-graph evidence stored in
+the repository. The check rejects dangling or duplicate provider nodes,
+unresolved internal references, reactive cycles, unreviewed candidates, and
+stale review decisions. Full JSON and compact summary output are deterministic,
+read-only, and created only on demand or as ephemeral CI evidence. Feature-owned
+async providers should follow the generated family reference in
 `ARCH-PROVIDER-CODEGEN-001`; manual providers require an exact reviewed
 exception rather than an implicit allowlist.
 

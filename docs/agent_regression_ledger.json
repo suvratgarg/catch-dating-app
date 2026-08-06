@@ -1,5 +1,5 @@
 {
-  "version": 147,
+  "version": 148,
   "updated": "2026-08-07",
   "owner": "agent_operating_model",
   "entries": [
@@ -1964,6 +1964,9 @@
         "tool/copy/check_l10n_key_usage.mjs",
         "tool/copy/check_l10n_key_usage.test.mjs",
         "tool/copy/l10n_orphan_baseline.json",
+        "tool/architecture/provider_graph.dart",
+        "tool/architecture/provider_graph_reviews.json",
+        "test/tool/provider_graph_test.dart",
         ".github/workflows/flutter-ci.yml",
         "tool/design/build_widgetbook_compare.mjs",
         "tool/tools_manifest.json",
@@ -1977,11 +1980,11 @@
         "docs/design_parity/widgetbook_coverage_audit_plan.json",
         "docs/design_parity/widgetbook_coverage_report.json"
       ],
-      "symptom": "A syntax-only or regex-overbroad scanner stays green, a physical-filesystem scan mistakes a sparse checkout for repository truth, or a tracked Widgetbook report, localization key-usage inventory, variant inventory, or static page drifts from current sources.",
+      "symptom": "A syntax-only or regex-overbroad scanner stays green, a physical-filesystem scan mistakes a sparse checkout for repository truth, or a tracked Widgetbook report, localization key-usage inventory, provider graph, variant inventory, or static page drifts from current sources.",
       "guard": {
         "type": "command",
-        "command": "node tool/run.mjs check audit:widget-cleanup lint:catch-ui-drift design:widget-variant-inventory design:widgetbook-compare-server copy:l10n-key-usage && node tool/design/check_widgetbook_coverage.mjs --self-test && node tool/design/check_widgetbook_coverage.mjs --check && node --test tool/copy/check_l10n_key_usage.test.mjs tool/harness/workflow_wiring.test.mjs tool/lib/tool_impact.test.mjs && node tool/run.mjs check --manifest-only",
-        "guardEvidence": "widget cleanup and coverage remain live; the sparse-safe variant finder reads the logical repository snapshot; the compare server derives current candidates in process; l10n orphan and missing-getter detection remains live, exact usage is emitted on demand, only the authored empty orphan baseline remains tracked, and all retired derived paths stay absent"
+        "command": "node tool/run.mjs check audit:widget-cleanup lint:catch-ui-drift design:widget-variant-inventory design:widgetbook-compare-server copy:l10n-key-usage audit:provider-graph && node tool/design/check_widgetbook_coverage.mjs --self-test && node tool/design/check_widgetbook_coverage.mjs --check && node --test tool/copy/check_l10n_key_usage.test.mjs tool/harness/workflow_wiring.test.mjs tool/lib/tool_impact.test.mjs && node tool/run.mjs check --manifest-only",
+        "guardEvidence": "widget cleanup, coverage, localization usage, and provider topology remain live; only authored baselines and review decisions stay tracked; deterministic detail is emitted on demand; and all retired derived paths stay absent"
       },
       "owner_docs": [
         "docs/audit_registry/README.md",
@@ -1990,7 +1993,7 @@
         "docs/app_architecture.md",
         "tool/README.md"
       ],
-      "notes": "Zero is scanner-specific. The widget inventory ratchets live category maxima, analyzer aggregation reads only the machine diagnostic-code field, Widgetbook coverage and variant evidence are derived on demand from the logical Git snapshot, and localization usage evidence is derived from the current source tree rather than committed as a generated snapshot."
+      "notes": "Zero is scanner-specific. The widget inventory ratchets live category maxima, analyzer aggregation reads only the machine diagnostic-code field, Widgetbook coverage and variant evidence are derived on demand from the logical Git snapshot, and localization and provider-topology evidence are derived from current sources rather than committed as generated snapshots."
     },
     {
       "id": "REG-SHELL-001",
@@ -3673,23 +3676,24 @@
     },
     {
       "id": "REG-PROVIDER-GRAPH-ROUTER-REFRESH-001",
-      "title": "Router dependency changes leave provider-graph reviews and projections stale",
+      "title": "Router dependency changes leave provider-graph reviews stale",
       "status": "active",
       "applies_to": [
         "lib/routing/**",
+        "tool/architecture/provider_graph.dart",
         "tool/architecture/provider_graph_reviews.json",
-        "docs/generated/provider_graph/**"
+        "test/tool/provider_graph_test.dart"
       ],
-      "symptom": "Architecture CI reports stale provider-graph artifacts or a stale review decision after router providers or their dependencies are removed.",
+      "symptom": "Architecture CI reports a stale review decision or live topology failure after router providers or their dependencies are removed.",
       "guard": {
         "type": "command",
         "command": "dart run tool/architecture/provider_graph.dart --check",
-        "guardEvidence": "the generated provider graph matches current Dart sources and every architecture review decision still maps to a live candidate"
+        "guardEvidence": "the live provider graph is healthy and every authored architecture review decision still maps to a current candidate"
       },
       "owner_docs": [
         "docs/app_architecture.md"
       ],
-      "notes": "Removing a dependency is an architecture change too. Regenerate all provider-graph projections and retire review decisions whose relationship no longer exists."
+      "notes": "Removing a dependency is an architecture change too. Run the live graph gate and retire review decisions whose relationship no longer exists; optional JSON or summary evidence is derived on demand."
     },
     {
       "id": "REG-ADMIN-ORGANIZER-LIVE-PACKET-PROJECTION-001",
@@ -4137,7 +4141,7 @@
     },
     {
       "id": "REG-HARNESS-SPARSE-SNAPSHOT-001",
-      "title": "Sparse checkout changes repository truth, escapes its root, or lets a zero-file scanner pass",
+      "title": "Sparse checkout changes repository truth, omits executable closure, or lets a zero-file scanner pass",
       "status": "active",
       "applies_to": [
         "tool/lib/repository_snapshot.mjs",
@@ -4151,17 +4155,17 @@
         "tool/check_enforcement_integrity.mjs",
         "tool/check_repository_root_hygiene.mjs"
       ],
-      "symptom": "A tool-only sparse worktree reports missing manifest paths, drops owner docs and rules from a context pack, omits a direct executable import, lets Flutter walk upward into the dirty primary checkout because root sentinels are absent, shrinks readiness's denominator, skips omitted Markdown or workflows, or passes dependency enforcement after scanning zero Dart files.",
+      "symptom": "A tool-only sparse worktree reports missing manifest paths, drops owner docs and rules from a context pack, omits a direct executable import, declares itself healthy while Flutter cannot resolve workspace members, path dependencies, or declared assets, lets Flutter walk upward into the dirty primary checkout because root sentinels are absent, shrinks readiness's denominator, skips omitted Markdown or workflows, or passes dependency enforcement after scanning zero Dart files.",
       "guard": {
         "type": "command",
         "command": "node --test tool/lib/repository_snapshot.test.mjs tool/run.test.mjs tool/harness/workflow_wiring.test.mjs tool/harness/worktree_lifecycle.test.mjs tool/agent/check_agent_readiness.test.mjs tool/architecture/check_dependency_direction.test.mjs tool/check_enforcement_integrity.test.mjs tool/check_repository_root_hygiene.test.mjs",
-        "guardEvidence": "full and sparse repository views produce identical logical results; executable fixtures and the task broker cover every direct context-pack and readiness import plus Flutter project-root sentinels; omitted blobs are batch-read locally without lazy fetches; normal deletions stay deleted; zero-file scans fail closed"
+        "guardEvidence": "full and sparse repository views produce identical logical results; executable fixtures and the task broker cover every direct context-pack and readiness import plus the Flutter workspace manifests, local path dependencies, project-root sentinels, and declared assets; omitted blobs are batch-read locally without lazy fetches; normal deletions stay deleted; zero-file scans fail closed"
       },
       "owner_docs": [
         "docs/agent_operating_model.md",
         "docs/plans/harness_v2_decision_and_cicd_delivery_plan.md"
       ],
-      "notes": "Repository reads use one captured stage-0 plus nonignored-untracked snapshot per process. Working-tree content wins, sparse-omitted regular files use locally available index blobs, and canonical writes require a materialized regular target. Partial clones without required local objects fail closed."
+      "notes": "Repository reads use one captured stage-0 plus nonignored-untracked snapshot per process. Working-tree content wins, sparse-omitted regular files use locally available index blobs, and canonical writes require a materialized regular target. The task broker materializes the root Flutter workspace and asset closure so declared Flutter commands can start. Partial clones without required local objects fail closed."
     },
     {
       "id": "REG-AUDIT-DERIVED-EVIDENCE-001",
@@ -4173,17 +4177,17 @@
         "docs/audit_registry/backlog.json",
         "docs/audit_registry"
       ],
-      "symptom": "A stale machine-generated definition dump, heuristic consolidation queue, widget-antipattern report, or unsafe mechanical migrator is committed or registered as authority despite having no current consumer and being superseded by focused classification, delta, similarity, and cleanup gates.",
+      "symptom": "A stale machine-generated definition dump, heuristic consolidation queue, widget-antipattern report, provider-graph projection, or unsafe mechanical migrator is committed or registered as authority despite having no current consumer and being superseded by focused live gates and authored decision ledgers.",
       "guard": {
         "type": "command",
         "command": "node --test tool/harness/workflow_wiring.test.mjs && node tool/run.mjs check --manifest-only",
-        "guardEvidence": "the required Harness full-index snapshot proves all six retired paths are absent and current audit authorities contain no retired names; manifest validation proves their obsolete generators and migrator are no longer registered"
+        "guardEvidence": "the required Harness full-index snapshot proves all eleven retired paths are absent and current audit authorities contain no retired names or provider-snapshot route; manifest validation proves obsolete generators and migrators are no longer registered"
       },
       "owner_docs": [
         "docs/audit_registry/README.md",
         "docs/plans/harness_v2_decision_and_cicd_delivery_plan.md"
       ],
-      "notes": "Historical pass and widget-consolidation receipts remain immutable. Current consolidation state is reconstructed from widget classification, similarity, new-widget inventory, the reviewed decision ledger, the live cleanup ratchet, and Git history rather than repository-wide heuristic dumps or source-rewriting helpers."
+      "notes": "Historical pass and widget-consolidation receipts remain immutable. Current consolidation state is reconstructed from widget classification, similarity, new-widget inventory, reviewed decision ledgers, live cleanup and provider-topology gates, and Git history rather than repository-wide heuristic dumps, committed projections, or source-rewriting helpers."
     },
     {
       "id": "REG-DOC-INLINE-HISTORY-001",

@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_relative_lib_imports
 
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -69,8 +70,10 @@ class Screen {
     },
   );
 
-  test('provider graph detects cycles and unresolved provider refs', () async {
-    final root = await _fixtureRoot('''
+  test(
+    'provider graph check failures match cycles and unresolved provider refs',
+    () async {
+      final root = await _fixtureRoot('''
 @riverpod
 int first(Ref ref) => ref.watch(secondProvider);
 
@@ -81,50 +84,86 @@ int second(Ref ref) {
   return 2;
 }
 ''');
-    addTearDown(() => root.delete(recursive: true));
-
-    final graph = await buildProviderGraph(root);
-
-    expect(graph.reactiveCycles, [
-      ['firstProvider', 'secondProvider'],
-    ]);
-    expect(graph.unresolvedInsideProviders, hasLength(1));
-    expect(
-      graph.unresolvedInsideProviders.single['reference'],
-      'dynamicDependency',
-    );
-    expect(graph.isHealthy, isFalse);
-  });
-
-  test(
-    'provider graph artifacts are deterministic and drift checked',
-    () async {
-      final root = await _fixtureRoot('''
-@riverpod
-int sample(Ref ref) => 1;
-''');
       addTearDown(() => root.delete(recursive: true));
 
       final graph = await buildProviderGraph(root);
-      final first = renderProviderGraphArtifacts(graph);
-      final second = renderProviderGraphArtifacts(
-        await buildProviderGraph(root),
-      );
-      expect(second, first);
+      final failures = providerGraphCheckFailures(graph);
 
-      await writeProviderGraphArtifacts(root, graph);
-      expect(await checkProviderGraphArtifacts(root, graph), isEmpty);
-
-      final jsonFile = File(
-        '${root.path}/$providerGraphOutputDirectory/provider_graph.json',
-      );
-      await jsonFile.writeAsString('{}\n');
+      expect(graph.reactiveCycles, [
+        ['firstProvider', 'secondProvider'],
+      ]);
+      expect(graph.unresolvedInsideProviders, hasLength(1));
       expect(
-        await checkProviderGraphArtifacts(root, graph),
-        contains('stale docs/generated/provider_graph/provider_graph.json'),
+        graph.unresolvedInsideProviders.single['reference'],
+        'dynamicDependency',
       );
+      expect(
+        failures,
+        contains('reactive cycle firstProvider -> secondProvider'),
+      );
+      expect(
+        failures,
+        contains(contains('unresolved provider ref secondProvider')),
+      );
+      expect(graph.isHealthy, isFalse);
+      expect(failures, isNotEmpty);
     },
   );
+
+  test('provider graph JSON and summary are deterministic', () async {
+    final root = await _fixtureRoot('''
+@riverpod
+int sample(Ref ref) => 1;
+''');
+    addTearDown(() => root.delete(recursive: true));
+
+    final graph = await buildProviderGraph(root);
+    final first = renderProviderGraphJson(graph.toJson());
+    final second = renderProviderGraphJson(
+      (await buildProviderGraph(root)).toJson(),
+    );
+    final summary = renderProviderGraphJson(providerGraphSummaryPayload(graph));
+
+    expect(second, first);
+    expect(first.endsWith('\n'), isTrue);
+    expect(summary.endsWith('\n'), isTrue);
+    expect(jsonDecode(first), isA<Map<String, Object?>>());
+    expect(
+      (jsonDecode(first) as Map<String, Object?>)['schemaVersion'],
+      providerGraphSchemaVersion,
+    );
+    expect(
+      (jsonDecode(summary) as Map<String, Object?>)['health'],
+      graph.health,
+    );
+  });
+
+  test('provider graph CLI rejects retired and conflicting output flags', () {
+    expect(
+      () => parseProviderGraphCliOptions(['--write']),
+      throwsFormatException,
+    );
+    expect(
+      () => parseProviderGraphCliOptions(['--json', '--summary']),
+      throwsFormatException,
+    );
+    expect(() => parseProviderGraphCliOptions([]), throwsFormatException);
+    expect(
+      () => parseProviderGraphCliOptions(['--root']),
+      throwsFormatException,
+    );
+
+    final options = parseProviderGraphCliOptions([
+      '--check',
+      '--summary',
+      '--root',
+      '/tmp/provider-root',
+    ]);
+    expect(options.check, isTrue);
+    expect(options.summary, isTrue);
+    expect(options.json, isFalse);
+    expect(options.root.path, '/tmp/provider-root');
+  });
 
   test(
     'provider graph requires current architecture review decisions',
@@ -139,6 +178,12 @@ final lookupProvider =
       expect(unreviewed.unreviewedCandidateIds, [
         'manual-provider:lookupProvider',
       ]);
+      expect(
+        providerGraphCheckFailures(unreviewed),
+        contains(
+          'unreviewed architecture candidate manual-provider:lookupProvider',
+        ),
+      );
 
       final reviewFile = File('${root.path}/$providerGraphReviewPath');
       await reviewFile.parent.create(recursive: true);
@@ -157,6 +202,7 @@ final lookupProvider =
       final reviewed = await buildProviderGraph(root);
       expect(reviewed.unreviewedCandidateIds, isEmpty);
       expect(reviewed.staleReviewIds, isEmpty);
+      expect(providerGraphCheckFailures(reviewed), isEmpty);
 
       await reviewFile.writeAsString('''
 {
@@ -171,6 +217,46 @@ final lookupProvider =
 ''');
       final stale = await buildProviderGraph(root);
       expect(stale.staleReviewIds, ['stale:decision']);
+      expect(
+        providerGraphCheckFailures(stale),
+        contains('stale architecture review stale:decision'),
+      );
+    },
+  );
+
+  test(
+    'provider graph rejects planned reviews without stable debt ids',
+    () async {
+      final root = await _fixtureRoot('''
+final lookupProvider =
+    FutureProvider.autoDispose.family<int, int>((ref, id) async => id);
+''');
+      addTearDown(() => root.delete(recursive: true));
+
+      final reviewFile = File('${root.path}/$providerGraphReviewPath');
+      await reviewFile.parent.create(recursive: true);
+      await reviewFile.writeAsString('''
+{
+  "decisions": [
+    {
+      "id": "manual-provider:lookupProvider",
+      "status": "planned",
+      "rationale": "Missing debt id."
+    }
+  ]
+}
+''');
+
+      await expectLater(
+        buildProviderGraph(root),
+        throwsA(
+          isA<FormatException>().having(
+            (error) => error.message,
+            'message',
+            contains('needs a stable debtId'),
+          ),
+        ),
+      );
     },
   );
 }
