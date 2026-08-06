@@ -46,9 +46,20 @@ jobs:
       setup_requirements: ${{ steps.impact.outputs.setup_requirements }}
 
     steps:
-      - uses: actions/checkout@v6
+      - name: Checkout tool preflight closure
+        timeout-minutes: 3
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /tool/
+            /.github/actions/load-toolchain/action.yml
+            /functions/package.json
+            /pubspec.yaml
+            /.github/workflows/app-build-matrix.yml
+            /.github/workflows/mobile-internal-release.yml
+            /.github/workflows/visual-integration-ci.yml
 
       - id: toolchain
         uses: ./.github/actions/load-toolchain
@@ -59,9 +70,6 @@ jobs:
 
       - name: Check CI toolchain pins
         run: bash tool/ci/check_toolchain_consistency.sh
-
-      - name: Validate tool manifest
-        run: node tool/run.mjs check --manifest-only
 
       - id: impact
         name: Resolve affected tool checks
@@ -109,7 +117,23 @@ jobs:
     timeout-minutes: 15
 
     steps:
-      - uses: actions/checkout@v6
+      - name: Checkout affected index closure
+        if: ${{ needs.preflight.outputs.repository_view == 'index' }}
+        timeout-minutes: 3
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /tool/
+            /.github/actions/load-toolchain/action.yml
+            /docs/audit_registry/doc_versions.json
+            /docs/audit_registry/test_inventory.json
+
+      - name: Checkout full affected repository
+        if: ${{ needs.preflight.outputs.repository_view != 'index' }}
+        timeout-minutes: 5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 

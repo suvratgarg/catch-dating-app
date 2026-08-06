@@ -20,6 +20,34 @@ const sparseExecutableClosure = [
   "/tool/lib/tool_platform.mjs",
   "/tool/run.mjs",
 ];
+const materializedSnapshotInputClosure = [
+  ...sparseExecutableClosure,
+  "/AGENTS.md",
+  "/docs/README.md",
+  "/docs/agent_operating_model.md",
+  "/docs/agent_regression_ledger.json",
+  "/docs/agent_skills/skills_manifest.json",
+  "/docs/audit_registry/README.md",
+  "/docs/audit_registry/doc_versions.json",
+  "/docs/audit_registry/rules.json",
+  "/tool/README.md",
+  "/tool/tools_manifest.json",
+];
+const toolPreflightCheckoutClosure = [
+  "/tool/",
+  "/.github/actions/load-toolchain/action.yml",
+  "/functions/package.json",
+  "/pubspec.yaml",
+  "/.github/workflows/app-build-matrix.yml",
+  "/.github/workflows/mobile-internal-release.yml",
+  "/.github/workflows/visual-integration-ci.yml",
+];
+const affectedIndexCheckoutClosure = [
+  "/tool/",
+  "/.github/actions/load-toolchain/action.yml",
+  "/docs/audit_registry/doc_versions.json",
+  "/docs/audit_registry/test_inventory.json",
+];
 
 function run(args) {
   return spawnSync("node", ["tool/run.mjs", ...args], {
@@ -264,6 +292,21 @@ test("active tool entries cannot be vacuous", () => {
   assert.deepEqual(empty, []);
 });
 
+test("index-view tools stay inside the fixed Node-only checkout contract", () => {
+  const manifest = JSON.parse(fs.readFileSync("tool/tools_manifest.json", "utf8"));
+  const incompatible = manifest.tools
+    .filter((tool) => tool.status === "active")
+    .filter((tool) => tool.ciRequirements?.repositoryView === "index")
+    .filter(
+      (tool) => JSON.stringify(tool.ciRequirements.setup) !== '["node"]',
+    )
+    .map((tool) => ({
+      id: tool.id,
+      setup: tool.ciRequirements.setup,
+    }));
+  assert.deepEqual(incompatible, []);
+});
+
 test("affected-tool GitHub outputs carry bounded control signals only", (context) => {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-tool-impact-"));
   context.after(() => fs.rmSync(directory, {recursive: true, force: true}));
@@ -286,46 +329,54 @@ test("affected-tool GitHub outputs carry bounded control signals only", (context
   assert.doesNotMatch(output, /docs:version-monotonic/u);
 });
 
-test("runner and context pack have identical logical results in full and sparse clones", (context) => {
+test("runner and context pack agree when canonical inputs are materialized or sparse-omitted", (context) => {
   const temporaryRoot = fs.mkdtempSync(
     path.join(os.tmpdir(), "catch-snapshot-callsites-"),
   );
   context.after(() => fs.rmSync(temporaryRoot, {recursive: true, force: true}));
 
-  const fullRoot = path.join(temporaryRoot, "full");
-  const sparseRoot = path.join(temporaryRoot, "sparse");
-  createClone(fullRoot, {sparse: false});
-  createClone(sparseRoot, {sparse: true});
+  const materializedRoot = path.join(temporaryRoot, "materialized");
+  const omittedRoot = path.join(temporaryRoot, "omitted");
+  createSnapshotFixtureClone(materializedRoot, {
+    checkoutPaths: materializedSnapshotInputClosure,
+  });
+  createSnapshotFixtureClone(omittedRoot, {
+    checkoutPaths: sparseExecutableClosure,
+  });
 
   assert.equal(
-    fs.existsSync(path.join(sparseRoot, "tool/tools_manifest.json")),
+    fs.existsSync(path.join(omittedRoot, "tool/tools_manifest.json")),
     false,
     "the sparse fixture must omit the manifest consumed by the runner",
   );
   assert.equal(
-    fs.existsSync(path.join(sparseRoot, "docs/audit_registry/rules.json")),
+    fs.existsSync(path.join(omittedRoot, "docs/audit_registry/rules.json")),
     false,
     "the sparse fixture must omit context-pack rule data",
   );
   assert.equal(
-    fs.existsSync(path.join(sparseRoot, "tool/check_enforcement_integrity.mjs")),
+    fs.existsSync(path.join(omittedRoot, "tool/check_enforcement_integrity.mjs")),
     false,
     "the sparse fixture must omit a managed script validated by the runner",
   );
 
-  const fullManifest = runNode(fullRoot, ["tool/run.mjs", "check", "--manifest-only"]);
-  const sparseManifest = runNode(sparseRoot, [
+  const materializedManifest = runNode(materializedRoot, [
     "tool/run.mjs",
     "check",
     "--manifest-only",
   ]);
-  assertSuccessful(fullManifest);
+  const omittedManifest = runNode(omittedRoot, [
+    "tool/run.mjs",
+    "check",
+    "--manifest-only",
+  ]);
+  assertSuccessful(materializedManifest);
   assert.deepEqual(
-    comparableProcessResult(sparseManifest),
-    comparableProcessResult(fullManifest),
+    comparableProcessResult(omittedManifest),
+    comparableProcessResult(materializedManifest),
   );
-  assert.equal(sparseManifest.stdout, "Tool manifest validation passed.\n");
-  assert.doesNotMatch(sparseManifest.stderr, /missing path|Unmanaged tool script/u);
+  assert.equal(omittedManifest.stdout, "Tool manifest validation passed.\n");
+  assert.doesNotMatch(omittedManifest.stderr, /missing path|Unmanaged tool script/u);
 
   const contextArgs = [
     "tool/agent/context_pack.mjs",
@@ -335,42 +386,100 @@ test("runner and context pack have identical logical results in full and sparse 
     "tool/run.mjs,tool/agent/context_pack.mjs",
     "--json",
   ];
-  const fullContext = runNode(fullRoot, contextArgs);
-  const sparseContext = runNode(sparseRoot, contextArgs);
-  assertSuccessful(fullContext);
-  assertSuccessful(sparseContext);
+  const materializedContext = runNode(materializedRoot, contextArgs);
+  const omittedContext = runNode(omittedRoot, contextArgs);
+  assertSuccessful(materializedContext);
+  assertSuccessful(omittedContext);
   assert.deepEqual(
-    normalizeContextPack(sparseContext.stdout),
-    normalizeContextPack(fullContext.stdout),
+    normalizeContextPack(omittedContext.stdout),
+    normalizeContextPack(materializedContext.stdout),
   );
   assert.ok(
-    normalizeContextPack(sparseContext.stdout).ownerDocs.some(
+    normalizeContextPack(omittedContext.stdout).ownerDocs.some(
       (entry) => entry.path === "docs/agent_operating_model.md",
     ),
   );
-  assert.ok(normalizeContextPack(sparseContext.stdout).activeRules.length > 0);
-  assert.ok(normalizeContextPack(sparseContext.stdout).regressionGuards.length > 0);
+  assert.ok(normalizeContextPack(omittedContext.stdout).activeRules.length > 0);
+  assert.ok(normalizeContextPack(omittedContext.stdout).regressionGuards.length > 0);
 });
 
-function createClone(destination, {sparse}) {
-  runGit(repositoryRoot, [
-    "clone",
-    "--shared",
-    "--no-checkout",
-    repositoryRoot,
-    destination,
-  ]);
-  if (sparse) {
-    runGit(destination, ["sparse-checkout", "init", "--no-cone"]);
-    runGit(destination, [
-      "sparse-checkout",
-      "set",
-      "--no-cone",
-      "--",
-      ...sparseExecutableClosure,
-    ]);
+test("tool preflight checkout closure runs the pin guard without product files", (context) => {
+  const temporaryRoot = fs.mkdtempSync(
+    path.join(os.tmpdir(), "catch-tool-preflight-"),
+  );
+  context.after(() => fs.rmSync(temporaryRoot, {recursive: true, force: true}));
+
+  createSparseClone(temporaryRoot, toolPreflightCheckoutClosure);
+
+  for (const relativePath of [
+    "tool/ci/check_toolchain_consistency.sh",
+    ".github/actions/load-toolchain/action.yml",
+    "functions/package.json",
+    "pubspec.yaml",
+    ".github/workflows/app-build-matrix.yml",
+    ".github/workflows/mobile-internal-release.yml",
+    ".github/workflows/visual-integration-ci.yml",
+  ]) {
+    assert.equal(
+      fs.existsSync(path.join(temporaryRoot, relativePath)),
+      true,
+      `${relativePath} must be materialized by the preflight closure`,
+    );
   }
-  runGit(destination, ["checkout", "--detach", "HEAD"]);
+  assertRepresentativeProductFilesOmitted(temporaryRoot);
+
+  const result = spawnSync(
+    "bash",
+    ["tool/ci/check_toolchain_consistency.sh"],
+    {cwd: temporaryRoot, encoding: "utf8"},
+  );
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.match(result.stdout, /CI toolchain pins are consistent\./u);
+});
+
+test("affected index checkout closure executes the complete bounded guard set", (context) => {
+  const temporaryRoot = fs.mkdtempSync(
+    path.join(os.tmpdir(), "catch-affected-index-"),
+  );
+  context.after(() => fs.rmSync(temporaryRoot, {recursive: true, force: true}));
+
+  createSparseClone(temporaryRoot, affectedIndexCheckoutClosure);
+
+  for (const relativePath of [
+    "tool/run.mjs",
+    ".github/actions/load-toolchain/action.yml",
+    "docs/audit_registry/doc_versions.json",
+    "docs/audit_registry/test_inventory.json",
+  ]) {
+    assert.equal(
+      fs.existsSync(path.join(temporaryRoot, relativePath)),
+      true,
+      `${relativePath} must be materialized by the affected index closure`,
+    );
+  }
+  assertRepresentativeProductFilesOmitted(temporaryRoot);
+
+  const result = runNode(temporaryRoot, [
+    "tool/run.mjs",
+    "affected-tools",
+    "--paths",
+    "tool/docs/check_doc_version_monotonic.mjs",
+    "--check",
+  ]);
+  assertSuccessful(result);
+  for (const toolId of [
+    "agent:readiness",
+    "docs:version-monotonic",
+    "meta:enforcement-integrity",
+    "meta:repository-root-hygiene",
+    "meta:test-inventory",
+  ]) {
+    assert.match(result.stdout, new RegExp(`==> ${toolId}`));
+  }
+});
+
+function createSnapshotFixtureClone(destination, {checkoutPaths}) {
+  createSparseClone(destination, checkoutPaths);
 
   for (const relativePath of [
     "tool/run.mjs",
@@ -380,6 +489,39 @@ function createClone(destination, {sparse}) {
     const destinationPath = path.join(destination, relativePath);
     fs.mkdirSync(path.dirname(destinationPath), {recursive: true});
     fs.copyFileSync(path.join(repositoryRoot, relativePath), destinationPath);
+  }
+}
+
+function createSparseClone(destination, checkoutPaths) {
+  runGit(repositoryRoot, [
+    "clone",
+    "--shared",
+    "--no-checkout",
+    repositoryRoot,
+    destination,
+  ]);
+  runGit(destination, ["sparse-checkout", "init", "--no-cone"]);
+  runGit(destination, [
+    "sparse-checkout",
+    "set",
+    "--no-cone",
+    "--",
+    ...checkoutPaths,
+  ]);
+  runGit(destination, ["checkout", "--detach", "HEAD"]);
+}
+
+function assertRepresentativeProductFilesOmitted(root) {
+  for (const relativePath of [
+    "lib/main.dart",
+    "website/package.json",
+    "admin/package.json",
+  ]) {
+    assert.equal(
+      fs.existsSync(path.join(root, relativePath)),
+      false,
+      `${relativePath} must remain sparse-omitted`,
+    );
   }
 }
 
@@ -393,10 +535,12 @@ function runGit(cwd, args) {
 }
 
 function runNode(cwd, args) {
+  const env = {...process.env, GIT_CONFIG_NOSYSTEM: "1"};
+  delete env.NODE_TEST_CONTEXT;
   return spawnSync(process.execPath, args, {
     cwd,
     encoding: "utf8",
-    env: {...process.env, GIT_CONFIG_NOSYSTEM: "1"},
+    env,
   });
 }
 
