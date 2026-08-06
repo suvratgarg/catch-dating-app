@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "generatedFrom": "git ls-files --cached --others --exclude-standard",
   "generatedBy": "node tool/test_inventory.mjs",
-  "total": 618,
+  "total": 622,
   "categories": {
     "firebase_rules": {
       "count": 2,
@@ -432,7 +432,7 @@
       ]
     },
     "tooling": {
-      "count": 144,
+      "count": 148,
       "files": [
         "tool/admin/generate_admin_action_catalog.test.mjs",
         "tool/agent/check_agent_readiness.test.mjs",
@@ -504,6 +504,7 @@
         "tool/docs/check_doc_version_monotonic.test.mjs",
         "tool/env/check_web_hosting_env.test.mjs",
         "tool/firebase/check_client_callable_dependencies.test.mjs",
+        "tool/firebase/check_environment_readiness.test.mjs",
         "tool/firebase/firebase_project_resolver.test.mjs",
         "tool/firebase/plan_firebase_deploy_targets.test.mjs",
         "tool/firebase/probe_chat_storage_rules.test.mjs",
@@ -511,6 +512,9 @@
         "tool/firebase_functions.test.mjs",
         "tool/flutter_with_env.test.sh",
         "tool/git/audit_merge_drops.test.mjs",
+        "tool/harness/check_flutter_l10n_generated.test.mjs",
+        "tool/harness/component_graph.test.mjs",
+        "tool/harness/harness_cli.test.mjs",
         "tool/lib/widget_cleanup_ratchet.test.mjs",
         "tool/marketing/website_meta_contract.test.mjs",
         "tool/organizer_intake/apply_pending_decision_answers.test.mjs",
