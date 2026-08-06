@@ -1,6 +1,6 @@
 ---
 doc_id: harness_v2_decision_and_cicd_delivery_plan
-version: 0.3.20
+version: 0.3.21
 updated: 2026-08-06
 owner: agent_operating_model
 status: execution-in-progress
@@ -715,6 +715,16 @@ Issue discovered during this tranche:
   an immutable content-addressed store rather than unsafe cross-worktree
   `node_modules` symlinks. Until then, report the setup blocker explicitly and
   run only checks whose local runtime closure is present.
+
+### Checkpoint 16 — derived merge-report retirement (2026-08-06)
+
+| Signal | Before this slice | Current result |
+|---|---|---|
+| Raw evidence footprint | Two generated four-tree comparison reports occupied 121,680 lines / 4,091,283 bytes in `docs/audit_registry` despite having no tool, workflow, catalog, or current-document consumer. | Both raw reports are deleted. The authored discard receipts, semantic review, Organizer Detail design QA, append-only pass records, and active merge-audit enforcement remain. Historical references inside another raw report and immutable ledgers are deliberately untouched. |
+| Reproducibility | Removing a report without a deterministic reconstruction path could discard unique evidence. | Strict regeneration from retained Git refs and receipts matched both files byte-for-byte: reconciliation SHA-256 `0dba93b892f15ac98f7aa8011ca0638a10979c703958d2857f8ba4feac348258`, blob `6c8b6d1bce8a7fd23427c79c11f5ab13aa46065a`, 0.21s; Organizer Detail SHA-256 `5d0a3e6c791a0f18f318066bc3655e67c7fe398c30f1d853e24871f58730d447`, blob `768a342c99bfafafdbce20f54deb551f865a2f6d`, 0.20s. |
+| Scope boundary | A third generated phone-only report was another apparent deletion candidate. | It remains because one merged input commit lacks an `origin/*` preservation ref. The tranche removes only evidence whose inputs and human decisions are already durably recoverable. |
+| Broker timing | Large audit-registry cleanup historically encouraged work in a shared full checkout. | `task start` created and pushed a 19.5 MB sparse worktree in 3.28s; context generation took 0.14s and doctor passed in 0.32s. |
+| Line accounting | The six prior cleanup/safety commits were cumulatively net −5,071 lines. | The complete five-file deletion, checkpoint, generated inventory, and pass receipt is +13/−121,684, net −121,671. The seven cleanup/safety commits are now cumulatively net −126,742 lines. |
 
 Durable outcomes are PR wall-clock p50/p95 and escaped defects. Record the
 baseline from the ten most recent comparable PRs and compare after ten v2 PRs.
