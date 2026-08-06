@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated": "2026-08-05",
+  "updated": "2026-08-06",
   "sourceOfTruth": {
     "generator": "tool/design/build_widget_similarity.mjs",
     "fingerprints": "artifacts/widget_dedupe/fingerprints.json",
@@ -77,58 +77,58 @@
     },
     {
       "hammingBucket": "40-44",
-      "pairs": 308,
+      "pairs": 310,
       "jaccardMin": 0,
-      "jaccardMean": 0.2246,
+      "jaccardMean": 0.2238,
       "jaccardMax": 0.5
     },
     {
       "hammingBucket": "45-49",
-      "pairs": 796,
+      "pairs": 802,
       "jaccardMin": 0,
-      "jaccardMean": 0.1444,
+      "jaccardMean": 0.1437,
       "jaccardMax": 0.4706
     },
     {
       "hammingBucket": "50-54",
-      "pairs": 1737,
+      "pairs": 1745,
       "jaccardMin": 0,
-      "jaccardMean": 0.0872,
+      "jaccardMean": 0.0874,
       "jaccardMax": 0.4412
     },
     {
       "hammingBucket": "55-59",
-      "pairs": 2940,
+      "pairs": 2967,
       "jaccardMin": 0,
-      "jaccardMean": 0.0531,
+      "jaccardMean": 0.053,
       "jaccardMax": 0.2813
     },
     {
       "hammingBucket": "60-64",
-      "pairs": 3235,
+      "pairs": 3270,
       "jaccardMin": 0,
       "jaccardMean": 0.0326,
       "jaccardMax": 0.2381
     },
     {
       "hammingBucket": "65-69",
-      "pairs": 2015,
+      "pairs": 2030,
       "jaccardMin": 0,
-      "jaccardMean": 0.0218,
+      "jaccardMean": 0.0217,
       "jaccardMax": 0.2
     },
     {
       "hammingBucket": "70-74",
-      "pairs": 676,
+      "pairs": 681,
       "jaccardMin": 0,
       "jaccardMean": 0.0133,
       "jaccardMax": 0.1304
     },
     {
       "hammingBucket": "75-79",
-      "pairs": 106,
+      "pairs": 108,
       "jaccardMin": 0,
-      "jaccardMean": 0.0084,
+      "jaccardMean": 0.0083,
       "jaccardMax": 0.0816
     },
     {
@@ -147,7 +147,7 @@
     }
   ],
   "summary": {
-    "widgets": 976,
+    "widgets": 979,
     "fingerprintFailures": 1,
     "exactClusters": 2,
     "clusters": 42,
@@ -162,8 +162,8 @@
     "ledgerDecisions": 315,
     "exactClusterDecisionCoverage": 40,
     "unresolvedClusters": 2,
-    "rankedPairDecisionCoverage": 142,
-    "unresolvedRankedPairs": 58
+    "rankedPairDecisionCoverage": 141,
+    "unresolvedRankedPairs": 59
   },
   "groundTruthRecall": [
     {
@@ -410,6 +410,32 @@
       "usageCountRaw": 0,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
+    },
+    {
+      "name": "_InvitationDetail",
+      "file": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+      "role": "screen",
+      "shapeHash": "0dfb2ea124f3d3b63e551c0aeb702688ea6f94920f7a4682f8d5f77fbec4ea8f",
+      "coarseShapeHash": "937176a096e65dc1af696f514d083598b1def17440f7574481ea498f287faccb",
+      "simhash128": "5c55f09ff7e1a37e6059e1fc174b7d57",
+      "tokenStreamLength": 21,
+      "coarseTokenStreamLength": 21,
+      "usageCountRaw": 0,
+      "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
+      "hasWidgetHelpers": false
+    },
+    {
+      "name": "_InvitationDetailBody",
+      "file": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+      "role": "screen",
+      "shapeHash": "069f49859278c319ff7975074a576b678ae52838e8b08583eaf5adb94565ee91",
+      "coarseShapeHash": "2ca59d42e37153988a6fa197f0dbe2b27dbf945d8fcf335b95667d8c6e99cd58",
+      "simhash128": "1f795acf5fb3f86a87cdbeb1b461d13f",
+      "tokenStreamLength": 75,
+      "coarseTokenStreamLength": 75,
+      "usageCountRaw": 0,
+      "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
+      "hasWidgetHelpers": true
     },
     {
       "name": "_RouteLoadingScreen",
@@ -1278,7 +1304,7 @@
       "simhash128": "e5d8cc04bb9be224ebe7cc9766399b67",
       "tokenStreamLength": 97,
       "coarseTokenStreamLength": 97,
-      "usageCountRaw": 187,
+      "usageCountRaw": 193,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -1681,7 +1707,7 @@
       "simhash128": "3b476d8b0ed191ecf04be82c6f21fb01",
       "tokenStreamLength": 8,
       "coarseTokenStreamLength": 8,
-      "usageCountRaw": 16,
+      "usageCountRaw": 19,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -1746,7 +1772,7 @@
       "simhash128": "5c950b57df26374e35f1ad2a53d0ee90",
       "tokenStreamLength": 8,
       "coarseTokenStreamLength": 8,
-      "usageCountRaw": 44,
+      "usageCountRaw": 49,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -2747,7 +2773,7 @@
       "simhash128": "7f1e5b0be023a1ca28bbdcb520a74be1",
       "tokenStreamLength": 8,
       "coarseTokenStreamLength": 8,
-      "usageCountRaw": 20,
+      "usageCountRaw": 21,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -2760,7 +2786,7 @@
       "simhash128": "204c6a9ecc7ac4aa64eae906b3ac6562",
       "tokenStreamLength": 10,
       "coarseTokenStreamLength": 10,
-      "usageCountRaw": 6,
+      "usageCountRaw": 7,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -2994,7 +3020,7 @@
       "simhash128": "3feb7bbed092d7bfb65fec553729a385",
       "tokenStreamLength": 67,
       "coarseTokenStreamLength": 67,
-      "usageCountRaw": 9,
+      "usageCountRaw": 10,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -3618,7 +3644,7 @@
       "simhash128": "7dc9d929c8a5c9bf3e46c41ff06fdd21",
       "tokenStreamLength": 100,
       "coarseTokenStreamLength": 100,
-      "usageCountRaw": 262,
+      "usageCountRaw": 263,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": true
     },
@@ -3761,7 +3787,7 @@
       "simhash128": "60a3cb6a35d45cfe6bda8e83fdfd8bfd",
       "tokenStreamLength": 117,
       "coarseTokenStreamLength": 117,
-      "usageCountRaw": 41,
+      "usageCountRaw": 42,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": true
     },
@@ -3990,11 +4016,11 @@
       "name": "ChatScreen",
       "file": "lib/chats/presentation/chat_screen.dart",
       "role": "screen",
-      "shapeHash": "98f0b6d4adb7c3119ef0d40d590520f9520efc241a94ac669fbc3f9bae205c18",
-      "coarseShapeHash": "9fe827a994511a93d7d7fab29ce69a143c305320099da56f9a7c77ff111b2382",
-      "simhash128": "76c0a24eaaaab3aaa665b00f779355fc",
-      "tokenStreamLength": 72,
-      "coarseTokenStreamLength": 72,
+      "shapeHash": "7d062d934659a1ed0abef6efa3fc94882fca2dcf8207a32f45fc1c1e9fe5aeaf",
+      "coarseShapeHash": "8edec12f3aa6fe23d8d255f7a7d601722a65b8afd06b0efdfc56855ae0691caf",
+      "simhash128": "56c0824eaaaab18aa665a00f770b55bc",
+      "tokenStreamLength": 73,
+      "coarseTokenStreamLength": 73,
       "usageCountRaw": 10,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
@@ -5248,15 +5274,28 @@
       "hasWidgetHelpers": false
     },
     {
+      "name": "CrossPathsInvitationScreen",
+      "file": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+      "role": "screen",
+      "shapeHash": "e7a0505f14ae87a5236baa5d3b9ca8d83aa117cd7cb6d3248805b2ca47a40f0c",
+      "coarseShapeHash": "3cc8a73bdd77c7c97cf4b52fff258c794f547d8789cb5e77247a810b7020abe5",
+      "simhash128": "a87541bdbe53cf4ca068e592a00a6d53",
+      "tokenStreamLength": 16,
+      "coarseTokenStreamLength": 16,
+      "usageCountRaw": 4,
+      "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
+      "hasWidgetHelpers": false
+    },
+    {
       "name": "CrossPathsProfilePreviewSheet",
       "file": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
       "role": "composition",
-      "shapeHash": "012def2b6503808f71df9291885d9dd1b186ddd64d72396bf5911e46b87b9f1f",
-      "coarseShapeHash": "5366555411db01537ad25a8c87ff4914242a41b14f69ab87c7a47b70e12e4f34",
-      "simhash128": "494fdd8d1f9bdaba225ae779fe7aad80",
-      "tokenStreamLength": 53,
-      "coarseTokenStreamLength": 53,
-      "usageCountRaw": 3,
+      "shapeHash": "3165975ad28b02429e34bd930e2d03b1c90c63b7a98be08b5600cb97d130f70f",
+      "coarseShapeHash": "1a82a164fe426d54171df030556f46a8713bed4aa339569c5ccfcf059e77ccb0",
+      "simhash128": "03432d9d9b93def08018af79fdb0ad93",
+      "tokenStreamLength": 87,
+      "coarseTokenStreamLength": 87,
+      "usageCountRaw": 6,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -7526,11 +7565,11 @@
       "name": "ExploreScreen",
       "file": "lib/explore/presentation/explore_screen.dart",
       "role": "screen",
-      "shapeHash": "a703fd900e01f8771f8921460ca3689038aa613c196694f3222a77e3393a66fe",
-      "coarseShapeHash": "3cdea88ef229c7d58ebe37498e46972b744bd2f6a93a7838f6491594cff22686",
+      "shapeHash": "d3865f08b6fa9d6dd9967bf18c045e0eb9b7942bc2db127ff1e9a731c7f636d4",
+      "coarseShapeHash": "0502ff93b0570fd4bd8bd2ce0b392579eae913959d22c3e1b9762c152c94e9ec",
       "simhash128": "c465c27bc3baa5a9c646e085e04acbbe",
-      "tokenStreamLength": 186,
-      "coarseTokenStreamLength": 186,
+      "tokenStreamLength": 187,
+      "coarseTokenStreamLength": 187,
       "usageCountRaw": 11,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
@@ -12258,11 +12297,11 @@
       "name": "SettingsScreen",
       "file": "lib/safety/presentation/settings_screen.dart",
       "role": "screen",
-      "shapeHash": "5baaa16e9c96ee6bfc064553dcf0f29f726340d782205979e2fe4e8c6512f303",
-      "coarseShapeHash": "573fbb2775910d8ccac9fecd5950938d622724eb781ffe177994069e0dacdba0",
+      "shapeHash": "4c6770d210c1df4d34442586eef63368a0fa0a9a33d223c6b51fa740388dd56d",
+      "coarseShapeHash": "7723c187bb5042b9caba7d0286d7c4bd5b2a84f846897c8b6d138ddf8a63d86e",
       "simhash128": "60e8feade047dbaea35aebfdbc0eefb3",
-      "tokenStreamLength": 198,
-      "coarseTokenStreamLength": 198,
+      "tokenStreamLength": 201,
+      "coarseTokenStreamLength": 201,
       "usageCountRaw": 17,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
@@ -13065,7 +13104,7 @@
     {
       "id": "c001-error-state",
       "rank": 1,
-      "score": 248.5,
+      "score": 266,
       "cohesion": 0.875,
       "absorbCandidate": true,
       "nameSignal": "ErrorState",
@@ -15430,6 +15469,32 @@
     },
     {
       "rank": 47,
+      "a": "_InvitationDetailBody",
+      "b": "EventDetailBody",
+      "jaccard": 0.0085,
+      "containment": 0.0208,
+      "score": 0.0208,
+      "smallWidgetMultisetJaccard": 0,
+      "hamming": 60,
+      "flags": [
+        "cross-role"
+      ],
+      "detectors": [
+        "name"
+      ],
+      "signals": [],
+      "nameStems": [
+        "DetailBody"
+      ],
+      "visualHamming": null,
+      "selectionSources": [
+        "name-family"
+      ],
+      "absorbCandidate": true,
+      "decisionRefs": []
+    },
+    {
+      "rank": 48,
       "a": "CatchSliverEmptyState",
       "b": "CatchSliverErrorState",
       "jaccard": 0,
@@ -15453,7 +15518,7 @@
       "decisionRefs": []
     },
     {
-      "rank": 48,
+      "rank": 49,
       "a": "CatchAnalyticsMetricGrid",
       "b": "HostOrganizerMetricGrid",
       "jaccard": 0,
@@ -15477,7 +15542,7 @@
       "decisionRefs": []
     },
     {
-      "rank": 49,
+      "rank": 50,
       "a": "CatchDetailSliverSectionList",
       "b": "CatchSectionList",
       "jaccard": 0,
@@ -15503,7 +15568,7 @@
       ]
     },
     {
-      "rank": 50,
+      "rank": 51,
       "a": "CatchScreenBody",
       "b": "PublicProfileScreenBody",
       "jaccard": 0,
@@ -15531,7 +15596,7 @@
       ]
     },
     {
-      "rank": 51,
+      "rank": 52,
       "a": "_ExploreMapSelectedEventCard",
       "b": "CatchEventCard",
       "jaccard": 0,
@@ -15557,7 +15622,7 @@
       "decisionRefs": []
     },
     {
-      "rank": 52,
+      "rank": 53,
       "a": "_ExploreMapSelectedEventCard",
       "b": "ExploreOrganizerPosterCard",
       "jaccard": 0,
@@ -15583,7 +15648,7 @@
       "decisionRefs": []
     },
     {
-      "rank": 53,
+      "rank": 54,
       "a": "CatchFieldRow",
       "b": "ProfileFieldRow",
       "jaccard": 0,
@@ -15606,32 +15671,6 @@
       "absorbCandidate": true,
       "decisionRefs": [
         "ranked-pair: CatchFieldRow/ProfileFieldRow"
-      ]
-    },
-    {
-      "rank": 54,
-      "a": "ClubDetailBody",
-      "b": "EventDetailBody",
-      "jaccard": 0,
-      "containment": 0,
-      "score": 0,
-      "smallWidgetMultisetJaccard": 0,
-      "hamming": 66,
-      "flags": [],
-      "detectors": [
-        "name"
-      ],
-      "signals": [],
-      "nameStems": [
-        "DetailBody"
-      ],
-      "visualHamming": null,
-      "selectionSources": [
-        "name-family"
-      ],
-      "absorbCandidate": true,
-      "decisionRefs": [
-        "ranked-pair: ClubDetailBody/EventDetailBody"
       ]
     },
     {
@@ -19890,7 +19929,7 @@
         "CatchTopBar",
         "OnboardingTopBar"
       ],
-      "usageSum": 55,
+      "usageSum": 56,
       "scope": "mixed"
     },
     {
@@ -20045,7 +20084,7 @@
         "CatchInlineErrorState",
         "CatchSliverErrorState"
       ],
-      "usageSum": 84,
+      "usageSum": 89,
       "scope": "widget"
     },
     {
@@ -20193,7 +20232,19 @@
       "scope": "mixed"
     },
     {
-      "id": "n051-entry-editor",
+      "id": "n051-detail-body",
+      "stem": "DetailBody",
+      "stemType": "final-two",
+      "members": [
+        "_InvitationDetailBody",
+        "ClubDetailBody",
+        "EventDetailBody"
+      ],
+      "usageSum": 15,
+      "scope": "mixed"
+    },
+    {
+      "id": "n052-entry-editor",
       "stem": "EntryEditor",
       "stemType": "final-two",
       "members": [
@@ -20205,7 +20256,7 @@
       "scope": "widget"
     },
     {
-      "id": "n052-event-row",
+      "id": "n053-event-row",
       "stem": "EventRow",
       "stemType": "final-two",
       "members": [
@@ -20217,7 +20268,7 @@
       "scope": "widget"
     },
     {
-      "id": "n053-hero-surface",
+      "id": "n054-hero-surface",
       "stem": "HeroSurface",
       "stemType": "final-two",
       "members": [
@@ -20229,7 +20280,7 @@
       "scope": "widget"
     },
     {
-      "id": "n054-profile-body",
+      "id": "n055-profile-body",
       "stem": "ProfileBody",
       "stemType": "outer",
       "members": [
@@ -20241,7 +20292,7 @@
       "scope": "widget"
     },
     {
-      "id": "n055-avatar-stack",
+      "id": "n056-avatar-stack",
       "stem": "AvatarStack",
       "stemType": "final-two",
       "members": [
@@ -20253,7 +20304,7 @@
       "scope": "widget"
     },
     {
-      "id": "n056-section-skeleton",
+      "id": "n057-section-skeleton",
       "stem": "SectionSkeleton",
       "stemType": "final-two",
       "members": [
@@ -20265,7 +20316,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n057-event-step",
+      "id": "n058-event-step",
       "stem": "EventStep",
       "stemType": "outer",
       "members": [
@@ -20277,7 +20328,7 @@
       "scope": "widget"
     },
     {
-      "id": "n058-host-list",
+      "id": "n059-host-list",
       "stem": "HostList",
       "stemType": "outer",
       "members": [
@@ -20289,7 +20340,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n059-profile-entry",
+      "id": "n060-profile-entry",
       "stem": "ProfileEntry",
       "stemType": "outer",
       "members": [
@@ -20301,7 +20352,7 @@
       "scope": "widget"
     },
     {
-      "id": "n060-share-card",
+      "id": "n061-share-card",
       "stem": "ShareCard",
       "stemType": "final-two",
       "members": [
@@ -20313,7 +20364,7 @@
       "scope": "widget"
     },
     {
-      "id": "n061-event-tile",
+      "id": "n062-event-tile",
       "stem": "EventTile",
       "stemType": "outer",
       "members": [
@@ -20325,7 +20376,7 @@
       "scope": "widget"
     },
     {
-      "id": "n062-profile-section",
+      "id": "n063-profile-section",
       "stem": "ProfileSection",
       "stemType": "outer",
       "members": [
@@ -20337,7 +20388,7 @@
       "scope": "widget"
     },
     {
-      "id": "n063-host-body",
+      "id": "n064-host-body",
       "stem": "HostBody",
       "stemType": "outer",
       "members": [
@@ -20349,7 +20400,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n064-group-editor",
+      "id": "n065-group-editor",
       "stem": "GroupEditor",
       "stemType": "outer",
       "members": [
@@ -20361,7 +20412,7 @@
       "scope": "widget"
     },
     {
-      "id": "n065-paper-card",
+      "id": "n066-paper-card",
       "stem": "PaperCard",
       "stemType": "outer",
       "members": [
@@ -20373,7 +20424,7 @@
       "scope": "widget"
     },
     {
-      "id": "n066-reveal-row",
+      "id": "n067-reveal-row",
       "stem": "RevealRow",
       "stemType": "outer",
       "members": [
@@ -20385,7 +20436,7 @@
       "scope": "widget"
     },
     {
-      "id": "n067-tab-skeleton",
+      "id": "n068-tab-skeleton",
       "stem": "TabSkeleton",
       "stemType": "final-two",
       "members": [
@@ -20397,7 +20448,7 @@
       "scope": "screen"
     },
     {
-      "id": "n068-event-header",
+      "id": "n069-event-header",
       "stem": "EventHeader",
       "stemType": "outer",
       "members": [
@@ -20409,7 +20460,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n069-event-rows",
+      "id": "n070-event-rows",
       "stem": "EventRows",
       "stemType": "outer",
       "members": [
@@ -20421,7 +20472,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n070-host-scaffold",
+      "id": "n071-host-scaffold",
       "stem": "HostScaffold",
       "stemType": "outer",
       "members": [
@@ -20433,7 +20484,7 @@
       "scope": "widget"
     },
     {
-      "id": "n071-catches-skeleton",
+      "id": "n072-catches-skeleton",
       "stem": "CatchesSkeleton",
       "stemType": "outer",
       "members": [
@@ -20445,7 +20496,7 @@
       "scope": "screen"
     },
     {
-      "id": "n072-profile-photo",
+      "id": "n073-profile-photo",
       "stem": "ProfilePhoto",
       "stemType": "final-two",
       "members": [
@@ -20456,7 +20507,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n073-error-banner",
+      "id": "n074-error-banner",
       "stem": "ErrorBanner",
       "stemType": "final-two",
       "members": [
@@ -20467,7 +20518,7 @@
       "scope": "widget"
     },
     {
-      "id": "n074-section-list",
+      "id": "n075-section-list",
       "stem": "SectionList",
       "stemType": "final-two",
       "members": [
@@ -20478,7 +20529,7 @@
       "scope": "widget"
     },
     {
-      "id": "n075-person-avatar",
+      "id": "n076-person-avatar",
       "stem": "PersonAvatar",
       "stemType": "final-two",
       "members": [
@@ -20489,7 +20540,7 @@
       "scope": "widget"
     },
     {
-      "id": "n076-event-screen",
+      "id": "n077-event-screen",
       "stem": "EventScreen",
       "stemType": "final-two",
       "members": [
@@ -20500,7 +20551,7 @@
       "scope": "screen"
     },
     {
-      "id": "n077-history-screen",
+      "id": "n078-history-screen",
       "stem": "HistoryScreen",
       "stemType": "final-two",
       "members": [
@@ -20511,7 +20562,7 @@
       "scope": "screen"
     },
     {
-      "id": "n078-count-pill",
+      "id": "n079-count-pill",
       "stem": "CountPill",
       "stemType": "final-two",
       "members": [
@@ -20522,7 +20573,7 @@
       "scope": "widget"
     },
     {
-      "id": "n079-sliver-state",
+      "id": "n080-sliver-state",
       "stem": "SliverState",
       "stemType": "outer",
       "members": [
@@ -20533,7 +20584,7 @@
       "scope": "widget"
     },
     {
-      "id": "n080-club-screen",
+      "id": "n081-club-screen",
       "stem": "ClubScreen",
       "stemType": "final-two",
       "members": [
@@ -20544,7 +20595,7 @@
       "scope": "screen"
     },
     {
-      "id": "n081-detail-screen",
+      "id": "n082-detail-screen",
       "stem": "DetailScreen",
       "stemType": "final-two",
       "members": [
@@ -20555,7 +20606,7 @@
       "scope": "screen"
     },
     {
-      "id": "n082-field-row",
+      "id": "n083-field-row",
       "stem": "FieldRow",
       "stemType": "final-two",
       "members": [
@@ -20566,7 +20617,7 @@
       "scope": "widget"
     },
     {
-      "id": "n083-terminal-padding",
+      "id": "n084-terminal-padding",
       "stem": "TerminalPadding",
       "stemType": "final-two",
       "members": [
@@ -20577,7 +20628,7 @@
       "scope": "widget"
     },
     {
-      "id": "n084-club-dock",
+      "id": "n085-club-dock",
       "stem": "ClubDock",
       "stemType": "outer",
       "members": [
@@ -20588,7 +20639,7 @@
       "scope": "widget"
     },
     {
-      "id": "n085-edit-screen",
+      "id": "n086-edit-screen",
       "stem": "EditScreen",
       "stemType": "outer",
       "members": [
@@ -20599,7 +20650,7 @@
       "scope": "screen"
     },
     {
-      "id": "n086-meta-row",
+      "id": "n087-meta-row",
       "stem": "MetaRow",
       "stemType": "final-two",
       "members": [
@@ -20610,7 +20661,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n087-section-label",
+      "id": "n088-section-label",
       "stem": "SectionLabel",
       "stemType": "final-two",
       "members": [
@@ -20621,7 +20672,7 @@
       "scope": "widget"
     },
     {
-      "id": "n088-field-row",
+      "id": "n089-field-row",
       "stem": "FieldRow",
       "stemType": "outer",
       "members": [
@@ -20632,7 +20683,7 @@
       "scope": "widget"
     },
     {
-      "id": "n089-section-header",
+      "id": "n090-section-header",
       "stem": "SectionHeader",
       "stemType": "final-two",
       "members": [
@@ -20643,7 +20694,7 @@
       "scope": "widget"
     },
     {
-      "id": "n090-map-screen",
+      "id": "n091-map-screen",
       "stem": "MapScreen",
       "stemType": "final-two",
       "members": [
@@ -20654,7 +20705,7 @@
       "scope": "screen"
     },
     {
-      "id": "n091-state-viewport",
+      "id": "n092-state-viewport",
       "stem": "StateViewport",
       "stemType": "final-two",
       "members": [
@@ -20662,17 +20713,6 @@
         "CatchStateViewport"
       ],
       "usageSum": 16,
-      "scope": "widget"
-    },
-    {
-      "id": "n092-detail-body",
-      "stem": "DetailBody",
-      "stemType": "final-two",
-      "members": [
-        "ClubDetailBody",
-        "EventDetailBody"
-      ],
-      "usageSum": 15,
       "scope": "widget"
     },
     {

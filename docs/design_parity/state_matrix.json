@@ -1209,21 +1209,6 @@
           "notes": "Captured the bounded profile preview with no contact details, attendee roster, or invitation controls and with persistent event context."
         },
         {
-          "id": "cross_paths_invitation",
-          "kind": "populated",
-          "status": "tested",
-          "captureIds": [],
-          "previewIds": [
-            "CrossPathsInvitationScreen/Cross Paths invitation states"
-          ],
-          "tests": [
-            "test/cross_paths/cross_paths_invitation_screen_test.dart",
-            "test/cross_paths/cross_paths_invitation_controller_test.dart",
-            "test/cross_paths/cross_paths_invitation_repository_test.dart"
-          ],
-          "notes": "Widgetbook and focused tests cover participant-only incoming invitation and accepted event-plan states, canonical person material, event context, and lifecycle actions."
-        },
-        {
           "id": "map_route",
               "kind": "populated",
               "status": "captured",
@@ -1323,6 +1308,113 @@
               "id": "DP-EXPLORE-003",
               "status": "closed",
               "nextAction": "Closed by advisory comparison of explore_search_query against the Claude Explore discovery-feed reference. Baseline: 61.62% mismatch / 90.26 mean delta. Section-level divergence is concentrated in the dark CoverStory hero, ticket-strip grouping, club interleave/map-pill behavior, and bottom tab dock treatment."
+            }
+          ]
+        },
+        {
+          "id": "cross_paths.invitation",
+          "routeId": "crossPathsInvitationScreen",
+          "implementationPaths": [
+            "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+            "lib/cross_paths/presentation/cross_paths_invitation_controller.dart",
+            "lib/cross_paths/data/cross_paths_repository.dart",
+            "lib/cross_paths/domain/cross_paths_invitation.dart"
+          ],
+          "componentIds": [
+            "catch.button",
+            "catch.person_polaroid",
+            "catch.surface",
+            "catch.top_bar"
+          ],
+          "captureIds": [],
+          "designRefs": [
+            {
+              "id": "repo.cross-paths-spec",
+              "kind": "repo",
+              "status": "available",
+              "path": "docs/cross_paths.md",
+              "notes": "Approved invitation, event-plan, consent, and lifecycle contract."
+            },
+            {
+              "id": "screen.cross_paths.invitation",
+              "kind": "repo",
+              "status": "available",
+              "path": "design/screens/catch.screens.json",
+              "notes": "Screen composition registry entry for the participant-only invitation route."
+            }
+          ],
+          "states": [
+            {
+              "id": "invitation_loading",
+              "kind": "loading",
+              "status": "tested",
+              "previewIds": [
+                "CrossPathsInvitationScreen/Cross Paths invitation states"
+              ],
+              "tests": [
+                "test/cross_paths/cross_paths_invitation_screen_test.dart"
+              ],
+              "notes": "Bounded loading UI covers invitation, peer profile, and event provider waves."
+            },
+            {
+              "id": "invitation_unavailable",
+              "kind": "permission",
+              "status": "tested",
+              "previewIds": [
+                "CrossPathsInvitationScreen/Cross Paths invitation states"
+              ],
+              "tests": [
+                "test/cross_paths/cross_paths_invitation_screen_test.dart",
+                "functions/test/firestore.rules.test.cjs"
+              ],
+              "notes": "Missing data, signed-out identity, and non-participant access fail closed."
+            },
+            {
+              "id": "invitation_pending",
+              "kind": "populated",
+              "status": "tested",
+              "previewIds": [
+                "CrossPathsInvitationScreen/Cross Paths invitation states"
+              ],
+              "tests": [
+                "test/cross_paths/cross_paths_invitation_screen_test.dart",
+                "test/cross_paths/cross_paths_invitation_controller_test.dart"
+              ],
+              "notes": "Incoming invitations expose accept and decline while outgoing invitations expose cancel."
+            },
+            {
+              "id": "event_plan_accepted",
+              "kind": "mutation",
+              "status": "tested",
+              "previewIds": [
+                "CrossPathsInvitationScreen/Cross Paths invitation states"
+              ],
+              "tests": [
+                "test/cross_paths/cross_paths_invitation_screen_test.dart",
+                "test/chats/chat_screen_test.dart",
+                "test/chats/chat_inbox_screen_test.dart"
+              ],
+              "notes": "A confirmed attendee pair receives the event plan and conversation handoff."
+            },
+            {
+              "id": "invitation_terminal",
+              "kind": "populated",
+              "status": "tested",
+              "previewIds": [
+                "CrossPathsInvitationScreen/Cross Paths invitation states"
+              ],
+              "tests": [
+                "test/cross_paths/cross_paths_invitation_screen_test.dart",
+                "functions/src/crossPaths/invitations.test.ts"
+              ],
+              "notes": "Declined, cancelled, expired, and invalidated invitations render participant-safe terminal states."
+            }
+          ],
+          "gaps": [
+            {
+              "id": "DP-CROSS-PATHS-INVITATION-001",
+              "status": "open",
+              "nextAction": "Add deterministic route captures after Cross Paths is enabled for a staged cohort."
             }
           ]
         },

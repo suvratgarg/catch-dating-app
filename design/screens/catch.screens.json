@@ -1676,15 +1676,14 @@
         "reason": "The consumer shell owns app navigation while this child route owns its screen scaffold and back action."
       },
       "topBar": {
-        "role": "screen",
+        "role": "compact",
         "expression": "CatchTopBar",
         "owner": "CrossPathsInvitationScreen",
-        "reason": "The invitation route owns canonical title and back chrome."
+        "reason": "The participant-only invitation route owns compact title and explicit back chrome."
       },
       "statePolicy": {
         "requiredStates": [
           "data",
-          "error",
           "loading",
           "mutation",
           "permission"
