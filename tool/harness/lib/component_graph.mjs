@@ -590,17 +590,18 @@ function validateCheckoutRequirement(requirement, location, errors) {
 }
 
 function validateCheckoutPath(checkoutPath, location, errors) {
-  const segments = checkoutPath.split("/");
+  const repoPath = checkoutPath.startsWith("/") ? checkoutPath.slice(1) : "";
+  const segments = repoPath.split("/");
   if (
-    checkoutPath !== normalizePath(checkoutPath) ||
-    checkoutPath.startsWith("/") ||
-    checkoutPath.startsWith("!") ||
-    checkoutPath.endsWith("/") ||
+    !checkoutPath.startsWith("/") ||
+    repoPath !== normalizePath(repoPath) ||
+    repoPath.startsWith("!") ||
+    repoPath.endsWith("/") ||
     segments.some((segment) => segment === "" || segment === "." || segment === "..") ||
-    /[\u0000-\u001f*?\[\]]/u.test(checkoutPath)
+    /[\u0000-\u001f*?\[\]]/u.test(repoPath)
   ) {
     errors.push(
-      `${location} contains unsafe or non-canonical path ${JSON.stringify(checkoutPath)}.`,
+      `${location} contains unsafe or non-canonical root pattern ${JSON.stringify(checkoutPath)}.`,
     );
   }
 }
