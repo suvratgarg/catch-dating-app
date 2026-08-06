@@ -1,6 +1,6 @@
 ---
 doc_id: harness_v2_decision_and_cicd_delivery_plan
-version: 0.3.13
+version: 0.3.14
 updated: 2026-08-06
 owner: agent_operating_model
 status: execution-in-progress
@@ -593,6 +593,23 @@ This rehearsal strengthens `H2-TRANSITION-001`, `H2-TRANSITION-004`, and
 The next implementation slice consumes the already-projected repository view
 and must reduce checkout materialization without partial-clone filtering or a
 shallower history.
+
+### Checkpoint 9 — checkout consumption and disk-bounded proof (2026-08-06)
+
+| Signal | Before this slice | Current result |
+|---|---|---|
+| Tools preflight materialization | The preflight always materialized the complete 7,308-file / 167.58 MiB working tree before resolving the affected plan. | A static root-anchored non-cone closure materializes 625 files / 7.04 MiB: 91.45% fewer files and 95.80% fewer working-tree bytes. It retains `tool/`, the local toolchain action, Functions Node metadata, Flutter dependency metadata, and the three Apple workflows read by the pin guard. |
+| Affected-runner materialization | `repositoryView: index` was projected but ignored; the affected runner still materialized the full repository. | Exact `index` output materializes 622 files / 7.07 MiB: 91.49% fewer files and 95.78% fewer working-tree bytes. Missing, malformed, future, or otherwise non-index output takes the unchanged full checkout. |
+| Repository truth | An aggressive partial clone could make a sparse-omitted blob unavailable to the logical snapshot. | Both bounded checkouts keep `fetch-depth: 0`, omit partial-clone filtering, and therefore retain all local objects needed by `GIT_NO_LAZY_FETCH=1` reads. The full six-bucket path remains unchanged. |
+| Executable proof | The first combined focused gate passed 103/104 checks; its only failure was the test fixture attempting another full checkout and exhausting disk. | The fixture now compares materialized and omitted canonical inputs through bounded sparse clones. The exact preflight closure runs the toolchain pin guard, and the exact affected closure runs all five production guards. The combined repository-view, setup, runner, workflow, readiness, and governance suite passes 124/124 in 9.89s. |
+| Redundant work | Preflight validated the complete tool manifest, then `affected-tools` immediately performed the same fail-closed validation again. The equivalence test also materialized a complete duplicate repository. | The duplicate manifest step and full fixture checkout are removed. Production/test changes are +285/−47 (net +238): the runtime footprint falls sharply, while exact closure, fallback, Node-only, and real sparse-clone proofs account for the net source growth. |
+| Live claim | The last healthy full Tools preflight checkout took 149s; affected jobs took 104–120s before setup projection. | No network-transfer or live wall-time improvement is claimed from local materialization bytes. GitHub Actions remains unavailable; the acceptance target is still an affected job at or below 45s after service recovery. |
+
+This closes the immediate checkout-consumption portion of
+`REG-HARNESS-AFFECTED-SETUP-001` and strengthens the existing disk-budget
+finding `H2-TRANSITION-001`. It deliberately does not add another transition
+id. After a live canary, the next deletion candidate is the now-redundant broad
+setup contract—not another layer of checkout metadata.
 
 Durable outcomes are PR wall-clock p50/p95 and escaped defects. Record the
 baseline from the ten most recent comparable PRs and compare after ten v2 PRs.

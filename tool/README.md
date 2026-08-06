@@ -47,8 +47,15 @@ planner unions each selected tool's optional `ciRequirements` only after
 mandatory and transitive `alsoCheckIds` expansion. A missing declaration keeps
 the conservative full repository view and all seven setup requirements;
 malformed declarations fail preflight. `repositoryView: index` describes the
-required logical read view but does not authorize sparse checkout until the
-workflow consumes and proves that closure. Full tool buckets remain unchanged.
+required logical read view and is consumed only by the affected Tools job. Its
+root-anchored non-cone checkout materializes `tool/`, the local toolchain action,
+and the two canonical audit outputs that still require physical files. Every
+active index-view tool is ratcheted to Node-only setup; a missing, malformed, or
+non-index view selects the full checkout instead. The preflight job uses its own
+fixed closure for the toolchain pin guard. Both sparse paths retain full history
+and local Git blobs: do not add partial-clone filtering, because logical
+repository reads disable lazy object fetches and fail closed when an omitted
+blob is unavailable. Full tool buckets remain unchanged.
 Tools that require an operating-system framework declare `platforms` using
 Node platform names (`darwin`, `linux`, or `win32`). Category checks report and
 skip incompatible entries; direct `run` calls fail with exit 64 instead of
