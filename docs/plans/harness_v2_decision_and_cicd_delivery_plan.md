@@ -1,6 +1,6 @@
 ---
 doc_id: harness_v2_decision_and_cicd_delivery_plan
-version: 0.3.11
+version: 0.3.12
 updated: 2026-08-06
 owner: agent_operating_model
 status: execution-in-progress
@@ -537,6 +537,32 @@ Issues discovered during this tranche:
   only after approved escalation. This is the same environment class as
   `H2-TRANSITION-003`, but it remains a measurable integration interruption,
   not a source-code or Git conflict.
+
+### Checkpoint 7 — dependency-aware affected setup (2026-08-06)
+
+| Signal | Before this tranche | Current result |
+|---|---|---|
+| Setup authority | The planner selected five Node-only checks, but the affected runner still installed Node, Flutter, ripgrep, Flutter packages, root npm, Functions npm, and Playwright. Tool prerequisites were implicit in workflow prose. | Plan schema v2 projects a bounded `repositoryView` and canonical `setupRequirements` union after mandatory and transitive checks are selected. The five mandatory guards declare `index` plus `node`. Missing metadata widens to `full` plus all seven setup requirements; malformed metadata fails preflight. |
+| Affected workflow | Every affected run restored npm caches and executed six expensive setup/install steps even when no selected check consumed them. | Node remains unconditional. npm cache restoration occurs only when root or Functions npm is required. Flutter, ripgrep, Flutter pub, root npm, Functions npm, and Playwright are each guarded by the exact planner token. This skips six of seven setup layers (85.7%) for the measured Node-only path. Full bucket behavior is deliberately unchanged. |
+| Contract proof | No test connected transitive tool selection to runner prerequisites, and sparse clone fixtures could mix a dirty runner with its committed dependency. | 43/43 focused planner, runner, and workflow tests pass. They cover transitive unions, a missing-metadata full fallback, null/unknown/duplicate declarations, prerequisite gaps, canonical output ordering, full-mode widening, affected-job scoping, and a coherent dirty executable closure in full/sparse clones. YAML parsing, manifest validation, and `git diff --check` also pass. |
+| Measured check cost | Three live affected jobs took 104s, 118s, and 120s; 76–91s was removable setup/post work. The pre-snapshot selected checks took about 2.4s locally. | The same five production checks now pass locally in 5.98s, and planner projection takes 0.45s. Holding normal 21–25s checkout constant gives a 31–38s expected affected job, a 70–76% reduction, with a live acceptance threshold of 45s. A live claim remains pending GitHub Actions recovery. |
+| Change accounting | After the prior −2,070-line retirement, the repository-snapshot tranche and pending checkout projection left the transition net −333 source/test lines before receipts. | This safety contract is +370/−11 (net +359), taking the cumulative source/test transition to net +26 before this checkpoint's receipts. That is an explicit course-correction signal: do not expand per-tool declarations speculatively. Prove the ≤45s live result, then consume `repositoryView` in checkout and retire redundant workflow/setup code before adding another Harness abstraction. |
+| Git interruption | Repository-metadata sandbox writes were already tracked as `H2-TRANSITION-015`. | The first stage attempt again failed immediately on the worktree `index.lock`; the approved retry succeeded. Commit `b27ceb9d1` took 0.06s and its preservation push took 2.07s. No source conflict occurred. |
+
+`repositoryView: index` is a required logical-read claim only in this tranche;
+the affected workflow still performs a full checkout. It must not be reported as
+a sparse-checkout improvement until the next checkout-consumption slice proves
+the local-blob and writable-output closure end to end.
+
+Issue discovered during this tranche:
+
+- `H2-TRANSITION-016` — setup narrowing is safe only after the complete selected
+  tool closure is known. A missing transitive prerequisite, malformed explicit
+  declaration, or formatter that accepts a noncanonical dependency set can
+  turn a speed optimization into an under-installed false failure. Project the
+  union after mandatory and `alsoCheckIds` expansion, widen absent metadata to
+  today's full behavior, reject malformed metadata, and keep full mode on the
+  full setup. `REG-HARNESS-AFFECTED-SETUP-001` makes this contract executable.
 
 Durable outcomes are PR wall-clock p50/p95 and escaped defects. Record the
 baseline from the ten most recent comparable PRs and compare after ten v2 PRs.

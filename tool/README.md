@@ -43,8 +43,12 @@ ignored by this inner planner instead of broadening a valid Tools selection.
 Active tools must define non-empty checks. This prevents a non-tool contract
 that selects the Tools lane from silently receiving guard checks only and
 prevents full mode from succeeding through a vacuous tool entry. The affected
-path retains the broad dependency bootstrap once; dependency-specific setup is
-a separately measured optimization.
+planner unions each selected tool's optional `ciRequirements` only after
+mandatory and transitive `alsoCheckIds` expansion. A missing declaration keeps
+the conservative full repository view and all seven setup requirements;
+malformed declarations fail preflight. `repositoryView: index` describes the
+required logical read view but does not authorize sparse checkout until the
+workflow consumes and proves that closure. Full tool buckets remain unchanged.
 Tools that require an operating-system framework declare `platforms` using
 Node platform names (`darwin`, `linux`, or `win32`). Category checks report and
 skip incompatible entries; direct `run` calls fail with exit 64 instead of

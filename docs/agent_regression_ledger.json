@@ -1,5 +1,5 @@
 {
-  "version": 134,
+  "version": 135,
   "updated": "2026-08-06",
   "owner": "agent_operating_model",
   "entries": [
@@ -4143,6 +4143,31 @@
         "docs/plans/harness_v2_decision_and_cicd_delivery_plan.md"
       ],
       "notes": "Repository reads use one captured stage-0 plus nonignored-untracked snapshot per process. Working-tree content wins, sparse-omitted regular files use locally available index blobs, and canonical writes require a materialized regular target. Partial clones without required local objects fail closed."
+    },
+    {
+      "id": "REG-HARNESS-AFFECTED-SETUP-001",
+      "title": "Affected Tools under-installs a selected check or silently broadens Node-only setup",
+      "status": "active",
+      "applies_to": [
+        ".github/workflows/tools-ci.yml",
+        "tool/lib/tool_impact.mjs",
+        "tool/lib/tool_impact.test.mjs",
+        "tool/run.mjs",
+        "tool/run.test.mjs",
+        "tool/harness/workflow_wiring.test.mjs",
+        "tool/tools_manifest.json"
+      ],
+      "symptom": "An affected tool plan omits the setup required by a mandatory or transitive check, accepts malformed prerequisite metadata, restores the full Flutter/npm/Playwright bootstrap for the five Node-only guards, or reports an index repository view as a sparse checkout that the workflow does not yet consume.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/lib/tool_impact.test.mjs tool/run.test.mjs tool/harness/workflow_wiring.test.mjs && node tool/run.mjs check --manifest-only",
+        "guardEvidence": "requirements union after mandatory and transitive selection; absent metadata restores full setup; invalid or noncanonical requirements fail; the affected workflow conditionally runs every expensive setup step while full buckets stay unchanged"
+      },
+      "owner_docs": [
+        "docs/agent_operating_model.md",
+        "docs/plans/harness_v2_decision_and_cicd_delivery_plan.md"
+      ],
+      "notes": "The canonical setup order is node, flutter, ripgrep, flutter-pub, root-npm, functions-npm, playwright. Node is always required; flutter-pub requires flutter; playwright requires root-npm. repositoryView is a planner contract until a later checkout slice consumes it."
     }
   ]
 }
