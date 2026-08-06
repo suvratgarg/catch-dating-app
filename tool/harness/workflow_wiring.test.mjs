@@ -18,10 +18,13 @@ const retiredUiWrapperNames = [
   "check_ui_local_constant_wrappers.sh",
   "check_ui_system_raw_values.sh",
 ];
-const retiredDefinitionCatalogPaths = [
+const retiredDerivedAuditPaths = [
   "docs/audit_registry/definition_catalog.json",
   "docs/audit_registry/consolidation_candidates.json",
   "tool/audit/definition_catalog.py",
+  "docs/audit_registry/widget_antipattern_scan.json",
+  "tool/scan_widget_antipatterns.py",
+  "tool/migrate_widget_functions.py",
 ];
 const liveAuditAuthorityPaths = [
   "AGENTS.md",
@@ -97,8 +100,8 @@ test("retired UI wrapper names have no live guidance consumers", () => {
   assert.deepEqual(offenders, []);
 });
 
-test("retired definition-catalog artifacts stay out of live authorities", () => {
-  for (const relativePath of retiredDefinitionCatalogPaths) {
+test("retired derived audit artifacts stay out of live authorities", () => {
+  for (const relativePath of retiredDerivedAuditPaths) {
     assert.equal(repositorySnapshot.exists(relativePath), false, relativePath);
   }
   const sources = repositorySnapshot.readTexts(liveAuditAuthorityPaths, {
@@ -107,7 +110,7 @@ test("retired definition-catalog artifacts stay out of live authorities", () => 
   const offenders = [];
   for (const relativePath of liveAuditAuthorityPaths) {
     const source = sources.get(relativePath);
-    for (const retiredPath of retiredDefinitionCatalogPaths) {
+    for (const retiredPath of retiredDerivedAuditPaths) {
       const retiredName = retiredPath.split("/").at(-1);
       if (source.includes(retiredName)) {
         offenders.push(`${relativePath}: ${retiredName}`);

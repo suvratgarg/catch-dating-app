@@ -1,5 +1,5 @@
 {
-  "version": 144,
+  "version": 145,
   "updated": "2026-08-07",
   "owner": "agent_operating_model",
   "entries": [
@@ -4160,17 +4160,17 @@
         "docs/audit_registry/backlog.json",
         "docs/audit_registry"
       ],
-      "symptom": "A stale machine-generated definition dump or heuristic consolidation queue is committed under docs/audit_registry, routed from a live authority, or registered as a tool despite having no current consumer and being superseded by focused classification, similarity, and inventory gates.",
+      "symptom": "A stale machine-generated definition dump, heuristic consolidation queue, widget-antipattern report, or unsafe mechanical migrator is committed or registered as authority despite having no current consumer and being superseded by focused classification, delta, similarity, and cleanup gates.",
       "guard": {
         "type": "command",
         "command": "node --test tool/harness/workflow_wiring.test.mjs && node tool/run.mjs check --manifest-only",
-        "guardEvidence": "the required Harness full-index snapshot proves all three retired paths are absent and current audit authorities contain no retired names; manifest validation proves the removed generator is no longer registered"
+        "guardEvidence": "the required Harness full-index snapshot proves all six retired paths are absent and current audit authorities contain no retired names; manifest validation proves their obsolete generators and migrator are no longer registered"
       },
       "owner_docs": [
         "docs/audit_registry/README.md",
         "docs/plans/harness_v2_decision_and_cicd_delivery_plan.md"
       ],
-      "notes": "Historical pass and widget-consolidation receipts remain immutable. Current consolidation state is reconstructed from widget classification, similarity, new-widget inventory, the reviewed decision ledger, and Git history rather than a repository-wide regex dump."
+      "notes": "Historical pass and widget-consolidation receipts remain immutable. Current consolidation state is reconstructed from widget classification, similarity, new-widget inventory, the reviewed decision ledger, the live cleanup ratchet, and Git history rather than repository-wide heuristic dumps or source-rewriting helpers."
     },
     {
       "id": "REG-DOC-INLINE-HISTORY-001",
