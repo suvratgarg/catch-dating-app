@@ -1,7 +1,7 @@
 ---
 doc_id: section_gutter_divider_followups
-version: 1.0.0
-updated: 2026-07-04
+version: 1.0.1
+updated: 2026-08-07
 owner: design_parity_review
 status: ready-for-implementation
 ---
@@ -31,9 +31,11 @@ receipt only where this spec says to.
 5. Finish the batch with: full `flutter analyze --no-fatal-infos` (must exit
    clean — fixtures under `tool/design/fixtures/**` are analyzer-excluded as
    of `ab3041649`), `node tool/agent/check_agent_readiness.mjs` (must stay
-   100/100), a `docs/widget_catalog.md` changelog entry + version bump +
-   `docs/audit_registry/doc_versions.json` update for any widget contract
-   change, and one pass stamp in `docs/audit_registry/passes.jsonl`.
+   100/100), an update to the affected current-inventory row in
+   `docs/widget_catalog.md` for any widget contract change, and one pass stamp
+   in `docs/audit_registry/passes.jsonl`. Bump the catalog contract version and
+   its `doc_versions.json` entry only when the catalog's reader contract or
+   structure changes.
 6. Widget contract changes need widgetbook coverage kept current for the
    changed types. Hand-edit `@UseCase` blocks (never regex across them), then
    regenerate.
@@ -214,5 +216,5 @@ record "no change needed" and stop.
 - [ ] Item 3: gutter HIGH count 0
 - [ ] Item 4: token respellings + `fieldTrailingValueMaxWidth`
 - [ ] Item 5: scanner flag inventory + tests
-- [ ] Catalog changelog + version + doc_versions; passes.jsonl stamp
+- [ ] Current widget-catalog inventory rows updated; passes.jsonl stamped
 - [ ] Full analyze clean; readiness 100/100; all named scanners green

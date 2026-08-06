@@ -13,10 +13,27 @@ import {
   parseSemanticVersion,
   runSelfTest,
 } from "./check_doc_version_monotonic.mjs";
+import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
 
 const scriptPath = fileURLToPath(
   new URL("./check_doc_version_monotonic.mjs", import.meta.url),
 );
+
+test("widget catalog keeps current inventory ahead of Git-owned history", () => {
+  const catalog = createRepositorySnapshot().readText("docs/widget_catalog.md", {
+    required: true,
+  });
+  assert.doesNotMatch(catalog, /^## Rule Changelog$/mu);
+  assert.doesNotMatch(catalog, /^### \d+\.\d+\.\d+$/mu);
+  assert.match(catalog, /^## Maintenance Contract$/mu);
+  const inventoryOffset = catalog.indexOf("\n## App Entry Point\n");
+  assert.notEqual(inventoryOffset, -1, "widget inventory marker is missing");
+  const inventoryLine = catalog.slice(0, inventoryOffset).split("\n").length + 1;
+  assert.ok(
+    inventoryLine <= 350,
+    `current widget inventory starts too late at line ${inventoryLine}`,
+  );
+});
 
 test("semantic parser normalizes partial versions and honors prerelease precedence", () => {
   assert.deepEqual(parseSemanticVersion("16"), {

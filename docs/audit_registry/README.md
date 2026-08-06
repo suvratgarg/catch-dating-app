@@ -1,7 +1,7 @@
 ---
 doc_id: audit_registry
-version: 3.0.0
-updated: 2026-08-06
+version: 3.0.1
+updated: 2026-08-07
 owner: recursive_audit_loop
 status: active
 ---
@@ -205,3 +205,8 @@ Archived rules remain searchable but should not be loaded into every pass.
 Long docs should expose version metadata and a short read policy at the top. Do
 not reread full historical snapshots unless the current task explicitly depends
 on them.
+
+Current-state owner docs must not accumulate per-change release notes or
+Git-reconstructible changelogs. Preserve durable decisions in the owning
+current section, preserve implementation proof in `passes.jsonl`, and rely on
+Git when commit-by-commit history is required.

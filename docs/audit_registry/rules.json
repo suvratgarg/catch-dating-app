@@ -817,7 +817,7 @@
         {
           "tool": "design:host-event-field-contracts",
           "stage": "scanner-gate",
-          "docAnchor": "docs/widget_catalog.md#rule-changelog"
+          "docAnchor": "docs/widget_catalog.md#maintenance-contract"
         },
         {
           "tool": "design:section-dividers",
@@ -827,7 +827,7 @@
         {
           "tool": "design:rail-contracts",
           "stage": "scanner-gate",
-          "docAnchor": "docs/widget_catalog.md#rule-changelog"
+          "docAnchor": "docs/widget_catalog.md#maintenance-contract"
         },
         {
           "tool": "design:section-headers",
@@ -992,7 +992,7 @@
         "lib/core/widgets/**",
         "docs/widget_catalog.md"
       ],
-      "instruction": "Update docs/widget_catalog.md in the same pass when adding, deleting, moving, renaming, or materially changing a widget, primitive API, screen ownership model, sliver/tab structure, or reusable design-system role. Do not update the catalog for tiny implementation-only edits that do not change inventory or usage guidance.",
+      "instruction": "Keep docs/widget_catalog.md as current inventory only. Update the affected row in the same pass when adding, deleting, moving, renaming, or materially changing a widget, primitive API, screen ownership model, sliver/tab structure, or reusable design-system role. Do not append release notes or per-change changelog headings, and do not update the catalog for tiny implementation-only edits that do not change inventory or usage guidance. Increment its semantic document version only when the catalog reader contract or structure changes.",
       "sunset_when": [
         "A generated widget inventory or CI check makes catalog drift visible automatically"
       ],
@@ -1003,8 +1003,13 @@
       ],
       "enforcement": [
         {
+          "tool": "docs:version-monotonic",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/widget_catalog.md#maintenance-contract"
+        },
+        {
           "stage": "manual",
-          "docAnchor": "docs/widget_catalog.md"
+          "docAnchor": "docs/widget_catalog.md#maintenance-contract"
         }
       ]
     },
@@ -1177,11 +1182,11 @@
         {
           "tool": "design:rail-contracts",
           "stage": "scanner-gate",
-          "docAnchor": "docs/widget_catalog.md#rule-changelog"
+          "docAnchor": "docs/app_architecture.md#layout-spacing-and-ui-architecture"
         },
         {
           "stage": "manual",
-          "docAnchor": "docs/widget_catalog.md#rule-changelog"
+          "docAnchor": "docs/app_architecture.md#layout-spacing-and-ui-architecture"
         }
       ]
     },
@@ -3239,6 +3244,6 @@
       ]
     }
   },
-  "version": "2.8.8",
-  "updated": "2026-08-06"
+  "version": "2.9.0",
+  "updated": "2026-08-07"
 }

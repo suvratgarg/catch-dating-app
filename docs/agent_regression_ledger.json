@@ -1,6 +1,6 @@
 {
-  "version": 142,
-  "updated": "2026-08-06",
+  "version": 143,
+  "updated": "2026-08-07",
   "owner": "agent_operating_model",
   "entries": [
     {
@@ -4161,6 +4161,28 @@
         "docs/plans/harness_v2_decision_and_cicd_delivery_plan.md"
       ],
       "notes": "Historical pass and widget-consolidation receipts remain immutable. Current consolidation state is reconstructed from widget classification, similarity, new-widget inventory, the reviewed decision ledger, and Git history rather than a repository-wide regex dump."
+    },
+    {
+      "id": "REG-DOC-INLINE-HISTORY-001",
+      "title": "A current-state owner document grows a Git-reconstructible inline changelog",
+      "status": "active",
+      "applies_to": [
+        "docs/widget_catalog.md",
+        "docs/audit_registry/rules.json",
+        "tool/docs/check_doc_version_monotonic.test.mjs",
+        "tool/tools_manifest.json"
+      ],
+      "symptom": "A normal widget inventory edit appends another release heading or process transcript ahead of the usable catalog, recreating thousands of lines of prompt baggage that Git and audit receipts already preserve.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/docs/check_doc_version_monotonic.test.mjs && node tool/docs/check_doc_version_monotonic.mjs --base origin/main",
+        "guardEvidence": "the catalog has no Rule Changelog or semantic-release headings, exposes its Maintenance Contract, and begins current inventory within the first 350 lines while document versions remain monotonic"
+      },
+      "owner_docs": [
+        "docs/widget_catalog.md",
+        "docs/audit_registry/README.md"
+      ],
+      "notes": "Git and docs/audit_registry/passes.jsonl own change history. The widget catalog owns current inventory and a compact maintenance contract; routine row edits do not increment its semantic document-contract version."
     },
     {
       "id": "REG-HARNESS-AFFECTED-SETUP-001",
