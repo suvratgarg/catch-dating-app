@@ -8,6 +8,14 @@ const operationKeys = [
   "deployGroups",
   "releaseRoles",
 ];
+const ciCheckoutKeys = ["planner", "default", "targetOverrides"];
+const checkoutRequirementKeys = [
+  "mode",
+  "fetchDepth",
+  "coneMode",
+  "timeoutMinutes",
+  "paths",
+];
 
 export function matchesGlob(value, pattern) {
   const normalizedValue = normalizePath(value);
@@ -36,6 +44,8 @@ export function validateComponentGraph(graph, {knownCheckIds} = {}) {
     ? graph.classifications
     : [];
   const generators = Array.isArray(graph.compileCodegen) ? graph.compileCodegen : [];
+
+  validateCiCheckout(graph.ciCheckout, targets, errors);
 
   if (!profiles || typeof profiles !== "object" || Array.isArray(profiles)) {
     errors.push("operationProfiles must be an object.");
@@ -162,6 +172,19 @@ export function validateComponentGraph(graph, {knownCheckIds} = {}) {
   }
   errors.push(...findPropagationCycles(components));
   return [...new Set(errors)];
+}
+
+export function resolveTargetCheckout({graph, target}) {
+  const errors = [];
+  const targets = uniqueStringSet(graph?.targets, "targets", errors, {required: true});
+  validateCiCheckout(graph?.ciCheckout, targets, errors);
+  if (!targets.has(target)) {
+    errors.push(`Cannot resolve checkout for unknown CI target "${target}".`);
+  }
+  if (errors.length > 0) throw new Error([...new Set(errors)].join("\n"));
+  const requirement = graph.ciCheckout.targetOverrides[target] ??
+    graph.ciCheckout.default;
+  return cloneCheckoutRequirement(requirement);
 }
 
 export function classifyPaths({changedPaths, graph}) {
@@ -484,6 +507,112 @@ function validateOperation({
       errors.push(`${location} cannot authorize release from an affected edge.`);
     }
   }
+}
+
+function validateCiCheckout(ciCheckout, targets, errors) {
+  if (!ciCheckout || typeof ciCheckout !== "object" || Array.isArray(ciCheckout)) {
+    errors.push("ciCheckout must be an object.");
+    return;
+  }
+  for (const key of Object.keys(ciCheckout)) {
+    if (!ciCheckoutKeys.includes(key)) errors.push(`ciCheckout uses unknown key "${key}".`);
+  }
+  validateCheckoutRequirement(ciCheckout.planner, "ciCheckout.planner", errors);
+  validateCheckoutRequirement(ciCheckout.default, "ciCheckout.default", errors);
+  if (ciCheckout.default?.mode !== "full") {
+    errors.push("ciCheckout.default.mode must be \"full\" so undeclared targets widen safely.");
+  }
+  const overrides = ciCheckout.targetOverrides;
+  if (!overrides || typeof overrides !== "object" || Array.isArray(overrides)) {
+    errors.push("ciCheckout.targetOverrides must be an object.");
+    return;
+  }
+  for (const [target, requirement] of Object.entries(overrides)) {
+    if (!targets.has(target)) {
+      errors.push(`ciCheckout.targetOverrides references unknown CI target "${target}".`);
+    }
+    validateCheckoutRequirement(
+      requirement,
+      `ciCheckout.targetOverrides.${target}`,
+      errors,
+    );
+  }
+}
+
+function validateCheckoutRequirement(requirement, location, errors) {
+  if (!requirement || typeof requirement !== "object" || Array.isArray(requirement)) {
+    errors.push(`${location} must be an object.`);
+    return;
+  }
+  for (const key of Object.keys(requirement)) {
+    if (!checkoutRequirementKeys.includes(key)) {
+      errors.push(`${location} uses unknown key "${key}".`);
+    }
+  }
+  if (!["full", "sparse"].includes(requirement.mode)) {
+    errors.push(`${location}.mode must be "full" or "sparse".`);
+  }
+  if (
+    !Number.isInteger(requirement.fetchDepth) ||
+    requirement.fetchDepth < 0 ||
+    requirement.fetchDepth > 1000
+  ) {
+    errors.push(`${location}.fetchDepth must be an integer from 0 through 1000.`);
+  }
+  if (
+    !Number.isInteger(requirement.timeoutMinutes) ||
+    requirement.timeoutMinutes < 1 ||
+    requirement.timeoutMinutes > 10
+  ) {
+    errors.push(`${location}.timeoutMinutes must be an integer from 1 through 10.`);
+  }
+  if (requirement.mode === "sparse") {
+    if (typeof requirement.coneMode !== "boolean") {
+      errors.push(`${location}.coneMode must be a boolean for sparse checkout.`);
+    }
+    const paths = uniqueStringSet(
+      requirement.paths,
+      `${location}.paths`,
+      errors,
+      {required: true},
+    );
+    for (const checkoutPath of paths) {
+      validateCheckoutPath(checkoutPath, `${location}.paths`, errors);
+    }
+  } else {
+    if (requirement.coneMode !== undefined) {
+      errors.push(`${location}.coneMode is only valid for sparse checkout.`);
+    }
+    if (requirement.paths !== undefined) {
+      errors.push(`${location}.paths is only valid for sparse checkout.`);
+    }
+  }
+}
+
+function validateCheckoutPath(checkoutPath, location, errors) {
+  const segments = checkoutPath.split("/");
+  if (
+    checkoutPath !== normalizePath(checkoutPath) ||
+    checkoutPath.startsWith("/") ||
+    checkoutPath.startsWith("!") ||
+    checkoutPath.endsWith("/") ||
+    segments.some((segment) => segment === "" || segment === "." || segment === "..") ||
+    /[\u0000-\u001f*?\[\]]/u.test(checkoutPath)
+  ) {
+    errors.push(
+      `${location} contains unsafe or non-canonical path ${JSON.stringify(checkoutPath)}.`,
+    );
+  }
+}
+
+function cloneCheckoutRequirement(requirement) {
+  return {
+    mode: requirement.mode,
+    fetchDepth: requirement.fetchDepth,
+    ...(requirement.coneMode === undefined ? {} : {coneMode: requirement.coneMode}),
+    timeoutMinutes: requirement.timeoutMinutes,
+    ...(requirement.paths === undefined ? {} : {paths: [...requirement.paths]}),
+  };
 }
 
 function validateCodegen(entry, errors) {

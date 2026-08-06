@@ -7,6 +7,7 @@ import {fromRepo, repoRoot} from "./lib/repo_paths.mjs";
 import {
   deriveAppRoles,
   planAffected,
+  resolveTargetCheckout,
   runCodegenChecks,
   selectCompileCodegen,
   summarizeCoverage,
@@ -53,6 +54,7 @@ export function projectPlanOutputs({plan, graph}) {
     has_release_roles: plan.operations.releaseRoles.length > 0,
     deploy_groups: JSON.stringify([...plan.operations.deployGroups].sort()),
     deploy_required: plan.operations.deployGroups.length > 0,
+    docs_checkout: JSON.stringify(resolveTargetCheckout({graph, target: "docs"})),
     mode: plan.mode,
     full: plan.full,
     complete: plan.complete,

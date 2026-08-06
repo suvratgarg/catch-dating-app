@@ -8,6 +8,23 @@ const graph = JSON.parse(
 const workflow = (name) => fs.readFileSync(`.github/workflows/${name}`, "utf8");
 const retiredPlanner = ["plan", "ci.mjs"].join("_");
 
+function namedStep(source, name) {
+  const marker = `      - name: ${name}`;
+  const start = source.indexOf(marker);
+  assert.notEqual(start, -1, `missing workflow step ${name}`);
+  const end = source.indexOf("\n      - ", start + marker.length);
+  return source.slice(start, end === -1 ? source.length : end);
+}
+
+function literalSparsePaths(step) {
+  const match = /sparse-checkout: \|\n((?: {12}\S.*(?:\n|$))+)/u.exec(step);
+  assert.ok(match, "missing literal sparse-checkout block");
+  return match[1]
+    .trimEnd()
+    .split("\n")
+    .map((line) => line.trim());
+}
+
 test("required CI consumes every bounded Harness v2 target", () => {
   const ci = workflow("ci.yml");
   assert.match(ci, /name: Required CI/);
@@ -18,9 +35,52 @@ test("required CI consumes every bounded Harness v2 target", () => {
   }
   assert.match(ci, /docs-policy:/);
   assert.match(ci, /- docs-policy/);
+  assert.match(ci, /docs_checkout: \$\{\{ steps\.plan\.outputs\.docs_checkout \}\}/);
   assert.match(ci, /base_sha: \$\{\{ needs\.plan\.outputs\.base_sha \}\}/);
   assert.match(ci, /mode: \$\{\{ needs\.plan\.outputs\.mode \}\}/);
   assert.match(ci, /full: \$\{\{ needs\.plan\.outputs\.full == 'true' \}\}/);
+});
+
+test("planner and ordinary docs consume the graph-owned checkout closure", () => {
+  const ci = workflow("ci.yml");
+  const planner = namedStep(ci, "Checkout planner closure");
+  assert.deepEqual(literalSparsePaths(planner), graph.ciCheckout.planner.paths);
+  assert.match(
+    planner,
+    new RegExp(`timeout-minutes: ${graph.ciCheckout.planner.timeoutMinutes}`),
+  );
+  assert.match(
+    planner,
+    new RegExp(`fetch-depth: ${graph.ciCheckout.planner.fetchDepth}`),
+  );
+  assert.match(
+    planner,
+    new RegExp(`sparse-checkout-cone-mode: ${graph.ciCheckout.planner.coneMode}`),
+  );
+
+  const decode = namedStep(ci, "Decode graph-projected docs checkout");
+  assert.match(decode, /DOCS_CHECKOUT: \$\{\{ needs\.plan\.outputs\.docs_checkout \}\}/);
+  assert.match(decode, /fromJSON\(needs\.plan\.outputs\.docs_checkout\)\.mode == 'sparse'/);
+
+  const ordinaryDocs = namedStep(ci, "Checkout ordinary-doc closure");
+  assert.match(ordinaryDocs, /steps\.docs-checkout\.outcome == 'success'/);
+  assert.match(ordinaryDocs, /steps\.docs-checkout\.outputs\.paths/);
+  assert.match(ordinaryDocs, /steps\.docs-checkout\.outputs\.fetch_depth/);
+  assert.match(ordinaryDocs, /steps\.docs-checkout\.outputs\.cone_mode/);
+  assert.match(ordinaryDocs, /fromJSON\(steps\.docs-checkout\.outputs\.timeout_minutes\)/);
+
+  const fullPolicy = namedStep(ci, "Checkout full policy closure");
+  assert.match(fullPolicy, /needs\.plan\.outputs\.policy_docs == 'true'/);
+  assert.match(fullPolicy, /fromJSON\(needs\.plan\.outputs\.docs_checkout\)\.mode == 'full'/);
+  assert.doesNotMatch(fullPolicy, /sparse-checkout/);
+  assert.match(
+    fullPolicy,
+    new RegExp(`timeout-minutes: ${graph.ciCheckout.default.timeoutMinutes}`),
+  );
+  assert.match(
+    fullPolicy,
+    new RegExp(`fetch-depth: ${graph.ciCheckout.default.fetchDepth}`),
+  );
 });
 
 test("tools fanout selects exactly one affected or full execution path", () => {

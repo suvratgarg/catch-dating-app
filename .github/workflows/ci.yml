@@ -33,6 +33,7 @@ jobs:
       contracts: ${{ steps.plan.outputs.contracts }}
       doc_state: ${{ steps.plan.outputs.doc_state }}
       docs: ${{ steps.plan.outputs.docs }}
+      docs_checkout: ${{ steps.plan.outputs.docs_checkout }}
       firestore_rules: ${{ steps.plan.outputs.firestore_rules }}
       flutter: ${{ steps.plan.outputs.flutter }}
       flutter_build_android: ${{ steps.plan.outputs.flutter_build_android }}
@@ -50,9 +51,18 @@ jobs:
       full: ${{ steps.plan.outputs.full }}
 
     steps:
-      - uses: actions/checkout@v6
+      - name: Checkout planner closure
+        uses: actions/checkout@v6
+        timeout-minutes: 3
         with:
           fetch-depth: 0
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            tool/harness.mjs
+            tool/harness/component_graph.json
+            tool/harness/lib/component_graph.mjs
+            tool/lib/repo_paths.mjs
+            tool/tools_manifest.json
 
       - id: plan
         name: Resolve fail-closed impact plan
@@ -221,7 +231,54 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v6
+      - name: Decode graph-projected docs checkout
+        id: docs-checkout
+        if: >-
+          needs.plan.outputs.docs == 'true' &&
+          needs.plan.outputs.policy_docs != 'true' &&
+          fromJSON(needs.plan.outputs.docs_checkout).mode == 'sparse'
+        env:
+          DOCS_CHECKOUT: ${{ needs.plan.outputs.docs_checkout }}
+        run: |
+          set -euo pipefail
+          jq -e '
+            .mode == "sparse" and
+            (.fetchDepth | type == "number") and
+            (.coneMode | type == "boolean") and
+            (.timeoutMinutes | type == "number") and
+            (.paths | type == "array") and
+            (.paths | length > 0)
+          ' <<< "$DOCS_CHECKOUT" > /dev/null
+          delimiter="__CATCH_DOC_CHECKOUT_PATHS__"
+          if jq -e --arg delimiter "$delimiter" 'any(.paths[]; . == $delimiter)' \
+            <<< "$DOCS_CHECKOUT" > /dev/null; then
+            echo "Checkout path collides with the output delimiter."
+            exit 64
+          fi
+          {
+            echo "paths<<$delimiter"
+            jq -er '.paths[]' <<< "$DOCS_CHECKOUT"
+            echo "$delimiter"
+            echo "fetch_depth=$(jq -er '.fetchDepth' <<< "$DOCS_CHECKOUT")"
+            echo "cone_mode=$(jq -r '.coneMode | tostring' <<< "$DOCS_CHECKOUT")"
+            echo "timeout_minutes=$(jq -er '.timeoutMinutes' <<< "$DOCS_CHECKOUT")"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Checkout ordinary-doc closure
+        if: ${{ steps.docs-checkout.outcome == 'success' }}
+        uses: actions/checkout@v6
+        timeout-minutes: ${{ fromJSON(steps.docs-checkout.outputs.timeout_minutes) }}
+        with:
+          fetch-depth: ${{ steps.docs-checkout.outputs.fetch_depth }}
+          sparse-checkout-cone-mode: ${{ steps.docs-checkout.outputs.cone_mode }}
+          sparse-checkout: ${{ steps.docs-checkout.outputs.paths }}
+
+      - name: Checkout full policy closure
+        if: >-
+          needs.plan.outputs.policy_docs == 'true' ||
+          fromJSON(needs.plan.outputs.docs_checkout).mode == 'full'
+        uses: actions/checkout@v6
+        timeout-minutes: 3
         with:
           fetch-depth: 0
       - name: Check document versions

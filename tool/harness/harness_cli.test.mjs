@@ -51,6 +51,19 @@ test("bounded plan outputs contain no changed-path inventory", () => {
   assert.match(output, /^docs=true$/m);
   assert.match(output, /^flutter=false$/m);
   assert.match(output, /^app_roles=\[\]$/m);
+  assert.deepEqual(
+    JSON.parse(output.match(/^docs_checkout=(.*)$/m)[1]),
+    {
+      mode: "sparse",
+      fetchDepth: 0,
+      coneMode: false,
+      timeoutMinutes: 3,
+      paths: [
+        "docs/audit_registry/doc_versions.json",
+        "tool/docs/check_doc_version_monotonic.mjs",
+      ],
+    },
+  );
 });
 
 test("plan output derives roles and deployment authorization from bounded operations", () => {
@@ -94,6 +107,28 @@ test("output projection rejects incomplete plans and unsafe multiline values", (
   assert.throws(
     () => formatGithubOutputs({docs: "true\nunsafe=value"}),
     /Unsafe GitHub output/,
+  );
+});
+
+test("output projection rejects an invalid checkout contract", () => {
+  const invalidGraph = JSON.parse(JSON.stringify(graph));
+  invalidGraph.ciCheckout.default = invalidGraph.ciCheckout.targetOverrides.docs;
+  assert.throws(
+    () => projectPlanOutputs({
+      plan: {
+        complete: true,
+        mode: "pr",
+        full: false,
+        operations: {
+          ciTargets: ["docs"],
+          buildTargets: [],
+          releaseRoles: [],
+          deployGroups: [],
+        },
+      },
+      graph: invalidGraph,
+    }),
+    /undeclared targets widen safely/,
   );
 });
 
