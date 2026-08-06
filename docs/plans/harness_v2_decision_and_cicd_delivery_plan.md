@@ -1,6 +1,6 @@
 ---
 doc_id: harness_v2_decision_and_cicd_delivery_plan
-version: 0.3.5
+version: 0.3.10
 updated: 2026-08-06
 owner: agent_operating_model
 status: execution-in-progress
@@ -390,14 +390,79 @@ Issues discovered during the rehearsal:
   unmaterialized paths as deletions. Task setup must materialize the declared
   validation closure; separate global integrity validation from selected-check
   execution while keeping the full gates required in CI.
-- `H2-TRANSITION-003` — Git metadata writes, network access, and Flutter SDK
-  cache writes can require managed-environment escalation. Harness receipts
-  must classify these as environment constraints rather than product failures.
+- `H2-TRANSITION-003` — managed-environment access failed before product
+  verification: sandboxed push DNS resolution failed in 0.05s, Dart SDK-cache
+  access failed in 0.04s, and a shared-worktree Git commit failed on
+  `index.lock` in 0.01s. Approved reruns succeeded; the measured commit itself
+  took 0.05s. Receipts must record initial and approved timings separately and
+  classify Git metadata, network, and SDK access failures as environment
+  constraints rather than product regressions.
 - `H2-TRANSITION-004` — the current audit stamp snapshots global dirty
   documentation state, so a Harness-only pass attempted to absorb an unrelated
   organizer-document version. The contaminated registry update was not
   committed. Phase 2 must replace global snapshot stamping with scoped,
   immutable CI evidence before ordinary parallel work can be pleasant.
+- `H2-TRANSITION-005` — the audit registry treated sparse disk materialization
+  as repository truth. `File.existsSync` filtering attempted to shrink
+  `files.jsonl` from 7,232 to 3,570 rows; an unmaterialized policy manifest
+  could fall back to `{}` and erase metadata from 2,483 aggregate rows; and
+  `mark-pass` reported success while silently skipping new paths. The affected-
+  tools tranche now reads tracked paths and sparse-omitted required JSON from
+  the Git index, rejects unresolved stages and missing/malformed policy,
+  validates pass scope, rejects unknown refresh options, and provides exact
+  `refresh --check` parity. Four focused tests and 7,236-entry parity passed.
+- `H2-TRANSITION-006` — squash-only integration was not represented in task
+  metadata. A tree-equivalent stacked branch produced historical conflicts
+  after its parent squash; replaying the reviewed refinement from integrated
+  `main` took 0.07s without conflict and produced the identical tree. Tasks
+  must record integration method and integrated base tree; after a squash,
+  replay reviewed commits from integrated `main` instead of merging the
+  historical stack. The clean replacement chain replayed the lifecycle,
+  deletion, and evidence commits in 0.06s, 0.10s, and 0.17s respectively with
+  no conflicts, but each parent squash still required its child to be replayed
+  again from integrated `main`: deletion took 0.17s and the final three-commit
+  evidence replay took 0.33s. The protocol keeps integration safe; it does not
+  remove the coordination tax. Dependent squash-only PRs should be serialized,
+  or an explicit stack tool must automatically restack descendants.
+- `H2-TRANSITION-007` — the outer component graph selected the correct Tools
+  lane, but the reusable workflow still launched six category buckets, each
+  installing Flutter, root npm, Functions npm, and scanner dependencies. The
+  affected-tools selector removes five runners for owned tool changes, but its
+  remaining runner still performs the broad bootstrap. Dependency-aware setup
+  is the next course correction, not more path-routing prose.
+- `H2-TRANSITION-008` — local readiness totals changed from 4,605 to 4,660 as
+  sparse materialization and focused tests changed, despite every run reporting
+  100/100. A score whose denominator depends on checkout materialization is not
+  comparable across agents; future receipts must report the declared validation
+  closure alongside the numerator and denominator.
+- `H2-TRANSITION-009` — runner reduction and wall-clock reduction diverged
+  under account contention. PR #153 used only 183 runner-seconds but waited
+  between every dependent Tools job while PR #152 exercised the full graph,
+  producing 814s wall time. The uncontended attempt completed in 274s wall
+  time with 254 runner-seconds even though its plan checkout varied from 27s
+  to 117s. Migration measurements must report queue gaps, aggregate runner
+  time, and setup variance separately rather than treating one wall sample as
+  a stable property of the selected checks.
+- `H2-TRANSITION-010` — a deterministic post-squash branch name already
+  existed from the historical stack. Branch creation failed safely in 0.01s;
+  inspection showed that reusing the stale branch would have produced a
+  21-file, +90/−1,514 diff against current `main`, including removal of newly
+  merged affected-tools and sparse-audit fixes. Task branches need an attempt
+  identity plus recorded base tree, and task setup must refuse branch reuse
+  when the recorded base is not the current integrated base. Old branches may
+  remain as evidence, but must be marked superseded rather than presented as
+  active merge paths.
+- `H2-TRANSITION-011` — affected selection cannot compensate for an unbounded
+  full-repository checkout. Final evidence PR #158 attempt 1 assigned a runner
+  immediately, then spent 274s in the `docs-policy` job while
+  `actions/checkout@v6` remained on its checkout step; it was cancelled after
+  the checkout had been observed in progress for 250s. The cancelled attempt
+  consumed 305 runner-seconds and 320s wall. The unchanged retry passed with
+  3 active jobs, 55 runner-seconds, and 74s wall, proving this was checkout
+  infrastructure variance rather than a repository check failure. Phase 1.9
+  must add graph-projected sparse checkout inputs and bounded job timeouts;
+  ordinary lanes should not clone unrelated product surfaces before running a
+  25-second policy check.
 
 ### Checkpoint 4 — authoritative cutover candidate (2026-08-06)
 
@@ -411,7 +476,22 @@ Issues discovered during the rehearsal:
 | V1 retirement candidate | 21 files, +179/−1,146 (net −967): planner implementation/tests and the duplicate 493-line routing table are deleted; focused verification is green |
 | Sparse validation closure | Global gates initially misreported absent unrelated files; adding only their declared owner/guard paths took 0.39s and grew the worktree from 64 MB to 84 MB, after which root hygiene and readiness passed |
 | Current audit-stamp overhead | Sandboxed Dart failed in 0.04s on SDK-cache writes; the approved rerun took 0.41s and rewrote 10 global catalog lines plus one shared pass receipt for nine scoped paths |
-| Cutover merge state | Candidate prepared on a stacked branch; it must not reach `main` until the foundation PR is green, a pre-cutover backup ref exists, and required-check/merge-queue state is reviewed |
+| Squash-stack reconciliation | Repository policy rejected the merge-commit path in 1.36s; the foundation squash completed in 3.67s and left the tree-equivalent stacked cutover historically conflicting. `backup/harness-v2-pre-cutover-20260806` preserved the pre-cutover state; replaying the three reviewed cutover commits from integrated `main` took 0.28s without conflict, and candidate/replay trees were identical. |
+| Full-cutover CI | PR #150 / run `31100381412` passed with 31 active jobs, 9,000 runner-seconds, and 1,183s wall time versus v1 run `31096882945` at 30 jobs, 9,121 runner-seconds, and 1,574s wall: +1 job, −1.3% runner time, and −24.8% wall time. Because a control-plane change deliberately selects the full graph, compute is effectively flat; the wall improvement is scheduling evidence, not an ordinary-path efficiency result. |
+| Cutover integration | PR #150 squash-merged as `228941c70` in 3.29s; Harness v2 is authoritative and the retired v1 planner remains deleted. Preserve the backup and manual-v1 rollback evidence for the planned seven-day window. |
+
+### Checkpoint 5 — affected Tools lane and deletion canaries (2026-08-06)
+
+| Signal | Previous behavior | Current result |
+|---|---|---|
+| Two-file tool-checker path | PR #148 / run `31099656393` ran 10 active jobs and consumed 2,400 runner-seconds over 833s wall time. The Tools lane launched all six category buckets and consumed 2,366 runner-seconds over a 790s active envelope. | PR #153 / run `31105049522` passed twice with 5 active and 12 skipped jobs, exactly the owning doc-version checker plus four mandatory guards, and all six category buckets skipped. Contended attempt 1 used 183 runner-seconds (−92.4%) but 814s wall. Uncontended attempt 2 used 254 runner-seconds (−89.4%) and 274s wall (−67.1%). Its Tools path used 133 runner-seconds (−94.4%) over a 138s envelope (−82.5%). The clean replay in PR #154 / run `31108209945` then passed with 5 active and 12 skipped jobs, 226 runner-seconds (−90.6%), and 240s wall (−71.2%); it squash-merged as `464da8976` in 3.73s. PR #153 was closed with its benchmark evidence preserved. |
+| Affected-runner bootstrap | Every category runner installed a broad shared toolchain. | The single affected runner completed green in 104–120s across both attempts, below the 300s acceptance threshold, but most of that time was Flutter, npm, Functions, ripgrep, and Playwright setup; the selected checks themselves completed locally in 2.4s. Phase 1.9 remains necessary. |
+| Full-control-plane interpretation | Control-plane edits require full validation. | PR #152 changes the planner, workflow, manifest, and audit tool, so its full-matrix execution is intentional and is not used as the affected-only performance result. |
+| Safe deletion accounting | The old system and accepted review artifacts were still physically present. | The v1 retirement commit removed 1,146 lines while adding 179 (net −967). Main merge `4a42066fe` removes 200 lines while adding 45 (net −155), including deletion of the 168-line retired Fable handoff. |
+| Deletion-only CI path | PR #149 used 3 active jobs, 59 runner-seconds, and 75s wall before the clean replay. | Stacked PR #155 / run `31108373400` used 3 active jobs, 57 runner-seconds, and 71s wall. After #154 squash-merged, the tree-identical main-based PR #157 / run `31109183790` used 3 active and 11 skipped jobs, 58 runner-seconds, and 83s wall, then squash-merged as `4a42066fe` in 5.14s. Tools skipped entirely in both runs. |
+| Shared-evidence integration tax | The first seven-file retirement replay on the historical stack conflicted in `files.jsonl` and `passes.jsonl` after 0.17s; preserving the sparse-safe side, regenerating from the staged index, and writing a scoped receipt restored exact 7,235-entry parity. | The pre-merge clean chain replayed without conflict, but squash integration required one more tree-identical deletion replay (0.17s) and, after deletion merged, one final three-commit evidence replay (0.33s). Safety improved; manual restacking remains real overhead. This validates the safe portion of `H2-TRANSITION-006` while `H2-TRANSITION-004` scoped-evidence debt remains. |
+| Publication overhead | Historical branches and PRs obscured which commits were intended to merge. | The clean lifecycle branch pushed in 1.99s and opened PR #154 in 2.58s; the first deletion branch pushed in 1.96s and opened PR #155 in 2.89s. After the parent squash, its main-based replacement pushed in 2.04s and opened PR #157 in 4.79s. Obsolete PRs #148, #149, #153, #155, and #156 were closed with evidence comments rather than left as competing merge paths. |
+| Checkout reliability | Full checkout cost was hidden inside aggregate job time. | PR #158 attempt 1 assigned a runner immediately but `actions/checkout@v6` remained in progress until the run was cancelled: 305 runner-seconds and 320s wall. The unchanged attempt 2 passed in 55 runner-seconds and 74s wall. This is a 5.5× compute and 4.3× wall swing before any meaningful policy variation, so checkout footprint and timeout must become explicit Harness outputs. |
 
 Durable outcomes are PR wall-clock p50/p95 and escaped defects. Record the
 baseline from the ten most recent comparable PRs and compare after ten v2 PRs.
