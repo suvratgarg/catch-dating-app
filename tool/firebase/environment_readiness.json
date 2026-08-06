@@ -1,0 +1,280 @@
+{
+  "version": 1,
+  "environments": [
+    "dev",
+    "staging",
+    "prod"
+  ],
+  "requirements": [
+    {
+      "id": "functions.secret.algolia-app-id",
+      "kind": "secret-version",
+      "name": "ALGOLIA_APP_ID",
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
+      "requiredWhen": {
+        "anyDeployTarget": [
+          "functions:exploreSearch",
+          "functions:syncAlgoliaClubIndex",
+          "functions:syncAlgoliaOrganizerIndex",
+          "functions:syncAlgoliaEventIndex"
+        ]
+      },
+      "acceptedStates": [
+        "ENABLED"
+      ],
+      "owner": "explore-search",
+      "sourcePaths": [
+        "functions/src/search/exploreSearch.ts",
+        "functions/src/search/algoliaExploreIndex.ts"
+      ]
+    },
+    {
+      "id": "functions.secret.algolia-search-api-key",
+      "kind": "secret-version",
+      "name": "ALGOLIA_SEARCH_API_KEY",
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
+      "requiredWhen": {
+        "anyDeployTarget": [
+          "functions:exploreSearch"
+        ]
+      },
+      "acceptedStates": [
+        "ENABLED"
+      ],
+      "owner": "explore-search",
+      "sourcePaths": [
+        "functions/src/search/exploreSearch.ts"
+      ]
+    },
+    {
+      "id": "functions.secret.algolia-write-api-key",
+      "kind": "secret-version",
+      "name": "ALGOLIA_WRITE_API_KEY",
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
+      "requiredWhen": {
+        "anyDeployTarget": [
+          "functions:syncAlgoliaClubIndex",
+          "functions:syncAlgoliaOrganizerIndex",
+          "functions:syncAlgoliaEventIndex"
+        ]
+      },
+      "acceptedStates": [
+        "ENABLED"
+      ],
+      "owner": "explore-search",
+      "sourcePaths": [
+        "functions/src/search/algoliaExploreIndex.ts"
+      ]
+    },
+    {
+      "id": "functions.secret.google-maps-places-api-key",
+      "kind": "secret-version",
+      "name": "GOOGLE_MAPS_PLACES_API_KEY",
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
+      "requiredWhen": {
+        "anyDeployTarget": [
+          "functions:placeDetails",
+          "functions:placesAutocomplete"
+        ]
+      },
+      "acceptedStates": [
+        "ENABLED"
+      ],
+      "owner": "location-stack",
+      "sourcePaths": [
+        "functions/src/places/googlePlaces.ts",
+        "functions/src/places/placeAutocomplete.ts"
+      ]
+    },
+    {
+      "id": "functions.secret.razorpay-key-id",
+      "kind": "secret-version",
+      "name": "RAZORPAY_KEY_ID",
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
+      "requiredWhen": {
+        "anyDeployTarget": [
+          "functions:cancelEvent",
+          "functions:cancelEventSignUp",
+          "functions:createRazorpayOrder",
+          "functions:razorpayWebhook",
+          "functions:reconcileRazorpayOrders",
+          "functions:verifyRazorpayPayment"
+        ]
+      },
+      "acceptedStates": [
+        "ENABLED"
+      ],
+      "owner": "payments",
+      "sourcePaths": [
+        "functions/src/payments/razorpay.ts"
+      ]
+    },
+    {
+      "id": "functions.secret.razorpay-key-secret",
+      "kind": "secret-version",
+      "name": "RAZORPAY_KEY_SECRET",
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
+      "requiredWhen": {
+        "anyDeployTarget": [
+          "functions:cancelEvent",
+          "functions:cancelEventSignUp",
+          "functions:createRazorpayOrder",
+          "functions:razorpayWebhook",
+          "functions:reconcileRazorpayOrders",
+          "functions:verifyRazorpayPayment"
+        ]
+      },
+      "acceptedStates": [
+        "ENABLED"
+      ],
+      "owner": "payments",
+      "sourcePaths": [
+        "functions/src/payments/razorpay.ts"
+      ]
+    },
+    {
+      "id": "functions.secret.razorpay-webhook-secret",
+      "kind": "secret-version",
+      "name": "RAZORPAY_WEBHOOK_SECRET",
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
+      "requiredWhen": {
+        "anyDeployTarget": [
+          "functions:razorpayWebhook"
+        ]
+      },
+      "acceptedStates": [
+        "ENABLED"
+      ],
+      "owner": "payments",
+      "sourcePaths": [
+        "functions/src/payments/razorpay.ts",
+        "functions/src/payments/razorpayWebhook.ts"
+      ]
+    },
+    {
+      "id": "functions.secret.stripe-secret-key",
+      "kind": "secret-version",
+      "name": "STRIPE_SECRET_KEY",
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
+      "requiredWhen": {
+        "anyDeployTarget": [
+          "functions:createStripeCheckoutSession",
+          "functions:createStripeHostOnboardingLink",
+          "functions:refreshStripeHostPaymentAccount",
+          "functions:stripeWebhook"
+        ]
+      },
+      "acceptedStates": [
+        "ENABLED"
+      ],
+      "owner": "payments",
+      "sourcePaths": [
+        "functions/src/payments/stripe.ts"
+      ]
+    },
+    {
+      "id": "functions.secret.stripe-webhook-secret",
+      "kind": "secret-version",
+      "name": "STRIPE_WEBHOOK_SECRET",
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
+      "requiredWhen": {
+        "anyDeployTarget": [
+          "functions:stripeWebhook"
+        ]
+      },
+      "acceptedStates": [
+        "ENABLED"
+      ],
+      "owner": "payments",
+      "sourcePaths": [
+        "functions/src/payments/stripe.ts",
+        "functions/src/payments/stripeWebhook.ts"
+      ]
+    },
+    {
+      "id": "functions.secret.cross-paths-suggestion-signing-key",
+      "kind": "secret-version",
+      "name": "CROSS_PATHS_SUGGESTION_SIGNING_KEY",
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
+      "requiredWhen": {
+        "anyDeployTarget": [
+          "functions:getCrossPathsSuggestions",
+          "functions:sendCrossPathsInvitation",
+          "functions:respondCrossPathsInvitation",
+          "functions:cancelCrossPathsInvitationOrPlan"
+        ]
+      },
+      "acceptedStates": [
+        "ENABLED"
+      ],
+      "owner": "cross-paths",
+      "sourcePaths": [
+        "functions/src/crossPaths/getCrossPathsSuggestions.ts",
+        "functions/src/crossPaths/invitations.ts"
+      ]
+    },
+    {
+      "id": "firestore.ttl.cross-paths-suggestion-exposures",
+      "kind": "firestore-ttl",
+      "collectionGroup": "crossPathsSuggestionExposures",
+      "field": "expiresAt",
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
+      "requiredWhen": {
+        "anyCapability": [
+          "cross-paths"
+        ]
+      },
+      "acceptedStates": [
+        "ACTIVE"
+      ],
+      "owner": "cross-paths",
+      "sourcePaths": [
+        "functions/src/crossPaths/getCrossPathsSuggestions.ts"
+      ]
+    }
+  ]
+}
