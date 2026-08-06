@@ -3979,28 +3979,21 @@
       }
     },
     {
-      "id": "design:widgetbook-compare-build",
-      "category": "design",
-      "path": "tool/design/build_widgetbook_compare.mjs",
-      "command": "node tool/design/build_widgetbook_compare.mjs",
-      "safety": "local-writes-docs",
-      "status": "active",
-      "description": "Builds the static Widgetbook comparison review page from Claude Design exports, component contracts, and generated Widgetbook directories.",
-      "checks": [
-        "node --check tool/design/build_widgetbook_compare.mjs"
-      ]
-    },
-    {
       "id": "design:widgetbook-compare-server",
       "category": "design",
       "path": "tool/design/widgetbook_compare_server.mjs",
+      "impactPaths": [
+        "tool/design/widgetbook_compare_server.test.mjs"
+      ],
       "command": "node tool/design/widgetbook_compare_server.mjs",
       "safety": "local-server",
       "status": "active",
-      "description": "Serves the interactive Widgetbook comparison and decision logging UI with pattern-family review first and dedupe evidence available as a secondary queue.",
+      "description": "Serves the interactive Widgetbook comparison and canonical decision logging UI from current Widgetbook and widget-classification sources, with pattern-family review first and dedupe evidence as a secondary queue.",
       "checks": [
-        "node --check tool/design/widgetbook_compare_server.mjs"
-      ]
+        "node --check tool/design/widgetbook_compare_server.mjs",
+        "node --test tool/design/widgetbook_compare_server.test.mjs"
+      ],
+      "role": "finder"
     },
     {
       "id": "design:screen-contract-hygiene",

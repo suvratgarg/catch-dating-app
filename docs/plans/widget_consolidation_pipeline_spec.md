@@ -1,7 +1,7 @@
 ---
 doc_id: widget_consolidation_pipeline_spec
-version: 0.2.0
-updated: 2026-07-02
+version: 0.2.1
+updated: 2026-08-07
 owner: widget_consolidation
 status: ready_for_execution
 ---
@@ -97,7 +97,7 @@ Anything on this list that seems necessary → stop and escalate to the owner.
 | Widgetbook coverage gate | `tool/design/check_widgetbook_coverage.mjs` + decision ledger `docs/design_parity/widgetbook_widget_decisions.json` | Existing coverage enforcement + the ledger pattern this spec's decision ledger copies. |
 | Variant inventory | `tool/design/generate_widget_variant_inventory.mjs` → `docs/audit_registry/widget_variant_inventory.json` | Variant/state-card labels per component; input to naming census (§8). |
 | Screen capture harness | `test/ui_captures/` + `tool/ui_capture/run_captures.mjs` | Proven flutter-test → PNG pattern (incl. the `pixelRatio`-into-`toImage` fix). Phase C copies this pattern at use-case granularity. |
-| Widgetbook compare tooling | `tool/design/build_widgetbook_compare.mjs`, `widgetbook_compare_server.mjs` | Read before Phase C; reuse anything that already renders use-cases. |
+| Widgetbook compare tooling | `tool/design/widgetbook_compare_server.mjs` | Read before Phase C. The live server renders from current Widgetbook/classification inputs and writes canonical decision logs; the stale static builder and HTML export are retired. |
 | Helper libs | `tool/lib/repo_paths.mjs`, `tool/lib/cli_args.mjs` | Use in all new `.mjs` tools. |
 
 Before writing code, read `tool/design/generate_widget_classification.mjs`

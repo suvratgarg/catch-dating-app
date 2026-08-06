@@ -1,7 +1,7 @@
 ---
 doc_id: design_parity_tracker
-version: 0.1.43
-updated: 2026-08-06
+version: 0.1.44
+updated: 2026-08-07
 owner: product_design_parity
 status: active
 ---
@@ -32,6 +32,7 @@ checks in one durable matrix.
 | `tool/design/check_screen_coverage.mjs` | Validates screen coverage against route inventory, capture coverage, and the screen composition registry. |
 | `tool/design/check_screen_contracts.mjs` | Validates screen contracts against route inventory, capture catalog entries, component dependencies, Flutter source paths, and Dart symbols. |
 | `tool/design/check_widgetbook_contract_refs.mjs` | Validates component contracts and contract preview ids against generated Widgetbook directories. |
+| `tool/design/check_widgetbook_coverage.mjs` | Computes role-derived Widgetbook coverage directly from current Dart, Widgetbook, classification, and decision sources. `--check` is authoritative; `--json` or `--write` is for ephemeral review output, never a tracked report. |
 | `tool/design/check_screen_contract_hygiene.mjs` | Advisory scanner for raw Material controls and hand-rolled visual values in contracted screen implementation files. Masks comments/string literals, ignores `Colors.transparent`, and prints sample line refs so findings are reviewable before promotion to lints. |
 | `tool/design/screen_top_bar_contracts.json` | Exhaustive role classification for every Flutter `Scaffold.appBar`, every consumer/Host tab-root header surface, canonical zero-inset geometry, and reviewed raw media-hero exceptions. New app bars and shell branches are unregistered by default and fail the gate. |
 | `tool/design/check_screen_top_bar_contracts.mjs` | Blocking screen-chrome gate. Rejects unregistered/raw/wrong app-bar owners, incomplete tab-root coverage, root headers that bypass `CatchScreenHeaderTitle`/`CatchScreenTopBar`, local padding/height/text-scaling overrides, and a nonzero canonical post-safe-area inset. |
@@ -146,6 +147,12 @@ The local Widgetbook workspace lives in `widgetbook/`. Primitive previews should
 map to `design/components/catch.components.json` contract states, and screen
 previews should use the same fixture fakes as UI captures where possible. Run
 `cd widgetbook && dart run build_runner build` after adding annotated use cases.
+
+Run `node tool/design/check_widgetbook_coverage.mjs --check` for current
+role-derived coverage. The interactive comparison UI is served by
+`tool/design/widgetbook_compare_server.mjs` from the current Widgetbook,
+classification registry, and canonical decision logs. Do not commit generated
+coverage reports or rebuild a parallel static comparison page.
 
 ## Feature Contract Compiler
 

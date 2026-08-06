@@ -1,6 +1,6 @@
 ---
 doc_id: audit_registry
-version: 3.0.1
+version: 3.0.2
 updated: 2026-08-07
 owner: recursive_audit_loop
 status: active
@@ -118,6 +118,7 @@ node tool/run.mjs check --category meta
     npm run design:widgets:classify
     npm run design:widgets:check
     npm run design:widgets:new
+    node tool/design/check_widgetbook_coverage.mjs --check
     npm run design:fields:inventory:check
     npm run design:fields:facades:check
     ```
@@ -126,6 +127,10 @@ node tool/run.mjs check --category meta
    local or too redundant must still resolve through a public catalog action:
     merge into a canonical public widget, promote to the catalog, or inline/delete
     the duplicate.
+
+   Widgetbook coverage is computed live. Use `--json` or `--write` only for an
+   ephemeral review artifact outside the tracked docs tree; the current
+   classification registry and canonical decision ledger remain its inputs.
 
    Flutter field migrations are ranked in
    `flutter_field_surface_adoption.json`; the inventory check validates its

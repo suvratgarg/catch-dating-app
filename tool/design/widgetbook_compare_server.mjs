@@ -1,7 +1,7 @@
 import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
-import { URL } from "node:url";
+import {URL, fileURLToPath} from "node:url";
 
 const repoRoot = process.cwd();
 const claudeRoot =
@@ -209,6 +209,14 @@ function groupByName(components) {
   return byName;
 }
 
+export function hasWidgetbookReviewSource(
+  name,
+  widgetbookByName,
+  classificationByName,
+) {
+  return widgetbookByName.has(name) || classificationByName.has(name);
+}
+
 function useCaseOf(component) {
   return component?.useCases?.[0] ?? null;
 }
@@ -271,15 +279,6 @@ function withWidgetbookKnobs(url, knobs) {
     "}";
   route.searchParams.set("knobs", encodedGroup);
   return `${originAndPath}#${route.pathname}?${route.searchParams.toString()}`;
-}
-
-function loadCoverageByName() {
-  const coveragePath = fromRepo(
-    "docs/design_parity/widgetbook_coverage_report.json",
-  );
-  if (!fs.existsSync(coveragePath)) return new Map();
-  const report = readJson(coveragePath);
-  return new Map((report.rows ?? []).map((row) => [row.name, row]));
 }
 
 function loadVariantReviewCandidates() {
@@ -471,40 +470,29 @@ function sourcePaneForName(name, classificationByName, label = "Source only") {
   };
 }
 
-function paneForName(name, byName, contractsByName, coverageByName, classificationByName) {
+function paneForName(name, byName, contractsByName, classificationByName) {
   const component = findFirst(byName, name);
-  const coverage = coverageByName.get(name);
   const classification = classificationByName.get(name);
   const pane = component
     ? candidatePane(component, contractsByName, classificationByName)
     : {
         component: name,
-        location: coverage?.area ?? "No Widgetbook listing parsed",
+        location: classification?.role ?? "No Widgetbook listing parsed",
         useCase: "Missing",
         path: "",
         url: "",
         files: classification?.file ? [classification.file] : [],
       };
 
-  if (coverage?.file && !pane.files.includes(coverage.file)) {
-    pane.files.push(coverage.file);
-  }
   if (classification?.file && !pane.files.includes(classification.file)) {
     pane.files.push(classification.file);
   }
-  if (coverage) {
-    pane.source = {
-      file: coverage.file,
-      line: coverage.line,
-      area: coverage.area,
-      base: coverage.base,
-    };
-  } else if (classification?.file) {
+  if (classification?.file) {
     pane.source = {
       file: classification.file,
-      line: classification.line,
       role: classification.role,
       visibility: classification.visibility,
+      base: classification.baseClass,
     };
   }
   return pane;
@@ -993,7 +981,6 @@ function buildCandidates() {
   );
   const components = parseWidgetbook(widgetbookSource);
   const byName = groupByName(components);
-  const coverageByName = loadCoverageByName();
   const classificationByName = loadClassificationByName();
   const variantReviewCandidates = loadVariantReviewCandidates();
   const similarity = loadWidgetSimilarityRegistry();
@@ -1005,7 +992,6 @@ function buildCandidates() {
       name,
       byName,
       contractsByName,
-      coverageByName,
       classificationByName,
     );
   const add = ({
@@ -1046,7 +1032,7 @@ function buildCandidates() {
       .filter((name) => {
         if (seen.has(name)) return false;
         seen.add(name);
-        return byName.has(name) || coverageByName.has(name);
+        return hasWidgetbookReviewSource(name, byName, classificationByName);
       })
       .map((name) => pane(name));
     if (related.length < 2) return;
@@ -3991,56 +3977,66 @@ function appHtml() {
 </html>`;
 }
 
-const previewFrameInstalled = installWidgetbookPreviewFrame();
-
-const server = http.createServer(async (req, res) => {
-  try {
-    const url = new URL(req.url, `http://${req.headers.host}`);
-    if (req.method === "GET" && (url.pathname === "/" || url.pathname === "/docs/design_parity/widgetbook_compare.html")) {
-      return text(res, 200, appHtml(), "text/html; charset=utf-8");
-    }
-    if (req.method === "GET" && url.pathname === "/preview-frame") {
-      const target = normalizePreviewTarget(url.searchParams.get("target"));
-      if (!target) {
-        return text(
-          res,
-          400,
-          "Invalid Widgetbook preview target.",
-          "text/plain; charset=utf-8",
-        );
+export function startWidgetbookCompareServer() {
+  const previewFrameInstalled = installWidgetbookPreviewFrame();
+  const server = http.createServer(async (req, res) => {
+    try {
+      const url = new URL(req.url, `http://${req.headers.host}`);
+      if (
+        req.method === "GET" &&
+        (url.pathname === "/" ||
+          url.pathname === "/docs/design_parity/widgetbook_compare.html")
+      ) {
+        return text(res, 200, appHtml(), "text/html; charset=utf-8");
       }
-      return text(res, 200, previewFrameHtml(target), "text/html; charset=utf-8");
+      if (req.method === "GET" && url.pathname === "/preview-frame") {
+        const target = normalizePreviewTarget(url.searchParams.get("target"));
+        if (!target) {
+          return text(
+            res,
+            400,
+            "Invalid Widgetbook preview target.",
+            "text/plain; charset=utf-8",
+          );
+        }
+        return text(res, 200, previewFrameHtml(target), "text/html; charset=utf-8");
+      }
+      if (req.method === "GET" && url.pathname === "/api/data") {
+        return json(res, 200, buildCandidates());
+      }
+      if (req.method === "GET" && url.pathname === "/api/code") {
+        return json(res, 200, safeReadFile(url.searchParams.get("file")));
+      }
+      if (req.method === "GET" && url.pathname === "/api/decisions") {
+        return json(res, 200, readVisibleDecisions());
+      }
+      if (req.method === "POST" && url.pathname === "/api/decision") {
+        const body = await readBody(req);
+        return json(res, 200, writeDecision(JSON.parse(body || "{}")));
+      }
+      if (req.method === "GET" && url.pathname === "/favicon.ico") {
+        res.writeHead(204);
+        return res.end();
+      }
+      return json(res, 404, {error: "Not found"});
+    } catch (error) {
+      return json(res, 500, {error: error.message});
     }
-    if (req.method === "GET" && url.pathname === "/api/data") {
-      return json(res, 200, buildCandidates());
-    }
-    if (req.method === "GET" && url.pathname === "/api/code") {
-      return json(res, 200, safeReadFile(url.searchParams.get("file")));
-    }
-    if (req.method === "GET" && url.pathname === "/api/decisions") {
-      return json(res, 200, readVisibleDecisions());
-    }
-    if (req.method === "POST" && url.pathname === "/api/decision") {
-      const body = await readBody(req);
-      return json(res, 200, writeDecision(JSON.parse(body || "{}")));
-    }
-    if (req.method === "GET" && url.pathname === "/favicon.ico") {
-      res.writeHead(204);
-      return res.end();
-    }
-    return json(res, 404, { error: "Not found" });
-  } catch (error) {
-    return json(res, 500, { error: error.message });
-  }
-});
+  });
 
-server.listen(port, host, () => {
-  console.log(
-    `Widgetbook compare server: http://${host}:${port}/docs/design_parity/widgetbook_compare.html`,
-  );
-  console.log(`Embedding Widgetbook from: ${widgetbookOrigin}`);
-  console.log(
-    `Widgetbook preview frame: ${previewFrameInstalled ? widgetbookPreviewFrameUrl() : "not installed"}`,
-  );
-  console.log(`Decision log: ${path.relative(repoRoot, decisionsPath)}`);
-});
+  server.listen(port, host, () => {
+    console.log(
+      `Widgetbook compare server: http://${host}:${port}/docs/design_parity/widgetbook_compare.html`,
+    );
+    console.log(`Embedding Widgetbook from: ${widgetbookOrigin}`);
+    console.log(
+      `Widgetbook preview frame: ${previewFrameInstalled ? widgetbookPreviewFrameUrl() : "not installed"}`,
+    );
+    console.log(`Decision log: ${path.relative(repoRoot, decisionsPath)}`);
+  });
+  return server;
+}
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  startWidgetbookCompareServer();
+}
