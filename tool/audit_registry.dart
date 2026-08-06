@@ -10,7 +10,6 @@ const filesPath = '$registryDir/files.jsonl';
 const passesPath = '$registryDir/passes.jsonl';
 const docVersionsPath = '$registryDir/doc_versions.json';
 const backlogPath = '$registryDir/backlog.json';
-const docSummariesPath = '$registryDir/doc_summaries.json';
 const rulesPath = '$registryDir/rules.json';
 const screenContractsPath = 'design/screens/catch.screens.json';
 const rootManifestPath = 'tool/repository_root_manifest.json';
@@ -98,7 +97,7 @@ Commands:
   report                  Print compact counts by status, kind, and area.
   backlog [--stored-scanner]
                           Print active backlog, next-up queue, and live scanner counts.
-  docs [--path p]         Print compact doc summaries/read policies.
+  docs [--path p]         Print compact read policies from the doc catalog.
   rules [--status active] Print rules, optionally filtered by lifecycle status.
   next [--limit n] [--screen-limit n] [--code-only]
                           Print actionable screen gaps, then unstamped/follow-up files.
@@ -269,30 +268,23 @@ void _printStoredScanner(Map scanner) {
 
 void _docs(List<String> args) {
   final pathFilter = _stringOption(args, '--path');
-  final data = _readJsonFile(docSummariesPath);
-  final summaries = data['summaries'];
-  if (summaries is! Map) {
-    stdout.writeln('No doc summaries found at $docSummariesPath.');
-    return;
+  final docs = <({String path, String readPolicy})>[];
+  for (final value in _readDocVersions().values) {
+    if (value is! Map || value['status'] == 'retired') continue;
+    final path = value['path'];
+    final readPolicy = value['read_policy'];
+    if (path is! String || readPolicy is! String) continue;
+    if (pathFilter == null || path.contains(pathFilter)) {
+      docs.add((path: path, readPolicy: readPolicy));
+    }
   }
-
-  final paths = summaries.keys.whereType<String>().where((path) {
-    return pathFilter == null || path.contains(pathFilter);
-  }).toList()..sort();
-
-  for (final path in paths) {
-    final summary = summaries[path];
-    if (summary is! Map) continue;
-    stdout.writeln('\n$path');
-    stdout.writeln('  purpose: ${summary['purpose']}');
-    final readWhen = summary['read_when'];
-    if (readWhen is List) {
-      stdout.writeln('  read_when: ${readWhen.join('; ')}');
-    }
-    final skipWhen = summary['skip_when'];
-    if (skipWhen is List) {
-      stdout.writeln('  skip_when: ${skipWhen.join('; ')}');
-    }
+  docs.sort((a, b) => a.path.compareTo(b.path));
+  if (docs.isEmpty) {
+    _fail('No governed document read policy matched ${pathFilter ?? 'all'}.');
+  }
+  for (final doc in docs) {
+    stdout.writeln('\n${doc.path}');
+    stdout.writeln('  read_policy: ${doc.readPolicy}');
   }
 }
 

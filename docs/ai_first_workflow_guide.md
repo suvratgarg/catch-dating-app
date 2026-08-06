@@ -1,6 +1,6 @@
 ---
 doc_id: ai_first_workflow_guide
-version: 1.1.0
+version: 1.2.0
 updated: 2026-08-06
 owner: agent_operating_model
 status: active
@@ -156,13 +156,12 @@ separate from temporary trackers and session summaries. The policy is:
 - `path`;
 - `version`;
 - `updated`;
-- `status`;
 - `read_policy`;
-- sometimes `read_when` for more detailed routing.
+- `status` only for governed non-Markdown artifacts; governed Markdown keeps
+  lifecycle status in source frontmatter.
 
-`docs/audit_registry/doc_summaries.json` gives compact read/skip guidance for
-long docs. The point is to reduce prompt baggage. An agent can learn which docs
-matter before opening thousands of lines of historical context.
+The same catalog supplies compact read guidance. There is no parallel summary
+registry to update or reconcile.
 
 If you copy this pattern, do not start by writing more docs. Start by creating a
 doc index that tells agents which docs not to read.
@@ -243,7 +242,6 @@ Key files:
   outcomes, and new debt.
 - `rules.json`: active, watch, and archived rules.
 - `doc_versions.json`: durable doc metadata and read policies.
-- `doc_summaries.json`: compact read/skip policies for long docs.
 - `backlog.json`: active backlog, stable debt ids, scanner counts, and next-up
   queues.
 - `agent_metrics.jsonl`: readiness scores, delegation outcomes, workflow
@@ -529,7 +527,7 @@ Use this loop for every non-trivial request:
 
 5. Read only selected owner docs.
 
-   Use `doc_versions.json` and `doc_summaries.json` before opening long docs.
+   Use the read policies in `doc_versions.json` before opening long docs.
 
 6. Implement the smallest coherent batch.
 
@@ -576,8 +574,7 @@ once.
 
 3. Add a docs index and doc metadata.
 
-   Use `docs/README.md`, `docs/audit_registry/doc_versions.json`, and
-   optionally `doc_summaries.json`.
+   Use `docs/README.md` and `docs/audit_registry/doc_versions.json`.
 
 4. Add a tool manifest and runner.
 

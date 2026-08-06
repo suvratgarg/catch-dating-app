@@ -11,6 +11,7 @@ import {
   executeTaskCommand,
   normalizeSparsePaths,
   parseWorktreePorcelain,
+  taskSparseAnchorPaths,
 } from "./lib/worktree_lifecycle.mjs";
 
 const MIB = 1024 * 1024;
@@ -86,6 +87,26 @@ test("task paths are canonical and sparse paths cannot escape", () => {
   assert.ok(paths.includes("/AGENTS.md"));
   assert.ok(paths.includes("/lib/user_profile/"));
   assert.ok(paths.includes("/functions/src/index.ts"));
+
+  for (const entrypoint of ["check_agent_readiness.mjs", "context_pack.mjs"]) {
+    const source = fs.readFileSync(
+      new URL(`../agent/${entrypoint}`, import.meta.url),
+      "utf8",
+    );
+    const imports = [...source.matchAll(/from\s+["'](\.[^"']+)["']/gu)]
+      .map((match) => path.posix.normalize(`/tool/agent/${match[1]}`));
+    assert.ok(imports.length > 0);
+    for (const importedPath of imports) {
+      assert.ok(
+        taskSparseAnchorPaths.some((anchor) =>
+          anchor.endsWith("/")
+            ? importedPath.startsWith(anchor)
+            : importedPath === anchor,
+        ),
+        `${entrypoint} import is missing from the task sparse closure: ${importedPath}`,
+      );
+    }
+  }
 });
 
 test("capacity preflight fails before a worktree can consume the reserve", () => {
