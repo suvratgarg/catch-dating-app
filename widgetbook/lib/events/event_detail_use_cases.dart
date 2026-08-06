@@ -3314,6 +3314,7 @@ class _FakePaymentRepository implements PaymentRepository {
     required String eventId,
     String? inviteCode,
     String? inviteLinkId,
+    String? crossPathsPairHoldId,
   }) async {}
 
   @override
@@ -3326,6 +3327,7 @@ class _FakePaymentRepository implements PaymentRepository {
     required String userContact,
     String? inviteCode,
     String? inviteLinkId,
+    String? crossPathsPairHoldId,
   }) async {
     return PaymentConfirmationData(
       paymentId: 'widgetbook-payment',

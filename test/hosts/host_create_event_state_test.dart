@@ -343,6 +343,9 @@ void main() {
       admissionPreset: EventAdmissionPreset.requestToJoin,
       cancellationPolicyId: EventCancellationPolicyId.strict,
     );
+    const pairInventory = CreateEventPolicyState(
+      crossPathsPairInventoryEnabled: true,
+    );
 
     final defaults = balanced.defaultsFromFields(
       minAge: '24',
@@ -377,6 +380,19 @@ void main() {
       dynamicPricingMax: '',
       currencyCode: 'INR',
     );
+    final pairPolicy = pairInventory.eventPolicyFromFields(
+      capacity: '20',
+      basePrice: '0',
+      inviteCode: '',
+      minAge: '',
+      maxAge: '',
+      maxMen: '',
+      maxWomen: '',
+      dynamicPricingStep: '',
+      dynamicPricingMax: '',
+      currencyCode: 'INR',
+      crossPathsPairCapacity: '4',
+    );
 
     expect(
       defaults.admissionPreset,
@@ -401,6 +417,14 @@ void main() {
     expect(
       requestPolicy.cancellationPolicy.id,
       EventCancellationPolicyId.strict,
+    );
+    expect(
+      pairPolicy.admissionPolicy.crossPathsPairInventory.isEnabled,
+      isTrue,
+    );
+    expect(
+      pairPolicy.admissionPolicy.crossPathsPairInventory.reservedPairCapacity,
+      4,
     );
     expect(CreateEventPolicyState.inviteCodeHint('ABCD'), 'ABCD');
     expect(CreateEventPolicyState.inviteCodeHint(''), isNull);
@@ -716,6 +740,8 @@ void main() {
       dynamicPricingStep: '5',
       dynamicPricingMax: '25',
       cancellationPolicy: 'flexible',
+      crossPathsPairInventoryEnabled: true,
+      crossPathsPairCapacity: '4',
       eventSuccessDefaults: eventSuccessDefaults,
     );
 
@@ -757,6 +783,8 @@ void main() {
     expect(state.policyState.cohortCapsEnabled, isTrue);
     expect(state.policyState.dynamicPricingEnabled, isTrue);
     expect(state.policyState.cancellationPolicyId.name, 'flexible');
+    expect(state.policyState.crossPathsPairInventoryEnabled, isTrue);
+    expect(state.crossPathsPairCapacityText, '4');
     expect(state.eventSuccessDefaults, eventSuccessDefaults);
   });
 
@@ -814,6 +842,8 @@ void main() {
       dynamicPricingStep: '5',
       dynamicPricingMax: '25',
       cancellationPolicy: 'flexible',
+      crossPathsPairInventoryEnabled: true,
+      crossPathsPairCapacity: '4',
       eventSuccessDefaults: eventSuccessDefaults,
       eventPhotoIds: 'photo-1,photo-2',
     );
@@ -855,6 +885,8 @@ void main() {
     expect(draft.dynamicPricingStep, '5');
     expect(draft.dynamicPricingMax, '25');
     expect(draft.cancellationPolicy, 'flexible');
+    expect(draft.crossPathsPairInventoryEnabled, isTrue);
+    expect(draft.crossPathsPairCapacity, '4');
     expect(draft.eventSuccessDefaults, eventSuccessDefaults);
   });
 

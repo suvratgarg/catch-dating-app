@@ -324,8 +324,17 @@ String? _eventCohortAvailability(Event event, String cohortId) {
   final roster = EventRosterSnapshot(
     bookedCountsByCohort: event.effectiveCohortCounts,
     waitlistedCountsByCohort: event.effectiveWaitlistedCohortCounts,
+    crossPathsPairConfirmedCount: event.crossPathsPairConfirmedCount,
   );
-  if (event.signedUpCount >= admission.capacityLimit) {
+  final generalCapacity = admission.crossPathsPairInventory.isEnabled
+      ? admission.capacityLimit -
+            admission.crossPathsPairInventory.reservedPairCapacity
+      : admission.capacityLimit;
+  final generalBooked = math.max(
+    0,
+    event.signedUpCount - event.crossPathsPairConfirmedCount,
+  );
+  if (generalBooked >= generalCapacity) {
     return admission.waitlistPolicy.isEnabled ? _waitlist : null;
   }
 

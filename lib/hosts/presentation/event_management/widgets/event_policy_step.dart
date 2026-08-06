@@ -28,12 +28,15 @@ class EventPolicyStep extends StatelessWidget {
     required this.maxAgeController,
     required this.maxMenController,
     required this.maxWomenController,
+    required this.crossPathsPairCapacityController,
     required this.admissionPreset,
     required this.onAdmissionPresetChanged,
     required this.cohortCapsEnabled,
     required this.onCohortCapsEnabledChanged,
     required this.dynamicPricingEnabled,
     required this.onDynamicPricingChanged,
+    required this.crossPathsPairInventoryEnabled,
+    required this.onCrossPathsPairInventoryChanged,
     required this.cancellationPolicyId,
     required this.onCancellationPolicyChanged,
   });
@@ -50,12 +53,15 @@ class EventPolicyStep extends StatelessWidget {
   final TextEditingController maxAgeController;
   final TextEditingController maxMenController;
   final TextEditingController maxWomenController;
+  final TextEditingController crossPathsPairCapacityController;
   final EventAdmissionPreset admissionPreset;
   final ValueChanged<EventAdmissionPreset> onAdmissionPresetChanged;
   final bool cohortCapsEnabled;
   final ValueChanged<bool> onCohortCapsEnabledChanged;
   final bool dynamicPricingEnabled;
   final ValueChanged<bool> onDynamicPricingChanged;
+  final bool crossPathsPairInventoryEnabled;
+  final ValueChanged<bool> onCrossPathsPairInventoryChanged;
   final EventCancellationPolicyId cancellationPolicyId;
   final ValueChanged<EventCancellationPolicyId> onCancellationPolicyChanged;
 
@@ -264,6 +270,56 @@ class EventPolicyStep extends StatelessWidget {
                           .hostsEventPolicyStepTextRequestsAppearInHost,
                       bodyMaxLines: 3,
                       icon: CatchIcons.howToRegOutlined,
+                    ),
+                  CatchField.toggle(
+                    key: CreateEventFormKeys.crossPathsPairInventoryToggle,
+                    title:
+                        context.l10n.hostsEventPolicyStepTitleCrossPathsPairs,
+                    contract: CatchContractConstraints
+                        .createEventCallablePayloadEventPolicyAdmissionCrossPathsPairInventoryEnabled,
+                    body: context.l10n.hostsEventPolicyStepBodyCrossPathsPairs,
+                    bodyMaxLines: 4,
+                    value: crossPathsPairInventoryEnabled,
+                    onChanged: onCrossPathsPairInventoryChanged,
+                  ),
+                  if (crossPathsPairInventoryEnabled)
+                    CatchSection.containedFieldRows(
+                      children: [
+                        CatchField.input(
+                          key: CreateEventFormKeys.crossPathsPairCapacity,
+                          title: context
+                              .l10n
+                              .hostsEventPolicyStepTitleCrossPathsPairCapacity,
+                          contract: CatchContractConstraints
+                              .createEventCallablePayloadEventPolicyAdmissionCrossPathsPairInventoryReservedPairCapacity,
+                          controller: crossPathsPairCapacityController,
+                          inputHint: '2',
+                          icon: CatchIcons.peopleOutline,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
+                          validator: crossPathsPairInventoryEnabled
+                              ? (value) {
+                                  final pairCapacity = int.tryParse(
+                                    value?.trim() ?? '',
+                                  );
+                                  final totalCapacity = int.tryParse(
+                                    capacityController.text.trim(),
+                                  );
+                                  if (pairCapacity == null ||
+                                      pairCapacity < 1 ||
+                                      totalCapacity == null ||
+                                      pairCapacity > totalCapacity) {
+                                    return context
+                                        .l10n
+                                        .hostsEventPolicyStepVisiblecopyInvalid;
+                                  }
+                                  return null;
+                                }
+                              : null,
+                        ),
+                      ],
                     ),
                   if (admissionPreset ==
                       EventAdmissionPreset.balancedSingles) ...[

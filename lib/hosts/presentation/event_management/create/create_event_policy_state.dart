@@ -50,6 +50,7 @@ class CreateEventPolicyState {
     this.admissionPreset = EventAdmissionPreset.openCapacity,
     this.cohortCapsEnabled = false,
     this.dynamicPricingEnabled = false,
+    this.crossPathsPairInventoryEnabled = false,
     this.cancellationPolicyId = EventCancellationPolicyId.standard,
   });
 
@@ -72,6 +73,7 @@ class CreateEventPolicyState {
     required String? maxMen,
     required String? maxWomen,
     required bool dynamicPricingEnabled,
+    bool crossPathsPairInventoryEnabled = false,
   }) {
     return CreateEventPolicyState(
       admissionPreset: admissionPresetFromName(admissionPreset),
@@ -80,6 +82,7 @@ class CreateEventPolicyState {
           maxMen != null ||
           maxWomen != null,
       dynamicPricingEnabled: dynamicPricingEnabled,
+      crossPathsPairInventoryEnabled: crossPathsPairInventoryEnabled,
       cancellationPolicyId: cancellationPolicyFromName(cancellationPolicy),
     );
   }
@@ -87,6 +90,7 @@ class CreateEventPolicyState {
   final EventAdmissionPreset admissionPreset;
   final bool cohortCapsEnabled;
   final bool dynamicPricingEnabled;
+  final bool crossPathsPairInventoryEnabled;
   final EventCancellationPolicyId cancellationPolicyId;
 
   CreateEventPolicyState selectAdmissionPreset(EventAdmissionPreset preset) {
@@ -98,6 +102,7 @@ class CreateEventPolicyState {
       dynamicPricingEnabled: preset == EventAdmissionPreset.balancedSingles
           ? dynamicPricingEnabled
           : false,
+      crossPathsPairInventoryEnabled: crossPathsPairInventoryEnabled,
       cancellationPolicyId: cancellationPolicyId,
     );
   }
@@ -107,6 +112,7 @@ class CreateEventPolicyState {
       admissionPreset: admissionPreset,
       cohortCapsEnabled: enabled,
       dynamicPricingEnabled: dynamicPricingEnabled,
+      crossPathsPairInventoryEnabled: crossPathsPairInventoryEnabled,
       cancellationPolicyId: cancellationPolicyId,
     );
   }
@@ -116,6 +122,17 @@ class CreateEventPolicyState {
       admissionPreset: admissionPreset,
       cohortCapsEnabled: cohortCapsEnabled,
       dynamicPricingEnabled: enabled,
+      crossPathsPairInventoryEnabled: crossPathsPairInventoryEnabled,
+      cancellationPolicyId: cancellationPolicyId,
+    );
+  }
+
+  CreateEventPolicyState setCrossPathsPairInventoryEnabled(bool enabled) {
+    return CreateEventPolicyState(
+      admissionPreset: admissionPreset,
+      cohortCapsEnabled: cohortCapsEnabled,
+      dynamicPricingEnabled: dynamicPricingEnabled,
+      crossPathsPairInventoryEnabled: enabled,
       cancellationPolicyId: cancellationPolicyId,
     );
   }
@@ -127,6 +144,7 @@ class CreateEventPolicyState {
       admissionPreset: admissionPreset,
       cohortCapsEnabled: cohortCapsEnabled,
       dynamicPricingEnabled: dynamicPricingEnabled,
+      crossPathsPairInventoryEnabled: crossPathsPairInventoryEnabled,
       cancellationPolicyId: policyId,
     );
   }
@@ -191,6 +209,7 @@ class CreateEventPolicyState {
     required String dynamicPricingStep,
     required String dynamicPricingMax,
     required String currencyCode,
+    String crossPathsPairCapacity = '0',
   }) {
     final capacityLimit = int.parse(capacity.trim());
     final basePriceInPaise = currencyTextInMinorUnits(
@@ -207,16 +226,30 @@ class CreateEventPolicyState {
       currencyCode: currencyCode,
     );
     if (admissionPreset == EventAdmissionPreset.requestToJoin) {
-      return EventPolicyBundle.requestToJoinEvent(
+      final policy = EventPolicyBundle.requestToJoinEvent(
         capacityLimit: capacityLimit,
         basePriceInPaise: basePriceInPaise,
         cancellationPolicy: defaults.cancellationPolicy,
       );
+      return _withPairInventory(policy, crossPathsPairCapacity);
     }
-    return defaults.toEventPolicyBundle(
+    final policy = defaults.toEventPolicyBundle(
       capacityLimit: capacityLimit,
       basePriceInPaise: basePriceInPaise,
       inviteCodeHint: inviteCodeHint(inviteCode),
+    );
+    return _withPairInventory(policy, crossPathsPairCapacity);
+  }
+
+  EventPolicyBundle _withPairInventory(
+    EventPolicyBundle policy,
+    String capacityText,
+  ) {
+    final reserved = crossPathsPairInventoryEnabled
+        ? int.tryParse(capacityText.trim()) ?? 0
+        : 0;
+    return policy.withCrossPathsPairInventory(
+      reservedPairCapacity: reserved.clamp(0, policy.capacityLimit),
     );
   }
 

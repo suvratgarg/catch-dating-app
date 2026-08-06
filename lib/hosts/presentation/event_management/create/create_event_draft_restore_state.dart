@@ -34,6 +34,7 @@ class CreateEventDraftRestoreState {
     required this.inviteCodeText,
     required this.dynamicPricingStepText,
     required this.dynamicPricingMaxText,
+    required this.crossPathsPairCapacityText,
     required this.policyState,
     required this.eventSuccessDefaults,
   });
@@ -98,12 +99,14 @@ class CreateEventDraftRestoreState {
       inviteCodeText: draft.inviteCode,
       dynamicPricingStepText: draft.dynamicPricingStep,
       dynamicPricingMaxText: draft.dynamicPricingMax,
+      crossPathsPairCapacityText: draft.crossPathsPairCapacity,
       policyState: CreateEventPolicyState.fromDraft(
         admissionPreset: draft.admissionPreset,
         cancellationPolicy: draft.cancellationPolicy,
         maxMen: draft.maxMen,
         maxWomen: draft.maxWomen,
         dynamicPricingEnabled: draft.dynamicPricingEnabled,
+        crossPathsPairInventoryEnabled: draft.crossPathsPairInventoryEnabled,
       ),
       eventSuccessDefaults: draft.eventSuccessDefaults,
     );
@@ -133,6 +136,7 @@ class CreateEventDraftRestoreState {
   final String? inviteCodeText;
   final String? dynamicPricingStepText;
   final String? dynamicPricingMaxText;
+  final String? crossPathsPairCapacityText;
   final CreateEventPolicyState policyState;
   final EventSuccessDefaults eventSuccessDefaults;
 

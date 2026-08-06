@@ -12,16 +12,19 @@ final class EventBookingCallableRequest {
     required this.eventId,
     this.inviteCode,
     this.inviteLinkId,
+    this.crossPathsPairHoldId,
   });
 
   final String eventId;
   final String? inviteCode;
   final String? inviteLinkId;
+  final String? crossPathsPairHoldId;
 
   Map<String, Object?> toJson() => {
     'eventId': eventId,
     'inviteCode': ?inviteCode?.trim(),
     'inviteLinkId': ?inviteLinkId?.trim(),
+    'crossPathsPairHoldId': ?crossPathsPairHoldId?.trim(),
   };
 }
 
@@ -30,15 +33,18 @@ final class CreateRazorpayOrderCallableRequest {
     required this.eventId,
     this.inviteCode,
     this.inviteLinkId,
+    this.crossPathsPairHoldId,
   });
 
   final String eventId;
   final String? inviteCode;
   final String? inviteLinkId;
+  final String? crossPathsPairHoldId;
 
   Map<String, Object?> toJson() => {
     'eventId': eventId,
     'inviteCode': ?inviteCode?.trim(),
     'inviteLinkId': ?inviteLinkId?.trim(),
+    'crossPathsPairHoldId': ?crossPathsPairHoldId?.trim(),
   };
 }

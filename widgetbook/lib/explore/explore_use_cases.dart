@@ -292,6 +292,25 @@ final _bookedCrossPathsSuggestion = CrossPathsSuggestion(
   rankingVersion: _crossPathsSuggestion.rankingVersion,
 );
 
+final _pairAvailableCrossPathsSuggestion = CrossPathsSuggestion(
+  profile: _crossPathsSuggestion.profile,
+  event: CrossPathsSuggestionEvent(
+    eventId: _crossPathsSuggestion.event.eventId,
+    organizerId: _crossPathsSuggestion.event.organizerId,
+    startTime: _crossPathsSuggestion.event.startTime,
+    endTime: _crossPathsSuggestion.event.endTime,
+    meetingPoint: _crossPathsSuggestion.event.meetingPoint,
+    activityKind: _crossPathsSuggestion.event.activityKind,
+    photoUrl: _crossPathsSuggestion.event.photoUrl,
+    viewerBookingStatus: CrossPathsViewerBookingStatus.canBookNow,
+    pairHoldAvailable: true,
+  ),
+  reasonCodes: _crossPathsSuggestion.reasonCodes,
+  suggestionToken: _crossPathsSuggestion.suggestionToken,
+  tokenExpiresAt: _crossPathsSuggestion.tokenExpiresAt,
+  rankingVersion: _crossPathsSuggestion.rankingVersion,
+);
+
 @widgetbook.UseCase(
   name: 'Screen states',
   type: ExploreScreen,
@@ -536,6 +555,22 @@ Widget crossPathsProfilePreviewStates(BuildContext context) {
         ),
       ),
       _StateCard(
+        label: 'pair spot available before booking',
+        child: _DeviceFrame(
+          child: _ExploreScope(
+            pairInventoryEnabled: true,
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: CrossPathsProfilePreviewSheet(
+                suggestion: _pairAvailableCrossPathsSuggestion,
+                event: _feedItems[1].event,
+                onEventSelected: _noop,
+              ),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
         label: 'invitation pending',
         child: _DeviceFrame(
           child: _ExploreScope(
@@ -605,6 +640,27 @@ Widget crossPathsInvitationStates(BuildContext context) {
     status: CrossPathsInvitationStatus.invalidated,
     invalidationReason: CrossPathsInvitationInvalidationReason.eventUnavailable,
   );
+  final pairHeld = _crossPathsInvitation(
+    id: 'widgetbook-cross-paths-pair-held',
+    status: CrossPathsInvitationStatus.accepted,
+    outgoing: true,
+    pairHoldId: 'widgetbook-cross-paths-hold',
+  );
+  final pairHold = CrossPathsPairHold(
+    id: 'widgetbook-cross-paths-hold',
+    eventId: _feedItems[1].event.id,
+    invitationId: pairHeld.id,
+    requesterUid: _viewerUid,
+    attendeeUid: _crossPathsSuggestion.profile.uid,
+    participantIds: const [_viewerUid, 'widgetbook-cross-paths-rhea'],
+    status: CrossPathsPairHoldStatus.active,
+    requesterBookingStatus: 'held',
+    attendeeBookingStatus: 'signedUp',
+    requesterPriceInPaise: 0,
+    currency: 'INR',
+    expiresAt: DateTime.now().add(const Duration(minutes: 15)),
+    conversationId: null,
+  );
   return _CatalogScreen(
     title: 'CrossPathsInvitationScreen',
     catalogId: 'screen.cross_paths.invitation',
@@ -628,6 +684,16 @@ Widget crossPathsInvitationStates(BuildContext context) {
         child: _DeviceFrame(
           height: 680,
           child: _CrossPathsInvitationScope(invitation: accepted),
+        ),
+      ),
+      _StateCard(
+        label: 'pair spot held but requester not booked',
+        child: _DeviceFrame(
+          height: 680,
+          child: _CrossPathsInvitationScope(
+            invitation: pairHeld,
+            pairHold: pairHold,
+          ),
         ),
       ),
       _StateCard(
@@ -2221,6 +2287,7 @@ class _ExploreScope extends StatelessWidget {
     this.uid = _viewerUid,
     this.deviceLocation,
     this.outgoingInvitation,
+    this.pairInventoryEnabled = false,
   });
 
   final Widget child;
@@ -2232,6 +2299,7 @@ class _ExploreScope extends StatelessWidget {
   final String? uid;
   final LocationCoordinate? deviceLocation;
   final CrossPathsInvitation? outgoingInvitation;
+  final bool pairInventoryEnabled;
 
   @override
   Widget build(BuildContext context) {
@@ -2250,6 +2318,13 @@ class _ExploreScope extends StatelessWidget {
         AsyncData(ExploreFeedViewModel(items: List.unmodifiable(_feedItems)));
     return ProviderScope(
       overrides: [
+        crossPathsFeatureConfigProvider.overrideWith(
+          (ref) => CrossPathsFeatureConfig(
+            consentControlsEnabled: true,
+            exploreSuggestionsEnabled: true,
+            pairInventoryEnabled: pairInventoryEnabled,
+          ),
+        ),
         uidProvider.overrideWith((ref) => Stream<String?>.value(uid)),
         watchUserProfileProvider.overrideWith(
           (ref) => Stream<UserProfile?>.value(uid == null ? null : _viewer),
@@ -2282,6 +2357,7 @@ CrossPathsInvitation _crossPathsInvitation({
   String? conversationId,
   bool outgoing = false,
   CrossPathsInvitationInvalidationReason? invalidationReason,
+  String? pairHoldId,
 }) {
   return CrossPathsInvitation(
     id: id,
@@ -2298,6 +2374,7 @@ CrossPathsInvitation _crossPathsInvitation({
     invalidatedAt: null,
     invalidationReason: invalidationReason,
     conversationId: conversationId,
+    pairHoldId: pairHoldId,
   );
 }
 
@@ -2306,11 +2383,13 @@ class _CrossPathsInvitationScope extends StatelessWidget {
     required this.invitation,
     this.event,
     this.missingMedia = false,
+    this.pairHold,
   });
 
   final CrossPathsInvitation invitation;
   final Event? event;
   final bool missingMedia;
+  final CrossPathsPairHold? pairHold;
 
   @override
   Widget build(BuildContext context) {
@@ -2330,6 +2409,10 @@ class _CrossPathsInvitationScope extends StatelessWidget {
         watchEventProvider(
           invitation.eventId,
         ).overrideWith((ref) => Stream.value(event)),
+        if (pairHold != null)
+          watchCrossPathsPairHoldProvider(
+            pairHold!.id,
+          ).overrideWith((ref) => Stream.value(pairHold)),
       ],
       child: CrossPathsInvitationScreen(invitationId: invitation.id),
     );

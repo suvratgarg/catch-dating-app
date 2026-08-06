@@ -527,6 +527,11 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
             'dynamicPricingEnabled': <String, Object?>{
               'type': 'boolean',
             },
+            'crossPathsPairCapacity': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 100,
+            },
             'dynamicPricingStepInPaise': <String, Object?>{
               'type': <Object?>[
                 'integer',

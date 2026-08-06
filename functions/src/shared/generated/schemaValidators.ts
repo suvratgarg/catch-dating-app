@@ -41,6 +41,7 @@ import {EventCrossPathsConsentDocument} from "./eventCrossPathsConsentDocument";
 import {CrossPathsShowcaseEligibilityDocument} from "./crossPathsShowcaseEligibilityDocument";
 import {CrossPathsSuggestionExposureDocument} from "./crossPathsSuggestionExposureDocument";
 import {CrossPathsInvitationDocument} from "./crossPathsInvitationDocument";
+import {CrossPathsPairHoldDocument} from "./crossPathsPairHoldDocument";
 import {EventBroadcastDocument} from "./eventBroadcastDocument";
 import {EventWaitlistOfferDocument} from "./eventWaitlistOfferDocument";
 import {EventSuccessPlanDocument} from "./eventSuccessPlanDocument";
@@ -273,6 +274,7 @@ import {
   crossPathsShowcaseEligibilityDocumentSchema,
   crossPathsSuggestionExposureDocumentSchema,
   crossPathsInvitationDocumentSchema,
+  crossPathsPairHoldDocumentSchema,
   eventBroadcastDocumentSchema,
   eventWaitlistOfferDocumentSchema,
   eventSuccessPlanDocumentSchema,
@@ -620,6 +622,10 @@ export const validateCrossPathsInvitationDocument:
   ValidateFunction<CrossPathsInvitationDocument> =
     ajv.compile(crossPathsInvitationDocumentSchema) as
       ValidateFunction<CrossPathsInvitationDocument>;
+export const validateCrossPathsPairHoldDocument:
+  ValidateFunction<CrossPathsPairHoldDocument> =
+    ajv.compile(crossPathsPairHoldDocumentSchema) as
+      ValidateFunction<CrossPathsPairHoldDocument>;
 export const validateEventBroadcastDocument:
   ValidateFunction<EventBroadcastDocument> =
     ajv.compile(eventBroadcastDocumentSchema) as

@@ -32,8 +32,6 @@ class EventService {
     }
 
     final policy = event.effectiveEventPolicy;
-    if (event.signedUpCount >= policy.capacityLimit) return const EventFull();
-
     final decision = const EventPolicyEngine().decideAdmission(
       policy: policy,
       request: EventAdmissionRequest(
@@ -42,6 +40,7 @@ class EventService {
       ),
       roster: EventRosterSnapshot(
         bookedCountsByCohort: event.effectiveCohortCounts,
+        crossPathsPairConfirmedCount: event.crossPathsPairConfirmedCount,
       ),
     );
 

@@ -950,6 +950,45 @@ describe("firestore.rules", () => {
         ), {status: "accepted"}));
       });
 
+    it("keeps Cross Paths pair holds participant-only and server-owned",
+      async () => {
+        const hold = {
+          eventId: "event-1",
+          invitationId: "invitation-1",
+          requesterUid: "runner-1",
+          attendeeUid: "runner-2",
+          participantIds: ["runner-1", "runner-2"],
+          status: "active",
+          expiresAt: Timestamp.fromMillis(Date.now() + 3_600_000),
+        };
+        await seed(["crossPathsPairHolds", "hold-1"], hold);
+
+        await assertSucceeds(getDoc(doc(
+          authedDb("runner-1"),
+          "crossPathsPairHolds",
+          "hold-1",
+        )));
+        await assertSucceeds(getDoc(doc(
+          authedDb("runner-2"),
+          "crossPathsPairHolds",
+          "hold-1",
+        )));
+        await assertFails(getDoc(doc(
+          authedDb("runner-3"),
+          "crossPathsPairHolds",
+          "hold-1",
+        )));
+        await assertFails(getDocs(collection(
+          authedDb("runner-1"),
+          "crossPathsPairHolds",
+        )));
+        await assertFails(updateDoc(doc(
+          authedDb("runner-1"),
+          "crossPathsPairHolds",
+          "hold-1",
+        ), {status: "confirmed"}));
+      });
+
     it("denies all client access to Cross Paths showcase eligibility", async () => {
       const eligibility = {
         status: "eligible",

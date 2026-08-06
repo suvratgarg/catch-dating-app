@@ -167,6 +167,11 @@ export interface EventDocument {
           | "manualReview"
           | "reject";
       } | null;
+      crossPathsPairInventory?: {
+        enabled: boolean;
+        reservedPairCapacity: number;
+        holdDurationMinutes: number;
+      };
     };
     pricing: {
       basePriceInPaise: number;
@@ -199,6 +204,11 @@ export interface EventDocument {
     [k: string]: number;
   };
   waitlistedCohortCounts: {
+    [k: string]: number;
+  };
+  crossPathsPairHeldCount?: number;
+  crossPathsPairConfirmedCount?: number;
+  crossPathsPairHeldCohortCounts?: {
     [k: string]: number;
   };
   discoveryMarketId: string;

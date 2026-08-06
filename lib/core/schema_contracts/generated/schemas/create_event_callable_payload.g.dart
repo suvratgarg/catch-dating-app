@@ -493,6 +493,30 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
                 },
               },
             },
+            'crossPathsPairInventory': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'enabled',
+                'reservedPairCapacity',
+                'holdDurationMinutes',
+              ],
+              'properties': <String, Object?>{
+                'enabled': <String, Object?>{
+                  'type': 'boolean',
+                },
+                'reservedPairCapacity': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 100,
+                },
+                'holdDurationMinutes': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 5,
+                  'maximum': 30,
+                },
+              },
+            },
           },
         },
         'pricing': <String, Object?>{

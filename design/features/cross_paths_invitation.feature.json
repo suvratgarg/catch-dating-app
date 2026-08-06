@@ -6,7 +6,7 @@
   "name": "Cross Paths Invitation",
   "owner": "cross_paths",
   "status": "pilot",
-  "description": "Owns the participant-only invitation lifecycle and temporary event-plan transition without creating a dating match or changing event admission.",
+  "description": "Owns participant-only invitations, organizer-enabled companion holds, canonical checkout conversion, and the temporary event-plan transition without creating a dating match or changing waitlist rank.",
   "surfaces": [
     {
       "id": "consumer_flutter",
@@ -16,9 +16,9 @@
         "id": "screen.cross_paths.invitation"
       },
       "actionScope": {
-        "included": "Recipient accept/decline, sender pending cancellation, participant accepted-plan cancellation, and event-plan navigation.",
+        "included": "Recipient accept/decline, sender pending cancellation, participant hold/plan cancellation, requester companion checkout, and event-plan navigation.",
         "excluded": [
-          "Suggestion ranking, event booking/payment, consent editing, permanent post-event Catch decisions, and organizer inventory retain their owning contracts."
+          "Suggestion ranking, consent editing, permanent post-event Catch decisions, waitlist ranking, and organizer event-policy editing retain their owning contracts. Booking and payment execution remain delegated to their canonical authorities."
         ]
       },
       "bindings": {
@@ -47,7 +47,11 @@
         ],
         "dataContracts": [
           "contracts/firestore/cross_paths_invitations.schema.json",
+          "contracts/firestore/cross_paths_pair_holds.schema.json",
           "contracts/firestore/matches.schema.json",
+          "contracts/callables/event_booking_payload.schema.json",
+          "contracts/callables/create_razorpay_order_payload.schema.json",
+          "contracts/callables/create_stripe_checkout_session_payload.schema.json",
           "contracts/callables/respond_cross_paths_invitation_payload.schema.json",
           "contracts/callables/cancel_cross_paths_invitation_or_plan_payload.schema.json",
           "contracts/callable_responses/respond_cross_paths_invitation_response.schema.json",
@@ -69,6 +73,14 @@
             "test/chats/chat_screen_test.dart",
             "test/chats/chat_inbox_screen_test.dart"
           ],
+          "pair_hold_active": [
+            "test/cross_paths/cross_paths_invitation_screen_test.dart",
+            "test/cross_paths/cross_paths_invitation_controller_test.dart"
+          ],
+          "pair_hold_ended": [
+            "test/cross_paths/cross_paths_invitation_screen_test.dart",
+            "test/cross_paths/cross_paths_contract_test.dart"
+          ],
           "invitation_terminal": [
             "test/cross_paths/cross_paths_invitation_screen_test.dart"
           ]
@@ -89,6 +101,8 @@
             "incoming_pending",
             "outgoing_pending",
             "accepted",
+            "pair_held",
+            "pair_ended",
             "terminal"
           ]
         }
@@ -107,7 +121,8 @@
             {
               "kind": "surface_state",
               "stateIds": [
-                "event_plan_accepted"
+                "event_plan_accepted",
+                "pair_hold_active"
               ]
             }
           ],
@@ -150,6 +165,25 @@
             }
           ],
           "description": "Sender cancels pending intent or either participant explicitly closes one accepted event plan."
+        },
+        {
+          "id": "complete_pair_booking",
+          "owner": "invitation_mutation",
+          "codeValue": "completePairBooking",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "invitationId",
+            "pairHoldId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "event_plan_accepted"
+              ]
+            }
+          ],
+          "description": "The unbooked requester converts one active companion hold through canonical free or paid booking authority; success confirms participation and creates the event plan."
         },
         {
           "id": "open_event_plan",
@@ -235,6 +269,40 @@
                 "open_event_plan",
                 "cancel_invitation_or_plan"
               ]
+            }
+          ]
+        },
+        {
+          "id": "pair_held",
+          "stateId": "pair_hold_active",
+          "dimensions": {
+            "lifecycle": "pair_held"
+          },
+          "actionCases": [
+            {
+              "id": "requester",
+              "enabledActions": [
+                "complete_pair_booking",
+                "cancel_invitation_or_plan"
+              ]
+            },
+            {
+              "id": "confirmed_attendee",
+              "enabledActions": [
+                "cancel_invitation_or_plan"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "pair_ended",
+          "stateId": "pair_hold_ended",
+          "dimensions": {
+            "lifecycle": "pair_ended"
+          },
+          "actionCases": [
+            {
+              "id": "read_only"
             }
           ]
         },

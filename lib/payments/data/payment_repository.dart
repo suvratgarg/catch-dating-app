@@ -87,12 +87,14 @@ class PaymentRepository {
     required String userContact,
     String? inviteCode,
     String? inviteLinkId,
+    String? crossPathsPairHoldId,
   }) async {
     if (currencyCode.trim().toUpperCase() != defaultCurrencyCode) {
       return _processStripeCheckout(
         eventId: eventId,
         inviteCode: inviteCode,
         inviteLinkId: inviteLinkId,
+        crossPathsPairHoldId: crossPathsPairHoldId,
       );
     }
     return _processRazorpayPayment(
@@ -103,6 +105,7 @@ class PaymentRepository {
       userContact: userContact,
       inviteCode: inviteCode,
       inviteLinkId: inviteLinkId,
+      crossPathsPairHoldId: crossPathsPairHoldId,
     );
   }
 
@@ -114,6 +117,7 @@ class PaymentRepository {
     required String userContact,
     String? inviteCode,
     String? inviteLinkId,
+    String? crossPathsPairHoldId,
   }) async {
     if (!supportsPaidBookings) {
       throw const PaidBookingUnsupportedException();
@@ -131,6 +135,7 @@ class PaymentRepository {
       eventId: eventId,
       inviteCode: inviteCode,
       inviteLinkId: inviteLinkId,
+      crossPathsPairHoldId: crossPathsPairHoldId,
     );
     final order = _parseOrderResponse(orderResult.data);
 
@@ -193,11 +198,13 @@ class PaymentRepository {
     required String eventId,
     String? inviteCode,
     String? inviteLinkId,
+    String? crossPathsPairHoldId,
   }) async {
     final result = await _createStripeCheckoutSession(
       eventId: eventId,
       inviteCode: inviteCode,
       inviteLinkId: inviteLinkId,
+      crossPathsPairHoldId: crossPathsPairHoldId,
     );
     final session = _parseStripeCheckoutResponse(result.data);
     final opened = await withBackendErrorContext(
@@ -237,6 +244,7 @@ class PaymentRepository {
     required String eventId,
     String? inviteCode,
     String? inviteLinkId,
+    String? crossPathsPairHoldId,
   }) => withBackendErrorContext(
     () => _functions
         .httpsCallable('signUpForFreeEvent')
@@ -245,6 +253,7 @@ class PaymentRepository {
             eventId: eventId,
             inviteCode: inviteCode,
             inviteLinkId: inviteLinkId,
+            crossPathsPairHoldId: crossPathsPairHoldId,
           ).toJson(),
         ),
     context: const BackendErrorContext(
@@ -341,6 +350,7 @@ class PaymentRepository {
     required String eventId,
     String? inviteCode,
     String? inviteLinkId,
+    String? crossPathsPairHoldId,
   }) => withBackendErrorContext(
     () => _functions
         .httpsCallable('createRazorpayOrder')
@@ -349,6 +359,7 @@ class PaymentRepository {
             eventId: eventId,
             inviteCode: inviteCode,
             inviteLinkId: inviteLinkId,
+            crossPathsPairHoldId: crossPathsPairHoldId,
           ).toJson(),
         ),
     context: const BackendErrorContext(
@@ -365,6 +376,7 @@ class PaymentRepository {
     required String eventId,
     String? inviteCode,
     String? inviteLinkId,
+    String? crossPathsPairHoldId,
   }) => withBackendErrorContext(
     () => _functions
         .httpsCallable('createStripeCheckoutSession')
@@ -373,6 +385,7 @@ class PaymentRepository {
             eventId: eventId,
             inviteCode: inviteCode?.trim(),
             inviteLinkId: inviteLinkId?.trim(),
+            crossPathsPairHoldId: crossPathsPairHoldId?.trim(),
           ).toJson(),
         ),
     context: const BackendErrorContext(

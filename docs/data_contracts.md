@@ -349,6 +349,7 @@ Root-level edge/action documents are the source of truth for many-to-many state:
 | Cross Paths showcase eligibility | server-only `crossPathsShowcaseEligibility/{uid}` |
 | Cross Paths suggestion exposure | server-only `crossPathsSuggestionExposures/{exposureId}` |
 | Cross Paths invitation | `crossPathsInvitations/{eventId_senderUid}` |
+| Cross Paths companion hold | `crossPathsPairHolds/{holdId}` |
 | Cross Paths accepted event plan | `matches/{event_pairHash}` with `conversationType: crossPathsEventPlan` |
 | Saved events | `savedEvents/{uid_eventId}` |
 | Outgoing profile decisions | `profileDecisions/{uid}/outgoing/{targetId}` |
@@ -420,12 +421,27 @@ Cross Paths invitations are deterministic event-and-sender documents. Only the
 two participant ids may read an invitation; every create or transition is
 owned by `sendCrossPathsInvitation`, `respondCrossPathsInvitation`,
 `cancelCrossPathsInvitationOrPlan`, or a lifecycle trigger. A signed suggestion
-token is not authority by itself: send and accept revalidate both confirmed
-participations, both layers of consent, reciprocal eligibility, current
-showcase approval, blocks/reports/moderation, event availability, and the
-one-invitation/one-plan cardinality rules. Invitation state is `pending`,
+token is not authority by itself: send and accept revalidate the recipient's
+confirmed participation and either the sender's confirmed participation or
+explicit companion-inventory admission, plus the applicable consent,
+reciprocal eligibility, current showcase approval, blocks/reports/moderation,
+event availability, and one-invitation/one-plan cardinality rules. Invitation state is `pending`,
 `accepted`, `declined`, `cancelled`, `expired`, or `invalidated`; timestamps and
 invalidation reasons are server-owned.
+
+When an organizer enables reserved companion inventory, an accepted invitation
+from an otherwise admissible unbooked sender may reference one
+`crossPathsPairHolds/{holdId}` document. The server-owned hold records the
+event, invitation, both participants, independent booking states, frozen price
+quotes, expiry, release reason, optional payment, and optional event-plan
+conversation. Only the two participants may get it; list and all client writes
+are denied. `active` means reserved, not booked. Free or paid booking authority
+atomically converts it to `confirmed`, creates the requester participation and
+event plan, and moves the event projection from `crossPathsPairHeldCount` to
+`crossPathsPairConfirmedCount`. Expiry, cancellation, event/participation or
+safety invalidation, payment failure, and account deletion release exactly
+once. Reserved companion capacity remains within total event capacity but
+outside general admission and never changes waitlist rank.
 
 Acceptance creates one deterministic `matches` document whose
 `conversationType` is `crossPathsEventPlan`, whose participants are the invite

@@ -5,11 +5,17 @@
   "description": "Sanitized terminal response after accepting or declining an invitation.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["invitationId", "status", "conversationId"],
+  "required": ["invitationId", "status", "conversationId", "pairHoldId"],
   "properties": {
     "invitationId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "status": {"type": "string", "enum": ["accepted", "declined"]},
     "conversationId": {
+      "anyOf": [
+        {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        {"type": "null"}
+      ]
+    },
+    "pairHoldId": {
       "anyOf": [
         {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
         {"type": "null"}

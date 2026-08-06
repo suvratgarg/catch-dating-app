@@ -15,7 +15,8 @@ enum CrossPathsInvitationInvalidationReason {
   consentRevoked('consent_revoked'),
   safetyStateChanged('safety_state_changed'),
   competingPlanAccepted('competing_plan_accepted'),
-  planCancelled('plan_cancelled');
+  planCancelled('plan_cancelled'),
+  holdExpired('hold_expired');
 
   const CrossPathsInvitationInvalidationReason(this.wireValue);
   final String wireValue;
@@ -37,6 +38,7 @@ class CrossPathsInvitation {
     required this.invalidatedAt,
     required this.invalidationReason,
     required this.conversationId,
+    this.pairHoldId,
   });
 
   factory CrossPathsInvitation.fromMap(String id, Map<String, dynamic> json) {
@@ -79,6 +81,7 @@ class CrossPathsInvitation {
               (reason) => reason.wireValue == reasonWire,
             ),
       conversationId: json['conversationId'] as String?,
+      pairHoldId: json['pairHoldId'] as String?,
     );
   }
 
@@ -96,6 +99,7 @@ class CrossPathsInvitation {
   final DateTime? invalidatedAt;
   final CrossPathsInvitationInvalidationReason? invalidationReason;
   final String? conversationId;
+  final String? pairHoldId;
 }
 
 class CrossPathsInvitationReceipt {
@@ -103,6 +107,7 @@ class CrossPathsInvitationReceipt {
     required this.invitationId,
     required this.status,
     required this.conversationId,
+    this.pairHoldId,
   });
 
   factory CrossPathsInvitationReceipt.fromCallableData(Object? value) {
@@ -116,10 +121,12 @@ class CrossPathsInvitationReceipt {
         json['status'] as String,
       ),
       conversationId: json['conversationId'] as String?,
+      pairHoldId: json['pairHoldId'] as String?,
     );
   }
 
   final String invitationId;
   final CrossPathsInvitationStatus status;
   final String? conversationId;
+  final String? pairHoldId;
 }

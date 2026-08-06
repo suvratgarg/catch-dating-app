@@ -61,6 +61,8 @@ export interface CrossPathsInvitationDocument {
     | "consent_revoked"
     | "safety_state_changed"
     | "competing_plan_accepted"
-    | "plan_cancelled";
+    | "plan_cancelled"
+    | "hold_expired";
   conversationId: string | null;
+  pairHoldId: string | null;
 }

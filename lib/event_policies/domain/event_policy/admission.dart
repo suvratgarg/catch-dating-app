@@ -200,6 +200,45 @@ class BalancedRatioPolicy {
   };
 }
 
+class CrossPathsPairInventoryPolicy {
+  const CrossPathsPairInventoryPolicy({
+    this.enabled = false,
+    this.reservedPairCapacity = 0,
+    this.holdDuration = const Duration(minutes: 15),
+  });
+
+  const CrossPathsPairInventoryPolicy.disabled()
+    : enabled = false,
+      reservedPairCapacity = 0,
+      holdDuration = const Duration(minutes: 15);
+
+  final bool enabled;
+  final int reservedPairCapacity;
+  final Duration holdDuration;
+
+  bool get isEnabled => enabled && reservedPairCapacity > 0;
+
+  factory CrossPathsPairInventoryPolicy.fromJson(Map<String, dynamic> json) {
+    final capacity = _intValue(json['reservedPairCapacity'], fallback: 0);
+    return CrossPathsPairInventoryPolicy(
+      enabled: _boolValue(json['enabled']) && capacity > 0,
+      reservedPairCapacity: capacity.clamp(0, 100),
+      holdDuration: Duration(
+        minutes: _intValue(
+          json['holdDurationMinutes'],
+          fallback: 15,
+        ).clamp(5, 30),
+      ),
+    );
+  }
+
+  Map<String, Object?> toJson() => {
+    'enabled': isEnabled,
+    'reservedPairCapacity': reservedPairCapacity,
+    'holdDurationMinutes': holdDuration.inMinutes,
+  };
+}
+
 class EventAdmissionPolicy {
   const EventAdmissionPolicy({
     required this.format,
@@ -211,6 +250,8 @@ class EventAdmissionPolicy {
     this.privateAccessPolicy = const EventPrivateAccessPolicy.none(),
     this.cohortCapacityLimits = const {},
     this.balancedRatioPolicy,
+    this.crossPathsPairInventory =
+        const CrossPathsPairInventoryPolicy.disabled(),
   });
 
   const EventAdmissionPolicy.open({
@@ -286,6 +327,22 @@ class EventAdmissionPolicy {
   final EventPrivateAccessPolicy privateAccessPolicy;
   final Map<String, int> cohortCapacityLimits;
   final BalancedRatioPolicy? balancedRatioPolicy;
+  final CrossPathsPairInventoryPolicy crossPathsPairInventory;
+
+  EventAdmissionPolicy withCrossPathsPairInventory(
+    CrossPathsPairInventoryPolicy policy,
+  ) => EventAdmissionPolicy(
+    format: format,
+    capacityLimit: capacityLimit,
+    waitlistPolicy: waitlistPolicy,
+    inviteRequired: inviteRequired,
+    membershipRequired: membershipRequired,
+    manualApprovalRequired: manualApprovalRequired,
+    privateAccessPolicy: privateAccessPolicy,
+    cohortCapacityLimits: cohortCapacityLimits,
+    balancedRatioPolicy: balancedRatioPolicy,
+    crossPathsPairInventory: policy,
+  );
 
   factory EventAdmissionPolicy.fromJson(Map<String, dynamic> json) {
     return EventAdmissionPolicy(
@@ -312,6 +369,12 @@ class EventAdmissionPolicy {
           : BalancedRatioPolicy.fromJson(
               _mapValue(json['balancedRatioPolicy'])!,
             ),
+      crossPathsPairInventory:
+          _mapValue(json['crossPathsPairInventory']) == null
+          ? const CrossPathsPairInventoryPolicy.disabled()
+          : CrossPathsPairInventoryPolicy.fromJson(
+              _mapValue(json['crossPathsPairInventory'])!,
+            ),
     );
   }
 
@@ -325,5 +388,6 @@ class EventAdmissionPolicy {
     'privateAccessPolicy': privateAccessPolicy.toJson(),
     'cohortCapacityLimits': cohortCapacityLimits,
     'balancedRatioPolicy': balancedRatioPolicy?.toJson(),
+    'crossPathsPairInventory': crossPathsPairInventory.toJson(),
   };
 }

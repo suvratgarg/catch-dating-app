@@ -91,6 +91,7 @@ interface EventContext {
   eventId: string;
   event: EventDocument;
   viewerBookingStatus: "signedUp" | "canBookNow";
+  pairHoldAvailable: boolean;
   candidateUids: string[];
 }
 
@@ -360,6 +361,7 @@ async function loadEventContext(params: {
   }
 
   let viewerBookingStatus: EventContext["viewerBookingStatus"];
+  let pairHoldAvailable = false;
   const viewerParticipation = viewerParticipationSnap.exists ?
     requireDoc<EventParticipationDocument>(
       viewerParticipationSnap,
@@ -372,11 +374,13 @@ async function loadEventContext(params: {
       return null;
     }
     const policy = eventPolicyFromEvent(event);
+    const pairPolicy = policy.admission.crossPathsPairInventory;
     if (
       policy.admission.inviteRequired === true ||
       policy.admission.membershipRequired === true ||
       policy.admission.manualApprovalRequired === true ||
-      event.discoveryAvailability !== "open"
+      (event.discoveryAvailability !== "open" &&
+        pairPolicy?.enabled !== true)
     ) {
       return null;
     }
@@ -387,11 +391,31 @@ async function loadEventContext(params: {
         rosterFromEvent(event),
         {nowMillis}
       );
-      assertPolicyAllowsSignup({
-        policy,
-        cohortId: cohortIdForUser(viewer),
-        roster,
-      });
+      const cohortId = cohortIdForUser(viewer);
+      try {
+        assertPolicyAllowsSignup({policy, cohortId, roster});
+      } catch {
+        assertPolicyAllowsSignup({
+          policy,
+          cohortId,
+          roster,
+          admissionMode: "crossPathsPair",
+        });
+        pairHoldAvailable = true;
+      }
+      if (pairPolicy?.enabled === true) {
+        try {
+          assertPolicyAllowsSignup({
+            policy,
+            cohortId,
+            roster,
+            admissionMode: "crossPathsPair",
+          });
+          pairHoldAvailable = true;
+        } catch {
+          // General admission can remain valid after pair inventory fills.
+        }
+      }
       await assertNoUserEventScheduleConflict(db, {
         uid: viewerUid,
         eventId,
@@ -421,7 +445,13 @@ async function loadEventContext(params: {
       participation.uid !== viewerUid
     )
     .map((participation) => participation.uid))];
-  return {eventId, event, viewerBookingStatus, candidateUids};
+  return {
+    eventId,
+    event,
+    viewerBookingStatus,
+    pairHoldAvailable,
+    candidateUids,
+  };
 }
 
 async function loadCandidateBundle(
@@ -686,6 +716,7 @@ function suggestionProjection(params: {
       activityKind: event.eventFormat.activityKind,
       photoUrl: event.photoUrl ?? null,
       viewerBookingStatus: pair.eventContext.viewerBookingStatus,
+      pairHoldAvailable: pair.eventContext.pairHoldAvailable,
     },
     reasonCodes: [
       "attending_event",

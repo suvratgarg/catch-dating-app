@@ -73,7 +73,15 @@ class EventPolicyEngine {
       );
     }
 
-    if (roster.totalBooked >= admissionPolicy.capacityLimit) {
+    final pairInventory = admissionPolicy.crossPathsPairInventory;
+    final generalCapacity = pairInventory.isEnabled
+        ? admissionPolicy.capacityLimit - pairInventory.reservedPairCapacity
+        : admissionPolicy.capacityLimit;
+    final generalBooked = math.max(
+      0,
+      roster.totalBooked - roster.crossPathsPairConfirmedCount,
+    );
+    if (generalBooked >= generalCapacity) {
       return _capacityBlockedDecision(decision, admissionPolicy);
     }
 

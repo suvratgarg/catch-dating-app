@@ -179,6 +179,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   final _inviteCodeController = TextEditingController();
   final _dynamicPricingStepController = TextEditingController();
   final _dynamicPricingMaxController = TextEditingController();
+  final _crossPathsPairCapacityController = TextEditingController(text: '2');
   CreateEventPolicyState _policyState = const CreateEventPolicyState();
   EventSuccessDefaults _eventSuccessDefaults = const EventSuccessDefaults();
 
@@ -223,6 +224,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       dynamicPricingStep: _dynamicPricingStepController.text,
       dynamicPricingMax: _dynamicPricingMaxController.text,
       currencyCode: _eventCurrencyCode,
+      crossPathsPairCapacity: _crossPathsPairCapacityController.text,
     );
   }
 
@@ -299,6 +301,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     _inviteCodeController.dispose();
     _dynamicPricingStepController.dispose();
     _dynamicPricingMaxController.dispose();
+    _crossPathsPairCapacityController.dispose();
     super.dispose();
   }
 
@@ -558,6 +561,11 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
         dynamicPricingStep: _trimmedTextOrNull(_dynamicPricingStepController),
         dynamicPricingMax: _trimmedTextOrNull(_dynamicPricingMaxController),
         cancellationPolicy: _policyState.cancellationPolicyId.name,
+        crossPathsPairInventoryEnabled:
+            _policyState.crossPathsPairInventoryEnabled,
+        crossPathsPairCapacity: _trimmedTextOrNull(
+          _crossPathsPairCapacityController,
+        ),
         eventSuccessDefaults: _eventSuccessDefaults,
         eventPhotoIds: _eventPhotos.signature,
       );
@@ -653,6 +661,10 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     }
     if (restore.dynamicPricingMaxText != null) {
       _dynamicPricingMaxController.text = restore.dynamicPricingMaxText!;
+    }
+    if (restore.crossPathsPairCapacityText != null) {
+      _crossPathsPairCapacityController.text =
+          restore.crossPathsPairCapacityText!;
     }
     _policyState = restore.policyState;
     _eventSuccessDefaults = restore.eventSuccessDefaults;
@@ -911,6 +923,8 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                     maxAgeController: _maxAgeController,
                     maxMenController: _maxMenController,
                     maxWomenController: _maxWomenController,
+                    crossPathsPairCapacityController:
+                        _crossPathsPairCapacityController,
                     admissionPreset: _policyState.admissionPreset,
                     onAdmissionPresetChanged: (preset) => setState(() {
                       _policyState = _policyState.selectAdmissionPreset(preset);
@@ -925,6 +939,12 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                         enabled,
                       );
                     }),
+                    crossPathsPairInventoryEnabled:
+                        _policyState.crossPathsPairInventoryEnabled,
+                    onCrossPathsPairInventoryChanged: (enabled) => setState(
+                      () => _policyState = _policyState
+                          .setCrossPathsPairInventoryEnabled(enabled),
+                    ),
                     cancellationPolicyId: _policyState.cancellationPolicyId,
                     onCancellationPolicyChanged: (policyId) => setState(
                       () => _policyState = _policyState.setCancellationPolicy(

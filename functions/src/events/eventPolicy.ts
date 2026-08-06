@@ -69,6 +69,11 @@ export interface EventPolicyBundleDocument {
       openingBufferPerCohort: number;
       outOfRatioCohortPolicy: EventOutOfRatioCohortPolicy;
     } | null;
+    crossPathsPairInventory?: {
+      enabled: boolean;
+      reservedPairCapacity: number;
+      holdDurationMinutes: number;
+    };
   };
   pricing: {
     basePriceInPaise: number;
@@ -94,6 +99,8 @@ export interface EventRosterSnapshot {
   bookedCountsByCohort: Record<string, number>;
   waitlistedCountsByCohort: Record<string, number>;
   totalBooked: number;
+  crossPathsPairHeldCount?: number;
+  crossPathsPairConfirmedCount?: number;
 }
 
 export function eventPolicyFromEvent(
@@ -132,6 +139,10 @@ export function normalizePolicy(policy: EventPolicyBundleDocument):
         policy.admission?.cohortCapacityLimits
       ),
       balancedRatioPolicy: policy.admission?.balancedRatioPolicy ?? null,
+      crossPathsPairInventory: normalizeCrossPathsPairInventory(
+        policy.admission?.crossPathsPairInventory,
+        Math.max(1, Math.trunc(policy.admission?.capacityLimit ?? 1))
+      ),
     },
     pricing: {
       basePriceInPaise: Math.max(0, Math.trunc(
@@ -181,6 +192,11 @@ export function legacyPolicyFromEvent(
           {}),
       },
       balancedRatioPolicy: null,
+      crossPathsPairInventory: {
+        enabled: false,
+        reservedPairCapacity: 0,
+        holdDurationMinutes: 15,
+      },
     },
     pricing: {
       basePriceInPaise: event.priceInPaise,
@@ -221,9 +237,35 @@ export function rosterFromEvent(event: EventDocument): EventRosterSnapshot {
       waitlistedCohortCounts?: Record<string, number> | null;
     }).waitlistedCohortCounts
   );
-  const totalBooked = event.bookedCount ??
-    Object.values(bookedCountsByCohort).reduce((sum, count) => sum + count, 0);
-  return {bookedCountsByCohort, waitlistedCountsByCohort, totalBooked};
+  const crossPathsPairHeldCount = Math.max(0, Math.trunc(
+    (event as EventDocument & {crossPathsPairHeldCount?: number})
+      .crossPathsPairHeldCount ?? 0
+  ));
+  const crossPathsPairConfirmedCount = Math.max(0, Math.trunc(
+    (event as EventDocument & {crossPathsPairConfirmedCount?: number})
+      .crossPathsPairConfirmedCount ?? 0
+  ));
+  const heldCohortCounts = sanitizeCountMap(
+    (event as EventDocument & {
+      crossPathsPairHeldCohortCounts?: Record<string, number> | null;
+    }).crossPathsPairHeldCohortCounts
+  );
+  for (const [cohortId, count] of Object.entries(heldCohortCounts)) {
+    bookedCountsByCohort[cohortId] =
+      (bookedCountsByCohort[cohortId] ?? 0) + count;
+  }
+  const totalBooked = (event.bookedCount ??
+    Object.values(bookedCountsByCohort).reduce(
+      (sum, count) => sum + count,
+      0
+    )) + crossPathsPairHeldCount;
+  return {
+    bookedCountsByCohort,
+    waitlistedCountsByCohort,
+    totalBooked,
+    crossPathsPairHeldCount,
+    crossPathsPairConfirmedCount,
+  };
 }
 
 export function quotePriceInPaise(params: {
@@ -314,6 +356,7 @@ export function assertPolicyAllowsSignup(params: {
   roster: EventRosterSnapshot;
   hasValidInvite?: boolean;
   hasHostApproval?: boolean;
+  admissionMode?: "general" | "crossPathsPair";
 }) {
   const admission = params.policy.admission;
   if (admission.inviteRequired && params.hasValidInvite !== true) {
@@ -329,8 +372,42 @@ export function assertPolicyAllowsSignup(params: {
     );
   }
 
+  const pairInventory = admission.crossPathsPairInventory ?? {
+    enabled: false,
+    reservedPairCapacity: 0,
+    holdDurationMinutes: 15,
+  };
+  const admissionMode = params.admissionMode ?? "general";
+  const pairHeldCount = params.roster.crossPathsPairHeldCount ?? 0;
+  const pairConfirmedCount = params.roster.crossPathsPairConfirmedCount ?? 0;
   if (params.roster.totalBooked >= admission.capacityLimit) {
     throw new HttpsError("failed-precondition", "This event is now full.");
+  }
+  if (admissionMode === "crossPathsPair") {
+    if (
+      !pairInventory.enabled ||
+      pairInventory.reservedPairCapacity <= 0 ||
+      pairHeldCount + pairConfirmedCount >=
+        pairInventory.reservedPairCapacity
+    ) {
+      throw new HttpsError(
+        "failed-precondition",
+        "A Cross Paths pair spot is not available right now."
+      );
+    }
+  } else if (pairInventory.enabled) {
+    const generalOccupied = params.roster.totalBooked -
+      pairHeldCount - pairConfirmedCount;
+    const generalCapacity = Math.max(
+      0,
+      admission.capacityLimit - pairInventory.reservedPairCapacity
+    );
+    if (generalOccupied >= generalCapacity) {
+      throw new HttpsError(
+        "failed-precondition",
+        "General admission is full. Reserved Cross Paths spots remain separate."
+      );
+    }
   }
 
   const cohortLimit = admission.cohortCapacityLimits?.[params.cohortId];
@@ -655,4 +732,24 @@ function timestampLikeMillis(value: unknown): number | null {
     return value.getTime();
   }
   return null;
+}
+
+function normalizeCrossPathsPairInventory(
+  value: EventPolicyBundleDocument["admission"]["crossPathsPairInventory"],
+  capacityLimit: number
+): NonNullable<
+  EventPolicyBundleDocument["admission"]["crossPathsPairInventory"]
+> {
+  const reservedPairCapacity = Math.min(
+    capacityLimit,
+    Math.max(0, Math.trunc(value?.reservedPairCapacity ?? 0))
+  );
+  return {
+    enabled: value?.enabled === true && reservedPairCapacity > 0,
+    reservedPairCapacity,
+    holdDurationMinutes: Math.min(
+      30,
+      Math.max(5, Math.trunc(value?.holdDurationMinutes ?? 15))
+    ),
+  };
 }

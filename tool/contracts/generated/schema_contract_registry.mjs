@@ -7037,6 +7037,11 @@ export const clubDocumentSchema = {
             "dynamicPricingEnabled": {
               "type": "boolean"
             },
+            "crossPathsPairCapacity": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
             "dynamicPricingStepInPaise": {
               "type": [
                 "integer",
@@ -9435,6 +9440,11 @@ export const organizerDocumentSchema = {
             },
             "dynamicPricingEnabled": {
               "type": "boolean"
+            },
+            "crossPathsPairCapacity": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
             },
             "dynamicPricingStepInPaise": {
               "type": [
@@ -12867,6 +12877,30 @@ export const eventDocumentSchema = {
                   ]
                 }
               }
+            },
+            "crossPathsPairInventory": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "enabled",
+                "reservedPairCapacity",
+                "holdDurationMinutes"
+              ],
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "reservedPairCapacity": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "holdDurationMinutes": {
+                  "type": "integer",
+                  "minimum": 5,
+                  "maximum": 30
+                }
+              }
             }
           }
         },
@@ -12994,6 +13028,24 @@ export const eventDocumentSchema = {
       "x-catch-ownership": "callable-owned"
     },
     "waitlistedCohortCounts": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "crossPathsPairHeldCount": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "callable-owned"
+    },
+    "crossPathsPairConfirmedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "callable-owned"
+    },
+    "crossPathsPairHeldCohortCounts": {
       "type": "object",
       "additionalProperties": {
         "type": "integer",
@@ -15266,7 +15318,8 @@ export const crossPathsInvitationDocumentSchema = {
     "cancelledAt",
     "invalidatedAt",
     "invalidationReason",
-    "conversationId"
+    "conversationId",
+    "pairHoldId"
   ],
   "properties": {
     "eventId": {
@@ -15470,8 +15523,309 @@ export const crossPathsInvitationDocumentSchema = {
         "consent_revoked",
         "safety_state_changed",
         "competing_plan_accepted",
-        "plan_cancelled"
+        "plan_cancelled",
+        "hold_expired"
       ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "conversationId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "pairHoldId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    }
+  }
+};
+
+export const crossPathsPairHoldDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/cross_paths_pair_holds.schema.json",
+  "title": "CrossPathsPairHoldDocument",
+  "description": "Server-owned, short-lived companion-seat reservation for an accepted Cross Paths invitation.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "cross_paths_pair_holds",
+  "x-firestore-path": "crossPathsPairHolds/{holdId}",
+  "x-document-id-field": "id",
+  "x-owner": "Cross Paths pair-inventory callables and payment fulfillment",
+  "required": [
+    "eventId",
+    "invitationId",
+    "organizerId",
+    "requesterUid",
+    "attendeeUid",
+    "participantIds",
+    "status",
+    "requesterBookingStatus",
+    "attendeeBookingStatus",
+    "requesterCohortId",
+    "attendeeCohortId",
+    "requesterPriceInPaise",
+    "attendeePriceInPaise",
+    "currency",
+    "createdAt",
+    "updatedAt",
+    "expiresAt",
+    "confirmedAt",
+    "releasedAt",
+    "releaseReason",
+    "paymentId",
+    "conversationId"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "invitationId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "requesterUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "attendeeUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "participantIds": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "confirmed",
+        "expired",
+        "cancelled",
+        "invalidated"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "requesterBookingStatus": {
+      "type": "string",
+      "enum": [
+        "held",
+        "confirmed",
+        "cancelled"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "attendeeBookingStatus": {
+      "type": "string",
+      "enum": [
+        "confirmed",
+        "cancelled"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "requesterCohortId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "x-catch-ownership": "callable-owned"
+    },
+    "attendeeCohortId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "x-catch-ownership": "callable-owned"
+    },
+    "requesterPriceInPaise": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000000,
+      "x-catch-ownership": "callable-owned"
+    },
+    "attendeePriceInPaise": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000000,
+      "x-catch-ownership": "callable-owned"
+    },
+    "currency": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "confirmedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "releasedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "releaseReason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        null,
+        "expired",
+        "cancelled",
+        "event_unavailable",
+        "participation_cancelled",
+        "safety_state_changed",
+        "payment_failed"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "paymentId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
       "x-catch-ownership": "callable-owned"
     },
     "conversationId": {
@@ -19127,6 +19481,16 @@ export const paymentDocumentSchema = {
       "minLength": 1,
       "maxLength": 80,
       "description": "Host-facing invite source copied from eventInviteLinks.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "crossPathsPairHoldId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Pair hold consumed by this booking, when present.",
       "x-catch-ownership": "callable-owned"
     },
     "signUpFailed": {
@@ -25030,6 +25394,11 @@ export const createClubCallablePayloadSchema = {
             "dynamicPricingEnabled": {
               "type": "boolean"
             },
+            "crossPathsPairCapacity": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
             "dynamicPricingStepInPaise": {
               "type": [
                 "integer",
@@ -25991,6 +26360,11 @@ export const createOrganizerCallablePayloadSchema = {
             },
             "dynamicPricingEnabled": {
               "type": "boolean"
+            },
+            "crossPathsPairCapacity": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
             },
             "dynamicPricingStepInPaise": {
               "type": [
@@ -26998,6 +27372,11 @@ export const updateOrganizerCallablePayloadSchema = {
                 },
                 "dynamicPricingEnabled": {
                   "type": "boolean"
+                },
+                "crossPathsPairCapacity": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100
                 },
                 "dynamicPricingStepInPaise": {
                   "type": [
@@ -28413,6 +28792,11 @@ export const updateClubCallablePayloadSchema = {
                 },
                 "dynamicPricingEnabled": {
                   "type": "boolean"
+                },
+                "crossPathsPairCapacity": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100
                 },
                 "dynamicPricingStepInPaise": {
                   "type": [
@@ -33827,6 +34211,30 @@ export const createEventCallablePayloadSchema = {
                   ]
                 }
               }
+            },
+            "crossPathsPairInventory": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "enabled",
+                "reservedPairCapacity",
+                "holdDurationMinutes"
+              ],
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "reservedPairCapacity": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "holdDurationMinutes": {
+                  "type": "integer",
+                  "minimum": 5,
+                  "maximum": 30
+                }
+              }
             }
           }
         },
@@ -34796,6 +35204,30 @@ export const updateEventCallablePayloadSchema = {
                         "manualReview",
                         "reject"
                       ]
+                    }
+                  }
+                },
+                "crossPathsPairInventory": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "enabled",
+                    "reservedPairCapacity",
+                    "holdDurationMinutes"
+                  ],
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean"
+                    },
+                    "reservedPairCapacity": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "holdDurationMinutes": {
+                      "type": "integer",
+                      "minimum": 5,
+                      "maximum": 30
                     }
                   }
                 }
@@ -37177,6 +37609,11 @@ export const eventBookingCallablePayloadSchema = {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
+    },
+    "crossPathsPairHoldId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
     }
   }
 };
@@ -37207,6 +37644,11 @@ export const createRazorpayOrderCallablePayloadSchema = {
       "pattern": "^[A-Za-z0-9_-]+$"
     },
     "inviteLinkId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "crossPathsPairHoldId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
@@ -37268,6 +37710,11 @@ export const createStripeCheckoutSessionCallablePayloadSchema = {
       "maxLength": 80
     },
     "inviteLinkId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "crossPathsPairHoldId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
@@ -39979,7 +40426,8 @@ export const getCrossPathsSuggestionsCallableResponseSchema = {
               "meetingPoint",
               "activityKind",
               "photoUrl",
-              "viewerBookingStatus"
+              "viewerBookingStatus",
+              "pairHoldAvailable"
             ],
             "properties": {
               "eventId": {
@@ -40047,6 +40495,9 @@ export const getCrossPathsSuggestionsCallableResponseSchema = {
                   "signedUp",
                   "canBookNow"
                 ]
+              },
+              "pairHoldAvailable": {
+                "type": "boolean"
               }
             }
           },
@@ -40214,7 +40665,8 @@ export const getCrossPathsSuggestionsCallableResponseSchema = {
         "meetingPoint",
         "activityKind",
         "photoUrl",
-        "viewerBookingStatus"
+        "viewerBookingStatus",
+        "pairHoldAvailable"
       ],
       "properties": {
         "eventId": {
@@ -40282,6 +40734,9 @@ export const getCrossPathsSuggestionsCallableResponseSchema = {
             "signedUp",
             "canBookNow"
           ]
+        },
+        "pairHoldAvailable": {
+          "type": "boolean"
         }
       }
     },
@@ -40400,7 +40855,8 @@ export const getCrossPathsSuggestionsCallableResponseSchema = {
             "meetingPoint",
             "activityKind",
             "photoUrl",
-            "viewerBookingStatus"
+            "viewerBookingStatus",
+            "pairHoldAvailable"
           ],
           "properties": {
             "eventId": {
@@ -40468,6 +40924,9 @@ export const getCrossPathsSuggestionsCallableResponseSchema = {
                 "signedUp",
                 "canBookNow"
               ]
+            },
+            "pairHoldAvailable": {
+              "type": "boolean"
             }
           }
         },
@@ -40552,7 +41011,8 @@ export const respondCrossPathsInvitationCallableResponseSchema = {
   "required": [
     "invitationId",
     "status",
-    "conversationId"
+    "conversationId",
+    "pairHoldId"
   ],
   "properties": {
     "invitationId": {
@@ -40568,6 +41028,18 @@ export const respondCrossPathsInvitationCallableResponseSchema = {
       ]
     },
     "conversationId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "pairHoldId": {
       "anyOf": [
         {
           "type": "string",

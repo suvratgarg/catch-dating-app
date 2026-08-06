@@ -47,6 +47,8 @@ abstract class EventDraft with _$EventDraft {
     String? dynamicPricingStep,
     String? dynamicPricingMax,
     String? cancellationPolicy,
+    @Default(false) bool crossPathsPairInventoryEnabled,
+    String? crossPathsPairCapacity,
     @Default(EventSuccessDefaults()) EventSuccessDefaults eventSuccessDefaults,
   }) = _EventDraft;
 
@@ -92,6 +94,8 @@ extension EventDraftX on EventDraft {
       dynamicPricingStep == null &&
       dynamicPricingMax == null &&
       cancellationPolicy == null &&
+      crossPathsPairInventoryEnabled == false &&
+      crossPathsPairCapacity == null &&
       eventSuccessDefaults == const EventSuccessDefaults();
 
   String get summary {

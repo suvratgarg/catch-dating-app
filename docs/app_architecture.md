@@ -2348,6 +2348,7 @@ Reference files:
 - `lib/explore/presentation/explore_cross_paths_provider.dart`
 - `lib/cross_paths/presentation/cross_paths_explore_card.dart`
 - `lib/cross_paths/domain/cross_paths_invitation.dart`
+- `lib/cross_paths/domain/cross_paths_pair_hold.dart`
 - `lib/cross_paths/presentation/cross_paths_invitation_controller.dart`
 - `lib/cross_paths/presentation/cross_paths_invitation_screen.dart`
 - `lib/cross_paths/presentation/cross_paths_event_consent_controller.dart`
@@ -2356,6 +2357,9 @@ Reference files:
 - `lib/safety/presentation/settings_screen.dart`
 - `functions/src/crossPaths/setCrossPathsEventConsent.ts`
 - `functions/src/crossPaths/invitations.ts`
+- `functions/src/crossPaths/pairHolds.ts`
+- `functions/src/events/eventPolicy.ts`
+- `functions/src/events/signUpUserForEvent.ts`
 - `test/cross_paths/cross_paths_event_consent_section_test.dart`
 
 Use layered consent for an identifiable people surface: a private default-false
@@ -2428,6 +2432,21 @@ Preserve these boundaries in later adopters:
   while `CrossPathsInvitationScreen` owns route parameters, async branches,
   participant identity, provider invalidation, and navigation to the accepted
   event plan;
+- organizer-configured companion inventory remains part of the canonical event
+  admission policy. General admission subtracts the reserved pool, while
+  `crossPathsPair` admission can consume only that pool and never changes
+  waitlist ordering;
+- an accepted invitation for an unbooked sender may create one server-owned,
+  participant-readable hold. `active` is not a booking; the controller hands
+  its frozen quote and id to the existing payment repository, and
+  `signUpUserForEvent` alone converts it atomically into participation,
+  confirmed pair accounting, and an event plan;
+- hold release is idempotent and lifecycle-owned. Expiry, explicit
+  cancellation, event/participation/safety invalidation, failed paid
+  fulfillment, and account deletion return capacity without client writes;
+- discovery consent revocation invalidates pending invitations only. An
+  accepted companion hold is explicit pair intent and follows hold expiry or
+  meeting-invalidating lifecycle boundaries, just like an accepted plan;
 - accepted plans reuse `matches` storage with the explicit
   `crossPathsEventPlan` type, event-scoped deterministic identity, and expiry;
   chat state keeps them out of dating-match celebrations and analytics;

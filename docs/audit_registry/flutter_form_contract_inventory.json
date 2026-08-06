@@ -2,8 +2,8 @@
   "schemaVersion": 2,
   "generatedBy": "tool/contracts/generate_flutter_form_contract_inventory.mjs",
   "summary": {
-    "editableCallsites": 193,
-    "boundCallsites": 191,
+    "editableCallsites": 195,
+    "boundCallsites": 193,
     "exemptCallsites": 2,
     "unboundCallsites": 0,
     "bySymbol": {
@@ -15,7 +15,7 @@
       "formMultiChoiceRow": 1,
       "formSingleChoiceRow": 6,
       "formTextRow": 11,
-      "input": 57,
+      "input": 58,
       "inputActions": 10,
       "optionCard": 1,
       "optionCards": 10,
@@ -29,7 +29,7 @@
       "selfProfileRangeDescriptor": 1,
       "selfProfileSingleChoiceDescriptor": 5,
       "stepper": 7,
-      "toggle": 22,
+      "toggle": 23,
       "topBarSearch": 3
     }
   },
@@ -646,7 +646,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 454,
+      "line": 459,
       "symbol": "stepper",
       "contract": "CatchContractConstraints .mobileFormStateEventDurationMinutes",
       "contractValue": null,
@@ -656,7 +656,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 490,
+      "line": 495,
       "symbol": "input",
       "contract": "CatchContractConstraints .updateEventCallablePayloadFieldsMeetingPoint",
       "contractValue": null,
@@ -666,7 +666,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 538,
+      "line": 543,
       "symbol": "input",
       "contract": "CatchContractConstraints .updateEventCallablePayloadFieldsLocationDetails",
       "contractValue": null,
@@ -676,7 +676,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 564,
+      "line": 569,
       "symbol": "input",
       "contract": "CatchContractConstraints .updateEventCallablePayloadFieldsDistanceKm",
       "contractValue": null,
@@ -686,7 +686,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 609,
+      "line": 614,
       "symbol": "choices",
       "contract": "CatchContractConstraints .updateEventCallablePayloadFieldsPace",
       "contractValue": "(value) => value.name",
@@ -696,7 +696,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 635,
+      "line": 640,
       "symbol": "input",
       "contract": "CatchContractConstraints .updateEventCallablePayloadFieldsDescription",
       "contractValue": null,
@@ -706,7 +706,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 1056,
+      "line": 1061,
       "symbol": "input",
       "contract": "CatchContractConstraints .updateEventCallablePayloadFieldsCapacityLimit",
       "contractValue": null,
@@ -716,7 +716,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 1069,
+      "line": 1074,
       "symbol": "input",
       "contract": "CatchContractConstraints .updateEventCallablePayloadFieldsPriceInPaise",
       "contractValue": null,
@@ -726,7 +726,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 1093,
+      "line": 1098,
       "symbol": "optionCards",
       "contract": "CatchContractConstraints .updateEventCallablePayloadFieldsEventPolicyAdmissionFormat",
       "contractValue": "(preset) => switch (preset) { EventAdmissionPreset.openCapacity => 'open', EventAdmissionPreset.inviteOnly => 'inviteOnly', EventAdmissionPreset.requestToJoin => 'manualApproval', EventAdmissionPreset.balancedSingles => 'balancedRatio', }",
@@ -736,7 +736,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 1111,
+      "line": 1116,
       "symbol": "input",
       "contract": "CatchContractConstraints .updateEventCallablePayloadFieldsPrivateAccessInviteCode",
       "contractValue": null,
@@ -746,7 +746,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 1136,
+      "line": 1141,
       "symbol": "toggle",
       "contract": "CatchContractConstraints.mobileFormStateEventCohortCapsEnabled",
       "contractValue": null,
@@ -756,7 +756,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 1151,
+      "line": 1156,
       "symbol": "input",
       "contract": "CatchContractConstraints .updateEventCallablePayloadFieldsConstraintsMaxMen",
       "contractValue": null,
@@ -766,7 +766,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 1167,
+      "line": 1172,
       "symbol": "input",
       "contract": "CatchContractConstraints .updateEventCallablePayloadFieldsConstraintsMaxWomen",
       "contractValue": null,
@@ -776,7 +776,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 1195,
+      "line": 1200,
       "symbol": "toggle",
       "contract": "CatchContractConstraints .mobileFormStateEventDynamicPricingEnabled",
       "contractValue": null,
@@ -786,7 +786,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 1208,
+      "line": 1213,
       "symbol": "input",
       "contract": "CatchContractConstraints .updateEventCallablePayloadFieldsEventPolicyPricingDemandPricingRulesItemsStepAdjustmentInPaise",
       "contractValue": null,
@@ -796,7 +796,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 1225,
+      "line": 1230,
       "symbol": "input",
       "contract": "CatchContractConstraints .updateEventCallablePayloadFieldsEventPolicyPricingDemandPricingRulesItemsMaxAdjustmentInPaise",
       "contractValue": null,
@@ -806,7 +806,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 1254,
+      "line": 1259,
       "symbol": "optionCards",
       "contract": "CatchContractConstraints .updateEventCallablePayloadFieldsEventPolicyCancellationPolicyId",
       "contractValue": "(value) => value.name",
@@ -896,7 +896,7 @@
     },
     {
       "file": "lib/hosts/presentation/event_management/widgets/event_policy_step.dart",
-      "line": 83,
+      "line": 89,
       "symbol": "input",
       "contract": "CatchContractConstraints .createEventCallablePayloadCapacityLimit",
       "contractValue": null,
@@ -906,7 +906,7 @@
     },
     {
       "file": "lib/hosts/presentation/event_management/widgets/event_policy_step.dart",
-      "line": 107,
+      "line": 113,
       "symbol": "input",
       "contract": "CatchContractConstraints .createEventCallablePayloadPriceInPaise",
       "contractValue": null,
@@ -916,7 +916,7 @@
     },
     {
       "file": "lib/hosts/presentation/event_management/widgets/event_policy_step.dart",
-      "line": 145,
+      "line": 151,
       "symbol": "optionCards",
       "contract": "CatchContractConstraints .createEventCallablePayloadEventPolicyAdmissionFormat",
       "contractValue": "(preset) => switch (preset) { EventAdmissionPreset.openCapacity => 'open', EventAdmissionPreset.inviteOnly => 'inviteOnly', EventAdmissionPreset.requestToJoin => 'manualApproval', EventAdmissionPreset.balancedSingles => 'balancedRatio', }",
@@ -926,7 +926,7 @@
     },
     {
       "file": "lib/hosts/presentation/event_management/widgets/event_policy_step.dart",
-      "line": 165,
+      "line": 171,
       "symbol": "input",
       "contract": "CatchContractConstraints .createEventCallablePayloadPrivateAccessInviteCode",
       "contractValue": null,
@@ -936,7 +936,7 @@
     },
     {
       "file": "lib/hosts/presentation/event_management/widgets/event_policy_step.dart",
-      "line": 191,
+      "line": 197,
       "symbol": "toggle",
       "contract": "CatchContractConstraints .mobileFormStateEventCohortCapsEnabled",
       "contractValue": null,
@@ -946,7 +946,7 @@
     },
     {
       "file": "lib/hosts/presentation/event_management/widgets/event_policy_step.dart",
-      "line": 206,
+      "line": 212,
       "symbol": "input",
       "contract": "CatchContractConstraints .createEventCallablePayloadConstraintsMaxMen",
       "contractValue": null,
@@ -956,7 +956,7 @@
     },
     {
       "file": "lib/hosts/presentation/event_management/widgets/event_policy_step.dart",
-      "line": 231,
+      "line": 237,
       "symbol": "input",
       "contract": "CatchContractConstraints .createEventCallablePayloadConstraintsMaxWomen",
       "contractValue": null,
@@ -966,7 +966,27 @@
     },
     {
       "file": "lib/hosts/presentation/event_management/widgets/event_policy_step.dart",
-      "line": 270,
+      "line": 274,
+      "symbol": "toggle",
+      "contract": "CatchContractConstraints .createEventCallablePayloadEventPolicyAdmissionCrossPathsPairInventoryEnabled",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/event_management/widgets/event_policy_step.dart",
+      "line": 288,
+      "symbol": "input",
+      "contract": "CatchContractConstraints .createEventCallablePayloadEventPolicyAdmissionCrossPathsPairInventoryReservedPairCapacity",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/event_management/widgets/event_policy_step.dart",
+      "line": 326,
       "symbol": "toggle",
       "contract": "CatchContractConstraints .mobileFormStateEventDynamicPricingEnabled",
       "contractValue": null,
@@ -976,7 +996,7 @@
     },
     {
       "file": "lib/hosts/presentation/event_management/widgets/event_policy_step.dart",
-      "line": 285,
+      "line": 341,
       "symbol": "input",
       "contract": "CatchContractConstraints .createEventCallablePayloadEventPolicyPricingDemandPricingRulesItemsStepAdjustmentInPaise",
       "contractValue": null,
@@ -986,7 +1006,7 @@
     },
     {
       "file": "lib/hosts/presentation/event_management/widgets/event_policy_step.dart",
-      "line": 308,
+      "line": 364,
       "symbol": "input",
       "contract": "CatchContractConstraints .createEventCallablePayloadEventPolicyPricingDemandPricingRulesItemsMaxAdjustmentInPaise",
       "contractValue": null,
@@ -996,7 +1016,7 @@
     },
     {
       "file": "lib/hosts/presentation/event_management/widgets/event_policy_step.dart",
-      "line": 343,
+      "line": 399,
       "symbol": "optionCards",
       "contract": "CatchContractConstraints .createEventCallablePayloadEventPolicyCancellationPolicyId",
       "contractValue": "(value) => value.name",

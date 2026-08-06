@@ -93,6 +93,7 @@ export 'create_saved_event_client_write.g.dart';
 export 'create_stripe_checkout_session_callable_payload.g.dart';
 export 'create_stripe_host_onboarding_link_callable_payload.g.dart';
 export 'cross_paths_invitation_document.g.dart';
+export 'cross_paths_pair_hold_document.g.dart';
 export 'cross_paths_showcase_eligibility_document.g.dart';
 export 'cross_paths_suggestion_exposure_document.g.dart';
 export 'delete_club_callable_payload.g.dart';

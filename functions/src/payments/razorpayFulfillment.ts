@@ -7,6 +7,7 @@ import {
   InviteAttribution,
 } from "../events/inviteLinks";
 import {buildPaymentRecord, VerifiedPaymentBooking} from "./paymentValidation";
+import {releaseCrossPathsPairHold} from "../crossPaths/pairHolds";
 
 /**
  * Issues a Razorpay refund for a payment that could not be fulfilled.
@@ -104,6 +105,8 @@ export async function fulfillRazorpayPayment({
       hasValidInvite: booking.inviteVerified,
       ...(hasHostApproval ? {hasHostApproval} : {}),
       ...(inviteAttribution ? {inviteAttribution} : {}),
+      ...(booking.crossPathsPairHoldId ?
+        {crossPathsPairHoldId: booking.crossPathsPairHoldId} : {}),
     });
   } catch (signUpError) {
     let refundSucceeded = false;
@@ -132,9 +135,17 @@ export async function fulfillRazorpayPayment({
         signUpFailed: true,
         inviteLinkId: booking.inviteLinkId,
         inviteSource: booking.inviteSource,
+        crossPathsPairHoldId: booking.crossPathsPairHoldId,
       }),
       createdAt: deps.serverTimestamp(),
     });
+    if (booking.crossPathsPairHoldId) {
+      await releaseCrossPathsPairHold({
+        db,
+        holdId: booking.crossPathsPairHoldId,
+        reason: "payment_failed",
+      });
+    }
 
     // The order reached a terminal (refunded/refundFailed) state — stop the
     // reconciliation sweep from re-processing it.
@@ -154,6 +165,7 @@ export async function fulfillRazorpayPayment({
       status: "completed",
       inviteLinkId: booking.inviteLinkId,
       inviteSource: booking.inviteSource,
+      crossPathsPairHoldId: booking.crossPathsPairHoldId,
     }),
     createdAt: deps.serverTimestamp(),
   };
@@ -255,6 +267,7 @@ export async function writeRazorpayPendingOrder({
   amountInPaise,
   currency,
   serverTimestamp,
+  crossPathsPairHoldId,
 }: {
   db: FirebaseFirestore.Firestore;
   orderId: string;
@@ -263,6 +276,7 @@ export async function writeRazorpayPendingOrder({
   amountInPaise: number;
   currency: string;
   serverTimestamp: () => unknown;
+  crossPathsPairHoldId?: string | null;
 }): Promise<void> {
   await db.collection("razorpayPendingOrders").doc(orderId).set({
     provider: "razorpay" as const,
@@ -271,6 +285,7 @@ export async function writeRazorpayPendingOrder({
     eventId,
     amountInPaise,
     currency,
+    ...(crossPathsPairHoldId ? {crossPathsPairHoldId} : {}),
     status: "pending" as const,
     createdAt: serverTimestamp(),
   });

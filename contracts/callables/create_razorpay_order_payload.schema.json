@@ -16,6 +16,9 @@
     },
     "inviteLinkId": {
       "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "crossPathsPairHoldId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
     }
   }
 }

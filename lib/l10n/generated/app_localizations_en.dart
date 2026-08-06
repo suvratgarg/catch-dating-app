@@ -11600,4 +11600,64 @@ class AppLocalizationsEn extends AppLocalizations {
   }) {
     return '$title, $sourceLabel, $statusLabel, $supportingLabel, $timePriceLabel, $readOnlySupplyLabel';
   }
+
+  @override
+  String get crossPathsPairInventoryActionAskTogether => 'Ask to go together';
+
+  @override
+  String get crossPathsPairInventoryStatusHeldNotBooked =>
+      'Your pair spot is held — you are not booked yet';
+
+  @override
+  String get crossPathsPairInventoryStatusNoLongerHeld =>
+      'This pair spot is no longer held';
+
+  @override
+  String crossPathsPairInventoryHoldCountdown({required int minutes}) {
+    return 'Complete your booking within $minutes minutes or this spot returns to the event.';
+  }
+
+  @override
+  String get crossPathsPairInventoryHoldEndedBody =>
+      'You can return to the event to see the latest availability.';
+
+  @override
+  String crossPathsPairInventoryBookingStates({
+    required Object requesterStatus,
+    required Object attendeeStatus,
+  }) {
+    return 'Your booking: $requesterStatus · Their booking: $attendeeStatus';
+  }
+
+  @override
+  String get crossPathsPairInventoryBookingStatusHeld => 'Held, not booked';
+
+  @override
+  String get crossPathsPairInventoryBookingStatusConfirmed => 'Confirmed';
+
+  @override
+  String get crossPathsPairInventoryBookingStatusNotBooked => 'Not booked';
+
+  @override
+  String get crossPathsPairInventoryActionCompleteBooking => 'Complete booking';
+
+  @override
+  String get crossPathsPairInventoryWaitingForRequester =>
+      'Their place is confirmed. We are waiting for the person who sent the invitation to finish booking.';
+
+  @override
+  String get crossPathsPairInventoryBookingStarted =>
+      'Booking started. This plan will open when your place is confirmed.';
+
+  @override
+  String get hostsEventPolicyStepTitleCrossPathsPairs =>
+      'Reserved Cross Paths spots';
+
+  @override
+  String get hostsEventPolicyStepBodyCrossPathsPairs =>
+      'Keep a small part of capacity for people who agree to attend together through Cross Paths.';
+
+  @override
+  String get hostsEventPolicyStepTitleCrossPathsPairCapacity =>
+      'Reserved companion spots';
 }

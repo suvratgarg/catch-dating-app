@@ -40,6 +40,7 @@ import {
   crossPathsShowcaseEligibilityDocumentSchema,
   crossPathsSuggestionExposureDocumentSchema,
   crossPathsInvitationDocumentSchema,
+  crossPathsPairHoldDocumentSchema,
   eventBroadcastDocumentSchema,
   eventWaitlistOfferDocumentSchema,
   eventSuccessPlanDocumentSchema,
@@ -295,6 +296,7 @@ export const validateEventCrossPathsConsentDocument = ajv.compile(eventCrossPath
 export const validateCrossPathsShowcaseEligibilityDocument = ajv.compile(crossPathsShowcaseEligibilityDocumentSchema);
 export const validateCrossPathsSuggestionExposureDocument = ajv.compile(crossPathsSuggestionExposureDocumentSchema);
 export const validateCrossPathsInvitationDocument = ajv.compile(crossPathsInvitationDocumentSchema);
+export const validateCrossPathsPairHoldDocument = ajv.compile(crossPathsPairHoldDocumentSchema);
 export const validateEventBroadcastDocument = ajv.compile(eventBroadcastDocumentSchema);
 export const validateEventWaitlistOfferDocument = ajv.compile(eventWaitlistOfferDocumentSchema);
 export const validateEventSuccessPlanDocument = ajv.compile(eventSuccessPlanDocumentSchema);

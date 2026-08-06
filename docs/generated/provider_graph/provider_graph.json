@@ -4,19 +4,19 @@
     "lib"
   ],
   "summary": {
-    "dartSourceFiles": 819,
-    "providerNodes": 229,
-    "generatedProviderNodes": 225,
+    "dartSourceFiles": 820,
+    "providerNodes": 230,
+    "generatedProviderNodes": 226,
     "manualProviderNodes": 4,
     "aliasProviderNodes": 0,
     "keepAliveNodes": 68,
-    "familyNodes": 88,
+    "familyNodes": 89,
     "mutationNodes": 84,
-    "consumerNodes": 257,
-    "providerToProviderCallsites": 419,
-    "uniqueProviderToProviderPairs": 333,
-    "uniqueCrossFeatureProviderPairs": 163,
-    "consumerToStateCallsites": 778,
+    "consumerNodes": 258,
+    "providerToProviderCallsites": 421,
+    "uniqueProviderToProviderPairs": 335,
+    "uniqueCrossFeatureProviderPairs": 164,
+    "consumerToStateCallsites": 783,
     "mutationReferenceCallsites": 206,
     "unresolvedRefOperations": 13,
     "unresolvedInsideProviders": 0,
@@ -46,8 +46,8 @@
     "explore": 19,
     "hosts": 16,
     "chats": 10,
+    "cross_paths": 9,
     "payments": 9,
-    "cross_paths": 8,
     "swipes": 7,
     "auth": 6,
     "reviews": 6,
@@ -69,7 +69,7 @@
     "locations": 1
   },
   "providersByLayer": {
-    "data": 132,
+    "data": 133,
     "presentation": 67,
     "core": 19,
     "routing": 4,
@@ -79,15 +79,15 @@
     "exceptions": 1
   },
   "providerEdgesByOperation": {
-    "watch": 264,
-    "read": 147,
+    "watch": 265,
+    "read": 148,
     "invalidate": 6,
     "listen": 2
   },
   "consumerEdgesByOperation": {
-    "watch": 269,
-    "read": 217,
-    "invalidate": 156,
+    "watch": 271,
+    "read": 219,
+    "invalidate": 157,
     "mutation-run": 91,
     "override": 23,
     "listen": 22
@@ -100,10 +100,10 @@
     "core -> core": 9,
     "explore -> events": 8,
     "chats -> chats": 7,
+    "cross_paths -> cross_paths": 7,
     "explore -> clubs": 7,
     "payments -> core": 7,
     "auth -> auth": 6,
-    "cross_paths -> cross_paths": 6,
     "events -> core": 6,
     "clubs -> core": 5,
     "explore -> auth": 5,
@@ -161,6 +161,7 @@
     "clubs -> events": 1,
     "clubs -> reviews": 1,
     "clubs -> user_profile": 1,
+    "cross_paths -> payments": 1,
     "dashboard -> clubs": 1,
     "dashboard -> reviews": 1,
     "dashboard -> user_profile": 1,
@@ -196,8 +197,8 @@
     "user_profile -> image_uploads": 1
   },
   "layerPairCounts": {
-    "presentation -> data": 118,
-    "data -> data": 98,
+    "presentation -> data": 119,
+    "data -> data": 99,
     "data -> core": 48,
     "presentation -> presentation": 36,
     "presentation -> core": 10,
@@ -326,7 +327,7 @@
     },
     {
       "name": "crossPathsRepositoryProvider",
-      "degree": 7
+      "degree": 8
     },
     {
       "name": "userProfileRepositoryProvider",
@@ -407,9 +408,9 @@
       },
       {
         "id": "cross_paths",
-        "providers": 8,
+        "providers": 9,
         "mutations": 1,
-        "consumers": 4
+        "consumers": 5
       },
       {
         "id": "dashboard",
@@ -663,7 +664,12 @@
       {
         "source": "cross_paths",
         "target": "cross_paths",
-        "uniqueProviderPairs": 6
+        "uniqueProviderPairs": 7
+      },
+      {
+        "source": "cross_paths",
+        "target": "payments",
+        "uniqueProviderPairs": 1
       },
       {
         "source": "dashboard",
@@ -1745,7 +1751,7 @@
       "name": "crossPathsInvitationControllerProvider",
       "kind": "generated-class",
       "path": "lib/cross_paths/presentation/cross_paths_invitation_controller.dart",
-      "line": 9,
+      "line": 13,
       "feature": "cross_paths",
       "layer": "presentation",
       "keepAlive": false,
@@ -1757,7 +1763,7 @@
       "name": "crossPathsRepositoryProvider",
       "kind": "generated-function",
       "path": "lib/cross_paths/data/cross_paths_repository.dart",
-      "line": 286,
+      "line": 323,
       "feature": "cross_paths",
       "layer": "data",
       "keepAlive": true,
@@ -1852,7 +1858,7 @@
       "name": "discoverableEventsProvider",
       "kind": "generated-function",
       "path": "lib/events/data/event_discovery_repository.dart",
-      "line": 407,
+      "line": 416,
       "feature": "events",
       "layer": "data",
       "keepAlive": false,
@@ -1948,7 +1954,7 @@
       "name": "eventDiscoveryRepositoryProvider",
       "kind": "generated-function",
       "path": "lib/events/data/event_discovery_repository.dart",
-      "line": 402,
+      "line": 411,
       "feature": "events",
       "layer": "data",
       "keepAlive": false,
@@ -2824,7 +2830,7 @@
       "name": "paymentRepositoryProvider",
       "kind": "generated-function",
       "path": "lib/payments/data/payment_repository.dart",
-      "line": 505,
+      "line": 518,
       "feature": "payments",
       "layer": "data",
       "keepAlive": true,
@@ -3388,7 +3394,7 @@
       "name": "watchCrossPathsEventConsentProvider",
       "kind": "generated-function",
       "path": "lib/cross_paths/data/cross_paths_repository.dart",
-      "line": 292,
+      "line": 329,
       "feature": "cross_paths",
       "layer": "data",
       "keepAlive": false,
@@ -3400,12 +3406,24 @@
       "name": "watchCrossPathsInvitationProvider",
       "kind": "generated-function",
       "path": "lib/cross_paths/data/cross_paths_repository.dart",
-      "line": 301,
+      "line": 338,
       "feature": "cross_paths",
       "layer": "data",
       "keepAlive": false,
       "family": true,
       "returnType": "Stream<CrossPathsInvitation?>"
+    },
+    {
+      "id": "provider:watchCrossPathsPairHoldProvider",
+      "name": "watchCrossPathsPairHoldProvider",
+      "kind": "generated-function",
+      "path": "lib/cross_paths/data/cross_paths_repository.dart",
+      "line": 344,
+      "feature": "cross_paths",
+      "layer": "data",
+      "keepAlive": false,
+      "family": true,
+      "returnType": "Stream<CrossPathsPairHold?>"
     },
     {
       "id": "provider:watchEventInviteLinksProvider",
@@ -3640,7 +3658,7 @@
       "name": "watchIncomingCrossPathsInvitationsProvider",
       "kind": "generated-function",
       "path": "lib/cross_paths/data/cross_paths_repository.dart",
-      "line": 307,
+      "line": 348,
       "feature": "cross_paths",
       "layer": "data",
       "keepAlive": false,
@@ -3676,7 +3694,7 @@
       "name": "watchOutgoingCrossPathsInvitationProvider",
       "kind": "generated-function",
       "path": "lib/cross_paths/data/cross_paths_repository.dart",
-      "line": 313,
+      "line": 354,
       "feature": "cross_paths",
       "layer": "data",
       "keepAlive": false,
@@ -4931,7 +4949,7 @@
       "id": "consumer:lib/cross_paths/presentation/cross_paths_explore_card.dart#CrossPathsProfilePreviewSheet.build",
       "owner": "CrossPathsProfilePreviewSheet.build",
       "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-      "line": 258,
+      "line": 261,
       "feature": "cross_paths",
       "layer": "presentation"
     },
@@ -4939,7 +4957,7 @@
       "id": "consumer:lib/cross_paths/presentation/cross_paths_invitation_screen.dart#CrossPathsInvitationScreen.build",
       "owner": "CrossPathsInvitationScreen.build",
       "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
-      "line": 35,
+      "line": 39,
       "feature": "cross_paths",
       "layer": "presentation"
     },
@@ -4947,7 +4965,7 @@
       "id": "consumer:lib/cross_paths/presentation/cross_paths_invitation_screen.dart#_InvitationDetail.build",
       "owner": "_InvitationDetail.build",
       "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
-      "line": 70,
+      "line": 74,
       "feature": "cross_paths",
       "layer": "presentation"
     },
@@ -4955,7 +4973,15 @@
       "id": "consumer:lib/cross_paths/presentation/cross_paths_invitation_screen.dart#_InvitationDetailBody.build",
       "owner": "_InvitationDetailBody.build",
       "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
-      "line": 131,
+      "line": 150,
+      "feature": "cross_paths",
+      "layer": "presentation"
+    },
+    {
+      "id": "consumer:lib/cross_paths/presentation/cross_paths_invitation_screen.dart#_PairHoldPanelState._completeBooking",
+      "owner": "_PairHoldPanelState._completeBooking",
+      "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+      "line": 462,
       "feature": "cross_paths",
       "layer": "presentation"
     },
@@ -5571,7 +5597,7 @@
       "id": "consumer:lib/hosts/presentation/edit_hosted_event_screen.dart#_EditHostedEventScreenState._pickLocation",
       "owner": "_EditHostedEventScreenState._pickLocation",
       "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 752,
+      "line": 757,
       "feature": "hosts",
       "layer": "presentation"
     },
@@ -5579,7 +5605,7 @@
       "id": "consumer:lib/hosts/presentation/edit_hosted_event_screen.dart#_EditHostedEventScreenState._saveChanges",
       "owner": "_EditHostedEventScreenState._saveChanges",
       "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 853,
+      "line": 858,
       "feature": "hosts",
       "layer": "presentation"
     },
@@ -5587,7 +5613,7 @@
       "id": "consumer:lib/hosts/presentation/edit_hosted_event_screen.dart#_EditHostedEventScreenState._savePending",
       "owner": "_EditHostedEventScreenState._savePending",
       "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 929,
+      "line": 934,
       "feature": "hosts",
       "layer": "presentation"
     },
@@ -5595,7 +5621,7 @@
       "id": "consumer:lib/hosts/presentation/edit_hosted_event_screen.dart#_EditHostedEventScreenState.build",
       "owner": "_EditHostedEventScreenState.build",
       "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 316,
+      "line": 321,
       "feature": "hosts",
       "layer": "presentation"
     },
@@ -5603,7 +5629,7 @@
       "id": "consumer:lib/hosts/presentation/event_management/create/create_event_screen.dart#_CreateEventScreenState._checkForDrafts",
       "owner": "_CreateEventScreenState._checkForDrafts",
       "path": "lib/hosts/presentation/event_management/create/create_event_screen.dart",
-      "line": 565,
+      "line": 573,
       "feature": "hosts",
       "layer": "presentation"
     },
@@ -5611,7 +5637,7 @@
       "id": "consumer:lib/hosts/presentation/event_management/create/create_event_screen.dart#_CreateEventScreenState._deleteDraft",
       "owner": "_CreateEventScreenState._deleteDraft",
       "path": "lib/hosts/presentation/event_management/create/create_event_screen.dart",
-      "line": 666,
+      "line": 678,
       "feature": "hosts",
       "layer": "presentation"
     },
@@ -5619,7 +5645,7 @@
       "id": "consumer:lib/hosts/presentation/event_management/create/create_event_screen.dart#_CreateEventScreenState._pickEventPhotos",
       "owner": "_CreateEventScreenState._pickEventPhotos",
       "path": "lib/hosts/presentation/event_management/create/create_event_screen.dart",
-      "line": 378,
+      "line": 381,
       "feature": "hosts",
       "layer": "presentation"
     },
@@ -5627,7 +5653,7 @@
       "id": "consumer:lib/hosts/presentation/event_management/create/create_event_screen.dart#_CreateEventScreenState._pickLocation",
       "owner": "_CreateEventScreenState._pickLocation",
       "path": "lib/hosts/presentation/event_management/create/create_event_screen.dart",
-      "line": 345,
+      "line": 348,
       "feature": "hosts",
       "layer": "presentation"
     },
@@ -5635,7 +5661,7 @@
       "id": "consumer:lib/hosts/presentation/event_management/create/create_event_screen.dart#_CreateEventScreenState._saveDraft",
       "owner": "_CreateEventScreenState._saveDraft",
       "path": "lib/hosts/presentation/event_management/create/create_event_screen.dart",
-      "line": 675,
+      "line": 687,
       "feature": "hosts",
       "layer": "presentation"
     },
@@ -5643,7 +5669,7 @@
       "id": "consumer:lib/hosts/presentation/event_management/create/create_event_screen.dart#_CreateEventScreenState._submit",
       "owner": "_CreateEventScreenState._submit",
       "path": "lib/hosts/presentation/event_management/create/create_event_screen.dart",
-      "line": 468,
+      "line": 471,
       "feature": "hosts",
       "layer": "presentation"
     },
@@ -5651,7 +5677,7 @@
       "id": "consumer:lib/hosts/presentation/event_management/create/create_event_screen.dart#_CreateEventScreenState.build",
       "owner": "_CreateEventScreenState.build",
       "path": "lib/hosts/presentation/event_management/create/create_event_screen.dart",
-      "line": 773,
+      "line": 785,
       "feature": "hosts",
       "layer": "presentation"
     },
@@ -7444,7 +7470,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/cross_paths/presentation/cross_paths_invitation_controller.dart",
-      "line": 21
+      "line": 25
     },
     {
       "source": "crossPathsInvitationControllerProvider",
@@ -7453,7 +7479,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/cross_paths/presentation/cross_paths_invitation_controller.dart",
-      "line": 39
+      "line": 43
     },
     {
       "source": "crossPathsInvitationControllerProvider",
@@ -7462,7 +7488,16 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/cross_paths/presentation/cross_paths_invitation_controller.dart",
-      "line": 50
+      "line": 54
+    },
+    {
+      "source": "crossPathsInvitationControllerProvider",
+      "sourceKind": "provider",
+      "target": "paymentRepositoryProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/cross_paths/presentation/cross_paths_invitation_controller.dart",
+      "line": 67
     },
     {
       "source": "crossPathsRepositoryProvider",
@@ -7471,7 +7506,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/cross_paths/data/cross_paths_repository.dart",
-      "line": 288
+      "line": 325
     },
     {
       "source": "crossPathsRepositoryProvider",
@@ -7480,7 +7515,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/cross_paths/data/cross_paths_repository.dart",
-      "line": 289
+      "line": 326
     },
     {
       "source": "currentUserFollowedClubIdsProvider",
@@ -7624,7 +7659,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/data/event_discovery_repository.dart",
-      "line": 409
+      "line": 418
     },
     {
       "source": "discoverableExternalEventsProvider",
@@ -7822,7 +7857,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/data/event_discovery_repository.dart",
-      "line": 404
+      "line": 413
     },
     {
       "source": "eventDraftRepositoryProvider",
@@ -9289,7 +9324,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/payments/data/payment_repository.dart",
-      "line": 510
+      "line": 523
     },
     {
       "source": "paymentRepositoryProvider",
@@ -9298,7 +9333,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/payments/data/payment_repository.dart",
-      "line": 508
+      "line": 521
     },
     {
       "source": "paymentRepositoryProvider",
@@ -9307,7 +9342,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/payments/data/payment_repository.dart",
-      "line": 509
+      "line": 522
     },
     {
       "source": "photoUploadControllerProvider",
@@ -10009,7 +10044,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/cross_paths/data/cross_paths_repository.dart",
-      "line": 297
+      "line": 334
     },
     {
       "source": "watchCrossPathsInvitationProvider",
@@ -10018,7 +10053,16 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/cross_paths/data/cross_paths_repository.dart",
-      "line": 305
+      "line": 342
+    },
+    {
+      "source": "watchCrossPathsPairHoldProvider",
+      "sourceKind": "provider",
+      "target": "crossPathsRepositoryProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/cross_paths/data/cross_paths_repository.dart",
+      "line": 346
     },
     {
       "source": "watchEventInviteLinksProvider",
@@ -10198,7 +10242,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/cross_paths/data/cross_paths_repository.dart",
-      "line": 311
+      "line": 352
     },
     {
       "source": "watchLaunchAccessApplicationProvider",
@@ -10225,7 +10269,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/cross_paths/data/cross_paths_repository.dart",
-      "line": 318
+      "line": 359
     },
     {
       "source": "watchPaymentProvider",
@@ -11442,7 +11486,16 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-      "line": 275
+      "line": 278
+    },
+    {
+      "source": "consumer:lib/cross_paths/presentation/cross_paths_explore_card.dart#CrossPathsProfilePreviewSheet.build",
+      "sourceKind": "consumer",
+      "target": "crossPathsFeatureConfigProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
+      "line": 281
     },
     {
       "source": "consumer:lib/cross_paths/presentation/cross_paths_explore_card.dart#CrossPathsProfilePreviewSheet.build",
@@ -11451,7 +11504,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-      "line": 272
+      "line": 275
     },
     {
       "source": "consumer:lib/cross_paths/presentation/cross_paths_explore_card.dart#CrossPathsProfilePreviewSheet.build",
@@ -11460,7 +11513,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-      "line": 271
+      "line": 274
     },
     {
       "source": "consumer:lib/cross_paths/presentation/cross_paths_explore_card.dart#CrossPathsProfilePreviewSheet.build",
@@ -11469,7 +11522,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-      "line": 261
+      "line": 264
     },
     {
       "source": "consumer:lib/cross_paths/presentation/cross_paths_explore_card.dart#CrossPathsProfilePreviewSheet.build",
@@ -11478,7 +11531,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-      "line": 264
+      "line": 267
     },
     {
       "source": "consumer:lib/cross_paths/presentation/cross_paths_invitation_screen.dart#CrossPathsInvitationScreen.build",
@@ -11487,7 +11540,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
-      "line": 51
+      "line": 55
     },
     {
       "source": "consumer:lib/cross_paths/presentation/cross_paths_invitation_screen.dart#CrossPathsInvitationScreen.build",
@@ -11496,7 +11549,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
-      "line": 37
+      "line": 41
     },
     {
       "source": "consumer:lib/cross_paths/presentation/cross_paths_invitation_screen.dart#_InvitationDetail.build",
@@ -11505,7 +11558,25 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
-      "line": 72
+      "line": 76
+    },
+    {
+      "source": "consumer:lib/cross_paths/presentation/cross_paths_invitation_screen.dart#_InvitationDetail.build",
+      "sourceKind": "consumer",
+      "target": "watchCrossPathsPairHoldProvider",
+      "targetKind": "provider",
+      "operation": "invalidate",
+      "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+      "line": 107
+    },
+    {
+      "source": "consumer:lib/cross_paths/presentation/cross_paths_invitation_screen.dart#_InvitationDetail.build",
+      "sourceKind": "consumer",
+      "target": "watchCrossPathsPairHoldProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+      "line": 91
     },
     {
       "source": "consumer:lib/cross_paths/presentation/cross_paths_invitation_screen.dart#_InvitationDetail.build",
@@ -11514,7 +11585,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
-      "line": 94
+      "line": 105
     },
     {
       "source": "consumer:lib/cross_paths/presentation/cross_paths_invitation_screen.dart#_InvitationDetail.build",
@@ -11523,7 +11594,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
-      "line": 84
+      "line": 88
     },
     {
       "source": "consumer:lib/cross_paths/presentation/cross_paths_invitation_screen.dart#_InvitationDetail.build",
@@ -11532,7 +11603,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
-      "line": 93
+      "line": 104
     },
     {
       "source": "consumer:lib/cross_paths/presentation/cross_paths_invitation_screen.dart#_InvitationDetail.build",
@@ -11541,7 +11612,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
-      "line": 83
+      "line": 87
     },
     {
       "source": "consumer:lib/cross_paths/presentation/cross_paths_invitation_screen.dart#_InvitationDetailBody.build",
@@ -11550,7 +11621,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
-      "line": 138
+      "line": 157
     },
     {
       "source": "consumer:lib/cross_paths/presentation/cross_paths_invitation_screen.dart#_InvitationDetailBody.build",
@@ -11559,7 +11630,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
-      "line": 135
+      "line": 154
     },
     {
       "source": "consumer:lib/cross_paths/presentation/cross_paths_invitation_screen.dart#_InvitationDetailBody.build",
@@ -11568,7 +11639,25 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
-      "line": 134
+      "line": 153
+    },
+    {
+      "source": "consumer:lib/cross_paths/presentation/cross_paths_invitation_screen.dart#_PairHoldPanelState._completeBooking",
+      "sourceKind": "consumer",
+      "target": "crossPathsInvitationControllerProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+      "line": 467
+    },
+    {
+      "source": "consumer:lib/cross_paths/presentation/cross_paths_invitation_screen.dart#_PairHoldPanelState._completeBooking",
+      "sourceKind": "consumer",
+      "target": "watchUserProfileProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+      "line": 463
     },
     {
       "source": "consumer:lib/dashboard/presentation/activity_screen.dart#_ActivityScreenState._markAllRead",
@@ -14601,7 +14690,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 754
+      "line": 759
     },
     {
       "source": "consumer:lib/hosts/presentation/edit_hosted_event_screen.dart#_EditHostedEventScreenState._saveChanges",
@@ -14610,7 +14699,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 909
+      "line": 914
     },
     {
       "source": "consumer:lib/hosts/presentation/edit_hosted_event_screen.dart#_EditHostedEventScreenState._saveChanges",
@@ -14619,7 +14708,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 918
+      "line": 923
     },
     {
       "source": "consumer:lib/hosts/presentation/edit_hosted_event_screen.dart#_EditHostedEventScreenState._saveChanges",
@@ -14628,7 +14717,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 917
+      "line": 922
     },
     {
       "source": "consumer:lib/hosts/presentation/edit_hosted_event_screen.dart#_EditHostedEventScreenState._savePending",
@@ -14637,7 +14726,7 @@
       "targetKind": "mutation",
       "operation": "read",
       "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 930
+      "line": 935
     },
     {
       "source": "consumer:lib/hosts/presentation/edit_hosted_event_screen.dart#_EditHostedEventScreenState.build",
@@ -14646,7 +14735,7 @@
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 318
+      "line": 323
     },
     {
       "source": "consumer:lib/hosts/presentation/edit_hosted_event_screen.dart#_EditHostedEventScreenState.build",
@@ -14655,7 +14744,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 364
+      "line": 369
     },
     {
       "source": "consumer:lib/hosts/presentation/event_management/create/create_event_screen.dart#_CreateEventScreenState._checkForDrafts",
@@ -14664,7 +14753,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/hosts/presentation/event_management/create/create_event_screen.dart",
-      "line": 570
+      "line": 578
     },
     {
       "source": "consumer:lib/hosts/presentation/event_management/create/create_event_screen.dart#_CreateEventScreenState._deleteDraft",
@@ -14673,7 +14762,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/hosts/presentation/event_management/create/create_event_screen.dart",
-      "line": 667
+      "line": 679
     },
     {
       "source": "consumer:lib/hosts/presentation/event_management/create/create_event_screen.dart#_CreateEventScreenState._pickEventPhotos",
@@ -14682,7 +14771,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/hosts/presentation/event_management/create/create_event_screen.dart",
-      "line": 381
+      "line": 384
     },
     {
       "source": "consumer:lib/hosts/presentation/event_management/create/create_event_screen.dart#_CreateEventScreenState._pickLocation",
@@ -14691,7 +14780,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/hosts/presentation/event_management/create/create_event_screen.dart",
-      "line": 346
+      "line": 349
     },
     {
       "source": "consumer:lib/hosts/presentation/event_management/create/create_event_screen.dart#_CreateEventScreenState._saveDraft",
@@ -14700,7 +14789,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/hosts/presentation/event_management/create/create_event_screen.dart",
-      "line": 684
+      "line": 696
     },
     {
       "source": "consumer:lib/hosts/presentation/event_management/create/create_event_screen.dart#_CreateEventScreenState._submit",
@@ -14709,7 +14798,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/hosts/presentation/event_management/create/create_event_screen.dart",
-      "line": 474
+      "line": 477
     },
     {
       "source": "consumer:lib/hosts/presentation/event_management/create/create_event_screen.dart#_CreateEventScreenState.build",
@@ -14718,7 +14807,7 @@
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/hosts/presentation/event_management/create/create_event_screen.dart",
-      "line": 776
+      "line": 788
     },
     {
       "source": "consumer:lib/hosts/presentation/event_management/create/create_event_screen.dart#_CreateEventScreenState.build",
@@ -14727,7 +14816,7 @@
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/hosts/presentation/event_management/create/create_event_screen.dart",
-      "line": 777
+      "line": 789
     },
     {
       "source": "consumer:lib/hosts/presentation/event_management/host_create_event_screen.dart#HostCreateEventRouteScreen.build",
@@ -18356,7 +18445,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 909
+      "line": 914
     },
     {
       "source": "consumer:lib/hosts/presentation/edit_hosted_event_screen.dart#_EditHostedEventScreenState._savePending",
@@ -18365,7 +18454,7 @@
       "targetKind": "mutation",
       "operation": "read",
       "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 930
+      "line": 935
     },
     {
       "source": "consumer:lib/hosts/presentation/edit_hosted_event_screen.dart#_EditHostedEventScreenState.build",
@@ -18374,7 +18463,7 @@
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 318
+      "line": 323
     },
     {
       "source": "consumer:lib/hosts/presentation/event_management/create/create_event_screen.dart#_CreateEventScreenState._deleteDraft",
@@ -18383,7 +18472,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/hosts/presentation/event_management/create/create_event_screen.dart",
-      "line": 667
+      "line": 679
     },
     {
       "source": "consumer:lib/hosts/presentation/event_management/create/create_event_screen.dart#_CreateEventScreenState._saveDraft",
@@ -18392,7 +18481,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/hosts/presentation/event_management/create/create_event_screen.dart",
-      "line": 684
+      "line": 696
     },
     {
       "source": "consumer:lib/hosts/presentation/event_management/create/create_event_screen.dart#_CreateEventScreenState._submit",
@@ -18401,7 +18490,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/hosts/presentation/event_management/create/create_event_screen.dart",
-      "line": 474
+      "line": 477
     },
     {
       "source": "consumer:lib/hosts/presentation/event_management/create/create_event_screen.dart#_CreateEventScreenState.build",
@@ -18410,7 +18499,7 @@
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/hosts/presentation/event_management/create/create_event_screen.dart",
-      "line": 776
+      "line": 788
     },
     {
       "source": "consumer:lib/hosts/presentation/event_management/create/create_event_screen.dart#_CreateEventScreenState.build",
@@ -18419,7 +18508,7 @@
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/hosts/presentation/event_management/create/create_event_screen.dart",
-      "line": 777
+      "line": 789
     },
     {
       "source": "consumer:lib/hosts/presentation/host_event_manage_screen.dart#_HostEventManageScreenState._confirmCancelEvent",

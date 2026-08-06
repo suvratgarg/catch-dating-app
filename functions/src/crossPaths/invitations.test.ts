@@ -321,6 +321,42 @@ test("recipient acceptance creates one scoped plan and invalidates rivals",
     );
   });
 
+test("accepting an unbooked request reserves a companion spot without booking",
+  async () => {
+    const h = harness({
+      "eventParticipations/event-1_sender": undefined,
+      "eventCrossPathsConsents/event-1_sender": undefined,
+    });
+    const sent = await sendCrossPathsInvitationHandler(
+      request("sender", sendPayload()),
+      h.deps
+    );
+    const accepted = await respondCrossPathsInvitationHandler(
+      request("recipient", {
+        invitationId: sent.invitationId,
+        decision: "accept",
+      }),
+      h.deps
+    );
+
+    assert.equal(accepted.status, "accepted");
+    assert.equal(accepted.conversationId, null);
+    assert.ok(accepted.pairHoldId);
+    assert.equal(
+      h.firestore.read(`crossPathsPairHolds/${accepted.pairHoldId}`)?.status,
+      "active"
+    );
+    assert.equal(
+      h.firestore.read(`crossPathsPairHolds/${accepted.pairHoldId}`)
+        ?.requesterBookingStatus,
+      "held"
+    );
+    assert.equal(
+      h.firestore.read("eventParticipations/event-1_sender"),
+      undefined
+    );
+  });
+
 test("token identity binding is enforced", async () => {
   const h = harness();
   await assert.rejects(
@@ -394,6 +430,48 @@ function matches(actual: unknown, op: string, expected: unknown): boolean {
 function event(): FakeData {
   return {
     status: "active",
+    clubId: "organizer-1",
+    organizerId: "organizer-1",
+    capacityLimit: 20,
+    priceInPaise: 0,
+    bookedCount: 1,
+    waitlistedCount: 0,
+    cohortCounts: {womenInterestedInMen: 1},
+    waitlistedCohortCounts: {},
+    crossPathsPairHeldCount: 0,
+    crossPathsPairConfirmedCount: 0,
+    crossPathsPairHeldCohortCounts: {},
+    currency: "INR",
+    eventPolicy: {
+      version: 1,
+      admission: {
+        format: "open",
+        capacityLimit: 20,
+        waitlistPolicy: {mode: "rankedOffer", offerWindowMinutes: 20},
+        inviteRequired: false,
+        membershipRequired: false,
+        manualApprovalRequired: false,
+        privateAccessPolicy: {
+          mode: "none",
+          inviteCodeHint: null,
+          privateLinkEnabled: false,
+        },
+        cohortCapacityLimits: {},
+        balancedRatioPolicy: null,
+        crossPathsPairInventory: {
+          enabled: true,
+          reservedPairCapacity: 2,
+          holdDurationMinutes: 15,
+        },
+      },
+      pricing: {
+        basePriceInPaise: 0,
+        cohortAdjustmentsInPaise: {},
+        demandPricingRules: [],
+      },
+      cancellation: {policyId: "standard"},
+      settlement: {hostPayoutTiming: "afterEventCompletion"},
+    },
     startTime: timestamp(eventStartMillis),
     endTime: timestamp(eventStartMillis + 2 * 60 * 60 * 1000),
   };

@@ -11,6 +11,7 @@ import {
   OrganizerFollowDocument,
   EventParticipationDocument,
 } from "../shared/generated/firestoreAdminTypes";
+import {releaseCrossPathsPairHold} from "../crossPaths/pairHolds";
 
 type StorageBucket = ReturnType<ReturnType<typeof admin.storage>["bucket"]>;
 
@@ -192,6 +193,7 @@ async function queueRelationshipCleanup(params: {
     queueCrossPathsConsentCleanup(db, uid, writer),
     queueCrossPathsSuggestionExposureCleanup(db, uid, writer),
     queueCrossPathsInvitationCleanup(db, uid, writer),
+    queueCrossPathsPairHoldCleanup(db, uid, writer),
     queueSavedEventCleanup(db, uid, writer),
     queueSwipeCleanup(db, uid, writer),
     queueMatchCleanup(db, uid, now, writer),
@@ -203,6 +205,25 @@ async function queueRelationshipCleanup(params: {
     queueBlockCleanup(db, uid, writer),
     queueReportCleanup(db, uid, now, writer),
   ]);
+}
+
+/** Releases and deletes pair reservations that expose the deleted account. */
+async function queueCrossPathsPairHoldCleanup(
+  db: FirebaseFirestore.Firestore,
+  uid: string,
+  writer: BatchQueue
+) {
+  const holds = await db.collection("crossPathsPairHolds")
+    .where("participantIds", "array-contains", uid)
+    .get();
+  for (const doc of holds.docs) {
+    await releaseCrossPathsPairHold({
+      db,
+      holdId: doc.id,
+      reason: "safety_state_changed",
+    });
+    writer.delete(doc.ref);
+  }
 }
 
 /** Deletes short-lived host analytics responses owned by the account. */

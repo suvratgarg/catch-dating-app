@@ -4412,6 +4412,13 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['flexible', 'standard', 'strict'],
   );
 
+  static const clubDocumentHostDefaultsEventPolicyCrossPathsPairCapacity = CatchContractFieldConstraints(
+    path: 'clubDocument.hostDefaults.eventPolicy.crossPathsPairCapacity',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
   static const clubDocumentHostDefaultsEventPolicyDynamicPricingEnabled = CatchContractFieldConstraints(
     path: 'clubDocument.hostDefaults.eventPolicy.dynamicPricingEnabled',
     valueTypes: <String>['boolean'],
@@ -6448,6 +6455,13 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['flexible', 'standard', 'strict'],
   );
 
+  static const createClubCallablePayloadHostDefaultsEventPolicyCrossPathsPairCapacity = CatchContractFieldConstraints(
+    path: 'createClubCallablePayload.hostDefaults.eventPolicy.crossPathsPairCapacity',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
   static const createClubCallablePayloadHostDefaultsEventPolicyDynamicPricingEnabled = CatchContractFieldConstraints(
     path: 'createClubCallablePayload.hostDefaults.eventPolicy.dynamicPricingEnabled',
     valueTypes: <String>['boolean'],
@@ -7253,6 +7267,28 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['object'],
   );
 
+  static const createEventCallablePayloadEventPolicyAdmissionCrossPathsPairInventoryEnabled = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.eventPolicy.admission.crossPathsPairInventory.enabled',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const createEventCallablePayloadEventPolicyAdmissionCrossPathsPairInventoryHoldDurationMinutes = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.eventPolicy.admission.crossPathsPairInventory.holdDurationMinutes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 5,
+    maximum: 30,
+  );
+
+  static const createEventCallablePayloadEventPolicyAdmissionCrossPathsPairInventoryReservedPairCapacity = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.eventPolicy.admission.crossPathsPairInventory.reservedPairCapacity',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
   static const createEventCallablePayloadEventPolicyAdmissionFormat = CatchContractFieldConstraints(
     path: 'createEventCallablePayload.eventPolicy.admission.format',
     required: true,
@@ -7851,6 +7887,13 @@ abstract final class CatchContractConstraints {
     path: 'createOrganizerCallablePayload.hostDefaults.eventPolicy.cancellationPolicyId',
     valueTypes: <String>['string'],
     enumValues: <String>['flexible', 'standard', 'strict'],
+  );
+
+  static const createOrganizerCallablePayloadHostDefaultsEventPolicyCrossPathsPairCapacity = CatchContractFieldConstraints(
+    path: 'createOrganizerCallablePayload.hostDefaults.eventPolicy.crossPathsPairCapacity',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
   );
 
   static const createOrganizerCallablePayloadHostDefaultsEventPolicyDynamicPricingEnabled = CatchContractFieldConstraints(
@@ -8867,6 +8910,14 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const createRazorpayOrderCallablePayloadCrossPathsPairHoldId = CatchContractFieldConstraints(
+    path: 'createRazorpayOrderCallablePayload.crossPathsPairHoldId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const createRazorpayOrderCallablePayloadEventId = CatchContractFieldConstraints(
     path: 'createRazorpayOrderCallablePayload.eventId',
     maxLength: 180,
@@ -8923,6 +8974,14 @@ abstract final class CatchContractConstraints {
 
   static const createSavedEventClientWritePathSavedEventId = CatchContractFieldConstraints(
     path: 'createSavedEventClientWrite.path.savedEventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createStripeCheckoutSessionCallablePayloadCrossPathsPairHoldId = CatchContractFieldConstraints(
+    path: 'createStripeCheckoutSessionCallablePayload.crossPathsPairHoldId',
     maxLength: 180,
     minLength: 1,
     required: true,
@@ -9039,7 +9098,14 @@ abstract final class CatchContractConstraints {
   static const crossPathsInvitationDocumentInvalidationReason = CatchContractFieldConstraints(
     path: 'crossPathsInvitationDocument.invalidationReason',
     valueTypes: <String>['string'],
-    enumValues: <String>['event_unavailable', 'participation_cancelled', 'consent_revoked', 'safety_state_changed', 'competing_plan_accepted', 'plan_cancelled'],
+    enumValues: <String>['event_unavailable', 'participation_cancelled', 'consent_revoked', 'safety_state_changed', 'competing_plan_accepted', 'plan_cancelled', 'hold_expired'],
+  );
+
+  static const crossPathsInvitationDocumentPairHoldId = CatchContractFieldConstraints(
+    path: 'crossPathsInvitationDocument.pairHoldId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
   );
 
   static const crossPathsInvitationDocumentParticipantIds = CatchContractFieldConstraints(
@@ -9107,6 +9173,214 @@ abstract final class CatchContractConstraints {
 
   static const crossPathsInvitationDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
     path: 'crossPathsInvitationDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const crossPathsPairHoldDocumentAttendeeBookingStatus = CatchContractFieldConstraints(
+    path: 'crossPathsPairHoldDocument.attendeeBookingStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['confirmed', 'cancelled'],
+  );
+
+  static const crossPathsPairHoldDocumentAttendeeCohortId = CatchContractFieldConstraints(
+    path: 'crossPathsPairHoldDocument.attendeeCohortId',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const crossPathsPairHoldDocumentAttendeePriceInPaise = CatchContractFieldConstraints(
+    path: 'crossPathsPairHoldDocument.attendeePriceInPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000,
+  );
+
+  static const crossPathsPairHoldDocumentAttendeeUid = CatchContractFieldConstraints(
+    path: 'crossPathsPairHoldDocument.attendeeUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const crossPathsPairHoldDocumentConfirmedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'crossPathsPairHoldDocument.confirmedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const crossPathsPairHoldDocumentConfirmedAtSeconds = CatchContractFieldConstraints(
+    path: 'crossPathsPairHoldDocument.confirmedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const crossPathsPairHoldDocumentConversationId = CatchContractFieldConstraints(
+    path: 'crossPathsPairHoldDocument.conversationId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const crossPathsPairHoldDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'crossPathsPairHoldDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const crossPathsPairHoldDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'crossPathsPairHoldDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const crossPathsPairHoldDocumentCurrency = CatchContractFieldConstraints(
+    path: 'crossPathsPairHoldDocument.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const crossPathsPairHoldDocumentEventId = CatchContractFieldConstraints(
+    path: 'crossPathsPairHoldDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const crossPathsPairHoldDocumentExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'crossPathsPairHoldDocument.expiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const crossPathsPairHoldDocumentExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'crossPathsPairHoldDocument.expiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const crossPathsPairHoldDocumentInvitationId = CatchContractFieldConstraints(
+    path: 'crossPathsPairHoldDocument.invitationId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const crossPathsPairHoldDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'crossPathsPairHoldDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const crossPathsPairHoldDocumentParticipantIds = CatchContractFieldConstraints(
+    path: 'crossPathsPairHoldDocument.participantIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 2,
+    maxItems: 2,
+    uniqueItems: true,
+  );
+
+  static const crossPathsPairHoldDocumentParticipantIdsItems = CatchContractFieldConstraints(
+    path: 'crossPathsPairHoldDocument.participantIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const crossPathsPairHoldDocumentPaymentId = CatchContractFieldConstraints(
+    path: 'crossPathsPairHoldDocument.paymentId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const crossPathsPairHoldDocumentReleasedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'crossPathsPairHoldDocument.releasedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const crossPathsPairHoldDocumentReleasedAtSeconds = CatchContractFieldConstraints(
+    path: 'crossPathsPairHoldDocument.releasedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const crossPathsPairHoldDocumentReleaseReason = CatchContractFieldConstraints(
+    path: 'crossPathsPairHoldDocument.releaseReason',
+    valueTypes: <String>['string'],
+    enumValues: <String>['expired', 'cancelled', 'event_unavailable', 'participation_cancelled', 'safety_state_changed', 'payment_failed'],
+  );
+
+  static const crossPathsPairHoldDocumentRequesterBookingStatus = CatchContractFieldConstraints(
+    path: 'crossPathsPairHoldDocument.requesterBookingStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['held', 'confirmed', 'cancelled'],
+  );
+
+  static const crossPathsPairHoldDocumentRequesterCohortId = CatchContractFieldConstraints(
+    path: 'crossPathsPairHoldDocument.requesterCohortId',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const crossPathsPairHoldDocumentRequesterPriceInPaise = CatchContractFieldConstraints(
+    path: 'crossPathsPairHoldDocument.requesterPriceInPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000,
+  );
+
+  static const crossPathsPairHoldDocumentRequesterUid = CatchContractFieldConstraints(
+    path: 'crossPathsPairHoldDocument.requesterUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const crossPathsPairHoldDocumentStatus = CatchContractFieldConstraints(
+    path: 'crossPathsPairHoldDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['active', 'confirmed', 'expired', 'cancelled', 'invalidated'],
+  );
+
+  static const crossPathsPairHoldDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'crossPathsPairHoldDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const crossPathsPairHoldDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'crossPathsPairHoldDocument.updatedAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
   );
@@ -9406,6 +9680,14 @@ abstract final class CatchContractConstraints {
 
   static const disableEventInviteLinkCallablePayloadInviteLinkId = CatchContractFieldConstraints(
     path: 'disableEventInviteLinkCallablePayload.inviteLinkId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventBookingCallablePayloadCrossPathsPairHoldId = CatchContractFieldConstraints(
+    path: 'eventBookingCallablePayload.crossPathsPairHoldId',
     maxLength: 180,
     minLength: 1,
     required: true,
@@ -9882,6 +10164,23 @@ abstract final class CatchContractConstraints {
     maximum: 120,
   );
 
+  static const eventDocumentCrossPathsPairConfirmedCount = CatchContractFieldConstraints(
+    path: 'eventDocument.crossPathsPairConfirmedCount',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const eventDocumentCrossPathsPairHeldCohortCounts = CatchContractFieldConstraints(
+    path: 'eventDocument.crossPathsPairHeldCohortCounts',
+    valueTypes: <String>['object'],
+  );
+
+  static const eventDocumentCrossPathsPairHeldCount = CatchContractFieldConstraints(
+    path: 'eventDocument.crossPathsPairHeldCount',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
   static const eventDocumentCurrency = CatchContractFieldConstraints(
     path: 'eventDocument.currency',
     valueTypes: <String>['string'],
@@ -10294,6 +10593,28 @@ abstract final class CatchContractConstraints {
     path: 'eventDocument.eventPolicy.admission.cohortCapacityLimits',
     required: true,
     valueTypes: <String>['object'],
+  );
+
+  static const eventDocumentEventPolicyAdmissionCrossPathsPairInventoryEnabled = CatchContractFieldConstraints(
+    path: 'eventDocument.eventPolicy.admission.crossPathsPairInventory.enabled',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventDocumentEventPolicyAdmissionCrossPathsPairInventoryHoldDurationMinutes = CatchContractFieldConstraints(
+    path: 'eventDocument.eventPolicy.admission.crossPathsPairInventory.holdDurationMinutes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 5,
+    maximum: 30,
+  );
+
+  static const eventDocumentEventPolicyAdmissionCrossPathsPairInventoryReservedPairCapacity = CatchContractFieldConstraints(
+    path: 'eventDocument.eventPolicy.admission.crossPathsPairInventory.reservedPairCapacity',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
   );
 
   static const eventDocumentEventPolicyAdmissionFormat = CatchContractFieldConstraints(
@@ -14515,6 +14836,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const getCrossPathsSuggestionsCallableResponseSuggestionsItemsEventPairHoldAvailable = CatchContractFieldConstraints(
+    path: 'getCrossPathsSuggestionsCallableResponse.suggestions.items.event.pairHoldAvailable',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
   static const getCrossPathsSuggestionsCallableResponseSuggestionsItemsEventPhotoUrl = CatchContractFieldConstraints(
     path: 'getCrossPathsSuggestionsCallableResponse.suggestions.items.event.photoUrl',
     maxLength: 2048,
@@ -18438,6 +18765,13 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['flexible', 'standard', 'strict'],
   );
 
+  static const organizerDocumentHostDefaultsEventPolicyCrossPathsPairCapacity = CatchContractFieldConstraints(
+    path: 'organizerDocument.hostDefaults.eventPolicy.crossPathsPairCapacity',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
   static const organizerDocumentHostDefaultsEventPolicyDynamicPricingEnabled = CatchContractFieldConstraints(
     path: 'organizerDocument.hostDefaults.eventPolicy.dynamicPricingEnabled',
     valueTypes: <String>['boolean'],
@@ -21322,6 +21656,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const paymentDocumentCrossPathsPairHoldId = CatchContractFieldConstraints(
+    path: 'paymentDocument.crossPathsPairHoldId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
   static const paymentDocumentCurrency = CatchContractFieldConstraints(
     path: 'paymentDocument.currency',
     maxLength: 3,
@@ -22916,6 +23257,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const respondCrossPathsInvitationCallableResponsePairHoldId = CatchContractFieldConstraints(
+    path: 'respondCrossPathsInvitationCallableResponse.pairHoldId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
   static const respondCrossPathsInvitationCallableResponseStatus = CatchContractFieldConstraints(
     path: 'respondCrossPathsInvitationCallableResponse.status',
     required: true,
@@ -24083,6 +24431,13 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['flexible', 'standard', 'strict'],
   );
 
+  static const updateClubPatchHostDefaultsEventPolicyCrossPathsPairCapacity = CatchContractFieldConstraints(
+    path: 'updateClubPatch.hostDefaults.eventPolicy.crossPathsPairCapacity',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
   static const updateClubPatchHostDefaultsEventPolicyDynamicPricingEnabled = CatchContractFieldConstraints(
     path: 'updateClubPatch.hostDefaults.eventPolicy.dynamicPricingEnabled',
     valueTypes: <String>['boolean'],
@@ -24757,6 +25112,28 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['object'],
   );
 
+  static const updateEventCallablePayloadFieldsEventPolicyAdmissionCrossPathsPairInventoryEnabled = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.eventPolicy.admission.crossPathsPairInventory.enabled',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const updateEventCallablePayloadFieldsEventPolicyAdmissionCrossPathsPairInventoryHoldDurationMinutes = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.eventPolicy.admission.crossPathsPairInventory.holdDurationMinutes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 5,
+    maximum: 30,
+  );
+
+  static const updateEventCallablePayloadFieldsEventPolicyAdmissionCrossPathsPairInventoryReservedPairCapacity = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.eventPolicy.admission.crossPathsPairInventory.reservedPairCapacity',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
   static const updateEventCallablePayloadFieldsEventPolicyAdmissionFormat = CatchContractFieldConstraints(
     path: 'updateEventCallablePayload.fields.eventPolicy.admission.format',
     required: true,
@@ -25071,6 +25448,13 @@ abstract final class CatchContractConstraints {
     path: 'updateOrganizerCallablePayload.fields.hostDefaults.eventPolicy.cancellationPolicyId',
     valueTypes: <String>['string'],
     enumValues: <String>['flexible', 'standard', 'strict'],
+  );
+
+  static const updateOrganizerCallablePayloadFieldsHostDefaultsEventPolicyCrossPathsPairCapacity = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.hostDefaults.eventPolicy.crossPathsPairCapacity',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
   );
 
   static const updateOrganizerCallablePayloadFieldsHostDefaultsEventPolicyDynamicPricingEnabled = CatchContractFieldConstraints(
@@ -28942,6 +29326,7 @@ abstract final class CatchContractConstraints {
     'clubDocument.hostAvatarUrl': clubDocumentHostAvatarUrl,
     'clubDocument.hostDefaults.eventPolicy.admissionPreset': clubDocumentHostDefaultsEventPolicyAdmissionPreset,
     'clubDocument.hostDefaults.eventPolicy.cancellationPolicyId': clubDocumentHostDefaultsEventPolicyCancellationPolicyId,
+    'clubDocument.hostDefaults.eventPolicy.crossPathsPairCapacity': clubDocumentHostDefaultsEventPolicyCrossPathsPairCapacity,
     'clubDocument.hostDefaults.eventPolicy.dynamicPricingEnabled': clubDocumentHostDefaultsEventPolicyDynamicPricingEnabled,
     'clubDocument.hostDefaults.eventPolicy.dynamicPricingMaxInPaise': clubDocumentHostDefaultsEventPolicyDynamicPricingMaxInPaise,
     'clubDocument.hostDefaults.eventPolicy.dynamicPricingStepInPaise': clubDocumentHostDefaultsEventPolicyDynamicPricingStepInPaise,
@@ -29222,6 +29607,7 @@ abstract final class CatchContractConstraints {
     'createClubCallablePayload.email': createClubCallablePayloadEmail,
     'createClubCallablePayload.hostDefaults.eventPolicy.admissionPreset': createClubCallablePayloadHostDefaultsEventPolicyAdmissionPreset,
     'createClubCallablePayload.hostDefaults.eventPolicy.cancellationPolicyId': createClubCallablePayloadHostDefaultsEventPolicyCancellationPolicyId,
+    'createClubCallablePayload.hostDefaults.eventPolicy.crossPathsPairCapacity': createClubCallablePayloadHostDefaultsEventPolicyCrossPathsPairCapacity,
     'createClubCallablePayload.hostDefaults.eventPolicy.dynamicPricingEnabled': createClubCallablePayloadHostDefaultsEventPolicyDynamicPricingEnabled,
     'createClubCallablePayload.hostDefaults.eventPolicy.dynamicPricingMaxInPaise': createClubCallablePayloadHostDefaultsEventPolicyDynamicPricingMaxInPaise,
     'createClubCallablePayload.hostDefaults.eventPolicy.dynamicPricingStepInPaise': createClubCallablePayloadHostDefaultsEventPolicyDynamicPricingStepInPaise,
@@ -29335,6 +29721,9 @@ abstract final class CatchContractConstraints {
     'createEventCallablePayload.eventPolicy.admission.balancedRatioPolicy.rightCohortId': createEventCallablePayloadEventPolicyAdmissionBalancedRatioPolicyRightCohortId,
     'createEventCallablePayload.eventPolicy.admission.capacityLimit': createEventCallablePayloadEventPolicyAdmissionCapacityLimit,
     'createEventCallablePayload.eventPolicy.admission.cohortCapacityLimits': createEventCallablePayloadEventPolicyAdmissionCohortCapacityLimits,
+    'createEventCallablePayload.eventPolicy.admission.crossPathsPairInventory.enabled': createEventCallablePayloadEventPolicyAdmissionCrossPathsPairInventoryEnabled,
+    'createEventCallablePayload.eventPolicy.admission.crossPathsPairInventory.holdDurationMinutes': createEventCallablePayloadEventPolicyAdmissionCrossPathsPairInventoryHoldDurationMinutes,
+    'createEventCallablePayload.eventPolicy.admission.crossPathsPairInventory.reservedPairCapacity': createEventCallablePayloadEventPolicyAdmissionCrossPathsPairInventoryReservedPairCapacity,
     'createEventCallablePayload.eventPolicy.admission.format': createEventCallablePayloadEventPolicyAdmissionFormat,
     'createEventCallablePayload.eventPolicy.admission.inviteRequired': createEventCallablePayloadEventPolicyAdmissionInviteRequired,
     'createEventCallablePayload.eventPolicy.admission.manualApprovalRequired': createEventCallablePayloadEventPolicyAdmissionManualApprovalRequired,
@@ -29418,6 +29807,7 @@ abstract final class CatchContractConstraints {
     'createOrganizerCallablePayload.email': createOrganizerCallablePayloadEmail,
     'createOrganizerCallablePayload.hostDefaults.eventPolicy.admissionPreset': createOrganizerCallablePayloadHostDefaultsEventPolicyAdmissionPreset,
     'createOrganizerCallablePayload.hostDefaults.eventPolicy.cancellationPolicyId': createOrganizerCallablePayloadHostDefaultsEventPolicyCancellationPolicyId,
+    'createOrganizerCallablePayload.hostDefaults.eventPolicy.crossPathsPairCapacity': createOrganizerCallablePayloadHostDefaultsEventPolicyCrossPathsPairCapacity,
     'createOrganizerCallablePayload.hostDefaults.eventPolicy.dynamicPricingEnabled': createOrganizerCallablePayloadHostDefaultsEventPolicyDynamicPricingEnabled,
     'createOrganizerCallablePayload.hostDefaults.eventPolicy.dynamicPricingMaxInPaise': createOrganizerCallablePayloadHostDefaultsEventPolicyDynamicPricingMaxInPaise,
     'createOrganizerCallablePayload.hostDefaults.eventPolicy.dynamicPricingStepInPaise': createOrganizerCallablePayloadHostDefaultsEventPolicyDynamicPricingStepInPaise,
@@ -29561,6 +29951,7 @@ abstract final class CatchContractConstraints {
     'createPublicOrganizerReviewCallableResponse.review.source': createPublicOrganizerReviewCallableResponseReviewSource,
     'createPublicOrganizerReviewCallableResponse.review.verificationStatus': createPublicOrganizerReviewCallableResponseReviewVerificationStatus,
     'createPublicOrganizerReviewCallableResponse.reviewId': createPublicOrganizerReviewCallableResponseReviewIdAtReviewId,
+    'createRazorpayOrderCallablePayload.crossPathsPairHoldId': createRazorpayOrderCallablePayloadCrossPathsPairHoldId,
     'createRazorpayOrderCallablePayload.eventId': createRazorpayOrderCallablePayloadEventId,
     'createRazorpayOrderCallablePayload.inviteCode': createRazorpayOrderCallablePayloadInviteCode,
     'createRazorpayOrderCallablePayload.inviteLinkId': createRazorpayOrderCallablePayloadInviteLinkId,
@@ -29569,6 +29960,7 @@ abstract final class CatchContractConstraints {
     'createSavedEventClientWrite.data.savedAt._seconds': createSavedEventClientWriteDataSavedAtSeconds,
     'createSavedEventClientWrite.data.uid': createSavedEventClientWriteDataUid,
     'createSavedEventClientWrite.path.savedEventId': createSavedEventClientWritePathSavedEventId,
+    'createStripeCheckoutSessionCallablePayload.crossPathsPairHoldId': createStripeCheckoutSessionCallablePayloadCrossPathsPairHoldId,
     'createStripeCheckoutSessionCallablePayload.eventId': createStripeCheckoutSessionCallablePayloadEventId,
     'createStripeCheckoutSessionCallablePayload.inviteCode': createStripeCheckoutSessionCallablePayloadInviteCode,
     'createStripeCheckoutSessionCallablePayload.inviteLinkId': createStripeCheckoutSessionCallablePayloadInviteLinkId,
@@ -29585,6 +29977,7 @@ abstract final class CatchContractConstraints {
     'crossPathsInvitationDocument.invalidatedAt._nanoseconds': crossPathsInvitationDocumentInvalidatedAtNanoseconds,
     'crossPathsInvitationDocument.invalidatedAt._seconds': crossPathsInvitationDocumentInvalidatedAtSeconds,
     'crossPathsInvitationDocument.invalidationReason': crossPathsInvitationDocumentInvalidationReason,
+    'crossPathsInvitationDocument.pairHoldId': crossPathsInvitationDocumentPairHoldId,
     'crossPathsInvitationDocument.participantIds': crossPathsInvitationDocumentParticipantIds,
     'crossPathsInvitationDocument.participantIds.items': crossPathsInvitationDocumentParticipantIdsItems,
     'crossPathsInvitationDocument.recipientUid': crossPathsInvitationDocumentRecipientUid,
@@ -29594,6 +29987,34 @@ abstract final class CatchContractConstraints {
     'crossPathsInvitationDocument.status': crossPathsInvitationDocumentStatus,
     'crossPathsInvitationDocument.updatedAt._nanoseconds': crossPathsInvitationDocumentUpdatedAtNanoseconds,
     'crossPathsInvitationDocument.updatedAt._seconds': crossPathsInvitationDocumentUpdatedAtSeconds,
+    'crossPathsPairHoldDocument.attendeeBookingStatus': crossPathsPairHoldDocumentAttendeeBookingStatus,
+    'crossPathsPairHoldDocument.attendeeCohortId': crossPathsPairHoldDocumentAttendeeCohortId,
+    'crossPathsPairHoldDocument.attendeePriceInPaise': crossPathsPairHoldDocumentAttendeePriceInPaise,
+    'crossPathsPairHoldDocument.attendeeUid': crossPathsPairHoldDocumentAttendeeUid,
+    'crossPathsPairHoldDocument.confirmedAt._nanoseconds': crossPathsPairHoldDocumentConfirmedAtNanoseconds,
+    'crossPathsPairHoldDocument.confirmedAt._seconds': crossPathsPairHoldDocumentConfirmedAtSeconds,
+    'crossPathsPairHoldDocument.conversationId': crossPathsPairHoldDocumentConversationId,
+    'crossPathsPairHoldDocument.createdAt._nanoseconds': crossPathsPairHoldDocumentCreatedAtNanoseconds,
+    'crossPathsPairHoldDocument.createdAt._seconds': crossPathsPairHoldDocumentCreatedAtSeconds,
+    'crossPathsPairHoldDocument.currency': crossPathsPairHoldDocumentCurrency,
+    'crossPathsPairHoldDocument.eventId': crossPathsPairHoldDocumentEventId,
+    'crossPathsPairHoldDocument.expiresAt._nanoseconds': crossPathsPairHoldDocumentExpiresAtNanoseconds,
+    'crossPathsPairHoldDocument.expiresAt._seconds': crossPathsPairHoldDocumentExpiresAtSeconds,
+    'crossPathsPairHoldDocument.invitationId': crossPathsPairHoldDocumentInvitationId,
+    'crossPathsPairHoldDocument.organizerId': crossPathsPairHoldDocumentOrganizerId,
+    'crossPathsPairHoldDocument.participantIds': crossPathsPairHoldDocumentParticipantIds,
+    'crossPathsPairHoldDocument.participantIds.items': crossPathsPairHoldDocumentParticipantIdsItems,
+    'crossPathsPairHoldDocument.paymentId': crossPathsPairHoldDocumentPaymentId,
+    'crossPathsPairHoldDocument.releasedAt._nanoseconds': crossPathsPairHoldDocumentReleasedAtNanoseconds,
+    'crossPathsPairHoldDocument.releasedAt._seconds': crossPathsPairHoldDocumentReleasedAtSeconds,
+    'crossPathsPairHoldDocument.releaseReason': crossPathsPairHoldDocumentReleaseReason,
+    'crossPathsPairHoldDocument.requesterBookingStatus': crossPathsPairHoldDocumentRequesterBookingStatus,
+    'crossPathsPairHoldDocument.requesterCohortId': crossPathsPairHoldDocumentRequesterCohortId,
+    'crossPathsPairHoldDocument.requesterPriceInPaise': crossPathsPairHoldDocumentRequesterPriceInPaise,
+    'crossPathsPairHoldDocument.requesterUid': crossPathsPairHoldDocumentRequesterUid,
+    'crossPathsPairHoldDocument.status': crossPathsPairHoldDocumentStatus,
+    'crossPathsPairHoldDocument.updatedAt._nanoseconds': crossPathsPairHoldDocumentUpdatedAtNanoseconds,
+    'crossPathsPairHoldDocument.updatedAt._seconds': crossPathsPairHoldDocumentUpdatedAtSeconds,
     'crossPathsShowcaseEligibilityDocument.profileFingerprint': crossPathsShowcaseEligibilityDocumentProfileFingerprint,
     'crossPathsShowcaseEligibilityDocument.reasonCodes': crossPathsShowcaseEligibilityDocumentReasonCodes,
     'crossPathsShowcaseEligibilityDocument.reasonCodes.items': crossPathsShowcaseEligibilityDocumentReasonCodesItems,
@@ -29635,6 +30056,7 @@ abstract final class CatchContractConstraints {
     'deleteSavedEventClientWrite.path.savedEventId': deleteSavedEventClientWritePathSavedEventId,
     'disableEventInviteLinkCallablePayload.eventId': disableEventInviteLinkCallablePayloadEventId,
     'disableEventInviteLinkCallablePayload.inviteLinkId': disableEventInviteLinkCallablePayloadInviteLinkId,
+    'eventBookingCallablePayload.crossPathsPairHoldId': eventBookingCallablePayloadCrossPathsPairHoldId,
     'eventBookingCallablePayload.eventId': eventBookingCallablePayloadEventId,
     'eventBookingCallablePayload.inviteCode': eventBookingCallablePayloadInviteCode,
     'eventBookingCallablePayload.inviteLinkId': eventBookingCallablePayloadInviteLinkId,
@@ -29698,6 +30120,9 @@ abstract final class CatchContractConstraints {
     'eventDocument.constraints.maxMen': eventDocumentConstraintsMaxMen,
     'eventDocument.constraints.maxWomen': eventDocumentConstraintsMaxWomen,
     'eventDocument.constraints.minAge': eventDocumentConstraintsMinAge,
+    'eventDocument.crossPathsPairConfirmedCount': eventDocumentCrossPathsPairConfirmedCount,
+    'eventDocument.crossPathsPairHeldCohortCounts': eventDocumentCrossPathsPairHeldCohortCounts,
+    'eventDocument.crossPathsPairHeldCount': eventDocumentCrossPathsPairHeldCount,
     'eventDocument.currency': eventDocumentCurrency,
     'eventDocument.demoOps': eventDocumentDemoOps,
     'eventDocument.demoOpsCommand': eventDocumentDemoOpsCommand,
@@ -29755,6 +30180,9 @@ abstract final class CatchContractConstraints {
     'eventDocument.eventPolicy.admission.balancedRatioPolicy.rightCohortId': eventDocumentEventPolicyAdmissionBalancedRatioPolicyRightCohortId,
     'eventDocument.eventPolicy.admission.capacityLimit': eventDocumentEventPolicyAdmissionCapacityLimit,
     'eventDocument.eventPolicy.admission.cohortCapacityLimits': eventDocumentEventPolicyAdmissionCohortCapacityLimits,
+    'eventDocument.eventPolicy.admission.crossPathsPairInventory.enabled': eventDocumentEventPolicyAdmissionCrossPathsPairInventoryEnabled,
+    'eventDocument.eventPolicy.admission.crossPathsPairInventory.holdDurationMinutes': eventDocumentEventPolicyAdmissionCrossPathsPairInventoryHoldDurationMinutes,
+    'eventDocument.eventPolicy.admission.crossPathsPairInventory.reservedPairCapacity': eventDocumentEventPolicyAdmissionCrossPathsPairInventoryReservedPairCapacity,
     'eventDocument.eventPolicy.admission.format': eventDocumentEventPolicyAdmissionFormat,
     'eventDocument.eventPolicy.admission.inviteRequired': eventDocumentEventPolicyAdmissionInviteRequired,
     'eventDocument.eventPolicy.admission.manualApprovalRequired': eventDocumentEventPolicyAdmissionManualApprovalRequired,
@@ -30339,6 +30767,7 @@ abstract final class CatchContractConstraints {
     'getCrossPathsSuggestionsCallableResponse.suggestions.items.event.eventId': getCrossPathsSuggestionsCallableResponseSuggestionsItemsEventEventId,
     'getCrossPathsSuggestionsCallableResponse.suggestions.items.event.meetingPoint': getCrossPathsSuggestionsCallableResponseSuggestionsItemsEventMeetingPoint,
     'getCrossPathsSuggestionsCallableResponse.suggestions.items.event.organizerId': getCrossPathsSuggestionsCallableResponseSuggestionsItemsEventOrganizerId,
+    'getCrossPathsSuggestionsCallableResponse.suggestions.items.event.pairHoldAvailable': getCrossPathsSuggestionsCallableResponseSuggestionsItemsEventPairHoldAvailable,
     'getCrossPathsSuggestionsCallableResponse.suggestions.items.event.photoUrl': getCrossPathsSuggestionsCallableResponseSuggestionsItemsEventPhotoUrl,
     'getCrossPathsSuggestionsCallableResponse.suggestions.items.event.startTime': getCrossPathsSuggestionsCallableResponseSuggestionsItemsEventStartTime,
     'getCrossPathsSuggestionsCallableResponse.suggestions.items.event.viewerBookingStatus': getCrossPathsSuggestionsCallableResponseSuggestionsItemsEventViewerBookingStatus,
@@ -30896,6 +31325,7 @@ abstract final class CatchContractConstraints {
     'organizerDocument.hostAvatarUrl': organizerDocumentHostAvatarUrl,
     'organizerDocument.hostDefaults.eventPolicy.admissionPreset': organizerDocumentHostDefaultsEventPolicyAdmissionPreset,
     'organizerDocument.hostDefaults.eventPolicy.cancellationPolicyId': organizerDocumentHostDefaultsEventPolicyCancellationPolicyId,
+    'organizerDocument.hostDefaults.eventPolicy.crossPathsPairCapacity': organizerDocumentHostDefaultsEventPolicyCrossPathsPairCapacity,
     'organizerDocument.hostDefaults.eventPolicy.dynamicPricingEnabled': organizerDocumentHostDefaultsEventPolicyDynamicPricingEnabled,
     'organizerDocument.hostDefaults.eventPolicy.dynamicPricingMaxInPaise': organizerDocumentHostDefaultsEventPolicyDynamicPricingMaxInPaise,
     'organizerDocument.hostDefaults.eventPolicy.dynamicPricingStepInPaise': organizerDocumentHostDefaultsEventPolicyDynamicPricingStepInPaise,
@@ -31299,6 +31729,7 @@ abstract final class CatchContractConstraints {
     'paymentDocument.checkoutSessionId': paymentDocumentCheckoutSessionId,
     'paymentDocument.createdAt._nanoseconds': paymentDocumentCreatedAtNanoseconds,
     'paymentDocument.createdAt._seconds': paymentDocumentCreatedAtSeconds,
+    'paymentDocument.crossPathsPairHoldId': paymentDocumentCrossPathsPairHoldId,
     'paymentDocument.currency': paymentDocumentCurrency,
     'paymentDocument.demoOps': paymentDocumentDemoOps,
     'paymentDocument.demoOpsCommand': paymentDocumentDemoOpsCommand,
@@ -31516,6 +31947,7 @@ abstract final class CatchContractConstraints {
     'respondCrossPathsInvitationCallablePayload.invitationId': respondCrossPathsInvitationCallablePayloadInvitationId,
     'respondCrossPathsInvitationCallableResponse.conversationId': respondCrossPathsInvitationCallableResponseConversationId,
     'respondCrossPathsInvitationCallableResponse.invitationId': respondCrossPathsInvitationCallableResponseInvitationId,
+    'respondCrossPathsInvitationCallableResponse.pairHoldId': respondCrossPathsInvitationCallableResponsePairHoldId,
     'respondCrossPathsInvitationCallableResponse.status': respondCrossPathsInvitationCallableResponseStatus,
     'reviewDocument.clubId': reviewDocumentClubId,
     'reviewDocument.comment': reviewDocumentComment,
@@ -31676,6 +32108,7 @@ abstract final class CatchContractConstraints {
     'updateClubPatch.hostAvatarUrl': updateClubPatchHostAvatarUrl,
     'updateClubPatch.hostDefaults.eventPolicy.admissionPreset': updateClubPatchHostDefaultsEventPolicyAdmissionPreset,
     'updateClubPatch.hostDefaults.eventPolicy.cancellationPolicyId': updateClubPatchHostDefaultsEventPolicyCancellationPolicyId,
+    'updateClubPatch.hostDefaults.eventPolicy.crossPathsPairCapacity': updateClubPatchHostDefaultsEventPolicyCrossPathsPairCapacity,
     'updateClubPatch.hostDefaults.eventPolicy.dynamicPricingEnabled': updateClubPatchHostDefaultsEventPolicyDynamicPricingEnabled,
     'updateClubPatch.hostDefaults.eventPolicy.dynamicPricingMaxInPaise': updateClubPatchHostDefaultsEventPolicyDynamicPricingMaxInPaise,
     'updateClubPatch.hostDefaults.eventPolicy.dynamicPricingStepInPaise': updateClubPatchHostDefaultsEventPolicyDynamicPricingStepInPaise,
@@ -31771,6 +32204,9 @@ abstract final class CatchContractConstraints {
     'updateEventCallablePayload.fields.eventPolicy.admission.balancedRatioPolicy.rightCohortId': updateEventCallablePayloadFieldsEventPolicyAdmissionBalancedRatioPolicyRightCohortId,
     'updateEventCallablePayload.fields.eventPolicy.admission.capacityLimit': updateEventCallablePayloadFieldsEventPolicyAdmissionCapacityLimit,
     'updateEventCallablePayload.fields.eventPolicy.admission.cohortCapacityLimits': updateEventCallablePayloadFieldsEventPolicyAdmissionCohortCapacityLimits,
+    'updateEventCallablePayload.fields.eventPolicy.admission.crossPathsPairInventory.enabled': updateEventCallablePayloadFieldsEventPolicyAdmissionCrossPathsPairInventoryEnabled,
+    'updateEventCallablePayload.fields.eventPolicy.admission.crossPathsPairInventory.holdDurationMinutes': updateEventCallablePayloadFieldsEventPolicyAdmissionCrossPathsPairInventoryHoldDurationMinutes,
+    'updateEventCallablePayload.fields.eventPolicy.admission.crossPathsPairInventory.reservedPairCapacity': updateEventCallablePayloadFieldsEventPolicyAdmissionCrossPathsPairInventoryReservedPairCapacity,
     'updateEventCallablePayload.fields.eventPolicy.admission.format': updateEventCallablePayloadFieldsEventPolicyAdmissionFormat,
     'updateEventCallablePayload.fields.eventPolicy.admission.inviteRequired': updateEventCallablePayloadFieldsEventPolicyAdmissionInviteRequired,
     'updateEventCallablePayload.fields.eventPolicy.admission.manualApprovalRequired': updateEventCallablePayloadFieldsEventPolicyAdmissionManualApprovalRequired,
@@ -31816,6 +32252,7 @@ abstract final class CatchContractConstraints {
     'updateOrganizerCallablePayload.fields.hostAvatarUrl': updateOrganizerCallablePayloadFieldsHostAvatarUrl,
     'updateOrganizerCallablePayload.fields.hostDefaults.eventPolicy.admissionPreset': updateOrganizerCallablePayloadFieldsHostDefaultsEventPolicyAdmissionPreset,
     'updateOrganizerCallablePayload.fields.hostDefaults.eventPolicy.cancellationPolicyId': updateOrganizerCallablePayloadFieldsHostDefaultsEventPolicyCancellationPolicyId,
+    'updateOrganizerCallablePayload.fields.hostDefaults.eventPolicy.crossPathsPairCapacity': updateOrganizerCallablePayloadFieldsHostDefaultsEventPolicyCrossPathsPairCapacity,
     'updateOrganizerCallablePayload.fields.hostDefaults.eventPolicy.dynamicPricingEnabled': updateOrganizerCallablePayloadFieldsHostDefaultsEventPolicyDynamicPricingEnabled,
     'updateOrganizerCallablePayload.fields.hostDefaults.eventPolicy.dynamicPricingMaxInPaise': updateOrganizerCallablePayloadFieldsHostDefaultsEventPolicyDynamicPricingMaxInPaise,
     'updateOrganizerCallablePayload.fields.hostDefaults.eventPolicy.dynamicPricingStepInPaise': updateOrganizerCallablePayloadFieldsHostDefaultsEventPolicyDynamicPricingStepInPaise,

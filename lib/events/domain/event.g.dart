@@ -40,6 +40,15 @@ _Event _$EventFromJson(Map<String, dynamic> json) => _Event(
   bookedCount: (json['bookedCount'] as num?)?.toInt(),
   checkedInCount: (json['checkedInCount'] as num?)?.toInt(),
   waitlistedCount: (json['waitlistedCount'] as num?)?.toInt(),
+  crossPathsPairHeldCount:
+      (json['crossPathsPairHeldCount'] as num?)?.toInt() ?? 0,
+  crossPathsPairConfirmedCount:
+      (json['crossPathsPairConfirmedCount'] as num?)?.toInt() ?? 0,
+  crossPathsPairHeldCohortCounts:
+      (json['crossPathsPairHeldCohortCounts'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(k, (e as num).toInt()),
+      ) ??
+      const {},
   status:
       $enumDecodeNullable(_$EventLifecycleStatusEnumMap, json['status']) ??
       EventLifecycleStatus.active,
@@ -89,6 +98,9 @@ Map<String, dynamic> _$EventToJson(_Event instance) => <String, dynamic>{
   'bookedCount': ?instance.bookedCount,
   'checkedInCount': ?instance.checkedInCount,
   'waitlistedCount': ?instance.waitlistedCount,
+  'crossPathsPairHeldCount': instance.crossPathsPairHeldCount,
+  'crossPathsPairConfirmedCount': instance.crossPathsPairConfirmedCount,
+  'crossPathsPairHeldCohortCounts': instance.crossPathsPairHeldCohortCounts,
   'status': _$EventLifecycleStatusEnumMap[instance.status]!,
   'cancelledAt': const NullableTimestampConverter().toJson(
     instance.cancelledAt,

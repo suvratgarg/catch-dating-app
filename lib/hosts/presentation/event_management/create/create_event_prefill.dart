@@ -93,6 +93,10 @@ class CreateEventPrefill {
                 currencyCode: event.currency,
               ),
         cancellationPolicy: policy.cancellationPolicy.id.name,
+        crossPathsPairInventoryEnabled:
+            admission.crossPathsPairInventory.isEnabled,
+        crossPathsPairCapacity:
+            '${admission.crossPathsPairInventory.reservedPairCapacity}',
         // Event Success is stored separately from the public event snapshot;
         // start from the current format recommendation rather than pretending
         // the old event's private plan was copied.

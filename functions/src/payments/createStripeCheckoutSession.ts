@@ -33,6 +33,8 @@ import {
   rosterWithReservedWaitlistOffers,
 } from "../events/eventPolicy";
 import {resolveInviteAttribution} from "../events/inviteLinks";
+import {requireActiveCrossPathsPairHold} from
+  "../crossPaths/pairHoldValidation";
 import {
   CreateStripeCheckoutSessionCallablePayload,
 } from "../shared/generated/createStripeCheckoutSessionCallablePayload";
@@ -78,7 +80,7 @@ export async function createStripeCheckoutSessionHandler(
     validateCreateStripeCheckoutSessionCallablePayload,
     normalizeStripeCheckoutPayload
   );
-  const {eventId, inviteCode, inviteLinkId} = payload;
+  const {eventId, inviteCode, inviteLinkId, crossPathsPairHoldId} = payload;
   const db = deps.firestore();
 
   const [
@@ -137,7 +139,8 @@ export async function createStripeCheckoutSessionHandler(
   const signedUpCount = activeParticipationsSnap.docs
     .filter((doc) => doc.data().status === "signedUp")
     .length;
-  if ((event.bookedCount ?? signedUpCount) >= event.capacityLimit) {
+  if (!crossPathsPairHoldId &&
+      (event.bookedCount ?? signedUpCount) >= event.capacityLimit) {
     throw new HttpsError(
       "failed-precondition",
       "This event is full. You can join the waitlist instead."
@@ -174,23 +177,34 @@ export async function createStripeCheckoutSessionHandler(
     policy,
     inviteCode,
   });
-  assertPolicyAllowsSignup({
-    policy,
-    cohortId,
-    roster: await rosterWithReservedWaitlistOffers(
+  const pairHold = crossPathsPairHoldId ?
+    await requireActiveCrossPathsPairHold({
       db,
+      holdId: crossPathsPairHoldId,
       eventId,
-      {
-        ...rosterFromEvent(event),
-        totalBooked: event.bookedCount ?? signedUpCount,
-      },
-      {excludeUid: uid}
-    ),
-    hasValidInvite: hasValidInvite || hasWaitlistOfferAccess,
-    hasHostApproval: hasHostApprovedJoinRequest(participation),
-  });
+      requesterUid: uid,
+    }) : null;
+  const admissionRoster = await rosterWithReservedWaitlistOffers(
+    db,
+    eventId,
+    {
+      ...rosterFromEvent(event),
+      totalBooked: (event.bookedCount ?? signedUpCount) +
+        Math.max(0, event.crossPathsPairHeldCount ?? 0),
+    },
+    {excludeUid: uid}
+  );
+  if (!pairHold) {
+    assertPolicyAllowsSignup({
+      policy,
+      cohortId,
+      roster: admissionRoster,
+      hasValidInvite: hasValidInvite || hasWaitlistOfferAccess,
+      hasHostApproval: hasHostApprovedJoinRequest(participation),
+    });
+  }
 
-  const amountMinor = quotePriceInPaise({
+  const amountMinor = pairHold?.requesterPriceInPaise ?? quotePriceInPaise({
     policy,
     cohortId,
     roster: rosterFromEvent(event),
@@ -276,6 +290,7 @@ export async function createStripeCheckoutSessionHandler(
       (hasValidInvite === true || hasWaitlistOfferAccess === true),
     inviteLinkId: inviteAttribution?.inviteLinkId,
     inviteSource: inviteAttribution?.inviteSource,
+    ...(pairHold && crossPathsPairHoldId ? {crossPathsPairHoldId} : {}),
     applicationFeeAmount,
     successUrl: successUrlForSession(eventId),
     cancelUrl: stripeCheckoutCancelUrlValue(),
@@ -302,6 +317,7 @@ export async function createStripeCheckoutSessionHandler(
     stripeAccountId: hostAccount.stripeAccountId,
     applicationFeeAmount,
     status: "pending",
+    ...(pairHold && crossPathsPairHoldId ? {crossPathsPairHoldId} : {}),
     signUpFailed: false,
     ...(inviteAttribution?.inviteLinkId ?
       {inviteLinkId: inviteAttribution.inviteLinkId} :
@@ -338,7 +354,12 @@ function successUrlForSession(eventId: string): string {
 
 function normalizeStripeCheckoutPayload(data: unknown): unknown {
   return normalizePayloadStrings(data, {
-    stringFields: ["eventId", "inviteCode", "inviteLinkId"],
+    stringFields: [
+      "eventId",
+      "inviteCode",
+      "inviteLinkId",
+      "crossPathsPairHoldId",
+    ],
   });
 }
 

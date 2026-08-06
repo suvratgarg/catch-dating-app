@@ -1,6 +1,14 @@
 {
   "indexes": [
     {
+      "collectionGroup": "crossPathsPairHolds",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "status", "mode": "ASCENDING"},
+        {"fieldPath": "expiresAt", "mode": "ASCENDING"}
+      ]
+    },
+    {
       "collectionGroup": "crossPathsInvitations",
       "queryScope": "COLLECTION",
       "fields": [

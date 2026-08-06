@@ -1,9 +1,11 @@
 import * as admin from "firebase-admin";
 import {HttpsError} from "firebase-functions/v2/https";
 import {
+  CrossPathsPairHoldDocument,
   EventDocument,
   UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
+import {crossPathsEventPlanId} from "../crossPaths/identifiers";
 import {assertNoBlockingRelationshipInTransaction} from "../safety/blocking";
 import {computeAge} from "../shared/dates";
 import {assertBookingReadyUserProfile} from "../shared/profileReadiness";
@@ -71,6 +73,7 @@ export async function signUpUserForEvent(
     hasValidInvite?: boolean;
     hasHostApproval?: boolean;
     inviteAttribution?: InviteAttribution | null;
+    crossPathsPairHoldId?: string | null;
   } = {}
 ): Promise<void> {
   const eventRef = db.collection("events").doc(eventId);
@@ -78,6 +81,9 @@ export async function signUpUserForEvent(
   const participationRef = db
     .collection("eventParticipations")
     .doc(eventParticipationId(eventId, userId));
+  const pairHoldRef = options.crossPathsPairHoldId ?
+    db.collection("crossPathsPairHolds").doc(options.crossPathsPairHoldId) :
+    null;
 
   await db.runTransaction(async (tx) => {
     const [
@@ -109,6 +115,18 @@ export async function signUpUserForEvent(
       "EventDocument"
 
     );
+    const pairHoldSnap = pairHoldRef ? await tx.get(pairHoldRef) : null;
+    const pairHold = pairHoldSnap?.exists ?
+      requireDoc<CrossPathsPairHoldDocument>(
+        pairHoldSnap,
+        "CrossPathsPairHoldDocument (booking)"
+      ) : null;
+    if (options.crossPathsPairHoldId && !pairHold) {
+      throw new HttpsError(
+        "failed-precondition",
+        "This Cross Paths hold is no longer available."
+      );
+    }
     if (event.status === "cancelled") {
       throw new HttpsError(
         "failed-precondition",
@@ -129,12 +147,70 @@ export async function signUpUserForEvent(
       } :
       null;
 
-    // Idempotent — user already signed up.
     if (
       existingParticipation?.status === "signedUp" ||
       existingParticipation?.status === "attended"
     ) {
-      return;
+      if (!pairHold) return;
+      if (
+        pairHold.eventId === eventId &&
+        pairHold.requesterUid === userId &&
+        pairHold.status === "confirmed" &&
+        pairHold.requesterBookingStatus === "confirmed"
+      ) {
+        return;
+      }
+      throw new HttpsError(
+        "failed-precondition",
+        "This Cross Paths hold does not match the confirmed booking."
+      );
+    }
+
+    let pairConversationId: string | null = null;
+    let pairPlanRef: FirebaseFirestore.DocumentReference | null = null;
+
+    if (pairHold) {
+      if (
+        pairHold.eventId !== eventId ||
+        pairHold.requesterUid !== userId ||
+        pairHold.status !== "active" ||
+        pairHold.requesterBookingStatus !== "held" ||
+        pairHold.expiresAt.toMillis() <= Date.now() ||
+        !activeParticipations.some((row) =>
+          row.data.uid === pairHold.attendeeUid &&
+          (row.data.status === "signedUp" || row.data.status === "attended"))
+      ) {
+        throw new HttpsError(
+          "failed-precondition",
+          "This Cross Paths hold is no longer available."
+        );
+      }
+      const invitationSnap = await tx.get(
+        db.collection("crossPathsInvitations").doc(pairHold.invitationId)
+      );
+      if (
+        !invitationSnap.exists ||
+        invitationSnap.data()?.status !== "accepted" ||
+        invitationSnap.data()?.pairHoldId !== pairHoldSnap?.id
+      ) {
+        throw new HttpsError(
+          "failed-precondition",
+          "This Cross Paths hold is no longer available."
+        );
+      }
+      pairConversationId = crossPathsEventPlanId(
+        eventId,
+        pairHold.requesterUid,
+        pairHold.attendeeUid
+      );
+      pairPlanRef = db.collection("matches").doc(pairConversationId);
+      const pairPlanSnap = await tx.get(pairPlanRef);
+      if (pairPlanSnap.exists) {
+        throw new HttpsError(
+          "failed-precondition",
+          "This Cross Paths event plan already exists."
+        );
+      }
     }
 
     const activeParticipantIds = participantUids(activeParticipations);
@@ -177,7 +253,8 @@ export async function signUpUserForEvent(
     const currentBookedCount = event.bookedCount ?? signedUpCount;
     const baseRoster = {
       ...rosterFromEvent(event),
-      totalBooked: currentBookedCount,
+      totalBooked: currentBookedCount +
+        Math.max(0, event.crossPathsPairHeldCount ?? 0),
     };
     const reservedRoster = await rosterWithReservedWaitlistOffersInTransaction(
       tx,
@@ -186,12 +263,25 @@ export async function signUpUserForEvent(
       baseRoster,
       {excludeUid: userId}
     );
+    const admissionRoster = pairHold ? {
+      ...reservedRoster,
+      totalBooked: Math.max(0, reservedRoster.totalBooked - 1),
+      bookedCountsByCohort: decrementCount(
+        reservedRoster.bookedCountsByCohort,
+        pairHold.requesterCohortId
+      ),
+      crossPathsPairHeldCount: Math.max(
+        0,
+        (reservedRoster.crossPathsPairHeldCount ?? 0) - 1
+      ),
+    } : reservedRoster;
     assertPolicyAllowsSignup({
       policy,
       cohortId,
-      roster: reservedRoster,
+      roster: admissionRoster,
       hasValidInvite: options.hasValidInvite,
       hasHostApproval: options.hasHostApproval,
+      admissionMode: pairHold ? "crossPathsPair" : "general",
     });
 
     await claimUserEventScheduleInTransaction(tx, db, {
@@ -227,6 +317,16 @@ export async function signUpUserForEvent(
       eventUpdate.waitlistedCohortCounts = decrementCount(
         event.waitlistedCohortCounts ?? {},
         cohortId
+      );
+    }
+    if (pairHold) {
+      eventUpdate.crossPathsPairHeldCount =
+        admin.firestore.FieldValue.increment(-1);
+      eventUpdate.crossPathsPairConfirmedCount =
+        admin.firestore.FieldValue.increment(1);
+      eventUpdate.crossPathsPairHeldCohortCounts = decrementCount(
+        event.crossPathsPairHeldCohortCounts ?? {},
+        pairHold.requesterCohortId
       );
     }
 
@@ -268,6 +368,64 @@ export async function signUpUserForEvent(
 
       organizerId: event.organizerId ?? event.clubId,
     });
+    if (
+      pairHold &&
+      pairHoldRef &&
+      pairPlanRef &&
+      pairConversationId
+    ) {
+      const now = admin.firestore.Timestamp.now();
+      tx.create(pairPlanRef, {
+        user1Id: pairHold.requesterUid,
+        user2Id: pairHold.attendeeUid,
+        eventIds: [eventId],
+        createdAt: now,
+        lastMessageAt: null,
+        lastMessagePreview: null,
+        lastMessageSenderId: null,
+        unreadCounts: {
+          [pairHold.requesterUid]: 0,
+          [pairHold.attendeeUid]: 0,
+        },
+        status: "active",
+        blockedBy: null,
+        blockedAt: null,
+        participantIds: [pairHold.requesterUid, pairHold.attendeeUid],
+        conversationType: "crossPathsEventPlan",
+        crossPathsInvitationId: pairHold.invitationId,
+        eventPlanExpiresAt: admin.firestore.Timestamp.fromMillis(
+          event.endTime.toMillis() + 24 * 60 * 60 * 1000
+        ),
+        closedAt: null,
+      });
+      tx.update(pairHoldRef, {
+        status: "confirmed",
+        requesterBookingStatus: "confirmed",
+        updatedAt: now,
+        confirmedAt: now,
+        paymentId: paymentId ?? null,
+        conversationId: pairConversationId,
+      });
+      tx.update(
+        db.collection("crossPathsInvitations").doc(pairHold.invitationId),
+        {updatedAt: now, conversationId: pairConversationId}
+      );
+      setActivityNotificationInTransaction(tx, db, {
+        id: activityNotificationId(
+          "crossPathsInvitationAccepted",
+          pairHold.invitationId
+        ),
+        uid: pairHold.attendeeUid,
+        type: "crossPathsInvitationAccepted",
+        title: "Your event plan is ready",
+        body: "Both spots are confirmed. Open your Cross Paths event plan.",
+        createdAt: now,
+        eventId,
+        matchId: pairConversationId,
+        invitationId: pairHold.invitationId,
+        actorUid: pairHold.requesterUid,
+      });
+    }
   });
 }
 

@@ -10,33 +10,33 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1116,
-    "widgetClasses": 980,
-    "stateClasses": 136,
+    "total": 1118,
+    "widgetClasses": 981,
+    "stateClasses": 137,
     "publicClasses": 973,
-    "privateClasses": 143,
+    "privateClasses": 145,
     "byRole": {
       "atom": 57,
       "composition": 360,
       "feature-adapter": 285,
       "pattern": 17,
-      "screen": 261,
-      "widget-state": 136
+      "screen": 262,
+      "widget-state": 137
     },
     "byDecision": {
       "keep-canonical-contract": 200,
       "keep-public-cataloged": 708,
-      "keep-widget-state": 136,
+      "keep-widget-state": 137,
       "review-catalog-coverage": 44,
       "review-promote-or-consolidate": 21,
-      "review-promote-or-inline": 7
+      "review-promote-or-inline": 8
     },
     "byCatalogStatus": {
       "cataloged": 669,
       "contracted": 200,
-      "not-applicable": 136,
+      "not-applicable": 137,
       "route-covered": 56,
-      "uncataloged": 55
+      "uncataloged": 56
     },
     "conceptCount": 64,
     "memberClassCount": 118,
@@ -10250,7 +10250,8 @@
       ],
       "flags": [
         "primitive-imports-data-layer",
-        "primitive-imports-provider-layer"
+        "primitive-imports-provider-layer",
+        "primitive-imports-routing-layer"
       ]
     },
     {
@@ -10282,7 +10283,8 @@
       ],
       "flags": [
         "primitive-imports-data-layer",
-        "primitive-imports-provider-layer"
+        "primitive-imports-provider-layer",
+        "primitive-imports-routing-layer"
       ]
     },
     {
@@ -10314,7 +10316,8 @@
       ],
       "flags": [
         "primitive-imports-data-layer",
-        "primitive-imports-provider-layer"
+        "primitive-imports-provider-layer",
+        "primitive-imports-routing-layer"
       ]
     },
     {
@@ -10380,6 +10383,67 @@
       "flags": [
         "private-widget-publicization-required"
       ]
+    },
+    {
+      "name": "_PairHoldPanel",
+      "file": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+      "classKind": "widget",
+      "baseClass": "ConsumerStatefulWidget",
+      "visibility": "private",
+      "role": "screen",
+      "canonicalFamily": "screen.pair_hold_panel",
+      "publicApi": false,
+      "catalogStatus": "uncataloged",
+      "contractId": null,
+      "conceptRole": "screen",
+      "conceptId": null,
+      "parentConceptId": null,
+      "qualifier": null,
+      "collisionKey": "pair_hold_panel",
+      "decisionRef": "generated-rule:screen-boundary",
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "review-promote-or-inline",
+      "remediationOptions": [
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "private-widget-publicization-required"
+      ]
+    },
+    {
+      "name": "_PairHoldPanelState",
+      "file": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+      "classKind": "widget-state",
+      "baseClass": "ConsumerState<_PairHoldPanel>",
+      "visibility": "private",
+      "role": "widget-state",
+      "canonicalFamily": "state.pair_hold_panel",
+      "publicApi": false,
+      "catalogStatus": "not-applicable",
+      "contractId": null,
+      "conceptRole": null,
+      "conceptId": null,
+      "parentConceptId": null,
+      "qualifier": null,
+      "collisionKey": null,
+      "decisionRef": null,
+      "allowedDependencyLevel": "owning-widget-state",
+      "stateOwnership": "owning-widget-state",
+      "asyncOwnership": "owning-widget-state",
+      "layoutOwnership": "owning-widget-state",
+      "actionOwnership": "owning-widget-state",
+      "decision": "keep-widget-state",
+      "remediationOptions": [
+        "moveStateToController",
+        "routeThroughScreenState"
+      ],
+      "flags": []
     },
     {
       "name": "CrossPathsInvitationScreen",

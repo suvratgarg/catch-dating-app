@@ -17970,6 +17970,99 @@ abstract class AppLocalizations {
     required Object timePriceLabel,
     required Object readOnlySupplyLabel,
   });
+
+  /// CTA for sending an invitation that can reserve a Cross Paths pair spot.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask to go together'**
+  String get crossPathsPairInventoryActionAskTogether;
+
+  /// Fail-safe status explaining that a pair reservation is not a completed booking.
+  ///
+  /// In en, this message translates to:
+  /// **'Your pair spot is held — you are not booked yet'**
+  String get crossPathsPairInventoryStatusHeldNotBooked;
+
+  /// Terminal pair hold status.
+  ///
+  /// In en, this message translates to:
+  /// **'This pair spot is no longer held'**
+  String get crossPathsPairInventoryStatusNoLongerHeld;
+
+  /// Pair hold countdown copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete your booking within {minutes} minutes or this spot returns to the event.'**
+  String crossPathsPairInventoryHoldCountdown({required int minutes});
+
+  /// Pair hold expiry guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'You can return to the event to see the latest availability.'**
+  String get crossPathsPairInventoryHoldEndedBody;
+
+  /// Independent booking states for both people in a pair plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Your booking: {requesterStatus} · Their booking: {attendeeStatus}'**
+  String crossPathsPairInventoryBookingStates({
+    required Object requesterStatus,
+    required Object attendeeStatus,
+  });
+
+  /// Human-readable booking status for the requester while a companion spot is held.
+  ///
+  /// In en, this message translates to:
+  /// **'Held, not booked'**
+  String get crossPathsPairInventoryBookingStatusHeld;
+
+  /// Human-readable confirmed booking status in a pair plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmed'**
+  String get crossPathsPairInventoryBookingStatusConfirmed;
+
+  /// Fail-safe human-readable booking status when a pair participant has no confirmed booking.
+  ///
+  /// In en, this message translates to:
+  /// **'Not booked'**
+  String get crossPathsPairInventoryBookingStatusNotBooked;
+
+  /// CTA to convert an active pair hold into a booking.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete booking'**
+  String get crossPathsPairInventoryActionCompleteBooking;
+
+  /// Recipient state while requester has a pair hold.
+  ///
+  /// In en, this message translates to:
+  /// **'Their place is confirmed. We are waiting for the person who sent the invitation to finish booking.'**
+  String get crossPathsPairInventoryWaitingForRequester;
+
+  /// Feedback after starting pair hold checkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking started. This plan will open when your place is confirmed.'**
+  String get crossPathsPairInventoryBookingStarted;
+
+  /// Host toggle for pair inventory.
+  ///
+  /// In en, this message translates to:
+  /// **'Reserved Cross Paths spots'**
+  String get hostsEventPolicyStepTitleCrossPathsPairs;
+
+  /// Host explanation of pair inventory.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep a small part of capacity for people who agree to attend together through Cross Paths.'**
+  String get hostsEventPolicyStepBodyCrossPathsPairs;
+
+  /// Host pair capacity field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Reserved companion spots'**
+  String get hostsEventPolicyStepTitleCrossPathsPairCapacity;
 }
 
 class _AppLocalizationsDelegate

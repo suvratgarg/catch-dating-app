@@ -9,4 +9,5 @@ export interface RespondCrossPathsInvitationCallableResponse {
   invitationId: string;
   status: "accepted" | "declined";
   conversationId: string | null;
+  pairHoldId: string | null;
 }

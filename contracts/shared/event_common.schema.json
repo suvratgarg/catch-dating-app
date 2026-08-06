@@ -574,6 +574,16 @@
                   ]
                 }
               }
+            },
+            "crossPathsPairInventory": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["enabled", "reservedPairCapacity", "holdDurationMinutes"],
+              "properties": {
+                "enabled": {"type": "boolean"},
+                "reservedPairCapacity": {"type": "integer", "minimum": 0, "maximum": 100},
+                "holdDurationMinutes": {"type": "integer", "minimum": 5, "maximum": 30}
+              }
             }
           }
         },
@@ -653,6 +663,7 @@
         "maxMen": {"type": ["integer", "null"], "minimum": 0},
         "maxWomen": {"type": ["integer", "null"], "minimum": 0},
         "dynamicPricingEnabled": {"type": "boolean"},
+        "crossPathsPairCapacity": {"type": "integer", "minimum": 0, "maximum": 100},
         "dynamicPricingStepInPaise": {
           "type": ["integer", "null"],
           "minimum": 0,

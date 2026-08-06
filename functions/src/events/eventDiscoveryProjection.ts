@@ -60,8 +60,20 @@ export function eventDiscoveryProjection(
   const projectedEvent = {...event, bookedCount};
   const roster = rosterFromEvent(projectedEvent as EventDocument);
   const isCancelled = event.status === "cancelled";
+  const pairInventory = policy.admission.crossPathsPairInventory;
+  const reservedPairCapacity = pairInventory?.enabled ?
+    pairInventory.reservedPairCapacity : 0;
+  const confirmedPairCount = Math.max(
+    0,
+    Math.trunc(event.crossPathsPairConfirmedCount ?? 0)
+  );
+  const generalBookedCount = Math.max(0, bookedCount - confirmedPairCount);
+  const generalCapacity = Math.max(
+    0,
+    policy.admission.capacityLimit - reservedPairCapacity
+  );
   const hasOpenSpots =
-    !isCancelled && bookedCount < policy.admission.capacityLimit;
+    !isCancelled && generalBookedCount < generalCapacity;
   const waitlistOpen =
     policy.admission.waitlistPolicy?.mode !== "disabled";
   const gated =

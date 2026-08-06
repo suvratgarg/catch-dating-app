@@ -1,6 +1,10 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_polaroid.dart';
+import 'package:catch_dating_app/cross_paths/data/cross_paths_feature_config_provider.dart';
+import 'package:catch_dating_app/cross_paths/data/cross_paths_repository.dart';
+import 'package:catch_dating_app/cross_paths/domain/cross_paths_feature_config.dart';
+import 'package:catch_dating_app/cross_paths/domain/cross_paths_invitation.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_suggestion.dart';
 import 'package:catch_dating_app/cross_paths/presentation/cross_paths_explore_card.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
@@ -126,6 +130,51 @@ void main() {
 
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('pair inventory offers an invitation before booking', (
+    tester,
+  ) async {
+    final fixture = _fixture(pairHoldAvailable: true);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          uidProvider.overrideWith((ref) => Stream.value('viewer-1')),
+          crossPathsFeatureConfigProvider.overrideWith(
+            (ref) => const CrossPathsFeatureConfig(
+              consentControlsEnabled: true,
+              exploreSuggestionsEnabled: true,
+              pairInventoryEnabled: true,
+            ),
+          ),
+          watchOutgoingCrossPathsInvitationProvider(
+            'viewer-1',
+            fixture.suggestion.event.eventId,
+          ).overrideWith((ref) => Stream<CrossPathsInvitation?>.value(null)),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: Align(
+              alignment: Alignment.bottomCenter,
+              child: CrossPathsProfilePreviewSheet(
+                suggestion: fixture.suggestion,
+                event: fixture.eventItem.event,
+                onEventSelected: () {},
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.text('Ask to go together'), findsOneWidget);
+    expect(find.text('Join the event to invite'), findsNothing);
+  });
 }
 
 Future<void> _pumpCard(
@@ -152,7 +201,9 @@ Future<void> _pumpCard(
   await tester.pump();
 }
 
-({CrossPathsSuggestion suggestion, ExploreEventItem eventItem}) _fixture() {
+({CrossPathsSuggestion suggestion, ExploreEventItem eventItem}) _fixture({
+  bool pairHoldAvailable = false,
+}) {
   final start = DateTime(2026, 8, 8, 18);
   final club = club_test.buildClub();
   final event = event_test.buildEvent(startTime: start);
@@ -184,6 +235,7 @@ Future<void> _pumpCard(
       'activityKind': event.activityKind.name,
       'photoUrl': null,
       'viewerBookingStatus': 'canBookNow',
+      'pairHoldAvailable': pairHoldAvailable,
     },
     'reasonCodes': [
       'attending_event',

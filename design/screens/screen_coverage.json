@@ -99,7 +99,7 @@
       "routeId": "crossPathsInvitationScreen",
       "status": "contracted",
       "priority": "P1",
-      "reason": "Covered by screen.cross_paths.invitation as the participant-only Cross Paths invitation route.",
+      "reason": "Covered by screen.cross_paths.invitation as the participant-only Cross Paths invitation and companion-seat hold route.",
       "screenId": "screen.cross_paths.invitation"
     },
     {

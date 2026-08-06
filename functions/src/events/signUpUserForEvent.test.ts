@@ -8,6 +8,10 @@ type FakeData = Record<string, unknown>;
 class FakeDocRef {
   constructor(readonly firestore: FakeFirestore, readonly path: string) {}
 
+  get id(): string {
+    return this.path.split("/").at(-1)!;
+  }
+
   collection(collectionPath: string) {
     return {
       doc: (docId: string) => new FakeDocRef(
@@ -55,7 +59,10 @@ class FakeQuery {
 }
 
 class FakeSnapshot {
-  constructor(private readonly value: FakeData | undefined) {}
+  constructor(
+    readonly id: string,
+    private readonly value: FakeData | undefined
+  ) {}
 
   get exists(): boolean {
     return this.value !== undefined;
@@ -119,7 +126,7 @@ class FakeTransaction {
     docs: Array<{ref: FakeDocRef; data: () => FakeData}>;
   }> {
     if (ref instanceof FakeQuery) return ref.get();
-    return new FakeSnapshot(this.firestore.get(ref.path));
+    return new FakeSnapshot(ref.id, this.firestore.get(ref.path));
   }
 
   update(ref: FakeDocRef, patch: FakeData) {
@@ -129,6 +136,15 @@ class FakeTransaction {
         throw new Error(`Missing doc for update: ${ref.path}`);
       }
       this.firestore.set(ref.path, {...current, ...patch});
+    });
+  }
+
+  create(ref: FakeDocRef, data: FakeData) {
+    this.writes.push(() => {
+      if (this.firestore.get(ref.path) !== undefined) {
+        throw new Error(`Doc already exists: ${ref.path}`);
+      }
+      this.firestore.set(ref.path, data);
     });
   }
 
@@ -218,6 +234,39 @@ function runningPreferences(overrides: FakeData = {}): FakeData {
   };
 }
 
+function pairInventoryPolicy(): FakeData {
+  return {
+    version: 1,
+    admission: {
+      format: "open",
+      capacityLimit: 20,
+      waitlistPolicy: {mode: "rankedOffer", offerWindowMinutes: 20},
+      inviteRequired: false,
+      membershipRequired: false,
+      manualApprovalRequired: false,
+      privateAccessPolicy: {
+        mode: "none",
+        inviteCodeHint: null,
+        privateLinkEnabled: false,
+      },
+      cohortCapacityLimits: {},
+      balancedRatioPolicy: null,
+      crossPathsPairInventory: {
+        enabled: true,
+        reservedPairCapacity: 2,
+        holdDurationMinutes: 15,
+      },
+    },
+    pricing: {
+      basePriceInPaise: 0,
+      cohortAdjustmentsInPaise: {},
+      demandPricingRules: [],
+    },
+    cancellation: {policyId: "standard"},
+    settlement: {hostPayoutTiming: "afterEventCompletion"},
+  };
+}
+
 test("signUpUserForEvent writes a signup activity notification", async () => {
   const db = firestore({
     "events/event-1": event(),
@@ -279,6 +328,77 @@ test("signUpUserForEvent updates event discovery availability", async () => {
     "nonBinaryOrOther",
   ]);
 });
+
+test("signUpUserForEvent converts a pair hold into a booking and plan",
+  async () => {
+    const start = Date.parse("2027-05-02T01:30:00.000Z");
+    const db = firestore({
+      "events/event-1": event({
+        startTime: admin.firestore.Timestamp.fromMillis(start),
+        endTime: admin.firestore.Timestamp.fromMillis(start + 3600000),
+        bookedCount: 1,
+        cohortCounts: {womenInterestedInMen: 1},
+        crossPathsPairHeldCount: 1,
+        crossPathsPairConfirmedCount: 0,
+        crossPathsPairHeldCohortCounts: {menInterestedInWomen: 1},
+        eventPolicy: pairInventoryPolicy(),
+      }),
+      "users/runner-1": user(),
+      "eventParticipations/event-1_attendee-1": {
+        eventId: "event-1",
+        clubId: "club-1",
+        uid: "attendee-1",
+        status: "signedUp",
+      },
+      "crossPathsInvitations/invitation-1": {
+        eventId: "event-1",
+        senderUid: "runner-1",
+        recipientUid: "attendee-1",
+        participantIds: ["runner-1", "attendee-1"],
+        status: "accepted",
+        pairHoldId: "hold-1",
+      },
+      "crossPathsPairHolds/hold-1": {
+        eventId: "event-1",
+        invitationId: "invitation-1",
+        organizerId: "club-1",
+        requesterUid: "runner-1",
+        attendeeUid: "attendee-1",
+        participantIds: ["runner-1", "attendee-1"],
+        status: "active",
+        requesterBookingStatus: "held",
+        attendeeBookingStatus: "confirmed",
+        requesterCohortId: "menInterestedInWomen",
+        attendeeCohortId: "womenInterestedInMen",
+        requesterPriceInPaise: 0,
+        attendeePriceInPaise: 0,
+        currency: "INR",
+        createdAt: admin.firestore.Timestamp.now(),
+        updatedAt: admin.firestore.Timestamp.now(),
+        expiresAt: admin.firestore.Timestamp.fromMillis(start - 3600000),
+        confirmedAt: null,
+        releasedAt: null,
+        releaseReason: null,
+        paymentId: null,
+        conversationId: null,
+      },
+    });
+
+    await signUpUserForEvent(db, "event-1", "runner-1", undefined, {
+      crossPathsPairHoldId: "hold-1",
+    });
+
+    const fake = db as unknown as FakeFirestore;
+    assert.equal(fake.get("crossPathsPairHolds/hold-1")?.status, "confirmed");
+    assert.equal(
+      fake.get("eventParticipations/event-1_runner-1")?.status,
+      "signedUp"
+    );
+    assert.equal(
+      fake.collectionDocs("matches")[0]?.data.conversationType,
+      "crossPathsEventPlan"
+    );
+  });
 
 test("signUpUserForEvent writes a waitlist promotion notification", async (
 ) => {

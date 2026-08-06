@@ -32,6 +32,8 @@ import {
   InviteAttribution,
   resolveInviteAttribution,
 } from "./inviteLinks";
+import {requireActiveCrossPathsPairHold} from
+  "../crossPaths/pairHoldValidation";
 
 interface SignUpForFreeEventDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -49,6 +51,7 @@ interface SignUpForFreeEventDeps {
       hasValidInvite?: boolean;
       hasHostApproval?: boolean;
       inviteAttribution?: InviteAttribution | null;
+      crossPathsPairHoldId?: string | null;
     }
   ) => Promise<void>;
 }
@@ -75,7 +78,7 @@ export async function signUpForFreeEventHandler(
     validateEventBookingCallablePayload,
     normalizeEventIdPayload
   );
-  const {eventId, inviteCode, inviteLinkId} = payload;
+  const {eventId, inviteCode, inviteLinkId, crossPathsPairHoldId} = payload;
   const db = deps.firestore();
 
   await deps.checkRateLimit(db, uid, "signUpForFreeEvent");
@@ -116,7 +119,14 @@ export async function signUpForFreeEventHandler(
     policy,
     inviteCode,
   });
-  const priceInPaise = quotePriceInPaise({
+  const pairHold = crossPathsPairHoldId ?
+    await requireActiveCrossPathsPairHold({
+      db,
+      holdId: crossPathsPairHoldId,
+      eventId,
+      requesterUid: uid,
+    }) : null;
+  const priceInPaise = pairHold?.requesterPriceInPaise ?? quotePriceInPaise({
     policy,
     cohortId,
     roster,
@@ -128,13 +138,15 @@ export async function signUpForFreeEventHandler(
       "This event requires payment. Use the payment flow instead."
     );
   }
-  assertPolicyAllowsSignup({
-    policy,
-    cohortId,
-    roster,
-    hasValidInvite: hasValidInvite || hasWaitlistOfferAccess,
-    hasHostApproval,
-  });
+  if (!pairHold) {
+    assertPolicyAllowsSignup({
+      policy,
+      cohortId,
+      roster,
+      hasValidInvite: hasValidInvite || hasWaitlistOfferAccess,
+      hasHostApproval,
+    });
+  }
 
   const inviteAttribution = await resolveInviteAttribution({
     db,
@@ -145,6 +157,7 @@ export async function signUpForFreeEventHandler(
     hasValidInvite: hasValidInvite || hasWaitlistOfferAccess,
     ...(hasHostApproval ? {hasHostApproval} : {}),
     ...(inviteAttribution ? {inviteAttribution} : {}),
+    ...(crossPathsPairHoldId ? {crossPathsPairHoldId} : {}),
   });
 
   return {success: true};

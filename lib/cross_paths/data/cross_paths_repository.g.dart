@@ -223,6 +223,85 @@ final class WatchCrossPathsInvitationFamily extends $Family
   String toString() => r'watchCrossPathsInvitationProvider';
 }
 
+@ProviderFor(watchCrossPathsPairHold)
+final watchCrossPathsPairHoldProvider = WatchCrossPathsPairHoldFamily._();
+
+final class WatchCrossPathsPairHoldProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<CrossPathsPairHold?>,
+          CrossPathsPairHold?,
+          Stream<CrossPathsPairHold?>
+        >
+    with
+        $FutureModifier<CrossPathsPairHold?>,
+        $StreamProvider<CrossPathsPairHold?> {
+  WatchCrossPathsPairHoldProvider._({
+    required WatchCrossPathsPairHoldFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'watchCrossPathsPairHoldProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$watchCrossPathsPairHoldHash();
+
+  @override
+  String toString() {
+    return r'watchCrossPathsPairHoldProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<CrossPathsPairHold?> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<CrossPathsPairHold?> create(Ref ref) {
+    final argument = this.argument as String;
+    return watchCrossPathsPairHold(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is WatchCrossPathsPairHoldProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$watchCrossPathsPairHoldHash() =>
+    r'646e03545891c5488e75b477929fb73448030744';
+
+final class WatchCrossPathsPairHoldFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<CrossPathsPairHold?>, String> {
+  WatchCrossPathsPairHoldFamily._()
+    : super(
+        retry: null,
+        name: r'watchCrossPathsPairHoldProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  WatchCrossPathsPairHoldProvider call(String holdId) =>
+      WatchCrossPathsPairHoldProvider._(argument: holdId, from: this);
+
+  @override
+  String toString() => r'watchCrossPathsPairHoldProvider';
+}
+
 @ProviderFor(watchIncomingCrossPathsInvitations)
 final watchIncomingCrossPathsInvitationsProvider =
     WatchIncomingCrossPathsInvitationsFamily._();

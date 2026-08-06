@@ -16,6 +16,9 @@ CrossPathsFeatureConfig crossPathsFeatureConfig(Ref ref) {
       exploreSuggestionsEnabled: remoteConfig.getBool(
         CrossPathsFeatureConfig.enableExploreSuggestionsKey,
       ),
+      pairInventoryEnabled: remoteConfig.getBool(
+        CrossPathsFeatureConfig.enablePairInventoryKey,
+      ),
     );
   } on Object {
     // Firebase initialization and fetch errors must never expose an unfinished
