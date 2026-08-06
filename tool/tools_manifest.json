@@ -54,7 +54,8 @@
           "affected-tool routing cannot ignore declared full-impact companions",
           "affected-tool routing fails closed for any unmapped lane input",
           "affected-tool routing keeps control-plane and explicit full runs full",
-          "active tool entries cannot be vacuous"
+          "active tool entries cannot be vacuous",
+          "tool manifest validation rejects malformed checkSafety"
         ]
       }
     },

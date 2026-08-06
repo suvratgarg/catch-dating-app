@@ -5,6 +5,7 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import {
+  collectKnownCheckIds,
   executeCheckIds,
   formatGithubOutputs,
   main,
@@ -19,6 +20,32 @@ const graph = JSON.parse(
 test("check executes by default and dry-run must be explicit", () => {
   assert.equal(parseArgs(["check", "--affected"]).dryRun, false);
   assert.equal(parseArgs(["check", "--affected", "--dry-run"]).dryRun, true);
+});
+
+test("Harness check selection distinguishes command safety from check safety", () => {
+  const remoteTool = {
+    id: "remote-tool",
+    status: "active",
+    safety: "remote-write-explicit",
+    checks: ["node --check tool/example.mjs"],
+  };
+  assert.deepEqual([...collectKnownCheckIds({tools: [remoteTool]})], []);
+  assert.deepEqual(
+    [...collectKnownCheckIds({
+      tools: [{...remoteTool, checkSafety: "local-readonly"}],
+    })],
+    ["remote-tool"],
+  );
+  for (const checkSafety of [
+    ["local-readonly"],
+    "local-readonly-typo",
+    "remote-readonly",
+  ]) {
+    assert.deepEqual(
+      [...collectKnownCheckIds({tools: [{...remoteTool, checkSafety}]})],
+      [],
+    );
+  }
 });
 
 test("task CLI dispatches lifecycle commands before planner validation", () => {

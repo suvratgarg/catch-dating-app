@@ -10,8 +10,13 @@ export const supportedToolSetupRequirements = Object.freeze([
   "playwright",
 ]);
 
+export const supportedToolCheckSafety = Object.freeze([
+  "local-readonly",
+]);
+
 const supportedRepositoryViews = new Set(["full", "index"]);
 const supportedSetupRequirements = new Set(supportedToolSetupRequirements);
+const supportedCheckSafety = new Set(supportedToolCheckSafety);
 const fullCiRequirements = Object.freeze({
   repositoryView: "full",
   setup: supportedToolSetupRequirements,
@@ -195,6 +200,38 @@ export function validateToolCiRequirements(tool) {
     errors.push("ciRequirements.setup playwright requires root-npm.");
   }
   return errors;
+}
+
+export function validateToolCheckSafety(tool) {
+  if (!Object.hasOwn(tool ?? {}, "checkSafety")) return [];
+  const errors = [];
+  if (!supportedCheckSafety.has(tool.checkSafety)) {
+    errors.push(
+      `checkSafety must be one of ${supportedToolCheckSafety.join(", ")}.`,
+    );
+  }
+  if (!hasExecutableChecks(tool)) {
+    errors.push("checkSafety requires non-empty executable checks.");
+  }
+  if (isLocalOnlySafety(tool?.safety)) {
+    errors.push(
+      "checkSafety must be omitted when safety already declares local-only behavior.",
+    );
+  }
+  return errors;
+}
+
+export function toolChecksAreLocalReadonly(tool) {
+  if (Object.hasOwn(tool ?? {}, "checkSafety")) {
+    return supportedCheckSafety.has(tool.checkSafety);
+  }
+  return isLocalOnlySafety(tool?.safety);
+}
+
+function isLocalOnlySafety(safety) {
+  return typeof safety === "string" &&
+    safety.startsWith("local") &&
+    !safety.includes("remote");
 }
 
 export function projectToolCiRequirements(tools) {

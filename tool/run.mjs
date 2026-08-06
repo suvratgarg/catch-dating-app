@@ -18,6 +18,7 @@ import {
   formatAffectedToolGithubOutputs,
   hasExecutableChecks,
   planAffectedToolChecks,
+  validateToolCheckSafety,
   validateToolCiRequirements,
 } from "./lib/tool_impact.mjs";
 
@@ -361,6 +362,9 @@ function validateManifest(manifest, componentGraph) {
     validateStringArrayField(tool.impactPaths, `${tool.id}.impactPaths`, errors);
     validateStringArrayField(tool.alsoCheckIds, `${tool.id}.alsoCheckIds`, errors);
     for (const error of validateToolCiRequirements(tool)) {
+      errors.push(`${tool.id ?? "<missing>"}: ${error}`);
+    }
+    for (const error of validateToolCheckSafety(tool)) {
       errors.push(`${tool.id ?? "<missing>"}: ${error}`);
     }
     if (tool.status === "active" && !hasExecutableChecks(tool)) {
