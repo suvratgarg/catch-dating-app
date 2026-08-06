@@ -1,6 +1,6 @@
 ---
 doc_id: harness_v2_decision_and_cicd_delivery_plan
-version: 0.3.29
+version: 0.3.30
 updated: 2026-08-07
 owner: agent_operating_model
 status: execution-in-progress
@@ -870,6 +870,29 @@ Issues discovered during this tranche:
   should provide a pinned hermetic Dart executable/cache or preauthorize the
   declared SDK-cache write once, so every fresh task does not pay a false-fail
   and escalation round trip.
+
+### Checkpoint 23 — live-only localization usage ratchet (2026-08-07)
+
+| Signal | Before this slice | Current result |
+|---|---|---|
+| Evidence authority | `docs/audit_registry/l10n_key_usage.json` committed 59,552 generated lines / 1,531,345 bytes even though the scanner could rebuild it in about 0.2–0.3s. The snapshot changed in 24 commits and generated 78,552 lines of historical diff churn. | The tracked snapshot is deleted and remains recoverable as blob `915393b7`. The only retained decision state is the empty eight-line / 445-byte orphan baseline. Exact usage evidence is emitted live with `--json`; the fresh artifact is 61,699 lines / 1,726,773 bytes raw, about 74.5 KB compressed, and retained by Flutter CI for 14 days rather than committed. |
+| Enforcement behavior | Freshness compared one generated copy with another beside the actual missing-getter and orphan controls. The write/check flags made ordinary maintenance rewrite the repository. | Missing catalog getters still fail unconditionally, new orphans still fail the shrink-only baseline, and baseline growth is still refused. Thirteen seeded tests cover exact locations, lexer exclusions, deterministic CLI JSON, both refusal paths, retired flag/path absence, and help. The live result remains 2,835/2,835 used keys, zero orphan or missing keys, and 3,116 getter references. |
+| Workflow evidence | Flutter CI required the committed copy to be current and had no failure artifact dedicated to localization usage. | Flutter CI writes `build/ci/l10n-key-usage.json`, prints only its summary and ratchet, and uploads the complete SHA-addressed artifact with `if: always()`, error-on-missing, and 14-day retention. Twelve workflow tests pin the command, artifact action/version, path, failure behavior, retention, and permanent absence of the retired snapshot. |
+| Affected CI | The tool had no declared CI requirements, so a scanner-only edit inherited the full repository plus Node, Flutter, ripgrep, Flutter pub, root npm, Functions npm, and Playwright setup. | The physical `lib/` scan deliberately keeps the full repository view but declares Node as its only setup requirement. The affected plan is complete, selects the scanner plus mandatory guards, and reduces declared setup categories from seven to one without making a false sparse-safety claim. Nineteen impact tests pin the full-view / Node-only closure for scanner, test, baseline, and fixture changes. |
+| Fresh proof | Stored-file parity could pass while preserving unnecessary Git churn. | A clean exact-SHA canary reproduced byte-identical live JSON at SHA-256 `a62cc071…`, passed scanner 13/13 in 0.55s, workflow/impact 31/31 in 0.38s, the live census in 0.36s, 83-rule / 92-tool enforcement in 0.49s, three document-version increases in 0.07s, 5,022/5,022 readiness in 0.37s, test inventory, manifest, Harness validation, and 7,212-entry registry parity in 0.30s. No Flutter run was selected because no Dart or rendered UI changed. |
+| Broker timing | A small evidence-storage change still needed proof that its clean-room delivery loop stayed bounded. | Core commit `85c02436a` was effectively instantaneous and pushed in 4.17s. The 42.5 MB canary materialized in 3.47s, ended at 47.2 MB, passed doctor in 0.11s, emitted the full JSON in 0.10s, and reached a clean remote-equal terminal state in 1.05s after network authorization. An abbreviated-SHA attempt failed before mutation as designed. |
+| Line accounting | The eighteen prior measured commits were cumulatively net −225,647 lines. | The 14-file core retirement is +212/−59,738, net −59,526. The three-file checkpoint receipt is +28/−4, net +24; the twenty-commit measured series is therefore net −285,149 lines. |
+
+Issue discovered during this tranche:
+
+- `H2-TRANSITION-031` — the task lifecycle's remote preservation checks run as
+  nested Git commands inside the Node broker. In a restricted task, direct
+  `git ls-remote` succeeds but `task start` reports that it cannot prove the
+  branch unused, and `task finish` reports `remote_head_not_preserved` even
+  while its cached upstream SHA equals `HEAD`. Authorized reruns complete in
+  3.47s and 1.05s. The broker needs a declared read-only Git-network
+  entitlement or an explicit remote-probe boundary so sandbox denial is not
+  misreported as a branch collision or lost preservation.
 
 Durable outcomes are PR wall-clock p50/p95 and escaped defects. Record the
 baseline from the ten most recent comparable PRs and compare after ten v2 PRs.
