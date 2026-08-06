@@ -1,6 +1,6 @@
 ---
 doc_id: harness_v2_decision_and_cicd_delivery_plan
-version: 0.3.26
+version: 0.3.27
 updated: 2026-08-07
 owner: agent_operating_model
 status: execution-in-progress
@@ -799,6 +799,27 @@ Issues discovered during this tranche:
   preservation needs three states (confirmed, absent, indeterminate) and an
   explicit `remote_verification_unavailable` blocker; until implemented, rerun
   terminal verification with declared network authority.
+
+### Checkpoint 20 — live-only Widgetbook review evidence (2026-08-07)
+
+| Signal | Before this slice | Current result |
+|---|---|---|
+| Evidence authority | A committed 435,858-byte comparison page, a 465,199-byte coverage report, a one-time audit-plan JSON, and a 1,103-line static-page builder formed a second Widgetbook review system beside the live server and current coverage checker. | All four derived/static artifacts are deleted: 15,252 direct lines / 942,090 bytes. The live comparison server remains the review surface; current widget classification supplies source candidates; the live coverage checker supplies coverage; and reviewed decisions remain in their authored JSONL/latest authorities. No replacement snapshot is committed. |
+| Staleness | The June 27 page showed 50 contracts, 708 components, and 714 use cases. Current coverage is 71 contracts and 956 source rows; the tracked coverage report retained 12 deleted rows and omitted 29 live rows. Its builder also carried 40 hard-coded overrides and a machine-specific Downloads path. | The focused live check reports 956 rows split into 169 roles, 510 features, and 277 screens, with zero decision-queue or stale-decision items. A full-index regression test prevents all four retired paths from returning and proves that the server no longer reads the report blob. |
+| Live behavior | Static output could look current without proving that the actual review server still assembled its data. | The server is import-safe, exports its source-candidate predicate, and has two focused behavioral tests. The dynamic route served the existing `Catch Pattern Family Review` page title. The optional external Claude manifest was unavailable on this machine, so `/api/data` integration with that export remains unclaimed rather than being mistaken for a repository failure. |
+| Executable proof | The static builder's manifest check only syntax-parsed the script; it did not regenerate or compare the page. | A fresh exact-SHA canary passes the two focused server tests and the 956-row live coverage check in 1.52s, manifest validation in 0.41s, 83-rule / 92-tool enforcement in 1.31s, test-inventory parity in 0.23s, 5,017/5,017 readiness in 0.92s, document monotonicity in 0.65s, and the 7,216-entry audit registry in 0.85s. No Flutter run was selected because no Dart or rendered UI changed. |
+| Broker timing | Derived review cleanup previously encouraged edits and ad hoc checks in a full shared checkout. | The 45.8 MB canary started in 5.38s, ended at 50.5 MB, passed doctor in 3.35s, and reached a clean, remote-equal terminal state in 2.51s. Core commit `8ed7abf15` took 0.30s and pushed in 12.77s. |
+| Line accounting | The twelve prior measured commits were cumulatively net −173,279 lines. | The 15-file authority consolidation, server repair, regression coverage, registry refresh, and audit receipt is +193/−15,379, net −15,186. The three-file checkpoint and canary receipt is +26/−4, net +22; the fourteen-commit measured series is therefore net −188,443 lines. |
+
+Issue discovered during this tranche:
+
+- `H2-TRANSITION-027` — `audit_registry.dart refresh --check` reads the index
+  view for file-set changes. Before the four deletions and one addition were
+  staged, it incorrectly reported the registry current; after staging, the same
+  command correctly failed with exit 64 and exposed the five-path mismatch.
+  Until the command either detects an unstaged file-set delta or makes its
+  staging precondition explicit and fail-closed, run registry parity only after
+  staging all additions and deletions and retain that ordering in task receipts.
 
 Durable outcomes are PR wall-clock p50/p95 and escaped defects. Record the
 baseline from the ten most recent comparable PRs and compare after ten v2 PRs.
