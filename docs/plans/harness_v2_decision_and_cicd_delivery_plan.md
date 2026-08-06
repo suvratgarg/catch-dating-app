@@ -1,6 +1,6 @@
 ---
 doc_id: harness_v2_decision_and_cicd_delivery_plan
-version: 0.3.30
+version: 0.3.31
 updated: 2026-08-07
 owner: agent_operating_model
 status: execution-in-progress
@@ -893,6 +893,37 @@ Issue discovered during this tranche:
   3.47s and 1.05s. The broker needs a declared read-only Git-network
   entitlement or an explicit remote-probe boundary so sandbox denial is not
   misreported as a branch collision or lost preservation.
+
+### Checkpoint 24 — live-only provider topology and executable sparse closure (2026-08-07)
+
+| Signal | Before this slice | Current result |
+|---|---|---|
+| Evidence authority | Four committed provider-graph views totaled 39,410 lines / 1,444,412 bytes: a README, interactive HTML, full JSON, and Mermaid projection. The graph builder could reconstruct them in about four seconds, while the only authored decision state was the 67-line / 4,278-byte review ledger. | All four projections are deleted and guarded from returning. `tool/architecture/provider_graph_reviews.json` remains the sole durable authored authority. Full graph JSON and compact summary evidence are deterministic, read-only, and emitted only on demand. The retired views remain exactly recoverable from blobs `b9be3c24`, `24fc1c28`, `e5b896f1`, and `498469e8`. |
+| Maintenance cost | The projections changed in 16 commits and generated 51,722 lines of historical diff churn. The Dart tool also carried the fixed output path, tracked-file drift checks, a README/Mermaid renderer, and a large embedded HTML application. | Repository-writing `--write` exits 64. The renderer/drift layer is removed, shrinking the tool from 1,649 to 1,318 lines. Live `--check`, `--summary`, and `--json` build the AST graph once; `--check --summary` now emits evidence and still enforces health instead of returning before validation. |
+| Topology behavior | Snapshot freshness was mixed into graph correctness, so a regenerated copy could dominate review even though the actual contract is resolvable providers plus current architecture decisions. | The live gate reports 820 Dart files, 230 providers, 84 Mutations, 421 provider callsites, 335 unique pairs, 164 cross-feature pairs, zero duplicate/dangling/provider-internal-unresolved/cycle findings, and ten fully reviewed candidates. Six focused tests cover topology extraction, live failure parity, deterministic JSON/summary, retired/conflicting CLI flags, stale/unreviewed decisions, and malformed planned decisions. |
+| Affected CI | Provider-tool edits inherited the default full setup: Node, Flutter, ripgrep, Flutter pub, root npm, Functions npm, and Playwright. Review-ledger edits were unmapped and forced the same full fallback. | Tool and review-ledger edits are both affected plans with the required full source view but only Node, Flutter, and Flutter pub setup: seven declared setup categories fall to three. The existing Flutter test lane continues to own `test/tool/**`; no bespoke provider artifact upload or duplicate Flutter workflow scan was added. |
+| Executable sparse closure | The original task passed `task doctor` while every Flutter command failed first on missing `apps/consumer` and `apps/host`, then on missing root assets and local package dependencies. Two manual sparse expansions were required before a 2.46s warm focused test could run. | Future tasks always materialize both Flutter workspace manifests, `assets/`, `packages/catch_ui_lints/`, and `packages/phosphor_flutter/`. The fresh exact-SHA canary required no repair: it passed doctor in 0.47s, its first dependency-resolving Flutter test run passed 6/6 in 8.19s, and the live graph passed in 4.67s. This reliability closure adds about 12.1 MB to this post-retirement task (50.8 MB prior baseline to 63.0 MB logical materialization), still only 23.5% of the 256 MB budget. |
+| Fresh governance proof | A healthy lifecycle receipt did not prove that the declared Flutter commands could start from the task's physical projection. | The fresh canary passed 42/42 workflow, lifecycle, and impact tests in 2.31s; manifest validation; 83-rule / 92-tool enforcement; six monotonic document-version increases; test inventory; 5,022/5,022 readiness; 7,208-entry registry parity; and clean remote-equal closeout in 1.30s. The canary started and pushed its exact base in 3.25s. |
+| Line accounting | The twenty prior measured commits were cumulatively net −285,149 lines. | Core commit `2f975bb6b` is +385/−39,968, net −39,583. This three-file checkpoint receipt is +36/−4, net +32; the 22-commit measured series is therefore net −324,700 lines. The core commit itself took 0.05s and pushed in 4.55s. |
+
+Issues discovered during this tranche:
+
+- `H2-TRANSITION-032` — closed in Checkpoint 24. Sparse-task health covered
+  Git/worktree integrity but not the root Flutter workspace's executable
+  closure. The broker now includes workspace manifests, local path packages,
+  and declared assets; a fresh first-run Flutter test proves the repair.
+- `H2-TRANSITION-033` — task creation records logical recursive bytes while
+  doctor reports allocated `du` bytes under the same apparent size series. The
+  canary was 62,953,704 logical bytes at creation and 68,816,896 allocated bytes
+  at doctor before build output. Rename and expose both units; do not calculate
+  worktree growth by subtracting one from the other.
+- `H2-TRANSITION-034` — the lifecycle tests remove their fixture contents but
+  leave an empty ignored `.claude/test-fixtures` directory. Terminal inspection
+  collapses this to an unknown `.claude/` path, so a clean remote-equal task can
+  accumulate a false ignored-payload hazard. Test cleanup should remove only
+  its empty session parents, or ignored inspection should distinguish empty
+  directory markers from payload without allowlisting arbitrary `.claude/`
+  contents.
 
 Durable outcomes are PR wall-clock p50/p95 and escaped defects. Record the
 baseline from the ten most recent comparable PRs and compare after ten v2 PRs.
