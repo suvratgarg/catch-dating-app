@@ -21,6 +21,23 @@ test("check executes by default and dry-run must be explicit", () => {
   assert.equal(parseArgs(["check", "--affected", "--dry-run"]).dryRun, true);
 });
 
+test("task CLI dispatches lifecycle commands before planner validation", () => {
+  let received = null;
+  let exitCode = 0;
+  main({
+    args: ["task", "reap", "--dry-run", "--json"],
+    taskExecutor(input) {
+      received = input;
+      return {status: 0, result: {operation: "reap", mode: "dry-run"}};
+    },
+    setExitCode(status) {
+      exitCode = status;
+    },
+  });
+  assert.deepEqual(received.args, ["reap", "--dry-run", "--json"]);
+  assert.equal(exitCode, 0);
+});
+
 test("plan parses an explicit GitHub output destination", () => {
   assert.equal(
     parseArgs(["plan", "--github-output", "/tmp/github-output"]).githubOutput,

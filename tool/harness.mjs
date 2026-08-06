@@ -13,6 +13,11 @@ import {
   summarizeCoverage,
   validateComponentGraph,
 } from "./harness/lib/component_graph.mjs";
+import {
+  executeTaskCommand,
+  TaskUsageError,
+  taskHelp,
+} from "./harness/lib/worktree_lifecycle.mjs";
 
 const graphPath = fromRepo("tool/harness/component_graph.json");
 const toolsManifestPath = fromRepo("tool/tools_manifest.json");
@@ -98,6 +103,7 @@ export function changedPathsSince({base, head = "HEAD", cwd = repoRoot}) {
 export function main({
   args = process.argv.slice(2),
   checkExecutor = executeCheckIds,
+  taskExecutor = executeTaskCommand,
   setExitCode = (status) => {
     process.exitCode = status;
   },
@@ -109,18 +115,29 @@ export function main({
       printHelp();
       return;
     }
+    if (options.command === "task") {
+      if (["help", "--help", "-h"].includes(args[1] ?? "help")) {
+        console.log(taskHelp());
+        return;
+      }
+      const execution = taskExecutor({args: args.slice(1), cwd: repoRoot});
+      printResult(execution.result, options.json);
+      if (execution.status !== 0) setExitCode(execution.status);
+      return;
+    }
 
     const graph = readJson(graphPath);
     const toolsManifest = readJson(toolsManifestPath);
     const knownCheckIds = new Set(
       toolsManifest.tools
-        .filter((tool) =>
-          tool.status === "active" &&
-          String(tool.safety).startsWith("local") &&
-          !String(tool.safety).includes("remote") &&
-          Array.isArray(tool.checks) &&
-          tool.checks.length > 0
-        )
+        .filter((tool) => {
+          const checkSafety = String(tool.checkSafety ?? tool.safety);
+          return tool.status === "active" &&
+            checkSafety.startsWith("local") &&
+            !checkSafety.includes("remote") &&
+            Array.isArray(tool.checks) &&
+            tool.checks.length > 0;
+        })
         .map((tool) => tool.id),
     );
     const validationErrors = validateComponentGraph(graph, {knownCheckIds});
@@ -220,7 +237,8 @@ export function main({
   } catch (error) {
     console.error(error.message);
     if (error instanceof UsageError) printHelp();
-    process.exitCode = error instanceof UsageError ? 64 : 1;
+    if (error instanceof TaskUsageError) console.error(taskHelp());
+    process.exitCode = error instanceof UsageError || error instanceof TaskUsageError ? 64 : 1;
   }
 }
 
@@ -280,6 +298,14 @@ function printResult(value, json) {
     console.log(JSON.stringify(value, null, 2));
     return;
   }
+  if (value.operation === "reap") {
+    console.log(`Harness task reap ${value.mode}: ${value.worktrees.length} registered worktrees`);
+    console.log(`Classifications: ${Object.entries(value.counts).map(([key, count]) => `${key}=${count}`).join(", ")}`);
+    console.log(`Legacy review only: ${value.legacyReview.count} worktrees, ${value.legacyReview.bytes} bytes`);
+    console.log(`Deletion authorized: ${value.deletionAuthorized}`);
+    console.log(`Report digest: ${value.reportDigest}`);
+    return;
+  }
   if (value.plan) {
     printPlan(value.plan);
     if (value.results) {
@@ -315,6 +341,7 @@ function printHelp() {
   console.log(`Usage: node tool/harness.mjs <command> [options]
 
 Commands:
+  task start|doctor|finish|reap
   validate
   coverage [--json]
   explain [--paths a,b | --base ref | --full] [--mode mode] [--json]

@@ -185,14 +185,16 @@
       "category": "agent",
       "path": "tool/harness.mjs",
       "command": "node tool/harness.mjs",
-      "safety": "local-readonly",
+      "safety": "remote-write-git-branch-and-local-worktree-explicit",
+      "checkSafety": "local-readonly",
       "status": "active",
-      "description": "Plans authoritative fail-closed CI, release, and deploy impact from the component graph and runs only allowlisted compile-codegen checks.",
+      "description": "Plans authoritative fail-closed CI, release, and deploy impact, runs allowlisted compile-codegen checks, and owns explicit sparse task-worktree lifecycle commands; start pushes a collision-free task branch to origin and reap is report-only.",
       "checks": [
         "node --check tool/harness.mjs",
         "node --check tool/harness/lib/component_graph.mjs",
         "node --check tool/harness/lib/check_flutter_l10n_generated.mjs",
-        "node --test tool/harness/component_graph.test.mjs tool/harness/check_flutter_l10n_generated.test.mjs tool/harness/harness_cli.test.mjs tool/harness/workflow_wiring.test.mjs",
+        "node --check tool/harness/lib/worktree_lifecycle.mjs",
+        "node --test tool/harness/component_graph.test.mjs tool/harness/check_flutter_l10n_generated.test.mjs tool/harness/harness_cli.test.mjs tool/harness/workflow_wiring.test.mjs tool/harness/worktree_lifecycle.test.mjs",
         "node tool/harness.mjs validate"
       ],
       "role": "gate",
@@ -204,7 +206,8 @@
         "path": "tool/harness/harness_cli.test.mjs",
         "contains": [
           "bounded plan outputs contain no changed-path inventory",
-          "plan CLI fails closed before writing outputs for an unknown path"
+          "plan CLI fails closed before writing outputs for an unknown path",
+          "task CLI dispatches lifecycle commands before planner validation"
         ]
       }
     },
