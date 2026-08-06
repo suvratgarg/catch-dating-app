@@ -1,5 +1,5 @@
 {
-  "version": 139,
+  "version": 140,
   "updated": "2026-08-06",
   "owner": "agent_operating_model",
   "entries": [
@@ -941,7 +941,6 @@
       },
       "owner_docs": [
         "docs/app_architecture.md",
-        "docs/plans/explore_screen_quality_pass_spec.md",
         "design/features/explore.feature.json"
       ],
       "notes": "Cover ranking is an independent display decision; chronological body order and actual CTA side effects remain authoritative."
@@ -982,7 +981,6 @@
         "guardEvidence": "the bounded capture pump includes a post-theme animation beat and both dark artifacts visually resolve to the final dark surface tokens"
       },
       "owner_docs": [
-        "docs/plans/explore_screen_quality_pass_spec.md",
         "docs/plans/ui_capture_visual_qa.md"
       ],
       "notes": "Keep capture settling bounded because loading indicators may animate indefinitely; the extra CatchMotion.base beat targets second-order implicit animations without using pumpAndSettle."
@@ -1943,7 +1941,6 @@
       "owner_docs": [
         "design/components/catch.components.json",
         "design/screens/catch.screens.json",
-        "docs/design_parity/event_detail_composition_tracker.md",
         "docs/widget_catalog.md",
         "design/features/event_detail.feature.json"
       ],
@@ -2242,7 +2239,6 @@
       },
       "owner_docs": [
         "docs/widget_catalog.md",
-        "docs/plans/catch_system_stretch_spec.md",
         "design/components/catch.components.json"
       ],
       "notes": "Null is a meaningful TextField maxLines value. Branch on config presence before reading maxLines; do not use a null-coalescing fallback on the stored value."
@@ -2265,7 +2261,6 @@
       },
       "owner_docs": [
         "docs/widget_catalog.md",
-        "docs/plans/catch_system_stretch_spec.md",
         "design/components/catch.components.json"
       ],
       "notes": "The private mode implementations are both the widget and its sealed config, avoiding nested parameterized object construction inside const initializer lists. CatchField overrides runtimeType with the public facade type so Flutter's Widget.canUpdate contract and existing exact-type finders retain their pre-refactor behavior while Dart type tests and the exhaustive config switch still see the private implementation subtype."
@@ -2338,7 +2333,6 @@
       "owner_docs": [
         "docs/design_language.md",
         "docs/web_surface_architecture.md",
-        "docs/plans/catch_system_stretch_spec.md",
         "design/components/catch.components.json"
       ],
       "notes": "Flutter owns interaction names and behavior. React implementations remain native; only the semantic vocabulary and adoption evidence are shared."
