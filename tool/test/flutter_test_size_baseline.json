@@ -29,7 +29,7 @@
     },
     {
       "path": "test/explore/explore_view_model_test.dart",
-      "maxLines": 2321
+      "maxLines": 2286
     },
     {
       "path": "test/explore/explore_widgets_test.dart",
