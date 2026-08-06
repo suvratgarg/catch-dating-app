@@ -69,19 +69,19 @@ code { color: var(--fg); }
     "lib"
   ],
   "summary": {
-    "dartSourceFiles": 816,
-    "providerNodes": 225,
-    "generatedProviderNodes": 221,
+    "dartSourceFiles": 819,
+    "providerNodes": 229,
+    "generatedProviderNodes": 225,
     "manualProviderNodes": 4,
     "aliasProviderNodes": 0,
     "keepAliveNodes": 68,
-    "familyNodes": 85,
+    "familyNodes": 88,
     "mutationNodes": 84,
-    "consumerNodes": 253,
-    "providerToProviderCallsites": 413,
-    "uniqueProviderToProviderPairs": 329,
+    "consumerNodes": 257,
+    "providerToProviderCallsites": 419,
+    "uniqueProviderToProviderPairs": 333,
     "uniqueCrossFeatureProviderPairs": 163,
-    "consumerToStateCallsites": 763,
+    "consumerToStateCallsites": 778,
     "mutationReferenceCallsites": 206,
     "unresolvedRefOperations": 13,
     "unresolvedInsideProviders": 0,
@@ -112,12 +112,12 @@ code { color: var(--fg); }
     "hosts": 16,
     "chats": 10,
     "payments": 9,
+    "cross_paths": 8,
     "swipes": 7,
     "auth": 6,
     "reviews": 6,
     "public_profile": 5,
     "user_profile": 5,
-    "cross_paths": 4,
     "dashboard": 4,
     "force_update": 4,
     "launch_access": 4,
@@ -134,8 +134,8 @@ code { color: var(--fg); }
     "locations": 1
   },
   "providersByLayer": {
-    "data": 129,
-    "presentation": 66,
+    "data": 132,
+    "presentation": 67,
     "core": 19,
     "routing": 4,
     "shared": 3,
@@ -144,15 +144,15 @@ code { color: var(--fg); }
     "exceptions": 1
   },
   "providerEdgesByOperation": {
-    "watch": 261,
-    "read": 144,
+    "watch": 264,
+    "read": 147,
     "invalidate": 6,
     "listen": 2
   },
   "consumerEdgesByOperation": {
-    "watch": 261,
-    "read": 213,
-    "invalidate": 153,
+    "watch": 269,
+    "read": 217,
+    "invalidate": 156,
     "mutation-run": 91,
     "override": 23,
     "listen": 22
@@ -168,6 +168,7 @@ code { color: var(--fg); }
     "explore -> clubs": 7,
     "payments -> core": 7,
     "auth -> auth": 6,
+    "cross_paths -> cross_paths": 6,
     "events -> core": 6,
     "clubs -> core": 5,
     "explore -> auth": 5,
@@ -197,7 +198,6 @@ code { color: var(--fg); }
     "chats -> public_profile": 2,
     "clubs -> auth": 2,
     "clubs -> exceptions": 2,
-    "cross_paths -> cross_paths": 2,
     "dashboard -> events": 2,
     "dashboard -> notifications": 2,
     "event_success -> core": 2,
@@ -261,8 +261,8 @@ code { color: var(--fg); }
     "user_profile -> image_uploads": 1
   },
   "layerPairCounts": {
-    "presentation -> data": 117,
-    "data -> data": 95,
+    "presentation -> data": 118,
+    "data -> data": 98,
     "data -> core": 48,
     "presentation -> presentation": 36,
     "presentation -> core": 10,
@@ -390,6 +390,10 @@ code { color: var(--fg); }
       "degree": 11
     },
     {
+      "name": "crossPathsRepositoryProvider",
+      "degree": 7
+    },
+    {
       "name": "userProfileRepositoryProvider",
       "degree": 7
     },
@@ -432,10 +436,6 @@ code { color: var(--fg); }
     {
       "name": "publicProfileRepositoryProvider",
       "degree": 4
-    },
-    {
-      "name": "safetyRepositoryProvider",
-      "degree": 4
     }
   ],
   "features": {
@@ -472,9 +472,9 @@ code { color: var(--fg); }
       },
       {
         "id": "cross_paths",
-        "providers": 4,
+        "providers": 8,
         "mutations": 1,
-        "consumers": 0
+        "consumers": 4
       },
       {
         "id": "dashboard",
@@ -728,7 +728,7 @@ code { color: var(--fg); }
       {
         "source": "cross_paths",
         "target": "cross_paths",
-        "uniqueProviderPairs": 2
+        "uniqueProviderPairs": 6
       },
       {
         "source": "dashboard",
@@ -1702,7 +1702,7 @@ code { color: var(--fg); }
       "name": "consumerGoRouterProvider",
       "kind": "generated-function",
       "path": "lib/routing/go_router.dart",
-      "line": 223,
+      "line": 224,
       "feature": "routing",
       "layer": "routing",
       "keepAlive": true,
@@ -1806,11 +1806,23 @@ code { color: var(--fg); }
       "returnType": "CrossPathsFeatureConfig"
     },
     {
+      "id": "provider:crossPathsInvitationControllerProvider",
+      "name": "crossPathsInvitationControllerProvider",
+      "kind": "generated-class",
+      "path": "lib/cross_paths/presentation/cross_paths_invitation_controller.dart",
+      "line": 9,
+      "feature": "cross_paths",
+      "layer": "presentation",
+      "keepAlive": false,
+      "family": false,
+      "returnType": "FutureOr<CrossPathsInvitationReceipt?>"
+    },
+    {
       "id": "provider:crossPathsRepositoryProvider",
       "name": "crossPathsRepositoryProvider",
       "kind": "generated-function",
       "path": "lib/cross_paths/data/cross_paths_repository.dart",
-      "line": 109,
+      "line": 286,
       "feature": "cross_paths",
       "layer": "data",
       "keepAlive": true,
@@ -2517,7 +2529,7 @@ code { color: var(--fg); }
       "name": "goRouterProvider",
       "kind": "generated-function",
       "path": "lib/routing/go_router.dart",
-      "line": 230,
+      "line": 231,
       "feature": "routing",
       "layer": "routing",
       "keepAlive": true,
@@ -2625,7 +2637,7 @@ code { color: var(--fg); }
       "name": "hostGoRouterProvider",
       "kind": "generated-function",
       "path": "lib/routing/go_router.dart",
-      "line": 227,
+      "line": 228,
       "feature": "routing",
       "layer": "routing",
       "keepAlive": true,
@@ -2721,7 +2733,7 @@ code { color: var(--fg); }
       "name": "initialAppLocationProvider",
       "kind": "generated-function",
       "path": "lib/routing/go_router.dart",
-      "line": 215,
+      "line": 216,
       "feature": "routing",
       "layer": "routing",
       "keepAlive": true,
@@ -3081,7 +3093,7 @@ code { color: var(--fg); }
       "name": "settingsControllerProvider",
       "kind": "generated-class",
       "path": "lib/safety/presentation/settings_controller.dart",
-      "line": 59,
+      "line": 63,
       "feature": "safety",
       "layer": "presentation",
       "keepAlive": false,
@@ -3441,12 +3453,24 @@ code { color: var(--fg); }
       "name": "watchCrossPathsEventConsentProvider",
       "kind": "generated-function",
       "path": "lib/cross_paths/data/cross_paths_repository.dart",
-      "line": 115,
+      "line": 292,
       "feature": "cross_paths",
       "layer": "data",
       "keepAlive": false,
       "family": true,
       "returnType": "Stream<CrossPathsEventConsent?>"
+    },
+    {
+      "id": "provider:watchCrossPathsInvitationProvider",
+      "name": "watchCrossPathsInvitationProvider",
+      "kind": "generated-function",
+      "path": "lib/cross_paths/data/cross_paths_repository.dart",
+      "line": 301,
+      "feature": "cross_paths",
+      "layer": "data",
+      "keepAlive": false,
+      "family": true,
+      "returnType": "Stream<CrossPathsInvitation?>"
     },
     {
       "id": "provider:watchEventInviteLinksProvider",
@@ -3677,6 +3701,18 @@ code { color: var(--fg); }
       "returnType": "Stream<HostProfile?>"
     },
     {
+      "id": "provider:watchIncomingCrossPathsInvitationsProvider",
+      "name": "watchIncomingCrossPathsInvitationsProvider",
+      "kind": "generated-function",
+      "path": "lib/cross_paths/data/cross_paths_repository.dart",
+      "line": 307,
+      "feature": "cross_paths",
+      "layer": "data",
+      "keepAlive": false,
+      "family": true,
+      "returnType": "Stream<List<CrossPathsInvitation>>"
+    },
+    {
       "id": "provider:watchLaunchAccessApplicationProvider",
       "name": "watchLaunchAccessApplicationProvider",
       "kind": "generated-function",
@@ -3699,6 +3735,18 @@ code { color: var(--fg); }
       "keepAlive": false,
       "family": true,
       "returnType": "Stream<List<Match>>"
+    },
+    {
+      "id": "provider:watchOutgoingCrossPathsInvitationProvider",
+      "name": "watchOutgoingCrossPathsInvitationProvider",
+      "kind": "generated-function",
+      "path": "lib/cross_paths/data/cross_paths_repository.dart",
+      "line": 313,
+      "feature": "cross_paths",
+      "layer": "data",
+      "keepAlive": false,
+      "family": true,
+      "returnType": "Stream<CrossPathsInvitation?>"
     },
     {
       "id": "provider:watchPaymentProvider",
@@ -4586,7 +4634,7 @@ code { color: var(--fg); }
       "id": "mutation:SettingsController.requestAccountDeletionMutation",
       "name": "SettingsController.requestAccountDeletionMutation",
       "path": "lib/safety/presentation/settings_controller.dart",
-      "line": 66,
+      "line": 70,
       "feature": "safety",
       "layer": "presentation"
     },
@@ -4594,7 +4642,7 @@ code { color: var(--fg); }
       "id": "mutation:SettingsController.savePreferenceMutation",
       "name": "SettingsController.savePreferenceMutation",
       "path": "lib/safety/presentation/settings_controller.dart",
-      "line": 65,
+      "line": 69,
       "feature": "safety",
       "layer": "presentation"
     },
@@ -4602,7 +4650,7 @@ code { color: var(--fg); }
       "id": "mutation:SettingsController.unblockUserMutation",
       "name": "SettingsController.unblockUserMutation",
       "path": "lib/safety/presentation/settings_controller.dart",
-      "line": 67,
+      "line": 71,
       "feature": "safety",
       "layer": "presentation"
     },
@@ -4943,6 +4991,38 @@ code { color: var(--fg); }
       "line": 137,
       "feature": "core",
       "layer": "core"
+    },
+    {
+      "id": "consumer:lib/cross_paths/presentation/cross_paths_explore_card.dart#CrossPathsProfilePreviewSheet.build",
+      "owner": "CrossPathsProfilePreviewSheet.build",
+      "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
+      "line": 258,
+      "feature": "cross_paths",
+      "layer": "presentation"
+    },
+    {
+      "id": "consumer:lib/cross_paths/presentation/cross_paths_invitation_screen.dart#CrossPathsInvitationScreen.build",
+      "owner": "CrossPathsInvitationScreen.build",
+      "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+      "line": 35,
+      "feature": "cross_paths",
+      "layer": "presentation"
+    },
+    {
+      "id": "consumer:lib/cross_paths/presentation/cross_paths_invitation_screen.dart#_InvitationDetail.build",
+      "owner": "_InvitationDetail.build",
+      "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+      "line": 70,
+      "feature": "cross_paths",
+      "layer": "presentation"
+    },
+    {
+      "id": "consumer:lib/cross_paths/presentation/cross_paths_invitation_screen.dart#_InvitationDetailBody.build",
+      "owner": "_InvitationDetailBody.build",
+      "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+      "line": 131,
+      "feature": "cross_paths",
+      "layer": "presentation"
     },
     {
       "id": "consumer:lib/dashboard/presentation/activity_screen.dart#_ActivityScreenState._markAllRead",
@@ -5364,7 +5444,7 @@ code { color: var(--fg); }
       "id": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._applyDistanceFilter",
       "owner": "_ExploreScreenState._applyDistanceFilter",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 638,
+      "line": 642,
       "feature": "explore",
       "layer": "presentation"
     },
@@ -5372,7 +5452,7 @@ code { color: var(--fg); }
       "id": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._loadMore",
       "owner": "_ExploreScreenState._loadMore",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 708,
+      "line": 712,
       "feature": "explore",
       "layer": "presentation"
     },
@@ -5380,7 +5460,7 @@ code { color: var(--fg); }
       "id": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._refreshExploreData",
       "owner": "_ExploreScreenState._refreshExploreData",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 660,
+      "line": 664,
       "feature": "explore",
       "layer": "presentation"
     },
@@ -5388,7 +5468,7 @@ code { color: var(--fg); }
       "id": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._scheduleGuestJoinedFilterReset",
       "owner": "_ExploreScreenState._scheduleGuestJoinedFilterReset",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 646,
+      "line": 650,
       "feature": "explore",
       "layer": "presentation"
     },
@@ -5396,7 +5476,7 @@ code { color: var(--fg); }
       "id": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._showLocationFailure",
       "owner": "_ExploreScreenState._showLocationFailure",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 726,
+      "line": 730,
       "feature": "explore",
       "layer": "presentation"
     },
@@ -5412,7 +5492,7 @@ code { color: var(--fg); }
       "id": "consumer:lib/explore/presentation/explore_screen.dart#logCrossPathsImpression",
       "owner": "logCrossPathsImpression",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 304,
+      "line": 308,
       "feature": "explore",
       "layer": "presentation"
     },
@@ -5436,7 +5516,7 @@ code { color: var(--fg); }
       "id": "consumer:lib/explore/presentation/explore_screen.dart#openExploreFilters",
       "owner": "openExploreFilters",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 360,
+      "line": 364,
       "feature": "explore",
       "layer": "presentation"
     },
@@ -5444,7 +5524,7 @@ code { color: var(--fg); }
       "id": "consumer:lib/explore/presentation/explore_screen.dart#openExternalEvent",
       "owner": "openExternalEvent",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 328,
+      "line": 332,
       "feature": "explore",
       "layer": "presentation"
     },
@@ -6460,7 +6540,7 @@ code { color: var(--fg); }
       "id": "consumer:lib/routing/go_router.dart#_buildGoRouter",
       "owner": "_buildGoRouter",
       "path": "lib/routing/go_router.dart",
-      "line": 239,
+      "line": 240,
       "feature": "routing",
       "layer": "routing"
     },
@@ -7423,13 +7503,40 @@ code { color: var(--fg); }
       "line": 11
     },
     {
+      "source": "crossPathsInvitationControllerProvider",
+      "sourceKind": "provider",
+      "target": "crossPathsRepositoryProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/cross_paths/presentation/cross_paths_invitation_controller.dart",
+      "line": 21
+    },
+    {
+      "source": "crossPathsInvitationControllerProvider",
+      "sourceKind": "provider",
+      "target": "crossPathsRepositoryProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/cross_paths/presentation/cross_paths_invitation_controller.dart",
+      "line": 39
+    },
+    {
+      "source": "crossPathsInvitationControllerProvider",
+      "sourceKind": "provider",
+      "target": "crossPathsRepositoryProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/cross_paths/presentation/cross_paths_invitation_controller.dart",
+      "line": 50
+    },
+    {
       "source": "crossPathsRepositoryProvider",
       "sourceKind": "provider",
       "target": "firebaseFirestoreProvider",
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/cross_paths/data/cross_paths_repository.dart",
-      "line": 111
+      "line": 288
     },
     {
       "source": "crossPathsRepositoryProvider",
@@ -7438,7 +7545,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/cross_paths/data/cross_paths_repository.dart",
-      "line": 112
+      "line": 289
     },
     {
       "source": "currentUserFollowedClubIdsProvider",
@@ -9616,7 +9723,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/safety/presentation/settings_controller.dart",
-      "line": 99
+      "line": 103
     },
     {
       "source": "settingsControllerProvider",
@@ -9625,7 +9732,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/safety/presentation/settings_controller.dart",
-      "line": 98
+      "line": 102
     },
     {
       "source": "settingsControllerProvider",
@@ -9634,7 +9741,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/safety/presentation/settings_controller.dart",
-      "line": 104
+      "line": 108
     },
     {
       "source": "settingsControllerProvider",
@@ -9643,7 +9750,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/safety/presentation/settings_controller.dart",
-      "line": 88
+      "line": 92
     },
     {
       "source": "suvbotActionsProvider",
@@ -9967,7 +10074,16 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/cross_paths/data/cross_paths_repository.dart",
-      "line": 120
+      "line": 297
+    },
+    {
+      "source": "watchCrossPathsInvitationProvider",
+      "sourceKind": "provider",
+      "target": "crossPathsRepositoryProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/cross_paths/data/cross_paths_repository.dart",
+      "line": 305
     },
     {
       "source": "watchEventInviteLinksProvider",
@@ -10141,6 +10257,15 @@ code { color: var(--fg); }
       "line": 118
     },
     {
+      "source": "watchIncomingCrossPathsInvitationsProvider",
+      "sourceKind": "provider",
+      "target": "crossPathsRepositoryProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/cross_paths/data/cross_paths_repository.dart",
+      "line": 311
+    },
+    {
       "source": "watchLaunchAccessApplicationProvider",
       "sourceKind": "provider",
       "target": "launchAccessRepositoryProvider",
@@ -10157,6 +10282,15 @@ code { color: var(--fg); }
       "operation": "watch",
       "path": "lib/matches/data/match_repository.dart",
       "line": 309
+    },
+    {
+      "source": "watchOutgoingCrossPathsInvitationProvider",
+      "sourceKind": "provider",
+      "target": "crossPathsRepositoryProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/cross_paths/data/cross_paths_repository.dart",
+      "line": 318
     },
     {
       "source": "watchPaymentProvider",
@@ -10824,7 +10958,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/chats/presentation/chat_screen.dart",
-      "line": 338
+      "line": 340
     },
     {
       "source": "consumer:lib/chats/presentation/chat_screen.dart#_ChatScreenState.build",
@@ -11365,6 +11499,141 @@ code { color: var(--fg); }
       "operation": "watch",
       "path": "lib/core/widgets/catch_notice.dart",
       "line": 144
+    },
+    {
+      "source": "consumer:lib/cross_paths/presentation/cross_paths_explore_card.dart#CrossPathsProfilePreviewSheet.build",
+      "sourceKind": "consumer",
+      "target": "appAnalyticsProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
+      "line": 275
+    },
+    {
+      "source": "consumer:lib/cross_paths/presentation/cross_paths_explore_card.dart#CrossPathsProfilePreviewSheet.build",
+      "sourceKind": "consumer",
+      "target": "crossPathsInvitationControllerProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
+      "line": 272
+    },
+    {
+      "source": "consumer:lib/cross_paths/presentation/cross_paths_explore_card.dart#CrossPathsProfilePreviewSheet.build",
+      "sourceKind": "consumer",
+      "target": "crossPathsInvitationControllerProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
+      "line": 271
+    },
+    {
+      "source": "consumer:lib/cross_paths/presentation/cross_paths_explore_card.dart#CrossPathsProfilePreviewSheet.build",
+      "sourceKind": "consumer",
+      "target": "uidProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
+      "line": 261
+    },
+    {
+      "source": "consumer:lib/cross_paths/presentation/cross_paths_explore_card.dart#CrossPathsProfilePreviewSheet.build",
+      "sourceKind": "consumer",
+      "target": "watchOutgoingCrossPathsInvitationProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
+      "line": 264
+    },
+    {
+      "source": "consumer:lib/cross_paths/presentation/cross_paths_invitation_screen.dart#CrossPathsInvitationScreen.build",
+      "sourceKind": "consumer",
+      "target": "watchCrossPathsInvitationProvider",
+      "targetKind": "provider",
+      "operation": "invalidate",
+      "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+      "line": 51
+    },
+    {
+      "source": "consumer:lib/cross_paths/presentation/cross_paths_invitation_screen.dart#CrossPathsInvitationScreen.build",
+      "sourceKind": "consumer",
+      "target": "watchCrossPathsInvitationProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+      "line": 37
+    },
+    {
+      "source": "consumer:lib/cross_paths/presentation/cross_paths_invitation_screen.dart#_InvitationDetail.build",
+      "sourceKind": "consumer",
+      "target": "uidProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+      "line": 72
+    },
+    {
+      "source": "consumer:lib/cross_paths/presentation/cross_paths_invitation_screen.dart#_InvitationDetail.build",
+      "sourceKind": "consumer",
+      "target": "watchEventProvider",
+      "targetKind": "provider",
+      "operation": "invalidate",
+      "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+      "line": 94
+    },
+    {
+      "source": "consumer:lib/cross_paths/presentation/cross_paths_invitation_screen.dart#_InvitationDetail.build",
+      "sourceKind": "consumer",
+      "target": "watchEventProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+      "line": 84
+    },
+    {
+      "source": "consumer:lib/cross_paths/presentation/cross_paths_invitation_screen.dart#_InvitationDetail.build",
+      "sourceKind": "consumer",
+      "target": "watchPublicProfileProvider",
+      "targetKind": "provider",
+      "operation": "invalidate",
+      "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+      "line": 93
+    },
+    {
+      "source": "consumer:lib/cross_paths/presentation/cross_paths_invitation_screen.dart#_InvitationDetail.build",
+      "sourceKind": "consumer",
+      "target": "watchPublicProfileProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+      "line": 83
+    },
+    {
+      "source": "consumer:lib/cross_paths/presentation/cross_paths_invitation_screen.dart#_InvitationDetailBody.build",
+      "sourceKind": "consumer",
+      "target": "appAnalyticsProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+      "line": 138
+    },
+    {
+      "source": "consumer:lib/cross_paths/presentation/cross_paths_invitation_screen.dart#_InvitationDetailBody.build",
+      "sourceKind": "consumer",
+      "target": "crossPathsInvitationControllerProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+      "line": 135
+    },
+    {
+      "source": "consumer:lib/cross_paths/presentation/cross_paths_invitation_screen.dart#_InvitationDetailBody.build",
+      "sourceKind": "consumer",
+      "target": "crossPathsInvitationControllerProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+      "line": 134
     },
     {
       "source": "consumer:lib/dashboard/presentation/activity_screen.dart#_ActivityScreenState._markAllRead",
@@ -13425,7 +13694,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 639
+      "line": 643
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._loadMore",
@@ -13434,7 +13703,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 712
+      "line": 716
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._refreshExploreData",
@@ -13443,7 +13712,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 666
+      "line": 670
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._refreshExploreData",
@@ -13452,21 +13721,12 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 662
+      "line": 666
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._refreshExploreData",
       "sourceKind": "consumer",
       "target": "exploreDiscoveryWindowProvider",
-      "targetKind": "provider",
-      "operation": "invalidate",
-      "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 663
-    },
-    {
-      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._refreshExploreData",
-      "sourceKind": "consumer",
-      "target": "exploreFeedViewModelProvider",
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/explore/presentation/explore_screen.dart",
@@ -13477,9 +13737,18 @@ code { color: var(--fg); }
       "sourceKind": "consumer",
       "target": "exploreFeedViewModelProvider",
       "targetKind": "provider",
+      "operation": "invalidate",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 671
+    },
+    {
+      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._refreshExploreData",
+      "sourceKind": "consumer",
+      "target": "exploreFeedViewModelProvider",
+      "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 677
+      "line": 681
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._refreshExploreData",
@@ -13488,7 +13757,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 668
+      "line": 672
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._refreshExploreData",
@@ -13497,7 +13766,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 665
+      "line": 669
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._refreshExploreData",
@@ -13506,7 +13775,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 664
+      "line": 668
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._scheduleGuestJoinedFilterReset",
@@ -13515,7 +13784,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 654
+      "line": 658
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._scheduleGuestJoinedFilterReset",
@@ -13524,7 +13793,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 656
+      "line": 660
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._scheduleGuestJoinedFilterReset",
@@ -13533,7 +13802,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 652
+      "line": 656
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._showLocationFailure",
@@ -13542,7 +13811,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 747
+      "line": 751
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13596,7 +13865,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 457
+      "line": 461
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13605,7 +13874,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 487
+      "line": 491
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13623,7 +13892,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 463
+      "line": 467
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13632,7 +13901,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 465
+      "line": 469
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13641,7 +13910,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 468
+      "line": 472
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13650,7 +13919,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 492
+      "line": 496
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13659,7 +13928,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 494
+      "line": 498
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13668,7 +13937,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 497
+      "line": 501
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13677,7 +13946,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 515
+      "line": 519
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13686,16 +13955,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 577
-    },
-    {
-      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
-      "sourceKind": "consumer",
-      "target": "exploreFiltersProvider",
-      "targetKind": "provider",
-      "operation": "read",
-      "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 583
+      "line": 581
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13713,7 +13973,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 590
+      "line": 591
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13722,7 +13982,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 593
+      "line": 594
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13732,6 +13992,15 @@ code { color: var(--fg); }
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
       "line": 597
+    },
+    {
+      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
+      "sourceKind": "consumer",
+      "target": "exploreFiltersProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 601
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13758,7 +14027,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 461
+      "line": 465
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13767,7 +14036,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 490
+      "line": 494
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13776,7 +14045,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 513
+      "line": 517
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13785,7 +14054,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 554
+      "line": 558
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13812,7 +14081,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 521
+      "line": 525
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13821,7 +14090,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 551
+      "line": 555
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13848,7 +14117,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 310
+      "line": 314
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#openCrossPathsProfile",
@@ -13884,16 +14153,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 367
-    },
-    {
-      "source": "consumer:lib/explore/presentation/explore_screen.dart#openExploreFilters",
-      "sourceKind": "consumer",
-      "target": "exploreFiltersProvider",
-      "targetKind": "provider",
-      "operation": "read",
-      "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 384
+      "line": 371
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#openExploreFilters",
@@ -13911,7 +14171,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 391
+      "line": 392
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#openExploreFilters",
@@ -13929,7 +14189,16 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 397
+      "line": 399
+    },
+    {
+      "source": "consumer:lib/explore/presentation/explore_screen.dart#openExploreFilters",
+      "sourceKind": "consumer",
+      "target": "exploreFiltersProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 401
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#openExploreFilters",
@@ -13938,7 +14207,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 366
+      "line": 370
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#openExploreFilters",
@@ -13947,7 +14216,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 368
+      "line": 372
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#openExternalEvent",
@@ -13956,7 +14225,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 331
+      "line": 335
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#openExternalEvent",
@@ -13965,7 +14234,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 349
+      "line": 353
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#openFeaturedEvent",
@@ -16692,7 +16961,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/routing/go_router.dart",
-      "line": 241
+      "line": 242
     },
     {
       "source": "consumer:lib/routing/go_router.dart#_buildGoRouter",
@@ -16701,7 +16970,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "listen",
       "path": "lib/routing/go_router.dart",
-      "line": 245
+      "line": 246
     },
     {
       "source": "consumer:lib/routing/go_router.dart#_buildGoRouter",
@@ -16710,7 +16979,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/routing/go_router.dart",
-      "line": 267
+      "line": 268
     },
     {
       "source": "consumer:lib/routing/go_router.dart#_buildGoRouter",
@@ -16719,7 +16988,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/routing/go_router.dart",
-      "line": 258
+      "line": 259
     },
     {
       "source": "consumer:lib/routing/go_router.dart#_buildGoRouter",
@@ -16728,7 +16997,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "listen",
       "path": "lib/routing/go_router.dart",
-      "line": 244
+      "line": 245
     },
     {
       "source": "consumer:lib/routing/go_router.dart#_buildGoRouter",
@@ -16737,7 +17006,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/routing/go_router.dart",
-      "line": 263
+      "line": 264
     },
     {
       "source": "consumer:lib/routing/go_router.dart#_buildGoRouter",
@@ -16746,7 +17015,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "listen",
       "path": "lib/routing/go_router.dart",
-      "line": 251
+      "line": 252
     },
     {
       "source": "consumer:lib/routing/go_router.dart#_buildGoRouter",
@@ -16755,7 +17024,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/routing/go_router.dart",
-      "line": 266
+      "line": 267
     },
     {
       "source": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState._confirmDeleteAccount",
@@ -16926,7 +17195,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/safety/presentation/settings_screen.dart",
-      "line": 504
+      "line": 521
     },
     {
       "source": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState.build",

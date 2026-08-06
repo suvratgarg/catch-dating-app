@@ -4,8 +4,12 @@ import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show
         GetCrossPathsSuggestionsCallableRequest,
+        SendCrossPathsInvitationCallableRequest,
+        RespondCrossPathsInvitationCallableRequest,
+        CancelCrossPathsInvitationOrPlanCallableRequest,
         SetCrossPathsEventConsentCallableRequest;
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_event_consent.dart';
+import 'package:catch_dating_app/cross_paths/domain/cross_paths_invitation.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_suggestion.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -31,10 +35,43 @@ CrossPathsEventConsent crossPathsEventConsentFromFirestore(
   );
 }
 
+CrossPathsInvitation crossPathsInvitationFromFirestore(
+  String id,
+  Map<String, dynamic> json,
+) {
+  DateTime timestamp(String key) {
+    final value = json[key];
+    if (value is! Timestamp) {
+      throw FormatException('$key must be a Firestore timestamp.');
+    }
+    return value.toDate();
+  }
+
+  DateTime? nullableTimestamp(String key) {
+    final value = json[key];
+    if (value == null) return null;
+    if (value is! Timestamp) {
+      throw FormatException('$key must be a Firestore timestamp or null.');
+    }
+    return value.toDate();
+  }
+
+  return CrossPathsInvitation.fromMap(id, {
+    ...json,
+    'createdAt': timestamp('createdAt'),
+    'updatedAt': timestamp('updatedAt'),
+    'expiresAt': timestamp('expiresAt'),
+    'respondedAt': nullableTimestamp('respondedAt'),
+    'cancelledAt': nullableTimestamp('cancelledAt'),
+    'invalidatedAt': nullableTimestamp('invalidatedAt'),
+  });
+}
+
 class CrossPathsRepository {
   const CrossPathsRepository(this._db, this._functions);
 
   static const _collectionPath = 'eventCrossPathsConsents';
+  static const _invitationsPath = 'crossPathsInvitations';
   final FirebaseFirestore _db;
   final FirebaseFunctions _functions;
 
@@ -103,6 +140,146 @@ class CrossPathsRepository {
       resource: 'getCrossPathsSuggestions',
     ),
   );
+
+  Stream<CrossPathsInvitation?> watchInvitation(String invitationId) =>
+      withBackendErrorStream(
+        () => _db
+            .collection(_invitationsPath)
+            .doc(invitationId)
+            .snapshots()
+            .map(
+              (snapshot) => snapshot.exists
+                  ? crossPathsInvitationFromFirestore(
+                      snapshot.id,
+                      snapshot.data()!,
+                    )
+                  : null,
+            ),
+        context: const BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'watch Cross Paths invitation',
+          resource: _invitationsPath,
+        ),
+      );
+
+  Stream<List<CrossPathsInvitation>> watchIncomingInvitations(String uid) =>
+      withBackendErrorStream(
+        () => _db
+            .collection(_invitationsPath)
+            .where('recipientUid', isEqualTo: uid)
+            .limit(ReadLimitPolicy.historyPage)
+            .snapshots()
+            .map(
+              (snapshot) =>
+                  snapshot.docs
+                      .map(
+                        (doc) => crossPathsInvitationFromFirestore(
+                          doc.id,
+                          doc.data(),
+                        ),
+                      )
+                      .toList(growable: false)
+                    ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt)),
+            ),
+        context: const BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'watch incoming Cross Paths invitations',
+          resource: _invitationsPath,
+        ),
+      );
+
+  Stream<CrossPathsInvitation?> watchOutgoingInvitation({
+    required String uid,
+    required String eventId,
+  }) => withBackendErrorStream(
+    () => _db
+        .collection(_invitationsPath)
+        .where('senderUid', isEqualTo: uid)
+        .limit(ReadLimitPolicy.historyPage)
+        .snapshots()
+        .map((snapshot) {
+          final matching = snapshot.docs
+              .where((doc) => doc.data()['eventId'] == eventId)
+              .toList(growable: false);
+          return matching.isEmpty
+              ? null
+              : crossPathsInvitationFromFirestore(
+                  matching.first.id,
+                  matching.first.data(),
+                );
+        }),
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'watch outgoing Cross Paths invitation',
+      resource: _invitationsPath,
+    ),
+  );
+
+  Future<CrossPathsInvitationReceipt> sendInvitation({
+    required String eventId,
+    required String recipientUid,
+    required String suggestionToken,
+  }) => withBackendErrorContext(
+    () async {
+      final result = await _functions
+          .httpsCallable('sendCrossPathsInvitation')
+          .call(
+            SendCrossPathsInvitationCallableRequest(
+              eventId: eventId,
+              recipientUid: recipientUid,
+              suggestionToken: suggestionToken,
+            ).toJson(),
+          );
+      return CrossPathsInvitationReceipt.fromCallableData(result.data);
+    },
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'send Cross Paths invitation',
+      resource: 'sendCrossPathsInvitation',
+    ),
+  );
+
+  Future<CrossPathsInvitationReceipt> respondToInvitation({
+    required String invitationId,
+    required bool accept,
+  }) => withBackendErrorContext(
+    () async {
+      final result = await _functions
+          .httpsCallable('respondCrossPathsInvitation')
+          .call(
+            RespondCrossPathsInvitationCallableRequest(
+              invitationId: invitationId,
+              decision: accept ? 'accept' : 'decline',
+            ).toJson(),
+          );
+      return CrossPathsInvitationReceipt.fromCallableData(result.data);
+    },
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'respond to Cross Paths invitation',
+      resource: 'respondCrossPathsInvitation',
+    ),
+  );
+
+  Future<CrossPathsInvitationReceipt> cancelInvitationOrPlan(
+    String invitationId,
+  ) => withBackendErrorContext(
+    () async {
+      final result = await _functions
+          .httpsCallable('cancelCrossPathsInvitationOrPlan')
+          .call(
+            CancelCrossPathsInvitationOrPlanCallableRequest(
+              invitationId: invitationId,
+            ).toJson(),
+          );
+      return CrossPathsInvitationReceipt.fromCallableData(result.data);
+    },
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'cancel Cross Paths invitation or plan',
+      resource: 'cancelCrossPathsInvitationOrPlan',
+    ),
+  );
 }
 
 // keepalive: Shared by event-detail consent listeners and mutation calls.
@@ -120,3 +297,24 @@ Stream<CrossPathsEventConsent?> watchCrossPathsEventConsent(
 ) => ref
     .watch(crossPathsRepositoryProvider)
     .watchEventConsent(eventId: eventId, uid: uid);
+
+@riverpod
+Stream<CrossPathsInvitation?> watchCrossPathsInvitation(
+  Ref ref,
+  String invitationId,
+) => ref.watch(crossPathsRepositoryProvider).watchInvitation(invitationId);
+
+@riverpod
+Stream<List<CrossPathsInvitation>> watchIncomingCrossPathsInvitations(
+  Ref ref,
+  String uid,
+) => ref.watch(crossPathsRepositoryProvider).watchIncomingInvitations(uid);
+
+@riverpod
+Stream<CrossPathsInvitation?> watchOutgoingCrossPathsInvitation(
+  Ref ref,
+  String uid,
+  String eventId,
+) => ref
+    .watch(crossPathsRepositoryProvider)
+    .watchOutgoingInvitation(uid: uid, eventId: eventId);

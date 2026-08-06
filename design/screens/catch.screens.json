@@ -1669,6 +1669,188 @@
       ]
     },
     {
+      "id": "screen.cross_paths.invitation",
+      "shell": {
+        "owner": "consumer",
+        "nestedScaffoldAllowed": false,
+        "reason": "The consumer shell owns app navigation while this child route owns its screen scaffold and back action."
+      },
+      "topBar": {
+        "role": "compact",
+        "expression": "CatchTopBar",
+        "owner": "CrossPathsInvitationScreen",
+        "reason": "The participant-only invitation route owns compact title and explicit back chrome."
+      },
+      "statePolicy": {
+        "requiredStates": [
+          "data",
+          "loading",
+          "mutation",
+          "permission"
+        ],
+        "owner": "CrossPathsInvitationScreen and CrossPathsInvitationController"
+      },
+      "name": "Cross Paths Invitation",
+      "owner": "cross_paths",
+      "priority": "P1",
+      "status": "ready",
+      "routes": [
+        {
+          "id": "crossPathsInvitationScreen",
+          "path": "/cross-paths/invitations/:invitationId",
+          "role": "primary"
+        }
+      ],
+      "source": {
+        "file": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+        "symbol": "CrossPathsInvitationScreen"
+      },
+      "stateController": {
+        "primary": "watchCrossPathsInvitationProvider + CrossPathsInvitationController",
+        "files": [
+          {
+            "file": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+            "symbol": "CrossPathsInvitationScreen"
+          },
+          {
+            "file": "lib/cross_paths/presentation/cross_paths_invitation_controller.dart",
+            "symbol": "CrossPathsInvitationController"
+          },
+          {
+            "file": "lib/cross_paths/data/cross_paths_repository.dart",
+            "symbol": "CrossPathsRepository"
+          }
+        ],
+        "mutationOwners": [
+          {
+            "file": "lib/cross_paths/presentation/cross_paths_invitation_controller.dart",
+            "symbol": "CrossPathsInvitationController"
+          }
+        ],
+        "notes": "The route watches one participant-readable invitation plus its sanitized peer profile and event, maps missing/error/loading branches before rendering, and delegates send/respond/cancel writes to callable-only repository methods."
+      },
+      "designRefs": [
+        {
+          "id": "repo.cross-paths-spec",
+          "kind": "repo",
+          "status": "available",
+          "path": "docs/cross_paths.md",
+          "notes": "Approved invitation, plan, consent, capacity, and entity-material contract."
+        }
+      ],
+      "captures": [],
+      "states": [
+        {
+          "id": "invitation_loading",
+          "kind": "loading",
+          "status": "tested",
+          "source": "Invitation, peer profile, and event provider waves render bounded loading UI.",
+          "tests": [
+            "test/cross_paths/cross_paths_invitation_screen_test.dart"
+          ],
+          "previewIds": [
+            "CrossPathsInvitationScreen/Cross Paths invitation states"
+          ],
+          "nextAction": "Add a route capture when Cross Paths is enabled for a staged cohort."
+        },
+        {
+          "id": "invitation_unavailable",
+          "kind": "permission",
+          "status": "tested",
+          "source": "Missing invitation, missing supporting entity, signed-out identity, or a non-participant viewer fails closed through CatchErrorState.",
+          "tests": [
+            "test/cross_paths/cross_paths_invitation_screen_test.dart",
+            "functions/test/firestore.rules.test.cjs"
+          ],
+          "previewIds": [
+            "CrossPathsInvitationScreen/Cross Paths invitation states"
+          ],
+          "nextAction": "Keep participant-only rules and route error copy aligned."
+        },
+        {
+          "id": "invitation_pending",
+          "kind": "populated",
+          "status": "tested",
+          "source": "Incoming pending invitations expose accept and decline; outgoing pending invitations expose cancel.",
+          "tests": [
+            "test/cross_paths/cross_paths_invitation_screen_test.dart",
+            "test/cross_paths/cross_paths_invitation_controller_test.dart"
+          ],
+          "previewIds": [
+            "CrossPathsInvitationScreen/Cross Paths invitation states"
+          ],
+          "nextAction": "Capture incoming and outgoing states during staged rollout."
+        },
+        {
+          "id": "event_plan_accepted",
+          "kind": "mutation",
+          "status": "tested",
+          "source": "Accepted invitation exposes the temporary event plan and an explicit cancel-plan inverse without creating dating-match UI.",
+          "tests": [
+            "test/cross_paths/cross_paths_invitation_screen_test.dart",
+            "test/chats/chat_screen_test.dart",
+            "test/chats/chat_inbox_screen_test.dart"
+          ],
+          "previewIds": [
+            "CrossPathsInvitationScreen/Cross Paths invitation states"
+          ],
+          "nextAction": "Capture accepted and expired plan states during staged rollout."
+        },
+        {
+          "id": "invitation_terminal",
+          "kind": "populated",
+          "status": "tested",
+          "source": "Declined, cancelled, expired, and invalidated invitations remain truthful read-only receipts with no illegal action.",
+          "tests": [
+            "functions/src/crossPaths/invitations.test.ts"
+          ],
+          "previewIds": [
+            "CrossPathsInvitationScreen/Cross Paths invitation states"
+          ],
+          "nextAction": "Keep terminal reason copy generic enough not to reveal safety or competing-plan state."
+        }
+      ],
+      "composition": {
+        "currentLayout": "CrossPathsInvitationScreen composes canonical person Polaroid, adjacent event context, lifecycle-specific actions, and route-level loading/error/unavailable states.",
+        "targetLayout": "Keep person, event, and event-plan meanings visually distinct while preserving participant privacy and callable-only mutations.",
+        "sections": [
+          {
+            "id": "section.cross_paths.invitation_detail",
+            "name": "Cross Paths invitation detail",
+            "status": "implemented_local",
+            "layer": "screen-adapter",
+            "claudeComponents": [
+              "CrossPathsInvitationScreen"
+            ],
+            "flutter": {
+              "file": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+              "symbol": "CrossPathsInvitationScreen"
+            },
+            "currentOwner": "CrossPathsInvitationScreen",
+            "targetOwner": "CrossPathsInvitationScreen",
+            "dependencies": [
+              "catch.person_polaroid",
+              "catch.surface",
+              "catch.button",
+              "catch.top_bar"
+            ],
+            "states": [
+              "invitation_loading",
+              "invitation_unavailable",
+              "invitation_pending",
+              "event_plan_accepted",
+              "invitation_terminal"
+            ],
+            "migration": "Implemented with provider reads at the route boundary and typed callable mutations in CrossPathsInvitationController.",
+            "previewIds": [
+              "CrossPathsInvitationScreen/Cross Paths invitation states"
+            ]
+          }
+        ]
+      },
+      "openGaps": []
+    },
+    {
       "id": "screen.explore.discovery",
         "shell": {
           "owner": "consumer",
@@ -2045,13 +2227,13 @@
             "test/cross_paths/cross_paths_explore_card_test.dart",
             "test/explore/explore_view_model_test.dart"
           ],
-          "nextAction": "Keep invitation language absent until the separately contracted invitation workflow exists; launch only after legal copy, seeded supply, signing-key, and TTL gates are complete."
+      "nextAction": "Invitation delivery is now separately contracted and remains available only after confirmed booking; launch only after legal copy, seeded supply, signing-key, TTL, and staged-cohort gates are complete."
         },
         {
           "id": "cross_paths_profile_preview",
           "kind": "populated",
           "status": "captured",
-          "source": "CrossPathsProfilePreviewSheet reuses the sanitized existing profile surface and keeps the associated first-party event context visible with a separate Event Detail action.",
+      "source": "CrossPathsProfilePreviewSheet reuses the sanitized existing profile surface, keeps the associated first-party event context visible, and derives join-first, invitation-ready, pending, accepted-plan, or terminal action state from a participant-scoped invitation stream.",
           "captureIds": [
             "explore_cross_paths_profile_preview"
           ],
@@ -2061,7 +2243,7 @@
           "tests": [
             "test/cross_paths/cross_paths_explore_card_test.dart"
           ],
-          "nextAction": "Extend this overlay with invitation state only after the invitation callable, participant rules, expiry, and plan-chat lifecycle are implemented."
+      "nextAction": "Invitation callable, participant rules, expiry, and plan-chat lifecycle are implemented; keep staged rollout and privacy-policy approval as the enablement gates."
         },
         {
           "id": "search_query",

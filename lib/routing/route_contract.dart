@@ -26,6 +26,10 @@ enum Routes {
   eventLocationMapScreen('/events/:eventId/location', AppRouteAudience.shared),
   dashboardScreen('/', AppRouteAudience.consumer),
   notificationsScreen('/notifications', AppRouteAudience.consumer),
+  crossPathsInvitationScreen(
+    '/cross-paths/invitations/:invitationId',
+    AppRouteAudience.consumer,
+  ),
   exploreScreen('/organizers', AppRouteAudience.consumer),
   exploreMapScreen('/organizers/map', AppRouteAudience.consumer),
   clubDetailScreen('/organizers/:clubId', AppRouteAudience.consumer),

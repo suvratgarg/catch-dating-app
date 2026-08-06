@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/send_cross_paths_invitation_response.schema.json",
+  "title": "SendCrossPathsInvitationCallableResponse",
+  "description": "Sanitized invitation receipt returned after a successful send.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["invitationId", "status", "eventId", "recipientUid", "expiresAt"],
+  "properties": {
+    "invitationId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "status": {"type": "string", "const": "pending"},
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "recipientUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "expiresAt": {"type": "string", "format": "date-time"}
+  }
+}

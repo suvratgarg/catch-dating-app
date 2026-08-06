@@ -1,7 +1,7 @@
 ---
 doc_id: action_cardinality_policy
-version: 1.0.0
-updated: 2026-05-12
+version: 1.1.0
+updated: 2026-08-06
 owner: product_architecture
 status: active
 ---
@@ -84,6 +84,8 @@ to build with one item.
 | Write review | Singleton per user/run or user/club/run, depending final reputation model. | Review prompt exists after attended runs. | Confirm duplicate review prevention and edit/delete semantics. |
 | Payment/order | Singleton successful booking per user/run; payment attempts may repeat until success. | Backend prevents duplicate booking and records failed signup state. | Ensure UI makes retry state clear after failed payment/sign-up race. |
 | Add to calendar / directions / share / invite | Repeated side effects. | Confirmation screen exposes these as repeated utility actions. | Clean. |
+| Cross Paths invitation | Domain-bounded: one recipient chosen by a sender for one event; recipient may hold at most three pending invitations and accept one plan per event. | Explore replaces send with pending/accepted state, invitation detail exposes only legal transitions, and accepted plans have an explicit cancel inverse. | Deterministic invitation and event-plan ids, transactional cap checks, idempotent response/cancel, and competing-pending invalidation are implemented in callables. |
+| Cross Paths event-plan message | Unbounded within one active accepted plan and its event-end-plus-24-hour window. | Chat shows event context and becomes read-only when closed, blocked, or expired. | Firestore rules and message trigger enforce participant, status, block, and expiry boundaries without emitting dating-match signals. |
 | Edit profile fields | Repeated updates, latest value wins. | Inline editors support repeated edits. | Clean. |
 
 ## Open Work Queue

@@ -281,6 +281,7 @@ Match buildMatch({
   MatchStatus status = MatchStatus.active,
   MatchConversationType conversationType = MatchConversationType.match,
   String? clubId,
+  DateTime? eventPlanExpiresAt,
 }) {
   return Match(
     id: id,
@@ -295,6 +296,7 @@ Match buildMatch({
     status: status,
     conversationType: conversationType,
     clubId: clubId,
+    eventPlanExpiresAt: eventPlanExpiresAt,
   );
 }
 
@@ -368,6 +370,7 @@ HostChatScreenState _hostChatState({
   required ClubHostProfile? hostProfile,
   bool reportUserPending = false,
   bool blockUserPending = false,
+  DateTime? now,
 }) {
   return HostChatScreenState.resolve(
     matchId: matchId,
@@ -379,6 +382,7 @@ HostChatScreenState _hostChatState({
     hostProfile: hostProfile,
     reportUserPending: reportUserPending,
     blockUserPending: blockUserPending,
+    now: now,
   );
 }
 
@@ -899,6 +903,29 @@ void main() {
       expect(fallback.safetyTargetName, 'this person');
       expect(loading.composerDisabledReason, 'Loading chat...');
       expect(blocked.composerDisabledReason, 'This chat is closed.');
+    });
+
+    test('scopes Cross Paths plans and closes the composer after expiry', () {
+      final now = DateTime.utc(2026, 8, 5, 12);
+      final plan = buildMatch(
+        conversationType: MatchConversationType.crossPathsEventPlan,
+        eventPlanExpiresAt: now.subtract(const Duration(minutes: 1)),
+      );
+      final state = _hostChatState(
+        matchId: plan.id,
+        uid: 'runner-1',
+        matchAsync: AsyncData<Match?>(plan),
+        messagesAsync: _emptyMessagesAsync,
+        suvbotActionsAsync: _emptySuvbotActionsAsync,
+        profile: buildPublicProfile(uid: 'runner-2', name: 'Rhea'),
+        hostProfile: null,
+        now: now,
+      );
+
+      expect(state.shareCardEnabled, isFalse);
+      expect(state.profileNavigationEnabled, isTrue);
+      expect(state.safetyActionsEnabled, isTrue);
+      expect(state.composerDisabledReason, 'This chat is closed.');
     });
 
     test('marks safety actions disabled while their mutations are pending', () {

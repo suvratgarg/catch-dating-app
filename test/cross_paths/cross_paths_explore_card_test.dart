@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_polaroid.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_suggestion.dart';
@@ -5,6 +6,7 @@ import 'package:catch_dating_app/cross_paths/presentation/cross_paths_explore_ca
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../clubs/clubs_test_helpers.dart' as club_test;
@@ -96,19 +98,24 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
 
     await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.light,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: MediaQuery(
-          data: const MediaQueryData(textScaler: TextScaler.linear(2)),
-          child: Scaffold(
-            body: Align(
-              alignment: Alignment.bottomCenter,
-              child: CrossPathsProfilePreviewSheet(
-                suggestion: fixture.suggestion,
-                event: fixture.eventItem.event,
-                onEventSelected: () {},
+      ProviderScope(
+        overrides: [
+          uidProvider.overrideWith((ref) => Stream<String?>.value(null)),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: MediaQuery(
+            data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+            child: Scaffold(
+              body: Align(
+                alignment: Alignment.bottomCenter,
+                child: CrossPathsProfilePreviewSheet(
+                  suggestion: fixture.suggestion,
+                  event: fixture.eventItem.event,
+                  onEventSelected: () {},
+                ),
               ),
             ),
           ),

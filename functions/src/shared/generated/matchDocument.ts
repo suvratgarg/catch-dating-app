@@ -28,7 +28,7 @@ export interface MatchDocument {
   unreadCounts: {
     [k: string]: number;
   };
-  status: "active" | "blocked";
+  status: "active" | "blocked" | "closed";
   blockedBy: string | null;
   blockedAt: {
     _seconds: number;
@@ -39,9 +39,21 @@ export interface MatchDocument {
    * @maxItems 2
    */
   participantIds: string[];
-  conversationType?: "match" | "clubHostInquiry";
+  conversationType?: "match" | "clubHostInquiry" | "crossPathsEventPlan";
   clubId?: string;
   organizerId?: string;
+  crossPathsInvitationId?: string;
+  /**
+   * Serialized Firestore Timestamp fixture shape.
+   */
+  eventPlanExpiresAt?: {
+    _seconds: number;
+    _nanoseconds: number;
+  };
+  closedAt?: {
+    _seconds: number;
+    _nanoseconds: number;
+  } | null;
   /**
    * Internal demo seed marker used for cleanup and diagnostics.
    */

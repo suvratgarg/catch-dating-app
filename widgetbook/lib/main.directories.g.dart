@@ -4305,6 +4305,21 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookFolder(
+        name: 'Screens',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CrossPathsInvitationScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Cross Paths invitation states',
+                builder: _widgetbook_workspace_explore_explore_use_cases
+                    .crossPathsInvitationStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
         name: 'Sections',
         children: [
           _widgetbook.WidgetbookComponent(

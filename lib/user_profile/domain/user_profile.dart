@@ -281,6 +281,7 @@ abstract class UserProfile with _$UserProfile {
     @Default(false) bool prefsWeeklyDigest,
     @Default(true) bool prefsShowOnMap,
     @Default(false) bool prefsShowInCrossPaths,
+    @Default(false) bool prefsCrossPathsInvitations,
   }) = _UserProfile;
 
   factory UserProfile.fromJson(Map<String, dynamic> json) =>

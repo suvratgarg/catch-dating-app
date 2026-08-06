@@ -76,6 +76,13 @@
       "leading": "back"
     },
     {
+      "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar",
+      "leading": "back"
+    },
+    {
       "path": "lib/dashboard/presentation/activity_screen.dart",
       "role": "screen",
       "expression": "CatchScreenTopBar",

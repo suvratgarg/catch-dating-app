@@ -348,6 +348,8 @@ Root-level edge/action documents are the source of truth for many-to-many state:
 | Cross Paths event visibility | `eventCrossPathsConsents/{eventId_uid}` |
 | Cross Paths showcase eligibility | server-only `crossPathsShowcaseEligibility/{uid}` |
 | Cross Paths suggestion exposure | server-only `crossPathsSuggestionExposures/{exposureId}` |
+| Cross Paths invitation | `crossPathsInvitations/{eventId_senderUid}` |
+| Cross Paths accepted event plan | `matches/{event_pairHash}` with `conversationType: crossPathsEventPlan` |
 | Saved events | `savedEvents/{uid_eventId}` |
 | Outgoing profile decisions | `profileDecisions/{uid}/outgoing/{targetId}` |
 | Match messages | `matches/{matchId}/messages/{messageId}` |
@@ -413,6 +415,28 @@ receipt used for seven-day fatigue and repeated-session stability. Firestore
 rules deny every client read/write, the document carries a 30-day expiry for
 the environment-owned Firestore TTL policy, and account deletion removes
 receipts where the member was viewer or candidate.
+
+Cross Paths invitations are deterministic event-and-sender documents. Only the
+two participant ids may read an invitation; every create or transition is
+owned by `sendCrossPathsInvitation`, `respondCrossPathsInvitation`,
+`cancelCrossPathsInvitationOrPlan`, or a lifecycle trigger. A signed suggestion
+token is not authority by itself: send and accept revalidate both confirmed
+participations, both layers of consent, reciprocal eligibility, current
+showcase approval, blocks/reports/moderation, event availability, and the
+one-invitation/one-plan cardinality rules. Invitation state is `pending`,
+`accepted`, `declined`, `cancelled`, `expired`, or `invalidated`; timestamps and
+invalidation reasons are server-owned.
+
+Acceptance creates one deterministic `matches` document whose
+`conversationType` is `crossPathsEventPlan`, whose participants are the invite
+pair, and whose event id and invitation id remain explicit. It is not a dating
+match and cannot drive match celebrations or Event Success signals. Rules allow
+participants to read the plan and create messages only while it is active,
+unblocked, and before `expiresAt` (event end plus 24 hours). Cancellation,
+participation loss, event cancellation, or a block closes the plan; revoking
+discovery consent invalidates pending invitations but does not silently cancel
+an already accepted plan. Invitation delivery uses the separate optional
+`prefsCrossPathsInvitations` preference, which defaults to false when missing.
 
 Each device push token lives at
 `users/{uid}/pushInstallations/{installationId}` with `token`, `appRole`,

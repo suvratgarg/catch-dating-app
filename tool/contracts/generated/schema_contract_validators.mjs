@@ -39,6 +39,7 @@ import {
   eventCrossPathsConsentDocumentSchema,
   crossPathsShowcaseEligibilityDocumentSchema,
   crossPathsSuggestionExposureDocumentSchema,
+  crossPathsInvitationDocumentSchema,
   eventBroadcastDocumentSchema,
   eventWaitlistOfferDocumentSchema,
   eventSuccessPlanDocumentSchema,
@@ -149,6 +150,9 @@ import {
   eventIdCallablePayloadSchema,
   setCrossPathsEventConsentCallablePayloadSchema,
   getCrossPathsSuggestionsCallablePayloadSchema,
+  sendCrossPathsInvitationCallablePayloadSchema,
+  respondCrossPathsInvitationCallablePayloadSchema,
+  cancelCrossPathsInvitationOrPlanCallablePayloadSchema,
   createEventWaitlistOffersCallablePayloadSchema,
   createEventInviteLinkCallablePayloadSchema,
   disableEventInviteLinkCallablePayloadSchema,
@@ -201,6 +205,9 @@ import {
   fetchSwipeCandidatesCallableResponseSchema,
   setCrossPathsEventConsentCallableResponseSchema,
   getCrossPathsSuggestionsCallableResponseSchema,
+  sendCrossPathsInvitationCallableResponseSchema,
+  respondCrossPathsInvitationCallableResponseSchema,
+  cancelCrossPathsInvitationOrPlanCallableResponseSchema,
   createProfileDecisionClientWriteSchema,
   createChatMessageClientWriteSchema,
   createSavedEventClientWriteSchema,
@@ -287,6 +294,7 @@ export const validateEventParticipationDocument = ajv.compile(eventParticipation
 export const validateEventCrossPathsConsentDocument = ajv.compile(eventCrossPathsConsentDocumentSchema);
 export const validateCrossPathsShowcaseEligibilityDocument = ajv.compile(crossPathsShowcaseEligibilityDocumentSchema);
 export const validateCrossPathsSuggestionExposureDocument = ajv.compile(crossPathsSuggestionExposureDocumentSchema);
+export const validateCrossPathsInvitationDocument = ajv.compile(crossPathsInvitationDocumentSchema);
 export const validateEventBroadcastDocument = ajv.compile(eventBroadcastDocumentSchema);
 export const validateEventWaitlistOfferDocument = ajv.compile(eventWaitlistOfferDocumentSchema);
 export const validateEventSuccessPlanDocument = ajv.compile(eventSuccessPlanDocumentSchema);
@@ -397,6 +405,9 @@ export const validateDeleteEventCallablePayload = ajv.compile(deleteEventCallabl
 export const validateEventIdCallablePayload = ajv.compile(eventIdCallablePayloadSchema);
 export const validateSetCrossPathsEventConsentCallablePayload = ajv.compile(setCrossPathsEventConsentCallablePayloadSchema);
 export const validateGetCrossPathsSuggestionsCallablePayload = ajv.compile(getCrossPathsSuggestionsCallablePayloadSchema);
+export const validateSendCrossPathsInvitationCallablePayload = ajv.compile(sendCrossPathsInvitationCallablePayloadSchema);
+export const validateRespondCrossPathsInvitationCallablePayload = ajv.compile(respondCrossPathsInvitationCallablePayloadSchema);
+export const validateCancelCrossPathsInvitationOrPlanCallablePayload = ajv.compile(cancelCrossPathsInvitationOrPlanCallablePayloadSchema);
 export const validateCreateEventWaitlistOffersCallablePayload = ajv.compile(createEventWaitlistOffersCallablePayloadSchema);
 export const validateCreateEventInviteLinkCallablePayload = ajv.compile(createEventInviteLinkCallablePayloadSchema);
 export const validateDisableEventInviteLinkCallablePayload = ajv.compile(disableEventInviteLinkCallablePayloadSchema);
@@ -449,6 +460,9 @@ export const validateFetchEventSuccessWingmanCandidatesCallableResponse = ajv.co
 export const validateFetchSwipeCandidatesCallableResponse = ajv.compile(fetchSwipeCandidatesCallableResponseSchema);
 export const validateSetCrossPathsEventConsentCallableResponse = ajv.compile(setCrossPathsEventConsentCallableResponseSchema);
 export const validateGetCrossPathsSuggestionsCallableResponse = ajv.compile(getCrossPathsSuggestionsCallableResponseSchema);
+export const validateSendCrossPathsInvitationCallableResponse = ajv.compile(sendCrossPathsInvitationCallableResponseSchema);
+export const validateRespondCrossPathsInvitationCallableResponse = ajv.compile(respondCrossPathsInvitationCallableResponseSchema);
+export const validateCancelCrossPathsInvitationOrPlanCallableResponse = ajv.compile(cancelCrossPathsInvitationOrPlanCallableResponseSchema);
 export const validateCreateProfileDecisionClientWrite = ajv.compile(createProfileDecisionClientWriteSchema);
 export const validateCreateChatMessageClientWrite = ajv.compile(createChatMessageClientWriteSchema);
 export const validateCreateSavedEventClientWrite = ajv.compile(createSavedEventClientWriteSchema);

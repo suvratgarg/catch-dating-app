@@ -1,0 +1,89 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/cross_paths_invitations.schema.json",
+  "title": "CrossPathsInvitationDocument",
+  "description": "Callable-owned event-scoped invitation stored at crossPathsInvitations/{deterministicEventSenderHash}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "cross_paths_invitations",
+  "x-firestore-path": "crossPathsInvitations/{invitationId}",
+  "x-document-id-field": "id",
+  "x-owner": "Cross Paths invitation callables",
+  "required": [
+    "eventId",
+    "senderUid",
+    "recipientUid",
+    "participantIds",
+    "status",
+    "createdAt",
+    "updatedAt",
+    "expiresAt",
+    "respondedAt",
+    "cancelledAt",
+    "invalidatedAt",
+    "invalidationReason",
+    "conversationId"
+  ],
+  "properties": {
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "senderUid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "recipientUid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "participantIds": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "uniqueItems": true,
+      "items": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+      "x-catch-ownership": "callable-owned"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["pending", "accepted", "declined", "cancelled", "expired", "invalidated"],
+      "x-catch-ownership": "callable-owned"
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "expiresAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "respondedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "cancelledAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "invalidatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "invalidationReason": {
+      "type": ["string", "null"],
+      "enum": [null, "event_unavailable", "participation_cancelled", "consent_revoked", "safety_state_changed", "competing_plan_accepted", "plan_cancelled"],
+      "x-catch-ownership": "callable-owned"
+    },
+    "conversationId": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    }
+  }
+}

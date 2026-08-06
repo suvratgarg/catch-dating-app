@@ -8,6 +8,7 @@ abstract final class StructuredDomainCopy {
   static const eventTitleDateSeparator = ' · ';
   static const chatTitle = 'Chat';
   static const chatHostConversationTitle = 'Host conversation';
+  static const chatCrossPathsEventPlanReady = 'Event plan ready';
   static const chatSuvbotTitle = 'Suvbot';
   static const chatUnknownDisplayName = 'Unknown';
   static const eventSuccessAssignmentRound = 'Round';

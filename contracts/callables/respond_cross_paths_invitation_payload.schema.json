@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/respond_cross_paths_invitation_payload.schema.json",
+  "title": "RespondCrossPathsInvitationCallablePayload",
+  "description": "Recipient-only response accepted by respondCrossPathsInvitation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["invitationId", "decision"],
+  "properties": {
+    "invitationId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "decision": {"type": "string", "enum": ["accept", "decline"]}
+  }
+}

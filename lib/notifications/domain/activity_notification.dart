@@ -10,10 +10,17 @@ enum ActivityNotificationType {
   eventReminder,
   eventSignup,
   waitlistPromotion,
+  waitlistOffer,
+  waitlistOfferExpiring,
+  waitlistOfferExpired,
   eventCancelled,
   eventUpdated,
   clubUpdate,
   organizerUpdate,
+  crossPathsInvitation,
+  crossPathsInvitationAccepted,
+  crossPathsInvitationDeclined,
+  crossPathsPlanCancelled,
 }
 
 @freezed
@@ -33,6 +40,7 @@ abstract class ActivityNotification with _$ActivityNotification {
     String? clubId,
     String? organizerId,
     String? postId,
+    String? invitationId,
     String? actorUid,
     String? actorName,
   }) = _ActivityNotification;

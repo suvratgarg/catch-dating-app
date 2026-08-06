@@ -84,6 +84,7 @@ class HostChatScreenState {
     required ClubHostProfile? hostProfile,
     bool reportUserPending = false,
     bool blockUserPending = false,
+    DateTime? now,
   }) {
     final match = matchAsync.status == CatchAsyncStatus.data
         ? matchAsync.value
@@ -91,6 +92,7 @@ class HostChatScreenState {
     final otherUid = uid == null ? null : match?.otherId(uid);
     final isSuvbot = isSuvbotConversation(matchId: matchId, otherUid: otherUid);
     final isHostInquiry = match?.isClubHostInquiry == true;
+    final isCrossPathsEventPlan = match?.isCrossPathsEventPlan == true;
     final name = isSuvbot
         ? StructuredDomainCopy.chatSuvbotTitle
         : hostProfile?.displayName ??
@@ -104,8 +106,13 @@ class HostChatScreenState {
     final composerDisabledReason = _chatComposerDisabledReason(
       matchAsync: matchAsync,
       match: match,
+      now: now ?? DateTime.now(),
     );
-    final shareCardEnabled = otherUid != null && !isSuvbot && !isHostInquiry;
+    final shareCardEnabled =
+        otherUid != null &&
+        !isSuvbot &&
+        !isHostInquiry &&
+        !isCrossPathsEventPlan;
     final safetyActionsEnabled = otherUid != null && !isSuvbot;
 
     return HostChatScreenState(
@@ -200,10 +207,16 @@ class HostChatRouteError {
 String? _chatComposerDisabledReason({
   required CatchAsyncState<Match?> matchAsync,
   required Match? match,
+  required DateTime now,
 }) {
   if (matchAsync.status == CatchAsyncStatus.error) return 'Chat unavailable.';
   if (matchAsync.status == CatchAsyncStatus.loading) return 'Loading chat...';
   if (match == null) return 'Chat unavailable.';
-  if (match.isBlocked) return 'This chat is closed.';
+  if (match.isBlocked ||
+      match.isClosed ||
+      (match.isCrossPathsEventPlan &&
+          match.eventPlanExpiresAt?.isBefore(now) == true)) {
+    return 'This chat is closed.';
+  }
   return null;
 }

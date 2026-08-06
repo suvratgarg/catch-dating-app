@@ -1,7 +1,7 @@
 {
   "$schema": "./widget_classification.schema.json",
   "version": 2,
-  "updated": "2026-08-05",
+  "updated": "2026-08-06",
   "sourceOfTruth": {
     "scope": "Generated inventory for production Flutter widget and widget-state classes under lib/**. Widgetbook/test scaffolds are intentionally out of scope.",
     "canonicalContracts": "design/components/catch.components.json owns canonical global component contracts and governance metadata.",
@@ -10,44 +10,44 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1113,
-    "widgetClasses": 977,
+    "total": 1116,
+    "widgetClasses": 980,
     "stateClasses": 136,
-    "publicClasses": 972,
-    "privateClasses": 141,
+    "publicClasses": 973,
+    "privateClasses": 143,
     "byRole": {
       "atom": 57,
       "composition": 360,
       "feature-adapter": 285,
       "pattern": 17,
-      "screen": 258,
+      "screen": 261,
       "widget-state": 136
     },
     "byDecision": {
       "keep-canonical-contract": 200,
-      "keep-public-cataloged": 707,
+      "keep-public-cataloged": 708,
       "keep-widget-state": 136,
       "review-catalog-coverage": 44,
       "review-promote-or-consolidate": 21,
-      "review-promote-or-inline": 5
+      "review-promote-or-inline": 7
     },
     "byCatalogStatus": {
-      "cataloged": 668,
+      "cataloged": 669,
       "contracted": 200,
       "not-applicable": 136,
       "route-covered": 56,
-      "uncataloged": 53
+      "uncataloged": 55
     },
     "conceptCount": 64,
     "memberClassCount": 118,
     "compositionClassCount": 519,
-    "screenClassCount": 271,
+    "screenClassCount": 272,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 519,
       "concept": 64,
       "member": 118,
-      "screen": 271
+      "screen": 272
     },
     "collisionGroupCount": 33,
     "collisions": [
@@ -374,7 +374,7 @@
       "memberClasses": 118,
       "memberClassesCataloged": 118,
       "compositionsCataloged": 471,
-      "screensCataloged": 215
+      "screensCataloged": 216
     }
   },
   "widgets": [
@@ -10248,7 +10248,10 @@
         "keepPublicCataloged",
         "mergeIntoCanonical"
       ],
-      "flags": []
+      "flags": [
+        "primitive-imports-data-layer",
+        "primitive-imports-provider-layer"
+      ]
     },
     {
       "name": "CrossPathsExploreCard",
@@ -10277,13 +10280,16 @@
         "keepPublicCataloged",
         "mergeIntoCanonical"
       ],
-      "flags": []
+      "flags": [
+        "primitive-imports-data-layer",
+        "primitive-imports-provider-layer"
+      ]
     },
     {
       "name": "CrossPathsProfilePreviewSheet",
       "file": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
       "classKind": "widget",
-      "baseClass": "StatelessWidget",
+      "baseClass": "ConsumerWidget",
       "visibility": "public",
       "role": "composition",
       "canonicalFamily": "catch.cross_paths_profile_preview_sheet",
@@ -10301,6 +10307,102 @@
       "asyncOwnership": "none",
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": [
+        "primitive-imports-data-layer",
+        "primitive-imports-provider-layer"
+      ]
+    },
+    {
+      "name": "_InvitationDetail",
+      "file": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+      "classKind": "widget",
+      "baseClass": "ConsumerWidget",
+      "visibility": "private",
+      "role": "screen",
+      "canonicalFamily": "screen.invitation_detail",
+      "publicApi": false,
+      "catalogStatus": "uncataloged",
+      "contractId": null,
+      "conceptRole": "screen",
+      "conceptId": null,
+      "parentConceptId": null,
+      "qualifier": null,
+      "collisionKey": "invitation_detail",
+      "decisionRef": "generated-rule:screen-boundary",
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "review-promote-or-inline",
+      "remediationOptions": [
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "private-widget-publicization-required"
+      ]
+    },
+    {
+      "name": "_InvitationDetailBody",
+      "file": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+      "classKind": "widget",
+      "baseClass": "ConsumerWidget",
+      "visibility": "private",
+      "role": "screen",
+      "canonicalFamily": "screen.invitation_detail_body",
+      "publicApi": false,
+      "catalogStatus": "uncataloged",
+      "contractId": null,
+      "conceptRole": "screen",
+      "conceptId": null,
+      "parentConceptId": null,
+      "qualifier": null,
+      "collisionKey": "invitation_detail_body",
+      "decisionRef": "generated-rule:screen-boundary",
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "review-promote-or-inline",
+      "remediationOptions": [
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "private-widget-publicization-required"
+      ]
+    },
+    {
+      "name": "CrossPathsInvitationScreen",
+      "file": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+      "classKind": "widget",
+      "baseClass": "ConsumerWidget",
+      "visibility": "public",
+      "role": "screen",
+      "canonicalFamily": "screen.cross_paths_invitation_screen",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "conceptRole": "screen",
+      "conceptId": null,
+      "parentConceptId": null,
+      "qualifier": null,
+      "collisionKey": "cross_paths_invitation_screen",
+      "decisionRef": "generated-rule:screen-boundary",
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
       "decision": "keep-public-cataloged",
       "remediationOptions": [
         "keepPublicCataloged",

@@ -40,6 +40,7 @@ final class SettingsProfileState {
 final class SettingsPreferenceValues {
   const SettingsPreferenceValues({
     required this.showInCrossPaths,
+    required this.crossPathsInvitations,
     required this.showOnMap,
     required this.newCatches,
     required this.messages,
@@ -51,6 +52,7 @@ final class SettingsPreferenceValues {
 
   const SettingsPreferenceValues.defaults()
     : showInCrossPaths = false,
+      crossPathsInvitations = false,
       showOnMap = true,
       newCatches = true,
       messages = true,
@@ -62,6 +64,7 @@ final class SettingsPreferenceValues {
   factory SettingsPreferenceValues.fromProfile(UserProfile profile) {
     return SettingsPreferenceValues(
       showInCrossPaths: profile.prefsShowInCrossPaths,
+      crossPathsInvitations: profile.prefsCrossPathsInvitations,
       showOnMap: profile.prefsShowOnMap,
       newCatches: profile.prefsNewCatches,
       messages: profile.prefsMessages,
@@ -73,6 +76,7 @@ final class SettingsPreferenceValues {
   }
 
   final bool showInCrossPaths;
+  final bool crossPathsInvitations;
   final bool showOnMap;
   final bool newCatches;
   final bool messages;
@@ -84,6 +88,7 @@ final class SettingsPreferenceValues {
   bool valueFor(SettingsPreference preference) {
     return switch (preference) {
       SettingsPreference.showInCrossPaths => showInCrossPaths,
+      SettingsPreference.crossPathsInvitations => crossPathsInvitations,
       SettingsPreference.showOnMap => showOnMap,
       SettingsPreference.newCatches => newCatches,
       SettingsPreference.messages => messages,
@@ -98,88 +103,31 @@ final class SettingsPreferenceValues {
     SettingsPreference preference,
     bool value,
   ) {
-    return switch (preference) {
-      SettingsPreference.showInCrossPaths => SettingsPreferenceValues(
-        showInCrossPaths: value,
-        showOnMap: showOnMap,
-        newCatches: newCatches,
-        messages: messages,
-        eventReminders: eventReminders,
-        eventStatusUpdates: eventStatusUpdates,
-        clubUpdates: clubUpdates,
-        weeklyDigest: weeklyDigest,
+    bool selected(SettingsPreference candidate, bool current) =>
+        preference == candidate ? value : current;
+    return SettingsPreferenceValues(
+      showInCrossPaths: selected(
+        SettingsPreference.showInCrossPaths,
+        showInCrossPaths,
       ),
-      SettingsPreference.showOnMap => SettingsPreferenceValues(
-        showInCrossPaths: showInCrossPaths,
-        showOnMap: value,
-        newCatches: newCatches,
-        messages: messages,
-        eventReminders: eventReminders,
-        eventStatusUpdates: eventStatusUpdates,
-        clubUpdates: clubUpdates,
-        weeklyDigest: weeklyDigest,
+      crossPathsInvitations: selected(
+        SettingsPreference.crossPathsInvitations,
+        crossPathsInvitations,
       ),
-      SettingsPreference.newCatches => SettingsPreferenceValues(
-        showInCrossPaths: showInCrossPaths,
-        showOnMap: showOnMap,
-        newCatches: value,
-        messages: messages,
-        eventReminders: eventReminders,
-        eventStatusUpdates: eventStatusUpdates,
-        clubUpdates: clubUpdates,
-        weeklyDigest: weeklyDigest,
+      showOnMap: selected(SettingsPreference.showOnMap, showOnMap),
+      newCatches: selected(SettingsPreference.newCatches, newCatches),
+      messages: selected(SettingsPreference.messages, messages),
+      eventReminders: selected(
+        SettingsPreference.eventReminders,
+        eventReminders,
       ),
-      SettingsPreference.messages => SettingsPreferenceValues(
-        showInCrossPaths: showInCrossPaths,
-        showOnMap: showOnMap,
-        newCatches: newCatches,
-        messages: value,
-        eventReminders: eventReminders,
-        eventStatusUpdates: eventStatusUpdates,
-        clubUpdates: clubUpdates,
-        weeklyDigest: weeklyDigest,
+      eventStatusUpdates: selected(
+        SettingsPreference.eventStatusUpdates,
+        eventStatusUpdates,
       ),
-      SettingsPreference.eventReminders => SettingsPreferenceValues(
-        showInCrossPaths: showInCrossPaths,
-        showOnMap: showOnMap,
-        newCatches: newCatches,
-        messages: messages,
-        eventReminders: value,
-        eventStatusUpdates: eventStatusUpdates,
-        clubUpdates: clubUpdates,
-        weeklyDigest: weeklyDigest,
-      ),
-      SettingsPreference.eventStatusUpdates => SettingsPreferenceValues(
-        showInCrossPaths: showInCrossPaths,
-        showOnMap: showOnMap,
-        newCatches: newCatches,
-        messages: messages,
-        eventReminders: eventReminders,
-        eventStatusUpdates: value,
-        clubUpdates: clubUpdates,
-        weeklyDigest: weeklyDigest,
-      ),
-      SettingsPreference.clubUpdates => SettingsPreferenceValues(
-        showInCrossPaths: showInCrossPaths,
-        showOnMap: showOnMap,
-        newCatches: newCatches,
-        messages: messages,
-        eventReminders: eventReminders,
-        eventStatusUpdates: eventStatusUpdates,
-        clubUpdates: value,
-        weeklyDigest: weeklyDigest,
-      ),
-      SettingsPreference.weeklyDigest => SettingsPreferenceValues(
-        showInCrossPaths: showInCrossPaths,
-        showOnMap: showOnMap,
-        newCatches: newCatches,
-        messages: messages,
-        eventReminders: eventReminders,
-        eventStatusUpdates: eventStatusUpdates,
-        clubUpdates: clubUpdates,
-        weeklyDigest: value,
-      ),
-    };
+      clubUpdates: selected(SettingsPreference.clubUpdates, clubUpdates),
+      weeklyDigest: selected(SettingsPreference.weeklyDigest, weeklyDigest),
+    );
   }
 }
 

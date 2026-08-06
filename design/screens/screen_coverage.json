@@ -96,6 +96,13 @@
       "screenId": "screen.notifications.list"
     },
     {
+      "routeId": "crossPathsInvitationScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Covered by screen.cross_paths.invitation as the participant-only Cross Paths invitation route.",
+      "screenId": "screen.cross_paths.invitation"
+    },
+    {
       "routeId": "exploreScreen",
       "status": "contracted",
       "priority": "P1",

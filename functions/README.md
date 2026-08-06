@@ -45,6 +45,7 @@ options when specific functions need higher or lower limits.
 | `fetchSwipeCandidates` | `src/matching/` | Resolve privacy-filtered post-event matching candidates without exposing event rosters |
 | `setCrossPathsEventConsent` | `src/crossPaths/` | Store or revoke private event-level Cross Paths consent after confirmed booking |
 | `getCrossPathsSuggestions` | `src/crossPaths/` | Resolve bounded, consent-safe pre-event Explore suggestions without exposing rosters or private preferences |
+| `sendCrossPathsInvitation` / `respondCrossPathsInvitation` / `cancelCrossPathsInvitationOrPlan` | `src/crossPaths/` | Send, answer, or cancel an event-scoped Cross Paths invitation and its accepted plan |
 | `createEventReview` / `updateEventReview` / `deleteEventReview` | `src/reviews/` | Review mutation surface |
 | `createPublicOrganizerReview` / `listPublicOrganizerReviews` | `src/reviews/` | Create or list reviews against canonical organizers |
 | `updateUserProfile` | `src/profiles/` | Profile patch callable with generated contract validation |
@@ -96,6 +97,10 @@ options when specific functions need higher or lower limits.
 | `onEventSuccessFeedbackWritten` | `src/marketplace/` | Event-success feedback write — recomputes scorecard inputs |
 | `syncClubReviewStats` | `src/reviews/` | `reviews/{id}` onWrite — recalculates club rating |
 | `onBlockCreated` | `src/safety/` | `blocks/{id}` onCreate — closes existing matches |
+| `onCrossPathsConsentWritten` | `src/crossPaths/` | Cross Paths consent onWrite — invalidates affected pending invitations after revocation |
+| `onCrossPathsEventWritten` | `src/crossPaths/` | `events/{eventId}` onWrite — invalidates invitations when an event becomes unavailable |
+| `onCrossPathsParticipationWritten` | `src/crossPaths/` | `events/{eventId}/participants/{uid}` onWrite — invalidates invitations when participation ends |
+| `onCrossPathsBlockCreated` | `src/crossPaths/` | `blocks/{id}` onCreate — invalidates invitations and closes accepted Cross Paths plans |
 | `moderateChatMessage` | `src/moderation/` | `matches/{id}/messages/{id}` onCreate — banned-word filter |
 
 ### Scheduled
@@ -103,6 +108,7 @@ options when specific functions need higher or lower limits.
 | Function | File | Schedule |
 |----------|------|----------|
 | `sendEventReminders` | `src/events/` | Every 15 minutes — writes reminder activity and push notifications |
+| `expireCrossPathsInvitations` | `src/crossPaths/` | Every 15 minutes — expires stale pending Cross Paths invitations |
 
 ### Storage-triggered
 

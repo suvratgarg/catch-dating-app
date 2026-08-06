@@ -460,7 +460,8 @@
       "coverageKind": "matrix",
       "coverageRationale": "Explore is the logged-out app preset. Organizer cards expose authority, Catch events open natively, external events hand off to their source, and account-only controls stay absent until auth resolves signed in.",
       "routeIds": [
-        "exploreScreen"
+        "exploreScreen",
+        "crossPathsInvitationScreen"
       ],
       "screenIds": [
         "screen.explore.discovery"

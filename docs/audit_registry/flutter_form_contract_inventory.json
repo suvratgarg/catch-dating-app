@@ -2,8 +2,8 @@
   "schemaVersion": 2,
   "generatedBy": "tool/contracts/generate_flutter_form_contract_inventory.mjs",
   "summary": {
-    "editableCallsites": 192,
-    "boundCallsites": 190,
+    "editableCallsites": 193,
+    "boundCallsites": 191,
     "exemptCallsites": 2,
     "unboundCallsites": 0,
     "bySymbol": {
@@ -29,7 +29,7 @@
       "selfProfileRangeDescriptor": 1,
       "selfProfileSingleChoiceDescriptor": 5,
       "stepper": 7,
-      "toggle": 21,
+      "toggle": 22,
       "topBarSearch": 3
     }
   },
@@ -1558,6 +1558,16 @@
       "file": "lib/safety/presentation/settings_screen.dart",
       "line": 414,
       "symbol": "toggle",
+      "contract": "CatchContractConstraints .updateUserProfilePatchPrefsCrossPathsInvitations",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/safety/presentation/settings_screen.dart",
+      "line": 431,
+      "symbol": "toggle",
       "contract": "CatchContractConstraints .updateUserProfilePatchPrefsMessages",
       "contractValue": null,
       "minimumContract": null,
@@ -1566,7 +1576,7 @@
     },
     {
       "file": "lib/safety/presentation/settings_screen.dart",
-      "line": 428,
+      "line": 445,
       "symbol": "toggle",
       "contract": "CatchContractConstraints .updateUserProfilePatchPrefsEventReminders",
       "contractValue": null,
@@ -1576,7 +1586,7 @@
     },
     {
       "file": "lib/safety/presentation/settings_screen.dart",
-      "line": 444,
+      "line": 461,
       "symbol": "toggle",
       "contract": "CatchContractConstraints .updateUserProfilePatchPrefsRunStatusUpdates",
       "contractValue": null,
@@ -1586,7 +1596,7 @@
     },
     {
       "file": "lib/safety/presentation/settings_screen.dart",
-      "line": 461,
+      "line": 478,
       "symbol": "toggle",
       "contract": "CatchContractConstraints .updateUserProfilePatchPrefsClubUpdates",
       "contractValue": null,
@@ -1596,7 +1606,7 @@
     },
     {
       "file": "lib/safety/presentation/settings_screen.dart",
-      "line": 477,
+      "line": 494,
       "symbol": "toggle",
       "contract": "CatchContractConstraints .updateUserProfilePatchPrefsWeeklyDigest",
       "contractValue": null,
@@ -1606,7 +1616,7 @@
     },
     {
       "file": "lib/safety/presentation/settings_screen.dart",
-      "line": 509,
+      "line": 526,
       "symbol": "toggle",
       "contract": "CatchContractConstraints .updateUserProfilePatchPrefsShowInCrossPaths",
       "contractValue": null,
@@ -1616,7 +1626,7 @@
     },
     {
       "file": "lib/safety/presentation/settings_screen.dart",
-      "line": 545,
+      "line": 562,
       "symbol": "toggle",
       "contract": "CatchContractConstraints .updateUserProfilePatchPrefsShowOnMap",
       "contractValue": null,

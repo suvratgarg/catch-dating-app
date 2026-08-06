@@ -6,6 +6,9 @@ abstract final class SettingsKeys {
   );
   static const showOnMapSwitch = ValueKey('settings.showOnMap.switch');
   static const newCatchesSwitch = ValueKey('settings.newCatches.switch');
+  static const crossPathsInvitationsSwitch = ValueKey(
+    'settings.crossPathsInvitations.switch',
+  );
   static const messagesSwitch = ValueKey('settings.messages.switch');
   static const eventRemindersSwitch = ValueKey(
     'settings.eventReminders.switch',

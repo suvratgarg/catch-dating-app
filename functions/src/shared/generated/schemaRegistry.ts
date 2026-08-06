@@ -5444,6 +5444,11 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
       "description": "Private global consent gate for Cross Paths. Missing values resolve to false and this field must never be copied to publicProfiles.",
       "x-catch-ownership": "client-writable"
     },
+    "prefsCrossPathsInvitations": {
+      "type": "boolean",
+      "description": "Opt-in push preference for Cross Paths invitations. Missing values resolve to false; durable Activity items are still written.",
+      "x-catch-ownership": "client-writable"
+    },
     "fcmToken": {
       "type": "string",
       "x-catch-ownership": "client-runtime-writable"
@@ -15238,6 +15243,250 @@ export const crossPathsSuggestionExposureDocumentSchema: Record<string, unknown>
   }
 } as const;
 
+export const crossPathsInvitationDocumentSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/cross_paths_invitations.schema.json",
+  "title": "CrossPathsInvitationDocument",
+  "description": "Callable-owned event-scoped invitation stored at crossPathsInvitations/{deterministicEventSenderHash}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "cross_paths_invitations",
+  "x-firestore-path": "crossPathsInvitations/{invitationId}",
+  "x-document-id-field": "id",
+  "x-owner": "Cross Paths invitation callables",
+  "required": [
+    "eventId",
+    "senderUid",
+    "recipientUid",
+    "participantIds",
+    "status",
+    "createdAt",
+    "updatedAt",
+    "expiresAt",
+    "respondedAt",
+    "cancelledAt",
+    "invalidatedAt",
+    "invalidationReason",
+    "conversationId"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "senderUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "recipientUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "participantIds": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "accepted",
+        "declined",
+        "cancelled",
+        "expired",
+        "invalidated"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "respondedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "cancelledAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "invalidatedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "invalidationReason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        null,
+        "event_unavailable",
+        "participation_cancelled",
+        "consent_revoked",
+        "safety_state_changed",
+        "competing_plan_accepted",
+        "plan_cancelled"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "conversationId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    }
+  }
+} as const;
+
 export const eventBroadcastDocumentSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/event_broadcasts.schema.json",
@@ -19523,7 +19772,8 @@ export const matchDocumentSchema: Record<string, unknown> = {
       "type": "string",
       "enum": [
         "active",
-        "blocked"
+        "blocked",
+        "closed"
       ],
       "x-catch-ownership": "trigger-owned"
     },
@@ -19580,7 +19830,8 @@ export const matchDocumentSchema: Record<string, unknown> = {
       "type": "string",
       "enum": [
         "match",
-        "clubHostInquiry"
+        "clubHostInquiry",
+        "crossPathsEventPlan"
       ],
       "x-catch-ownership": "trigger-owned"
     },
@@ -19595,6 +19846,61 @@ export const matchDocumentSchema: Record<string, unknown> = {
       "minLength": 1,
       "maxLength": 180,
       "x-catch-ownership": "trigger-owned"
+    },
+    "crossPathsInvitationId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "eventPlanExpiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "closedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
     },
     "synthetic": {
       "type": "boolean",
@@ -19812,7 +20118,11 @@ export const activityNotificationDocumentSchema: Record<string, unknown> = {
         "eventCancelled",
         "eventUpdated",
         "clubUpdate",
-        "organizerUpdate"
+        "organizerUpdate",
+        "crossPathsInvitation",
+        "crossPathsInvitationAccepted",
+        "crossPathsInvitationDeclined",
+        "crossPathsPlanCancelled"
       ],
       "x-catch-ownership": "server-only"
     },
@@ -19914,6 +20224,15 @@ export const activityNotificationDocumentSchema: Record<string, unknown> = {
       "x-catch-ownership": "server-only"
     },
     "postId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "invitationId": {
       "type": [
         "string",
         "null"
@@ -24164,6 +24483,9 @@ export const updateUserProfileCallablePayloadSchema: Record<string, unknown> = {
           "type": "boolean"
         },
         "prefsShowInCrossPaths": {
+          "type": "boolean"
+        },
+        "prefsCrossPathsInvitations": {
           "type": "boolean"
         }
       }
@@ -34766,6 +35088,83 @@ export const getCrossPathsSuggestionsCallablePayloadSchema: Record<string, unkno
   }
 } as const;
 
+export const sendCrossPathsInvitationCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/send_cross_paths_invitation_payload.schema.json",
+  "title": "SendCrossPathsInvitationCallablePayload",
+  "description": "Typed, message-free invitation intent accepted by sendCrossPathsInvitation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "recipientUid",
+    "suggestionToken"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "recipientUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "suggestionToken": {
+      "type": "string",
+      "minLength": 40,
+      "maxLength": 4096
+    }
+  }
+} as const;
+
+export const respondCrossPathsInvitationCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/respond_cross_paths_invitation_payload.schema.json",
+  "title": "RespondCrossPathsInvitationCallablePayload",
+  "description": "Recipient-only response accepted by respondCrossPathsInvitation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "invitationId",
+    "decision"
+  ],
+  "properties": {
+    "invitationId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "accept",
+        "decline"
+      ]
+    }
+  }
+} as const;
+
+export const cancelCrossPathsInvitationOrPlanCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/cancel_cross_paths_invitation_or_plan_payload.schema.json",
+  "title": "CancelCrossPathsInvitationOrPlanCallablePayload",
+  "description": "Participant cancellation accepted by cancelCrossPathsInvitationOrPlan.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "invitationId"
+  ],
+  "properties": {
+    "invitationId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+} as const;
+
 export const createEventWaitlistOffersCallablePayloadSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/create_event_waitlist_offers_payload.schema.json",
@@ -40099,6 +40498,114 @@ export const getCrossPathsSuggestionsCallableResponseSchema: Record<string, unkn
           "format": "date-time"
         }
       }
+    }
+  }
+} as const;
+
+export const sendCrossPathsInvitationCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/send_cross_paths_invitation_response.schema.json",
+  "title": "SendCrossPathsInvitationCallableResponse",
+  "description": "Sanitized invitation receipt returned after a successful send.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "invitationId",
+    "status",
+    "eventId",
+    "recipientUid",
+    "expiresAt"
+  ],
+  "properties": {
+    "invitationId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "status": {
+      "type": "string",
+      "const": "pending"
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "recipientUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+} as const;
+
+export const respondCrossPathsInvitationCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/respond_cross_paths_invitation_response.schema.json",
+  "title": "RespondCrossPathsInvitationCallableResponse",
+  "description": "Sanitized terminal response after accepting or declining an invitation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "invitationId",
+    "status",
+    "conversationId"
+  ],
+  "properties": {
+    "invitationId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "accepted",
+        "declined"
+      ]
+    },
+    "conversationId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+} as const;
+
+export const cancelCrossPathsInvitationOrPlanCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/cancel_cross_paths_invitation_or_plan_response.schema.json",
+  "title": "CancelCrossPathsInvitationOrPlanCallableResponse",
+  "description": "Sanitized cancellation receipt for a pending invitation or accepted plan.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "invitationId",
+    "status"
+  ],
+  "properties": {
+    "invitationId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "cancelled",
+        "invalidated"
+      ]
     }
   }
 } as const;

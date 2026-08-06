@@ -901,6 +901,55 @@ describe("firestore.rules", () => {
       );
     });
 
+    it("keeps Cross Paths invitations participant-only and callable-owned",
+      async () => {
+        const invitation = {
+          eventId: "event-1",
+          senderUid: "runner-1",
+          recipientUid: "runner-2",
+          participantIds: ["runner-1", "runner-2"],
+          status: "pending",
+          createdAt: Timestamp.now(),
+          updatedAt: Timestamp.now(),
+          expiresAt: Timestamp.fromMillis(Date.now() + 3_600_000),
+        };
+        await seed(["crossPathsInvitations", "invitation-1"], invitation);
+
+        await assertSucceeds(getDoc(doc(
+          authedDb("runner-1"),
+          "crossPathsInvitations",
+          "invitation-1",
+        )));
+        await assertSucceeds(getDoc(doc(
+          authedDb("runner-2"),
+          "crossPathsInvitations",
+          "invitation-1",
+        )));
+        await assertFails(getDoc(doc(
+          authedDb("runner-3"),
+          "crossPathsInvitations",
+          "invitation-1",
+        )));
+        await assertSucceeds(getDocs(query(
+          collection(authedDb("runner-1"), "crossPathsInvitations"),
+          where("senderUid", "==", "runner-1"),
+        )));
+        await assertSucceeds(getDocs(query(
+          collection(authedDb("runner-2"), "crossPathsInvitations"),
+          where("recipientUid", "==", "runner-2"),
+        )));
+        await assertFails(setDoc(doc(
+          authedDb("runner-1"),
+          "crossPathsInvitations",
+          "invitation-2",
+        ), invitation));
+        await assertFails(updateDoc(doc(
+          authedDb("runner-2"),
+          "crossPathsInvitations",
+          "invitation-1",
+        ), {status: "accepted"}));
+      });
+
     it("denies all client access to Cross Paths showcase eligibility", async () => {
       const eligibility = {
         status: "eligible",
@@ -1575,6 +1624,36 @@ describe("firestore.rules", () => {
           },
         ),
       );
+    });
+
+    it("denies messages after a Cross Paths event plan expires", async () => {
+      await seed(["matches", "expired-plan"], match({
+        conversationType: "crossPathsEventPlan",
+        eventPlanExpiresAt: Timestamp.fromMillis(Date.now() - 60_000),
+      }));
+      await seed(["matches", "open-plan"], match({
+        conversationType: "crossPathsEventPlan",
+        eventPlanExpiresAt: Timestamp.fromMillis(Date.now() + 3_600_000),
+      }));
+      const message = {
+        senderId: "runner-1",
+        text: "See you there",
+        sentAt: serverTimestamp(),
+      };
+      await assertFails(setDoc(doc(
+        authedDb("runner-1"),
+        "matches",
+        "expired-plan",
+        "messages",
+        "message-1",
+      ), message));
+      await assertSucceeds(setDoc(doc(
+        authedDb("runner-1"),
+        "matches",
+        "open-plan",
+        "messages",
+        "message-1",
+      ), message));
     });
 
     it("allows participants to reset only their own unread count", async () => {

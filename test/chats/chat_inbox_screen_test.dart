@@ -313,6 +313,18 @@ void main() {
         ),
         isEmpty,
       );
+      final eventPlan = _buildMatch(
+        id: 'event-plan',
+        conversationType: MatchConversationType.crossPathsEventPlan,
+      );
+      expect(
+        controller.newMatchesToCelebrate(
+          previous: const AsyncData<List<Match>>([]),
+          next: AsyncData<List<Match>>([eventPlan]),
+          isHostApp: false,
+        ),
+        isEmpty,
+      );
     });
   });
 

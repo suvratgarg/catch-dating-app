@@ -102,6 +102,11 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
         viewerUid: "runner-2",
         candidateUid: "runner-1",
       },
+      "crossPathsInvitations/invitation-1": {
+        senderUid: "runner-2",
+        recipientUid: "runner-1",
+        participantIds: ["runner-2", "runner-1"],
+      },
       "savedEvents/runner-1_run-1": {uid: "runner-1", eventId: "event-1"},
       "profileDecisions/runner-1/outgoing/runner-2": {
         swiperId: "runner-1",
@@ -211,6 +216,7 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
     "preferredRunTimes",
     "runPreferencesVersion",
     "prefsShowInCrossPaths",
+    "prefsCrossPathsInvitations",
     "fcmToken",
   ]) {
     assert.equal(hasOwn(data, field), true);
@@ -274,6 +280,11 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
   assert.ok(
     harness.deletedPublicDocs.includes(
       "crossPathsSuggestionExposures/shown"
+    )
+  );
+  assert.ok(
+    harness.deletedPublicDocs.includes(
+      "crossPathsInvitations/invitation-1"
     )
   );
   assert.ok(

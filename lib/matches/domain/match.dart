@@ -4,9 +4,9 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'match.freezed.dart';
 part 'match.g.dart';
 
-enum MatchStatus { active, blocked }
+enum MatchStatus { active, blocked, closed }
 
-enum MatchConversationType { match, clubHostInquiry }
+enum MatchConversationType { match, clubHostInquiry, crossPathsEventPlan }
 
 @freezed
 abstract class Match with _$Match {
@@ -31,6 +31,10 @@ abstract class Match with _$Match {
     @Default(MatchConversationType.match)
     MatchConversationType conversationType,
     String? clubId,
+    String? organizerId,
+    String? crossPathsInvitationId,
+    @NullableTimestampConverter() DateTime? eventPlanExpiresAt,
+    @NullableTimestampConverter() DateTime? closedAt,
   }) = _Match;
 
   factory Match.fromJson(Map<String, dynamic> json) => _$MatchFromJson(json);
@@ -42,9 +46,15 @@ abstract class Match with _$Match {
   String? get latestEventId => eventIds.isEmpty ? null : eventIds.last;
 
   bool get isBlocked => status == MatchStatus.blocked;
+  bool get isClosed => status == MatchStatus.closed;
 
   bool get isClubHostInquiry =>
       conversationType == MatchConversationType.clubHostInquiry;
+
+  bool get isCrossPathsEventPlan =>
+      conversationType == MatchConversationType.crossPathsEventPlan;
+
+  bool get isScopedConversation => isClubHostInquiry || isCrossPathsEventPlan;
 
   bool hasUnreadIncomingFor(String uid) =>
       !isBlocked &&

@@ -140,6 +140,7 @@ const schemaMatchDocumentSchema = <String, Object?>{
       'enum': <Object?>[
         'active',
         'blocked',
+        'closed',
       ],
       'x-catch-ownership': 'trigger-owned',
     },
@@ -197,6 +198,7 @@ const schemaMatchDocumentSchema = <String, Object?>{
       'enum': <Object?>[
         'match',
         'clubHostInquiry',
+        'crossPathsEventPlan',
       ],
       'x-catch-ownership': 'trigger-owned',
     },
@@ -211,6 +213,61 @@ const schemaMatchDocumentSchema = <String, Object?>{
       'minLength': 1,
       'maxLength': 180,
       'x-catch-ownership': 'trigger-owned',
+    },
+    'crossPathsInvitationId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
+    },
+    'eventPlanExpiresAt': <String, Object?>{
+      'type': 'object',
+      'description': 'Serialized Firestore Timestamp fixture shape.',
+      'x-firestore-type': 'timestamp',
+      'additionalProperties': false,
+      'required': <Object?>[
+        '_seconds',
+        '_nanoseconds',
+      ],
+      'properties': <String, Object?>{
+        '_seconds': <String, Object?>{
+          'type': 'integer',
+        },
+        '_nanoseconds': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 999999999,
+        },
+      },
+      'x-catch-ownership': 'callable-owned',
+    },
+    'closedAt': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'object',
+          'description': 'Serialized Firestore Timestamp fixture shape.',
+          'x-firestore-type': 'timestamp',
+          'additionalProperties': false,
+          'required': <Object?>[
+            '_seconds',
+            '_nanoseconds',
+          ],
+          'properties': <String, Object?>{
+            '_seconds': <String, Object?>{
+              'type': 'integer',
+            },
+            '_nanoseconds': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 999999999,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+      'x-catch-ownership': 'callable-owned',
     },
     'synthetic': <String, Object?>{
       'type': 'boolean',

@@ -121,5 +121,6 @@ export interface UpdateUserProfileCallablePayload {
     prefsWeeklyDigest?: boolean;
     prefsShowOnMap?: boolean;
     prefsShowInCrossPaths?: boolean;
+    prefsCrossPathsInvitations?: boolean;
   };
 }

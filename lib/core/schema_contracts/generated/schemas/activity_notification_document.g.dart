@@ -52,6 +52,10 @@ const schemaActivityNotificationDocumentSchema = <String, Object?>{
         'eventUpdated',
         'clubUpdate',
         'organizerUpdate',
+        'crossPathsInvitation',
+        'crossPathsInvitationAccepted',
+        'crossPathsInvitationDeclined',
+        'crossPathsPlanCancelled',
       ],
       'x-catch-ownership': 'server-only',
     },
@@ -153,6 +157,15 @@ const schemaActivityNotificationDocumentSchema = <String, Object?>{
       'x-catch-ownership': 'server-only',
     },
     'postId': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 1,
+      'maxLength': 180,
+      'x-catch-ownership': 'server-only',
+    },
+    'invitationId': <String, Object?>{
       'type': <Object?>[
         'string',
         'null',

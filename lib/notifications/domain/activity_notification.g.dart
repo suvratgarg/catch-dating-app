@@ -21,6 +21,7 @@ _ActivityNotification _$ActivityNotificationFromJson(
   clubId: json['clubId'] as String?,
   organizerId: json['organizerId'] as String?,
   postId: json['postId'] as String?,
+  invitationId: json['invitationId'] as String?,
   actorUid: json['actorUid'] as String?,
   actorName: json['actorName'] as String?,
 );
@@ -39,6 +40,7 @@ Map<String, dynamic> _$ActivityNotificationToJson(
   'clubId': instance.clubId,
   'organizerId': instance.organizerId,
   'postId': instance.postId,
+  'invitationId': instance.invitationId,
   'actorUid': instance.actorUid,
   'actorName': instance.actorName,
 };
@@ -49,8 +51,17 @@ const _$ActivityNotificationTypeEnumMap = {
   ActivityNotificationType.eventReminder: 'eventReminder',
   ActivityNotificationType.eventSignup: 'eventSignup',
   ActivityNotificationType.waitlistPromotion: 'waitlistPromotion',
+  ActivityNotificationType.waitlistOffer: 'waitlistOffer',
+  ActivityNotificationType.waitlistOfferExpiring: 'waitlistOfferExpiring',
+  ActivityNotificationType.waitlistOfferExpired: 'waitlistOfferExpired',
   ActivityNotificationType.eventCancelled: 'eventCancelled',
   ActivityNotificationType.eventUpdated: 'eventUpdated',
   ActivityNotificationType.clubUpdate: 'clubUpdate',
   ActivityNotificationType.organizerUpdate: 'organizerUpdate',
+  ActivityNotificationType.crossPathsInvitation: 'crossPathsInvitation',
+  ActivityNotificationType.crossPathsInvitationAccepted:
+      'crossPathsInvitationAccepted',
+  ActivityNotificationType.crossPathsInvitationDeclined:
+      'crossPathsInvitationDeclined',
+  ActivityNotificationType.crossPathsPlanCancelled: 'crossPathsPlanCancelled',
 };

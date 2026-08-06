@@ -36,6 +36,10 @@
       "value": "Host conversation",
       "description": "Fallback title for a club-host inquiry conversation."
     },
+    "chatCrossPathsEventPlanReady": {
+      "value": "Event plan ready",
+      "description": "Preview shown before the first message in an accepted Cross Paths event plan."
+    },
     "chatSuvbotTitle": {
       "value": "Suvbot",
       "description": "Display name for the built-in Suvbot conversation."

@@ -211,6 +211,12 @@ const schemaSpecs = [
       "crossPathsSuggestionExposureDocument.ts",
   },
   {
+    name: "CrossPathsInvitationDocument",
+    source: "firestore/cross_paths_invitations.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/crossPathsInvitationDocument.ts",
+  },
+  {
     name: "EventBroadcastDocument",
     source: "firestore/event_broadcasts.schema.json",
     typeOutput: "functions/src/shared/generated/eventBroadcastDocument.ts",
@@ -878,6 +884,28 @@ const schemaSpecs = [
       "getCrossPathsSuggestionsCallablePayload.ts",
   },
   {
+    name: "SendCrossPathsInvitationCallablePayload",
+    source: "callables/send_cross_paths_invitation_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "sendCrossPathsInvitationCallablePayload.ts",
+  },
+  {
+    name: "RespondCrossPathsInvitationCallablePayload",
+    source: "callables/respond_cross_paths_invitation_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "respondCrossPathsInvitationCallablePayload.ts",
+  },
+  {
+    name: "CancelCrossPathsInvitationOrPlanCallablePayload",
+    source:
+      "callables/cancel_cross_paths_invitation_or_plan_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "cancelCrossPathsInvitationOrPlanCallablePayload.ts",
+  },
+  {
     name: "CreateEventWaitlistOffersCallablePayload",
     source: "callables/create_event_waitlist_offers_payload.schema.json",
     typeOutput:
@@ -1218,6 +1246,31 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "getCrossPathsSuggestionsCallableResponse.ts",
+  },
+  {
+    name: "SendCrossPathsInvitationCallableResponse",
+    source:
+      "callable_responses/send_cross_paths_invitation_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "sendCrossPathsInvitationCallableResponse.ts",
+  },
+  {
+    name: "RespondCrossPathsInvitationCallableResponse",
+    source:
+      "callable_responses/respond_cross_paths_invitation_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "respondCrossPathsInvitationCallableResponse.ts",
+  },
+  {
+    name: "CancelCrossPathsInvitationOrPlanCallableResponse",
+    source:
+      "callable_responses/" +
+      "cancel_cross_paths_invitation_or_plan_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "cancelCrossPathsInvitationOrPlanCallableResponse.ts",
   },
   {
     name: "CreateProfileDecisionClientWrite",

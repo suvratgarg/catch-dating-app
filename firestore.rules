@@ -239,6 +239,7 @@ service cloud.firestore {
           'prefsNewCatches', 'prefsMessages', 'prefsEventReminders',
           'prefsRunStatusUpdates', 'prefsClubUpdates',
           'prefsWeeklyDigest', 'prefsShowOnMap', 'prefsShowInCrossPaths',
+          'prefsCrossPathsInvitations',
           // Runtime fields
           'fcmToken',
           // Server-owned lifecycle fields. These must be tolerated on existing
@@ -337,6 +338,7 @@ service cloud.firestore {
         && data.prefsWeeklyDigest is bool
         && data.prefsShowOnMap is bool
         && optionalBool(data, 'prefsShowInCrossPaths')
+        && optionalBool(data, 'prefsCrossPathsInvitations')
         // Runtime fields (optional)
         && optionalString(data, 'fcmToken')
         && optionalBool(data, 'deleted')
@@ -863,6 +865,19 @@ service cloud.firestore {
     // must never infer who was eligible or who attends which event from them.
     match /crossPathsSuggestionExposures/{exposureId} {
       allow read, write: if false;
+    }
+
+    // Invitations expose only their two participants. Clients may query their
+    // incoming or outgoing rows, but all lifecycle writes remain callable-owned.
+    match /crossPathsInvitations/{invitationId} {
+      allow get: if isAuthed()
+        && request.auth.uid in resource.data.participantIds
+        && !hasBlockBetween(resource.data.senderUid, resource.data.recipientUid);
+      allow list: if isAuthed()
+        && resource.data.senderUid == request.auth.uid;
+      allow list: if isAuthed()
+        && resource.data.recipientUid == request.auth.uid;
+      allow create, update, delete: if false;
     }
 
     // Server-owned event-announcement receipts contain frozen recipient and
@@ -1508,8 +1523,23 @@ service cloud.firestore {
           get(/databases/$(database)/documents/matches/$(matchId)).data,
           request.auth.uid
         )
-        && get(/databases/$(database)/documents/matches/$(matchId))
-            .data.status == 'active';
+        && isOpenConversationForMessage(
+          get(/databases/$(database)/documents/matches/$(matchId)).data
+        );
+    }
+
+    function isOpenConversationForMessage(data) {
+      return data.status == 'active'
+        && (
+          !hasField(data, 'conversationType')
+          || data.conversationType != 'crossPathsEventPlan'
+          || (
+            hasField(data, 'eventPlanExpiresAt')
+            && data.eventPlanExpiresAt is timestamp
+            && data.eventPlanExpiresAt > request.time
+          )
+        )
+        && !hasBlockBetween(data.user1Id, data.user2Id);
     }
 
     match /matches/{matchId}/messages/{messageId} {

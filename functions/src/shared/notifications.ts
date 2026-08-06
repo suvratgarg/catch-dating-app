@@ -14,6 +14,7 @@ export interface FcmParams {
   clubId?: string;
   organizerId?: string;
   postId?: string;
+  invitationId?: string;
 }
 
 export type ActivityNotificationType =
@@ -28,7 +29,11 @@ export type ActivityNotificationType =
   | "eventCancelled"
   | "eventUpdated"
   | "clubUpdate"
-  | "organizerUpdate";
+  | "organizerUpdate"
+  | "crossPathsInvitation"
+  | "crossPathsInvitationAccepted"
+  | "crossPathsInvitationDeclined"
+  | "crossPathsPlanCancelled";
 
 export interface ActivityNotificationParams {
   id: string;
@@ -42,6 +47,7 @@ export interface ActivityNotificationParams {
   clubId?: string;
   organizerId?: string;
   postId?: string;
+  invitationId?: string;
   actorUid?: string;
   actorName?: string;
   demoOps?: boolean;
@@ -56,7 +62,8 @@ export type NotificationPreference =
   | "messages"
   | "eventReminders"
   | "eventStatusUpdates"
-  | "clubUpdates";
+  | "clubUpdates"
+  | "crossPathsInvitations";
 
 export interface NotificationPreferenceDocument {
   prefsNewCatches?: boolean;
@@ -64,6 +71,7 @@ export interface NotificationPreferenceDocument {
   prefsEventReminders?: boolean;
   prefsRunStatusUpdates?: boolean;
   prefsClubUpdates?: boolean;
+  prefsCrossPathsInvitations?: boolean;
 }
 
 /**
@@ -92,6 +100,8 @@ export function allowsPushPreference(
     return user.prefsRunStatusUpdates !== false;
   case "clubUpdates":
     return user.prefsClubUpdates !== false;
+  case "crossPathsInvitations":
+    return user.prefsCrossPathsInvitations === true;
   }
 }
 
@@ -111,6 +121,7 @@ export async function sendFcmNotification(params: FcmParams): Promise<void> {
       clubId: params.clubId,
       organizerId: params.organizerId,
       postId: params.postId,
+      invitationId: params.invitationId,
     }),
     apns: {payload: {aps: {sound: "default"}}},
     android: {notification: {sound: "default"}},
@@ -314,6 +325,7 @@ function activityNotificationData(
       clubId: params.clubId,
       organizerId: params.organizerId,
       postId: params.postId,
+      invitationId: params.invitationId,
       actorUid: params.actorUid,
       actorName: params.actorName,
       demoOpsId: params.demoOpsId,

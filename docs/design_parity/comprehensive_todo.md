@@ -96,23 +96,23 @@ ledgers as the source of truth when counts differ:
   overview, access-decision, role, safety, and marketing mutation directions
   now have strict request and response schemas; remaining structural callables
   stay explicitly labeled rather than being overclaimed.
-- Screen priority spread: 18 P1, 9 P2, and 5 P3 contracted screens.
-- Contracted screen states: 597.
-- Contracted screen sections: 227.
+- Screen priority spread: 19 P1, 9 P2, and 5 P3 contracted screens.
+- Contracted screen states: 609.
+- Contracted screen sections: 229.
 - Screen registry migration gaps: 15 open, 24 blocked, and 113 closed. One of
   the 15 non-blocked gaps is currently marked in progress. These are
   product migration gaps in `design/screens/catch.screens.json`, not
   validation failures.
-- Contracted section states: 1,069.
+- Contracted section states: 1,086.
 - Open screen-contract validation gaps: 0.
-- Design parity matrix: 12 feature groups, 33 screens, 604 matrix states, and
-  48 open matrix gaps across screen-state, lint-candidate, and preview-plan
+- Design parity matrix: 12 feature groups, 34 screens, 611 matrix states, and
+  49 open matrix gaps across screen-state, lint-candidate, and preview-plan
   queues.
-- Matrix state status spread: 548 captured, 16 implemented, 1 planned, and
-  39 tested.
-- Capture coverage registry: 608 capture ids across 36 captured route entries,
-  7 alias route entries, 3 planned route entries, and 6 excluded route entries.
-- Component contracts: 69 reusable primitive/composite contracts with 445
+- Matrix state status spread: 550 captured, 16 implemented, 1 planned, and
+  44 tested.
+- Capture coverage registry: 610 capture ids across 36 captured route entries,
+  7 alias route entries, 4 planned route entries, and 6 excluded route entries.
+- Component contracts: 71 reusable primitive/composite contracts with 445
   contract states.
 - Widgetbook registry: 870 generated component entries, 928 generated use-case
   builders, 124 formal primitive contract previews, and 1,532 referenced
@@ -738,6 +738,7 @@ from those ledgers rather than hand-editing counts.
 | P1 | `screen.event_success.companion` | 26 | 11 | 1 | Stage variants blocked on missing canonical exports | `DS-EVENT-SUCCESS-COMPANION-004` blocked, `DS-EVENT-SUCCESS-COMPANION-005` | `feature.event_success` now compiles all 26 states and 12 attendee actions. The contract exposes the unwired compatibility-save callback as a known gap instead of enabling it; nine captured/previewed states still need focused test registration, while auto-launch remains policy tested without synthetic visual evidence. |
 | P1 | `screen.event.detail` | 21 | 14 | 1 | None | None | Booking dock, booking/cancel mutation feedback, host lookup, companion availability, body visibility, invite-loop visibility, host-app bottom-nav visibility, and social/review access now map through provider-free Event Detail display states. Continue only reference/pixel comparison, waitlist-specific mutation variants, or new product variants. |
 | P1 | `screen.explore.discovery` | 21 | 8 | 1 | None | `DS-EXPLORE-005` | `feature.explore` now compiles two native projections under one identity: all 21 Flutter discovery/map states with empty-state recovery actions, plus the three real marketing Organizer Search route states with URL-filter/search/reset controller actions and React preview/test evidence. The stale marketing-only `saved-organizers` route state was removed because saving belongs to organizer detail. Dedicated captures for no-exact-pin and zero-radius map results plus focused no-exact-pin/offline/accessibility tests remain named Flutter evidence debt. The 2026-07 quality pass adds ranked-but-non-destructive cover selection, honest CTA copy, a seven-day intent strip plus Any, cursor freshness, privacy-safe attendee proof, host/rating organizer context, and current widget-contract convergence. Cross Paths is retired until a consent-safe relationship source exists. |
+| P1 | `screen.cross_paths.invitation` | 5 | 1 | 0 | Staged route captures wait on the default-off rollout flag | None | `feature.cross_paths_invitation` compiles all five participant-only pending, accepted-plan, terminal, unavailable, and loading states. Focused widget, controller, callable, and Firestore rules tests cover the behavior; deterministic route captures remain deliberately deferred until the consent-safe feature is enabled for a staged cohort. |
 | P1 | `screen.host.chat` | 29 | 9 | 1 | Blocked: provider-specific offline policy and dedicated Host Chat reference masks | `DS-HOST-CHAT-001` blocked, `DS-HOST-CHAT-005` blocked, `DS-HOST-CHAT-006` | `feature.member_chat` now binds Host Chat as a second projection of the same `ChatScreen` implementation, compiling all 29 host states and nine host actions while preserving intentional profile/share disablement for host inquiries. Twenty-five focused test/capture obligations remain explicit host-surface evidence debt. Read-marker and scroll coordination stay lifecycle effects rather than synthetic user actions. The populated-thread reference remains within threshold at `12.71%` mismatch / `5.28` mean delta. |
 | P1 | `screen.host.club.detail` | 19 | 10 | 1 | None | None | Public-view parity pass aligned the Claude photo fixture, one-line title scale, next-event address, next-run banner, 4-up stats, section order, activity chips, capture font loading, asset prewarm, floating hero chrome, stat value fit, regular-weight About copy, split generic-tag wraps, and hero-edge mask calibration. Advisory comparison is now within threshold at 15.82% / 15.22 after improving from 28.94% / 44.44 and 17.87% / 19.52. Current contract is closed as public-preview-only; reopen only if design adds distinct hosted schedule/share/contact/review or host-control variants. |
 | P1 | `screen.host.clubs` | 49 | 18 | 4 | None | `DS-HOST-CLUBS-005` | `feature.host_organizers` compiles all 49 registered states and 29 actions across Edit, Insights, Preview, settings spokes, payouts, team, host identity, hosted-organizer navigation, and sign out. Captures cover the default Organizer overview, signed-out, co-host, loading, error/offline, empty, analytics, inline editor, payout, team mutation, and the canonical Host team workspace; 46 focused test/capture/preview obligations remain explicit evidence debt. The Host Organizer advisory compare remains within threshold at `5.71%` mismatch / `3.53` mean delta. |

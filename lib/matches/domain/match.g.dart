@@ -39,6 +39,12 @@ _Match _$MatchFromJson(Map<String, dynamic> json) => _Match(
       ) ??
       MatchConversationType.match,
   clubId: json['clubId'] as String?,
+  organizerId: json['organizerId'] as String?,
+  crossPathsInvitationId: json['crossPathsInvitationId'] as String?,
+  eventPlanExpiresAt: const NullableTimestampConverter().fromJson(
+    json['eventPlanExpiresAt'],
+  ),
+  closedAt: const NullableTimestampConverter().fromJson(json['closedAt']),
 );
 
 Map<String, dynamic> _$MatchToJson(_Match instance) => <String, dynamic>{
@@ -58,14 +64,22 @@ Map<String, dynamic> _$MatchToJson(_Match instance) => <String, dynamic>{
   'conversationType':
       _$MatchConversationTypeEnumMap[instance.conversationType]!,
   'clubId': instance.clubId,
+  'organizerId': instance.organizerId,
+  'crossPathsInvitationId': instance.crossPathsInvitationId,
+  'eventPlanExpiresAt': const NullableTimestampConverter().toJson(
+    instance.eventPlanExpiresAt,
+  ),
+  'closedAt': const NullableTimestampConverter().toJson(instance.closedAt),
 };
 
 const _$MatchStatusEnumMap = {
   MatchStatus.active: 'active',
   MatchStatus.blocked: 'blocked',
+  MatchStatus.closed: 'closed',
 };
 
 const _$MatchConversationTypeEnumMap = {
   MatchConversationType.match: 'match',
   MatchConversationType.clubHostInquiry: 'clubHostInquiry',
+  MatchConversationType.crossPathsEventPlan: 'crossPathsEventPlan',
 };

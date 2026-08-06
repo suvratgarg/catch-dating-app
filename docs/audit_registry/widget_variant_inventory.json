@@ -1,15 +1,15 @@
 {
-  "generatedAt": "2026-08-05T23:13:29.160Z",
+  "generatedAt": "2026-08-06T05:22:25.785Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
   },
   "summary": {
-    "useCases": 874,
-    "components": 821,
-    "stateCards": 1816,
-    "reviewCandidates": 45,
-    "oversizedUseCases": 44,
+    "useCases": 875,
+    "components": 822,
+    "stateCards": 1830,
+    "reviewCandidates": 46,
+    "oversizedUseCases": 45,
     "multiUseCaseComponents": 47
   },
   "reviewCandidates": [
@@ -2516,6 +2516,92 @@
             {
               "label": "joined saved cancelled",
               "normalizedLabel": "joined saved cancelled"
+            },
+            {
+              "label": "text scale 2.0",
+              "normalizedLabel": "text scale 2 0"
+            },
+            {
+              "label": "reduced motion",
+              "normalizedLabel": "reduced motion"
+            },
+            {
+              "label": "dark theme",
+              "normalizedLabel": "dark theme"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CrossPathsInvitationScreen",
+      "useCaseCount": 1,
+      "stateCardCount": 11,
+      "paths": [
+        "[Explore]/Screens"
+      ],
+      "labels": [
+        "accepted event plan",
+        "dark theme",
+        "declined terminal receipt",
+        "event invalidated receipt",
+        "expired terminal receipt",
+        "incoming invitation",
+        "long event location copy",
+        "missing profile media",
+        "outgoing invitation",
+        "reduced motion",
+        "text scale 2.0"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "large-state-matrix"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": [
+          "crossPathsInvitationStates"
+        ]
+      },
+      "useCases": [
+        {
+          "name": "Cross Paths invitation states",
+          "functionName": "crossPathsInvitationStates",
+          "file": "widgetbook/lib/explore/explore_use_cases.dart",
+          "path": "[Explore]/Screens",
+          "stateCardCount": 11,
+          "stateCards": [
+            {
+              "label": "incoming invitation",
+              "normalizedLabel": "incoming invitation"
+            },
+            {
+              "label": "outgoing invitation",
+              "normalizedLabel": "outgoing invitation"
+            },
+            {
+              "label": "accepted event plan",
+              "normalizedLabel": "accepted event plan"
+            },
+            {
+              "label": "declined terminal receipt",
+              "normalizedLabel": "declined terminal receipt"
+            },
+            {
+              "label": "expired terminal receipt",
+              "normalizedLabel": "expired terminal receipt"
+            },
+            {
+              "label": "event invalidated receipt",
+              "normalizedLabel": "event invalidated receipt"
+            },
+            {
+              "label": "missing profile media",
+              "normalizedLabel": "missing profile media"
+            },
+            {
+              "label": "long event location copy",
+              "normalizedLabel": "long event location copy"
             },
             {
               "label": "text scale 2.0",
@@ -6939,6 +7025,92 @@
             {
               "label": "joined saved cancelled",
               "normalizedLabel": "joined saved cancelled"
+            },
+            {
+              "label": "text scale 2.0",
+              "normalizedLabel": "text scale 2 0"
+            },
+            {
+              "label": "reduced motion",
+              "normalizedLabel": "reduced motion"
+            },
+            {
+              "label": "dark theme",
+              "normalizedLabel": "dark theme"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CrossPathsInvitationScreen",
+      "useCaseCount": 1,
+      "stateCardCount": 11,
+      "paths": [
+        "[Explore]/Screens"
+      ],
+      "labels": [
+        "accepted event plan",
+        "dark theme",
+        "declined terminal receipt",
+        "event invalidated receipt",
+        "expired terminal receipt",
+        "incoming invitation",
+        "long event location copy",
+        "missing profile media",
+        "outgoing invitation",
+        "reduced motion",
+        "text scale 2.0"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "large-state-matrix"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": [
+          "crossPathsInvitationStates"
+        ]
+      },
+      "useCases": [
+        {
+          "name": "Cross Paths invitation states",
+          "functionName": "crossPathsInvitationStates",
+          "file": "widgetbook/lib/explore/explore_use_cases.dart",
+          "path": "[Explore]/Screens",
+          "stateCardCount": 11,
+          "stateCards": [
+            {
+              "label": "incoming invitation",
+              "normalizedLabel": "incoming invitation"
+            },
+            {
+              "label": "outgoing invitation",
+              "normalizedLabel": "outgoing invitation"
+            },
+            {
+              "label": "accepted event plan",
+              "normalizedLabel": "accepted event plan"
+            },
+            {
+              "label": "declined terminal receipt",
+              "normalizedLabel": "declined terminal receipt"
+            },
+            {
+              "label": "expired terminal receipt",
+              "normalizedLabel": "expired terminal receipt"
+            },
+            {
+              "label": "event invalidated receipt",
+              "normalizedLabel": "event invalidated receipt"
+            },
+            {
+              "label": "missing profile media",
+              "normalizedLabel": "missing profile media"
+            },
+            {
+              "label": "long event location copy",
+              "normalizedLabel": "long event location copy"
             },
             {
               "label": "text scale 2.0",
@@ -13736,6 +13908,53 @@
             {
               "label": "text scale 2",
               "normalizedLabel": "text scale 2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CrossPathsProfilePreviewSheet",
+      "useCaseCount": 1,
+      "stateCardCount": 4,
+      "paths": [
+        "[Explore]/Sections"
+      ],
+      "labels": [
+        "book first",
+        "booked and invitation ready",
+        "event plan ready",
+        "invitation pending"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Cross Paths profile preview",
+          "functionName": "crossPathsProfilePreviewStates",
+          "file": "widgetbook/lib/explore/explore_use_cases.dart",
+          "path": "[Explore]/Sections",
+          "stateCardCount": 4,
+          "stateCards": [
+            {
+              "label": "book first",
+              "normalizedLabel": "book first"
+            },
+            {
+              "label": "booked and invitation ready",
+              "normalizedLabel": "booked and invitation ready"
+            },
+            {
+              "label": "invitation pending",
+              "normalizedLabel": "invitation pending"
+            },
+            {
+              "label": "event plan ready",
+              "normalizedLabel": "event plan ready"
             }
           ]
         }
@@ -26778,38 +26997,6 @@
             {
               "label": "bookable event",
               "normalizedLabel": "bookable event"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "CrossPathsProfilePreviewSheet",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[Explore]/Sections"
-      ],
-      "labels": [
-        "sanitized profile with event context"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Cross Paths profile preview",
-          "functionName": "crossPathsProfilePreviewStates",
-          "file": "widgetbook/lib/explore/explore_use_cases.dart",
-          "path": "[Explore]/Sections",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "sanitized profile with event context",
-              "normalizedLabel": "sanitized profile with event context"
             }
           ]
         }

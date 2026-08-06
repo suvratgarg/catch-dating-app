@@ -255,7 +255,7 @@ List<Match> collapseMatchesByOtherUser(List<Match> matches, String uid) {
       >{};
   for (final match in matches) {
     final otherId = match.otherId(uid);
-    final bucketKey = match.isClubHostInquiry
+    final bucketKey = match.isScopedConversation
         ? (
             type: match.conversationType,
             clubId: match.clubId,

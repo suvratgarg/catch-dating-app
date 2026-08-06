@@ -177,6 +177,12 @@ String? notificationRoute(ActivityNotification notification) {
   if (notification.matchId case final matchId?) {
     return Routes.chatScreen.path.replaceFirst(':matchId', matchId);
   }
+  if (notification.invitationId case final invitationId?) {
+    return Routes.crossPathsInvitationScreen.path.replaceFirst(
+      ':invitationId',
+      invitationId,
+    );
+  }
   if (notification.eventId case final eventId?
       when notification.clubId != null) {
     return Routes.eventDetailScreen.path

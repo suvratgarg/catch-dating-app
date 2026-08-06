@@ -94,6 +94,11 @@ export async function setCrossPathsEventConsentHandler(
         tx.get(participationRef),
         tx.get(consentRef),
       ]);
+    const invitationsSnap = data.enabled ? null : await tx.get(
+      db.collection("crossPathsInvitations")
+        .where("participantIds", "array-contains", uid)
+        .limit(50)
+    );
     const now = deps.now();
 
     if (data.enabled) {
@@ -164,10 +169,23 @@ export async function setCrossPathsEventConsentHandler(
       source: data.source,
     };
     tx.set(consentRef, document);
-
-    // Cross Paths invitations do not exist yet. When introduced, disabling
-    // consent must invalidate this user's pending invitations in this same
-    // server-owned workflow rather than adding a client write path.
+    if (!data.enabled) {
+      for (const invitationSnap of invitationsSnap?.docs ?? []) {
+        const invitation = invitationSnap.data();
+        if (
+          invitation.eventId !== data.eventId ||
+          invitation.status !== "pending"
+        ) {
+          continue;
+        }
+        tx.update(invitationSnap.ref, {
+          status: "invalidated",
+          updatedAt: now,
+          invalidatedAt: now,
+          invalidationReason: "consent_revoked",
+        });
+      }
+    }
   });
 
   if (!validateSetCrossPathsEventConsentCallableResponse(response)) {

@@ -412,6 +412,23 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                 ),
                         ),
                         CatchField.toggle(
+                          key: SettingsKeys.crossPathsInvitationsSwitch,
+                          contract: CatchContractConstraints
+                              .updateUserProfilePatchPrefsCrossPathsInvitations,
+                          title: context
+                              .l10n
+                              .safetySettingsScreenTitleCrossPathsInvitations,
+                          icon: CatchIcons.personSearchOutlined,
+                          value: state.preferences.crossPathsInvitations,
+                          onChanged: operationPending
+                              ? null
+                              : (value) => _savePref(
+                                  preference:
+                                      SettingsPreference.crossPathsInvitations,
+                                  value: value,
+                                ),
+                        ),
+                        CatchField.toggle(
                           key: SettingsKeys.messagesSwitch,
                           contract: CatchContractConstraints
                               .updateUserProfilePatchPrefsMessages,

@@ -48,6 +48,7 @@ Do not edit it by hand.
 | EventCrossPathsConsentDocument | `firestore/event_cross_paths_consents.schema.json` | `functions/src/shared/generated/eventCrossPathsConsentDocument.ts` |
 | CrossPathsShowcaseEligibilityDocument | `firestore/cross_paths_showcase_eligibility.schema.json` | `functions/src/shared/generated/crossPathsShowcaseEligibilityDocument.ts` |
 | CrossPathsSuggestionExposureDocument | `firestore/cross_paths_suggestion_exposures.schema.json` | `functions/src/shared/generated/crossPathsSuggestionExposureDocument.ts` |
+| CrossPathsInvitationDocument | `firestore/cross_paths_invitations.schema.json` | `functions/src/shared/generated/crossPathsInvitationDocument.ts` |
 | EventBroadcastDocument | `firestore/event_broadcasts.schema.json` | `functions/src/shared/generated/eventBroadcastDocument.ts` |
 | EventWaitlistOfferDocument | `firestore/event_waitlist_offers.schema.json` | `functions/src/shared/generated/eventWaitlistOfferDocument.ts` |
 | EventSuccessPlanDocument | `firestore/event_success_plans.schema.json` | `functions/src/shared/generated/eventSuccessPlanDocument.ts` |
@@ -158,6 +159,9 @@ Do not edit it by hand.
 | EventIdCallablePayload | `callables/event_id_payload.schema.json` | `functions/src/shared/generated/eventIdCallablePayload.ts` |
 | SetCrossPathsEventConsentCallablePayload | `callables/set_cross_paths_event_consent_payload.schema.json` | `functions/src/shared/generated/setCrossPathsEventConsentCallablePayload.ts` |
 | GetCrossPathsSuggestionsCallablePayload | `callables/get_cross_paths_suggestions_payload.schema.json` | `functions/src/shared/generated/getCrossPathsSuggestionsCallablePayload.ts` |
+| SendCrossPathsInvitationCallablePayload | `callables/send_cross_paths_invitation_payload.schema.json` | `functions/src/shared/generated/sendCrossPathsInvitationCallablePayload.ts` |
+| RespondCrossPathsInvitationCallablePayload | `callables/respond_cross_paths_invitation_payload.schema.json` | `functions/src/shared/generated/respondCrossPathsInvitationCallablePayload.ts` |
+| CancelCrossPathsInvitationOrPlanCallablePayload | `callables/cancel_cross_paths_invitation_or_plan_payload.schema.json` | `functions/src/shared/generated/cancelCrossPathsInvitationOrPlanCallablePayload.ts` |
 | CreateEventWaitlistOffersCallablePayload | `callables/create_event_waitlist_offers_payload.schema.json` | `functions/src/shared/generated/createEventWaitlistOffersCallablePayload.ts` |
 | CreateEventInviteLinkCallablePayload | `callables/create_event_invite_link_payload.schema.json` | `functions/src/shared/generated/createEventInviteLinkCallablePayload.ts` |
 | DisableEventInviteLinkCallablePayload | `callables/disable_event_invite_link_payload.schema.json` | `functions/src/shared/generated/disableEventInviteLinkCallablePayload.ts` |
@@ -210,6 +214,9 @@ Do not edit it by hand.
 | FetchSwipeCandidatesCallableResponse | `callable_responses/fetch_swipe_candidates_response.schema.json` | `functions/src/shared/generated/fetchSwipeCandidatesCallableResponse.ts` |
 | SetCrossPathsEventConsentCallableResponse | `callable_responses/set_cross_paths_event_consent_response.schema.json` | `functions/src/shared/generated/setCrossPathsEventConsentCallableResponse.ts` |
 | GetCrossPathsSuggestionsCallableResponse | `callable_responses/get_cross_paths_suggestions_response.schema.json` | `functions/src/shared/generated/getCrossPathsSuggestionsCallableResponse.ts` |
+| SendCrossPathsInvitationCallableResponse | `callable_responses/send_cross_paths_invitation_response.schema.json` | `functions/src/shared/generated/sendCrossPathsInvitationCallableResponse.ts` |
+| RespondCrossPathsInvitationCallableResponse | `callable_responses/respond_cross_paths_invitation_response.schema.json` | `functions/src/shared/generated/respondCrossPathsInvitationCallableResponse.ts` |
+| CancelCrossPathsInvitationOrPlanCallableResponse | `callable_responses/cancel_cross_paths_invitation_or_plan_response.schema.json` | `functions/src/shared/generated/cancelCrossPathsInvitationOrPlanCallableResponse.ts` |
 | CreateProfileDecisionClientWrite | `client_writes/create_profile_decision.schema.json` | `functions/src/shared/generated/createProfileDecisionClientWrite.ts` |
 | CreateChatMessageClientWrite | `client_writes/create_chat_message.schema.json` | `functions/src/shared/generated/createChatMessageClientWrite.ts` |
 | CreateSavedEventClientWrite | `client_writes/create_saved_event.schema.json` | `functions/src/shared/generated/createSavedEventClientWrite.ts` |
@@ -277,6 +284,7 @@ Do not edit it by hand.
 | `schemaEventCrossPathsConsentDocumentSchema` | EventCrossPathsConsentDocument | `firestore/event_cross_paths_consents.schema.json` | `lib/core/schema_contracts/generated/schemas/event_cross_paths_consent_document.g.dart` |
 | `schemaCrossPathsShowcaseEligibilityDocumentSchema` | CrossPathsShowcaseEligibilityDocument | `firestore/cross_paths_showcase_eligibility.schema.json` | `lib/core/schema_contracts/generated/schemas/cross_paths_showcase_eligibility_document.g.dart` |
 | `schemaCrossPathsSuggestionExposureDocumentSchema` | CrossPathsSuggestionExposureDocument | `firestore/cross_paths_suggestion_exposures.schema.json` | `lib/core/schema_contracts/generated/schemas/cross_paths_suggestion_exposure_document.g.dart` |
+| `schemaCrossPathsInvitationDocumentSchema` | CrossPathsInvitationDocument | `firestore/cross_paths_invitations.schema.json` | `lib/core/schema_contracts/generated/schemas/cross_paths_invitation_document.g.dart` |
 | `schemaEventBroadcastDocumentSchema` | EventBroadcastDocument | `firestore/event_broadcasts.schema.json` | `lib/core/schema_contracts/generated/schemas/event_broadcast_document.g.dart` |
 | `schemaEventWaitlistOfferDocumentSchema` | EventWaitlistOfferDocument | `firestore/event_waitlist_offers.schema.json` | `lib/core/schema_contracts/generated/schemas/event_waitlist_offer_document.g.dart` |
 | `schemaEventSuccessPlanDocumentSchema` | EventSuccessPlanDocument | `firestore/event_success_plans.schema.json` | `lib/core/schema_contracts/generated/schemas/event_success_plan_document.g.dart` |
@@ -387,6 +395,9 @@ Do not edit it by hand.
 | `schemaEventIdCallablePayloadSchema` | EventIdCallablePayload | `callables/event_id_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/event_id_callable_payload.g.dart` |
 | `schemaSetCrossPathsEventConsentCallablePayloadSchema` | SetCrossPathsEventConsentCallablePayload | `callables/set_cross_paths_event_consent_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/set_cross_paths_event_consent_callable_payload.g.dart` |
 | `schemaGetCrossPathsSuggestionsCallablePayloadSchema` | GetCrossPathsSuggestionsCallablePayload | `callables/get_cross_paths_suggestions_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_cross_paths_suggestions_callable_payload.g.dart` |
+| `schemaSendCrossPathsInvitationCallablePayloadSchema` | SendCrossPathsInvitationCallablePayload | `callables/send_cross_paths_invitation_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/send_cross_paths_invitation_callable_payload.g.dart` |
+| `schemaRespondCrossPathsInvitationCallablePayloadSchema` | RespondCrossPathsInvitationCallablePayload | `callables/respond_cross_paths_invitation_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/respond_cross_paths_invitation_callable_payload.g.dart` |
+| `schemaCancelCrossPathsInvitationOrPlanCallablePayloadSchema` | CancelCrossPathsInvitationOrPlanCallablePayload | `callables/cancel_cross_paths_invitation_or_plan_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/cancel_cross_paths_invitation_or_plan_callable_payload.g.dart` |
 | `schemaCreateEventWaitlistOffersCallablePayloadSchema` | CreateEventWaitlistOffersCallablePayload | `callables/create_event_waitlist_offers_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/create_event_waitlist_offers_callable_payload.g.dart` |
 | `schemaCreateEventInviteLinkCallablePayloadSchema` | CreateEventInviteLinkCallablePayload | `callables/create_event_invite_link_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/create_event_invite_link_callable_payload.g.dart` |
 | `schemaDisableEventInviteLinkCallablePayloadSchema` | DisableEventInviteLinkCallablePayload | `callables/disable_event_invite_link_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/disable_event_invite_link_callable_payload.g.dart` |
@@ -439,6 +450,9 @@ Do not edit it by hand.
 | `schemaFetchSwipeCandidatesCallableResponseSchema` | FetchSwipeCandidatesCallableResponse | `callable_responses/fetch_swipe_candidates_response.schema.json` | `lib/core/schema_contracts/generated/schemas/fetch_swipe_candidates_callable_response.g.dart` |
 | `schemaSetCrossPathsEventConsentCallableResponseSchema` | SetCrossPathsEventConsentCallableResponse | `callable_responses/set_cross_paths_event_consent_response.schema.json` | `lib/core/schema_contracts/generated/schemas/set_cross_paths_event_consent_callable_response.g.dart` |
 | `schemaGetCrossPathsSuggestionsCallableResponseSchema` | GetCrossPathsSuggestionsCallableResponse | `callable_responses/get_cross_paths_suggestions_response.schema.json` | `lib/core/schema_contracts/generated/schemas/get_cross_paths_suggestions_callable_response.g.dart` |
+| `schemaSendCrossPathsInvitationCallableResponseSchema` | SendCrossPathsInvitationCallableResponse | `callable_responses/send_cross_paths_invitation_response.schema.json` | `lib/core/schema_contracts/generated/schemas/send_cross_paths_invitation_callable_response.g.dart` |
+| `schemaRespondCrossPathsInvitationCallableResponseSchema` | RespondCrossPathsInvitationCallableResponse | `callable_responses/respond_cross_paths_invitation_response.schema.json` | `lib/core/schema_contracts/generated/schemas/respond_cross_paths_invitation_callable_response.g.dart` |
+| `schemaCancelCrossPathsInvitationOrPlanCallableResponseSchema` | CancelCrossPathsInvitationOrPlanCallableResponse | `callable_responses/cancel_cross_paths_invitation_or_plan_response.schema.json` | `lib/core/schema_contracts/generated/schemas/cancel_cross_paths_invitation_or_plan_callable_response.g.dart` |
 | `schemaCreateProfileDecisionClientWriteSchema` | CreateProfileDecisionClientWrite | `client_writes/create_profile_decision.schema.json` | `lib/core/schema_contracts/generated/schemas/create_profile_decision_client_write.g.dart` |
 | `schemaCreateChatMessageClientWriteSchema` | CreateChatMessageClientWrite | `client_writes/create_chat_message.schema.json` | `lib/core/schema_contracts/generated/schemas/create_chat_message_client_write.g.dart` |
 | `schemaCreateSavedEventClientWriteSchema` | CreateSavedEventClientWrite | `client_writes/create_saved_event.schema.json` | `lib/core/schema_contracts/generated/schemas/create_saved_event_client_write.g.dart` |
@@ -527,6 +541,9 @@ Do not edit it by hand.
 | EventIdCallableRequest | EventIdCallablePayload | `callables/event_id_payload.schema.json` | `lib/core/schema_contracts/generated/callables/event_id_callable_request.g.dart` |
 | SetCrossPathsEventConsentCallableRequest | SetCrossPathsEventConsentCallablePayload | `callables/set_cross_paths_event_consent_payload.schema.json` | `lib/core/schema_contracts/generated/callables/set_cross_paths_event_consent_callable_request.g.dart` |
 | GetCrossPathsSuggestionsCallableRequest | GetCrossPathsSuggestionsCallablePayload | `callables/get_cross_paths_suggestions_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_cross_paths_suggestions_callable_request.g.dart` |
+| SendCrossPathsInvitationCallableRequest | SendCrossPathsInvitationCallablePayload | `callables/send_cross_paths_invitation_payload.schema.json` | `lib/core/schema_contracts/generated/callables/send_cross_paths_invitation_callable_request.g.dart` |
+| RespondCrossPathsInvitationCallableRequest | RespondCrossPathsInvitationCallablePayload | `callables/respond_cross_paths_invitation_payload.schema.json` | `lib/core/schema_contracts/generated/callables/respond_cross_paths_invitation_callable_request.g.dart` |
+| CancelCrossPathsInvitationOrPlanCallableRequest | CancelCrossPathsInvitationOrPlanCallablePayload | `callables/cancel_cross_paths_invitation_or_plan_payload.schema.json` | `lib/core/schema_contracts/generated/callables/cancel_cross_paths_invitation_or_plan_callable_request.g.dart` |
 | CreateEventWaitlistOffersCallableRequest | CreateEventWaitlistOffersCallablePayload | `callables/create_event_waitlist_offers_payload.schema.json` | `lib/core/schema_contracts/generated/callables/create_event_waitlist_offers_callable_request.g.dart` |
 | CreateEventInviteLinkCallableRequest | CreateEventInviteLinkCallablePayload | `callables/create_event_invite_link_payload.schema.json` | `lib/core/schema_contracts/generated/callables/create_event_invite_link_callable_request.g.dart` |
 | DisableEventInviteLinkCallableRequest | DisableEventInviteLinkCallablePayload | `callables/disable_event_invite_link_payload.schema.json` | `lib/core/schema_contracts/generated/callables/disable_event_invite_link_callable_request.g.dart` |

@@ -15,16 +15,16 @@
     ]
   },
   "summary": {
-    "catalogKeys": 2800,
-    "usedKeys": 2800,
+    "catalogKeys": 2820,
+    "usedKeys": 2820,
     "orphanedKeys": 0,
-    "usageReferences": 3069,
-    "catalogL10nReferences": 3069,
+    "usageReferences": 3097,
+    "catalogL10nReferences": 3097,
     "nonMessageL10nReferences": 1,
     "missingCatalogKeys": 0,
     "missingCatalogReferences": 0,
-    "scannedDartFiles": 803,
-    "excludedGeneratedDartFiles": 522
+    "scannedDartFiles": 806,
+    "excludedGeneratedDartFiles": 533
   },
   "orphanedKeys": [],
   "nonMessageL10nReferences": [
@@ -785,7 +785,7 @@
       "usages": [
         {
           "path": "lib/chats/presentation/chat_screen.dart",
-          "line": 369,
+          "line": 371,
           "column": 28
         }
       ],
@@ -793,7 +793,7 @@
       "l10nReferences": [
         {
           "path": "lib/chats/presentation/chat_screen.dart",
-          "line": 369,
+          "line": 371,
           "column": 28
         }
       ]
@@ -865,7 +865,7 @@
       "usages": [
         {
           "path": "lib/chats/presentation/chat_screen.dart",
-          "line": 358,
+          "line": 360,
           "column": 40
         }
       ],
@@ -873,7 +873,7 @@
       "l10nReferences": [
         {
           "path": "lib/chats/presentation/chat_screen.dart",
-          "line": 358,
+          "line": 360,
           "column": 40
         }
       ]
@@ -885,7 +885,7 @@
       "usages": [
         {
           "path": "lib/chats/presentation/chat_screen.dart",
-          "line": 305,
+          "line": 307,
           "column": 39
         }
       ],
@@ -893,7 +893,7 @@
       "l10nReferences": [
         {
           "path": "lib/chats/presentation/chat_screen.dart",
-          "line": 305,
+          "line": 307,
           "column": 39
         }
       ]
@@ -6765,7 +6765,7 @@
       "usages": [
         {
           "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-          "line": 200,
+          "line": 210,
           "column": 33
         }
       ],
@@ -6773,7 +6773,7 @@
       "l10nReferences": [
         {
           "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-          "line": 200,
+          "line": 210,
           "column": 33
         }
       ]
@@ -6785,7 +6785,7 @@
       "usages": [
         {
           "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-          "line": 175,
+          "line": 185,
           "column": 28
         }
       ],
@@ -6793,7 +6793,7 @@
       "l10nReferences": [
         {
           "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-          "line": 175,
+          "line": 185,
           "column": 28
         }
       ]
@@ -6805,7 +6805,7 @@
       "usages": [
         {
           "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-          "line": 148,
+          "line": 158,
           "column": 40
         }
       ],
@@ -6813,7 +6813,7 @@
       "l10nReferences": [
         {
           "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-          "line": 148,
+          "line": 158,
           "column": 40
         }
       ]
@@ -6821,20 +6821,30 @@
     {
       "key": "crossPathsExploreCardLabelCrossPaths",
       "status": "used",
-      "usageCount": 1,
+      "usageCount": 2,
       "usages": [
         {
           "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-          "line": 111,
+          "line": 121,
           "column": 36
+        },
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+          "line": 147,
+          "column": 32
         }
       ],
-      "l10nReferenceCount": 1,
+      "l10nReferenceCount": 2,
       "l10nReferences": [
         {
           "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-          "line": 111,
+          "line": 121,
           "column": 36
+        },
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+          "line": 147,
+          "column": 32
         }
       ]
     },
@@ -6845,7 +6855,7 @@
       "usages": [
         {
           "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-          "line": 95,
+          "line": 105,
           "column": 24
         }
       ],
@@ -6853,7 +6863,7 @@
       "l10nReferences": [
         {
           "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-          "line": 95,
+          "line": 105,
           "column": 24
         }
       ]
@@ -6865,7 +6875,7 @@
       "usages": [
         {
           "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-          "line": 114,
+          "line": 124,
           "column": 32
         }
       ],
@@ -6873,7 +6883,7 @@
       "l10nReferences": [
         {
           "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-          "line": 114,
+          "line": 124,
           "column": 32
         }
       ]
@@ -6885,7 +6895,7 @@
       "usages": [
         {
           "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-          "line": 86,
+          "line": 96,
           "column": 10
         }
       ],
@@ -6893,8 +6903,458 @@
       "l10nReferences": [
         {
           "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-          "line": 86,
+          "line": 96,
           "column": 10
+        }
+      ]
+    },
+    {
+      "key": "crossPathsInvitationActionCancel",
+      "status": "used",
+      "usageCount": 2,
+      "usages": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
+          "line": 393,
+          "column": 22
+        },
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+          "line": 230,
+          "column": 31
+        }
+      ],
+      "l10nReferenceCount": 2,
+      "l10nReferences": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
+          "line": 393,
+          "column": 22
+        },
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+          "line": 230,
+          "column": 31
+        }
+      ]
+    },
+    {
+      "key": "crossPathsInvitationActionJoinFirst",
+      "status": "used",
+      "usageCount": 1,
+      "usages": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
+          "line": 388,
+          "column": 27
+        }
+      ],
+      "l10nReferenceCount": 1,
+      "l10nReferences": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
+          "line": 388,
+          "column": 27
+        }
+      ]
+    },
+    {
+      "key": "crossPathsInvitationActionOpenPlan",
+      "status": "used",
+      "usageCount": 2,
+      "usages": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
+          "line": 395,
+          "column": 22
+        },
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+          "line": 241,
+          "column": 31
+        }
+      ],
+      "l10nReferenceCount": 2,
+      "l10nReferences": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
+          "line": 395,
+          "column": 22
+        },
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+          "line": 241,
+          "column": 31
+        }
+      ]
+    },
+    {
+      "key": "crossPathsInvitationActionSend",
+      "status": "used",
+      "usageCount": 1,
+      "usages": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
+          "line": 391,
+          "column": 28
+        }
+      ],
+      "l10nReferenceCount": 1,
+      "l10nReferences": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
+          "line": 391,
+          "column": 28
+        }
+      ]
+    },
+    {
+      "key": "crossPathsInvitationConfirmAction",
+      "status": "used",
+      "usageCount": 1,
+      "usages": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
+          "line": 437,
+          "column": 34
+        }
+      ],
+      "l10nReferenceCount": 1,
+      "l10nReferences": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
+          "line": 437,
+          "column": 34
+        }
+      ]
+    },
+    {
+      "key": "crossPathsInvitationConfirmBody",
+      "status": "used",
+      "usageCount": 1,
+      "usages": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
+          "line": 436,
+          "column": 29
+        }
+      ],
+      "l10nReferenceCount": 1,
+      "l10nReferences": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
+          "line": 436,
+          "column": 29
+        }
+      ]
+    },
+    {
+      "key": "crossPathsInvitationConfirmTitle",
+      "status": "used",
+      "usageCount": 1,
+      "usages": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
+          "line": 433,
+          "column": 27
+        }
+      ],
+      "l10nReferenceCount": 1,
+      "l10nReferences": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
+          "line": 433,
+          "column": 27
+        }
+      ]
+    },
+    {
+      "key": "crossPathsInvitationScreenAcceptedBody",
+      "status": "used",
+      "usageCount": 1,
+      "usages": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+          "line": 191,
+          "column": 20
+        }
+      ],
+      "l10nReferenceCount": 1,
+      "l10nReferences": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+          "line": 191,
+          "column": 20
+        }
+      ]
+    },
+    {
+      "key": "crossPathsInvitationScreenActionAccept",
+      "status": "used",
+      "usageCount": 1,
+      "usages": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+          "line": 205,
+          "column": 31
+        }
+      ],
+      "l10nReferenceCount": 1,
+      "l10nReferences": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+          "line": 205,
+          "column": 31
+        }
+      ]
+    },
+    {
+      "key": "crossPathsInvitationScreenActionCancelPlan",
+      "status": "used",
+      "usageCount": 1,
+      "usages": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+          "line": 252,
+          "column": 31
+        }
+      ],
+      "l10nReferenceCount": 1,
+      "l10nReferences": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+          "line": 252,
+          "column": 31
+        }
+      ]
+    },
+    {
+      "key": "crossPathsInvitationScreenActionDecline",
+      "status": "used",
+      "usageCount": 1,
+      "usages": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+          "line": 213,
+          "column": 31
+        }
+      ],
+      "l10nReferenceCount": 1,
+      "l10nReferences": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+          "line": 213,
+          "column": 31
+        }
+      ]
+    },
+    {
+      "key": "crossPathsInvitationScreenIncomingBody",
+      "status": "used",
+      "usageCount": 1,
+      "usages": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+          "line": 188,
+          "column": 26
+        }
+      ],
+      "l10nReferenceCount": 1,
+      "l10nReferences": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+          "line": 188,
+          "column": 26
+        }
+      ]
+    },
+    {
+      "key": "crossPathsInvitationScreenOutgoingBody",
+      "status": "used",
+      "usageCount": 1,
+      "usages": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+          "line": 189,
+          "column": 26
+        }
+      ],
+      "l10nReferenceCount": 1,
+      "l10nReferences": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+          "line": 189,
+          "column": 26
+        }
+      ]
+    },
+    {
+      "key": "crossPathsInvitationScreenTitle",
+      "status": "used",
+      "usageCount": 1,
+      "usages": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+          "line": 42,
+          "column": 29
+        }
+      ],
+      "l10nReferenceCount": 1,
+      "l10nReferences": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+          "line": 42,
+          "column": 29
+        }
+      ]
+    },
+    {
+      "key": "crossPathsInvitationScreenUnavailableBody",
+      "status": "used",
+      "usageCount": 3,
+      "usages": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+          "line": 56,
+          "column": 39
+        },
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+          "line": 76,
+          "column": 31
+        },
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+          "line": 103,
+          "column": 31
+        }
+      ],
+      "l10nReferenceCount": 3,
+      "l10nReferences": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+          "line": 56,
+          "column": 39
+        },
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+          "line": 76,
+          "column": 31
+        },
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+          "line": 103,
+          "column": 31
+        }
+      ]
+    },
+    {
+      "key": "crossPathsInvitationScreenUnavailableTitle",
+      "status": "used",
+      "usageCount": 3,
+      "usages": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+          "line": 55,
+          "column": 37
+        },
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+          "line": 75,
+          "column": 29
+        },
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+          "line": 102,
+          "column": 29
+        }
+      ],
+      "l10nReferenceCount": 3,
+      "l10nReferences": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+          "line": 55,
+          "column": 37
+        },
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+          "line": 75,
+          "column": 29
+        },
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+          "line": 102,
+          "column": 29
+        }
+      ]
+    },
+    {
+      "key": "crossPathsInvitationSentMessage",
+      "status": "used",
+      "usageCount": 1,
+      "usages": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
+          "line": 456,
+          "column": 24
+        }
+      ],
+      "l10nReferenceCount": 1,
+      "l10nReferences": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
+          "line": 456,
+          "column": 24
+        }
+      ]
+    },
+    {
+      "key": "crossPathsInvitationStatusClosed",
+      "status": "used",
+      "usageCount": 2,
+      "usages": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
+          "line": 396,
+          "column": 25
+        },
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+          "line": 192,
+          "column": 23
+        }
+      ],
+      "l10nReferenceCount": 2,
+      "l10nReferences": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
+          "line": 396,
+          "column": 25
+        },
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+          "line": 192,
+          "column": 23
+        }
+      ]
+    },
+    {
+      "key": "crossPathsInvitationStatusPending",
+      "status": "used",
+      "usageCount": 1,
+      "usages": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
+          "line": 332,
+          "column": 38
+        }
+      ],
+      "l10nReferenceCount": 1,
+      "l10nReferences": [
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
+          "line": 332,
+          "column": 38
         }
       ]
     },
@@ -6905,7 +7365,7 @@
       "usages": [
         {
           "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-          "line": 271,
+          "line": 300,
           "column": 40
         }
       ],
@@ -6913,7 +7373,7 @@
       "l10nReferences": [
         {
           "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-          "line": 271,
+          "line": 300,
           "column": 40
         }
       ]
@@ -6925,7 +7385,7 @@
       "usages": [
         {
           "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-          "line": 279,
+          "line": 308,
           "column": 42
         }
       ],
@@ -6933,7 +7393,7 @@
       "l10nReferences": [
         {
           "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-          "line": 279,
+          "line": 308,
           "column": 42
         }
       ]
@@ -8565,7 +9025,7 @@
       "usages": [
         {
           "path": "lib/dashboard/presentation/notifications_list_state.dart",
-          "line": 208,
+          "line": 214,
           "column": 15
         }
       ],
@@ -8573,7 +9033,7 @@
       "l10nReferences": [
         {
           "path": "lib/dashboard/presentation/notifications_list_state.dart",
-          "line": 208,
+          "line": 214,
           "column": 15
         }
       ]
@@ -8585,7 +9045,7 @@
       "usages": [
         {
           "path": "lib/dashboard/presentation/notifications_list_state.dart",
-          "line": 205,
+          "line": 211,
           "column": 17
         }
       ],
@@ -8593,7 +9053,7 @@
       "l10nReferences": [
         {
           "path": "lib/dashboard/presentation/notifications_list_state.dart",
-          "line": 205,
+          "line": 211,
           "column": 17
         }
       ]
@@ -8605,7 +9065,7 @@
       "usages": [
         {
           "path": "lib/dashboard/presentation/notifications_list_state.dart",
-          "line": 201,
+          "line": 207,
           "column": 17
         }
       ],
@@ -8613,7 +9073,7 @@
       "l10nReferences": [
         {
           "path": "lib/dashboard/presentation/notifications_list_state.dart",
-          "line": 201,
+          "line": 207,
           "column": 17
         }
       ]
@@ -8665,7 +9125,7 @@
       "usages": [
         {
           "path": "lib/dashboard/presentation/notifications_list_state.dart",
-          "line": 199,
+          "line": 205,
           "column": 17
         }
       ],
@@ -8673,7 +9133,7 @@
       "l10nReferences": [
         {
           "path": "lib/dashboard/presentation/notifications_list_state.dart",
-          "line": 199,
+          "line": 205,
           "column": 17
         }
       ]
@@ -28760,7 +29220,7 @@
         },
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 744,
+          "line": 748,
           "column": 35
         }
       ],
@@ -28773,7 +29233,7 @@
         },
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 744,
+          "line": 748,
           "column": 35
         }
       ]
@@ -28930,7 +29390,7 @@
         },
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 736,
+          "line": 740,
           "column": 14
         }
       ],
@@ -28943,7 +29403,7 @@
         },
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 736,
+          "line": 740,
           "column": 14
         }
       ]
@@ -28960,7 +29420,7 @@
         },
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 732,
+          "line": 736,
           "column": 22
         }
       ],
@@ -28973,7 +29433,7 @@
         },
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 732,
+          "line": 736,
           "column": 22
         }
       ]
@@ -28990,7 +29450,7 @@
         },
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 737,
+          "line": 741,
           "column": 25
         }
       ],
@@ -29003,7 +29463,7 @@
         },
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 737,
+          "line": 741,
           "column": 25
         }
       ]
@@ -29215,7 +29675,7 @@
       "usages": [
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 542,
+          "line": 546,
           "column": 32
         }
       ],
@@ -29223,7 +29683,7 @@
       "l10nReferences": [
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 542,
+          "line": 546,
           "column": 32
         }
       ]
@@ -29235,7 +29695,7 @@
       "usages": [
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 806,
+          "line": 810,
           "column": 35
         }
       ],
@@ -29243,7 +29703,7 @@
       "l10nReferences": [
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 806,
+          "line": 810,
           "column": 35
         }
       ]
@@ -29255,7 +29715,7 @@
       "usages": [
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 877,
+          "line": 881,
           "column": 38
         }
       ],
@@ -29263,7 +29723,7 @@
       "l10nReferences": [
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 877,
+          "line": 881,
           "column": 38
         }
       ]
@@ -29280,7 +29740,7 @@
         },
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 876,
+          "line": 880,
           "column": 37
         }
       ],
@@ -29293,7 +29753,7 @@
         },
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 876,
+          "line": 880,
           "column": 37
         }
       ]
@@ -29305,7 +29765,7 @@
       "usages": [
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 875,
+          "line": 879,
           "column": 37
         }
       ],
@@ -29313,7 +29773,7 @@
       "l10nReferences": [
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 875,
+          "line": 879,
           "column": 37
         }
       ]
@@ -29325,7 +29785,7 @@
       "usages": [
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 874,
+          "line": 878,
           "column": 22
         }
       ],
@@ -29333,7 +29793,7 @@
       "l10nReferences": [
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 874,
+          "line": 878,
           "column": 22
         }
       ]
@@ -29345,7 +29805,7 @@
       "usages": [
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 843,
+          "line": 847,
           "column": 35
         }
       ],
@@ -29353,7 +29813,7 @@
       "l10nReferences": [
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 843,
+          "line": 847,
           "column": 35
         }
       ]
@@ -29365,7 +29825,7 @@
       "usages": [
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 819,
+          "line": 823,
           "column": 35
         }
       ],
@@ -29373,7 +29833,7 @@
       "l10nReferences": [
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 819,
+          "line": 823,
           "column": 35
         }
       ]
@@ -29385,7 +29845,7 @@
       "usages": [
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 804,
+          "line": 808,
           "column": 35
         }
       ],
@@ -29393,7 +29853,7 @@
       "l10nReferences": [
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 804,
+          "line": 808,
           "column": 35
         }
       ]
@@ -29405,7 +29865,7 @@
       "usages": [
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 832,
+          "line": 836,
           "column": 18
         }
       ],
@@ -29413,7 +29873,7 @@
       "l10nReferences": [
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 832,
+          "line": 836,
           "column": 18
         }
       ]
@@ -31165,7 +31625,7 @@
       "usages": [
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 801,
+          "line": 805,
           "column": 33
         }
       ],
@@ -31173,7 +31633,7 @@
       "l10nReferences": [
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 801,
+          "line": 805,
           "column": 33
         }
       ]
@@ -31185,7 +31645,7 @@
       "usages": [
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 842,
+          "line": 846,
           "column": 33
         }
       ],
@@ -31193,7 +31653,7 @@
       "l10nReferences": [
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 842,
+          "line": 846,
           "column": 33
         }
       ]
@@ -31205,12 +31665,12 @@
       "usages": [
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 818,
+          "line": 822,
           "column": 33
         },
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 829,
+          "line": 833,
           "column": 33
         }
       ],
@@ -31218,12 +31678,12 @@
       "l10nReferences": [
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 818,
+          "line": 822,
           "column": 33
         },
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 829,
+          "line": 833,
           "column": 33
         }
       ]
@@ -31235,7 +31695,7 @@
       "usages": [
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 409,
+          "line": 413,
           "column": 31
         }
       ],
@@ -31243,7 +31703,7 @@
       "l10nReferences": [
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 409,
+          "line": 413,
           "column": 31
         }
       ]
@@ -31280,7 +31740,7 @@
         },
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 341,
+          "line": 345,
           "column": 32
         }
       ],
@@ -31293,7 +31753,7 @@
         },
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 341,
+          "line": 345,
           "column": 32
         }
       ]
@@ -31310,7 +31770,7 @@
         },
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 342,
+          "line": 346,
           "column": 28
         }
       ],
@@ -31323,7 +31783,7 @@
         },
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 342,
+          "line": 346,
           "column": 28
         }
       ]
@@ -31340,7 +31800,7 @@
         },
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 338,
+          "line": 342,
           "column": 32
         }
       ],
@@ -31353,7 +31813,7 @@
         },
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "line": 338,
+          "line": 342,
           "column": 32
         }
       ]
@@ -52995,7 +53455,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 613,
+          "line": 630,
           "column": 46
         }
       ],
@@ -53003,7 +53463,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 613,
+          "line": 630,
           "column": 46
         }
       ]
@@ -53075,7 +53535,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 637,
+          "line": 654,
           "column": 46
         }
       ],
@@ -53083,7 +53543,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 637,
+          "line": 654,
           "column": 46
         }
       ]
@@ -53115,7 +53575,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 542,
+          "line": 559,
           "column": 32
         }
       ],
@@ -53123,7 +53583,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 542,
+          "line": 559,
           "column": 32
         }
       ]
@@ -53135,7 +53595,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 518,
+          "line": 535,
           "column": 34
         }
       ],
@@ -53143,7 +53603,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 518,
+          "line": 535,
           "column": 34
         }
       ]
@@ -53195,7 +53655,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 886,
+          "line": 903,
           "column": 29
         }
       ],
@@ -53203,7 +53663,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 886,
+          "line": 903,
           "column": 29
         }
       ]
@@ -53215,7 +53675,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 784,
+          "line": 801,
           "column": 32
         }
       ],
@@ -53223,7 +53683,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 784,
+          "line": 801,
           "column": 32
         }
       ]
@@ -53235,7 +53695,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 733,
+          "line": 750,
           "column": 33
         }
       ],
@@ -53243,7 +53703,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 733,
+          "line": 750,
           "column": 33
         }
       ]
@@ -53275,7 +53735,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 683,
+          "line": 700,
           "column": 38
         }
       ],
@@ -53283,7 +53743,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 683,
+          "line": 700,
           "column": 38
         }
       ]
@@ -53295,7 +53755,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 604,
+          "line": 621,
           "column": 43
         }
       ],
@@ -53303,7 +53763,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 604,
+          "line": 621,
           "column": 43
         }
       ]
@@ -53335,7 +53795,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 732,
+          "line": 749,
           "column": 31
         }
       ],
@@ -53343,7 +53803,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 732,
+          "line": 749,
           "column": 31
         }
       ]
@@ -53355,7 +53815,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 532,
+          "line": 549,
           "column": 32
         }
       ],
@@ -53363,7 +53823,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 532,
+          "line": 549,
           "column": 32
         }
       ]
@@ -53395,7 +53855,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 467,
+          "line": 484,
           "column": 32
         }
       ],
@@ -53403,7 +53863,27 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 467,
+          "line": 484,
+          "column": 32
+        }
+      ]
+    },
+    {
+      "key": "safetySettingsScreenTitleCrossPathsInvitations",
+      "status": "used",
+      "usageCount": 1,
+      "usages": [
+        {
+          "path": "lib/safety/presentation/settings_screen.dart",
+          "line": 420,
+          "column": 32
+        }
+      ],
+      "l10nReferenceCount": 1,
+      "l10nReferences": [
+        {
+          "path": "lib/safety/presentation/settings_screen.dart",
+          "line": 420,
           "column": 32
         }
       ]
@@ -53435,7 +53915,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 588,
+          "line": 605,
           "column": 32
         }
       ],
@@ -53443,7 +53923,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 588,
+          "line": 605,
           "column": 32
         }
       ]
@@ -53495,7 +53975,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 483,
+          "line": 500,
           "column": 32
         }
       ],
@@ -53503,7 +53983,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 483,
+          "line": 500,
           "column": 32
         }
       ]
@@ -53515,7 +53995,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 450,
+          "line": 467,
           "column": 32
         }
       ],
@@ -53523,7 +54003,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 450,
+          "line": 467,
           "column": 32
         }
       ]
@@ -53555,7 +54035,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 434,
+          "line": 451,
           "column": 32
         }
       ],
@@ -53563,7 +54043,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 434,
+          "line": 451,
           "column": 32
         }
       ]
@@ -53615,7 +54095,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 611,
+          "line": 628,
           "column": 34
         }
       ],
@@ -53623,7 +54103,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 611,
+          "line": 628,
           "column": 34
         }
       ]
@@ -53635,7 +54115,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 667,
+          "line": 684,
           "column": 47
         }
       ],
@@ -53643,7 +54123,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 667,
+          "line": 684,
           "column": 47
         }
       ]
@@ -53655,7 +54135,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 418,
+          "line": 435,
           "column": 47
         }
       ],
@@ -53663,7 +54143,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 418,
+          "line": 435,
           "column": 47
         }
       ]
@@ -53675,7 +54155,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 782,
+          "line": 799,
           "column": 35
         }
       ],
@@ -53683,7 +54163,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 782,
+          "line": 799,
           "column": 35
         }
       ]
@@ -53755,7 +54235,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 565,
+          "line": 582,
           "column": 34
         }
       ],
@@ -53763,7 +54243,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 565,
+          "line": 582,
           "column": 34
         }
       ]
@@ -53775,7 +54255,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 497,
+          "line": 514,
           "column": 40
         }
       ],
@@ -53783,7 +54263,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 497,
+          "line": 514,
           "column": 40
         }
       ]
@@ -53855,7 +54335,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 515,
+          "line": 532,
           "column": 34
         }
       ],
@@ -53863,7 +54343,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 515,
+          "line": 532,
           "column": 34
         }
       ]
@@ -53875,7 +54355,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 550,
+          "line": 567,
           "column": 44
         }
       ],
@@ -53883,7 +54363,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 550,
+          "line": 567,
           "column": 44
         }
       ]
@@ -53895,7 +54375,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 635,
+          "line": 652,
           "column": 49
         }
       ],
@@ -53903,7 +54383,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 635,
+          "line": 652,
           "column": 49
         }
       ]
@@ -53915,7 +54395,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 657,
+          "line": 674,
           "column": 47
         }
       ],
@@ -53923,7 +54403,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 657,
+          "line": 674,
           "column": 47
         }
       ]
@@ -53935,7 +54415,7 @@
       "usages": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 539,
+          "line": 556,
           "column": 32
         }
       ],
@@ -53943,7 +54423,7 @@
       "l10nReferences": [
         {
           "path": "lib/safety/presentation/settings_screen.dart",
-          "line": 539,
+          "line": 556,
           "column": 32
         }
       ]

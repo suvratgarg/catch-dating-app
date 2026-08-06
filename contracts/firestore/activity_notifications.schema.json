@@ -43,7 +43,11 @@
         "eventCancelled",
         "eventUpdated",
         "clubUpdate",
-        "organizerUpdate"
+        "organizerUpdate",
+        "crossPathsInvitation",
+        "crossPathsInvitationAccepted",
+        "crossPathsInvitationDeclined",
+        "crossPathsPlanCancelled"
       ],
       "x-catch-ownership": "server-only"
     },
@@ -104,6 +108,15 @@
       "x-catch-ownership": "server-only"
     },
     "postId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "invitationId": {
       "type": [
         "string",
         "null"

@@ -138,6 +138,10 @@ export interface UserProfileDocument {
    * Private global consent gate for Cross Paths. Missing values resolve to false and this field must never be copied to publicProfiles.
    */
   prefsShowInCrossPaths?: boolean;
+  /**
+   * Opt-in push preference for Cross Paths invitations. Missing values resolve to false; durable Activity items are still written.
+   */
+  prefsCrossPathsInvitations?: boolean;
   fcmToken?: string;
   deleted?: boolean;
   deletedAt?: {

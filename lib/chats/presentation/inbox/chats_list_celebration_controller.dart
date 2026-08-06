@@ -17,7 +17,11 @@ class ChatsListCelebrationController {
 
     final previousIds = previous.value!.map((match) => match.id).toSet();
     return List.unmodifiable(
-      next.value!.where((match) => !previousIds.contains(match.id)),
+      next.value!.where(
+        (match) =>
+            match.conversationType == MatchConversationType.match &&
+            !previousIds.contains(match.id),
+      ),
     );
   }
 

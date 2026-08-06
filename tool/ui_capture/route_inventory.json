@@ -4,13 +4,13 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "a11b2fef2b38d18e302f3ca6603fda8c3bfa0e41062cf2a197d7dfa225b54ff4",
-    "routeContractSha256": "11c1df5ff9e32b451baad7075a19d305ee06cd21a1c85a46827ffdb7e55b3161",
-    "goRouteCount": 53,
+    "normalizedFileSha256": "539ce6a2e7002fdefccad65220b96dd081a29b3172f12a269ffee7cb23491a5c",
+    "routeContractSha256": "573de63618a6501a9c52745733059e608733f396df6c01c9bfaa6e4399388d2c",
+    "goRouteCount": 54,
     "shellBranchCount": 8,
-    "enumRouteCount": 52,
-    "referencedRouteCount": 52,
-    "runtimeRouteCount": 52,
+    "enumRouteCount": 53,
+    "referencedRouteCount": 53,
+    "runtimeRouteCount": 53,
     "routeHelperCount": 2,
     "routeHelpers": [
       "_hostUtilityRoutes",
@@ -182,6 +182,20 @@
       "runtimePath": "/notifications",
       "runtimeParentId": "dashboardScreen",
       "runtimePathExpression": "'notifications'",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "crossPathsInvitationScreen",
+      "path": "/cross-paths/invitations/:invitationId",
+      "pathParameters": [
+        "invitationId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/cross-paths/invitations/:invitationId",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.crossPathsInvitationScreen.path",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -702,6 +716,7 @@
     "calendarScreen",
     "chatScreen",
     "clubDetailScreen",
+    "crossPathsInvitationScreen",
     "dashboardEventDetailScreen",
     "dashboardScreen",
     "eventDetailScreen",

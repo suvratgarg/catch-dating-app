@@ -19,7 +19,11 @@ export interface ActivityNotificationDocument {
     | "eventCancelled"
     | "eventUpdated"
     | "clubUpdate"
-    | "organizerUpdate";
+    | "organizerUpdate"
+    | "crossPathsInvitation"
+    | "crossPathsInvitationAccepted"
+    | "crossPathsInvitationDeclined"
+    | "crossPathsPlanCancelled";
   title: string;
   body: string;
   /**
@@ -38,6 +42,7 @@ export interface ActivityNotificationDocument {
   clubId?: string | null;
   organizerId?: string | null;
   postId?: string | null;
+  invitationId?: string | null;
   actorUid?: string | null;
   actorName?: string | null;
   /**

@@ -722,6 +722,10 @@ export interface UserProfileDocument {
    * Private global consent gate for Cross Paths. Missing values resolve to false and this field must never be copied to publicProfiles.
    */
   prefsShowInCrossPaths?: boolean;
+  /**
+   * Opt-in push preference for Cross Paths invitations. Missing values resolve to false; durable Activity items are still written.
+   */
+  prefsCrossPathsInvitations?: boolean;
   fcmToken?: string;
   deleted?: boolean;
   deletedAt?: FirebaseFirestore.Timestamp | null;
@@ -2029,6 +2033,42 @@ export interface CrossPathsSuggestionExposureDocument {
 }
 
 /**
+ * Callable-owned event-scoped invitation stored at crossPathsInvitations/{deterministicEventSenderHash}.
+ */
+export interface CrossPathsInvitationDocument {
+  eventId: string;
+  senderUid: string;
+  recipientUid: string;
+  /**
+   * @minItems 2
+   * @maxItems 2
+   */
+  participantIds: string[];
+  status:
+    | "pending"
+    | "accepted"
+    | "declined"
+    | "cancelled"
+    | "expired"
+    | "invalidated";
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+  respondedAt: FirebaseFirestore.Timestamp | null;
+  cancelledAt: FirebaseFirestore.Timestamp | null;
+  invalidatedAt: FirebaseFirestore.Timestamp | null;
+  invalidationReason:
+    | null
+    | "event_unavailable"
+    | "participation_cancelled"
+    | "consent_revoked"
+    | "safety_state_changed"
+    | "competing_plan_accepted"
+    | "plan_cancelled";
+  conversationId: string | null;
+}
+
+/**
  * Server-owned delivery receipt for an organizer event broadcast stored at eventBroadcasts/{broadcastId}.
  */
 export interface EventBroadcastDocument {
@@ -2621,7 +2661,7 @@ export interface MatchDocument {
   unreadCounts: {
     [k: string]: number;
   };
-  status: "active" | "blocked";
+  status: "active" | "blocked" | "closed";
   blockedBy?: string | null;
   blockedAt?: FirebaseFirestore.Timestamp | null;
   /**
@@ -2629,9 +2669,12 @@ export interface MatchDocument {
    * @maxItems 2
    */
   participantIds: string[];
-  conversationType?: "match" | "clubHostInquiry";
+  conversationType?: "match" | "clubHostInquiry" | "crossPathsEventPlan";
   clubId?: string;
   organizerId?: string;
+  crossPathsInvitationId?: string;
+  eventPlanExpiresAt?: FirebaseFirestore.Timestamp;
+  closedAt?: FirebaseFirestore.Timestamp | null;
 }
 
 /**
@@ -2661,7 +2704,11 @@ export interface ActivityNotificationDocument {
     | "eventCancelled"
     | "eventUpdated"
     | "clubUpdate"
-    | "organizerUpdate";
+    | "organizerUpdate"
+    | "crossPathsInvitation"
+    | "crossPathsInvitationAccepted"
+    | "crossPathsInvitationDeclined"
+    | "crossPathsPlanCancelled";
   title: string;
   body: string;
   createdAt: FirebaseFirestore.Timestamp;
@@ -2671,6 +2718,7 @@ export interface ActivityNotificationDocument {
   clubId?: string | null;
   organizerId?: string | null;
   postId?: string | null;
+  invitationId?: string | null;
   actorUid?: string | null;
   actorName?: string | null;
 }

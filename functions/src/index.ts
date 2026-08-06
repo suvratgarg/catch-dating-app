@@ -150,6 +150,16 @@ export {setCrossPathsEventConsent} from
 export {getCrossPathsSuggestions} from
   "./crossPaths/getCrossPathsSuggestions";
 export {
+  cancelCrossPathsInvitationOrPlan,
+  expireCrossPathsInvitations,
+  onCrossPathsBlockCreated,
+  onCrossPathsConsentWritten,
+  onCrossPathsEventWritten,
+  onCrossPathsParticipationWritten,
+  respondCrossPathsInvitation,
+  sendCrossPathsInvitation,
+} from "./crossPaths/invitations";
+export {
   generateProfilePhotoThumbnail,
 } from "./profiles/generateProfilePhotoThumbnail";
 export {
