@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "generatedFrom": "git ls-files --cached --others --exclude-standard",
   "generatedBy": "node tool/test_inventory.mjs",
-  "total": 611,
+  "total": 612,
   "categories": {
     "firebase_rules": {
       "count": 2,
@@ -24,7 +24,7 @@
       ]
     },
     "flutter_unit_widget": {
-      "count": 281,
+      "count": 282,
       "files": [
         "test/activity/activity_taxonomy_test.dart",
         "test/analytics/app_analytics_test.dart",
@@ -175,6 +175,7 @@
         "test/events/viewer_event_availability_test.dart",
         "test/exceptions/error_logger_test.dart",
         "test/explore/explore_city_controller_test.dart",
+        "test/explore/explore_cross_paths_feed_test.dart",
         "test/explore/explore_discovery_window_controller_test.dart",
         "test/explore/explore_view_model_test.dart",
         "test/explore/explore_widgets_test.dart",
