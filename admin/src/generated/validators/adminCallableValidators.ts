@@ -1115,6 +1115,30 @@ const model = {
                       ]
                     }
                   }
+                },
+                "crossPathsPairInventory": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "enabled",
+                    "reservedPairCapacity",
+                    "holdDurationMinutes"
+                  ],
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean"
+                    },
+                    "reservedPairCapacity": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "holdDurationMinutes": {
+                      "type": "integer",
+                      "minimum": 5,
+                      "maximum": 30
+                    }
+                  }
                 }
               }
             },
@@ -1263,6 +1287,11 @@ const model = {
             },
             "dynamicPricingEnabled": {
               "type": "boolean"
+            },
+            "crossPathsPairCapacity": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
             },
             "dynamicPricingStepInPaise": {
               "type": [
