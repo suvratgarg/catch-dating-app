@@ -173,6 +173,40 @@ test("source frontmatter is the canonical Markdown retirement authority", () => 
   assert.match(missingSourceStatus.findings[0].reason, /no single valid lifecycle status/u);
 });
 
+test("current lifecycle catalog rejects duplicate or missing authority", () => {
+  assert.throws(
+    () => compareDocVersionCatalogs({
+      baseCatalog: {doc: {path: "docs/doc.md", version: "1.0.0", status: "active"}},
+      currentCatalog: {
+        doc: {path: "docs/doc.md", version: "1.0.1", status: "active"},
+      },
+      currentDocumentPaths: new Set(["docs/doc.md"]),
+    }),
+    /must omit Markdown lifecycle status/u,
+  );
+  assert.throws(
+    () => compareDocVersionCatalogs({
+      baseCatalog: {doc: {path: "docs/doc.md", version: "1.0.0", status: "active"}},
+      currentCatalog: {doc: {path: "docs/doc.md", version: "1.0.1"}},
+      currentDocumentPaths: new Set(["docs/doc.md"]),
+      currentDocumentStatuses: new Map([["docs/doc.md", null]]),
+    }),
+    /no single valid source-frontmatter lifecycle status/u,
+  );
+  assert.throws(
+    () => compareDocVersionCatalogs({
+      baseCatalog: {
+        contract: {path: "contracts/contract.json", version: "1.0.0", status: "active"},
+      },
+      currentCatalog: {
+        contract: {path: "contracts/contract.json", version: "1.0.1"},
+      },
+      currentDocumentPaths: new Set(["contracts/contract.json"]),
+    }),
+    /non-Markdown.*missing lifecycle status/u,
+  );
+});
+
 test("catalog comparator fails only semantic decreases and removal inconsistencies", () => {
   const result = compareDocVersionCatalogs({
     baseCatalog: {
@@ -304,8 +338,8 @@ test("CLI compares an explicit catalog from base to working tree and target ref"
   git(repo, ["init", "-q"]);
   git(repo, ["config", "user.email", "test@example.com"]);
   git(repo, ["config", "user.name", "Catch Test"]);
-  write(repo, "docs/a.md", "# A\n");
-  write(repo, "docs/b.md", "# B\n");
+  write(repo, "docs/a.md", "---\nstatus: active\n---\n\n# A\n");
+  write(repo, "docs/b.md", "---\nstatus: active\n---\n\n# B\n");
   writeCatalog(repo, catalogPath, {
     a: {path: "docs/a.md", version: "1.2.0"},
     b: {path: "docs/b.md", version: "2"},
@@ -324,8 +358,8 @@ test("CLI compares an explicit catalog from base to working tree and target ref"
   assert.equal(badReport.summary.versionDecreases, 1);
   assert.equal(badReport.summary.removalInconsistencies, 1);
 
-  write(repo, "docs/b.md", "# B restored\n");
-  write(repo, "docs/c.md", "# C\n");
+  write(repo, "docs/b.md", "---\nstatus: active\n---\n\n# B restored\n");
+  write(repo, "docs/c.md", "---\nstatus: active\n---\n\n# C\n");
   writeCatalog(repo, catalogPath, {
     a: {path: "docs/a.md", version: "1.3.0"},
     b: {path: "docs/b.md", version: "2.0.0"},

@@ -152,7 +152,8 @@
         "path": "tool/docs/check_doc_version_monotonic.test.mjs",
         "contains": [
           "catalog comparator fails only semantic decreases and removal inconsistencies",
-          "known-bad self-test proves decrease and removal detection"
+          "known-bad self-test proves decrease and removal detection",
+          "current lifecycle catalog rejects duplicate or missing authority"
         ]
       }
     },
@@ -177,7 +178,8 @@
         "path": "tool/docs/build_doc_state.test.mjs",
         "contains": [
           "derived document state keeps semantic metadata separate from Git state",
-          "derived document state rejects duplicate catalog paths"
+          "derived document state rejects duplicate catalog paths",
+          "derived document state rejects missing lifecycle authority"
         ]
       }
     },

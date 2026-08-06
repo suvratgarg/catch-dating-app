@@ -1,3 +1,7 @@
+---
+status: active
+---
+
 # Catch Web Config
 
 Shared React web tooling for Catch's web-native surfaces.

@@ -1,6 +1,6 @@
 ---
 doc_id: audit_registry
-version: 2.8.0
+version: 2.9.0
 updated: 2026-08-06
 owner: recursive_audit_loop
 status: active
@@ -43,9 +43,9 @@ Use this registry before reading long tracker docs. The goal is to answer:
 
 `doc_versions.json` owns semantic version/path/read routing. For governed
 Markdown, exactly one valid source-frontmatter `status` is the sole lifecycle
-authority; the catalog cannot authorize Markdown deletion. Missing, malformed,
-duplicate, or unclosed source status fails closed. Governed non-Markdown
-artifacts continue to use catalog lifecycle status.
+authority and catalog rows must omit that field. Missing, malformed, duplicate,
+or unclosed source status fails closed. Governed non-Markdown artifacts continue
+to require catalog lifecycle status.
 
 The inventory includes native Android, iOS, macOS, Flutter web, and Functions
 operator scripts in addition to Dart, tests, tooling, design, and documentation,

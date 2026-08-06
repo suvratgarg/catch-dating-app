@@ -1,6 +1,6 @@
 ---
 doc_id: docs_index
-version: 4.12.0
+version: 4.13.0
 updated: 2026-08-06
 owner: recursive_audit_loop
 status: active
@@ -116,8 +116,9 @@ operational runbooks.
 
 For governed Markdown, exactly one valid frontmatter `status` is the lifecycle
 authority. `doc_versions.json` owns version/path routing but cannot authorize a
-Markdown deletion; missing, malformed, or duplicate source status fails closed.
-Catalog lifecycle status remains only for governed non-Markdown artifacts. The
+Markdown deletion; Markdown catalog rows must omit `status`, and missing,
+malformed, duplicate, or unclosed source status fails closed. Catalog lifecycle
+status remains required only for governed non-Markdown artifacts. The
 retirement gate also proves that both the target source path and catalog row are
 gone.
 

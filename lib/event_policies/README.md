@@ -1,3 +1,7 @@
+---
+status: active
+---
+
 # Event Policies
 
 Status: in production migration, wired into create-event and booking while the

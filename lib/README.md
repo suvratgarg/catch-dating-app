@@ -1,3 +1,7 @@
+---
+status: active
+---
+
 # Lib Code Map
 
 Read `PROJECT_CONTEXT.md` first for the whole-app architecture and product

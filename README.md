@@ -1,3 +1,7 @@
+---
+status: active
+---
+
 # Catch
 
 Catch is a Flutter dating and social-events product with Firebase backends, a React marketing site, and a separate React admin console.

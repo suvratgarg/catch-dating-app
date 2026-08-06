@@ -287,11 +287,11 @@ node --test tool/git/audit_merge_drops.test.mjs
 
 Governed document versions may increase or remain unchanged, but may not
 decrease or silently lose their catalog entry/path metadata. The target defaults
-to the working tree. Governed Markdown requires exactly one valid base-source
-frontmatter status as its retirement authority and never falls back to catalog
-lifecycle metadata; catalog status remains only for non-Markdown governed
-artifacts. A retirement still requires both the target file and its catalog row
-to be gone:
+to the working tree. Governed Markdown requires exactly one valid source
+frontmatter status and never falls back to catalog lifecycle metadata; current
+Markdown catalog rows must omit `status`, while non-Markdown governed artifacts
+must retain it. A retirement still requires both the target file and its catalog
+row to be gone:
 
 ```sh
 node tool/docs/check_doc_version_monotonic.mjs --base origin/main

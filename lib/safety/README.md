@@ -1,3 +1,7 @@
+---
+status: active
+---
+
 # Safety
 
 Safety owns blocking, reporting, and account deletion. The client can hide UI,

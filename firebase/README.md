@@ -1,3 +1,7 @@
+---
+status: active
+---
+
 # Firebase Environments
 
 This repo now has a three-environment Firebase workflow:
