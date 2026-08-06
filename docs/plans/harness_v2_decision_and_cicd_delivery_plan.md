@@ -362,6 +362,12 @@ the broader automatic Functions-deploy probe checked all 11 target-selected
 prerequisites in 12.10s. GitHub checkout and OIDC timing will be measured on the
 first shadow/preflight workflow run.
 
+This is the first environment-readiness tranche, not completion of items 0.5
+or 3.1. API enablement, deploy/runtime IAM, required parameters, deployed
+revision-to-secret binding, distinct signing-key material, and post-deploy
+health still need explicit probes or provisioning receipts. None may be
+inferred from an enabled secret version or an active TTL policy.
+
 Durable outcomes are PR wall-clock p50/p95 and escaped defects. Record the
 baseline from the ten most recent comparable PRs and compare after ten v2 PRs.
 Course-correct when any of these occur:
