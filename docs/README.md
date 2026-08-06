@@ -1,6 +1,6 @@
 ---
 doc_id: docs_index
-version: 4.11.0
+version: 4.12.0
 updated: 2026-08-06
 owner: recursive_audit_loop
 status: active
@@ -114,7 +114,14 @@ route, component, and evidence inventories; they do not replace product intent,
 architecture, business policy, data schemas, copy, release procedures, or
 operational runbooks.
 
-The following 10 documents are ready to delete after their named inbound
+For governed Markdown, exactly one valid frontmatter `status` is the lifecycle
+authority. `doc_versions.json` owns version/path routing but cannot authorize a
+Markdown deletion; missing, malformed, or duplicate source status fails closed.
+Catalog lifecycle status remains only for governed non-Markdown artifacts. The
+retirement gate also proves that both the target source path and catalog row are
+gone.
+
+The following 9 documents are ready to delete after their named inbound
 references are rewritten in the same change. Their durable decisions already
 live in the listed owners and pass receipts. Actual deletion is tracked by
 `DOC-FEATURE-CONTRACT-RETIREMENT-001`; until then, do not treat these files as
@@ -129,7 +136,6 @@ active sources of truth.
 | `design_parity/adaptive_tab_bar_spec.md` | The work order is complete and the remaining Home/Catches absorption is separately owned. | `../design/components/catch.components.json`, `app_architecture.md`, `widget_catalog.md`, tab-root scanners/tests, `plans/home_catches_unification_spec.md` |
 | `audit_registry/host_consumer_ui_reconciliation_findings_2026-07-18.md` | Every finding is resolved; current constraints and proof have canonical owners. | `app_architecture.md`, `widget_catalog.md`, `agent_regression_ledger.json`, `audit_registry/passes.jsonl` |
 | `plans/catch_ui_enforcement_system_spec.md` | The implementation receipt is complete and the live rule set is executable. | `app_architecture.md`, `../design/components/README.md`, `../design/screens/catch.screens.json`, `../tool/README.md`, analyzer/scanner tests |
-| `plans/repository_root_hygiene_spec.md` | The owner-reviewed plan is fully implemented and already labels itself historical. | `../tool/repository_root_manifest.json`, `../tool/README.md`, `../artifacts/README.md`, `agent_operating_model.md` |
 | `plans/web_platform_hardening_spec.md` | All phases and final verification are complete; current React and callable-validation rules are enforced by registries and gates. | `web_surface_architecture.md`, `marketing_website_architecture.md`, `../design/website/components.json`, `../design/admin/components.json`, web checks |
 | `plans/catch_system_stretch_spec.md` | The completion audit closes every phase and owner gate; current field, top-bar, async, terminal-padding, and schema rules have durable owners. | `app_architecture.md`, `widget_catalog.md`, `../design/components/`, `../contracts/`, generated contract and UI gates |
 

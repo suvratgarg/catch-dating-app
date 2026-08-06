@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import {fromRepo} from "../lib/repo_paths.mjs";
 import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
+import {parseDocumentLifecycleStatus} from "../docs/check_doc_version_monotonic.mjs";
 
 const args = parseArgs(process.argv.slice(2));
 const repositorySnapshot = createRepositorySnapshot();
@@ -115,10 +116,13 @@ function buildOwnerDocs({task, scopePaths, matchedSkills, docVersions}) {
 function addDoc(docs, docPath, reason, versionEntry) {
   const existing = docs.get(docPath);
   const nextReason = existing ? `${existing.reason} ${reason}` : reason;
+  const markdown = docPath.endsWith(".md");
   docs.set(docPath, {
     path: docPath,
     version: versionEntry?.version ?? null,
-    status: versionEntry?.status ?? null,
+    status: markdown
+      ? parseDocumentLifecycleStatus(repositorySnapshot.readText(docPath) ?? "")
+      : versionEntry?.status ?? null,
     read_policy: versionEntry?.read_policy ?? null,
     reason: nextReason.trim(),
   });

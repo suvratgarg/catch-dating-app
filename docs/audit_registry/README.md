@@ -1,7 +1,7 @@
 ---
 doc_id: audit_registry
-version: 2.7.0
-updated: 2026-07-19
+version: 2.8.0
+updated: 2026-08-06
 owner: recursive_audit_loop
 status: active
 ---
@@ -40,6 +40,12 @@ Use this registry before reading long tracker docs. The goal is to answer:
 | `widget_consolidation_receipts.md` | Command receipts, spot-checks, calibration notes, and known limitations for the widget consolidation pipeline. |
 | `new_widget_inventory_scan.json` | Generated report comparing the working tree to a base ref for newly added widgets, private widget classes, widget-returning helpers, and Widgetbook/catalog coverage gaps. |
 | `archive/` | Historical detail that should be searched only when a debt id or rule requires it. |
+
+`doc_versions.json` owns semantic version/path/read routing. For governed
+Markdown, exactly one valid source-frontmatter `status` is the sole lifecycle
+authority; the catalog cannot authorize Markdown deletion. Missing, malformed,
+duplicate, or unclosed source status fails closed. Governed non-Markdown
+artifacts continue to use catalog lifecycle status.
 
 The inventory includes native Android, iOS, macOS, Flutter web, and Functions
 operator scripts in addition to Dart, tests, tooling, design, and documentation,

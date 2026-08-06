@@ -83,6 +83,7 @@ export function compareDocVersionCatalogs({
   baseCatalog,
   currentCatalog,
   currentDocumentPaths = null,
+  baseDocumentStatuses = null,
 }) {
   const baseEntries = normalizeCatalog(baseCatalog, "base");
   const currentEntries = normalizeCatalog(currentCatalog, "current", {
@@ -112,12 +113,17 @@ export function compareDocVersionCatalogs({
     const current = currentById.get(base.id) ?? currentByPath.get(base.path);
     if (!current) {
       const documentStillExists = currentDocumentPaths?.has(base.path) ?? null;
-      if (base.status === "retirement_ready" && documentStillExists === false) {
+      const sourceOwnsStatus = base.path.endsWith(".md");
+      const retirementStatus = sourceOwnsStatus
+        ? baseDocumentStatuses?.get(base.path) ?? null
+        : base.status;
+      if (retirementStatus === "retirement_ready" && documentStillExists === false) {
         retirements.push({
           id: base.id,
           path: base.path,
           baseVersion: base.version,
-          baseStatus: base.status,
+          baseStatus: retirementStatus,
+          statusAuthority: sourceOwnsStatus ? "source-frontmatter" : "catalog",
         });
         continue;
       }
@@ -128,10 +134,14 @@ export function compareDocVersionCatalogs({
         baseVersion: base.version,
         currentVersion: null,
         reason:
-          base.status !== "retirement_ready"
-            ? "governed catalog entry was removed without retirement_ready status"
+          retirementStatus !== "retirement_ready"
+            ? sourceOwnsStatus
+              ? retirementStatus == null
+                ? "governed Markdown source has no single valid lifecycle status"
+                : `governed document source status is ${retirementStatus}, not retirement_ready`
+              : "governed non-Markdown catalog entry was removed without retirement_ready status"
             : documentStillExists === true
-              ? "retirement_ready catalog entry was removed while the governed document remains in the target"
+              ? "retirement_ready entry was removed while the governed document remains in the target"
               : "retirement_ready deletion could not be proven against target paths",
       });
       continue;
@@ -226,11 +236,13 @@ export function buildDocVersionReport({
   baseCatalog,
   currentCatalog,
   currentDocumentPaths = null,
+  baseDocumentStatuses = null,
 }) {
   const comparison = compareDocVersionCatalogs({
     baseCatalog,
     currentCatalog,
     currentDocumentPaths,
+    baseDocumentStatuses,
   });
   return {
     schemaVersion: 1,
@@ -359,6 +371,12 @@ function runCli() {
       baseCatalog,
       currentCatalog,
       currentDocumentPaths,
+      baseDocumentStatuses: readRemovedDocumentStatusesFromRef(
+        args.repo,
+        baseCommit,
+        baseCatalog,
+        currentCatalog,
+      ),
     });
     if (args.json) console.log(JSON.stringify(report, null, 2));
     else printHumanReport(report);
@@ -526,6 +544,47 @@ function readCatalogFromWorkingTree(repo, catalogPath) {
   return parseCatalogJson(fs.readFileSync(file, "utf8"), catalogPath);
 }
 
+function readRemovedDocumentStatusesFromRef(repo, ref, baseCatalog, currentCatalog) {
+  const baseEntries = normalizeCatalog(baseCatalog, "base");
+  const currentEntries = normalizeCatalog(currentCatalog, "current", {
+    allowIncomplete: true,
+  });
+  const currentIds = new Set(currentEntries.map((entry) => entry.id));
+  const currentPaths = new Set(
+    currentEntries.map((entry) => entry.path).filter((entryPath) => entryPath != null),
+  );
+  const statuses = new Map();
+  for (const entry of baseEntries) {
+    if (currentIds.has(entry.id) || currentPaths.has(entry.path)) continue;
+    if (!entry.path.endsWith(".md")) continue;
+    const source = runGit(repo, ["show", `${ref}:${entry.path}`]);
+    statuses.set(entry.path, parseDocumentLifecycleStatus(source));
+  }
+  return statuses;
+}
+
+/** Markdown frontmatter is the lifecycle authority when it declares status. */
+export function parseDocumentLifecycleStatus(source) {
+  if (typeof source !== "string") return null;
+  const lines = source.replaceAll("\r\n", "\n").split("\n");
+  if (lines[0] !== "---") return null;
+  let status = null;
+  let statusCount = 0;
+  for (let index = 1; index < lines.length; index += 1) {
+    const line = lines[index];
+    if (line === "---") return statusCount === 1 ? status : null;
+    const match =
+      /^status:\s*(?:"([A-Za-z0-9_-]+)"|'([A-Za-z0-9_-]+)'|([A-Za-z0-9_-]+))(?:\s+#.*)?\s*$/u.exec(
+        line,
+      );
+    if (match) {
+      status = match[1] ?? match[2] ?? match[3];
+      statusCount += 1;
+    }
+  }
+  return null;
+}
+
 function parseCatalogJson(source, label) {
   try {
     return JSON.parse(source);
@@ -617,9 +676,11 @@ function printHelp() {
 Compares governed versions in docs/audit_registry/doc_versions.json (or an
 explicit catalog) between a base Git ref and the working tree by default. Pass
 --target to compare two Git refs. Semantic decreases and removed governance
-fail. A removed entry passes only when its base status is retirement_ready and
-the target tree proves its document is also gone. Increases, unchanged versions,
-new entries, and proven retirements pass.`);
+fail. Markdown requires exactly one valid source-frontmatter status and never
+falls back to catalog lifecycle metadata; non-Markdown artifacts use governed
+catalog status. A removed entry passes only when that base authority says
+retirement_ready and the target tree proves its document is also gone.
+Increases, unchanged versions, new entries, and proven retirements pass.`);
 }
 
 function compareCatalogRows(left, right) {

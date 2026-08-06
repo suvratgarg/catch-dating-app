@@ -1,6 +1,6 @@
 {
-  "version": "4.7.1",
-  "updated": "2026-08-05",
+  "version": "4.7.2",
+  "updated": "2026-08-06",
   "owner": "recursive_audit_loop",
   "summaries": {
     "PROJECT_CONTEXT.md": {
@@ -332,7 +332,7 @@
       ]
     },
     "docs/audit_registry/README.md": {
-      "purpose": "Recursive audit workflow, registry files including the admin-console design adoption tracker, enforcement metadata, manifest role requirements, allowedFindings/maxCounts baseline receipts including the live widget-cleanup ratchet, architecture pattern-adoption tracker, pruning policy, and completion criteria.",
+      "purpose": "Recursive audit workflow, registry files including the admin-console design adoption tracker, Markdown source-frontmatter lifecycle authority, enforcement metadata, manifest role requirements, allowedFindings/maxCounts baseline receipts including the live widget-cleanup ratchet, architecture pattern-adoption tracker, pruning policy, and completion criteria.",
       "read_when": [
         "Starting any repeated cleanup/audit pass",
         "Changing rule enforcement entries, manifest rule bindings, vacuity proof declarations, or ratchet baseline receipts",
@@ -591,20 +591,6 @@
         "Only fixing one lint violation without changing rule behavior"
       ]
     },
-    "docs/plans/repository_root_hygiene_spec.md": {
-      "purpose": "Fable/owner review spec for the full project-root inventory, reproducible disk cleanup, protected local state, legacy artifact retirement, root documentation consolidation, artifact retention, Firebase deploy safety, and manifest-backed root hygiene enforcement.",
-      "read_when": [
-        "Deleting, moving, reclassifying, or adding a project-root entry",
-        "Cleaning local caches, logs, artifacts, or worktrees",
-        "Consolidating CLAUDE.md, PROJECT_CONTEXT.md, README.md, or TESTS.md",
-        "Implementing root manifest, portability, test-inventory, retention, or protected-cleanup tooling",
-        "Reviewing the recorded Fable dispositions or the pending-owner root-hygiene decisions"
-      ],
-      "skip_when": [
-        "A narrow feature change does not affect root layout, local cleanup, documentation ownership, artifacts, or deploy safety",
-        "The accepted root-hygiene work is complete and permanent policy has moved into owner docs and enforcement"
-      ]
-    },
     "docs/marketing_website_architecture.md": {
       "purpose": "Marketing website source layout, complete stateful route feature contracts, route shell ownership, route Storybook evidence through parameters.catchRoute, pending form snapshot and lead API schema debt, React dependency choices, feature/page/controller/component boundaries, CSS ownership, component registry, and shared primitive/component-family governance including admin marketing guide shells, admin marketing stacked-section shells, and website route/section shell families.",
       "read_when": [
@@ -653,7 +639,7 @@
       ]
     },
     "docs/README.md": {
-      "purpose": "Canonical documentation index, lifecycle policy, source-of-truth routing, authored semantic-version policy, integration-derived document-state policy, and the reviewed 99-file feature-contract retirement boundary with 11 retirement-ready documents.",
+      "purpose": "Canonical documentation index, lifecycle policy with Markdown frontmatter as retirement authority, source-of-truth routing, authored semantic-version policy, integration-derived document-state policy, and the reviewed 99-file feature-contract retirement boundary with 9 remaining retirement-ready documents.",
       "read_when": [
         "Adding, deleting, consolidating, or routing documentation",
         "Checking whether a feature spec or completed handoff is retirement-ready"
