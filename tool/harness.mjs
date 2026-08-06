@@ -6,6 +6,7 @@ import {fileURLToPath} from "node:url";
 import {fromRepo, repoRoot} from "./lib/repo_paths.mjs";
 import {planCi} from "./ci/plan_ci.mjs";
 import {
+  deriveAppRoles,
   diffPlans,
   planAffected,
   runCodegenChecks,
@@ -34,7 +35,38 @@ export function parseArgs(args) {
     checkOnly: args.includes("--check"),
     dryRun: args.includes("--dry-run"),
     full: args.includes("--full"),
+    githubOutput: valueAfter(args, "--github-output"),
   };
+}
+
+export function projectPlanOutputs({plan, graph}) {
+  const selectedTargets = new Set(plan.operations.ciTargets);
+  const appRoles = deriveAppRoles(plan);
+  return {
+    ...Object.fromEntries(graph.targets.map((target) => [
+      target,
+      selectedTargets.has(target),
+    ])),
+    app_roles: JSON.stringify(appRoles),
+    build_targets: JSON.stringify(plan.operations.buildTargets),
+    release_roles: JSON.stringify(plan.operations.releaseRoles),
+    has_release_roles: plan.operations.releaseRoles.length > 0,
+    deploy_groups: JSON.stringify(plan.operations.deployGroups),
+    deploy_required: plan.operations.deployGroups.length > 0,
+    mode: plan.mode,
+    full: plan.full,
+    complete: plan.complete,
+  };
+}
+
+export function formatGithubOutputs(outputs) {
+  return Object.entries(outputs)
+    .map(([key, value]) => `${key}=${String(value)}\n`)
+    .join("");
+}
+
+export function writeGithubOutputs(path, outputs) {
+  fs.appendFileSync(path, formatGithubOutputs(outputs), "utf8");
 }
 
 export function changedPathsSince({base, head = "HEAD", cwd = repoRoot}) {
@@ -126,7 +158,22 @@ export function main({
 
     if (options.command === "explain") {
       printResult(plan, options.json);
-      setClassificationExitCode(plan);
+      setClassificationExitCode(plan, setExitCode);
+      return;
+    }
+    if (options.command === "plan") {
+      if (!plan.complete) {
+        printResult(plan, options.json);
+        setClassificationExitCode(plan, setExitCode);
+        return;
+      }
+      if (options.githubOutput) {
+        writeGithubOutputs(
+          options.githubOutput,
+          projectPlanOutputs({plan, graph}),
+        );
+      }
+      printResult(plan, options.json);
       return;
     }
     if (options.command === "shadow") {
@@ -147,7 +194,7 @@ export function main({
       requireAffected(options);
       if (!plan.complete) {
         printResult(plan, options.json);
-        setClassificationExitCode(plan);
+        setClassificationExitCode(plan, setExitCode);
         return;
       }
       let execution = options.dryRun
@@ -173,7 +220,7 @@ export function main({
       }
       if (!plan.complete) {
         printResult(plan, options.json);
-        setClassificationExitCode(plan);
+        setClassificationExitCode(plan, setExitCode);
         return;
       }
       const selection = selectCompileCodegen({plan, graph});
@@ -218,8 +265,8 @@ export function executeCheckIds({ids, cwd = repoRoot, runner = spawnSync}) {
   };
 }
 
-function setClassificationExitCode(plan) {
-  if (!plan.complete) process.exitCode = 1;
+function setClassificationExitCode(plan, setExitCode) {
+  if (!plan.complete) setExitCode(1);
 }
 
 function readJson(path) {
@@ -292,6 +339,7 @@ Commands:
   validate
   coverage [--json]
   explain [--paths a,b | --base ref | --full] [--mode mode] [--json]
+  plan [--paths a,b | --base ref | --full] [--mode mode] [--github-output path] [--json]
   shadow [--paths a,b | --base ref | --full] [--mode mode] [--json]
   check --affected [--paths a,b | --base ref] [--dry-run] [--json]
   generate --affected --check [--paths a,b | --base ref] [--json]

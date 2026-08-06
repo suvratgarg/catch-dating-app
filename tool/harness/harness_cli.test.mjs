@@ -6,8 +6,10 @@ import {
   authoritativeShadowFailure,
   buildShadowReport,
   executeCheckIds,
+  formatGithubOutputs,
   main,
   parseArgs,
+  projectPlanOutputs,
 } from "../harness.mjs";
 
 const graph = JSON.parse(
@@ -20,6 +22,60 @@ const rootManifest = JSON.parse(
 test("check executes by default and dry-run must be explicit", () => {
   assert.equal(parseArgs(["check", "--affected"]).dryRun, false);
   assert.equal(parseArgs(["check", "--affected", "--dry-run"]).dryRun, true);
+});
+
+test("plan parses an explicit GitHub output destination", () => {
+  assert.equal(
+    parseArgs(["plan", "--github-output", "/tmp/github-output"]).githubOutput,
+    "/tmp/github-output",
+  );
+});
+
+test("bounded plan outputs contain no changed-path inventory", () => {
+  const changedPaths = Array.from(
+    {length: 5000},
+    (_, index) => `docs/generated-fixture-${index}.md`,
+  );
+  const plan = {
+    mode: "pr",
+    full: false,
+    complete: true,
+    changedPaths,
+    operations: {
+      ciTargets: ["docs"],
+      buildTargets: [],
+      releaseRoles: [],
+      deployGroups: [],
+    },
+  };
+  const output = formatGithubOutputs(projectPlanOutputs({plan, graph}));
+  assert.ok(Buffer.byteLength(output, "utf8") < 4096);
+  assert.doesNotMatch(output, /generated-fixture/);
+  assert.match(output, /^docs=true$/m);
+  assert.match(output, /^flutter=false$/m);
+  assert.match(output, /^app_roles=\[\]$/m);
+});
+
+test("plan output derives roles and deployment authorization from bounded operations", () => {
+  const plan = {
+    mode: "main",
+    full: false,
+    complete: true,
+    operations: {
+      ciTargets: ["flutter_build_ios", "functions"],
+      buildTargets: ["host-ios"],
+      releaseRoles: ["host"],
+      deployGroups: ["functions"],
+    },
+  };
+  const output = projectPlanOutputs({plan, graph});
+  assert.equal(output.flutter_build_ios, true);
+  assert.equal(output.flutter_build_android, false);
+  assert.equal(output.app_roles, '["host"]');
+  assert.equal(output.release_roles, '["host"]');
+  assert.equal(output.has_release_roles, true);
+  assert.equal(output.deploy_groups, '["functions"]');
+  assert.equal(output.deploy_required, true);
 });
 
 test("captured check execution keeps stdout available for structured JSON", () => {
@@ -75,6 +131,26 @@ test("check CLI executes a selected repository check end to end", () => {
   const output = JSON.parse(result.stdout);
   assert.deepEqual(output.plan.operations.checkIds, ["docs:version-monotonic"]);
   assert.equal(output.execution.status, 0);
+});
+
+test("plan CLI fails closed before writing outputs for an unknown path", () => {
+  let exitCode = 0;
+  const outputPath = `/tmp/catch-harness-output-${process.pid}-${Date.now()}`;
+  main({
+    args: [
+      "plan",
+      "--paths",
+      "unowned/new.file",
+      "--github-output",
+      outputPath,
+      "--json",
+    ],
+    setExitCode(status) {
+      exitCode = status;
+    },
+  });
+  assert.equal(exitCode, 1);
+  assert.equal(fs.existsSync(outputPath), false);
 });
 
 test("shadow reports remain governed by authoritative v1 mapping", () => {
