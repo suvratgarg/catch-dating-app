@@ -18,6 +18,7 @@ import {
   TaskUsageError,
   taskHelp,
 } from "./harness/lib/worktree_lifecycle.mjs";
+import {toolChecksAreLocalReadonly} from "./lib/tool_impact.mjs";
 
 const graphPath = fromRepo("tool/harness/component_graph.json");
 const toolsManifestPath = fromRepo("tool/tools_manifest.json");
@@ -128,18 +129,7 @@ export function main({
 
     const graph = readJson(graphPath);
     const toolsManifest = readJson(toolsManifestPath);
-    const knownCheckIds = new Set(
-      toolsManifest.tools
-        .filter((tool) => {
-          const checkSafety = String(tool.checkSafety ?? tool.safety);
-          return tool.status === "active" &&
-            checkSafety.startsWith("local") &&
-            !checkSafety.includes("remote") &&
-            Array.isArray(tool.checks) &&
-            tool.checks.length > 0;
-        })
-        .map((tool) => tool.id),
-    );
+    const knownCheckIds = collectKnownCheckIds(toolsManifest);
     const validationErrors = validateComponentGraph(graph, {knownCheckIds});
     if (validationErrors.length > 0) {
       printErrors("Harness v2 component graph is invalid:", validationErrors);
@@ -240,6 +230,19 @@ export function main({
     if (error instanceof TaskUsageError) console.error(taskHelp());
     process.exitCode = error instanceof UsageError || error instanceof TaskUsageError ? 64 : 1;
   }
+}
+
+export function collectKnownCheckIds(toolsManifest) {
+  return new Set(
+    (toolsManifest?.tools ?? [])
+      .filter((tool) =>
+        tool.status === "active" &&
+        toolChecksAreLocalReadonly(tool) &&
+        Array.isArray(tool.checks) &&
+        tool.checks.length > 0
+      )
+      .map((tool) => tool.id),
+  );
 }
 
 function requireAffected(options) {

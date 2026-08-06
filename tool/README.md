@@ -43,6 +43,10 @@ ignored by this inner planner instead of broadening a valid Tools selection.
 Active tools must define non-empty checks. This prevents a non-tool contract
 that selects the Tools lane from silently receiving guard checks only and
 prevents full mode from succeeding through a vacuous tool entry. The affected
+tool's `safety` describes its command. A remote-write tool may separately set
+`checkSafety: local-readonly` when its declared checks are safe for Harness CI;
+that is the only accepted override, it requires executable checks, and local
+tools must omit the redundant field. Malformed overrides fail closed. The affected
 planner unions each selected tool's optional `ciRequirements` only after
 mandatory and transitive `alsoCheckIds` expansion. A missing declaration keeps
 the conservative full repository view and all seven setup requirements;

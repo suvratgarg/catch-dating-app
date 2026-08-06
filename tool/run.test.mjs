@@ -293,6 +293,31 @@ test("active tool entries cannot be vacuous", () => {
   assert.deepEqual(empty, []);
 });
 
+test("tool manifest validation rejects malformed checkSafety", (context) => {
+  const temporaryRoot = fs.mkdtempSync(
+    path.join(os.tmpdir(), "catch-check-safety-"),
+  );
+  context.after(() => fs.rmSync(temporaryRoot, {recursive: true, force: true}));
+  createSnapshotFixtureClone(temporaryRoot, {
+    checkoutPaths: materializedSnapshotInputClosure,
+  });
+  const manifestPath = path.join(temporaryRoot, "tool/tools_manifest.json");
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+  manifest.tools.find((tool) => tool.id === "agent:harness-v2").checkSafety = [
+    "local-readonly",
+  ];
+  fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+  runGit(temporaryRoot, ["add", "tool/tools_manifest.json"]);
+
+  const result = runNode(temporaryRoot, [
+    "tool/run.mjs",
+    "check",
+    "--manifest-only",
+  ]);
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /agent:harness-v2: checkSafety must be one of local-readonly/u);
+});
+
 test("index-view tools stay inside the fixed Node-only checkout contract", () => {
   const manifest = JSON.parse(fs.readFileSync("tool/tools_manifest.json", "utf8"));
   const incompatible = manifest.tools

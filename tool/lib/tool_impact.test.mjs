@@ -8,7 +8,10 @@ import {
   hasExecutableChecks,
   planAffectedToolChecks,
   projectToolCiRequirements,
+  supportedToolCheckSafety,
   supportedToolSetupRequirements,
+  toolChecksAreLocalReadonly,
+  validateToolCheckSafety,
   validateToolCiRequirements,
 } from "./tool_impact.mjs";
 
@@ -330,6 +333,54 @@ test("CI requirement declarations reject typos and unsafe dependency gaps", () =
       },
     }).join("\n"),
     /flutter-pub requires flutter/u,
+  );
+});
+
+test("check safety is explicit, local-readonly, and non-redundant", () => {
+  const splitSafety = {
+    safety: "remote-write-explicit",
+    checkSafety: "local-readonly",
+    checks: ["node --test tool/example.test.mjs"],
+  };
+  assert.deepEqual(supportedToolCheckSafety, ["local-readonly"]);
+  assert.deepEqual(validateToolCheckSafety(splitSafety), []);
+  assert.equal(toolChecksAreLocalReadonly(splitSafety), true);
+  assert.equal(
+    toolChecksAreLocalReadonly({safety: "local-readonly", checks: ["node --check x.mjs"]}),
+    true,
+  );
+  assert.equal(
+    toolChecksAreLocalReadonly({...splitSafety, checkSafety: "local-readonly-typo"}),
+    false,
+  );
+  for (const checkSafety of [
+    null,
+    true,
+    {},
+    [],
+    ["local-readonly"],
+    "",
+    "local",
+    "local-readonly-typo",
+    "local-writes-generated",
+    "remote-readonly",
+  ]) {
+    assert.match(
+      validateToolCheckSafety({...splitSafety, checkSafety}).join("\n"),
+      /must be one of local-readonly/u,
+    );
+  }
+  assert.match(
+    validateToolCheckSafety({...splitSafety, checks: []}).join("\n"),
+    /requires non-empty executable checks/u,
+  );
+  assert.match(
+    validateToolCheckSafety({
+      safety: "local-readonly",
+      checkSafety: "local-readonly",
+      checks: ["node --check x.mjs"],
+    }).join("\n"),
+    /must be omitted when safety already declares local-only behavior/u,
   );
 });
 

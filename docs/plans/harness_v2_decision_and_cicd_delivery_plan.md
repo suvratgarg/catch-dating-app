@@ -1,6 +1,6 @@
 ---
 doc_id: harness_v2_decision_and_cicd_delivery_plan
-version: 0.3.15
+version: 0.3.16
 updated: 2026-08-06
 owner: agent_operating_model
 status: execution-in-progress
@@ -624,11 +624,11 @@ setup contract—not another layer of checkout metadata.
 
 Issue discovered during this tranche:
 
-- `H2-TRANSITION-017` — `checkSafety` now distinguishes a tool's read-only
-  validation path from its explicit remote-write command, but the tool-manifest
-  validator does not yet define or negatively test that field. Keep its use
-  limited to `agent:harness-v2`; formalize the schema and add a malformed-value
-  test before any other tool adopts it.
+- `H2-TRANSITION-017` — closed in Checkpoint 11. `checkSafety` distinguishes a
+  tool's read-only validation path from its explicit remote-write command. The
+  manifest validator and Harness now share an exact `local-readonly` contract;
+  malformed values fail closed and the field remains limited to
+  `agent:harness-v2`.
 - `H2-TRANSITION-018` — Markdown retirement lifecycle was duplicated between
   source frontmatter and `doc_versions.json`; the root-hygiene source correctly
   said `retirement_ready` while the catalog still said `implemented`, so a safe
@@ -640,6 +640,15 @@ Issue discovered during this tranche:
   context packs now publish only source-derived Markdown status. The same-branch
   deletion passes against `origin/main` without
   weakening target-file or catalog-row absence proof.
+
+### Checkpoint 11 — executable check-safety contract (2026-08-06)
+
+| Signal | Before this slice | Current result |
+|---|---|---|
+| Safety authority | Harness coerced `checkSafety` through `String(...)` and accepted any value with a `local` prefix and no `remote` substring. A typo or array could therefore cross the local-check allowlist while the manifest validator remained silent. | One shared executable contract now admits only the exact `local-readonly` override, requires non-empty checks, rejects redundant overrides on already-local commands, and fails closed for malformed values. `safety` continues to describe the command; `checkSafety` describes only its validation commands. No parallel JSON schema was added. |
+| Direct proof | No negative test exercised the split between a remote-write command and its local checks. | 55/55 focused runner, tool-impact, and Harness CLI tests pass in 8.30s. They cover null, scalar, collection, prefix, suffix, write, and remote malformed values; direct Harness inclusion/exclusion; and an end-to-end manifest rejection fixture. |
+| Scope | The unvalidated override was trusted by `agent:harness-v2`. | Adoption remains limited to `agent:harness-v2`; another tool cannot use the field safely without passing the same closed validator and tests. |
+| Implementation size | The field had one consumer and no executable schema or negative proof. | The bounded enforcement tranche is 12 files, +192/−29 lines, net +163. This is deliberate guard/test growth; the following lifecycle-catalog and adapter retirements must more than offset it before claiming a net-negative migration. |
 
 Durable outcomes are PR wall-clock p50/p95 and escaped defects. Record the
 baseline from the ten most recent comparable PRs and compare after ten v2 PRs.
