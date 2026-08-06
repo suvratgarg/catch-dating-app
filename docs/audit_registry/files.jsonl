@@ -3468,6 +3468,7 @@
 {"path":"docs/migrations/evidence/clubs_to_organizers_2026-07-22_rollout.json","area":"docs","kind":"doc","status":"unreviewed","last_pass_id":null,"doc_versions":{},"rules_applied":[],"debt":[],"proof":[],"notes":""}
 {"path":"docs/operations_platform.md","area":"docs","kind":"doc","status":"unreviewed","last_pass_id":null,"doc_versions":{},"rules_applied":[],"debt":[],"proof":[],"notes":""}
 {"path":"docs/plans/admin_intake_workbench_ui_spec.md","area":"docs","kind":"doc","status":"unreviewed","last_pass_id":null,"doc_versions":{},"rules_applied":[],"debt":[],"proof":[],"notes":""}
+{"path":"docs/plans/agent_harness_rearchitecture_fable_review.md","area":"docs","kind":"doc","status":"unreviewed","last_pass_id":null,"doc_versions":{},"rules_applied":[],"debt":[],"proof":[],"notes":""}
 {"path":"docs/plans/catch_field_section_system_spec.md","area":"docs","kind":"doc","status":"unreviewed","last_pass_id":null,"doc_versions":{},"rules_applied":[],"debt":[],"proof":[],"notes":""}
 {"path":"docs/plans/catch_system_stretch_spec.md","area":"docs","kind":"doc","status":"unreviewed","last_pass_id":null,"doc_versions":{},"rules_applied":[],"debt":[],"proof":[],"notes":""}
 {"path":"docs/plans/catch_ui_enforcement_system_spec.md","area":"docs","kind":"doc","status":"unreviewed","last_pass_id":null,"doc_versions":{},"rules_applied":[],"debt":[],"proof":[],"notes":""}
@@ -3475,6 +3476,7 @@
 {"path":"docs/plans/design_context_pack_plan.md","area":"docs","kind":"doc","status":"unreviewed","last_pass_id":null,"doc_versions":{},"rules_applied":[],"debt":[],"proof":[],"notes":""}
 {"path":"docs/plans/explore_findings_remediation_spec.md","area":"docs","kind":"doc","status":"unreviewed","last_pass_id":null,"doc_versions":{},"rules_applied":[],"debt":[],"proof":[],"notes":""}
 {"path":"docs/plans/explore_screen_quality_pass_spec.md","area":"docs","kind":"doc","status":"unreviewed","last_pass_id":null,"doc_versions":{},"rules_applied":[],"debt":[],"proof":[],"notes":""}
+{"path":"docs/plans/harness_v2_decision_and_cicd_delivery_plan.md","area":"docs","kind":"doc","status":"unreviewed","last_pass_id":null,"doc_versions":{},"rules_applied":[],"debt":[],"proof":[],"notes":""}
 {"path":"docs/plans/home_catches_unification_spec.md","area":"docs","kind":"doc","status":"unreviewed","last_pass_id":null,"doc_versions":{},"rules_applied":[],"debt":[],"proof":[],"notes":""}
 {"path":"docs/plans/home_live_layer_product_spec.md","area":"docs","kind":"doc","status":"unreviewed","last_pass_id":null,"doc_versions":{},"rules_applied":[],"debt":[],"proof":[],"notes":""}
 {"path":"docs/plans/host_club_edit_and_live_guide_spec.md","area":"docs","kind":"doc","status":"unreviewed","last_pass_id":null,"doc_versions":{},"rules_applied":[],"debt":[],"proof":[],"notes":""}
