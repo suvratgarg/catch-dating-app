@@ -1,7 +1,7 @@
 ---
 doc_id: docs_index
-version: 4.10.1
-updated: 2026-08-05
+version: 4.11.0
+updated: 2026-08-06
 owner: recursive_audit_loop
 status: active
 ---
@@ -114,7 +114,7 @@ route, component, and evidence inventories; they do not replace product intent,
 architecture, business policy, data schemas, copy, release procedures, or
 operational runbooks.
 
-The following 11 documents are ready to delete after their named inbound
+The following 10 documents are ready to delete after their named inbound
 references are rewritten in the same change. Their durable decisions already
 live in the listed owners and pass receipts. Actual deletion is tracked by
 `DOC-FEATURE-CONTRACT-RETIREMENT-001`; until then, do not treat these files as
@@ -127,7 +127,6 @@ active sources of truth.
 | `plans/explore_screen_quality_pass_spec.md` | The quality pass is complete; current Explore states/actions/evidence are compiled and its durable ranking, data, privacy, and capture constraints are guarded elsewhere. | `../design/features/explore.feature.json`, `app_architecture.md`, `data_contracts.md`, `design_language.md`, `agent_regression_ledger.json`, `design_parity/comprehensive_todo.md` |
 | `plans/explore_findings_remediation_spec.md` | All three named implementation receipts landed; feature coverage is compiled and architecture/scanner adoption has durable machine owners. | `../design/features/explore.feature.json`, `../design/features/profile_self.feature.json`, `../design/features/profile_public.feature.json`, `../design/features/member_chat.feature.json`, `app_architecture.md`, `audit_registry/architecture_pattern_adoption.json`, `audit_registry/rules.json` |
 | `design_parity/adaptive_tab_bar_spec.md` | The work order is complete and the remaining Home/Catches absorption is separately owned. | `../design/components/catch.components.json`, `app_architecture.md`, `widget_catalog.md`, tab-root scanners/tests, `plans/home_catches_unification_spec.md` |
-| `design_parity/fable_ui_issue_handoff.md` | The single issue is resolved and the containment rule is encoded in the field/section contracts and architecture guidance. | `../design/components/catch.components.json`, `app_architecture.md`, `agent_regression_ledger.json`, focused tests |
 | `audit_registry/host_consumer_ui_reconciliation_findings_2026-07-18.md` | Every finding is resolved; current constraints and proof have canonical owners. | `app_architecture.md`, `widget_catalog.md`, `agent_regression_ledger.json`, `audit_registry/passes.jsonl` |
 | `plans/catch_ui_enforcement_system_spec.md` | The implementation receipt is complete and the live rule set is executable. | `app_architecture.md`, `../design/components/README.md`, `../design/screens/catch.screens.json`, `../tool/README.md`, analyzer/scanner tests |
 | `plans/repository_root_hygiene_spec.md` | The owner-reviewed plan is fully implemented and already labels itself historical. | `../tool/repository_root_manifest.json`, `../tool/README.md`, `../artifacts/README.md`, `agent_operating_model.md` |
