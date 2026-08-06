@@ -95,6 +95,25 @@ test("widget variant changes stay index-only with Node setup", () => {
   assert.ok(finderPlan.toolIds.includes("design:widgetbook-compare-server"));
 });
 
+test("l10n usage changes keep the full source view with Node-only setup", () => {
+  for (const changedPath of [
+    "tool/copy/check_l10n_key_usage.mjs",
+    "tool/copy/check_l10n_key_usage.test.mjs",
+    "tool/copy/l10n_orphan_baseline.json",
+    "tool/copy/fixtures/l10n_key_usage/reduction/lib/sample.dart",
+  ]) {
+    const plan = planAffectedToolChecks({
+      changedPaths: [changedPath],
+      manifest: productionManifest,
+      componentGraph: componentGraph(),
+    });
+    assert.equal(plan.mode, "affected", changedPath);
+    assert.equal(plan.repositoryView, "full", changedPath);
+    assert.deepEqual(plan.setupRequirements, ["node"], changedPath);
+    assert.ok(plan.toolIds.includes("copy:l10n-key-usage"), changedPath);
+  }
+});
+
 test("transitive check dependencies are selected once", () => {
   const fixture = manifest([
     {

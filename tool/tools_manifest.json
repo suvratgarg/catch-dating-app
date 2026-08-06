@@ -681,14 +681,25 @@
       "id": "copy:l10n-key-usage",
       "category": "lint",
       "path": "tool/copy/check_l10n_key_usage.mjs",
-      "command": "node tool/copy/check_l10n_key_usage.mjs --check --check-inventory",
-      "safety": "local-writes-generated",
+      "impactPaths": [
+        "tool/copy/check_l10n_key_usage.test.mjs",
+        "tool/copy/l10n_orphan_baseline.json",
+        "tool/copy/fixtures/l10n_key_usage/**"
+      ],
+      "command": "node tool/copy/check_l10n_key_usage.mjs --check",
+      "safety": "local-readonly",
       "status": "active",
-      "description": "Inventories exact handwritten Flutter localization-key usage and fails on stale evidence or any new zero-use catalog key.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "description": "Derives exact handwritten Flutter localization-key usage live and fails on missing catalog getters or any new zero-use catalog key; complete JSON evidence is ephemeral.",
       "checks": [
         "node --check tool/copy/check_l10n_key_usage.mjs",
         "node --test tool/copy/check_l10n_key_usage.test.mjs",
-        "node tool/copy/check_l10n_key_usage.mjs --check --check-inventory"
+        "node tool/copy/check_l10n_key_usage.mjs --check"
       ],
       "role": "ratchet",
       "rules": [
@@ -700,7 +711,11 @@
         "path": "tool/copy/check_l10n_key_usage.test.mjs",
         "contains": [
           "known-bad fixture reports only the newly orphaned key",
-          "inventory generation is deterministic and exact-file checkable"
+          "inventory generation is deterministic JSON",
+          "JSON review records missing getters but exits unsuccessfully",
+          "baseline refresh refuses to bless a newly orphaned key",
+          "retired tracked inventory and legacy CLI modes stay absent",
+          "CLI help exposes only live evidence and baseline modes"
         ]
       }
     },
