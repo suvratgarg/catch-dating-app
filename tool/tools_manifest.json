@@ -4851,7 +4851,18 @@
       "command": "dart run tool/architecture/provider_graph.dart --check",
       "safety": "local-readonly",
       "status": "active",
-      "description": "Generates and drift-checks the complete static Riverpod provider, consumer, override, family, alias, and Mutation graph while requiring current architecture decisions for questionable relationships.",
+      "description": "Checks the live static Riverpod provider, consumer, override, family, alias, and Mutation graph while requiring current architecture decisions for questionable relationships; deterministic JSON is emitted only on demand.",
+      "impactPaths": [
+        "tool/architecture/provider_graph_reviews.json"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "flutter",
+          "flutter-pub"
+        ]
+      },
       "checks": [
         "dart format --output=none --set-exit-if-changed tool/architecture/provider_graph.dart test/tool/provider_graph_test.dart",
         "flutter test test/tool/provider_graph_test.dart",
@@ -4867,9 +4878,11 @@
         "type": "test",
         "path": "test/tool/provider_graph_test.dart",
         "contains": [
-          "provider graph detects cycles and unresolved provider refs",
-          "provider graph artifacts are deterministic and drift checked",
-          "provider graph requires current architecture review decisions"
+          "provider graph check failures match cycles and unresolved provider refs",
+          "provider graph JSON and summary are deterministic",
+          "provider graph CLI rejects retired and conflicting output flags",
+          "provider graph requires current architecture review decisions",
+          "provider graph rejects planned reviews without stable debt ids"
         ]
       }
     },

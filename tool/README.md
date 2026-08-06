@@ -229,22 +229,23 @@ test containing a known-bad fixture.
 ## Riverpod Provider Graph
 
 `tool/architecture/provider_graph.dart` parses every handwritten Dart AST under
-`lib/` and generates the durable provider topology under
-`docs/generated/provider_graph/`. The JSON includes generated and handwritten
-providers, aliases, families, consumers, provider operations, overrides, and
-Riverpod experimental Mutations. The HTML supports feature exploration and
-one-hop provider inspection; the Mermaid file is the aggregated feature map.
+`lib/` and checks the live provider topology. Its deterministic JSON includes
+generated and handwritten providers, aliases, families, consumers, provider
+operations, overrides, and Riverpod experimental Mutations, but no generated
+view is committed to the repository.
 
 ```sh
-dart run tool/architecture/provider_graph.dart --write
 dart run tool/architecture/provider_graph.dart --check
 dart run tool/architecture/provider_graph.dart --summary
+dart run tool/architecture/provider_graph.dart --json
 ```
 
 Architecture candidates are exhaustively reviewed in
-`tool/architecture/provider_graph_reviews.json`. The gate rejects stale output,
-cycles, unresolved provider-internal references, new unreviewed relationships,
-and obsolete review entries.
+`tool/architecture/provider_graph_reviews.json`; this small authored ledger is
+the durable decision authority. The live gate rejects cycles, unresolved
+provider-internal references, new unreviewed relationships, and obsolete review
+entries. Redirect `--json` or `--summary` into `build/` when a temporary local or
+CI artifact is useful.
 
 ## Repository Hygiene
 

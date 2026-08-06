@@ -19,6 +19,9 @@ const TEMP_ROOTS = [...new Set([
 export const taskSparseAnchorPaths = Object.freeze([
   "/analysis_options.yaml",
   "/AGENTS.md",
+  "/apps/consumer/pubspec.yaml",
+  "/apps/host/pubspec.yaml",
+  "/assets/",
   "/docs/README.md",
   "/docs/agent_operating_model.md",
   "/docs/agent_regression_ledger.json",
@@ -27,6 +30,8 @@ export const taskSparseAnchorPaths = Object.freeze([
   "/docs/audit_registry/rules.json",
   "/pubspec.lock",
   "/pubspec.yaml",
+  "/packages/catch_ui_lints/",
+  "/packages/phosphor_flutter/",
   "/tool/agent/",
   "/tool/architecture/check_dependency_direction.mjs",
   "/tool/docs/check_doc_version_monotonic.mjs",

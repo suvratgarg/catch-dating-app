@@ -86,6 +86,11 @@ test("task paths are canonical and sparse paths cannot escape", () => {
   const paths = normalizeSparsePaths(["lib/user_profile/", "functions/src/index.ts"]);
   assert.ok(paths.includes("/AGENTS.md"));
   assert.ok(paths.includes("/analysis_options.yaml"));
+  assert.ok(paths.includes("/apps/consumer/pubspec.yaml"));
+  assert.ok(paths.includes("/apps/host/pubspec.yaml"));
+  assert.ok(paths.includes("/assets/"));
+  assert.ok(paths.includes("/packages/catch_ui_lints/"));
+  assert.ok(paths.includes("/packages/phosphor_flutter/"));
   assert.ok(paths.includes("/pubspec.lock"));
   assert.ok(paths.includes("/pubspec.yaml"));
   assert.ok(paths.includes("/lib/user_profile/"));
