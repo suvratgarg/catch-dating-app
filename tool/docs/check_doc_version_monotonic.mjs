@@ -76,8 +76,8 @@ export function compareSemanticVersions(left, right) {
 /**
  * Pure catalog comparator. It fails only when an existing governed identity
  * decreases semantically or loses its catalog/path governance. Increases,
- * unchanged versions, and newly governed docs are explicitly reported and
- * allowed.
+ * unchanged versions, newly governed docs, and proven retirement-ready
+ * deletions are explicitly reported and allowed.
  */
 export function compareDocVersionCatalogs({
   baseCatalog,
@@ -101,6 +101,7 @@ export function compareDocVersionCatalogs({
   const matchedCurrentIds = new Set();
   const increases = [];
   const unchanged = [];
+  const retirements = [];
   const catalogVersion = compareCatalogMetadataVersion(
     baseCatalog.version,
     currentCatalog.version,
@@ -110,13 +111,28 @@ export function compareDocVersionCatalogs({
   for (const base of baseEntries) {
     const current = currentById.get(base.id) ?? currentByPath.get(base.path);
     if (!current) {
+      const documentStillExists = currentDocumentPaths?.has(base.path) ?? null;
+      if (base.status === "retirement_ready" && documentStillExists === false) {
+        retirements.push({
+          id: base.id,
+          path: base.path,
+          baseVersion: base.version,
+          baseStatus: base.status,
+        });
+        continue;
+      }
       findings.push({
         kind: "removal-inconsistency",
         id: base.id,
         path: base.path,
         baseVersion: base.version,
         currentVersion: null,
-        reason: "governed catalog entry was removed",
+        reason:
+          base.status !== "retirement_ready"
+            ? "governed catalog entry was removed without retirement_ready status"
+            : documentStillExists === true
+              ? "retirement_ready catalog entry was removed while the governed document remains in the target"
+              : "retirement_ready deletion could not be proven against target paths",
       });
       continue;
     }
@@ -184,6 +200,7 @@ export function compareDocVersionCatalogs({
     .sort(compareCatalogRows);
   increases.sort(compareCatalogRows);
   unchanged.sort(compareCatalogRows);
+  retirements.sort(compareCatalogRows);
   findings.sort(compareFindings);
   return {
     baseGoverned: baseEntries.length,
@@ -191,6 +208,7 @@ export function compareDocVersionCatalogs({
     increases,
     unchanged,
     additions,
+    retirements,
     findings,
     catalogVersion: {
       baseVersion: catalogVersion.baseVersion,
@@ -226,6 +244,7 @@ export function buildDocVersionReport({
       increases: comparison.increases.length,
       unchanged: comparison.unchanged.length,
       additions: comparison.additions.length,
+      retirements: comparison.retirements.length,
       versionDecreases: comparison.findings.filter(
         (finding) => finding.kind === "version-decrease",
       ).length,
@@ -237,6 +256,7 @@ export function buildDocVersionReport({
     increases: comparison.increases,
     unchanged: comparison.unchanged,
     additions: comparison.additions,
+    retirements: comparison.retirements,
     catalogVersion: comparison.catalogVersion,
     findings: comparison.findings,
   };
@@ -329,7 +349,7 @@ function runCli() {
       };
     } else {
       currentCatalog = readCatalogFromWorkingTree(args.repo, catalogPath);
-      currentDocumentPaths = existingCatalogPaths(args.repo, currentCatalog);
+      currentDocumentPaths = listWorkingTreePaths(args.repo);
       target = {kind: "working-tree", input: null, commit: null, catalog: catalogPath};
     }
 
@@ -369,6 +389,7 @@ function normalizeCatalog(catalog, label, {allowIncomplete = false} = {}) {
             id,
             path: null,
             version: null,
+            status: null,
             incompleteReason: "governed catalog metadata was removed",
           };
         }
@@ -380,6 +401,7 @@ function normalizeCatalog(catalog, label, {allowIncomplete = false} = {}) {
             id,
             path: null,
             version: typeof value.version === "string" ? value.version : null,
+            status: typeof value.status === "string" ? value.status : null,
             incompleteReason: "governed document path metadata was removed",
           };
         }
@@ -391,6 +413,7 @@ function normalizeCatalog(catalog, label, {allowIncomplete = false} = {}) {
             id,
             path: normalizePath(value.path),
             version: null,
+            status: typeof value.status === "string" ? value.status : null,
             incompleteReason: "governed document version metadata was removed",
           };
         }
@@ -401,6 +424,7 @@ function normalizeCatalog(catalog, label, {allowIncomplete = false} = {}) {
         id,
         path: normalizePath(value.path),
         version: value.version,
+        status: typeof value.status === "string" ? value.status : null,
         incompleteReason: null,
       };
     })
@@ -510,14 +534,19 @@ function parseCatalogJson(source, label) {
   }
 }
 
-function existingCatalogPaths(repo, catalog) {
-  const result = new Set();
-  for (const value of Object.values(catalog)) {
-    if (value && typeof value.path === "string" && fs.existsSync(path.join(repo, value.path))) {
-      result.add(normalizePath(value.path));
-    }
-  }
-  return result;
+function listWorkingTreePaths(repo) {
+  const present = new Set(
+    runGit(repo, ["ls-files", "-z", "--cached", "--others", "--exclude-standard"])
+      .split("\0")
+      .filter(Boolean)
+      .map(normalizePath),
+  );
+  const deleted = runGit(repo, ["ls-files", "-z", "--deleted"])
+    .split("\0")
+    .filter(Boolean)
+    .map(normalizePath);
+  for (const deletedPath of deleted) present.delete(deletedPath);
+  return present;
 }
 
 function listRefPaths(repo, ref) {
@@ -563,7 +592,8 @@ function printHumanReport(report) {
   if (summary.pass) {
     console.log(
       `Doc-version monotonic check passed (${summary.unchanged} unchanged, ` +
-        `${summary.increases} increase(s), ${summary.additions} addition(s)).`,
+        `${summary.increases} increase(s), ${summary.additions} addition(s), ` +
+        `${summary.retirements} retirement(s)).`,
     );
     return;
   }
@@ -587,7 +617,9 @@ function printHelp() {
 Compares governed versions in docs/audit_registry/doc_versions.json (or an
 explicit catalog) between a base Git ref and the working tree by default. Pass
 --target to compare two Git refs. Semantic decreases and removed governance
-fail; increases, unchanged versions, and new entries pass.`);
+fail. A removed entry passes only when its base status is retirement_ready and
+the target tree proves its document is also gone. Increases, unchanged versions,
+new entries, and proven retirements pass.`);
 }
 
 function compareCatalogRows(left, right) {
