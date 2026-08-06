@@ -1,7 +1,4 @@
 import assert from "node:assert/strict";
-import fs from "node:fs";
-import os from "node:os";
-import path from "node:path";
 import test from "node:test";
 import {scanDependencyDirection, scanFile} from "./check_dependency_direction.mjs";
 
@@ -395,18 +392,16 @@ test("scanFile flags presentation files with multiple route screens", () => {
 });
 
 test("scanDependencyDirection flags untracked state adapters as a hard gate", () => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-dependency-"));
-  writeFile(
-    root,
-    "lib/events/presentation/event_detail_screen_state.dart",
-    "class EventDetailScreenState { const EventDetailScreenState(); }\n",
-  );
-  writeJson(root, "docs/audit_registry/architecture_pattern_adoption.json", {
-    patterns: [],
+  const snapshot = createFixtureSnapshot({
+    "lib/events/presentation/event_detail_screen_state.dart":
+      "class EventDetailScreenState { const EventDetailScreenState(); }\n",
+    "docs/audit_registry/architecture_pattern_adoption.json": JSON.stringify({
+      patterns: [],
+    }),
   });
 
   const result = scanDependencyDirection({
-    root,
+    snapshot,
     baseline: {
       allowedFindings: [
         {
@@ -422,44 +417,37 @@ test("scanDependencyDirection flags untracked state adapters as a hard gate", ()
 });
 
 test("scanDependencyDirection allows registered state adapters", () => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-dependency-"));
-  writeFile(
-    root,
-    "lib/events/presentation/event_detail_screen_state.dart",
-    "class EventDetailScreenState { const EventDetailScreenState(); }\n",
-  );
-  writeJson(root, "docs/audit_registry/architecture_pattern_adoption.json", {
-    patterns: [
-      {
-        adopters: [
-          {path: "lib/events/presentation/event_detail_screen_state.dart"},
-        ],
-      },
-    ],
+  const snapshot = createFixtureSnapshot({
+    "lib/events/presentation/event_detail_screen_state.dart":
+      "class EventDetailScreenState { const EventDetailScreenState(); }\n",
+    "docs/audit_registry/architecture_pattern_adoption.json": JSON.stringify({
+      patterns: [
+        {
+          adopters: [
+            {path: "lib/events/presentation/event_detail_screen_state.dart"},
+          ],
+        },
+      ],
+    }),
   });
 
-  const result = scanDependencyDirection({root, baseline: {allowedFindings: []}});
+  const result = scanDependencyDirection({
+    snapshot,
+    baseline: {allowedFindings: []},
+  });
 
   assert.deepEqual(result.findings, []);
 });
 
 test("scanDependencyDirection ratchets baseline findings", () => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-dependency-"));
-  writeFile(
-    root,
-    "lib/events/domain/event.dart",
-    "import 'package:cloud_firestore/cloud_firestore.dart';\n",
-  );
-  writeFile(
-    root,
-    "lib/hosts/presentation/host_event_manage_screen.dart",
-    "import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';\n",
-  );
-  writeFile(
-    root,
-    "lib/events/domain/event_time_policy.dart",
-    "bool isPast(DateTime startTime) => startTime.isBefore(DateTime.now());\n",
-  );
+  const snapshot = createFixtureSnapshot({
+    "lib/events/domain/event.dart":
+      "import 'package:cloud_firestore/cloud_firestore.dart';\n",
+    "lib/hosts/presentation/host_event_manage_screen.dart":
+      "import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';\n",
+    "lib/events/domain/event_time_policy.dart":
+      "bool isPast(DateTime startTime) => startTime.isBefore(DateTime.now());\n",
+  });
 
   const baseline = {
     allowedFindings: [
@@ -475,19 +463,65 @@ test("scanDependencyDirection ratchets baseline findings", () => {
     ],
   };
 
-  const result = scanDependencyDirection({root, baseline});
+  const result = scanDependencyDirection({snapshot, baseline});
 
   assert.equal(result.baselineFindings.length, 2);
   assert.equal(result.findings.length, 1);
   assert.equal(result.findings[0].rule, "crossFeaturePresentationImport");
 });
 
-function writeFile(root, relativePath, source) {
-  const file = path.join(root, relativePath);
-  fs.mkdirSync(path.dirname(file), {recursive: true});
-  fs.writeFileSync(file, source);
-}
+test("scanDependencyDirection batches snapshot reads and ignores generated Dart", () => {
+  const batches = [];
+  const snapshot = createFixtureSnapshot(
+    {
+      "lib/events/domain/event.dart": "class Event {}\n",
+      "lib/events/domain/event.g.dart": "generated\n",
+      "lib/events/domain/event.freezed.dart": "generated\n",
+      "lib/events/presentation/event_screen.dart": "class EventScreen {}\n",
+      "docs/audit_registry/architecture_pattern_adoption.json": JSON.stringify({
+        patterns: [],
+      }),
+    },
+    {onReadTexts: (paths) => batches.push(paths)},
+  );
 
-function writeJson(root, relativePath, value) {
-  writeFile(root, relativePath, `${JSON.stringify(value, null, 2)}\n`);
+  const result = scanDependencyDirection({
+    snapshot,
+    baseline: {allowedFindings: []},
+  });
+
+  assert.equal(result.checkedFiles, 2);
+  assert.deepEqual(batches, [[
+    "lib/events/domain/event.dart",
+    "lib/events/presentation/event_screen.dart",
+    "docs/audit_registry/architecture_pattern_adoption.json",
+  ]]);
+});
+
+test("scanDependencyDirection fails closed when the repository view has no Dart", () => {
+  const snapshot = createFixtureSnapshot({"README.md": "fixture\n"});
+
+  assert.throws(
+    () => scanDependencyDirection({snapshot, baseline: {allowedFindings: []}}),
+    /cannot pass without handwritten lib Dart files/u,
+  );
+});
+
+function createFixtureSnapshot(files, {onReadTexts = () => {}} = {}) {
+  const sources = new Map(Object.entries(files));
+  return {
+    listFiles({prefix = ""} = {}) {
+      return [...sources.keys()]
+        .filter((relativePath) => relativePath.startsWith(prefix))
+        .sort();
+    },
+    readTexts(relativePaths) {
+      const paths = [...relativePaths];
+      onReadTexts(paths);
+      return new Map(paths.map((relativePath) => [
+        relativePath,
+        sources.get(relativePath) ?? null,
+      ]));
+    },
+  };
 }

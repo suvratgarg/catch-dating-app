@@ -4,23 +4,88 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {scanDependencyDirection} from "../architecture/check_dependency_direction.mjs";
 import {fromRepo} from "../lib/repo_paths.mjs";
+import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
 import {buildInventory, renderInventory} from "../test_inventory.mjs";
 
 const isCliEntrypoint =
   process.argv[1] != null &&
   path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 
-const checks = [];
-
 if (isCliEntrypoint) runCli();
 
 function runCli() {
   const args = parseArgs(process.argv.slice(2));
+  const snapshot = createRepositorySnapshot({root: fromRepo()});
+  const result = evaluateAgentReadiness({snapshot});
+
+  if (args.recordMetric) {
+    appendReadinessMetric(result, snapshot);
+  }
+
+  if (args.json) {
+    console.log(JSON.stringify(result, null, 2));
+  } else {
+    console.log(
+      `Agent readiness score: ${result.score}/100 (${result.passed}/${result.total} checks passed)`,
+    );
+    for (const failure of result.failures) {
+      console.error(`- ${failure}`);
+    }
+    for (const warning of result.warnings) {
+      console.error(`! ${warning}`);
+    }
+  }
+
+  if (result.failed > 0) {
+    process.exitCode = 1;
+  }
+}
+
+export function evaluateAgentReadiness({snapshot}) {
+  if (
+    snapshot == null ||
+    typeof snapshot.exists !== "function" ||
+    typeof snapshot.listFiles !== "function" ||
+    typeof snapshot.listPaths !== "function" ||
+    typeof snapshot.readTexts !== "function"
+  ) {
+    throw new Error("Agent readiness requires a repository snapshot.");
+  }
+
+  const metricsPath = "docs/audit_registry/agent_metrics.jsonl";
+  const sourcePaths = [
+    "AGENTS.md",
+    "docs/README.md",
+    "docs/agent_operating_model.md",
+    "docs/agent_regression_ledger.json",
+    "docs/agent_skills/skills_manifest.json",
+    "docs/audit_registry/agent_metrics.jsonl",
+    "docs/audit_registry/doc_versions.json",
+    "docs/audit_registry/test_inventory.json",
+    "tool/architecture/dependency_direction_baseline.json",
+    "tool/tools_manifest.json",
+  ];
+  const sources = snapshot.readTexts(sourcePaths);
+  const sourceFor = (relativePath) => sources.get(relativePath) ?? null;
+  const readJson = (relativePath) => parseJsonSource(sourceFor(relativePath));
+  const checks = [];
+  const check = (ok, message) => {
+    checks.push({ok: Boolean(ok), message});
+  };
+  const checkPath = (relativePath, message) => {
+    check(
+      Boolean(relativePath) && repositoryPathExists(snapshot, relativePath),
+      message,
+    );
+  };
+  const checkContains = (relativePath, needle, message) => {
+    check(sourceFor(relativePath)?.includes(needle) === true, message);
+  };
+
   const docVersions = readJson("docs/audit_registry/doc_versions.json");
   const toolsManifest = readJson("tool/tools_manifest.json");
   const regressionLedger = readJson("docs/agent_regression_ledger.json");
   const skillsManifest = readJson("docs/agent_skills/skills_manifest.json");
-  const metricsPath = "docs/audit_registry/agent_metrics.jsonl";
 
   checkPath("AGENTS.md", "Agent entrypoint exists.");
   checkPath("docs/agent_operating_model.md", "Agent operating model exists.");
@@ -95,8 +160,8 @@ function runCli() {
   );
   check(
     testInventoryMatches(
-      readText("docs/audit_registry/test_inventory.json"),
-      buildInventory(),
+      sourceFor("docs/audit_registry/test_inventory.json") ?? "",
+      buildInventory(snapshot.listFiles()),
     ),
     "Canonical test inventory matches tracked and untracked test files.",
   );
@@ -128,21 +193,29 @@ function runCli() {
     "Tool manifest includes agent:record-delegation.",
   );
 
-  const dependencyDirectionBaseline = readDependencyDirectionBaselineSnapshot();
-  const metricsEntries = readMetricEntries(metricsPath);
+  const dependencyDirectionBaseline = readDependencyDirectionBaselineSnapshot({
+    baseline: readJson("tool/architecture/dependency_direction_baseline.json"),
+    snapshot,
+  });
+  const metricsSource = sourceFor(metricsPath);
+  const metricsEntries = readMetricEntries(metricsSource);
   const warnings = dependencyBaselineGrowthWarnings(
     metricsEntries,
     dependencyDirectionBaseline,
   );
 
-  validateRegressionLedger(regressionLedger);
-  validateSkills(skillsManifest, toolIds);
-  validateMetrics(metricsPath);
+  const checker = {check, checkPath};
+  validateRegressionLedger(regressionLedger, checker);
+  validateSkills(skillsManifest, toolIds, checker);
+  validateMetrics(metricsSource, metricsPath, checker);
 
   const passed = checks.filter((entry) => entry.ok).length;
   const failed = checks.length - passed;
-  const score =
-    checks.length === 0 ? 0 : Math.round((passed / checks.length) * 100);
+  const score = checks.length === 0
+    ? 0
+    : failed === 0
+      ? 100
+      : Math.min(99, Math.round((passed / checks.length) * 100));
 
   const result = {
     score,
@@ -156,30 +229,10 @@ function runCli() {
     },
   };
 
-  if (args.recordMetric) {
-    appendMetric(result);
-  }
-
-  if (args.json) {
-    console.log(JSON.stringify(result, null, 2));
-  } else {
-    console.log(
-      `Agent readiness score: ${score}/100 (${passed}/${checks.length} checks passed)`,
-    );
-    for (const failure of result.failures) {
-      console.error(`- ${failure}`);
-    }
-    for (const warning of result.warnings) {
-      console.error(`! ${warning}`);
-    }
-  }
-
-  if (failed > 0) {
-    process.exitCode = 1;
-  }
+  return result;
 }
 
-function validateRegressionLedger(ledger) {
+function validateRegressionLedger(ledger, {check, checkPath}) {
   check(Boolean(ledger && Array.isArray(ledger.entries)), "Regression ledger has an entries array.");
   const seenIds = new Set();
   for (const entry of ledger?.entries ?? []) {
@@ -204,7 +257,7 @@ function validateRegressionLedger(ledger) {
   }
 }
 
-function validateSkills(manifest, toolIds) {
+function validateSkills(manifest, toolIds, {check, checkPath}) {
   check(Boolean(manifest && Array.isArray(manifest.skills)), "Skill manifest has a skills array.");
   const seenIds = new Set();
   for (const skill of manifest?.skills ?? []) {
@@ -232,24 +285,23 @@ function validateSkills(manifest, toolIds) {
   }
 }
 
-function validateMetrics(relativePath) {
-  const fullPath = fromRepo(relativePath);
-  if (!fs.existsSync(fullPath)) return;
-  const lines = fs.readFileSync(fullPath, "utf8").split(/\r?\n/).filter(Boolean);
+function validateMetrics(source, relativePath, {check}) {
+  if (source == null) return;
+  const lines = source.split(/\r?\n/).filter(Boolean);
   for (const [index, line] of lines.entries()) {
     try {
       const entry = JSON.parse(line);
       check(true, `${relativePath}:${index + 1} is valid JSON.`);
-      validateMetricEntry(entry, `${relativePath}:${index + 1}`);
+      validateMetricEntry(entry, `${relativePath}:${index + 1}`, {check});
     } catch {
       check(false, `${relativePath}:${index + 1} is valid JSON.`);
     }
   }
 }
 
-function validateMetricEntry(entry, label) {
+function validateMetricEntry(entry, label, {check}) {
   if (entry?.event === "agent_readiness_check") {
-    validateReadinessMetric(entry, label);
+    validateReadinessMetric(entry, label, {check});
     return;
   }
   if (entry?.event !== "agent_delegation_outcome") return;
@@ -263,7 +315,7 @@ function validateMetricEntry(entry, label) {
   check(Number.isFinite(entry.parent_edits_required), `${label} delegation metric parent_edits_required is numeric.`);
 }
 
-function validateReadinessMetric(entry, label) {
+function validateReadinessMetric(entry, label, {check}) {
   const snapshot = extractDependencyBaselineSnapshot(entry);
   if (snapshot == null) return;
   check(
@@ -285,10 +337,9 @@ function validateReadinessMetric(entry, label) {
   );
 }
 
-function readDependencyDirectionBaselineSnapshot() {
-  const baseline = readJson("tool/architecture/dependency_direction_baseline.json");
+function readDependencyDirectionBaselineSnapshot({baseline, snapshot}) {
   const result = scanDependencyDirection({
-    root: fromRepo(),
+    snapshot,
     baseline: baseline ?? {allowedFindings: []},
   });
   return {
@@ -299,11 +350,10 @@ function readDependencyDirectionBaselineSnapshot() {
   };
 }
 
-function readMetricEntries(relativePath) {
-  const fullPath = fromRepo(relativePath);
-  if (!fs.existsSync(fullPath)) return [];
+function readMetricEntries(source) {
+  if (source == null) return [];
   const entries = [];
-  for (const line of fs.readFileSync(fullPath, "utf8").split(/\r?\n/)) {
+  for (const line of source.split(/\r?\n/)) {
     if (!line.trim()) continue;
     try {
       entries.push(JSON.parse(line));
@@ -402,7 +452,7 @@ export function extractCommandPaths(command) {
     });
 }
 
-function appendMetric(result) {
+export function appendReadinessMetric(result, snapshot) {
   const entry = {
     timestamp: new Date().toISOString(),
     event: "agent_readiness_check",
@@ -412,36 +462,40 @@ function appendMetric(result) {
     checks_total: result.total,
     architecture_baselines: result.architecture_baselines,
   };
-  fs.appendFileSync(fromRepo("docs/audit_registry/agent_metrics.jsonl"), `${JSON.stringify(entry)}\n`);
-}
-
-function checkPath(relativePath, message) {
-  check(Boolean(relativePath) && fs.existsSync(fromRepo(relativePath)), message);
-}
-
-function checkContains(relativePath, needle, message) {
-  const fullPath = fromRepo(relativePath);
-  check(fs.existsSync(fullPath) && fs.readFileSync(fullPath, "utf8").includes(needle), message);
-}
-
-function check(ok, message) {
-  checks.push({ok: Boolean(ok), message});
-}
-
-function readJson(relativePath) {
+  const metricsPath = "docs/audit_registry/agent_metrics.jsonl";
+  const fullPath = path.join(snapshot.root, metricsPath);
+  let stat = null;
   try {
-    return JSON.parse(fs.readFileSync(fromRepo(relativePath), "utf8"));
+    stat = fs.lstatSync(fullPath);
+  } catch (error) {
+    if (error?.code !== "ENOENT" && error?.code !== "ENOTDIR") throw error;
+  }
+  if (snapshot.exists(metricsPath) && stat == null) {
+    throw new Error(
+      `Refusing to write sparse-omitted repository path: ${metricsPath}`,
+    );
+  }
+  if (stat == null || !stat.isFile()) {
+    throw new Error(
+      `Readiness metric target must be a materialized regular file: ${metricsPath}`,
+    );
+  }
+  fs.appendFileSync(fullPath, `${JSON.stringify(entry)}\n`);
+}
+
+function parseJsonSource(source) {
+  if (source == null) return null;
+  try {
+    return JSON.parse(source);
   } catch {
     return null;
   }
 }
 
-function readText(relativePath) {
-  try {
-    return fs.readFileSync(fromRepo(relativePath), "utf8");
-  } catch {
-    return "";
-  }
+function repositoryPathExists(snapshot, relativePath) {
+  const normalized = relativePath.replace(/\/$/u, "");
+  if (snapshot.exists(normalized)) return true;
+  return snapshot.listPaths({prefix: normalized}).length > 0;
 }
 
 function parseArgs(argv) {
