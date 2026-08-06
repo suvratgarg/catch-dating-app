@@ -12,6 +12,21 @@ const workflow = (name) => repositorySnapshot.readText(
   {required: true},
 );
 const retiredPlanner = ["plan", "ci.mjs"].join("_");
+const toolPreflightCheckoutClosure = [
+  "/tool/",
+  "/.github/actions/load-toolchain/action.yml",
+  "/functions/package.json",
+  "/pubspec.yaml",
+  "/.github/workflows/app-build-matrix.yml",
+  "/.github/workflows/mobile-internal-release.yml",
+  "/.github/workflows/visual-integration-ci.yml",
+];
+const affectedIndexCheckoutClosure = [
+  "/tool/",
+  "/.github/actions/load-toolchain/action.yml",
+  "/docs/audit_registry/doc_versions.json",
+  "/docs/audit_registry/test_inventory.json",
+];
 
 function namedStep(source, name) {
   const marker = `      - name: ${name}`;
@@ -122,6 +137,61 @@ test("tools fanout selects exactly one affected or full execution path", () => {
   ]) {
     assert.match(tools, new RegExp(`name: ${bucket}`));
   }
+});
+
+test("tools materialize only the closure required by each repository view", () => {
+  const tools = workflow("tools-ci.yml");
+  assert.doesNotMatch(tools, /\n\s+filter:/u);
+  assert.doesNotMatch(tools, /^\s+- name: Validate tool manifest\s*$/mu);
+
+  const preflight = namedStep(tools, "Checkout tool preflight closure");
+  assert.deepEqual(literalSparsePaths(preflight), toolPreflightCheckoutClosure);
+  assert.match(preflight, /timeout-minutes: 3/u);
+  assert.match(preflight, /fetch-depth: 0/u);
+  assert.match(preflight, /sparse-checkout-cone-mode: false/u);
+
+  const affectedJob = tools.match(
+    /  affected-tools:\n(?<body>[\s\S]*?)\n  tool-buckets:/u,
+  )?.groups?.body;
+  assert.ok(affectedJob, "affected-tools job must remain present");
+
+  const indexCheckout = namedStep(
+    affectedJob,
+    "Checkout affected index closure",
+  );
+  assert.match(
+    indexCheckout,
+    /if: \$\{\{ needs\.preflight\.outputs\.repository_view == 'index' \}\}/u,
+  );
+  assert.deepEqual(
+    literalSparsePaths(indexCheckout),
+    affectedIndexCheckoutClosure,
+  );
+  assert.match(indexCheckout, /timeout-minutes: 3/u);
+  assert.match(indexCheckout, /fetch-depth: 0/u);
+  assert.match(indexCheckout, /sparse-checkout-cone-mode: false/u);
+
+  const fullCheckout = namedStep(
+    affectedJob,
+    "Checkout full affected repository",
+  );
+  assert.match(
+    fullCheckout,
+    /if: \$\{\{ needs\.preflight\.outputs\.repository_view != 'index' \}\}/u,
+  );
+  assert.match(fullCheckout, /timeout-minutes: 5/u);
+  assert.match(fullCheckout, /fetch-depth: 0/u);
+  assert.doesNotMatch(fullCheckout, /sparse-checkout/u);
+
+  const fullBuckets = tools.match(
+    /  tool-buckets:\n(?<body>[\s\S]*?)\n  tools:/u,
+  )?.groups?.body;
+  assert.ok(fullBuckets, "tool-buckets job must remain present");
+  assert.match(
+    fullBuckets,
+    /- uses: actions\/checkout@v6\s+with:\s+fetch-depth: 0/u,
+  );
+  assert.doesNotMatch(fullBuckets, /sparse-checkout/u);
 });
 
 test("affected tools install only planner-declared setup requirements", () => {
