@@ -269,6 +269,10 @@ class CrossPathsProfilePreviewSheet extends ConsumerWidget {
           );
     final invitation = invitationAsync.asData?.value;
     final mutation = ref.watch(crossPathsInvitationControllerProvider);
+    final invitationController = ref.read(
+      crossPathsInvitationControllerProvider.notifier,
+    );
+    final analytics = ref.read(appAnalyticsProvider);
     return FractionallySizedBox(
       heightFactor: 0.94,
       child: CatchSurface(
@@ -326,7 +330,10 @@ class CrossPathsProfilePreviewSheet extends ConsumerWidget {
                         CrossPathsInvitationStatus.pending) ...[
                       Text(
                         context.l10n.crossPathsInvitationStatusPending,
-                        style: CatchTextStyles.bodyS(context, color: t.ink2),
+                        style: CatchTextStyles.supporting(
+                          context,
+                          color: t.ink2,
+                        ),
                         textAlign: TextAlign.center,
                       ),
                       gapH8,
@@ -350,7 +357,8 @@ class CrossPathsProfilePreviewSheet extends ConsumerWidget {
                           : CatchButtonVariant.primary,
                       onPressed: _invitationAction(
                         context,
-                        ref,
+                        invitationController,
+                        analytics,
                         invitationAsync,
                         invitation,
                       ),
@@ -391,17 +399,19 @@ class CrossPathsProfilePreviewSheet extends ConsumerWidget {
 
   VoidCallback? _invitationAction(
     BuildContext context,
-    WidgetRef ref,
+    CrossPathsInvitationController invitationController,
+    AppAnalytics analytics,
     AsyncValue<CrossPathsInvitation?> invitationAsync,
     CrossPathsInvitation? invitation,
   ) {
     if (!suggestion.viewerIsBooked) return onEventSelected;
     if (!invitationAsync.hasValue) return null;
     return switch (invitation?.status) {
-      null => () => _sendInvitation(context, ref),
+      null => () => _sendInvitation(context, invitationController, analytics),
       CrossPathsInvitationStatus.pending => () => _cancelInvitation(
         context,
-        ref,
+        invitationController,
+        analytics,
         invitation!.id,
       ),
       CrossPathsInvitationStatus.accepted =>
@@ -412,7 +422,11 @@ class CrossPathsProfilePreviewSheet extends ConsumerWidget {
     };
   }
 
-  Future<void> _sendInvitation(BuildContext context, WidgetRef ref) async {
+  Future<void> _sendInvitation(
+    BuildContext context,
+    CrossPathsInvitationController invitationController,
+    AppAnalytics analytics,
+  ) async {
     final firstName = crossPathsFirstName(suggestion.profile.name);
     final confirmed = await showCatchConfirmDialog(
       context: context,
@@ -424,22 +438,18 @@ class CrossPathsProfilePreviewSheet extends ConsumerWidget {
     );
     if (confirmed != true || !context.mounted) return;
     try {
-      await ref
-          .read(crossPathsInvitationControllerProvider.notifier)
-          .send(
-            eventId: suggestion.event.eventId,
-            recipientUid: suggestion.profile.uid,
-            suggestionToken: suggestion.suggestionToken,
-          );
-      ref
-          .read(appAnalyticsProvider)
-          .logEvent(
-            AnalyticsEvents.crossPathsInvitationSent,
-            parameters: {
-              AnalyticsParameters.eventId: suggestion.event.eventId,
-              AnalyticsParameters.surface: 'explore_profile',
-            },
-          );
+      await invitationController.send(
+        eventId: suggestion.event.eventId,
+        recipientUid: suggestion.profile.uid,
+        suggestionToken: suggestion.suggestionToken,
+      );
+      analytics.logEvent(
+        AnalyticsEvents.crossPathsInvitationSent,
+        parameters: {
+          AnalyticsParameters.eventId: suggestion.event.eventId,
+          AnalyticsParameters.surface: 'explore_profile',
+        },
+      );
       if (context.mounted) {
         showCatchSnackBar(
           context,
@@ -459,22 +469,19 @@ class CrossPathsProfilePreviewSheet extends ConsumerWidget {
 
   Future<void> _cancelInvitation(
     BuildContext context,
-    WidgetRef ref,
+    CrossPathsInvitationController invitationController,
+    AppAnalytics analytics,
     String invitationId,
   ) async {
     try {
-      await ref
-          .read(crossPathsInvitationControllerProvider.notifier)
-          .cancel(invitationId);
-      ref
-          .read(appAnalyticsProvider)
-          .logEvent(
-            AnalyticsEvents.crossPathsInvitationCancelled,
-            parameters: {
-              AnalyticsParameters.eventId: suggestion.event.eventId,
-              AnalyticsParameters.surface: 'explore_profile',
-            },
-          );
+      await invitationController.cancel(invitationId);
+      analytics.logEvent(
+        AnalyticsEvents.crossPathsInvitationCancelled,
+        parameters: {
+          AnalyticsParameters.eventId: suggestion.event.eventId,
+          AnalyticsParameters.surface: 'explore_profile',
+        },
+      );
     } catch (error) {
       if (context.mounted) {
         showCatchErrorSnackBar(

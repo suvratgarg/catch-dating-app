@@ -2110,10 +2110,10 @@
         },
         {
           "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-          "role": "canonical person-polaroid composition with sanitized profile preview and separate first-party event action",
-          "providerFree": true,
+          "role": "canonical person-polaroid composition with a sanitized profile preview; its consumer boundary resolves participant-scoped invitation state and delegates mutations to the Cross Paths controller",
+          "providerFree": false,
           "status": "aligned",
-          "lastReviewedPass": "2026-08-05-cross-paths-explore"
+          "lastReviewedPass": "2026-08-06-cross-paths-invitations"
         },
         {
           "path": "lib/events/shared/event_detail_route_transition.dart and lib/events/presentation/event_detail_screen.dart",

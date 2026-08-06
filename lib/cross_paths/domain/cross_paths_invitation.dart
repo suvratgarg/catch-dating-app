@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 enum CrossPathsInvitationStatus {
   pending,
   accepted,
@@ -41,25 +39,22 @@ class CrossPathsInvitation {
     required this.conversationId,
   });
 
-  factory CrossPathsInvitation.fromFirestore(
-    String id,
-    Map<String, dynamic> json,
-  ) {
+  factory CrossPathsInvitation.fromMap(String id, Map<String, dynamic> json) {
     DateTime timestamp(String key) {
       final value = json[key];
-      if (value is! Timestamp) {
-        throw FormatException('$key must be a Firestore timestamp.');
+      if (value is! DateTime) {
+        throw FormatException('$key must be a date-time.');
       }
-      return value.toDate();
+      return value;
     }
 
     DateTime? nullableTimestamp(String key) {
       final value = json[key];
       if (value == null) return null;
-      if (value is! Timestamp) {
-        throw FormatException('$key must be a Firestore timestamp or null.');
+      if (value is! DateTime) {
+        throw FormatException('$key must be a date-time or null.');
       }
-      return value.toDate();
+      return value;
     }
 
     final reasonWire = json['invalidationReason'] as String?;

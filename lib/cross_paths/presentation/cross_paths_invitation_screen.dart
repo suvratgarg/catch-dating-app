@@ -132,6 +132,10 @@ class _InvitationDetailBody extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
     final mutation = ref.watch(crossPathsInvitationControllerProvider);
+    final invitationController = ref.read(
+      crossPathsInvitationControllerProvider.notifier,
+    );
+    final analytics = ref.read(appAnalyticsProvider);
     final photo = profile.primaryPhotoThumbnailUrl;
     return ListView(
       padding: CatchInsets.pageBody,
@@ -162,13 +166,18 @@ class _InvitationDetailBody extends ConsumerWidget {
                 '${EventFormatters.shortDate(event.startTime)} · '
                 '${EventFormatters.time(event.startTime)} · '
                 '${event.meetingPoint}',
-                style: CatchTextStyles.bodyM(context, color: t.ink2),
+                style: CatchTextStyles.supporting(context, color: t.ink2),
               ),
             ],
           ),
         ),
         gapH16,
-        ..._actions(context, ref, mutation.isLoading),
+        ..._actions(
+          context,
+          invitationController,
+          analytics,
+          mutation.isLoading,
+        ),
       ],
     );
   }
@@ -183,7 +192,12 @@ class _InvitationDetailBody extends ConsumerWidget {
     _ => context.l10n.crossPathsInvitationStatusClosed,
   };
 
-  List<Widget> _actions(BuildContext context, WidgetRef ref, bool loading) {
+  List<Widget> _actions(
+    BuildContext context,
+    CrossPathsInvitationController invitationController,
+    AppAnalytics analytics,
+    bool loading,
+  ) {
     if (invitation.status == CrossPathsInvitationStatus.pending &&
         isRecipient) {
       return [
@@ -191,7 +205,8 @@ class _InvitationDetailBody extends ConsumerWidget {
           label: context.l10n.crossPathsInvitationScreenActionAccept,
           fullWidth: true,
           isLoading: loading,
-          onPressed: () => _respond(context, ref, accept: true),
+          onPressed: () =>
+              _respond(context, invitationController, analytics, accept: true),
         ),
         gapH10,
         CatchButton(
@@ -200,7 +215,12 @@ class _InvitationDetailBody extends ConsumerWidget {
           variant: CatchButtonVariant.secondary,
           onPressed: loading
               ? null
-              : () => _respond(context, ref, accept: false),
+              : () => _respond(
+                  context,
+                  invitationController,
+                  analytics,
+                  accept: false,
+                ),
         ),
       ];
     }
@@ -211,7 +231,7 @@ class _InvitationDetailBody extends ConsumerWidget {
           fullWidth: true,
           isLoading: loading,
           variant: CatchButtonVariant.secondary,
-          onPressed: () => _cancel(context, ref),
+          onPressed: () => _cancel(context, invitationController, analytics),
         ),
       ];
     }
@@ -233,7 +253,7 @@ class _InvitationDetailBody extends ConsumerWidget {
           fullWidth: true,
           variant: CatchButtonVariant.secondary,
           isLoading: loading,
-          onPressed: () => _cancel(context, ref),
+          onPressed: () => _cancel(context, invitationController, analytics),
         ),
       ];
     }
@@ -242,21 +262,21 @@ class _InvitationDetailBody extends ConsumerWidget {
 
   Future<void> _respond(
     BuildContext context,
-    WidgetRef ref, {
+    CrossPathsInvitationController invitationController,
+    AppAnalytics analytics, {
     required bool accept,
   }) async {
     try {
-      final receipt = await ref
-          .read(crossPathsInvitationControllerProvider.notifier)
-          .respond(invitationId: invitation.id, accept: accept);
-      ref
-          .read(appAnalyticsProvider)
-          .logEvent(
-            accept
-                ? AnalyticsEvents.crossPathsInvitationAccepted
-                : AnalyticsEvents.crossPathsInvitationDeclined,
-            parameters: {AnalyticsParameters.eventId: invitation.eventId},
-          );
+      final receipt = await invitationController.respond(
+        invitationId: invitation.id,
+        accept: accept,
+      );
+      analytics.logEvent(
+        accept
+            ? AnalyticsEvents.crossPathsInvitationAccepted
+            : AnalyticsEvents.crossPathsInvitationDeclined,
+        parameters: {AnalyticsParameters.eventId: invitation.eventId},
+      );
       if (context.mounted && accept && receipt.conversationId != null) {
         context.goNamed(
           Routes.chatScreen.name,
@@ -274,17 +294,17 @@ class _InvitationDetailBody extends ConsumerWidget {
     }
   }
 
-  Future<void> _cancel(BuildContext context, WidgetRef ref) async {
+  Future<void> _cancel(
+    BuildContext context,
+    CrossPathsInvitationController invitationController,
+    AppAnalytics analytics,
+  ) async {
     try {
-      await ref
-          .read(crossPathsInvitationControllerProvider.notifier)
-          .cancel(invitation.id);
-      ref
-          .read(appAnalyticsProvider)
-          .logEvent(
-            AnalyticsEvents.crossPathsInvitationCancelled,
-            parameters: {AnalyticsParameters.eventId: invitation.eventId},
-          );
+      await invitationController.cancel(invitation.id);
+      analytics.logEvent(
+        AnalyticsEvents.crossPathsInvitationCancelled,
+        parameters: {AnalyticsParameters.eventId: invitation.eventId},
+      );
     } catch (error) {
       if (context.mounted) {
         showCatchErrorSnackBar(

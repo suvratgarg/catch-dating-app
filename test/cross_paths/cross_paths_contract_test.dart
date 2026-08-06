@@ -93,8 +93,8 @@ void main() {
   });
 
   test('invitation documents and callable receipts decode typed states', () {
-    final now = Timestamp.fromDate(DateTime.utc(2026, 8, 5));
-    final invitation = CrossPathsInvitation.fromFirestore('invitation-1', {
+    final now = DateTime.utc(2026, 8, 5);
+    final invitation = CrossPathsInvitation.fromMap('invitation-1', {
       'eventId': 'event-1',
       'senderUid': 'runner-1',
       'recipientUid': 'runner-2',

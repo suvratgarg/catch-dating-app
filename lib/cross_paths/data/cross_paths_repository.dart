@@ -35,6 +35,38 @@ CrossPathsEventConsent crossPathsEventConsentFromFirestore(
   );
 }
 
+CrossPathsInvitation crossPathsInvitationFromFirestore(
+  String id,
+  Map<String, dynamic> json,
+) {
+  DateTime timestamp(String key) {
+    final value = json[key];
+    if (value is! Timestamp) {
+      throw FormatException('$key must be a Firestore timestamp.');
+    }
+    return value.toDate();
+  }
+
+  DateTime? nullableTimestamp(String key) {
+    final value = json[key];
+    if (value == null) return null;
+    if (value is! Timestamp) {
+      throw FormatException('$key must be a Firestore timestamp or null.');
+    }
+    return value.toDate();
+  }
+
+  return CrossPathsInvitation.fromMap(id, {
+    ...json,
+    'createdAt': timestamp('createdAt'),
+    'updatedAt': timestamp('updatedAt'),
+    'expiresAt': timestamp('expiresAt'),
+    'respondedAt': nullableTimestamp('respondedAt'),
+    'cancelledAt': nullableTimestamp('cancelledAt'),
+    'invalidatedAt': nullableTimestamp('invalidatedAt'),
+  });
+}
+
 class CrossPathsRepository {
   const CrossPathsRepository(this._db, this._functions);
 
@@ -117,7 +149,7 @@ class CrossPathsRepository {
             .snapshots()
             .map(
               (snapshot) => snapshot.exists
-                  ? CrossPathsInvitation.fromFirestore(
+                  ? crossPathsInvitationFromFirestore(
                       snapshot.id,
                       snapshot.data()!,
                     )
@@ -141,7 +173,7 @@ class CrossPathsRepository {
               (snapshot) =>
                   snapshot.docs
                       .map(
-                        (doc) => CrossPathsInvitation.fromFirestore(
+                        (doc) => crossPathsInvitationFromFirestore(
                           doc.id,
                           doc.data(),
                         ),
@@ -171,7 +203,7 @@ class CrossPathsRepository {
               .toList(growable: false);
           return matching.isEmpty
               ? null
-              : CrossPathsInvitation.fromFirestore(
+              : crossPathsInvitationFromFirestore(
                   matching.first.id,
                   matching.first.data(),
                 );

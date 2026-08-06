@@ -70,7 +70,8 @@ Future<void> _pumpInvitation(
       ),
     ),
   );
-  await tester.pumpAndSettle();
+  await tester.pump();
+  await tester.pump();
 }
 
 _InvitationFixture _fixture({
