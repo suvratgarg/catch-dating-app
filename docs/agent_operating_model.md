@@ -1,7 +1,7 @@
 ---
 doc_id: agent_operating_model
-version: 1.5.0
-updated: 2026-07-25
+version: 1.6.0
+updated: 2026-08-06
 owner: agent_operating_model
 status: active
 ---
@@ -137,13 +137,16 @@ cannot prove that one side's behavior was incorporated.
 Governed document metadata has two deliberately separate clocks:
 
 - `docs/audit_registry/doc_versions.json` stores authored semantic versions,
-  ownership, status, and read policy. Change a semantic version only when the
-  document's contract, schema, protocol, or reader workflow changes. Ordinary
-  prose corrections do not require a version bump.
-- `tool/docs/build_doc_state.mjs` derives content revision, last integrated
-  commit, and integration timestamp from Git. CI publishes that state as an
-  immutable artifact for the integrated SHA; it never commits generated
-  version/date churn back to an author branch.
+  ownership, and read policy. For governed non-Markdown artifacts it also owns
+  lifecycle status. Governed Markdown owns lifecycle status exclusively in one
+  valid frontmatter field; missing, malformed, or duplicate status fails closed
+  for deletion. Change a semantic version only when the document's contract,
+  schema, protocol, or reader workflow changes. Ordinary prose corrections do
+  not require a version bump.
+- `tool/docs/build_doc_state.mjs` derives Markdown lifecycle status, content
+  revision, last integrated commit, and integration timestamp from source and
+  Git. CI publishes that state as an immutable artifact for the integrated SHA;
+  it never commits generated version/date churn back to an author branch.
 
 Authored versions may stay unchanged or move monotonically:
 
@@ -182,30 +185,49 @@ single file set and later reviews the result.
 
 ### Git Protocol
 
-Use Git worktrees as the isolation boundary. Create durable local worktrees
-under the repository's ignored `.claude/worktrees/` directory; never use
-`/tmp` or `/private/tmp`, because system cleanup can leave stale Git
-registrations or destroy active work.
+Use Git worktrees as the isolation boundary, but do not create them with ad hoc
+`git worktree add` commands. The Harness lifecycle is the canonical broker:
 
-1. Parent records the current branch and HEAD before delegation.
-2. Parent creates or asks for a disposable subagent branch from that HEAD.
-3. Each subagent receives a task id, owned paths, excluded paths, required owner
-   docs, allowed checks, and the structured result format.
-4. Before editing, the subagent must prove isolation by reporting
-   `pwd`, `git branch --show-current`, `git rev-parse HEAD`, and
-   `git status --short --branch`. The branch must not be the parent branch, the
-   HEAD must match the assigned base SHA, and the worktree must not be the
-   parent's live worktree. If any preflight value is wrong, the subagent stops
-   without editing and the parent recreates the delegation locally or with a
-   real disposable worktree.
-5. Subagent commits its proposal on its branch and reports the commit SHA,
+```sh
+node tool/harness.mjs task start \
+  --task-id <task-id> \
+  --base-sha <40-character-parent-sha> \
+  --stack-parent <parent-ref> \
+  --paths <owned-path[,owned-path...]> \
+  --budget-mib 256
+node tool/harness.mjs task doctor --worktree <task-worktree>
+node tool/harness.mjs task finish --worktree <task-worktree>
+node tool/harness.mjs task reap --dry-run
+```
+
+`task start` validates the exact parent SHA and explicit sparse paths, checks a
+fixed disk reserve plus the task budget, rejects local and remote branch
+collisions, creates the worktree under ignored `.claude/worktrees/`, records
+task metadata in the worktree Git directory, Git-locks the active worktree, and
+pushes the new branch to `origin`. It never uses `/tmp` or `/private/tmp`.
+
+1. Parent records its current branch and 40-character HEAD, chooses disjoint
+   owned paths, then runs `task start` from that exact SHA.
+2. Each subagent receives the task id, generated worktree path and branch,
+   owned paths, excluded paths, required owner docs, allowed checks, and the
+   structured result format.
+3. Before editing, the subagent runs `task doctor` and reports `pwd`,
+   `git branch --show-current`, `git rev-parse HEAD`, and
+   `git status --short --branch`. Any doctor blocker or mismatch stops the
+   task without editing.
+4. The subagent commits and pushes its proposal, then reports the commit SHA,
    changed files, checks run, blockers, and quality risks.
-6. Parent reviews with `git show`, `git diff`, or `cherry-pick -n`, then imports
+5. Parent reviews with `git show`, `git diff`, or `cherry-pick -n`, then imports
    only the accepted changes into the parent branch.
-7. Parent runs final checks, updates canonical docs/registries, stamps the audit
+6. Parent runs final checks, updates canonical docs/registries, stamps the audit
    pass, commits the integrated loop, and records the delegation outcome.
-8. Disposable worktrees/branches may be removed after the parent has accepted or
-   rejected the proposal.
+7. After the task branch is clean and its exact head exists at `origin`, run
+   `task finish`. Finish records terminal metadata and unlocks the worktree; it
+   never removes a worktree or deletes a branch.
+8. `task reap --dry-run` refreshes remote refs and emits a digested inventory.
+   It is report-only. Removal requires a separate, exact owner acknowledgment;
+   dirty, active, remotely unpreserved, legacy-unknown, or inspection-failed
+   worktrees remain blocked.
 
 If a subagent is discovered on the parent worktree or on a branch that includes
 unreviewed parent-only commits, interrupt it immediately. Accept only reviewed
@@ -213,9 +235,10 @@ commit diffs by cherry-picking them onto the intended parent branch, record the
 isolation failure in delegation metrics, and do not delegate more patch work
 until the next worker can pass the preflight.
 
-If the parent branch advances while a subagent is still working, either rebase
-the subagent branch onto the new parent HEAD or discard/recreate the worktree.
-Long-lived subagent branches are not part of the operating model.
+If the parent branch advances while a subagent is still working, finish the
+existing task after preserving its proposal and create a new task from the new
+exact parent SHA. Long-lived or silently rebased subagent branches are not part
+of the operating model.
 
 ### Ownership Rules
 

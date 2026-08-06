@@ -9,6 +9,7 @@ import {
   buildDocVersionReport,
   compareDocVersionCatalogs,
   compareSemanticVersions,
+  parseDocumentLifecycleStatus,
   parseSemanticVersion,
   runSelfTest,
 } from "./check_doc_version_monotonic.mjs";
@@ -67,7 +68,7 @@ test("catalog comparator allows only proven retirement-ready deletions", () => {
   const allowed = compareDocVersionCatalogs({
     baseCatalog: {
       retired: {
-        path: "docs/retired.md",
+        path: "governance/retired.json",
         version: "1.0.0",
         status: "retirement_ready",
       },
@@ -79,35 +80,97 @@ test("catalog comparator allows only proven retirement-ready deletions", () => {
   assert.deepEqual(allowed.retirements, [
     {
       id: "retired",
-      path: "docs/retired.md",
+      path: "governance/retired.json",
       baseVersion: "1.0.0",
       baseStatus: "retirement_ready",
+      statusAuthority: "catalog",
     },
   ]);
 
   const catalogOnly = compareDocVersionCatalogs({
     baseCatalog: {
       retired: {
-        path: "docs/retired.md",
+        path: "governance/retired.json",
         version: "1.0.0",
         status: "retirement_ready",
       },
     },
     currentCatalog: {},
-    currentDocumentPaths: new Set(["docs/retired.md"]),
+    currentDocumentPaths: new Set(["governance/retired.json"]),
   });
   assert.equal(catalogOnly.pass, false);
   assert.match(catalogOnly.findings[0].reason, /document remains/u);
 
   const activeDeletion = compareDocVersionCatalogs({
     baseCatalog: {
-      active: {path: "docs/active.md", version: "1.0.0", status: "active"},
+      active: {path: "governance/active.json", version: "1.0.0", status: "active"},
     },
     currentCatalog: {},
     currentDocumentPaths: new Set(),
   });
   assert.equal(activeDeletion.pass, false);
   assert.match(activeDeletion.findings[0].reason, /without retirement_ready/u);
+});
+
+test("source frontmatter is the canonical Markdown retirement authority", () => {
+  assert.equal(
+    parseDocumentLifecycleStatus(
+      "---\ndoc_id: retired\nstatus: retirement_ready\n---\n\n# Retired\n",
+    ),
+    "retirement_ready",
+  );
+  assert.equal(parseDocumentLifecycleStatus("# No frontmatter\n"), null);
+  assert.equal(
+    parseDocumentLifecycleStatus("---\r\nstatus: \"retirement_ready\" # reviewed\r\n---\r\n"),
+    "retirement_ready",
+  );
+  assert.equal(
+    parseDocumentLifecycleStatus("---\nstatus: retirement_ready\n# missing close\n"),
+    null,
+  );
+  assert.equal(
+    parseDocumentLifecycleStatus(
+      "---\nstatus: retirement_ready\nstatus: active\n---\n",
+    ),
+    null,
+  );
+
+  const allowed = compareDocVersionCatalogs({
+    baseCatalog: {
+      retired: {path: "docs/retired.md", version: "1.0.0", status: "implemented"},
+    },
+    currentCatalog: {},
+    currentDocumentPaths: new Set(),
+    baseDocumentStatuses: new Map([["docs/retired.md", "retirement_ready"]]),
+  });
+  assert.equal(allowed.pass, true);
+  assert.equal(allowed.retirements[0].statusAuthority, "source-frontmatter");
+
+  const blocked = compareDocVersionCatalogs({
+    baseCatalog: {
+      active: {path: "docs/active.md", version: "1.0.0", status: "retirement_ready"},
+    },
+    currentCatalog: {},
+    currentDocumentPaths: new Set(),
+    baseDocumentStatuses: new Map([["docs/active.md", "active"]]),
+  });
+  assert.equal(blocked.pass, false);
+  assert.match(blocked.findings[0].reason, /source status is active/u);
+
+  const missingSourceStatus = compareDocVersionCatalogs({
+    baseCatalog: {
+      stale: {
+        path: "docs/stale.md",
+        version: "1.0.0",
+        status: "retirement_ready",
+      },
+    },
+    currentCatalog: {},
+    currentDocumentPaths: new Set(),
+    baseDocumentStatuses: new Map([["docs/stale.md", null]]),
+  });
+  assert.equal(missingSourceStatus.pass, false);
+  assert.match(missingSourceStatus.findings[0].reason, /no single valid lifecycle status/u);
 });
 
 test("catalog comparator fails only semantic decreases and removal inconsistencies", () => {
@@ -172,12 +235,16 @@ test("CLI requires both catalog removal and working-tree deletion for retirement
   git(repo, ["init", "-q"]);
   git(repo, ["config", "user.email", "test@example.com"]);
   git(repo, ["config", "user.name", "Catch Test"]);
-  write(repo, "docs/retired.md", "# Retired\n");
+  write(
+    repo,
+    "docs/retired.md",
+    "---\ndoc_id: retired\nversion: 1.0.0\nstatus: retirement_ready\n---\n\n# Retired\n",
+  );
   writeCatalog(repo, catalogPath, {
     retired: {
       path: "docs/retired.md",
       version: "1.0.0",
-      status: "retirement_ready",
+      status: "implemented",
     },
   });
   commitAll(repo, "base");
@@ -194,6 +261,7 @@ test("CLI requires both catalog removal and working-tree deletion for retirement
   const report = JSON.parse(retired.stdout);
   assert.equal(report.summary.retirements, 1);
   assert.equal(report.retirements[0].id, "retired");
+  assert.equal(report.retirements[0].statusAuthority, "source-frontmatter");
 });
 
 test("catalog top-level version is itself monotonic", () => {

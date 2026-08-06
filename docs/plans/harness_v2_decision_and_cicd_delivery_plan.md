@@ -1,6 +1,6 @@
 ---
 doc_id: harness_v2_decision_and_cicd_delivery_plan
-version: 0.3.14
+version: 0.3.15
 updated: 2026-08-06
 owner: agent_operating_model
 status: execution-in-progress
@@ -611,6 +611,36 @@ finding `H2-TRANSITION-001`. It deliberately does not add another transition
 id. After a live canary, the next deletion candidate is the now-redundant broad
 setup contract—not another layer of checkout metadata.
 
+### Checkpoint 10 — sparse task-worktree broker and first root-doc retirement (2026-08-06)
+
+| Signal | Before this slice | Current result |
+|---|---|---|
+| Task creation | Parallel-agent instructions relied on prose plus ad hoc `git worktree` commands. There was no capacity preflight, durable task state, active lock, remote-branch collision contract, or guaranteed preservation push. | `node tool/harness.mjs task start` validates the exact base SHA/stack parent and explicit sparse paths, reserves 1 GiB plus a 256 MiB default task budget, creates only under `.claude/worktrees/`, writes task metadata in Git state, locks the active worktree, atomically requires the remote branch to be absent, and pushes it to `origin`. |
+| Task health and closeout | “Disposable” worktrees could remain live indefinitely or be mistaken for deletion-safe based on age, cleanliness, or a gone upstream. | `task doctor` verifies lifecycle, lock, sparse materialization, capacity, and shared-cache boundaries. `task finish` requires a clean, remotely equal head, records a recoverable terminal transition, and unlocks without deleting. `task reap --dry-run` refreshes live remote heads and has no apply path; ignored-inspection failures and legacy-unknown ownership block classification. |
+| Live inventory | No authoritative command could quantify the shared worktree pool. | The report inspected 45 registered worktrees. The 44 secondary worktrees occupied 8.49 GiB; four sparse worktrees averaged about 38 MiB versus about 192 MiB for full `.claude` worktrees, an observed ~80% reduction. Strict autonomous removal eligibility is zero. The latest report returned `deletionAuthorized: false`, one zero-byte stale registration for owner review, 44 blocked entries, six legacy-review-only worktrees totaling about 1.0 GiB, and digest `5f9145de292157c6505807f06ec0831fa3216bc87c4d43f0e0140adef9d16d0c`. Live state must be refreshed before any owner decision. |
+| Executable proof | Delegation policy was guarded only by the broad readiness command. | 59/59 focused Harness tests pass in 2.14s, including lifecycle/CLI recovery, collision, sparse-path, capacity, ignored-payload, and report-only cases. The final owner gate also passes 40 runner/impact, 10 monotonic, 3 document-state, 19 enforcement, 6 root-hygiene, and 2 inventory tests in 15.40s; manifest, audit parity, diff/JSON, and 4,948/4,948 readiness pass. `AGENT-DELEGATION-001` now maps bidirectionally to `agent:harness-v2`, and `REG-AGENT-007` names the focused lifecycle tests. |
+| Preservation timing | No bounded lifecycle commit existed. | Source commit `e22963491` completed in under 0.1s and its branch push completed in 2.44s. The live report took about 18.9s, dominated by fail-closed remote and worktree inspection rather than deletion. |
+| Consolidation | Current delegation behavior was repeated across agent entrypoints while an implemented 890-line root-hygiene review spec remained indexed as a live retirement candidate. | Canonical instructions now route to the four Harness task commands, and the obsolete root-hygiene spec plus its live catalog/index/backlog links are deleted. The complete 25-file instruction, authority, test, registry, delegation-evidence, and retirement tranche is +422/−1,047, net −625 lines. Historical merge-drop and append-only pass references remain intact. |
+
+Issue discovered during this tranche:
+
+- `H2-TRANSITION-017` — `checkSafety` now distinguishes a tool's read-only
+  validation path from its explicit remote-write command, but the tool-manifest
+  validator does not yet define or negatively test that field. Keep its use
+  limited to `agent:harness-v2`; formalize the schema and add a malformed-value
+  test before any other tool adopts it.
+- `H2-TRANSITION-018` — Markdown retirement lifecycle was duplicated between
+  source frontmatter and `doc_versions.json`; the root-hygiene source correctly
+  said `retirement_ready` while the catalog still said `implemented`, so a safe
+  deletion failed and would have required a ceremonial intermediate PR. Source
+  frontmatter is now the sole Markdown authority, missing/malformed/duplicate
+  status fails closed, catalog lifecycle remains only for non-Markdown
+  artifacts, and tests prove an active source overrides a stale
+  `retirement_ready` catalog row. Derived document-state artifacts and agent
+  context packs now publish only source-derived Markdown status. The same-branch
+  deletion passes against `origin/main` without
+  weakening target-file or catalog-row absence proof.
+
 Durable outcomes are PR wall-clock p50/p95 and escaped defects. Record the
 baseline from the ten most recent comparable PRs and compare after ten v2 PRs.
 Course-correct when any of these occur:
@@ -652,7 +682,9 @@ Course-correct when any of these occur:
 
 ## 7. Explicitly not building now
 
-- Worktree lease broker with heartbeats (wrapper + reap only).
+- Continuous worktree heartbeats or automatic removal. The bounded lifecycle
+  wrapper and report-only reap exist; deletion remains owner-authorized and
+  outside the broker.
 - External receipt/artifact store; GitHub artifacts carry the required digest
   and provenance manifest.
 - Atomic multi-change-set merge machinery.

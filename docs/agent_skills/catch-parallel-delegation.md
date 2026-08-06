@@ -16,11 +16,16 @@ Loop:
    `git rev-parse HEAD`, and `git status --short --branch`. Stop the subagent
    if it is on the parent branch, in the parent worktree, or not at the assigned
    base SHA.
-4. Subagents work in disposable Git worktrees/branches and commit proposals
-   there.
-5. Parent reviews the subagent commit, imports accepted changes into the parent
+4. Parent creates each task with `node tool/harness.mjs task start` from the
+   exact parent SHA and explicit owned paths. `start` creates, locks, and pushes
+   the sparse task branch; the subagent must pass `task doctor` before editing.
+5. Subagents commit and push proposals in their task worktrees. Parent reviews
+   the subagent commit, imports accepted changes into the parent
    branch, updates canonical docs/registries/stamps, and runs final checks.
-6. Parent records a delegation outcome with
+6. After remote preservation, close the task with `task finish`. It records
+   terminal state and unlocks the worktree but never deletes it. Use
+   `task reap --dry-run` only for a digested, report-only inventory.
+7. Parent records a delegation outcome with
    `node tool/agent/record_delegation_outcome.mjs`.
 
 Default parent-owned files: `AGENTS.md`, `docs/agent_operating_model.md`,
@@ -28,7 +33,8 @@ Default parent-owned files: `AGENTS.md`, `docs/agent_operating_model.md`,
 `docs/design_parity/**`, `docs/widget_catalog.md`, generated registries, tool
 manifest entries, and audit pass receipts.
 
-Failure modes to avoid: subagents accidentally sharing the parent worktree,
+Failure modes to avoid: bypassing the Harness lifecycle, subagents accidentally sharing the parent worktree,
 parallel agents editing the same file, subagents updating canonical docs without
 parent review, long-lived stale branches, parallel Flutter test/analyzer races,
-and accepting a patch whose pattern delta was not reviewed.
+accepting a patch whose pattern delta was not reviewed, or treating a reap
+candidate as deletion authorization.

@@ -1,5 +1,5 @@
 {
-  "version": 135,
+  "version": 136,
   "updated": "2026-08-06",
   "owner": "agent_operating_model",
   "entries": [
@@ -832,7 +832,7 @@
       "symptom": "Parallel agents make independent edits to canonical docs, generated registries, audit receipts, or the same source files, causing merge conflicts and multiple local truths.",
       "guard": {
         "type": "command",
-        "command": "node tool/agent/check_agent_readiness.mjs"
+        "command": "node --test tool/harness/worktree_lifecycle.test.mjs tool/harness/harness_cli.test.mjs && node tool/agent/check_agent_readiness.mjs"
       },
       "owner_docs": [
         "AGENTS.md",
@@ -840,7 +840,7 @@
         "docs/agent_skills/catch-parallel-delegation.md",
         "docs/audit_registry/README.md"
       ],
-      "notes": "Use disposable worktrees, disjoint write scopes, parent-owned integration, and record delegation outcomes with tool/agent/record_delegation_outcome.mjs."
+      "notes": "Use Harness start, doctor, finish, and report-only reap; keep disjoint write scopes and parent-owned integration; record delegation outcomes with tool/agent/record_delegation_outcome.mjs."
     },
     {
       "id": "REG-AGENT-008",
@@ -2066,7 +2066,6 @@
       "owner_docs": [
         "tool/README.md",
         "artifacts/README.md",
-        "docs/plans/repository_root_hygiene_spec.md",
         "docs/agent_operating_model.md"
       ],
       "notes": "The cleaner is allowlist-only, dry-run by default, and never invokes git clean."
@@ -3436,7 +3435,7 @@
       "guard": {
         "type": "command",
         "command": "node --test tool/docs/check_doc_version_monotonic.test.mjs && node tool/docs/check_doc_version_monotonic.mjs --base origin/main",
-        "guardEvidence": "retirement passes only when the base catalog grants retirement_ready status and Git proves the target path is absent; catalog-only removal and active-document deletion both fail"
+        "guardEvidence": "retirement passes only when exactly one valid base Markdown frontmatter status grants retirement_ready, or a non-Markdown catalog row does so, and Git proves the target path is absent; catalog-only Markdown removal, malformed source lifecycle, and active-source deletion all fail"
       },
       "owner_docs": [
         "docs/README.md",

@@ -13,6 +13,7 @@ import {
 const repositoryRoot = process.cwd();
 const sparseExecutableClosure = [
   "/tool/agent/context_pack.mjs",
+  "/tool/docs/check_doc_version_monotonic.mjs",
   "/tool/harness/lib/component_graph.mjs",
   "/tool/lib/repo_paths.mjs",
   "/tool/lib/repository_snapshot.mjs",
@@ -484,6 +485,7 @@ function createSnapshotFixtureClone(destination, {checkoutPaths}) {
   for (const relativePath of [
     "tool/run.mjs",
     "tool/agent/context_pack.mjs",
+    "tool/docs/check_doc_version_monotonic.mjs",
     "tool/lib/tool_impact.mjs",
   ]) {
     const destinationPath = path.join(destination, relativePath);

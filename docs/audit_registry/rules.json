@@ -254,7 +254,7 @@
         "lib/**",
         "test/**"
       ],
-      "instruction": "When using subagents for speed, isolate their work in short-lived Git worktrees/branches, assign disjoint write scopes, keep canonical docs/generated registries/audit receipts parent-owned by default, review commits before importing, run final verification in the parent branch, and record a delegation outcome metric.",
+      "instruction": "When using subagents for speed, create an exact-SHA sparse task with agent:harness-v2, require doctor before edits, assign disjoint write scopes, keep canonical docs/generated registries/audit receipts parent-owned by default, review and preserve commits before importing, close with finish, treat reap as report-only, run final verification in the parent branch, and record a delegation outcome metric.",
       "sunset_when": [
         "Delegation outcome metrics show five consecutive accepted batches with no file-ownership conflicts",
         "The readiness gate validates delegation protocol coverage and metrics shape"
@@ -266,8 +266,9 @@
       ],
       "enforcement": [
         {
-          "stage": "manual",
-          "docAnchor": "docs/audit_registry/rules.json"
+          "tool": "agent:harness-v2",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/agent_operating_model.md#parallel-worktree-delegation-contract"
         }
       ]
     },
@@ -3258,6 +3259,6 @@
       ]
     }
   },
-  "version": "2.8.6",
-  "updated": "2026-07-24"
+  "version": "2.8.7",
+  "updated": "2026-08-06"
 }

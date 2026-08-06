@@ -5,6 +5,7 @@ import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
+import {parseDocumentLifecycleStatus} from "./check_doc_version_monotonic.mjs";
 
 export function buildDocState({catalog, sourceRevision, resolveDocument}) {
   const documents = {};
@@ -28,9 +29,12 @@ export function buildDocState({catalog, sourceRevision, resolveDocument}) {
 
   for (const [docId, entry] of orderedEntries) {
     const revision = resolveDocument(entry.path);
+    const markdown = entry.path.endsWith(".md");
     documents[docId] = {
       path: entry.path,
-      status: entry.status,
+      status: markdown
+        ? parseDocumentLifecycleStatus(revision.source ?? "")
+        : entry.status ?? null,
       semanticVersion: entry.version,
       contentRevision: revision.contentRevision,
       lastIntegratedRevision: revision.lastIntegratedRevision,
@@ -39,7 +43,7 @@ export function buildDocState({catalog, sourceRevision, resolveDocument}) {
   }
 
   return {
-    schemaVersion: "1.0.0",
+    schemaVersion: "1.1.0",
     sourceRevision,
     documents,
   };
@@ -55,6 +59,7 @@ function git(args) {
 
 function resolveDocumentAt(ref, documentPath) {
   const contentRevision = git(["rev-parse", `${ref}:${documentPath}`]);
+  const source = git(["show", `${ref}:${documentPath}`]);
   const lastChange = git([
     "log",
     "-1",
@@ -67,7 +72,7 @@ function resolveDocumentAt(ref, documentPath) {
   if (!lastIntegratedRevision || !lastIntegratedAt) {
     throw new Error(`No integration history found for ${documentPath} at ${ref}.`);
   }
-  return {contentRevision, lastIntegratedRevision, lastIntegratedAt};
+  return {source, contentRevision, lastIntegratedRevision, lastIntegratedAt};
 }
 
 function valueAfter(args, flag) {

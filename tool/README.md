@@ -283,7 +283,11 @@ node --test tool/git/audit_merge_drops.test.mjs
 
 Governed document versions may increase or remain unchanged, but may not
 decrease or silently lose their catalog entry/path metadata. The target defaults
-to the working tree:
+to the working tree. Governed Markdown requires exactly one valid base-source
+frontmatter status as its retirement authority and never falls back to catalog
+lifecycle metadata; catalog status remains only for non-Markdown governed
+artifacts. A retirement still requires both the target file and its catalog row
+to be gone:
 
 ```sh
 node tool/docs/check_doc_version_monotonic.mjs --base origin/main
@@ -299,6 +303,10 @@ node tool/docs/build_doc_state.mjs \
   --ref HEAD \
   --output build/ci/doc-state.json
 ```
+
+That projection and agent context packs expose Markdown `status` only from
+source frontmatter. Catalog lifecycle metadata is not surfaced as a competing
+Markdown status.
 
 ## Remote Ops Manifest
 
@@ -569,6 +577,25 @@ node tool/agent/check_agent_readiness.mjs --record-metric
 node tool/agent/record_delegation_outcome.mjs --task-id example --mode worker-patch --status integrated --parent-review-outcome accepted --dry-run
 node tool/run.mjs check --category agent
 ```
+
+Delegated worktrees use one fail-closed lifecycle instead of direct
+`git worktree` shell sequences:
+
+```sh
+node tool/harness.mjs task start --task-id <id> --base-sha <40-character-sha> --stack-parent <ref> --paths <path[,path...]> --budget-mib 256
+node tool/harness.mjs task doctor --worktree <path>
+node tool/harness.mjs task finish --worktree <path>
+node tool/harness.mjs task reap --dry-run
+```
+
+`start` creates a bounded sparse worktree under `.claude/worktrees/`, locks it,
+records lifecycle metadata outside tracked source, and pushes its collision-free
+branch to `origin`. `doctor` fails on lifecycle, sparse-materialization,
+capacity, or shared-cache hazards. `finish` requires a clean, remotely preserved
+head and records terminal state; it does not delete anything. `reap --dry-run`
+refreshes live remote heads and returns a digested, report-only inventory. It
+has no apply mode, and legacy or incompletely inspected worktrees remain
+blocked.
 
 `AGENTS.md` is the short entrypoint. Durable process guidance lives in
 `docs/agent_operating_model.md`, regression guards in

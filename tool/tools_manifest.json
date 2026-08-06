@@ -136,7 +136,7 @@
           "node"
         ]
       },
-      "description": "Rejects semantic version decreases and removal inconsistencies in the governed document-version catalog.",
+      "description": "Rejects semantic version decreases and removal inconsistencies, requiring governed Markdown frontmatter as its sole retirement authority while retaining catalog lifecycle only for non-Markdown artifacts.",
       "checks": [
         "node --check tool/docs/check_doc_version_monotonic.mjs",
         "node --test tool/docs/check_doc_version_monotonic.test.mjs",
@@ -199,7 +199,8 @@
       ],
       "role": "gate",
       "rules": [
-        "AGENT-HARNESS-001"
+        "AGENT-HARNESS-001",
+        "AGENT-DELEGATION-001"
       ],
       "vacuityProof": {
         "type": "test",
