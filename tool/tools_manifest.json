@@ -65,6 +65,12 @@
       "command": "node tool/check_enforcement_integrity.mjs",
       "safety": "local",
       "status": "active",
+      "ciRequirements": {
+        "repositoryView": "index",
+        "setup": [
+          "node"
+        ]
+      },
       "role": "gate",
       "rules": [
         "AGENT-HARNESS-001",
@@ -124,6 +130,12 @@
       "command": "node tool/docs/check_doc_version_monotonic.mjs --base origin/main",
       "safety": "local-readonly",
       "status": "active",
+      "ciRequirements": {
+        "repositoryView": "index",
+        "setup": [
+          "node"
+        ]
+      },
       "description": "Rejects semantic version decreases and removal inconsistencies in the governed document-version catalog.",
       "checks": [
         "node --check tool/docs/check_doc_version_monotonic.mjs",
@@ -243,6 +255,12 @@
       "command": "node tool/agent/check_agent_readiness.mjs",
       "safety": "local",
       "status": "active",
+      "ciRequirements": {
+        "repositoryView": "index",
+        "setup": [
+          "node"
+        ]
+      },
       "description": "Validates the Catch agent harness, project-local skills, regression ledger, tool registration, canonical test-inventory freshness, and metrics parseability.",
       "checks": [
         "node --check tool/agent/check_agent_readiness.mjs",
@@ -5141,6 +5159,12 @@
       "command": "node tool/check_repository_root_hygiene.mjs",
       "safety": "local",
       "status": "active",
+      "ciRequirements": {
+        "repositoryView": "index",
+        "setup": [
+          "node"
+        ]
+      },
       "role": "gate",
       "description": "Enforces manifest-backed repository ownership and impact relationships, Git expectations, protected cleanup boundaries, audit policies, and portable Markdown links.",
       "checks": [
@@ -5177,6 +5201,12 @@
       "command": "node tool/test_inventory.mjs --check",
       "safety": "local",
       "status": "active",
+      "ciRequirements": {
+        "repositoryView": "index",
+        "setup": [
+          "node"
+        ]
+      },
       "role": "generator",
       "description": "Generates and drift-checks the Git-backed cross-surface test inventory.",
       "checks": [

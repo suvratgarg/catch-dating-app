@@ -278,7 +278,11 @@ test("affected-tool GitHub outputs carry bounded control signals only", (context
   ]);
   assert.equal(result.status, 0, result.stderr);
   const output = fs.readFileSync(outputPath, "utf8");
-  assert.equal(output, "tool_mode=affected\naffected=true\nfull=false\n");
+  assert.equal(
+    output,
+    "tool_mode=affected\naffected=true\nfull=false\n" +
+      "repository_view=index\nsetup_requirements=[\"node\"]\n",
+  );
   assert.doesNotMatch(output, /docs:version-monotonic/u);
 });
 
@@ -368,7 +372,11 @@ function createClone(destination, {sparse}) {
   }
   runGit(destination, ["checkout", "--detach", "HEAD"]);
 
-  for (const relativePath of ["tool/run.mjs", "tool/agent/context_pack.mjs"]) {
+  for (const relativePath of [
+    "tool/run.mjs",
+    "tool/agent/context_pack.mjs",
+    "tool/lib/tool_impact.mjs",
+  ]) {
     const destinationPath = path.join(destination, relativePath);
     fs.mkdirSync(path.dirname(destinationPath), {recursive: true});
     fs.copyFileSync(path.join(repositoryRoot, relativePath), destinationPath);
