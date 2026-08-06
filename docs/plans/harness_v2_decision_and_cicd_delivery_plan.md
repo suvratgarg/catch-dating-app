@@ -1,7 +1,7 @@
 ---
 doc_id: harness_v2_decision_and_cicd_delivery_plan
-version: 0.3.25
-updated: 2026-08-06
+version: 0.3.26
+updated: 2026-08-07
 owner: agent_operating_model
 status: execution-in-progress
 ---
@@ -771,6 +771,34 @@ Issue discovered during this tranche:
   generation must publish its physical path closure to `task start`; until
   then, prove omitted commands in a fresh capability-complete canary, as this
   tranche did.
+
+### Checkpoint 19 — current-only widget catalog (2026-08-07)
+
+| Signal | Before this slice | Current result |
+|---|---|---|
+| Reader cost | `docs/widget_catalog.md` was 7,748 lines / 620,927 bytes. Current inventory did not begin until line 6,490 because 6,255 lines of release history and 217 lines of duplicated cleanup/process instructions came first. | The catalog is 1,291 lines / 306,844 bytes and current inventory begins at line 33. Total file size falls 50.6%, word count falls 53.7%, and pre-inventory scrolling falls 99.5%. Git and immutable audit receipts now own history; the catalog owns current inventory plus a 13-line maintenance contract. |
+| Inventory safety | The history prefix mentioned current and retired widget names, so a text-presence checker could appear stronger than the actual current inventory. | `## App Entry Point` through EOF is byte-identical to the parent: 305,649 bytes at SHA-256 `4fe4a91ebdb270aa680e4e5c0cbeed2d4fded73b3a41279e189dab0cdd53c55c`. The full 820-file new-widget scan reports zero added, moved, or unresolved items. |
+| Maintenance semantics | Routine widget edits appended another release heading and incremented a 669-patch semantic version, even though semantic document versions are contracts rather than edit counters. Four live rule anchors depended on the obsolete changelog heading. | Routine changes update only affected current-inventory rows. Version `3.0.0` marks the one-time reader-contract change; future version bumps are reserved for reader-contract or structural changes. Four rule anchors now point to the maintenance or architecture owner. `REG-DOC-INLINE-HISTORY-001`, the required structural test, manifest binding, and `WIDGET-CATALOG-001` prevent inline history from regrowing. |
+| Proof | No machine gate constrained where usable inventory began or prevented semantic release headings from returning. | A fresh committed-state canary passed 12/12 document tests, 60 unchanged / 6 increased document versions, 83-rule / 92-tool enforcement integrity, manifest validation, 5,012/5,012 readiness, the exact suffix proof, the 36.13s full widget scan, and the 7,219-entry registry parity check. No Flutter run was selected because no Dart or rendered UI changed. |
+| Broker timing | The first sparse declaration omitted a live design-policy consumer discovered during full-index review, and closing it without network authority mislabeled remote verification as non-preservation. | The untouched rehearsal was closed instead of manually widening its receipt. The corrected 46.6 MB task started in 22.14s; context generation took 0.30s; commit `83cc80890` took 0.16s and pushed in 5.77s. The warmed 46.3 MB canary started in 5.27s, doctor passed in 1.78s, and terminal closeout took 1.53s. |
+| Line accounting | The ten prior cleanup/safety commits were cumulatively net −166,907 lines. | The 11-file core deletion and all owner, enforcement, test, registry, and receipt changes are +128/−6,529, net −6,401. The canary checkpoint receipt is +34/−5, net +29; the twelve measured commits are cumulatively net −173,279 lines. |
+
+Issues discovered during this tranche:
+
+- `H2-TRANSITION-025` — `task start` requires physical paths before the task's
+  context/reference analysis can expose reverse live consumers. A full-index
+  review found one design-policy consumer only after the first branch existed.
+  The untouched task was cleanly closed and replaced; no sparse pattern was
+  widened by hand. The broker needs an inspect-first task-plan transaction that
+  expands enforcement anchors and live document references before branch
+  creation. Until then, contract-removal tasks must perform a full-index
+  reference preflight before `task start`.
+- `H2-TRANSITION-026` — a sandboxed `task finish` reported
+  `remote_head_not_preserved` while its own local snapshot showed matching HEAD
+  and upstream SHAs. The remote probe was unavailable, not negative. Remote
+  preservation needs three states (confirmed, absent, indeterminate) and an
+  explicit `remote_verification_unavailable` blocker; until implemented, rerun
+  terminal verification with declared network authority.
 
 Durable outcomes are PR wall-clock p50/p95 and escaped defects. Record the
 baseline from the ten most recent comparable PRs and compare after ten v2 PRs.
