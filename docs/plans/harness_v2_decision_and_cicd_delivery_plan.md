@@ -1,6 +1,6 @@
 ---
 doc_id: harness_v2_decision_and_cicd_delivery_plan
-version: 0.3.23
+version: 0.3.24
 updated: 2026-08-06
 owner: agent_operating_model
 status: execution-in-progress
@@ -745,6 +745,31 @@ Issue discovered during this tranche:
   `pubspec.yaml`, `pubspec.lock`, and `analysis_options.yaml` in every task,
   retain the shared-dependency-symlink prohibition, and prove a fresh task sees
   its own root before claiming isolated execution; the fresh canary now does.
+
+### Checkpoint 18 — legacy definition-catalog retirement (2026-08-06)
+
+| Signal | Before this slice | Current result |
+|---|---|---|
+| Authority | A 935-line regex extractor persisted a complete Dart definition dump and a second heuristic candidate queue even though no live tool, workflow, or instruction consumed either output. The active manifest only syntax-parsed the generator and never proved either file current. | The generator, 38,977-line definition dump, 51-line candidate queue, and manifest entry are deleted. Current widget-consolidation authority remains with widget classification, similarity, new-widget inventory, the reviewed decision ledger, and the active backlog; no alias or replacement dump is introduced. |
+| Staleness | The catalog claimed 779 source files from July 17 and embedded an absolute machine path and generation time. The live tree has 820 matching Dart files: 46 current files were absent and five deleted files remained. The backlog said zero candidates while the committed candidate queue still contained two. | The stale backlog note now routes to current focused authorities. Historical pass and consolidation receipts remain immutable, but they are not live consumers. The deleted blobs remain recoverable from Git as `56f9ae7d`, `6f823a343`, and `a2ce670ba`. |
+| Regression proof | A retired generated dump could return because no gate asserted that it stayed absent. | `REG-AUDIT-DERIVED-EVIDENCE-001` and a full-index repository-snapshot test now prove all three paths are absent and that current agent, audit, backlog, rule, and tool authorities do not route to their names. The test is a required check of `audit:registry`. |
+| Broker timing | The prior large evidence cleanup used bespoke inspection boundaries. | `task start` created and remotely preserved an 8.28 MB sparse task in 19.13s; context generation passed in 1.18s. Final commit, push, doctor, and closeout timing follow after the audit receipt. |
+| Line accounting | The first eight cleanup/safety commits were cumulatively net −127,012 lines; the evidence-only canary receipt was net zero. | The complete 11-file generator/output deletion, authority repair, full-index guard, checkpoint, registry refresh, and reviewed receipt is +98/−39,995, net −39,897. The nine cleanup/safety commits are cumulatively net −166,909 lines. The three direct retirements account for 39,965 deleted diff lines / 1,335,697 bytes. |
+
+Issue discovered during this tranche:
+
+- `H2-TRANSITION-023` — legitimate ad hoc sparse expansion is invisible to the
+  task creation receipt, so doctor correctly blocks closeout with
+  `sparse_checkout_metadata_mismatch`. Until the broker owns an explicit,
+  budget-checked materialization operation, create a fresh capability-complete
+  task rather than changing sparse patterns manually; restoring the recorded
+  view is the only valid closeout path for an older task.
+- `H2-TRANSITION-024` — the generated context-pack command plan can recommend a
+  check whose executable entrypoint is absent from the task's sparse closure.
+  This task correctly refused to improvise another expansion when
+  `tool/run.mjs` and the enforcement checker were missing. Command-plan
+  generation must publish its physical path closure to `task start`; until
+  then, prove omitted commands in a fresh capability-complete canary.
 
 Durable outcomes are PR wall-clock p50/p95 and escaped defects. Record the
 baseline from the ten most recent comparable PRs and compare after ten v2 PRs.

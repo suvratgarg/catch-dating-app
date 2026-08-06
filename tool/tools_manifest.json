@@ -370,19 +370,6 @@
       }
     },
     {
-      "id": "audit:definition-catalog",
-      "category": "audit",
-      "path": "tool/audit/definition_catalog.py",
-      "command": "python3 tool/audit/definition_catalog.py",
-      "safety": "local-writes-audit-json",
-      "status": "active",
-      "description": "Builds Dart definition and consolidation candidate catalogs.",
-      "checks": [
-        "python3 -B -c \"import ast,pathlib; ast.parse(pathlib.Path('tool/audit/definition_catalog.py').read_text())\""
-      ],
-      "role": "generator"
-    },
-    {
       "id": "audit:architecture-scan",
       "category": "audit",
       "path": "tool/scan_architecture.py",
