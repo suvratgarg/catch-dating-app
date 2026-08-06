@@ -95,7 +95,11 @@ export function normalizeEventIdPayload(data: unknown): unknown {
   if (!isRecord(data)) return data;
   return normalizeFields(data, {
     stringFields: ["eventId"],
-    nullableStringFields: ["inviteCode", "inviteLinkId"],
+    nullableStringFields: [
+      "inviteCode",
+      "inviteLinkId",
+      "crossPathsPairHoldId",
+    ],
   });
 }
 

@@ -45,7 +45,7 @@
       "authorityId": "screen.cross_paths.invitation",
       "status": "contracted",
       "priority": "P1",
-      "reason": "Compiled Cross Paths invitation contract covers pending, accepted, declined, cancelled, expired, invalidated, and event-plan lifecycle states.",
+      "reason": "Compiled Cross Paths invitation contract covers invitation decisions, pair-hold booking states, expiry recovery, and confirmed event plans.",
       "featureContract": "feature.cross_paths_invitation"
     },
     {

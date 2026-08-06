@@ -32,5 +32,10 @@ const schemaCreateStripeCheckoutSessionCallablePayloadSchema = <String, Object?>
       'minLength': 1,
       'maxLength': 180,
     },
+    'crossPathsPairHoldId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
   },
 };

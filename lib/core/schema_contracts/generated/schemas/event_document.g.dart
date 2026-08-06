@@ -789,6 +789,30 @@ const schemaEventDocumentSchema = <String, Object?>{
                 },
               },
             },
+            'crossPathsPairInventory': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'enabled',
+                'reservedPairCapacity',
+                'holdDurationMinutes',
+              ],
+              'properties': <String, Object?>{
+                'enabled': <String, Object?>{
+                  'type': 'boolean',
+                },
+                'reservedPairCapacity': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 100,
+                },
+                'holdDurationMinutes': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 5,
+                  'maximum': 30,
+                },
+              },
+            },
           },
         },
         'pricing': <String, Object?>{
@@ -915,6 +939,24 @@ const schemaEventDocumentSchema = <String, Object?>{
       'x-catch-ownership': 'callable-owned',
     },
     'waitlistedCohortCounts': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': <String, Object?>{
+        'type': 'integer',
+        'minimum': 0,
+      },
+      'x-catch-ownership': 'callable-owned',
+    },
+    'crossPathsPairHeldCount': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'x-catch-ownership': 'callable-owned',
+    },
+    'crossPathsPairConfirmedCount': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'x-catch-ownership': 'callable-owned',
+    },
+    'crossPathsPairHeldCohortCounts': <String, Object?>{
       'type': 'object',
       'additionalProperties': <String, Object?>{
         'type': 'integer',

@@ -1,7 +1,9 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/cross_paths/data/cross_paths_repository.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_invitation.dart';
+import 'package:catch_dating_app/cross_paths/domain/cross_paths_pair_hold.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_suggestion.dart';
 import 'package:catch_dating_app/cross_paths/presentation/cross_paths_invitation_screen.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -41,6 +43,86 @@ void main() {
     expect(find.text('Cancel event plan'), findsOneWidget);
     expect(find.text('Accept and make a plan'), findsNothing);
   });
+
+  testWidgets('requester sees a held-not-booked state and booking action', (
+    tester,
+  ) async {
+    final fixture = _fixture(
+      status: CrossPathsInvitationStatus.accepted,
+      withPairHold: true,
+    );
+
+    await _pumpInvitation(tester, fixture.invitation, fixture);
+    await tester.scrollUntilVisible(
+      find.text('Your pair spot is held — you are not booked yet'),
+      180,
+    );
+
+    expect(
+      find.text('Your pair spot is held — you are not booked yet'),
+      findsWidgets,
+    );
+    expect(find.textContaining('you are not booked yet'), findsWidgets);
+    expect(
+      find.text('Your booking: Held, not booked · Their booking: Confirmed'),
+      findsOneWidget,
+    );
+    await tester.scrollUntilVisible(find.text('Complete booking'), 140);
+    expect(find.text('Complete booking'), findsOneWidget);
+    await tester.scrollUntilVisible(find.text('Open event plan'), 140);
+    expect(find.text('Open event plan'), findsOneWidget);
+    expect(
+      tester
+          .widget<CatchButton>(
+            find.widgetWithText(CatchButton, 'Open event plan'),
+          )
+          .onPressed,
+      isNull,
+    );
+  });
+
+  testWidgets('recipient sees the requester booking state without a CTA', (
+    tester,
+  ) async {
+    final fixture = _fixture(
+      status: CrossPathsInvitationStatus.accepted,
+      withPairHold: true,
+      viewerIsRequester: false,
+    );
+
+    await _pumpInvitation(tester, fixture.invitation, fixture);
+    await tester.scrollUntilVisible(
+      find.textContaining('waiting for the person who sent'),
+      180,
+    );
+
+    expect(
+      find.textContaining('waiting for the person who sent'),
+      findsOneWidget,
+    );
+    expect(find.text('Complete booking'), findsNothing);
+  });
+
+  testWidgets('ended pair hold returns both people to the event', (
+    tester,
+  ) async {
+    final fixture = _fixture(
+      status: CrossPathsInvitationStatus.accepted,
+      withPairHold: true,
+      pairHoldStatus: CrossPathsPairHoldStatus.expired,
+    );
+
+    await _pumpInvitation(tester, fixture.invitation, fixture);
+    await tester.scrollUntilVisible(
+      find.text('This pair spot is no longer held'),
+      180,
+    );
+
+    expect(find.text('This pair spot is no longer held'), findsOneWidget);
+    await tester.scrollUntilVisible(find.text('See the event'), 120);
+    expect(find.text('See the event'), findsOneWidget);
+    expect(find.text('Complete booking'), findsNothing);
+  });
 }
 
 Future<void> _pumpInvitation(
@@ -61,6 +143,10 @@ Future<void> _pumpInvitation(
         watchEventProvider(
           fixture.event.id,
         ).overrideWith((ref) => Stream.value(fixture.event)),
+        if (fixture.pairHold != null)
+          watchCrossPathsPairHoldProvider(
+            fixture.pairHold!.id,
+          ).overrideWith((ref) => Stream.value(fixture.pairHold)),
       ],
       child: MaterialApp(
         theme: AppTheme.light,
@@ -78,6 +164,9 @@ Future<void> _pumpInvitation(
 
 _InvitationFixture _fixture({
   CrossPathsInvitationStatus status = CrossPathsInvitationStatus.pending,
+  bool withPairHold = false,
+  bool viewerIsRequester = true,
+  CrossPathsPairHoldStatus pairHoldStatus = CrossPathsPairHoldStatus.active,
 }) {
   final event = event_test.buildEvent(
     meetingPoint: 'Kala Ghoda table room',
@@ -130,11 +219,17 @@ _InvitationFixture _fixture({
     rankingVersion: parsedSuggestion.rankingVersion,
   );
   final now = DateTime(2026, 8, 5, 12);
+  final senderUid = withPairHold && viewerIsRequester
+      ? 'viewer-1'
+      : suggestion.profile.uid;
+  final recipientUid = withPairHold && viewerIsRequester
+      ? suggestion.profile.uid
+      : 'viewer-1';
   final invitation = CrossPathsInvitation(
     id: 'invitation-1',
     eventId: event.id,
-    senderUid: suggestion.profile.uid,
-    recipientUid: 'viewer-1',
+    senderUid: senderUid,
+    recipientUid: recipientUid,
     participantIds: const ['candidate-1', 'viewer-1'],
     status: status,
     createdAt: now,
@@ -144,14 +239,36 @@ _InvitationFixture _fixture({
     cancelledAt: null,
     invalidatedAt: null,
     invalidationReason: null,
-    conversationId: status == CrossPathsInvitationStatus.accepted
+    conversationId:
+        status == CrossPathsInvitationStatus.accepted && !withPairHold
         ? 'plan-1'
         : null,
+    pairHoldId: withPairHold ? 'hold-1' : null,
   );
+  final pairHold = withPairHold
+      ? CrossPathsPairHold(
+          id: 'hold-1',
+          eventId: event.id,
+          invitationId: invitation.id,
+          requesterUid: senderUid,
+          attendeeUid: recipientUid,
+          participantIds: const ['viewer-1', 'candidate-1'],
+          status: pairHoldStatus,
+          requesterBookingStatus: 'held',
+          attendeeBookingStatus: 'signedUp',
+          requesterPriceInPaise: 0,
+          currency: 'INR',
+          expiresAt: pairHoldStatus.isActive
+              ? DateTime.now().add(const Duration(minutes: 15))
+              : DateTime.now().subtract(const Duration(minutes: 1)),
+          conversationId: null,
+        )
+      : null;
   return _InvitationFixture(
     invitation: invitation,
     suggestion: suggestion,
     event: event,
+    pairHold: pairHold,
   );
 }
 
@@ -160,9 +277,11 @@ class _InvitationFixture {
     required this.invitation,
     required this.suggestion,
     required this.event,
+    required this.pairHold,
   });
 
   final CrossPathsInvitation invitation;
   final CrossPathsSuggestion suggestion;
   final Event event;
+  final CrossPathsPairHold? pairHold;
 }

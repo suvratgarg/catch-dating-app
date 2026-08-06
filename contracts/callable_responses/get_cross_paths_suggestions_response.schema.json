@@ -68,7 +68,7 @@
     "event": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["eventId", "organizerId", "startTime", "endTime", "meetingPoint", "activityKind", "photoUrl", "viewerBookingStatus"],
+      "required": ["eventId", "organizerId", "startTime", "endTime", "meetingPoint", "activityKind", "photoUrl", "viewerBookingStatus", "pairHoldAvailable"],
       "properties": {
         "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
         "organizerId": {
@@ -82,7 +82,8 @@
         "meetingPoint": {"type": "string", "minLength": 1, "maxLength": 240},
         "activityKind": {"$ref": "../shared/event_common.schema.json#/definitions/activityKind"},
         "photoUrl": {"type": ["string", "null"], "format": "uri", "maxLength": 2048},
-        "viewerBookingStatus": {"type": "string", "enum": ["signedUp", "canBookNow"]}
+        "viewerBookingStatus": {"type": "string", "enum": ["signedUp", "canBookNow"]},
+        "pairHoldAvailable": {"type": "boolean"}
       }
     },
     "suggestion": {

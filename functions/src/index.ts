@@ -159,6 +159,7 @@ export {
   respondCrossPathsInvitation,
   sendCrossPathsInvitation,
 } from "./crossPaths/invitations";
+export {expireCrossPathsPairHolds} from "./crossPaths/pairHolds";
 export {
   generateProfilePhotoThumbnail,
 } from "./profiles/generateProfilePhotoThumbnail";

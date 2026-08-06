@@ -153,6 +153,16 @@ const schemaPaymentDocumentSchema = <String, Object?>{
       'description': 'Host-facing invite source copied from eventInviteLinks.',
       'x-catch-ownership': 'callable-owned',
     },
+    'crossPathsPairHoldId': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 1,
+      'maxLength': 180,
+      'description': 'Pair hold consumed by this booking, when present.',
+      'x-catch-ownership': 'callable-owned',
+    },
     'signUpFailed': <String, Object?>{
       'type': 'boolean',
       'x-catch-ownership': 'callable-owned',

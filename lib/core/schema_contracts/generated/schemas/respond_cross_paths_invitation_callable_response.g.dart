@@ -15,6 +15,7 @@ const schemaRespondCrossPathsInvitationCallableResponseSchema = <String, Object?
     'invitationId',
     'status',
     'conversationId',
+    'pairHoldId',
   ],
   'properties': <String, Object?>{
     'invitationId': <String, Object?>{
@@ -30,6 +31,18 @@ const schemaRespondCrossPathsInvitationCallableResponseSchema = <String, Object?
       ],
     },
     'conversationId': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+    },
+    'pairHoldId': <String, Object?>{
       'anyOf': <Object?>[
         <String, Object?>{
           'type': 'string',

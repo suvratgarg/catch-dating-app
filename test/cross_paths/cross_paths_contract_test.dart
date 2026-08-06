@@ -2,6 +2,7 @@ import 'package:catch_dating_app/cross_paths/data/cross_paths_repository.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_event_consent.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_feature_config.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_invitation.dart';
+import 'package:catch_dating_app/cross_paths/domain/cross_paths_pair_hold.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_suggestion.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,9 +12,11 @@ void main() {
     expect(kCrossPathsConfigDefaults, {
       CrossPathsFeatureConfig.enableConsentControlsKey: false,
       CrossPathsFeatureConfig.enableExploreSuggestionsKey: false,
+      CrossPathsFeatureConfig.enablePairInventoryKey: false,
     });
     expect(CrossPathsFeatureConfig.disabled.consentControlsEnabled, isFalse);
     expect(CrossPathsFeatureConfig.disabled.exploreSuggestionsEnabled, isFalse);
+    expect(CrossPathsFeatureConfig.disabled.pairInventoryEnabled, isFalse);
   });
 
   test('event consent ids and timestamps decode deterministically', () {
@@ -123,6 +126,33 @@ void main() {
     expect(receipt.status, CrossPathsInvitationStatus.accepted);
     expect(receipt.conversationId, 'plan-1');
   });
+
+  test(
+    'pair hold documents decode held inventory without implying booking',
+    () {
+      final expiresAt = DateTime.utc(2026, 8, 6, 12, 15);
+      final hold = CrossPathsPairHold.fromMap('hold-1', {
+        'eventId': 'event-1',
+        'invitationId': 'invitation-1',
+        'requesterUid': 'runner-1',
+        'attendeeUid': 'runner-2',
+        'participantIds': ['runner-1', 'runner-2'],
+        'status': 'active',
+        'requesterBookingStatus': 'held',
+        'attendeeBookingStatus': 'signedUp',
+        'requesterPriceInPaise': 2500,
+        'currency': 'INR',
+        'expiresAt': expiresAt,
+        'conversationId': null,
+      });
+
+      expect(hold.status, CrossPathsPairHoldStatus.active);
+      expect(hold.requesterBookingStatus, 'held');
+      expect(hold.attendeeBookingStatus, 'signedUp');
+      expect(hold.expiresAt, expiresAt);
+      expect(hold.conversationId, isNull);
+    },
+  );
 }
 
 Map<String, Object?> _suggestionJson() => {

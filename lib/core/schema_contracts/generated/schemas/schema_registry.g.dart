@@ -202,6 +202,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaCrossPathsInvitationDocumentSchema,
   ),
   SchemaContractDefinition(
+    name: 'CrossPathsPairHoldDocument',
+    source: 'firestore/cross_paths_pair_holds.schema.json',
+    schema: schemaCrossPathsPairHoldDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'EventBroadcastDocument',
     source: 'firestore/event_broadcasts.schema.json',
     schema: schemaEventBroadcastDocumentSchema,
@@ -1211,6 +1216,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'CrossPathsShowcaseEligibilityDocument': schemaCrossPathsShowcaseEligibilityDocumentSchema,
   'CrossPathsSuggestionExposureDocument': schemaCrossPathsSuggestionExposureDocumentSchema,
   'CrossPathsInvitationDocument': schemaCrossPathsInvitationDocumentSchema,
+  'CrossPathsPairHoldDocument': schemaCrossPathsPairHoldDocumentSchema,
   'EventBroadcastDocument': schemaEventBroadcastDocumentSchema,
   'EventWaitlistOfferDocument': schemaEventWaitlistOfferDocumentSchema,
   'EventSuccessPlanDocument': schemaEventSuccessPlanDocumentSchema,
@@ -1445,6 +1451,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'firestore/cross_paths_showcase_eligibility.schema.json': schemaCrossPathsShowcaseEligibilityDocumentSchema,
   'firestore/cross_paths_suggestion_exposures.schema.json': schemaCrossPathsSuggestionExposureDocumentSchema,
   'firestore/cross_paths_invitations.schema.json': schemaCrossPathsInvitationDocumentSchema,
+  'firestore/cross_paths_pair_holds.schema.json': schemaCrossPathsPairHoldDocumentSchema,
   'firestore/event_broadcasts.schema.json': schemaEventBroadcastDocumentSchema,
   'firestore/event_waitlist_offers.schema.json': schemaEventWaitlistOfferDocumentSchema,
   'firestore/event_success_plans.schema.json': schemaEventSuccessPlanDocumentSchema,

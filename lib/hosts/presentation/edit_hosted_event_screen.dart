@@ -151,6 +151,11 @@ class HostEventEditSaveRequest {
             capacityLimit: capacityLimit,
             basePriceInPaise: priceInPaise,
             inviteCodeHint: _inviteCodeHint(inviteCodeText),
+            crossPathsPairCapacity: event
+                .effectiveEventPolicy
+                .admissionPolicy
+                .crossPathsPairInventory
+                .reservedPairCapacity,
           )
         : event.eventPolicy;
 
@@ -1315,6 +1320,13 @@ class ReadOnlyHostedEventPolicyCard extends StatelessWidget {
           valueText: policy.cancellationPolicy.title,
           icon: CatchIcons.ruleOutlined,
         ),
+        if (policy.usesCrossPathsPairInventory)
+          CatchField.read(
+            title: context.l10n.hostsEventPolicyStepTitleCrossPathsPairs,
+            valueText:
+                '${policy.admissionPolicy.crossPathsPairInventory.reservedPairCapacity}',
+            icon: CatchIcons.peopleOutline,
+          ),
       ],
     );
   }
@@ -1393,18 +1405,24 @@ EventPolicyBundle _eventPolicyForDefaults({
   required int capacityLimit,
   required int basePriceInPaise,
   required String? inviteCodeHint,
+  required int crossPathsPairCapacity,
 }) {
+  EventPolicyBundle policy;
   if (admissionPreset == EventAdmissionPreset.requestToJoin) {
-    return EventPolicyBundle.requestToJoinEvent(
+    policy = EventPolicyBundle.requestToJoinEvent(
       capacityLimit: capacityLimit,
       basePriceInPaise: basePriceInPaise,
       cancellationPolicy: defaults.cancellationPolicy,
     );
+  } else {
+    policy = defaults.toEventPolicyBundle(
+      capacityLimit: capacityLimit,
+      basePriceInPaise: basePriceInPaise,
+      inviteCodeHint: inviteCodeHint,
+    );
   }
-  return defaults.toEventPolicyBundle(
-    capacityLimit: capacityLimit,
-    basePriceInPaise: basePriceInPaise,
-    inviteCodeHint: inviteCodeHint,
+  return policy.withCrossPathsPairInventory(
+    reservedPairCapacity: crossPathsPairCapacity.clamp(0, capacityLimit),
   );
 }
 

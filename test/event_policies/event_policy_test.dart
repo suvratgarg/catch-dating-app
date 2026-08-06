@@ -115,6 +115,41 @@ void main() {
       expect(decision.waitlistMode, EventWaitlistMode.rankedOffer);
     });
 
+    test('reserved pair seats stay separate from general admission', () {
+      final admission =
+          const EventAdmissionPolicy.open(
+            capacityLimit: 10,
+            waitlistPolicy: EventWaitlistPolicy.rankedOffer(),
+          ).withCrossPathsPairInventory(
+            const CrossPathsPairInventoryPolicy(
+              enabled: true,
+              reservedPairCapacity: 2,
+            ),
+          );
+      final policy = bundle(admissionPolicy: admission);
+
+      final admitted = decide(
+        policy: policy,
+        attendee: _attendee(Gender.woman, {Gender.man}),
+        roster: const EventRosterSnapshot(
+          bookedCountsByCohort: {EventCohortIds.menInterestedInWomen: 8},
+          crossPathsPairConfirmedCount: 2,
+        ),
+      );
+      final generalPoolFull = decide(
+        policy: policy,
+        attendee: _attendee(Gender.woman, {Gender.man}),
+        roster: const EventRosterSnapshot(
+          bookedCountsByCohort: {EventCohortIds.menInterestedInWomen: 10},
+          crossPathsPairConfirmedCount: 2,
+        ),
+      );
+
+      expect(admitted.type, EventAdmissionDecisionType.admitted);
+      expect(generalPoolFull.type, EventAdmissionDecisionType.waitlisted);
+      expect(generalPoolFull.reason, EventAdmissionDecisionReason.capacityFull);
+    });
+
     test('fixed cohort caps block only the capped cohort', () {
       final policy = bundle(
         admissionPolicy: const EventAdmissionPolicy.fixedCohortCaps(

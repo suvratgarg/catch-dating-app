@@ -138,6 +138,55 @@ test("manual approval policy blocks direct signup until host approval", () => {
   }));
 });
 
+test("reserved pair capacity stays separate from general admission", () => {
+  const pairPolicy: EventPolicyBundleDocument = {
+    ...policy("standard"),
+    admission: {
+      ...policy("standard").admission,
+      capacityLimit: 10,
+      crossPathsPairInventory: {
+        enabled: true,
+        reservedPairCapacity: 2,
+        holdDurationMinutes: 15,
+      },
+    },
+  };
+  const roster = {
+    bookedCountsByCohort: {},
+    waitlistedCountsByCohort: {},
+    totalBooked: 8,
+    crossPathsPairHeldCount: 0,
+    crossPathsPairConfirmedCount: 0,
+  };
+  assert.throws(
+    () => assertPolicyAllowsSignup({
+      policy: pairPolicy,
+      cohortId: cohortIds.menInterestedInWomen,
+      roster,
+    }),
+    /General admission is full/
+  );
+  assert.doesNotThrow(() => assertPolicyAllowsSignup({
+    policy: pairPolicy,
+    cohortId: cohortIds.menInterestedInWomen,
+    roster,
+    admissionMode: "crossPathsPair",
+  }));
+  assert.throws(
+    () => assertPolicyAllowsSignup({
+      policy: pairPolicy,
+      cohortId: cohortIds.menInterestedInWomen,
+      roster: {
+        ...roster,
+        crossPathsPairHeldCount: 2,
+        totalBooked: 10,
+      },
+      admissionMode: "crossPathsPair",
+    }),
+    /event is now full|pair spot is not available/
+  );
+});
+
 function policy(
   policyId: EventPolicyBundleDocument["cancellation"]["policyId"]
 ): EventPolicyBundleDocument {

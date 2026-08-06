@@ -304,6 +304,7 @@ export interface EventPolicyDefaults {
   maxMen?: number | null;
   maxWomen?: number | null;
   dynamicPricingEnabled?: boolean;
+  crossPathsPairCapacity?: number;
   dynamicPricingStepInPaise?: number | null;
   dynamicPricingMaxInPaise?: number | null;
   cancellationPolicyId?: "flexible" | "standard" | "strict";
@@ -397,6 +398,11 @@ export interface EventPolicyAdmissionDocument {
     [k: string]: number;
   };
   balancedRatioPolicy?: EventPolicyBalancedRatioDocument | null;
+  crossPathsPairInventory?: {
+    enabled: boolean;
+    reservedPairCapacity: number;
+    holdDurationMinutes: number;
+  };
 }
 
 export interface EventPolicyPrivateAccessDocument {
@@ -1205,6 +1211,7 @@ export interface OrganizerDocument {
       maxMen?: number | null;
       maxWomen?: number | null;
       dynamicPricingEnabled?: boolean;
+      crossPathsPairCapacity?: number;
       dynamicPricingStepInPaise?: number | null;
       dynamicPricingMaxInPaise?: number | null;
       cancellationPolicyId?: "flexible" | "standard" | "strict";
@@ -1703,6 +1710,11 @@ export interface EventDocument {
   waitlistedCohortCounts: {
     [k: string]: number;
   };
+  crossPathsPairHeldCount?: number;
+  crossPathsPairConfirmedCount?: number;
+  crossPathsPairHeldCohortCounts?: {
+    [k: string]: number;
+  };
   discoveryMarketId: string;
   discoveryCityName: string;
   discoveryActivityKind:
@@ -2064,7 +2076,48 @@ export interface CrossPathsInvitationDocument {
     | "consent_revoked"
     | "safety_state_changed"
     | "competing_plan_accepted"
-    | "plan_cancelled";
+    | "plan_cancelled"
+    | "hold_expired";
+  conversationId: string | null;
+  pairHoldId: string | null;
+}
+
+/**
+ * Server-owned, short-lived companion-seat reservation for an accepted Cross Paths invitation.
+ */
+export interface CrossPathsPairHoldDocument {
+  eventId: string;
+  invitationId: string;
+  organizerId: string;
+  requesterUid: string;
+  attendeeUid: string;
+  /**
+   * @minItems 2
+   * @maxItems 2
+   */
+  participantIds: string[];
+  status: "active" | "confirmed" | "expired" | "cancelled" | "invalidated";
+  requesterBookingStatus: "held" | "confirmed" | "cancelled";
+  attendeeBookingStatus: "confirmed" | "cancelled";
+  requesterCohortId: string;
+  attendeeCohortId: string;
+  requesterPriceInPaise: number;
+  attendeePriceInPaise: number;
+  currency: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+  confirmedAt: FirebaseFirestore.Timestamp | null;
+  releasedAt: FirebaseFirestore.Timestamp | null;
+  releaseReason:
+    | null
+    | "expired"
+    | "cancelled"
+    | "event_unavailable"
+    | "participation_cancelled"
+    | "safety_state_changed"
+    | "payment_failed";
+  paymentId: string | null;
   conversationId: string | null;
 }
 
@@ -2567,6 +2620,10 @@ export interface PaymentDocument {
    * Host-facing invite source copied from eventInviteLinks.
    */
   inviteSource?: string | null;
+  /**
+   * Pair hold consumed by this booking, when present.
+   */
+  crossPathsPairHoldId?: string | null;
   signUpFailed: boolean;
   createdAt: FirebaseFirestore.Timestamp;
 }

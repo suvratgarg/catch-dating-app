@@ -18,6 +18,7 @@ import 'package:catch_dating_app/core/widgets/catch_person_polaroid.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';
+import 'package:catch_dating_app/cross_paths/data/cross_paths_feature_config_provider.dart';
 import 'package:catch_dating_app/cross_paths/data/cross_paths_repository.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_invitation.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_suggestion.dart';
@@ -26,9 +27,11 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
+import 'package:catch_dating_app/routing/route_contract.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_surface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class CrossPathsExploreCard extends StatefulWidget {
   const CrossPathsExploreCard({
@@ -273,6 +276,9 @@ class CrossPathsProfilePreviewSheet extends ConsumerWidget {
       crossPathsInvitationControllerProvider.notifier,
     );
     final analytics = ref.read(appAnalyticsProvider);
+    final pairInvitationEnabled =
+        suggestion.event.pairHoldAvailable &&
+        ref.watch(crossPathsFeatureConfigProvider).pairInventoryEnabled;
     return FractionallySizedBox(
       heightFactor: 0.94,
       child: CatchSurface(
@@ -340,7 +346,11 @@ class CrossPathsProfilePreviewSheet extends ConsumerWidget {
                     ],
                     CatchButton(
                       key: const ValueKey('cross-paths-invitation-action'),
-                      label: _invitationActionLabel(context, invitation),
+                      label: _invitationActionLabel(
+                        context,
+                        invitation,
+                        pairInvitationEnabled: pairInvitationEnabled,
+                      ),
                       icon: Icon(
                         invitation?.status ==
                                 CrossPathsInvitationStatus.accepted
@@ -361,6 +371,7 @@ class CrossPathsProfilePreviewSheet extends ConsumerWidget {
                         analytics,
                         invitationAsync,
                         invitation,
+                        pairInvitationEnabled: pairInvitationEnabled,
                       ),
                     ),
                     gapH10,
@@ -382,10 +393,14 @@ class CrossPathsProfilePreviewSheet extends ConsumerWidget {
 
   String _invitationActionLabel(
     BuildContext context,
-    CrossPathsInvitation? invitation,
-  ) {
-    if (!suggestion.viewerIsBooked) {
+    CrossPathsInvitation? invitation, {
+    required bool pairInvitationEnabled,
+  }) {
+    if (!suggestion.viewerIsBooked && !pairInvitationEnabled) {
       return context.l10n.crossPathsInvitationActionJoinFirst;
+    }
+    if (!suggestion.viewerIsBooked && invitation == null) {
+      return context.l10n.crossPathsPairInventoryActionAskTogether;
     }
     return switch (invitation?.status) {
       null => context.l10n.crossPathsInvitationActionSend,
@@ -402,9 +417,12 @@ class CrossPathsProfilePreviewSheet extends ConsumerWidget {
     CrossPathsInvitationController invitationController,
     AppAnalytics analytics,
     AsyncValue<CrossPathsInvitation?> invitationAsync,
-    CrossPathsInvitation? invitation,
-  ) {
-    if (!suggestion.viewerIsBooked) return onEventSelected;
+    CrossPathsInvitation? invitation, {
+    required bool pairInvitationEnabled,
+  }) {
+    if (!suggestion.viewerIsBooked && !pairInvitationEnabled) {
+      return onEventSelected;
+    }
     if (!invitationAsync.hasValue) return null;
     return switch (invitation?.status) {
       null => () => _sendInvitation(context, invitationController, analytics),
@@ -415,9 +433,14 @@ class CrossPathsProfilePreviewSheet extends ConsumerWidget {
         invitation!.id,
       ),
       CrossPathsInvitationStatus.accepted =>
-        invitation?.conversationId == null || onPlanSelected == null
-            ? null
-            : () => onPlanSelected!(invitation!.conversationId!),
+        invitation?.conversationId != null && onPlanSelected != null
+            ? () => onPlanSelected!(invitation!.conversationId!)
+            : invitation?.pairHoldId != null
+            ? () => context.pushNamed(
+                Routes.crossPathsInvitationScreen.name,
+                pathParameters: {'invitationId': invitation!.id},
+              )
+            : null,
       _ => null,
     };
   }

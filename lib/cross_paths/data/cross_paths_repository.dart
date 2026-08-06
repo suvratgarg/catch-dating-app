@@ -10,6 +10,7 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
         SetCrossPathsEventConsentCallableRequest;
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_event_consent.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_invitation.dart';
+import 'package:catch_dating_app/cross_paths/domain/cross_paths_pair_hold.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_suggestion.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -67,11 +68,26 @@ CrossPathsInvitation crossPathsInvitationFromFirestore(
   });
 }
 
+CrossPathsPairHold crossPathsPairHoldFromFirestore(
+  String id,
+  Map<String, dynamic> json,
+) {
+  final expiresAt = json['expiresAt'];
+  if (expiresAt is! Timestamp) {
+    throw const FormatException('expiresAt must be a Firestore timestamp.');
+  }
+  return CrossPathsPairHold.fromMap(id, {
+    ...json,
+    'expiresAt': expiresAt.toDate(),
+  });
+}
+
 class CrossPathsRepository {
   const CrossPathsRepository(this._db, this._functions);
 
   static const _collectionPath = 'eventCrossPathsConsents';
   static const _invitationsPath = 'crossPathsInvitations';
+  static const _pairHoldsPath = 'crossPathsPairHolds';
   final FirebaseFirestore _db;
   final FirebaseFunctions _functions;
 
@@ -159,6 +175,27 @@ class CrossPathsRepository {
           service: BackendService.firestore,
           action: 'watch Cross Paths invitation',
           resource: _invitationsPath,
+        ),
+      );
+
+  Stream<CrossPathsPairHold?> watchPairHold(String holdId) =>
+      withBackendErrorStream(
+        () => _db
+            .collection(_pairHoldsPath)
+            .doc(holdId)
+            .snapshots()
+            .map(
+              (snapshot) => snapshot.exists
+                  ? crossPathsPairHoldFromFirestore(
+                      snapshot.id,
+                      snapshot.data()!,
+                    )
+                  : null,
+            ),
+        context: const BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'watch Cross Paths pair hold',
+          resource: _pairHoldsPath,
         ),
       );
 
@@ -303,6 +340,10 @@ Stream<CrossPathsInvitation?> watchCrossPathsInvitation(
   Ref ref,
   String invitationId,
 ) => ref.watch(crossPathsRepositoryProvider).watchInvitation(invitationId);
+
+@riverpod
+Stream<CrossPathsPairHold?> watchCrossPathsPairHold(Ref ref, String holdId) =>
+    ref.watch(crossPathsRepositoryProvider).watchPairHold(holdId);
 
 @riverpod
 Stream<List<CrossPathsInvitation>> watchIncomingCrossPathsInvitations(

@@ -2050,6 +2050,7 @@
         "lib/explore/presentation/explore_cross_paths_provider.dart",
         "lib/cross_paths/presentation/cross_paths_explore_card.dart",
         "lib/cross_paths/domain/cross_paths_invitation.dart",
+        "lib/cross_paths/domain/cross_paths_pair_hold.dart",
         "lib/cross_paths/presentation/cross_paths_invitation_controller.dart",
         "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
         "lib/events/shared/event_detail_route_transition.dart",
@@ -2059,6 +2060,9 @@
         "lib/cross_paths/presentation/cross_paths_event_consent_section.dart",
         "functions/src/crossPaths/setCrossPathsEventConsent.ts",
         "functions/src/crossPaths/invitations.ts",
+        "functions/src/crossPaths/pairHolds.ts",
+        "functions/src/events/eventPolicy.ts",
+        "functions/src/events/signUpUserForEvent.ts",
         "test/cross_paths/cross_paths_contract_test.dart",
         "test/cross_paths/cross_paths_event_consent_section_test.dart",
         "functions/src/crossPaths/setCrossPathsEventConsent.test.ts"
@@ -2110,10 +2114,10 @@
         },
         {
           "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-          "role": "canonical person-polaroid composition with a sanitized profile preview; its consumer boundary resolves participant-scoped invitation state and delegates mutations to the Cross Paths controller",
+          "role": "canonical person-polaroid composition with a sanitized profile preview; its consumer boundary resolves participant-scoped invitation state and default-off pair availability before delegating mutations",
           "providerFree": false,
           "status": "aligned",
-          "lastReviewedPass": "2026-08-06-cross-paths-invitations"
+          "lastReviewedPass": "2026-08-06-cross-paths-pair-inventory"
         },
         {
           "path": "lib/events/shared/event_detail_route_transition.dart and lib/events/presentation/event_detail_screen.dart",
@@ -2140,6 +2144,12 @@
           "lastReviewedPass": "2026-08-06-cross-paths-invitations"
         },
         {
+          "path": "functions/src/crossPaths/pairHolds.ts and functions/src/events/eventPolicy.ts and functions/src/events/signUpUserForEvent.ts and lib/cross_paths/domain/cross_paths_pair_hold.dart",
+          "role": "organizer-configured companion admission, participant-readable server-owned holds, canonical booking conversion, and idempotent lifecycle release without waitlist reordering",
+          "status": "aligned",
+          "lastReviewedPass": "2026-08-06-cross-paths-pair-inventory"
+        },
+        {
           "path": "functions/src/crossPaths/setCrossPathsEventConsent.ts and firestore.rules",
           "role": "server-owned enablement validation, revocation persistence, own-edge reads, and direct-write denial",
           "status": "aligned",
@@ -2154,16 +2164,16 @@
       ],
       "candidateQueue": [],
       "exceptions": [],
-      "requiredBackPropagation": "When Cross Paths consent terms, global preference semantics, event-edge fields, suggestion response/ranking versions, enablement preconditions, rollout flags, revocation behavior, or funnel attribution changes, update the JSON schemas, generated Dart and TypeScript contracts, callable, Firestore rules, Settings, Explore and Event Detail adopters, analytics names, disclosure copy, focused tests, docs/cross_paths.md, and this exhibit in one pass.",
+      "requiredBackPropagation": "When Cross Paths consent terms, global preference semantics, event-edge fields, suggestion response/ranking versions, companion inventory/hold/payment semantics, enablement preconditions, rollout flags, revocation behavior, or funnel attribution changes, update the JSON schemas, generated Dart and TypeScript contracts, callable, Firestore rules, Settings, Explore, Event Detail, Host policy and payment adopters, analytics names, disclosure copy, focused tests, docs/cross_paths.md, and this exhibit in one pass.",
       "requiredChecks": [
         "./tool/check_data_contract.sh",
-        "flutter test test/analytics/app_analytics_test.dart test/cross_paths test/chats/chat_screen_test.dart test/chats/chat_inbox_screen_test.dart test/explore/explore_view_model_test.dart test/safety/settings_screen_test.dart test/events/event_detail_widgets_test.dart",
-        "npm --prefix functions run lint && npm --prefix functions run build && node --test functions/lib/crossPaths/*.test.js functions/lib/shared/notifications.test.js",
+        "flutter test test/analytics/app_analytics_test.dart test/cross_paths test/chats/chat_screen_test.dart test/chats/chat_inbox_screen_test.dart test/explore/explore_view_model_test.dart test/safety/settings_screen_test.dart test/events/event_detail_widgets_test.dart test/hosts/host_create_event_state_test.dart test/events/event_booking_controller_test.dart",
+        "npm --prefix functions run lint && npm --prefix functions run build && node --test functions/lib/crossPaths/*.test.js functions/lib/events/eventPolicy.test.js functions/lib/events/signUpUserForEvent.test.js functions/lib/payments/*.test.js functions/lib/shared/notifications.test.js",
         "bash tool/check_catch_ui_lints.sh",
         "node tool/architecture/check_app_architecture_exhibits.mjs",
         "node tool/agent/check_agent_readiness.mjs"
       ],
-      "notes": "This reference now covers permission storage, server-owned suggestion resolution, fail-closed Explore consumption, participant-only invitations, and temporary event plans. Both rollout flags remain off by default, and external privacy-policy approval is required before enabling identifiable discovery beyond internal review."
+      "notes": "This reference now covers permission storage, server-owned suggestion resolution, fail-closed Explore consumption, participant-only invitations, organizer-controlled companion holds, canonical checkout conversion, and temporary event plans. All three rollout flags remain off by default, and external privacy-policy approval is required before enabling identifiable discovery beyond internal review."
     },
     {
       "id": "ARCH-ENTITY-MATERIAL-001",

@@ -684,12 +684,14 @@ class FakePaymentRepository extends Fake implements PaymentRepository {
 
   String? bookedFreeEventInviteCode;
   String? bookedFreeEventInviteLinkId;
+  String? bookedFreeEventCrossPathsPairHoldId;
 
   @override
   Future<void> bookFreeEvent({
     required String eventId,
     String? inviteCode,
     String? inviteLinkId,
+    String? crossPathsPairHoldId,
   }) async {
     if (bookFreeEventError != null) {
       throw bookFreeEventError!;
@@ -698,6 +700,7 @@ class FakePaymentRepository extends Fake implements PaymentRepository {
     bookedFreeEventId = eventId;
     bookedFreeEventInviteCode = inviteCode;
     bookedFreeEventInviteLinkId = inviteLinkId;
+    bookedFreeEventCrossPathsPairHoldId = crossPathsPairHoldId;
   }
 
   @override
@@ -710,6 +713,7 @@ class FakePaymentRepository extends Fake implements PaymentRepository {
     required String userContact,
     String? inviteCode,
     String? inviteLinkId,
+    String? crossPathsPairHoldId,
   }) async {
     if (!supportsPaid) {
       throw const PaidBookingUnsupportedException();
@@ -727,6 +731,7 @@ class FakePaymentRepository extends Fake implements PaymentRepository {
       userContact: userContact,
       inviteCode: inviteCode,
       inviteLinkId: inviteLinkId,
+      crossPathsPairHoldId: crossPathsPairHoldId,
     );
     return processPaymentResult ??
         PaymentConfirmationData(
@@ -752,6 +757,7 @@ class ProcessPaymentCall {
     required this.userContact,
     this.inviteCode,
     this.inviteLinkId,
+    this.crossPathsPairHoldId,
   });
 
   final String eventId;
@@ -762,6 +768,7 @@ class ProcessPaymentCall {
   final String userContact;
   final String? inviteCode;
   final String? inviteLinkId;
+  final String? crossPathsPairHoldId;
 }
 
 class FakePublicProfileRepository extends Fake

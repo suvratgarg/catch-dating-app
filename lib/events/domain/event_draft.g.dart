@@ -40,6 +40,9 @@ _EventDraft _$EventDraftFromJson(Map<String, dynamic> json) => _EventDraft(
   dynamicPricingStep: json['dynamicPricingStep'] as String?,
   dynamicPricingMax: json['dynamicPricingMax'] as String?,
   cancellationPolicy: json['cancellationPolicy'] as String?,
+  crossPathsPairInventoryEnabled:
+      json['crossPathsPairInventoryEnabled'] as bool? ?? false,
+  crossPathsPairCapacity: json['crossPathsPairCapacity'] as String?,
   eventSuccessDefaults: json['eventSuccessDefaults'] == null
       ? const EventSuccessDefaults()
       : EventSuccessDefaults.fromJson(
@@ -80,5 +83,7 @@ Map<String, dynamic> _$EventDraftToJson(_EventDraft instance) =>
       'dynamicPricingStep': instance.dynamicPricingStep,
       'dynamicPricingMax': instance.dynamicPricingMax,
       'cancellationPolicy': instance.cancellationPolicy,
+      'crossPathsPairInventoryEnabled': instance.crossPathsPairInventoryEnabled,
+      'crossPathsPairCapacity': instance.crossPathsPairCapacity,
       'eventSuccessDefaults': instance.eventSuccessDefaults.toJson(),
     };

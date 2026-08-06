@@ -5323,9 +5323,11 @@ class _EventPolicyStepFrameState extends State<_EventPolicyStepFrame> {
   late final TextEditingController _maxAgeController;
   late final TextEditingController _maxMenController;
   late final TextEditingController _maxWomenController;
+  late final TextEditingController _crossPathsPairCapacityController;
   late EventAdmissionPreset _admissionPreset;
   var _cohortCapsEnabled = false;
   var _dynamicPricingEnabled = false;
+  var _crossPathsPairInventoryEnabled = false;
   var _cancellationPolicyId = EventCancellationPolicyId.standard;
 
   @override
@@ -5343,6 +5345,7 @@ class _EventPolicyStepFrameState extends State<_EventPolicyStepFrame> {
     _maxAgeController = TextEditingController(text: '38');
     _maxMenController = TextEditingController(text: '12');
     _maxWomenController = TextEditingController(text: '12');
+    _crossPathsPairCapacityController = TextEditingController(text: '2');
   }
 
   @override
@@ -5356,6 +5359,7 @@ class _EventPolicyStepFrameState extends State<_EventPolicyStepFrame> {
     _maxAgeController.dispose();
     _maxMenController.dispose();
     _maxWomenController.dispose();
+    _crossPathsPairCapacityController.dispose();
     super.dispose();
   }
 
@@ -5373,12 +5377,16 @@ class _EventPolicyStepFrameState extends State<_EventPolicyStepFrame> {
       maxAgeController: _maxAgeController,
       maxMenController: _maxMenController,
       maxWomenController: _maxWomenController,
+      crossPathsPairCapacityController: _crossPathsPairCapacityController,
       admissionPreset: _admissionPreset,
       onAdmissionPresetChanged: (preset) =>
           setState(() => _admissionPreset = preset),
       cohortCapsEnabled: _cohortCapsEnabled,
       onCohortCapsEnabledChanged: (enabled) =>
           setState(() => _cohortCapsEnabled = enabled),
+      crossPathsPairInventoryEnabled: _crossPathsPairInventoryEnabled,
+      onCrossPathsPairInventoryChanged: (enabled) =>
+          setState(() => _crossPathsPairInventoryEnabled = enabled),
       dynamicPricingEnabled: _dynamicPricingEnabled,
       onDynamicPricingChanged: (enabled) =>
           setState(() => _dynamicPricingEnabled = enabled),

@@ -179,6 +179,7 @@ ViewerEventAvailability resolveViewerEventAvailability({
     roster: EventRosterSnapshot(
       bookedCountsByCohort: event.effectiveCohortCounts,
       waitlistedCountsByCohort: event.effectiveWaitlistedCohortCounts,
+      crossPathsPairConfirmedCount: event.crossPathsPairConfirmedCount,
     ),
   );
   final quotedPriceInPaise = decision.priceQuote.finalAmount.inPaise;

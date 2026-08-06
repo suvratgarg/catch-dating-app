@@ -1706,7 +1706,7 @@
         "symbol": "CrossPathsInvitationScreen"
       },
       "stateController": {
-        "primary": "watchCrossPathsInvitationProvider + CrossPathsInvitationController",
+        "primary": "watchCrossPathsInvitationProvider + watchCrossPathsPairHoldProvider + CrossPathsInvitationController",
         "files": [
           {
             "file": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
@@ -1727,7 +1727,7 @@
             "symbol": "CrossPathsInvitationController"
           }
         ],
-        "notes": "The route watches one participant-readable invitation plus its sanitized peer profile and event, maps missing/error/loading branches before rendering, and delegates send/respond/cancel writes to callable-only repository methods."
+        "notes": "The route watches one participant-readable invitation, its optional participant-readable companion hold, sanitized peer profile, and event; it maps missing/error/loading branches before rendering and delegates lifecycle mutations plus canonical hold checkout to CrossPathsInvitationController."
       },
       "designRefs": [
         {
@@ -1797,6 +1797,35 @@
           "nextAction": "Capture accepted and expired plan states during staged rollout."
         },
         {
+          "id": "pair_hold_active",
+          "kind": "mutation",
+          "status": "tested",
+          "source": "An accepted invitation with an active companion hold clearly says held, not booked; only the requester can complete canonical checkout while the confirmed attendee sees a waiting state.",
+          "tests": [
+            "test/cross_paths/cross_paths_invitation_screen_test.dart",
+            "test/cross_paths/cross_paths_invitation_controller_test.dart",
+            "functions/src/events/signUpUserForEvent.test.ts"
+          ],
+          "previewIds": [
+            "CrossPathsInvitationScreen/Cross Paths invitation states"
+          ],
+          "nextAction": "Capture the active requester and confirmed-attendee states during the organizer pilot."
+        },
+        {
+          "id": "pair_hold_ended",
+          "kind": "populated",
+          "status": "tested",
+          "source": "Expired, cancelled, invalidated, or otherwise inactive holds disable checkout and return the viewer to current Event Detail availability.",
+          "tests": [
+            "functions/src/crossPaths/invitations.test.ts",
+            "functions/test/firestore.rules.test.cjs"
+          ],
+          "previewIds": [
+            "CrossPathsInvitationScreen/Cross Paths invitation states"
+          ],
+          "nextAction": "Keep terminal hold copy generic across expiry, safety, and event-unavailability release reasons."
+        },
+        {
           "id": "invitation_terminal",
           "kind": "populated",
           "status": "tested",
@@ -1811,7 +1840,7 @@
         }
       ],
       "composition": {
-        "currentLayout": "CrossPathsInvitationScreen composes canonical person Polaroid, adjacent event context, lifecycle-specific actions, and route-level loading/error/unavailable states.",
+        "currentLayout": "CrossPathsInvitationScreen composes canonical person Polaroid, adjacent event context, invitation/hold/plan actions, an explicit held-not-booked panel, and route-level loading/error/unavailable states.",
         "targetLayout": "Keep person, event, and event-plan meanings visually distinct while preserving participant privacy and callable-only mutations.",
         "sections": [
           {
@@ -1839,6 +1868,8 @@
               "invitation_unavailable",
               "invitation_pending",
               "event_plan_accepted",
+              "pair_hold_active",
+              "pair_hold_ended",
               "invitation_terminal"
             ],
             "migration": "Implemented with provider reads at the route boundary and typed callable mutations in CrossPathsInvitationController.",

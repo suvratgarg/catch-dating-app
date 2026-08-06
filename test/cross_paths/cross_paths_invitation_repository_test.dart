@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/cross_paths/data/cross_paths_repository.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_invitation.dart';
+import 'package:catch_dating_app/cross_paths/domain/cross_paths_pair_hold.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
@@ -134,6 +135,29 @@ void main() {
       ]);
     },
   );
+
+  test('pair hold watch is participant-readable and typed', () async {
+    await firestore.collection('crossPathsPairHolds').doc('hold-1').set({
+      'eventId': 'event-1',
+      'invitationId': 'invitation-1',
+      'requesterUid': 'runner-1',
+      'attendeeUid': 'runner-2',
+      'participantIds': ['runner-1', 'runner-2'],
+      'status': 'active',
+      'requesterBookingStatus': 'held',
+      'attendeeBookingStatus': 'signedUp',
+      'requesterPriceInPaise': 0,
+      'currency': 'INR',
+      'expiresAt': Timestamp.fromDate(DateTime.utc(2026, 8, 6, 12, 15)),
+      'conversationId': null,
+    });
+
+    final hold = await repository.watchPairHold('hold-1').first;
+
+    expect(hold?.status, CrossPathsPairHoldStatus.active);
+    expect(hold?.requesterBookingStatus, 'held');
+    expect(hold?.attendeeBookingStatus, 'signedUp');
+  });
 }
 
 Map<String, Object?> _invitation({

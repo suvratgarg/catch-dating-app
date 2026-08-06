@@ -91,11 +91,13 @@ class EventRosterSnapshot {
     this.bookedCountsByCohort = const {},
     this.waitlistedCountsByCohort = const {},
     this.offeredCountsByCohort = const {},
+    this.crossPathsPairConfirmedCount = 0,
   });
 
   final Map<String, int> bookedCountsByCohort;
   final Map<String, int> waitlistedCountsByCohort;
   final Map<String, int> offeredCountsByCohort;
+  final int crossPathsPairConfirmedCount;
 
   int bookedCountFor(String cohortId) => bookedCountsByCohort[cohortId] ?? 0;
 

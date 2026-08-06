@@ -28,6 +28,12 @@ abstract final class CreateEventFormKeys {
   static const dynamicPricingToggle = ValueKey(
     'create-event-dynamic-pricing-toggle',
   );
+  static const crossPathsPairInventoryToggle = ValueKey(
+    'create-event-cross-paths-pair-inventory-toggle',
+  );
+  static const crossPathsPairCapacity = ValueKey(
+    'create-event-cross-paths-pair-capacity-field',
+  );
   static const dynamicPricingStep = ValueKey(
     'create-event-dynamic-pricing-step-field',
   );

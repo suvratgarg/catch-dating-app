@@ -1,9 +1,9 @@
 ---
 doc_id: cross_paths
-version: 1.6.0
-updated: 2026-08-05
+version: 1.7.0
+updated: 2026-08-06
 owner: product (approved direction 2026-08-05)
-status: implementation-in-progress
+status: implemented-default-off
 ---
 
 # Cross Paths — Explore People + Event Invitation Spec
@@ -31,15 +31,18 @@ The approved defaults are:
   a hidden numeric attractiveness score must not become the eligibility rule.
 - Visibility requires both a global opt-in and a per-event opt-in. Existing
   users default to off.
-- A personal invitation is delivered only after the sender has a confirmed
-  booking for the event.
+- A personal invitation is normally delivered after the sender has a confirmed
+  booking. An unbooked sender may invite only when the organizer explicitly
+  enabled reserved Cross Paths companion inventory and the server proves a
+  companion hold is currently available.
 - Acceptance opens a temporary event-planning conversation. It does not create
   a permanent dating match or bypass the post-event Catch flow.
 - Cross Paths does not reorder a normal waitlist or bypass event admission.
 - Initial supply uses objective showcase-readiness rules plus reviewed human
   curation. Later ranking may use exposure-adjusted behavioral signals.
-- Phase 1 excludes full and waitlist-only events. Later paired inventory must be
-  an explicit organizer-controlled product, not a hidden ranking privilege.
+- General Explore discovery excludes full and waitlist-only events. Reserved
+  companion inventory is an explicit organizer-controlled, default-off product
+  and never changes normal waitlist rank.
 
 ## Product thesis
 
@@ -100,7 +103,8 @@ workflow:
 - A temporary event-planning conversation after acceptance.
 - Exposure-aware ranking, cold-start exploration, safety suppression, and
   conversion measurement.
-- A later organizer-controlled paired-inventory extension.
+- Organizer-controlled companion inventory, short-lived holds, and canonical
+  booking/payment conversion.
 
 ### Explicit non-goals
 
@@ -428,7 +432,7 @@ post-event Catch and must not create `profileDecisions` data.
 | Join/book event | viewer + event | Existing singleton booking contract | Confirmed participation |
 | Send invitation | sender + event | Domain-bounded: one recipient for the event | Pending |
 | Respond | invitation + recipient | Singleton terminal decision | Accepted or declined |
-| Accept an invitation | recipient + event | Domain-bounded: one accepted plan | Event plan created; competing pending invites invalidated |
+| Accept an invitation | recipient + event | Domain-bounded: one accepted intent | Event plan created for a booked sender, or one companion hold created for an eligible unbooked sender; competing pending invites invalidated |
 | Cancel pending invitation | invitation + sender | Singleton inverse before response | Cancelled |
 | Cancel accepted plan | participant + event plan | Singleton inverse | Plan cancelled/read-only |
 | Send event-plan message | participant + active plan | Unbounded until plan expiry, abuse-rate-limited | Message timeline |
@@ -448,7 +452,8 @@ The backend revalidates all of these transactionally:
 - authenticated sender;
 - valid, unexpired server-issued suggestion token;
 - sender and recipient are different;
-- both have `signedUp` participation for the same upcoming event;
+- the recipient has `signedUp` participation; the sender is either signed up
+  or currently admissible through enabled companion inventory;
 - recipient still has effective consent;
 - reciprocal preferences, showcase eligibility, and safety checks still pass;
 - no prior sender invitation for the event;
@@ -536,24 +541,33 @@ they do today; the event plan is not silently upgraded.
 - If the final seat disappears before booking, normal Event Detail availability
   wins and the suggestion becomes non-actionable/hidden.
 
-### Phase 3: organizer-controlled pair inventory
+### Phase 3: organizer-controlled companion inventory
 
-Paired inventory is a later, separately gated extension. It may be implemented
-only when an organizer explicitly configures a bounded pool of two-person
-holds.
+Phase 3 is implemented behind the separate default-off
+`cross_paths_enable_pair_inventory` flag. An organizer may reserve a bounded
+number of seats from an event's total capacity for unbooked Cross Paths
+requesters. The featured recipient is already confirmed; acceptance reserves
+one companion seat for the requester, not a second seat and not a booking.
 
-The later contract must include:
+The contract now guarantees:
 
-- organizer-visible reserved pair capacity;
-- a short-lived, transactionally created two-seat hold;
-- independent eligibility and price quotes for both members;
-- both members' payment/confirmation before final admission;
-- expiry and automatic inventory release;
-- cohort/capacity invariants shared with the canonical event-policy engine;
-- transparent UI that distinguishes a hold from a confirmed booking;
-- no hidden ranking-based waitlist movement.
+- organizer-visible reserved companion capacity on the canonical event policy;
+- a short-lived, transactionally created one-seat hold for the unbooked
+  requester;
+- frozen requester and attendee price quotes, while only the requester still
+  needs checkout;
+- conversion through the existing free, Razorpay, or Stripe booking authority;
+- expiry, cancellation, safety, participation, event-unavailability, payment
+  failure, and account-deletion release paths;
+- separate held and confirmed aggregate projections with cohort invariants;
+- transparent requester/recipient UI that says a hold is not a booking;
+- no general-capacity leak and no hidden ranking-based waitlist movement.
 
-Until that contract exists, Cross Paths never changes admission.
+General admission never consumes the reserved pool. A confirmed companion
+booking moves from held to confirmed pair inventory; if the plan is later
+cancelled, the booking remains canonical and simply returns to general capacity
+accounting. Pair inventory does not grant a waitlist promotion or bypass any
+payment, schedule, safety, profile-readiness, or cohort rule.
 
 ## Backend and data ownership
 
@@ -568,6 +582,7 @@ contracts. A proposed name does not exist merely because this spec names it.
 | Per-event consent | `eventCrossPathsConsents/{eventId_uid}` | Implemented, callable-owned |
 | Human/automated showcase eligibility | server-only `crossPathsShowcaseEligibility/{uid}` | Implemented, reviewed and fingerprint-bound |
 | Event invitation | `crossPathsInvitations/{eventId_senderUid}` | Implemented, callable-owned and participant-readable |
+| Companion-seat hold | `crossPathsPairHolds/{holdId}` | Implemented, callable-owned and participant-readable by the two members only |
 | Accepted event plan | event-and-pair-scoped conversation with `conversationType: crossPathsEventPlan` | Implemented, participant-only and time-bounded |
 | Exposure/fatigue state | server-only `crossPathsSuggestionExposures/{exposureId}` | Implemented, session-idempotent and client-denied |
 
@@ -842,13 +857,27 @@ permanent-match promise.
 
 ### Phase 3 — Explicit paired inventory
 
-- Write a separate event-policy/payment contract for organizer-controlled
-  two-seat inventory.
-- Add two-seat hold, payment, expiry, release, and cohort invariants.
-- Pilot only with organizers who explicitly enable and understand the product.
+Implementation receipt (2026-08-06): organizer event creation/editing now owns
+a bounded reserved companion-seat policy. Suggestions expose only the coarse
+`pairHoldAvailable` decision. An unbooked, globally opted-in requester can send
+an explicit event invitation to an already booked and fully consented attendee.
+Acceptance creates a participant-readable hold, not a booking or conversation.
+The requester sees the frozen quote and expiry, then completes normal free or
+paid checkout; successful booking atomically confirms the hold, updates event
+aggregates, and creates the temporary event plan. Scheduled expiry and all
+lifecycle/safety/payment/account-deletion paths release the pool. Normal
+capacity and waitlist ordering remain separate.
 
-This phase is not implied by Phase 1 or Phase 2 and requires its own owner
-approval before implementation.
+- [x] Add organizer-controlled companion inventory to the canonical policy.
+- [x] Add transactional hold, confirmation, release, and aggregate invariants.
+- [x] Carry the hold through free, Razorpay, and Stripe booking authority.
+- [x] Add requester/recipient held, confirmed, and ended UI states.
+- [x] Keep pair inventory behind an independent default-off rollout flag.
+- [ ] Pilot only with organizers who explicitly enable and understand it.
+
+Exit gate: emulator rules, Functions transactions, payment tests, Flutter
+states, generated contracts, design registries, and repository readiness are
+green before any market flag is enabled.
 
 ## Verification and evidence
 

@@ -83,6 +83,11 @@ export interface CreateEventCallablePayload {
           | "manualReview"
           | "reject";
       } | null;
+      crossPathsPairInventory?: {
+        enabled: boolean;
+        reservedPairCapacity: number;
+        holdDurationMinutes: number;
+      };
     };
     pricing: {
       basePriceInPaise: number;

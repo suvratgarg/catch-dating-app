@@ -203,6 +203,26 @@ class EventPolicyBundle {
 
   bool get usesDemandPricing => pricingPolicy.hasDemandPricing;
 
+  bool get usesCrossPathsPairInventory =>
+      admissionPolicy.crossPathsPairInventory.isEnabled;
+
+  EventPolicyBundle withCrossPathsPairInventory({
+    required int reservedPairCapacity,
+    Duration holdDuration = const Duration(minutes: 15),
+  }) => EventPolicyBundle(
+    admissionPolicy: admissionPolicy.withCrossPathsPairInventory(
+      CrossPathsPairInventoryPolicy(
+        enabled: reservedPairCapacity > 0,
+        reservedPairCapacity: reservedPairCapacity,
+        holdDuration: holdDuration,
+      ),
+    ),
+    pricingPolicy: pricingPolicy,
+    cancellationPolicy: cancellationPolicy,
+    settlementPolicy: settlementPolicy,
+    cohortResolver: cohortResolver,
+  );
+
   Map<String, Object?> toJson() => {
     'version': version,
     'admission': admissionPolicy.toJson(),

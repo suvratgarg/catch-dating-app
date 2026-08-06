@@ -86,6 +86,7 @@ export interface CreateClubCallablePayload {
       maxMen?: number | null;
       maxWomen?: number | null;
       dynamicPricingEnabled?: boolean;
+      crossPathsPairCapacity?: number;
       dynamicPricingStepInPaise?: number | null;
       dynamicPricingMaxInPaise?: number | null;
       cancellationPolicyId?: "flexible" | "standard" | "strict";

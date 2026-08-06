@@ -204,6 +204,21 @@
       },
       "x-catch-ownership": "callable-owned"
     },
+    "crossPathsPairHeldCount": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nonNegativeInteger",
+      "x-catch-ownership": "callable-owned"
+    },
+    "crossPathsPairConfirmedCount": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nonNegativeInteger",
+      "x-catch-ownership": "callable-owned"
+    },
+    "crossPathsPairHeldCohortCounts": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "../shared/event_common.schema.json#/definitions/nonNegativeInteger"
+      },
+      "x-catch-ownership": "callable-owned"
+    },
     "discoveryMarketId": {
       "$ref": "../shared/event_common.schema.json#/definitions/marketId",
       "x-catch-ownership": "callable-owned"

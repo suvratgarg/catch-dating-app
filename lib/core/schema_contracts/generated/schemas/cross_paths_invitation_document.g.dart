@@ -29,6 +29,7 @@ const schemaCrossPathsInvitationDocumentSchema = <String, Object?>{
     'invalidatedAt',
     'invalidationReason',
     'conversationId',
+    'pairHoldId',
   ],
   'properties': <String, Object?>{
     'eventId': <String, Object?>{
@@ -233,10 +234,20 @@ const schemaCrossPathsInvitationDocumentSchema = <String, Object?>{
         'safety_state_changed',
         'competing_plan_accepted',
         'plan_cancelled',
+        'hold_expired',
       ],
       'x-catch-ownership': 'callable-owned',
     },
     'conversationId': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 1,
+      'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
+    },
+    'pairHoldId': <String, Object?>{
       'type': <Object?>[
         'string',
         'null',

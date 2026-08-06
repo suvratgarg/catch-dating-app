@@ -1,4 +1,3 @@
-import {createHash} from "node:crypto";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {onDocumentCreated, onDocumentWritten} from
@@ -13,6 +12,7 @@ import {normalizePayloadStrings} from
   "../shared/callablePayloadNormalization";
 import {
   CrossPathsInvitationDocument,
+  CrossPathsPairHoldDocument,
   CrossPathsShowcaseEligibilityDocument,
   EventCrossPathsConsentDocument,
   EventDocument,
@@ -51,6 +51,15 @@ import {isReciprocallyEligible} from
   "../shared/relationshipEligibility";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {
+  assertPolicyAllowsSignup,
+  cohortIdForUser,
+  eventPolicyFromEvent,
+  incrementCount,
+  quotePriceInPaise,
+  rosterFromEvent,
+  rosterWithReservedWaitlistOffersInTransaction,
+} from "../events/eventPolicy";
+import {
   crossPathsSuggestionSigningKey,
   verifyCrossPathsSuggestionToken,
 } from "./getCrossPathsSuggestions";
@@ -58,6 +67,21 @@ import {
   effectiveCrossPathsShowcaseEligibility,
   evaluateCrossPathsShowcaseReadiness,
 } from "./showcaseEligibility";
+import {
+  crossPathsEventPlanId,
+  crossPathsInvitationId,
+  crossPathsPairHoldId,
+} from "./identifiers";
+import {
+  releaseCrossPathsPairHold,
+  releaseCrossPathsPairHoldInTransaction,
+} from "./pairHolds";
+
+export {
+  crossPathsEventPlanId,
+  crossPathsInvitationId,
+  crossPathsPairHoldId,
+} from "./identifiers";
 
 const minimumInvitationLeadMillis = 6 * 60 * 60 * 1000;
 const responseBufferMillis = 30 * 60 * 1000;
@@ -88,22 +112,6 @@ const defaultDeps: InvitationDeps = {
   checkRateLimit: defaultCheckRateLimit,
   verifyToken: verifyCrossPathsSuggestionToken,
 };
-
-export function crossPathsInvitationId(
-  eventId: string,
-  senderUid: string
-): string {
-  return `cp_${sha256(`${eventId}\u0000${senderUid}`).slice(0, 48)}`;
-}
-
-export function crossPathsEventPlanId(
-  eventId: string,
-  userA: string,
-  userB: string
-): string {
-  const pair = [userA, userB].sort().join("\u0000");
-  return `cpp_${sha256(`${eventId}\u0000${pair}`).slice(0, 48)}`;
-}
 
 /** Sends one message-free, event-scoped invitation. */
 export async function sendCrossPathsInvitationHandler(
@@ -194,7 +202,17 @@ export async function sendCrossPathsInvitationHandler(
       data.eventId,
       data.recipientUid
     );
-    if (!senderParticipation || !recipientParticipation) throw unavailable();
+    if (!recipientParticipation) throw unavailable();
+    if (
+      !senderParticipation &&
+      !missingOrCancelledParticipation(
+        senderParticipationSnap,
+        data.eventId,
+        senderUid
+      )
+    ) {
+      throw unavailable();
+    }
     const senderConsent = effectiveConsent(
       senderConsentSnap,
       data.eventId,
@@ -205,7 +223,9 @@ export async function sendCrossPathsInvitationHandler(
       data.eventId,
       data.recipientUid
     );
-    if (!senderConsent || !recipientConsent) throw unavailable();
+    if ((senderParticipation && !senderConsent) || !recipientConsent) {
+      throw unavailable();
+    }
     const sender = activeUser(senderUserSnap);
     const recipient = activeUser(recipientUserSnap);
     if (
@@ -220,6 +240,22 @@ export async function sendCrossPathsInvitationHandler(
       !hasEligibleShowcase(recipientPublicSnap, recipientShowcaseSnap)
     ) {
       throw unavailable();
+    }
+    if (!senderParticipation) {
+      const policy = eventPolicyFromEvent(event);
+      const roster = await rosterWithReservedWaitlistOffersInTransaction(
+        tx,
+        db,
+        data.eventId,
+        rosterFromEvent(event),
+        {excludeUid: senderUid, nowMillis: now.toMillis()}
+      );
+      assertPolicyAllowsSignup({
+        policy,
+        cohortId: cohortIdForUser(sender),
+        roster,
+        admissionMode: "crossPathsPair",
+      });
     }
     const pendingCount = pendingForRecipient.docs.filter((doc) => {
       const row = doc.data();
@@ -253,6 +289,7 @@ export async function sendCrossPathsInvitationHandler(
       invalidatedAt: null,
       invalidationReason: null,
       conversationId: null,
+      pairHoldId: null,
     };
     tx.create(invitationRef, invitation);
     setActivityNotificationInTransaction(tx, db, {
@@ -347,6 +384,7 @@ export async function respondCrossPathsInvitationHandler(
         invitationId: data.invitationId,
         status: invitation.status,
         conversationId: invitation.conversationId,
+        pairHoldId: invitation.pairHoldId,
       };
       return;
     }
@@ -384,6 +422,7 @@ export async function respondCrossPathsInvitationHandler(
         invitationId: data.invitationId,
         status: "declined",
         conversationId: null,
+        pairHoldId: null,
       };
       return;
     }
@@ -400,6 +439,8 @@ export async function respondCrossPathsInvitationHandler(
       invitation.recipientUid
     );
     const planRef = db.collection("matches").doc(conversationId);
+    const holdId = crossPathsPairHoldId(data.invitationId);
+    const holdRef = db.collection("crossPathsPairHolds").doc(holdId);
     const [
       eventSnap,
       senderParticipationSnap,
@@ -418,6 +459,7 @@ export async function respondCrossPathsInvitationHandler(
       outgoingBlock,
       incomingBlock,
       planSnap,
+      holdSnap,
     ] = await Promise.all([
       tx.get(refs.event),
       tx.get(refs.senderParticipation),
@@ -443,27 +485,39 @@ export async function respondCrossPathsInvitationHandler(
         `${invitation.recipientUid}__${invitation.senderUid}`
       )),
       tx.get(planRef),
+      tx.get(holdRef),
     ]);
-    if (outgoingBlock.exists || incomingBlock.exists || planSnap.exists) {
+    if (
+      outgoingBlock.exists ||
+      incomingBlock.exists ||
+      planSnap.exists ||
+      holdSnap.exists
+    ) {
       throw unavailable();
     }
     const event = validUpcomingEvent(eventSnap, now, false);
+    const senderParticipation = signedUpParticipation(
+      senderParticipationSnap,
+      invitation.eventId,
+      invitation.senderUid
+    );
+    const recipientParticipation = signedUpParticipation(
+      recipientParticipationSnap,
+      invitation.eventId,
+      invitation.recipientUid
+    );
     if (
-      !signedUpParticipation(
+      !recipientParticipation ||
+      (!senderParticipation && !missingOrCancelledParticipation(
         senderParticipationSnap,
         invitation.eventId,
         invitation.senderUid
-      ) ||
-      !signedUpParticipation(
-        recipientParticipationSnap,
-        invitation.eventId,
-        invitation.recipientUid
-      ) ||
-      !effectiveConsent(
+      )) ||
+      (senderParticipation && !effectiveConsent(
         senderConsentSnap,
         invitation.eventId,
         invitation.senderUid
-      ) ||
+      )) ||
       !effectiveConsent(
         recipientConsentSnap,
         invitation.eventId,
@@ -490,6 +544,113 @@ export async function respondCrossPathsInvitationHandler(
       throw unavailable();
     }
     recipientName = recipient.name;
+    if (!senderParticipation) {
+      const policy = eventPolicyFromEvent(event);
+      const roster = await rosterWithReservedWaitlistOffersInTransaction(
+        tx,
+        db,
+        invitation.eventId,
+        rosterFromEvent(event),
+        {excludeUid: invitation.senderUid, nowMillis: now.toMillis()}
+      );
+      const requesterCohortId = cohortIdForUser(sender);
+      const attendeeCohortId = cohortIdForUser(recipient);
+      assertPolicyAllowsSignup({
+        policy,
+        cohortId: requesterCohortId,
+        roster,
+        admissionMode: "crossPathsPair",
+      });
+      const pairPolicy = policy.admission.crossPathsPairInventory;
+      if (!pairPolicy?.enabled) throw unavailable();
+      const holdExpiresAt = admin.firestore.Timestamp.fromMillis(Math.min(
+        now.toMillis() + pairPolicy.holdDurationMinutes * 60 * 1000,
+        event.startTime.toMillis() - responseBufferMillis
+      ));
+      const hold: CrossPathsPairHoldDocument = {
+        eventId: invitation.eventId,
+        invitationId: data.invitationId,
+        organizerId: event.organizerId ?? event.clubId,
+        requesterUid: invitation.senderUid,
+        attendeeUid: invitation.recipientUid,
+        participantIds: [invitation.senderUid, invitation.recipientUid],
+        status: "active",
+        requesterBookingStatus: "held",
+        attendeeBookingStatus: "confirmed",
+        requesterCohortId,
+        attendeeCohortId,
+        requesterPriceInPaise: quotePriceInPaise({
+          policy,
+          cohortId: requesterCohortId,
+          roster,
+        }),
+        attendeePriceInPaise: quotePriceInPaise({
+          policy,
+          cohortId: attendeeCohortId,
+          roster,
+          includeRequestedAttendee: false,
+        }),
+        currency: event.currency ?? "INR",
+        createdAt: now,
+        updatedAt: now,
+        expiresAt: holdExpiresAt,
+        confirmedAt: null,
+        releasedAt: null,
+        releaseReason: null,
+        paymentId: null,
+        conversationId: null,
+      };
+      tx.create(holdRef, hold);
+      tx.update(refs.event, {
+        crossPathsPairHeldCount: admin.firestore.FieldValue.increment(1),
+        crossPathsPairHeldCohortCounts: incrementCount(
+          event.crossPathsPairHeldCohortCounts ?? {},
+          requesterCohortId
+        ),
+      });
+      tx.update(invitationRef, {
+        status: "accepted",
+        updatedAt: now,
+        respondedAt: now,
+        conversationId: null,
+        pairHoldId: holdId,
+      });
+      for (const doc of competingInvitations.docs) {
+        if (doc.id === data.invitationId) continue;
+        const row = doc.data();
+        if (row.eventId !== invitation.eventId || row.status !== "pending") {
+          continue;
+        }
+        tx.update(doc.ref, {
+          status: "invalidated",
+          updatedAt: now,
+          invalidatedAt: now,
+          invalidationReason: "competing_plan_accepted",
+        });
+      }
+      setActivityNotificationInTransaction(tx, db, {
+        id: activityNotificationId(
+          "crossPathsInvitationAccepted",
+          data.invitationId
+        ),
+        uid: invitation.senderUid,
+        type: "crossPathsInvitationAccepted",
+        title: "Your pair spot is held",
+        body: `${recipientName} accepted. Finish booking before the hold ends.`,
+        createdAt: now,
+        eventId: invitation.eventId,
+        invitationId: data.invitationId,
+        actorUid: invitation.recipientUid,
+        actorName: recipientName,
+      });
+      response = {
+        invitationId: data.invitationId,
+        status: "accepted",
+        conversationId: null,
+        pairHoldId: holdId,
+      };
+      return;
+    }
     const planExpiresAt = admin.firestore.Timestamp.fromMillis(
       event.endTime.toMillis() + eventPlanGraceMillis
     );
@@ -553,11 +714,16 @@ export async function respondCrossPathsInvitationHandler(
       invitationId: data.invitationId,
       status: "accepted",
       conversationId,
+      pairHoldId: null,
     };
   });
 
   if (expired || !response) throw unavailable();
-  const copy = response.status === "accepted" ? {
+  const copy = response.status === "accepted" && response.pairHoldId ? {
+    type: "crossPathsInvitationAccepted",
+    title: "Your pair spot is held",
+    body: `${recipientName} accepted. Finish booking before the hold ends.`,
+  } as const : response.status === "accepted" ? {
     type: "crossPathsInvitationAccepted",
     title: "Your event plan is ready",
     body: `${recipientName} accepted your Cross Paths invitation.`,
@@ -604,6 +770,7 @@ export async function cancelCrossPathsInvitationOrPlanHandler(
   let notifyUid = "";
   let eventId = "";
   let matchId: string | undefined;
+  let pairReleased = false;
   let response: CancelCrossPathsInvitationOrPlanCallableResponse | undefined;
   await db.runTransaction(async (tx) => {
     const snap = await tx.get(invitationRef);
@@ -635,6 +802,49 @@ export async function cancelCrossPathsInvitationOrPlanHandler(
         cancelledAt: now,
       });
       response = {invitationId: data.invitationId, status: "cancelled"};
+      return;
+    }
+    if (invitation.status === "accepted" && invitation.pairHoldId) {
+      pairReleased = true;
+      matchId = invitation.conversationId ?? undefined;
+      await releaseCrossPathsPairHoldInTransaction({
+        tx,
+        db,
+        holdId: invitation.pairHoldId,
+        reason: "cancelled",
+        now,
+      });
+      tx.update(invitationRef, {
+        status: "invalidated",
+        updatedAt: now,
+        invalidatedAt: now,
+        invalidationReason: "plan_cancelled",
+      });
+      if (invitation.conversationId) {
+        tx.update(db.collection("matches").doc(invitation.conversationId), {
+          status: "closed",
+          closedAt: now,
+          unreadCounts: {
+            [invitation.senderUid]: 0,
+            [invitation.recipientUid]: 0,
+          },
+        });
+      }
+      setActivityNotificationInTransaction(tx, db, {
+        id: activityNotificationId(
+          "crossPathsPlanCancelled",
+          data.invitationId
+        ),
+        uid: notifyUid,
+        type: "crossPathsPlanCancelled",
+        title: "Pair spot released",
+        body: "Your Cross Paths pair reservation is no longer active.",
+        createdAt: now,
+        eventId: invitation.eventId,
+        invitationId: data.invitationId,
+        actorUid: uid,
+      });
+      response = {invitationId: data.invitationId, status: "invalidated"};
       return;
     }
     if (invitation.status !== "accepted" || !invitation.conversationId) {
@@ -675,8 +885,10 @@ export async function cancelCrossPathsInvitationOrPlanHandler(
       db,
       uid: notifyUid,
       type: "crossPathsPlanCancelled",
-      title: "Event plan cancelled",
-      body: "Your Cross Paths event plan is now closed.",
+      title: pairReleased ? "Pair spot released" : "Event plan cancelled",
+      body: pairReleased ?
+        "Your Cross Paths pair reservation is no longer active." :
+        "Your Cross Paths event plan is now closed.",
       eventId,
       invitationId: data.invitationId,
       matchId,
@@ -715,6 +927,17 @@ export async function invalidateCrossPathsInvitations(params: {
       (invitation.status !== "accepted" || !includeAccepted)
     ) {
       continue;
+    }
+    if (invitation.status === "accepted" && invitation.pairHoldId) {
+      await releaseCrossPathsPairHold({
+        db,
+        holdId: invitation.pairHoldId,
+        reason: reason === "event_unavailable" ? "event_unavailable" :
+          reason === "participation_cancelled" ? "participation_cancelled" :
+            reason === "safety_state_changed" ? "safety_state_changed" :
+              "cancelled",
+        now,
+      });
     }
     batch.update(doc.ref, {
       status: "invalidated",
@@ -912,6 +1135,20 @@ function signedUpParticipation(
     row.status === "signedUp" ? row : undefined;
 }
 
+function missingOrCancelledParticipation(
+  snap: FirebaseFirestore.DocumentSnapshot,
+  eventId: string,
+  uid: string
+): boolean {
+  if (!snap.exists) return true;
+  const row = requireDoc<EventParticipationDocument>(
+    snap,
+    "EventParticipationDocument (Cross Paths pair requester)"
+  );
+  return row.eventId === eventId && row.uid === uid &&
+    row.status === "cancelled";
+}
+
 function effectiveConsent(
   snap: FirebaseFirestore.DocumentSnapshot,
   eventId: string,
@@ -1060,8 +1297,4 @@ function unavailable(): HttpsError {
     "failed-precondition",
     "This Cross Paths plan is no longer available."
   );
-}
-
-function sha256(value: string): string {
-  return createHash("sha256").update(value).digest("hex");
 }

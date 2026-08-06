@@ -92,6 +92,9 @@ abstract class Event with _$Event {
     @JsonKey(includeIfNull: false) int? bookedCount,
     @JsonKey(includeIfNull: false) int? checkedInCount,
     @JsonKey(includeIfNull: false) int? waitlistedCount,
+    @Default(0) int crossPathsPairHeldCount,
+    @Default(0) int crossPathsPairConfirmedCount,
+    @Default({}) Map<String, int> crossPathsPairHeldCohortCounts,
     @Default(EventLifecycleStatus.active) EventLifecycleStatus status,
     @NullableTimestampConverter() DateTime? cancelledAt,
     String? cancellationReason,
@@ -191,6 +194,7 @@ abstract class Event with _$Event {
           roster: EventRosterSnapshot(
             bookedCountsByCohort: effectiveCohortCounts,
             waitlistedCountsByCohort: effectiveWaitlistedCohortCounts,
+            crossPathsPairConfirmedCount: crossPathsPairConfirmedCount,
           ),
         )
         .finalAmount

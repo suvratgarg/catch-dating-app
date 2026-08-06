@@ -1,8 +1,33 @@
 {
-  "version": 129,
+  "version": 130,
   "updated": "2026-08-06",
   "owner": "agent_operating_model",
   "entries": [
+    {
+      "id": "REG-CROSS-PATHS-PAIR-HOLD-001",
+      "title": "Cross Paths companion hold is treated as a booking or leaks reserved capacity",
+      "status": "active",
+      "applies_to": [
+        "contracts/firestore/cross_paths_pair_holds.schema.json",
+        "functions/src/crossPaths/invitations.ts",
+        "functions/src/crossPaths/pairHolds.ts",
+        "functions/src/events/eventPolicy.ts",
+        "functions/src/events/signUpUserForEvent.ts",
+        "lib/cross_paths/presentation/cross_paths_invitation_screen.dart"
+      ],
+      "symptom": "An accepted invitation marks an unbooked requester as booked, lets general admission consume reserved companion seats, fails to release a stale hold, or changes waitlist ordering.",
+      "guard": {
+        "type": "command",
+        "command": "npm --prefix functions run build && node --test functions/lib/crossPaths/*.test.js functions/lib/events/eventPolicy.test.js functions/lib/events/signUpUserForEvent.test.js functions/lib/payments/*.test.js && flutter test test/cross_paths test/hosts/host_create_event_state_test.dart",
+        "guardEvidence": "acceptance creates an active held-not-booked document; canonical checkout alone confirms participation and plan state; release is idempotent; reserved and general capacity remain separate; UI states name the hold truthfully"
+      },
+      "owner_docs": [
+        "docs/cross_paths.md",
+        "docs/data_contracts.md",
+        "docs/app_architecture.md"
+      ],
+      "notes": "Reserved companion inventory is part of total event capacity but is not a ranking privilege, waitlist promotion, booking, or second attendee reservation. The featured recipient is already confirmed; the hold protects only the requester's companion seat."
+    },
     {
       "id": "REG-CROSS-PATHS-PLAN-CONSENT-001",
       "title": "Cross Paths discovery consent silently cancels an accepted event plan",

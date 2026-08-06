@@ -9,4 +9,5 @@ export interface CreateRazorpayOrderCallablePayload {
   eventId: string;
   inviteCode?: string | null;
   inviteLinkId?: string;
+  crossPathsPairHoldId?: string;
 }

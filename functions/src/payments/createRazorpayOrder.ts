@@ -43,6 +43,8 @@ import {
   rosterWithReservedWaitlistOffers,
 } from "../events/eventPolicy";
 import {resolveInviteAttribution} from "../events/inviteLinks";
+import {requireActiveCrossPathsPairHold} from
+  "../crossPaths/pairHoldValidation";
 
 interface CreateRazorpayOrderDeps {
   createClient: () => Razorpay;
@@ -74,7 +76,7 @@ export async function createRazorpayOrderHandler(
     validateCreateRazorpayOrderCallablePayload,
     normalizeEventIdPayload
   );
-  const {eventId, inviteCode, inviteLinkId} = payload;
+  const {eventId, inviteCode, inviteLinkId, crossPathsPairHoldId} = payload;
 
   const db = deps.firestore();
   const [eventSnap, userSnap, participationSnap, activeParticipationsSnap] =
@@ -130,7 +132,8 @@ export async function createRazorpayOrderHandler(
   const signedUpCount = activeParticipationsSnap.docs
     .filter((doc) => doc.data().status === "signedUp")
     .length;
-  if ((event.bookedCount ?? signedUpCount) >= event.capacityLimit) {
+  if (!crossPathsPairHoldId &&
+      (event.bookedCount ?? signedUpCount) >= event.capacityLimit) {
     throw new HttpsError(
       "failed-precondition",
       "This event is full. You can join the waitlist instead."
@@ -164,24 +167,36 @@ export async function createRazorpayOrderHandler(
     policy,
     inviteCode,
   });
-  assertPolicyAllowsSignup({
-    policy,
-    cohortId,
-    roster: await rosterWithReservedWaitlistOffers(
+  const pairHold = crossPathsPairHoldId ?
+    await requireActiveCrossPathsPairHold({
       db,
+      holdId: crossPathsPairHoldId,
       eventId,
-      {
-        ...rosterFromEvent(event),
-        totalBooked: event.bookedCount ?? signedUpCount,
-      },
-      {excludeUid: uid}
-    ),
-    hasValidInvite: hasValidInvite || hasWaitlistOfferAccess,
-    hasHostApproval: hasHostApprovedJoinRequest(participation),
-  });
+      requesterUid: uid,
+      nowMillis: deps.now(),
+    }) : null;
+  const admissionRoster = await rosterWithReservedWaitlistOffers(
+    db,
+    eventId,
+    {
+      ...rosterFromEvent(event),
+      totalBooked: (event.bookedCount ?? signedUpCount) +
+        Math.max(0, event.crossPathsPairHeldCount ?? 0),
+    },
+    {excludeUid: uid}
+  );
+  if (!pairHold) {
+    assertPolicyAllowsSignup({
+      policy,
+      cohortId,
+      roster: admissionRoster,
+      hasValidInvite: hasValidInvite || hasWaitlistOfferAccess,
+      hasHostApproval: hasHostApprovedJoinRequest(participation),
+    });
+  }
 
   const razorpay = deps.createClient();
-  const amountInPaise = quotePriceInPaise({
+  const amountInPaise = pairHold?.requesterPriceInPaise ?? quotePriceInPaise({
     policy,
     cohortId,
     roster: rosterFromEvent(event),
@@ -202,6 +217,7 @@ export async function createRazorpayOrderHandler(
         (hasValidInvite || hasWaitlistOfferAccess),
       inviteLinkId: inviteAttribution?.inviteLinkId,
       inviteSource: inviteAttribution?.inviteSource,
+      crossPathsPairHoldId: pairHold ? crossPathsPairHoldId : null,
     })
   );
 
@@ -218,6 +234,7 @@ export async function createRazorpayOrderHandler(
       amountInPaise,
       currency: order.currency ?? event.currency ?? razorpayCurrency,
       serverTimestamp: deps.serverTimestamp,
+      crossPathsPairHoldId: pairHold ? crossPathsPairHoldId : null,
     });
   } catch (error) {
     logger.warn(

@@ -46,6 +46,7 @@ class CrossPathsSuggestionEvent {
     required this.activityKind,
     required this.photoUrl,
     required this.viewerBookingStatus,
+    this.pairHoldAvailable = false,
   });
 
   final String eventId;
@@ -56,6 +57,7 @@ class CrossPathsSuggestionEvent {
   final ActivityKind activityKind;
   final String? photoUrl;
   final CrossPathsViewerBookingStatus viewerBookingStatus;
+  final bool pairHoldAvailable;
 }
 
 class CrossPathsSuggestion {
@@ -166,6 +168,7 @@ class CrossPathsSuggestion {
         viewerBookingStatus: CrossPathsViewerBookingStatus.fromWire(
           _requiredString(event, 'viewerBookingStatus'),
         ),
+        pairHoldAvailable: event['pairHoldAvailable'] == true,
       ),
       reasonCodes: reasonCodes
           .map(CrossPathsSuggestionReason.fromWire)

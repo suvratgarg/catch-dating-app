@@ -11,15 +11,18 @@ final class CreateStripeCheckoutSessionCallableRequest {
     required this.eventId,
     this.inviteCode,
     this.inviteLinkId,
+    this.crossPathsPairHoldId,
   });
 
   final String eventId;
   final String? inviteCode;
   final String? inviteLinkId;
+  final String? crossPathsPairHoldId;
 
   Map<String, Object?> toJson() => {
     'eventId': eventId,
     'inviteCode': ?inviteCode,
     'inviteLinkId': ?inviteLinkId,
+    'crossPathsPairHoldId': ?crossPathsPairHoldId,
   };
 }

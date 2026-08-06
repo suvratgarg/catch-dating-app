@@ -49,6 +49,7 @@ Do not edit it by hand.
 | CrossPathsShowcaseEligibilityDocument | `firestore/cross_paths_showcase_eligibility.schema.json` | `functions/src/shared/generated/crossPathsShowcaseEligibilityDocument.ts` |
 | CrossPathsSuggestionExposureDocument | `firestore/cross_paths_suggestion_exposures.schema.json` | `functions/src/shared/generated/crossPathsSuggestionExposureDocument.ts` |
 | CrossPathsInvitationDocument | `firestore/cross_paths_invitations.schema.json` | `functions/src/shared/generated/crossPathsInvitationDocument.ts` |
+| CrossPathsPairHoldDocument | `firestore/cross_paths_pair_holds.schema.json` | `functions/src/shared/generated/crossPathsPairHoldDocument.ts` |
 | EventBroadcastDocument | `firestore/event_broadcasts.schema.json` | `functions/src/shared/generated/eventBroadcastDocument.ts` |
 | EventWaitlistOfferDocument | `firestore/event_waitlist_offers.schema.json` | `functions/src/shared/generated/eventWaitlistOfferDocument.ts` |
 | EventSuccessPlanDocument | `firestore/event_success_plans.schema.json` | `functions/src/shared/generated/eventSuccessPlanDocument.ts` |
@@ -285,6 +286,7 @@ Do not edit it by hand.
 | `schemaCrossPathsShowcaseEligibilityDocumentSchema` | CrossPathsShowcaseEligibilityDocument | `firestore/cross_paths_showcase_eligibility.schema.json` | `lib/core/schema_contracts/generated/schemas/cross_paths_showcase_eligibility_document.g.dart` |
 | `schemaCrossPathsSuggestionExposureDocumentSchema` | CrossPathsSuggestionExposureDocument | `firestore/cross_paths_suggestion_exposures.schema.json` | `lib/core/schema_contracts/generated/schemas/cross_paths_suggestion_exposure_document.g.dart` |
 | `schemaCrossPathsInvitationDocumentSchema` | CrossPathsInvitationDocument | `firestore/cross_paths_invitations.schema.json` | `lib/core/schema_contracts/generated/schemas/cross_paths_invitation_document.g.dart` |
+| `schemaCrossPathsPairHoldDocumentSchema` | CrossPathsPairHoldDocument | `firestore/cross_paths_pair_holds.schema.json` | `lib/core/schema_contracts/generated/schemas/cross_paths_pair_hold_document.g.dart` |
 | `schemaEventBroadcastDocumentSchema` | EventBroadcastDocument | `firestore/event_broadcasts.schema.json` | `lib/core/schema_contracts/generated/schemas/event_broadcast_document.g.dart` |
 | `schemaEventWaitlistOfferDocumentSchema` | EventWaitlistOfferDocument | `firestore/event_waitlist_offers.schema.json` | `lib/core/schema_contracts/generated/schemas/event_waitlist_offer_document.g.dart` |
 | `schemaEventSuccessPlanDocumentSchema` | EventSuccessPlanDocument | `firestore/event_success_plans.schema.json` | `lib/core/schema_contracts/generated/schemas/event_success_plan_document.g.dart` |

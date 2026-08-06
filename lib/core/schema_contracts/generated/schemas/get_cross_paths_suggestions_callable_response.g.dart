@@ -144,6 +144,7 @@ const schemaGetCrossPathsSuggestionsCallableResponseSchema = <String, Object?>{
               'activityKind',
               'photoUrl',
               'viewerBookingStatus',
+              'pairHoldAvailable',
             ],
             'properties': <String, Object?>{
               'eventId': <String, Object?>{
@@ -211,6 +212,9 @@ const schemaGetCrossPathsSuggestionsCallableResponseSchema = <String, Object?>{
                   'signedUp',
                   'canBookNow',
                 ],
+              },
+              'pairHoldAvailable': <String, Object?>{
+                'type': 'boolean',
               },
             },
           },
@@ -379,6 +383,7 @@ const schemaGetCrossPathsSuggestionsCallableResponseSchema = <String, Object?>{
         'activityKind',
         'photoUrl',
         'viewerBookingStatus',
+        'pairHoldAvailable',
       ],
       'properties': <String, Object?>{
         'eventId': <String, Object?>{
@@ -446,6 +451,9 @@ const schemaGetCrossPathsSuggestionsCallableResponseSchema = <String, Object?>{
             'signedUp',
             'canBookNow',
           ],
+        },
+        'pairHoldAvailable': <String, Object?>{
+          'type': 'boolean',
         },
       },
     },
@@ -565,6 +573,7 @@ const schemaGetCrossPathsSuggestionsCallableResponseSchema = <String, Object?>{
             'activityKind',
             'photoUrl',
             'viewerBookingStatus',
+            'pairHoldAvailable',
           ],
           'properties': <String, Object?>{
             'eventId': <String, Object?>{
@@ -632,6 +641,9 @@ const schemaGetCrossPathsSuggestionsCallableResponseSchema = <String, Object?>{
                 'signedUp',
                 'canBookNow',
               ],
+            },
+            'pairHoldAvailable': <String, Object?>{
+              'type': 'boolean',
             },
           },
         },

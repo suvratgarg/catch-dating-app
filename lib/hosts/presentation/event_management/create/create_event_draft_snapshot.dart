@@ -32,6 +32,8 @@ class CreateEventDraftSnapshot {
     required this.dynamicPricingStep,
     required this.dynamicPricingMax,
     required this.cancellationPolicy,
+    this.crossPathsPairInventoryEnabled = false,
+    this.crossPathsPairCapacity,
     required this.eventSuccessDefaults,
     required this.eventPhotoIds,
   });
@@ -65,6 +67,8 @@ class CreateEventDraftSnapshot {
   final String? dynamicPricingStep;
   final String? dynamicPricingMax;
   final String cancellationPolicy;
+  final bool crossPathsPairInventoryEnabled;
+  final String? crossPathsPairCapacity;
   final EventSuccessDefaults eventSuccessDefaults;
   final String eventPhotoIds;
 
@@ -98,6 +102,8 @@ class CreateEventDraftSnapshot {
     dynamicPricingStep: dynamicPricingStep,
     dynamicPricingMax: dynamicPricingMax,
     cancellationPolicy: cancellationPolicy,
+    crossPathsPairInventoryEnabled: crossPathsPairInventoryEnabled,
+    crossPathsPairCapacity: crossPathsPairCapacity,
     eventSuccessDefaults: eventSuccessDefaults,
     eventPhotoIds: eventPhotoIds,
   );
@@ -139,6 +145,8 @@ class CreateEventDraftSnapshot {
       dynamicPricingStep: dynamicPricingStep,
       dynamicPricingMax: dynamicPricingMax,
       cancellationPolicy: cancellationPolicy,
+      crossPathsPairInventoryEnabled: crossPathsPairInventoryEnabled,
+      crossPathsPairCapacity: crossPathsPairCapacity,
       eventSuccessDefaults: eventSuccessDefaults,
     );
   }

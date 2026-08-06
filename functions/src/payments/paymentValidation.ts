@@ -36,6 +36,7 @@ export interface VerifiedPaymentBooking {
   inviteVerified?: boolean;
   inviteLinkId?: string | null;
   inviteSource?: string | null;
+  crossPathsPairHoldId?: string | null;
 }
 
 export interface PaymentRecordInput extends VerifiedPaymentBooking {
@@ -66,6 +67,7 @@ export function buildOrderCreatePayload({
   inviteVerified = false,
   inviteLinkId,
   inviteSource,
+  crossPathsPairHoldId,
 }: {
   eventId: string;
   event: EventDocument;
@@ -75,6 +77,7 @@ export function buildOrderCreatePayload({
   inviteVerified?: boolean;
   inviteLinkId?: string | null;
   inviteSource?: string | null;
+  crossPathsPairHoldId?: string | null;
 }) {
   if (event.status === "cancelled") {
     throw new HttpsError(
@@ -106,6 +109,7 @@ export function buildOrderCreatePayload({
       inviteVerified: inviteVerified ? "true" : "false",
       ...(inviteLinkId ? {inviteLinkId} : {}),
       ...(inviteSource ? {inviteSource} : {}),
+      ...(crossPathsPairHoldId ? {crossPathsPairHoldId} : {}),
     },
   };
 }
@@ -192,6 +196,10 @@ export function verifyPaidEventBooking({
   const inviteVerified = order.notes?.inviteVerified === "true";
   const inviteLinkId = getOptionalNote(order.notes, "inviteLinkId");
   const inviteSource = getOptionalNote(order.notes, "inviteSource");
+  const crossPathsPairHoldId = getOptionalNote(
+    order.notes,
+    "crossPathsPairHoldId"
+  );
 
   if (userId !== expectedUserId) {
     throw new HttpsError(
@@ -208,6 +216,7 @@ export function verifyPaidEventBooking({
     inviteVerified,
     inviteLinkId,
     inviteSource,
+    ...(crossPathsPairHoldId ? {crossPathsPairHoldId} : {}),
   };
 }
 
@@ -227,6 +236,7 @@ export function buildPaymentRecord({
   signUpFailed = false,
   inviteLinkId,
   inviteSource,
+  crossPathsPairHoldId,
 }: PaymentRecordInput) {
   return {
     userId,
@@ -241,6 +251,7 @@ export function buildPaymentRecord({
     signUpFailed,
     ...(inviteLinkId ? {inviteLinkId} : {}),
     ...(inviteSource ? {inviteSource} : {}),
+    ...(crossPathsPairHoldId ? {crossPathsPairHoldId} : {}),
   };
 }
 

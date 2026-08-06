@@ -217,6 +217,12 @@ const schemaSpecs = [
       "functions/src/shared/generated/crossPathsInvitationDocument.ts",
   },
   {
+    name: "CrossPathsPairHoldDocument",
+    source: "firestore/cross_paths_pair_holds.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/crossPathsPairHoldDocument.ts",
+  },
+  {
     name: "EventBroadcastDocument",
     source: "firestore/event_broadcasts.schema.json",
     typeOutput: "functions/src/shared/generated/eventBroadcastDocument.ts",

@@ -45,7 +45,7 @@
       "reachability": "production_route",
       "screenIds": ["screen.host.event.edit"],
       "routeIds": ["hostAppEditEventScreen"],
-      "semanticFieldCount": 22,
+      "semanticFieldCount": 23,
       "bindings": [
         {
           "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
@@ -61,7 +61,7 @@
         {"file": "lib/hosts/presentation/edit_hosted_event_screen.dart", "symbol": "CatchField.optionCards", "expected": 2},
         {"file": "lib/hosts/presentation/edit_hosted_event_screen.dart", "symbol": "CatchField.stepper", "expected": 1},
         {"file": "lib/hosts/presentation/edit_hosted_event_screen.dart", "symbol": "CatchField.toggle", "expected": 2},
-        {"file": "lib/hosts/presentation/edit_hosted_event_screen.dart", "symbol": "CatchField.read", "expected": 8}
+        {"file": "lib/hosts/presentation/edit_hosted_event_screen.dart", "symbol": "CatchField.read", "expected": 9}
       ],
       "targetModes": ["CatchSection.fieldRows", "CatchSection.containedFieldRows", "CatchField.nav", "CatchField.input", "CatchField.choices", "CatchField.optionCards", "CatchField.stepper", "CatchField.toggle", "CatchField.read"],
       "preserve": ["HostEventEditScreenState", "HostEventEditSaveRequest", "validation keys", "lock states", "picker side effects"],

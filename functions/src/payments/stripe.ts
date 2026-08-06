@@ -63,6 +63,7 @@ export interface StripeCheckoutSessionCreateInput {
   inviteVerified: boolean;
   inviteLinkId?: string | null;
   inviteSource?: string | null;
+  crossPathsPairHoldId?: string | null;
   applicationFeeAmount: number;
   successUrl: string;
   cancelUrl: string;
@@ -489,6 +490,8 @@ function stripeMetadata(
     inviteVerified: input.inviteVerified ? "true" : "false",
     ...(input.inviteLinkId ? {inviteLinkId: input.inviteLinkId} : {}),
     ...(input.inviteSource ? {inviteSource: input.inviteSource} : {}),
+    ...(input.crossPathsPairHoldId ?
+      {crossPathsPairHoldId: input.crossPathsPairHoldId} : {}),
   };
 }
 

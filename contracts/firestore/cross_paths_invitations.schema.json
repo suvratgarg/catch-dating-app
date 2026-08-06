@@ -22,7 +22,8 @@
     "cancelledAt",
     "invalidatedAt",
     "invalidationReason",
-    "conversationId"
+    "conversationId",
+    "pairHoldId"
   ],
   "properties": {
     "eventId": {
@@ -76,10 +77,16 @@
     },
     "invalidationReason": {
       "type": ["string", "null"],
-      "enum": [null, "event_unavailable", "participation_cancelled", "consent_revoked", "safety_state_changed", "competing_plan_accepted", "plan_cancelled"],
+      "enum": [null, "event_unavailable", "participation_cancelled", "consent_revoked", "safety_state_changed", "competing_plan_accepted", "plan_cancelled", "hold_expired"],
       "x-catch-ownership": "callable-owned"
     },
     "conversationId": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "pairHoldId": {
       "type": ["string", "null"],
       "minLength": 1,
       "maxLength": 180,

@@ -880,6 +880,19 @@ service cloud.firestore {
       allow create, update, delete: if false;
     }
 
+    // Pair holds reveal the same event-scoped relationship as invitations.
+    // Only the two participants can read the exact hold; server transactions
+    // exclusively own reservation, confirmation, expiry, and release writes.
+    match /crossPathsPairHolds/{holdId} {
+      allow get: if isAuthed()
+        && request.auth.uid in resource.data.participantIds
+        && !hasBlockBetween(
+          resource.data.requesterUid,
+          resource.data.attendeeUid
+        );
+      allow list, create, update, delete: if false;
+    }
+
     // Server-owned event-announcement receipts contain frozen recipient and
     // per-delivery evidence. V1 exposes only the sanitized callable response.
     match /eventBroadcasts/{broadcastId} {

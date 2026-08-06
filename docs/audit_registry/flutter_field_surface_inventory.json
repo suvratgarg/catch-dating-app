@@ -3,11 +3,11 @@
   "generatedBy": "tool/design/generate_flutter_field_surface_inventory.mjs",
   "source": {
     "manifest": "docs/audit_registry/flutter_field_surface_adoption.json",
-    "manifestSha256": "3557928e192754aea43616bd99b41ddaef91d848f7227abad3bad3952c7865cf",
+    "manifestSha256": "f81acf73d4f9819c181c0d49382c30c9e64805356bf6c3d583f71bb42253a505",
     "routeInventory": "tool/ui_capture/route_inventory.json",
     "routeInventorySha256": "696cea21fe6f4481ff75d823a46e74f1e253e90cba79a692c06f4598f1d0dd88",
     "screenContracts": "design/screens/catch.screens.json",
-    "screenContractsSha256": "00a722d7713e3a60b11af2cfc5c5bffea155d06982594fba835b22b767f3e303"
+    "screenContractsSha256": "56a7f5628cf21c39f20ac99c93822bc77af32a615e362d8cb5c4dbf78ae6d149"
   },
   "summary": {
     "candidateCount": 10,
@@ -43,7 +43,7 @@
       "routeIds": [
         "hostAppEditEventScreen"
       ],
-      "semanticFieldCount": 22,
+      "semanticFieldCount": 23,
       "bindings": [
         {
           "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
@@ -94,7 +94,7 @@
         {
           "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
           "symbol": "CatchField.read",
-          "expected": 8
+          "expected": 9
         }
       ],
       "targetModes": [
@@ -128,12 +128,12 @@
           "expected": 6,
           "observed": 6,
           "lines": [
-            426,
-            486,
-            558,
-            1046,
-            1279,
-            1330
+            431,
+            491,
+            563,
+            1051,
+            1284,
+            1342
           ]
         },
         {
@@ -143,8 +143,8 @@
           "expected": 2,
           "observed": 2,
           "lines": [
-            1149,
-            1206
+            1154,
+            1211
           ]
         },
         {
@@ -154,9 +154,9 @@
           "expected": 3,
           "observed": 3,
           "lines": [
-            431,
-            442,
-            518
+            436,
+            447,
+            523
           ]
         },
         {
@@ -166,17 +166,17 @@
           "expected": 11,
           "observed": 11,
           "lines": [
-            490,
-            538,
-            564,
-            635,
-            1056,
-            1069,
-            1111,
-            1151,
-            1167,
-            1208,
-            1225
+            495,
+            543,
+            569,
+            640,
+            1061,
+            1074,
+            1116,
+            1156,
+            1172,
+            1213,
+            1230
           ]
         },
         {
@@ -186,7 +186,7 @@
           "expected": 1,
           "observed": 1,
           "lines": [
-            609
+            614
           ]
         },
         {
@@ -196,8 +196,8 @@
           "expected": 2,
           "observed": 2,
           "lines": [
-            1093,
-            1254
+            1098,
+            1259
           ]
         },
         {
@@ -207,7 +207,7 @@
           "expected": 1,
           "observed": 1,
           "lines": [
-            454
+            459
           ]
         },
         {
@@ -217,25 +217,26 @@
           "expected": 2,
           "observed": 2,
           "lines": [
-            1136,
-            1195
+            1141,
+            1200
           ]
         },
         {
           "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
           "kind": "call",
           "symbol": "CatchField.read",
-          "expected": 8,
-          "observed": 8,
+          "expected": 9,
+          "observed": 9,
           "lines": [
-            1187,
-            1282,
-            1290,
-            1298,
-            1308,
+            1192,
+            1287,
+            1295,
+            1303,
             1313,
-            1333,
-            1338
+            1318,
+            1324,
+            1345,
+            1350
           ]
         }
       ]

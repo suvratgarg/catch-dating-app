@@ -58,6 +58,7 @@ export interface GetCrossPathsSuggestionsCallableResponse {
         | "openActivity";
       photoUrl: string | null;
       viewerBookingStatus: "signedUp" | "canBookNow";
+      pairHoldAvailable: boolean;
     };
     /**
      * @minItems 4

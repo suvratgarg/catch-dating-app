@@ -31,6 +31,10 @@ export interface PaymentDocument {
    * Host-facing invite source copied from eventInviteLinks.
    */
   inviteSource?: string | null;
+  /**
+   * Pair hold consumed by this booking, when present.
+   */
+  crossPathsPairHoldId?: string | null;
   signUpFailed: boolean;
   /**
    * Serialized Firestore Timestamp fixture shape.

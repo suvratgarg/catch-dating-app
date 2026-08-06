@@ -17,6 +17,7 @@ import {
   stripeWebhookSecret,
   verifyStripeWebhookSignature,
 } from "./stripe";
+import {releaseCrossPathsPairHold} from "../crossPaths/pairHolds";
 import {
   syncHostPaymentAccountByStripeAccountId,
 } from "./stripeHostAccounts";
@@ -104,6 +105,10 @@ async function fulfillStripeCheckoutSession({
   const amountMinor = Number(requiredMetadata(metadata, "amountMinor"));
   const currency = requiredMetadata(metadata, "currency").toUpperCase();
   const inviteAttribution = inviteAttributionFromMetadata(metadata);
+  const crossPathsPairHoldId = optionalMetadata(
+    metadata,
+    "crossPathsPairHoldId"
+  );
   const paymentIntentId = session.paymentIntentId;
   if (!Number.isInteger(amountMinor) || amountMinor <= 0) {
     throw new Error("Stripe Checkout Session amount metadata is invalid.");
@@ -133,6 +138,7 @@ async function fulfillStripeCheckoutSession({
       hasValidInvite: metadata.inviteVerified === "true",
       ...(hasHostApproval ? {hasHostApproval} : {}),
       ...(inviteAttribution ? {inviteAttribution} : {}),
+      ...(crossPathsPairHoldId ? {crossPathsPairHoldId} : {}),
     });
   } catch (signUpError) {
     let refundSucceeded = false;
@@ -168,6 +174,7 @@ async function fulfillStripeCheckoutSession({
       checkoutSessionId: session.id,
       status: refundSucceeded ? "refunded" : "refundFailed",
       signUpFailed: true,
+      ...(crossPathsPairHoldId ? {crossPathsPairHoldId} : {}),
       ...(inviteAttribution?.inviteLinkId ?
         {inviteLinkId: inviteAttribution.inviteLinkId} :
         {}),
@@ -177,6 +184,13 @@ async function fulfillStripeCheckoutSession({
       updatedAt: deps.serverTimestamp(),
       createdAt,
     }, {merge: true});
+    if (crossPathsPairHoldId) {
+      await releaseCrossPathsPairHold({
+        db,
+        holdId: crossPathsPairHoldId,
+        reason: "payment_failed",
+      });
+    }
     throw signUpError;
   }
 
@@ -201,6 +215,7 @@ async function fulfillStripeCheckoutSession({
     checkoutSessionId: session.id,
     status: "completed",
     signUpFailed: false,
+    ...(crossPathsPairHoldId ? {crossPathsPairHoldId} : {}),
     ...(inviteAttribution?.inviteLinkId ?
       {inviteLinkId: inviteAttribution.inviteLinkId} :
       {}),
