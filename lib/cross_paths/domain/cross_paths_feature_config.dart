@@ -28,6 +28,5 @@ class CrossPathsFeatureConfig {
   static const disabled = CrossPathsFeatureConfig(
     consentControlsEnabled: false,
     exploreSuggestionsEnabled: false,
-    pairInventoryEnabled: false,
   );
 }
