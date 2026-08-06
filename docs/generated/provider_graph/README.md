@@ -13,7 +13,7 @@ Open [provider_graph.html](provider_graph.html) for the interactive feature/prov
 | Mutations | 84 |
 | Unique provider relationships | 333 |
 | Cross-feature relationships | 163 |
-| Consumer callsites | 782 |
+| Consumer callsites | 778 |
 | Reactive cycles | 0 |
 
 ## Architecture review

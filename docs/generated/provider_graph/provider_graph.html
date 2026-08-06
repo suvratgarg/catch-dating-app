@@ -77,11 +77,11 @@ code { color: var(--fg); }
     "keepAliveNodes": 68,
     "familyNodes": 88,
     "mutationNodes": 84,
-    "consumerNodes": 261,
+    "consumerNodes": 257,
     "providerToProviderCallsites": 419,
     "uniqueProviderToProviderPairs": 333,
     "uniqueCrossFeatureProviderPairs": 163,
-    "consumerToStateCallsites": 782,
+    "consumerToStateCallsites": 778,
     "mutationReferenceCallsites": 206,
     "unresolvedRefOperations": 13,
     "unresolvedInsideProviders": 0,
@@ -151,7 +151,7 @@ code { color: var(--fg); }
   },
   "consumerEdgesByOperation": {
     "watch": 269,
-    "read": 221,
+    "read": 217,
     "invalidate": 156,
     "mutation-run": 91,
     "override": 23,
@@ -474,7 +474,7 @@ code { color: var(--fg); }
         "id": "cross_paths",
         "providers": 8,
         "mutations": 1,
-        "consumers": 8
+        "consumers": 4
       },
       {
         "id": "dashboard",
@@ -1822,7 +1822,7 @@ code { color: var(--fg); }
       "name": "crossPathsRepositoryProvider",
       "kind": "generated-function",
       "path": "lib/cross_paths/data/cross_paths_repository.dart",
-      "line": 254,
+      "line": 286,
       "feature": "cross_paths",
       "layer": "data",
       "keepAlive": true,
@@ -3453,7 +3453,7 @@ code { color: var(--fg); }
       "name": "watchCrossPathsEventConsentProvider",
       "kind": "generated-function",
       "path": "lib/cross_paths/data/cross_paths_repository.dart",
-      "line": 260,
+      "line": 292,
       "feature": "cross_paths",
       "layer": "data",
       "keepAlive": false,
@@ -3465,7 +3465,7 @@ code { color: var(--fg); }
       "name": "watchCrossPathsInvitationProvider",
       "kind": "generated-function",
       "path": "lib/cross_paths/data/cross_paths_repository.dart",
-      "line": 269,
+      "line": 301,
       "feature": "cross_paths",
       "layer": "data",
       "keepAlive": false,
@@ -3705,7 +3705,7 @@ code { color: var(--fg); }
       "name": "watchIncomingCrossPathsInvitationsProvider",
       "kind": "generated-function",
       "path": "lib/cross_paths/data/cross_paths_repository.dart",
-      "line": 275,
+      "line": 307,
       "feature": "cross_paths",
       "layer": "data",
       "keepAlive": false,
@@ -3741,7 +3741,7 @@ code { color: var(--fg); }
       "name": "watchOutgoingCrossPathsInvitationProvider",
       "kind": "generated-function",
       "path": "lib/cross_paths/data/cross_paths_repository.dart",
-      "line": 281,
+      "line": 313,
       "feature": "cross_paths",
       "layer": "data",
       "keepAlive": false,
@@ -4993,22 +4993,6 @@ code { color: var(--fg); }
       "layer": "core"
     },
     {
-      "id": "consumer:lib/cross_paths/presentation/cross_paths_explore_card.dart#CrossPathsProfilePreviewSheet._cancelInvitation",
-      "owner": "CrossPathsProfilePreviewSheet._cancelInvitation",
-      "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-      "line": 460,
-      "feature": "cross_paths",
-      "layer": "presentation"
-    },
-    {
-      "id": "consumer:lib/cross_paths/presentation/cross_paths_explore_card.dart#CrossPathsProfilePreviewSheet._sendInvitation",
-      "owner": "CrossPathsProfilePreviewSheet._sendInvitation",
-      "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-      "line": 415,
-      "feature": "cross_paths",
-      "layer": "presentation"
-    },
-    {
       "id": "consumer:lib/cross_paths/presentation/cross_paths_explore_card.dart#CrossPathsProfilePreviewSheet.build",
       "owner": "CrossPathsProfilePreviewSheet.build",
       "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
@@ -5029,22 +5013,6 @@ code { color: var(--fg); }
       "owner": "_InvitationDetail.build",
       "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
       "line": 70,
-      "feature": "cross_paths",
-      "layer": "presentation"
-    },
-    {
-      "id": "consumer:lib/cross_paths/presentation/cross_paths_invitation_screen.dart#_InvitationDetailBody._cancel",
-      "owner": "_InvitationDetailBody._cancel",
-      "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
-      "line": 277,
-      "feature": "cross_paths",
-      "layer": "presentation"
-    },
-    {
-      "id": "consumer:lib/cross_paths/presentation/cross_paths_invitation_screen.dart#_InvitationDetailBody._respond",
-      "owner": "_InvitationDetailBody._respond",
-      "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
-      "line": 243,
       "feature": "cross_paths",
       "layer": "presentation"
     },
@@ -7568,7 +7536,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/cross_paths/data/cross_paths_repository.dart",
-      "line": 256
+      "line": 288
     },
     {
       "source": "crossPathsRepositoryProvider",
@@ -7577,7 +7545,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/cross_paths/data/cross_paths_repository.dart",
-      "line": 257
+      "line": 289
     },
     {
       "source": "currentUserFollowedClubIdsProvider",
@@ -10106,7 +10074,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/cross_paths/data/cross_paths_repository.dart",
-      "line": 265
+      "line": 297
     },
     {
       "source": "watchCrossPathsInvitationProvider",
@@ -10115,7 +10083,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/cross_paths/data/cross_paths_repository.dart",
-      "line": 273
+      "line": 305
     },
     {
       "source": "watchEventInviteLinksProvider",
@@ -10295,7 +10263,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/cross_paths/data/cross_paths_repository.dart",
-      "line": 279
+      "line": 311
     },
     {
       "source": "watchLaunchAccessApplicationProvider",
@@ -10322,7 +10290,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/cross_paths/data/cross_paths_repository.dart",
-      "line": 286
+      "line": 318
     },
     {
       "source": "watchPaymentProvider",
@@ -11533,40 +11501,22 @@ code { color: var(--fg); }
       "line": 144
     },
     {
-      "source": "consumer:lib/cross_paths/presentation/cross_paths_explore_card.dart#CrossPathsProfilePreviewSheet._cancelInvitation",
+      "source": "consumer:lib/cross_paths/presentation/cross_paths_explore_card.dart#CrossPathsProfilePreviewSheet.build",
       "sourceKind": "consumer",
       "target": "appAnalyticsProvider",
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-      "line": 469
+      "line": 275
     },
     {
-      "source": "consumer:lib/cross_paths/presentation/cross_paths_explore_card.dart#CrossPathsProfilePreviewSheet._cancelInvitation",
+      "source": "consumer:lib/cross_paths/presentation/cross_paths_explore_card.dart#CrossPathsProfilePreviewSheet.build",
       "sourceKind": "consumer",
       "target": "crossPathsInvitationControllerProvider",
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-      "line": 466
-    },
-    {
-      "source": "consumer:lib/cross_paths/presentation/cross_paths_explore_card.dart#CrossPathsProfilePreviewSheet._sendInvitation",
-      "sourceKind": "consumer",
-      "target": "appAnalyticsProvider",
-      "targetKind": "provider",
-      "operation": "read",
-      "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-      "line": 434
-    },
-    {
-      "source": "consumer:lib/cross_paths/presentation/cross_paths_explore_card.dart#CrossPathsProfilePreviewSheet._sendInvitation",
-      "sourceKind": "consumer",
-      "target": "crossPathsInvitationControllerProvider",
-      "targetKind": "provider",
-      "operation": "read",
-      "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-      "line": 427
+      "line": 272
     },
     {
       "source": "consumer:lib/cross_paths/presentation/cross_paths_explore_card.dart#CrossPathsProfilePreviewSheet.build",
@@ -11659,40 +11609,22 @@ code { color: var(--fg); }
       "line": 83
     },
     {
-      "source": "consumer:lib/cross_paths/presentation/cross_paths_invitation_screen.dart#_InvitationDetailBody._cancel",
+      "source": "consumer:lib/cross_paths/presentation/cross_paths_invitation_screen.dart#_InvitationDetailBody.build",
       "sourceKind": "consumer",
       "target": "appAnalyticsProvider",
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
-      "line": 282
+      "line": 138
     },
     {
-      "source": "consumer:lib/cross_paths/presentation/cross_paths_invitation_screen.dart#_InvitationDetailBody._cancel",
+      "source": "consumer:lib/cross_paths/presentation/cross_paths_invitation_screen.dart#_InvitationDetailBody.build",
       "sourceKind": "consumer",
       "target": "crossPathsInvitationControllerProvider",
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
-      "line": 279
-    },
-    {
-      "source": "consumer:lib/cross_paths/presentation/cross_paths_invitation_screen.dart#_InvitationDetailBody._respond",
-      "sourceKind": "consumer",
-      "target": "appAnalyticsProvider",
-      "targetKind": "provider",
-      "operation": "read",
-      "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
-      "line": 252
-    },
-    {
-      "source": "consumer:lib/cross_paths/presentation/cross_paths_invitation_screen.dart#_InvitationDetailBody._respond",
-      "sourceKind": "consumer",
-      "target": "crossPathsInvitationControllerProvider",
-      "targetKind": "provider",
-      "operation": "read",
-      "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
-      "line": 249
+      "line": 135
     },
     {
       "source": "consumer:lib/cross_paths/presentation/cross_paths_invitation_screen.dart#_InvitationDetailBody.build",

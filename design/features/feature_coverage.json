@@ -42,6 +42,14 @@
     },
     {
       "authority": "flutter_screens",
+      "authorityId": "screen.cross_paths.invitation",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Cross Paths invitation contract covers pending, accepted, declined, cancelled, expired, invalidated, and event-plan lifecycle states.",
+      "featureContract": "feature.cross_paths_invitation"
+    },
+    {
+      "authority": "flutter_screens",
       "authorityId": "screen.club.detail",
       "status": "contracted",
       "priority": "P1",
