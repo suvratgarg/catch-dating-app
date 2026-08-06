@@ -2,8 +2,10 @@
 import fs from "node:fs";
 import path from "node:path";
 import {fromRepo} from "../lib/repo_paths.mjs";
+import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
 
 const args = parseArgs(process.argv.slice(2));
+const repositorySnapshot = createRepositorySnapshot();
 const task = args.task ?? "unspecified";
 const scopePaths = normalizePaths(args.paths);
 const generatedAt = new Date().toISOString();
@@ -297,15 +299,11 @@ function normalizePaths(values) {
 }
 
 function readJson(relativePath, fallback) {
-  try {
-    return JSON.parse(fs.readFileSync(fromRepo(relativePath), "utf8"));
-  } catch {
-    return fallback;
-  }
+  return repositorySnapshot.readJson(relativePath) ?? fallback;
 }
 
 function fileExists(relativePath) {
-  return fs.existsSync(fromRepo(relativePath));
+  return repositorySnapshot.exists(relativePath);
 }
 
 function matchesAny(candidates, patterns) {

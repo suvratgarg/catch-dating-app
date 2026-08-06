@@ -2,7 +2,8 @@
 import fs from "node:fs";
 import path from "node:path";
 import {spawnSync} from "node:child_process";
-import {fromRepo, repoRoot, toolRoot} from "./lib/repo_paths.mjs";
+import {repoRoot} from "./lib/repo_paths.mjs";
+import {createRepositorySnapshot} from "./lib/repository_snapshot.mjs";
 import {
   toolSupportsPlatform,
   validateToolPlatforms,
@@ -19,8 +20,9 @@ import {
   planAffectedToolChecks,
 } from "./lib/tool_impact.mjs";
 
-const manifestPath = fromRepo("tool/tools_manifest.json");
-const componentGraphPath = fromRepo("tool/harness/component_graph.json");
+const manifestPath = "tool/tools_manifest.json";
+const componentGraphPath = "tool/harness/component_graph.json";
+let capturedRepositorySnapshot = null;
 
 const command = process.argv[2] ?? "help";
 const argv = process.argv.slice(3);
@@ -44,7 +46,7 @@ if (command === "help" || command === "--help" || command === "-h") {
 }
 
 function loadManifest() {
-  const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+  const manifest = repositorySnapshot().readJson(manifestPath, {required: true});
   if (!Array.isArray(manifest.tools)) {
     throw new Error("tools_manifest.json must contain a tools array.");
   }
@@ -133,10 +135,11 @@ function requireSelection(tools, {category, ids = []} = {}) {
 function impactedTools(args) {
   const options = parseImpactedArgs(args);
   const manifest = loadManifest();
-  const rootManifest = JSON.parse(
-    fs.readFileSync(fromRepo("tool/repository_root_manifest.json"), "utf8"),
+  const rootManifest = repositorySnapshot().readJson(
+    "tool/repository_root_manifest.json",
+    {required: true},
   );
-  const componentGraph = JSON.parse(fs.readFileSync(componentGraphPath, "utf8"));
+  const componentGraph = loadComponentGraph();
   const changedPaths = options.paths ?? changedPathsSince(options.base);
   const relationships = rootManifest.relationships ?? [];
   const matchedRelationships = relationships.filter((relationship) =>
@@ -363,7 +366,7 @@ function validateManifest(manifest, componentGraph) {
     if (tool.id) ids.add(tool.id);
     if (tool.path) {
       paths.add(tool.path);
-      if (!fs.existsSync(fromRepo(tool.path))) {
+      if (!repositorySnapshot().exists(tool.path)) {
         errors.push(`${tool.id}: missing path ${tool.path}`);
       }
     }
@@ -422,8 +425,7 @@ function validateManifest(manifest, componentGraph) {
     }
   }
 
-  for (const file of discoverManagedScripts()) {
-    const relativePath = path.relative(repoRoot, file);
+  for (const relativePath of discoverManagedScripts()) {
     if (!paths.has(relativePath)) {
       errors.push(`Unmanaged tool script: ${relativePath}`);
     }
@@ -433,15 +435,12 @@ function validateManifest(manifest, componentGraph) {
 }
 
 function loadComponentGraph() {
-  return JSON.parse(fs.readFileSync(componentGraphPath, "utf8"));
+  return repositorySnapshot().readJson(componentGraphPath, {required: true});
 }
 
 function discoverManagedScripts() {
-  const files = [];
-  walk(toolRoot, files);
-  return files.filter((file) => {
-    const relativePath = path.relative(repoRoot, file);
-    const ext = path.extname(file);
+  return repositorySnapshot().listFiles({prefix: "tool/"}).filter((relativePath) => {
+    const ext = path.extname(relativePath);
     if (![".mjs", ".js", ".dart", ".py", ".rb", ".sh"].includes(ext)) {
       return false;
     }
@@ -453,12 +452,9 @@ function discoverManagedScripts() {
   });
 }
 
-function walk(dir, files) {
-  for (const entry of fs.readdirSync(dir, {withFileTypes: true})) {
-    const fullPath = path.join(dir, entry.name);
-    if (entry.isDirectory()) walk(fullPath, files);
-    else if (entry.isFile()) files.push(fullPath);
-  }
+function repositorySnapshot() {
+  capturedRepositorySnapshot ??= createRepositorySnapshot();
+  return capturedRepositorySnapshot;
 }
 
 function selectTools(manifest, {category, ids = []} = {}) {
