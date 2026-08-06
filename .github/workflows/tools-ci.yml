@@ -2,16 +2,51 @@ name: Tools CI
 
 on:
   workflow_call:
+    inputs:
+      base_sha:
+        required: true
+        type: string
+      mode:
+        required: true
+        type: string
+      full:
+        required: true
+        type: boolean
   workflow_dispatch:
+    inputs:
+      base_sha:
+        description: Base Git ref used to resolve affected tool checks.
+        required: false
+        type: string
+        default: origin/main
+      full:
+        description: Run the complete six-bucket tool matrix.
+        required: false
+        type: boolean
+        default: true
+      mode:
+        description: Harness execution mode used for lane membership.
+        required: false
+        type: choice
+        options:
+          - pr
+          - merge_group
+          - main
+          - nightly
+        default: nightly
 
 jobs:
   preflight:
     name: Tool manifest preflight
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    outputs:
+      tool_mode: ${{ steps.impact.outputs.tool_mode }}
 
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - id: toolchain
         uses: ./.github/actions/load-toolchain
@@ -30,8 +65,91 @@ jobs:
       - name: Validate tool manifest
         run: node tool/run.mjs check --manifest-only
 
+      - id: impact
+        name: Resolve affected tool checks
+        env:
+          BASE_SHA: ${{ inputs.base_sha }}
+          FULL: ${{ inputs.full }}
+          MODE: ${{ inputs.mode }}
+        run: |
+          set -euo pipefail
+          full_flag=()
+          if [[ "$FULL" == "true" ]]; then
+            full_flag=(--full)
+          fi
+          mkdir -p build/ci
+          node tool/run.mjs affected-tools \
+            --base "$BASE_SHA" \
+            --mode "$MODE" \
+            "${full_flag[@]}" \
+            --github-output "$GITHUB_OUTPUT" \
+            --json > build/ci/affected-tools-plan.json
+
+      - name: Publish affected-tool summary
+        run: |
+          {
+            echo "## Affected tool checks"
+            echo
+            echo '```json'
+            jq . build/ci/affected-tools-plan.json
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload affected-tool plan
+        uses: actions/upload-artifact@v7
+        with:
+          name: affected-tools-plan-${{ github.sha }}
+          path: build/ci/affected-tools-plan.json
+          if-no-files-found: error
+          retention-days: 14
+
+  affected-tools:
+    name: Tool checks (affected)
+    needs: preflight
+    if: ${{ needs.preflight.outputs.tool_mode == 'affected' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            functions/package-lock.json
+
+      - uses: ./.github/actions/setup-flutter
+
+      - name: Install scanner dependencies
+        run: sudo apt-get update && sudo apt-get install -y ripgrep
+
+      - run: flutter pub get
+
+      - run: npm ci
+
+      - run: npm --prefix functions ci
+
+      - name: Install marketing design browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Check affected tools
+        env:
+          BASE_SHA: ${{ inputs.base_sha }}
+          MODE: ${{ inputs.mode }}
+        run: node tool/run.mjs affected-tools --base "$BASE_SHA" --mode "$MODE" --check
+
   tool-buckets:
     name: Tool checks (${{ matrix.name }})
+    needs: preflight
+    if: ${{ needs.preflight.outputs.tool_mode == 'full' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
@@ -96,6 +214,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - preflight
+      - affected-tools
       - tool-buckets
     if: always()
     timeout-minutes: 5
@@ -104,10 +223,20 @@ jobs:
       - name: Check tool job results
         env:
           PREFLIGHT_RESULT: ${{ needs.preflight.result }}
+          AFFECTED_RESULT: ${{ needs['affected-tools'].result }}
           BUCKETS_RESULT: ${{ needs['tool-buckets'].result }}
         run: |
           echo "preflight: ${PREFLIGHT_RESULT}"
+          echo "affected tools: ${AFFECTED_RESULT}"
           echo "tool buckets: ${BUCKETS_RESULT}"
-          if [[ "${PREFLIGHT_RESULT}" != "success" || "${BUCKETS_RESULT}" != "success" ]]; then
+          if [[ "${PREFLIGHT_RESULT}" != "success" ]]; then
             exit 1
           fi
+          if [[ "${AFFECTED_RESULT}" == "success" && "${BUCKETS_RESULT}" == "skipped" ]]; then
+            exit 0
+          fi
+          if [[ "${AFFECTED_RESULT}" == "skipped" && "${BUCKETS_RESULT}" == "success" ]]; then
+            exit 0
+          fi
+          echo "Exactly one affected or full tool execution path must succeed."
+          exit 1

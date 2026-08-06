@@ -23,16 +23,40 @@ node tool/run.mjs check contracts:flutter-form-inventory
 node tool/run.mjs check --category demo
 node tool/run.mjs impacted --paths contracts/firestore/users.schema.json --json
 node tool/run.mjs impacted --check
+node tool/run.mjs affected-tools --paths tool/docs/check_doc_version_monotonic.mjs --json
+node tool/run.mjs affected-tools --base origin/main --check
 node tool/run.mjs run demo:ops --help
 ```
 
 Filtered `list` and `check` commands fail with exit 64 when no active tool
 matches; an empty category can never count as a successful CI lane. Tools CI
-declares every active manifest category and validates that matrix before fanout.
+validates the complete category matrix before fanout. Ordinary tool changes run
+the exact active owner declared by `path` or `impactPaths`, its transitive
+`alsoCheckIds`, and the mandatory repository guards in
+`tools_manifest.json#ciImpact`. Canonical Harness control-plane paths come from
+`component_graph.json#repo.harness`; the tool manifest declares only additional
+full-matrix paths. Any lane input without an exact active owner, a control-plane
+path, or an explicit full run fails closed to the unchanged six-bucket matrix.
+CI passes the same PR, merge-queue, main, or nightly mode into both planners.
+Companion files owned exclusively by Docs, Policy, or another Harness lane are
+ignored by this inner planner instead of broadening a valid Tools selection.
+Active tools must define non-empty checks. This prevents a non-tool contract
+that selects the Tools lane from silently receiving guard checks only and
+prevents full mode from succeeding through a vacuous tool entry. The affected
+path retains the broad dependency bootstrap once; dependency-specific setup is
+a separately measured optimization.
 Tools that require an operating-system framework declare `platforms` using
 Node platform names (`darwin`, `linux`, or `win32`). Category checks report and
 skip incompatible entries; direct `run` calls fail with exit 64 instead of
 executing a platform-incompatible command.
+
+The audit registry refresh strictly parses regular files from Git's index, so
+it is safe inside a sparse worktree and fails before a malformed listing can
+truncate the registry. Stage new files and deletions before `refresh`.
+`mark-pass` verifies both the live index and registry instead of silently
+skipping scope; name deleted files in receipt proof and stamp their surviving
+governing files. The manifest gate runs `refresh --check`, making exact sorted
+path parity a CI invariant rather than a manual receipt.
 
 `impacted` joins changed paths through
 `tool/repository_root_manifest.json#relationships` to their source, generated

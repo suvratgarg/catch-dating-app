@@ -46,6 +46,8 @@ jobs:
       tools: ${{ steps.plan.outputs.tools }}
       visual_integration: ${{ steps.plan.outputs.visual_integration }}
       base_sha: ${{ steps.plan.outputs.base_sha }}
+      mode: ${{ steps.plan.outputs.mode }}
+      full: ${{ steps.plan.outputs.full }}
 
     steps:
       - uses: actions/checkout@v6
@@ -134,6 +136,10 @@ jobs:
     needs: plan
     if: ${{ needs.plan.outputs.tools == 'true' }}
     uses: ./.github/workflows/tools-ci.yml
+    with:
+      base_sha: ${{ needs.plan.outputs.base_sha }}
+      mode: ${{ needs.plan.outputs.mode }}
+      full: ${{ needs.plan.outputs.full == 'true' }}
     secrets: inherit
 
   contracts:

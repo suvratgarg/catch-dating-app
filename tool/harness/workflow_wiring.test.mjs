@@ -18,6 +18,41 @@ test("required CI consumes every bounded Harness v2 target", () => {
   }
   assert.match(ci, /docs-policy:/);
   assert.match(ci, /- docs-policy/);
+  assert.match(ci, /base_sha: \$\{\{ needs\.plan\.outputs\.base_sha \}\}/);
+  assert.match(ci, /mode: \$\{\{ needs\.plan\.outputs\.mode \}\}/);
+  assert.match(ci, /full: \$\{\{ needs\.plan\.outputs\.full == 'true' \}\}/);
+});
+
+test("tools fanout selects exactly one affected or full execution path", () => {
+  const tools = workflow("tools-ci.yml");
+  assert.match(tools, /base_sha:\s*\n\s+required: true\s*\n\s+type: string/);
+  assert.match(tools, /mode:\s*\n\s+required: true\s*\n\s+type: string/);
+  assert.match(tools, /full:\s*\n\s+required: true\s*\n\s+type: boolean/);
+  assert.match(tools, /node tool\/run\.mjs affected-tools/);
+  assert.match(tools, /--mode "\$MODE"/);
+  assert.match(
+    tools,
+    /needs\.preflight\.outputs\.tool_mode == 'affected'/,
+  );
+  assert.match(
+    tools,
+    /needs\.preflight\.outputs\.tool_mode == 'full'/,
+  );
+  assert.match(tools, /- affected-tools\s*\n\s+- tool-buckets/);
+  assert.match(
+    tools,
+    /Exactly one affected or full tool execution path must succeed/,
+  );
+  for (const bucket of [
+    "core-audit",
+    "lint-scanners",
+    "contracts-data",
+    "platform-env",
+    "marketing-design",
+    "organizer-intake",
+  ]) {
+    assert.match(tools, new RegExp(`name: ${bucket}`));
+  }
 });
 
 test("web smoke compiles dev roles without compiling production web", () => {
