@@ -1,6 +1,6 @@
 ---
 doc_id: harness_v2_decision_and_cicd_delivery_plan
-version: 0.3.28
+version: 0.3.29
 updated: 2026-08-07
 owner: agent_operating_model
 status: execution-in-progress
@@ -841,6 +841,35 @@ Issue discovered while selecting the following tranche:
   byte-equivalent content from a full archive. Repository-wide readers must use
   the captured repository snapshot abstraction, and their tests must prove full
   and sparse logical views agree before they are admitted to affected checks.
+
+### Checkpoint 22 — live, sparse-safe Widgetbook variant finder (2026-08-07)
+
+| Signal | Before this slice | Current result |
+|---|---|---|
+| Evidence authority | A 36,252-line / 999,970-byte JSON inventory duplicated data that the 0.05s finder can reconstruct from Widgetbook sources. It changed in 23 commits and generated 65,708 lines of Git churn. The comparison server loaded the full megabyte to obtain 46 review candidates. | The tracked JSON and two duplicate npm aliases are deleted. The import-safe finder emits deterministic summary or JSON on demand and never writes tracked output. The live comparison server calls it in process. The retired snapshot remains recoverable as blob `cef70389`. |
+| Sparse truth | The generator recursively walked physical directories. This task materialized only `main.directories.g.dart`, which the generator intentionally skips, so `--check` falsely said a current inventory was stale. | The finder uses the captured repository snapshot and batch-reads sparse-omitted index blobs. With one physical Widgetbook Dart file, it sees all 26 logical files and returns 875 use cases, 822 components, 1,832 state cards, and 46 review candidates. Its complete output is semantically identical to the retired snapshot after removing the timestamp and updating the authority description. |
+| Product behavior | Snapshot freshness was the only gate; it did not fail on excessive variants. The server could silently inherit stale candidate data. | The live builder validates non-vacuity and internal count consistency. Two seeded finder tests cover deterministic logical-source extraction and read-only CLI/JSON modes. Three server tests prove classification-only candidates, in-process variant derivation, and absence of every retired derived path. |
+| Affected CI | Coupling the finder into the comparison server initially caused a finder edit to inherit the server's undeclared default: full repository view plus Node, Flutter, ripgrep, Flutter pub, root npm, Functions npm, and Playwright setup. | Both check surfaces now declare an index repository view with Node-only setup. An affected Widgetbook source selects the variant finder plus mandatory guards; a finder-source edit also selects the server test. A production-manifest regression test pins both plans as complete, affected, index-only, and Node-only. |
+| Fresh proof | The old finder had no seeded test and its sparse check failed before evaluating repository truth. | A fresh exact-SHA canary passes finder 2/2 and server 3/3 in 1.57s, coverage with zero decision/stale queue in 0.34s, 27 repository-snapshot/impact tests in 1.15s, the live cleanup suite in 1.37s, manifest in 0.59s, 83-rule / 92-tool enforcement in 0.99s, three document-version increases in 0.50s, test inventory in 0.18s, 5,018/5,018 readiness in 0.55s, and 7,213-entry registry parity in 0.43s. No Flutter run was selected because no Dart or rendered UI changed. |
+| Broker timing | The prior sparse task still carried the committed megabyte and the finder could not trust its view. | The 45.8 MB core task started in 3.43s and generated context in 0.12s; commit `003b38927` took 0.06s and pushed in 4.25s. The post-retirement canary materialized 44.8 MB in 3.44s, ended at 49.5 MB, passed doctor in 0.81s, and reached a clean, remote-equal terminal state in 1.24s. |
+| Line accounting | The sixteen prior measured commits were cumulatively net −189,627 lines. | The 15-file conversion, tests, authority updates, generated registries, and audit receipt is +339/−36,389, net −36,050. The three-file checkpoint receipt is +34/−4, net +30; the eighteen-commit measured series is therefore net −225,647 lines. |
+
+Issues discovered during this tranche:
+
+- `H2-TRANSITION-029` — closed in Checkpoint 22. A selected tool without
+  explicit CI requirements inherits the complete setup profile. Adding the
+  live comparison server as a dependent check therefore turned a 0.05s Node
+  finder into a full Flutter/npm/Functions/Playwright setup. Both tools now
+  declare Node-only index checks, and the production-manifest impact test pins
+  that bounded closure.
+- `H2-TRANSITION-030` — the nominally read-only `dart
+  tool/audit_registry.dart` command enters Flutter's SDK update wrapper and
+  tries to rewrite shared engine stamp files. Restricted tasks fail before
+  repository code, while the authorized rerun completes in about 0.4–0.5s.
+  This is toolchain-environment friction, not a registry failure. Harness setup
+  should provide a pinned hermetic Dart executable/cache or preauthorize the
+  declared SDK-cache write once, so every fresh task does not pay a false-fail
+  and escalation round trip.
 
 Durable outcomes are PR wall-clock p50/p95 and escaped defects. Record the
 baseline from the ten most recent comparable PRs and compare after ten v2 PRs.
