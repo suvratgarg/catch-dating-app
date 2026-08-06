@@ -1,6 +1,6 @@
 ---
 doc_id: harness_v2_decision_and_cicd_delivery_plan
-version: 0.3.27
+version: 0.3.28
 updated: 2026-08-07
 owner: agent_operating_model
 status: execution-in-progress
@@ -820,6 +820,27 @@ Issue discovered during this tranche:
   Until the command either detects an unstaged file-set delta or makes its
   staging precondition explicit and fail-closed, run registry parity only after
   staging all additions and deletions and retain that ordering in task receipts.
+
+### Checkpoint 21 — legacy widget-antipattern bundle retirement (2026-08-07)
+
+| Signal | Before this slice | Current result |
+|---|---|---|
+| Duplicate authority | A 317-line Python regex scanner, a 154-line source-rewriting helper, and a committed 711-line heuristic report formed an untested widget-migration path beside current classification, delta, cleanup-ratchet, similarity, and reviewed-decision authorities. | The scanner, migrator, report, and both manifest entries are deleted. Current authorities remain unchanged; the existing full-index regression guard now keeps all six retired derived-audit paths absent. Historical receipts remain immutable. |
+| Staleness and coverage | The July 15 report listed 15 files with findings, while a current isolated run found 17. The scanner changed after the report without refreshing it, and its syntax-only manifest check could not detect the drift. | Live cleanup reports one ratcheted candidate and passes. The current widget delta reports zero added, moved, or unresolved items. Manifest inventory falls from 272 to 270 total tools, 228 to 227 active tools, two to one support tool, and 19 to 17 audit tools without changing enforcement coverage. |
+| Migration safety | The migrator discarded parameters when converting functions to classes, did not implement its own primitive-replacement disposition, globally renamed call sites, could not handle private-widget rows from its paired scanner, and had no behavioral test. | No automated source-rewriting replacement is introduced. Widget changes continue through current reviewed decisions, live finders, focused implementation, and normal verification. Recovery remains available from Git blobs `c0a46adf`, `74753cd6`, and `38021532`. |
+| Fresh proof | Neither obsolete tool had an executable behavior test, and the tracked output had no parity check. | A fresh exact-SHA canary passes 11/11 workflow tests in 0.75s, manifest validation in 0.60s, 83-rule / 92-tool enforcement in 0.99s, the live cleanup ratchet in 1.19s, the zero-delta widget scan in 9.17s, two document-version increases in 0.58s, 5,017/5,017 readiness in 0.71s, test inventory in 0.15s, and 7,213-entry registry parity in 0.49s. No Flutter run was selected because no Dart or rendered UI changed. |
+| Broker timing | A small cleanup still lacked a repeatable measured delivery loop. | The 45.8 MB task started in 4.15s and generated context in 0.13s. Core commit `cc3d5dfd0` took 0.07s and pushed in 4.31s. The 45.8 MB fresh canary started in 3.39s, passed doctor in 0.57s, and reached a clean, remote-equal terminal state in 1.31s. |
+| Line accounting | The fourteen prior measured commits were cumulatively net −188,443 lines. | The nine-file core retirement is +20/−1,226, net −1,206. The three-file checkpoint receipt is +26/−4, net +22; the sixteen-commit measured series is therefore net −189,627 lines. |
+
+Issue discovered while selecting the following tranche:
+
+- `H2-TRANSITION-028` — a repository-wide scanner that walks the physical
+  filesystem can report false drift in a correct sparse task. The Widgetbook
+  variant inventory saw one materialized Dart file, skipped it, and called its
+  current 26-file inventory stale; the same exact commit regenerated
+  byte-equivalent content from a full archive. Repository-wide readers must use
+  the captured repository snapshot abstraction, and their tests must prove full
+  and sparse logical views agree before they are admitted to affected checks.
 
 Durable outcomes are PR wall-clock p50/p95 and escaped defects. Record the
 baseline from the ten most recent comparable PRs and compare after ten v2 PRs.
