@@ -43,8 +43,8 @@
   },
   "audit_backlog": {
     "path": "docs/audit_registry/backlog.json",
-    "version": "2.7.171",
-    "updated": "2026-07-23",
+    "version": "2.7.173",
+    "updated": "2026-08-06",
     "status": "active",
     "read_policy": "Use for active backlog, next-up order, stable debt ids, uid-loading conflation follow-up, scanner counts, React component-governance follow-up through class-name boundary enforcement, the retired website legacy site barrel/import boundary, website page shells, admin directory/detail screen shells, admin workbench layouts, admin editor section/form shells, admin layout span classes, admin eyebrow labels, admin card/stat layout shells, admin loading icon shells, admin toolbar shells/modifiers, admin marketing studio shell/tabs, admin marketing post-board shells, admin marketing composer flow shells, admin marketing picker list/row shells, admin marketing feature-shot grid/card shells, admin marketing brand-contract shells, admin marketing help/compliance text/list shells, admin marketing event-library grid/card/link shells, admin marketing media-library grid/card shells, admin marketing new-post grid/card shells, admin marketing guide shells, admin marketing stacked-section shells, admin marketing app-media shells, admin marketing field shells, admin diff list shells, admin publishing utility primitives, admin event supply shells, admin selected table rows, admin marketing tag rows, admin marketing query lists, admin marketing slide editor/list shells, admin marketing recommendation list/item shells, admin marketing audit list/row shells, admin feature-drop feature editor/list shells, admin marketing preview/export shells, admin marketing carousel preview shells, admin marketing image editor shells, admin guardrail lists, admin intake source lists, admin intake gate lists, admin intake decision/footer shells, admin intake workspace shells, admin organizer intake curation shells, admin overview queue shells, admin overview analytics shells, admin command lists, admin intake tag lists, admin intake section/search-candidate shells, admin intake state grids, admin row/tag cell shells, admin roadmap lists, admin intake/status chips, admin quality rows, admin quality lists, website capture-card shells, website empty-state variants, website badge/status rows, website identity display shells, website process status panels, UI label spans, section-heading shells, action-group shells, control-row shells, waitlist-section shells, waitlist form shells, configured success-grid shells, claim shells, claim-flow route/root/auth-row shells, content-grid shells, panel shells, product shells including product-module grids, row/list shells, Host Preview route shells, Host Page route shells, Host Application flow shells, Host feature section shells, marketing section shells, marketing info-card shells, marketing loop-list shells, marketing consent banner shells, featured organizer card shells, app-download CTA group/shells, organizer listing shells, organizer listing hero shells, organizer listing review shells including review-signal and owner-response shells, organizer listing claim shells, organizer listing card-grid shells, organizer listing event section shells including event-action cards, organizer listing source ledger shells, organizer search section shells, organizer search result shells, search-form shells including PublicSearchBar ownership, direct public-search slot composition, and public event-card shells, and remaining governed component families, app-wide error-management follow-up, and documentation hygiene follow-up; historical detail lives in passes.jsonl/files.jsonl. React admin feature export boundary follow-up. Admin component registry scanner obligations. Admin Storybook preview coverage follow-up."
   },
@@ -57,8 +57,8 @@
   },
   "audit_doc_versions": {
     "path": "docs/audit_registry/doc_versions.json",
-    "version": "4.9.1",
-    "updated": "2026-08-05",
+    "version": "4.9.2",
+    "updated": "2026-08-06",
     "status": "active",
     "read_policy": "Use for durable doc version metadata, read policies, AI-first workflow guide routing, architecture pattern-tracker routing, exhibit-freshness routing, manifest role metadata, allowedFindings receipt checks, React class-name boundaries, React surface and component-family governance including the retired website legacy site barrel/import boundary, website page shells, admin directory/detail screen shells, admin workbench layouts, admin editor section/form shells, admin layout span classes, admin eyebrow labels, admin card/stat layout shells, admin marketing studio shell/tabs, admin marketing post-board shells, admin marketing composer flow shells, admin marketing picker list/row shells, admin marketing feature-shot grid/card shells, admin marketing brand-contract shells, admin marketing help/compliance text/list shells, admin marketing event-library grid/card/link shells, admin marketing media-library grid/card shells, admin marketing new-post grid/card shells, admin marketing guide shells, admin marketing stacked-section shells, admin marketing app-media shells, admin marketing field shells, admin diff list shells, admin publishing utility primitives, admin event supply shells, admin selected table rows, admin marketing tag rows, admin marketing query lists, admin marketing slide editor/list shells, admin marketing recommendation list/item shells, admin marketing audit list/row shells, admin feature-drop feature editor/list shells, admin feature-drop controls/preview shells, admin marketing preview/export shells, admin marketing carousel preview shells, admin marketing image editor shells, admin guardrail lists, admin intake source lists, admin intake gate lists, admin intake decision shells, admin intake workspace shells, admin organizer intake curation shells, admin overview queue shells, admin overview analytics shells, capture-card shells, empty-state variants, badge/status rows, website identity display shells, website process status panels, product-module grids, event-action cards, PublicSearchBar ownership, public event-card shells, UI label spans, claim-flow route/root/auth-row shells, Host Page route shells, Host Application flow shells, Host feature section shells, featured organizer card shells, and app-download CTA group/shells, agent delegation protocol doc freshness, composition-audit routing, and design parity/catalog version bumps including Host Manage Event Success, private-access, and invite-link edge coverage. Admin component registry scanner obligations. Admin Storybook preview coverage obligations."
   },
@@ -85,7 +85,7 @@
   },
   "agent_regression_ledger": {
     "path": "docs/agent_regression_ledger.json",
-    "version": "132",
+    "version": "133",
     "updated": "2026-08-06",
     "status": "active",
     "read_policy": "Use before touching a scope with hard-won prior fixes; context packs surface matching active/watch regression guards, including section-ownership drift, parallel-delegation ownership, enforcement-integrity drift, and reconciliation merges that can hide dropped conflict-resolution intent."
@@ -163,8 +163,8 @@
   },
   "docs_index": {
     "path": "docs/README.md",
-    "version": "4.10.1",
-    "updated": "2026-08-05",
+    "version": "4.11.0",
+    "updated": "2026-08-06",
     "status": "active",
     "read_policy": "Read before adding, deleting, consolidating docs, changing canonical doc routing, or adding agent-facing workflow instructions."
   },
@@ -441,7 +441,7 @@
     "status": "implemented",
     "read_policy": "Historical implementation closeout only. Current root ownership, relationship, cleanup, retention, portability, test-inventory, and worktree policy lives in executable tooling and its owning active docs."
   },
-  "version": "4.8.0",
+  "version": "4.8.1",
   "admin_components": {
     "path": "design/admin/components.json",
     "version": "36",
@@ -504,13 +504,6 @@
     "updated": "2026-07-23",
     "status": "retirement_ready",
     "read_policy": "Historical implemented adaptive-tab-bar work order only. Current tab behavior, component ownership, and Home/Catches follow-up live in active contracts, scanners, and owner docs."
-  },
-  "fable_ui_issue_handoff": {
-    "path": "docs/design_parity/fable_ui_issue_handoff.md",
-    "version": "0.1.0",
-    "updated": "2026-07-23",
-    "status": "retirement_ready",
-    "read_policy": "Historical resolved UI issue handoff only. Current containment is owned by field and section component contracts, architecture guidance, regression entries, and focused tests."
   },
   "host_consumer_ui_reconciliation_findings_2026_07_18": {
     "path": "docs/audit_registry/host_consumer_ui_reconciliation_findings_2026-07-18.md",
