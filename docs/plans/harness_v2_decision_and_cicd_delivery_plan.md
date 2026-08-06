@@ -1,6 +1,6 @@
 ---
 doc_id: harness_v2_decision_and_cicd_delivery_plan
-version: 0.3.24
+version: 0.3.25
 updated: 2026-08-06
 owner: agent_operating_model
 status: execution-in-progress
@@ -752,9 +752,9 @@ Issue discovered during this tranche:
 |---|---|---|
 | Authority | A 935-line regex extractor persisted a complete Dart definition dump and a second heuristic candidate queue even though no live tool, workflow, or instruction consumed either output. The active manifest only syntax-parsed the generator and never proved either file current. | The generator, 38,977-line definition dump, 51-line candidate queue, and manifest entry are deleted. Current widget-consolidation authority remains with widget classification, similarity, new-widget inventory, the reviewed decision ledger, and the active backlog; no alias or replacement dump is introduced. |
 | Staleness | The catalog claimed 779 source files from July 17 and embedded an absolute machine path and generation time. The live tree has 820 matching Dart files: 46 current files were absent and five deleted files remained. The backlog said zero candidates while the committed candidate queue still contained two. | The stale backlog note now routes to current focused authorities. Historical pass and consolidation receipts remain immutable, but they are not live consumers. The deleted blobs remain recoverable from Git as `56f9ae7d`, `6f823a343`, and `a2ce670ba`. |
-| Regression proof | A retired generated dump could return because no gate asserted that it stayed absent. | `REG-AUDIT-DERIVED-EVIDENCE-001` and a full-index repository-snapshot test now prove all three paths are absent and that current agent, audit, backlog, rule, and tool authorities do not route to their names. The test is a required check of `audit:registry`. |
-| Broker timing | The prior large evidence cleanup used bespoke inspection boundaries. | `task start` created and remotely preserved an 8.28 MB sparse task in 19.13s; context generation passed in 1.18s. Final commit, push, doctor, and closeout timing follow after the audit receipt. |
-| Line accounting | The first eight cleanup/safety commits were cumulatively net −127,012 lines; the evidence-only canary receipt was net zero. | The complete 11-file generator/output deletion, authority repair, full-index guard, checkpoint, registry refresh, and reviewed receipt is +98/−39,995, net −39,897. The nine cleanup/safety commits are cumulatively net −166,909 lines. The three direct retirements account for 39,965 deleted diff lines / 1,335,697 bytes. |
+| Regression proof | A retired generated dump could return because no gate asserted that it stayed absent. | `REG-AUDIT-DERIVED-EVIDENCE-001` and a required full-index Harness test now prove all three paths are absent and that current agent, audit, backlog, rule, and tool authorities do not route to their names. A fresh canary passed manifest validation, 83-rule/92-tool enforcement integrity, 11/11 workflow tests, 5,001/5,001 readiness, and three exact-base document-version increases; active manifest tools fell only from 230 to 229. |
+| Broker timing | The prior large evidence cleanup used bespoke inspection boundaries. | The 8.28 MB task started in 19.13s and generated context in 1.18s; commit `f277dd2ea` took 0.19s and pushed in 7.61s. A mistyped guessed full SHA failed closed in 0.25s before creating state. The exact-SHA canary started in 11.45s at 6.70 MB; manifest, enforcement, workflow, readiness, and monotonic checks completed in 1.33s, 5.05s, 2.17s, 2.12s, and 3.51s; doctor passed in 1.02s and terminal closeout in 1.80s. |
+| Line accounting | The first eight cleanup/safety commits were cumulatively net −127,012 lines; the evidence-only UI canary receipt was net zero. | The complete 11-file generator/output deletion, authority repair, full-index guard, checkpoint, registry refresh, and reviewed receipt is +98/−39,995, net −39,897. The clean canary receipt is +13/−11, net +2; the ten-commit measured series is therefore net −166,907 lines. The three direct retirements account for 39,965 deleted diff lines / 1,335,697 bytes. |
 
 Issue discovered during this tranche:
 
@@ -769,7 +769,8 @@ Issue discovered during this tranche:
   This task correctly refused to improvise another expansion when
   `tool/run.mjs` and the enforcement checker were missing. Command-plan
   generation must publish its physical path closure to `task start`; until
-  then, prove omitted commands in a fresh capability-complete canary.
+  then, prove omitted commands in a fresh capability-complete canary, as this
+  tranche did.
 
 Durable outcomes are PR wall-clock p50/p95 and escaped defects. Record the
 baseline from the ten most recent comparable PRs and compare after ten v2 PRs.
