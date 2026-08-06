@@ -1,6 +1,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import {execFileSync} from "node:child_process";
 import {
+  checkRepository,
   classify,
   matchesImpactPath,
   matchesPattern,
@@ -50,3 +55,73 @@ test("relationship validation rejects unknown tools and unmapped files", () => {
     "README.md: no impact relationship",
   ]);
 });
+
+test("repository findings are identical when docs and workflows are sparse omitted", (context) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-root-hygiene-sparse-"));
+  context.after(() => fs.rmSync(root, {recursive: true, force: true}));
+  const manifest = {
+    ownerVocabulary: ["repository_tooling"],
+    entries: [
+      rootEntry(".git"),
+      rootEntry(".github", {expectation: "tracked"}),
+      rootEntry("docs", {
+        expectation: "tracked",
+        kind: "curated-artifact",
+        consumer: "tool/tools_manifest.json",
+      }),
+      rootEntry("tool", {expectation: "tracked"}),
+    ],
+    patterns: [],
+    prohibitedRootEntries: [],
+    cleanupTargets: [],
+    protectedPaths: [],
+    relationships: [{
+      id: "control-plane",
+      owner: "repository_tooling",
+      sources: [".github/**", "docs/**", "tool/**"],
+      checks: [],
+      ciWorkflows: [".github/workflows/ci.yml"],
+    }],
+    auditPolicies: [],
+  };
+  write(root, "tool/repository_root_manifest.json", `${JSON.stringify(manifest)}\n`);
+  write(root, "tool/tools_manifest.json", '{"tools":[]}\n');
+  write(root, ".github/workflows/ci.yml", "name: CI\n");
+  write(root, "docs/readme.md", "[machine](/Users/example/private.md)\n");
+  git(root, ["init", "-q"]);
+  git(root, ["config", "user.email", "snapshot@example.com"]);
+  git(root, ["config", "user.name", "Snapshot Test"]);
+  git(root, ["add", "."]);
+  git(root, ["commit", "-qm", "fixture"]);
+
+  const full = checkRepository({root});
+  git(root, ["sparse-checkout", "init", "--no-cone"]);
+  git(root, ["sparse-checkout", "set", "--no-cone", "/tool/"]);
+  const sparse = checkRepository({root});
+
+  assert.deepEqual(sparse, full);
+  assert.deepEqual(sparse, [
+    "docs/readme.md: non-portable Markdown link /Users/example/private.md",
+  ]);
+  assert.equal(fs.existsSync(path.join(root, ".github/workflows/ci.yml")), false);
+  assert.equal(fs.existsSync(path.join(root, "docs/readme.md")), false);
+});
+
+function rootEntry(name, overrides = {}) {
+  return {
+    names: [name],
+    owner: "repository_tooling",
+    recovery: "restore fixture",
+    ...overrides,
+  };
+}
+
+function write(root, relativePath, source) {
+  const absolutePath = path.join(root, relativePath);
+  fs.mkdirSync(path.dirname(absolutePath), {recursive: true});
+  fs.writeFileSync(absolutePath, source);
+}
+
+function git(root, args) {
+  execFileSync("git", args, {cwd: root, stdio: "pipe"});
+}
