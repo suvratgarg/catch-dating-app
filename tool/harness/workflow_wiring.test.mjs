@@ -18,6 +18,22 @@ const retiredUiWrapperNames = [
   "check_ui_local_constant_wrappers.sh",
   "check_ui_system_raw_values.sh",
 ];
+const retiredDefinitionCatalogPaths = [
+  "docs/audit_registry/definition_catalog.json",
+  "docs/audit_registry/consolidation_candidates.json",
+  "tool/audit/definition_catalog.py",
+];
+const liveAuditAuthorityPaths = [
+  "AGENTS.md",
+  "docs/README.md",
+  "docs/agent_operating_model.md",
+  "docs/audit_registry/README.md",
+  "docs/audit_registry/backlog.json",
+  "docs/audit_registry/doc_versions.json",
+  "docs/audit_registry/rules.json",
+  "tool/README.md",
+  "tool/tools_manifest.json",
+];
 const toolPreflightCheckoutClosure = [
   "/tool/",
   "/.github/actions/load-toolchain/action.yml",
@@ -76,6 +92,26 @@ test("retired UI wrapper names have no live guidance consumers", () => {
     const source = sources.get(relativePath);
     for (const retired of retiredUiWrapperNames) {
       if (source.includes(retired)) offenders.push(`${relativePath}: ${retired}`);
+    }
+  }
+  assert.deepEqual(offenders, []);
+});
+
+test("retired definition-catalog artifacts stay out of live authorities", () => {
+  for (const relativePath of retiredDefinitionCatalogPaths) {
+    assert.equal(repositorySnapshot.exists(relativePath), false, relativePath);
+  }
+  const sources = repositorySnapshot.readTexts(liveAuditAuthorityPaths, {
+    required: true,
+  });
+  const offenders = [];
+  for (const relativePath of liveAuditAuthorityPaths) {
+    const source = sources.get(relativePath);
+    for (const retiredPath of retiredDefinitionCatalogPaths) {
+      const retiredName = retiredPath.split("/").at(-1);
+      if (source.includes(retiredName)) {
+        offenders.push(`${relativePath}: ${retiredName}`);
+      }
     }
   }
   assert.deepEqual(offenders, []);
