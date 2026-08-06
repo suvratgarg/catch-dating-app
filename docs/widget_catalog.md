@@ -6895,6 +6895,22 @@ Widgetbook callers.
 
 ---
 
+## Cross Paths
+
+### ConsumerWidget
+
+| Widget | File | Purpose |
+|---|---|---|
+| `CrossPathsInvitationScreen` | `lib/cross_paths/presentation/cross_paths_invitation_screen.dart` | Participant-only invitation route. Owns the invitation/profile/event provider waves, unavailable/error branches, route navigation, and accept/decline/cancel/open-plan actions. Its loaded body composes the canonical `CatchPersonPolaroid` with adjacent event context; Widgetbook covers incoming-pending and accepted-plan states. |
+
+### Action Controllers
+
+| Controller | File | Purpose |
+|---|---|---|
+| `CrossPathsInvitationController` | `lib/cross_paths/presentation/cross_paths_invitation_controller.dart` | Exclusive invitation mutation owner. Delegates send, respond, and cancel to the typed repository, keeps pending/error state route-readable, and prevents overlapping event-plan actions. |
+
+---
+
 ## Swipes
 
 ### ConsumerStatefulWidget

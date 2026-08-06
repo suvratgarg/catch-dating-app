@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "generatedFrom": "git ls-files --cached --others --exclude-standard",
   "generatedBy": "node tool/test_inventory.mjs",
-  "total": 612,
+  "total": 618,
   "categories": {
     "firebase_rules": {
       "count": 2,
@@ -24,7 +24,7 @@
       ]
     },
     "flutter_unit_widget": {
-      "count": 282,
+      "count": 286,
       "files": [
         "test/activity/activity_taxonomy_test.dart",
         "test/analytics/app_analytics_test.dart",
@@ -122,6 +122,10 @@
         "test/cross_paths/cross_paths_event_consent_section_test.dart",
         "test/cross_paths/cross_paths_event_detail_integration_test.dart",
         "test/cross_paths/cross_paths_explore_card_test.dart",
+        "test/cross_paths/cross_paths_invitation_controller_test.dart",
+        "test/cross_paths/cross_paths_invitation_repository_test.dart",
+        "test/cross_paths/cross_paths_invitation_screen_test.dart",
+        "test/dashboard/cross_paths_notification_route_test.dart",
         "test/dashboard/dashboard_full_view_model_test.dart",
         "test/dashboard/dashboard_screen_test.dart",
         "test/dashboard/empty_hero_card_test.dart",
@@ -319,7 +323,7 @@
       ]
     },
     "functions_source": {
-      "count": 102,
+      "count": 104,
       "files": [
         "functions/src/admin/accessApplications.test.ts",
         "functions/src/admin/adminActionExecutions.test.ts",
@@ -361,6 +365,7 @@
         "functions/src/clubs/syncClubMemberStats.test.ts",
         "functions/src/clubs/syncClubNextEvent.test.ts",
         "functions/src/crossPaths/getCrossPathsSuggestions.test.ts",
+        "functions/src/crossPaths/invitations.test.ts",
         "functions/src/crossPaths/setCrossPathsEventConsent.test.ts",
         "functions/src/crossPaths/showcaseEligibility.test.ts",
         "functions/src/demoOps/suvbot.test.ts",
@@ -418,6 +423,7 @@
         "functions/src/search/algoliaExploreIndex.test.ts",
         "functions/src/search/exploreSearch.test.ts",
         "functions/src/shared/notificationCopy.test.ts",
+        "functions/src/shared/notifications.test.ts",
         "functions/src/shared/organizerSupplyCapabilities.test.ts",
         "functions/src/shared/profileProjection.test.ts",
         "functions/src/shared/schemaContracts.test.ts",

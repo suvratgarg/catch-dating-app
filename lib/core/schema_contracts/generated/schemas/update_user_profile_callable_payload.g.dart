@@ -565,6 +565,9 @@ const schemaUpdateUserProfileCallablePayloadSchema = <String, Object?>{
         'prefsShowInCrossPaths': <String, Object?>{
           'type': 'boolean',
         },
+        'prefsCrossPathsInvitations': <String, Object?>{
+          'type': 'boolean',
+        },
       },
     },
   },

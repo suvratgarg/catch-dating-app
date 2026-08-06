@@ -5720,6 +5720,13 @@
     "x-owner": "product",
     "x-surface": "safety.presentation.settings_screen"
   },
+  "safetySettingsScreenTitleCrossPathsInvitations": "Cross Paths invitations",
+  "@safetySettingsScreenTitleCrossPathsInvitations": {
+    "description": "Notification setting for event-scoped Cross Paths invitations.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "safety.presentation.settings_screen"
+  },
   "safetySettingsScreenTitleEmailUpdates": "Email updates",
   "@safetySettingsScreenTitleEmailUpdates": {
     "description": "Product copy used by lib/safety/presentation/settings_screen.dart (title).",
@@ -5861,6 +5868,140 @@
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "cross_paths.presentation.profile_preview"
+  },
+  "crossPathsInvitationActionSend": "Invite to this event",
+  "@crossPathsInvitationActionSend": {
+    "description": "Action that sends a message-free Cross Paths event invitation.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "cross_paths.presentation.profile_preview"
+  },
+  "crossPathsInvitationActionJoinFirst": "Join the event to invite",
+  "@crossPathsInvitationActionJoinFirst": {
+    "description": "Action shown when the viewer must book before inviting.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "cross_paths.presentation.profile_preview"
+  },
+  "crossPathsInvitationActionCancel": "Cancel invitation",
+  "@crossPathsInvitationActionCancel": {
+    "description": "Action that cancels a pending Cross Paths invitation.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "cross_paths.presentation.profile_preview"
+  },
+  "crossPathsInvitationActionOpenPlan": "Open event plan",
+  "@crossPathsInvitationActionOpenPlan": {
+    "description": "Action that opens an accepted temporary event plan.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "cross_paths.presentation.profile_preview"
+  },
+  "crossPathsInvitationStatusPending": "Invitation sent — waiting for a reply",
+  "@crossPathsInvitationStatusPending": {
+    "description": "Pending Cross Paths invitation status.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "cross_paths.presentation.profile_preview"
+  },
+  "crossPathsInvitationStatusClosed": "This invitation is closed",
+  "@crossPathsInvitationStatusClosed": {
+    "description": "Generic terminal Cross Paths invitation status.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "cross_paths.presentation.profile_preview"
+  },
+  "crossPathsInvitationConfirmTitle": "Invite {firstName}?",
+  "@crossPathsInvitationConfirmTitle": {
+    "description": "Final confirmation title before sending an invitation.",
+    "placeholders": {"firstName": {"type": "String"}},
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "cross_paths.presentation.profile_preview"
+  },
+  "crossPathsInvitationConfirmBody": "They’ll be able to accept or decline. If they accept, you’ll get a private event-planning chat.",
+  "@crossPathsInvitationConfirmBody": {
+    "description": "Explains the invitation outcome before send.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "cross_paths.presentation.profile_preview"
+  },
+  "crossPathsInvitationConfirmAction": "Send invitation",
+  "@crossPathsInvitationConfirmAction": {
+    "description": "Confirmation action that sends the invitation.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "cross_paths.presentation.profile_preview"
+  },
+  "crossPathsInvitationSentMessage": "Invitation sent",
+  "@crossPathsInvitationSentMessage": {
+    "description": "Success snackbar after an invitation is sent.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "cross_paths.presentation.profile_preview"
+  },
+  "crossPathsInvitationScreenTitle": "Cross Paths invitation",
+  "@crossPathsInvitationScreenTitle": {
+    "description": "Title for the participant-only invitation detail screen.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "cross_paths.presentation.invitation_detail"
+  },
+  "crossPathsInvitationScreenIncomingBody": "They’d like to make a plan to meet you at this event.",
+  "@crossPathsInvitationScreenIncomingBody": {
+    "description": "Explanation shown to an invitation recipient.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "cross_paths.presentation.invitation_detail"
+  },
+  "crossPathsInvitationScreenOutgoingBody": "Your invitation is waiting for a reply.",
+  "@crossPathsInvitationScreenOutgoingBody": {
+    "description": "Explanation shown to an invitation sender.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "cross_paths.presentation.invitation_detail"
+  },
+  "crossPathsInvitationScreenAcceptedBody": "You both agreed to make a plan for this event.",
+  "@crossPathsInvitationScreenAcceptedBody": {
+    "description": "Explanation for an accepted temporary event plan.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "cross_paths.presentation.invitation_detail"
+  },
+  "crossPathsInvitationScreenActionAccept": "Accept and make a plan",
+  "@crossPathsInvitationScreenActionAccept": {
+    "description": "Accepts an invitation and creates the event-plan chat.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "cross_paths.presentation.invitation_detail"
+  },
+  "crossPathsInvitationScreenActionDecline": "Decline",
+  "@crossPathsInvitationScreenActionDecline": {
+    "description": "Declines a pending invitation.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "cross_paths.presentation.invitation_detail"
+  },
+  "crossPathsInvitationScreenActionCancelPlan": "Cancel event plan",
+  "@crossPathsInvitationScreenActionCancelPlan": {
+    "description": "Closes an accepted event plan for both participants.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "cross_paths.presentation.invitation_detail"
+  },
+  "crossPathsInvitationScreenUnavailableTitle": "Invitation unavailable",
+  "@crossPathsInvitationScreenUnavailableTitle": {
+    "description": "Title when an invitation cannot be read or no longer exists.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "cross_paths.presentation.invitation_detail"
+  },
+  "crossPathsInvitationScreenUnavailableBody": "This invitation may have expired, been cancelled, or become unavailable.",
+  "@crossPathsInvitationScreenUnavailableBody": {
+    "description": "Generic privacy-safe invitation unavailable message.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "cross_paths.presentation.invitation_detail"
   },
   "safetySettingsScreenBodyRunnersOnMyEvents": "Runners on my events",
   "@safetySettingsScreenBodyRunnersOnMyEvents": {

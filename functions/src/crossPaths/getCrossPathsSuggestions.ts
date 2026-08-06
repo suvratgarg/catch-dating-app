@@ -1,4 +1,4 @@
-import {createHash, createHmac} from "node:crypto";
+import {createHash, createHmac, timingSafeEqual} from "node:crypto";
 import {defineSecret} from "firebase-functions/params";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
@@ -76,7 +76,7 @@ interface GetCrossPathsSuggestionsDeps {
   signToken?: (payload: SuggestionTokenPayload) => string;
 }
 
-interface SuggestionTokenPayload {
+export interface SuggestionTokenPayload {
   version: 1;
   rankingVersion: 1;
   viewerUid: string;
@@ -733,7 +733,7 @@ async function recordExposureReceipts(params: {
   });
 }
 
-function signSuggestionToken(payload: SuggestionTokenPayload): string {
+export function signSuggestionToken(payload: SuggestionTokenPayload): string {
   const key = crossPathsSuggestionSigningKey.value();
   if (key.length < 32) {
     throw new HttpsError(
@@ -746,6 +746,59 @@ function signSuggestionToken(payload: SuggestionTokenPayload): string {
     .update(encoded)
     .digest("base64url");
   return `${encoded}.${signature}`;
+}
+
+/** Verifies and decodes a short-lived roster-private suggestion token. */
+export function verifyCrossPathsSuggestionToken(
+  token: string,
+  nowMillis: number
+): SuggestionTokenPayload {
+  const [encoded, suppliedSignature, ...extra] = token.split(".");
+  const key = crossPathsSuggestionSigningKey.value();
+  if (!encoded || !suppliedSignature || extra.length > 0 || key.length < 32) {
+    throw invalidSuggestionToken();
+  }
+  const expectedSignature = createHmac("sha256", key)
+    .update(encoded)
+    .digest("base64url");
+  const supplied = Buffer.from(suppliedSignature);
+  const expected = Buffer.from(expectedSignature);
+  if (
+    supplied.length !== expected.length ||
+    !timingSafeEqual(supplied, expected)
+  ) {
+    throw invalidSuggestionToken();
+  }
+  try {
+    const payload = JSON.parse(
+      Buffer.from(encoded, "base64url").toString("utf8")
+    ) as Partial<SuggestionTokenPayload>;
+    if (
+      payload.version !== 1 ||
+      payload.rankingVersion !== 1 ||
+      typeof payload.viewerUid !== "string" ||
+      typeof payload.candidateUid !== "string" ||
+      typeof payload.eventId !== "string" ||
+      typeof payload.sessionIdHash !== "string" ||
+      typeof payload.issuedAtMillis !== "number" ||
+      typeof payload.expiresAtMillis !== "number" ||
+      payload.issuedAtMillis > nowMillis + 60_000 ||
+      payload.expiresAtMillis <= nowMillis
+    ) {
+      throw invalidSuggestionToken();
+    }
+    return payload as SuggestionTokenPayload;
+  } catch (error) {
+    if (error instanceof HttpsError) throw error;
+    throw invalidSuggestionToken();
+  }
+}
+
+function invalidSuggestionToken(): HttpsError {
+  return new HttpsError(
+    "failed-precondition",
+    "This Cross Paths suggestion is no longer available."
+  );
 }
 
 function sha256(value: string): string {

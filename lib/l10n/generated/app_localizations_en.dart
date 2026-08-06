@@ -2843,6 +2843,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Organizer announcements';
 
   @override
+  String get safetySettingsScreenTitleCrossPathsInvitations =>
+      'Cross Paths invitations';
+
+  @override
   String get safetySettingsScreenTitleEmailUpdates => 'Email updates';
 
   @override
@@ -2919,6 +2923,72 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get crossPathsProfilePreviewTooltipClose => 'Close profile';
+
+  @override
+  String get crossPathsInvitationActionSend => 'Invite to this event';
+
+  @override
+  String get crossPathsInvitationActionJoinFirst => 'Join the event to invite';
+
+  @override
+  String get crossPathsInvitationActionCancel => 'Cancel invitation';
+
+  @override
+  String get crossPathsInvitationActionOpenPlan => 'Open event plan';
+
+  @override
+  String get crossPathsInvitationStatusPending =>
+      'Invitation sent — waiting for a reply';
+
+  @override
+  String get crossPathsInvitationStatusClosed => 'This invitation is closed';
+
+  @override
+  String crossPathsInvitationConfirmTitle({required String firstName}) {
+    return 'Invite $firstName?';
+  }
+
+  @override
+  String get crossPathsInvitationConfirmBody =>
+      'They’ll be able to accept or decline. If they accept, you’ll get a private event-planning chat.';
+
+  @override
+  String get crossPathsInvitationConfirmAction => 'Send invitation';
+
+  @override
+  String get crossPathsInvitationSentMessage => 'Invitation sent';
+
+  @override
+  String get crossPathsInvitationScreenTitle => 'Cross Paths invitation';
+
+  @override
+  String get crossPathsInvitationScreenIncomingBody =>
+      'They’d like to make a plan to meet you at this event.';
+
+  @override
+  String get crossPathsInvitationScreenOutgoingBody =>
+      'Your invitation is waiting for a reply.';
+
+  @override
+  String get crossPathsInvitationScreenAcceptedBody =>
+      'You both agreed to make a plan for this event.';
+
+  @override
+  String get crossPathsInvitationScreenActionAccept => 'Accept and make a plan';
+
+  @override
+  String get crossPathsInvitationScreenActionDecline => 'Decline';
+
+  @override
+  String get crossPathsInvitationScreenActionCancelPlan => 'Cancel event plan';
+
+  @override
+  String get crossPathsInvitationScreenUnavailableTitle =>
+      'Invitation unavailable';
+
+  @override
+  String get crossPathsInvitationScreenUnavailableBody =>
+      'This invitation may have expired, been cancelled, or become unavailable.';
 
   @override
   String get safetySettingsScreenBodyRunnersOnMyEvents =>

@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
+import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -18,6 +19,7 @@ import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/cross_paths/cross_paths.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
+import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/external_event.dart';
 import 'package:catch_dating_app/events/domain/viewer_event_availability.dart';
@@ -36,6 +38,7 @@ import 'package:catch_dating_app/explore/presentation/widgets/explore_header.dar
 import 'package:catch_dating_app/explore/presentation/widgets/explore_list.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
@@ -271,6 +274,24 @@ final _crossPathsSuggestion = CrossPathsSuggestion.fromCallableData({
   'tokenExpiresAt': '2027-06-24T14:20:00.000Z',
 });
 
+final _bookedCrossPathsSuggestion = CrossPathsSuggestion(
+  profile: _crossPathsSuggestion.profile,
+  event: CrossPathsSuggestionEvent(
+    eventId: _crossPathsSuggestion.event.eventId,
+    organizerId: _crossPathsSuggestion.event.organizerId,
+    startTime: _crossPathsSuggestion.event.startTime,
+    endTime: _crossPathsSuggestion.event.endTime,
+    meetingPoint: _crossPathsSuggestion.event.meetingPoint,
+    activityKind: _crossPathsSuggestion.event.activityKind,
+    photoUrl: _crossPathsSuggestion.event.photoUrl,
+    viewerBookingStatus: CrossPathsViewerBookingStatus.signedUp,
+  ),
+  reasonCodes: _crossPathsSuggestion.reasonCodes,
+  suggestionToken: _crossPathsSuggestion.suggestionToken,
+  tokenExpiresAt: _crossPathsSuggestion.tokenExpiresAt,
+  rankingVersion: _crossPathsSuggestion.rankingVersion,
+);
+
 @widgetbook.UseCase(
   name: 'Screen states',
   type: ExploreScreen,
@@ -469,20 +490,218 @@ Widget crossPathsEventContextStates(BuildContext context) {
   path: '[Explore]/Sections',
 )
 Widget crossPathsProfilePreviewStates(BuildContext context) {
+  final pending = _crossPathsInvitation(
+    id: 'widgetbook-profile-preview-pending',
+    status: CrossPathsInvitationStatus.pending,
+    outgoing: true,
+  );
+  final accepted = _crossPathsInvitation(
+    id: 'widgetbook-profile-preview-accepted',
+    status: CrossPathsInvitationStatus.accepted,
+    outgoing: true,
+    conversationId: 'widgetbook-profile-preview-plan',
+  );
   return _CatalogScreen(
     title: 'CrossPathsProfilePreviewSheet',
     catalogId: 'overlay.person.cross_paths_profile',
     children: [
       _StateCard(
-        label: 'sanitized profile with event context',
+        label: 'book first',
         child: _DeviceFrame(
-          child: Align(
-            alignment: Alignment.bottomCenter,
-            child: CrossPathsProfilePreviewSheet(
-              suggestion: _crossPathsSuggestion,
-              event: _feedItems[1].event,
-              onEventSelected: _noop,
+          child: _ExploreScope(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: CrossPathsProfilePreviewSheet(
+                suggestion: _crossPathsSuggestion,
+                event: _feedItems[1].event,
+                onEventSelected: _noop,
+              ),
             ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'booked and invitation ready',
+        child: _DeviceFrame(
+          child: _ExploreScope(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: CrossPathsProfilePreviewSheet(
+                suggestion: _bookedCrossPathsSuggestion,
+                event: _feedItems[1].event,
+                onEventSelected: _noop,
+              ),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'invitation pending',
+        child: _DeviceFrame(
+          child: _ExploreScope(
+            outgoingInvitation: pending,
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: CrossPathsProfilePreviewSheet(
+                suggestion: _bookedCrossPathsSuggestion,
+                event: _feedItems[1].event,
+                onEventSelected: _noop,
+              ),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'event plan ready',
+        child: _DeviceFrame(
+          child: _ExploreScope(
+            outgoingInvitation: accepted,
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: CrossPathsProfilePreviewSheet(
+                suggestion: _bookedCrossPathsSuggestion,
+                event: _feedItems[1].event,
+                onEventSelected: _noop,
+                onPlanSelected: (_) {},
+              ),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Cross Paths invitation states',
+  type: CrossPathsInvitationScreen,
+  path: '[Explore]/Screens',
+)
+Widget crossPathsInvitationStates(BuildContext context) {
+  final pending = _crossPathsInvitation(
+    id: 'widgetbook-cross-paths-pending',
+    status: CrossPathsInvitationStatus.pending,
+  );
+  final accepted = _crossPathsInvitation(
+    id: 'widgetbook-cross-paths-accepted',
+    status: CrossPathsInvitationStatus.accepted,
+    conversationId: 'widgetbook-cross-paths-plan',
+  );
+  final outgoing = _crossPathsInvitation(
+    id: 'widgetbook-cross-paths-outgoing',
+    status: CrossPathsInvitationStatus.pending,
+    outgoing: true,
+  );
+  final declined = _crossPathsInvitation(
+    id: 'widgetbook-cross-paths-declined',
+    status: CrossPathsInvitationStatus.declined,
+  );
+  final expired = _crossPathsInvitation(
+    id: 'widgetbook-cross-paths-expired',
+    status: CrossPathsInvitationStatus.expired,
+  );
+  final invalidated = _crossPathsInvitation(
+    id: 'widgetbook-cross-paths-invalidated',
+    status: CrossPathsInvitationStatus.invalidated,
+    invalidationReason: CrossPathsInvitationInvalidationReason.eventUnavailable,
+  );
+  return _CatalogScreen(
+    title: 'CrossPathsInvitationScreen',
+    catalogId: 'screen.cross_paths.invitation',
+    children: [
+      _StateCard(
+        label: 'incoming invitation',
+        child: _DeviceFrame(
+          height: 680,
+          child: _CrossPathsInvitationScope(invitation: pending),
+        ),
+      ),
+      _StateCard(
+        label: 'outgoing invitation',
+        child: _DeviceFrame(
+          height: 680,
+          child: _CrossPathsInvitationScope(invitation: outgoing),
+        ),
+      ),
+      _StateCard(
+        label: 'accepted event plan',
+        child: _DeviceFrame(
+          height: 680,
+          child: _CrossPathsInvitationScope(invitation: accepted),
+        ),
+      ),
+      _StateCard(
+        label: 'declined terminal receipt',
+        child: _DeviceFrame(
+          height: 680,
+          child: _CrossPathsInvitationScope(invitation: declined),
+        ),
+      ),
+      _StateCard(
+        label: 'expired terminal receipt',
+        child: _DeviceFrame(
+          height: 680,
+          child: _CrossPathsInvitationScope(invitation: expired),
+        ),
+      ),
+      _StateCard(
+        label: 'event invalidated receipt',
+        child: _DeviceFrame(
+          height: 680,
+          child: _CrossPathsInvitationScope(invitation: invalidated),
+        ),
+      ),
+      _StateCard(
+        label: 'missing profile media',
+        child: _DeviceFrame(
+          height: 680,
+          child: _CrossPathsInvitationScope(
+            invitation: pending,
+            missingMedia: true,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'long event location copy',
+        child: _DeviceFrame(
+          height: 680,
+          child: _CrossPathsInvitationScope(
+            invitation: pending,
+            event: _feedItems[1].event.copyWith(
+              meetingPoint:
+                  'The courtyard entrance beside the heritage library, '
+                  'opposite the east fountain at Kala Ghoda',
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'text scale 2.0',
+        child: _MediaOverride(
+          textScaler: const TextScaler.linear(2),
+          child: _DeviceFrame(
+            height: 820,
+            child: _CrossPathsInvitationScope(invitation: pending),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'reduced motion',
+        child: _MediaOverride(
+          disableAnimations: true,
+          child: _DeviceFrame(
+            height: 680,
+            child: _CrossPathsInvitationScope(invitation: pending),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'dark theme',
+        child: Theme(
+          data: AppTheme.dark,
+          child: _DeviceFrame(
+            height: 680,
+            child: _CrossPathsInvitationScope(invitation: accepted),
           ),
         ),
       ),
@@ -2001,6 +2220,7 @@ class _ExploreScope extends StatelessWidget {
     this.feed,
     this.uid = _viewerUid,
     this.deviceLocation,
+    this.outgoingInvitation,
   });
 
   final Widget child;
@@ -2011,6 +2231,7 @@ class _ExploreScope extends StatelessWidget {
   final AsyncValue<ExploreFeedViewModel>? feed;
   final String? uid;
   final LocationCoordinate? deviceLocation;
+  final CrossPathsInvitation? outgoingInvitation;
 
   @override
   Widget build(BuildContext context) {
@@ -2040,12 +2261,77 @@ class _ExploreScope extends StatelessWidget {
         exploreSourceClubsProvider.overrideWithValue(effectiveSourceClubs),
         exploreClubsViewModelProvider.overrideWithValue(effectiveViewModel),
         exploreFeedViewModelProvider.overrideWithValue(effectiveFeed),
+        if (uid != null)
+          watchOutgoingCrossPathsInvitationProvider(
+            uid!,
+            _crossPathsSuggestion.event.eventId,
+          ).overrideWith((ref) => Stream.value(outgoingInvitation)),
       ],
       child: _SeedExploreState(
         searchQuery: searchQuery,
         seedFilters: seedFilters,
         child: child,
       ),
+    );
+  }
+}
+
+CrossPathsInvitation _crossPathsInvitation({
+  required String id,
+  required CrossPathsInvitationStatus status,
+  String? conversationId,
+  bool outgoing = false,
+  CrossPathsInvitationInvalidationReason? invalidationReason,
+}) {
+  return CrossPathsInvitation(
+    id: id,
+    eventId: _feedItems[1].event.id,
+    senderUid: outgoing ? _viewerUid : _crossPathsSuggestion.profile.uid,
+    recipientUid: outgoing ? _crossPathsSuggestion.profile.uid : _viewerUid,
+    participantIds: [_viewerUid, _crossPathsSuggestion.profile.uid],
+    status: status,
+    createdAt: _now,
+    updatedAt: _now,
+    expiresAt: _now.add(const Duration(hours: 24)),
+    respondedAt: status == CrossPathsInvitationStatus.accepted ? _now : null,
+    cancelledAt: null,
+    invalidatedAt: null,
+    invalidationReason: invalidationReason,
+    conversationId: conversationId,
+  );
+}
+
+class _CrossPathsInvitationScope extends StatelessWidget {
+  const _CrossPathsInvitationScope({
+    required this.invitation,
+    this.event,
+    this.missingMedia = false,
+  });
+
+  final CrossPathsInvitation invitation;
+  final Event? event;
+  final bool missingMedia;
+
+  @override
+  Widget build(BuildContext context) {
+    final profile = missingMedia
+        ? _crossPathsSuggestion.profile.copyWith(profilePhotos: const [])
+        : _crossPathsSuggestion.profile;
+    final event = this.event ?? _feedItems[1].event;
+    return ProviderScope(
+      overrides: [
+        uidProvider.overrideWith((ref) => Stream.value(_viewerUid)),
+        watchCrossPathsInvitationProvider(
+          invitation.id,
+        ).overrideWith((ref) => Stream.value(invitation)),
+        watchPublicProfileProvider(
+          _crossPathsSuggestion.profile.uid,
+        ).overrideWith((ref) => Stream.value(profile)),
+        watchEventProvider(
+          invitation.eventId,
+        ).overrideWith((ref) => Stream.value(event)),
+      ],
+      child: CrossPathsInvitationScreen(invitationId: invitation.id),
     );
   }
 }

@@ -208,7 +208,11 @@ ChatThreadPreview _previewForMatch(
   final hasConversation = match.lastMessagePreview != null;
   final String previewText;
   if (!hasConversation) {
-    previewText = match.isClubHostInquiry ? 'Ask the host' : 'You matched!';
+    previewText = match.isClubHostInquiry
+        ? 'Ask the host'
+        : match.isCrossPathsEventPlan
+        ? StructuredDomainCopy.chatCrossPathsEventPlanReady
+        : 'You matched!';
   } else if (match.lastMessageSenderId == uid) {
     previewText = 'You: ${match.lastMessagePreview}';
   } else {

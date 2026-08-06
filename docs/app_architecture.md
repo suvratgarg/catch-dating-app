@@ -2347,11 +2347,15 @@ Reference files:
 - `lib/cross_paths/domain/cross_paths_suggestion.dart`
 - `lib/explore/presentation/explore_cross_paths_provider.dart`
 - `lib/cross_paths/presentation/cross_paths_explore_card.dart`
+- `lib/cross_paths/domain/cross_paths_invitation.dart`
+- `lib/cross_paths/presentation/cross_paths_invitation_controller.dart`
+- `lib/cross_paths/presentation/cross_paths_invitation_screen.dart`
 - `lib/cross_paths/presentation/cross_paths_event_consent_controller.dart`
 - `lib/cross_paths/presentation/cross_paths_event_consent_state.dart`
 - `lib/cross_paths/presentation/cross_paths_event_consent_section.dart`
 - `lib/safety/presentation/settings_screen.dart`
 - `functions/src/crossPaths/setCrossPathsEventConsent.ts`
+- `functions/src/crossPaths/invitations.ts`
 - `test/cross_paths/cross_paths_event_consent_section_test.dart`
 
 Use layered consent for an identifiable people surface: a private default-false
@@ -2417,6 +2421,19 @@ Preserve these boundaries in later adopters:
   no-adjacent-non-event composition contract;
 - `CrossPathsExploreCard` keeps the canonical person Polaroid person-only and
   owns adjacent event context plus distinct profile/event actions.
+- invitation documents remain participant-readable and callable-only writable;
+  Explore and Activity watch only the current member's specific invitation
+  edges and never query an attendee roster;
+- `CrossPathsInvitationController` owns send/respond/cancel mutation state,
+  while `CrossPathsInvitationScreen` owns route parameters, async branches,
+  participant identity, provider invalidation, and navigation to the accepted
+  event plan;
+- accepted plans reuse `matches` storage with the explicit
+  `crossPathsEventPlan` type, event-scoped deterministic identity, and expiry;
+  chat state keeps them out of dating-match celebrations and analytics;
+- consent revocation invalidates pending invitations only. Event cancellation,
+  booking loss, an explicit plan cancellation, or a block may close an accepted
+  plan because those boundaries invalidate the meeting itself.
 
 ### Exhibit ARCH-SCREEN-001: Feature Screen Boundary
 

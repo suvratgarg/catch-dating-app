@@ -1,6 +1,6 @@
 ---
 doc_id: cross_paths
-version: 1.5.0
+version: 1.6.0
 updated: 2026-08-05
 owner: product (approved direction 2026-08-05)
 status: implementation-in-progress
@@ -385,8 +385,10 @@ Revoking visibility invalidates pending invitations and removes future
 recommendations. It does not silently cancel an already accepted plan; the
 member receives a separate, explicit action for that.
 
-Pending invitations and accepted plans do not exist yet. Their later callables
-must add that invalidation behavior to the same server-owned consent workflow.
+The implemented server-owned consent workflow invalidates pending invitations
+in the same transaction when visibility is revoked. Accepted plans remain
+active until a participant explicitly cancels, an event or participation
+becomes unavailable, or a safety boundary closes them.
 
 ### Disclosure
 
@@ -407,9 +409,9 @@ policy review remains an external launch blocker, so both bundled Remote Config
 defaults stay off.
 
 Invitation state is always visible in-app while the member remains opted in.
-Phase 2 should add a dedicated Cross Paths invitation push preference rather
-than silently reusing the existing new-Catches or messages preference. Missing
-values resolve to off until the member has explicitly enabled Cross Paths.
+Phase 2 adds the dedicated `prefsCrossPathsInvitations` push preference rather
+than silently reusing new-Catches or messages. Missing values resolve to off
+until the member has explicitly enabled Cross Paths.
 
 ## Invitation contract
 
@@ -460,7 +462,7 @@ event-scoped action, which reduces harassment and moderation surface area.
 
 ### Invitation lifecycle
 
-Proposed `crossPathsInvitations` states:
+Implemented `crossPathsInvitations` states:
 
 `pending → accepted | declined | cancelled | expired | invalidated`
 
@@ -565,8 +567,8 @@ contracts. A proposed name does not exist merely because this spec names it.
 | Global visibility master | private `users/{uid}.prefsShowInCrossPaths` | Implemented, optional/default-off |
 | Per-event consent | `eventCrossPathsConsents/{eventId_uid}` | Implemented, callable-owned |
 | Human/automated showcase eligibility | server-only `crossPathsShowcaseEligibility/{uid}` | Implemented, reviewed and fingerprint-bound |
-| Event invitation | `crossPathsInvitations/{eventId_senderUid}` | Proposed Phase 2 |
-| Accepted event plan | event-and-pair-scoped conversation with `conversationType: crossPathsEventPlan` | Proposed Phase 2 |
+| Event invitation | `crossPathsInvitations/{eventId_senderUid}` | Implemented, callable-owned and participant-readable |
+| Accepted event plan | event-and-pair-scoped conversation with `conversationType: crossPathsEventPlan` | Implemented, participant-only and time-bounded |
 | Exposure/fatigue state | server-only `crossPathsSuggestionExposures/{exposureId}` | Implemented, session-idempotent and client-denied |
 
 `crossPathsShowcaseEligibility` stores only operational status and reason codes
@@ -813,13 +815,26 @@ concentration guardrails.
 
 ### Phase 2 — Invitation and event plan
 
-- Add invitation contracts, callables, notifications, and inbox states.
-- Require confirmed sender and recipient participation.
-- Enforce one sender invitation and one accepted recipient plan per event.
-- Add accept/decline/cancel/expire/invalidate transitions.
-- Add the `crossPathsEventPlan` conversation type and expiry behavior.
-- Exclude event plans from permanent-match and Event Success metrics.
-- Measure acceptance, co-attendance, plan usage, and post-event Catch outcomes.
+Implementation receipt (2026-08-06): invitation request/response/document
+schemas, generated Dart/TypeScript validators, callable-only lifecycle writes,
+participant-only reads, notifications, dedicated default-off push preference,
+Activity routing, invitation detail, Explore pending/accepted actions, and the
+temporary event-plan chat are implemented. Send and accept transactionally
+revalidate both bookings, layered consent, reciprocal eligibility, showcase
+approval, safety state, cardinality, and event availability. Scheduled expiry
+and event, participation, consent, and block triggers keep lifecycle state
+truthful. Accepted plans are excluded from dating-match celebrations and Event
+Success signals, become read-only after event end plus 24 hours, and remain
+separate from post-event Catch decisions.
+
+- [x] Add invitation contracts, callables, notifications, and inbox states.
+- [x] Require confirmed sender and recipient participation.
+- [x] Enforce one sender invitation and one accepted recipient plan per event.
+- [x] Add accept/decline/cancel/expire/invalidate transitions.
+- [x] Add the `crossPathsEventPlan` conversation type and expiry behavior.
+- [x] Exclude event plans from permanent-match and Event Success metrics.
+- [x] Measure send, accept, decline, cancel, and plan-open actions; co-attendance
+      and post-event mutual-interest reporting remain aggregate analytics work.
 
 Exit gate: invitation abuse remains within guardrails and accepted invitations
 increase co-attendance or post-event mutual interest without confusing the

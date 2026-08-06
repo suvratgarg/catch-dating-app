@@ -124,6 +124,12 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   updateUserProfile: {maxRequests: 60, windowMs: 60 * 1000},
   setCrossPathsEventConsent: {maxRequests: 30, windowMs: 60 * 1000},
   getCrossPathsSuggestions: {maxRequests: 12, windowMs: 60 * 1000},
+  sendCrossPathsInvitation: {maxRequests: 5, windowMs: 60 * 60 * 1000},
+  respondCrossPathsInvitation: {maxRequests: 20, windowMs: 60 * 1000},
+  cancelCrossPathsInvitationOrPlan: {
+    maxRequests: 20,
+    windowMs: 60 * 1000,
+  },
   // 3/hour
   createClub: {maxRequests: 3, windowMs: 60 * 60 * 1000},
   createOrganizer: {maxRequests: 3, windowMs: 60 * 60 * 1000},

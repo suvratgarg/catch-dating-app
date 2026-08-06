@@ -151,6 +151,8 @@ _UserProfile _$UserProfileFromJson(Map<String, dynamic> json) => _UserProfile(
   prefsWeeklyDigest: json['prefsWeeklyDigest'] as bool? ?? false,
   prefsShowOnMap: json['prefsShowOnMap'] as bool? ?? true,
   prefsShowInCrossPaths: json['prefsShowInCrossPaths'] as bool? ?? false,
+  prefsCrossPathsInvitations:
+      json['prefsCrossPathsInvitations'] as bool? ?? false,
 );
 
 Map<String, dynamic> _$UserProfileToJson(
@@ -198,6 +200,7 @@ Map<String, dynamic> _$UserProfileToJson(
   'prefsWeeklyDigest': instance.prefsWeeklyDigest,
   'prefsShowOnMap': instance.prefsShowOnMap,
   'prefsShowInCrossPaths': instance.prefsShowInCrossPaths,
+  'prefsCrossPathsInvitations': instance.prefsCrossPathsInvitations,
 };
 
 const _$GenderEnumMap = {

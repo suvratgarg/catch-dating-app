@@ -270,6 +270,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final conversationContext = chatConversationContextFor(
       isHostInquiry: routeState.lookupState.isHostInquiry,
       viewerIsHost: AppConfig.appRole.isHost,
+      isCrossPathsEventPlan:
+          routeState.matchAsync.value?.isCrossPathsEventPlan == true,
     );
     final routeError = routeState.routeError;
     final authError = routeState.authError;

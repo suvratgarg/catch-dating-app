@@ -13,6 +13,7 @@ import 'package:catch_dating_app/core/presentation/host_app_shell.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
+import 'package:catch_dating_app/cross_paths/presentation/cross_paths_invitation_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
 import 'package:catch_dating_app/event_policies/presentation/event_policy_lab_screen.dart';
@@ -288,6 +289,13 @@ GoRouter _buildGoRouter(Ref ref, {required bool isHostApp}) {
         builder: (context, state) => const AuthScreen(),
       ),
       if (!isHostApp) ...[
+        GoRoute(
+          path: Routes.crossPathsInvitationScreen.path,
+          name: Routes.crossPathsInvitationScreen.name,
+          builder: (context, state) => CrossPathsInvitationScreen(
+            invitationId: state.pathParameters['invitationId']!,
+          ),
+        ),
         GoRoute(
           path: Routes.onboardingScreen.path,
           name: Routes.onboardingScreen.name,

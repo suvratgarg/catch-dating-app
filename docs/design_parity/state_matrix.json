@@ -1209,6 +1209,21 @@
           "notes": "Captured the bounded profile preview with no contact details, attendee roster, or invitation controls and with persistent event context."
         },
         {
+          "id": "cross_paths_invitation",
+          "kind": "populated",
+          "status": "tested",
+          "captureIds": [],
+          "previewIds": [
+            "CrossPathsInvitationScreen/Cross Paths invitation states"
+          ],
+          "tests": [
+            "test/cross_paths/cross_paths_invitation_screen_test.dart",
+            "test/cross_paths/cross_paths_invitation_controller_test.dart",
+            "test/cross_paths/cross_paths_invitation_repository_test.dart"
+          ],
+          "notes": "Widgetbook and focused tests cover participant-only incoming invitation and accepted event-plan states, canonical person material, event context, and lifecycle actions."
+        },
+        {
           "id": "map_route",
               "kind": "populated",
               "status": "captured",

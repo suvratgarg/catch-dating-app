@@ -4942,6 +4942,12 @@ abstract class AppLocalizations {
   /// **'Organizer announcements'**
   String get safetySettingsScreenTitleClubAnnouncements;
 
+  /// Notification setting for event-scoped Cross Paths invitations.
+  ///
+  /// In en, this message translates to:
+  /// **'Cross Paths invitations'**
+  String get safetySettingsScreenTitleCrossPathsInvitations;
+
   /// Product copy used by lib/safety/presentation/settings_screen.dart (title).
   ///
   /// In en, this message translates to:
@@ -5061,6 +5067,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Close profile'**
   String get crossPathsProfilePreviewTooltipClose;
+
+  /// Action that sends a message-free Cross Paths event invitation.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite to this event'**
+  String get crossPathsInvitationActionSend;
+
+  /// Action shown when the viewer must book before inviting.
+  ///
+  /// In en, this message translates to:
+  /// **'Join the event to invite'**
+  String get crossPathsInvitationActionJoinFirst;
+
+  /// Action that cancels a pending Cross Paths invitation.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel invitation'**
+  String get crossPathsInvitationActionCancel;
+
+  /// Action that opens an accepted temporary event plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Open event plan'**
+  String get crossPathsInvitationActionOpenPlan;
+
+  /// Pending Cross Paths invitation status.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation sent — waiting for a reply'**
+  String get crossPathsInvitationStatusPending;
+
+  /// Generic terminal Cross Paths invitation status.
+  ///
+  /// In en, this message translates to:
+  /// **'This invitation is closed'**
+  String get crossPathsInvitationStatusClosed;
+
+  /// Final confirmation title before sending an invitation.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite {firstName}?'**
+  String crossPathsInvitationConfirmTitle({required String firstName});
+
+  /// Explains the invitation outcome before send.
+  ///
+  /// In en, this message translates to:
+  /// **'They’ll be able to accept or decline. If they accept, you’ll get a private event-planning chat.'**
+  String get crossPathsInvitationConfirmBody;
+
+  /// Confirmation action that sends the invitation.
+  ///
+  /// In en, this message translates to:
+  /// **'Send invitation'**
+  String get crossPathsInvitationConfirmAction;
+
+  /// Success snackbar after an invitation is sent.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation sent'**
+  String get crossPathsInvitationSentMessage;
+
+  /// Title for the participant-only invitation detail screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Cross Paths invitation'**
+  String get crossPathsInvitationScreenTitle;
+
+  /// Explanation shown to an invitation recipient.
+  ///
+  /// In en, this message translates to:
+  /// **'They’d like to make a plan to meet you at this event.'**
+  String get crossPathsInvitationScreenIncomingBody;
+
+  /// Explanation shown to an invitation sender.
+  ///
+  /// In en, this message translates to:
+  /// **'Your invitation is waiting for a reply.'**
+  String get crossPathsInvitationScreenOutgoingBody;
+
+  /// Explanation for an accepted temporary event plan.
+  ///
+  /// In en, this message translates to:
+  /// **'You both agreed to make a plan for this event.'**
+  String get crossPathsInvitationScreenAcceptedBody;
+
+  /// Accepts an invitation and creates the event-plan chat.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept and make a plan'**
+  String get crossPathsInvitationScreenActionAccept;
+
+  /// Declines a pending invitation.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline'**
+  String get crossPathsInvitationScreenActionDecline;
+
+  /// Closes an accepted event plan for both participants.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel event plan'**
+  String get crossPathsInvitationScreenActionCancelPlan;
+
+  /// Title when an invitation cannot be read or no longer exists.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation unavailable'**
+  String get crossPathsInvitationScreenUnavailableTitle;
+
+  /// Generic privacy-safe invitation unavailable message.
+  ///
+  /// In en, this message translates to:
+  /// **'This invitation may have expired, been cancelled, or become unavailable.'**
+  String get crossPathsInvitationScreenUnavailableBody;
 
   /// Product copy used by lib/safety/presentation/settings_screen.dart (body).
   ///

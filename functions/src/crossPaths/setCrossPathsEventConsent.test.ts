@@ -14,7 +14,10 @@ class FakeDocRef {
 }
 
 class FakeSnapshot {
-  constructor(private readonly value: FakeData | undefined) {}
+  constructor(
+    private readonly value: FakeData | undefined,
+    readonly ref: FakeDocRef
+  ) {}
   get exists(): boolean {
     return this.value !== undefined;
   }
@@ -23,10 +26,52 @@ class FakeSnapshot {
   }
 }
 
+class FakeQuery {
+  constructor(
+    private readonly firestore: FakeFirestore,
+    protected readonly path: string,
+    private readonly field?: string,
+    private readonly expected?: unknown
+  ) {}
+  where(field: string, _op: string, expected: unknown) {
+    return new FakeQuery(this.firestore, this.path, field, expected);
+  }
+  limit(value: number) {
+    void value;
+    return this;
+  }
+  async get() {
+    const field = this.field;
+    const docs = this.firestore.collectionRows(this.path)
+      .filter(({value}) => {
+        if (field === undefined) return true;
+        const actual = value[field];
+        return Array.isArray(actual) && actual.includes(this.expected);
+      })
+      .map(({id, value}) => new FakeSnapshot(
+        value,
+        new FakeDocRef(`${this.path}/${id}`)
+      ));
+    return {docs};
+  }
+}
+
+class FakeCollection extends FakeQuery {
+  constructor(
+    firestoreRef: FakeFirestore,
+    readonly path: string
+  ) {
+    super(firestoreRef, path);
+  }
+  doc(id: string) {
+    return new FakeDocRef(`${this.path}/${id}`);
+  }
+}
+
 class FakeFirestore {
   constructor(private readonly docs: Record<string, FakeData | undefined>) {}
   collection(path: string) {
-    return {doc: (id: string) => new FakeDocRef(`${path}/${id}`)};
+    return new FakeCollection(this, path);
   }
   async runTransaction<T>(callback: (tx: FakeTransaction) => Promise<T>) {
     const tx = new FakeTransaction(this);
@@ -41,16 +86,32 @@ class FakeFirestore {
   write(path: string, value: FakeData) {
     this.docs[path] = {...value};
   }
+  collectionRows(path: string): Array<{id: string; value: FakeData}> {
+    const prefix = `${path}/`;
+    return Object.entries(this.docs).flatMap(([key, value]) => {
+      if (!key.startsWith(prefix) || value === undefined) return [];
+      const suffix = key.slice(prefix.length);
+      if (suffix.includes("/")) return [];
+      return [{id: suffix, value}];
+    });
+  }
 }
 
 class FakeTransaction {
   private readonly writes: Array<() => void> = [];
   constructor(private readonly firestore: FakeFirestore) {}
-  async get(ref: FakeDocRef) {
-    return new FakeSnapshot(this.firestore.read(ref.path));
+  async get(ref: FakeDocRef | FakeQuery) {
+    if (ref instanceof FakeQuery) return ref.get();
+    return new FakeSnapshot(this.firestore.read(ref.path), ref);
   }
   set(ref: FakeDocRef, value: FakeData) {
     this.writes.push(() => this.firestore.write(ref.path, value));
+  }
+  update(ref: FakeDocRef, value: FakeData) {
+    this.writes.push(() => this.firestore.write(ref.path, {
+      ...this.firestore.read(ref.path),
+      ...value,
+    }));
   }
   commit() {
     for (const write of this.writes) write();
@@ -198,6 +259,25 @@ test(
         revokedAt: null,
         source: "booking_success",
       },
+      "crossPathsInvitations/pending-1": {
+        eventId: "event-1",
+        senderUid: "runner-1",
+        recipientUid: "peer-1",
+        participantIds: ["runner-1", "peer-1"],
+        status: "pending",
+      },
+      "crossPathsInvitations/accepted-1": {
+        eventId: "event-1",
+        senderUid: "peer-2",
+        recipientUid: "runner-1",
+        participantIds: ["peer-2", "runner-1"],
+        status: "accepted",
+        conversationId: "plan-1",
+      },
+      "matches/plan-1": {
+        status: "active",
+        unreadCounts: {"runner-1": 2, "peer-2": 1},
+      },
     });
 
     await setCrossPathsEventConsentHandler(
@@ -218,6 +298,15 @@ test(
         source: "event_detail",
       }
     );
+    assert.equal(
+      h.firestore.read("crossPathsInvitations/pending-1")?.status,
+      "invalidated"
+    );
+    assert.equal(
+      h.firestore.read("crossPathsInvitations/accepted-1")?.status,
+      "accepted"
+    );
+    assert.equal(h.firestore.read("matches/plan-1")?.status, "active");
   }
 );
 

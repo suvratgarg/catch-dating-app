@@ -1,10 +1,16 @@
+import 'package:catch_dating_app/auth/data/auth_repository.dart'
+    show uidProvider;
+import 'package:catch_dating_app/core/analytics/app_analytics.dart';
+import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet_grabber.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_mono_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
@@ -12,13 +18,17 @@ import 'package:catch_dating_app/core/widgets/catch_person_polaroid.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';
+import 'package:catch_dating_app/cross_paths/data/cross_paths_repository.dart';
+import 'package:catch_dating_app/cross_paths/domain/cross_paths_invitation.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_suggestion.dart';
+import 'package:catch_dating_app/cross_paths/presentation/cross_paths_invitation_controller.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_surface.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class CrossPathsExploreCard extends StatefulWidget {
   const CrossPathsExploreCard({
@@ -215,6 +225,7 @@ Future<void> showCrossPathsProfilePreview({
   required CrossPathsSuggestion suggestion,
   required Event event,
   required VoidCallback onEventSelected,
+  ValueChanged<String>? onPlanSelected,
 }) {
   return showCatchBottomSheet<void>(
     context: context,
@@ -225,25 +236,39 @@ Future<void> showCrossPathsProfilePreview({
         Navigator.of(sheetContext).pop();
         onEventSelected();
       },
+      onPlanSelected: onPlanSelected,
     ),
   );
 }
 
-class CrossPathsProfilePreviewSheet extends StatelessWidget {
+class CrossPathsProfilePreviewSheet extends ConsumerWidget {
   const CrossPathsProfilePreviewSheet({
     super.key,
     required this.suggestion,
     required this.event,
     required this.onEventSelected,
+    this.onPlanSelected,
   });
 
   final CrossPathsSuggestion suggestion;
   final Event event;
   final VoidCallback onEventSelected;
+  final ValueChanged<String>? onPlanSelected;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
+    final uid = ref.watch(uidProvider).asData?.value;
+    final invitationAsync = uid == null
+        ? const AsyncValue<CrossPathsInvitation?>.data(null)
+        : ref.watch(
+            watchOutgoingCrossPathsInvitationProvider(
+              uid,
+              suggestion.event.eventId,
+            ),
+          );
+    final invitation = invitationAsync.asData?.value;
+    final mutation = ref.watch(crossPathsInvitationControllerProvider);
     return FractionallySizedBox(
       heightFactor: 0.94,
       child: CatchSurface(
@@ -294,11 +319,50 @@ class CrossPathsProfilePreviewSheet extends StatelessWidget {
               top: false,
               child: Padding(
                 padding: CatchInsets.pageBody.copyWith(top: CatchSpacing.s2),
-                child: CrossPathsEventContextCard(
-                  suggestion: suggestion,
-                  event: event,
-                  onEventSelected: onEventSelected,
-                  compact: true,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (invitation?.status ==
+                        CrossPathsInvitationStatus.pending) ...[
+                      Text(
+                        context.l10n.crossPathsInvitationStatusPending,
+                        style: CatchTextStyles.bodyS(context, color: t.ink2),
+                        textAlign: TextAlign.center,
+                      ),
+                      gapH8,
+                    ],
+                    CatchButton(
+                      key: const ValueKey('cross-paths-invitation-action'),
+                      label: _invitationActionLabel(context, invitation),
+                      icon: Icon(
+                        invitation?.status ==
+                                CrossPathsInvitationStatus.accepted
+                            ? CatchIcons.chatBubbleOutlineRounded
+                            : CatchIcons.favoriteOutline,
+                        size: CatchIcon.sm,
+                      ),
+                      fullWidth: true,
+                      isLoading: mutation.isLoading,
+                      variant:
+                          invitation?.status ==
+                              CrossPathsInvitationStatus.pending
+                          ? CatchButtonVariant.secondary
+                          : CatchButtonVariant.primary,
+                      onPressed: _invitationAction(
+                        context,
+                        ref,
+                        invitationAsync,
+                        invitation,
+                      ),
+                    ),
+                    gapH10,
+                    CrossPathsEventContextCard(
+                      suggestion: suggestion,
+                      event: event,
+                      onEventSelected: onEventSelected,
+                      compact: true,
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -306,6 +370,120 @@ class CrossPathsProfilePreviewSheet extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _invitationActionLabel(
+    BuildContext context,
+    CrossPathsInvitation? invitation,
+  ) {
+    if (!suggestion.viewerIsBooked) {
+      return context.l10n.crossPathsInvitationActionJoinFirst;
+    }
+    return switch (invitation?.status) {
+      null => context.l10n.crossPathsInvitationActionSend,
+      CrossPathsInvitationStatus.pending =>
+        context.l10n.crossPathsInvitationActionCancel,
+      CrossPathsInvitationStatus.accepted =>
+        context.l10n.crossPathsInvitationActionOpenPlan,
+      _ => context.l10n.crossPathsInvitationStatusClosed,
+    };
+  }
+
+  VoidCallback? _invitationAction(
+    BuildContext context,
+    WidgetRef ref,
+    AsyncValue<CrossPathsInvitation?> invitationAsync,
+    CrossPathsInvitation? invitation,
+  ) {
+    if (!suggestion.viewerIsBooked) return onEventSelected;
+    if (!invitationAsync.hasValue) return null;
+    return switch (invitation?.status) {
+      null => () => _sendInvitation(context, ref),
+      CrossPathsInvitationStatus.pending => () => _cancelInvitation(
+        context,
+        ref,
+        invitation!.id,
+      ),
+      CrossPathsInvitationStatus.accepted =>
+        invitation?.conversationId == null || onPlanSelected == null
+            ? null
+            : () => onPlanSelected!(invitation!.conversationId!),
+      _ => null,
+    };
+  }
+
+  Future<void> _sendInvitation(BuildContext context, WidgetRef ref) async {
+    final firstName = crossPathsFirstName(suggestion.profile.name);
+    final confirmed = await showCatchConfirmDialog(
+      context: context,
+      title: context.l10n.crossPathsInvitationConfirmTitle(
+        firstName: firstName,
+      ),
+      message: context.l10n.crossPathsInvitationConfirmBody,
+      confirmLabel: context.l10n.crossPathsInvitationConfirmAction,
+    );
+    if (confirmed != true || !context.mounted) return;
+    try {
+      await ref
+          .read(crossPathsInvitationControllerProvider.notifier)
+          .send(
+            eventId: suggestion.event.eventId,
+            recipientUid: suggestion.profile.uid,
+            suggestionToken: suggestion.suggestionToken,
+          );
+      ref
+          .read(appAnalyticsProvider)
+          .logEvent(
+            AnalyticsEvents.crossPathsInvitationSent,
+            parameters: {
+              AnalyticsParameters.eventId: suggestion.event.eventId,
+              AnalyticsParameters.surface: 'explore_profile',
+            },
+          );
+      if (context.mounted) {
+        showCatchSnackBar(
+          context,
+          context.l10n.crossPathsInvitationSentMessage,
+        );
+      }
+    } catch (error) {
+      if (context.mounted) {
+        showCatchErrorSnackBar(
+          context,
+          error,
+          errorContext: AppErrorContext.explore,
+        );
+      }
+    }
+  }
+
+  Future<void> _cancelInvitation(
+    BuildContext context,
+    WidgetRef ref,
+    String invitationId,
+  ) async {
+    try {
+      await ref
+          .read(crossPathsInvitationControllerProvider.notifier)
+          .cancel(invitationId);
+      ref
+          .read(appAnalyticsProvider)
+          .logEvent(
+            AnalyticsEvents.crossPathsInvitationCancelled,
+            parameters: {
+              AnalyticsParameters.eventId: suggestion.event.eventId,
+              AnalyticsParameters.surface: 'explore_profile',
+            },
+          );
+    } catch (error) {
+      if (context.mounted) {
+        showCatchErrorSnackBar(
+          context,
+          error,
+          errorContext: AppErrorContext.explore,
+        );
+      }
+    }
   }
 }
 

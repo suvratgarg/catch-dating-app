@@ -63,6 +63,7 @@ void main() {
         prefsWeeklyDigest: true,
         prefsShowOnMap: true,
         prefsShowInCrossPaths: true,
+        prefsCrossPathsInvitations: true,
       );
 
       final schema = schema_contracts

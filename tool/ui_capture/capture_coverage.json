@@ -219,6 +219,12 @@
       "reason": "Notifications captures now cover populated read/unread activity, uid loading/error, signed-out, activity loading, activity error, empty activity, mark-all-read pending/error, deep-link failure feedback, text scale 2.0, reduced motion, and paired light/dark output."
     },
     {
+      "routeId": "crossPathsInvitationScreen",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "The dedicated invitation route has deterministic Widgetbook coverage for incoming, outgoing, accepted, declined, expired, invalidated, missing-media, long-location, text-scale, reduced-motion, and dark-theme states. Add route-level captures when the Cross Paths launch fixture is admitted to the canonical capture manifest."
+    },
+    {
       "routeId": "exploreScreen",
       "status": "captured",
       "priority": "P1",

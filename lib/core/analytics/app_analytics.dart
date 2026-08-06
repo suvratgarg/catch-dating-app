@@ -227,6 +227,11 @@ abstract final class AnalyticsEvents {
   static const crossPathsEventOpened = 'cross_paths_event_open';
   static const crossPathsBookingStarted = 'cross_paths_booking_started';
   static const crossPathsBookingCompleted = 'cross_paths_booking_completed';
+  static const crossPathsInvitationSent = 'cross_paths_invitation_sent';
+  static const crossPathsInvitationAccepted = 'cross_paths_invitation_accepted';
+  static const crossPathsInvitationDeclined = 'cross_paths_invitation_declined';
+  static const crossPathsInvitationCancelled =
+      'cross_paths_invitation_cancelled';
   static const exploreMapEventSelected = 'explore_map_event_selected';
   static const homeOpened = 'home_opened';
   static const homeModuleImpression = 'home_module_impression';

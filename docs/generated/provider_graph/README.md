@@ -8,12 +8,12 @@ Open [provider_graph.html](provider_graph.html) for the interactive feature/prov
 
 | Measure | Count |
 |---|---:|
-| Handwritten Dart files | 816 |
-| Providers | 225 |
+| Handwritten Dart files | 819 |
+| Providers | 229 |
 | Mutations | 84 |
-| Unique provider relationships | 329 |
+| Unique provider relationships | 333 |
 | Cross-feature relationships | 163 |
-| Consumer callsites | 763 |
+| Consumer callsites | 782 |
 | Reactive cycles | 0 |
 
 ## Architecture review

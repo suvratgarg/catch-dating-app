@@ -51,6 +51,7 @@ final class UpdateUserProfilePatch {
     bool? prefsWeeklyDigest,
     bool? prefsShowOnMap,
     bool? prefsShowInCrossPaths,
+    bool? prefsCrossPathsInvitations,
   }) : _fields = {
          if (name != null)
            'name': name,
@@ -126,6 +127,8 @@ final class UpdateUserProfilePatch {
            'prefsShowOnMap': prefsShowOnMap,
          if (prefsShowInCrossPaths != null)
            'prefsShowInCrossPaths': prefsShowInCrossPaths,
+         if (prefsCrossPathsInvitations != null)
+           'prefsCrossPathsInvitations': prefsCrossPathsInvitations,
        };
 
   /// Escape hatch for callers that compute the field key dynamically.

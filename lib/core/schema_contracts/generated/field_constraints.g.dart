@@ -300,6 +300,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const activityNotificationDocumentInvitationId = CatchContractFieldConstraints(
+    path: 'activityNotificationDocument.invitationId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
   static const activityNotificationDocumentMatchId = CatchContractFieldConstraints(
     path: 'activityNotificationDocument.matchId',
     maxLength: 240,
@@ -368,7 +375,7 @@ abstract final class CatchContractConstraints {
     path: 'activityNotificationDocument.type',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['message', 'match', 'eventReminder', 'eventSignup', 'waitlistPromotion', 'waitlistOffer', 'waitlistOfferExpiring', 'waitlistOfferExpired', 'eventCancelled', 'eventUpdated', 'clubUpdate', 'organizerUpdate'],
+    enumValues: <String>['message', 'match', 'eventReminder', 'eventSignup', 'waitlistPromotion', 'waitlistOffer', 'waitlistOfferExpiring', 'waitlistOfferExpired', 'eventCancelled', 'eventUpdated', 'clubUpdate', 'organizerUpdate', 'crossPathsInvitation', 'crossPathsInvitationAccepted', 'crossPathsInvitationDeclined', 'crossPathsPlanCancelled'],
   );
 
   static const activityNotificationDocumentUid = CatchContractFieldConstraints(
@@ -3814,6 +3821,29 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const cancelCrossPathsInvitationOrPlanCallablePayloadInvitationId = CatchContractFieldConstraints(
+    path: 'cancelCrossPathsInvitationOrPlanCallablePayload.invitationId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const cancelCrossPathsInvitationOrPlanCallableResponseInvitationId = CatchContractFieldConstraints(
+    path: 'cancelCrossPathsInvitationOrPlanCallableResponse.invitationId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const cancelCrossPathsInvitationOrPlanCallableResponseStatus = CatchContractFieldConstraints(
+    path: 'cancelCrossPathsInvitationOrPlanCallableResponse.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['cancelled', 'invalidated'],
   );
 
   static const cancelEventCallablePayloadEventId = CatchContractFieldConstraints(
@@ -8933,6 +8963,152 @@ abstract final class CatchContractConstraints {
     maxLength: 3,
     minLength: 3,
     valueTypes: <String>['string'],
+  );
+
+  static const crossPathsInvitationDocumentCancelledAtNanoseconds = CatchContractFieldConstraints(
+    path: 'crossPathsInvitationDocument.cancelledAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const crossPathsInvitationDocumentCancelledAtSeconds = CatchContractFieldConstraints(
+    path: 'crossPathsInvitationDocument.cancelledAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const crossPathsInvitationDocumentConversationId = CatchContractFieldConstraints(
+    path: 'crossPathsInvitationDocument.conversationId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const crossPathsInvitationDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'crossPathsInvitationDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const crossPathsInvitationDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'crossPathsInvitationDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const crossPathsInvitationDocumentEventId = CatchContractFieldConstraints(
+    path: 'crossPathsInvitationDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const crossPathsInvitationDocumentExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'crossPathsInvitationDocument.expiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const crossPathsInvitationDocumentExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'crossPathsInvitationDocument.expiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const crossPathsInvitationDocumentInvalidatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'crossPathsInvitationDocument.invalidatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const crossPathsInvitationDocumentInvalidatedAtSeconds = CatchContractFieldConstraints(
+    path: 'crossPathsInvitationDocument.invalidatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const crossPathsInvitationDocumentInvalidationReason = CatchContractFieldConstraints(
+    path: 'crossPathsInvitationDocument.invalidationReason',
+    valueTypes: <String>['string'],
+    enumValues: <String>['event_unavailable', 'participation_cancelled', 'consent_revoked', 'safety_state_changed', 'competing_plan_accepted', 'plan_cancelled'],
+  );
+
+  static const crossPathsInvitationDocumentParticipantIds = CatchContractFieldConstraints(
+    path: 'crossPathsInvitationDocument.participantIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 2,
+    maxItems: 2,
+    uniqueItems: true,
+  );
+
+  static const crossPathsInvitationDocumentParticipantIdsItems = CatchContractFieldConstraints(
+    path: 'crossPathsInvitationDocument.participantIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const crossPathsInvitationDocumentRecipientUid = CatchContractFieldConstraints(
+    path: 'crossPathsInvitationDocument.recipientUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const crossPathsInvitationDocumentRespondedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'crossPathsInvitationDocument.respondedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const crossPathsInvitationDocumentRespondedAtSeconds = CatchContractFieldConstraints(
+    path: 'crossPathsInvitationDocument.respondedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const crossPathsInvitationDocumentSenderUid = CatchContractFieldConstraints(
+    path: 'crossPathsInvitationDocument.senderUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const crossPathsInvitationDocumentStatus = CatchContractFieldConstraints(
+    path: 'crossPathsInvitationDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'accepted', 'declined', 'cancelled', 'expired', 'invalidated'],
+  );
+
+  static const crossPathsInvitationDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'crossPathsInvitationDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const crossPathsInvitationDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'crossPathsInvitationDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
   );
 
   static const crossPathsShowcaseEligibilityDocumentProfileFingerprint = CatchContractFieldConstraints(
@@ -16726,6 +16902,20 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const matchDocumentClosedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'matchDocument.closedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const matchDocumentClosedAtSeconds = CatchContractFieldConstraints(
+    path: 'matchDocument.closedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const matchDocumentClubId = CatchContractFieldConstraints(
     path: 'matchDocument.clubId',
     maxLength: 180,
@@ -16737,7 +16927,7 @@ abstract final class CatchContractConstraints {
   static const matchDocumentConversationType = CatchContractFieldConstraints(
     path: 'matchDocument.conversationType',
     valueTypes: <String>['string'],
-    enumValues: <String>['match', 'clubHostInquiry'],
+    enumValues: <String>['match', 'clubHostInquiry', 'crossPathsEventPlan'],
   );
 
   static const matchDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
@@ -16752,6 +16942,14 @@ abstract final class CatchContractConstraints {
     path: 'matchDocument.createdAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
+  );
+
+  static const matchDocumentCrossPathsInvitationId = CatchContractFieldConstraints(
+    path: 'matchDocument.crossPathsInvitationId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const matchDocumentDemoOps = CatchContractFieldConstraints(
@@ -16790,6 +16988,20 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const matchDocumentEventPlanExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'matchDocument.eventPlanExpiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const matchDocumentEventPlanExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'matchDocument.eventPlanExpiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
   );
 
   static const matchDocumentLastMessageAtNanoseconds = CatchContractFieldConstraints(
@@ -16865,7 +17077,7 @@ abstract final class CatchContractConstraints {
     path: 'matchDocument.status',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['active', 'blocked'],
+    enumValues: <String>['active', 'blocked', 'closed'],
   );
 
   static const matchDocumentSynthetic = CatchContractFieldConstraints(
@@ -22674,6 +22886,43 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const respondCrossPathsInvitationCallablePayloadDecision = CatchContractFieldConstraints(
+    path: 'respondCrossPathsInvitationCallablePayload.decision',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['accept', 'decline'],
+  );
+
+  static const respondCrossPathsInvitationCallablePayloadInvitationId = CatchContractFieldConstraints(
+    path: 'respondCrossPathsInvitationCallablePayload.invitationId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const respondCrossPathsInvitationCallableResponseConversationId = CatchContractFieldConstraints(
+    path: 'respondCrossPathsInvitationCallableResponse.conversationId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const respondCrossPathsInvitationCallableResponseInvitationId = CatchContractFieldConstraints(
+    path: 'respondCrossPathsInvitationCallableResponse.invitationId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const respondCrossPathsInvitationCallableResponseStatus = CatchContractFieldConstraints(
+    path: 'respondCrossPathsInvitationCallableResponse.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['accepted', 'declined'],
+  );
+
   static const reviewDocumentClubId = CatchContractFieldConstraints(
     path: 'reviewDocument.clubId',
     maxLength: 180,
@@ -23106,6 +23355,67 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['number'],
     minimum: -180,
     maximum: 180,
+  );
+
+  static const sendCrossPathsInvitationCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'sendCrossPathsInvitationCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const sendCrossPathsInvitationCallablePayloadRecipientUid = CatchContractFieldConstraints(
+    path: 'sendCrossPathsInvitationCallablePayload.recipientUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const sendCrossPathsInvitationCallablePayloadSuggestionToken = CatchContractFieldConstraints(
+    path: 'sendCrossPathsInvitationCallablePayload.suggestionToken',
+    maxLength: 4096,
+    minLength: 40,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const sendCrossPathsInvitationCallableResponseEventId = CatchContractFieldConstraints(
+    path: 'sendCrossPathsInvitationCallableResponse.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const sendCrossPathsInvitationCallableResponseExpiresAt = CatchContractFieldConstraints(
+    path: 'sendCrossPathsInvitationCallableResponse.expiresAt',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const sendCrossPathsInvitationCallableResponseInvitationId = CatchContractFieldConstraints(
+    path: 'sendCrossPathsInvitationCallableResponse.invitationId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const sendCrossPathsInvitationCallableResponseRecipientUid = CatchContractFieldConstraints(
+    path: 'sendCrossPathsInvitationCallableResponse.recipientUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const sendCrossPathsInvitationCallableResponseStatus = CatchContractFieldConstraints(
+    path: 'sendCrossPathsInvitationCallableResponse.status',
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const sendEventBroadcastCallablePayloadAudience = CatchContractFieldConstraints(
@@ -25574,6 +25884,11 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['boolean'],
   );
 
+  static const updateUserProfilePatchPrefsCrossPathsInvitations = CatchContractFieldConstraints(
+    path: 'updateUserProfilePatch.prefsCrossPathsInvitations',
+    valueTypes: <String>['boolean'],
+  );
+
   static const updateUserProfilePatchPrefsEventReminders = CatchContractFieldConstraints(
     path: 'updateUserProfilePatch.prefsEventReminders',
     valueTypes: <String>['boolean'],
@@ -26650,6 +26965,11 @@ abstract final class CatchContractConstraints {
   static const userProfileDocumentPrefsClubUpdates = CatchContractFieldConstraints(
     path: 'userProfileDocument.prefsClubUpdates',
     required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const userProfileDocumentPrefsCrossPathsInvitations = CatchContractFieldConstraints(
+    path: 'userProfileDocument.prefsCrossPathsInvitations',
     valueTypes: <String>['boolean'],
   );
 
@@ -28035,6 +28355,7 @@ abstract final class CatchContractConstraints {
     'activityNotificationDocument.demoOpsCommand': activityNotificationDocumentDemoOpsCommand,
     'activityNotificationDocument.demoOpsId': activityNotificationDocumentDemoOpsId,
     'activityNotificationDocument.eventId': activityNotificationDocumentEventId,
+    'activityNotificationDocument.invitationId': activityNotificationDocumentInvitationId,
     'activityNotificationDocument.matchId': activityNotificationDocumentMatchId,
     'activityNotificationDocument.organizerId': activityNotificationDocumentOrganizerId,
     'activityNotificationDocument.postId': activityNotificationDocumentPostId,
@@ -28538,6 +28859,9 @@ abstract final class CatchContractConstraints {
     'blockUserCallablePayload.reasonCode': blockUserCallablePayloadReasonCode,
     'blockUserCallablePayload.source': blockUserCallablePayloadSource,
     'blockUserCallablePayload.targetUserId': blockUserCallablePayloadTargetUserId,
+    'cancelCrossPathsInvitationOrPlanCallablePayload.invitationId': cancelCrossPathsInvitationOrPlanCallablePayloadInvitationId,
+    'cancelCrossPathsInvitationOrPlanCallableResponse.invitationId': cancelCrossPathsInvitationOrPlanCallableResponseInvitationId,
+    'cancelCrossPathsInvitationOrPlanCallableResponse.status': cancelCrossPathsInvitationOrPlanCallableResponseStatus,
     'cancelEventCallablePayload.eventId': cancelEventCallablePayloadEventId,
     'cancelEventCallablePayload.reason': cancelEventCallablePayloadReason,
     'chatMessageDocument.demoOps': chatMessageDocumentDemoOps,
@@ -29250,6 +29574,26 @@ abstract final class CatchContractConstraints {
     'createStripeCheckoutSessionCallablePayload.inviteLinkId': createStripeCheckoutSessionCallablePayloadInviteLinkId,
     'createStripeHostOnboardingLinkCallablePayload.country': createStripeHostOnboardingLinkCallablePayloadCountry,
     'createStripeHostOnboardingLinkCallablePayload.defaultCurrency': createStripeHostOnboardingLinkCallablePayloadDefaultCurrency,
+    'crossPathsInvitationDocument.cancelledAt._nanoseconds': crossPathsInvitationDocumentCancelledAtNanoseconds,
+    'crossPathsInvitationDocument.cancelledAt._seconds': crossPathsInvitationDocumentCancelledAtSeconds,
+    'crossPathsInvitationDocument.conversationId': crossPathsInvitationDocumentConversationId,
+    'crossPathsInvitationDocument.createdAt._nanoseconds': crossPathsInvitationDocumentCreatedAtNanoseconds,
+    'crossPathsInvitationDocument.createdAt._seconds': crossPathsInvitationDocumentCreatedAtSeconds,
+    'crossPathsInvitationDocument.eventId': crossPathsInvitationDocumentEventId,
+    'crossPathsInvitationDocument.expiresAt._nanoseconds': crossPathsInvitationDocumentExpiresAtNanoseconds,
+    'crossPathsInvitationDocument.expiresAt._seconds': crossPathsInvitationDocumentExpiresAtSeconds,
+    'crossPathsInvitationDocument.invalidatedAt._nanoseconds': crossPathsInvitationDocumentInvalidatedAtNanoseconds,
+    'crossPathsInvitationDocument.invalidatedAt._seconds': crossPathsInvitationDocumentInvalidatedAtSeconds,
+    'crossPathsInvitationDocument.invalidationReason': crossPathsInvitationDocumentInvalidationReason,
+    'crossPathsInvitationDocument.participantIds': crossPathsInvitationDocumentParticipantIds,
+    'crossPathsInvitationDocument.participantIds.items': crossPathsInvitationDocumentParticipantIdsItems,
+    'crossPathsInvitationDocument.recipientUid': crossPathsInvitationDocumentRecipientUid,
+    'crossPathsInvitationDocument.respondedAt._nanoseconds': crossPathsInvitationDocumentRespondedAtNanoseconds,
+    'crossPathsInvitationDocument.respondedAt._seconds': crossPathsInvitationDocumentRespondedAtSeconds,
+    'crossPathsInvitationDocument.senderUid': crossPathsInvitationDocumentSenderUid,
+    'crossPathsInvitationDocument.status': crossPathsInvitationDocumentStatus,
+    'crossPathsInvitationDocument.updatedAt._nanoseconds': crossPathsInvitationDocumentUpdatedAtNanoseconds,
+    'crossPathsInvitationDocument.updatedAt._seconds': crossPathsInvitationDocumentUpdatedAtSeconds,
     'crossPathsShowcaseEligibilityDocument.profileFingerprint': crossPathsShowcaseEligibilityDocumentProfileFingerprint,
     'crossPathsShowcaseEligibilityDocument.reasonCodes': crossPathsShowcaseEligibilityDocumentReasonCodes,
     'crossPathsShowcaseEligibilityDocument.reasonCodes.items': crossPathsShowcaseEligibilityDocumentReasonCodesItems,
@@ -30336,15 +30680,20 @@ abstract final class CatchContractConstraints {
     'matchDocument.blockedAt._nanoseconds': matchDocumentBlockedAtNanoseconds,
     'matchDocument.blockedAt._seconds': matchDocumentBlockedAtSeconds,
     'matchDocument.blockedBy': matchDocumentBlockedBy,
+    'matchDocument.closedAt._nanoseconds': matchDocumentClosedAtNanoseconds,
+    'matchDocument.closedAt._seconds': matchDocumentClosedAtSeconds,
     'matchDocument.clubId': matchDocumentClubId,
     'matchDocument.conversationType': matchDocumentConversationType,
     'matchDocument.createdAt._nanoseconds': matchDocumentCreatedAtNanoseconds,
     'matchDocument.createdAt._seconds': matchDocumentCreatedAtSeconds,
+    'matchDocument.crossPathsInvitationId': matchDocumentCrossPathsInvitationId,
     'matchDocument.demoOps': matchDocumentDemoOps,
     'matchDocument.demoOpsCommand': matchDocumentDemoOpsCommand,
     'matchDocument.demoOpsId': matchDocumentDemoOpsId,
     'matchDocument.eventIds': matchDocumentEventIds,
     'matchDocument.eventIds.items': matchDocumentEventIdsItems,
+    'matchDocument.eventPlanExpiresAt._nanoseconds': matchDocumentEventPlanExpiresAtNanoseconds,
+    'matchDocument.eventPlanExpiresAt._seconds': matchDocumentEventPlanExpiresAtSeconds,
     'matchDocument.lastMessageAt._nanoseconds': matchDocumentLastMessageAtNanoseconds,
     'matchDocument.lastMessageAt._seconds': matchDocumentLastMessageAtSeconds,
     'matchDocument.lastMessagePreview': matchDocumentLastMessagePreview,
@@ -31163,6 +31512,11 @@ abstract final class CatchContractConstraints {
     'requestSuvbotDemoOperationCallablePayload.text': requestSuvbotDemoOperationCallablePayloadText,
     'resetMatchUnreadCountClientWrite.data.unreadCounts': resetMatchUnreadCountClientWriteDataUnreadCounts,
     'resetMatchUnreadCountClientWrite.path.matchId': resetMatchUnreadCountClientWritePathMatchId,
+    'respondCrossPathsInvitationCallablePayload.decision': respondCrossPathsInvitationCallablePayloadDecision,
+    'respondCrossPathsInvitationCallablePayload.invitationId': respondCrossPathsInvitationCallablePayloadInvitationId,
+    'respondCrossPathsInvitationCallableResponse.conversationId': respondCrossPathsInvitationCallableResponseConversationId,
+    'respondCrossPathsInvitationCallableResponse.invitationId': respondCrossPathsInvitationCallableResponseInvitationId,
+    'respondCrossPathsInvitationCallableResponse.status': respondCrossPathsInvitationCallableResponseStatus,
     'reviewDocument.clubId': reviewDocumentClubId,
     'reviewDocument.comment': reviewDocumentComment,
     'reviewDocument.createdAt._nanoseconds': reviewDocumentCreatedAtNanoseconds,
@@ -31224,6 +31578,14 @@ abstract final class CatchContractConstraints {
     'selfCheckInAttendanceCallablePayload.eventId': selfCheckInAttendanceCallablePayloadEventId,
     'selfCheckInAttendanceCallablePayload.latitude': selfCheckInAttendanceCallablePayloadLatitude,
     'selfCheckInAttendanceCallablePayload.longitude': selfCheckInAttendanceCallablePayloadLongitude,
+    'sendCrossPathsInvitationCallablePayload.eventId': sendCrossPathsInvitationCallablePayloadEventId,
+    'sendCrossPathsInvitationCallablePayload.recipientUid': sendCrossPathsInvitationCallablePayloadRecipientUid,
+    'sendCrossPathsInvitationCallablePayload.suggestionToken': sendCrossPathsInvitationCallablePayloadSuggestionToken,
+    'sendCrossPathsInvitationCallableResponse.eventId': sendCrossPathsInvitationCallableResponseEventId,
+    'sendCrossPathsInvitationCallableResponse.expiresAt': sendCrossPathsInvitationCallableResponseExpiresAt,
+    'sendCrossPathsInvitationCallableResponse.invitationId': sendCrossPathsInvitationCallableResponseInvitationId,
+    'sendCrossPathsInvitationCallableResponse.recipientUid': sendCrossPathsInvitationCallableResponseRecipientUid,
+    'sendCrossPathsInvitationCallableResponse.status': sendCrossPathsInvitationCallableResponseStatus,
     'sendEventBroadcastCallablePayload.audience': sendEventBroadcastCallablePayloadAudience,
     'sendEventBroadcastCallablePayload.body': sendEventBroadcastCallablePayloadBody,
     'sendEventBroadcastCallablePayload.eventId': sendEventBroadcastCallablePayloadEventId,
@@ -31567,6 +31929,7 @@ abstract final class CatchContractConstraints {
     'updateUserProfilePatch.occupation': updateUserProfilePatchOccupation,
     'updateUserProfilePatch.phoneNumber': updateUserProfilePatchPhoneNumber,
     'updateUserProfilePatch.prefsClubUpdates': updateUserProfilePatchPrefsClubUpdates,
+    'updateUserProfilePatch.prefsCrossPathsInvitations': updateUserProfilePatchPrefsCrossPathsInvitations,
     'updateUserProfilePatch.prefsEventReminders': updateUserProfilePatchPrefsEventReminders,
     'updateUserProfilePatch.prefsMessages': updateUserProfilePatchPrefsMessages,
     'updateUserProfilePatch.prefsNewCatches': updateUserProfilePatchPrefsNewCatches,
@@ -31719,6 +32082,7 @@ abstract final class CatchContractConstraints {
     'userProfileDocument.occupation': userProfileDocumentOccupation,
     'userProfileDocument.phoneNumber': userProfileDocumentPhoneNumber,
     'userProfileDocument.prefsClubUpdates': userProfileDocumentPrefsClubUpdates,
+    'userProfileDocument.prefsCrossPathsInvitations': userProfileDocumentPrefsCrossPathsInvitations,
     'userProfileDocument.prefsEventReminders': userProfileDocumentPrefsEventReminders,
     'userProfileDocument.prefsMessages': userProfileDocumentPrefsMessages,
     'userProfileDocument.prefsNewCatches': userProfileDocumentPrefsNewCatches,

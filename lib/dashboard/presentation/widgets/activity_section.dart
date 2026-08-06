@@ -351,6 +351,18 @@ class _NotificationVisual {
         icon: CatchIcons.scheduleRounded,
         accent: t.warning,
       ),
+      ActivityNotificationType.waitlistOffer => visual(
+        icon: CatchIcons.scheduleRounded,
+        accent: t.warning,
+      ),
+      ActivityNotificationType.waitlistOfferExpiring => visual(
+        icon: CatchIcons.scheduleRounded,
+        accent: t.warning,
+      ),
+      ActivityNotificationType.waitlistOfferExpired => visual(
+        icon: CatchIcons.eventBusyRounded,
+        accent: t.ink3,
+      ),
       ActivityNotificationType.eventCancelled => visual(
         icon: CatchIcons.eventBusyRounded,
         accent: t.danger,
@@ -366,6 +378,22 @@ class _NotificationVisual {
       ActivityNotificationType.organizerUpdate => visual(
         icon: CatchIcons.groupsRounded,
         accent: t.ink2,
+      ),
+      ActivityNotificationType.crossPathsInvitation => visual(
+        icon: CatchIcons.favoriteOutline,
+        accent: t.primary,
+      ),
+      ActivityNotificationType.crossPathsInvitationAccepted => visual(
+        icon: CatchIcons.chatBubbleOutlineRounded,
+        accent: t.success,
+      ),
+      ActivityNotificationType.crossPathsInvitationDeclined => visual(
+        icon: CatchIcons.favoriteOutline,
+        accent: t.ink3,
+      ),
+      ActivityNotificationType.crossPathsPlanCancelled => visual(
+        icon: CatchIcons.eventBusyRounded,
+        accent: t.danger,
       ),
     };
   }

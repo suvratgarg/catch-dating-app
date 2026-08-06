@@ -1,0 +1,489 @@
+{
+  "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
+  "version": 2,
+  "generatedFrom": "design/features/cross_paths_invitation.feature.json",
+  "generatedFor": "2026-08-06",
+  "sourceDigest": "sha256:03a4790dfc92106fe9a3aa00835779cc15808dd62591180257796ae8c5299b9b",
+  "resolvedDigest": "sha256:d10d23dc5e2374def1de149969c68a3b69323dda4e259c86ae9d688d2ee31e46",
+  "feature": {
+    "id": "feature.cross_paths_invitation",
+    "name": "Cross Paths Invitation",
+    "owner": "cross_paths",
+    "status": "pilot",
+    "description": "Owns the participant-only invitation lifecycle and temporary event-plan transition without creating a dating match or changing event admission."
+  },
+  "coverage": {
+    "surfaces": 1,
+    "states": 5,
+    "scenarios": 5,
+    "actionCases": 6,
+    "actions": 4,
+    "captures": 0,
+    "previews": 1,
+    "testFiles": 6,
+    "evidenceExceptions": 0
+  },
+  "surfaces": [
+    {
+      "id": "consumer_flutter",
+      "runtime": "flutter",
+      "authority": {
+        "registry": "flutter_screens",
+        "id": "screen.cross_paths.invitation"
+      },
+      "actionScope": {
+        "included": "Recipient accept/decline, sender pending cancellation, participant accepted-plan cancellation, and event-plan navigation.",
+        "excluded": [
+          "Suggestion ranking, event booking/payment, consent editing, permanent post-event Catch decisions, and organizer inventory retain their owning contracts."
+        ]
+      },
+      "bindings": {
+        "previewSources": [
+          "widgetbook/lib/explore/explore_use_cases.dart"
+        ],
+        "actionOwners": [
+          {
+            "id": "invitation_mutation",
+            "language": "dart",
+            "file": "lib/cross_paths/presentation/cross_paths_invitation_controller.dart",
+            "symbol": "CrossPathsInvitationController"
+          },
+          {
+            "id": "invitation_route",
+            "language": "dart",
+            "file": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+            "symbol": "CrossPathsInvitationScreen"
+          }
+        ],
+        "componentContracts": [
+          "catch.button",
+          "catch.person_polaroid",
+          "catch.surface",
+          "catch.top_bar"
+        ],
+        "dataContracts": [
+          "contracts/firestore/cross_paths_invitations.schema.json",
+          "contracts/firestore/matches.schema.json",
+          "contracts/callables/respond_cross_paths_invitation_payload.schema.json",
+          "contracts/callables/cancel_cross_paths_invitation_or_plan_payload.schema.json",
+          "contracts/callable_responses/respond_cross_paths_invitation_response.schema.json",
+          "contracts/callable_responses/cancel_cross_paths_invitation_or_plan_response.schema.json"
+        ],
+        "testEvidence": {
+          "invitation_loading": [
+            "test/cross_paths/cross_paths_invitation_screen_test.dart"
+          ],
+          "invitation_unavailable": [
+            "test/cross_paths/cross_paths_invitation_screen_test.dart"
+          ],
+          "invitation_pending": [
+            "test/cross_paths/cross_paths_invitation_screen_test.dart",
+            "test/cross_paths/cross_paths_invitation_controller_test.dart"
+          ],
+          "event_plan_accepted": [
+            "test/cross_paths/cross_paths_invitation_screen_test.dart",
+            "test/chats/chat_screen_test.dart",
+            "test/chats/chat_inbox_screen_test.dart"
+          ],
+          "invitation_terminal": [
+            "test/cross_paths/cross_paths_invitation_screen_test.dart"
+          ]
+        }
+      },
+      "coverage": {
+        "states": 5,
+        "scenarios": 5,
+        "actionCases": 6,
+        "actions": 4,
+        "captures": 0,
+        "previews": 1,
+        "testFiles": 6,
+        "evidenceExceptions": 0
+      },
+      "dimensions": {
+        "load": {
+          "default": "ready",
+          "values": [
+            "ready",
+            "loading",
+            "unavailable"
+          ]
+        },
+        "lifecycle": {
+          "default": "incoming_pending",
+          "values": [
+            "incoming_pending",
+            "outgoing_pending",
+            "accepted",
+            "terminal"
+          ]
+        }
+      },
+      "actions": [
+        {
+          "id": "accept_invitation",
+          "owner": "invitation_mutation",
+          "codeValue": "respond",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "invitationId",
+            "statusVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "event_plan_accepted"
+              ]
+            }
+          ],
+          "description": "Recipient accepts one still-pending invitation and creates the deterministic temporary event plan.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "decline_invitation",
+          "owner": "invitation_mutation",
+          "codeValue": "respond",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "invitationId",
+            "statusVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "invitation_terminal"
+              ]
+            }
+          ],
+          "description": "Recipient declines one pending invitation without creating a conversation.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "cancel_invitation_or_plan",
+          "owner": "invitation_mutation",
+          "codeValue": "cancel",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "invitationId",
+            "statusVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "invitation_terminal"
+              ]
+            }
+          ],
+          "description": "Sender cancels pending intent or either participant explicitly closes one accepted event plan.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "open_event_plan",
+          "owner": "invitation_route",
+          "codeValue": "pushNamed",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "invitationId",
+            "conversationId"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.matches.chat"
+              }
+            }
+          ],
+          "description": "Opens the accepted event-scoped plan without changing invitation, match, booking, or waitlist state.",
+          "implementationStatus": "implemented"
+        }
+      ],
+      "evidenceExceptions": [],
+      "scenarios": [
+        {
+          "id": "loading",
+          "stateId": "invitation_loading",
+          "kind": "loading",
+          "status": "tested",
+          "dimensions": {
+            "load": "loading",
+            "lifecycle": "incoming_pending"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "CrossPathsInvitationScreen/Cross Paths invitation states"
+            ],
+            "tests": [
+              "test/cross_paths/cross_paths_invitation_screen_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "load": "loading",
+                "lifecycle": "incoming_pending"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "accept_invitation",
+                  "decline_invitation",
+                  "cancel_invitation_or_plan",
+                  "open_event_plan"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "unavailable",
+          "stateId": "invitation_unavailable",
+          "kind": "permission",
+          "status": "tested",
+          "dimensions": {
+            "load": "unavailable",
+            "lifecycle": "incoming_pending"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "CrossPathsInvitationScreen/Cross Paths invitation states"
+            ],
+            "tests": [
+              "test/cross_paths/cross_paths_invitation_screen_test.dart",
+              "functions/test/firestore.rules.test.cjs"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "load": "unavailable",
+                "lifecycle": "incoming_pending"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "accept_invitation",
+                  "decline_invitation",
+                  "cancel_invitation_or_plan",
+                  "open_event_plan"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "incoming_pending",
+          "stateId": "invitation_pending",
+          "kind": "populated",
+          "status": "tested",
+          "dimensions": {
+            "load": "ready",
+            "lifecycle": "incoming_pending"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "CrossPathsInvitationScreen/Cross Paths invitation states"
+            ],
+            "tests": [
+              "test/cross_paths/cross_paths_invitation_screen_test.dart",
+              "test/cross_paths/cross_paths_invitation_controller_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "recipient",
+              "dimensions": {
+                "load": "ready",
+                "lifecycle": "incoming_pending"
+              },
+              "actions": {
+                "enabled": [
+                  "accept_invitation",
+                  "decline_invitation"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "cancel_invitation_or_plan",
+                  "open_event_plan"
+                ]
+              }
+            },
+            {
+              "id": "sender",
+              "dimensions": {
+                "load": "ready",
+                "lifecycle": "outgoing_pending"
+              },
+              "actions": {
+                "enabled": [
+                  "cancel_invitation_or_plan"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "accept_invitation",
+                  "decline_invitation",
+                  "open_event_plan"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "accepted",
+          "stateId": "event_plan_accepted",
+          "kind": "mutation",
+          "status": "tested",
+          "dimensions": {
+            "load": "ready",
+            "lifecycle": "accepted"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "CrossPathsInvitationScreen/Cross Paths invitation states"
+            ],
+            "tests": [
+              "test/cross_paths/cross_paths_invitation_screen_test.dart",
+              "test/chats/chat_screen_test.dart",
+              "test/chats/chat_inbox_screen_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "participant",
+              "dimensions": {
+                "load": "ready",
+                "lifecycle": "accepted"
+              },
+              "actions": {
+                "enabled": [
+                  "open_event_plan",
+                  "cancel_invitation_or_plan"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "accept_invitation",
+                  "decline_invitation"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "terminal",
+          "stateId": "invitation_terminal",
+          "kind": "populated",
+          "status": "tested",
+          "dimensions": {
+            "load": "ready",
+            "lifecycle": "terminal"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "CrossPathsInvitationScreen/Cross Paths invitation states"
+            ],
+            "tests": [
+              "functions/src/crossPaths/invitations.test.ts"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "read_only",
+              "dimensions": {
+                "load": "ready",
+                "lifecycle": "terminal"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "accept_invitation",
+                  "decline_invitation",
+                  "cancel_invitation_or_plan",
+                  "open_event_plan"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "resolved": {
+        "authority": {
+          "id": "screen.cross_paths.invitation",
+          "owner": "cross_paths",
+          "routes": [
+            {
+              "id": "crossPathsInvitationScreen",
+              "path": "/cross-paths/invitations/:invitationId",
+              "role": "primary"
+            }
+          ]
+        },
+        "components": [
+          {
+            "id": "catch.button",
+            "kind": "primitive",
+            "dart": {
+              "symbol": "CatchButton",
+              "file": "lib/core/widgets/catch_button.dart",
+              "constructors": [
+                "CatchButton"
+              ]
+            }
+          },
+          {
+            "id": "catch.person_polaroid",
+            "kind": "composite",
+            "dart": {
+              "symbol": "CatchPersonPolaroid",
+              "file": "lib/core/widgets/catch_person_polaroid.dart",
+              "constructors": [
+                "CatchPersonPolaroid"
+              ]
+            }
+          },
+          {
+            "id": "catch.surface",
+            "kind": "primitive",
+            "dart": {
+              "symbol": "CatchSurface",
+              "file": "lib/core/widgets/catch_surface.dart",
+              "constructors": [
+                "CatchSurface",
+                "CatchSurface.card",
+                "CatchSurface.tinted",
+                "CatchSurface.message"
+              ]
+            }
+          },
+          {
+            "id": "catch.top_bar",
+            "kind": "composite",
+            "dart": {
+              "symbol": "CatchTopBar",
+              "file": "lib/core/widgets/catch_top_bar.dart",
+              "constructors": [
+                "CatchTopBar"
+              ]
+            }
+          }
+        ],
+        "previews": [
+          "CrossPathsInvitationScreen/Cross Paths invitation states"
+        ]
+      }
+    }
+  ]
+}

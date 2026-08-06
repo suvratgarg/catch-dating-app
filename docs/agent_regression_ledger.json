@@ -1,8 +1,31 @@
 {
-  "version": 128,
-  "updated": "2026-08-05",
+  "version": 129,
+  "updated": "2026-08-06",
   "owner": "agent_operating_model",
   "entries": [
+    {
+      "id": "REG-CROSS-PATHS-PLAN-CONSENT-001",
+      "title": "Cross Paths discovery consent silently cancels an accepted event plan",
+      "status": "active",
+      "applies_to": [
+        "functions/src/crossPaths/setCrossPathsEventConsent.ts",
+        "functions/src/crossPaths/invitations.ts",
+        "functions/src/crossPaths/setCrossPathsEventConsent.test.ts",
+        "docs/cross_paths.md"
+      ],
+      "symptom": "Turning off future Cross Paths visibility invalidates an already accepted invitation and closes its event-planning chat even though both people explicitly accepted the plan.",
+      "guard": {
+        "type": "command",
+        "command": "npm --prefix functions run build && node --test functions/lib/crossPaths/setCrossPathsEventConsent.test.js functions/lib/crossPaths/invitations.test.js",
+        "guardEvidence": "consent revocation invalidates pending invitations in the callable and trigger paths while accepted invitation and event-plan documents remain active"
+      },
+      "owner_docs": [
+        "docs/cross_paths.md",
+        "docs/data_contracts.md",
+        "docs/app_architecture.md"
+      ],
+      "notes": "Discovery permission and accepted-plan intent are distinct. Participation loss, event cancellation, explicit cancellation, and safety boundaries may close a plan; discovery opt-out alone may not."
+    },
     {
       "id": "REG-CROSS-PATHS-TEST-ROLLOUT-001",
       "title": "Cross Paths rollout providers destabilize app-shell integration builds",

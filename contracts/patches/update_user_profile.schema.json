@@ -252,6 +252,9 @@
         },
         "prefsShowInCrossPaths": {
           "type": "boolean"
+        },
+        "prefsCrossPathsInvitations": {
+          "type": "boolean"
         }
       }
     }

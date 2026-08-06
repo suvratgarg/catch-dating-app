@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/cross_paths/data/cross_paths_repository.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_event_consent.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_feature_config.dart';
+import 'package:catch_dating_app/cross_paths/domain/cross_paths_invitation.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_suggestion.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -89,6 +90,38 @@ void main() {
       }),
       throwsFormatException,
     );
+  });
+
+  test('invitation documents and callable receipts decode typed states', () {
+    final now = Timestamp.fromDate(DateTime.utc(2026, 8, 5));
+    final invitation = CrossPathsInvitation.fromFirestore('invitation-1', {
+      'eventId': 'event-1',
+      'senderUid': 'runner-1',
+      'recipientUid': 'runner-2',
+      'participantIds': ['runner-1', 'runner-2'],
+      'status': 'invalidated',
+      'createdAt': now,
+      'updatedAt': now,
+      'expiresAt': now,
+      'respondedAt': null,
+      'cancelledAt': null,
+      'invalidatedAt': now,
+      'invalidationReason': 'consent_revoked',
+      'conversationId': null,
+    });
+    final receipt = CrossPathsInvitationReceipt.fromCallableData({
+      'invitationId': 'invitation-1',
+      'status': 'accepted',
+      'conversationId': 'plan-1',
+    });
+
+    expect(invitation.status, CrossPathsInvitationStatus.invalidated);
+    expect(
+      invitation.invalidationReason,
+      CrossPathsInvitationInvalidationReason.consentRevoked,
+    );
+    expect(receipt.status, CrossPathsInvitationStatus.accepted);
+    expect(receipt.conversationId, 'plan-1');
   });
 }
 

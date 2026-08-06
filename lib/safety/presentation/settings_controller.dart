@@ -11,6 +11,7 @@ part 'settings_controller.g.dart';
 
 enum SettingsPreference {
   showInCrossPaths('prefsShowInCrossPaths'),
+  crossPathsInvitations('prefsCrossPathsInvitations'),
   showOnMap('prefsShowOnMap'),
   newCatches('prefsNewCatches'),
   messages('prefsMessages'),
@@ -30,6 +31,9 @@ enum SettingsPreference {
     return switch (this) {
       SettingsPreference.showInCrossPaths => UpdateUserProfilePatch(
         prefsShowInCrossPaths: value,
+      ),
+      SettingsPreference.crossPathsInvitations => UpdateUserProfilePatch(
+        prefsCrossPathsInvitations: value,
       ),
       SettingsPreference.showOnMap => UpdateUserProfilePatch(
         prefsShowOnMap: value,

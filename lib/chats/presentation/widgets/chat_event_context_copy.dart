@@ -9,7 +9,9 @@ String chatContextStampFor(
   ChatConversationContext conversationContext = ChatConversationContext.match,
 }) {
   if (conversationContext != ChatConversationContext.match) {
-    return 'EVENT QUESTION';
+    return conversationContext == ChatConversationContext.crossPathsEventPlan
+        ? 'EVENT PLAN'
+        : 'EVENT QUESTION';
   }
   if (event == null) return chatContextFallbackStamp;
   return chatContextStampForActivity(event.activityKind);
@@ -51,6 +53,8 @@ String chatEmptyThreadMessageFor({
       return 'Ask $otherName about $eventName.';
     case ChatConversationContext.attendeeInquiry:
       return 'Reply to $otherName about $eventName.';
+    case ChatConversationContext.crossPathsEventPlan:
+      return 'Make a plan with $otherName for $eventName.';
     case ChatConversationContext.match:
       break;
   }

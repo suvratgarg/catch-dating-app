@@ -2049,12 +2049,16 @@
         "lib/cross_paths/domain/cross_paths_suggestion.dart",
         "lib/explore/presentation/explore_cross_paths_provider.dart",
         "lib/cross_paths/presentation/cross_paths_explore_card.dart",
+        "lib/cross_paths/domain/cross_paths_invitation.dart",
+        "lib/cross_paths/presentation/cross_paths_invitation_controller.dart",
+        "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
         "lib/events/shared/event_detail_route_transition.dart",
         "lib/events/presentation/event_detail_screen.dart",
         "lib/cross_paths/presentation/cross_paths_event_consent_controller.dart",
         "lib/cross_paths/presentation/cross_paths_event_consent_state.dart",
         "lib/cross_paths/presentation/cross_paths_event_consent_section.dart",
         "functions/src/crossPaths/setCrossPathsEventConsent.ts",
+        "functions/src/crossPaths/invitations.ts",
         "test/cross_paths/cross_paths_contract_test.dart",
         "test/cross_paths/cross_paths_event_consent_section_test.dart",
         "functions/src/crossPaths/setCrossPathsEventConsent.test.ts"
@@ -2118,6 +2122,24 @@
           "lastReviewedPass": "2026-08-05-cross-paths-explore"
         },
         {
+          "path": "lib/cross_paths/domain/cross_paths_invitation.dart and lib/cross_paths/data/cross_paths_repository.dart and lib/cross_paths/presentation/cross_paths_invitation_controller.dart",
+          "role": "typed participant invitation stream plus callable-only send, respond, and cancel mutation boundary",
+          "status": "aligned",
+          "lastReviewedPass": "2026-08-06-cross-paths-invitations"
+        },
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart and lib/chats/presentation/host_chat_screen_state.dart",
+          "role": "participant-only invitation route and time-bounded event-plan chat presentation kept separate from dating matches",
+          "status": "aligned",
+          "lastReviewedPass": "2026-08-06-cross-paths-invitations"
+        },
+        {
+          "path": "functions/src/crossPaths/invitations.ts and firestore.rules",
+          "role": "transactionally revalidated invitation lifecycle, participant reads, server-only writes, safety invalidation, and expiring event-plan messages",
+          "status": "aligned",
+          "lastReviewedPass": "2026-08-06-cross-paths-invitations"
+        },
+        {
           "path": "functions/src/crossPaths/setCrossPathsEventConsent.ts and firestore.rules",
           "role": "server-owned enablement validation, revocation persistence, own-edge reads, and direct-write denial",
           "status": "aligned",
@@ -2130,26 +2152,18 @@
           "lastReviewedPass": "2026-08-05-cross-paths-phase0-consent"
         }
       ],
-      "candidateQueue": [
-        {
-          "id": "ARCH-CROSS-PATHS-CONSENT-001-INVITATION-INVALIDATION",
-          "path": "proposed Cross Paths invitation workflow",
-          "reason": "When invitations exist, revocation must invalidate pending invitations in the same server-owned workflow without adding a client write path.",
-          "detectedBy": "2026-08-05-cross-paths-phase0-consent",
-          "addedPass": "2026-08-05-cross-paths-phase0-consent"
-        }
-      ],
+      "candidateQueue": [],
       "exceptions": [],
       "requiredBackPropagation": "When Cross Paths consent terms, global preference semantics, event-edge fields, suggestion response/ranking versions, enablement preconditions, rollout flags, revocation behavior, or funnel attribution changes, update the JSON schemas, generated Dart and TypeScript contracts, callable, Firestore rules, Settings, Explore and Event Detail adopters, analytics names, disclosure copy, focused tests, docs/cross_paths.md, and this exhibit in one pass.",
       "requiredChecks": [
         "./tool/check_data_contract.sh",
-        "flutter test test/analytics/app_analytics_test.dart test/cross_paths/cross_paths_contract_test.dart test/cross_paths/cross_paths_event_consent_section_test.dart test/cross_paths/cross_paths_explore_card_test.dart test/explore/explore_view_model_test.dart test/safety/settings_screen_test.dart test/events/event_detail_widgets_test.dart",
-        "npm --prefix functions run lint && npm --prefix functions run build && node --test functions/lib/crossPaths/setCrossPathsEventConsent.test.js",
+        "flutter test test/analytics/app_analytics_test.dart test/cross_paths test/chats/chat_screen_test.dart test/chats/chat_inbox_screen_test.dart test/explore/explore_view_model_test.dart test/safety/settings_screen_test.dart test/events/event_detail_widgets_test.dart",
+        "npm --prefix functions run lint && npm --prefix functions run build && node --test functions/lib/crossPaths/*.test.js functions/lib/shared/notifications.test.js",
         "bash tool/check_catch_ui_lints.sh",
         "node tool/architecture/check_app_architecture_exhibits.mjs",
         "node tool/agent/check_agent_readiness.mjs"
       ],
-      "notes": "This reference now covers permission storage, server-owned suggestion resolution, and fail-closed Explore consumption. Both rollout flags remain off by default, and external privacy-policy approval is required before enabling identifiable discovery beyond internal review."
+      "notes": "This reference now covers permission storage, server-owned suggestion resolution, fail-closed Explore consumption, participant-only invitations, and temporary event plans. Both rollout flags remain off by default, and external privacy-policy approval is required before enabling identifiable discovery beyond internal review."
     },
     {
       "id": "ARCH-ENTITY-MATERIAL-001",

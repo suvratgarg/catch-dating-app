@@ -85,7 +85,8 @@
       "type": "string",
       "enum": [
         "active",
-        "blocked"
+        "blocked",
+        "closed"
       ],
       "x-catch-ownership": "trigger-owned"
     },
@@ -116,7 +117,8 @@
       "type": "string",
       "enum": [
         "match",
-        "clubHostInquiry"
+        "clubHostInquiry",
+        "crossPathsEventPlan"
       ],
       "x-catch-ownership": "trigger-owned"
     },
@@ -127,6 +129,18 @@
     "organizerId": {
       "$ref": "../shared/event_common.schema.json#/definitions/documentId",
       "x-catch-ownership": "trigger-owned"
+    },
+    "crossPathsInvitationId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "eventPlanExpiresAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "closedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "callable-owned"
     },
     "synthetic": {
       "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"

@@ -297,6 +297,10 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
           suggestion: suggestion,
           event: eventItem.event,
           onEventSelected: () => openEvent(eventItem, 'cross_paths_profile'),
+          onPlanSelected: (matchId) => context.pushNamed(
+            Routes.chatScreen.name,
+            pathParameters: {'matchId': matchId},
+          ),
         ),
       );
     }

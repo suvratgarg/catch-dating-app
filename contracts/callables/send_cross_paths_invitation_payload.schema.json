@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/send_cross_paths_invitation_payload.schema.json",
+  "title": "SendCrossPathsInvitationCallablePayload",
+  "description": "Typed, message-free invitation intent accepted by sendCrossPathsInvitation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["eventId", "recipientUid", "suggestionToken"],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "recipientUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "suggestionToken": {"type": "string", "minLength": 40, "maxLength": 4096}
+  }
+}

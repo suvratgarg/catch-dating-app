@@ -134,6 +134,7 @@ export async function requestAccountDeletionHandler(
     preferredRunTimes: admin.firestore.FieldValue.delete(),
     runPreferencesVersion: admin.firestore.FieldValue.delete(),
     prefsShowInCrossPaths: admin.firestore.FieldValue.delete(),
+    prefsCrossPathsInvitations: admin.firestore.FieldValue.delete(),
     fcmToken: admin.firestore.FieldValue.delete(),
   }, {merge: true});
 
@@ -190,6 +191,7 @@ async function queueRelationshipCleanup(params: {
     queueEventParticipationCleanup(db, uid, now, writer),
     queueCrossPathsConsentCleanup(db, uid, writer),
     queueCrossPathsSuggestionExposureCleanup(db, uid, writer),
+    queueCrossPathsInvitationCleanup(db, uid, writer),
     queueSavedEventCleanup(db, uid, writer),
     queueSwipeCleanup(db, uid, writer),
     queueMatchCleanup(db, uid, now, writer),
@@ -320,6 +322,18 @@ async function queueCrossPathsSuggestionExposureCleanup(
     seen.add(doc.ref.path);
     writer.delete(doc.ref);
   });
+}
+
+/** Deletes private Cross Paths invitations involving the account. */
+async function queueCrossPathsInvitationCleanup(
+  db: FirebaseFirestore.Firestore,
+  uid: string,
+  writer: BatchQueue
+) {
+  const invitations = await db.collection("crossPathsInvitations")
+    .where("participantIds", "array-contains", uid)
+    .get();
+  invitations.forEach((doc) => writer.delete(doc.ref));
 }
 
 /**
