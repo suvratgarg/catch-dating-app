@@ -1,7 +1,7 @@
 ---
 doc_id: catch-ui-lint-rules-plan
-version: 0.5.0
-updated: 2026-06-30
+version: 0.5.1
+updated: 2026-08-06
 owner: ui_elevation_initiative
 dri: TBD
 status: remaining_work
@@ -61,9 +61,9 @@ unimplemented or still-weak lint/governance work.
 - The old UI debt inventory is closed. Future work should come from fresh
   scanner deltas, screen reviews, or analyzer rule escalation, not the retired
   broad-count tracker.
-- Former shell scanner entry points are now analyzer-output wrappers:
-  `check_sizing.sh`, `check_ui_local_constant_wrappers.sh`,
-  `check_ui_system_raw_values.sh`, and `check_ui_allow_debt.sh`.
+- Diagnostic-specific shell wrappers are retired. Focused inspection uses
+  `check_catch_ui_lint_drift.sh --code <diagnostic>` and aggregate enforcement
+  uses its decrease-only `--check` ratchet.
 - The shared shell scanner helper is retired because no scanner wrapper consumes it.
 
 ## Phase 0 - Token Foundation Still Open
@@ -154,9 +154,10 @@ Implement only after the current scanner/lint policy is stable.
 bash tool/check_catch_ui_lints.sh
 bash tool/check_catch_ui_lint_drift.sh --count
 bash tool/check_catch_ui_lint_drift.sh --all --json /private/tmp/catch-ui-lint-drift.json
-bash tool/check_sizing.sh --count
-bash tool/check_ui_local_constant_wrappers.sh --summary
-bash tool/check_ui_system_raw_values.sh --count
-bash tool/check_ui_allow_debt.sh --summary
+bash tool/check_catch_ui_lint_drift.sh --code catch_no_raw_content_dimension --count
+bash tool/check_catch_ui_lint_drift.sh --code catch_no_local_design_constant --summary
+bash tool/check_catch_ui_lint_drift.sh --code 'catch_no_raw_ui_spacing|catch_no_token_arithmetic|catch_prefer_semantic_insets|catch_no_raw_material_control|catch_no_raw_button_control|catch_no_raw_radius|catch_no_raw_icon_source|catch_no_raw_icon_size|catch_no_raw_alpha|catch_no_raw_shadow|catch_no_raw_motion|catch_no_raw_breakpoint|catch_no_raw_surface_shell' --count
+bash tool/check_catch_ui_lint_drift.sh --code catch_no_allow_debt --summary
+bash tool/check_catch_ui_lint_drift.sh --check
 flutter analyze --no-fatal-infos
 ```

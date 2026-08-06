@@ -156,12 +156,13 @@ node tool/test/check_flutter_test_size.mjs --check
 node tool/test_inventory.mjs --check
 ```
 
-## Analyzer-Backed UI Reports
+## Analyzer-Backed UI Gate
 
-The old UI/design shell scanners have been retired. Their stable root wrapper
-names remain because cleanup passes, docs, and CI still call them, but the
-matching policy now lives in `packages/catch_ui_lints` and is reported from
-repository-root `dart analyze --format machine` output. In this workspace,
+The old UI/design shell scanners and their compatibility wrapper names are
+retired. Matching policy lives in `packages/catch_ui_lints`; CI collects one
+repository-root `dart analyze --format machine` census and
+`tool/check_catch_ui_lint_drift.sh` projects focused reports or enforces the
+complete decrease-only baseline. In this workspace,
 `flutter analyze` and `dart analyze lib` do not load the Catch plugin; never
 use either command as proof that a Catch UI rule is clean.
 
@@ -193,14 +194,9 @@ plugins are loaded:
 - `tool/check_riverpod_lint.sh`
 - `tool/check_catch_ui_lints.sh`
 
-The migrated Catch UI drift reports are analyzer-output aggregators, not
-standalone scanners:
-
-- `tool/check_catch_ui_lint_drift.sh`
-- `tool/check_sizing.sh`
-- `tool/check_ui_allow_debt.sh`
-- `tool/check_ui_local_constant_wrappers.sh`
-- `tool/check_ui_system_raw_values.sh`
+The canonical Catch UI drift reporter is
+`tool/check_catch_ui_lint_drift.sh`; do not add diagnostic-specific wrapper
+scripts around it.
 
 The component registry generates the plugin steering tables and steering
 probes through `tool/design/build_lint_enforcement_tables.mjs`. The
@@ -704,10 +700,6 @@ or muscle memory already depend on them:
 - `tool/check_data_contract.sh`
 - `tool/check_catch_ui_lint_drift.sh`
 - `tool/design_tokens.dart`
-- `tool/check_sizing.sh`
-- `tool/check_ui_allow_debt.sh`
-- `tool/check_ui_local_constant_wrappers.sh`
-- `tool/check_ui_system_raw_values.sh`
 - `tool/check_riverpod_lint.sh`
 - `tool/check_catch_ui_lints.sh`
 - `tool/deploy_firebase_targets.sh`

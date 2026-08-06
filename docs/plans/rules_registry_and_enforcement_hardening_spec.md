@@ -1,7 +1,7 @@
 ---
 doc_id: rules_registry_and_enforcement_hardening_spec
-version: 1.0.0
-updated: 2026-07-02
+version: 1.0.1
+updated: 2026-08-06
 owner: app
 status: active
 ---
@@ -417,8 +417,10 @@ Then:
   file counts), any tool the role-loophole check caught, and any deviation
   from this spec with the reason.
 
-**Explicitly out of scope** (do not attempt): analyzer-lint promotion of any
-rule; retiring `check_sizing.sh` / `check_ui_local_constant_wrappers.sh`;
-`DEAD-PUBLIC-SYMBOL` reference-analysis scanner; web-lane anything; edits to
-`lib/` or `test/`; exhibit generation-from-source (a `sunset_when` on
-EXHIBIT-FRESHNESS-001 already tracks it).
+**Historical scope boundary:** this implementation did not promote analyzer
+lints or retire diagnostic-specific compatibility wrappers. Harness v2 later
+consolidated those wrappers into the canonical Catch UI drift command; do not
+restore aliases. Still out of scope here: the `DEAD-PUBLIC-SYMBOL`
+reference-analysis scanner; web-lane anything; edits to `lib/` or `test/`;
+exhibit generation-from-source (a `sunset_when` on EXHIBIT-FRESHNESS-001
+already tracks it).
