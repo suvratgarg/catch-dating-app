@@ -1,5 +1,5 @@
 {
-  "version": 136,
+  "version": 137,
   "updated": "2026-08-06",
   "owner": "agent_operating_model",
   "entries": [
@@ -3423,25 +3423,27 @@
     },
     {
       "id": "REG-DOC-RETIREMENT-PROOF-001",
-      "title": "Document retirement is blocked forever or loses governance before source deletion",
+      "title": "Document lifecycle authority is duplicated or retirement loses governance",
       "status": "active",
       "applies_to": [
         "docs/README.md",
         "docs/audit_registry/doc_versions.json",
+        "tool/agent/context_pack.mjs",
+        "tool/docs/build_doc_state.mjs",
         "tool/docs/check_doc_version_monotonic.mjs",
         "tool/docs/check_doc_version_monotonic.test.mjs"
       ],
-      "symptom": "A document explicitly marked retirement_ready cannot be deleted, or removing only its catalog row passes while the source document remains and silently escapes governance.",
+      "symptom": "Markdown lifecycle status drifts between source and catalog, a governed source has no parseable status, a retirement_ready document cannot be deleted, or removing only its catalog row passes while source remains and silently escapes governance.",
       "guard": {
         "type": "command",
         "command": "node --test tool/docs/check_doc_version_monotonic.test.mjs && node tool/docs/check_doc_version_monotonic.mjs --base origin/main",
-        "guardEvidence": "retirement passes only when exactly one valid base Markdown frontmatter status grants retirement_ready, or a non-Markdown catalog row does so, and Git proves the target path is absent; catalog-only Markdown removal, malformed source lifecycle, and active-source deletion all fail"
+        "guardEvidence": "all current governed Markdown has exactly one source-frontmatter status and no catalog status, all non-Markdown catalog rows retain status, retirement authority comes from the base source or non-Markdown catalog as appropriate, and Git proves retired target paths are absent"
       },
       "owner_docs": [
         "docs/README.md",
         "docs/audit_registry/README.md"
       ],
-      "notes": "Retirement is an explicit lifecycle transition, not an exception to governance. Historical audit receipts remain after the live document, index row, backlog path, and catalog entry are removed."
+      "notes": "Markdown source frontmatter is the single lifecycle authority; catalog status is reserved for non-Markdown artifacts. Retirement is an explicit transition, not an exception to governance. Historical audit receipts remain after the live document, index row, backlog path, and catalog entry are removed."
     },
     {
       "id": "REG-MOBILE-ROLE-PACKAGE-BOUNDARY-001",

@@ -84,11 +84,26 @@ export function compareDocVersionCatalogs({
   currentCatalog,
   currentDocumentPaths = null,
   baseDocumentStatuses = null,
+  currentDocumentStatuses = null,
 }) {
-  const baseEntries = normalizeCatalog(baseCatalog, "base");
+  const baseEntries = normalizeCatalog(baseCatalog, "base", {
+    allowMarkdownStatus: true,
+  });
   const currentEntries = normalizeCatalog(currentCatalog, "current", {
     allowIncomplete: true,
   });
+  if (currentDocumentStatuses != null) {
+    for (const entry of currentEntries) {
+      if (entry.path == null || !entry.path.endsWith(".md")) continue;
+      if (currentDocumentPaths != null && !currentDocumentPaths.has(entry.path)) continue;
+      if (currentDocumentStatuses.get(entry.path) == null) {
+        throw new Error(
+          `Current governed Markdown ${entry.id} (${entry.path}) has no single valid ` +
+            "source-frontmatter lifecycle status.",
+        );
+      }
+    }
+  }
   const currentById = new Map(currentEntries.map((entry) => [entry.id, entry]));
   const currentByPath = new Map();
   for (const entry of currentEntries) {
@@ -237,12 +252,14 @@ export function buildDocVersionReport({
   currentCatalog,
   currentDocumentPaths = null,
   baseDocumentStatuses = null,
+  currentDocumentStatuses = null,
 }) {
   const comparison = compareDocVersionCatalogs({
     baseCatalog,
     currentCatalog,
     currentDocumentPaths,
     baseDocumentStatuses,
+    currentDocumentStatuses,
   });
   return {
     schemaVersion: 1,
@@ -348,11 +365,18 @@ function runCli() {
 
     let currentCatalog;
     let currentDocumentPaths;
+    let currentDocumentStatuses;
     let target;
     if (args.target) {
       const targetCommit = resolveCommit(args.repo, args.target);
       currentCatalog = readCatalogFromRef(args.repo, targetCommit, catalogPath);
       currentDocumentPaths = listRefPaths(args.repo, targetCommit);
+      currentDocumentStatuses = readGovernedMarkdownStatusesFromRef({
+        repo: args.repo,
+        ref: targetCommit,
+        catalog: currentCatalog,
+        currentDocumentPaths,
+      });
       target = {
         kind: "git-ref",
         input: args.target,
@@ -362,6 +386,11 @@ function runCli() {
     } else {
       currentCatalog = readCatalogFromWorkingTree(args.repo, catalogPath);
       currentDocumentPaths = listWorkingTreePaths(args.repo);
+      currentDocumentStatuses = readGovernedMarkdownStatusesFromWorkingTree({
+        repo: args.repo,
+        catalog: currentCatalog,
+        currentDocumentPaths,
+      });
       target = {kind: "working-tree", input: null, commit: null, catalog: catalogPath};
     }
 
@@ -371,6 +400,7 @@ function runCli() {
       baseCatalog,
       currentCatalog,
       currentDocumentPaths,
+      currentDocumentStatuses,
       baseDocumentStatuses: readRemovedDocumentStatusesFromRef(
         args.repo,
         baseCommit,
@@ -388,7 +418,11 @@ function runCli() {
   }
 }
 
-function normalizeCatalog(catalog, label, {allowIncomplete = false} = {}) {
+function normalizeCatalog(
+  catalog,
+  label,
+  {allowIncomplete = false, allowMarkdownStatus = false} = {},
+) {
   if (catalog == null || typeof catalog !== "object" || Array.isArray(catalog)) {
     throw new Error(`${label} doc-version catalog must be a JSON object.`);
   }
@@ -438,9 +472,28 @@ function normalizeCatalog(catalog, label, {allowIncomplete = false} = {}) {
         throw new Error(`${label} catalog entry ${id} is missing version governance.`);
       }
       parseSemanticVersion(value.version);
+      const normalizedPath = normalizePath(value.path);
+      if (
+        normalizedPath.endsWith(".md") &&
+        Object.hasOwn(value, "status") &&
+        !allowMarkdownStatus
+      ) {
+        throw new Error(
+          `${label} catalog entry ${id} must omit Markdown lifecycle status; ` +
+            "source frontmatter is authoritative.",
+        );
+      }
+      if (
+        !normalizedPath.endsWith(".md") &&
+        (typeof value.status !== "string" || value.status.length === 0)
+      ) {
+        throw new Error(
+          `${label} non-Markdown catalog entry ${id} is missing lifecycle status.`,
+        );
+      }
       return {
         id,
-        path: normalizePath(value.path),
+        path: normalizedPath,
         version: value.version,
         status: typeof value.status === "string" ? value.status : null,
         incompleteReason: null,
@@ -545,7 +598,9 @@ function readCatalogFromWorkingTree(repo, catalogPath) {
 }
 
 function readRemovedDocumentStatusesFromRef(repo, ref, baseCatalog, currentCatalog) {
-  const baseEntries = normalizeCatalog(baseCatalog, "base");
+  const baseEntries = normalizeCatalog(baseCatalog, "base", {
+    allowMarkdownStatus: true,
+  });
   const currentEntries = normalizeCatalog(currentCatalog, "current", {
     allowIncomplete: true,
   });
@@ -559,6 +614,49 @@ function readRemovedDocumentStatusesFromRef(repo, ref, baseCatalog, currentCatal
     if (!entry.path.endsWith(".md")) continue;
     const source = runGit(repo, ["show", `${ref}:${entry.path}`]);
     statuses.set(entry.path, parseDocumentLifecycleStatus(source));
+  }
+  return statuses;
+}
+
+function readGovernedMarkdownStatusesFromWorkingTree({
+  repo,
+  catalog,
+  currentDocumentPaths,
+}) {
+  return readGovernedMarkdownStatuses({
+    catalog,
+    currentDocumentPaths,
+    readSource(documentPath) {
+      const workingPath = path.join(repo, documentPath);
+      if (fs.existsSync(workingPath)) return fs.readFileSync(workingPath, "utf8");
+      return runGit(repo, ["show", `:${documentPath}`]);
+    },
+  });
+}
+
+function readGovernedMarkdownStatusesFromRef({
+  repo,
+  ref,
+  catalog,
+  currentDocumentPaths,
+}) {
+  return readGovernedMarkdownStatuses({
+    catalog,
+    currentDocumentPaths,
+    readSource: (documentPath) => runGit(repo, ["show", `${ref}:${documentPath}`]),
+  });
+}
+
+function readGovernedMarkdownStatuses({catalog, currentDocumentPaths, readSource}) {
+  const statuses = new Map();
+  for (const [id, entry] of Object.entries(catalog)) {
+    if (id === "version" || !entry?.path?.endsWith?.(".md")) continue;
+    const documentPath = normalizePath(entry.path);
+    if (!currentDocumentPaths.has(documentPath)) {
+      statuses.set(documentPath, null);
+      continue;
+    }
+    statuses.set(documentPath, parseDocumentLifecycleStatus(readSource(documentPath)));
   }
   return statuses;
 }

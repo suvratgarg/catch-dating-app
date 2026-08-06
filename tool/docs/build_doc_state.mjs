@@ -24,17 +24,32 @@ export function buildDocState({catalog, sourceRevision, resolveDocument}) {
     if (paths.has(entry.path)) {
       throw new Error(`Document path is cataloged more than once: ${entry.path}`);
     }
+    if (
+      !entry.path.endsWith(".md") &&
+      (typeof entry.status !== "string" || entry.status.length === 0)
+    ) {
+      throw new Error(
+        `Non-Markdown document catalog entry "${docId}" is missing lifecycle status.`,
+      );
+    }
     paths.add(entry.path);
   }
 
   for (const [docId, entry] of orderedEntries) {
     const revision = resolveDocument(entry.path);
     const markdown = entry.path.endsWith(".md");
+    const status = markdown
+      ? parseDocumentLifecycleStatus(revision.source ?? "")
+      : entry.status;
+    if (markdown && status == null) {
+      throw new Error(
+        `Governed Markdown "${docId}" (${entry.path}) has no single valid ` +
+          "source-frontmatter lifecycle status.",
+      );
+    }
     documents[docId] = {
       path: entry.path,
-      status: markdown
-        ? parseDocumentLifecycleStatus(revision.source ?? "")
-        : entry.status ?? null,
+      status,
       semanticVersion: entry.version,
       contentRevision: revision.contentRevision,
       lastIntegratedRevision: revision.lastIntegratedRevision,
@@ -43,7 +58,7 @@ export function buildDocState({catalog, sourceRevision, resolveDocument}) {
   }
 
   return {
-    schemaVersion: "1.1.0",
+    schemaVersion: "1.2.0",
     sourceRevision,
     documents,
   };

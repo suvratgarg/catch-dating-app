@@ -1,3 +1,7 @@
+---
+status: active
+---
+
 # Catch Marketing Website
 
 Vite + React marketing surface for `catchdates.com`.

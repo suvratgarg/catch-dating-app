@@ -1,9 +1,9 @@
 ---
 doc_id: ui_elevation_implementation
-version: 2.2.1
+version: 2.2.2
 updated: 2026-07-15
 owner: ui_elevation_initiative
-status: active — mechanical execution checklist for implementing agents
+status: active # mechanical execution checklist for implementing agents
 ---
 
 # UI Elevation — Implementation TODO (self-contained)

@@ -117,12 +117,18 @@ function addDoc(docs, docPath, reason, versionEntry) {
   const existing = docs.get(docPath);
   const nextReason = existing ? `${existing.reason} ${reason}` : reason;
   const markdown = docPath.endsWith(".md");
+  const status = markdown
+    ? parseDocumentLifecycleStatus(repositorySnapshot.readText(docPath) ?? "")
+    : versionEntry?.status ?? null;
+  if (markdown && versionEntry != null && status == null) {
+    throw new Error(
+      `Governed Markdown ${docPath} has no single valid source-frontmatter lifecycle status.`,
+    );
+  }
   docs.set(docPath, {
     path: docPath,
     version: versionEntry?.version ?? null,
-    status: markdown
-      ? parseDocumentLifecycleStatus(repositorySnapshot.readText(docPath) ?? "")
-      : versionEntry?.status ?? null,
+    status,
     read_policy: versionEntry?.read_policy ?? null,
     reason: nextReason.trim(),
   });

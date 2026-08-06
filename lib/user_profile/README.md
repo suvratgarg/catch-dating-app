@@ -1,3 +1,7 @@
+---
+status: active
+---
+
 # User Profile
 
 User profile owns the private `users/{uid}` profile, profile editing, preview

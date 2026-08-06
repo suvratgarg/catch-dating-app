@@ -1,6 +1,6 @@
 ---
 doc_id: harness_v2_decision_and_cicd_delivery_plan
-version: 0.3.16
+version: 0.3.17
 updated: 2026-08-06
 owner: agent_operating_model
 status: execution-in-progress
@@ -629,7 +629,7 @@ Issue discovered during this tranche:
   manifest validator and Harness now share an exact `local-readonly` contract;
   malformed values fail closed and the field remains limited to
   `agent:harness-v2`.
-- `H2-TRANSITION-018` — Markdown retirement lifecycle was duplicated between
+- `H2-TRANSITION-018` — closed in Checkpoint 12. Markdown retirement lifecycle was duplicated between
   source frontmatter and `doc_versions.json`; the root-hygiene source correctly
   said `retirement_ready` while the catalog still said `implemented`, so a safe
   deletion failed and would have required a ceremonial intermediate PR. Source
@@ -649,6 +649,15 @@ Issue discovered during this tranche:
 | Direct proof | No negative test exercised the split between a remote-write command and its local checks. | 55/55 focused runner, tool-impact, and Harness CLI tests pass in 8.30s. They cover null, scalar, collection, prefix, suffix, write, and remote malformed values; direct Harness inclusion/exclusion; and an end-to-end manifest rejection fixture. |
 | Scope | The unvalidated override was trusted by `agent:harness-v2`. | Adoption remains limited to `agent:harness-v2`; another tool cannot use the field safely without passing the same closed validator and tests. |
 | Implementation size | The field had one consumer and no executable schema or negative proof. | The bounded enforcement tranche is 12 files, +192/−29 lines, net +163. This is deliberate guard/test growth; the following lifecycle-catalog and adapter retirements must more than offset it before claiming a net-negative migration. |
+
+### Checkpoint 12 — single Markdown lifecycle authority (2026-08-06)
+
+| Signal | Before this slice | Current result |
+|---|---|---|
+| Catalog authority | All 62 governed Markdown rows repeated lifecycle `status` beside source frontmatter; four already disagreed with their sources. Thirteen governed non-Markdown artifacts also used catalog status legitimately. | Markdown rows now contain zero catalog statuses; all 13 non-Markdown statuses remain. The catalog schema advances to 5.0.0 and rejects either authority split. The metadata migration itself is net −30 lines; the complete 25-file source-repair, enforcement, test, and receipt tranche is +319/−156, net +163, so the next adapter/doc retirement remains required to reduce total Harness size. |
+| Source completeness | Eight governed README files had no frontmatter and two prose-valued status lines were unparseable, so blindly deleting catalog fields would have emitted ten null lifecycle states. | All 62 governed Markdown sources now produce exactly one status. The eight README owners received minimal status-only frontmatter and the two prose statuses preserve their explanation as comments. Document-state generation and context packs fail closed on missing governed source status. |
+| Executable proof | The monotonic gate could pass a current catalog whose derived Markdown lifecycle was null. | 15/15 focused lifecycle and document-state tests pass in 0.53s. The 96-test owner gate passes in 13.04s across runner, impact, enforcement, lifecycle, document-state, readiness, root-hygiene, and inventory checks; readiness is 4,981/4,981. The working-tree gate passes against legacy `origin/main` with 18 increases, 57 unchanged entries, one proven retirement, and zero findings; a direct invariant scan reports 62 valid Markdown sources, zero Markdown catalog statuses, and 13 non-Markdown catalog statuses. |
+| Broker rehearsal | This cleanup began in the legacy rehearsal worktree. | `task start` created and remotely preserved an exact-SHA, locked 26.6 MiB sparse worktree in 3.10s; `task doctor` passed in 0.16s. The first sandboxed invocation correctly failed closed because its nested remote probe lacked network authority; the same command succeeded once that declared remote-write permission was granted. |
 
 Durable outcomes are PR wall-clock p50/p95 and escaped defects. Record the
 baseline from the ten most recent comparable PRs and compare after ten v2 PRs.

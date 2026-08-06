@@ -1,9 +1,9 @@
 ---
 doc_id: design_language
-version: 1.6.0
+version: 1.6.1
 updated: 2026-08-05
 owner: ui_elevation_initiative
-status: active — identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
+status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
 ---
 
 # Catch Design Language
