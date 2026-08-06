@@ -315,6 +315,7 @@
       "checks": [
         "flutter analyze --no-fatal-infos tool/audit_registry.dart tool/lib/audit_registry_paths.dart test/tool/audit_registry_paths_test.dart",
         "flutter test test/tool/audit_registry_paths_test.dart",
+        "dart tool/audit_registry.dart docs --path widget",
         "dart tool/audit_registry.dart refresh --check"
       ],
       "role": "generator"

@@ -1,6 +1,6 @@
 ---
 doc_id: audit_registry
-version: 2.9.0
+version: 3.0.0
 updated: 2026-08-06
 owner: recursive_audit_loop
 status: active
@@ -27,7 +27,6 @@ Use this registry before reading long tracker docs. The goal is to answer:
 | `rules.json` | Active/watch/archived rules used by recursive cleanup passes. |
 | `doc_versions.json` | Version metadata for durable docs that Codex reads repeatedly. |
 | `backlog.json` | Active backlog, next-up order, stable debt ids, and scanner counts. |
-| `doc_summaries.json` | Compact read/skip policies for long docs. |
 | `agent_metrics.jsonl` | Append-only measurements for agent-readiness score, check counts, delegation outcomes, and workflow-quality trend events. |
 | `architecture_pattern_adoption.json` | Machine-readable tracker for architecture reference exhibits, prototype files, adopters, variants, exceptions, and back-propagation obligations. |
 | `react_component_governance_families.json` | Generated reader snapshot of React component families governed by `tool/web/check_react_component_governance.mjs --families-json`. |
@@ -41,7 +40,8 @@ Use this registry before reading long tracker docs. The goal is to answer:
 | `new_widget_inventory_scan.json` | Generated report comparing the working tree to a base ref for newly added widgets, private widget classes, widget-returning helpers, and Widgetbook/catalog coverage gaps. |
 | `archive/` | Historical detail that should be searched only when a debt id or rule requires it. |
 
-`doc_versions.json` owns semantic version/path/read routing. For governed
+`doc_versions.json` owns semantic version/path/read routing; the retired
+`doc_summaries.json` registry no longer duplicates that authority. For governed
 Markdown, exactly one valid source-frontmatter `status` is the sole lifecycle
 authority and catalog rows must omit that field. Missing, malformed, duplicate,
 or unclosed source status fails closed. Governed non-Markdown artifacts continue

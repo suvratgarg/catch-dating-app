@@ -1,6 +1,6 @@
 ---
 doc_id: harness_v2_decision_and_cicd_delivery_plan
-version: 0.3.18
+version: 0.3.19
 updated: 2026-08-06
 owner: agent_operating_model
 status: execution-in-progress
@@ -676,6 +676,25 @@ Issue discovered during this tranche:
   fail even though the production module existed in the full checkout. Keep
   direct imports in the bounded fixture closure and let full/sparse equivalence
   tests fail before a checkout optimization is published.
+
+### Checkpoint 14 — document-summary authority retirement (2026-08-06)
+
+| Signal | Before this slice | Current result |
+|---|---|---|
+| Read-policy authority | `doc_versions.json` and a 674-line `doc_summaries.json` independently routed agents to governed documentation. Changing one owner could leave the other stale, while the `audit:registry docs` command still read the duplicate summary file. | `doc_versions.json` is the sole live read-policy catalog. The docs command reads it directly, omits retired rows, sorts deterministically, and fails with exit 64 when a filter matches nothing. The document-hygiene skill and portable workflow guide no longer instruct agents to maintain a parallel summary registry. |
+| Retirement size | The duplicate registry occupied 674 lines and remained a default sparse-task anchor. | It is a five-line lifecycle tombstone pending retirement of `doc_versions.json` itself: a 99.3% reduction and 669 fewer physical lines. No tool, test, skill, or task anchor consumes it. Historical receipts remain immutable. |
+| Executable proof | The summary command had no direct check in the tool manifest, and a missing path filter could be mistaken for successful routing. | The manifest exercises `audit_registry.dart docs --path widget`; the focused positive command prints five governed policies and the negative command fails closed. Document lifecycle/state tests pass 15/15, the monotonic comparison preserves all 75 governed paths with zero inconsistencies, and the broker lifecycle suite passes 9/9. |
+| Sparse handoff closure | Task anchors materialized both required agent entrypoints but omitted direct imports needed by the context-pack and readiness commands. The mandated gates therefore crashed before inspecting the sparse repository. | The broker now anchors the missing document-lifecycle, dependency-direction, and test-inventory modules. One regression test derives every relative import from both mandatory entrypoints and proves that the sparse closure covers it. This closes the immediate `H2-TRANSITION-020` failure without widening to the whole `tool/` tree. |
+| Measured next deletions | Follow-on cleanup was described generically. | Three independent read-only audits identified bounded candidates: nine completed handoff docs remove 4,050 direct lines; two reproducible raw merge reports remove 121,680 lines / 4.09 MB; and four UI compatibility wrappers should remove about 250–300 net lines while eliminating 80% of duplicate full-repository analyzer launches. Each remains an independent commit and verification boundary. |
+| Line accounting | The four prior cleanup/safety commits were cumulatively net −323 lines. | The complete 17-file implementation, regression guard, checkpoint, three audit metrics, generated inventory, and pass receipt is +120/−751, net −631. The five cleanup/safety commits are now cumulatively net −954 lines. |
+
+Issue discovered during this tranche:
+
+- `H2-TRANSITION-020` — a sparse broker cannot advertise a mandatory command
+  while omitting that command's executable import closure. Both context-pack
+  generation and readiness failed before repository evaluation in this task.
+  Treat those entrypoints as broker-owned closure roots, derive their relative
+  imports in a regression test, and prove the fix in the next brokered task.
 
 Durable outcomes are PR wall-clock p50/p95 and escaped defects. Record the
 baseline from the ten most recent comparable PRs and compare after ten v2 PRs.

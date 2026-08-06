@@ -1,5 +1,5 @@
 {
-  "version": 138,
+  "version": 139,
   "updated": "2026-08-06",
   "owner": "agent_operating_model",
   "entries": [
@@ -4127,6 +4127,7 @@
         "tool/run.mjs",
         "tool/harness/workflow_wiring.test.mjs",
         "tool/harness/lib/worktree_lifecycle.mjs",
+        "tool/harness/worktree_lifecycle.test.mjs",
         "tool/agent/context_pack.mjs",
         "tool/agent/check_agent_readiness.mjs",
         "tool/architecture/check_dependency_direction.mjs",
@@ -4136,8 +4137,8 @@
       "symptom": "A tool-only sparse worktree reports missing manifest paths, drops owner docs and rules from a context pack, omits a direct executable import, shrinks readiness's denominator, skips omitted Markdown or workflows, or passes dependency enforcement after scanning zero Dart files.",
       "guard": {
         "type": "command",
-        "command": "node --test tool/lib/repository_snapshot.test.mjs tool/run.test.mjs tool/harness/workflow_wiring.test.mjs tool/agent/check_agent_readiness.test.mjs tool/architecture/check_dependency_direction.test.mjs tool/check_enforcement_integrity.test.mjs tool/check_repository_root_hygiene.test.mjs",
-        "guardEvidence": "full and sparse repository views produce identical logical results; executable fixtures include direct imports; omitted blobs are batch-read locally without lazy fetches; normal deletions stay deleted; zero-file scans fail closed"
+        "command": "node --test tool/lib/repository_snapshot.test.mjs tool/run.test.mjs tool/harness/workflow_wiring.test.mjs tool/harness/worktree_lifecycle.test.mjs tool/agent/check_agent_readiness.test.mjs tool/architecture/check_dependency_direction.test.mjs tool/check_enforcement_integrity.test.mjs tool/check_repository_root_hygiene.test.mjs",
+        "guardEvidence": "full and sparse repository views produce identical logical results; executable fixtures and the task broker cover every direct context-pack and readiness import; omitted blobs are batch-read locally without lazy fetches; normal deletions stay deleted; zero-file scans fail closed"
       },
       "owner_docs": [
         "docs/agent_operating_model.md",

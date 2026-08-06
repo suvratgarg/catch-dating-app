@@ -2,8 +2,7 @@
 
 Use for docs consolidation, deletion, drift cleanup, and source-of-truth updates.
 
-Read: `docs/README.md`, `docs/audit_registry/doc_versions.json`, and
-`docs/audit_registry/doc_summaries.json`.
+Read: `docs/README.md` and `docs/audit_registry/doc_versions.json`.
 
 Loop: identify the durable owner doc, fold in current guidance, delete or mark
 stale docs, update the docs index and doc versions, then run the agent readiness

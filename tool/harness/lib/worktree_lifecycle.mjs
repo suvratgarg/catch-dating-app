@@ -22,14 +22,16 @@ export const taskSparseAnchorPaths = Object.freeze([
   "/docs/agent_operating_model.md",
   "/docs/agent_regression_ledger.json",
   "/docs/agent_skills/",
-  "/docs/audit_registry/doc_summaries.json",
   "/docs/audit_registry/doc_versions.json",
   "/docs/audit_registry/rules.json",
   "/tool/agent/",
+  "/tool/architecture/check_dependency_direction.mjs",
+  "/tool/docs/check_doc_version_monotonic.mjs",
   "/tool/harness.mjs",
   "/tool/harness/",
   "/tool/lib/",
   "/tool/README.md",
+  "/tool/test_inventory.mjs",
   "/tool/tools_manifest.json",
 ]);
 
