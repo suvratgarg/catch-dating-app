@@ -370,6 +370,27 @@ export function planAffected({changedPaths, graph, mode = "pr", full = false}) {
   };
 }
 
+export function deriveAppRoles(plan) {
+  const roles = new Set(plan.operations.releaseRoles ?? []);
+  for (const target of plan.operations.buildTargets ?? []) {
+    if (target.startsWith("consumer-")) roles.add("consumer");
+    if (target.startsWith("host-")) roles.add("host");
+  }
+  const selectsPlatformBuild = (plan.operations.ciTargets ?? []).some((target) =>
+    [
+      "flutter_build_android",
+      "flutter_build_ios",
+      "flutter_build_web",
+      "flutter_web_smoke",
+    ].includes(target)
+  );
+  if (roles.size === 0 && selectsPlatformBuild) {
+    roles.add("consumer");
+    roles.add("host");
+  }
+  return [...roles].sort();
+}
+
 export function diffPlans({v1Plan, v2Plan}) {
   const v1Targets = [...new Set(v1Plan.targets ?? [])].sort();
   const v2Targets = [...new Set(v2Plan.operations.ciTargets ?? [])].sort();

@@ -4,6 +4,7 @@ import fs from "node:fs";
 import test from "node:test";
 import {planCi} from "../ci/plan_ci.mjs";
 import {
+  deriveAppRoles,
   diffPlans,
   planAffected,
   runCodegenChecks,
@@ -117,6 +118,13 @@ test("host-only Flutter source selects only Flutter and the host web smoke lane"
   assert.deepEqual(result.affectedComponents, []);
   assert.deepEqual(result.operations.ciTargets, ["flutter", "flutter_web_smoke"]);
   assert.deepEqual(result.operations.buildTargets, ["host-web-smoke"]);
+  assert.deepEqual(deriveAppRoles(result), ["host"]);
+});
+
+test("platform builds without explicit role metadata conservatively compile both apps", () => {
+  const result = plan("android/gradle.properties");
+  assert.deepEqual(result.operations.ciTargets, ["flutter_build_android"]);
+  assert.deepEqual(deriveAppRoles(result), ["consumer", "host"]);
 });
 
 test("native and Firebase role fixtures retain platform-specific validation", () => {
