@@ -1,5 +1,5 @@
 {
-  "version": 133,
+  "version": 134,
   "updated": "2026-08-06",
   "owner": "agent_operating_model",
   "entries": [
@@ -4117,6 +4117,32 @@
         "docs/backend_operation_catalog.md"
       ],
       "notes": "Event documents expose callable-owned aggregate counts for anonymous volume. Identified post-event profiles are a server-owned projection; Cross Paths Explore consent and showcase eligibility remain separate Phase 0 work."
+    },
+    {
+      "id": "REG-HARNESS-SPARSE-SNAPSHOT-001",
+      "title": "Sparse checkout changes repository truth or lets a zero-file scanner pass",
+      "status": "active",
+      "applies_to": [
+        "tool/lib/repository_snapshot.mjs",
+        "tool/run.mjs",
+        "tool/harness/workflow_wiring.test.mjs",
+        "tool/agent/context_pack.mjs",
+        "tool/agent/check_agent_readiness.mjs",
+        "tool/architecture/check_dependency_direction.mjs",
+        "tool/check_enforcement_integrity.mjs",
+        "tool/check_repository_root_hygiene.mjs"
+      ],
+      "symptom": "A tool-only sparse worktree reports missing manifest paths, drops owner docs and rules from a context pack, shrinks readiness's denominator, skips omitted Markdown or workflows, or passes dependency enforcement after scanning zero Dart files.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/lib/repository_snapshot.test.mjs tool/run.test.mjs tool/harness/workflow_wiring.test.mjs tool/agent/check_agent_readiness.test.mjs tool/architecture/check_dependency_direction.test.mjs tool/check_enforcement_integrity.test.mjs tool/check_repository_root_hygiene.test.mjs",
+        "guardEvidence": "full and sparse repository views produce identical logical results; omitted blobs are batch-read locally without lazy fetches; normal deletions stay deleted; zero-file scans fail closed"
+      },
+      "owner_docs": [
+        "docs/agent_operating_model.md",
+        "docs/plans/harness_v2_decision_and_cicd_delivery_plan.md"
+      ],
+      "notes": "Repository reads use one captured stage-0 plus nonignored-untracked snapshot per process. Working-tree content wins, sparse-omitted regular files use locally available index blobs, and canonical writes require a materialized regular target. Partial clones without required local objects fail closed."
     }
   ]
 }

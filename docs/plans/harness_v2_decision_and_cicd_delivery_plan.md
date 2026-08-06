@@ -1,6 +1,6 @@
 ---
 doc_id: harness_v2_decision_and_cicd_delivery_plan
-version: 0.3.10
+version: 0.3.11
 updated: 2026-08-06
 owner: agent_operating_model
 status: execution-in-progress
@@ -492,6 +492,51 @@ Issues discovered during the rehearsal:
 | Shared-evidence integration tax | The first seven-file retirement replay on the historical stack conflicted in `files.jsonl` and `passes.jsonl` after 0.17s; preserving the sparse-safe side, regenerating from the staged index, and writing a scoped receipt restored exact 7,235-entry parity. | The pre-merge clean chain replayed without conflict, but squash integration required one more tree-identical deletion replay (0.17s) and, after deletion merged, one final three-commit evidence replay (0.33s). Safety improved; manual restacking remains real overhead. This validates the safe portion of `H2-TRANSITION-006` while `H2-TRANSITION-004` scoped-evidence debt remains. |
 | Publication overhead | Historical branches and PRs obscured which commits were intended to merge. | The clean lifecycle branch pushed in 1.99s and opened PR #154 in 2.58s; the first deletion branch pushed in 1.96s and opened PR #155 in 2.89s. After the parent squash, its main-based replacement pushed in 2.04s and opened PR #157 in 4.79s. Obsolete PRs #148, #149, #153, #155, and #156 were closed with evidence comments rather than left as competing merge paths. |
 | Checkout reliability | Full checkout cost was hidden inside aggregate job time. | PR #158 attempt 1 assigned a runner immediately but `actions/checkout@v6` remained in progress until the run was cancelled: 305 runner-seconds and 320s wall. The unchanged attempt 2 passed in 55 runner-seconds and 74s wall. This is a 5.5× compute and 4.3× wall swing before any meaningful policy variation, so checkout footprint and timeout must become explicit Harness outputs. |
+
+### Checkpoint 6 — checkout closure and logical repository snapshot (2026-08-06)
+
+| Signal | Before this tranche | Current result |
+|---|---|---|
+| Planner checkout | Every planning job cloned the full repository with no bounded checkout step. | PR #159 projects a five-file, root-anchored non-cone sparse closure with a three-minute checkout timeout. Its live planner checkout completed in 2s; the same run's full Tools preflight checkout took 149s. Local planner checkout took 0.05s and exposed exactly five tracked files. |
+| Docs checkout | Docs-only validation inherited a full clone. | The graph projects an exact two-file docs closure; any `policy_docs` selection still fails safe to a full checkout. Local parity covered all 76 governed docs. |
+| Sparse repository truth | A tool-only worktree produced 19 false manifest-path errors, a context pack with only 2 of 9 owner docs and no rules/guards, readiness at 13/32, root hygiene with 19 false failures, enforcement integrity crashing on an omitted rules file, and dependency enforcement passing after scanning 0 Dart files. | One shared repository snapshot now exposes 7,308 logical paths from 621 physically materialized files. Manifest validation passes; context-pack full/sparse outputs match; enforcement passes with 83 active rules and 96 bound tools; root hygiene passes; final readiness is 4,753/4,753 after parent receipts; dependency enforcement scans all 820 eligible Dart files with the same 8 acknowledged findings and 0 new findings. |
+| Sparse read cost | A naive fallback implied one `git cat-file` process per omitted source. | The snapshot captures membership in about 107ms and hydrates all 1,341 logical Dart files (11.35MB) in one batch in about 132ms; a cached repeat takes about 4ms. The dependency gate's 820-file scan completes locally in about 0.18s. |
+| Failure truthfulness | Readiness rounded 4,681/4,682 to a displayed 100/100, and empty materialization could shrink the denominator. | Any nonzero failure caps the displayed score at 99; the test inventory and dependency denominator come from the same captured logical file set; a zero-file dependency scan throws. |
+| Canonical writes | Repository readers and writers both assumed disk materialization. | Reads use the logical snapshot; metrics and baselines remain explicit physical writes and refuse sparse-omitted or non-regular targets. The parent task materialized only the required receipt files before refreshing the test inventory from 624 to 625 tests. |
+| Bounded implementation accounting | No common repository-view abstraction. | Five bounded commits change 14 source/test files by +1,547/−296 (net +1,251). The common reader and its adversarial tests account for +728; migrated production call sites remove 240 old filesystem-specific lines. Combined with the prior −2,070-line retirement and the pending +486 checkout projection, the transition remains net −333 lines before this checkpoint's receipts. |
+
+The checkout PR is code-ready but not yet merge-ready. GitHub Actions reported
+degraded performance during both failed attempts. The organizer-intake job
+failed while downloading an action before repository code ran. The retry did
+not fail fast: `tools-ci.yml` already declares `fail-fast: false`. The unrelated
+marketing job instead exhausted its 15-minute job timeout after 364s in runner
+setup, 209s in checkout, and 273s in its real category checks. No product failure
+is inferred from those attempts, and another retry is held until Actions returns
+to operational status.
+
+Issues discovered during this tranche:
+
+- `H2-TRANSITION-012` — the full Tools bucket's 15-minute job timeout includes
+  provider-side runner setup and full-repository checkout. Under the Actions
+  degradation, marketing reached its real checks with only about 4m33s left and
+  was cancelled while running them. Preserve `fail-fast: false`, separate setup
+  and check timing in receipts, and either reduce the checkout/setup closure or
+  give full buckets an explicit outage margin without weakening step ceilings.
+- `H2-TRANSITION-013` — filesystem presence is not repository truth in a sparse
+  task. This caused both false failures and a zero-file false green. The shared
+  stage-0 plus nonignored-untracked snapshot, batched local-blob reader, and
+  full/sparse equivalence tests close the immediate defect. Partial clones that
+  do not contain a required object fail closed without lazy network fetching.
+- `H2-TRANSITION-014` — read closure and write closure are different. The test
+  inventory generator failed immediately because its canonical output directory
+  was omitted. The current task materialized only its declared receipt paths;
+  `harness task start` must project writable outputs separately and generators
+  must refuse to recreate a sparse-omitted tracked path accidentally.
+- `H2-TRANSITION-015` — repository metadata writes still hit managed-sandbox
+  `index.lock` restrictions. One cherry-pick failed immediately and succeeded
+  only after approved escalation. This is the same environment class as
+  `H2-TRANSITION-003`, but it remains a measurable integration interruption,
+  not a source-code or Git conflict.
 
 Durable outcomes are PR wall-clock p50/p95 and escaped defects. Record the
 baseline from the ten most recent comparable PRs and compare after ten v2 PRs.
