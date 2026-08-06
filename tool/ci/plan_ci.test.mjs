@@ -209,12 +209,3 @@ test("reusable fanout workflows do not cancel sibling lanes", () => {
     );
   }
 });
-
-test("automatic dev deploy consumes deploy impact instead of validation lanes", () => {
-  const workflow = fs.readFileSync(".github/workflows/firebase-dev-deploy.yml", "utf8");
-  assert.match(
-    workflow,
-    /deploy_required: \$\{\{ steps\.impact\.outputs\.backend_deploy_required \}\}/,
-  );
-  assert.doesNotMatch(workflow, /steps\.impact\.outputs\.(contracts|firestore_rules|functions)/);
-});

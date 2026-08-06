@@ -32,16 +32,20 @@ jobs:
       app_roles: ${{ steps.plan.outputs.app_roles }}
       contracts: ${{ steps.plan.outputs.contracts }}
       doc_state: ${{ steps.plan.outputs.doc_state }}
+      docs: ${{ steps.plan.outputs.docs }}
       firestore_rules: ${{ steps.plan.outputs.firestore_rules }}
       flutter: ${{ steps.plan.outputs.flutter }}
       flutter_build_android: ${{ steps.plan.outputs.flutter_build_android }}
       flutter_build_ios: ${{ steps.plan.outputs.flutter_build_ios }}
       flutter_build_web: ${{ steps.plan.outputs.flutter_build_web }}
+      flutter_web_smoke: ${{ steps.plan.outputs.flutter_web_smoke }}
       functions: ${{ steps.plan.outputs.functions }}
       marketing: ${{ steps.plan.outputs.marketing }}
       operations: ${{ steps.plan.outputs.operations }}
+      policy_docs: ${{ steps.plan.outputs.policy_docs }}
       tools: ${{ steps.plan.outputs.tools }}
       visual_integration: ${{ steps.plan.outputs.visual_integration }}
+      base_sha: ${{ steps.plan.outputs.base_sha }}
 
     steps:
       - uses: actions/checkout@v6
@@ -59,59 +63,70 @@ jobs:
           REQUEST_FULL: ${{ github.event_name == 'schedule' || inputs.full }}
         run: |
           set -euo pipefail
-          mkdir -p build/ci
-          base_sha="${PR_BASE_SHA:-${MERGE_GROUP_BASE_SHA:-${BEFORE_SHA:-}}}"
-          full_flag=()
-          if [[ "$REQUEST_FULL" == "true" || -z "$base_sha" || "$base_sha" =~ ^0+$ ]]; then
-            full_flag=(--full)
-            base_sha="$HEAD_SHA"
-          fi
-          node tool/ci/plan_ci.mjs \
-            --base "$base_sha" \
-            --head "$HEAD_SHA" \
-            "${full_flag[@]}" \
-            --github-output "$GITHUB_OUTPUT" \
-            --json > build/ci/impact-plan.json
-
           event_mode="pr"
+          base_sha=""
+          full_flag=()
           case "$EVENT_NAME" in
-            merge_group) event_mode="merge_group" ;;
-            push) event_mode="main" ;;
-            schedule|workflow_dispatch) event_mode="nightly" ;;
+            pull_request)
+              base_sha="$PR_BASE_SHA"
+              ;;
+            merge_group)
+              event_mode="merge_group"
+              base_sha="$MERGE_GROUP_BASE_SHA"
+              ;;
+            push)
+              event_mode="main"
+              base_sha="$BEFORE_SHA"
+              ;;
+            schedule)
+              event_mode="nightly"
+              base_sha="${HEAD_SHA}^"
+              full_flag=(--full)
+              ;;
+            workflow_dispatch)
+              event_mode="nightly"
+              base_sha="${HEAD_SHA}^"
+              if [[ "$REQUEST_FULL" == "true" ]]; then
+                full_flag=(--full)
+              fi
+              ;;
+            *)
+              echo "Unsupported CI event: $EVENT_NAME"
+              exit 64
+              ;;
           esac
-          node tool/harness.mjs shadow \
+
+          if [[ -z "$base_sha" || "$base_sha" =~ ^0+$ ]]; then
+            echo "Missing usable base SHA for $EVENT_NAME; refusing to broaden a non-nightly plan."
+            exit 64
+          fi
+          git cat-file -e "${base_sha}^{commit}"
+
+          mkdir -p build/ci
+          node tool/harness.mjs plan \
             --base "$base_sha" \
             --head "$HEAD_SHA" \
             "${full_flag[@]}" \
             --mode "$event_mode" \
-            --json > build/ci/harness-v2-shadow.json
+            --github-output "$GITHUB_OUTPUT" \
+            --json > build/ci/impact-plan.json
+          echo "base_sha=$base_sha" >> "$GITHUB_OUTPUT"
 
       - name: Publish impact summary
         run: |
           {
-            echo "## Monorepo CI plan"
+            echo "## Harness v2 affected plan"
             echo
             echo '```json'
             jq . build/ci/impact-plan.json
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
-          {
-            echo
-            echo "## Harness v2 shadow comparison"
-            echo
-            echo '```json'
-            jq '{authority, shadowStatus, mode, full, comparison, v2Selection: {directComponents: .v2Plan.directComponents, affectedComponents: .v2Plan.affectedComponents, operations: .v2Plan.operations}}' build/ci/harness-v2-shadow.json
-            echo '```'
-          } >> "$GITHUB_STEP_SUMMARY"
-
       - name: Upload planner evidence
         uses: actions/upload-artifact@v7
         with:
-          name: ci-plans-${{ github.sha }}
-          path: |
-            build/ci/impact-plan.json
-            build/ci/harness-v2-shadow.json
+          name: harness-plan-${{ github.sha }}
+          path: build/ci/impact-plan.json
           if-no-files-found: error
           retention-days: 14
 
@@ -192,18 +207,40 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
+  docs-policy:
+    needs: plan
+    if: >-
+      needs.plan.outputs.docs == 'true' ||
+      needs.plan.outputs.policy_docs == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Check document versions
+        if: ${{ needs.plan.outputs.docs == 'true' }}
+        env:
+          BASE_SHA: ${{ needs.plan.outputs.base_sha }}
+        run: node tool/docs/check_doc_version_monotonic.mjs --base "$BASE_SHA"
+      - name: Check agent policy readiness
+        if: ${{ needs.plan.outputs.policy_docs == 'true' }}
+        run: node tool/agent/check_agent_readiness.mjs
+
   app-builds:
     needs: plan
     if: >-
       needs.plan.outputs.flutter_build_android == 'true' ||
       needs.plan.outputs.flutter_build_ios == 'true' ||
-      needs.plan.outputs.flutter_build_web == 'true'
+      needs.plan.outputs.flutter_build_web == 'true' ||
+      needs.plan.outputs.flutter_web_smoke == 'true'
     uses: ./.github/workflows/app-build-matrix.yml
     with:
       app_roles: ${{ needs.plan.outputs.app_roles }}
       build_android: ${{ needs.plan.outputs.flutter_build_android == 'true' }}
       build_ios: ${{ needs.plan.outputs.flutter_build_ios == 'true' }}
       build_web: ${{ needs.plan.outputs.flutter_build_web == 'true' }}
+      web_smoke: ${{ needs.plan.outputs.flutter_web_smoke == 'true' }}
     secrets: inherit
 
   required:
@@ -221,6 +258,7 @@ jobs:
       - marketing
       - operations
       - doc-state
+      - docs-policy
       - app-builds
     runs-on: ubuntu-latest
     timeout-minutes: 5

@@ -99,12 +99,13 @@ jobs:
         run: |
           set -euo pipefail
           if [[ -z "$BEFORE_SHA" || "$BEFORE_SHA" =~ ^0+$ ]]; then
-            echo 'mobile_release_roles=[]' >> "$GITHUB_OUTPUT"
+            echo 'release_roles=[]' >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          node tool/ci/plan_ci.mjs \
+          node tool/harness.mjs plan \
             --base "$BEFORE_SHA" \
             --head "$HEAD_SHA" \
+            --mode main \
             --github-output "$GITHUB_OUTPUT" \
             --json
 
@@ -112,7 +113,7 @@ jobs:
         env:
           APP_ROLE_INPUT: ${{ inputs.app_role || 'both' }}
           EVENT_NAME: ${{ github.event_name }}
-          IMPACT_ROLES: ${{ steps.impact.outputs.mobile_release_roles }}
+          IMPACT_ROLES: ${{ steps.impact.outputs.release_roles }}
         run: |
           set -euo pipefail
           if [[ "$EVENT_NAME" == "push" ]]; then
