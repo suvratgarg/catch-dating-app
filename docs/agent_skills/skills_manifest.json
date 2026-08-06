@@ -1,5 +1,5 @@
 {
-  "version": 138,
+  "version": 139,
   "updated": "2026-08-06",
   "owner": "agent_operating_model",
   "skills": [
@@ -41,53 +41,6 @@
         "Generated Dart, design, Widgetbook, or tool metadata is left stale.",
         "Feature boundaries are moved without updating app architecture docs.",
         "Repeated migration work proceeds without a reference exhibit and pattern-adoption tracker update."
-      ]
-    },
-    {
-      "skill_id": "catch-parallel-delegation",
-      "path": "docs/agent_skills/catch-parallel-delegation.md",
-      "version": "1.1.0",
-      "updated": "2026-08-06",
-      "applies_to": [
-        "AGENTS.md",
-        "docs/agent_operating_model.md",
-        "docs/agent_skills/**",
-        "docs/audit_registry/**",
-        "tool/agent/**",
-        "tool/tools_manifest.json"
-      ],
-      "source_docs": [
-        "AGENTS.md",
-        "docs/agent_operating_model.md",
-        "docs/audit_registry/README.md",
-        "docs/agent_regression_ledger.json",
-        "tool/README.md"
-      ],
-      "required_tools": [
-        "agent:harness-v2",
-        "agent:context-pack",
-        "agent:readiness",
-        "agent:record-delegation",
-        "audit:registry"
-      ],
-      "required_commands": [
-        "node tool/agent/context_pack.mjs --task parallel-delegation --paths AGENTS.md,docs/agent_operating_model.md,tool/agent",
-        "node tool/harness.mjs task start --task-id <task-id> --base-sha <40-character-sha> --stack-parent <ref> --paths <path[,path...]>",
-        "node tool/harness.mjs task doctor --worktree <task-worktree>",
-        "node tool/harness.mjs task finish --worktree <task-worktree>",
-        "node tool/harness.mjs task reap --dry-run",
-        "node tool/agent/record_delegation_outcome.mjs --help",
-        "node tool/agent/check_agent_readiness.mjs"
-      ],
-      "success_receipt": "Harness start and doctor prove a remotely preserved sparse task boundary, the parent reviews before import, finish records terminal state without deletion, reap remains report-only, final docs/registries/stamps stay parent-owned, and a delegation outcome metric is recorded.",
-      "known_failure_modes": [
-        "An agent bypasses the Harness lifecycle with ad hoc git worktree commands.",
-        "Two agents edit the same file in one loop.",
-        "A subagent updates canonical docs, generated registries, or pass receipts without parent integration.",
-        "Long-lived subagent branches drift behind the parent branch.",
-        "Flutter tests or analyzer are parallelized and fail due toolchain/build-output races.",
-        "A patch is accepted without reviewing its pattern_delta.",
-        "A report-only reap candidate is mistaken for deletion authorization."
       ]
     },
     {
@@ -161,8 +114,8 @@
     {
       "skill_id": "catch-react-surface-refactor",
       "path": "docs/agent_skills/catch-react-surface-refactor.md",
-      "version": "1.0.135",
-      "updated": "2026-07-13",
+      "version": "1.0.136",
+      "updated": "2026-08-06",
       "applies_to": [
         "website/**",
         "admin/**",
@@ -191,8 +144,7 @@
         "tool/tools_manifest.json",
         "docs/audit_registry/README.md",
         "docs/audit_registry/web_shared_primitive_adoption.json",
-        "docs/agent_regression_ledger.json",
-        "docs/agent_skills/catch-parallel-delegation.md"
+        "docs/agent_regression_ledger.json"
       ],
       "required_tools": [
         "agent:context-pack",

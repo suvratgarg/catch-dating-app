@@ -592,6 +592,9 @@ node tool/harness.mjs task finish --worktree <path>
 node tool/harness.mjs task reap --dry-run
 ```
 
+Context packs request this lifecycle with `--mode parallel-delegation`; there
+is no separate adapter skill or command recipe.
+
 `start` creates a bounded sparse worktree under `.claude/worktrees/`, locks it,
 records lifecycle metadata outside tracked source, and pushes its collision-free
 branch to `origin`. `doctor` fails on lifecycle, sparse-materialization,

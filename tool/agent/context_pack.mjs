@@ -4,10 +4,12 @@ import path from "node:path";
 import {fromRepo} from "../lib/repo_paths.mjs";
 import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
 import {parseDocumentLifecycleStatus} from "../docs/check_doc_version_monotonic.mjs";
+import {taskCommandTemplates} from "../harness/lib/worktree_lifecycle.mjs";
 
 const args = parseArgs(process.argv.slice(2));
 const repositorySnapshot = createRepositorySnapshot();
 const task = args.task ?? "unspecified";
+const mode = args.mode ?? "standard";
 const scopePaths = normalizePaths(args.paths);
 const generatedAt = new Date().toISOString();
 
@@ -18,14 +20,15 @@ const skillManifest = readJson("docs/agent_skills/skills_manifest.json", {skills
 
 const matchedSkills = selectSkills(skillManifest.skills ?? [], task, scopePaths);
 const ownerDocs = buildOwnerDocs({task, scopePaths, matchedSkills, docVersions});
-const matchedRules = selectRules(rulesFile.rules ?? {}, scopePaths);
+const matchedRules = selectRules(rulesFile.rules ?? {}, scopePaths, mode);
 const matchedRegressions = selectRegressions(regressionLedger.entries ?? [], scopePaths);
-const commands = buildCommandPlan({matchedSkills, matchedRegressions});
-const acceptance = buildAcceptance({task, scopePaths, matchedSkills});
+const commands = buildCommandPlan({matchedSkills, matchedRegressions, mode});
+const acceptance = buildAcceptance({task, scopePaths, matchedSkills, mode});
 
 const pack = {
   generatedAt,
   task,
+  mode,
   scope: {
     paths: scopePaths,
     note: scopePaths.length === 0
@@ -150,10 +153,11 @@ function selectSkills(skills, task, scopePaths) {
   return selected.length > 0 ? selected : skills.filter((skill) => skill.skill_id === "catch-doc-hygiene");
 }
 
-function selectRules(rules, scopePaths) {
+function selectRules(rules, scopePaths, mode) {
   return Object.entries(rules)
     .filter(([, rule]) => ["active", "watch"].includes(rule.status))
     .filter(([id, rule]) => {
+      if (mode === "parallel-delegation" && id === "AGENT-DELEGATION-001") return true;
       if (scopePaths.length === 0) return ["AUDIT-REGISTRY-001", "DOC-HYGIENE-001"].includes(id);
       return matchesAny(scopePaths, rule.applies_to ?? []);
     })
@@ -181,9 +185,19 @@ function selectRegressions(entries, scopePaths) {
     }));
 }
 
-function buildCommandPlan({matchedSkills, matchedRegressions}) {
+function buildCommandPlan({matchedSkills, matchedRegressions, mode}) {
   const commands = [];
   addCommand(commands, "node tool/agent/check_agent_readiness.mjs", "Validate agent harness before handoff.");
+  if (mode === "parallel-delegation") {
+    for (const command of Object.values(taskCommandTemplates)) {
+      addCommand(commands, command, "Required by the canonical Harness task lifecycle.");
+    }
+    addCommand(
+      commands,
+      "node tool/agent/record_delegation_outcome.mjs --help",
+      "Record the parent-reviewed delegation outcome.",
+    );
+  }
   for (const skill of matchedSkills) {
     for (const command of skill.required_commands ?? []) {
       addCommand(commands, command, `Required by ${skill.skill_id}.`);
@@ -207,7 +221,7 @@ function addCommand(commands, command, reason) {
   commands.push({command, reason});
 }
 
-function buildAcceptance({task, scopePaths, matchedSkills}) {
+function buildAcceptance({task, scopePaths, matchedSkills, mode}) {
   const items = [
     "Scope and excluded dirty work are stated before edits.",
     "Owner docs are updated or explicitly left unchanged.",
@@ -219,6 +233,9 @@ function buildAcceptance({task, scopePaths, matchedSkills}) {
   }
   if (matchedSkills.some((skill) => skill.skill_id.includes("ui") || skill.skill_id.includes("design"))) {
     items.push("Widgetbook, contracts, captures, or design ledgers are refreshed when UI/API coverage changed.");
+  }
+  if (mode === "parallel-delegation") {
+    items.push("Parent retains canonical docs, registries, audit receipts, and final verification.");
   }
   if (scopePaths.length === 0 || task === "unspecified") {
     items.unshift("Task name and paths are narrowed before implementation.");
@@ -271,6 +288,7 @@ function renderMarkdown(pack) {
 function parseArgs(argv) {
   const parsed = {
     task: null,
+    mode: null,
     paths: [],
     output: null,
     json: false,
@@ -278,6 +296,7 @@ function parseArgs(argv) {
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
     if (arg === "--task") parsed.task = requireValue(argv, ++i, arg);
+    else if (arg === "--mode") parsed.mode = requireValue(argv, ++i, arg);
     else if (arg === "--path" || arg === "--paths") parsed.paths.push(requireValue(argv, ++i, arg));
     else if (arg === "--output") parsed.output = requireValue(argv, ++i, arg);
     else if (arg === "--json") parsed.json = true;
@@ -289,6 +308,9 @@ function parseArgs(argv) {
     } else {
       parsed.paths.push(arg);
     }
+  }
+  if (parsed.mode != null && parsed.mode !== "parallel-delegation") {
+    throw new Error(`Unsupported context-pack mode: ${parsed.mode}`);
   }
   return parsed;
 }
@@ -346,10 +368,11 @@ function escapeRegex(value) {
 }
 
 function printHelp() {
-  console.log(`Usage: node tool/agent/context_pack.mjs --task <name> --paths <path[,path...]>
+  console.log(`Usage: node tool/agent/context_pack.mjs --task <name> --paths <path[,path...]> [--mode parallel-delegation]
 
 Options:
   --task name          Task label used to select matching skills.
+  --mode mode          Add the canonical parallel-delegation lifecycle.
   --paths paths        Comma-separated or repeated path scope.
   --output path        Write the rendered pack to a file.
   --json               Print JSON instead of Markdown.

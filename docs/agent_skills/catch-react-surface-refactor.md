@@ -1,7 +1,7 @@
 ---
 doc_id: agent_skill_catch_react_surface_refactor
-version: 1.0.135
-updated: 2026-07-13
+version: 1.0.136
+updated: 2026-08-06
 owner: agent_operating_model
 status: active
 ---
@@ -70,18 +70,6 @@ Loop:
 15. Stamp the pass with `dart tool/audit_registry.dart mark-pass`, including
     `WEB-UI-PRIMITIVE-001` and `WEB-UI-COMPONENT-001` whenever UI primitive or
     component-family enforcement is relevant.
-
-Parallel agent protocol:
-
-- Use `docs/agent_skills/catch-parallel-delegation.md` for any subagent work.
-- Parent owns canonical docs, route/component registries, generated files, tool
-  manifest entries, audit receipts, and final verification.
-- Subagents may do read-only inventory, candidate selection, isolated patch
-  proposals in disjoint feature files, or scanner interpretation.
-- Assign disjoint paths. Do not let two agents edit the same React primitive,
-  route registry, docs file, or manifest in one loop.
-- Every subagent packet must include `pattern_delta`, checks run, changed files,
-  and do-not-merge conditions.
 
 Required checks for a cross-React pass:
 

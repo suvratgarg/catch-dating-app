@@ -15,6 +15,7 @@ const sparseExecutableClosure = [
   "/tool/agent/context_pack.mjs",
   "/tool/docs/check_doc_version_monotonic.mjs",
   "/tool/harness/lib/component_graph.mjs",
+  "/tool/harness/lib/worktree_lifecycle.mjs",
   "/tool/lib/repo_paths.mjs",
   "/tool/lib/repository_snapshot.mjs",
   "/tool/lib/tool_impact.mjs",
@@ -429,6 +430,36 @@ test("runner and context pack agree when canonical inputs are materialized or sp
   assert.ok(normalizeContextPack(omittedContext.stdout).regressionGuards.length > 0);
 });
 
+test("parallel delegation context mode is lifecycle-complete without an adapter skill", () => {
+  const result = runNode(process.cwd(), [
+    "tool/agent/context_pack.mjs",
+    "--task",
+    "parallel-work",
+    "--paths",
+    "docs/agent_operating_model.md,tool/agent",
+    "--mode",
+    "parallel-delegation",
+    "--json",
+  ]);
+  assertSuccessful(result);
+  const pack = JSON.parse(result.stdout);
+  assert.equal(pack.mode, "parallel-delegation");
+  assert.ok(pack.ownerDocs.some((doc) => doc.path === "docs/agent_operating_model.md"));
+  assert.ok(pack.activeRules.some((rule) => rule.id === "AGENT-DELEGATION-001"));
+  assert.ok(!pack.skills.some((skill) => skill.skill_id === "catch-parallel-delegation"));
+  const commands = pack.commandPlan.map((entry) => entry.command);
+  for (const command of [
+    "node tool/harness.mjs task start --task-id <task-id> --base-sha <40-character-sha> --stack-parent <ref> --paths <path[,path...]> [--budget-mib 256]",
+    "node tool/harness.mjs task doctor --worktree <task-worktree>",
+    "node tool/harness.mjs task finish --worktree <task-worktree>",
+    "node tool/harness.mjs task reap --dry-run [--merged-into origin/main] [--stale-days 7]",
+    "node tool/agent/record_delegation_outcome.mjs --help",
+  ]) {
+    assert.ok(commands.includes(command), command);
+  }
+  assert.ok(!commands.some((command) => command.includes("--task parallel-delegation")));
+});
+
 test("tool preflight checkout closure runs the pin guard without product files", (context) => {
   const temporaryRoot = fs.mkdtempSync(
     path.join(os.tmpdir(), "catch-tool-preflight-"),
@@ -511,6 +542,7 @@ function createSnapshotFixtureClone(destination, {checkoutPaths}) {
     "tool/run.mjs",
     "tool/agent/context_pack.mjs",
     "tool/docs/check_doc_version_monotonic.mjs",
+    "tool/harness/lib/worktree_lifecycle.mjs",
     "tool/lib/tool_impact.mjs",
   ]) {
     const destinationPath = path.join(destination, relativePath);

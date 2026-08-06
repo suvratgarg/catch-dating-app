@@ -1,7 +1,7 @@
 ---
 doc_id: ai_first_workflow_guide
-version: 1.0.0
-updated: 2026-07-05
+version: 1.1.0
+updated: 2026-08-06
 owner: agent_operating_model
 status: active
 ---
@@ -117,8 +117,8 @@ Catch uses these modes:
   Widgetbook states or preview surfaces, implementation, and visual proof.
 - `release-operation`: use runbooks and verify live or workflow state when the
   answer depends on it.
-- `parallel-delegation`: use short-lived worktrees, disjoint scopes, parent
-  integration, and outcome metrics.
+- `parallel-delegation`: generate the explicit context-pack mode, then use the
+  Harness task lifecycle, parent integration, and outcome metrics.
 - `strategy`: separate current-state facts from recommendations and propose an
   executable pass.
 
@@ -225,7 +225,6 @@ Examples include:
 - `catch-design-parity`;
 - `catch-marketing-website`;
 - `catch-react-surface-refactor`;
-- `catch-parallel-delegation`;
 - `catch-release-check`.
 
 These skills are deliberately not a second architecture system. They route
