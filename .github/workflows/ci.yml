@@ -6,7 +6,7 @@ on:
     branches: [main]
   merge_group:
   schedule:
-    - cron: "23 2 * * 1"
+    - cron: "23 2 * * *"
   workflow_dispatch:
     inputs:
       full:
@@ -19,7 +19,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: ci-${{ github.event.pull_request.number || github.event.merge_group.head_sha || github.ref }}
+  group: ci-${{ github.event_name }}-${{ github.event.pull_request.number || github.event.merge_group.head_sha || github.ref }}
   cancel-in-progress: ${{ github.event_name != 'push' }}
 
 jobs:
@@ -52,6 +52,7 @@ jobs:
         name: Resolve fail-closed impact plan
         env:
           BEFORE_SHA: ${{ github.event.before }}
+          EVENT_NAME: ${{ github.event_name }}
           HEAD_SHA: ${{ github.sha }}
           MERGE_GROUP_BASE_SHA: ${{ github.event.merge_group.base_sha }}
           PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
@@ -72,6 +73,19 @@ jobs:
             --github-output "$GITHUB_OUTPUT" \
             --json > build/ci/impact-plan.json
 
+          event_mode="pr"
+          case "$EVENT_NAME" in
+            merge_group) event_mode="merge_group" ;;
+            push) event_mode="main" ;;
+            schedule|workflow_dispatch) event_mode="nightly" ;;
+          esac
+          node tool/harness.mjs shadow \
+            --base "$base_sha" \
+            --head "$HEAD_SHA" \
+            "${full_flag[@]}" \
+            --mode "$event_mode" \
+            --json > build/ci/harness-v2-shadow.json
+
       - name: Publish impact summary
         run: |
           {
@@ -81,6 +95,25 @@ jobs:
             jq . build/ci/impact-plan.json
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+
+          {
+            echo
+            echo "## Harness v2 shadow comparison"
+            echo
+            echo '```json'
+            jq '{authority, shadowStatus, mode, full, comparison, v2Selection: {directComponents: .v2Plan.directComponents, affectedComponents: .v2Plan.affectedComponents, operations: .v2Plan.operations}}' build/ci/harness-v2-shadow.json
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload planner evidence
+        uses: actions/upload-artifact@v7
+        with:
+          name: ci-plans-${{ github.sha }}
+          path: |
+            build/ci/impact-plan.json
+            build/ci/harness-v2-shadow.json
+          if-no-files-found: error
+          retention-days: 14
 
   tools:
     needs: plan

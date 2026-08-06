@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-07-30",
+  "updated": "2026-08-06",
   "tools": [
     {
       "id": "tool:runner",
@@ -162,6 +162,23 @@
           "unknown paths fail closed"
         ]
       }
+    },
+    {
+      "id": "agent:harness-v2",
+      "category": "agent",
+      "path": "tool/harness.mjs",
+      "command": "node tool/harness.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Validates and explains the shadow Harness v2 component graph, compares it with authoritative v1 planning, and runs only allowlisted compile-codegen checks.",
+      "checks": [
+        "node --check tool/harness.mjs",
+        "node --check tool/harness/lib/component_graph.mjs",
+        "node --check tool/harness/lib/check_flutter_l10n_generated.mjs",
+        "node --test tool/harness/component_graph.test.mjs tool/harness/check_flutter_l10n_generated.test.mjs tool/harness/harness_cli.test.mjs",
+        "node tool/harness.mjs validate"
+      ],
+      "role": "finder"
     },
     {
       "id": "agent:context-pack",
@@ -2013,6 +2030,29 @@
       "checks": [
         "node --check tool/firebase/validate_google_maps_config.mjs"
       ]
+    },
+    {
+      "id": "firebase:environment-readiness",
+      "category": "firebase",
+      "path": "tool/firebase/check_environment_readiness.mjs",
+      "command": "node tool/firebase/check_environment_readiness.mjs --manifest-only",
+      "safety": "local-with-optional-remote-readonly",
+      "status": "active",
+      "description": "Fails Firebase deploys before dependency installation when target-specific Secret Manager metadata, Firestore TTL policy, project identity, or probe authority is missing; never reads secret payloads.",
+      "checks": [
+        "node --check tool/firebase/check_environment_readiness.mjs",
+        "node --test tool/firebase/check_environment_readiness.test.mjs",
+        "node tool/firebase/check_environment_readiness.mjs --manifest-only"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/firebase/check_environment_readiness.test.mjs",
+        "contains": [
+          "secret metadata classification never returns payload fields",
+          "deploy workflows run readiness before dependency installation"
+        ]
+      }
     },
     {
       "id": "firebase:function-targets",

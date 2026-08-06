@@ -1,8 +1,32 @@
 {
-  "version": 130,
+  "version": 131,
   "updated": "2026-08-06",
   "owner": "agent_operating_model",
   "entries": [
+    {
+      "id": "REG-FIREBASE-READINESS-LATE-FAILURE-001",
+      "title": "Firebase deployment discovers a known environment prerequisite after expensive validation",
+      "status": "active",
+      "applies_to": [
+        "tool/firebase/environment_readiness.json",
+        "tool/firebase/check_environment_readiness.mjs",
+        "tool/firebase/check_environment_readiness.test.mjs",
+        ".github/workflows/firebase-dev-deploy.yml",
+        ".github/workflows/firebase-deploy.yml",
+        "docs/release_operations.md"
+      ],
+      "symptom": "A deploy installs runtimes and dependencies, repeats already-green backend checks, and only then fails because a required secret version, Firestore TTL policy, project identity, or metadata-read permission is absent.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/firebase/check_environment_readiness.mjs --manifest-only && node --test tool/firebase/check_environment_readiness.test.mjs",
+        "guardEvidence": "all literal defineSecret declarations and exported targets reconcile to a deny-by-default manifest; deploy workflows authenticate and run metadata-only readiness before setup or installation; secret payload access and apply flags are rejected"
+      },
+      "owner_docs": [
+        "docs/release_operations.md",
+        "tool/README.md"
+      ],
+      "notes": "Confirmed absence exits 1, indeterminate probe state exits 2, and invalid usage exits 64. Every non-zero result blocks deployment. The checker may expose resource names and version metadata but never secret values."
+    },
     {
       "id": "REG-CROSS-PATHS-PAIR-HOLD-001",
       "title": "Cross Paths companion hold is treated as a booking or leaks reserved capacity",

@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 1.15.0
+version: 1.17.0
 updated: 2026-08-06
 owner: recursive_audit_loop
 status: active
@@ -34,6 +34,34 @@ Functions Node engine, or an Apple-native workflow runner drifts. Keep the
 Apple runner major aligned with the minimum Xcode major. `connectivity_plus`
 7.x requires Xcode 26.1.1 or newer, so the native build, release, and hosted
 visual-smoke workflows use `macos-26`.
+
+## Firebase Environment Readiness
+
+Every Firebase deploy workflow runs the target-aware metadata preflight after
+OIDC authentication and before Node/Java setup, dependency installation,
+Firebase CLI installation, or repeated backend validation:
+
+```sh
+node tool/firebase/check_environment_readiness.mjs --manifest-only
+node tool/firebase/check_environment_readiness.mjs \
+  --env dev \
+  --targets functions,firestore:indexes,firestore:rules,storage
+```
+
+`tool/firebase/environment_readiness.json` is the source of truth for enabled
+Secret Manager versions and Firestore TTL policies required by deploy targets.
+The offline mode reconciles every literal Functions `defineSecret` declaration,
+exported Function target, and owning source path. The live mode resolves project
+ids only from `.firebaserc` and permits three metadata-only `gcloud` command
+families: project describe, secret-version list, and Firestore TTL list. It has
+no apply mode and never accesses or prints secret payloads.
+
+Confirmed missing state exits `1`; authentication, authorization, unavailable
+tooling, or malformed metadata exits `2`; invalid invocation exits `64`. All
+non-zero results block deployment. Add a requirement in the same change that
+introduces a new `defineSecret`, TTL-dependent capability, or deploy-time
+project prerequisite. A missing prerequisite must fail before dependency
+installation; do not move this gate into Firebase predeploy hooks.
 
 ## Storage Rules Cross-Service Readiness
 
@@ -124,8 +152,17 @@ required check permanently pending.
 `.github/workflows/ci.yml` is the orchestration owner. Its planner reads
 `tool/repository_root_manifest.json#ciPlanning`, fails closed for an unmapped
 path, and invokes reusable validation workflows only for affected targets.
-Changes to the CI control plane intentionally run the full matrix. A weekly
+Changes to the CI control plane intentionally run the full matrix. A nightly
 scheduled full run catches drift hidden by ordinary impact routing.
+
+Harness v2 runs beside that authoritative planner in shadow mode. The plan job
+writes `build/ci/harness-v2-shadow.json`, publishes the v1/v2 selection delta,
+and uploads both plans for 14 days. Shadow output never controls required jobs.
+Pull requests, merge queues, main pushes, and nightly full validation use the
+explicit `pr`, `merge_group`, `main`, and `nightly` graph modes respectively.
+Unknown or ambiguous v2 ownership is evidence to repair during shadow; v1
+continues to fail closed and remains the only fanout authority until the
+Harness v2 cutover gate is met.
 
 The orchestrator also owns cancellation. Reusable fanout workflows must not
 derive a concurrency group from `github.workflow`: inside a called workflow
