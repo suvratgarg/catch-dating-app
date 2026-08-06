@@ -2878,6 +2878,49 @@ class AppLocalizationsEn extends AppLocalizations {
       'Cross Paths settings are unavailable right now. Try again shortly.';
 
   @override
+  String get crossPathsExploreCardLabelPeopleYouCouldMeet =>
+      'People you could meet';
+
+  @override
+  String get crossPathsExploreCardLabelCrossPaths => 'Cross Paths';
+
+  @override
+  String get crossPathsExploreCardReasonCompatibleAtThisEvent =>
+      'A compatible person at this event';
+
+  @override
+  String crossPathsExploreCardContextPersonGoingToEvent({
+    required String firstName,
+    required String eventTitle,
+  }) {
+    return '$firstName is going to $eventTitle';
+  }
+
+  @override
+  String crossPathsExploreCardEventDateTime({
+    required String date,
+    required String time,
+  }) {
+    return '$date at $time';
+  }
+
+  @override
+  String get crossPathsExploreCardActionSeeEvent => 'See the event';
+
+  @override
+  String crossPathsExploreCardSemanticsViewProfile({
+    required String firstName,
+  }) {
+    return 'View $firstName’s profile';
+  }
+
+  @override
+  String get crossPathsProfilePreviewTitle => 'Cross Paths profile';
+
+  @override
+  String get crossPathsProfilePreviewTooltipClose => 'Close profile';
+
+  @override
   String get safetySettingsScreenBodyRunnersOnMyEvents =>
       'Runners on my events';
 

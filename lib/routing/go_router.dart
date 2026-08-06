@@ -111,6 +111,13 @@ Object? _eventDetailHeroTag(GoRouterState state) {
   };
 }
 
+EventDetailAttribution? _eventDetailAttribution(GoRouterState state) {
+  return switch (state.extra) {
+    EventDetailRouteExtra(:final attribution) => attribution,
+    _ => null,
+  };
+}
+
 EventDetailScreen _eventDetailScreen(GoRouterState state) {
   return EventDetailScreen(
     clubId: state.pathParameters['clubId']!,
@@ -122,6 +129,7 @@ EventDetailScreen _eventDetailScreen(GoRouterState state) {
     initialEvent: _eventDetailInitialEvent(state),
     presentationMode: _eventDetailPresentationMode(state),
     heroTag: _eventDetailHeroTag(state),
+    attribution: _eventDetailAttribution(state),
   );
 }
 

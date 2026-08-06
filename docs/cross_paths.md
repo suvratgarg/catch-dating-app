@@ -1,7 +1,7 @@
 ---
 doc_id: cross_paths
-version: 1.4.0
-updated: 2026-08-06
+version: 1.5.0
+updated: 2026-08-05
 owner: product (approved direction 2026-08-05)
 status: implementation-in-progress
 ---
@@ -124,8 +124,8 @@ The implementation should extend these existing contracts rather than build
 parallel systems:
 
 1. `CatchPersonPolaroid` and `CatchOrganizerPoster` establish the person and
-   organizer materials. Their current migration may land independently of this
-   feature; Cross Paths must consume the final shared APIs.
+   organizer materials. Cross Paths consumes the canonical person material and
+   keeps its event context in adjacent composition.
 2. `profileQualitySummary` already measures profile completeness, including
    photographs, prompts, relationship goal, background, lifestyle, and legacy
    running detail. It is an owner-coaching score, not a desirability score.
@@ -140,9 +140,10 @@ parallel systems:
 6. The user-profile exposure event schema already establishes impression,
    view, dwell, and photo-denominator concepts. Cross Paths analytics should
    extend that vocabulary instead of calculating popularity from raw totals.
-7. Explore already owns a chronological event feed with organizer intermix and
-   viewer-specific event availability. The Cross Paths provider should enrich
-   this feed through one batched, feature-owned seam.
+7. Explore owns a chronological event feed with organizer intermix and
+   viewer-specific event availability. The implemented Cross Paths provider
+   enriches this feed through one batched, feature-owned seam and fails closed
+   without blocking events.
 
 ### Roster privacy foundation (implemented)
 
@@ -651,16 +652,17 @@ the roster cannot be reconstructed by changing query predicates.
 The implemented `lib/cross_paths/` feature root uses normal domain, data, and
 presentation boundaries:
 
-- domain models currently own feature flags and consent state; suggestion,
-  invitation, event-plan, and ranking models remain future slices;
-- the data repository currently owns the consent callable and caller-scoped
-  consent stream;
-- providers/controllers currently own fail-closed rollout flags and consent
-  mutation orchestration;
-- presentation currently owns the Event Detail consent section; later
-  composition around `CatchPersonPolaroid` remains blocked on suggestions;
-- Explore remains the route/provider boundary and receives provider-free mixed
-  feed card state;
+- domain models own feature flags, consent state, and the strict sanitized
+  suggestion projection; invitation and event-plan models remain future slices;
+- the data repository owns consent operations plus the batched
+  `getCrossPathsSuggestions` callable;
+- providers/controllers own fail-closed rollout flags, consent mutation, one
+  bounded current-event request, response expiry, and error-to-empty behavior;
+- presentation owns the Event Detail consent section and
+  `CrossPathsExploreCard`, which composes `CatchPersonPolaroid` with separate
+  associated-event context and a sanitized profile preview;
+- Explore remains the route/provider boundary and passes provider-free
+  suggestion values into mixed-feed planning;
 - shared person and event materials stay in their existing owners.
 
 The current `SwipeCandidateRepository` is not a reusable pre-event source. It
@@ -787,12 +789,21 @@ eligibility.
 
 ### Phase 1 — Discovery and booking
 
-- Add Cross Paths mixed-feed card and profile preview.
-- Enforce the Explore modality budget and no-search/no-map constraints.
-- Link every Polaroid to one still-actionable event.
-- Route unbooked viewers through the existing Event Detail/booking flow.
-- Instrument exposure, profile-open, event-open, and booking conversion.
-- Launch to a small market/flag cohort with manual showcase curation.
+Implementation receipt (2026-08-05): the mixed-feed person card, sanitized
+profile preview, event-majority/no-adjacent-non-event rules, no-search/no-map
+gates, current-event association, token expiry, and Event Detail routing are
+implemented behind the default-off Explore suggestions flag. Qualified card
+impression, profile-open, event-open, booking-started, and booking-completed
+analytics are wired without emitting the signed token or candidate identity.
+Production seed supply, legal copy approval, signing-key/TTL operations, and a
+small-market flag cohort remain before live enablement.
+
+- [x] Add Cross Paths mixed-feed card and profile preview.
+- [x] Enforce the Explore modality budget and no-search/no-map constraints.
+- [x] Link every Polaroid to one still-actionable event.
+- [x] Route unbooked viewers through the existing Event Detail/booking flow.
+- [x] Instrument exposure, profile-open, event-open, and booking conversion.
+- [ ] Launch to a small market/flag cohort with manual showcase curation.
 
 No invitation is delivered in this phase.
 

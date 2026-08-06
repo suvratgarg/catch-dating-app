@@ -9,18 +9,39 @@ enum EventDetailRouteTransition {
 
 enum EventDetailPresentationMode { standard, ticket, spotlightDark }
 
+enum EventDetailAttributionSource { crossPaths }
+
+class EventDetailAttribution {
+  const EventDetailAttribution({
+    required this.source,
+    required this.suggestionToken,
+    required this.rankingVersion,
+    required this.reasonCodes,
+  });
+
+  final EventDetailAttributionSource source;
+
+  /// Opaque server-signed context retained in memory for the next authorized
+  /// Cross Paths action. It must never be emitted to analytics or logs.
+  final String suggestionToken;
+  final int rankingVersion;
+  final List<String> reasonCodes;
+}
+
 class EventDetailRouteExtra {
   const EventDetailRouteExtra({
     this.initialEvent,
     this.transition = EventDetailRouteTransition.platform,
     this.presentationMode = EventDetailPresentationMode.standard,
     this.heroTag,
+    this.attribution,
   });
 
   final Event? initialEvent;
   final EventDetailRouteTransition transition;
   final EventDetailPresentationMode presentationMode;
   final Object? heroTag;
+  final EventDetailAttribution? attribution;
 }
 
 String eventPhotoHeroTag(String eventId) => 'event-photo-$eventId';

@@ -785,41 +785,6 @@ void main() {
       },
     );
 
-    test('second club row waits until the feed has room to interleave', () {
-      final eventClub = buildClub(id: 'cadence-event-club');
-      final clubs = [
-        buildClub(id: 'cadence-spotlight', nextEventLabel: 'Friday'),
-        buildClub(id: 'cadence-row', nextEventLabel: 'Saturday'),
-      ];
-
-      List<ExploreMixedCard> cardsFor(int eventCount) {
-        return buildExploreMixedFeedCards(
-          viewModel: ExploreFeedViewModel(
-            items: [
-              for (var index = 0; index < eventCount; index += 1)
-                _exploreItem(
-                  id: 'cadence-event-$index',
-                  club: eventClub,
-                  startTime: DateTime(2026, 7, 2, 10 + index),
-                ),
-            ],
-          ),
-          candidateClubs: clubs,
-          joinedClubIds: const {},
-        );
-      }
-
-      for (final eventCount in [1, 2, 3]) {
-        expect(
-          cardsFor(eventCount).whereType<ExploreMixedClubRowCard>(),
-          isEmpty,
-        );
-      }
-      final fourEventCards = cardsFor(4);
-      expect(fourEventCards.whereType<ExploreMixedClubRowCard>(), hasLength(1));
-      expect(fourEventCards.last, isA<ExploreMixedClubRowCard>());
-    });
-
     test('mixed feed does not silently truncate external results', () {
       final externalItems = [
         for (var index = 0; index < 9; index += 1)

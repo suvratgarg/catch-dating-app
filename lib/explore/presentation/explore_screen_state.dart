@@ -5,6 +5,7 @@ import 'package:catch_dating_app/clubs/shared/club_identity_atoms.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/formatters/catch_distance_formatter.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/cross_paths/cross_paths.dart';
 import 'package:catch_dating_app/events/domain/event_eligibility.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/domain/viewer_event_availability.dart';
@@ -513,6 +514,7 @@ class ExploreFeedSectionState {
     required Set<String> joinedClubIds,
     required bool showThisWeekList,
     required AppLocalizations l10n,
+    List<CrossPathsSuggestion> crossPathsSuggestions = const [],
     bool promoteFeaturedItem = true,
     DateTime? now,
   }) {
@@ -526,8 +528,13 @@ class ExploreFeedSectionState {
       isLoadingMore: viewModel.isLoadingMore,
       windowRequest: viewModel.windowRequest,
     );
+    final crossPathsEventIds = {
+      for (final suggestion in crossPathsSuggestions) suggestion.event.eventId,
+    };
     final candidateThisWeekItems = showThisWeekList
         ? topExploreThisWeekRecommendations(bodyItems, now: now)
+              .where((item) => !crossPathsEventIds.contains(item.event.id))
+              .toList(growable: false)
         : const <ExploreEventItem>[];
     final thisWeekItems =
         candidateThisWeekItems.length >=
@@ -540,6 +547,7 @@ class ExploreFeedSectionState {
       candidateClubs: candidateClubs,
       joinedClubIds: joinedClubIds,
       excludeEventIds: thisWeekEventIds,
+      crossPathsSuggestions: crossPathsSuggestions,
     );
 
     return ExploreFeedSectionState(
@@ -803,11 +811,25 @@ class ExploreMixedClubRowCard extends ExploreMixedCard {
   DateTime? get startTime => null;
 }
 
+class ExploreMixedPersonCard extends ExploreMixedCard {
+  const ExploreMixedPersonCard({
+    required this.suggestion,
+    required this.eventItem,
+  });
+
+  final CrossPathsSuggestion suggestion;
+  final ExploreEventItem eventItem;
+
+  @override
+  DateTime get startTime => eventItem.event.startTime;
+}
+
 List<ExploreMixedCard> buildExploreMixedFeedCards({
   required ExploreFeedViewModel viewModel,
   required List<Club> candidateClubs,
   required Set<String> joinedClubIds,
   Set<String> excludeEventIds = const <String>{},
+  List<CrossPathsSuggestion> crossPathsSuggestions = const [],
 }) {
   final rankedClubs = rankExploreClubIntermixCandidates(
     candidateClubs,
@@ -836,14 +858,96 @@ List<ExploreMixedCard> buildExploreMixedFeedCards({
       ExploreMixedClubSpotlightCard(firstClub),
     );
   }
-  if (secondClub != null && timedCardCount >= 4) {
+  // The first eight cards may contain at most one organizer. A second
+  // organizer therefore appears only after eight timed cards exist.
+  if (secondClub != null && timedCardCount >= 8) {
     cards.insert(
-      math.min(5, cards.length),
+      math.min(9, cards.length),
       ExploreMixedClubRowCard(secondClub),
     );
   }
+
+  _insertCrossPathsPeople(
+    cards,
+    suggestions: crossPathsSuggestions,
+    eventItems: viewModel.items,
+    excludedEventIds: excludeEventIds,
+  );
   return cards;
 }
+
+void _insertCrossPathsPeople(
+  List<ExploreMixedCard> cards, {
+  required List<CrossPathsSuggestion> suggestions,
+  required List<ExploreEventItem> eventItems,
+  required Set<String> excludedEventIds,
+}) {
+  if (cards.isEmpty || suggestions.isEmpty) return;
+  final itemByEventId = <String, ExploreEventItem>{
+    for (final item in eventItems)
+      if (!excludedEventIds.contains(item.event.id)) item.event.id: item,
+  };
+  final seenPeople = <String>{};
+  var minimumCardIndex = 0;
+  var inserted = 0;
+
+  for (final suggestion in suggestions) {
+    if (inserted >= 2) break;
+    if (!seenPeople.add(suggestion.profile.uid)) continue;
+    final eventItem = itemByEventId[suggestion.event.eventId];
+    if (eventItem == null) continue;
+    final eventDay = DateUtils.dateOnly(eventItem.event.startTime);
+
+    final associatedIndex = cards.indexWhere(
+      (card) =>
+          card is ExploreMixedEventRowCard &&
+          card.item.event.id == eventItem.event.id,
+    );
+    if (associatedIndex < 0) continue;
+
+    var placementIndex = associatedIndex;
+    while (placementIndex < cards.length) {
+      final card = cards[placementIndex];
+      final isTimed = _isExploreTimedCard(card);
+      final sameDay =
+          card.startTime != null &&
+          DateUtils.dateOnly(card.startTime!) == eventDay;
+      final timedSeen = cards
+          .take(placementIndex + 1)
+          .where(_isExploreTimedCard)
+          .length;
+      final hasMinimumTickets = inserted > 0 || timedSeen >= 2;
+      final insertAt = placementIndex + 1;
+      final nextIsNonEvent =
+          insertAt < cards.length && !_isExploreTimedCard(cards[insertAt]);
+      if (isTimed &&
+          sameDay &&
+          hasMinimumTickets &&
+          insertAt >= minimumCardIndex &&
+          !nextIsNonEvent) {
+        cards.insert(
+          insertAt,
+          ExploreMixedPersonCard(suggestion: suggestion, eventItem: eventItem),
+        );
+        inserted += 1;
+        // Require at least one subsequent event before another person card.
+        minimumCardIndex = insertAt + 2;
+        break;
+      }
+      placementIndex += 1;
+      if (placementIndex >= cards.length ||
+          (cards[placementIndex].startTime != null &&
+              DateUtils.dateOnly(cards[placementIndex].startTime!) !=
+                  eventDay)) {
+        break;
+      }
+    }
+  }
+}
+
+bool _isExploreTimedCard(ExploreMixedCard card) =>
+    card is ExploreMixedEventRowCard ||
+    card is ExploreMixedExternalEventRowCard;
 
 List<ExploreFeedCardGroup> groupExploreMixedFeedCards(
   List<ExploreMixedCard> cards, {

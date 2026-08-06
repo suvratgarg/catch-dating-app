@@ -4,19 +4,19 @@
     "lib"
   ],
   "summary": {
-    "dartSourceFiles": 813,
-    "providerNodes": 223,
-    "generatedProviderNodes": 219,
+    "dartSourceFiles": 816,
+    "providerNodes": 225,
+    "generatedProviderNodes": 221,
     "manualProviderNodes": 4,
     "aliasProviderNodes": 0,
     "keepAliveNodes": 68,
     "familyNodes": 85,
     "mutationNodes": 84,
-    "consumerNodes": 251,
-    "providerToProviderCallsites": 407,
-    "uniqueProviderToProviderPairs": 323,
-    "uniqueCrossFeatureProviderPairs": 160,
-    "consumerToStateCallsites": 757,
+    "consumerNodes": 253,
+    "providerToProviderCallsites": 413,
+    "uniqueProviderToProviderPairs": 329,
+    "uniqueCrossFeatureProviderPairs": 163,
+    "consumerToStateCallsites": 763,
     "mutationReferenceCallsites": 206,
     "unresolvedRefOperations": 13,
     "unresolvedInsideProviders": 0,
@@ -43,7 +43,7 @@
     "clubs": 23,
     "core": 22,
     "event_success": 21,
-    "explore": 17,
+    "explore": 19,
     "hosts": 16,
     "chats": 10,
     "payments": 9,
@@ -70,7 +70,7 @@
   },
   "providersByLayer": {
     "data": 129,
-    "presentation": 64,
+    "presentation": 66,
     "core": 19,
     "routing": 4,
     "shared": 3,
@@ -79,14 +79,14 @@
     "exceptions": 1
   },
   "providerEdgesByOperation": {
-    "watch": 255,
+    "watch": 261,
     "read": 144,
     "invalidate": 6,
     "listen": 2
   },
   "consumerEdgesByOperation": {
-    "watch": 260,
-    "read": 208,
+    "watch": 261,
+    "read": 213,
     "invalidate": 153,
     "mutation-run": 91,
     "override": 23,
@@ -94,7 +94,7 @@
   },
   "featurePairCounts": {
     "events -> events": 32,
-    "explore -> explore": 26,
+    "explore -> explore": 29,
     "clubs -> clubs": 21,
     "event_success -> event_success": 16,
     "core -> core": 9,
@@ -105,6 +105,7 @@
     "auth -> auth": 6,
     "events -> core": 6,
     "clubs -> core": 5,
+    "explore -> auth": 5,
     "explore -> core": 5,
     "payments -> payments": 5,
     "reviews -> reviews": 5,
@@ -112,7 +113,6 @@
     "user_profile -> user_profile": 5,
     "auth -> explore": 4,
     "events -> clubs": 4,
-    "explore -> auth": 4,
     "explore -> user_profile": 4,
     "hosts -> clubs": 4,
     "user_profile -> core": 4,
@@ -138,6 +138,7 @@
     "event_success -> core": 2,
     "events -> exceptions": 2,
     "events -> user_profile": 2,
+    "explore -> cross_paths": 2,
     "force_update -> core": 2,
     "force_update -> force_update": 2,
     "health_activity -> health_activity": 2,
@@ -195,10 +196,10 @@
     "user_profile -> image_uploads": 1
   },
   "layerPairCounts": {
-    "presentation -> data": 114,
+    "presentation -> data": 117,
     "data -> data": 95,
     "data -> core": 48,
-    "presentation -> presentation": 33,
+    "presentation -> presentation": 36,
     "presentation -> core": 10,
     "core -> core": 6,
     "shared -> data": 5,
@@ -239,6 +240,10 @@
     },
     {
       "name": "eventMapViewModelProvider",
+      "degree": 6
+    },
+    {
+      "name": "exploreCrossPathsSuggestionsProvider",
       "degree": 6
     },
     {
@@ -284,10 +289,6 @@
     {
       "name": "eventDetailControllerProvider",
       "degree": 3
-    },
-    {
-      "name": "eventRecapViewModelProvider",
-      "degree": 3
     }
   ],
   "topUniqueFanIn": [
@@ -304,15 +305,15 @@
       "degree": 16
     },
     {
+      "name": "uidProvider",
+      "degree": 15
+    },
+    {
       "name": "clubsRepositoryProvider",
       "degree": 14
     },
     {
       "name": "eventRepositoryProvider",
-      "degree": 14
-    },
-    {
-      "name": "uidProvider",
       "degree": 14
     },
     {
@@ -328,11 +329,11 @@
       "degree": 7
     },
     {
-      "name": "authRepositoryProvider",
-      "degree": 5
+      "name": "exploreSearchQueryProvider",
+      "degree": 6
     },
     {
-      "name": "exploreSearchQueryProvider",
+      "name": "authRepositoryProvider",
       "degree": 5
     },
     {
@@ -436,9 +437,9 @@
       },
       {
         "id": "explore",
-        "providers": 17,
+        "providers": 19,
         "mutations": 0,
-        "consumers": 19
+        "consumers": 21
       },
       {
         "id": "force_update",
@@ -767,7 +768,7 @@
       {
         "source": "explore",
         "target": "auth",
-        "uniqueProviderPairs": 4
+        "uniqueProviderPairs": 5
       },
       {
         "source": "explore",
@@ -781,13 +782,18 @@
       },
       {
         "source": "explore",
+        "target": "cross_paths",
+        "uniqueProviderPairs": 2
+      },
+      {
+        "source": "explore",
         "target": "events",
         "uniqueProviderPairs": 8
       },
       {
         "source": "explore",
         "target": "explore",
-        "uniqueProviderPairs": 26
+        "uniqueProviderPairs": 29
       },
       {
         "source": "explore",
@@ -1631,7 +1637,7 @@
       "name": "consumerGoRouterProvider",
       "kind": "generated-function",
       "path": "lib/routing/go_router.dart",
-      "line": 215,
+      "line": 223,
       "feature": "routing",
       "layer": "routing",
       "keepAlive": true,
@@ -1711,6 +1717,18 @@
       "returnType": "void"
     },
     {
+      "id": "provider:crossPathsExploreSessionIdProvider",
+      "name": "crossPathsExploreSessionIdProvider",
+      "kind": "generated-function",
+      "path": "lib/explore/presentation/explore_cross_paths_provider.dart",
+      "line": 16,
+      "feature": "explore",
+      "layer": "presentation",
+      "keepAlive": false,
+      "family": false,
+      "returnType": "String"
+    },
+    {
       "id": "provider:crossPathsFeatureConfigProvider",
       "name": "crossPathsFeatureConfigProvider",
       "kind": "generated-function",
@@ -1727,7 +1745,7 @@
       "name": "crossPathsRepositoryProvider",
       "kind": "generated-function",
       "path": "lib/cross_paths/data/cross_paths_repository.dart",
-      "line": 84,
+      "line": 109,
       "feature": "cross_paths",
       "layer": "data",
       "keepAlive": true,
@@ -2094,6 +2112,18 @@
       "returnType": "AsyncValue<ExploreViewModel>"
     },
     {
+      "id": "provider:exploreCrossPathsSuggestionsProvider",
+      "name": "exploreCrossPathsSuggestionsProvider",
+      "kind": "generated-function",
+      "path": "lib/explore/presentation/explore_cross_paths_provider.dart",
+      "line": 28,
+      "feature": "explore",
+      "layer": "presentation",
+      "keepAlive": false,
+      "family": false,
+      "returnType": "Future<List<CrossPathsSuggestion>>"
+    },
+    {
       "id": "provider:exploreDiscoveryReferenceNowProvider",
       "name": "exploreDiscoveryReferenceNowProvider",
       "kind": "generated-function",
@@ -2422,7 +2452,7 @@
       "name": "goRouterProvider",
       "kind": "generated-function",
       "path": "lib/routing/go_router.dart",
-      "line": 222,
+      "line": 230,
       "feature": "routing",
       "layer": "routing",
       "keepAlive": true,
@@ -2530,7 +2560,7 @@
       "name": "hostGoRouterProvider",
       "kind": "generated-function",
       "path": "lib/routing/go_router.dart",
-      "line": 219,
+      "line": 227,
       "feature": "routing",
       "layer": "routing",
       "keepAlive": true,
@@ -2626,7 +2656,7 @@
       "name": "initialAppLocationProvider",
       "kind": "generated-function",
       "path": "lib/routing/go_router.dart",
-      "line": 207,
+      "line": 215,
       "feature": "routing",
       "layer": "routing",
       "keepAlive": true,
@@ -3346,7 +3376,7 @@
       "name": "watchCrossPathsEventConsentProvider",
       "kind": "generated-function",
       "path": "lib/cross_paths/data/cross_paths_repository.dart",
-      "line": 90,
+      "line": 115,
       "feature": "cross_paths",
       "layer": "data",
       "keepAlive": false,
@@ -5101,7 +5131,7 @@
       "id": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState._messageHost",
       "owner": "_EventDetailScreenState._messageHost",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 570,
+      "line": 605,
       "feature": "events",
       "layer": "presentation"
     },
@@ -5109,7 +5139,7 @@
       "id": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState._recordInviteLinkOpen",
       "owner": "_EventDetailScreenState._recordInviteLinkOpen",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 92,
+      "line": 93,
       "feature": "events",
       "layer": "presentation"
     },
@@ -5117,7 +5147,7 @@
       "id": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState._toggleSavedEvent",
       "owner": "_EventDetailScreenState._toggleSavedEvent",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 519,
+      "line": 554,
       "feature": "events",
       "layer": "presentation"
     },
@@ -5125,7 +5155,7 @@
       "id": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
       "owner": "_EventDetailScreenState.build",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 117,
+      "line": 118,
       "feature": "events",
       "layer": "presentation"
     },
@@ -5269,7 +5299,7 @@
       "id": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._applyDistanceFilter",
       "owner": "_ExploreScreenState._applyDistanceFilter",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 537,
+      "line": 638,
       "feature": "explore",
       "layer": "presentation"
     },
@@ -5277,7 +5307,7 @@
       "id": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._loadMore",
       "owner": "_ExploreScreenState._loadMore",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 607,
+      "line": 708,
       "feature": "explore",
       "layer": "presentation"
     },
@@ -5285,7 +5315,7 @@
       "id": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._refreshExploreData",
       "owner": "_ExploreScreenState._refreshExploreData",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 559,
+      "line": 660,
       "feature": "explore",
       "layer": "presentation"
     },
@@ -5293,7 +5323,7 @@
       "id": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._scheduleGuestJoinedFilterReset",
       "owner": "_ExploreScreenState._scheduleGuestJoinedFilterReset",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 545,
+      "line": 646,
       "feature": "explore",
       "layer": "presentation"
     },
@@ -5301,7 +5331,7 @@
       "id": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._showLocationFailure",
       "owner": "_ExploreScreenState._showLocationFailure",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 625,
+      "line": 726,
       "feature": "explore",
       "layer": "presentation"
     },
@@ -5309,7 +5339,23 @@
       "id": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
       "owner": "_ExploreScreenState.build",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 97,
+      "line": 100,
+      "feature": "explore",
+      "layer": "presentation"
+    },
+    {
+      "id": "consumer:lib/explore/presentation/explore_screen.dart#logCrossPathsImpression",
+      "owner": "logCrossPathsImpression",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 304,
+      "feature": "explore",
+      "layer": "presentation"
+    },
+    {
+      "id": "consumer:lib/explore/presentation/explore_screen.dart#openCrossPathsProfile",
+      "owner": "openCrossPathsProfile",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 275,
       "feature": "explore",
       "layer": "presentation"
     },
@@ -5317,7 +5363,7 @@
       "id": "consumer:lib/explore/presentation/explore_screen.dart#openEvent",
       "owner": "openEvent",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 204,
+      "line": 210,
       "feature": "explore",
       "layer": "presentation"
     },
@@ -5325,7 +5371,7 @@
       "id": "consumer:lib/explore/presentation/explore_screen.dart#openExploreFilters",
       "owner": "openExploreFilters",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 265,
+      "line": 360,
       "feature": "explore",
       "layer": "presentation"
     },
@@ -5333,7 +5379,7 @@
       "id": "consumer:lib/explore/presentation/explore_screen.dart#openExternalEvent",
       "owner": "openExternalEvent",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 233,
+      "line": 328,
       "feature": "explore",
       "layer": "presentation"
     },
@@ -5341,7 +5387,7 @@
       "id": "consumer:lib/explore/presentation/explore_screen.dart#openFeaturedEvent",
       "owner": "openFeaturedEvent",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 182,
+      "line": 188,
       "feature": "explore",
       "layer": "presentation"
     },
@@ -5349,7 +5395,7 @@
       "id": "consumer:lib/explore/presentation/explore_screen.dart#retryBodyState",
       "owner": "retryBodyState",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 166,
+      "line": 172,
       "feature": "explore",
       "layer": "presentation"
     },
@@ -6349,7 +6395,7 @@
       "id": "consumer:lib/routing/go_router.dart#_buildGoRouter",
       "owner": "_buildGoRouter",
       "path": "lib/routing/go_router.dart",
-      "line": 231,
+      "line": 239,
       "feature": "routing",
       "layer": "routing"
     },
@@ -7318,7 +7364,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/cross_paths/data/cross_paths_repository.dart",
-      "line": 86
+      "line": 111
     },
     {
       "source": "crossPathsRepositoryProvider",
@@ -7327,7 +7373,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/cross_paths/data/cross_paths_repository.dart",
-      "line": 87
+      "line": 112
     },
     {
       "source": "currentUserFollowedClubIdsProvider",
@@ -8111,6 +8157,60 @@
       "operation": "watch",
       "path": "lib/explore/presentation/explore_view_model.dart",
       "line": 615
+    },
+    {
+      "source": "exploreCrossPathsSuggestionsProvider",
+      "sourceKind": "provider",
+      "target": "crossPathsExploreSessionIdProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/explore/presentation/explore_cross_paths_provider.dart",
+      "line": 55
+    },
+    {
+      "source": "exploreCrossPathsSuggestionsProvider",
+      "sourceKind": "provider",
+      "target": "crossPathsFeatureConfigProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/explore/presentation/explore_cross_paths_provider.dart",
+      "line": 35
+    },
+    {
+      "source": "exploreCrossPathsSuggestionsProvider",
+      "sourceKind": "provider",
+      "target": "crossPathsRepositoryProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/explore/presentation/explore_cross_paths_provider.dart",
+      "line": 51
+    },
+    {
+      "source": "exploreCrossPathsSuggestionsProvider",
+      "sourceKind": "provider",
+      "target": "exploreFeedViewModelProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/explore/presentation/explore_cross_paths_provider.dart",
+      "line": 45
+    },
+    {
+      "source": "exploreCrossPathsSuggestionsProvider",
+      "sourceKind": "provider",
+      "target": "exploreSearchQueryProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/explore/presentation/explore_cross_paths_provider.dart",
+      "line": 42
+    },
+    {
+      "source": "exploreCrossPathsSuggestionsProvider",
+      "sourceKind": "provider",
+      "target": "uidProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/explore/presentation/explore_cross_paths_provider.dart",
+      "line": 38
     },
     {
       "source": "exploreDiscoveryWindowProvider",
@@ -9802,7 +9902,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/cross_paths/data/cross_paths_repository.dart",
-      "line": 95
+      "line": 120
     },
     {
       "source": "watchEventInviteLinksProvider",
@@ -12585,7 +12685,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 576
+      "line": 611
     },
     {
       "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState._recordInviteLinkOpen",
@@ -12594,7 +12694,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 108
+      "line": 109
     },
     {
       "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState._toggleSavedEvent",
@@ -12603,7 +12703,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 543
+      "line": 578
     },
     {
       "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState._toggleSavedEvent",
@@ -12612,7 +12712,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 562
+      "line": 597
     },
     {
       "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
@@ -12621,7 +12721,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 330
+      "line": 365
     },
     {
       "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
@@ -12630,7 +12730,7 @@
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 152
+      "line": 153
     },
     {
       "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
@@ -12639,7 +12739,7 @@
       "targetKind": "mutation",
       "operation": "listen",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 219
+      "line": 220
     },
     {
       "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
@@ -12648,7 +12748,7 @@
       "targetKind": "mutation",
       "operation": "listen",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 227
+      "line": 262
     },
     {
       "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
@@ -12657,7 +12757,25 @@
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 149
+      "line": 150
+    },
+    {
+      "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
+      "sourceKind": "consumer",
+      "target": "appAnalyticsProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/events/presentation/event_detail_screen.dart",
+      "line": 225
+    },
+    {
+      "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
+      "sourceKind": "consumer",
+      "target": "appAnalyticsProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/events/presentation/event_detail_screen.dart",
+      "line": 242
     },
     {
       "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
@@ -12666,7 +12784,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 125
+      "line": 126
     },
     {
       "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
@@ -12675,7 +12793,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 180
+      "line": 181
     },
     {
       "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
@@ -12684,57 +12802,12 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 503
+      "line": 538
     },
     {
       "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
       "sourceKind": "consumer",
       "target": "eventDetailViewModelProvider",
-      "targetKind": "provider",
-      "operation": "watch",
-      "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 119
-    },
-    {
-      "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
-      "sourceKind": "consumer",
-      "target": "externalShareControllerProvider",
-      "targetKind": "provider",
-      "operation": "watch",
-      "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 179
-    },
-    {
-      "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
-      "sourceKind": "consumer",
-      "target": "fetchClubProvider",
-      "targetKind": "provider",
-      "operation": "invalidate",
-      "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 321
-    },
-    {
-      "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
-      "sourceKind": "consumer",
-      "target": "fetchClubProvider",
-      "targetKind": "provider",
-      "operation": "invalidate",
-      "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 457
-    },
-    {
-      "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
-      "sourceKind": "consumer",
-      "target": "fetchClubProvider",
-      "targetKind": "provider",
-      "operation": "watch",
-      "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 123
-    },
-    {
-      "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
-      "sourceKind": "consumer",
-      "target": "uidProvider",
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/presentation/event_detail_screen.dart",
@@ -12743,11 +12816,56 @@
     {
       "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
       "sourceKind": "consumer",
+      "target": "externalShareControllerProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/events/presentation/event_detail_screen.dart",
+      "line": 180
+    },
+    {
+      "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
+      "sourceKind": "consumer",
+      "target": "fetchClubProvider",
+      "targetKind": "provider",
+      "operation": "invalidate",
+      "path": "lib/events/presentation/event_detail_screen.dart",
+      "line": 356
+    },
+    {
+      "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
+      "sourceKind": "consumer",
+      "target": "fetchClubProvider",
+      "targetKind": "provider",
+      "operation": "invalidate",
+      "path": "lib/events/presentation/event_detail_screen.dart",
+      "line": 492
+    },
+    {
+      "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
+      "sourceKind": "consumer",
+      "target": "fetchClubProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/events/presentation/event_detail_screen.dart",
+      "line": 124
+    },
+    {
+      "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
+      "sourceKind": "consumer",
+      "target": "uidProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/events/presentation/event_detail_screen.dart",
+      "line": 121
+    },
+    {
+      "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
+      "sourceKind": "consumer",
       "target": "watchCrossPathsEventConsentProvider",
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 165
+      "line": 166
     },
     {
       "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
@@ -12756,7 +12874,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 305
+      "line": 340
     },
     {
       "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
@@ -12765,7 +12883,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 442
+      "line": 477
     },
     {
       "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
@@ -12774,7 +12892,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 190
+      "line": 191
     },
     {
       "source": "consumer:lib/events/presentation/event_location_map_screen.dart#_EventLocationMapRouteScreenState._openDirections",
@@ -13242,7 +13360,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 538
+      "line": 639
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._loadMore",
@@ -13251,7 +13369,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 611
+      "line": 712
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._refreshExploreData",
@@ -13260,7 +13378,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 565
+      "line": 666
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._refreshExploreData",
@@ -13269,7 +13387,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 561
+      "line": 662
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._refreshExploreData",
@@ -13278,7 +13396,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 562
+      "line": 663
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._refreshExploreData",
@@ -13287,7 +13405,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 566
+      "line": 667
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._refreshExploreData",
@@ -13296,7 +13414,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 576
+      "line": 677
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._refreshExploreData",
@@ -13305,7 +13423,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 567
+      "line": 668
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._refreshExploreData",
@@ -13314,7 +13432,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 564
+      "line": 665
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._refreshExploreData",
@@ -13323,7 +13441,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 563
+      "line": 664
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._scheduleGuestJoinedFilterReset",
@@ -13332,7 +13450,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 553
+      "line": 654
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._scheduleGuestJoinedFilterReset",
@@ -13341,7 +13459,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 555
+      "line": 656
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._scheduleGuestJoinedFilterReset",
@@ -13350,7 +13468,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 551
+      "line": 652
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._showLocationFailure",
@@ -13359,7 +13477,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 646
+      "line": 747
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13368,7 +13486,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 106
+      "line": 112
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13377,7 +13495,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 104
+      "line": 110
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13386,7 +13504,16 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 103
+      "line": 109
+    },
+    {
+      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
+      "sourceKind": "consumer",
+      "target": "exploreCrossPathsSuggestionsProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 106
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13395,7 +13522,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 140
+      "line": 146
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13404,7 +13531,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 362
+      "line": 457
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13413,7 +13540,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 389
+      "line": 487
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13422,7 +13549,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 101
+      "line": 104
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13431,7 +13558,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 368
+      "line": 463
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13440,7 +13567,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 370
+      "line": 465
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13449,79 +13576,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 373
-    },
-    {
-      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
-      "sourceKind": "consumer",
-      "target": "exploreFiltersProvider",
-      "targetKind": "provider",
-      "operation": "read",
-      "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 394
-    },
-    {
-      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
-      "sourceKind": "consumer",
-      "target": "exploreFiltersProvider",
-      "targetKind": "provider",
-      "operation": "read",
-      "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 396
-    },
-    {
-      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
-      "sourceKind": "consumer",
-      "target": "exploreFiltersProvider",
-      "targetKind": "provider",
-      "operation": "read",
-      "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 399
-    },
-    {
-      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
-      "sourceKind": "consumer",
-      "target": "exploreFiltersProvider",
-      "targetKind": "provider",
-      "operation": "read",
-      "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 414
-    },
-    {
-      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
-      "sourceKind": "consumer",
-      "target": "exploreFiltersProvider",
-      "targetKind": "provider",
-      "operation": "read",
-      "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 476
-    },
-    {
-      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
-      "sourceKind": "consumer",
-      "target": "exploreFiltersProvider",
-      "targetKind": "provider",
-      "operation": "read",
-      "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 482
-    },
-    {
-      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
-      "sourceKind": "consumer",
-      "target": "exploreFiltersProvider",
-      "targetKind": "provider",
-      "operation": "read",
-      "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 486
-    },
-    {
-      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
-      "sourceKind": "consumer",
-      "target": "exploreFiltersProvider",
-      "targetKind": "provider",
-      "operation": "read",
-      "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 489
+      "line": 468
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13539,7 +13594,79 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 496
+      "line": 494
+    },
+    {
+      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
+      "sourceKind": "consumer",
+      "target": "exploreFiltersProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 497
+    },
+    {
+      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
+      "sourceKind": "consumer",
+      "target": "exploreFiltersProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 515
+    },
+    {
+      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
+      "sourceKind": "consumer",
+      "target": "exploreFiltersProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 577
+    },
+    {
+      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
+      "sourceKind": "consumer",
+      "target": "exploreFiltersProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 583
+    },
+    {
+      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
+      "sourceKind": "consumer",
+      "target": "exploreFiltersProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 587
+    },
+    {
+      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
+      "sourceKind": "consumer",
+      "target": "exploreFiltersProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 590
+    },
+    {
+      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
+      "sourceKind": "consumer",
+      "target": "exploreFiltersProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 593
+    },
+    {
+      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
+      "sourceKind": "consumer",
+      "target": "exploreFiltersProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 597
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13548,7 +13675,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 115
+      "line": 121
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13557,7 +13684,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 102
+      "line": 108
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13566,7 +13693,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 366
+      "line": 461
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13575,7 +13702,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 392
+      "line": 490
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13584,7 +13711,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 412
+      "line": 513
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13593,7 +13720,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 453
+      "line": 554
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13602,7 +13729,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 114
+      "line": 120
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13611,7 +13738,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 127
+      "line": 133
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13620,7 +13747,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 420
+      "line": 521
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13629,7 +13756,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 450
+      "line": 551
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13638,7 +13765,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 105
+      "line": 111
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13647,7 +13774,25 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 100
+      "line": 103
+    },
+    {
+      "source": "consumer:lib/explore/presentation/explore_screen.dart#logCrossPathsImpression",
+      "sourceKind": "consumer",
+      "target": "appAnalyticsProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 310
+    },
+    {
+      "source": "consumer:lib/explore/presentation/explore_screen.dart#openCrossPathsProfile",
+      "sourceKind": "consumer",
+      "target": "appAnalyticsProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 279
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#openEvent",
@@ -13656,7 +13801,16 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 205
+      "line": 219
+    },
+    {
+      "source": "consumer:lib/explore/presentation/explore_screen.dart#openEvent",
+      "sourceKind": "consumer",
+      "target": "appAnalyticsProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 237
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#openExploreFilters",
@@ -13665,7 +13819,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 272
+      "line": 367
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#openExploreFilters",
@@ -13674,7 +13828,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 289
+      "line": 384
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#openExploreFilters",
@@ -13683,7 +13837,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 293
+      "line": 388
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#openExploreFilters",
@@ -13692,7 +13846,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 296
+      "line": 391
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#openExploreFilters",
@@ -13701,7 +13855,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 300
+      "line": 395
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#openExploreFilters",
@@ -13710,7 +13864,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 302
+      "line": 397
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#openExploreFilters",
@@ -13719,7 +13873,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 271
+      "line": 366
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#openExploreFilters",
@@ -13728,7 +13882,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 273
+      "line": 368
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#openExternalEvent",
@@ -13737,7 +13891,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 236
+      "line": 331
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#openExternalEvent",
@@ -13746,7 +13900,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 254
+      "line": 349
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#openFeaturedEvent",
@@ -13755,7 +13909,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 183
+      "line": 189
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#retryBodyState",
@@ -13764,7 +13918,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 175
+      "line": 181
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#retryBodyState",
@@ -13773,12 +13927,21 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 170
+      "line": 176
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#retryBodyState",
       "sourceKind": "consumer",
       "target": "exploreDiscoveryWindowProvider",
+      "targetKind": "provider",
+      "operation": "invalidate",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 183
+    },
+    {
+      "source": "consumer:lib/explore/presentation/explore_screen.dart#retryBodyState",
+      "sourceKind": "consumer",
+      "target": "exploreFeedViewModelProvider",
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/explore/presentation/explore_screen.dart",
@@ -13791,16 +13954,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 171
-    },
-    {
-      "source": "consumer:lib/explore/presentation/explore_screen.dart#retryBodyState",
-      "sourceKind": "consumer",
-      "target": "exploreFeedViewModelProvider",
-      "targetKind": "provider",
-      "operation": "invalidate",
-      "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 178
+      "line": 184
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#retryBodyState",
@@ -13809,7 +13963,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 176
+      "line": 182
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#retryBodyState",
@@ -13818,7 +13972,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 174
+      "line": 180
     },
     {
       "source": "consumer:lib/explore/presentation/widgets/explore_list.dart#ExploreList.build",
@@ -16473,7 +16627,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/routing/go_router.dart",
-      "line": 233
+      "line": 241
     },
     {
       "source": "consumer:lib/routing/go_router.dart#_buildGoRouter",
@@ -16482,7 +16636,7 @@
       "targetKind": "provider",
       "operation": "listen",
       "path": "lib/routing/go_router.dart",
-      "line": 237
+      "line": 245
     },
     {
       "source": "consumer:lib/routing/go_router.dart#_buildGoRouter",
@@ -16491,7 +16645,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/routing/go_router.dart",
-      "line": 259
+      "line": 267
     },
     {
       "source": "consumer:lib/routing/go_router.dart#_buildGoRouter",
@@ -16500,43 +16654,43 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/routing/go_router.dart",
-      "line": 250
-    },
-    {
-      "source": "consumer:lib/routing/go_router.dart#_buildGoRouter",
-      "sourceKind": "consumer",
-      "target": "uidProvider",
-      "targetKind": "provider",
-      "operation": "listen",
-      "path": "lib/routing/go_router.dart",
-      "line": 236
-    },
-    {
-      "source": "consumer:lib/routing/go_router.dart#_buildGoRouter",
-      "sourceKind": "consumer",
-      "target": "uidProvider",
-      "targetKind": "provider",
-      "operation": "read",
-      "path": "lib/routing/go_router.dart",
-      "line": 255
-    },
-    {
-      "source": "consumer:lib/routing/go_router.dart#_buildGoRouter",
-      "sourceKind": "consumer",
-      "target": "watchUserProfileProvider",
-      "targetKind": "provider",
-      "operation": "listen",
-      "path": "lib/routing/go_router.dart",
-      "line": 243
-    },
-    {
-      "source": "consumer:lib/routing/go_router.dart#_buildGoRouter",
-      "sourceKind": "consumer",
-      "target": "watchUserProfileProvider",
-      "targetKind": "provider",
-      "operation": "read",
-      "path": "lib/routing/go_router.dart",
       "line": 258
+    },
+    {
+      "source": "consumer:lib/routing/go_router.dart#_buildGoRouter",
+      "sourceKind": "consumer",
+      "target": "uidProvider",
+      "targetKind": "provider",
+      "operation": "listen",
+      "path": "lib/routing/go_router.dart",
+      "line": 244
+    },
+    {
+      "source": "consumer:lib/routing/go_router.dart#_buildGoRouter",
+      "sourceKind": "consumer",
+      "target": "uidProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/routing/go_router.dart",
+      "line": 263
+    },
+    {
+      "source": "consumer:lib/routing/go_router.dart#_buildGoRouter",
+      "sourceKind": "consumer",
+      "target": "watchUserProfileProvider",
+      "targetKind": "provider",
+      "operation": "listen",
+      "path": "lib/routing/go_router.dart",
+      "line": 251
+    },
+    {
+      "source": "consumer:lib/routing/go_router.dart#_buildGoRouter",
+      "sourceKind": "consumer",
+      "target": "watchUserProfileProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/routing/go_router.dart",
+      "line": 266
     },
     {
       "source": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState._confirmDeleteAccount",
@@ -17672,7 +17826,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 576
+      "line": 611
     },
     {
       "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState._toggleSavedEvent",
@@ -17681,7 +17835,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 543
+      "line": 578
     },
     {
       "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
@@ -17690,7 +17844,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 330
+      "line": 365
     },
     {
       "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
@@ -17699,7 +17853,7 @@
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 152
+      "line": 153
     },
     {
       "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
@@ -17708,7 +17862,7 @@
       "targetKind": "mutation",
       "operation": "listen",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 219
+      "line": 220
     },
     {
       "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
@@ -17717,7 +17871,7 @@
       "targetKind": "mutation",
       "operation": "listen",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 227
+      "line": 262
     },
     {
       "source": "consumer:lib/events/presentation/event_detail_screen.dart#_EventDetailScreenState.build",
@@ -17726,7 +17880,7 @@
       "targetKind": "mutation",
       "operation": "watch",
       "path": "lib/events/presentation/event_detail_screen.dart",
-      "line": 149
+      "line": 150
     },
     {
       "source": "consumer:lib/events/presentation/widgets/event_detail_cta.dart#EventDetailCta.build",

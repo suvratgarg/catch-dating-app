@@ -2,25 +2,25 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/explore.feature.json",
-  "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:fc7e03679c24ed00454e746d1549b297cdfe2a69cd61de87659f7e5c8b2d3ac6",
-  "resolvedDigest": "sha256:0b3387fd4ed2f39de65b08d9c537aead35e621bf0e8b14183d08cd20d46ded78",
+  "generatedFor": "2026-08-05",
+  "sourceDigest": "sha256:fac4dea5d4f7e3c62a6e0d9c837978f368783e65096d15f45012fde2ce93677c",
+  "resolvedDigest": "sha256:dafe6fb8de1fb0243a1da9547762afcae54df7cdd1d89ae6cc2f266c2d8a786b",
   "feature": {
     "id": "feature.explore",
     "name": "Explore",
     "owner": "explore",
     "status": "pilot",
-    "description": "Orchestrates organizer discovery across Flutter and marketing-web projections without duplicating the owning screen, route, component, data, or preview registries."
+    "description": "Orchestrates event-first discovery with consent-safe people and organizer interleaves across Flutter, plus organizer discovery on marketing web, without duplicating owning screen, route, component, data, or preview registries."
   },
   "coverage": {
     "surfaces": 2,
-    "states": 24,
-    "scenarios": 24,
-    "actionCases": 26,
-    "actions": 6,
-    "captures": 20,
-    "previews": 11,
-    "testFiles": 4,
+    "states": 26,
+    "scenarios": 26,
+    "actionCases": 28,
+    "actions": 8,
+    "captures": 22,
+    "previews": 13,
+    "testFiles": 6,
     "evidenceExceptions": 6
   },
   "surfaces": [
@@ -32,9 +32,9 @@
         "id": "screen.explore.discovery"
       },
       "actionScope": {
-        "included": "Empty-result recovery actions represented by ExploreDiscoveryEmptyAction.",
+        "included": "Empty-result recovery actions represented by ExploreDiscoveryEmptyAction plus consent-safe Cross Paths profile-preview and associated-event navigation.",
         "excluded": [
-          "Search entry, city and filter editing, organizer follow/sign-in, map interaction, event or organizer navigation, and membership mutations retain their existing owners and verification paths."
+          "Search entry, city and filter editing, organizer follow/sign-in, map interaction, ordinary event or organizer navigation, and membership mutations retain their existing owners and verification paths."
         ]
       },
       "bindings": {
@@ -48,6 +48,12 @@
             "language": "dart",
             "file": "lib/explore/presentation/explore_screen_state.dart",
             "symbol": "ExploreDiscoveryEmptyAction"
+          },
+          {
+            "id": "cross_paths_discovery",
+            "language": "dart",
+            "file": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
+            "symbol": "CrossPathsExploreCard"
           }
         ],
         "componentContracts": [
@@ -58,6 +64,7 @@
           "catch.event_card",
           "catch.field",
           "catch.icon_button",
+          "catch.person_polaroid",
           "catch.surface",
           "catch.top_bar"
         ],
@@ -66,17 +73,19 @@
           "contracts/firestore/clubs.schema.json",
           "contracts/firestore/events.schema.json",
           "contracts/firestore/external_events.schema.json",
-          "contracts/firestore/organizers.schema.json"
+          "contracts/firestore/organizers.schema.json",
+          "contracts/callables/get_cross_paths_suggestions_payload.schema.json",
+          "contracts/callable_responses/get_cross_paths_suggestions_response.schema.json"
         ]
       },
       "coverage": {
-        "states": 21,
-        "scenarios": 21,
-        "actionCases": 23,
-        "actions": 3,
-        "captures": 20,
-        "previews": 8,
-        "testFiles": 3,
+        "states": 23,
+        "scenarios": 23,
+        "actionCases": 25,
+        "actions": 5,
+        "captures": 22,
+        "previews": 10,
+        "testFiles": 5,
         "evidenceExceptions": 6
       },
       "dimensions": {
@@ -129,6 +138,13 @@
           "values": [
             "none",
             "pin"
+          ]
+        },
+        "people": {
+          "default": "hidden",
+          "values": [
+            "hidden",
+            "suggested"
           ]
         },
         "accessibility": {
@@ -206,6 +222,48 @@
           ],
           "description": "Clears both search and filters as one recovery transition for the current Explore state.",
           "implementationStatus": "implemented"
+        },
+        {
+          "id": "view_cross_paths_profile",
+          "owner": "cross_paths_discovery",
+          "codeValue": "onProfileSelected",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "routeInstanceId",
+            "candidateId",
+            "eventId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "cross_paths_profile_preview"
+              ]
+            }
+          ],
+          "description": "Opens the server-sanitized Cross Paths profile preview for one suggested person without exposing the event roster.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "open_cross_paths_event",
+          "owner": "cross_paths_discovery",
+          "codeValue": "onEventSelected",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "routeInstanceId",
+            "eventId"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.event.detail"
+              }
+            }
+          ],
+          "description": "Opens the exact first-party event associated with a consent-safe Cross Paths suggestion.",
+          "implementationStatus": "implemented"
         }
       ],
       "evidenceExceptions": [
@@ -248,6 +306,7 @@
             "search": "inactive",
             "filters": "inactive",
             "selection": "none",
+            "people": "hidden",
             "accessibility": "standard"
           },
           "evidence": {
@@ -272,6 +331,7 @@
                 "search": "inactive",
                 "filters": "inactive",
                 "selection": "none",
+                "people": "hidden",
                 "accessibility": "standard"
               },
               "actions": {
@@ -280,7 +340,9 @@
                 "notAllowed": [
                   "clear_search",
                   "clear_filters",
-                  "clear_search_and_filters"
+                  "clear_search_and_filters",
+                  "view_cross_paths_profile",
+                  "open_cross_paths_event"
                 ]
               }
             }
@@ -299,6 +361,7 @@
             "search": "inactive",
             "filters": "inactive",
             "selection": "none",
+            "people": "hidden",
             "accessibility": "standard"
           },
           "evidence": {
@@ -323,6 +386,7 @@
                 "search": "inactive",
                 "filters": "inactive",
                 "selection": "none",
+                "people": "hidden",
                 "accessibility": "standard"
               },
               "actions": {
@@ -331,7 +395,9 @@
                 "notAllowed": [
                   "clear_search",
                   "clear_filters",
-                  "clear_search_and_filters"
+                  "clear_search_and_filters",
+                  "view_cross_paths_profile",
+                  "open_cross_paths_event"
                 ]
               }
             }
@@ -350,6 +416,7 @@
             "search": "inactive",
             "filters": "inactive",
             "selection": "none",
+            "people": "hidden",
             "accessibility": "standard"
           },
           "evidence": {
@@ -374,6 +441,7 @@
                 "search": "inactive",
                 "filters": "inactive",
                 "selection": "none",
+                "people": "hidden",
                 "accessibility": "standard"
               },
               "actions": {
@@ -382,7 +450,9 @@
                 "notAllowed": [
                   "clear_search",
                   "clear_filters",
-                  "clear_search_and_filters"
+                  "clear_search_and_filters",
+                  "view_cross_paths_profile",
+                  "open_cross_paths_event"
                 ]
               }
             }
@@ -401,6 +471,7 @@
             "search": "inactive",
             "filters": "inactive",
             "selection": "none",
+            "people": "hidden",
             "accessibility": "standard"
           },
           "evidence": {
@@ -426,6 +497,7 @@
                 "search": "inactive",
                 "filters": "inactive",
                 "selection": "none",
+                "people": "hidden",
                 "accessibility": "standard"
               },
               "actions": {
@@ -434,7 +506,9 @@
                 "notAllowed": [
                   "clear_search",
                   "clear_filters",
-                  "clear_search_and_filters"
+                  "clear_search_and_filters",
+                  "view_cross_paths_profile",
+                  "open_cross_paths_event"
                 ]
               }
             }
@@ -453,6 +527,7 @@
             "search": "inactive",
             "filters": "inactive",
             "selection": "none",
+            "people": "hidden",
             "accessibility": "standard"
           },
           "evidence": {
@@ -480,6 +555,7 @@
                 "search": "active",
                 "filters": "inactive",
                 "selection": "none",
+                "people": "hidden",
                 "accessibility": "standard"
               },
               "actions": {
@@ -489,7 +565,9 @@
                 "disabled": [],
                 "notAllowed": [
                   "clear_filters",
-                  "clear_search_and_filters"
+                  "clear_search_and_filters",
+                  "view_cross_paths_profile",
+                  "open_cross_paths_event"
                 ]
               }
             },
@@ -503,6 +581,7 @@
                 "search": "inactive",
                 "filters": "active",
                 "selection": "none",
+                "people": "hidden",
                 "accessibility": "standard"
               },
               "actions": {
@@ -512,7 +591,9 @@
                 "disabled": [],
                 "notAllowed": [
                   "clear_search",
-                  "clear_search_and_filters"
+                  "clear_search_and_filters",
+                  "view_cross_paths_profile",
+                  "open_cross_paths_event"
                 ]
               }
             },
@@ -526,6 +607,7 @@
                 "search": "active",
                 "filters": "active",
                 "selection": "none",
+                "people": "hidden",
                 "accessibility": "standard"
               },
               "actions": {
@@ -535,7 +617,9 @@
                 "disabled": [],
                 "notAllowed": [
                   "clear_search",
-                  "clear_filters"
+                  "clear_filters",
+                  "view_cross_paths_profile",
+                  "open_cross_paths_event"
                 ]
               }
             }
@@ -554,6 +638,7 @@
             "search": "inactive",
             "filters": "inactive",
             "selection": "none",
+            "people": "hidden",
             "accessibility": "standard"
           },
           "evidence": {
@@ -583,6 +668,7 @@
                 "search": "inactive",
                 "filters": "inactive",
                 "selection": "none",
+                "people": "hidden",
                 "accessibility": "standard"
               },
               "actions": {
@@ -591,7 +677,123 @@
                 "notAllowed": [
                   "clear_search",
                   "clear_filters",
+                  "clear_search_and_filters",
+                  "view_cross_paths_profile",
+                  "open_cross_paths_event"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "cross_paths_suggestion",
+          "stateId": "cross_paths_suggestion",
+          "kind": "populated",
+          "status": "captured",
+          "dimensions": {
+            "surface": "discovery",
+            "load": "ready",
+            "content": "populated",
+            "viewer": "member",
+            "search": "inactive",
+            "filters": "inactive",
+            "selection": "none",
+            "people": "suggested",
+            "accessibility": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "explore_cross_paths_person"
+            ],
+            "previewIds": [
+              "CrossPathsExploreCard/Cross Paths person card"
+            ],
+            "tests": [
+              "test/cross_paths/cross_paths_contract_test.dart",
+              "test/cross_paths/cross_paths_explore_card_test.dart",
+              "test/explore/explore_view_model_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "bookable_event",
+              "dimensions": {
+                "surface": "discovery",
+                "load": "ready",
+                "content": "populated",
+                "viewer": "member",
+                "search": "inactive",
+                "filters": "inactive",
+                "selection": "none",
+                "people": "suggested",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "view_cross_paths_profile",
+                  "open_cross_paths_event"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "clear_search",
+                  "clear_filters",
                   "clear_search_and_filters"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "cross_paths_profile_preview",
+          "stateId": "cross_paths_profile_preview",
+          "kind": "populated",
+          "status": "captured",
+          "dimensions": {
+            "surface": "discovery",
+            "load": "ready",
+            "content": "populated",
+            "viewer": "member",
+            "search": "inactive",
+            "filters": "inactive",
+            "selection": "none",
+            "people": "suggested",
+            "accessibility": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "explore_cross_paths_profile_preview"
+            ],
+            "previewIds": [
+              "CrossPathsProfilePreviewSheet/Cross Paths profile preview"
+            ],
+            "tests": [
+              "test/cross_paths/cross_paths_explore_card_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "associated_event",
+              "dimensions": {
+                "surface": "discovery",
+                "load": "ready",
+                "content": "populated",
+                "viewer": "member",
+                "search": "inactive",
+                "filters": "inactive",
+                "selection": "none",
+                "people": "suggested",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "open_cross_paths_event"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "clear_search",
+                  "clear_filters",
+                  "clear_search_and_filters",
+                  "view_cross_paths_profile"
                 ]
               }
             }
@@ -610,6 +812,7 @@
             "search": "active",
             "filters": "inactive",
             "selection": "none",
+            "people": "hidden",
             "accessibility": "standard"
           },
           "evidence": {
@@ -637,6 +840,7 @@
                 "search": "active",
                 "filters": "inactive",
                 "selection": "none",
+                "people": "hidden",
                 "accessibility": "standard"
               },
               "actions": {
@@ -645,7 +849,9 @@
                 "notAllowed": [
                   "clear_search",
                   "clear_filters",
-                  "clear_search_and_filters"
+                  "clear_search_and_filters",
+                  "view_cross_paths_profile",
+                  "open_cross_paths_event"
                 ]
               }
             }
@@ -664,6 +870,7 @@
             "search": "inactive",
             "filters": "active",
             "selection": "none",
+            "people": "hidden",
             "accessibility": "standard"
           },
           "evidence": {
@@ -693,6 +900,7 @@
                 "search": "inactive",
                 "filters": "active",
                 "selection": "none",
+                "people": "hidden",
                 "accessibility": "standard"
               },
               "actions": {
@@ -701,7 +909,9 @@
                 "notAllowed": [
                   "clear_search",
                   "clear_filters",
-                  "clear_search_and_filters"
+                  "clear_search_and_filters",
+                  "view_cross_paths_profile",
+                  "open_cross_paths_event"
                 ]
               }
             }
@@ -720,6 +930,7 @@
             "search": "inactive",
             "filters": "inactive",
             "selection": "none",
+            "people": "hidden",
             "accessibility": "standard"
           },
           "evidence": {
@@ -745,6 +956,7 @@
                 "search": "inactive",
                 "filters": "inactive",
                 "selection": "none",
+                "people": "hidden",
                 "accessibility": "standard"
               },
               "actions": {
@@ -753,7 +965,9 @@
                 "notAllowed": [
                   "clear_search",
                   "clear_filters",
-                  "clear_search_and_filters"
+                  "clear_search_and_filters",
+                  "view_cross_paths_profile",
+                  "open_cross_paths_event"
                 ]
               }
             }
@@ -772,6 +986,7 @@
             "search": "inactive",
             "filters": "inactive",
             "selection": "none",
+            "people": "hidden",
             "accessibility": "standard"
           },
           "evidence": {
@@ -798,6 +1013,7 @@
                 "search": "inactive",
                 "filters": "inactive",
                 "selection": "none",
+                "people": "hidden",
                 "accessibility": "standard"
               },
               "actions": {
@@ -806,7 +1022,9 @@
                 "notAllowed": [
                   "clear_search",
                   "clear_filters",
-                  "clear_search_and_filters"
+                  "clear_search_and_filters",
+                  "view_cross_paths_profile",
+                  "open_cross_paths_event"
                 ]
               }
             }
@@ -825,6 +1043,7 @@
             "search": "inactive",
             "filters": "inactive",
             "selection": "none",
+            "people": "hidden",
             "accessibility": "standard"
           },
           "evidence": {
@@ -851,6 +1070,7 @@
                 "search": "inactive",
                 "filters": "inactive",
                 "selection": "none",
+                "people": "hidden",
                 "accessibility": "standard"
               },
               "actions": {
@@ -859,7 +1079,9 @@
                 "notAllowed": [
                   "clear_search",
                   "clear_filters",
-                  "clear_search_and_filters"
+                  "clear_search_and_filters",
+                  "view_cross_paths_profile",
+                  "open_cross_paths_event"
                 ]
               }
             }
@@ -878,6 +1100,7 @@
             "search": "inactive",
             "filters": "inactive",
             "selection": "none",
+            "people": "hidden",
             "accessibility": "standard"
           },
           "evidence": {
@@ -903,6 +1126,7 @@
                 "search": "inactive",
                 "filters": "inactive",
                 "selection": "none",
+                "people": "hidden",
                 "accessibility": "standard"
               },
               "actions": {
@@ -911,7 +1135,9 @@
                 "notAllowed": [
                   "clear_search",
                   "clear_filters",
-                  "clear_search_and_filters"
+                  "clear_search_and_filters",
+                  "view_cross_paths_profile",
+                  "open_cross_paths_event"
                 ]
               }
             }
@@ -930,6 +1156,7 @@
             "search": "inactive",
             "filters": "inactive",
             "selection": "pin",
+            "people": "hidden",
             "accessibility": "standard"
           },
           "evidence": {
@@ -954,6 +1181,7 @@
                 "search": "inactive",
                 "filters": "inactive",
                 "selection": "pin",
+                "people": "hidden",
                 "accessibility": "standard"
               },
               "actions": {
@@ -962,7 +1190,9 @@
                 "notAllowed": [
                   "clear_search",
                   "clear_filters",
-                  "clear_search_and_filters"
+                  "clear_search_and_filters",
+                  "view_cross_paths_profile",
+                  "open_cross_paths_event"
                 ]
               }
             }
@@ -981,6 +1211,7 @@
             "search": "inactive",
             "filters": "inactive",
             "selection": "none",
+            "people": "hidden",
             "accessibility": "standard"
           },
           "evidence": {
@@ -1005,6 +1236,7 @@
                 "search": "inactive",
                 "filters": "inactive",
                 "selection": "none",
+                "people": "hidden",
                 "accessibility": "standard"
               },
               "actions": {
@@ -1013,7 +1245,9 @@
                 "notAllowed": [
                   "clear_search",
                   "clear_filters",
-                  "clear_search_and_filters"
+                  "clear_search_and_filters",
+                  "view_cross_paths_profile",
+                  "open_cross_paths_event"
                 ]
               }
             }
@@ -1032,6 +1266,7 @@
             "search": "inactive",
             "filters": "inactive",
             "selection": "none",
+            "people": "hidden",
             "accessibility": "standard"
           },
           "evidence": {
@@ -1052,6 +1287,7 @@
                 "search": "inactive",
                 "filters": "inactive",
                 "selection": "none",
+                "people": "hidden",
                 "accessibility": "standard"
               },
               "actions": {
@@ -1060,7 +1296,9 @@
                 "notAllowed": [
                   "clear_search",
                   "clear_filters",
-                  "clear_search_and_filters"
+                  "clear_search_and_filters",
+                  "view_cross_paths_profile",
+                  "open_cross_paths_event"
                 ]
               }
             }
@@ -1079,6 +1317,7 @@
             "search": "inactive",
             "filters": "inactive",
             "selection": "none",
+            "people": "hidden",
             "accessibility": "standard"
           },
           "evidence": {
@@ -1101,6 +1340,7 @@
                 "search": "inactive",
                 "filters": "inactive",
                 "selection": "none",
+                "people": "hidden",
                 "accessibility": "standard"
               },
               "actions": {
@@ -1109,7 +1349,9 @@
                 "notAllowed": [
                   "clear_search",
                   "clear_filters",
-                  "clear_search_and_filters"
+                  "clear_search_and_filters",
+                  "view_cross_paths_profile",
+                  "open_cross_paths_event"
                 ]
               }
             }
@@ -1128,6 +1370,7 @@
             "search": "inactive",
             "filters": "inactive",
             "selection": "none",
+            "people": "hidden",
             "accessibility": "standard"
           },
           "evidence": {
@@ -1152,6 +1395,7 @@
                 "search": "inactive",
                 "filters": "inactive",
                 "selection": "none",
+                "people": "hidden",
                 "accessibility": "standard"
               },
               "actions": {
@@ -1160,7 +1404,9 @@
                 "notAllowed": [
                   "clear_search",
                   "clear_filters",
-                  "clear_search_and_filters"
+                  "clear_search_and_filters",
+                  "view_cross_paths_profile",
+                  "open_cross_paths_event"
                 ]
               }
             }
@@ -1179,6 +1425,7 @@
             "search": "inactive",
             "filters": "inactive",
             "selection": "none",
+            "people": "hidden",
             "accessibility": "standard"
           },
           "evidence": {
@@ -1203,6 +1450,7 @@
                 "search": "inactive",
                 "filters": "inactive",
                 "selection": "none",
+                "people": "hidden",
                 "accessibility": "standard"
               },
               "actions": {
@@ -1211,7 +1459,9 @@
                 "notAllowed": [
                   "clear_search",
                   "clear_filters",
-                  "clear_search_and_filters"
+                  "clear_search_and_filters",
+                  "view_cross_paths_profile",
+                  "open_cross_paths_event"
                 ]
               }
             }
@@ -1230,6 +1480,7 @@
             "search": "inactive",
             "filters": "inactive",
             "selection": "none",
+            "people": "hidden",
             "accessibility": "standard"
           },
           "evidence": {
@@ -1252,6 +1503,7 @@
                 "search": "inactive",
                 "filters": "inactive",
                 "selection": "none",
+                "people": "hidden",
                 "accessibility": "standard"
               },
               "actions": {
@@ -1260,7 +1512,9 @@
                 "notAllowed": [
                   "clear_search",
                   "clear_filters",
-                  "clear_search_and_filters"
+                  "clear_search_and_filters",
+                  "view_cross_paths_profile",
+                  "open_cross_paths_event"
                 ]
               }
             }
@@ -1279,6 +1533,7 @@
             "search": "inactive",
             "filters": "inactive",
             "selection": "none",
+            "people": "hidden",
             "accessibility": "text_scale_2"
           },
           "evidence": {
@@ -1302,6 +1557,7 @@
                 "search": "inactive",
                 "filters": "inactive",
                 "selection": "none",
+                "people": "hidden",
                 "accessibility": "text_scale_2"
               },
               "actions": {
@@ -1310,7 +1566,9 @@
                 "notAllowed": [
                   "clear_search",
                   "clear_filters",
-                  "clear_search_and_filters"
+                  "clear_search_and_filters",
+                  "view_cross_paths_profile",
+                  "open_cross_paths_event"
                 ]
               }
             }
@@ -1329,6 +1587,7 @@
             "search": "inactive",
             "filters": "inactive",
             "selection": "none",
+            "people": "hidden",
             "accessibility": "reduced_motion"
           },
           "evidence": {
@@ -1351,6 +1610,7 @@
                 "search": "inactive",
                 "filters": "inactive",
                 "selection": "none",
+                "people": "hidden",
                 "accessibility": "reduced_motion"
               },
               "actions": {
@@ -1359,7 +1619,9 @@
                 "notAllowed": [
                   "clear_search",
                   "clear_filters",
-                  "clear_search_and_filters"
+                  "clear_search_and_filters",
+                  "view_cross_paths_profile",
+                  "open_cross_paths_event"
                 ]
               }
             }
@@ -1479,6 +1741,17 @@
             }
           },
           {
+            "id": "catch.person_polaroid",
+            "kind": "composite",
+            "dart": {
+              "symbol": "CatchPersonPolaroid",
+              "file": "lib/core/widgets/catch_person_polaroid.dart",
+              "constructors": [
+                "CatchPersonPolaroid"
+              ]
+            }
+          },
+          {
             "id": "catch.surface",
             "kind": "primitive",
             "dart": {
@@ -1507,6 +1780,8 @@
         "previews": [
           "CatchCountPill/Map launcher states",
           "CatchEmptyState/Empty states",
+          "CrossPathsExploreCard/Cross Paths person card",
+          "CrossPathsProfilePreviewSheet/Cross Paths profile preview",
           "ExploreBrowseHeaderContent/Chrome states",
           "ExploreEventTypeBrowseGrid/Activity states",
           "ExploreEventsSection/Feed states",

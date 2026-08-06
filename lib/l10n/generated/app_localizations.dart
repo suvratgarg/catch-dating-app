@@ -5002,6 +5002,66 @@ abstract class AppLocalizations {
   /// **'Cross Paths settings are unavailable right now. Try again shortly.'**
   String get crossPathsEventConsentSectionBodyConsentUnavailable;
 
+  /// Editorial label above an opted-in person suggestion in Explore.
+  ///
+  /// In en, this message translates to:
+  /// **'People you could meet'**
+  String get crossPathsExploreCardLabelPeopleYouCouldMeet;
+
+  /// Feature kicker on the person Polaroid.
+  ///
+  /// In en, this message translates to:
+  /// **'Cross Paths'**
+  String get crossPathsExploreCardLabelCrossPaths;
+
+  /// Coarse, privacy-safe compatibility reason for an Explore person suggestion.
+  ///
+  /// In en, this message translates to:
+  /// **'A compatible person at this event'**
+  String get crossPathsExploreCardReasonCompatibleAtThisEvent;
+
+  /// Prospective event context shown outside the person Polaroid.
+  ///
+  /// In en, this message translates to:
+  /// **'{firstName} is going to {eventTitle}'**
+  String crossPathsExploreCardContextPersonGoingToEvent({
+    required String firstName,
+    required String eventTitle,
+  });
+
+  /// Date and time for the event attached to a person suggestion.
+  ///
+  /// In en, this message translates to:
+  /// **'{date} at {time}'**
+  String crossPathsExploreCardEventDateTime({
+    required String date,
+    required String time,
+  });
+
+  /// Action that opens the associated first-party Event Detail screen.
+  ///
+  /// In en, this message translates to:
+  /// **'See the event'**
+  String get crossPathsExploreCardActionSeeEvent;
+
+  /// Screen-reader label for the person target on a Cross Paths card.
+  ///
+  /// In en, this message translates to:
+  /// **'View {firstName}’s profile'**
+  String crossPathsExploreCardSemanticsViewProfile({required String firstName});
+
+  /// Title for the event-tied person profile preview.
+  ///
+  /// In en, this message translates to:
+  /// **'Cross Paths profile'**
+  String get crossPathsProfilePreviewTitle;
+
+  /// Tooltip for closing the Cross Paths profile preview.
+  ///
+  /// In en, this message translates to:
+  /// **'Close profile'**
+  String get crossPathsProfilePreviewTooltipClose;
+
   /// Product copy used by lib/safety/presentation/settings_screen.dart (body).
   ///
   /// In en, this message translates to:

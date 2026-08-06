@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/cross_paths/cross_paths.dart';
 import 'package:catch_dating_app/explore/domain/explore_event_recommendation.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
@@ -39,6 +40,9 @@ List<Widget> buildExploreBodySlivers({
   ValueChanged<ActivityKind>? onActivitySelected,
   ExploreEventSelected? onEventSelected,
   ValueChanged<ExploreExternalEventItem>? onExternalEventOpened,
+  List<CrossPathsSuggestion> crossPathsSuggestions = const [],
+  CrossPathsProfileSelected? onCrossPathsProfileSelected,
+  CrossPathsImpression? onCrossPathsImpression,
   ValueChanged<Club>? onClubSelected,
   ExploreViewModel? clubsViewModel,
   Object? clubSectionError,
@@ -64,6 +68,9 @@ List<Widget> buildExploreBodySlivers({
     onSetTimeFilter: onSetTimeFilter,
     onEventSelected: onEventSelected,
     onExternalEventOpened: onExternalEventOpened,
+    crossPathsSuggestions: crossPathsSuggestions,
+    onCrossPathsProfileSelected: onCrossPathsProfileSelected,
+    onCrossPathsImpression: onCrossPathsImpression,
     onClubSelected: onClubSelected,
     candidateClubs: viewModel?.allClubs ?? const [],
     joinedClubIds: viewModel?.joinedClubIds ?? const {},

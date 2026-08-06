@@ -27,9 +27,11 @@ import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/cross_paths/cross_paths.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/explore/presentation/explore_city_controller.dart';
+import 'package:catch_dating_app/explore/presentation/explore_cross_paths_provider.dart';
 import 'package:catch_dating_app/explore/presentation/explore_discovery_window_controller.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
@@ -62,6 +64,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
   bool? _wasExploreTabActive;
   bool _reentryRefreshQueued = false;
   bool _guestJoinedFilterResetQueued = false;
+  final Set<String> _loggedCrossPathsImpressions = <String>{};
   Timer? _initialLoadDeadline;
   bool _initialLoadTimedOut = false;
 
@@ -99,6 +102,9 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     final t = CatchTokens.of(context);
     final uidAsync = ref.watch(uidProvider);
     final feedAsync = ref.watch(exploreFeedViewModelProvider);
+    final crossPathsSuggestions =
+        ref.watch(exploreCrossPathsSuggestionsProvider).asData?.value ??
+        const <CrossPathsSuggestion>[];
     final recommendationsAsync = ref.watch(exploreRecommendationsProvider);
     final viewModelAsync = ref.watch(exploreClubsViewModelProvider);
     ref.watch(exploreCityControllerProvider);
@@ -202,6 +208,32 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     }
 
     void openEvent(ExploreEventItem item, String source) {
+      CrossPathsSuggestion? crossPathsSuggestion;
+      if (source.startsWith('cross_paths')) {
+        for (final suggestion in crossPathsSuggestions) {
+          if (suggestion.event.eventId == item.event.id) {
+            crossPathsSuggestion = suggestion;
+            break;
+          }
+        }
+        ref
+            .read(appAnalyticsProvider)
+            .logEvent(
+              AnalyticsEvents.crossPathsEventOpened,
+              parameters: {
+                AnalyticsParameters.eventId: item.event.id,
+                AnalyticsParameters.surface: 'explore',
+                AnalyticsParameters.viewerBookingStatus:
+                    crossPathsSuggestion?.event.viewerBookingStatus.name,
+                AnalyticsParameters.rankingVersion:
+                    crossPathsSuggestion?.rankingVersion,
+                AnalyticsParameters.reasonCodes: crossPathsSuggestion
+                    ?.reasonCodes
+                    .map((reason) => reason.wireValue)
+                    .join(','),
+              },
+            );
+      }
       ref
           .read(appAnalyticsProvider)
           .logEvent(
@@ -226,8 +258,71 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
           transition: EventDetailRouteTransition.ticketCard,
           presentationMode: EventDetailPresentationMode.ticket,
           heroTag: eventTicketHeroTag(item.event.id, source),
+          attribution: crossPathsSuggestion == null
+              ? null
+              : EventDetailAttribution(
+                  source: EventDetailAttributionSource.crossPaths,
+                  suggestionToken: crossPathsSuggestion.suggestionToken,
+                  rankingVersion: crossPathsSuggestion.rankingVersion,
+                  reasonCodes: crossPathsSuggestion.reasonCodes
+                      .map((reason) => reason.wireValue)
+                      .toList(growable: false),
+                ),
         ),
       );
+    }
+
+    void openCrossPathsProfile(
+      CrossPathsSuggestion suggestion,
+      ExploreEventItem eventItem,
+    ) {
+      ref
+          .read(appAnalyticsProvider)
+          .logEvent(
+            AnalyticsEvents.crossPathsProfileOpened,
+            parameters: {
+              AnalyticsParameters.eventId: eventItem.event.id,
+              AnalyticsParameters.surface: 'explore',
+              AnalyticsParameters.viewerBookingStatus:
+                  suggestion.event.viewerBookingStatus.name,
+              AnalyticsParameters.rankingVersion: suggestion.rankingVersion,
+              AnalyticsParameters.reasonCodes: suggestion.reasonCodes
+                  .map((reason) => reason.wireValue)
+                  .join(','),
+            },
+          );
+      unawaited(
+        showCrossPathsProfilePreview(
+          context: context,
+          suggestion: suggestion,
+          event: eventItem.event,
+          onEventSelected: () => openEvent(eventItem, 'cross_paths_profile'),
+        ),
+      );
+    }
+
+    void logCrossPathsImpression(
+      CrossPathsSuggestion suggestion,
+      ExploreEventItem eventItem,
+      int position,
+    ) {
+      if (!_loggedCrossPathsImpressions.add(suggestion.suggestionToken)) return;
+      ref
+          .read(appAnalyticsProvider)
+          .logEvent(
+            AnalyticsEvents.crossPathsImpression,
+            parameters: {
+              AnalyticsParameters.eventId: eventItem.event.id,
+              AnalyticsParameters.surface: 'explore',
+              AnalyticsParameters.position: position,
+              AnalyticsParameters.viewerBookingStatus:
+                  suggestion.event.viewerBookingStatus.name,
+              AnalyticsParameters.rankingVersion: suggestion.rankingVersion,
+              AnalyticsParameters.reasonCodes: suggestion.reasonCodes
+                  .map((reason) => reason.wireValue)
+                  .join(','),
+            },
+          );
     }
 
     void openExternalEvent(ExploreExternalEventItem item) {
@@ -374,6 +469,9 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                   .read(exploreFiltersProvider.notifier)
                   .toggleActivityTag(activityKind.name),
               onEventSelected: openEvent,
+              crossPathsSuggestions: crossPathsSuggestions,
+              onCrossPathsProfileSelected: openCrossPathsProfile,
+              onCrossPathsImpression: logCrossPathsImpression,
               onExternalEventOpened: openExternalEvent,
               onClubSelected: openClub,
               promoteFeaturedItem: showFeaturedCover,
@@ -400,6 +498,9 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                     .read(exploreFiltersProvider.notifier)
                     .toggleActivityTag(activityKind.name),
                 onEventSelected: openEvent,
+                crossPathsSuggestions: crossPathsSuggestions,
+                onCrossPathsProfileSelected: openCrossPathsProfile,
+                onCrossPathsImpression: logCrossPathsImpression,
                 onExternalEventOpened: openExternalEvent,
                 onClubSelected: openClub,
                 promoteFeaturedItem: showFeaturedCover,

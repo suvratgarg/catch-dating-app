@@ -2046,6 +2046,11 @@
         "lib/cross_paths/domain/cross_paths_feature_config.dart",
         "lib/cross_paths/data/cross_paths_feature_config_provider.dart",
         "lib/cross_paths/data/cross_paths_repository.dart",
+        "lib/cross_paths/domain/cross_paths_suggestion.dart",
+        "lib/explore/presentation/explore_cross_paths_provider.dart",
+        "lib/cross_paths/presentation/cross_paths_explore_card.dart",
+        "lib/events/shared/event_detail_route_transition.dart",
+        "lib/events/presentation/event_detail_screen.dart",
         "lib/cross_paths/presentation/cross_paths_event_consent_controller.dart",
         "lib/cross_paths/presentation/cross_paths_event_consent_state.dart",
         "lib/cross_paths/presentation/cross_paths_event_consent_section.dart",
@@ -2089,9 +2094,28 @@
         },
         {
           "path": "lib/cross_paths/data/cross_paths_repository.dart",
-          "role": "caller-scoped consent read plus callable-only write seam; never an attendee-roster source",
+          "role": "caller-scoped consent read, callable-only consent write, and sanitized batched suggestion seam; never an attendee-roster source",
           "status": "aligned",
-          "lastReviewedPass": "2026-08-05-cross-paths-phase0-consent"
+          "lastReviewedPass": "2026-08-05-cross-paths-explore"
+        },
+        {
+          "path": "lib/explore/presentation/explore_cross_paths_provider.dart and lib/explore/presentation/explore_screen_state.dart",
+          "role": "fail-closed optional enrichment, current-event request bounding, token expiry, and provider-free event-majority mixed-feed planning",
+          "status": "aligned",
+          "lastReviewedPass": "2026-08-05-cross-paths-explore"
+        },
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
+          "role": "canonical person-polaroid composition with sanitized profile preview and separate first-party event action",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-08-05-cross-paths-explore"
+        },
+        {
+          "path": "lib/events/shared/event_detail_route_transition.dart and lib/events/presentation/event_detail_screen.dart",
+          "role": "in-memory Cross Paths source attribution for booking-started/completed analytics without emitting the signed token or candidate identity",
+          "status": "aligned",
+          "lastReviewedPass": "2026-08-05-cross-paths-explore"
         },
         {
           "path": "functions/src/crossPaths/setCrossPathsEventConsent.ts and firestore.rules",
@@ -2108,13 +2132,6 @@
       ],
       "candidateQueue": [
         {
-          "id": "ARCH-CROSS-PATHS-CONSENT-001-SUGGESTION-CONSUMER",
-          "path": "lib/explore and proposed getCrossPathsSuggestions callable",
-          "reason": "Explore may adopt effective consent only through a sanitized server-owned suggestion response that also enforces showcase, reciprocal, safety, event, and fatigue rules.",
-          "detectedBy": "2026-08-05-cross-paths-phase0-consent",
-          "addedPass": "2026-08-05-cross-paths-phase0-consent"
-        },
-        {
           "id": "ARCH-CROSS-PATHS-CONSENT-001-INVITATION-INVALIDATION",
           "path": "proposed Cross Paths invitation workflow",
           "reason": "When invitations exist, revocation must invalidate pending invitations in the same server-owned workflow without adding a client write path.",
@@ -2123,16 +2140,16 @@
         }
       ],
       "exceptions": [],
-      "requiredBackPropagation": "When Cross Paths consent terms, global preference semantics, event-edge fields, enablement preconditions, rollout flags, or revocation behavior change, update the JSON schemas, generated Dart and TypeScript contracts, callable, Firestore rules, Settings and Event Detail adopters, disclosure copy, focused tests, docs/cross_paths.md, and this exhibit in one pass.",
+      "requiredBackPropagation": "When Cross Paths consent terms, global preference semantics, event-edge fields, suggestion response/ranking versions, enablement preconditions, rollout flags, revocation behavior, or funnel attribution changes, update the JSON schemas, generated Dart and TypeScript contracts, callable, Firestore rules, Settings, Explore and Event Detail adopters, analytics names, disclosure copy, focused tests, docs/cross_paths.md, and this exhibit in one pass.",
       "requiredChecks": [
         "./tool/check_data_contract.sh",
-        "flutter test test/cross_paths/cross_paths_contract_test.dart test/cross_paths/cross_paths_event_consent_section_test.dart test/safety/settings_screen_test.dart test/events/event_detail_widgets_test.dart",
+        "flutter test test/analytics/app_analytics_test.dart test/cross_paths/cross_paths_contract_test.dart test/cross_paths/cross_paths_event_consent_section_test.dart test/cross_paths/cross_paths_explore_card_test.dart test/explore/explore_view_model_test.dart test/safety/settings_screen_test.dart test/events/event_detail_widgets_test.dart",
         "npm --prefix functions run lint && npm --prefix functions run build && node --test functions/lib/crossPaths/setCrossPathsEventConsent.test.js",
         "bash tool/check_catch_ui_lints.sh",
         "node tool/architecture/check_app_architecture_exhibits.mjs",
         "node tool/agent/check_agent_readiness.mjs"
       ],
-      "notes": "This reference establishes permission storage and controls only. Both flags remain off by default, no Explore identity is returned, and external privacy-policy approval is required before enabling the controls beyond internal review."
+      "notes": "This reference now covers permission storage, server-owned suggestion resolution, and fail-closed Explore consumption. Both rollout flags remain off by default, and external privacy-policy approval is required before enabling identifiable discovery beyond internal review."
     },
     {
       "id": "ARCH-ENTITY-MATERIAL-001",
@@ -2208,14 +2225,7 @@
           "addedPass": "2026-08-05-entity-material-reference"
         }
       ],
-      "exceptions": [
-        {
-          "id": "ARCH-ENTITY-MATERIAL-001-CROSS-PATHS-CONSENT",
-          "path": "design/screens/catch.screens.json#section.explore.feed",
-          "reason": "Cross Paths consent now exists, but Explore still lacks the server-owned batched suggestion and showcase-eligibility sources required for identifiable attendee discovery. Person-polaroid availability and consent documents alone do not authorize that data surface.",
-          "status": "blocked_product"
-        }
-      ],
+      "exceptions": [],
       "requiredBackPropagation": "When entity material roles, poster layouts/treatments, person-polaroid anatomy, or context-overlay ownership changes, update the design language, component contracts, Explore and Organizer Detail adopters, shared Profile adopter, Widgetbook states, focused widget tests, and this exhibit before migrating another surface.",
       "requiredChecks": [
         "flutter test --concurrency=1 test/clubs/club_hero_app_bar_test.dart test/explore/explore_widgets_test.dart test/swipes/profile_surface_contract_test.dart test/swipes/profile_card_widget_test.dart",
@@ -2225,7 +2235,7 @@
         "bash tool/check_catch_ui_lints.sh",
         "node tool/agent/check_agent_readiness.mjs"
       ],
-      "notes": "The reference slice changes live Explore, Organizer Detail, Profile Preview, Public Profile, and Catches presentation without adding a fake persistence path. Host recipe persistence/editor and share-poster adoption remain explicit candidates."
+      "notes": "The reference slice changes live Explore, Organizer Detail, Profile Preview, Public Profile, and Catches presentation without adding a fake persistence path. Cross Paths now uses the person Polaroid only through a consent-safe server projection with adjacent event context. Host recipe persistence/editor and share-poster adoption remain explicit candidates."
     }
   ]
 }

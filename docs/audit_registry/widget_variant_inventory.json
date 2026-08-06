@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-08-05T15:14:06.241Z",
+  "generatedAt": "2026-08-05T23:13:29.160Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
   },
   "summary": {
-    "useCases": 871,
-    "components": 818,
-    "stateCards": 1813,
+    "useCases": 874,
+    "components": 821,
+    "stateCards": 1816,
     "reviewCandidates": 45,
     "oversizedUseCases": 44,
     "multiUseCaseComponents": 47
@@ -26714,6 +26714,102 @@
             {
               "label": "save or discard",
               "normalizedLabel": "save or discard"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CrossPathsEventContextCard",
+      "useCaseCount": 1,
+      "stateCardCount": 1,
+      "paths": [
+        "[Explore]/Sections"
+      ],
+      "labels": [
+        "bookable associated event"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Cross Paths event context",
+          "functionName": "crossPathsEventContextStates",
+          "file": "widgetbook/lib/explore/explore_use_cases.dart",
+          "path": "[Explore]/Sections",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "bookable associated event",
+              "normalizedLabel": "bookable associated event"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CrossPathsExploreCard",
+      "useCaseCount": 1,
+      "stateCardCount": 1,
+      "paths": [
+        "[Explore]/Sections"
+      ],
+      "labels": [
+        "bookable event"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Cross Paths person card",
+          "functionName": "crossPathsExploreCardStates",
+          "file": "widgetbook/lib/explore/explore_use_cases.dart",
+          "path": "[Explore]/Sections",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "bookable event",
+              "normalizedLabel": "bookable event"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CrossPathsProfilePreviewSheet",
+      "useCaseCount": 1,
+      "stateCardCount": 1,
+      "paths": [
+        "[Explore]/Sections"
+      ],
+      "labels": [
+        "sanitized profile with event context"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Cross Paths profile preview",
+          "functionName": "crossPathsProfilePreviewStates",
+          "file": "widgetbook/lib/explore/explore_use_cases.dart",
+          "path": "[Explore]/Sections",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "sanitized profile with event context",
+              "normalizedLabel": "sanitized profile with event context"
             }
           ]
         }

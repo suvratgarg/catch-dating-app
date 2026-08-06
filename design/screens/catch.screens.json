@@ -1719,10 +1719,14 @@
             "file": "lib/explore/presentation/explore_view_model.dart",
             "symbol": "exploreClubsViewModel"
           },
-          {
-            "file": "lib/explore/presentation/explore_feed_view_model.dart",
-            "symbol": "exploreFeedViewModel"
-          },
+      {
+        "file": "lib/explore/presentation/explore_feed_view_model.dart",
+        "symbol": "exploreFeedViewModel"
+      },
+      {
+        "file": "lib/explore/presentation/explore_cross_paths_provider.dart",
+        "symbol": "exploreCrossPathsSuggestions"
+      },
           {
             "file": "lib/explore/presentation/explore_view_model.dart",
             "symbol": "SelectedExploreCity"
@@ -1750,7 +1754,7 @@
             "symbol": "ClubMembershipController"
           }
         ],
-        "notes": "ExploreScreen reads separate club and event-feed provider seams, then maps route provider waves through ExploreDiscoveryScreenState before composing browse chrome, filter state, mixed event/club feed composition, empty/error states, map-pill copy, and mutation listening."
+    "notes": "ExploreScreen reads separate club, event-feed, and optional consent-safe Cross Paths provider seams, then maps route provider waves through ExploreDiscoveryScreenState before composing browse chrome, filter state, mixed event/person/organizer feed composition, empty/error states, map-pill copy, and mutation listening. Cross Paths failure stays non-blocking and renders no people."
       },
       "designRefs": [
         {
@@ -1765,7 +1769,7 @@
           "kind": "claude",
           "status": "available",
           "path": "/Users/suvratgarg/Downloads/Catch Design System (1)/components/explore",
-          "notes": "CoverStory and CountPill contracts plus the retired CrossPathsCard proposal."
+      "notes": "CoverStory and CountPill contracts plus a retired standalone CrossPathsCard proposal. Production Cross Paths now composes the canonical catch.person_polaroid with separate event context and actions."
         },
         {
           "id": "claude.explore-spec-v2",
@@ -1816,11 +1820,23 @@
           "capturedAt": "2026-07-18",
           "notes": "Worst-case pale activity glow fixture proving the cover-story contrast scrim in both themes."
         },
-        {
-          "id": "explore_joined_clubs",
+    {
+      "id": "explore_joined_clubs",
           "status": "captured",
-          "notes": "Signed-in Explore fixture with joined-club membership data and the production mixed feed."
-        },
+      "notes": "Signed-in Explore fixture with joined-club membership data and the production mixed feed."
+    },
+    {
+      "id": "explore_cross_paths_person",
+      "status": "captured",
+      "capturedAt": "2026-08-05",
+      "notes": "Deterministic event-first Explore feed with one server-shaped, consent-safe person Polaroid inserted without replacing the associated event ticket."
+    },
+    {
+      "id": "explore_cross_paths_profile_preview",
+      "status": "captured",
+      "capturedAt": "2026-08-05",
+      "notes": "Sanitized Cross Paths profile preview with persistent associated-event context and a distinct event action."
+    },
         {
           "id": "explore_map",
           "status": "captured",
@@ -1996,7 +2012,7 @@
           "id": "discovery_feed",
           "kind": "populated",
           "status": "captured",
-          "source": "Explore feed with production cover-story header, time filter rail, mixed event/club cards, type browse grid, and floating map count pill. The member_event_discovery fixture now mirrors the Claude Bandra/Khar pub-quiz reference scenario.",
+          "source": "Explore feed with production cover-story header, time filter rail, mixed event/person/organizer cards, type browse grid, and floating map count pill. The member_event_discovery fixture mirrors the Claude Bandra/Khar pub-quiz reference scenario while Cross Paths remains an optional server-owned enrichment.",
           "captureIds": [
             "member_event_discovery",
             "explore_cover_contrast_floor",
@@ -2012,6 +2028,40 @@
             "test/explore/explore_widgets_test.dart"
           ],
           "nextAction": "Above-threshold advisory comparison improved from 61.62% mismatch / 90.26 meanDelta to 41.87% mismatch / 36.74 meanDelta. Continue resolving generated title, card rhythm, map interleave, status chrome, and bottom dock divergences."
+        },
+        {
+          "id": "cross_paths_suggestion",
+          "kind": "populated",
+          "status": "captured",
+          "source": "exploreCrossPathsSuggestionsProvider requests at most two server-ranked, consent-safe suggestions for currently visible first-party events. ExploreFeedSectionState inserts each CatchPersonPolaroid after event content in the same date group without replacing its event ticket; provider errors and expired tokens fail closed to no people.",
+          "captureIds": [
+            "explore_cross_paths_person"
+          ],
+          "previewIds": [
+            "CrossPathsExploreCard/Cross Paths person card"
+          ],
+          "tests": [
+            "test/cross_paths/cross_paths_contract_test.dart",
+            "test/cross_paths/cross_paths_explore_card_test.dart",
+            "test/explore/explore_view_model_test.dart"
+          ],
+          "nextAction": "Keep invitation language absent until the separately contracted invitation workflow exists; launch only after legal copy, seeded supply, signing-key, and TTL gates are complete."
+        },
+        {
+          "id": "cross_paths_profile_preview",
+          "kind": "populated",
+          "status": "captured",
+          "source": "CrossPathsProfilePreviewSheet reuses the sanitized existing profile surface and keeps the associated first-party event context visible with a separate Event Detail action.",
+          "captureIds": [
+            "explore_cross_paths_profile_preview"
+          ],
+          "previewIds": [
+            "CrossPathsProfilePreviewSheet/Cross Paths profile preview"
+          ],
+          "tests": [
+            "test/cross_paths/cross_paths_explore_card_test.dart"
+          ],
+          "nextAction": "Extend this overlay with invitation state only after the invitation callable, participant rules, expiry, and plan-chat lifecycle are implemented."
         },
         {
           "id": "search_query",
@@ -2252,7 +2302,7 @@
         }
       ],
       "composition": {
-        "currentLayout": "ExploreScreen composes Scaffold, SafeArea, browse chrome, filter rail, CustomScrollView slivers, membership mutation listener, mixed event/club feed, empty/error states, and floating map count pill; route provider-wave branch precedence, empty-state derivation, and map count label now route through ExploreDiscoveryScreenState, which delegates body loading/error/content/empty branches to ExploreScreenBodyState and map label derivation to ExploreMapLauncherState. Browse/search-open chrome labels and search expansion policy route through ExploreChromeState, city-trigger chrome labels/icons route through ExploreCityTriggerState, filter active-count/sheet-option copy routes through ExploreFilterRailState and ExploreFilterSheetState, cover-story copy routes through ExploreCoverStoryState, and mixed-feed card ordering plus event/external/club row labels route through ExploreFeedSectionState, ExploreEventRowState, ExploreExternalEventRowState, and ExploreClubCardState. ExploreMapScreen is a child route that reuses the event map view model; the retired map peek-rail summary/ticket adapters are no longer part of the active composition.",
+      "currentLayout": "ExploreScreen composes Scaffold, SafeArea, browse chrome, filter rail, CustomScrollView slivers, membership mutation listener, mixed event/person/organizer feed, empty/error states, and floating map count pill; route provider-wave branch precedence, empty-state derivation, and map count label route through ExploreDiscoveryScreenState, which delegates body loading/error/content/empty branches to ExploreScreenBodyState and map label derivation to ExploreMapLauncherState. Browse/search-open chrome labels and search expansion policy route through ExploreChromeState, city-trigger chrome labels/icons route through ExploreCityTriggerState, filter active-count/sheet-option copy routes through ExploreFilterRailState and ExploreFilterSheetState, cover-story copy routes through ExploreCoverStoryState, and mixed-feed card ordering plus event/external/person/organizer row labels route through ExploreFeedSectionState, ExploreEventRowState, ExploreExternalEventRowState, CrossPathsExploreCard, and ExploreClubCardState. Cross Paths is optional fail-closed enrichment and never replaces its associated event ticket. ExploreMapScreen is a child route that reuses the event map view model; the retired map peek-rail summary/ticket adapters are no longer part of the active composition.",
         "targetLayout": "ExploreScreen should map provider state into an ExploreDiscoveryScreenState and compose registered sections: browse chrome, scope/filter rail, cover story, day ticket feed, club interleaves, cross-paths card, event type browse grid, map launcher, empty/error states, and map route sheet/overlay.",
         "sections": [
           {
@@ -2331,19 +2381,22 @@
               "file": "lib/explore/presentation/widgets/explore_events_section.dart",
               "symbol": "buildExploreEventsSlivers"
             },
-            "currentOwner": "ExploreBody, ExploreEventsSection, ExploreFeedSectionState, ExploreCoverStoryState, ExploreEventRowState, ExploreExternalEventRowState, and ExploreClubCardState",
+          "currentOwner": "ExploreBody, ExploreEventsSection, ExploreFeedSectionState, ExploreCoverStoryState, ExploreEventRowState, ExploreExternalEventRowState, CrossPathsExploreCard, and ExploreClubCardState",
             "targetOwner": "registered mixed Explore feed section",
             "dependencies": [
               "catch.button",
               "catch.cover_story",
-              "catch.event_card",
-              "catch.organizer_poster",
-              "catch.surface"
+            "catch.event_card",
+            "catch.organizer_poster",
+            "catch.person_polaroid",
+            "catch.surface"
             ],
             "states": [
               "cover_story",
-              "event_row",
-              "organizer_poster",
+            "event_row",
+            "cross_paths_person",
+            "cross_paths_profile_preview",
+            "organizer_poster",
               "club_row",
               "search_filtered",
               "empty"
@@ -2351,7 +2404,7 @@
             "previewIds": [
               "ExploreEventsSection/Feed states"
             ],
-            "migration": "ExploreFeedSectionState owns mixed feed card selection, result-count copy, organizer intermix ranking, and This Week promotion. ExploreCoverStoryState owns the ranked cover-story identity and availability-aware CTA copy with an injected clock for tests. Explore event tickets reuse the consent-safe veiled attendee stack, while ExploreClubCardState owns host and rating context for the mixed-feed organizer poster and row. DateTicket/EventTicket roles map to catch.event_card; organizer spotlights map to catch.organizer_poster through ExploreOrganizerPosterCard. The catalog-only CrossPathsCard proposal remains retired because no consent-safe relationship source exists; people use catch.person_polaroid only on approved profile surfaces."
+          "migration": "ExploreFeedSectionState owns mixed feed card selection, result-count copy, Cross Paths person insertion, organizer intermix ranking, and This Week promotion. ExploreCoverStoryState owns the ranked cover-story identity and availability-aware CTA copy with an injected clock for tests. Explore event tickets reuse the consent-safe veiled attendee stack, ExploreClubCardState owns organizer context, and CrossPathsExploreCard composes catch.person_polaroid with separate associated-event context and actions from a server-owned sanitized suggestion. DateTicket/EventTicket roles map to catch.event_card; organizer spotlights map to catch.organizer_poster through ExploreOrganizerPosterCard. The old standalone CrossPathsCard proposal remains retired."
           },
           {
             "id": "section.explore.cover_story",
@@ -2528,7 +2581,7 @@
         {
           "id": "DS-EXPLORE-004",
           "status": "closed",
-          "nextAction": "Closed by ExploreDiscoveryScreenState, which maps route provider-wave inputs into map launcher state, route body branch state, and empty-state copy/action before ExploreScreen renders visual slivers. Existing provider-free section states own feed-card planning, cover/search-open/event/external/club/map-sheet/filter/chrome labels, and map labels. The catalog-only CrossPaths proposal was retired; live attendee signals now use the established veiled-avatar privacy contract."
+        "nextAction": "Closed by ExploreDiscoveryScreenState, which maps route provider-wave inputs into map launcher state, route body branch state, and empty-state copy/action before ExploreScreen renders visual slivers. Existing provider-free section states own feed-card planning, cover/search-open/event/external/person/organizer/map-sheet/filter/chrome labels, and map labels. Cross Paths now consumes a private server-ranked suggestion seam and composes the canonical person Polaroid without exposing attendee rosters."
         },
         {
           "id": "DS-EXPLORE-005",

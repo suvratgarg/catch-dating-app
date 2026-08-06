@@ -2,8 +2,11 @@ import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
-    show SetCrossPathsEventConsentCallableRequest;
+    show
+        GetCrossPathsSuggestionsCallableRequest,
+        SetCrossPathsEventConsentCallableRequest;
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_event_consent.dart';
+import 'package:catch_dating_app/cross_paths/domain/cross_paths_suggestion.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -76,6 +79,28 @@ class CrossPathsRepository {
       service: BackendService.functions,
       action: 'update Cross Paths event consent',
       resource: _collectionPath,
+    ),
+  );
+
+  Future<CrossPathsSuggestionsResponse> getSuggestions({
+    required List<String> eventIds,
+    required String sessionId,
+  }) => withBackendErrorContext(
+    () async {
+      final result = await _functions
+          .httpsCallable('getCrossPathsSuggestions')
+          .call(
+            GetCrossPathsSuggestionsCallableRequest(
+              eventIds: eventIds,
+              sessionId: sessionId,
+            ).toJson(),
+          );
+      return CrossPathsSuggestionsResponse.fromCallableData(result.data);
+    },
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'fetch Cross Paths suggestions',
+      resource: 'getCrossPathsSuggestions',
     ),
   );
 }

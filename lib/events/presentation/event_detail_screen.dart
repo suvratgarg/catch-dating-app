@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_host_contact_controller.dart';
+import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/app_error_context.dart' as app_ops;
 import 'package:catch_dating_app/core/app_error_message.dart';
@@ -14,8 +15,6 @@ import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/cross_paths/cross_paths.dart';
-import 'package:catch_dating_app/cross_paths/data/cross_paths_feature_config_provider.dart';
-import 'package:catch_dating_app/cross_paths/data/cross_paths_repository.dart';
 import 'package:catch_dating_app/cross_paths/presentation/cross_paths_event_consent_controller.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/events/data/event_calendar_links.dart';
@@ -55,6 +54,7 @@ class EventDetailScreen extends ConsumerStatefulWidget {
     this.inviteLinkId,
     this.presentationMode = EventDetailPresentationMode.standard,
     this.heroTag,
+    this.attribution,
     this.enableMapNetworkTiles = true,
   });
 
@@ -65,6 +65,7 @@ class EventDetailScreen extends ConsumerStatefulWidget {
   final String? inviteLinkId;
   final EventDetailPresentationMode presentationMode;
   final Object? heroTag;
+  final EventDetailAttribution? attribution;
   final bool enableMapNetworkTiles;
 
   @override
@@ -217,7 +218,41 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
 
       if (vm.isAuthenticated) {
         ref.listen(EventBookingController.bookMutation, (prev, next) {
+          final attribution = widget.attribution;
+          if (attribution?.source == EventDetailAttributionSource.crossPaths &&
+              prev?.isPending != true &&
+              next.isPending) {
+            ref
+                .read(appAnalyticsProvider)
+                .logEvent(
+                  AnalyticsEvents.crossPathsBookingStarted,
+                  parameters: {
+                    AnalyticsParameters.eventId: vm.event.id,
+                    AnalyticsParameters.surface: 'event_detail',
+                    AnalyticsParameters.rankingVersion:
+                        attribution!.rankingVersion,
+                    AnalyticsParameters.reasonCodes: attribution.reasonCodes
+                        .join(','),
+                  },
+                );
+          }
           if (prev?.isPending == true && next.isSuccess) {
+            if (attribution?.source ==
+                EventDetailAttributionSource.crossPaths) {
+              ref
+                  .read(appAnalyticsProvider)
+                  .logEvent(
+                    AnalyticsEvents.crossPathsBookingCompleted,
+                    parameters: {
+                      AnalyticsParameters.eventId: vm.event.id,
+                      AnalyticsParameters.surface: 'event_detail',
+                      AnalyticsParameters.rankingVersion:
+                          attribution!.rankingVersion,
+                      AnalyticsParameters.reasonCodes: attribution.reasonCodes
+                          .join(','),
+                    },
+                  );
+            }
             showCatchSnackBar(
               context,
               context.l10n.eventsEventDetailScreenVisiblecopyBookingConfirmed,

@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/cross_paths/data/cross_paths_repository.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_event_consent.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_feature_config.dart';
+import 'package:catch_dating_app/cross_paths/domain/cross_paths_suggestion.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -34,4 +35,98 @@ void main() {
       'event-1_runner-1',
     );
   });
+
+  test(
+    'sanitized suggestion response decodes without private roster fields',
+    () {
+      final response = CrossPathsSuggestionsResponse.fromCallableData({
+        'schemaVersion': 1,
+        'rankingVersion': 1,
+        'suggestions': [_suggestionJson()],
+      });
+
+      expect(response.suggestions, hasLength(1));
+      final suggestion = response.suggestions.single;
+      expect(suggestion.profile.uid, 'candidate-1');
+      expect(suggestion.profile.profilePhotos, hasLength(3));
+      expect(suggestion.profile.profilePrompts, hasLength(3));
+      expect(suggestion.event.eventId, 'event-1');
+      expect(suggestion.viewerIsBooked, isFalse);
+      expect(
+        suggestion.reasonCodes,
+        contains(CrossPathsSuggestionReason.mutualPreferences),
+      );
+    },
+  );
+
+  test('suggestion response fails closed on an unsupported wire value', () {
+    final suggestion = _suggestionJson();
+    (suggestion['event']! as Map<String, Object?>)['viewerBookingStatus'] =
+        'waitlisted';
+
+    expect(
+      () => CrossPathsSuggestionsResponse.fromCallableData({
+        'schemaVersion': 1,
+        'rankingVersion': 1,
+        'suggestions': [suggestion],
+      }),
+      throwsFormatException,
+    );
+  });
+
+  test('suggestion response fails closed on an underspecified profile', () {
+    final suggestion = _suggestionJson();
+    (suggestion['person']! as Map<String, Object?>)['photoUrls'] = [
+      'https://example.com/one.jpg',
+      'https://example.com/two.jpg',
+    ];
+
+    expect(
+      () => CrossPathsSuggestionsResponse.fromCallableData({
+        'schemaVersion': 1,
+        'rankingVersion': 1,
+        'suggestions': [suggestion],
+      }),
+      throwsFormatException,
+    );
+  });
 }
+
+Map<String, Object?> _suggestionJson() => {
+  'person': <String, Object?>{
+    'uid': 'candidate-1',
+    'name': 'Rhea Kapoor',
+    'age': 29,
+    'gender': 'woman',
+    'city': 'in-mh-mumbai',
+    'photoUrls': [
+      'https://example.com/one.jpg',
+      'https://example.com/two.jpg',
+      'https://example.com/three.jpg',
+    ],
+    'promptAnswers': [
+      {'prompt': 'A perfect event', 'answer': 'A sunset walk'},
+      {'prompt': 'Typical Sunday', 'answer': 'Coffee and a long read'},
+      {'prompt': 'Together we could', 'answer': 'Try every new place'},
+    ],
+    'relationshipGoal': 'relationship',
+  },
+  'event': <String, Object?>{
+    'eventId': 'event-1',
+    'organizerId': 'organizer-1',
+    'startTime': '2026-08-08T12:00:00.000Z',
+    'endTime': '2026-08-08T13:00:00.000Z',
+    'meetingPoint': 'Carter Road',
+    'activityKind': 'socialRun',
+    'photoUrl': null,
+    'viewerBookingStatus': 'canBookNow',
+  },
+  'reasonCodes': [
+    'attending_event',
+    'booking_available',
+    'mutual_preferences',
+    'showcase_ready',
+  ],
+  'suggestionToken': 'tttttttttttttttttttttttttttttttttttttttt.token',
+  'tokenExpiresAt': '2026-08-08T11:00:00.000Z',
+};

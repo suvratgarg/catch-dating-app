@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_day_section_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_mono_label.dart';
+import 'package:catch_dating_app/cross_paths/cross_paths.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
@@ -19,6 +20,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart'
 export 'package:catch_dating_app/explore/presentation/widgets/explore_club_cards.dart';
 export 'package:catch_dating_app/explore/presentation/widgets/explore_event_rows.dart';
 export 'package:catch_dating_app/explore/presentation/widgets/explore_events_status_slivers.dart';
+
+typedef CrossPathsProfileSelected =
+    void Function(CrossPathsSuggestion suggestion, ExploreEventItem eventItem);
+typedef CrossPathsImpression =
+    void Function(
+      CrossPathsSuggestion suggestion,
+      ExploreEventItem eventItem,
+      int position,
+    );
 
 final EdgeInsets _exploreEventsErrorPadding = CatchInsets.pageBody.copyWith(
   top: CatchSpacing.s3,
@@ -41,6 +51,9 @@ List<Widget> buildExploreEventsSlivers(
   ValueChanged<ExploreTimeFilter>? onSetTimeFilter,
   ExploreEventSelected? onEventSelected,
   ValueChanged<ExploreExternalEventItem>? onExternalEventOpened,
+  List<CrossPathsSuggestion> crossPathsSuggestions = const [],
+  CrossPathsProfileSelected? onCrossPathsProfileSelected,
+  CrossPathsImpression? onCrossPathsImpression,
   ValueChanged<Club>? onClubSelected,
   bool pinnedDayHeaders = true,
   bool promoteFeaturedItem = false,
@@ -112,6 +125,9 @@ List<Widget> buildExploreEventsSlivers(
               now: now,
               onEventSelected: onEventSelected,
               onExternalEventOpened: onExternalEventOpened,
+              crossPathsSuggestions: crossPathsSuggestions,
+              onCrossPathsProfileSelected: onCrossPathsProfileSelected,
+              onCrossPathsImpression: onCrossPathsImpression,
               onClubSelected: onClubSelected,
             );
     }(),
@@ -134,6 +150,9 @@ class ExploreEventsSection extends StatelessWidget {
     this.onSetTimeFilter,
     this.onEventSelected,
     this.onExternalEventOpened,
+    this.crossPathsSuggestions = const [],
+    this.onCrossPathsProfileSelected,
+    this.onCrossPathsImpression,
     this.onClubSelected,
   });
 
@@ -146,6 +165,9 @@ class ExploreEventsSection extends StatelessWidget {
   final ValueChanged<ExploreTimeFilter>? onSetTimeFilter;
   final ExploreEventSelected? onEventSelected;
   final ValueChanged<ExploreExternalEventItem>? onExternalEventOpened;
+  final List<CrossPathsSuggestion> crossPathsSuggestions;
+  final CrossPathsProfileSelected? onCrossPathsProfileSelected;
+  final CrossPathsImpression? onCrossPathsImpression;
   final ValueChanged<Club>? onClubSelected;
 
   @override
@@ -161,6 +183,9 @@ class ExploreEventsSection extends StatelessWidget {
       onSetTimeFilter: onSetTimeFilter,
       onEventSelected: onEventSelected,
       onExternalEventOpened: onExternalEventOpened,
+      crossPathsSuggestions: crossPathsSuggestions,
+      onCrossPathsProfileSelected: onCrossPathsProfileSelected,
+      onCrossPathsImpression: onCrossPathsImpression,
       onClubSelected: onClubSelected,
       pinnedDayHeaders: false,
     );
@@ -180,6 +205,9 @@ List<Widget> _exploreContentSlivers(
   required DateTime? now,
   required ExploreEventSelected? onEventSelected,
   required ValueChanged<ExploreExternalEventItem>? onExternalEventOpened,
+  required List<CrossPathsSuggestion> crossPathsSuggestions,
+  required CrossPathsProfileSelected? onCrossPathsProfileSelected,
+  required CrossPathsImpression? onCrossPathsImpression,
   required ValueChanged<Club>? onClubSelected,
 }) {
   final effectiveCandidateClubs = withDebugSyntheticExploreClubs(
@@ -212,6 +240,7 @@ List<Widget> _exploreContentSlivers(
     showThisWeekList: showThisWeekList,
     promoteFeaturedItem: promoteFeaturedItem,
     now: now,
+    crossPathsSuggestions: crossPathsSuggestions,
   );
   if (sectionState.isEmpty) {
     return const [SliverToBoxAdapter(child: SizedBox.shrink())];
@@ -280,13 +309,54 @@ List<Widget> _exploreContentSlivers(
                 ? 0
                 : CatchSpacing.s4,
           ),
-          itemBuilder: (context, index) => _exploreMixedFeedCard(
-            group.cards,
-            index,
-            onEventSelected: onEventSelected,
-            onExternalEventOpened: onExternalEventOpened,
-            onClubSelected: onClubSelected,
-          ),
+          itemBuilder: (context, index) {
+            final cards = group.cards;
+            final position = _exploreMixedFeedPosition(
+              sectionState.cardGroups,
+              group,
+              index,
+            );
+            return switch (cards[index]) {
+              ExploreMixedEventRowCard(:final item) => ExploreFeedEventRow(
+                item: item,
+                stripPosition: exploreMixedEventStripPosition(cards, index),
+                onEventSelected: onEventSelected,
+              ),
+              ExploreMixedExternalEventRowCard(:final item) =>
+                ExploreExternalEventRow(
+                  item: item,
+                  onExternalEventOpened: onExternalEventOpened,
+                ),
+              ExploreMixedClubSpotlightCard(:final club) =>
+                ExploreOrganizerPosterCard(
+                  club: club,
+                  onClubSelected: onClubSelected,
+                ),
+              ExploreMixedClubRowCard(:final club) => ExploreFeedClubRow(
+                club: club,
+                onClubSelected: onClubSelected,
+              ),
+              ExploreMixedPersonCard(:final suggestion, :final eventItem) =>
+                CrossPathsExploreCard(
+                  suggestion: suggestion,
+                  event: eventItem.event,
+                  onProfileSelected: onCrossPathsProfileSelected == null
+                      ? null
+                      : () =>
+                            onCrossPathsProfileSelected(suggestion, eventItem),
+                  onEventSelected: onEventSelected == null
+                      ? null
+                      : () => onEventSelected(eventItem, 'cross_paths'),
+                  onImpression: onCrossPathsImpression == null
+                      ? null
+                      : () => onCrossPathsImpression(
+                          suggestion,
+                          eventItem,
+                          position,
+                        ),
+                ),
+            };
+          },
         ),
       ),
     ],
@@ -294,30 +364,15 @@ List<Widget> _exploreContentSlivers(
   ];
 }
 
-Widget _exploreMixedFeedCard(
-  List<ExploreMixedCard> cards,
-  int index, {
-  required ExploreEventSelected? onEventSelected,
-  required ValueChanged<ExploreExternalEventItem>? onExternalEventOpened,
-  required ValueChanged<Club>? onClubSelected,
-}) {
-  return switch (cards[index]) {
-    ExploreMixedEventRowCard(:final item) => ExploreFeedEventRow(
-      item: item,
-      stripPosition: exploreMixedEventStripPosition(cards, index),
-      onEventSelected: onEventSelected,
-    ),
-    ExploreMixedExternalEventRowCard(:final item) => ExploreExternalEventRow(
-      item: item,
-      onExternalEventOpened: onExternalEventOpened,
-    ),
-    ExploreMixedClubSpotlightCard(:final club) => ExploreOrganizerPosterCard(
-      club: club,
-      onClubSelected: onClubSelected,
-    ),
-    ExploreMixedClubRowCard(:final club) => ExploreFeedClubRow(
-      club: club,
-      onClubSelected: onClubSelected,
-    ),
-  };
+int _exploreMixedFeedPosition(
+  List<ExploreFeedCardGroup> groups,
+  ExploreFeedCardGroup target,
+  int index,
+) {
+  var position = index + 1;
+  for (final group in groups) {
+    if (identical(group, target)) return position;
+    position += group.cards.length;
+  }
+  return position;
 }
