@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 1.17.0
+version: 1.18.0
 updated: 2026-08-06
 owner: recursive_audit_loop
 status: active
@@ -150,19 +150,14 @@ fails; unaffected lanes are explicit skips, so path scoping never leaves a
 required check permanently pending.
 
 `.github/workflows/ci.yml` is the orchestration owner. Its planner reads
-`tool/repository_root_manifest.json#ciPlanning`, fails closed for an unmapped
+`tool/harness/component_graph.json`, fails closed for an unmapped or ambiguous
 path, and invokes reusable validation workflows only for affected targets.
-Changes to the CI control plane intentionally run the full matrix. A nightly
-scheduled full run catches drift hidden by ordinary impact routing.
-
-Harness v2 runs beside that authoritative planner in shadow mode. The plan job
-writes `build/ci/harness-v2-shadow.json`, publishes the v1/v2 selection delta,
-and uploads both plans for 14 days. Shadow output never controls required jobs.
 Pull requests, merge queues, main pushes, and nightly full validation use the
 explicit `pr`, `merge_group`, `main`, and `nightly` graph modes respectively.
-Unknown or ambiguous v2 ownership is evidence to repair during shadow; v1
-continues to fail closed and remains the only fanout authority until the
-Harness v2 cutover gate is met.
+Changes to the Harness control plane intentionally run every declared target. A
+nightly scheduled full run catches drift hidden by ordinary impact routing.
+Only direct component ownership may authorize Firebase deployment or a mobile
+release; dependency expansion can add validation but cannot authorize mutation.
 
 The orchestrator also owns cancellation. Reusable fanout workflows must not
 derive a concurrency group from `github.workflow`: inside a called workflow

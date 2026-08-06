@@ -2,10 +2,8 @@ import assert from "node:assert/strict";
 import {execFileSync} from "node:child_process";
 import fs from "node:fs";
 import test from "node:test";
-import {planCi} from "../ci/plan_ci.mjs";
 import {
   deriveAppRoles,
-  diffPlans,
   planAffected,
   runCodegenChecks,
   selectCompileCodegen,
@@ -93,13 +91,10 @@ test("root operations README keeps its explicit workflow owner", () => {
   assert.deepEqual(result.operations.ciTargets, ["functions", "operations", "tools"]);
 });
 
-test("shared Flutter presentation change collapses six legacy targets to two", () => {
+test("shared Flutter presentation change selects tests and role-bounded web smoke", () => {
   const path = "lib/features/explore/presentation/explore_page.dart";
-  const v1Plan = planCi({changedPaths: [path], ciPlanning: rootManifest.ciPlanning});
   const v2Plan = plan(path);
-  const comparison = diffPlans({v1Plan, v2Plan});
 
-  assert.equal(v1Plan.targets.length, 6);
   assert.deepEqual(v2Plan.directComponents, ["app.shared"]);
   assert.deepEqual(v2Plan.affectedComponents, ["app.consumer", "app.host"]);
   assert.deepEqual(v2Plan.operations.ciTargets, ["flutter", "flutter_web_smoke"]);
@@ -107,9 +102,6 @@ test("shared Flutter presentation change collapses six legacy targets to two", (
     "consumer-web-smoke",
     "host-web-smoke",
   ]);
-  assert.equal(comparison.delta.targetReductionPercent, 66.7);
-  assert.equal(comparison.reviewRequired, true);
-  assert.equal(comparison.safeToConsiderCutover, false);
 });
 
 test("host-only Flutter source selects only Flutter and the host web smoke lane", () => {

@@ -6,12 +6,13 @@ const graph = JSON.parse(
   fs.readFileSync(new URL("./component_graph.json", import.meta.url), "utf8"),
 );
 const workflow = (name) => fs.readFileSync(`.github/workflows/${name}`, "utf8");
+const retiredPlanner = ["plan", "ci.mjs"].join("_");
 
 test("required CI consumes every bounded Harness v2 target", () => {
   const ci = workflow("ci.yml");
   assert.match(ci, /name: Required CI/);
   assert.match(ci, /node tool\/harness\.mjs plan/);
-  assert.doesNotMatch(ci, /plan_ci\.mjs|harness\.mjs shadow/);
+  assert.doesNotMatch(ci, new RegExp(`${retiredPlanner}|harness\\.mjs shadow`));
   for (const target of graph.targets) {
     assert.match(ci, new RegExp(`steps\\.plan\\.outputs\\.${target}`));
   }
@@ -38,7 +39,7 @@ test("deploy and mobile release workflows consume authorization outputs", () => 
   assert.match(firebase, /steps\.impact\.outputs\.deploy_groups/);
   assert.match(firebase, /node tool\/harness\.mjs plan/);
   assert.match(firebase, /--mode main/);
-  assert.doesNotMatch(firebase, /plan_ci\.mjs/);
+  assert.doesNotMatch(firebase, new RegExp(retiredPlanner));
   assert.doesNotMatch(
     firebase,
     /steps\.impact\.outputs\.(contracts|firestore_rules|functions)/,
@@ -48,7 +49,7 @@ test("deploy and mobile release workflows consume authorization outputs", () => 
   assert.match(mobile, /steps\.impact\.outputs\.release_roles/);
   assert.match(mobile, /node tool\/harness\.mjs plan/);
   assert.match(mobile, /--mode main/);
-  assert.doesNotMatch(mobile, /mobile_release_roles|plan_ci\.mjs/);
+  assert.doesNotMatch(mobile, new RegExp(`mobile_release_roles|${retiredPlanner}`));
 });
 
 test("reusable fanout workflows cannot cancel sibling lanes", () => {

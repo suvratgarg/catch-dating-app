@@ -4,10 +4,8 @@ import fs from "node:fs";
 import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 import {fromRepo, repoRoot} from "./lib/repo_paths.mjs";
-import {planCi} from "./ci/plan_ci.mjs";
 import {
   deriveAppRoles,
-  diffPlans,
   planAffected,
   runCodegenChecks,
   selectCompileCodegen,
@@ -16,7 +14,6 @@ import {
 } from "./harness/lib/component_graph.mjs";
 
 const graphPath = fromRepo("tool/harness/component_graph.json");
-const rootManifestPath = fromRepo("tool/repository_root_manifest.json");
 const toolsManifestPath = fromRepo("tool/tools_manifest.json");
 
 export function parseArgs(args) {
@@ -94,22 +91,6 @@ export function changedPathsSince({base, head = "HEAD", cwd = repoRoot}) {
     for (const line of result.stdout.split(/\r?\n/).filter(Boolean)) paths.add(line);
   }
   return [...paths].sort();
-}
-
-export function buildShadowReport({changedPaths, graph, rootManifest, mode, full = false}) {
-  const v1Plan = planCi({changedPaths, ciPlanning: rootManifest.ciPlanning, full});
-  const v2Plan = planAffected({changedPaths, graph, mode, full});
-  return {
-    generatedAt: new Date().toISOString(),
-    authority: "v1",
-    shadowStatus: graph.status,
-    mode,
-    full,
-    changedPaths,
-    v1Plan,
-    v2Plan,
-    comparison: diffPlans({v1Plan, v2Plan}),
-  };
 }
 
 export function main({
@@ -190,20 +171,6 @@ export function main({
       printResult(plan, options.json);
       return;
     }
-    if (options.command === "shadow") {
-      const rootManifest = readJson(rootManifestPath);
-      const report = buildShadowReport({
-        changedPaths,
-        graph,
-        rootManifest,
-        mode: options.mode,
-        full: options.full,
-      });
-      printResult(report, options.json);
-      // Shadow incompleteness is evidence, not a replacement failure. V1 remains authoritative.
-      if (authoritativeShadowFailure(report)) process.exitCode = 1;
-      return;
-    }
     if (options.command === "check") {
       requireAffected(options);
       if (!plan.complete) {
@@ -229,7 +196,7 @@ export function main({
       requireAffected(options);
       if (!options.checkOnly) {
         throw new UsageError(
-          "Harness v2 only permits compile-codegen in explicit --check mode during shadow.",
+          "Harness only permits compile-codegen in explicit --check mode.",
         );
       }
       if (!plan.complete) {
@@ -259,10 +226,6 @@ function requireAffected(options) {
   if (!options.affected) {
     throw new UsageError(`${options.command} requires --affected to make scope explicit.`);
   }
-}
-
-export function authoritativeShadowFailure(report) {
-  return (report.v1Plan.unmatchedPaths ?? []).length > 0;
 }
 
 export function executeCheckIds({ids, cwd = repoRoot, runner = spawnSync}) {
@@ -354,12 +317,9 @@ Commands:
   coverage [--json]
   explain [--paths a,b | --base ref | --full] [--mode mode] [--json]
   plan [--paths a,b | --base ref | --full] [--mode mode] [--github-output path] [--json]
-  shadow [--paths a,b | --base ref | --full] [--mode mode] [--json]
   check --affected [--paths a,b | --base ref] [--dry-run] [--json]
   generate --affected --check [--paths a,b | --base ref] [--json]
 
-Shadow mode never replaces v1 CI output. Authoritative v1 mapping failures still
-fail the command; v2-only unknown or ambiguous paths remain shadow evidence.
 Compile-codegen executes only declared, deterministic, network-free checks.`);
 }
 
