@@ -10,6 +10,17 @@ import {
   validateToolPlatforms,
 } from "./lib/tool_platform.mjs";
 
+const repositoryRoot = process.cwd();
+const sparseExecutableClosure = [
+  "/tool/agent/context_pack.mjs",
+  "/tool/harness/lib/component_graph.mjs",
+  "/tool/lib/repo_paths.mjs",
+  "/tool/lib/repository_snapshot.mjs",
+  "/tool/lib/tool_impact.mjs",
+  "/tool/lib/tool_platform.mjs",
+  "/tool/run.mjs",
+];
+
 function run(args) {
   return spawnSync("node", ["tool/run.mjs", ...args], {
     cwd: process.cwd(),
@@ -270,3 +281,134 @@ test("affected-tool GitHub outputs carry bounded control signals only", (context
   assert.equal(output, "tool_mode=affected\naffected=true\nfull=false\n");
   assert.doesNotMatch(output, /docs:version-monotonic/u);
 });
+
+test("runner and context pack have identical logical results in full and sparse clones", (context) => {
+  const temporaryRoot = fs.mkdtempSync(
+    path.join(os.tmpdir(), "catch-snapshot-callsites-"),
+  );
+  context.after(() => fs.rmSync(temporaryRoot, {recursive: true, force: true}));
+
+  const fullRoot = path.join(temporaryRoot, "full");
+  const sparseRoot = path.join(temporaryRoot, "sparse");
+  createClone(fullRoot, {sparse: false});
+  createClone(sparseRoot, {sparse: true});
+
+  assert.equal(
+    fs.existsSync(path.join(sparseRoot, "tool/tools_manifest.json")),
+    false,
+    "the sparse fixture must omit the manifest consumed by the runner",
+  );
+  assert.equal(
+    fs.existsSync(path.join(sparseRoot, "docs/audit_registry/rules.json")),
+    false,
+    "the sparse fixture must omit context-pack rule data",
+  );
+  assert.equal(
+    fs.existsSync(path.join(sparseRoot, "tool/check_enforcement_integrity.mjs")),
+    false,
+    "the sparse fixture must omit a managed script validated by the runner",
+  );
+
+  const fullManifest = runNode(fullRoot, ["tool/run.mjs", "check", "--manifest-only"]);
+  const sparseManifest = runNode(sparseRoot, [
+    "tool/run.mjs",
+    "check",
+    "--manifest-only",
+  ]);
+  assertSuccessful(fullManifest);
+  assert.deepEqual(
+    comparableProcessResult(sparseManifest),
+    comparableProcessResult(fullManifest),
+  );
+  assert.equal(sparseManifest.stdout, "Tool manifest validation passed.\n");
+  assert.doesNotMatch(sparseManifest.stderr, /missing path|Unmanaged tool script/u);
+
+  const contextArgs = [
+    "tool/agent/context_pack.mjs",
+    "--task",
+    "snapshot-callsite-equivalence",
+    "--paths",
+    "tool/run.mjs,tool/agent/context_pack.mjs",
+    "--json",
+  ];
+  const fullContext = runNode(fullRoot, contextArgs);
+  const sparseContext = runNode(sparseRoot, contextArgs);
+  assertSuccessful(fullContext);
+  assertSuccessful(sparseContext);
+  assert.deepEqual(
+    normalizeContextPack(sparseContext.stdout),
+    normalizeContextPack(fullContext.stdout),
+  );
+  assert.ok(
+    normalizeContextPack(sparseContext.stdout).ownerDocs.some(
+      (entry) => entry.path === "docs/agent_operating_model.md",
+    ),
+  );
+  assert.ok(normalizeContextPack(sparseContext.stdout).activeRules.length > 0);
+  assert.ok(normalizeContextPack(sparseContext.stdout).regressionGuards.length > 0);
+});
+
+function createClone(destination, {sparse}) {
+  runGit(repositoryRoot, [
+    "clone",
+    "--shared",
+    "--no-checkout",
+    repositoryRoot,
+    destination,
+  ]);
+  if (sparse) {
+    runGit(destination, ["sparse-checkout", "init", "--no-cone"]);
+    runGit(destination, [
+      "sparse-checkout",
+      "set",
+      "--no-cone",
+      "--",
+      ...sparseExecutableClosure,
+    ]);
+  }
+  runGit(destination, ["checkout", "--detach", "HEAD"]);
+
+  for (const relativePath of ["tool/run.mjs", "tool/agent/context_pack.mjs"]) {
+    const destinationPath = path.join(destination, relativePath);
+    fs.mkdirSync(path.dirname(destinationPath), {recursive: true});
+    fs.copyFileSync(path.join(repositoryRoot, relativePath), destinationPath);
+  }
+}
+
+function runGit(cwd, args) {
+  const result = spawnSync("git", args, {cwd, encoding: "utf8"});
+  assert.equal(
+    result.status,
+    0,
+    `git ${args.join(" ")} failed:\n${result.stderr || result.stdout}`,
+  );
+}
+
+function runNode(cwd, args) {
+  return spawnSync(process.execPath, args, {
+    cwd,
+    encoding: "utf8",
+    env: {...process.env, GIT_CONFIG_NOSYSTEM: "1"},
+  });
+}
+
+function assertSuccessful(result) {
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.equal(result.signal, null);
+  assert.equal(result.stderr, "");
+}
+
+function comparableProcessResult(result) {
+  return {
+    status: result.status,
+    signal: result.signal,
+    stdout: result.stdout,
+    stderr: result.stderr,
+  };
+}
+
+function normalizeContextPack(source) {
+  const payload = JSON.parse(source);
+  delete payload.generatedAt;
+  return payload;
+}
