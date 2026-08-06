@@ -71,10 +71,16 @@ export function buildShadowReport({changedPaths, graph, rootManifest, mode, full
   };
 }
 
-function main() {
+export function main({
+  args = process.argv.slice(2),
+  checkExecutor = executeCheckIds,
+  setExitCode = (status) => {
+    process.exitCode = status;
+  },
+} = {}) {
   let options;
   try {
-    options = parseArgs(process.argv.slice(2));
+    options = parseArgs(args);
     if (["help", "--help", "-h"].includes(options.command)) {
       printHelp();
       return;
@@ -148,12 +154,12 @@ function main() {
         ? {status: 0, skipped: "dry-run", stdout: "", stderr: ""}
         : {status: 0, skipped: "no selected check ids", stdout: "", stderr: ""};
       if (!options.dryRun && plan.operations.checkIds.length > 0) {
-        execution = executeCheckIds({ids: plan.operations.checkIds});
+        execution = checkExecutor({ids: plan.operations.checkIds});
         if (!options.json) {
           if (execution.stdout) process.stdout.write(execution.stdout);
           if (execution.stderr) process.stderr.write(execution.stderr);
         }
-        if (result.status !== 0) process.exitCode = result.status ?? 1;
+        if (execution.status !== 0) setExitCode(execution.status ?? 1);
       }
       printResult({plan, execution}, options.json);
       return;

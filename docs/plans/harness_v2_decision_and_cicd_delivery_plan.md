@@ -1,6 +1,6 @@
 ---
 doc_id: harness_v2_decision_and_cicd_delivery_plan
-version: 0.3.3
+version: 0.3.4
 updated: 2026-08-06
 owner: agent_operating_model
 status: execution-in-progress
@@ -8,11 +8,12 @@ status: execution-in-progress
 
 # Harness v2 Decision + CI/CD Delivery Plan (Fable response)
 
-This is Fable's response to
-`docs/plans/agent_harness_rearchitecture_fable_review.md`, combined with the
+This execution plan consolidates Fable's accepted Harness review with the
 owner's delivery asks (TestFlight automation, affected-only CI, safe
-rules/index deployment, website deployment). Both documents retire when the
-punch list below is executed; neither becomes a permanent layer.
+rules/index deployment, website deployment). The superseded 973-line review
+brief was retired on 2026-08-06 after its decisions and evidence were preserved
+here. This plan retires when the punch list below is executed; it does not
+become a permanent layer.
 
 **Owner decisions were locked on 2026-08-06 (§6). Codex executes the code-owned
 work from this spec; Fable reviews the PRs. `[OWNER]` items are console or
@@ -265,7 +266,7 @@ Use wall-clock and runner-minutes—not literal GitHub job count—as the outcom
 | 2.3 | Implement the replacement front-matter/catalog/link/policy-doc checks before retiring `doc_versions.json`, `doc_summaries.json`, readiness scoring, or context-pack requirements. |
 | 2.4 | Migrate regression ledger entries and active rules to focused tests, explicit component risk gates, or expiring waivers. Produce a one-time replacement report; do not silently archive privacy, payment, auth, storage, or deployment invariants. |
 | 2.5 | Move authored architecture/design adoption state to its durable owner; publish regenerable inventories and snapshots as nightly/on-demand artifacts; then delete bounded batches only after active-reference count reaches zero. |
-| 2.6 | Prune `widget_catalog.md` history; retire the eleven verified docs; fold durable agent workflow into a short entrypoint plus lifecycle commands. Preserve one short Harness v2 ADR after retiring both planning documents. |
+| 2.6 | Prune `widget_catalog.md` history; retire the eleven verified docs; fold durable agent workflow into a short entrypoint plus lifecycle commands. Preserve one short Harness v2 ADR after retiring this execution plan. |
 
 Main-branch churn drops to product changes only; the merge queue rarely
 requeues; PR staleness largely disappears.
@@ -305,7 +306,7 @@ backend gates; rollback/roll-forward commands are exercised in non-prod.
 | 4.2 | Promote the Phase 0 nightly shadow to full validation. Nightly-red opens an incident; it opens a candidate revert PR only after deterministic reproduction and last-green attribution. |
 | 4.3 | Dependabot: grouped weekly updates (root npm, functions npm, pub, GitHub Actions). |
 | 4.4 | Nightly environment drift report: deployed Firestore/Storage rules + index list vs repo (Firebase management REST). Report-only. |
-| 4.5 | Update `docs/release_operations.md` CD Policy and retain one short Harness v2 ADR; retire this document and the review brief. |
+| 4.5 | Update `docs/release_operations.md` CD Policy and retain one short Harness v2 ADR; retire this execution plan. |
 
 ## 5. Measurement and course-correction contract
 
@@ -367,6 +368,31 @@ or 3.1. API enablement, deploy/runtime IAM, required parameters, deployed
 revision-to-secret binding, distinct signing-key material, and post-deploy
 health still need explicit probes or provisioning receipts. None may be
 inferred from an enabled secret version or an active TTL policy.
+
+### Checkpoint 3 — first measured transition rehearsal (2026-08-06)
+
+| Signal | First attempt | Current result |
+|---|---|---|
+| Isolated checkout | Full worktree checkout failed after 2.31s at 44% with `No space left on device`; only 197 MiB remained and existing repo worktrees occupied about 24 GB | Removed only the ignored, reproducible 1.4 GB root `build/` cache; no source or other worktree was removed. Sparse checkout materialized 39 MB in 0.37s, then 64 MB after selected-check dependencies were added in 0.57s |
+| Remote preservation | Sandboxed push failed DNS resolution in 0.05s | Approved network push created the preservation branch in 2.00s; the first bounded commit pushed in 2.30s |
+| Harness check execution | A selected `check --affected` path referenced undefined `result.status` and could throw after the child check completed | CLI now propagates `execution.status`; injected failure and repository-level execution are covered; 30 / 30 focused Harness tests passed in 0.77s |
+| First bounded commit | No measured integration unit | `41c407ce5` changed two files (+41/−4), committed in 0.04s, and was pushed before the deletion tranche |
+| Duplicate plan surface | Two temporary plans totaling 1,391 lines | Accepted review brief retired (973 deleted lines); this execution plan remains until its punch list is closed |
+
+Issues discovered during the rehearsal:
+
+- `H2-TRANSITION-001` — worktree creation has no disk-space or materialization
+  budget. `harness task start` must preflight capacity and either create a
+  scope-appropriate sparse checkout or refuse before a partial checkout.
+- `H2-TRANSITION-002` — a selected `tool/run.mjs check <id>` validates path
+  existence for every manifest entry. Sparse tasks therefore need unrelated
+  source directories, while doc-version and root-hygiene gates treat
+  unmaterialized paths as deletions. Task setup must materialize the declared
+  validation closure; separate global integrity validation from selected-check
+  execution while keeping the full gates required in CI.
+- `H2-TRANSITION-003` — Git metadata writes, network access, and Flutter SDK
+  cache writes can require managed-environment escalation. Harness receipts
+  must classify these as environment constraints rather than product failures.
 
 Durable outcomes are PR wall-clock p50/p95 and escaped defects. Record the
 baseline from the ten most recent comparable PRs and compare after ten v2 PRs.
