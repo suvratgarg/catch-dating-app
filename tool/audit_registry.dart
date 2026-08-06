@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'lib/audit_inventory_policy.dart';
 import 'lib/audit_registry_gap_classifier.dart';
+import 'lib/audit_registry_paths.dart';
 
 const registryDir = 'docs/audit_registry';
 const filesPath = '$registryDir/files.jsonl';
@@ -63,7 +64,12 @@ void main(List<String> args) {
 
   switch (args.first) {
     case 'refresh':
-      _refresh();
+      final options = args.skip(1).toList();
+      final unknown = options.where((option) => option != '--check').toList();
+      if (unknown.isNotEmpty) {
+        _fail('Unknown refresh option(s): ${unknown.join(', ')}');
+      }
+      _refresh(check: options.contains('--check'));
     case 'report':
       _report();
     case 'backlog':
@@ -88,7 +94,7 @@ void _printHelp() {
 Usage: dart tool/audit_registry.dart <command>
 
 Commands:
-  refresh                 Regenerate tracked file inventory while preserving stamps.
+  refresh [--check]       Regenerate tracked file inventory, or verify exact parity.
   report                  Print compact counts by status, kind, and area.
   backlog [--stored-scanner]
                           Print active backlog, next-up queue, and live scanner counts.
@@ -104,11 +110,11 @@ Commands:
 ''');
 }
 
-void _refresh() {
+void _refresh({bool check = false}) {
   Directory(registryDir).createSync(recursive: true);
   final existing = _readFileEntries();
   final paths = _trackedFiles();
-  final rootManifest = _readJsonFile(rootManifestPath);
+  final rootManifest = _readRequiredJsonFile(rootManifestPath);
   final entries = <Map<String, dynamic>>[];
 
   for (final path in paths) {
@@ -145,6 +151,23 @@ void _refresh() {
       'proof': previous['proof'] ?? <dynamic>[],
       'notes': previous['notes'] ?? '',
     });
+  }
+
+  if (check) {
+    final actual = File(filesPath).existsSync()
+        ? File(filesPath).readAsStringSync()
+        : '';
+    final expected = _encodeJsonLines(entries);
+    if (actual != expected) {
+      _fail(
+        'Audit registry inventory is stale. Stage additions/deletions and run '
+        '`dart tool/audit_registry.dart refresh`.',
+      );
+    }
+    stdout.writeln(
+      'Audit registry inventory is current (${entries.length} file entries).',
+    );
+    return;
   }
 
   _writeJsonLines(filesPath, entries);
@@ -495,12 +518,32 @@ void _markPass(List<String> args) {
     }
   }
 
+  final absentFromIndex = missingAuditPaths(
+    requested: paths,
+    available: _trackedFiles(),
+  );
+  if (absentFromIndex.isNotEmpty) {
+    _fail(
+      'Audit pass scope is absent from the Git index: '
+      '${absentFromIndex.join(', ')}. Record staged deletions in receipt proof '
+      'and stamp their surviving governing files.',
+    );
+  }
+
+  final missingPaths = missingAuditPaths(
+    requested: paths,
+    available: entries.keys,
+  );
+  if (missingPaths.isNotEmpty) {
+    _fail(
+      'Audit registry is missing indexed path(s): ${missingPaths.join(', ')}. '
+      'Stage new files, run refresh, then retry mark-pass.',
+    );
+  }
+
   for (final path in paths) {
     final entry = entries[path];
-    if (entry == null) {
-      stderr.writeln('Skipping untracked path: $path');
-      continue;
-    }
+    if (entry == null) continue;
     entry['status'] = status;
     entry['last_pass_id'] = passId;
     entry['doc_versions'] = {
@@ -560,25 +603,43 @@ Map<String, dynamic> _readJsonFile(String path) {
   return jsonDecode(file.readAsStringSync()) as Map<String, dynamic>;
 }
 
+Map<String, dynamic> _readRequiredJsonFile(String path) {
+  final file = File(path);
+  String? workingTreeContent;
+  ProcessResult? indexResult;
+  if (file.existsSync()) {
+    workingTreeContent = file.readAsStringSync();
+  } else {
+    indexResult = Process.runSync('git', ['show', ':$path']);
+  }
+
+  try {
+    return requiredJsonObjectFromWorkingTreeOrIndex(
+      path: path,
+      workingTreeContent: workingTreeContent,
+      indexExitCode: indexResult?.exitCode,
+      indexStdout: indexResult?.stdout as String? ?? '',
+      indexStderr: indexResult?.stderr as String? ?? '',
+      requiredListKeys: const ['auditPolicies'],
+    );
+  } on Object catch (error) {
+    _fail(error.toString());
+  }
+}
+
 List<String> _trackedFiles() {
   final result = Process.runSync('git', [
     'ls-files',
-    '-co',
-    '--exclude-standard',
+    '--stage',
+    '--cached',
+    '-z',
     '--',
     ...trackedPaths,
   ]);
   if (result.exitCode != 0) {
     _fail('git ls-files failed: ${result.stderr}');
   }
-  final paths =
-      LineSplitter.split(result.stdout as String)
-          .where((path) => path.isNotEmpty)
-          .where((path) => File(path).existsSync())
-          .toSet()
-          .toList()
-        ..sort();
-  return paths;
+  return trackedAuditPathsFromGitIndex(result.stdout as String);
 }
 
 String _areaFor(String path) {
@@ -620,11 +681,15 @@ String _kindFor(String path) {
 }
 
 void _writeJsonLines(String path, List<Map<String, dynamic>> entries) {
+  File(path).writeAsStringSync(_encodeJsonLines(entries));
+}
+
+String _encodeJsonLines(List<Map<String, dynamic>> entries) {
   final buffer = StringBuffer();
   for (final entry in entries) {
     buffer.writeln(jsonEncode(entry));
   }
-  File(path).writeAsStringSync(buffer.toString());
+  return buffer.toString();
 }
 
 void _printCounts(
