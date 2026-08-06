@@ -1,6 +1,6 @@
 ---
 doc_id: docs_index
-version: 4.13.0
+version: 4.14.0
 updated: 2026-08-06
 owner: recursive_audit_loop
 status: active
@@ -106,7 +106,7 @@ durable owners above or closed in code.
 | `event_success_theatrical_experience_tracker.md` | Event Success live ceremony polish is active: native sensory cues, attendee moment theatre, host showtime console, invite-loop follow-up, private afterglow recap planning, and the optional First Hello arrival ritual. |
 | `sales_demo_seed_tracker.md` | Sales-grade synthetic supply is active: canonical personas/assets, cohort scope, image production, U.S./India market packs, host sales scenario, event policy coverage, and migration of lower-quality demo surfaces remain. |
 
-## Retirement-Ready Documents
+## Completed Document Retirement
 
 The 2026-07-23 feature-contract lifecycle audit reviewed all 99 Markdown files
 under `docs/`. The executable contracts replace current surface, state, action,
@@ -122,23 +122,11 @@ status remains required only for governed non-Markdown artifacts. The
 retirement gate also proves that both the target source path and catalog row are
 gone.
 
-The following 9 documents are ready to delete after their named inbound
-references are rewritten in the same change. Their durable decisions already
-live in the listed owners and pass receipts. Actual deletion is tracked by
-`DOC-FEATURE-CONTRACT-RETIREMENT-001`; until then, do not treat these files as
-active sources of truth.
-
-| Retirement-ready document | Why it is redundant | Durable replacement |
-|---|---|---|
-| `design_parity/event_detail_composition_tracker.md` | Its section map, exact states, actions, evidence, and remaining gaps are now represented by checked screen, component, and feature contracts. | `../design/screens/catch.screens.json`, `../design/components/catch.components.json`, `../design/features/event_detail.feature.json`, `design_parity/comprehensive_todo.md` |
-| `design_parity/event_club_profile_parity_handoff.md` | The 22-item Event Map, Organizer Detail, and Profile handoff is fully implemented; current projections and evidence are compiled rather than checklist-owned. | `../design/features/explore.feature.json`, `../design/features/organizer_detail.feature.json`, `../design/features/profile_self.feature.json`, `../design/features/profile_public.feature.json`, component/screen registries, `audit_registry/passes.jsonl` |
-| `plans/explore_screen_quality_pass_spec.md` | The quality pass is complete; current Explore states/actions/evidence are compiled and its durable ranking, data, privacy, and capture constraints are guarded elsewhere. | `../design/features/explore.feature.json`, `app_architecture.md`, `data_contracts.md`, `design_language.md`, `agent_regression_ledger.json`, `design_parity/comprehensive_todo.md` |
-| `plans/explore_findings_remediation_spec.md` | All three named implementation receipts landed; feature coverage is compiled and architecture/scanner adoption has durable machine owners. | `../design/features/explore.feature.json`, `../design/features/profile_self.feature.json`, `../design/features/profile_public.feature.json`, `../design/features/member_chat.feature.json`, `app_architecture.md`, `audit_registry/architecture_pattern_adoption.json`, `audit_registry/rules.json` |
-| `design_parity/adaptive_tab_bar_spec.md` | The work order is complete and the remaining Home/Catches absorption is separately owned. | `../design/components/catch.components.json`, `app_architecture.md`, `widget_catalog.md`, tab-root scanners/tests, `plans/home_catches_unification_spec.md` |
-| `audit_registry/host_consumer_ui_reconciliation_findings_2026-07-18.md` | Every finding is resolved; current constraints and proof have canonical owners. | `app_architecture.md`, `widget_catalog.md`, `agent_regression_ledger.json`, `audit_registry/passes.jsonl` |
-| `plans/catch_ui_enforcement_system_spec.md` | The implementation receipt is complete and the live rule set is executable. | `app_architecture.md`, `../design/components/README.md`, `../design/screens/catch.screens.json`, `../tool/README.md`, analyzer/scanner tests |
-| `plans/web_platform_hardening_spec.md` | All phases and final verification are complete; current React and callable-validation rules are enforced by registries and gates. | `web_surface_architecture.md`, `marketing_website_architecture.md`, `../design/website/components.json`, `../design/admin/components.json`, web checks |
-| `plans/catch_system_stretch_spec.md` | The completion audit closes every phase and owner gate; current field, top-bar, async, terminal-padding, and schema rules have durable owners. | `app_architecture.md`, `widget_catalog.md`, `../design/components/`, `../contracts/`, generated contract and UI gates |
+All 11 documents classified `retirement_ready` by that audit have now been
+deleted after their current inbound references were moved to durable owner docs,
+contracts, registries, tests, and scanners. Historical pass and merge receipts
+remain immutable; do not recreate completed implementation handoffs as live
+documentation.
 
 Feature-related docs that remain intentionally active include Event Success
 theatre, Home live-layer and Home/Catches unification, Host Edit/Live Guide,

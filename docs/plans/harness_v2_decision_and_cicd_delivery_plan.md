@@ -1,6 +1,6 @@
 ---
 doc_id: harness_v2_decision_and_cicd_delivery_plan
-version: 0.3.19
+version: 0.3.20
 updated: 2026-08-06
 owner: agent_operating_model
 status: execution-in-progress
@@ -695,6 +695,26 @@ Issue discovered during this tranche:
   generation and readiness failed before repository evaluation in this task.
   Treat those entrypoints as broker-owned closure roots, derive their relative
   imports in a regression test, and prove the fix in the next brokered task.
+
+### Checkpoint 15 — completed feature-handoff retirement (2026-08-06)
+
+| Signal | Before this slice | Current result |
+|---|---|---|
+| Temporary documentation | Nine completed implementation specs and design-parity handoffs remained indexed as live retirement candidates after their durable decisions had moved to owner docs, contracts, registries, scanners, and tests. | All nine source files are deleted together: 4,050 direct lines. `docs/README.md` now records the completed lifecycle rather than maintaining another candidate table; the backlog item is closed; and current catalog and regression-owner references point only to surviving authorities. Historical pass, merge, metric, and rule-introduction receipts remain unchanged. |
+| Deletion proof | A missing file or catalog row alone could not prove safe retirement. | The working-tree monotonic gate compares exact base `1543ca986`, reads each base source frontmatter, and proves nine `retirement_ready` removals, 75→66 governed paths, five version increases, zero decreases, and zero removal inconsistencies. The 15 focused lifecycle/state tests pass in 0.67s. |
+| Broker regression canary | `H2-TRANSITION-020` had repaired mandatory sparse imports but was not yet exercised by a fresh task. | `task start` created and pushed a 23.9 MB sparse worktree in 3.27s. Its own context pack (0.12s), readiness (4,996/4,996 in 0.17s), manifest gate (0.03s), enforcement gate (83 rules / 96 tools in 0.74s), and doctor (0.26s) all pass from the sparse checkout. |
+| Dependency truth | Context planning could select Node-based design checks without proving that the task had a runnable dependency environment. | The two optional feature-contract checks failed before repository evaluation because `ajv` is absent. No full `npm install` or shared `node_modules` symlink was introduced into the 64 MiB task: the broker explicitly rejects shared dependency symlinks. `H2-TRANSITION-021` records the need for declared local setup profiles and an immutable content-addressed dependency strategy. |
+| Line accounting | The five prior cleanup/safety commits were cumulatively net −954 lines. | The complete 17-file deletion, live-reference repair, checkpoint, generated inventory, and pass receipt is +55/−4,172, net −4,117. The six cleanup/safety commits are now cumulatively net −5,071 lines. |
+
+Issue discovered during this tranche:
+
+- `H2-TRANSITION-021` — sparse path closure and executable dependency closure
+  are separate contracts. A task may contain a script and package manifest but
+  still lack the packages required to execute it. The broker should declare a
+  bounded setup profile, estimate installed bytes before task creation, and use
+  an immutable content-addressed store rather than unsafe cross-worktree
+  `node_modules` symlinks. Until then, report the setup blocker explicitly and
+  run only checks whose local runtime closure is present.
 
 Durable outcomes are PR wall-clock p50/p95 and escaped defects. Record the
 baseline from the ten most recent comparable PRs and compare after ten v2 PRs.
