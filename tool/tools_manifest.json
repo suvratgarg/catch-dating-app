@@ -175,7 +175,7 @@
         "node --check tool/harness.mjs",
         "node --check tool/harness/lib/component_graph.mjs",
         "node --check tool/harness/lib/check_flutter_l10n_generated.mjs",
-        "node --test tool/harness/component_graph.test.mjs tool/harness/check_flutter_l10n_generated.test.mjs tool/harness/harness_cli.test.mjs",
+        "node --test tool/harness/component_graph.test.mjs tool/harness/check_flutter_l10n_generated.test.mjs tool/harness/harness_cli.test.mjs tool/harness/workflow_wiring.test.mjs",
         "node tool/harness.mjs validate"
       ],
       "role": "finder"

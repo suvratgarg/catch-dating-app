@@ -78,6 +78,28 @@ test("plan output derives roles and deployment authorization from bounded operat
   assert.equal(output.deploy_required, true);
 });
 
+test("output projection rejects incomplete plans and unsafe multiline values", () => {
+  assert.throws(
+    () => projectPlanOutputs({
+      plan: {
+        complete: false,
+        operations: {
+          ciTargets: [],
+          buildTargets: [],
+          releaseRoles: [],
+          deployGroups: [],
+        },
+      },
+      graph,
+    }),
+    /incomplete Harness plan/,
+  );
+  assert.throws(
+    () => formatGithubOutputs({docs: "true\nunsafe=value"}),
+    /Unsafe GitHub output/,
+  );
+});
+
 test("captured check execution keeps stdout available for structured JSON", () => {
   const calls = [];
   const execution = executeCheckIds({

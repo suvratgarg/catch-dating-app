@@ -40,6 +40,9 @@ export function parseArgs(args) {
 }
 
 export function projectPlanOutputs({plan, graph}) {
+  if (plan.complete !== true) {
+    throw new Error("Refusing to project outputs from an incomplete Harness plan.");
+  }
   const selectedTargets = new Set(plan.operations.ciTargets);
   const appRoles = deriveAppRoles(plan);
   return {
@@ -48,10 +51,10 @@ export function projectPlanOutputs({plan, graph}) {
       selectedTargets.has(target),
     ])),
     app_roles: JSON.stringify(appRoles),
-    build_targets: JSON.stringify(plan.operations.buildTargets),
-    release_roles: JSON.stringify(plan.operations.releaseRoles),
+    build_targets: JSON.stringify([...plan.operations.buildTargets].sort()),
+    release_roles: JSON.stringify([...plan.operations.releaseRoles].sort()),
     has_release_roles: plan.operations.releaseRoles.length > 0,
-    deploy_groups: JSON.stringify(plan.operations.deployGroups),
+    deploy_groups: JSON.stringify([...plan.operations.deployGroups].sort()),
     deploy_required: plan.operations.deployGroups.length > 0,
     mode: plan.mode,
     full: plan.full,
@@ -61,7 +64,13 @@ export function projectPlanOutputs({plan, graph}) {
 
 export function formatGithubOutputs(outputs) {
   return Object.entries(outputs)
-    .map(([key, value]) => `${key}=${String(value)}\n`)
+    .map(([key, value]) => {
+      const serialized = String(value);
+      if (!/^[a-z][a-z0-9_]*$/.test(key) || /[\r\n]/.test(serialized)) {
+        throw new Error(`Unsafe GitHub output ${JSON.stringify(key)}.`);
+      }
+      return `${key}=${serialized}\n`;
+    })
     .join("");
 }
 
@@ -162,6 +171,11 @@ export function main({
       return;
     }
     if (options.command === "plan") {
+      if (graph.status !== "required") {
+        throw new Error(
+          `Harness plan authority requires graph status "required", found ${JSON.stringify(graph.status)}.`,
+        );
+      }
       if (!plan.complete) {
         printResult(plan, options.json);
         setClassificationExitCode(plan, setExitCode);

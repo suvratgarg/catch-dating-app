@@ -25,7 +25,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
-      deploy_required: ${{ steps.impact.outputs.backend_deploy_required }}
+      deploy_required: ${{ steps.impact.outputs.deploy_required }}
+      deploy_groups: ${{ steps.impact.outputs.deploy_groups }}
     env:
       HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
     steps:
@@ -36,9 +37,10 @@ jobs:
 
       - id: impact
         run: >-
-          node tool/ci/plan_ci.mjs
+          node tool/harness.mjs plan
           --base "${HEAD_SHA}^"
           --head "$HEAD_SHA"
+          --mode main
           --github-output "$GITHUB_OUTPUT"
           --json
 
