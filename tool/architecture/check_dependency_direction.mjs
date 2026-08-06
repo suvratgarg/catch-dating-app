@@ -2,11 +2,13 @@
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
-import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
+import {fromRepo} from "../lib/repo_paths.mjs";
+import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
 
-const defaultBaselinePath = fromRepo(
-  "tool/architecture/dependency_direction_baseline.json",
-);
+const defaultBaselinePath =
+  "tool/architecture/dependency_direction_baseline.json";
+const architectureRegistryPath =
+  "docs/audit_registry/architecture_pattern_adoption.json";
 
 const hardGateRules = new Set([
   "barrelPresentationExport",
@@ -48,15 +50,34 @@ const isCliEntrypoint =
 
 if (isCliEntrypoint) runCli();
 
-export function scanDependencyDirection({root, baseline = emptyBaseline()}) {
-  const files = collectDartFiles(path.join(root, "lib"));
+export function scanDependencyDirection({snapshot, baseline = emptyBaseline()}) {
+  if (
+    snapshot == null ||
+    typeof snapshot.listFiles !== "function" ||
+    typeof snapshot.readTexts !== "function"
+  ) {
+    throw new Error("Dependency direction requires a repository snapshot.");
+  }
+
+  const files = collectDartFiles(snapshot);
+  if (files.length === 0) {
+    throw new Error(
+      "Dependency direction cannot pass without handwritten lib Dart files.",
+    );
+  }
+  const sources = snapshot.readTexts([...files, architectureRegistryPath]);
   const allFindings = [];
   for (const file of files) {
-    const source = fs.readFileSync(file, "utf8");
-    const relativePath = normalizePath(path.relative(root, file));
-    allFindings.push(...scanFile({relativePath, source}));
+    const source = sources.get(file);
+    if (source == null) {
+      throw new Error(`Required repository path is missing: ${file}`);
+    }
+    allFindings.push(...scanFile({relativePath: file, source}));
   }
-  allFindings.push(...scanArchitectureRegistryFindings({root, files}));
+  allFindings.push(...scanArchitectureRegistryFindings({
+    files,
+    source: sources.get(architectureRegistryPath),
+  }));
 
   const baselineKeys = new Set(
     (baseline.allowedFindings ?? []).map((finding) => findingKey(finding)),
@@ -320,26 +341,13 @@ function findingKey(finding) {
     : `${finding.rule}|${finding.path}|${finding.import}`;
 }
 
-function collectDartFiles(root) {
-  if (!fs.existsSync(root)) return [];
-  const files = [];
-  walk(root, files);
-  return files
+function collectDartFiles(snapshot) {
+  return snapshot
+    .listFiles({prefix: "lib/"})
     .filter((file) => file.endsWith(".dart"))
     .filter((file) => !file.endsWith(".g.dart"))
     .filter((file) => !file.endsWith(".freezed.dart"))
     .sort((a, b) => a.localeCompare(b));
-}
-
-function walk(directory, files) {
-  for (const entry of fs.readdirSync(directory, {withFileTypes: true})) {
-    const absolutePath = path.join(directory, entry.name);
-    if (entry.isDirectory()) {
-      walk(absolutePath, files);
-    } else if (entry.isFile()) {
-      files.push(absolutePath);
-    }
-  }
 }
 
 function isDomainFile(relativePath) {
@@ -400,13 +408,16 @@ function isFeaturePresentationImport(uri) {
   return /^package:catch_dating_app\/[^/]+\/presentation\//u.test(uri);
 }
 
-function scanArchitectureRegistryFindings({root, files}) {
-  const trackerPath = path.join(
-    root,
-    "docs/audit_registry/architecture_pattern_adoption.json",
-  );
-  if (!fs.existsSync(trackerPath)) return [];
-  const tracker = JSON.parse(fs.readFileSync(trackerPath, "utf8"));
+function scanArchitectureRegistryFindings({files, source}) {
+  if (source == null) return [];
+  let tracker;
+  try {
+    tracker = JSON.parse(source);
+  } catch (error) {
+    throw new Error(
+      `Repository JSON ${architectureRegistryPath} is invalid: ${error.message}`,
+    );
+  }
   const registeredPaths = new Set();
   for (const pattern of tracker.patterns ?? []) {
     for (const collectionName of ["prototypeFiles", "adopters", "variants", "candidateQueue"]) {
@@ -422,12 +433,11 @@ function scanArchitectureRegistryFindings({root, files}) {
 
   const findings = [];
   for (const file of files) {
-    const relativePath = normalizePath(path.relative(root, file));
-    if (!isStateFile(relativePath)) continue;
-    if (registeredPaths.has(relativePath)) continue;
+    if (!isStateFile(file)) continue;
+    if (registeredPaths.has(file)) continue;
     findings.push({
       rule: "untrackedStateAdapter",
-      path: relativePath,
+      path: file,
       line: 1,
       reason:
         "presentation *_state.dart files must be registered in architecture_pattern_adoption.json so provider-free and migration obligations stay visible",
@@ -599,21 +609,21 @@ function lineForOffset(source, offset) {
   return line;
 }
 
-function readBaseline(file) {
-  if (!fs.existsSync(file)) return emptyBaseline(file);
+function readBaseline(snapshot, relativePath) {
+  const source = snapshot.readText(relativePath);
+  if (source == null) return emptyBaseline(relativePath);
   try {
     return {
-      ...JSON.parse(fs.readFileSync(file, "utf8")),
-      path: relativeToRepo(file),
+      ...JSON.parse(source),
+      path: relativePath,
     };
   } catch (error) {
-    console.error(`Failed to parse ${relativeToDisplay(fromRepo(), file)}: ${error.message}`);
-    process.exit(1);
+    throw new Error(`Failed to parse ${relativePath}: ${error.message}`);
   }
 }
 
-function emptyBaseline(file = null) {
-  return {path: file == null ? null : relativeToRepo(file), allowedFindings: []};
+function emptyBaseline(relativePath = null) {
+  return {path: relativePath, allowedFindings: []};
 }
 
 function parseArgs(rawArgs) {
@@ -699,8 +709,38 @@ function normalizePath(filePath) {
   return filePath.split(path.sep).join("/");
 }
 
-function relativeToDisplay(root, file) {
-  return normalizePath(path.relative(root, file));
+function relativePathWithinRoot(root, file) {
+  const relativePath = normalizePath(path.relative(root, file));
+  if (
+    relativePath === "" ||
+    relativePath === ".." ||
+    relativePath.startsWith("../") ||
+    path.isAbsolute(relativePath)
+  ) {
+    throw new Error(`Dependency baseline must be inside the repository: ${file}`);
+  }
+  return relativePath;
+}
+
+function assertMaterializedWriteTarget(snapshot, relativePath) {
+  const absolutePath = path.join(snapshot.root, relativePath);
+  let stat = null;
+  try {
+    stat = fs.lstatSync(absolutePath);
+  } catch (error) {
+    if (error?.code !== "ENOENT" && error?.code !== "ENOTDIR") throw error;
+  }
+  if (snapshot.exists(relativePath) && stat == null) {
+    throw new Error(
+      `Refusing to write sparse-omitted repository path: ${relativePath}`,
+    );
+  }
+  if (stat != null && !stat.isFile()) {
+    throw new Error(
+      `Refusing to write non-regular repository path: ${relativePath}`,
+    );
+  }
+  return absolutePath;
 }
 
 function runCli() {
@@ -711,15 +751,22 @@ function runCli() {
     process.exit(0);
   }
 
-  const baselinePath = args.baseline ?? defaultBaselinePath;
   const root = args.root ?? fromRepo();
+  const snapshot = createRepositorySnapshot({root});
+  const baselineRelativePath = args.baseline == null
+    ? defaultBaselinePath
+    : relativePathWithinRoot(snapshot.root, args.baseline);
   const baseline = args.writeBaseline
     ? emptyBaseline()
-    : readBaseline(baselinePath);
-  const result = scanDependencyDirection({root, baseline});
+    : readBaseline(snapshot, baselineRelativePath);
+  const result = scanDependencyDirection({snapshot, baseline});
 
   if (args.writeBaseline) {
     const nextBaseline = baselineFromFindings(result.allFindings);
+    const baselinePath = assertMaterializedWriteTarget(
+      snapshot,
+      baselineRelativePath,
+    );
     fs.mkdirSync(path.dirname(baselinePath), {recursive: true});
     fs.writeFileSync(
       baselinePath,
@@ -727,7 +774,7 @@ function runCli() {
     );
     if (!args.json) {
       console.log(
-        `Wrote dependency direction baseline with ${nextBaseline.allowedFindings.length} finding(s): ${relativeToDisplay(root, baselinePath)}`,
+        `Wrote dependency direction baseline with ${nextBaseline.allowedFindings.length} finding(s): ${baselineRelativePath}`,
       );
     }
     if (args.json) {

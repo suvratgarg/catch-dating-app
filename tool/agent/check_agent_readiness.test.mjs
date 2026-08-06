@@ -1,11 +1,17 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import test from "node:test";
 import {
+  appendReadinessMetric,
   dependencyBaselineGrowthWarnings,
+  evaluateAgentReadiness,
   extractCommandPaths,
   extractDependencyBaselineSnapshot,
   testInventoryMatches,
 } from "./check_agent_readiness.mjs";
+import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
 
 test("extractCommandPaths validates Functions build outputs through tracked sources", () => {
   assert.deepEqual(
@@ -200,3 +206,75 @@ test("test inventory readiness proof rejects stale generated content", () => {
   assert.equal(testInventoryMatches(current, inventory), true);
   assert.equal(testInventoryMatches('{"total":0}\n', inventory), false);
 });
+
+test("agent readiness keeps check collection invocation-local", () => {
+  const snapshot = createRepositorySnapshot();
+
+  const first = evaluateAgentReadiness({snapshot});
+  const second = evaluateAgentReadiness({snapshot});
+
+  assert.ok(first.total > 100);
+  assert.equal(first.total, second.total);
+  assert.equal(first.passed, second.passed);
+  assert.equal(first.failed, second.failed);
+  assert.ok(first.architecture_baselines.dependency_direction.checked_files > 0);
+  if (first.failed === 0) {
+    assert.equal(first.score, 100);
+  } else {
+    assert.ok(first.score <= 99);
+  }
+});
+
+test("readiness metric write refuses a sparse-omitted target", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-readiness-metric-"));
+  const snapshot = {
+    root,
+    exists(relativePath) {
+      return relativePath === "docs/audit_registry/agent_metrics.jsonl";
+    },
+  };
+
+  assert.throws(
+    () => appendReadinessMetric(readinessResultFixture(), snapshot),
+    /Refusing to write sparse-omitted repository path/u,
+  );
+});
+
+test("readiness metric write appends to a materialized regular file", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-readiness-metric-"));
+  const metricsPath = path.join(
+    root,
+    "docs/audit_registry/agent_metrics.jsonl",
+  );
+  fs.mkdirSync(path.dirname(metricsPath), {recursive: true});
+  fs.writeFileSync(metricsPath, "");
+  const snapshot = {
+    root,
+    exists(relativePath) {
+      return relativePath === "docs/audit_registry/agent_metrics.jsonl";
+    },
+  };
+
+  appendReadinessMetric(readinessResultFixture(), snapshot);
+
+  const entry = JSON.parse(fs.readFileSync(metricsPath, "utf8"));
+  assert.equal(entry.event, "agent_readiness_check");
+  assert.equal(entry.readiness_score, 100);
+});
+
+function readinessResultFixture() {
+  return {
+    score: 100,
+    passed: 1,
+    failed: 0,
+    total: 1,
+    architecture_baselines: {
+      dependency_direction: {
+        baseline_total: 0,
+        baseline_by_rule: {},
+        new_findings_total: 0,
+        checked_files: 1,
+      },
+    },
+  };
+}
