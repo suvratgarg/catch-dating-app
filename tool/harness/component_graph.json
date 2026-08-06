@@ -1,6 +1,6 @@
 {
   "$schema": "./component_graph.schema.json",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "status": "required",
   "modes": ["pr", "merge_group", "main", "nightly", "release"],
   "targets": [
@@ -21,6 +21,38 @@
     "tools",
     "visual_integration"
   ],
+  "ciCheckout": {
+    "planner": {
+      "mode": "sparse",
+      "fetchDepth": 0,
+      "coneMode": false,
+      "timeoutMinutes": 3,
+      "paths": [
+        "tool/harness.mjs",
+        "tool/harness/component_graph.json",
+        "tool/harness/lib/component_graph.mjs",
+        "tool/lib/repo_paths.mjs",
+        "tool/tools_manifest.json"
+      ]
+    },
+    "default": {
+      "mode": "full",
+      "fetchDepth": 0,
+      "timeoutMinutes": 3
+    },
+    "targetOverrides": {
+      "docs": {
+        "mode": "sparse",
+        "fetchDepth": 0,
+        "coneMode": false,
+        "timeoutMinutes": 3,
+        "paths": [
+          "docs/audit_registry/doc_versions.json",
+          "tool/docs/check_doc_version_monotonic.mjs"
+        ]
+      }
+    }
+  },
   "operationProfiles": {
     "docs": {
       "direct": {
