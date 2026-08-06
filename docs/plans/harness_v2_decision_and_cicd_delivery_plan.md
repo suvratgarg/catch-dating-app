@@ -1,6 +1,6 @@
 ---
 doc_id: harness_v2_decision_and_cicd_delivery_plan
-version: 0.3.4
+version: 0.3.5
 updated: 2026-08-06
 owner: agent_operating_model
 status: execution-in-progress
@@ -69,8 +69,8 @@ Every measurable claim was independently re-verified on 2026-08-06:
 |---|---|
 | Audit registry ≈382,694 lines | Exact match |
 | 68 of last 73 commits touch `docs/audit_registry` | Exact match |
-| Planner is order-dependent (first match wins) | `tool/ci/plan_ci.mjs:99` uses `.find()` |
-| `lib/**` selects all builds + functions + visual | `shared-flutter-source` rule in `tool/repository_root_manifest.json` |
+| Retired planner was order-dependent (first match won) | Verified at the pre-cutover baseline before deletion |
+| `lib/**` selected all builds + functions + visual | Verified from the retired pre-cutover routing table |
 | Test suite runs twice per Flutter PR | 4 shards + full serial `--concurrency=1` coverage rerun in `flutter-ci.yml` |
 | Deployment re-runs validation | `firebase-dev-deploy.yml` reruns lint/tests/rules; `firebase.json` predeploy reruns lint+build again |
 | No deploy stage checkpoint/resume | `tool/deploy_firebase_targets.sh` is a plain sequential loop |
@@ -393,6 +393,25 @@ Issues discovered during the rehearsal:
 - `H2-TRANSITION-003` — Git metadata writes, network access, and Flutter SDK
   cache writes can require managed-environment escalation. Harness receipts
   must classify these as environment constraints rather than product failures.
+- `H2-TRANSITION-004` — the current audit stamp snapshots global dirty
+  documentation state, so a Harness-only pass attempted to absorb an unrelated
+  organizer-document version. The contaminated registry update was not
+  committed. Phase 2 must replace global snapshot stamping with scoped,
+  immutable CI evidence before ordinary parallel work can be pleasant.
+
+### Checkpoint 4 — authoritative cutover candidate (2026-08-06)
+
+| Signal | Current result |
+|---|---|
+| Bounded plan-output commit | `cdbffcb22` added fail-closed fixed outputs and role projection (+158/−5); 37 focused tests passed in 0.69s; commit 0.03s; push 3.24s |
+| Workflow authority commit | `3cb9b9080` routed CI, Firebase dev deploy, and mobile release through Harness v2 (+207/−62); 57 combined legacy/v2 tests passed in 0.67s; four workflows parsed as YAML; commit 0.04s; push 2.53s |
+| Ordinary shared Flutter projection | `flutter` plus `flutter_web_smoke`; Consumer and Host dev debug web only; no Android, iOS, or production-web build |
+| Ordinary documentation projection | One `docs` target; the dedicated job runs monotonic document checks without Flutter, npm, or Functions installation |
+| Old-system execution evidence | The five-file foundation PR still launched 27 active jobs under v1, including device builds, visual integration, four Flutter shards, coverage, and multiple web builds |
+| V1 retirement candidate | 21 files, +179/−1,146 (net −967): planner implementation/tests and the duplicate 493-line routing table are deleted; focused verification is green |
+| Sparse validation closure | Global gates initially misreported absent unrelated files; adding only their declared owner/guard paths took 0.39s and grew the worktree from 64 MB to 84 MB, after which root hygiene and readiness passed |
+| Current audit-stamp overhead | Sandboxed Dart failed in 0.04s on SDK-cache writes; the approved rerun took 0.41s and rewrote 10 global catalog lines plus one shared pass receipt for nine scoped paths |
+| Cutover merge state | Candidate prepared on a stacked branch; it must not reach `main` until the foundation PR is green, a pre-cutover backup ref exists, and required-check/merge-queue state is reviewed |
 
 Durable outcomes are PR wall-clock p50/p95 and escaped defects. Record the
 baseline from the ten most recent comparable PRs and compare after ten v2 PRs.

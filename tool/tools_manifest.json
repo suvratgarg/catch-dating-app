@@ -139,16 +139,19 @@
       }
     },
     {
-      "id": "ci:plan",
-      "category": "meta",
-      "path": "tool/ci/plan_ci.mjs",
-      "command": "node tool/ci/plan_ci.mjs",
+      "id": "agent:harness-v2",
+      "category": "agent",
+      "path": "tool/harness.mjs",
+      "command": "node tool/harness.mjs",
       "safety": "local-readonly",
       "status": "active",
-      "description": "Plans fail-closed monorepo CI targets and mobile release roles from the canonical repository impact graph.",
+      "description": "Plans authoritative fail-closed CI, release, and deploy impact from the component graph and runs only allowlisted compile-codegen checks.",
       "checks": [
-        "node --check tool/ci/plan_ci.mjs",
-        "node --test tool/ci/plan_ci.test.mjs"
+        "node --check tool/harness.mjs",
+        "node --check tool/harness/lib/component_graph.mjs",
+        "node --check tool/harness/lib/check_flutter_l10n_generated.mjs",
+        "node --test tool/harness/component_graph.test.mjs tool/harness/check_flutter_l10n_generated.test.mjs tool/harness/harness_cli.test.mjs tool/harness/workflow_wiring.test.mjs",
+        "node tool/harness.mjs validate"
       ],
       "role": "gate",
       "rules": [
@@ -156,29 +159,12 @@
       ],
       "vacuityProof": {
         "type": "test",
-        "path": "tool/ci/plan_ci.test.mjs",
+        "path": "tool/harness/harness_cli.test.mjs",
         "contains": [
-          "admin-only changes do not invoke Flutter or mobile releases",
-          "unknown paths fail closed"
+          "bounded plan outputs contain no changed-path inventory",
+          "plan CLI fails closed before writing outputs for an unknown path"
         ]
       }
-    },
-    {
-      "id": "agent:harness-v2",
-      "category": "agent",
-      "path": "tool/harness.mjs",
-      "command": "node tool/harness.mjs",
-      "safety": "local-readonly",
-      "status": "active",
-      "description": "Validates and explains the shadow Harness v2 component graph, compares it with authoritative v1 planning, and runs only allowlisted compile-codegen checks.",
-      "checks": [
-        "node --check tool/harness.mjs",
-        "node --check tool/harness/lib/component_graph.mjs",
-        "node --check tool/harness/lib/check_flutter_l10n_generated.mjs",
-        "node --test tool/harness/component_graph.test.mjs tool/harness/check_flutter_l10n_generated.test.mjs tool/harness/harness_cli.test.mjs",
-        "node tool/harness.mjs validate"
-      ],
-      "role": "finder"
     },
     {
       "id": "agent:context-pack",

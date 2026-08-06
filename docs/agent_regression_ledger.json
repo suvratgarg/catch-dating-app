@@ -1,5 +1,5 @@
 {
-  "version": 131,
+  "version": 132,
   "updated": "2026-08-06",
   "owner": "agent_operating_model",
   "entries": [
@@ -3381,15 +3381,16 @@
         ".github/workflows/firebase-dev-deploy.yml",
         ".github/workflows/mobile-internal-release.yml",
         "tool/app_targets.json",
-        "tool/ci/plan_ci.mjs",
+        "tool/harness.mjs",
+        "tool/harness/component_graph.json",
         "tool/platform/check_app_targets.mjs",
         "tool/repository_root_manifest.json"
       ],
       "symptom": "An Admin, marketing, documentation, backend-validation-only, or generated-schema-binding pull request compiles iOS and Android; a main-branch push produces signed mobile artifacts without affected runtime code, starts a dev Firebase deployment from validation flags alone, skips the affected Consumer TestFlight upload, or automatically mutates Host TestFlight or Play.",
       "guard": {
         "type": "command",
-        "command": "node --test tool/ci/plan_ci.test.mjs tool/platform/check_app_targets.test.mjs && node tool/ci/plan_ci.mjs --paths admin/src/app/App.tsx --json && node tool/platform/check_app_targets.mjs --check",
-        "guardEvidence": "ordered path ownership selects only affected validation lanes and app roles, generated Dart schema bindings run Flutter validation without platform builds or release roles, backend validation and Firebase deploy authorization use separate outputs, unknown paths fail closed, the stable Required CI aggregate always reports, affected Consumer main pushes resolve automatic TestFlight upload through the target manifest, and Host TestFlight plus Play remain manual"
+        "command": "node --test tool/harness/component_graph.test.mjs tool/harness/harness_cli.test.mjs tool/harness/workflow_wiring.test.mjs tool/platform/check_app_targets.test.mjs && node tool/harness.mjs plan --paths admin/src/app/App.tsx --mode pr --json && node tool/platform/check_app_targets.mjs --check",
+        "guardEvidence": "directional component ownership selects only affected validation lanes and app roles, generated Dart schema bindings run Flutter validation without platform builds or release roles, backend validation and Firebase deploy authorization use separate outputs, unknown paths fail closed before outputs are written, the stable Required CI aggregate always reports, affected Consumer main pushes resolve automatic TestFlight upload through the target manifest, and Host TestFlight plus Play remain manual"
       },
       "owner_docs": [
         "docs/release_operations.md",
@@ -3480,13 +3481,13 @@
         ".github/workflows/operations-ci.yml",
         ".github/workflows/tools-ci.yml",
         ".github/workflows/visual-integration-ci.yml",
-        "tool/ci/plan_ci.test.mjs"
+        "tool/harness/workflow_wiring.test.mjs"
       ],
       "symptom": "Several reusable validation lanes start from the same orchestrated run and immediately cancel one another because each called workflow derives the same concurrency group from the caller-level github.workflow value.",
       "guard": {
         "type": "command",
-        "command": "node --test tool/ci/plan_ci.test.mjs",
-        "guardEvidence": "the CI orchestrator owns cancellation and the planner regression suite rejects caller-name concurrency in reusable fanout workflows"
+        "command": "node --test tool/harness/workflow_wiring.test.mjs",
+        "guardEvidence": "the CI orchestrator owns cancellation and the Harness workflow regression suite rejects caller-name concurrency in reusable fanout workflows"
       },
       "owner_docs": [
         "docs/release_operations.md",
@@ -3500,13 +3501,13 @@
       "status": "active",
       "applies_to": [
         ".github/workflows/ci.yml",
-        "tool/ci/plan_ci.mjs",
-        "tool/ci/plan_ci.test.mjs"
+        "tool/harness.mjs",
+        "tool/harness/harness_cli.test.mjs"
       ],
       "symptom": "Planning succeeds for a large monorepo pull request, but the next step cannot start its shell because the complete per-file JSON plan is expanded through a GitHub output into an environment variable and the operating system reports Argument list too long.",
       "guard": {
         "type": "command",
-        "command": "node --test tool/ci/plan_ci.test.mjs",
+        "command": "node --test tool/harness/harness_cli.test.mjs",
         "guardEvidence": "the complete impact plan is a workspace file while GitHub outputs remain bounded to booleans and short role arrays even for 5000 changed paths"
       },
       "owner_docs": [

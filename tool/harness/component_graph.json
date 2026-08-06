@@ -1,7 +1,7 @@
 {
   "$schema": "./component_graph.schema.json",
   "version": "0.1.0",
-  "status": "shadow",
+  "status": "required",
   "modes": ["pr", "merge_group", "main", "nightly", "release"],
   "targets": [
     "admin",
@@ -42,10 +42,10 @@
     },
     "harness-full": {
       "direct": {
-        "pr": {"ciTargets": ["admin", "contracts", "doc_state", "firestore_rules", "flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "functions", "marketing", "operations", "tools", "visual_integration"], "checkIds": ["agent:harness-v2"]},
-        "merge_group": {"ciTargets": ["admin", "contracts", "doc_state", "firestore_rules", "flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "functions", "marketing", "operations", "tools", "visual_integration"], "checkIds": ["agent:harness-v2"]},
-        "main": {"ciTargets": ["admin", "contracts", "doc_state", "firestore_rules", "flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "functions", "marketing", "operations", "tools", "visual_integration"], "checkIds": ["agent:harness-v2"]},
-        "nightly": {"ciTargets": ["admin", "contracts", "doc_state", "firestore_rules", "flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "functions", "marketing", "operations", "tools", "visual_integration"], "checkIds": ["agent:harness-v2"]}
+        "pr": {"ciTargets": ["admin", "contracts", "doc_state", "docs", "firestore_rules", "flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "flutter_web_smoke", "functions", "marketing", "operations", "policy_docs", "tools", "visual_integration"], "checkIds": ["agent:harness-v2"]},
+        "merge_group": {"ciTargets": ["admin", "contracts", "doc_state", "docs", "firestore_rules", "flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "flutter_web_smoke", "functions", "marketing", "operations", "policy_docs", "tools", "visual_integration"], "checkIds": ["agent:harness-v2"]},
+        "main": {"ciTargets": ["admin", "contracts", "doc_state", "docs", "firestore_rules", "flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "flutter_web_smoke", "functions", "marketing", "operations", "policy_docs", "tools", "visual_integration"], "checkIds": ["agent:harness-v2"]},
+        "nightly": {"ciTargets": ["admin", "contracts", "doc_state", "docs", "firestore_rules", "flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "flutter_web_smoke", "functions", "marketing", "operations", "policy_docs", "tools", "visual_integration"], "checkIds": ["agent:harness-v2"]}
       },
       "affected": {}
     },
@@ -618,7 +618,7 @@
   "components": [
     {"id": "docs.ordinary", "owner": "documentation", "risk": "low", "operationProfile": "docs", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Ordinary prose with no executable-policy ownership."},
     {"id": "policy.agent", "owner": "agent_operating_model", "risk": "high", "operationProfile": "policy", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Agent instructions and workflow policy."},
-    {"id": "repo.harness", "owner": "repository_tooling", "risk": "high", "operationProfile": "harness-full", "pathType": "component", "ownedPaths": {"include": [".github/**", "tool/ci/**", "tool/harness/**", "tool/harness.mjs", "tool/repository_root_manifest.json", "tool/tools_manifest.json"]}, "dependsOn": [], "alsoAffects": [], "description": "Harness control plane; v1 full validation remains authoritative during shadow."},
+    {"id": "repo.harness", "owner": "repository_tooling", "risk": "high", "operationProfile": "harness-full", "pathType": "component", "ownedPaths": {"include": [".github/**", "tool/ci/**", "tool/harness/**", "tool/harness.mjs", "tool/repository_root_manifest.json", "tool/tools_manifest.json"]}, "dependsOn": [], "alsoAffects": [], "description": "Authoritative Harness control plane; changes validate every declared CI target."},
     {"id": "contracts.source", "owner": "backend_platform", "risk": "high", "operationProfile": "contracts-source", "pathType": "component", "ownedPaths": {"include": ["contracts/**"], "exclude": ["contracts/README.md", "contracts/*/README.md"]}, "dependsOn": [], "alsoAffects": [], "description": "Authored cross-stack contracts."},
     {"id": "contracts.doc", "owner": "backend_platform", "risk": "standard", "operationProfile": "contracts-doc", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Contract inventory and operational documentation."},
     {"id": "contracts.generated.flutter", "owner": "backend_platform", "risk": "standard", "operationProfile": "generated-flutter-contract", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Tracked generated Flutter schema bindings validate their consumer but never authorize release."},

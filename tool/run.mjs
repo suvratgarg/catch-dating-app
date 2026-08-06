@@ -7,9 +7,14 @@ import {
   toolSupportsPlatform,
   validateToolPlatforms,
 } from "./lib/tool_platform.mjs";
-import {planCi} from "./ci/plan_ci.mjs";
+import {
+  deriveAppRoles,
+  matchesGlob,
+  planAffected,
+} from "./harness/lib/component_graph.mjs";
 
 const manifestPath = fromRepo("tool/tools_manifest.json");
+const componentGraphPath = fromRepo("tool/harness/component_graph.json");
 
 const command = process.argv[2] ?? "help";
 const argv = process.argv.slice(3);
@@ -123,6 +128,7 @@ function impactedTools(args) {
   const rootManifest = JSON.parse(
     fs.readFileSync(fromRepo("tool/repository_root_manifest.json"), "utf8"),
   );
+  const componentGraph = JSON.parse(fs.readFileSync(componentGraphPath, "utf8"));
   const changedPaths = options.paths ?? changedPathsSince(options.base);
   const relationships = rootManifest.relationships ?? [];
   const matchedRelationships = relationships.filter((relationship) =>
@@ -139,13 +145,27 @@ function impactedTools(args) {
   const ciWorkflows = [...new Set(matchedRelationships.flatMap(
     (relationship) => relationship.ciWorkflows ?? [],
   ))].sort();
-  const ciPlan = planCi({
+  const prPlan = planAffected({
     changedPaths,
-    ciPlanning: rootManifest.ciPlanning,
+    graph: componentGraph,
+    mode: "pr",
   });
+  const mainPlan = planAffected({
+    changedPaths,
+    graph: componentGraph,
+    mode: "main",
+  });
+  const unknownPaths = [...new Set([
+    ...prPlan.unknownPaths,
+    ...mainPlan.unknownPaths,
+  ])].sort();
+  const ambiguousPaths = [...prPlan.ambiguousPaths].sort((left, right) =>
+    left.path.localeCompare(right.path)
+  );
   const unmatchedPaths = [...new Set([
     ...changedPaths.filter((changedPath) => !matchedPaths.has(changedPath)),
-    ...ciPlan.unmatchedPaths,
+    ...unknownPaths,
+    ...ambiguousPaths.map((entry) => entry.path),
   ])].sort();
   const result = {
     base: options.base,
@@ -153,9 +173,14 @@ function impactedTools(args) {
     relationships: matchedRelationships.map((relationship) => relationship.id).sort(),
     toolIds,
     ciWorkflows,
-    ciTargets: ciPlan.targets,
-    appRoles: ciPlan.appRoles,
-    mobileReleaseRoles: ciPlan.mobileReleaseRoles,
+    ciTargets: prPlan.operations.ciTargets,
+    appRoles: deriveAppRoles(prPlan),
+    buildTargets: prPlan.operations.buildTargets,
+    mobileReleaseRoles: mainPlan.operations.releaseRoles,
+    deployGroups: mainPlan.operations.deployGroups,
+    deployRequired: mainPlan.operations.deployGroups.length > 0,
+    unknownPaths,
+    ambiguousPaths,
     unmatchedPaths,
   };
 
@@ -165,11 +190,12 @@ function impactedTools(args) {
     console.log(`Impacted relationships: ${result.relationships.join(", ") || "none"}`);
     console.log(`Impacted tool checks: ${toolIds.join(", ") || "none"}`);
     console.log(`CI workflows: ${ciWorkflows.join(", ") || "none"}`);
-    console.log(`CI targets: ${ciPlan.targets.join(", ") || "none"}`);
-    console.log(`App roles: ${ciPlan.appRoles.join(", ") || "none"}`);
+    console.log(`CI targets: ${result.ciTargets.join(", ") || "none"}`);
+    console.log(`App roles: ${result.appRoles.join(", ") || "none"}`);
     console.log(
-      `Mobile release roles: ${ciPlan.mobileReleaseRoles.join(", ") || "none"}`,
+      `Mobile release roles: ${result.mobileReleaseRoles.join(", ") || "none"}`,
     );
+    console.log(`Deploy groups: ${result.deployGroups.join(", ") || "none"}`);
   }
 
   if (unmatchedPaths.length > 0) {
@@ -214,17 +240,6 @@ function relationshipPatterns(relationship) {
     ...(relationship.generatedOutputs ?? []),
     ...(relationship.consumers ?? []),
   ];
-}
-
-export function matchesGlob(value, pattern) {
-  const doubleStar = "\u0000";
-  const escaped = pattern
-    .replace(/[.+^${}()|[\]\\]/g, "\\$&")
-    .replaceAll("**", doubleStar)
-    .replaceAll("*", "[^/]*")
-    .replaceAll("?", "[^/]")
-    .replaceAll(doubleStar, ".*");
-  return new RegExp(`^${escaped}$`).test(value);
 }
 
 function runTool(args) {

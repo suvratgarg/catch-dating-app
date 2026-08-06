@@ -210,7 +210,7 @@
           "docAnchor": "docs/agent_operating_model.md#done-criteria-for-this-harness"
         },
         {
-          "tool": "ci:plan",
+          "tool": "agent:harness-v2",
           "stage": "scanner-gate",
           "docAnchor": "docs/release_operations.md#required-pr-checks"
         },

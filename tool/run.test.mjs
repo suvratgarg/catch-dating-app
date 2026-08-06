@@ -58,6 +58,8 @@ test("impact routing reports the owning relationship and checks", () => {
   assert.ok(payload.toolIds.includes("contracts:validate-schemas"));
   assert.ok(payload.ciTargets.includes("contracts"));
   assert.deepEqual(payload.mobileReleaseRoles, []);
+  assert.deepEqual(payload.deployGroups, ["backend-contracts"]);
+  assert.equal(payload.deployRequired, true);
   assert.deepEqual(payload.unmatchedPaths, []);
 });
 
@@ -68,6 +70,7 @@ test("impact routing includes field inventory for Flutter design consumers", () 
   assert.ok(payload.relationships.includes("design-system"));
   assert.ok(payload.toolIds.includes("design:flutter-field-surface-inventory"));
   assert.deepEqual(payload.mobileReleaseRoles, ["consumer", "host"]);
+  assert.deepEqual(payload.buildTargets, ["consumer-web-smoke", "host-web-smoke"]);
   assert.deepEqual(payload.unmatchedPaths, []);
 });
 
@@ -93,6 +96,26 @@ test("impact routing preserves role ownership for independent app packages", () 
   assert.deepEqual(payload.appRoles, ["host"]);
   assert.deepEqual(payload.mobileReleaseRoles, ["host"]);
   assert.deepEqual(payload.unmatchedPaths, []);
+});
+
+test("impact routing treats ordinary root documentation as owned", () => {
+  const result = run(["impacted", "--paths", "README.md", "--json"]);
+  assert.equal(result.status, 0, result.stderr);
+  const payload = JSON.parse(result.stdout);
+  assert.deepEqual(payload.ciTargets, ["docs"]);
+  assert.deepEqual(payload.unmatchedPaths, []);
+});
+
+test("generated localization and notification copy avoid unrelated mobile releases", () => {
+  for (const changedPath of [
+    "lib/l10n/generated/app_localizations.dart",
+    "copy/notifications_en.json",
+  ]) {
+    const result = run(["impacted", "--paths", changedPath, "--json"]);
+    assert.equal(result.status, 0, result.stderr);
+    const payload = JSON.parse(result.stdout);
+    assert.deepEqual(payload.mobileReleaseRoles, []);
+  }
 });
 
 test("impact routing fails closed for an unmapped changed path", () => {

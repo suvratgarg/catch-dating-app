@@ -20,6 +20,10 @@ on:
         required: false
         type: boolean
         default: true
+      web_smoke:
+        required: false
+        type: boolean
+        default: false
   workflow_dispatch:
     inputs:
       app_roles:
@@ -39,6 +43,10 @@ on:
         required: false
         type: boolean
         default: true
+      web_smoke:
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   app-targets:
@@ -61,7 +69,7 @@ jobs:
   web:
     name: Web build
     needs: app-targets
-    if: ${{ inputs.build_web }}
+    if: ${{ inputs.build_web || inputs.web_smoke }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -90,11 +98,11 @@ jobs:
       # Also compile the prod config (prod dart-defines + prod Firebase
       # options) so a prod-only build break is caught on PRs, not at release.
       - name: Build prod web artifact
-        if: ${{ contains(fromJSON(inputs.app_roles), 'consumer') }}
+        if: ${{ inputs.build_web && contains(fromJSON(inputs.app_roles), 'consumer') }}
         run: ./tool/flutter_with_env.sh prod build web --release
 
       - name: Build prod host web artifact
-        if: ${{ contains(fromJSON(inputs.app_roles), 'host') }}
+        if: ${{ inputs.build_web && contains(fromJSON(inputs.app_roles), 'host') }}
         run: ./tool/flutter_with_env.sh prod --role host build web --release
 
   android:

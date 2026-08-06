@@ -4,9 +4,8 @@ import fs from "node:fs";
 import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 import {fromRepo, repoRoot} from "./lib/repo_paths.mjs";
-import {planCi} from "./ci/plan_ci.mjs";
 import {
-  diffPlans,
+  deriveAppRoles,
   planAffected,
   runCodegenChecks,
   selectCompileCodegen,
@@ -15,7 +14,6 @@ import {
 } from "./harness/lib/component_graph.mjs";
 
 const graphPath = fromRepo("tool/harness/component_graph.json");
-const rootManifestPath = fromRepo("tool/repository_root_manifest.json");
 const toolsManifestPath = fromRepo("tool/tools_manifest.json");
 
 export function parseArgs(args) {
@@ -34,7 +32,47 @@ export function parseArgs(args) {
     checkOnly: args.includes("--check"),
     dryRun: args.includes("--dry-run"),
     full: args.includes("--full"),
+    githubOutput: valueAfter(args, "--github-output"),
   };
+}
+
+export function projectPlanOutputs({plan, graph}) {
+  if (plan.complete !== true) {
+    throw new Error("Refusing to project outputs from an incomplete Harness plan.");
+  }
+  const selectedTargets = new Set(plan.operations.ciTargets);
+  const appRoles = deriveAppRoles(plan);
+  return {
+    ...Object.fromEntries(graph.targets.map((target) => [
+      target,
+      selectedTargets.has(target),
+    ])),
+    app_roles: JSON.stringify(appRoles),
+    build_targets: JSON.stringify([...plan.operations.buildTargets].sort()),
+    release_roles: JSON.stringify([...plan.operations.releaseRoles].sort()),
+    has_release_roles: plan.operations.releaseRoles.length > 0,
+    deploy_groups: JSON.stringify([...plan.operations.deployGroups].sort()),
+    deploy_required: plan.operations.deployGroups.length > 0,
+    mode: plan.mode,
+    full: plan.full,
+    complete: plan.complete,
+  };
+}
+
+export function formatGithubOutputs(outputs) {
+  return Object.entries(outputs)
+    .map(([key, value]) => {
+      const serialized = String(value);
+      if (!/^[a-z][a-z0-9_]*$/.test(key) || /[\r\n]/.test(serialized)) {
+        throw new Error(`Unsafe GitHub output ${JSON.stringify(key)}.`);
+      }
+      return `${key}=${serialized}\n`;
+    })
+    .join("");
+}
+
+export function writeGithubOutputs(path, outputs) {
+  fs.appendFileSync(path, formatGithubOutputs(outputs), "utf8");
 }
 
 export function changedPathsSince({base, head = "HEAD", cwd = repoRoot}) {
@@ -53,22 +91,6 @@ export function changedPathsSince({base, head = "HEAD", cwd = repoRoot}) {
     for (const line of result.stdout.split(/\r?\n/).filter(Boolean)) paths.add(line);
   }
   return [...paths].sort();
-}
-
-export function buildShadowReport({changedPaths, graph, rootManifest, mode, full = false}) {
-  const v1Plan = planCi({changedPaths, ciPlanning: rootManifest.ciPlanning, full});
-  const v2Plan = planAffected({changedPaths, graph, mode, full});
-  return {
-    generatedAt: new Date().toISOString(),
-    authority: "v1",
-    shadowStatus: graph.status,
-    mode,
-    full,
-    changedPaths,
-    v1Plan,
-    v2Plan,
-    comparison: diffPlans({v1Plan, v2Plan}),
-  };
 }
 
 export function main({
@@ -126,28 +148,34 @@ export function main({
 
     if (options.command === "explain") {
       printResult(plan, options.json);
-      setClassificationExitCode(plan);
+      setClassificationExitCode(plan, setExitCode);
       return;
     }
-    if (options.command === "shadow") {
-      const rootManifest = readJson(rootManifestPath);
-      const report = buildShadowReport({
-        changedPaths,
-        graph,
-        rootManifest,
-        mode: options.mode,
-        full: options.full,
-      });
-      printResult(report, options.json);
-      // Shadow incompleteness is evidence, not a replacement failure. V1 remains authoritative.
-      if (authoritativeShadowFailure(report)) process.exitCode = 1;
+    if (options.command === "plan") {
+      if (graph.status !== "required") {
+        throw new Error(
+          `Harness plan authority requires graph status "required", found ${JSON.stringify(graph.status)}.`,
+        );
+      }
+      if (!plan.complete) {
+        printResult(plan, options.json);
+        setClassificationExitCode(plan, setExitCode);
+        return;
+      }
+      if (options.githubOutput) {
+        writeGithubOutputs(
+          options.githubOutput,
+          projectPlanOutputs({plan, graph}),
+        );
+      }
+      printResult(plan, options.json);
       return;
     }
     if (options.command === "check") {
       requireAffected(options);
       if (!plan.complete) {
         printResult(plan, options.json);
-        setClassificationExitCode(plan);
+        setClassificationExitCode(plan, setExitCode);
         return;
       }
       let execution = options.dryRun
@@ -168,12 +196,12 @@ export function main({
       requireAffected(options);
       if (!options.checkOnly) {
         throw new UsageError(
-          "Harness v2 only permits compile-codegen in explicit --check mode during shadow.",
+          "Harness only permits compile-codegen in explicit --check mode.",
         );
       }
       if (!plan.complete) {
         printResult(plan, options.json);
-        setClassificationExitCode(plan);
+        setClassificationExitCode(plan, setExitCode);
         return;
       }
       const selection = selectCompileCodegen({plan, graph});
@@ -200,10 +228,6 @@ function requireAffected(options) {
   }
 }
 
-export function authoritativeShadowFailure(report) {
-  return (report.v1Plan.unmatchedPaths ?? []).length > 0;
-}
-
 export function executeCheckIds({ids, cwd = repoRoot, runner = spawnSync}) {
   const result = runner(
     process.execPath,
@@ -218,8 +242,8 @@ export function executeCheckIds({ids, cwd = repoRoot, runner = spawnSync}) {
   };
 }
 
-function setClassificationExitCode(plan) {
-  if (!plan.complete) process.exitCode = 1;
+function setClassificationExitCode(plan, setExitCode) {
+  if (!plan.complete) setExitCode(1);
 }
 
 function readJson(path) {
@@ -292,12 +316,10 @@ Commands:
   validate
   coverage [--json]
   explain [--paths a,b | --base ref | --full] [--mode mode] [--json]
-  shadow [--paths a,b | --base ref | --full] [--mode mode] [--json]
+  plan [--paths a,b | --base ref | --full] [--mode mode] [--github-output path] [--json]
   check --affected [--paths a,b | --base ref] [--dry-run] [--json]
   generate --affected --check [--paths a,b | --base ref] [--json]
 
-Shadow mode never replaces v1 CI output. Authoritative v1 mapping failures still
-fail the command; v2-only unknown or ambiguous paths remain shadow evidence.
 Compile-codegen executes only declared, deterministic, network-free checks.`);
 }
 

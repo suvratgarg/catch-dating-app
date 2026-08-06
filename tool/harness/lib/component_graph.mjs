@@ -370,55 +370,25 @@ export function planAffected({changedPaths, graph, mode = "pr", full = false}) {
   };
 }
 
-export function diffPlans({v1Plan, v2Plan}) {
-  const v1Targets = [...new Set(v1Plan.targets ?? [])].sort();
-  const v2Targets = [...new Set(v2Plan.operations.ciTargets ?? [])].sort();
-  const removedCiTargets = v1Targets.filter((target) => !v2Targets.includes(target));
-  const addedCiTargets = v2Targets.filter((target) => !v1Targets.includes(target));
-  const v1Roles = [...new Set(v1Plan.mobileReleaseRoles ?? v1Plan.appRoles ?? [])].sort();
-  const v2Roles = [...new Set(v2Plan.operations.releaseRoles ?? [])].sort();
-  const denominator = Math.max(v1Targets.length, 1);
-  const targetReductionPercent = Number(
-    (((v1Targets.length - v2Targets.length) / denominator) * 100).toFixed(1),
+export function deriveAppRoles(plan) {
+  const roles = new Set(plan.operations.releaseRoles ?? []);
+  for (const target of plan.operations.buildTargets ?? []) {
+    if (target.startsWith("consumer-")) roles.add("consumer");
+    if (target.startsWith("host-")) roles.add("host");
+  }
+  const selectsPlatformBuild = (plan.operations.ciTargets ?? []).some((target) =>
+    [
+      "flutter_build_android",
+      "flutter_build_ios",
+      "flutter_build_web",
+      "flutter_web_smoke",
+    ].includes(target)
   );
-  const highRiskTargetOmissions = v2Plan.highRiskDirectComponents.length > 0
-    ? removedCiTargets
-    : [];
-
-  return {
-    v1: {
-      targets: v1Targets,
-      releaseRoles: v1Roles,
-      backendDeployRequired: v1Plan.backendDeployRequired === true,
-    },
-    v2: {
-      targets: v2Targets,
-      releaseRoles: v2Roles,
-      deployGroups: v2Plan.operations.deployGroups,
-      complete: v2Plan.complete,
-    },
-    delta: {
-      v1TargetCount: v1Targets.length,
-      v2TargetCount: v2Targets.length,
-      targetReductionPercent,
-      removedCiTargets,
-      addedCiTargets,
-      removedReleaseRoles: v1Roles.filter((role) => !v2Roles.includes(role)),
-      addedReleaseRoles: v2Roles.filter((role) => !v1Roles.includes(role)),
-    },
-    blockers: {
-      unknownPaths: v2Plan.unknownPaths,
-      ambiguousPaths: v2Plan.ambiguousPaths,
-      highRiskTargetOmissions,
-    },
-    reviewRequired: removedCiTargets.length > 0 ||
-      v1Roles.some((role) => !v2Roles.includes(role)),
-    safeToConsiderCutover: v2Plan.graphStatus === "required" &&
-      v2Plan.complete &&
-      highRiskTargetOmissions.length === 0 &&
-      removedCiTargets.length === 0 &&
-      v1Roles.every((role) => v2Roles.includes(role)),
-  };
+  if (roles.size === 0 && selectsPlatformBuild) {
+    roles.add("consumer");
+    roles.add("host");
+  }
+  return [...roles].sort();
 }
 
 export function selectCompileCodegen({plan, graph, platform = process.platform}) {
