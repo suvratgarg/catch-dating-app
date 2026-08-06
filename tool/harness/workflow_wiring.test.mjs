@@ -21,6 +21,7 @@ const retiredUiWrapperNames = [
 const retiredDerivedAuditPaths = [
   "docs/audit_registry/definition_catalog.json",
   "docs/audit_registry/consolidation_candidates.json",
+  "docs/audit_registry/l10n_key_usage.json",
   "tool/audit/definition_catalog.py",
   "docs/audit_registry/widget_antipattern_scan.json",
   "tool/scan_widget_antipatterns.py",
@@ -80,6 +81,45 @@ test("Flutter UI lint wiring uses one analyzer census and no legacy wrappers", (
   for (const retired of retiredUiWrapperNames) {
     assert.doesNotMatch(flutter, new RegExp(retired.replace(".", "\\."), "u"));
   }
+});
+
+test("Flutter l10n ratchet derives JSON live and uploads ephemeral evidence", () => {
+  const flutter = workflow("flutter-ci.yml");
+  const scan = namedStep(
+    flutter,
+    "Localization catalog and getter usage ratchet",
+  );
+  assert.equal(
+    [...flutter.matchAll(/check_l10n_key_usage\.mjs/gu)].length,
+    1,
+  );
+  assert.match(scan, /mkdir -p build\/ci/u);
+  assert.match(
+    scan,
+    /node tool\/copy\/check_l10n_key_usage\.mjs --check --json > build\/ci\/l10n-key-usage\.json/u,
+  );
+  assert.match(
+    scan,
+    /jq '\{summary: \.inventory\.summary, ratchet: \.ratchet\}' build\/ci\/l10n-key-usage\.json/u,
+  );
+  assert.doesNotMatch(
+    flutter,
+    /--check-inventory|--write-inventory|docs\/audit_registry\/l10n_key_usage\.json/u,
+  );
+
+  const upload = namedStep(
+    flutter,
+    "Upload localization key-usage evidence",
+  );
+  assert.match(upload, /if: always\(\)/u);
+  assert.match(upload, /uses: actions\/upload-artifact@v7/u);
+  assert.match(
+    upload,
+    /name: l10n-key-usage-\$\{\{ github\.sha \}\}/u,
+  );
+  assert.match(upload, /path: build\/ci\/l10n-key-usage\.json/u);
+  assert.match(upload, /if-no-files-found: error/u);
+  assert.match(upload, /retention-days: 14/u);
 });
 
 test("retired UI wrapper names have no live guidance consumers", () => {

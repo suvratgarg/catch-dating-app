@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.8.2
-updated: 2026-08-06
+version: 1.8.3
+updated: 2026-08-07
 owner: recursive_audit_loop
 status: active
 ---
@@ -1757,8 +1757,9 @@ Reference implementation:
 - `lib/core/app_error_message.dart` — semantic exception-code localization at
   widget build time; and
 - `tool/copy/check_mobile_copy_ownership.dart` — zero-debt ownership gate.
-- `tool/copy/check_l10n_key_usage.mjs` — exact handwritten-key inventory and
-  zero-orphan ratchet with generated evidence under the audit registry.
+- `tool/copy/check_l10n_key_usage.mjs` — exact live handwritten-key census and
+  zero-orphan ratchet derived on demand from the current source tree; only the
+  authored orphan baseline is tracked.
 
 Required checks:
 
@@ -1775,10 +1776,11 @@ node tool/run.mjs check copy:structured-domain-content
 
 The baselines in `tool/copy/mobile_copy_baseline.json` and
 `tool/copy/l10n_orphan_baseline.json` must remain empty. New inline findings or
-zero-use ARB keys fail immediately, and the checked key-usage inventory must
-match the current catalog and handwritten Dart sources. An allowlist entry is
-only appropriate for a technical identifier, test/demo fixture, or
-user-authored value and must contain a narrow reason.
+missing catalog getters or zero-use ARB keys fail immediately. Exact usage
+locations are available from live `--json` output; no generated usage inventory
+is committed. An allowlist entry is only appropriate for a technical
+identifier, test/demo fixture, or user-authored value and must contain a narrow
+reason.
 
 The ownership gate covers more than direct `Text(...)` calls: copy-shaped
 named arguments, default parameters and constructor initializers,

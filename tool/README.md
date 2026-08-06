@@ -730,14 +730,16 @@ contain the generated `Visiblecopy` marker. Reviewed legacy exceptions live in
 review instead of silently expanding the catalog.
 
 ```sh
-node tool/copy/check_l10n_key_usage.mjs --write-inventory
+node tool/copy/check_l10n_key_usage.mjs --check --json
 node tool/run.mjs check copy:l10n-key-usage
 node --test tool/copy/check_l10n_key_usage.test.mjs
 ```
 
-The key-usage inventory records exact handwritten Dart references, excludes
-generated Dart/comments/string contents, and fails on any new orphan or stale
-checked evidence. Baseline reductions pass; baseline growth is rejected.
+The live key-usage scan reports exact handwritten Dart references, excludes
+generated Dart, comments, and string contents, and fails on any new orphan or
+missing catalog getter. Use `--json` for ephemeral review evidence; do not
+commit a generated usage snapshot. Baseline reductions pass; baseline growth
+is rejected.
 
 ```sh
 node tool/copy/sync_event_success_questionnaires.mjs --write

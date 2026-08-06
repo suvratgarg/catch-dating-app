@@ -7,9 +7,9 @@ import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 import test from "node:test";
+import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
 import {
   baselineFromOrphans,
-  checkInventoryFile,
   evaluateOrphanRatchet,
   findL10nMemberReferences,
   readOrphanBaseline,
@@ -157,30 +157,18 @@ test("Dart lexer ignores comments and strings but scans interpolation code", () 
   );
 });
 
-test("inventory generation is deterministic and exact-file checkable", () => {
+test("inventory generation is deterministic JSON", () => {
   const root = fixtureRoot("reduction");
   const first = scanFixture(root).inventory;
   const second = scanFixture(root).inventory;
   assert.equal(stableJson(first), stableJson(second));
+  assert.deepEqual(JSON.parse(stableJson(first)), first);
 
-  const temporaryRoot = fs.mkdtempSync(
-    path.join(os.tmpdir(), "catch-l10n-inventory-"),
-  );
-  try {
-    const inventoryPath = path.join(temporaryRoot, "inventory.json");
-    fs.writeFileSync(inventoryPath, stableJson(first));
-    assert.deepEqual(checkInventoryFile(second, inventoryPath), {
-      current: true,
-      reason: null,
-    });
-    fs.writeFileSync(inventoryPath, "{}\n");
-    assert.deepEqual(checkInventoryFile(second, inventoryPath), {
-      current: false,
-      reason: "stale",
-    });
-  } finally {
-    fs.rmSync(temporaryRoot, {recursive: true, force: true});
-  }
+  const firstCli = runFixtureCli("reduction", "--check", "--json");
+  const secondCli = runFixtureCli("reduction", "--check", "--json");
+  assert.equal(firstCli.status, 0, firstCli.stderr);
+  assert.equal(secondCli.status, 0, secondCli.stderr);
+  assert.equal(firstCli.stdout, secondCli.stdout);
 });
 
 test("CLI fails the new-orphan fixture and passes the reduction fixture", () => {
@@ -207,34 +195,19 @@ test("CLI always fails missing catalog getters with exact locations", () => {
   }
 });
 
-test("inventory write records missing getters but exits unsuccessfully", () => {
-  const root = fixtureRoot("missing_catalog");
-  const temporaryRoot = fs.mkdtempSync(
-    path.join(os.tmpdir(), "catch-l10n-missing-inventory-"),
-  );
-  try {
-    const inventoryPath = path.join(temporaryRoot, "inventory.json");
-    const result = runCli([
-      "--repo-root",
-      root,
-      "--inventory",
-      inventoryPath,
-      "--write-inventory",
-    ]);
-    assert.equal(result.status, 1, result.stderr);
-    const inventory = JSON.parse(fs.readFileSync(inventoryPath, "utf8"));
-    assert.deepEqual(inventory.missingCatalogKeys, ["missingCatalogKey"]);
-    assert.deepEqual(inventory.missingCatalogReferences, [
-      {
-        key: "missingCatalogKey",
-        path: "lib/sample.dart",
-        line: 3,
-        column: 24,
-      },
-    ]);
-  } finally {
-    fs.rmSync(temporaryRoot, {recursive: true, force: true});
-  }
+test("JSON review records missing getters but exits unsuccessfully", () => {
+  const result = runFixtureCli("missing_catalog", "--check", "--json");
+  assert.equal(result.status, 1, result.stderr);
+  const inventory = JSON.parse(result.stdout).inventory;
+  assert.deepEqual(inventory.missingCatalogKeys, ["missingCatalogKey"]);
+  assert.deepEqual(inventory.missingCatalogReferences, [
+    {
+      key: "missingCatalogKey",
+      path: "lib/sample.dart",
+      line: 3,
+      column: 24,
+    },
+  ]);
 });
 
 test("baseline refresh refuses missing catalog getters", () => {
@@ -270,35 +243,19 @@ test("baseline refresh refuses to bless a newly orphaned key", () => {
   assert.equal(fs.readFileSync(baselinePath, "utf8"), before);
 });
 
-test("CLI write flags produce reviewable inventory and reduced baseline", () => {
+test("CLI JSON is reviewable and baseline write produces a reduction", () => {
   const root = fixtureRoot("reduction");
   const temporaryRoot = fs.mkdtempSync(
     path.join(os.tmpdir(), "catch-l10n-writes-"),
   );
   try {
-    const inventoryPath = path.join(temporaryRoot, "inventory.json");
     const baselinePath = path.join(temporaryRoot, "baseline.json");
-    const inventoryWrite = runCli([
-      "--repo-root",
-      root,
-      "--inventory",
-      inventoryPath,
-      "--write-inventory",
-    ]);
-    assert.equal(inventoryWrite.status, 0, inventoryWrite.stderr);
+    const review = runCli(["--repo-root", root, "--check", "--json"]);
+    assert.equal(review.status, 0, review.stderr);
     assert.equal(
-      fs.readFileSync(inventoryPath, "utf8"),
+      stableJson(JSON.parse(review.stdout).inventory),
       stableJson(scanFixture(root).inventory),
     );
-
-    const inventoryCheck = runCli([
-      "--repo-root",
-      root,
-      "--inventory",
-      inventoryPath,
-      "--check-inventory",
-    ]);
-    assert.equal(inventoryCheck.status, 0, inventoryCheck.stderr);
 
     const baselineWrite = runCli([
       "--repo-root",
@@ -315,6 +272,38 @@ test("CLI write flags produce reviewable inventory and reduced baseline", () => 
   } finally {
     fs.rmSync(temporaryRoot, {recursive: true, force: true});
   }
+});
+
+test("retired tracked inventory and legacy CLI modes stay absent", () => {
+  const snapshot = createRepositorySnapshot();
+  assert.equal(
+    snapshot.exists("docs/audit_registry/l10n_key_usage.json"),
+    false,
+  );
+  for (const flag of ["--check-inventory", "--write-inventory", "--inventory"]) {
+    const result = runFixtureCli("reduction", flag);
+    assert.equal(result.status, 64, `${flag}: ${result.stderr}`);
+    assert.match(result.stderr, /Unknown argument/u);
+  }
+});
+
+test("CLI help exposes only live evidence and baseline modes", () => {
+  const result = runCli(["--help"]);
+  assert.equal(result.status, 0, result.stderr);
+  for (const supported of [
+    "--check",
+    "--json",
+    "--write-baseline",
+    "--baseline <path>",
+    "--repo-root <path>",
+    "--check --json > build/ci/l10n-key-usage.json",
+  ]) {
+    assert.ok(result.stdout.includes(supported), supported);
+  }
+  assert.doesNotMatch(
+    result.stdout,
+    /--check-inventory|--write-inventory|--inventory <path>|docs\/audit_registry\/l10n_key_usage\.json/u,
+  );
 });
 
 function fixtureRoot(name) {

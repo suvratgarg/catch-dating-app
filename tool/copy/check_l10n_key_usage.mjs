@@ -10,8 +10,6 @@ import {
 const defaultArbRelativePath = "lib/l10n/app_en.arb";
 const defaultSourceRootRelativePath = "lib";
 const defaultBaselineRelativePath = "tool/copy/l10n_orphan_baseline.json";
-const defaultInventoryRelativePath =
-  "docs/audit_registry/l10n_key_usage.json";
 
 const generatedSuffixPattern =
   /\.(?:freezed|g|gen|gr|mocks)\.dart$/u;
@@ -19,6 +17,7 @@ const generatedHeaderPattern =
   /(?:GENERATED CODE\s*-\s*DO NOT (?:EDIT|MODIFY)|DO NOT MODIFY BY HAND)/iu;
 const dartIdentifierPattern = /^[A-Za-z_$][A-Za-z0-9_$]*$/u;
 const canonicalNonMessageL10nMembers = new Set(["localeName"]);
+class CliUsageError extends Error {}
 
 const isCliEntrypoint =
   process.argv[1] != null &&
@@ -380,8 +379,7 @@ export function baselineFromOrphans(orphanedKeys) {
   return {
     version: 1,
     generatedBy: "node tool/copy/check_l10n_key_usage.mjs --write-baseline",
-    checkCommand:
-      "node tool/copy/check_l10n_key_usage.mjs --check --check-inventory",
+    checkCommand: "node tool/copy/check_l10n_key_usage.mjs --check",
     refreshCommand:
       "node tool/copy/check_l10n_key_usage.mjs --write-baseline",
     description:
@@ -423,18 +421,6 @@ export function readOrphanBaseline(filePath) {
 
 export function stableJson(value) {
   return `${JSON.stringify(value, null, 2)}\n`;
-}
-
-export function checkInventoryFile(inventory, inventoryPath) {
-  if (!fs.existsSync(inventoryPath)) {
-    return {current: false, reason: "missing"};
-  }
-  const expected = stableJson(inventory);
-  const actual = fs.readFileSync(inventoryPath, "utf8");
-  return {
-    current: actual === expected,
-    reason: actual === expected ? null : "stale",
-  };
 }
 
 function generatedFileExclusionReason({relativePath, source}) {
@@ -557,14 +543,11 @@ function parseArgs(argv) {
     arb: defaultArbRelativePath,
     baseline: defaultBaselineRelativePath,
     check: false,
-    checkInventory: false,
     help: false,
-    inventory: defaultInventoryRelativePath,
     json: false,
     repoRoot: defaultRepoRoot,
     sourceRoot: defaultSourceRootRelativePath,
     writeBaseline: false,
-    writeInventory: false,
   };
   for (let index = 0; index < argv.length; index += 1) {
     const argument = argv[index];
@@ -572,31 +555,19 @@ function parseArgs(argv) {
     else if (argument === "--baseline") {
       parsed.baseline = requiredValue(argv, ++index, argument);
     } else if (argument === "--check") parsed.check = true;
-    else if (argument === "--check-inventory") parsed.checkInventory = true;
     else if (argument === "--help" || argument === "-h") parsed.help = true;
-    else if (argument === "--inventory") {
-      parsed.inventory = requiredValue(argv, ++index, argument);
-    } else if (argument === "--json") parsed.json = true;
+    else if (argument === "--json") parsed.json = true;
     else if (argument === "--repo-root") {
       parsed.repoRoot = path.resolve(requiredValue(argv, ++index, argument));
     } else if (argument === "--source-root") {
       parsed.sourceRoot = requiredValue(argv, ++index, argument);
     } else if (argument === "--write-baseline") parsed.writeBaseline = true;
-    else if (argument === "--write-inventory") parsed.writeInventory = true;
     else throw new CliUsageError(`Unknown argument: ${argument}`);
   }
 
-  if (parsed.writeBaseline && parsed.writeInventory) {
+  if (parsed.writeBaseline && parsed.check) {
     throw new CliUsageError(
-      "--write-baseline and --write-inventory must run as separate review steps.",
-    );
-  }
-  if (
-    (parsed.writeBaseline || parsed.writeInventory) &&
-    (parsed.check || parsed.checkInventory)
-  ) {
-    throw new CliUsageError(
-      "Write modes cannot be combined with --check or --check-inventory.",
+      "--write-baseline cannot be combined with --check.",
     );
   }
   return parsed;
@@ -625,7 +596,6 @@ function runCli() {
   const arbPath = resolveFromRoot(repoRoot, args.arb);
   const sourceRoot = resolveFromRoot(repoRoot, args.sourceRoot);
   const baselinePath = resolveFromRoot(repoRoot, args.baseline);
-  const inventoryPath = resolveFromRoot(repoRoot, args.inventory);
   const result = scanL10nKeyUsage({repoRoot, arbPath, sourceRoot});
 
   if (args.writeBaseline) {
@@ -659,24 +629,8 @@ function runCli() {
     return;
   }
 
-  if (args.writeInventory) {
-    fs.mkdirSync(path.dirname(inventoryPath), {recursive: true});
-    fs.writeFileSync(inventoryPath, stableJson(result.inventory));
-    console.log(
-      `Wrote l10n key-usage inventory: ${displayPath(inventoryPath, repoRoot)}`,
-    );
-    if (result.missingCatalogReferences.length > 0) {
-      reportMissingCatalogReferences(result.missingCatalogReferences);
-      process.exitCode = 1;
-    }
-    return;
-  }
-
   const baseline = readOrphanBaseline(baselinePath);
   const ratchet = evaluateOrphanRatchet(result.orphanedKeys, baseline);
-  const inventoryCheck = args.checkInventory
-    ? checkInventoryFile(result.inventory, inventoryPath)
-    : null;
 
   if (args.json) {
     console.log(
@@ -684,7 +638,6 @@ function runCli() {
         inventory: result.inventory,
         baseline: displayPath(baselinePath, repoRoot),
         ratchet,
-        inventoryCheck,
         excludedFiles: result.excludedFiles,
       }).trimEnd(),
     );
@@ -728,15 +681,6 @@ function runCli() {
     );
   }
 
-  if (args.checkInventory && !inventoryCheck.current) {
-    console.error(
-      `L10n key-usage inventory is ${inventoryCheck.reason}: ${displayPath(inventoryPath, repoRoot)}`,
-    );
-    console.error(
-      "Refresh and review it with: node tool/copy/check_l10n_key_usage.mjs --write-inventory",
-    );
-    process.exitCode = 1;
-  }
 }
 
 function reportMissingCatalogReferences(references) {
@@ -762,11 +706,9 @@ Dart, comments, and ordinary string contents cannot affect either result.
 
 Check options:
   --check                 Fail when an orphan is outside the baseline.
-  --check-inventory       Fail when the generated key-usage inventory is stale.
-  --json                  Print the complete inventory and ratchet result.
+  --json                  Print the complete live inventory and ratchet result.
 
-Reviewed write options (run separately):
-  --write-inventory       Write docs/audit_registry/l10n_key_usage.json.
+Reviewed write option:
   --write-baseline        Replace the baseline with current orphaned keys after
                           pruning or restoring usages; the baseline may only shrink.
 
@@ -774,16 +716,13 @@ Path options:
   --arb <path>            Override lib/l10n/app_en.arb.
   --source-root <path>    Override the lib source root.
   --baseline <path>       Override tool/copy/l10n_orphan_baseline.json.
-  --inventory <path>      Override docs/audit_registry/l10n_key_usage.json.
   --repo-root <path>      Override the checkout root (used by fixture tests).
   --help, -h              Show this help.
 
 Parent integration loop:
-  node tool/copy/check_l10n_key_usage.mjs --write-inventory
-  node tool/copy/check_l10n_key_usage.mjs --check --check-inventory
+  node tool/copy/check_l10n_key_usage.mjs --check
+  node tool/copy/check_l10n_key_usage.mjs --check --json > build/ci/l10n-key-usage.json
   # After deleting obsolete ARB keys or restoring real usages:
   node tool/copy/check_l10n_key_usage.mjs --write-baseline
 `);
 }
-
-class CliUsageError extends Error {}

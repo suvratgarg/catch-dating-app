@@ -32,7 +32,19 @@ jobs:
         run: flutter test --concurrency=1 test/core/forms/contract_alignment_test.dart
 
       - name: Localization catalog and getter usage ratchet
-        run: node tool/copy/check_l10n_key_usage.mjs --check --check-inventory
+        run: |
+          mkdir -p build/ci
+          node tool/copy/check_l10n_key_usage.mjs --check --json > build/ci/l10n-key-usage.json
+          jq '{summary: .inventory.summary, ratchet: .ratchet}' build/ci/l10n-key-usage.json
+
+      - name: Upload localization key-usage evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: l10n-key-usage-${{ github.sha }}
+          path: build/ci/l10n-key-usage.json
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Design parity gate
         run: npm run design:parity:check
