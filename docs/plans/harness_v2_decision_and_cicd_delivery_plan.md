@@ -1,6 +1,6 @@
 ---
 doc_id: harness_v2_decision_and_cicd_delivery_plan
-version: 0.3.8
+version: 0.3.9
 updated: 2026-08-06
 owner: agent_operating_model
 status: execution-in-progress
@@ -417,10 +417,13 @@ Issues discovered during the rehearsal:
   `main` took 0.07s without conflict and produced the identical tree. Tasks
   must record integration method and integrated base tree; after a squash,
   replay reviewed commits from integrated `main` instead of merging the
-  historical stack. The clean replacement chain then replayed the lifecycle,
+  historical stack. The clean replacement chain replayed the lifecycle,
   deletion, and evidence commits in 0.06s, 0.10s, and 0.17s respectively with
-  no conflicts, confirming that the revised sequence removes this integration
-  tax when it is followed.
+  no conflicts, but each parent squash still required its child to be replayed
+  again from integrated `main`: deletion took 0.17s and the final three-commit
+  evidence replay took 0.33s. The protocol keeps integration safe; it does not
+  remove the coordination tax. Dependent squash-only PRs should be serialized,
+  or an explicit stack tool must automatically restack descendants.
 - `H2-TRANSITION-007` — the outer component graph selected the correct Tools
   lane, but the reusable workflow still launched six category buckets, each
   installing Flutter, root npm, Functions npm, and scanner dependencies. The
@@ -440,6 +443,15 @@ Issues discovered during the rehearsal:
   to 117s. Migration measurements must report queue gaps, aggregate runner
   time, and setup variance separately rather than treating one wall sample as
   a stable property of the selected checks.
+- `H2-TRANSITION-010` — a deterministic post-squash branch name already
+  existed from the historical stack. Branch creation failed safely in 0.01s;
+  inspection showed that reusing the stale branch would have produced a
+  21-file, +90/−1,514 diff against current `main`, including removal of newly
+  merged affected-tools and sparse-audit fixes. Task branches need an attempt
+  identity plus recorded base tree, and task setup must refuse branch reuse
+  when the recorded base is not the current integrated base. Old branches may
+  remain as evidence, but must be marked superseded rather than presented as
+  active merge paths.
 
 ### Checkpoint 4 — authoritative cutover candidate (2026-08-06)
 
@@ -461,13 +473,13 @@ Issues discovered during the rehearsal:
 
 | Signal | Previous behavior | Current result |
 |---|---|---|
-| Two-file tool-checker path | PR #148 / run `31099656393` ran 10 active jobs and consumed 2,400 runner-seconds over 833s wall time. The Tools lane launched all six category buckets and consumed 2,366 runner-seconds over a 790s active envelope. | PR #153 / run `31105049522` passed twice with 5 active and 12 skipped jobs, exactly the owning doc-version checker plus four mandatory guards, and all six category buckets skipped. Contended attempt 1 used 183 runner-seconds (−92.4%) but 814s wall. Uncontended attempt 2 used 254 runner-seconds (−89.4%) and 274s wall (−67.1%). Its Tools path used 133 runner-seconds (−94.4%) over a 138s envelope (−82.5%). The clean replay in PR #154 / run `31108209945` then passed with 5 active and 12 skipped jobs, 226 runner-seconds (−90.6%), and 240s wall (−71.2%); PR #153 was closed with its benchmark evidence preserved. |
+| Two-file tool-checker path | PR #148 / run `31099656393` ran 10 active jobs and consumed 2,400 runner-seconds over 833s wall time. The Tools lane launched all six category buckets and consumed 2,366 runner-seconds over a 790s active envelope. | PR #153 / run `31105049522` passed twice with 5 active and 12 skipped jobs, exactly the owning doc-version checker plus four mandatory guards, and all six category buckets skipped. Contended attempt 1 used 183 runner-seconds (−92.4%) but 814s wall. Uncontended attempt 2 used 254 runner-seconds (−89.4%) and 274s wall (−67.1%). Its Tools path used 133 runner-seconds (−94.4%) over a 138s envelope (−82.5%). The clean replay in PR #154 / run `31108209945` then passed with 5 active and 12 skipped jobs, 226 runner-seconds (−90.6%), and 240s wall (−71.2%); it squash-merged as `464da8976` in 3.73s. PR #153 was closed with its benchmark evidence preserved. |
 | Affected-runner bootstrap | Every category runner installed a broad shared toolchain. | The single affected runner completed green in 104–120s across both attempts, below the 300s acceptance threshold, but most of that time was Flutter, npm, Functions, ripgrep, and Playwright setup; the selected checks themselves completed locally in 2.4s. Phase 1.9 remains necessary. |
 | Full-control-plane interpretation | Control-plane edits require full validation. | PR #152 changes the planner, workflow, manifest, and audit tool, so its full-matrix execution is intentional and is not used as the affected-only performance result. |
-| Safe deletion accounting | The old system and accepted review artifacts were still physically present. | The v1 retirement commit removed 1,146 lines while adding 179 (net −967). The final main-based document-retirement replay `03856f3ac` removes 200 lines while adding 45 (net −155), including deletion of the 168-line retired Fable handoff. |
-| Deletion-only CI path | PR #149 used 3 active jobs, 59 runner-seconds, and 75s wall before the clean replay. | PR #155 / run `31108373400` passed with 3 active and 11 skipped jobs, 57 runner-seconds (−3.4%), and 71s wall (−5.3%). The Tools lane skipped entirely, showing that the document deletion did not reintroduce the broad tool bootstrap. |
-| Shared-evidence integration tax | The first seven-file retirement replay on the historical stack conflicted in `files.jsonl` and `passes.jsonl` after 0.17s; preserving the sparse-safe side, regenerating from the staged index, and writing a scoped receipt restored exact 7,235-entry parity. | Starting again from integrated `main`, lifecycle commit `bdb60fcd6` replayed in 0.06s, retirement commit `03856f3ac` in 0.10s, and evidence commit `5a996245d` in 0.17s, all without conflict. PR #154 and stacked PR #155 replace the historical canaries. This validates the `H2-TRANSITION-006` replay protocol while `H2-TRANSITION-004` scoped-evidence debt remains. |
-| Publication overhead | Historical branches and PRs obscured which commits were intended to merge. | The clean lifecycle branch pushed in 1.99s and opened PR #154 in 2.58s; the net-negative deletion branch pushed in 1.96s and opened PR #155 in 2.89s. Obsolete PRs #148, #149, and #153 were closed with benchmark comments instead of deleted, preserving evidence without leaving competing merge paths. |
+| Safe deletion accounting | The old system and accepted review artifacts were still physically present. | The v1 retirement commit removed 1,146 lines while adding 179 (net −967). Main merge `4a42066fe` removes 200 lines while adding 45 (net −155), including deletion of the 168-line retired Fable handoff. |
+| Deletion-only CI path | PR #149 used 3 active jobs, 59 runner-seconds, and 75s wall before the clean replay. | Stacked PR #155 / run `31108373400` used 3 active jobs, 57 runner-seconds, and 71s wall. After #154 squash-merged, the tree-identical main-based PR #157 / run `31109183790` used 3 active and 11 skipped jobs, 58 runner-seconds, and 83s wall, then squash-merged as `4a42066fe` in 5.14s. Tools skipped entirely in both runs. |
+| Shared-evidence integration tax | The first seven-file retirement replay on the historical stack conflicted in `files.jsonl` and `passes.jsonl` after 0.17s; preserving the sparse-safe side, regenerating from the staged index, and writing a scoped receipt restored exact 7,235-entry parity. | The pre-merge clean chain replayed without conflict, but squash integration required one more tree-identical deletion replay (0.17s) and, after deletion merged, one final three-commit evidence replay (0.33s). Safety improved; manual restacking remains real overhead. This validates the safe portion of `H2-TRANSITION-006` while `H2-TRANSITION-004` scoped-evidence debt remains. |
+| Publication overhead | Historical branches and PRs obscured which commits were intended to merge. | The clean lifecycle branch pushed in 1.99s and opened PR #154 in 2.58s; the first deletion branch pushed in 1.96s and opened PR #155 in 2.89s. After the parent squash, its main-based replacement pushed in 2.04s and opened PR #157 in 4.79s. Obsolete PRs #148, #149, #153, #155, and #156 were closed with evidence comments rather than left as competing merge paths. |
 
 Durable outcomes are PR wall-clock p50/p95 and escaped defects. Record the
 baseline from the ten most recent comparable PRs and compare after ten v2 PRs.
