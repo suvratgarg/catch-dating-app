@@ -33,6 +33,13 @@ export const taskSparseAnchorPaths = Object.freeze([
   "/tool/tools_manifest.json",
 ]);
 
+export const taskCommandTemplates = Object.freeze({
+  start: "node tool/harness.mjs task start --task-id <task-id> --base-sha <40-character-sha> --stack-parent <ref> --paths <path[,path...]> [--budget-mib 256]",
+  doctor: "node tool/harness.mjs task doctor --worktree <task-worktree>",
+  finish: "node tool/harness.mjs task finish --worktree <task-worktree>",
+  reap: "node tool/harness.mjs task reap --dry-run [--merged-into origin/main] [--stale-days 7]",
+});
+
 export class TaskUsageError extends Error {}
 
 export function parseWorktreePorcelain(source) {
@@ -989,5 +996,5 @@ function formatMiB(bytes) {
 }
 
 export function taskHelp() {
-  return `Harness task lifecycle:\n  task start --task-id id --base-sha <40-char-sha> --stack-parent ref --paths a,b [--budget-mib 256]\n  task doctor [--worktree path]\n  task finish [--worktree path]\n  task reap --dry-run [--merged-into origin/main] [--stale-days 7]\n\nTask worktrees are sparse, remotely preserved, locked, and live under .claude/worktrees/. Reap never deletes.`;
+  return `Harness task lifecycle:\n  ${Object.values(taskCommandTemplates).join("\n  ")}\n\nTask worktrees are sparse, remotely preserved, locked, and live under .claude/worktrees/. Reap never deletes.`;
 }

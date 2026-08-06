@@ -1,7 +1,7 @@
 ---
 doc_id: agent_skills
-version: 1.3.128
-updated: 2026-07-03
+version: 1.3.129
+updated: 2026-08-06
 owner: agent_operating_model
 status: active
 ---
@@ -23,10 +23,6 @@ node tool/agent/check_agent_readiness.mjs
 
 Do not add broad doctrine here. Add durable architecture decisions to the owner
 docs and reference them from the manifest.
-
-Parallel worktree delegation is a workflow router, not a separate architecture
-system. Use `catch-parallel-delegation.md` only to route agents to the parent-led
-Git/worktree protocol, structured result packet, and metrics recorder.
 
 Marketing website work routes through `catch-marketing-website.md` so public
 routes, generated organizer listings, static metadata, CI, and route-review
@@ -55,9 +51,6 @@ organizer search section shells,
 organizer search result shells, and search-form shells including PublicSearchBar
 ownership, direct public-search slot composition, public event-card shells, and
 the retired website legacy site barrel/import boundary.
-It layers on top of the parent-led parallel delegation protocol; the parent remains
-the owner for canonical docs, registries, generated artifacts, tool manifests,
-and final verification.
 Admin feature UI exports are part of this same boundary: route/workspace entry
 components may be exported from `admin/src/features/**`, while reusable panels,
 cards, lists, badges, and sections must live under `admin/src/shared/ui` or stay

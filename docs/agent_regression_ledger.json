@@ -1,5 +1,5 @@
 {
-  "version": 137,
+  "version": 138,
   "updated": "2026-08-06",
   "owner": "agent_operating_model",
   "entries": [
@@ -837,7 +837,6 @@
       "owner_docs": [
         "AGENTS.md",
         "docs/agent_operating_model.md",
-        "docs/agent_skills/catch-parallel-delegation.md",
         "docs/audit_registry/README.md"
       ],
       "notes": "Use Harness start, doctor, finish, and report-only reap; keep disjoint write scopes and parent-owned integration; record delegation outcomes with tool/agent/record_delegation_outcome.mjs."
@@ -4127,17 +4126,18 @@
         "tool/lib/repository_snapshot.mjs",
         "tool/run.mjs",
         "tool/harness/workflow_wiring.test.mjs",
+        "tool/harness/lib/worktree_lifecycle.mjs",
         "tool/agent/context_pack.mjs",
         "tool/agent/check_agent_readiness.mjs",
         "tool/architecture/check_dependency_direction.mjs",
         "tool/check_enforcement_integrity.mjs",
         "tool/check_repository_root_hygiene.mjs"
       ],
-      "symptom": "A tool-only sparse worktree reports missing manifest paths, drops owner docs and rules from a context pack, shrinks readiness's denominator, skips omitted Markdown or workflows, or passes dependency enforcement after scanning zero Dart files.",
+      "symptom": "A tool-only sparse worktree reports missing manifest paths, drops owner docs and rules from a context pack, omits a direct executable import, shrinks readiness's denominator, skips omitted Markdown or workflows, or passes dependency enforcement after scanning zero Dart files.",
       "guard": {
         "type": "command",
         "command": "node --test tool/lib/repository_snapshot.test.mjs tool/run.test.mjs tool/harness/workflow_wiring.test.mjs tool/agent/check_agent_readiness.test.mjs tool/architecture/check_dependency_direction.test.mjs tool/check_enforcement_integrity.test.mjs tool/check_repository_root_hygiene.test.mjs",
-        "guardEvidence": "full and sparse repository views produce identical logical results; omitted blobs are batch-read locally without lazy fetches; normal deletions stay deleted; zero-file scans fail closed"
+        "guardEvidence": "full and sparse repository views produce identical logical results; executable fixtures include direct imports; omitted blobs are batch-read locally without lazy fetches; normal deletions stay deleted; zero-file scans fail closed"
       },
       "owner_docs": [
         "docs/agent_operating_model.md",

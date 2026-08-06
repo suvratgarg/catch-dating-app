@@ -1,6 +1,6 @@
 ---
 doc_id: harness_v2_decision_and_cicd_delivery_plan
-version: 0.3.17
+version: 0.3.18
 updated: 2026-08-06
 owner: agent_operating_model
 status: execution-in-progress
@@ -658,6 +658,24 @@ Issue discovered during this tranche:
 | Source completeness | Eight governed README files had no frontmatter and two prose-valued status lines were unparseable, so blindly deleting catalog fields would have emitted ten null lifecycle states. | All 62 governed Markdown sources now produce exactly one status. The eight README owners received minimal status-only frontmatter and the two prose statuses preserve their explanation as comments. Document-state generation and context packs fail closed on missing governed source status. |
 | Executable proof | The monotonic gate could pass a current catalog whose derived Markdown lifecycle was null. | 15/15 focused lifecycle and document-state tests pass in 0.53s. The 96-test owner gate passes in 13.04s across runner, impact, enforcement, lifecycle, document-state, readiness, root-hygiene, and inventory checks; readiness is 4,981/4,981. The working-tree gate passes against legacy `origin/main` with 18 increases, 57 unchanged entries, one proven retirement, and zero findings; a direct invariant scan reports 62 valid Markdown sources, zero Markdown catalog statuses, and 13 non-Markdown catalog statuses. |
 | Broker rehearsal | This cleanup began in the legacy rehearsal worktree. | `task start` created and remotely preserved an exact-SHA, locked 26.6 MiB sparse worktree in 3.10s; `task doctor` passed in 0.16s. The first sandboxed invocation correctly failed closed because its nested remote probe lacked network authority; the same command succeeded once that declared remote-write permission was granted. |
+
+### Checkpoint 13 — parallel-delegation adapter retirement (2026-08-06)
+
+| Signal | Before this slice | Current result |
+|---|---|---|
+| Delegation authority | A 40-line adapter doc and 47-line manifest recipe repeated policy and lifecycle commands already owned by the operating model and Harness. The React refactor router also imported this unrelated delegation layer. | The adapter doc and recipe are deleted. Parallel delegation is an explicit `context_pack.mjs --mode parallel-delegation` projection owned by the operating model; its four command templates are exported from the Harness lifecycle itself. React routing no longer carries delegation policy. |
+| Context completeness | Deleting the recipe alone would silently remove start, doctor, finish, reap, outcome recording, `AGENT-DELEGATION-001`, and parent-ownership acceptance from generated task context. The old recipe also invoked a self-referential `--task parallel-delegation` context command. | A focused test proves the mode emits the owner doc, active rule, four canonical lifecycle commands, outcome recorder, and parent-owned acceptance without selecting the retired skill or emitting a recursive context command. Readiness passes 4,963/4,963; its denominator is 18 checks smaller than Checkpoint 12 because the duplicate recipe is gone. |
+| Sparse executable closure | The first focused run passed 47/48 tests: the new context-pack import was absent from the sparse-equivalence fixture and failed before assertions. | `REG-HARNESS-SPARSE-SNAPSHOT-001` now covers direct executable imports, and the fixture materializes the Harness lifecycle module. The unchanged focused gate then passed 48/48 in 8.82s; the complete owner gate passed 119/119 in 8.94s. |
+| Broker rehearsal | Ad hoc worktree creation made task isolation and preservation timing hard to compare. | `task start` created and pushed the exact-SHA, locked 27.8 MiB sparse worktree in 2.89s; `task doctor` reported healthy in 0.5s. The read-only delegation audit was recorded as accepted with parent edits. |
+| Line accounting | Checkpoints 10–12 contributed net −299 lines across the root-doc retirement and two safety tranches. | The complete 17-file implementation, checkpoint, delegation metric, and audit-receipt tranche is +140/−164, net −24. The four cleanup/safety commits are now cumulatively net −323 lines while retaining executable behavior. |
+
+Issue discovered during this tranche:
+
+- `H2-TRANSITION-019` — executable sparse closures are dependency graphs, not
+  lists of entrypoints. A new direct import caused the materialized fixture to
+  fail even though the production module existed in the full checkout. Keep
+  direct imports in the bounded fixture closure and let full/sparse equivalence
+  tests fail before a checkout optimization is published.
 
 Durable outcomes are PR wall-clock p50/p95 and escaped defects. Record the
 baseline from the ten most recent comparable PRs and compare after ten v2 PRs.
