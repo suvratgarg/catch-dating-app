@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-08-06",
+  "updated": "2026-08-07",
   "ciImpact": {
     "mandatoryCheckIds": [
       "agent:readiness",
@@ -126,7 +126,9 @@
       "category": "audit",
       "path": "tool/docs/check_doc_version_monotonic.mjs",
       "impactPaths": [
-        "tool/docs/check_doc_version_monotonic.test.mjs"
+        "tool/docs/check_doc_version_monotonic.test.mjs",
+        "docs/widget_catalog.md",
+        "docs/audit_registry/doc_versions.json"
       ],
       "command": "node tool/docs/check_doc_version_monotonic.mjs --base origin/main",
       "safety": "local-readonly",
@@ -145,7 +147,8 @@
       ],
       "role": "gate",
       "rules": [
-        "DOC-HYGIENE-001"
+        "DOC-HYGIENE-001",
+        "WIDGET-CATALOG-001"
       ],
       "vacuityProof": {
         "type": "test",
@@ -153,7 +156,8 @@
         "contains": [
           "catalog comparator fails only semantic decreases and removal inconsistencies",
           "known-bad self-test proves decrease and removal detection",
-          "current lifecycle catalog rejects duplicate or missing authority"
+          "current lifecycle catalog rejects duplicate or missing authority",
+          "widget catalog keeps current inventory ahead of Git-owned history"
         ]
       }
     },
