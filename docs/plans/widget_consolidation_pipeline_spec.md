@@ -1,6 +1,6 @@
 ---
 doc_id: widget_consolidation_pipeline_spec
-version: 0.2.1
+version: 0.2.2
 updated: 2026-08-07
 owner: widget_consolidation
 status: ready_for_execution
@@ -95,7 +95,7 @@ Anything on this list that seems necessary → stop and escalate to the owner.
 | Widget inventory + roles | `docs/audit_registry/widget_classification.json` (generator: `tool/design/generate_widget_classification.mjs`) | **Authoritative input list.** 1,163 entries with `role` (atom / composition / feature-adapter / pattern / screen / widget-state), `canonicalFamily`, `catalogStatus`, `contractId`. |
 | Canonical component contracts | `design/components/catch.components.json` (59 components, props, `kind: primitive`) | Absorption targets: a feature widget similar to a contracted primitive is the highest-value finding. |
 | Widgetbook coverage gate | `tool/design/check_widgetbook_coverage.mjs` + decision ledger `docs/design_parity/widgetbook_widget_decisions.json` | Existing coverage enforcement + the ledger pattern this spec's decision ledger copies. |
-| Variant inventory | `tool/design/generate_widget_variant_inventory.mjs` → `docs/audit_registry/widget_variant_inventory.json` | Variant/state-card labels per component; input to naming census (§8). |
+| Variant finder | `tool/design/generate_widget_variant_inventory.mjs --check` / `--json` | Live, sparse-safe variant/state-card labels per component; ephemeral input to comparison and naming review rather than a tracked snapshot. |
 | Screen capture harness | `test/ui_captures/` + `tool/ui_capture/run_captures.mjs` | Proven flutter-test → PNG pattern (incl. the `pixelRatio`-into-`toImage` fix). Phase C copies this pattern at use-case granularity. |
 | Widgetbook compare tooling | `tool/design/widgetbook_compare_server.mjs` | Read before Phase C. The live server renders from current Widgetbook/classification inputs and writes canonical decision logs; the stale static builder and HTML export are retired. |
 | Helper libs | `tool/lib/repo_paths.mjs`, `tool/lib/cli_args.mjs` | Use in all new `.mjs` tools. |
@@ -385,8 +385,9 @@ If Phase C is skipped/fails (§6.5), the registry records
 ### 5.6 Acceptance criteria — Phase B
 
 - Registry checked in; `--check` mode verifies the checked-in file matches a
-  regeneration (modulo `updated`), same pattern as
-  `generate_widget_variant_inventory.mjs --check`.
+  regeneration (modulo `updated`), using the deterministic
+  `build_widget_similarity.mjs --check` registry pattern. The live variant
+  finder is intentionally not a checked-in-registry precedent.
 - **Ground-truth recall table (v0.2.0)**: each of the four §0 families PLUS
   the absorb pair `ChatShareCardSheet`/`CatchShareCardSheet` must surface
   through at least one detector, and the registry must record which:

@@ -1,7 +1,7 @@
 ---
 doc_id: composition_audit
-version: 0.1.8
-updated: 2026-07-16
+version: 0.1.9
+updated: 2026-08-07
 owner: design_parity_review
 status: active
 ---
@@ -626,8 +626,9 @@ contract once. `SetupTab`, `LiveTab`, and `ReportTab` pass only ordered child
 lists plus `embedded`; the old `shrinkWrap`/`physics`/`padding` prop chain and
 the repeated branch-local scroll shells are gone without changing branch order,
 copy, or controller ownership. Widgetbook, the widget catalog, widget
-classification, new-widget inventory, and variant inventory now cover the
-public shell.
+classification, new-widget inventory, and the live variant finder now cover the
+public shell; variant evidence is derived from the logical repository snapshot
+rather than read from a committed artifact.
 
 ### S3. `QuestionProgressRail` uses Material ink inside the stage grammar `[done 929cf34a7]`
 

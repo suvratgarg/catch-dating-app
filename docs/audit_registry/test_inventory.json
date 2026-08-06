@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "generatedFrom": "git ls-files --cached --others --exclude-standard",
   "generatedBy": "node tool/test_inventory.mjs",
-  "total": 627,
+  "total": 628,
   "categories": {
     "firebase_rules": {
       "count": 2,
@@ -433,7 +433,7 @@
       ]
     },
     "tooling": {
-      "count": 152,
+      "count": 153,
       "files": [
         "tool/admin/generate_admin_action_catalog.test.mjs",
         "tool/agent/check_agent_readiness.test.mjs",
@@ -500,6 +500,7 @@
         "tool/design/context_pack_builder_test.dart",
         "tool/design/generate_field_inventory.test.mjs",
         "tool/design/generate_flutter_field_surface_inventory.test.mjs",
+        "tool/design/generate_widget_variant_inventory.test.mjs",
         "tool/design/widgetbook_compare_server.test.mjs",
         "tool/docs/build_doc_state.test.mjs",
         "tool/docs/check_doc_version_monotonic.test.mjs",

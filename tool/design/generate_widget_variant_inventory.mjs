@@ -1,71 +1,26 @@
 #!/usr/bin/env node
-import fs from "node:fs";
 import path from "node:path";
-import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
+import {fileURLToPath} from "node:url";
+import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
 
-const args = process.argv.slice(2);
-const writeIndex = args.indexOf("--write");
-const outputPath =
-  writeIndex === -1
-    ? "docs/audit_registry/widget_variant_inventory.json"
-    : args[writeIndex + 1];
-const shouldCheck = args.includes("--check");
-const shouldJson = args.includes("--json");
+const widgetbookPrefix = "widgetbook/lib/";
+const generatedDirectoryFile = `${widgetbookPrefix}main.directories.g.dart`;
 
-if (args.includes("--help") || args.includes("-h")) {
-  console.log(`Usage:
-  node tool/design/generate_widget_variant_inventory.mjs [--write <path>] [--check] [--json]
-
-Scans Widgetbook use cases and records variant/state-card labels by component.
-Use this to find oversized state matrices and redundant variant vocabularies.
-`);
-  process.exit(0);
-}
-
-if (writeIndex !== -1 && !outputPath) {
-  console.error("--write requires a path");
-  process.exit(64);
-}
-
-const inventory = buildInventory();
-const absoluteOutputPath = fromRepo(outputPath);
-
-if (shouldCheck) {
-  const current = fs.existsSync(absoluteOutputPath)
-    ? JSON.parse(fs.readFileSync(absoluteOutputPath, "utf8"))
-    : null;
-  const comparableCurrent = current == null
-    ? null
-    : {...current, generatedAt: inventory.generatedAt};
-  if (
-    JSON.stringify(comparableCurrent, null, 2) !==
-    JSON.stringify(inventory, null, 2)
-  ) {
-    console.error(
-      `${relativeToRepo(absoluteOutputPath)} is stale. Run npm run design:widgets:variants.`,
+export function buildWidgetVariantInventory(
+  repositorySnapshot = createRepositorySnapshot(),
+) {
+  const dartPaths = repositorySnapshot
+    .listFiles({prefix: widgetbookPrefix})
+    .filter(
+      (relativePath) =>
+        relativePath.endsWith(".dart") &&
+        relativePath !== generatedDirectoryFile,
     );
-    process.exit(1);
-  }
-} else {
-  fs.writeFileSync(absoluteOutputPath, JSON.stringify(inventory, null, 2) + "\n");
-}
-
-if (shouldJson) {
-  console.log(JSON.stringify(inventory, null, 2));
-} else {
-  console.log(
-    `Widget variant inventory: ${inventory.summary.useCases} use cases, ` +
-      `${inventory.summary.stateCards} state cards, ` +
-      `${inventory.summary.reviewCandidates} review candidates.`,
-  );
-}
-
-function buildInventory() {
+  const sources = repositorySnapshot.readTexts(dartPaths, {required: true});
   const useCases = [];
-  for (const filePath of listDartFiles(fromRepo("widgetbook/lib"))) {
-    if (filePath.endsWith("main.directories.g.dart")) continue;
-    const source = fs.readFileSync(filePath, "utf8");
-    useCases.push(...collectUseCases(source, filePath));
+
+  for (const relativePath of dartPaths) {
+    useCases.push(...collectUseCases(sources.get(relativePath), relativePath));
   }
 
   useCases.sort(
@@ -105,12 +60,10 @@ function buildInventory() {
     );
 
   const reviewCandidates = components.filter((row) => row.review.needsReview);
-
-  return {
-    generatedAt: new Date().toISOString(),
+  const inventory = {
     sourceOfTruth: {
       scope:
-        "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
+        "Live inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
       generator: "tool/design/generate_widget_variant_inventory.mjs",
     },
     summary: {
@@ -126,22 +79,75 @@ function buildInventory() {
     reviewCandidates,
     components,
   };
+  validateWidgetVariantInventory(inventory);
+  return inventory;
 }
 
-function listDartFiles(root) {
-  const results = [];
-  for (const entry of fs.readdirSync(root, {withFileTypes: true})) {
-    const fullPath = path.join(root, entry.name);
-    if (entry.isDirectory()) {
-      results.push(...listDartFiles(fullPath));
-    } else if (entry.isFile() && entry.name.endsWith(".dart")) {
-      results.push(fullPath);
-    }
+export function validateWidgetVariantInventory(inventory) {
+  const {summary, components, reviewCandidates} = inventory;
+  if (summary.useCases === 0 || summary.components === 0) {
+    throw new Error(
+      "Widget variant inventory is empty; verify the logical repository snapshot.",
+    );
   }
-  return results;
+  const componentUseCases = components.reduce(
+    (sum, component) => sum + component.useCaseCount,
+    0,
+  );
+  const componentStateCards = components.reduce(
+    (sum, component) => sum + component.stateCardCount,
+    0,
+  );
+  if (
+    summary.components !== components.length ||
+    summary.useCases !== componentUseCases ||
+    summary.stateCards !== componentStateCards ||
+    summary.reviewCandidates !== reviewCandidates.length
+  ) {
+    throw new Error("Widget variant inventory summary is internally inconsistent.");
+  }
 }
 
-function collectUseCases(source, filePath) {
+export function runWidgetVariantInventoryCli(
+  args = process.argv.slice(2),
+  {
+    repositorySnapshot = createRepositorySnapshot(),
+    stdout = (value) => console.log(value),
+    stderr = (value) => console.error(value),
+  } = {},
+) {
+  if (args.includes("--help") || args.includes("-h")) {
+    stdout(`Usage:
+  node tool/design/generate_widget_variant_inventory.mjs [--check] [--json]
+
+Scans the logical repository snapshot for Widgetbook use cases and reports
+variant/state-card labels by component. Default and --check are read-only;
+--json emits the complete ephemeral inventory to stdout.
+`);
+    return 0;
+  }
+
+  const allowedArgs = new Set(["--check", "--json"]);
+  const unknownArgs = args.filter((arg) => !allowedArgs.has(arg));
+  if (unknownArgs.length > 0) {
+    stderr(`Unknown option(s): ${unknownArgs.join(", ")}`);
+    return 64;
+  }
+
+  const inventory = buildWidgetVariantInventory(repositorySnapshot);
+  if (args.includes("--json")) {
+    stdout(JSON.stringify(inventory, null, 2));
+  } else {
+    stdout(
+      `Widget variant inventory: ${inventory.summary.useCases} use cases, ` +
+        `${inventory.summary.stateCards} state cards, ` +
+        `${inventory.summary.reviewCandidates} review candidates.`,
+    );
+  }
+  return 0;
+}
+
+function collectUseCases(source, relativePath) {
   const rows = [];
   const regex =
     /@widgetbook\.UseCase\(([\s\S]*?)\)\s*Widget\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(\s*BuildContext\s+context\s*\)\s*\{/gu;
@@ -151,15 +157,12 @@ function collectUseCases(source, filePath) {
     const bodyStart = match.index + match[0].length - 1;
     const bodyEnd = findMatchingBrace(source, bodyStart);
     const body = bodyEnd === -1 ? "" : source.slice(bodyStart, bodyEnd + 1);
-    const component = readAnnotationValue(annotation, "type") ?? "Unknown";
-    const name = readAnnotationValue(annotation, "name") ?? "Unnamed";
-    const useCasePath = readAnnotationValue(annotation, "path") ?? "";
     rows.push({
-      component,
-      name,
-      path: useCasePath,
+      component: readAnnotationValue(annotation, "type") ?? "Unknown",
+      name: readAnnotationValue(annotation, "name") ?? "Unnamed",
+      path: readAnnotationValue(annotation, "path") ?? "",
       functionName: match[2],
-      file: relativeToRepo(filePath),
+      file: relativePath,
       stateCards: collectStateCards(body),
     });
   }
@@ -219,7 +222,9 @@ function reviewForComponent(useCases, stateCards) {
     stateCards.length >= 12 ||
     (!canonicalContractOnly && oversizedUseCases.length > 0);
   const needsReview =
-    tooManyStates || duplicateLabels.length > 0 || (splitCatalog && stateCards.length >= 6);
+    tooManyStates ||
+    duplicateLabels.length > 0 ||
+    (splitCatalog && stateCards.length >= 6);
 
   return {
     needsReview,
@@ -229,7 +234,9 @@ function reviewForComponent(useCases, stateCards) {
         ? ["canonical-contract-matrix"]
         : []),
       ...(duplicateLabels.length > 0 ? ["duplicate-state-labels"] : []),
-      ...(splitCatalog && stateCards.length >= 6 ? ["split-across-use-cases"] : []),
+      ...(splitCatalog && stateCards.length >= 6
+        ? ["split-across-use-cases"]
+        : []),
     ],
     duplicateLabels,
     oversizedUseCases,
@@ -262,4 +269,11 @@ function countBy(rows, keyFor) {
     map.set(key, (map.get(key) ?? 0) + 1);
   }
   return map;
+}
+
+if (
+  process.argv[1] &&
+  path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
+) {
+  process.exitCode = runWidgetVariantInventoryCli();
 }

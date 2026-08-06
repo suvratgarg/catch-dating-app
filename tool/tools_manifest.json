@@ -3854,15 +3854,35 @@
       "id": "design:widget-variant-inventory",
       "category": "design",
       "path": "tool/design/generate_widget_variant_inventory.mjs",
-      "command": "node tool/design/generate_widget_variant_inventory.mjs",
-      "safety": "local-writes-audit-json",
+      "impactPaths": [
+        "tool/design/generate_widget_variant_inventory.test.mjs",
+        "tool/lib/repository_snapshot.mjs",
+        "widgetbook/lib/**"
+      ],
+      "command": "node tool/design/generate_widget_variant_inventory.mjs --check",
+      "safety": "local-readonly",
       "status": "active",
-      "description": "Generates and validates the Widgetbook variant inventory used to prune oversized state matrices.",
+      "ciRequirements": {
+        "repositoryView": "index",
+        "setup": [
+          "node"
+        ]
+      },
+      "description": "Finds oversized or duplicated Widgetbook variant matrices on demand from the logical repository snapshot without committing derived inventory.",
       "checks": [
         "node --check tool/design/generate_widget_variant_inventory.mjs",
+        "node --test tool/design/generate_widget_variant_inventory.test.mjs",
         "node tool/design/generate_widget_variant_inventory.mjs --check"
       ],
-      "role": "finder"
+      "role": "finder",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/generate_widget_variant_inventory.test.mjs",
+        "contains": [
+          "logical repository snapshot drives deterministic variant review candidates",
+          "CLI modes stay read-only while JSON remains available on demand"
+        ]
+      }
     },
     {
       "id": "design:parity-matrix",
@@ -3958,11 +3978,18 @@
       "category": "design",
       "path": "tool/design/widgetbook_compare_server.mjs",
       "impactPaths": [
+        "tool/design/generate_widget_variant_inventory.mjs",
         "tool/design/widgetbook_compare_server.test.mjs"
       ],
       "command": "node tool/design/widgetbook_compare_server.mjs",
       "safety": "local-server",
       "status": "active",
+      "ciRequirements": {
+        "repositoryView": "index",
+        "setup": [
+          "node"
+        ]
+      },
       "description": "Serves the interactive Widgetbook comparison and canonical decision logging UI from current Widgetbook and widget-classification sources, with pattern-family review first and dedupe evidence as a secondary queue.",
       "checks": [
         "node --check tool/design/widgetbook_compare_server.mjs",

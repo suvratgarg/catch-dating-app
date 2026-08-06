@@ -1,5 +1,5 @@
 {
-  "version": 145,
+  "version": 146,
   "updated": "2026-08-07",
   "owner": "agent_operating_model",
   "entries": [
@@ -1954,30 +1954,35 @@
         "tool/widget_cleanup_scan.sh",
         "tool/check_catch_ui_lint_drift.sh",
         "tool/design/check_widgetbook_coverage.mjs",
+        "tool/design/generate_widget_variant_inventory.mjs",
+        "tool/design/generate_widget_variant_inventory.test.mjs",
         "tool/design/widgetbook_compare_server.mjs",
         "tool/design/widgetbook_compare_server.test.mjs",
+        "tool/lib/tool_impact.test.mjs",
         "tool/design/build_widgetbook_compare.mjs",
         "tool/tools_manifest.json",
         "tool/audit/widget_cleanup_baseline.json",
         "docs/audit_registry/backlog.json",
         "docs/audit_registry/widget_classification.json",
+        "docs/audit_registry/widget_variant_inventory.json",
         "docs/design_parity/widgetbook_widget_decisions.json",
         "docs/design_parity/widgetbook_compare.html",
         "docs/design_parity/widgetbook_coverage_audit_plan.json",
         "docs/design_parity/widgetbook_coverage_report.json"
       ],
-      "symptom": "A syntax-only or regex-overbroad scanner stays green, a stored snapshot says zero, or a tracked Widgetbook report/static page stays stale while the live working tree and classification sources contain different findings.",
+      "symptom": "A syntax-only or regex-overbroad scanner stays green, a physical-filesystem scan mistakes a sparse checkout for repository truth, or a tracked Widgetbook report, variant inventory, or static page drifts from current logical sources.",
       "guard": {
         "type": "command",
-        "command": "node tool/run.mjs check audit:widget-cleanup lint:catch-ui-drift && node tool/design/check_widgetbook_coverage.mjs --self-test && node tool/design/check_widgetbook_coverage.mjs --check && node --test tool/design/widgetbook_compare_server.test.mjs && node tool/run.mjs check --manifest-only",
-        "guardEvidence": "widget cleanup ratchet and diagnostic parser remain live; Widgetbook coverage scans current sources; the compare server retains classification-only candidates; stale report, audit-plan, static-page, and builder paths stay absent"
+        "command": "node tool/run.mjs check audit:widget-cleanup lint:catch-ui-drift design:widget-variant-inventory design:widgetbook-compare-server && node tool/design/check_widgetbook_coverage.mjs --self-test && node tool/design/check_widgetbook_coverage.mjs --check && node --test tool/lib/tool_impact.test.mjs && node tool/run.mjs check --manifest-only",
+        "guardEvidence": "widget cleanup and coverage remain live; the sparse-safe variant finder reads the logical repository snapshot; the compare server derives current candidates in process; affected planning pins both to a Node-only index closure; stale report, variant-inventory, audit-plan, static-page, and builder paths stay absent"
       },
       "owner_docs": [
         "docs/audit_registry/README.md",
         "docs/design_parity/README.md",
+        "docs/plans/widget_consolidation_pipeline_spec.md",
         "tool/README.md"
       ],
-      "notes": "Zero is scanner-specific. The widget inventory ratchets live category maxima, analyzer aggregation reads only the machine diagnostic-code field, and Widgetbook coverage is derived on demand from Dart, Widgetbook, classification, and authored decision inputs rather than committed output snapshots."
+      "notes": "Zero is scanner-specific. The widget inventory ratchets live category maxima, analyzer aggregation reads only the machine diagnostic-code field, and Widgetbook coverage and variant evidence are derived on demand from the logical Git snapshot, classification, and authored decision inputs rather than committed output snapshots."
     },
     {
       "id": "REG-SHELL-001",

@@ -2,6 +2,7 @@ import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
 import {URL, fileURLToPath} from "node:url";
+import {buildWidgetVariantInventory} from "./generate_widget_variant_inventory.mjs";
 
 const repoRoot = process.cwd();
 const claudeRoot =
@@ -281,13 +282,8 @@ function withWidgetbookKnobs(url, knobs) {
   return `${originAndPath}#${route.pathname}?${route.searchParams.toString()}`;
 }
 
-function loadVariantReviewCandidates() {
-  const inventoryPath = fromRepo(
-    "docs/audit_registry/widget_variant_inventory.json",
-  );
-  if (!fs.existsSync(inventoryPath)) return [];
-  const inventory = readJson(inventoryPath);
-  return inventory.reviewCandidates ?? [];
+export function loadVariantReviewCandidates() {
+  return buildWidgetVariantInventory().reviewCandidates;
 }
 
 function loadWidgetSimilarityRegistry() {

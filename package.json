@@ -58,8 +58,6 @@
     "design:widgets:check": "node tool/design/check_widget_classification.mjs",
     "design:widgets:new": "node tool/design/check_new_widget_inventory.mjs",
     "design:widgets:new:check": "node tool/design/check_new_widget_inventory.mjs --check",
-    "design:widgets:variants": "node tool/design/generate_widget_variant_inventory.mjs",
-    "design:widgets:variants:check": "node tool/design/generate_widget_variant_inventory.mjs --check",
     "design:fields:inventory": "node tool/design/generate_flutter_field_surface_inventory.mjs",
     "design:fields:inventory:check": "node tool/design/generate_flutter_field_surface_inventory.mjs --check",
     "design:fields:facades": "node tool/design/generate_field_inventory.mjs",
