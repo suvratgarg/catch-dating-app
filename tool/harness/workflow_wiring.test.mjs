@@ -1,11 +1,16 @@
 import assert from "node:assert/strict";
-import fs from "node:fs";
 import test from "node:test";
+import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
 
-const graph = JSON.parse(
-  fs.readFileSync(new URL("./component_graph.json", import.meta.url), "utf8"),
+const repositorySnapshot = createRepositorySnapshot();
+const graph = repositorySnapshot.readJson(
+  "tool/harness/component_graph.json",
+  {required: true},
 );
-const workflow = (name) => fs.readFileSync(`.github/workflows/${name}`, "utf8");
+const workflow = (name) => repositorySnapshot.readText(
+  `.github/workflows/${name}`,
+  {required: true},
+);
 const retiredPlanner = ["plan", "ci.mjs"].join("_");
 
 function namedStep(source, name) {
@@ -102,6 +107,10 @@ test("tools fanout selects exactly one affected or full execution path", () => {
   assert.match(
     tools,
     /Exactly one affected or full tool execution path must succeed/,
+  );
+  assert.match(
+    tools,
+    /strategy:\s*\n\s+fail-fast:\s+false\s*\n\s+matrix:/,
   );
   for (const bucket of [
     "core-audit",
