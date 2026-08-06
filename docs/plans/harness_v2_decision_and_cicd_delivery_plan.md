@@ -1,6 +1,6 @@
 ---
 doc_id: harness_v2_decision_and_cicd_delivery_plan
-version: 0.3.6
+version: 0.3.7
 updated: 2026-08-06
 owner: agent_operating_model
 status: execution-in-progress
@@ -417,7 +417,10 @@ Issues discovered during the rehearsal:
   `main` took 0.07s without conflict and produced the identical tree. Tasks
   must record integration method and integrated base tree; after a squash,
   replay reviewed commits from integrated `main` instead of merging the
-  historical stack.
+  historical stack. The clean replacement chain then replayed the lifecycle,
+  deletion, and evidence commits in 0.06s, 0.10s, and 0.17s respectively with
+  no conflicts, confirming that the revised sequence removes this integration
+  tax when it is followed.
 - `H2-TRANSITION-007` — the outer component graph selected the correct Tools
   lane, but the reusable workflow still launched six category buckets, each
   installing Flutter, root npm, Functions npm, and scanner dependencies. The
@@ -458,11 +461,12 @@ Issues discovered during the rehearsal:
 
 | Signal | Previous behavior | Current result |
 |---|---|---|
-| Two-file tool-checker path | PR #148 / run `31099656393` ran 10 active jobs and consumed 2,400 runner-seconds over 833s wall time. The Tools lane launched all six category buckets and consumed 2,366 runner-seconds over a 790s active envelope. | PR #153 / run `31105049522` passed twice with 5 active and 12 skipped jobs, exactly the owning doc-version checker plus four mandatory guards, and all six category buckets skipped. Contended attempt 1 used 183 runner-seconds (−92.4%) but 814s wall. Uncontended attempt 2 used 254 runner-seconds (−89.4%) and 274s wall (−67.1%). Its Tools path used 133 runner-seconds (−94.4%) over a 138s envelope (−82.5%). |
+| Two-file tool-checker path | PR #148 / run `31099656393` ran 10 active jobs and consumed 2,400 runner-seconds over 833s wall time. The Tools lane launched all six category buckets and consumed 2,366 runner-seconds over a 790s active envelope. | PR #153 / run `31105049522` passed twice with 5 active and 12 skipped jobs, exactly the owning doc-version checker plus four mandatory guards, and all six category buckets skipped. Contended attempt 1 used 183 runner-seconds (−92.4%) but 814s wall. Uncontended attempt 2 used 254 runner-seconds (−89.4%) and 274s wall (−67.1%). Its Tools path used 133 runner-seconds (−94.4%) over a 138s envelope (−82.5%). PR #153 was then closed in favor of the clean main-based replay in PR #154; the benchmark run remains preserved as evidence. |
 | Affected-runner bootstrap | Every category runner installed a broad shared toolchain. | The single affected runner completed green in 104–120s across both attempts, below the 300s acceptance threshold, but most of that time was Flutter, npm, Functions, ripgrep, and Playwright setup; the selected checks themselves completed locally in 2.4s. Phase 1.9 remains necessary. |
 | Full-control-plane interpretation | Control-plane edits require full validation. | PR #152 changes the planner, workflow, manifest, and audit tool, so its full-matrix execution is intentional and is not used as the affected-only performance result. |
-| Safe deletion accounting | The old system and accepted review artifacts were still physically present. | The v1 retirement commit removed 1,146 lines while adding 179 (net −967). The clean document-retirement commit `b96af4be9` removes 200 lines while adding 45 (net −155), including deletion of the 168-line retired Fable handoff. |
-| Shared-evidence integration tax | No measured deletion replay on top of the new tooling tranche. | The seven-file retirement replay conflicted only in `files.jsonl` and `passes.jsonl` after 0.17s. Preserving the sparse-safe side, regenerating from the staged index, and writing a scoped surviving-file receipt restored exact 7,235-entry parity; the final commit continued in 0.06s. This confirms `H2-TRANSITION-004` remains active debt. |
+| Safe deletion accounting | The old system and accepted review artifacts were still physically present. | The v1 retirement commit removed 1,146 lines while adding 179 (net −967). The final main-based document-retirement replay `03856f3ac` removes 200 lines while adding 45 (net −155), including deletion of the 168-line retired Fable handoff. |
+| Shared-evidence integration tax | The first seven-file retirement replay on the historical stack conflicted in `files.jsonl` and `passes.jsonl` after 0.17s; preserving the sparse-safe side, regenerating from the staged index, and writing a scoped receipt restored exact 7,235-entry parity. | Starting again from integrated `main`, lifecycle commit `bdb60fcd6` replayed in 0.06s, retirement commit `03856f3ac` in 0.10s, and evidence commit `5a996245d` in 0.17s, all without conflict. PR #154 and stacked PR #155 replace the historical canaries. This validates the `H2-TRANSITION-006` replay protocol while `H2-TRANSITION-004` scoped-evidence debt remains. |
+| Publication overhead | Historical branches and PRs obscured which commits were intended to merge. | The clean lifecycle branch pushed in 1.99s and opened PR #154 in 2.58s; the net-negative deletion branch pushed in 1.96s and opened PR #155 in 2.89s. Obsolete PRs #148, #149, and #153 were closed with benchmark comments instead of deleted, preserving evidence without leaving competing merge paths. |
 
 Durable outcomes are PR wall-clock p50/p95 and escaped defects. Record the
 baseline from the ten most recent comparable PRs and compare after ten v2 PRs.
