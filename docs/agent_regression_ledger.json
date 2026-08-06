@@ -1,5 +1,5 @@
 {
-  "version": 132,
+  "version": 133,
   "updated": "2026-08-06",
   "owner": "agent_operating_model",
   "entries": [
@@ -3421,6 +3421,28 @@
         "docs/release_operations.md"
       ],
       "notes": "Cloud integration state is authoritative for what landed and when. Intentional semantic contract changes remain reviewable source changes and ordinary prose fixes need no version bump."
+    },
+    {
+      "id": "REG-DOC-RETIREMENT-PROOF-001",
+      "title": "Document retirement is blocked forever or loses governance before source deletion",
+      "status": "active",
+      "applies_to": [
+        "docs/README.md",
+        "docs/audit_registry/doc_versions.json",
+        "tool/docs/check_doc_version_monotonic.mjs",
+        "tool/docs/check_doc_version_monotonic.test.mjs"
+      ],
+      "symptom": "A document explicitly marked retirement_ready cannot be deleted, or removing only its catalog row passes while the source document remains and silently escapes governance.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/docs/check_doc_version_monotonic.test.mjs && node tool/docs/check_doc_version_monotonic.mjs --base origin/main",
+        "guardEvidence": "retirement passes only when the base catalog grants retirement_ready status and Git proves the target path is absent; catalog-only removal and active-document deletion both fail"
+      },
+      "owner_docs": [
+        "docs/README.md",
+        "docs/audit_registry/README.md"
+      ],
+      "notes": "Retirement is an explicit lifecycle transition, not an exception to governance. Historical audit receipts remain after the live document, index row, backlog path, and catalog entry are removed."
     },
     {
       "id": "REG-MOBILE-ROLE-PACKAGE-BOUNDARY-001",
