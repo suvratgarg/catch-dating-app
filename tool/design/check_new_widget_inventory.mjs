@@ -7,7 +7,7 @@ import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
 const args = process.argv.slice(2);
 const explicitBaseRef = valueAfter("--base");
 const baseRef = explicitBaseRef ?? "HEAD^";
-const writePath = valueAfter("--write") ?? "docs/audit_registry/new_widget_inventory_scan.json";
+const writePath = valueAfter("--write") ?? "build/reports/new_widget_inventory_scan.json";
 const shouldCheck = args.includes("--check");
 const shouldJson = args.includes("--json");
 const shouldNoWrite = args.includes("--no-write");

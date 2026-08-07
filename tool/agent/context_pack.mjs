@@ -1,175 +1,109 @@
 #!/usr/bin/env node
-import fs from "node:fs";
-import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {fromRepo} from "../lib/repo_paths.mjs";
 import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
-import {parseDocumentLifecycleStatus} from "../docs/check_doc_version_monotonic.mjs";
-import {taskCommandTemplates} from "../harness/lib/task_contract.mjs";
+import {parseDocumentLifecycleStatus} from "../docs/check_doc_metadata.mjs";
 import {
-  buildTaskStartContract,
-  CONTEXT_PACK_SCHEMA_V3,
-  deriveTaskCheckSelection,
-  matchesTaskScopePatterns,
-  normalizeTaskScopePaths,
-  resolveStructuredCheckPlan,
-  TASK_START_MODE,
-  taskImpactBlockers,
-  taskStartabilityBlockers,
-} from "./lib/task_input.mjs";
+  deriveCheckSelection,
+  matchesScopePatterns,
+  normalizeScopePaths,
+  resolveCheckPlan,
+} from "./lib/context_plan.mjs";
 
-let parsedCli;
+let args;
 try {
-  const parsedArgs = parseArgs(process.argv.slice(2));
-  parsedCli = {args: parsedArgs, outputFormat: resolveOutputFormat(parsedArgs)};
+  args = parseArgs(process.argv.slice(2));
 } catch (error) {
   console.error(error instanceof Error ? error.message : String(error));
   process.exit(64);
 }
-const {args, outputFormat} = parsedCli;
+
 const repositorySnapshot = createRepositorySnapshot();
 const task = args.task ?? "unspecified";
-const mode = args.mode ?? "standard";
-const ownedPaths = normalizePaths(args.ownedPaths);
-const plannedImpactPaths = args.plannedImpactPaths.length > 0
-  ? normalizePaths(args.plannedImpactPaths)
-  : ownedPaths;
-const selectionPaths = expandSelectionPaths(plannedImpactPaths);
-const generatedAt = new Date().toISOString();
-
-const rulesFile = readJson("docs/audit_registry/rules.json", {rules: {}});
+const scopePaths = normalizeScopePaths(args.paths);
+const selectionPaths = expandSelectionPaths(scopePaths);
+const rulesFile = readJson("tool/policy/rules.json", {rules: {}});
 const skillManifest = readJson("docs/agent_skills/skills_manifest.json", {skills: []});
 const toolsManifest = readJson("tool/tools_manifest.json", {tools: []});
-
-const selection = deriveTaskCheckSelection({
+const selection = deriveCheckSelection({
   task,
-  mode,
-  impactPaths: selectionPaths,
+  paths: selectionPaths,
   skills: skillManifest.skills ?? [],
-  regressions: [],
+  rules: rulesFile.rules ?? {},
 });
-const matchedSkills = selection.matchedSkills;
-const ownerDocs = buildOwnerDocs({task, selectionPaths, matchedSkills});
-const matchedRules = selectRules(rulesFile.rules ?? {}, selectionPaths, mode);
-const matchedRegressions = selection.matchedRegressions.map(projectRegression);
-const sourceState = readSourceState();
-const checkPlan = resolveStructuredCheckPlan({
-  manifest: toolsManifest,
-  requestedChecks: selection.requests,
-});
-const commands = buildCommandPlan({
-  matchedSkills,
-  matchedRegressions,
-  mode,
-  checkPlan,
-});
-const acceptance = buildAcceptance({task, ownedPaths, plannedImpactPaths, matchedSkills, mode});
-const startabilityBlockers = taskStartabilityBlockers({
-  taskId: task,
-  scopePaths: ownedPaths,
-  inspectPath: (relativePath) => {
-    if (repositorySnapshot.exists(relativePath)) return "blob";
-    if (repositorySnapshot.listPaths({prefix: `${relativePath}/`}).length > 0) return "tree";
-    return null;
-  },
-});
-const impactBlockers = taskImpactBlockers({
-  ownedPaths,
-  plannedImpactPaths,
-  inspectPath: (relativePath) => {
-    if (repositorySnapshot.exists(relativePath)) return "blob";
-    if (repositorySnapshot.listPaths({prefix: `${relativePath}/`}).length > 0) return "tree";
-    return null;
-  },
-});
-const explicitImpactBlockers = mode === TASK_START_MODE && args.plannedImpactPaths.length === 0 &&
-  ownedPaths.some((relativePath) =>
-    repositorySnapshot.listPaths({prefix: `${relativePath}/`}).length > 0)
-  ? ["planned_impact_required_for_owned_directory"]
-  : [];
-const taskStart = buildTaskStartContract({
-  taskId: task,
-  mode,
-  sourceSha: sourceState.sha,
-  ownedPaths,
-  plannedImpactPaths,
-  checkPlan,
-  sourceClean: sourceState.clean,
-  blockers: [
-    ...(mode === TASK_START_MODE ? [] : ["task_start_requires_parallel_delegation_mode"]),
-    ...startabilityBlockers,
-    ...impactBlockers,
-    ...explicitImpactBlockers,
-    ...checkPlan.blockers,
-  ],
-  deferredRegressionIds: selection.deferredRegressionIds,
-});
+validateSelectedSkills(selection.matchedSkills);
 
+const sourceState = readSourceState();
 const pack = {
-  schema: CONTEXT_PACK_SCHEMA_V3,
-  generatedAt,
   sourceSha: sourceState.sha,
   sourceClean: sourceState.clean,
   task,
-  mode,
-  scope: {
-    ownedPaths,
-    plannedImpactPaths,
-    note: ownedPaths.length === 0
-      ? "No owned paths supplied. Treat this as strategy/planning until write authority is declared."
-      : "Owned paths are the write ceiling; planned impacts select checks and constrain the actual diff.",
-  },
-  ownerDocs,
-  skills: matchedSkills.map((skill) => ({
-    skill_id: skill.skill_id,
-    path: skill.path,
-    version: skill.version,
-    required_tools: skill.required_tools ?? [],
-    required_commands: skill.required_commands ?? [],
-    success_evidence: skill.success_evidence,
-  })),
-  activeRules: matchedRules,
-  regressionGuards: matchedRegressions,
-  commandPlan: commands,
-  checkPlan,
-  taskStart,
-  acceptance,
+  scope: {paths: scopePaths},
+  ownerDocs: buildOwnerDocs({task, selectionPaths, matchedSkills: selection.matchedSkills}),
+  skills: selection.matchedSkills.map(projectSkill),
+  activeRules: selection.matchedRules.map(projectRule),
+  checkPlan: resolveCheckPlan({
+    manifest: toolsManifest,
+    requestedChecks: selection.requests,
+  }),
 };
 
-const rendered = outputFormat === "json"
+process.stdout.write(args.json
   ? `${JSON.stringify(pack, null, 2)}\n`
-  : renderMarkdown(pack);
+  : renderMarkdown(pack));
 
-if (args.output) {
-  const outputPath = path.isAbsolute(args.output) ? args.output : fromRepo(args.output);
-  fs.mkdirSync(path.dirname(outputPath), {recursive: true});
-  fs.writeFileSync(outputPath, rendered);
-  const relativeOutput = path.relative(fromRepo(), outputPath);
-  const receipt = {
-    output: relativeOutput === "" || relativeOutput.startsWith("..")
-      ? outputPath
-      : relativeOutput,
-    format: outputFormat,
-    schema: pack.schema,
-    task: pack.task,
-    complete: pack.taskStart.complete,
-    digest: pack.taskStart.digest,
-    blockerCount: pack.taskStart.blockers.length,
-    blockers: pack.taskStart.blockers.slice(0, 10),
-    blockersTruncated: pack.taskStart.blockers.length > 10,
+function validateSelectedSkills(skills) {
+  const ids = new Set();
+  for (const skill of skills) {
+    if (typeof skill.skill_id !== "string" || skill.skill_id === "") {
+      throw new Error("Every selected project skill must declare skill_id.");
+    }
+    if (ids.has(skill.skill_id)) throw new Error(`Duplicate project skill id: ${skill.skill_id}`);
+    ids.add(skill.skill_id);
+    if (typeof skill.path !== "string" || !repositorySnapshot.exists(skill.path)) {
+      throw new Error(`${skill.skill_id}: skill path does not exist: ${skill.path}`);
+    }
+    for (const field of ["applies_to", "source_docs", "required_tools"]) {
+      if (!Array.isArray(skill[field]) || skill[field].some(
+        (entry) => typeof entry !== "string" || entry === "",
+      )) {
+        throw new Error(`${skill.skill_id}: ${field} must be a string array.`);
+      }
+    }
+    for (const sourceDoc of skill.source_docs) {
+      if (!repositorySnapshot.exists(sourceDoc)) {
+        throw new Error(`${skill.skill_id}: source document does not exist: ${sourceDoc}`);
+      }
+    }
+  }
+}
+
+function projectSkill(skill) {
+  return {
+    skill_id: skill.skill_id,
+    path: skill.path,
+    version: skill.version ?? null,
+    source_docs: [...(skill.source_docs ?? [])],
+    required_tools: [...(skill.required_tools ?? [])],
+    success_evidence: skill.success_evidence ?? null,
   };
-  process.stdout.write(outputFormat === "json"
-    ? `${JSON.stringify(receipt)}\n`
-    : `Context pack written: ${receipt.output} (format=${receipt.format}, task=${receipt.task}, complete=${receipt.complete}, blockers=${receipt.blockers.join(",") || "none"}, digest=${receipt.digest})\n`);
-} else {
-  process.stdout.write(rendered);
+}
+
+function projectRule(rule) {
+  return {
+    id: rule.id,
+    title: rule.title,
+    kind: rule.kind ?? null,
+    applies_to: [...(rule.applies_to ?? [])],
+    instruction: rule.instruction,
+    enforcement: [...(rule.enforcement ?? [])],
+  };
 }
 
 function buildOwnerDocs({task, selectionPaths, matchedSkills}) {
   const docs = new Map();
-
   addDoc(docs, "AGENTS.md", "Agent routing entrypoint.");
-  addDoc(docs, "docs/agent_operating_model.md", "Execution mode and completion contract.");
+  addDoc(docs, "docs/agent_operating_model.md", "Execution and collaboration guidance.");
 
   for (const skill of matchedSkills) {
     addDoc(docs, skill.path, `Project-local skill ${skill.skill_id}.`);
@@ -178,249 +112,106 @@ function buildOwnerDocs({task, selectionPaths, matchedSkills}) {
     }
   }
 
-  if (matchesTaskScopePatterns(selectionPaths, ["lib/**", "test/**"])) {
+  if (matchesScopePatterns(selectionPaths, ["lib/**", "test/**"])) {
     addDoc(docs, "docs/app_architecture.md", "Canonical app architecture for lib/test changes.");
     addDoc(docs, "lib/README.md", "Feature map for lib/.");
   }
-  if (matchesTaskScopePatterns(selectionPaths, ["docs/**", "PROJECT_CONTEXT.md", "README.md", "AGENTS.md"])) {
-    addDoc(docs, "docs/README.md", "Docs source-of-truth index and hygiene policy.");
+  if (matchesScopePatterns(selectionPaths, [
+    "docs/**", "PROJECT_CONTEXT.md", "README.md", "AGENTS.md",
+  ])) {
+    addDoc(docs, "docs/README.md", "Documentation ownership and lifecycle policy.");
   }
-  if (matchesTaskScopePatterns(selectionPaths, ["tool/**"])) {
-    addDoc(docs, "tool/README.md", "Tool ownership, registration, and validation policy.");
+  if (matchesScopePatterns(selectionPaths, ["tool/**"])) {
+    addDoc(docs, "tool/README.md", "Tool registration and validation policy.");
   }
-  if (matchesTaskScopePatterns(selectionPaths, ["website/**", "packages/web-config/**", "tool/marketing/**", "design/website/**", "docs/marketing_website_architecture.md", "docs/web_surface_architecture.md", "docs/marketing_landing_page_research.md", "docs/marketing_app_media_pipeline.md"])) {
-    addDoc(docs, "docs/marketing_website_architecture.md", "Marketing website feature structure and refactor ownership.");
-    addDoc(docs, "docs/web_surface_architecture.md", "Marketing website route, deployment, and public surface ownership.");
-    addDoc(docs, "docs/marketing_landing_page_research.md", "Marketing page positioning, content, and redesign guardrails.");
-    addDoc(docs, "docs/marketing_app_media_pipeline.md", "App-derived marketing media ownership and drift checks.");
-    addDoc(docs, "website/README.md", "Marketing app local workflow and analytics setup.");
-    addDoc(docs, "packages/web-config/README.md", "Shared React web config and token plumbing.");
-    addDoc(docs, "design/website/routes.json", "Machine-readable marketing website route contract.");
+  if (matchesScopePatterns(selectionPaths, [
+    "website/**", "packages/web-config/**", "tool/marketing/**", "design/website/**",
+  ])) {
+    addDoc(docs, "docs/marketing_website_architecture.md", "Marketing website architecture.");
+    addDoc(docs, "docs/web_surface_architecture.md", "Web and deployment surface ownership.");
+    addDoc(docs, "website/README.md", "Marketing app local workflow.");
+    addDoc(docs, "design/website/routes.json", "Marketing route contract.");
   }
-  if (matchesTaskScopePatterns(selectionPaths, ["contracts/**", "functions/src/**", "firestore.rules", "storage.rules", "lib/**/data/**", "lib/**/domain/**"])) {
-    addDoc(docs, "docs/data_contracts.md", "Data/schema/rules contract source of truth.");
-    addDoc(docs, "docs/backend_operation_catalog.md", "Backend write and projection ownership catalog.");
+  if (matchesScopePatterns(selectionPaths, [
+    "contracts/**", "functions/src/**", "firestore.rules", "storage.rules",
+    "lib/**/data/**", "lib/**/domain/**",
+  ])) {
+    addDoc(docs, "docs/data_contracts.md", "Data and rules contract source of truth.");
+    addDoc(docs, "docs/backend_operation_catalog.md", "Backend operation ownership.");
   }
-  if (matchesTaskScopePatterns(selectionPaths, ["lib/**/presentation/**", "lib/core/widgets/**", "widgetbook/**", "docs/design_parity/**", "design/components/**", "design/screens/**", "design/tokens/**", "design_context_pack/**"])) {
-    addDoc(docs, "docs/design_parity/README.md", "Design parity workflow and state matrix owner.");
-    addDoc(docs, "docs/widget_catalog.md", "Widget ownership and catalog update rules.");
-    addDoc(docs, "docs/design_language.md", "Visual identity and design language source of truth.");
+  if (matchesScopePatterns(selectionPaths, [
+    "lib/**/presentation/**", "lib/core/widgets/**", "widgetbook/**",
+    "docs/design_parity/**", "design/components/**", "design/screens/**", "design/tokens/**",
+  ])) {
+    addDoc(docs, "docs/design_parity/README.md", "Design parity workflow.");
+    addDoc(docs, "docs/widget_catalog.md", "Widget ownership and catalog policy.");
+    addDoc(docs, "docs/design_language.md", "Visual design source of truth.");
   }
-  if (matchesTaskScopePatterns(selectionPaths, [".github/workflows/**", "firebase.json", ".firebaserc", "ios/**", "android/**"])) {
-    addDoc(docs, "docs/release_operations.md", "Release, CI, deploy, and environment gates.");
-    addDoc(docs, "docs/web_surface_architecture.md", "Web/deploy surface ownership.");
+  if (matchesScopePatterns(selectionPaths, [
+    ".github/workflows/**", "firebase.json", ".firebaserc", "ios/**", "android/**",
+  ])) {
+    addDoc(docs, "docs/release_operations.md", "Release, CI, and deployment gates.");
+    addDoc(docs, "docs/web_surface_architecture.md", "Web and deployment surface ownership.");
   }
-
-  if (task.includes("doc")) {
+  if (task.toLowerCase().includes("doc")) {
     addDoc(docs, "docs/README.md", "Task name indicates documentation work.");
   }
 
-  return [...docs.values()].filter((doc) => fileExists(doc.path));
+  return [...docs.values()].filter((doc) => repositorySnapshot.exists(doc.path));
 }
 
 function addDoc(docs, docPath, reason) {
   const existing = docs.get(docPath);
-  const nextReason = existing ? `${existing.reason} ${reason}` : reason;
   const markdown = docPath.endsWith(".md");
   const source = markdown ? repositorySnapshot.readText(docPath) ?? "" : "";
-  const status = markdown
-    ? parseDocumentLifecycleStatus(source)
-    : null;
   docs.set(docPath, {
     path: docPath,
     version: markdown ? parseDocumentVersion(source) : null,
-    status,
-    read_policy: null,
-    reason: nextReason.trim(),
+    status: markdown ? parseDocumentLifecycleStatus(source) : null,
+    reason: existing ? `${existing.reason} ${reason}` : reason,
   });
 }
 
 function parseDocumentVersion(source) {
   const frontmatter = /^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/u.exec(source)?.[1];
   if (frontmatter == null) return null;
-  const raw = /^version:\s*["']?([^\s"'#]+)["']?\s*(?:#.*)?$/mu.exec(frontmatter)?.[1];
-  return raw ?? null;
+  return /^version:\s*["']?([^\s"'#]+)["']?\s*(?:#.*)?$/mu.exec(frontmatter)?.[1] ?? null;
 }
 
-function selectRules(rules, selectionPaths, mode) {
-  return Object.entries(rules)
-    .filter(([, rule]) => ["active", "watch"].includes(rule.status))
-    .filter(([id, rule]) => {
-      if (mode === "parallel-delegation" && id === "AGENT-DELEGATION-001") return true;
-      if (selectionPaths.length === 0) return ["AUDIT-REGISTRY-001", "DOC-HYGIENE-001"].includes(id);
-      return matchesTaskScopePatterns(selectionPaths, rule.applies_to ?? []);
-    })
-    .map(([id, rule]) => ({
-      id,
-      title: rule.title,
-      status: rule.status,
-      applies_to: rule.applies_to ?? [],
-      instruction: rule.instruction,
-    }));
-}
-
-function projectRegression(entry) {
-  return {
-    id: entry.id,
-    title: entry.title,
-    status: entry.status,
-    applies_to: entry.applies_to ?? [],
-    symptom: entry.symptom,
-    guard: entry.guard,
-    owner_docs: entry.owner_docs ?? [],
-  };
-}
-
-function buildCommandPlan({matchedSkills, matchedRegressions, mode, checkPlan}) {
-  const commands = [];
-  if (mode === TASK_START_MODE) {
-    addCommand(commands, taskCommandTemplates.start, "Create the bounded task worktree from this pack.", {
-      owner: "parent",
-      phase: "lifecycle-start",
-    });
-    addCommand(commands, taskCommandTemplates.doctor, "Verify task integrity before worker execution.", {
-      owner: "worker",
-      phase: "preflight",
-    });
-    addCommand(commands, taskCommandTemplates.finish, "Verify, close, and unlock the pushed task branch.", {
-      owner: "parent",
-      phase: "lifecycle-finish",
-    });
-    addCommand(
-      commands,
-      taskCommandTemplates.recoverLease,
-      "Recover a stale execution lease only after its owner, transition claimant, and recorded child process groups are dead.",
-      {owner: "parent", phase: "lifecycle-recovery"},
-    );
-    addCommand(commands, taskCommandTemplates.reap, "Report stale terminal worktrees without mutating them.", {
-      owner: "parent",
-      phase: "maintenance",
-    });
-    addCheckCommand(commands, checkPlan.task, "worker", "task-check", "Run the bounded task checks.");
-    addCheckCommand(
-      commands,
-      checkPlan.integration,
-      "parent",
-      "integration-check",
-      "Run checks that require the full repository view.",
-    );
-  }
-  for (const skill of matchedSkills) {
-    for (const command of skill.required_commands ?? []) {
-      addCommand(commands, command, `Guidance from ${skill.skill_id}; the parent owns integration.`, {
-        owner: mode === TASK_START_MODE ? "parent" : "current-agent",
-        phase: mode === TASK_START_MODE ? "integration-guidance" : "current-task",
-      });
-    }
-  }
-  for (const regression of matchedRegressions) {
-    if (regression.guard?.type === "command" &&
-        (!Array.isArray(regression.guard.check_ids) || regression.guard.check_ids.length === 0)) {
-      addCommand(commands, regression.guard.command, `Unstructured regression guard ${regression.id}.`, {
-        owner: mode === TASK_START_MODE ? "parent" : "current-agent",
-        phase: mode === TASK_START_MODE ? "deferred-regression" : "current-task",
-      });
-    }
-  }
-  return commands;
-}
-
-function addCheckCommand(commands, checks, owner, phase, reason) {
-  const ids = checks.map((entry) => entry.id);
-  if (ids.length === 0) return;
-  addCommand(commands, `node tool/run.mjs check ${ids.join(" ")}`, reason, {owner, phase});
-}
-
-function addCommand(commands, command, reason, {owner, phase}) {
-  if (!command) return;
-  const existing = commands.find((entry) =>
-    entry.command === command && entry.owner === owner && entry.phase === phase);
-  if (existing) {
-    existing.reason = `${existing.reason} ${reason}`.trim();
-    return;
-  }
-  commands.push({command, owner, phase, reason});
-}
-
-function buildAcceptance({task, ownedPaths, plannedImpactPaths, matchedSkills, mode}) {
-  const items = [
-    "Owned write paths, planned impact paths, and excluded dirty work are stated before edits.",
-    "Owner docs are updated or explicitly left unchanged.",
-    "Relevant checks from the command plan are run or blockers are documented.",
-    "A recurring invariant is encoded in a focused test, lint, or expiring waiver.",
+function renderMarkdown(value) {
+  const lines = [
+    "# Agent Context Pack",
+    "",
+    `- Task: ${value.task}`,
+    `- Source SHA: ${value.sourceSha}`,
+    `- Source clean: ${value.sourceClean}`,
+    `- Scope: ${value.scope.paths.join(", ") || "(none supplied)"}`,
+    "",
+    "## Owner Docs",
   ];
-  if (matchedSkills.some((skill) => skill.skill_id.includes("ui") || skill.skill_id.includes("design"))) {
-    items.push("Widgetbook, contracts, captures, or design ledgers are refreshed when UI/API coverage changed.");
-  }
-  if (mode === "parallel-delegation") {
-    items.push("Worker stays inside its claimed paths; parent owns integration and final verification.");
-  }
-  if (ownedPaths.length === 0 || plannedImpactPaths.length === 0 || task === "unspecified") {
-    items.unshift("Task name and paths are narrowed before implementation.");
-  }
-  return items;
-}
-
-function renderMarkdown(pack) {
-  const lines = [];
-  lines.push("# Agent Context Pack");
-  lines.push("");
-  lines.push(`- Task: ${pack.task}`);
-  lines.push(`- Generated: ${pack.generatedAt}`);
-  lines.push(`- Owned write paths: ${pack.scope.ownedPaths.length > 0 ? pack.scope.ownedPaths.join(", ") : "(none supplied)"}`);
-  lines.push(`- Planned impact paths: ${pack.scope.plannedImpactPaths.length > 0 ? pack.scope.plannedImpactPaths.join(", ") : "(none supplied)"}`);
-  lines.push("");
-  lines.push("## Owner Docs");
-  for (const doc of pack.ownerDocs) {
-    const version = doc.version ? ` v${doc.version}` : "";
-    lines.push(`- ${doc.path}${version}: ${doc.reason}`);
-  }
-  lines.push("");
-  lines.push("## Matching Skills");
-  for (const skill of pack.skills) {
-    lines.push(`- ${skill.skill_id} (${skill.path})`);
-  }
-  lines.push("");
-  lines.push("## Active Rules");
-  for (const rule of pack.activeRules) {
-    lines.push(`- ${rule.id}: ${rule.title}`);
-  }
-  lines.push("");
-  lines.push("## Regression Guards");
-  for (const regression of pack.regressionGuards) {
-    lines.push(`- ${regression.id}: ${regression.title} (${regression.guard?.type ?? "unknown"})`);
-  }
-  lines.push("");
-  lines.push("## Task Start Contract");
-  lines.push(`- Schema: ${pack.taskStart.schema}`);
-  lines.push(`- Source SHA: ${pack.sourceSha}`);
-  lines.push(`- Complete: ${pack.taskStart.complete}`);
-  lines.push(`- Task checks: ${pack.taskStart.checkIds.join(", ") || "(none)"}`);
-  lines.push(`- Deferred integration checks: ${pack.taskStart.deferredCheckIds.join(", ") || "(none)"}`);
-  lines.push(`- Deferred unstructured regressions: ${pack.taskStart.deferredRegressionIds.join(", ") || "(none)"}`);
-  lines.push(`- Support paths: ${pack.taskStart.supportPaths.join(", ") || "(none)"}`);
-  lines.push(`- Required entrypoints: ${pack.taskStart.requiredEntrypoints.join(", ") || "(none)"}`);
-  for (const blocker of pack.taskStart.blockers) lines.push(`- Blocker: ${blocker}`);
-  lines.push("");
-  for (const group of [
-    {title: "Worker Task Commands", owners: ["worker"]},
-    {title: "Parent Integration Commands", owners: ["parent"]},
-    {title: "Current-Agent Commands", owners: ["current-agent"]},
-  ]) {
-    const commands = pack.commandPlan.filter((entry) => group.owners.includes(entry.owner));
-    if (commands.length === 0) continue;
-    lines.push(`## ${group.title}`);
-    for (const command of commands) {
-      lines.push(`- [${command.phase}] \`${command.command}\`: ${command.reason}`);
-    }
-    lines.push("");
-  }
-  lines.push("## Acceptance");
-  for (const item of pack.acceptance) {
-    lines.push(`- ${item}`);
-  }
+  appendList(lines, value.ownerDocs, (doc) => {
+    const version = doc.version == null ? "" : ` v${doc.version}`;
+    return `${doc.path}${version}: ${doc.reason}`;
+  });
+  lines.push("", "## Matching Skills");
+  appendList(lines, value.skills, (skill) => `${skill.skill_id} (${skill.path})`);
+  lines.push("", "## Active Source Rules");
+  appendList(lines, value.activeRules, (rule) => `${rule.id}: ${rule.title}`);
+  lines.push("", "## Check Plan");
+  appendList(lines, value.checkPlan.checks, (check) => {
+    return `${check.id} (${check.repositoryView}, local-readonly check) from ${check.sources.join(", ")}`;
+  });
+  for (const unresolved of value.checkPlan.unresolved) lines.push(`- Unresolved: ${unresolved}`);
   lines.push("");
   return `${lines.join("\n")}\n`;
+}
+
+function appendList(lines, values, render) {
+  if (values.length === 0) {
+    lines.push("- (none)");
+    return;
+  }
+  for (const value of values) lines.push(`- ${render(value)}`);
 }
 
 function readSourceState() {
@@ -429,82 +220,46 @@ function readSourceState() {
   return {sha, clean: status.trim() === ""};
 }
 
-function runGit(args) {
-  const result = spawnSync("git", args, {
+function runGit(gitArgs) {
+  const result = spawnSync("git", gitArgs, {
     cwd: fromRepo(),
     encoding: "utf8",
     shell: false,
     env: {...process.env, GIT_OPTIONAL_LOCKS: "0", GIT_NO_LAZY_FETCH: "1"},
   });
   if (result.error) throw result.error;
-  if (result.status !== 0) {
-    throw new Error(result.stderr || `git ${args.join(" ")} failed.`);
-  }
+  if (result.status !== 0) throw new Error(result.stderr || `git ${gitArgs.join(" ")} failed.`);
   return result.stdout;
 }
 
 function parseArgs(argv) {
-  const parsed = {
-    task: null,
-    mode: null,
-    ownedPaths: [],
-    plannedImpactPaths: [],
-    output: null,
-    json: false,
-  };
+  const parsed = {task: null, paths: [], json: false};
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
     if (arg === "--task") parsed.task = requireValue(argv, ++i, arg);
-    else if (arg === "--mode") parsed.mode = requireValue(argv, ++i, arg);
-    else if (arg === "--owned-paths") parsed.ownedPaths.push(requireValue(argv, ++i, arg));
-    else if (arg === "--planned-impact-paths") {
-      parsed.plannedImpactPaths.push(requireValue(argv, ++i, arg));
-    }
-    else if (arg === "--output") parsed.output = requireValue(argv, ++i, arg);
-    else if (arg === "--json") parsed.json = true;
+    else if (arg === "--paths") {
+      parsed.paths.push(requireValue(argv, ++i, arg));
+    } else if (arg === "--json") parsed.json = true;
     else if (arg === "--help" || arg === "-h") {
       printHelp();
       process.exit(0);
+    } else if (arg === "--mode") {
+      throw new Error("--mode was removed: context packs provide guidance and never grant task authority.");
+    } else if (arg === "--output") {
+      throw new Error("--output was removed: context packs are read-only and write only to stdout.");
     } else if (arg.startsWith("--")) {
       throw new Error(`Unknown argument: ${arg}`);
-    } else throw new Error(`Unexpected positional context-pack argument: ${arg}`);
-  }
-  if (parsed.mode != null && parsed.mode !== "parallel-delegation") {
-    throw new Error(`Unsupported context-pack mode: ${parsed.mode}`);
+    } else {
+      throw new Error(`Unexpected positional context-pack argument: ${arg}`);
+    }
   }
   return parsed;
-}
-
-function resolveOutputFormat({json, output}) {
-  const explicitFormat = json ? "json" : null;
-  const extension = output == null ? "" : path.extname(output).toLowerCase();
-  const inferredFormat = extension === ".json"
-    ? "json"
-    : ([".md", ".markdown"].includes(extension) ? "markdown" : null);
-
-  if (explicitFormat != null && inferredFormat != null && explicitFormat !== inferredFormat) {
-    throw new Error(
-      `Output suffix ${extension} conflicts with requested ${explicitFormat} format: ${output}`,
-    );
-  }
-  if (explicitFormat != null) return explicitFormat;
-  if (inferredFormat != null) return inferredFormat;
-  if (output != null) {
-    throw new Error(
-      "--output requires a .json, .md, or .markdown suffix unless --json is supplied.",
-    );
-  }
-  return "markdown";
 }
 
 function requireValue(argv, index, flag) {
   const value = argv[index];
   if (!value || value.startsWith("--")) throw new Error(`${flag} requires a value.`);
   return value;
-}
-
-function normalizePaths(values) {
-  return normalizeTaskScopePaths(values);
 }
 
 function expandSelectionPaths(scopePaths) {
@@ -521,19 +276,16 @@ function readJson(relativePath, fallback) {
   return repositorySnapshot.readJson(relativePath) ?? fallback;
 }
 
-function fileExists(relativePath) {
-  return repositorySnapshot.exists(relativePath);
-}
-
 function printHelp() {
-  console.log(`Usage: node tool/agent/context_pack.mjs --task <name> --owned-paths <path[,path...]> [--planned-impact-paths <path[,path...]>] [--mode parallel-delegation]
+  console.log(`Usage: node tool/agent/context_pack.mjs --task <name> --paths <path[,path...]> [--json]
+
+Read-only planning guidance derived from the current Git checkout and repository sources.
 
 Options:
-  --task name          Task label used to select matching skills.
-  --mode mode          Add the canonical parallel-delegation lifecycle.
-  --owned-paths paths          Comma-separated or repeated owned/write paths.
-  --planned-impact-paths paths Comma-separated or repeated expected change paths. Defaults to owned paths except delegated directory ownership requires an explicit value.
-  --output path        Write the pack and print only a compact receipt. .json, .md, and .markdown infer format.
-  --json               Serialize as JSON. Required for an unrecognized output suffix and must agree with recognized suffixes.
+  --task name    Task label used only as a skill-routing fallback.
+  --paths paths  Comma-separated or repeated repository-relative scope paths.
+  --json         Serialize the guidance as JSON instead of Markdown.
+  --help         Show this help.
+
 `);
 }

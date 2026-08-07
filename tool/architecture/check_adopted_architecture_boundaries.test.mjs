@@ -76,7 +76,7 @@ test("scanBoundaryFile flags provider, routing, data, and repository access", ()
 
 test("scanAdoptedArchitectureBoundaries ignores prose-only provider-free roles", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-boundaries-"));
-  writeJson(root, "docs/audit_registry/architecture_pattern_adoption.json", {
+  writeJson(root, "tool/architecture/pattern_adoption.json", {
     patterns: [
       {
         id: "ARCH-TEST-001",
@@ -119,7 +119,7 @@ test("scanAdoptedArchitectureBoundaries ignores prose-only provider-free roles",
 
 test("scanAdoptedArchitectureBoundaries reports missing tracked files", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-boundaries-"));
-  writeJson(root, "docs/audit_registry/architecture_pattern_adoption.json", {
+  writeJson(root, "tool/architecture/pattern_adoption.json", {
     patterns: [
       {
         id: "ARCH-TEST-001",

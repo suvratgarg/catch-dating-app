@@ -21,7 +21,7 @@ on:
       - "design/web-ui/**"
       - "design/website/**"
       - "contracts/public/website_host_listing_projection.schema.json"
-      - "docs/audit_registry/web_shared_primitive_adoption.json"
+      - "design/web-ui/shared_primitive_adoption.json"
       - "tool/ci/toolchain.env"
       - "tool/design_tokens.dart"
       - "tool/design/check_component_lexicon.mjs"

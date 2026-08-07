@@ -1,0 +1,361 @@
+name: Firebase Backend Promotion
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: Protected Firebase environment alias.
+        required: true
+        type: string
+      base_sha:
+        description: Exact base SHA recorded by the trusted CI impact plan.
+        required: true
+        type: string
+      source_ci_run_id:
+        description: Trusted source CI run id.
+        required: true
+        type: string
+      source_ci_run_attempt:
+        description: Trusted source CI run attempt.
+        required: true
+        type: string
+      source_sha:
+        description: Exact CI-approved source SHA.
+        required: true
+        type: string
+      resume_delivery_run_id:
+        description: Optional terminal non-success Delivery run id containing the exact recovery authorization/checkpoint.
+        required: false
+        type: string
+      resume_delivery_attempt:
+        description: Prior terminal non-success Delivery attempt containing the recovery state.
+        required: false
+        default: "1"
+        type: string
+
+permissions:
+  actions: read
+  contents: read
+  id-token: write
+
+jobs:
+  promote:
+    name: Firebase ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    environment: ${{ inputs.environment }}
+    concurrency:
+      group: firebase-${{ inputs.environment }}
+      cancel-in-progress: false
+    steps:
+      - name: Validate bounded promotion inputs
+        env:
+          DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+          BASE_SHA: ${{ inputs.base_sha }}
+          SOURCE_CI_RUN_ATTEMPT: ${{ inputs.source_ci_run_attempt }}
+          SOURCE_CI_RUN_ID: ${{ inputs.source_ci_run_id }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+        run: |
+          set -euo pipefail
+          if (( GITHUB_RUN_ATTEMPT > 1 )); then
+            echo "GitHub partial reruns may reuse stale authorize outputs. Start a fresh manual Delivery recovery run instead."
+            exit 64
+          fi
+          [[ "$DEPLOY_ENVIRONMENT" =~ ^(dev|staging|prod)$ ]]
+          [[ "$BASE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$SOURCE_CI_RUN_ATTEMPT" =~ ^[1-9][0-9]*$ ]]
+          [[ "$SOURCE_CI_RUN_ID" =~ ^[1-9][0-9]*$ ]]
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+
+      - name: Checkout the exact CI-approved source
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.source_sha }}
+          fetch-depth: 0
+
+      - name: Require the ordered source to remain reachable from main
+        env:
+          SOURCE_SHA: ${{ inputs.source_sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git fetch origin main:refs/remotes/origin/main --no-tags
+          git merge-base --is-ancestor "$SOURCE_SHA" refs/remotes/origin/main
+
+      - name: Download only the source CI artifact
+        uses: actions/download-artifact@v7
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ inputs.source_ci_run_id }}
+          name: firebase-delivery-${{ inputs.source_sha }}-${{ inputs.source_ci_run_attempt }}
+          path: build/delivery/source
+
+      - id: verify
+        name: Verify artifact provenance and packaged CI plan before mutation
+        env:
+          BASE_SHA: ${{ inputs.base_sha }}
+          DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+          SOURCE_CI_RUN_ATTEMPT: ${{ inputs.source_ci_run_attempt }}
+          SOURCE_CI_RUN_ID: ${{ inputs.source_ci_run_id }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+        run: |
+          set -euo pipefail
+          node tool/ci/delivery_core.mjs verify \
+            --manifest build/delivery/source/firebase-provenance.json \
+            --artifact build/delivery/source/firebase-backend.tar.gz \
+            --source-sha "$SOURCE_SHA" \
+            --ci-run-id "$SOURCE_CI_RUN_ID" \
+            --ci-run-attempt "$SOURCE_CI_RUN_ATTEMPT"
+          mkdir -p build/delivery/package
+          tar -tzf build/delivery/source/firebase-backend.tar.gz | \
+            awk '/(^\/|(^|\/)\.\.($|\/))/ { exit 64 }'
+          tar -xzf build/delivery/source/firebase-backend.tar.gz \
+            -C build/delivery/package
+          result="$(node tool/ci/package_firebase_delivery.mjs verify \
+            --package-dir build/delivery/package \
+            --source-sha "$SOURCE_SHA" \
+            --base-sha "$BASE_SHA" \
+            --ci-run-id "$SOURCE_CI_RUN_ID" \
+            --ci-run-attempt "$SOURCE_CI_RUN_ATTEMPT" \
+            --provenance-manifest build/delivery/source/firebase-provenance.json)"
+          project_id="$(jq -er --arg environment "$DEPLOY_ENVIRONMENT" \
+            '.projects[$environment]' build/delivery/package/.firebaserc)"
+          [[ "$project_id" =~ ^[a-z][a-z0-9-]{4,28}[a-z0-9]$ ]]
+          echo "targets=$(jq -er '.targets | join(",")' <<< "$result")" >> "$GITHUB_OUTPUT"
+          echo "has_functions=$(jq -er '.stages | contains(["functions"])' <<< "$result")" >> "$GITHUB_OUTPUT"
+          echo "project_id=$project_id" >> "$GITHUB_OUTPUT"
+          echo "checkpoint_scope=firebase:${DEPLOY_ENVIRONMENT}:${project_id}" >> "$GITHUB_OUTPUT"
+
+      - id: restore
+        name: Resolve resumable checkpoint
+        env:
+          EXPLICIT_ATTEMPT: ${{ inputs.resume_delivery_attempt }}
+          EXPLICIT_RUN_ID: ${{ inputs.resume_delivery_run_id }}
+          GH_TOKEN: ${{ github.token }}
+          PROJECT_ID: ${{ steps.verify.outputs.project_id }}
+          SOURCE_CI_RUN_ATTEMPT: ${{ inputs.source_ci_run_attempt }}
+          SOURCE_CI_RUN_ID: ${{ inputs.source_ci_run_id }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+        run: |
+          set -euo pipefail
+          restore_run_id=""
+          restore_attempt=""
+          explicit=false
+          if [[ -n "$EXPLICIT_RUN_ID" ]]; then
+            [[ "$EXPLICIT_RUN_ID" =~ ^[1-9][0-9]*$ ]]
+            [[ "$EXPLICIT_ATTEMPT" =~ ^[1-9][0-9]*$ ]]
+            restore_run_id="$EXPLICIT_RUN_ID"
+            restore_attempt="$EXPLICIT_ATTEMPT"
+            explicit=true
+          fi
+          artifact_name="firebase-checkpoint-${DEPLOY_ENVIRONMENT}-${PROJECT_ID}-${SOURCE_SHA}-${restore_attempt}"
+          should_restore=false
+          if [[ -n "$restore_run_id" ]]; then
+            if [[ "$explicit" == "true" && "$restore_run_id" == "$GITHUB_RUN_ID" ]]; then
+              echo "A Delivery run cannot resume a checkpoint from its current attempt."
+              exit 64
+            fi
+            if [[ "$restore_run_id" != "$GITHUB_RUN_ID" ]]; then
+              prior_run="$(gh api \
+                "repos/$GITHUB_REPOSITORY/actions/runs/$restore_run_id/attempts/$restore_attempt")"
+              jq -e \
+                --arg repository "$GITHUB_REPOSITORY" \
+                --argjson attempt "$restore_attempt" '
+                .name == "Delivery" and
+                .path == ".github/workflows/delivery.yml" and
+                .head_repository.full_name == $repository and
+                .head_branch == "main" and
+                .status == "completed" and
+                (.conclusion == "failure" or
+                 .conclusion == "cancelled" or
+                 .conclusion == "timed_out" or
+                 .conclusion == "stale" or
+                 .conclusion == "action_required" or
+                 .conclusion == "startup_failure") and
+                .run_attempt == $attempt
+              ' <<< "$prior_run" > /dev/null
+            fi
+            count="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$restore_run_id/artifacts" \
+              --paginate --jq "[.artifacts[] | select(.name == \"$artifact_name\")] | length" | \
+              awk '{ total += $1 } END { print total + 0 }')"
+            decision="$(node tool/ci/delivery_core.mjs restore-decision \
+              --artifact-count "$count")"
+            should_restore="$(jq -er '.shouldRestore' <<< "$decision")"
+            if [[ "$(jq -er '.restartFromFirstStage' <<< "$decision")" == "true" ]]; then
+              echo "No exact checkpoint exists for $DEPLOY_ENVIRONMENT; restarting its same verified package at the first stage."
+            fi
+          fi
+          echo "run_id=$restore_run_id" >> "$GITHUB_OUTPUT"
+          echo "artifact_name=$artifact_name" >> "$GITHUB_OUTPUT"
+          echo "should_restore=$should_restore" >> "$GITHUB_OUTPUT"
+
+      - name: Download prior checkpoint
+        if: ${{ steps.restore.outputs.should_restore == 'true' }}
+        uses: actions/download-artifact@v7
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ steps.restore.outputs.run_id }}
+          name: ${{ steps.restore.outputs.artifact_name }}
+          path: build/delivery/checkpoint
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT_EMAIL }}
+
+      - name: Install authenticated Google Cloud CLI
+        uses: google-github-actions/setup-gcloud@v3
+
+      - name: Verify environment prerequisites for the approved targets
+        env:
+          DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+          DEPLOY_TARGETS: ${{ steps.verify.outputs.targets }}
+        run: >-
+          node tool/firebase/check_environment_readiness.mjs
+          --env "$DEPLOY_ENVIRONMENT"
+          --targets "$DEPLOY_TARGETS"
+
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+          cache: npm
+          cache-dependency-path: functions/package-lock.json
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools@${{ steps.toolchain.outputs.firebase-tools-version }}
+
+      - name: Create a separate deploy tree
+        run: |
+          test ! -e build/delivery/deploy-tree
+          cp -a build/delivery/package build/delivery/deploy-tree
+
+      - name: Install runtime dependencies only in the deploy tree
+        if: ${{ steps.verify.outputs.has_functions == 'true' }}
+        run: >-
+          npm --prefix build/delivery/deploy-tree/functions ci
+          --omit=dev --ignore-scripts
+
+      - name: Reverify every authored byte immediately before deployment
+        env:
+          BASE_SHA: ${{ inputs.base_sha }}
+          SOURCE_CI_RUN_ATTEMPT: ${{ inputs.source_ci_run_attempt }}
+          SOURCE_CI_RUN_ID: ${{ inputs.source_ci_run_id }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+        run: |
+          set -euo pipefail
+          node tool/ci/delivery_core.mjs verify \
+            --manifest build/delivery/source/firebase-provenance.json \
+            --artifact build/delivery/source/firebase-backend.tar.gz \
+            --source-sha "$SOURCE_SHA" \
+            --ci-run-id "$SOURCE_CI_RUN_ID" \
+            --ci-run-attempt "$SOURCE_CI_RUN_ATTEMPT"
+          node tool/ci/package_firebase_delivery.mjs verify \
+            --package-dir build/delivery/package \
+            --source-sha "$SOURCE_SHA" \
+            --base-sha "$BASE_SHA" \
+            --ci-run-id "$SOURCE_CI_RUN_ID" \
+            --ci-run-attempt "$SOURCE_CI_RUN_ATTEMPT" \
+            --provenance-manifest build/delivery/source/firebase-provenance.json
+          node tool/ci/package_firebase_delivery.mjs verify \
+            --package-dir build/delivery/deploy-tree \
+            --source-sha "$SOURCE_SHA" \
+            --base-sha "$BASE_SHA" \
+            --ci-run-id "$SOURCE_CI_RUN_ID" \
+            --ci-run-attempt "$SOURCE_CI_RUN_ATTEMPT" \
+            --provenance-manifest build/delivery/source/firebase-provenance.json \
+            --allow-runtime-dependencies true \
+            --trusted-package-dir build/delivery/package
+
+      - id: promote
+        name: Resume ordered backend stages
+        env:
+          CHECKPOINT: build/delivery/checkpoint/checkpoint.json
+          CHECKPOINT_SCOPE: ${{ steps.verify.outputs.checkpoint_scope }}
+          DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+          DELIVERY_FUNCTIONS_DIR: build/delivery/deploy-tree/functions
+          PACKAGE_DIR: build/delivery/deploy-tree
+          PROJECT_ID: ${{ steps.verify.outputs.project_id }}
+          SOURCE_CI_RUN_ATTEMPT: ${{ inputs.source_ci_run_attempt }}
+          SOURCE_CI_RUN_ID: ${{ inputs.source_ci_run_id }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$(dirname "$CHECKPOINT")"
+          while true; do
+            next="$(node tool/ci/delivery_core.mjs next \
+              --manifest build/delivery/source/firebase-provenance.json \
+              --artifact build/delivery/source/firebase-backend.tar.gz \
+              --source-sha "$SOURCE_SHA" \
+              --ci-run-id "$SOURCE_CI_RUN_ID" \
+              --ci-run-attempt "$SOURCE_CI_RUN_ATTEMPT" \
+              --scope "$CHECKPOINT_SCOPE" \
+              --checkpoint "$CHECKPOINT")"
+            if [[ "$(jq -r '.next.complete' <<< "$next")" == "true" ]]; then
+              break
+            fi
+            stage="$(jq -er '.next.stage' <<< "$next")"
+            target="$(jq -er --arg stage "$stage" '
+              .stages as $stages |
+              .targets as $targets |
+              ($stages | index($stage)) as $index |
+              select($index != null) |
+              $targets[$index]
+            ' "$PACKAGE_DIR/delivery-plan.json")"
+            case "$stage" in
+              firestore-indexes|functions|firestore-rules|storage-rules) ;;
+              *) echo "Refusing unknown delivery stage: $stage"; exit 64 ;;
+            esac
+            stage_status=0
+            failure_detail="Firebase CLI stage failed; safe to resume this stage."
+            CATCH_DELIVERY_FUNCTIONS_DIR="$DELIVERY_FUNCTIONS_DIR" \
+              ./tool/deploy_firebase_targets.sh \
+                "$DEPLOY_ENVIRONMENT" "$target" \
+                --config "$PACKAGE_DIR/firebase.json" || stage_status=$?
+            if [[ "$stage_status" == "0" && "$stage" == "firestore-indexes" ]]; then
+              node tool/firebase/wait_firestore_indexes_ready.mjs \
+                --indexes "$PACKAGE_DIR/firestore.indexes.json" \
+                --project "$PROJECT_ID" \
+                --timeout-seconds 1800 \
+                --poll-seconds 20 || stage_status=$?
+              failure_detail="Firestore composite indexes did not reach READY; safe to resume the index stage."
+            fi
+            if [[ "$stage_status" == "0" ]]; then
+              node tool/ci/delivery_core.mjs checkpoint \
+                --manifest build/delivery/source/firebase-provenance.json \
+                --artifact build/delivery/source/firebase-backend.tar.gz \
+                --source-sha "$SOURCE_SHA" \
+                --ci-run-id "$SOURCE_CI_RUN_ID" \
+                --ci-run-attempt "$SOURCE_CI_RUN_ATTEMPT" \
+                --scope "$CHECKPOINT_SCOPE" \
+                --checkpoint "$CHECKPOINT" \
+                --stage "$stage" \
+                --status passed
+            else
+              node tool/ci/delivery_core.mjs checkpoint \
+                --manifest build/delivery/source/firebase-provenance.json \
+                --artifact build/delivery/source/firebase-backend.tar.gz \
+                --source-sha "$SOURCE_SHA" \
+                --ci-run-id "$SOURCE_CI_RUN_ID" \
+                --ci-run-attempt "$SOURCE_CI_RUN_ATTEMPT" \
+                --scope "$CHECKPOINT_SCOPE" \
+                --checkpoint "$CHECKPOINT" \
+                --stage "$stage" \
+                --status failed \
+                --detail "$failure_detail"
+              exit "$stage_status"
+            fi
+          done
+
+      - name: Upload resumable checkpoint
+        if: ${{ always() && hashFiles('build/delivery/checkpoint/checkpoint.json') != '' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: firebase-checkpoint-${{ inputs.environment }}-${{ steps.verify.outputs.project_id }}-${{ inputs.source_sha }}-${{ github.run_attempt }}
+          path: build/delivery/checkpoint/checkpoint.json
+          if-no-files-found: error
+          retention-days: 90

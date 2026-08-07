@@ -5,9 +5,9 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 
 const DEFAULT_MANIFEST =
-  "docs/audit_registry/flutter_field_surface_adoption.json";
+  "design/components/flutter_field_surface_adoption.json";
 const DEFAULT_OUTPUT =
-  "docs/audit_registry/flutter_field_surface_inventory.json";
+  "build/reports/flutter_field_surface_inventory.json";
 const DEFAULT_ROUTES = "tool/ui_capture/route_inventory.json";
 const DEFAULT_SCREENS = "design/screens/catch.screens.json";
 const ALLOWED_STATUSES = new Set([
@@ -473,7 +473,8 @@ function main() {
     [--repo-root <path>] [--manifest <path>] [--write <path>]
 
 Validates the human-owned Flutter field-surface adoption ledger, proves all
-legacy product callsites are classified, and writes deterministic evidence.
+legacy product callsites are classified, and optionally writes an ignored
+build report.
 `);
     return;
   }
@@ -483,17 +484,7 @@ legacy product callsites are classified, and writes deterministic evidence.
   });
   const outputFile = resolveFrom(args.repoRoot, args.outputPath);
   const output = `${JSON.stringify(inventory, null, 2)}\n`;
-  if (args.check) {
-    const current = fs.existsSync(outputFile)
-      ? fs.readFileSync(outputFile, "utf8")
-      : null;
-    if (current !== output) {
-      throw new Error(
-        `${normalizePath(path.relative(args.repoRoot, outputFile))} is stale; ` +
-          "run npm run design:fields:inventory",
-      );
-    }
-  } else {
+  if (!args.check) {
     fs.mkdirSync(path.dirname(outputFile), {recursive: true});
     fs.writeFileSync(outputFile, output);
   }

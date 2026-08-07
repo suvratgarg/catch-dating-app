@@ -9,7 +9,6 @@ const defaultRepoRoot = path.resolve(path.dirname(scriptPath), "../..");
 const defaultRegistryPath =
   "docs/design_parity/widget_consolidation/pattern_families.json";
 const widgetbookPath = "widgetbook/lib/main.directories.g.dart";
-const classificationPath = "docs/audit_registry/widget_classification.json";
 
 const priorities = new Set(["P0", "P1", "P2"]);
 const statuses = new Set([
@@ -140,11 +139,10 @@ export function validatePatternFamilies(registry, evidence = {}) {
         }
       }
       if (member.preview === "source-only" && isNonemptyString(member.symbol)) {
-        const hasClassification = evidence.classificationSymbols?.has(member.symbol);
         const hasSource = evidence.sourceSymbols?.has(member.symbol);
-        if (!hasClassification && !hasSource) {
+        if (!hasSource) {
           errors.push(
-            `${memberPrefix}.preview is source-only but '${member.symbol}' has no current Dart classification or lib source evidence`,
+            `${memberPrefix}.preview is source-only but '${member.symbol}' has no current lib source evidence`,
           );
         }
       }
@@ -312,7 +310,6 @@ function collectEvidence(repoRoot, registry) {
   const previews = collectRequestedPreviewStates(registry);
   const errors = [];
   let widgetbookSymbols = new Set();
-  let classificationSymbols = new Set();
   let sourceSymbols = new Set();
 
   if (previews.has("required")) {
@@ -329,20 +326,10 @@ function collectEvidence(repoRoot, registry) {
   }
 
   if (previews.has("source-only")) {
-    const fullPath = path.resolve(repoRoot, classificationPath);
-    if (fs.existsSync(fullPath)) {
-      try {
-        classificationSymbols = parseClassificationSymbols(
-          JSON.parse(fs.readFileSync(fullPath, "utf8")),
-        );
-      } catch (error) {
-        errors.push(`${classificationPath} is not valid classification evidence: ${error.message}`);
-      }
-    }
     sourceSymbols = collectDartSourceSymbols(path.resolve(repoRoot, "lib"));
   }
 
-  return {errors, widgetbookSymbols, classificationSymbols, sourceSymbols};
+  return {errors, widgetbookSymbols, sourceSymbols};
 }
 
 function collectRequestedPreviewStates(registry) {
@@ -359,15 +346,6 @@ export function parseWidgetbookSymbols(source) {
   const symbols = new Set();
   const pattern = /WidgetbookComponent\(\s*name:\s*'([^']+)'/gu;
   for (const match of source.matchAll(pattern)) symbols.add(match[1]);
-  return symbols;
-}
-
-function parseClassificationSymbols(classification) {
-  const symbols = new Set();
-  if (!Array.isArray(classification?.widgets)) return symbols;
-  for (const row of classification.widgets) {
-    if (isNonemptyString(row?.name)) symbols.add(row.name);
-  }
   return symbols;
 }
 

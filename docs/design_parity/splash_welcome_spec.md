@@ -1,7 +1,7 @@
 ---
 doc_id: splash_welcome_spec
-version: 1.3.0
-updated: 2026-07-30
+version: 1.3.1
+updated: 2026-08-07
 owner: design_parity_review
 status: implemented
 ---
@@ -55,9 +55,9 @@ mounted. Consumer cold boot reuses its provider-free `WelcomeScene` with landing
 actions suppressed; the animation is therefore above routing rather than owned
 by `/start`.
 
-Workflow: standard (AGENTS.md; verify with `rg`; per-part commits with
-pathspecs; focused tests + analyzer; sequential Flutter runs; catalog/
-doc_versions/passes stamps; readiness gate).
+Workflow: standard (`AGENTS.md`; verify with `rg`; per-part commits with
+pathspecs; focused tests + analyzer; sequential Flutter runs; catalog checks;
+Git and CI proof).
 
 ---
 
@@ -289,7 +289,7 @@ The installable Host app has a distinct static launch contract:
 |---|---|---|
 | Part 1 transparent splash marks generated separately from launcher icon | aligned | `tool/branding/generate_catch_icon.swift` renders the shared single-line `Catch_` lockup with explicit Archivo `wght: 600` / `wdth: 78`; `tool/branding/native_branding.generated.json`, `tool/branding/README.md`, and tracked `assets/branding/catch_splash_mark_*.png` carry the outputs |
 | Part 1 splash refs point to transparent marks while launcher icon stays opaque | aligned | `pubspec.yaml` keeps launcher `image_path` on `catch_icon.png` and splash `image`/`image_dark` on `catch_splash_mark_*` |
-| Part 1 regenerated native/web splash outputs and cold-launch evidence | aligned | `docs/audit_registry/passes.jsonl` pass ids `2026-07-06-splash-welcome-spec`, `2026-07-06-splash-native-appshots`, and `2026-07-06-splash-welcome-final-gates` |
+| Part 1 regenerated native/web splash outputs and cold-launch evidence | aligned | Historical pass ids are retained in Git history; the former tracked pass file and writer are retired. Current verification uses the branding checks and live cold-launch evidence. |
 | Part 2 preserve native splash before startup awaits | aligned | `lib/app_bootstrap.dart` calls `FlutterNativeSplash.preserve` before orientation/Firebase/logger/analytics awaits |
 | Part 2 idempotent native splash removal | aligned | `CatchNativeSplash` owns one platform removal; Consumer removes after the matching boot frame and Host removes after its force-update gate resolves |
 | Part 3 startup screen retone and delayed spinner | aligned | `CatchStartupLoadingScreen` uses `t.bg`, brightness-matched transparent splash marks, and `CatchMotion.startupIndicatorDelay`; covered by `test/core/catch_primitives_test.dart` |

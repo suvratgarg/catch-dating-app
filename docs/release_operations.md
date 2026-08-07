@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 1.18.0
-updated: 2026-08-06
+version: 2.0.0
+updated: 2026-08-07
 owner: recursive_audit_loop
 status: active
 ---
@@ -37,15 +37,16 @@ visual-smoke workflows use `macos-26`.
 
 ## Firebase Environment Readiness
 
-Every Firebase deploy workflow runs the target-aware metadata preflight after
-OIDC authentication and before Node/Java setup, dependency installation,
-Firebase CLI installation, or repeated backend validation:
+The reusable backend Firebase promotion workflow runs the target-aware metadata
+preflight after OIDC authentication and before Node/Java setup, dependency
+installation, Firebase CLI installation, or repeated backend validation.
+Hosting and explicit Remote Config/Extensions operations have separate owners:
 
 ```sh
 node tool/firebase/check_environment_readiness.mjs --manifest-only
 node tool/firebase/check_environment_readiness.mjs \
   --env dev \
-  --targets functions,firestore:indexes,firestore:rules,storage
+  --targets firestore:indexes,functions,firestore:rules,storage
 ```
 
 `tool/firebase/environment_readiness.json` is the source of truth for enabled
@@ -181,10 +182,12 @@ artifacts while still detecting stale or invalid Dart bindings.
 
 Backend validation and backend deployment are also separate decisions.
 CI-control changes intentionally validate Functions, contracts, and rules, but
-they do not authorize an automatic dev Firebase deployment. The impact
-manifest marks only owned Functions, contract, rules/index, or Firebase backend
-configuration changes as `backendDeploy`; the dev deploy workflow consumes
-that dedicated output instead of inferring deployment from validation lanes.
+they do not authorize a Firebase mutation. Only directly owned Functions,
+rules, index, or Storage-rules sources may emit their bounded deploy group;
+contract and Firebase configuration changes alone never grant mutation. After
+every selected validation lane passes, CI packages those explicit groups once,
+and Delivery promotes that exact SHA-, run-attempt-, and checksum-bound package
+instead of inferring deployment from validation lanes or rebuilding it.
 
 The app package-graph gate must also work in a clean checkout before
 `flutter pub get`. It validates governed native-package declarations directly
@@ -203,8 +206,8 @@ The current workflows are:
 | `.github/workflows/contracts-ci.yml` | Validates the `contracts/` schema source of truth: source validity, generated-output freshness, schema/type boundaries, path literals, and rules semantics. |
 | `.github/workflows/operations-ci.yml` | Reusable Operations platform contracts, tests, boundaries, and CLI smoke lane, selected independently from general repository tooling. |
 | `.github/workflows/app-build-matrix.yml` | Reusable role/platform-selective dev web, Android debug APK, and iOS simulator build gates. |
-| `.github/workflows/firebase-dev-deploy.yml` | Automatic dev Firebase deploy after `main` is green. |
-| `.github/workflows/firebase-deploy.yml` | Manual deploy of selected Firebase targets to dev, staging, or prod. Keep staging/prod explicit. |
+| `.github/workflows/delivery.yml` | Sole backend delivery entrypoint. Authorizes a successful same-repository `main` CI run and promotes its exact package through dev, staging, and protected production. |
+| `.github/workflows/_firebase-promote.yml` | Reusable environment adapter that verifies provenance before authentication, resumes ordered stages, and waits for deployed Firestore indexes to become ready before dependent stages continue. |
 | `.github/workflows/data-validation.yml` | Read-only Firestore data validation, nightly and manual. |
 | `.github/workflows/marketing-website.yml` | Validates the marketing build and Playwright/axe Storybook accessibility contract, deploys the production Firebase Hosting `marketing` target, then requires a unique unknown production URL to return HTTP 404. |
 | `.github/workflows/admin-website.yml` | Validates and deploys the production Firebase Hosting `admin` target after matching changes land on `main`. |
@@ -471,21 +474,30 @@ after both probes pass.
 
 ## CD Policy
 
-Firebase CD is intentionally asymmetric by environment:
+Firebase backend delivery is one ordered promotion chain. After a successful
+same-repository `main` push, CI packages only the backend groups authorized by
+the exact impact plan. `Delivery` verifies that CI-produced package and promotes
+the same bytes through `dev`, then `staging`, then `prod`; each environment waits
+for the prior environment to finish. The reusable promotion job attaches the
+matching GitHub Environment, so reviewer protection on `prod` pauses the chain
+without rebuilding or changing the approved artifact.
 
-- `dev` deploys automatically from `main` after the required CI/build workflows
-  for that exact commit pass.
-- `staging` deploys only through the manual `Firebase Deploy` workflow.
-- `prod` backend deploys only through the manual `Firebase Deploy` workflow and
-  retains required-reviewer approval.
+The backend stages inside each environment are ordered
+`firestore-indexes` → `functions` → `firestore-rules` → `storage-rules`, omitting
+groups the impact plan did not authorize. The index stage is not complete until
+every packaged composite index reaches `READY`. Normal delivery is therefore
+automatic from dev through protected production, but it is still a backend
+deployment—not a store, Hosting, or app release.
 
-The automatic dev deploy is a backend deploy, not a store release. It starts
-only after the aggregate CI result succeeds and only when the same impact plan
-explicitly authorizes a backend deployment. Functions, contract,
-Firestore/rules/index, and Firebase backend configuration owners carry that
-authorization; validation-only CI-control changes do not. The workflow deploys
-Functions, Firestore indexes, Firestore rules, and Storage rules in the safe
-order.
+Manual `Delivery` dispatch is bounded recovery, not an arbitrary deploy path.
+It accepts only the id and full SHA of the oldest pending successful
+same-repository `main` CI attempt plus a terminal non-success Delivery run id
+and attempt. The prior run must contain a source-, base-, package-, and
+provenance-digest-bound recovery authorization written before promotion. It
+restores a matching checkpoint when present and restarts that same verified
+package at stage one when the terminal attempt ended before checkpoint
+publication. It cannot rebuild a branch, borrow an unrelated failed run,
+broaden the authorized targets, or substitute newer workspace contents.
 
 Mobile artifacts remain separate from backend deployment. App-impacting pushes
 to `main` start `.github/workflows/mobile-internal-release.yml` only for the
@@ -547,33 +559,117 @@ disabled, the deployed web app's reCAPTCHA v3 key has a matching Firebase App
 Check server secret, and the live page completes App Check token exchange
 before sign-in.
 
-The manual `Firebase Deploy` workflow forwards these GitHub Environment
-variables into Firebase Hosting predeploys when `hosting` is selected:
-`VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`,
-`VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_STORAGE_BUCKET`,
-`VITE_FIREBASE_MESSAGING_SENDER_ID`, `VITE_FIREBASE_APP_ID`,
-`VITE_FIREBASE_MEASUREMENT_ID`, `VITE_WEBSITE_APPCHECK_SITE_KEY`,
-`VITE_STORE_LINKS_MODE`, `VITE_APP_STORE_URL`, `VITE_PLAY_STORE_URL`,
-`VITE_ADMIN_DATA_MODE`, `VITE_ADMIN_FIREBASE_ENV`, and
-`VITE_ADMIN_APPCHECK_SITE_KEY`. `VITE_GTM_ID` is optional until the production
-GTM container exists; paid-acquisition readiness still requires setting it and
-validating consent-aware tags. The environment-specific values must match the
-selected Firebase alias; for prod, `VITE_FIREBASE_PROJECT_ID` must be
-`catch-dating-app-64e51` and `VITE_ADMIN_FIREBASE_ENV` must be `prod`.
-For marketing Hosting, an absent environment-level `VITE_STORE_LINKS_MODE`
-defaults to `prelaunch`; cut over by setting it to `live` only after setting
-both official product URLs in the same GitHub Environment.
+Backend `Delivery` never deploys Hosting or forwards Vite variables. The
+marketing and admin workflows own their production Hosting builds and the
+`prod-hosting` environment described above. `VITE_GTM_ID` remains optional
+until the production GTM container exists; paid-acquisition readiness still
+requires setting it and validating consent-aware tags. For marketing Hosting,
+an absent environment-level `VITE_STORE_LINKS_MODE` defaults to `prelaunch`;
+cut over by setting it to `live` only after setting both official product URLs
+in the same GitHub Environment.
 
-If the automatic dev deploy fails, fix the branch with a new PR rather than
-rerunning deploys against a stale commit. Use the manual `Firebase Deploy`
-workflow for intentional redeploys or environment-specific recovery.
+If a `main` CI attempt reuses successful jobs from an older attempt, Required CI
+fails unless that exact current attempt owns its planner artifact and, when
+applicable, backend package. Use **Re-run all jobs** so the successful attempt
+publishes a complete immutable artifact set.
 
-Current note from the 2026-05-20 environment pass: the Cloud Billing API
-blocker is resolved in dev, staging, and prod, and the latest automatic
-`Firebase Dev Deploy` run on `main` passed. Keep using
-`tool/deploy_firebase_targets.sh` so the logical `functions` target expands to
-explicit callable names and does not prompt to delete legacy live run/run-club
-functions in non-interactive CI.
+If backend delivery ends in `failure`, `cancelled`, `timed_out`, `stale`,
+`action_required`, or `startup_failure`, do not use GitHub's re-run-job or
+re-run-failed-jobs controls: they may reuse successful prerequisite outputs from
+an older attempt.
+Start a fresh manual `Delivery` dispatch from `main` with the exact oldest
+pending successful CI run id and SHA plus that terminal non-success Delivery run
+id and attempt. The fresh run re-authorizes queue position and verifies the
+prior run's exact source/package authorization. When the prior run stopped
+before publishing its first checkpoint, recovery starts the same verified
+package at stage one; otherwise it restores the matching environment/project
+checkpoint. Successful, neutral, skipped, or nonterminal runs cannot authorize
+recovery. A source fix needs a new PR, CI run, and package; do not use recovery
+to rebuild or redeploy mutable workspace state. The logical
+`functions` target still expands to explicit callable names so non-interactive
+promotion does not prompt to delete unrelated legacy live functions.
+
+## Exact-Artifact Promotion And Resume
+
+Validation and deployment are separate trust decisions. A green CI run proves
+the source and checks that ran in that job; it does not prove that bytes rebuilt
+later by a deployment job are identical. Delivery paths should therefore build
+once and promote the producing run's verified artifact whenever the target
+supports artifact promotion.
+
+The reusable delivery contract binds:
+
+- the full 40-character source commit SHA;
+- the producing CI run identifier and attempt;
+- artifact basename, byte length, and SHA-256 digest; and
+- the ordered stages permitted for that artifact.
+
+The Firebase adapter additionally binds the Harness plan's base SHA and exact
+deploy groups so the packaged stage order cannot differ from the plan CI
+validated.
+
+The final `Required CI` step publishes `catch.ci-delivery-authority/v3` only
+after that exact attempt owns its planner artifact and, when deployment is
+needed, backend package. The authority binds the numeric CI workflow id,
+workflow-scoped run number, run id, attempt, source SHA, and each referenced
+artifact's immutable id, name, and GitHub SHA-256 digest. Delivery downloads
+the referenced plan and package by artifact id and independently verifies the
+downloaded archive digest before extraction.
+
+Before using deployment credentials or mutating remote state, a consuming job
+must receive the expected source SHA, run id, and run attempt from trusted queue
+selection or explicit recovery input, download the artifact plus provenance
+manifest, and verify every binding. A source mismatch, run mismatch, attempt
+mismatch, changed size, or digest mismatch fails closed. A successful upstream
+run by itself is not artifact identity.
+
+Multi-stage delivery uses an ephemeral checkpoint bound to the provenance
+manifest digest, source SHA, source run and attempt, artifact digest, and an
+immutable target scope. Firebase scopes include the environment and project id,
+so a dev checkpoint cannot authorize staging or production. Checkpoints form an
+ordered prefix of the manifest's stages. A stage is complete only after its
+documented remote postcondition passes. On retry, the consumer verifies the
+same artifact and checkpoint binding, identifies the first incomplete stage,
+and resumes there. It cannot skip ahead; replay of an already-passed stage is
+idempotent and does not rewrite prior proof.
+
+Provenance, source-bound recovery authorizations, cursors, and checkpoint
+documents are CI or bounded recovery artifacts, not tracked repository state.
+Writes must be atomic so interruption cannot publish a partial checkpoint. A
+verified v4 cursor remains authoritative if its later drain-dispatch step fails
+or the originating run is subsequently rerun; selection uses the greatest
+verified source run number within the exact CI workflow id, never the mutable
+latest conclusion of that Delivery run. One artifact-catalogue scan selects the
+cursor and oldest pending `catch.ci-delivery-authority/v3`; Delivery then
+downloads and verifies only those selected artifacts and their historical run
+attempts. It does not perform an API call or ZIP download per retained merge.
+The selected plan's base SHA must equal the cursor source SHA, so a missing or
+expired intermediate authority fails visibly rather than skipping work.
+
+CI workflow ids define queue generations because GitHub run numbers restart if
+a workflow is deleted and recreated. A cursor from another or legacy generation
+causes a hard stop. Review the intended backend baseline and explicitly remove
+or migrate the old cursor artifacts before restarting; never compare run numbers
+across workflow ids.
+Backend plans, packages, authorizations, cursors, and checkpoints retain for 90
+days, covering GitHub's 30-day approval and rerun window without turning source
+control into a delivery-state database.
+
+Resume is not rollback. Resume continues promotion of the same verified bytes.
+Rollback follows the target-specific instructions in this runbook and may use
+a prior verified artifact, a compensating configuration change, or a
+roll-forward. Partial remote state must be reported explicitly; no generic
+delivery helper may claim it reversed a deployment merely because a command
+failed.
+
+The shared delivery primitive verifies identity, integrity, order, and resume
+state. Each release owner still supplies environment readiness, credentials,
+approval, concurrency, stage postconditions, smoke tests, and mutation policy.
+Production permission is never inferred from a valid digest. The Firebase
+backend consumes this contract through `delivery.yml` and
+`_firebase-promote.yml`. Marketing/admin Hosting and mobile releases still use
+their owning workflows; do not claim exact-artifact promotion for those paths
+until their own adapters adopt the contract.
 
 ## Release Setup Evidence Snapshot
 
@@ -766,14 +862,19 @@ complete for each target environment (`dev`, `staging`, and `prod`):
   Current non-prod/prod state has reused test-mode Razorpay secrets; replace
   them with the intended `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` values per
   Firebase project.
+- [ ] Before client code generation or a mobile release build, ensure the local,
+  git-ignored root `.env` contains a non-placeholder `RAZORPAY_KEY_ID`. The
+  client key is separate from the Firebase Secret Manager credentials used by
+  Functions and must never be committed.
 - [ ] Replace the temporary `RAZORPAY_WEBHOOK_SECRET` values before enabling
   real Razorpay webhooks. As of 2026-06-26, `dev`, `staging`, and `prod` each
   have an enabled placeholder Secret Manager version so unrelated Functions
   deploys are not blocked while Razorpay account approval is pending.
-- [ ] Deploy Functions after secrets and params are present:
-  `./tool/deploy_firebase_targets.sh <env> functions`.
-- [ ] Confirm the Functions phase completed its automatic callable-invoker sync
-  before the deploy advanced to indexes or rules.
+- [ ] Merge the backend change and require `Delivery` to promote the exact
+  CI-produced package; do not use a local rebuild for the normal rollout.
+- [ ] Confirm packaged indexes reached `READY`, then confirm the Functions phase
+  and its automatic callable-invoker sync passed before Firestore or Storage
+  rules advanced.
 - [ ] Smoke test the full paid-event matrix in the target environment:
   free booking, INR Razorpay checkout success/cancel/refund, non-INR Stripe host
   onboarding, non-INR Stripe checkout success/cancel/expiration webhook, payment
@@ -782,19 +883,22 @@ complete for each target environment (`dev`, `staging`, and `prod`):
 - [ ] Record the smoke evidence in the release notes before enabling production
   host-created international paid events.
 
-## Firebase Deploy Order
+## Firebase Backend Delivery Order
 
 For backend/schema-affecting releases, deploy in this order per environment:
 
-1. Functions.
-2. Firestore indexes.
+1. Firestore indexes, followed by an explicit wait until every packaged index is
+   `READY`.
+2. Functions, including callable-invoker synchronization.
 3. Firestore rules.
 4. Storage rules.
-5. Hosting or app surfaces, when applicable.
 
-Deploy Functions before tightening rules when a release moves writes behind new
-callables. Do not use Remote Config as a schema migration tool; use it only to
-block older app builds after the compatible build is available.
+The impact plan may omit unaffected stages but cannot reorder the stages it
+selects. Hosting and app releases are separate workflows, not a fifth backend
+stage. Keep Functions ahead of tighter rules when a release moves writes behind
+new callables, and keep indexes ahead of Functions that may immediately depend
+on new queries. Do not use Remote Config as a schema migration tool; use it only
+to block older app builds after the compatible build is available.
 
 The 2026-07-10 event-scoped Host inquiry change is a concrete two-phase case:
 deploy the updated `startClubHostConversation` Function and generated payload
@@ -823,33 +927,37 @@ Dev and staging may keep the flag true for integration testing. Production
 stays dark in source until the live backend proof exists; a client merge is not
 a substitute for the Functions deployment.
 
-`./tool/deploy_firebase_targets.sh` deploys the logical `functions` target by
-expanding the current exports from `functions/src/index.ts` into explicit
-`functions:<name>` targets. This keeps legacy live Functions, such as old
-run/run-club callables, deployed until a deliberate cleanup plan removes them.
-Exact `functions:<name>` requests use the same Functions-first phase. Planner
-errors and empty or malformed target sets fail before any deploy begins. After
-the Functions phase, the helper discovers every live callable-labeled v2
-Function and synchronizes `roles/run.invoker` on its exact Cloud Run service
-before continuing to indexes or rules. The deploy identity therefore needs
-permission to list Cloud Functions and get/set Cloud Run IAM policies.
+`./tool/deploy_firebase_targets.sh` is the bounded stage executor beneath
+Delivery and an operator-only recovery helper. It plans selected targets in the
+same index → Functions → Firestore-rules → Storage-rules order regardless of
+the caller's CSV order. The logical `functions` target expands current exports
+from `functions/src/index.ts` into explicit `functions:<name>` targets. This
+keeps legacy live Functions, such as old run/run-club callables, deployed until
+a deliberate cleanup plan removes them. Exact `functions:<name>` requests use
+the same Functions phase. Planner errors and empty or malformed target sets fail
+before any deploy begins. After the Functions phase, the helper discovers every
+live callable-labeled v2 Function and synchronizes `roles/run.invoker` on its
+exact Cloud Run service before continuing to rules. The deploy identity
+therefore needs permission to list Cloud Functions and get/set Cloud Run IAM
+policies. Delivery additionally owns artifact verification, checkpointing, and
+the index-`READY` wait; invoking this helper directly is not normal promotion.
 Do not use a broad `firebase deploy --only functions --force` unless deleting
 legacy Functions is the intended release action.
 
 Typical commands:
 
 ```bash
-./tool/deploy_firebase_targets.sh dev functions,firestore:indexes,firestore:rules,storage
-./tool/deploy_firebase_targets.sh staging functions,firestore:indexes,firestore:rules,storage
-./tool/deploy_firebase_targets.sh prod functions,firestore:indexes,firestore:rules,storage
+./tool/deploy_firebase_targets.sh dev firestore:indexes,functions,firestore:rules,storage
+./tool/deploy_firebase_targets.sh staging firestore:indexes,functions,firestore:rules,storage
+./tool/deploy_firebase_targets.sh prod firestore:indexes,functions,firestore:rules,storage
 ```
 
 Remote Config is intentionally separate from the standard backend deploy:
 
 ```bash
-./tool/deploy_firebase_targets.sh dev remoteconfig
-./tool/deploy_firebase_targets.sh staging remoteconfig
-./tool/deploy_firebase_targets.sh prod remoteconfig
+./tool/firebase_with_env.sh dev deploy --only remoteconfig
+./tool/firebase_with_env.sh staging deploy --only remoteconfig
+./tool/firebase_with_env.sh prod deploy --only remoteconfig
 ```
 
 Firebase Extensions (`firestore-bigquery-export` instances in `firebase.json`)
@@ -946,11 +1054,13 @@ only the legacy `events` indexes (`status/startTime` and `clubId/startTime`).
 Deploy `firestore:indexes` and wait for every discovery index to become
 `READY` before enabling an app build that relies on the direct event query.
 
-Then deploy Functions and indexes before applying any backfill. Apply the
-backfill only after reviewing the dry-run counts for that environment:
+Require Delivery to promote indexes and then Functions before applying any
+backfill. Apply the backfill only after the index stage reports `READY`, the
+Functions stage passes, and the dry-run counts for that environment are
+reviewed. The direct helper below is for bounded operator recovery only:
 
 ```bash
-./tool/deploy_firebase_targets.sh dev functions,firestore:indexes
+./tool/deploy_firebase_targets.sh dev firestore:indexes,functions
 node tool/data/backfill_event_discovery_fields.mjs --env dev --apply
 ```
 
@@ -1025,6 +1135,18 @@ both Firebase Analytics and Crashlytics. It is true only when:
 In a debug build it is always false: `AppAnalytics.initialize()` calls
 `setAnalyticsCollectionEnabled(false)`, so even Firebase **DebugView shows
 nothing** (DebugView requires collection to be enabled).
+
+Do not use `GoogleService-Info.plist`'s legacy `IS_ANALYTICS_ENABLED` value as
+standalone proof that collection is on or off, and do not hand-edit generated
+Firebase config files to change it. The runtime gate above plus live DebugView
+and release evidence are authoritative. Regenerate the environment/role plist
+from Firebase only when the registered app configuration changes.
+
+The Runner Crashlytics symbol-upload phase intentionally evaluates every
+non-Debug build and declares no fake output artifact: release dSYM uploads must
+not be skipped because Xcode cached a prior script result. The resulting
+dependency-analysis warning is accepted build noise, not an open release
+defect.
 
 ### How to verify Analytics events reach Firebase
 

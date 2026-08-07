@@ -14,7 +14,7 @@ Catch is a Flutter dating and social-events product with Firebase backends, a Re
 - [lib/README.md](lib/README.md): Flutter feature ownership map.
 - [firebase/README.md](firebase/README.md): Firebase environment setup.
 - [functions/README.md](functions/README.md): Functions architecture and security.
-- [TESTS.md](TESTS.md): generated test inventory and test commands.
+- [TESTS.md](TESTS.md): maintained test strategy and common test commands.
 - [docs/release_operations.md](docs/release_operations.md): build, signing, deploy, and release runbook.
 
 ## Local setup
@@ -26,7 +26,6 @@ flutter pub get
 npm ci
 npm --prefix functions ci
 cp .env.example .env.local
-node tool/agent/check_agent_readiness.mjs
 ```
 
 Firebase defaults to the development project. Every deployment or remote log command must still name an environment explicitly through `tool/firebase_with_env.sh`; see [firebase/README.md](firebase/README.md).
@@ -50,7 +49,6 @@ flutter test
 npm --prefix functions test
 npm run web:typecheck
 node tool/run.mjs check --manifest-only
-node tool/agent/check_agent_readiness.mjs
 ```
 
 Use `node tool/run.mjs list` to discover governed checks. Data-contract changes must also run `./tool/check_data_contract.sh`.

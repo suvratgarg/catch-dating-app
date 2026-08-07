@@ -1,0 +1,1964 @@
+{
+  "version": "1.8.1",
+  "updated": "2026-08-05",
+  "sourceOfTruth": "docs/app_architecture.md#reference-implementation-workflow",
+  "purpose": "Defines architecture reference exhibits, adopter files, candidate status, and back-propagation obligations enforced by architecture checks.",
+  "patterns": [
+    {
+      "id": "ARCH-SCREEN-001",
+      "name": "Feature screen route boundary",
+      "status": "reference",
+      "screenInventory": "design/screens/catch.screens.json",
+      "architectureExhibit": "docs/app_architecture.md#exhibit-arch-screen-001-feature-screen-boundary",
+      "prototypeFiles": [
+        "lib/events/presentation/event_detail_screen.dart",
+        "lib/events/presentation/event_detail_screen_state.dart",
+        "lib/events/presentation/event_detail_display_state.dart",
+        "lib/events/presentation/event_detail_controller.dart",
+        "lib/events/presentation/widgets/event_detail_cta.dart",
+        "lib/events/presentation/widgets/event_detail_body.dart",
+        "test/events/event_detail_screen_state_test.dart",
+        "test/events/event_detail_controller_test.dart",
+        "test/events/event_detail_widgets_test.dart"
+      ],
+      "adopters": [
+        {
+          "path": "lib/events/presentation/event_detail_screen.dart",
+          "role": "reference route screen: provider watch, auth-resolution and organizer-authority fail-closed branches, resolved viewer availability, loaded Scaffold, bottom navigation, role-correct organizer route callbacks, mutation listeners, EventDetailScreenState host/companion/booking derivation, and route side effects",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/events/presentation/event_detail_screen_state.dart",
+          "role": "provider-free EventDetailHostState, EventDetailCompanionState, and EventDetailBookingDockState adapters for club lookup display data, host message availability, companion plan availability, booking dock modes, mutation display flags, and consumer-action visibility",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/events/presentation/event_detail_display_state.dart",
+          "role": "provider-free Event Detail display-state definitions for companion availability, host card data, host stats, section visibility, invite-loop visibility, and social/review access",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/events/presentation/event_detail_controller.dart",
+          "role": "reference controller seam for event-detail side effects and save mutation",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/events/presentation/widgets/event_detail_body.dart",
+          "role": "embedded scroll body for reference route path; requires explicit save/share/calendar/back callbacks, companion state, host state, route-intent callbacks, and has no direct Scaffold, bottom navigation, provider reads, mutation listeners, or route side effects",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "test/events/event_detail_screen_state_test.dart",
+          "role": "provider-free host, companion, and booking dock display-state behavior coverage",
+          "status": "aligned"
+        },
+        {
+          "path": "design/screens/catch.screens.json",
+          "role": "canonical feature-screen inventory and screen composition map",
+          "status": "aligned"
+        },
+        {
+          "path": "widgetbook/lib/events/event_detail_use_cases.dart",
+          "role": "route-state and body-state review coverage for the reference screen",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/events/presentation/event_location_map_screen.dart",
+          "role": "adopter route screen: EventDetailViewModel watch, chromeless route Scaffold, coordinate gate, provider-free map body, and external directions callback owned by the route",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/events/presentation/event_location_map_state.dart",
+          "role": "provider-free display-state adapter for exact coordinate availability, map tile mode, location copy, and directions URI",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "test/events/events_widgets_test.dart",
+          "role": "focused route/body/state tests for Event Location Map screen-boundary adoption",
+          "status": "aligned"
+        },
+        {
+          "path": "test/ui_captures/catalog/screen_capture_catalog.dart",
+          "role": "screen-capture entries mount EventLocationMapRouteScreen for route chrome states instead of body-owned scaffold compatibility",
+          "status": "aligned"
+        },
+        {
+          "path": "widgetbook/lib/utility/p3_utility_use_cases.dart",
+          "role": "Widgetbook route and body states use route provider overrides or explicit EventLocationMapState/callback fixtures",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/events/presentation/calendar/calendar_screen.dart",
+          "role": "adopter route screen: uid/event provider waves, CalendarHomeState construction, route Scaffold, sliver scroll state, retry invalidation, and event-detail navigation callbacks",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/events/presentation/calendar/calendar_screen_state.dart",
+          "role": "provider-free CalendarHomeState and CalendarEventSummary adapters for selected date, header mode, event merge/sort, and club-id lookup input",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "test/calendar/calendar_screen_test.dart",
+          "role": "route shell, async/error, scroll, date selection, summary, and event-detail navigation coverage for Calendar",
+          "status": "aligned"
+        },
+        {
+          "path": "test/calendar/calendar_screen_state_test.dart",
+          "role": "CalendarHomeState and CalendarEventSummary behavior coverage",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/events/presentation/saved_events_screen.dart",
+          "role": "adopter route screen: uid/saved-event provider wave, route Scaffold, async/error/empty states, retry invalidation, SavedEventsListState construction, club-name lookup, and saved-event detail navigation",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/events/presentation/saved_events_state.dart",
+          "role": "provider-free SavedEventsListState adapter for event ordering, saved/past badge labels, tile statuses, today, and club-id lookup input",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "test/events/saved_events_screen_test.dart",
+          "role": "SavedEventsListState plus Saved Events route empty, ordering, and navigation coverage",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/clubs/presentation/detail/club_detail_screen.dart",
+          "role": "adopter route screen: auth-resolution-safe initial route cache, organizer authority and app-visibility boundary, host ownership preview boundary, relationship fail-closed state, and provider-free organizer-detail content composition",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/explore/presentation/explore_screen.dart",
+          "role": "adopter route screen: route-owned Explore feed/organizer/city/search/filter/source provider wave, auth-resolved account controls, guest joined-filter reset, app-browseable organizer supply, live filter-sheet count subscription, body-state branch precedence, map launcher, mutation listener, city-recovery callback, event/external navigation side effects, and provider-free chrome/body composition",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/explore/presentation/explore_map_screen.dart",
+          "role": "adopter route screen: route-owned Explore map feed/filter provider wave, viewer-keyed cache reset, app-browseable organizer supply, map view-model construction, retry invalidation, distance-filter cycling, and event-detail navigation side effects",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/explore/presentation/widgets/explore_body.dart",
+          "role": "provider-free Explore body/sliver composer for feed async states, partial club-section failure, optional legacy club rails, activity browse callbacks, and event/external row callbacks",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/explore/presentation/widgets/explore_events_section.dart",
+          "role": "provider-free Explore events section shell for feed loading/error/data branch selection, empty clear/broaden callbacks, mixed-card sliver assembly, and route-owned event/external/club selection callbacks",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/explore/presentation/widgets/explore_event_rows.dart",
+          "role": "provider-free Explore event row widgets with explicit ineligible visual weight and this-week compatibility section receiving explicit row state and route-owned event/external callbacks",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/explore/presentation/widgets/explore_club_cards.dart",
+          "role": "provider-free Explore club card and compact club row widgets receiving explicit club data and route-owned club-selection callback",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/explore/presentation/widgets/explore_events_status_slivers.dart",
+          "role": "provider-free Explore event loading and empty slivers receiving explicit empty-state actions and retry/clear callbacks",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/explore/presentation/widgets/explore_filter_rail.dart",
+          "role": "provider-free Explore date strip, removable applied-filter row, and filter sheet receiving explicit date/filter/sheet state plus route-owned open and mutation callbacks",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/explore/presentation/widgets/explore_header.dart",
+          "role": "provider-free Explore browse header and discovery cover header receiving explicit search text, featured item, and route-owned search/event callbacks",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "test/explore/explore_widgets_test.dart",
+          "role": "Explore route/body/chrome provider-boundary coverage including provider-free body, events, filter, header fixtures plus route-level provider override tests",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/host_event_manage_screen.dart",
+          "role": "defined host workspace variant: canonical route aliases, uid/club/event provider wave, access gate, loaded Setup/Guests/Live/Report workspace, roster/private-access/Event Success/report/action section composition",
+          "status": "variant_needed"
+        }
+      ],
+      "variantPatterns": [
+        {
+          "id": "ARCH-SCREEN-001C",
+          "name": "Host workspace route boundary",
+          "status": "defined",
+          "paths": [
+            "lib/hosts/presentation/host_event_manage_screen.dart",
+            "lib/hosts/presentation/host_event_manage_controller.dart",
+            "lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
+            "test/hosts/host_create_event_screen_test.dart",
+            "test/hosts/host_event_manage_controller_test.dart",
+            "test/ui_captures/catalog/screen_capture_catalog.dart",
+            "widgetbook/lib/hosts/host_operations_use_cases.dart"
+          ],
+          "exitCriteria": "Promote Host Event Manage from defined variant to aligned adopter only when the loaded workspace is provider-free for selected section, roster, private access, invite links, Event Success, report, host action display data, mutation display state, retry intents, navigation, and typed callbacks while HostEventManageRouteScreen keeps canonical route aliases plus route loading, missing-resource, error, and access gates. As of 2026-07-03 HostEventManageScreenState is provider-free, but HostEventManageScreen still owns loaded-workspace provider watches and HostEventAttendancePanel still has WidgetRef-parameter debt, so the variant remains open."
+        },
+        {
+          "id": "ARCH-SCREEN-001D",
+          "name": "Explore provider-island compatibility variants",
+          "status": "defined",
+          "paths": [
+            "lib/explore/presentation/widgets/explore_list.dart",
+            "lib/explore/presentation/widgets/explore_peek_rail.dart"
+          ],
+          "exitCriteria": "Delete ExploreList if it remains only a legacy fixture/compatibility sliver, or migrate it to the route-owned ExploreBody contract. Promote ExplorePeekRail only when the map sheet lead is either deleted as non-production compatibility code or receives feed async state, retry, analytics, and event navigation callbacks from a route/screen boundary. ExploreCityPicker was promoted after ExploreScreen/ExploreChrome took over city-list and selected-city provider reads plus typed city callbacks."
+        },
+        {
+          "id": "ARCH-SCREEN-001E",
+          "name": "Event Success staged screen boundary",
+          "status": "needs_update",
+          "paths": [
+            "lib/event_success/presentation/event_success_companion_screen.dart",
+            "lib/event_success/presentation/event_success_companion_screen_state.dart",
+            "lib/event_success/presentation/event_success_host_screen.dart",
+            "lib/event_success/presentation/event_success_host_screen_state.dart",
+            "lib/event_success/presentation/event_success_live_reveal_card.dart",
+            "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
+            "lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart",
+            "lib/event_success/presentation/host_parts/event_success_host_live.dart",
+            "lib/event_success/presentation/host_parts/event_success_host_overrides.dart",
+            "lib/event_success/presentation/host_parts/event_success_host_shared.dart",
+            "test/event_success/event_success_companion_screen_state_test.dart"
+          ],
+          "exitCriteria": "Promote Event Success only after companion and host route screens are thin provider edges, display-state derivation lives in registered *_screen_state.dart adapters, provider-free part widgets remain render-only, and tests cover the host and companion screen-state adapters. The companion screen-state adapter, host screen-state adapter, and live reveal action-state adapter are aligned as of 2026-07-03; route-level ref density and route splitting remain open."
+        }
+      ],
+      "candidateQueue": [
+        {
+          "id": "ARCH-SCREEN-001-CHATS-INBOX-BOUNDARY",
+          "path": "lib/chats/presentation/inbox/widgets/chats_list.dart",
+          "reason": "ChatsList still re-watches route providers for celebration and display-state construction. Keep this as explicit screen-boundary migration debt; do not mark the Chats inbox route aligned until the route owns those reads and passes display state/callbacks down."
+        },
+        {
+          "id": "ARCH-SCREEN-001-EVENT-SUCCESS-COMPANION-ROUTE-BOUNDARY",
+          "path": "lib/event_success/presentation/event_success_companion_screen.dart",
+          "reason": "Event Success companion now has a registered provider-free screen-state adapter, but the route screen still contains the provider wave, multiple route/render classes, and callback construction. Keep as screen-boundary debt until the route is a thin provider edge and the render surface receives explicit state/callbacks."
+        },
+        {
+          "id": "ARCH-SCREEN-001-EVENT-SUCCESS-HOST-ROUTE-BOUNDARY",
+          "path": "lib/event_success/presentation/event_success_host_screen.dart",
+          "reason": "Event Success host now has provider-free host section/action state, but the route still owns a broad provider wave, mutation callback construction, and multiple route/render surfaces. Split the route/workspace boundary before marking the host surface aligned."
+        },
+        {
+          "id": "ARCH-SCREEN-001-HOST-OPERATIONS-SPLIT",
+          "path": "lib/hosts/presentation/host_operations_screen.dart",
+          "reason": "Host Operations is a 5k+ line multi-route file with multiple Consumer screens and a broad provider/ref surface. HostClubsScreenState and HostClubInsightsState are now extracted, but the file still needs route/workspace splits before applying screen-boundary adoption claims."
+        },
+        {
+          "id": "ARCH-SCREEN-001-HOST-ATTENDANCE-PANEL-REFS",
+          "path": "lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
+          "reason": "HostEventAttendancePanel remains a large widget with WidgetRef parameter debt and should receive route-owned attendance display state, mutation intents, and callbacks before the Host Event Manage workspace can be promoted."
+        }
+      ],
+      "requiredBackPropagation": "When this exhibit changes, inspect each aligned adopter and every variant path above; update EventDetailScreen/EventDetailBody first, then EventLocationMapRouteScreen/EventLocationMapState/EventLocationMapScreen, CalendarScreen/CalendarHomeState, SavedEventsScreen/SavedEventsListState, and HostEventManageRouteScreen/ARCH-SCREEN-001C before migrating any later screen from this pattern.",
+      "requiredChecks": [
+        "flutter test test/events/event_detail_screen_state_test.dart",
+        "flutter test test/events/event_detail_controller_test.dart test/events/event_detail_widgets_test.dart",
+        "flutter analyze --no-fatal-infos lib/events/presentation/event_detail_screen.dart lib/events/presentation/event_detail_screen_state.dart lib/events/presentation/widgets/event_detail_body.dart lib/events/presentation/event_detail_controller.dart test/events/event_detail_screen_state_test.dart test/events/event_detail_controller_test.dart test/events/events_test_helpers.dart",
+        "flutter test test/events/events_widgets_test.dart",
+        "flutter analyze --no-fatal-infos lib/events/presentation/event_location_map_screen.dart lib/events/presentation/event_location_map_state.dart test/events/events_widgets_test.dart test/ui_captures/catalog/screen_capture_catalog.dart widgetbook/lib/utility/p3_utility_use_cases.dart",
+        "flutter test test/calendar/calendar_screen_state_test.dart test/calendar/calendar_screen_test.dart",
+        "flutter analyze --no-fatal-infos lib/events/presentation/calendar/calendar_screen.dart lib/events/presentation/calendar/calendar_screen_state.dart test/calendar/calendar_screen_state_test.dart test/calendar/calendar_screen_test.dart",
+        "flutter test test/events/saved_events_screen_test.dart",
+        "flutter analyze --no-fatal-infos lib/events/presentation/saved_events_screen.dart lib/events/presentation/saved_events_state.dart test/events/saved_events_screen_test.dart",
+        "flutter test test/hosts/host_create_event_screen_test.dart test/hosts/host_event_manage_controller_test.dart",
+        "flutter analyze --no-fatal-infos lib/hosts/presentation/host_event_manage_screen.dart lib/hosts/presentation/host_event_manage_controller.dart lib/hosts/presentation/widgets/host_event_attendance_panel.dart test/hosts/host_create_event_screen_test.dart test/hosts/host_event_manage_controller_test.dart test/ui_captures/catalog/screen_capture_catalog.dart",
+        "node tool/design/check_new_widget_inventory.mjs --no-write",
+        "node tool/architecture/check_mutation_error_surfaces.mjs",
+        "node tool/architecture/check_adopted_architecture_boundaries.mjs"
+      ],
+      "notes": "This pattern defines the feature-screen boundary. EventDetailBody and EventLocationMapScreen no longer expose direct Scaffold compatibility; route chrome, bottom navigation, mutation listeners, provider reads, save/share/calendar/back side effects, companion/host/booking display state, and navigation side effects belong to their route screens. EventDetailScreen now delegates host, companion, and booking dock display-state derivation to EventDetailScreenState while EventDetailCta remains the mutation/router edge for booking actions. EventLocationMapRouteScreen, CalendarScreen, SavedEventsScreen, ExploreScreen, and ExploreMapScreen are aligned adopters outside Event Detail and use provider-free state adapters or provider-free body/chrome widgets for their loaded body data. tool/architecture/check_adopted_architecture_boundaries.mjs enforces provider/routing/data/repository-free imports for aligned lib adopters with providerFree set to true. HostEventManageRouteScreen is intentionally tracked as ARCH-SCREEN-001C because its loaded surface is a host workspace with canonical route aliases and lifecycle sections; do not force it through the Event Detail body shape before the host workspace adapter exists. ExploreCityPicker is promoted: ExploreScreen/ExploreChrome own city-list and selected-city provider reads plus typed city callbacks, while the picker renders plain ExploreCityPickerState. ExploreList and ExplorePeekRail remain explicitly tracked under ARCH-SCREEN-001D until they are deleted or migrated to route-owned state/callback seams."
+    },
+    {
+      "id": "ARCH-SCREEN-CHROME-001",
+      "name": "Root screen header chrome",
+      "status": "reference",
+      "architectureExhibit": "docs/app_architecture.md#exhibit-arch-screen-chrome-001-root-screen-header-chrome",
+      "prototypeFiles": [
+        "lib/core/widgets/catch_top_bar.dart",
+        "test/core/catch_top_bar_test.dart",
+        "widgetbook/lib/primitives/core_catalog_use_cases.dart"
+      ],
+      "adopters": [
+        {
+          "path": "lib/core/widgets/catch_top_bar.dart",
+          "role": "reference CatchScreenHeaderTitle and CatchScreenTopBar implementation for root-screen title typography, root app-bar wrapper configuration, search slots, leading slots, and action slots",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/dashboard/presentation/dashboard_home_screen.dart",
+          "role": "Home tab sliver title uses CatchScreenHeaderTitle.block with compact root-screen padding and notification action slot",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/dashboard/presentation/activity_screen.dart",
+          "role": "Activity root-like route uses CatchScreenTopBar so the title matches main tab screen typography while preserving the Mark all read action slot",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/explore/presentation/widgets/explore_header.dart",
+          "role": "Explore browse and no-cover discovery headers use CatchScreenHeaderTitle/CatchScreenTopBar with city picker leading slot and shared expanding search",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
+          "role": "Chats/Host Inbox scroll-owned browse header uses CatchScreenTopBar with root title, subtitle, expanding search, and optional host filter row",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/user_profile/presentation/profile_screen.dart",
+          "role": "Profile tab sliver title uses CatchScreenHeaderTitle.block with the settings icon in the action slot before the pinned tab rail",
+          "status": "aligned"
+        },
+        {
+          "path": "widgetbook/lib/dashboard/dashboard_use_cases.dart",
+          "role": "Dashboard header review state now mounts CatchScreenHeaderTitle instead of a one-off DashboardHeaderContent wrapper",
+          "status": "aligned"
+        },
+        {
+          "path": "widgetbook/lib/profiles/profile_use_cases.dart",
+          "role": "Profile header review states now mount CatchScreenHeaderTitle instead of a one-off ProfileTitle wrapper",
+          "status": "aligned"
+        }
+      ],
+      "retiredSymbols": [
+        {
+          "symbol": "DashboardHeaderContent",
+          "path": "lib/dashboard/presentation/widgets/dashboard_sliver_header.dart",
+          "reason": "One-off wrapper duplicated root-screen title typography and action layout now owned by CatchScreenHeaderTitle."
+        },
+        {
+          "symbol": "ProfileTitle",
+          "path": "lib/user_profile/presentation/widgets/profile_sliver_header.dart",
+          "reason": "One-off wrapper duplicated root-screen title typography and action layout now owned by CatchScreenHeaderTitle."
+        }
+      ],
+      "requiredBackPropagation": "When root-screen header typography, padding, action slots, or search composition changes, inspect every adopter above and keep Settings/Activity aligned with the five main tab surfaces. Compact/detail CatchTopBar(title: ...) screens remain outside this pattern unless product promotes them to root-like destinations.",
+      "requiredChecks": [
+        "flutter test test/core/catch_top_bar_test.dart",
+        "flutter test test/explore/explore_widgets_test.dart --plain-name 'Explore header'",
+        "flutter test test/chats/chat_inbox_screen_test.dart",
+        "flutter test test/profile/profile_widgets_test.dart --plain-name 'Profile header'",
+        "node tool/run.mjs check design:screen-top-bar-contracts",
+        "flutter analyze --no-fatal-infos lib/core/widgets/catch_top_bar.dart lib/dashboard/presentation/dashboard_home_screen.dart lib/dashboard/presentation/activity_screen.dart lib/explore/presentation/widgets/explore_header.dart lib/chats/presentation/inbox/widgets/chats_sliver_header.dart lib/user_profile/presentation/profile_screen.dart lib/safety/presentation/settings_screen.dart test/core/catch_top_bar_test.dart test/explore/explore_widgets_test.dart test/chats/chat_inbox_screen_test.dart test/profile/profile_widgets_test.dart widgetbook/lib/dashboard/dashboard_use_cases.dart widgetbook/lib/profiles/profile_use_cases.dart",
+        "node tool/architecture/check_app_architecture_exhibits.mjs",
+        "bash tool/widget_cleanup_scan.sh"
+      ],
+      "notes": "This pattern separates root screen voice chrome from compact navigation chrome. CatchScreenHeaderTitle owns Archivo headline typography for root titles plus optional mono eyebrow, subtitle, leading, action, material, and padding slots. CatchScreenTopBar wraps CatchTopBar when a root-like app bar also needs safe-area, action, or expanding-search behavior. Do not recreate feature-local title widgets for Home, Explore, Chats, Profile, Activity, or Settings; pass feature data and actions into the shared header slots. The screen-top-bar contract gate inventories every compact and identity app bar, exact raw media-hero exception, feature-owned Screen/Scaffold/Header/TopBar/HeaderContent class including delegated State bodies, and shell-covering editor launcher. Every discovered surface in an aligned adopter path must retain a canonical root owner, so one correct header cannot hide a second drifting implementation."
+    },
+    {
+      "id": "ARCH-ROUTE-CHROME-001",
+      "name": "Pushed route chrome",
+      "status": "reference",
+      "architectureExhibit": "docs/app_architecture.md#exhibit-arch-route-chrome-001-pushed-route-chrome",
+      "prototypeFiles": [
+        "lib/core/widgets/catch_route_scaffold.dart",
+        "test/core/catch_top_bar_test.dart"
+      ],
+      "adopters": [
+        {
+          "path": "lib/events/presentation/saved_events_screen.dart",
+          "role": "consumer pushed list with one title hierarchy and scroll-derived divider",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/reviews/presentation/reviews_history_screen.dart",
+          "role": "consumer pushed list with compact back chrome and scroll-derived divider",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/payments/presentation/payment_history_screen.dart",
+          "role": "consumer pushed history route sharing the same empty and scroll chrome",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/safety/presentation/settings_screen.dart",
+          "role": "consumer pushed settings route with scroll-derived divider",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/chats/presentation/chat_screen.dart",
+          "role": "shared Consumer and Host chat detail with canonical route surface and divider",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/host_event_manage_screen.dart",
+          "role": "Host event workspace with scroll-derived compact chrome",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
+          "role": "Host event editor with scroll-derived compact chrome",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations/host_loading_screen.dart",
+          "role": "Host loading route retaining the canonical surface and top bar",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "role": "Host team workspace with canonical route surface and scroll-derived divider",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
+          "role": "Host organizer settings spokes with canonical route surface and scroll-derived divider",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/club_management/create/widgets/host_club_editor_loading_screen.dart",
+          "role": "Host organizer step-flow loading state retaining the canonical step header",
+          "status": "aligned"
+        }
+      ],
+      "requiredBackPropagation": "When pushed-route surface, divider, title, or back semantics change, update CatchRouteScaffold, every aligned Consumer and Host adopter, the top-bar manifest, focused widget tests, and the owning executable checks together.",
+      "requiredChecks": [
+        "flutter test test/core/catch_top_bar_test.dart test/events/saved_events_screen_test.dart test/reviews/reviews_widgets_test.dart test/payments/payment_history_screen_test.dart test/safety/settings_screen_test.dart test/chats/chat_screen_test.dart",
+        "flutter test test/hosts/host_create_event_screen_test.dart test/hosts/host_operations_screen_test.dart",
+        "node tool/run.mjs check design:screen-top-bar-contracts",
+        "node tool/architecture/check_app_architecture_exhibits.mjs"
+      ],
+      "notes": "Root tab titles remain scroll content under ARCH-SCREEN-CHROME-001. This exhibit owns pushed-route surface and divider behavior only."
+    },
+    {
+      "id": "ARCH-UI-STATE-001",
+      "name": "Provider-free presentation state model",
+      "status": "reference",
+      "architectureExhibit": "docs/app_architecture.md#exhibit-arch-ui-state-001-provider-free-presentation-state-model",
+      "prototypeFiles": [
+        "lib/events/presentation/calendar/calendar_screen_state.dart",
+        "lib/events/presentation/event_detail_display_state.dart",
+        "test/calendar/calendar_screen_state_test.dart"
+      ],
+      "adopters": [
+        {
+          "path": "lib/core/widgets/catch_empty_state.dart",
+          "role": "reference CatchStateViewport geometry shared by box and sliver empty/error placement; preserves responsive overflow while shifting the optical center above floating shell chrome",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/core/widgets/catch_error_state.dart",
+          "role": "canonical sliver error placement adapter sharing CatchSliverStateViewport geometry with empty states",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/core/presentation/catch_async_value_adapter.dart",
+          "role": "route-edge Riverpod translation into provider-free CatchAsyncState with known-error, credible-data, then loading precedence",
+          "status": "aligned"
+        },
+        {
+          "path": "test/core/catch_async_state_test.dart",
+          "role": "refresh-time AsyncValue precedence coverage for the shared route-edge adapter",
+          "status": "aligned"
+        },
+        {
+          "path": "test/core/catch_primitives_test.dart",
+          "role": "floating-shell optical-center parity coverage for box, sliver empty, and sliver error states",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/user_profile/presentation/profile_screen.dart",
+          "role": "consumer Profile terminal box empty/error branches routed through CatchStateViewport inside the floating tab shell",
+          "status": "aligned"
+        },
+        {
+          "path": "test/profile/profile_widgets_test.dart",
+          "role": "Profile unavailable/error branch adoption coverage for shell-aware box placement",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/events/presentation/calendar/calendar_screen.dart",
+          "role": "route-edge provider reads and CalendarHomeState construction",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/events/presentation/calendar/calendar_screen_state.dart",
+          "role": "reference CalendarHomeState and CalendarEventSummary implementation",
+          "status": "aligned"
+        },
+        {
+          "path": "test/calendar/calendar_screen_state_test.dart",
+          "role": "reference behavior test",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/core/presentation/catch_async_state.dart",
+          "role": "provider-free async snapshot primitive used by route-edge Riverpod adapters before display-state builders consume loading/data/error branches",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/events/presentation/event_detail_screen_state.dart",
+          "role": "provider-free EventDetailHostState, EventDetailCompanionState, and EventDetailBookingDockState adapters using CatchAsyncState plus explicit mutation display flags for host card display data, host message availability, companion loading/available/error/hidden state, booking dock modes, and consumer-action visibility",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/events/presentation/event_detail_display_state.dart",
+          "role": "provider-free Event Detail display-state definitions shared by the route adapter, body widget, social section, and Widgetbook states",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/events/presentation/event_detail_information_state.dart",
+          "role": "provider-free Event Detail information-section adapter for non-overlapping sign-up and good-to-know fact rows, localized activity expectations, and invariant validation",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "test/events/event_detail_screen_state_test.dart",
+          "role": "EventDetailHostState, EventDetailCompanionState, and EventDetailBookingDockState behavior coverage",
+          "status": "aligned"
+        },
+        {
+          "path": "test/events/event_detail_information_state_test.dart",
+          "role": "EventDetailInformationState section ownership, row projection, and invariant behavior coverage",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/swipes/presentation/catches_event_screen_state.dart",
+          "role": "provider-free CatchesEventScreenState adapter for queue loading/error/data branches, empty/access copy, active deck profile selection, remaining-count display data, viewer enrichment, and shared event title enrichment",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "test/swipes/catches_event_screen_state_test.dart",
+          "role": "CatchesEventScreenState behavior coverage for queue branches, empty/access copy, and active deck display data",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/clubs/presentation/detail/club_detail_screen_state.dart",
+          "role": "provider-free Club Detail route/body adapter for live view-model data, initial-club fallback, loading/error/not-found branches, next-event selection, contact actions, host-message eligibility, event-route target, review visibility, membership dock state, host public-preview mode, and retry intent typing",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "test/clubs/clubs_controllers_test.dart",
+          "role": "HostClubDetailScreenState and ClubDetailBodyState behavior coverage for live content, initial fallback, loading, error, not-found branches, contact actions, next-event selection, host-message eligibility, event route target, review visibility, and dock state",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/explore/presentation/explore_screen_state.dart",
+          "role": "provider-free ExploreFeedSectionState, ExploreCoverStoryState, ExploreChromeState, ExploreEventRowState, ExploreExternalEventRowState, ExploreClubCardState, ExploreMapLauncherState, ExploreCityPickerState, ExploreCityTriggerState, ExploreFilterRailState, ExploreDateStripState, ExploreFilterSheetState, ExploreCollapsedMapSummaryState, ExplorePeekRailState, ExploreMapEventTicketState, ExploreScreenBodyState, ExploreDiscoveryEmptyState, and ExploreEventsEmptyState adapters for mixed-feed card planning, cover-story/search-open/event-row/external-row/club-card/map-sheet/filter/chrome display labels, date supply density, live count copy, city-picker availability, map-count label, route body branch precedence, source-club/feed empty copy, clear-action cardinality, and broaden-time-filter intent",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/explore/presentation/widgets/explore_city_picker.dart",
+          "role": "provider-free Explore city picker trigger and sheet render surface receiving ExploreCityPickerState plus typed city selection callback from ExploreScreen/ExploreChrome",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "test/explore/explore_view_model_test.dart",
+          "role": "provider-free Explore display-state coverage including date-strip density, live cursor-honest filter counts, event eligibility reason copy, and legacy weekly compatibility",
+          "status": "aligned"
+        },
+        {
+          "path": "test/explore/explore_widgets_test.dart",
+          "role": "ExploreScreen and ExploreEventsSection route-owned clear/search/filter/date/city callback coverage plus date strip, applied filter, live count, distance scope, and eligibility-demotion widget acceptance",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/auth/presentation/auth_presentation_state.dart",
+          "role": "provider-free AuthPhoneEntryViewState and AuthOtpEntryViewState adapters for phone-country display, autofocus policy, OTP display phone copy, cooldown/resend labels, verify/resend/change-number action enablement, and mutation loading flags",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "test/auth/presentation/auth_presentation_state_test.dart",
+          "role": "AuthPhoneEntryViewState and AuthOtpEntryViewState display-policy behavior coverage",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/onboarding/presentation/onboarding_flow_state.dart",
+          "role": "provider-free OnboardingFlowState and OnboardingTopBarState adapters for onboarding entry mode, current step, previous-step/back boundary, welcome/progress shell, and header copy/progress display policy",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/onboarding/presentation/pages/photos_page_state.dart",
+          "role": "provider-free OnboardingPhotosState adapter for onboarding photo count, upload pending state, continue gating/hints, supporting copy, delete availability, and typed photo slot intents",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/onboarding/presentation/pages/name_dob_page_state.dart",
+          "role": "provider-free OnboardingNameDobState adapter for onboarding identity draft display, autofocus policy, date picker bounds, age suffix copy, validated submit intent, and field controller/callback seams",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/onboarding/presentation/pages/gender_interest_page_state.dart",
+          "role": "provider-free OnboardingGenderInterestState adapter for onboarding gender and interest selected-chip display, validation copy, save pending/error display, typed submit intent, and typed chip callbacks",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/onboarding/presentation/pages/instagram_page_state.dart",
+          "role": "provider-free OnboardingInstagramState adapter for optional Instagram handle seed text, trimmed continue intent, skip intent, and field controller/callback seams",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/onboarding/presentation/pages/profile_prompts_page_state.dart",
+          "role": "provider-free OnboardingProfilePromptsState adapter for prompt selection normalization, available prompt options, answer projection, footer progress, completion gating, mutation error display, and typed prompt/continue callbacks",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/onboarding/presentation/pages/running_prefs_page_state.dart",
+          "role": "provider-free OnboardingRunningPrefsState adapter for pace label display, run-preference chip selections, mode-specific footer/reason/time labels, mutation error display, and typed complete-run-preferences submit intent",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "test/onboarding/onboarding_flow_state_test.dart",
+          "role": "OnboardingFlowState and OnboardingTopBarState route-shell display-policy behavior coverage",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/host_event_edit_screen_state.dart",
+          "role": "needs-update Host event edit state adapters for loaded editability, schedule/policy locks, save footer enabled/loading state, save error exposure, feedback copy, pop-on-success policy, and private-access AsyncValue handling that still imports Riverpod",
+          "providerFree": false,
+          "status": "needs_update",
+          "debtId": "ARCH-UI-STATE-HOST-EDIT-ASYNCVALUE"
+        },
+        {
+          "path": "test/hosts/edit_hosted_event_screen_test.dart",
+          "role": "HostEventEditScreenState save display, editability, lock, error, and success policy behavior coverage",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/event_success/presentation/event_success_companion_screen_state.dart",
+          "role": "provider-free Event Success companion display-state adapter for attendee moment selection, paper-shell policy, reveal kind, wingman candidate filtering, effect keys, and moment presentation copy/icon/effect metadata",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "test/event_success/event_success_companion_screen_state_test.dart",
+          "role": "EventSuccessCompanionScreenState behavior coverage for pre-arrival, First Hello, wingman filtering, and companion action-state display flags",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/event_success/presentation/event_success_live_reveal_card_state.dart",
+          "role": "provider-free Event Success live reveal action-state adapter for countdown, reveal, and reset pending/error display snapshots",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/event_success/presentation/event_success_host_screen_state.dart",
+          "role": "provider-free Event Success host section and action-state adapter for setup save state, live action mutations, assignment generation actions, host section async status, fallback plan data, retry intent mapping, roster/profile/preference/wingman defaults, and error display snapshots",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "test/event_success/event_success_live_reveal_card_state_test.dart",
+          "role": "EventSuccessRevealActionState pending and error-priority behavior coverage",
+          "status": "aligned"
+        },
+        {
+          "path": "test/event_success/event_success_live_screens_test.dart",
+          "role": "Event Success host screen-state and live behavior coverage for host section async status, retry intents, reveal action state, generation, overrides, and ceremony effects",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/host_event_manage_screen_state.dart",
+          "role": "provider-free Host Event Manage display-state adapter for section selection, destructive action policy, private-link display data, participants mutation state, report summary, invite-link rows, roster rows, capacity display, and setup/live/report row policy; route-owned URL construction keeps routing out of the adapter",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "test/hosts/host_event_manage_screen_state_test.dart",
+          "role": "HostEventManageScreenState and related Host Event Manage display-state behavior coverage for actions, private links, invite rows, roster rows, report summary, and mutation state",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations_screen_state.dart",
+          "role": "provider-free Host Operations clubs and club insights display-state adapter for selected club/tab ownership, analytics query range, granularity, event scope, and custom date windows",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/host_team_workspace_state.dart",
+          "role": "provider-free Host Team workspace state for profile and hosted-club async branches, create/edit/sign-out action policy, owner-versus-team role labels, and typed edit-or-preview navigation intent",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "test/hosts/host_operations_screen_test.dart",
+          "role": "Host Operations clubs and insights state behavior coverage for selected club, tab, owner role, analytics query, custom range, and event scope",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/club_management/create/create_club_screen_state.dart",
+          "role": "provider-free Host Create Club wizard/edit display-state adapter for footer policy, edit scaffold affordances, media previews, city/currency display, validation, draft/submit requests, and submit-success transition",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "test/hosts/host_club_create_state_test.dart",
+          "role": "HostClubCreateState, draft request, submit request, validation, media display, and submit outcome behavior coverage",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/user_profile/presentation/self_profile_screen_state.dart",
+          "role": "provider-free Self Profile route state adapter for profile loading/data/error/unavailable branches and upload/save mutation display modes via CatchAsyncState",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
+          "role": "provider-free Self Profile edit tab state adapter for photo-grid display, prompt slots, inline field descriptors, section rows, and patch intent metadata",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "test/profile/self_profile_screen_state_test.dart",
+          "role": "SelfProfileScreenState loading, error, unavailable, ready profile, and mutation-mode behavior coverage",
+          "status": "aligned"
+        },
+        {
+          "path": "test/profile/self_profile_edit_tab_state_test.dart",
+          "role": "SelfProfileEditTabState photo-grid, prompt-slot, field descriptor, and photo intent-factory behavior coverage",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/chats/presentation/inbox/chats_list_screen_state.dart",
+          "role": "provider-free Chats inbox display-state adapter for auth/view-model loading, error, content, empty, search-empty, host-empty, and unread-filter branches",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/chats/presentation/host_chat_screen_state.dart",
+          "role": "provider-free host/consumer chat display-state adapter for route errors, identity, safety/share action availability, composer disablement, and retry intents via CatchAsyncState",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/chats/presentation/chat_thread_lookup_state.dart",
+          "role": "provider-free chat thread lookup adapter for participant identity, host inquiry club/profile precedence, public-profile lookup keys, event lookup keys, and Suvbot suppression",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/chats/presentation/chat_read_marker_state.dart",
+          "role": "provider-free chat read-marker decision adapter for once-per-uid marking, incoming latest-message detection, and dispose-time last-known uid exposure",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/chats/presentation/chat_route_state.dart",
+          "role": "provider-free ChatRouteState snapshot adapter for uid, match, messages, event, Suvbot actions, route error, visibility gates, and widget-edge async projections",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/inbox/host_inbox_view_model.dart",
+          "role": "provider-free Host Inbox scope, event ordering, Booked/Prospective classification, roster-versus-thread count, search, lifecycle, and row-status adapter",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "test/hosts/host_inbox_view_model_test.dart",
+          "role": "HostInboxViewModel Event/General scope, default event, roster/thread separation, search, and participation-status behavior coverage",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/host_home_screen_state.dart",
+          "role": "provider-free Host route, selected-club, Today, and Events lifecycle display states including exact lifecycle boundaries, month grouping, repeat availability, and render-ready row data",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "test/chats/chat_inbox_screen_test.dart",
+          "role": "ChatsListScreenState, inbox empty/search/unread branches, batched roster lookup, host inbox filtering, and navigation behavior coverage",
+          "status": "aligned"
+        },
+        {
+          "path": "test/chats/chat_screen_test.dart",
+          "role": "ChatRouteState, HostChatScreenState, ChatThreadLookupState, ChatReadMarkerState, route retry, safety action, Suvbot, and host-inquiry behavior coverage",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/swipes/presentation/event_recap_screen_state.dart",
+          "role": "provider-free Event Recap adapter preserving primary recap loading/error/missing plus batched attendee-profile loading, error, resolved absence, rows, selection, and handoff state",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/swipes/presentation/filters_screen_state.dart",
+          "role": "provider-free Matching Preferences adapter for saved and draft values, dirty/reset/apply availability, pending state, and frozen save request construction",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/payments/presentation/payment_history_state.dart",
+          "role": "provider-free Payment History adapter preserving payment rows plus event-title loading, failure, resolved title, and genuinely missing-event state",
+          "providerFree": true,
+          "status": "aligned"
+        }
+      ],
+      "variantPatterns": [],
+      "candidateQueue": [
+        {
+          "id": "ARCH-UI-STATE-HOST-EDIT-ASYNCVALUE",
+          "path": "lib/hosts/presentation/host_event_edit_screen_state.dart",
+          "reason": "HostEventEditPrivateAccessState still stores Riverpod AsyncValue<EventPrivateAccess?> in a state adapter. Replace it with CatchAsyncState or split the provider-owned private-access wrapper before marking this file providerFree again."
+        },
+        {
+          "id": "ARCH-UI-STATE-001-CHATS-PRESENTATION-INBOX-WIDGETS-CHATS-EMPTY-STATE",
+          "path": "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
+          "reason": "File name matches *_state.dart but lives under widgets; register it for explicit review, then either confirm provider-free display-state ownership or rename if it is only a render widget."
+        },
+        {
+          "id": "ARCH-UI-STATE-001-DASHBOARD-PRESENTATION-NOTIFICATIONS-LIST-STATE",
+          "path": "lib/dashboard/presentation/notifications_list_state.dart",
+          "reason": "NotificationsListState now preserves identity error separately from resolved sign-out, but notificationRoute still imports app routing. Move route-path derivation behind a typed route intent before marking this adapter provider-free."
+        },
+        {
+          "id": "ARCH-UI-STATE-001-EXPLORE-PRESENTATION-WIDGETS-EXPLORE-EMPTY-STATE",
+          "path": "lib/explore/presentation/widgets/explore_empty_state.dart",
+          "reason": "File name matches *_state.dart but lives under widgets; register it for explicit review, then either confirm provider-free display-state ownership or rename if it is only a render widget."
+        },
+        {
+          "id": "ARCH-UI-STATE-001-HOSTS-PRESENTATION-EVENT-MANAGEMENT-CREATE-CREATE-EVENT-DRAFT-RESTORE-STATE",
+          "path": "lib/hosts/presentation/event_management/create/create_event_draft_restore_state.dart",
+          "reason": "File name matches *_state.dart and must be reviewed under the provider-free display-state pattern; migrate provider coupling or mark aligned with tests in a focused pass."
+        },
+        {
+          "id": "ARCH-UI-STATE-001-HOSTS-PRESENTATION-EVENT-MANAGEMENT-CREATE-CREATE-EVENT-LOCATION-STATE",
+          "path": "lib/hosts/presentation/event_management/create/create_event_location_state.dart",
+          "reason": "File name matches *_state.dart and must be reviewed under the provider-free display-state pattern; migrate provider coupling or mark aligned with tests in a focused pass."
+        },
+        {
+          "id": "ARCH-UI-STATE-001-HOSTS-PRESENTATION-EVENT-MANAGEMENT-CREATE-CREATE-EVENT-PHOTO-DRAFT-STATE",
+          "path": "lib/hosts/presentation/event_management/create/create_event_photo_draft_state.dart",
+          "reason": "File name matches *_state.dart and must be reviewed under the provider-free display-state pattern; migrate provider coupling or mark aligned with tests in a focused pass."
+        },
+        {
+          "id": "ARCH-UI-STATE-001-HOSTS-PRESENTATION-EVENT-MANAGEMENT-CREATE-CREATE-EVENT-POLICY-STATE",
+          "path": "lib/hosts/presentation/event_management/create/create_event_policy_state.dart",
+          "reason": "File name matches *_state.dart and must be reviewed under the provider-free display-state pattern; migrate provider coupling or mark aligned with tests in a focused pass."
+        },
+        {
+          "id": "ARCH-UI-STATE-001-HOSTS-PRESENTATION-EVENT-MANAGEMENT-CREATE-CREATE-EVENT-SCHEDULE-STATE",
+          "path": "lib/hosts/presentation/event_management/create/create_event_schedule_state.dart",
+          "reason": "File name matches *_state.dart and must be reviewed under the provider-free display-state pattern; migrate provider coupling or mark aligned with tests in a focused pass."
+        },
+        {
+          "id": "ARCH-UI-STATE-001-HOSTS-PRESENTATION-EVENT-MANAGEMENT-CREATE-CREATE-EVENT-WIZARD-STATE",
+          "path": "lib/hosts/presentation/event_management/create/create_event_wizard_state.dart",
+          "reason": "File name matches *_state.dart and must be reviewed under the provider-free display-state pattern; migrate provider coupling or mark aligned with tests in a focused pass."
+        },
+        {
+          "id": "ARCH-UI-STATE-001-HOSTS-PRESENTATION-EVENT-MANAGEMENT-HOST-CREATE-EVENT-ROUTE-STATE",
+          "path": "lib/hosts/presentation/event_management/host_create_event_route_state.dart",
+          "reason": "File name matches *_state.dart and must be reviewed under the provider-free display-state pattern; migrate provider coupling or mark aligned with tests in a focused pass."
+        },
+        {
+          "id": "ARCH-UI-STATE-001-HOSTS-PRESENTATION-HOST-SETTINGS-STATE",
+          "path": "lib/hosts/presentation/host_settings_state.dart",
+          "reason": "HostSettingsState still imports Riverpod AsyncValue, so it is not provider-free despite earlier audit wording. Replace AsyncValue-facing factories with route-owned snapshots before marking this adapter aligned."
+        },
+        {
+          "id": "ARCH-UI-STATE-001-PAYMENTS-PRESENTATION-PAYMENT-HISTORY-STATE",
+          "path": "lib/payments/presentation/payment_history_state.dart",
+          "reason": "File name matches *_state.dart and must be reviewed under the provider-free display-state pattern; migrate provider coupling or mark aligned with tests in a focused pass."
+        },
+        {
+          "id": "ARCH-UI-STATE-001-PUBLIC-PROFILE-PRESENTATION-PUBLIC-PROFILE-SCREEN-STATE",
+          "path": "lib/public_profile/presentation/public_profile_screen_state.dart",
+          "reason": "File name matches *_state.dart and must be reviewed under the provider-free display-state pattern; migrate provider coupling or mark aligned with tests in a focused pass."
+        },
+        {
+          "id": "ARCH-UI-STATE-001-REVIEWS-PRESENTATION-REVIEWS-HISTORY-STATE",
+          "path": "lib/reviews/presentation/reviews_history_state.dart",
+          "reason": "File name matches *_state.dart and must be reviewed under the provider-free display-state pattern; migrate provider coupling or mark aligned with tests in a focused pass."
+        },
+        {
+          "id": "ARCH-UI-STATE-001-SAFETY-PRESENTATION-SETTINGS-ACCOUNT-STATE",
+          "path": "lib/safety/presentation/settings_account_state.dart",
+          "reason": "File name matches *_state.dart and must be reviewed under the provider-free display-state pattern; migrate provider coupling or mark aligned with tests in a focused pass."
+        },
+        {
+          "id": "ARCH-UI-STATE-001-SWIPES-PRESENTATION-CATCHES-HUB-SCREEN-STATE",
+          "path": "lib/swipes/presentation/catches_hub_screen_state.dart",
+          "reason": "File name matches *_state.dart and must be reviewed under the provider-free display-state pattern; migrate provider coupling or mark aligned with tests in a focused pass."
+        },
+        {
+          "id": "ARCH-UI-STATE-001-SWIPES-PRESENTATION-EVENT-RECAP-SCREEN-STATE",
+          "path": "lib/swipes/presentation/event_recap_screen_state.dart",
+          "reason": "File name matches *_state.dart and must be reviewed under the provider-free display-state pattern; migrate provider coupling or mark aligned with tests in a focused pass."
+        },
+        {
+          "id": "ARCH-UI-STATE-001-SWIPES-PRESENTATION-FILTERS-SCREEN-STATE",
+          "path": "lib/swipes/presentation/filters_screen_state.dart",
+          "reason": "File name matches *_state.dart and must be reviewed under the provider-free display-state pattern; migrate provider coupling or mark aligned with tests in a focused pass."
+        },
+        {
+          "id": "ARCH-UI-STATE-001-SWIPES-PRESENTATION-WIDGETS-SWIPE-EMPTY-STATE",
+          "path": "lib/swipes/presentation/widgets/swipe_empty_state.dart",
+          "reason": "File name matches *_state.dart but lives under widgets; register it for explicit review, then either confirm provider-free display-state ownership or rename if it is only a render widget."
+        }
+      ],
+      "requiredBackPropagation": "When this exhibit changes, inspect every adopter above and either update it in the same pass or mark it variant_needed/exception with a stable debt id.",
+      "requiredChecks": [
+        "flutter test test/calendar/calendar_screen_state_test.dart",
+        "flutter test test/events/event_detail_screen_state_test.dart",
+        "flutter test test/swipes/catches_event_screen_state_test.dart",
+        "flutter test test/swipes/swipe_screen_test.dart",
+        "flutter test test/clubs/clubs_controllers_test.dart --plain-name 'HostClubDetailScreenState'",
+        "flutter test test/explore/explore_widgets_test.dart --plain-name 'ClubDetailBody'",
+        "flutter test test/calendar/calendar_screen_test.dart",
+        "flutter test test/explore/explore_view_model_test.dart test/explore/explore_widgets_test.dart",
+        "flutter test test/profile/self_profile_screen_state_test.dart test/profile/self_profile_edit_tab_state_test.dart",
+        "flutter test test/profile/profile_widgets_test.dart --plain-name 'text edit failure keeps the inline editor open with an error'",
+        "flutter test test/chats/chat_screen_test.dart test/chats/chat_inbox_screen_test.dart",
+        "flutter analyze --no-fatal-infos",
+        "node tool/architecture/check_adopted_architecture_boundaries.mjs",
+        "flutter test test/swipes/filters_screen_test.dart test/swipes/event_recap_screen_state_test.dart test/swipes/event_recap_screen_test.dart",
+        "flutter test test/dashboard/dashboard_screen_test.dart --plain-name 'notifications identity failure is not shown as signed out'",
+        "flutter test test/payments/payment_history_screen_test.dart"
+      ],
+      "notes": "This is a narrow display-state reference. CalendarHomeState remains the reference. CatchAsyncState is the provider-free async branch primitive for route-edge translations. EventDetailHostState, EventDetailCompanionState, and EventDetailBookingDockState are aligned small adapters for host-card, companion entry, and booking dock display data; EventDetailCta keeps provider mutations and router side effects at the edge. CatchesEventScreenState is aligned for queue provider-wave mapping, empty/access copy, and active deck display data; SwipeScreen now owns CatchesProfileReviewActionState for write-pending/failure display while the remaining Catches Event work is capture/reference coverage. HostClubDetailScreenState and ClubDetailBodyState are aligned for Club Detail route async branch mapping, live data, initial route fallback, host public-preview mode, next-event selection, contact actions, host-message eligibility, event-route target, review visibility, membership dock state, and retry typing; capture work remains open under the Club Detail screen contract. ExploreFeedSectionState, ExploreCoverStoryState, ExploreChromeState, ExploreEventRowState, ExploreExternalEventRowState, ExploreClubCardState, ExploreMapLauncherState, ExploreCityPickerState, ExploreCityTriggerState, ExploreFilterRailState, ExploreFilterSheetState, ExploreCollapsedMapSummaryState, ExplorePeekRailState, ExploreMapEventTicketState, ExploreScreenBodyState, ExploreDiscoveryEmptyState, and ExploreEventsEmptyState are aligned adopters for mixed-feed planning, cover-story/search-open/event-row/external-row/club-card/map-sheet/filter/chrome display data, route/body branch, city picker availability, map launcher, and empty-state actions. EventSuccessRevealActionState is aligned as a provider-free live reveal action-state adapter after the host route now translates mutation state into plain pending/error snapshots. SelfProfileScreenState and SelfProfileEditTabState are aligned provider-free Profile adopters after the route provider split and photo intent-factory rename. ChatsListScreenState, HostChatScreenState, ChatThreadLookupState, ChatReadMarkerState, and ChatRouteState are aligned provider-free Chats adopters after the route view-model split and batched inbox roster lookups. The main Explore route/feed body migration is tracked under ARCH-SCREEN-001; only the explicitly recorded ARCH-SCREEN-001D provider islands remain. The Chats inbox widget-level route reads are recorded as ARCH-SCREEN-001-CHATS-INBOX-BOUNDARY candidate debt, not as aligned screen-boundary adoption."
+    },
+    {
+      "id": "ARCH-APP-TARGET-001",
+      "name": "Installable app target resolution",
+      "status": "reference",
+      "architectureExhibit": "docs/app_architecture.md#exhibit-arch-app-target-001-installable-app-target-resolution",
+      "prototypeFiles": [
+        "tool/app_targets.json",
+        "tool/platform/resolve_app_target.mjs",
+        "tool/platform/check_app_targets.mjs",
+        "tool/flutter_with_env.sh",
+        "tool/platform/configure_apple_flavors.rb",
+        "tool/platform/compute_mobile_build_number.mjs",
+        "tool/platform/verify_ios_release_identity.mjs",
+        "tool/platform/verify_android_release_bundle.mjs",
+        "tool/platform/verify_app_store_build.mjs",
+        "tool/platform/verify_ios_processing_receipts.mjs",
+        "tool/platform/check_app_package_graph.mjs",
+        "tool/platform/check_mobile_package.mjs"
+      ],
+      "adopters": [
+        {
+          "path": "apps/consumer and apps/host",
+          "role": "independent Flutter package roots with role-specific native dependency graphs and compile-time app composition",
+          "status": "aligned"
+        },
+        {
+          "path": "apps/consumer/android/app/build.gradle.kts and apps/host/android/app/build.gradle.kts",
+          "role": "role-pinned manifest-generated Android flavors compiling package-local entrypoints",
+          "status": "aligned"
+        },
+        {
+          "path": "apps/consumer/ios/Runner.xcodeproj/project.pbxproj and apps/host/ios/Runner.xcodeproj/project.pbxproj",
+          "role": "manifest-generated role-specific Apple projects, package entrypoints, entitlements, and plugin graphs",
+          "status": "aligned"
+        },
+        {
+          "path": "tool/use_firebase_environment.sh",
+          "role": "manifest-resolved Firebase app activation",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/force_update/data/app_version_config_provider.dart",
+          "role": "role-prefixed compatibility and store policy",
+          "status": "aligned"
+        },
+        {
+          "path": ".github/workflows/mobile-internal-release.yml",
+          "role": "impact-selected Consumer and Host artifacts with manual-only TestFlight and Play mutation",
+          "status": "aligned"
+        },
+        {
+          "path": "tool/platform/check_app_package_graph.mjs and tool/platform/check_mobile_package.mjs",
+          "role": "role-exclusive dependency, package-size, forbidden-native-SDK, and compiled-binary separation gates",
+          "status": "aligned"
+        },
+        {
+          "path": "tool/platform/verify_android_release_bundle.mjs",
+          "role": "signed Android bundle certificate, compiled role, Firebase, Maps, debug, package, and version receipt gate",
+          "status": "aligned"
+        },
+        {
+          "path": "tool/platform/verify_app_store_build.mjs",
+          "role": "Apple build-floor preflight and exact processing receipt gate",
+          "status": "aligned"
+        },
+        {
+          "path": "tool/platform/verify_ios_processing_receipts.mjs",
+          "role": "cross-run TestFlight receipt provenance gate before legacy owner retirement",
+          "status": "aligned"
+        }
+      ],
+      "exceptions": [
+        {
+          "id": "APP-TARGET-IOS-GITHUB-CUTOVER-001",
+          "path": ".github/workflows/mobile-internal-release.yml",
+          "reason": "GitHub is canonical for both iOS roles, both exact builds processed, and both legacy Xcode Cloud workflows are disabled. Intended TestFlight group assignment plus install and launch proof remains external.",
+          "status": "blocked_external"
+        },
+        {
+          "id": "APP-TARGET-ANDROID-PLAY-001",
+          "path": ".github/workflows/mobile-internal-release.yml",
+          "reason": "Both signed AAB lanes are implemented, but Play records, app signing, publisher authorization, tester configuration, and install proof remain external.",
+          "status": "blocked_external"
+        }
+      ],
+      "requiredBackPropagation": "When target fields, project roots, package entrypoints, or resolver output change, regenerate Apple configuration, inspect Android/Firebase/build wrappers and both CI/release paths, then rerun app-target, package-graph, package-policy, and role comparison gates.",
+      "requiredChecks": [
+        "node --test tool/platform/check_app_targets.test.mjs",
+        "node tool/run.mjs check platform:app-targets platform:app-package-graphs platform:mobile-package-policy platform:mobile-build-number platform:verify-ios-release-identity platform:verify-app-store-build platform:verify-ios-processing-receipts platform:verify-android-release-identity platform:probe-google-play-access",
+        "ruby -c tool/platform/configure_apple_flavors.rb",
+        "bash -n tool/flutter_with_env.sh tool/use_firebase_environment.sh tool/validate_firebase_environment.sh",
+        "flutter test test/force_update/app_version_config_provider_test.dart",
+        "node tool/architecture/check_app_architecture_exhibits.mjs"
+      ],
+      "notes": "The target contract is authoritative for product identity. Shared product code remains a dependency package, while each store product owns an independent Flutter/native package root. Host must not resolve Consumer-only Health or Razorpay plugins, and cross-role release artifacts must prove different compiled app binaries and package entry sets."
+    },
+    {
+      "id": "ARCH-COPY-001",
+      "name": "Product copy and localization boundary",
+      "status": "reference",
+      "architectureExhibit": "docs/app_architecture.md#exhibit-arch-copy-001-product-copy-boundary",
+      "prototypeFiles": [
+        "l10n.yaml",
+        "lib/l10n/app_en.arb",
+        "lib/l10n/l10n.dart",
+        "lib/app.dart",
+        "lib/core/presentation/app_shell.dart",
+        "lib/core/widgets/catch_notice.dart",
+        "copy/native_en.json",
+        "copy/notifications_en.json",
+        "copy/event_success_questionnaires_en.json",
+        "copy/structured_domain_copy_en.json",
+        "functions/src/shared/notificationCopy.ts",
+        "tool/copy/check_mobile_copy_ownership.dart",
+        "tool/copy/mobile_copy_allowlist.json",
+        "tool/copy/sync_structured_domain_copy.dart"
+      ],
+      "adopters": [
+        {
+          "path": "lib/core/presentation/app_shell.dart",
+          "role": "consumer semantic navigation destination localization",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/core/presentation/host_app_shell.dart",
+          "role": "host semantic navigation destination localization",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/core/widgets/catch_notice.dart",
+          "role": "shared semantic notice localization seam",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/onboarding/presentation/onboarding_flow_state.dart",
+          "role": "consumer presentation-state localization injection",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
+          "role": "consumer profile presentation-state localization injection",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/events/presentation/event_detail_screen_state.dart",
+          "role": "consumer booking presentation-state localization injection",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/event_success/presentation/event_success_companion_screen_state.dart",
+          "role": "consumer Event Success presentation-state localization injection",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/swipes/presentation/swipe_empty_content.dart",
+          "role": "consumer semantic empty-state localization factory",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/payments/presentation/payment_history_screen.dart",
+          "role": "consumer payment status localization adapter",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/reviews/presentation/reviews_history_view_model.dart",
+          "role": "consumer review history presentation-state localization injection",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/core/widgets/event_activity_visuals.dart",
+          "role": "shared semantic activity label localization at render boundary",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/core/app_error_message.dart",
+          "role": "shared semantic exception-code localization at widget build time",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/user_analytics/shared/user_analytics_copy.dart",
+          "role": "consumer analytics copy adapter with explicit AppLocalizations injection",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/public_profile/presentation/profile_quality_copy.dart",
+          "role": "consumer semantic profile-quality suggestion adapter",
+          "status": "aligned"
+        },
+        {
+          "path": "copy/structured_domain_copy_en.json",
+          "role": "marketing-owned synchronous Event Success, profile-validation, and event-policy content source",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/events/shared/event_invite_share_copy.dart",
+          "role": "consumer and Host external-share copy with explicit AppLocalizations injection",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/onboarding/presentation/pages/running_prefs_page_state.dart",
+          "role": "consumer presentation-state copy resolved from AppLocalizations",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/event_success/domain/event_success_models.dart",
+          "role": "Flutter-independent Event Success display metadata from generated structured copy",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/user_profile/domain/profile_validation.dart",
+          "role": "Flutter-independent profile validation copy from generated structured constants",
+          "status": "aligned"
+        },
+        {
+          "path": "functions/src/shared/notifications.ts",
+          "role": "generated server notification template consumer",
+          "status": "aligned"
+        }
+      ],
+      "exceptions": [],
+      "requiredBackPropagation": "When the copy access contract changes, update the ARB metadata validator, Flutter ownership scanner, both app-role roots, native and notification sync lanes, reference adopters, and this exhibit before migrating another slice.",
+      "requiredChecks": [
+        "flutter gen-l10n",
+        "node tool/run.mjs check copy:mobile-catalog",
+        "node tool/run.mjs check copy:mobile-ownership",
+        "node tool/run.mjs check copy:l10n-key-usage",
+        "node tool/run.mjs check copy:native-sync",
+        "node tool/run.mjs check copy:notification-sync",
+        "node tool/run.mjs check copy:event-success-questionnaires",
+        "node tool/run.mjs check copy:structured-domain-content",
+        "flutter test test/core/app_config_test.dart test/core/app_shell_test.dart",
+        "node tool/architecture/check_app_architecture_exhibits.mjs"
+      ],
+      "notes": "The ARB, native JSON, and notification JSON files are the editable product sources. Generated Dart, plist strings, and TypeScript files are consumers and must not be edited by hand."
+    },
+    {
+      "id": "ARCH-SHELL-SCROLL-001",
+      "name": "Adaptive tab-root scroll clearance",
+      "status": "reference",
+      "architectureExhibit": "docs/app_architecture.md#exhibit-arch-shell-scroll-001-adaptive-tab-root-scroll-clearance",
+      "prototypeFiles": [
+        "lib/core/presentation/catch_adaptive_tab_scaffold.dart",
+        "lib/core/presentation/app_shell_active_tab.dart",
+        "lib/core/widgets/catch_section_layout.dart",
+        "lib/core/widgets/catch_tab_bar.dart",
+        "lib/core/widgets/catch_tabbed_screen.dart",
+        "test/core/app_shell_test.dart",
+        "test/core/semantic_layout_contracts_test.dart",
+        "tool/design/tab_root_scroll_contracts.json",
+        "tool/design/check_tab_root_scroll_contracts.mjs"
+      ],
+      "adopters": [
+        {
+          "path": "lib/core/presentation/app_shell.dart",
+          "role": "consumer shell delegates adaptive placement and raw exclusion publication",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/core/presentation/host_app_shell.dart",
+          "role": "host shell delegates the same adaptive placement contract",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/dashboard/presentation/dashboard_home_screen.dart",
+          "role": "consumer Home populated root terminal",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/explore/presentation/explore_screen.dart",
+          "role": "consumer Explore feed terminal while map overlay keeps SafeArea-relative clearance",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/chats/presentation/inbox/chat_inbox_screen.dart",
+          "role": "consumer Chats root terminal",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/user_profile/presentation/profile_screen.dart",
+          "role": "consumer Profile delegates per-tab page owners and terminals to the shared tabbed shell while retaining its feature-specific Preview scroll bridge",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
+          "role": "host Today and Events ListView terminals",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
+          "role": "host Inbox sliver terminal",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations/host_route_providers.dart",
+          "role": "host Clubs uses per-club, per-page keyed scroll owners and terminals, including the embedded consumer Club Detail preview",
+          "status": "aligned"
+        }
+      ],
+      "exceptions": [],
+      "requiredBackPropagation": "When shell placement, tab geometry, root routes, or terminal primitives change, update both shells, every manifest owner, the architecture exhibit, Widgetbook platform states, and the known-bad scanner fixtures in one pass.",
+      "requiredChecks": [
+        "node tool/design/check_tab_root_scroll_contracts.mjs --check",
+        "node --test tool/design/check_tab_root_scroll_contracts.test.mjs",
+        "flutter test test/core/semantic_layout_contracts_test.dart test/core/app_shell_test.dart test/routing/app_shell_guest_cta_test.dart test/routing/host_shell_navigation_test.dart",
+        "node tool/architecture/check_app_architecture_exhibits.mjs"
+      ],
+      "notes": "The shell publishes placement; root scroll primitives consume it. Android anchored chrome is already in layout, iOS floating chrome is a raw exclusion, and transient no-bar shells fall back to device safe area."
+    },
+    {
+      "id": "ARCH-TABBED-SCREEN-001",
+      "name": "Route-owned nested tab screen shell",
+      "status": "reference",
+      "architectureExhibit": "docs/app_architecture.md#exhibit-arch-tabbed-screen-001-route-owned-nested-tab-screen-shell",
+      "prototypeFiles": [
+        "lib/core/widgets/catch_tabbed_screen.dart",
+        "lib/core/widgets/catch_tab_rail.dart",
+        "lib/user_profile/presentation/profile_screen.dart",
+        "test/core/widgets/catch_tabbed_screen_test.dart",
+        "test/profile/profile_widgets_test.dart",
+        "tool/design/tab_root_scroll_contracts.json"
+      ],
+      "adopters": [
+        {
+          "path": "lib/user_profile/presentation/profile_screen.dart",
+          "role": "reference three-page adopter with a route-owned typed controller, native paging, shared page scroll owners, and a feature-owned two-way Preview scroll bridge",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
+          "role": "aligned four-page adopter with independent per-club offsets and a direct embedded read-only Club Detail preview",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/clubs/presentation/detail/club_detail_read_only_preview.dart",
+          "role": "sliver-native consumer Club Detail adapter that keeps route chrome and interactions outside the embedded Host Preview page",
+          "status": "aligned"
+        }
+      ],
+      "retiredSymbols": [
+        {
+          "symbol": "ProfileTabScrollView",
+          "path": "lib/user_profile/presentation/profile_screen.dart",
+          "reason": "The feature-local overlap and focus wrapper is now the shared CatchTabbedPageScrollView."
+        },
+        {
+          "symbol": "HostClubPreviewPane",
+          "path": "lib/hosts/presentation/host_operations/host_club_preview.dart",
+          "reason": "The second-click preview adapter was replaced by direct composition of the canonical consumer Club Detail slivers."
+        }
+      ],
+      "requiredBackPropagation": "When nested title, pinned rail, paging, overlap, focus, restoration, terminal, content-width, or embedded-preview policy changes, inspect Profile and Host Clubs together, keep typed controllers route-owned, preserve direct narrow-width slivers and full-bleed previews, and update the component and scroll contracts in the same pass.",
+      "requiredChecks": [
+        "flutter test --concurrency=1 test/core/widgets/catch_tabbed_screen_test.dart test/profile/profile_widgets_test.dart test/hosts/host_operations_screen_test.dart test/clubs/clubs_controllers_test.dart test/clubs/club_hero_app_bar_test.dart test/clubs/club_detail_read_only_preview_test.dart",
+        "flutter analyze --no-fatal-infos lib/core/widgets/catch_tabbed_screen.dart lib/core/widgets/catch_tab_rail.dart lib/user_profile/presentation/profile_screen.dart lib/hosts/presentation/host_operations/host_clubs_scaffold.dart lib/clubs/presentation/detail/club_detail_read_only_preview.dart",
+        "node tool/design/check_component_contracts.mjs",
+        "node tool/architecture/check_app_architecture_exhibits.mjs"
+      ],
+      "notes": "The shared shell owns composition mechanics only. Feature state, async policy, callbacks, and specialized inner-scroll behavior remain feature-owned. Optional content-width constraining centers the canonical 600 px lane plus page gutters only when surplus cross-axis space exists; phone layouts stay direct. Embedded detail previews reuse canonical full-bleed slivers and disable actions at one boundary instead of cloning the public screen."
+    },
+    {
+      "id": "ARCH-PROVIDER-001",
+      "name": "Feature-owned startup orchestration",
+      "status": "reference",
+      "architectureExhibit": "docs/app_architecture.md#exhibit-arch-provider-001-feature-owned-startup-orchestration",
+      "prototypeFiles": [
+        "lib/user_profile/data/profile_location_initializer.dart",
+        "lib/user_profile/data/profile_location_initializer.g.dart",
+        "lib/app.dart",
+        "test/user_profile/profile_location_initializer_test.dart",
+        "tool/architecture/provider_graph.dart",
+        "tool/architecture/provider_graph_reviews.json"
+      ],
+      "adopters": [
+        {
+          "path": "lib/user_profile/data/profile_location_initializer.dart",
+          "role": "reference feature-owned keepAlive startup provider that combines current-profile state with feature-neutral device-location and city services before writing through the owning repository",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/app.dart",
+          "role": "composition root that activates the public feature-owned initializer without owning profile persistence or location policy",
+          "status": "aligned"
+        },
+        {
+          "path": "test/user_profile/profile_location_initializer_test.dart",
+          "role": "provider-container proof that app-lifetime orchestration resolves passive location and persists it through the feature repository",
+          "status": "aligned"
+        }
+      ],
+      "exceptions": [],
+      "requiredBackPropagation": "When a core provider begins watching feature data, move the orchestration to the owning feature or introduce a feature-neutral inversion contract; update the provider graph review, exhibit, and focused provider-container test in the same pass.",
+      "requiredChecks": [
+        "flutter test test/user_profile/profile_location_initializer_test.dart",
+        "dart run tool/architecture/provider_graph.dart --check",
+        "node tool/architecture/check_dependency_direction.mjs",
+        "node tool/architecture/check_app_architecture_exhibits.mjs"
+      ],
+      "notes": "The app root may activate feature startup work. It must not make core own a feature repository or profile stream."
+    },
+    {
+      "id": "ARCH-PROVIDER-CODEGEN-001",
+      "name": "Generated auto-dispose provider family",
+      "status": "reference",
+      "architectureExhibit": "docs/app_architecture.md#exhibit-arch-provider-codegen-001-generated-auto-dispose-provider-family",
+      "prototypeFiles": [
+        "lib/clubs/data/club_name_lookup.dart",
+        "lib/clubs/data/club_name_lookup.g.dart",
+        "test/architecture/generated_provider_family_test.dart"
+      ],
+      "adopters": [
+        {
+          "path": "lib/clubs/data/club_name_lookup.dart",
+          "role": "reference generated Future provider family keyed by a value-equality club-id query",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/event_success/event_success_companion_clock.dart",
+          "role": "generated auto-dispose Stream provider for the Event Success companion clock",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/explore/data/explore_recommendations_repository.dart",
+          "role": "generated Future provider family keyed by a value-equality Explore recommendation query",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/public_profile/data/public_profiles_lookup.dart",
+          "role": "generated Future provider family keyed by a value-equality batched public-profile query",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/swipes/data/swipe_candidate_repository.dart",
+          "role": "generated Future provider family keyed by event id that resolves server-owned post-event candidate projections without exposing the attendance roster",
+          "status": "aligned"
+        },
+        {
+          "path": "test/architecture/generated_provider_family_test.dart",
+          "role": "ProviderContainer proof that equivalent query keys and generated override contracts remain stable across the reference adopters",
+          "status": "aligned"
+        }
+      ],
+      "exceptions": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
+          "reason": "_hostClubsForUserProvider remains the reviewed private part-file adapter exception recorded in provider_graph_reviews.json."
+        }
+      ],
+      "requiredBackPropagation": "When a handwritten feature-owned async provider family is migrated, preserve its provider name, family call shape, value-equality key semantics, lifecycle, .future access, and override contracts; regenerate adjacent output and remove the matching planned manual-provider review decision.",
+      "requiredChecks": [
+        "flutter test test/architecture/generated_provider_family_test.dart",
+        "flutter analyze --no-fatal-infos lib/clubs/data/club_name_lookup.dart lib/event_success/event_success_companion_clock.dart lib/explore/data/explore_recommendations_repository.dart lib/public_profile/data/public_profiles_lookup.dart lib/swipes/data/swipe_candidate_repository.dart test/architecture/generated_provider_family_test.dart",
+        "dart run tool/architecture/provider_graph.dart --check",
+        "node tool/architecture/check_app_architecture_exhibits.mjs"
+      ],
+      "notes": "Generated function providers are auto-dispose by default. KeepAlive remains an explicit reviewed lifecycle decision with a rationale marker."
+    },
+    {
+      "id": "ARCH-FORM-DESCRIPTOR-001",
+      "name": "Typed form row orchestration",
+      "status": "reference",
+      "architectureExhibit": "docs/app_architecture.md#exhibit-arch-form-descriptor-001-typed-form-row-orchestration",
+      "prototypeFiles": [
+        "lib/core/forms/catch_form_descriptors.dart",
+        "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
+        "lib/user_profile/presentation/widgets/profile_tab.dart",
+        "test/core/forms/catch_form_descriptors_test.dart",
+        "test/profile/self_profile_edit_tab_state_test.dart"
+      ],
+      "adopters": [
+        {
+          "path": "lib/user_profile/presentation/widgets/profile_tab.dart",
+          "role": "reference About You section adopter with one typed UpdateUserProfilePatch save delegate and shared accordion wiring",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
+          "role": "reference feature adapter for read, text, choice, multi-choice, and custom height descriptors without moving profile policy into core",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "test/core/forms/catch_form_descriptors_test.dart",
+          "role": "typed descriptor, shared accordion, and single save-delegate contract coverage",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
+          "role": "Host Club Identity and Contact adopter with typed UpdateClubPatch descriptors, schema-derived constraints, and one save delegate",
+          "status": "aligned"
+        },
+        {
+          "path": "test/core/forms/contract_alignment_test.dart",
+          "role": "consumer and Host descriptor-to-schema alignment gate with a seeded drift fixture",
+          "status": "aligned"
+        },
+        {
+          "path": "tool/contracts/generate_flutter_form_contract_inventory.mjs",
+          "role": "source-derived inventory generator proving every editable canonical control and descriptor instance in Consumer and Catch Host is contract-bound or explicitly exempt",
+          "status": "aligned"
+        }
+      ],
+      "candidateQueue": [
+        {
+          "id": "ARCH-FORM-DESCRIPTOR-001-CONSUMER-REMAINDER",
+          "path": "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
+          "reason": "Running and Lifestyle intentionally retain SelfProfile descriptors until the About You prototype receives owner API review."
+        },
+        {
+          "id": "ARCH-FORM-DESCRIPTOR-001-ONBOARDING",
+          "path": "lib/onboarding/presentation",
+          "reason": "Onboarding adopts opportunistically only after the reference prototype is approved."
+        }
+      ],
+      "exceptions": [],
+      "requiredBackPropagation": "When descriptor fields, save semantics, accordion ownership, or error mapping change, update the About You prototype, core descriptor tests, architecture exhibit, and every promoted adopter before broad rollout.",
+      "requiredChecks": [
+        "flutter test --concurrency=1 test/core/forms/catch_form_descriptors_test.dart test/profile/self_profile_edit_tab_state_test.dart test/profile/profile_widgets_test.dart",
+        "flutter analyze --no-fatal-infos lib/core/forms/catch_form_descriptors.dart lib/user_profile/presentation/self_profile_edit_tab_state.dart lib/user_profile/presentation/widgets/profile_tab.dart test/core/forms/catch_form_descriptors_test.dart test/profile/self_profile_edit_tab_state_test.dart",
+        "node tool/architecture/check_app_architecture_exhibits.mjs"
+      ],
+      "notes": "Only the consumer Profile About You section is promoted. CatchFormCustomRow keeps the profile height stepper feature-owned while routing accordion and save behavior through CatchFormRowScope."
+    },
+    {
+      "id": "ARCH-DATA-CURSOR-001",
+      "name": "Bounded cursor read window",
+      "status": "reference",
+      "architectureExhibit": "docs/app_architecture.md#exhibit-arch-data-cursor-001-bounded-cursor-read-window",
+      "prototypeFiles": [
+        "lib/core/data/cursor_page.dart",
+        "lib/core/data/read_limit_policy.dart",
+        "lib/explore/presentation/explore_discovery_window_controller.dart",
+        "test/core/cursor_page_test.dart",
+        "test/explore/explore_discovery_window_controller_test.dart"
+      ],
+      "adopters": [
+        {
+          "path": "lib/events/data/event_discovery_repository.dart",
+          "role": "reference internal discovery page retaining a raw document cursor through exact availability and distance post-filtering",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/events/data/external_event_repository.dart",
+          "role": "reference external discovery page sharing the same bounded Firestore window contract",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/explore/presentation/explore_feed_view_model.dart",
+          "role": "consumer composition that preserves cursor exhaustiveness, load-more state, one shared date-strip query window and clock snapshot, per-date supply density, honest result count, and coordinate-complete map count",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/chats/data/chat_repository.dart",
+          "role": "bounded newest-message stream plus explicit older-message cursor page",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/matches/data/match_repository.dart",
+          "role": "two-branch participant query with a compound cursor and branch-exhaustion state",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/reviews/data/reviews_repository.dart",
+          "role": "bounded club, event, and reviewer streams with document-cursor history pages",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/notifications/data/activity_notification_repository.dart",
+          "role": "bounded visible activity stream plus document-cursor history page",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/payments/data/payment_history_repository.dart",
+          "role": "bounded newest-payment stream plus document-cursor history page",
+          "status": "aligned"
+        }
+      ],
+      "exceptions": [],
+      "requiredBackPropagation": "When cursor, page-size, post-filter, refresh, or count-truth semantics change, update the shared cursor helper, Explore reference controller, read-path contract, tracker adopters, focused tests, and read-limit/index scanners in the same pass.",
+      "requiredChecks": [
+        "node tool/run.mjs check contracts:firestore-read-limits",
+        "node tool/run.mjs check contracts:firestore-query-indexes",
+        "flutter test test/core/cursor_page_test.dart test/explore/explore_discovery_window_controller_test.dart test/events/event_discovery_repository_test.dart test/events/external_event_repository_test.dart",
+        "node tool/architecture/check_app_architecture_exhibits.mjs"
+      ],
+      "notes": "The Explore query pair is the reference accumulated feed. Realtime first-page history adopters remain bounded; documented operational-set exceptions are capped but intentionally do not expose archive pagination."
+    },
+    {
+      "id": "ARCH-ROUTER-LIFECYCLE-001",
+      "name": "App router and deterministic integration lifecycle",
+      "status": "reference",
+      "architectureExhibit": "docs/app_architecture.md#exhibit-arch-router-lifecycle-001-app-router-and-integration-test-lifecycle",
+      "prototypeFiles": [
+        "lib/routing/go_router.dart",
+        "integration_test/support/app_shell_test_harness.dart",
+        "tool/test_app_shell_integration.sh"
+      ],
+      "adopters": [
+        {
+          "path": "test/design/public_surface_behavior_test.dart",
+          "role": "data-driven app proof harness that executes every registered public-surface configuration against production route, organizer authority, Explore account-control, event-availability, and action-disposition helpers",
+          "status": "aligned"
+        },
+        {
+          "path": "test/routing/router_redirect_test.dart",
+          "role": "focused guest, auth-resolution, booking-ready, social-ready, onboarding-resume, and host/consumer route redirect coverage",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/app.dart",
+          "role": "app root with synchronous owned localization delegates and component-native English fallback for the nonlocalized country picker",
+          "status": "aligned"
+        },
+        {
+          "path": "test/integration/app_shell_smoke_test.dart",
+          "role": "headless wrapper proving repeated keyed ProviderScope and GoRouter lifecycles in one deterministic process",
+          "status": "aligned"
+        },
+        {
+          "path": ".github/workflows/visual-integration-ci.yml",
+          "role": "exact macOS golden and deterministic headless app-shell CI lane",
+          "status": "aligned"
+        },
+        {
+          "path": ".github/workflows/visual-integration-ci.yml",
+          "role": "exact macOS golden, deterministic headless app-shell, and bounded hosted native smoke CI lane",
+          "status": "aligned"
+        }
+      ],
+      "exceptions": [
+        {
+          "path": "integration_test/**",
+          "reason": "original suites remain optional native-device entrypoints when APP_SHELL_NATIVE_INTEGRATION is explicitly enabled"
+        },
+        {
+          "path": "integration_test/**",
+          "reason": "the smoke suite runs through the hosted native macOS binding; the remaining suites stay explicit selected-device entrypoints when APP_SHELL_NATIVE_INTEGRATION is enabled"
+        }
+      ],
+      "requiredBackPropagation": "When the app root, GoRouter ownership, public route classification, integration binding, app-shell navigation, localization delegates, or mounted async behavior changes, update the public-surface matrix and harness, shared integration harness, headless wrappers, native runner, CI lane, owning executable checks, and focused shell/golden coverage together.",
+      "requiredChecks": [
+        "node tool/run.mjs check design:public-surface-behavior",
+        "flutter test test/design/public_surface_behavior_test.dart test/routing/router_redirect_test.dart",
+        "bash tool/test_app_shell_integration.sh",
+        "flutter test --concurrency=1 test/goldens",
+        "flutter test --concurrency=1 test/core/catch_primitives_test.dart --plain-name 'CatchTabBar keeps four animated destinations within 390px'",
+        "node tool/architecture/check_app_architecture_exhibits.mjs",
+        "bash tool/test_app_shell_integration.sh --self-test",
+        "bash tool/test_app_shell_integration.sh macos smoke"
+      ],
+      "notes": "Every consumer route is owned by exactly one public-surface matrix class even when guest tab chrome hides it. Consumer integration cases cover consumer-owned routes only. Host creation and attendance remain in host surface/controller tests; Dashboard recommendations remain owned by Explore."
+    },
+    {
+      "id": "ARCH-PENDING-SNAPSHOT-001",
+      "name": "Pending request snapshot integrity",
+      "status": "reference",
+      "architectureExhibit": "docs/app_architecture.md#exhibit-arch-pending-snapshot-001-pending-request-snapshot-integrity",
+      "prototypeFiles": [
+        "lib/auth/presentation/auth_controller.dart",
+        "lib/auth/presentation/auth_presentation_state.dart",
+        "lib/auth/presentation/phone_page.dart",
+        "test/auth/presentation/auth_controller_test.dart",
+        "test/auth/presentation/auth_presentation_state_test.dart",
+        "test/auth/presentation/auth_screen_test.dart"
+      ],
+      "adopters": [
+        {
+          "path": "lib/auth/presentation/auth_controller.dart",
+          "role": "reference controller deduplicating one Firebase verification request, freezing request-defining country state, and rejecting stale callbacks after flow reset",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/auth/presentation/phone_page.dart",
+          "role": "reference frozen-snapshot form disabling phone and country controls while the submitted request is pending",
+          "status": "aligned"
+        },
+        {
+          "path": "test/auth/presentation/auth_controller_test.dart",
+          "role": "controller proof for duplicate-request deduplication, immutable submitted values, and stale callback rejection",
+          "status": "aligned"
+        },
+        {
+          "path": "test/auth/presentation/auth_screen_test.dart",
+          "role": "widget proof that request-defining phone and country controls stay disabled and cannot launch a second request",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/onboarding/presentation",
+          "role": "frozen-snapshot adopter across booking identity, prompt completion, and running preferences with route back freezing, request-control disabling, error-reset guards, and controller deduplication",
+          "status": "aligned"
+        },
+        {
+          "path": "test/onboarding",
+          "role": "controller, flow-state, and widget proof for immutable pending identity, prompt, and running-preference snapshots",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/swipes/presentation/filters_screen.dart",
+          "role": "frozen-snapshot adopter disabling route exit, close, reset, age, gender, and apply controls during save",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/swipes/presentation/filters_controller.dart",
+          "role": "controller defense returning one in-flight future for duplicate filter saves",
+          "status": "aligned"
+        },
+        {
+          "path": "test/swipes/filters_screen_test.dart",
+          "role": "controller and route proof for one persisted request and frozen filter controls",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/club_management/create",
+          "role": "frozen-snapshot adopter across organizer submit, draft save, and draft restore with route, step, media, form, and default-decision freezing plus controller deduplication",
+          "status": "aligned"
+        },
+        {
+          "path": "test/clubs/clubs_controllers_test.dart and test/explore/explore_widgets_test.dart",
+          "role": "controller and widget proof for one organizer submission and a frozen create route",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
+          "role": "frozen-snapshot adopter disabling route exit and the full editable event form while save is pending",
+          "status": "aligned"
+        },
+        {
+          "path": "test/hosts/host_event_booking_controller_test.dart and test/hosts/edit_hosted_event_screen_test.dart",
+          "role": "controller, state, and widget proof for one event update and a frozen edit route",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/reviews/shared/write_review_sheet.dart and lib/reviews/shared/write_review_controller.dart",
+          "role": "frozen-snapshot adopter disabling rating, comment, submit, delete, and sheet dismissal across review writes with controller deduplication",
+          "status": "aligned"
+        },
+        {
+          "path": "test/reviews/write_review_controller_test.dart and test/reviews/reviews_widgets_test.dart",
+          "role": "controller and widget proof for one review write and a frozen edit-sheet snapshot",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/safety/presentation/settings_account_state.dart, lib/safety/presentation/settings_controller.dart, lib/safety/presentation/settings_screen.dart, and lib/auth/presentation/auth_session_controller.dart",
+          "role": "whole-surface exclusive adopter freezing route, recovery, navigation, external, preference, unblock, delete, and sign-out actions during any settings mutation or external-link launch, with selected-link progress, visible false/error outcomes, settings-write deduplication, and sign-out deduplication",
+          "status": "aligned"
+        },
+        {
+          "path": "test/safety/settings_account_state_test.dart, test/safety/settings_controller_test.dart, test/safety/settings_screen_test.dart, and test/auth/presentation/auth_controller_test.dart",
+          "role": "state, controller, and widget proof for global settings exclusivity, one overlapping settings write, one sign-out operation, and external-link success, pending, duplicate-tap, false-result, and thrown-failure outcomes",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/events/presentation/event_location_map_screen.dart and lib/events/presentation/event_location_map_body_screen.dart",
+          "role": "route-action adopter making the directions launch singleton while pending, exposing button progress, awaiting the platform result, and presenting visible false or thrown failure outcomes",
+          "status": "aligned"
+        },
+        {
+          "path": "test/events/events_widgets_test.dart",
+          "role": "widget proof for directions success, pending progress, duplicate-tap exclusion, false launcher results, thrown failures, and action restoration",
+          "status": "aligned"
+        },
+        {
+          "path": "website/src/features/waitlist, website/src/features/host/application, website/src/features/claims, and website/src/shared/pendingRequest.tsx",
+          "role": "marketing frozen-snapshot adopters disabling request-defining form, step, auth, sibling-form, shared-link, and browser-exit controls with controller single-flight guards",
+          "status": "aligned"
+        },
+        {
+          "path": "website/src/features/waitlist/useWaitlistFormController.test.tsx, website/src/features/host/application/useHostApplicationController.test.tsx, website/src/features/claims/useClaimFlowController.test.tsx, website/src/features/claims/useClaimRequestMutation.test.tsx, and website/src/shared/pendingRequest.test.tsx",
+          "role": "controller and UI proof for immutable marketing form snapshots, one request per submit, frozen auth and steps, and blocked route exits",
+          "status": "aligned"
+        },
+        {
+          "path": "admin/src/shared/pendingOperation.tsx, admin/src/app/App.tsx, and admin/src/shared/ui/AdminPrimitives",
+          "role": "Admin whole-surface exclusive operation lease freezing workspace controls, shared links, route navigation, peer operations, and browser unload until settlement",
+          "status": "aligned"
+        },
+        {
+          "path": "admin/src/features/access, admin/src/features/admin-roles, admin/src/features/events, admin/src/features/intake, admin/src/features/marketing, admin/src/features/organizers, admin/src/features/safety, and admin/src/features/users",
+          "role": "Admin controller adopters acquiring one synchronous global lease around immutable mutation or submitted-query snapshots",
+          "status": "aligned"
+        },
+        {
+          "path": "admin/src/shared/pendingOperation.test.tsx and design/features/admin_*.feature.json",
+          "role": "cross-controller, visible-snapshot, navigation, unload, and compiled pending-action proof for the Admin exclusive policy",
+          "status": "aligned"
+        }
+      ],
+      "variantPatterns": [
+        {
+          "id": "ARCH-PENDING-SNAPSHOT-001-VERSIONED",
+          "name": "Versioned editable snapshot",
+          "rule": "Keep edits live only with an immutable request generation and stale-result rejection or cancellation plus explicit queued-or-next-submit UI."
+        },
+        {
+          "id": "ARCH-PENDING-SNAPSHOT-001-INDEPENDENT-KEYED",
+          "name": "Independently keyed concurrency",
+          "rule": "Allow simultaneous operations only when typed scope keys and separate pending/error surfaces prevent sibling interference."
+        }
+      ],
+      "candidateQueue": [],
+      "exceptions": [],
+      "requiredBackPropagation": "When pending ownership, request-defining inputs, reset behavior, cancellation, deduplication, route exits, scope keys, or stale-result handling change, update the Phone Authentication reference, every promoted adopter, feature-contract action matrices, screen debt, regression guard, and focused interaction tests in the same pass.",
+      "requiredChecks": [
+        "flutter test --concurrency=1 test/auth/presentation/auth_controller_test.dart test/auth/presentation/auth_presentation_state_test.dart test/auth/presentation/auth_screen_test.dart",
+        "flutter test --concurrency=1 test/onboarding/onboarding_controller_test.dart test/onboarding/onboarding_flow_state_test.dart test/onboarding/onboarding_widgets_test.dart",
+        "flutter test --concurrency=1 test/swipes/filters_screen_test.dart test/swipes/filters_screen_state_test.dart",
+        "flutter test --concurrency=1 test/events/events_widgets_test.dart test/safety/settings_screen_test.dart",
+        "npm --prefix website exec vitest run -- --project=unit src/features/waitlist/useWaitlistFormController.test.tsx src/features/host/application/useHostApplicationController.test.tsx src/features/claims/useClaimFlowController.test.tsx src/features/claims/useClaimRequestMutation.test.tsx src/shared/pendingRequest.test.tsx",
+        "npm --prefix admin test -- --run",
+        "npm --prefix admin run typecheck",
+        "node tool/run.mjs check web:admin-pending-operations",
+        "node tool/design/build_feature_contracts.mjs --check",
+        "node tool/design/check_screen_contracts.mjs --check",
+        "node tool/architecture/check_app_architecture_exhibits.mjs",
+        "dart analyze"
+      ],
+      "notes": "Frozen snapshot is the default for one submitted form or route action, including external platform launches. Versioned editing and independently keyed concurrency are explicit variants, not implicit exceptions. Phone Authentication is the reference; Member Onboarding, Matching Preferences, Host Organizer Create, Host Event Edit, Reviews, Account Settings, Event Location Map, Marketing forms, and the Admin console are aligned adopters. Admin deliberately uses one global exclusive lease because operator writes and submitted queries share navigation, feedback, query-cache, and selection surfaces; the small throughput trade-off prevents cross-workspace ambiguity."
+    },
+    {
+      "id": "ARCH-CROSS-PATHS-CONSENT-001",
+      "name": "Fail-closed layered consent",
+      "status": "reference",
+      "architectureExhibit": "docs/app_architecture.md#exhibit-arch-cross-paths-consent-001-fail-closed-layered-consent",
+      "prototypeFiles": [
+        "lib/cross_paths/cross_paths.dart",
+        "lib/cross_paths/domain/cross_paths_feature_config.dart",
+        "lib/cross_paths/data/cross_paths_feature_config_provider.dart",
+        "lib/cross_paths/data/cross_paths_repository.dart",
+        "lib/cross_paths/domain/cross_paths_suggestion.dart",
+        "lib/explore/presentation/explore_cross_paths_provider.dart",
+        "lib/cross_paths/presentation/cross_paths_explore_card.dart",
+        "lib/cross_paths/domain/cross_paths_invitation.dart",
+        "lib/cross_paths/domain/cross_paths_pair_hold.dart",
+        "lib/cross_paths/presentation/cross_paths_invitation_controller.dart",
+        "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
+        "lib/events/shared/event_detail_route_transition.dart",
+        "lib/events/presentation/event_detail_screen.dart",
+        "lib/cross_paths/presentation/cross_paths_event_consent_controller.dart",
+        "lib/cross_paths/presentation/cross_paths_event_consent_state.dart",
+        "lib/cross_paths/presentation/cross_paths_event_consent_section.dart",
+        "functions/src/crossPaths/setCrossPathsEventConsent.ts",
+        "functions/src/crossPaths/invitations.ts",
+        "functions/src/crossPaths/pairHolds.ts",
+        "functions/src/events/eventPolicy.ts",
+        "functions/src/events/signUpUserForEvent.ts",
+        "test/cross_paths/cross_paths_contract_test.dart",
+        "test/cross_paths/cross_paths_event_consent_section_test.dart",
+        "functions/src/crossPaths/setCrossPathsEventConsent.test.ts"
+      ],
+      "adopters": [
+        {
+          "path": "lib/cross_paths/cross_paths.dart",
+          "role": "sanctioned public presentation seam for provider-free Cross Paths state and section APIs",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/safety/presentation/settings_screen.dart and lib/safety/presentation/settings_controller.dart",
+          "role": "typed private global-consent control hidden behind the fail-closed consent-controls rollout flag",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/events/presentation/event_detail_screen.dart and lib/events/presentation/widgets/event_detail_body.dart",
+          "role": "route-owned rollout, caller-scoped consent read, mutation, error listener, state adaptation, and explicit Event Detail composition boundary",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_event_consent_state.dart",
+          "role": "provider-free eligibility and display-state adapter",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_event_consent_section.dart",
+          "role": "provider-free state-and-callback-only Event Detail renderer",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/cross_paths/data/cross_paths_repository.dart",
+          "role": "caller-scoped consent read, callable-only consent write, and sanitized batched suggestion seam; never an attendee-roster source",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/explore/presentation/explore_cross_paths_provider.dart and lib/explore/presentation/explore_screen_state.dart",
+          "role": "fail-closed optional enrichment, current-event request bounding, token expiry, and provider-free event-majority mixed-feed planning",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
+          "role": "canonical person-polaroid composition with a sanitized profile preview; its consumer boundary resolves participant-scoped invitation state and default-off pair availability before delegating mutations",
+          "providerFree": false,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/events/shared/event_detail_route_transition.dart and lib/events/presentation/event_detail_screen.dart",
+          "role": "in-memory Cross Paths source attribution for booking-started/completed analytics without emitting the signed token or candidate identity",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/cross_paths/domain/cross_paths_invitation.dart and lib/cross_paths/data/cross_paths_repository.dart and lib/cross_paths/presentation/cross_paths_invitation_controller.dart",
+          "role": "typed participant invitation stream plus callable-only send, respond, and cancel mutation boundary",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart and lib/chats/presentation/host_chat_screen_state.dart",
+          "role": "participant-only invitation route and time-bounded event-plan chat presentation kept separate from dating matches",
+          "status": "aligned"
+        },
+        {
+          "path": "functions/src/crossPaths/invitations.ts and firestore.rules",
+          "role": "transactionally revalidated invitation lifecycle, participant reads, server-only writes, safety invalidation, and expiring event-plan messages",
+          "status": "aligned"
+        },
+        {
+          "path": "functions/src/crossPaths/pairHolds.ts and functions/src/events/eventPolicy.ts and functions/src/events/signUpUserForEvent.ts and lib/cross_paths/domain/cross_paths_pair_hold.dart",
+          "role": "organizer-configured companion admission, participant-readable server-owned holds, canonical booking conversion, and idempotent lifecycle release without waitlist reordering",
+          "status": "aligned"
+        },
+        {
+          "path": "functions/src/crossPaths/setCrossPathsEventConsent.ts and firestore.rules",
+          "role": "server-owned enablement validation, revocation persistence, own-edge reads, and direct-write denial",
+          "status": "aligned"
+        },
+        {
+          "path": "test/cross_paths and functions/src/crossPaths/setCrossPathsEventConsent.test.ts and functions/test/firestore.rules.test.cjs",
+          "role": "default-off, visibility-gate, callable precondition, revocation, and read/write authorization proof",
+          "status": "aligned"
+        }
+      ],
+      "candidateQueue": [],
+      "exceptions": [],
+      "requiredBackPropagation": "When Cross Paths consent terms, global preference semantics, event-edge fields, suggestion response/ranking versions, companion inventory/hold/payment semantics, enablement preconditions, rollout flags, revocation behavior, or funnel attribution changes, update the JSON schemas, generated Dart and TypeScript contracts, callable, Firestore rules, Settings, Explore, Event Detail, Host policy and payment adopters, analytics names, disclosure copy, focused tests, docs/cross_paths.md, and this exhibit in one pass.",
+      "requiredChecks": [
+        "./tool/check_data_contract.sh",
+        "flutter test test/analytics/app_analytics_test.dart test/cross_paths test/chats/chat_screen_test.dart test/chats/chat_inbox_screen_test.dart test/explore/explore_view_model_test.dart test/safety/settings_screen_test.dart test/events/event_detail_widgets_test.dart test/hosts/host_create_event_state_test.dart test/events/event_booking_controller_test.dart",
+        "npm --prefix functions run lint && npm --prefix functions run build && node --test functions/lib/crossPaths/*.test.js functions/lib/events/eventPolicy.test.js functions/lib/events/signUpUserForEvent.test.js functions/lib/payments/*.test.js functions/lib/shared/notifications.test.js",
+        "bash tool/check_catch_ui_lints.sh",
+        "node tool/architecture/check_app_architecture_exhibits.mjs"
+      ],
+      "notes": "This reference now covers permission storage, server-owned suggestion resolution, fail-closed Explore consumption, participant-only invitations, organizer-controlled companion holds, canonical checkout conversion, and temporary event plans. All three rollout flags remain off by default, and external privacy-policy approval is required before enabling identifiable discovery beyond internal review."
+    },
+    {
+      "id": "ARCH-ENTITY-MATERIAL-001",
+      "name": "Entity material composition",
+      "status": "reference",
+      "screenInventory": "design/screens/catch.screens.json",
+      "architectureExhibit": "docs/app_architecture.md#exhibit-arch-entity-material-001-entity-material-composition",
+      "prototypeFiles": [
+        "lib/clubs/shared/catch_organizer_poster.dart",
+        "lib/core/widgets/catch_person_polaroid.dart",
+        "lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart",
+        "lib/swipes/shared/profile_surface/catch_profile_view.dart",
+        "test/clubs/club_hero_app_bar_test.dart",
+        "test/swipes/profile_surface_contract_test.dart",
+        "widgetbook/lib/clubs/club_detail_use_cases.dart",
+        "widgetbook/lib/catches/catches_use_cases.dart"
+      ],
+      "adopters": [
+        {
+          "path": "lib/clubs/shared/catch_organizer_poster.dart",
+          "role": "canonical provider-free organizer poster canvas with four bounded layouts, three treatments, media/overlay/footer slots, and deterministic no-photo artwork",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/explore/presentation/widgets/explore_club_cards.dart",
+          "role": "Explore organizer-poster reference adopter with source-backed authority, host, rating, member, and tag composition",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart",
+          "role": "Organizer Detail poster reference adopter with route-owned share/back actions outside the provider-free poster module",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/core/widgets/catch_person_polaroid.dart",
+          "role": "canonical provider-free person polaroid with portrait media, identity caption, optional context overlay, and callback-only interaction",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
+          "role": "consent-safe production person-polaroid reference adopter for Catches, Profile Preview, and Public Profile",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "design/components/catch.components.json",
+          "role": "canonical component contracts for catch.organizer_poster and catch.person_polaroid",
+          "status": "aligned"
+        }
+      ],
+      "candidateQueue": [
+        {
+          "id": "ARCH-ENTITY-MATERIAL-001-HOST-POSTER-RECIPE",
+          "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
+          "reason": "Phase 2 must add a schema-first persisted poster recipe plus a guided host editor; do not expose a save action until repository, rules, migration, and preview contracts exist."
+        },
+        {
+          "id": "ARCH-ENTITY-MATERIAL-001-SHARE-POSTER",
+          "path": "lib/clubs/presentation/detail/widgets/club_share_card.dart",
+          "reason": "Share media uses OrganizerPosterArtwork for fallback but has not yet adopted the complete poster recipe/layout canvas."
+        }
+      ],
+      "exceptions": [],
+      "requiredBackPropagation": "When entity material roles, poster layouts/treatments, person-polaroid anatomy, or context-overlay ownership changes, update the design language, component contracts, Explore and Organizer Detail adopters, shared Profile adopter, Widgetbook states, focused widget tests, and this exhibit before migrating another surface.",
+      "requiredChecks": [
+        "flutter test --concurrency=1 test/clubs/club_hero_app_bar_test.dart test/explore/explore_widgets_test.dart test/swipes/profile_surface_contract_test.dart test/swipes/profile_card_widget_test.dart",
+        "node tool/design/check_component_contracts.mjs --check",
+        "node tool/design/check_screen_contracts.mjs --check",
+        "node tool/architecture/check_app_architecture_exhibits.mjs",
+        "bash tool/check_catch_ui_lints.sh"
+      ],
+      "notes": "The reference slice changes live Explore, Organizer Detail, Profile Preview, Public Profile, and Catches presentation without adding a fake persistence path. Cross Paths now uses the person Polaroid only through a consent-safe server projection with adjacent event context. Host recipe persistence/editor and share-poster adoption remain explicit candidates."
+    }
+  ]
+}

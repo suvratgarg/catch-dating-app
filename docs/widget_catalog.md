@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 3.0.0
+version: 3.0.1
 updated: 2026-08-07
 owner: recursive_audit_loop
 status: active
@@ -10,25 +10,22 @@ status: active
 
 ## Read Policy
 
-Use this as current inventory, not as a history or process ledger. Git and
-`docs/audit_registry/passes.jsonl` own change history; do not append release
-notes here. For process rules, start with `docs/audit_registry/README.md`,
-`docs/audit_registry/rules.json`, and `docs/audit_registry/backlog.json`. Read a
-feature section here only when auditing that feature's widget surface.
+Use this as current inventory. Git owns prior versions; do not append release
+notes here. For process guidance, start with `AGENTS.md`,
+`docs/app_architecture.md`, and the widget-consolidation worklog. Read a feature
+section here only when auditing that feature's widget surface.
 
 ## Maintenance Contract
 
-This file contains current widget inventory only; Git and audit receipts own
-history. Update the relevant inventory row when a widget is added, deleted,
-moved, renamed, or its public API, ownership, sliver/tab structure, or reusable
-design-system role materially changes. Tiny implementation-only edits do not
-require a catalog change.
+This file contains current widget inventory only. Update the relevant inventory
+row when a widget is added, deleted, moved, renamed, or its public API,
+ownership, sliver/tab structure, or reusable design-system role materially
+changes. Tiny implementation-only edits do not require a catalog change.
 
 New public widgets require an exact-name inventory entry and Widgetbook
-coverage. Rules and architecture live in `docs/audit_registry/rules.json` and
-`docs/app_architecture.md`; active work lives in
-`docs/audit_registry/backlog.json`. Routine inventory edits do not increment
-this document contract version.
+coverage. Architecture lives in `docs/app_architecture.md`; active consolidation
+work lives in `docs/design_parity/widget_consolidation/codex_worklog.md`.
+Routine inventory edits do not increment this document contract version.
 
 ## App Entry Point
 
@@ -1270,8 +1267,10 @@ Widgetbook callers.
 
 Keep this section current and conservative. It is for durable consolidation
 ideas that still appear valid after the widget cleanup passes, not for active
-status. Move any selected item into `docs/audit_registry/backlog.json` before
-implementing it.
+status. Create or link a GitHub Issue for any selected item, then place its
+bounded execution order in
+`docs/design_parity/widget_consolidation/codex_worklog.md` when implementation
+begins.
 
 ### High Signal
 

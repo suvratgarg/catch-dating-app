@@ -1,7 +1,9 @@
 import http from "node:http";
+import {spawnSync} from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import {URL, fileURLToPath} from "node:url";
+import {buildWidgetClassification} from "./generate_widget_classification.mjs";
 import {buildWidgetVariantInventory} from "./generate_widget_variant_inventory.mjs";
 
 const repoRoot = process.cwd();
@@ -222,13 +224,15 @@ function useCaseOf(component) {
   return component?.useCases?.[0] ?? null;
 }
 
+let classificationByNameCache;
+
 function loadClassificationByName() {
-  const classificationPath = fromRepo(
-    "docs/audit_registry/widget_classification.json",
+  if (classificationByNameCache !== undefined) return classificationByNameCache;
+  const registry = buildWidgetClassification({repoRoot});
+  classificationByNameCache = new Map(
+    (registry.widgets ?? []).map((row) => [row.name, row]),
   );
-  if (!fs.existsSync(classificationPath)) return new Map();
-  const registry = readJson(classificationPath);
-  return new Map((registry.widgets ?? []).map((row) => [row.name, row]));
+  return classificationByNameCache;
 }
 
 function filesFor(component, contractsByName, classificationByName) {
@@ -286,10 +290,22 @@ export function loadVariantReviewCandidates() {
   return buildWidgetVariantInventory().reviewCandidates;
 }
 
-function loadWidgetSimilarityRegistry() {
-  const registryPath = fromRepo("docs/audit_registry/widget_similarity.json");
-  if (!fs.existsSync(registryPath)) return null;
-  return readJson(registryPath);
+let widgetSimilarityCache;
+
+export function loadWidgetSimilarityRegistry() {
+  if (widgetSimilarityCache !== undefined) return widgetSimilarityCache;
+  const build = spawnSync(
+    process.execPath,
+    ["tool/design/build_widget_similarity.mjs", "--check", "--json"],
+    {cwd: repoRoot, encoding: "utf8", maxBuffer: 32 * 1024 * 1024},
+  );
+  if (build.status !== 0) {
+    throw new Error(
+      `Widget similarity generation failed: ${build.error?.message ?? build.stderr ?? build.stdout}`,
+    );
+  }
+  widgetSimilarityCache = JSON.parse(build.stdout);
+  return widgetSimilarityCache;
 }
 
 function loadPatternFamilyRegistry() {

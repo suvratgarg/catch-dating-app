@@ -1,6 +1,6 @@
 ---
 doc_id: agent_entrypoint
-version: 2.0.0
+version: 3.0.0
 updated: 2026-08-07
 owner: agent_operating_model
 status: active
@@ -8,25 +8,30 @@ status: active
 
 # Catch Agent Entrypoint
 
-This is a routing document, not a task ledger. Git owns history, the Catch
-planner selects affected operations, existing tests and scanners prove
-correctness, and CI stores run evidence.
+This is a routing document. Git owns source, history, branches, and worktrees.
+The Catch planner selects existing checks and delivery lanes, deterministic
+tests and scanners prove correctness, and CI stores run evidence.
 
 ## Starting Loop
 
 1. Run `git status --short` and preserve unrelated work.
 2. Read the owner document for the changed surface.
-3. For broad work, generate a read-only plan or context pack before editing:
+3. For broad work, inspect a read-only impact plan. Add the optional context
+   guidance when owner-doc or check routing would help:
 
    ```sh
-   node tool/agent/context_pack.mjs --task <task> --owned-paths <paths>
-   node tool/harness.mjs plan --mode pr --base <base> --head HEAD
+   node tool/harness.mjs plan --base <base> --head HEAD --json
+   node tool/agent/context_pack.mjs --task <label> --paths <paths>
    ```
 
+   Both commands are read-only with respect to the repository. The context
+   guidance prints to stdout and is never a prerequisite for editing.
 4. Run the focused checks selected by the changed surface. Use
    `node tool/run.mjs check <id...>` when a registered check exists.
-5. Use a separate Git worktree for concurrent changes. The parent reviews and
-   integrates each result; task, Git, PR, and CI output are the evidence.
+5. Use a separate Git worktree for concurrent changes. When overlap protection
+   is useful, use `node tool/git/worktree_guard.mjs start|doctor|finish|stale`.
+   The parent reviews and integrates each result; Git, PR, and CI output are
+   the evidence.
 
 ## Source-Of-Truth Routing
 
@@ -43,11 +48,11 @@ correctness, and CI stores run evidence.
 | Marketing routes/components/SEO | `docs/marketing_website_architecture.md`, `design/website/routes.json`, `design/website/components.json` | Route/component/import checks and marketing typecheck/build |
 | Widget consolidation or dedupe | `docs/design_parity/widget_consolidation/codex_worklog.md`, `docs/design_parity/widget_consolidation/consolidation_rules.md`, `docs/design_parity/widget_consolidation/decisions.json` | Apply only exact K/R/D rules; escalate unmatched identity or visual trade-offs; keep the decision ledger current |
 | Tooling or automation | `tool/README.md`, `tool/tools_manifest.json` | `node tool/run.mjs check --manifest-only` plus focused tool tests |
-| Parallel worktrees | `docs/agent_operating_model.md` | Current `node tool/harness.mjs task ...` lifecycle until the thin guard replaces it |
+| Parallel worktrees | `docs/agent_operating_model.md` | Ordinary Git plus the optional thin `tool/git/worktree_guard.mjs` safety wrapper |
 
-## Evidence Freeze
+## Removed Evidence Layer
 
-The following legacy snapshots are immutable pending deletion:
+The following legacy evidence paths have been deleted and must remain absent:
 
 - `docs/audit_registry/files.jsonl`
 - `docs/audit_registry/passes.jsonl`
@@ -55,12 +60,12 @@ The following legacy snapshots are immutable pending deletion:
 - `docs/audit_registry/doc_versions.json`
 - `docs/agent_regression_ledger.json`
 
-Do not refresh, stamp, append, version-bump, or add entries to them. Any older
-instruction that requires those writes is superseded by this section. Put a
-recurring safety rule in an executable test or scanner; use an expiring waiver
-in the owning source document only when automation is not possible. Store
-generated inventories and run evidence in ignored local output or expiring CI
-artifacts, never in a replacement repository ledger.
+Any older instruction that requires those writes is superseded by this section.
+Put a recurring safety rule in an executable test or scanner; use an expiring
+waiver in the owning source document only when automation is not possible.
+Store generated inventories and run evidence in ignored local output or
+expiring CI artifacts when a consumer needs them, never in a replacement
+repository ledger.
 
 ## Non-Negotiable Rules
 
@@ -73,12 +78,12 @@ artifacts, never in a replacement repository ledger.
 - Before rewriting shared Git history, create a recoverable backup ref and
   verify the exact target.
 - Do not run multiple Flutter analyzer/test processes concurrently.
-- Do not add a new registry, receipt file, metrics ledger, or generated
-  snapshot to replace the frozen evidence.
+- Do not add a new tracked evidence registry or generated history snapshot to
+  replace the removed evidence.
 
 ## Completion Standard
 
 A task is complete when its intended source and contract changes are present,
 the relevant focused checks pass, generated compile-critical outputs are
 current, and the exact commit or working diff is preserved. Ordinary product
-work must not modify any frozen evidence file.
+work must not recreate or replace the removed evidence layer.

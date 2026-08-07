@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
+import {spawnSync} from "node:child_process";
 import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
 
 const JACCARD_STRONG = 0.55;
@@ -13,10 +15,10 @@ const SKIP_TRIVIAL_TOKENS = 8;
 const args = process.argv.slice(2);
 const shouldCheck = args.includes("--check");
 const shouldJson = args.includes("--json");
-const fingerprintsPath =
-  valueAfter("--fingerprints") ?? "artifacts/widget_dedupe/fingerprints.json";
-const fingerprintsLabel = valueAfter("--fingerprints-label") ?? fingerprintsPath;
-const outputPath = valueAfter("--out") ?? "docs/audit_registry/widget_similarity.json";
+const explicitFingerprintsPath = valueAfter("--fingerprints");
+let fingerprintsPath = explicitFingerprintsPath;
+let fingerprintsLabel = valueAfter("--fingerprints-label");
+const outputPath = valueAfter("--out") ?? "build/reports/widget_similarity.json";
 const visualPath = valueAfter("--visual");
 const today = new Date().toISOString().slice(0, 10);
 
@@ -24,44 +26,89 @@ if (args.includes("--help") || args.includes("-h")) {
   console.log(`Usage:
   node tool/design/build_widget_similarity.mjs [--fingerprints path] [--fingerprints-label path] [--out path] [--visual path] [--check] [--json]
 
-Builds the mechanical widget similarity registry from Phase A fingerprints.
+Builds mechanical widget similarity from explicit Phase A fingerprints, or
+generates current fingerprints in a temporary directory when none are supplied.
 `);
   process.exit(0);
 }
 
-const registry = buildRegistry();
-const absoluteOutputPath = fromRepo(outputPath);
-
-if (shouldCheck) {
-  const current = fs.existsSync(absoluteOutputPath)
-    ? JSON.parse(fs.readFileSync(absoluteOutputPath, "utf8"))
-    : null;
-  const comparableCurrent =
-    current == null ? null : {...current, updated: registry.updated};
-  if (
-    JSON.stringify(comparableCurrent, null, 2) !==
-    JSON.stringify(registry, null, 2)
-  ) {
-    console.error(
-      `${relativeToRepo(absoluteOutputPath)} is stale. Run node tool/design/build_widget_similarity.mjs.`,
-    );
-    process.exit(1);
-  }
+let cleanupFingerprints = () => {};
+if (fingerprintsPath == null) {
+  const prepared = extractCurrentFingerprints();
+  fingerprintsPath = prepared.path;
+  fingerprintsLabel ??= "ephemeral:current-source";
+  cleanupFingerprints = prepared.cleanup;
 } else {
-  fs.mkdirSync(path.dirname(absoluteOutputPath), {recursive: true});
-  fs.writeFileSync(absoluteOutputPath, JSON.stringify(registry, null, 2) + "\n");
+  fingerprintsLabel ??= fingerprintsPath;
 }
 
-if (shouldJson) {
-  console.log(JSON.stringify(registry, null, 2));
-} else {
-  console.log(
-    `Widget similarity: ${registry.summary.widgets} widgets, ` +
-      `${registry.summary.clusters} clusters, ` +
-      `${registry.summary.rankedPairs} ranked pairs, ` +
-      `${registry.summary.nameFamilies} name families, ` +
-      `${registry.summary.absorbCandidates} absorb candidates.`,
+try {
+  const registry = buildRegistry();
+  const absoluteOutputPath = fromRepo(outputPath);
+
+  if (shouldCheck) {
+    JSON.parse(JSON.stringify(registry));
+  } else {
+    fs.mkdirSync(path.dirname(absoluteOutputPath), {recursive: true});
+    fs.writeFileSync(absoluteOutputPath, JSON.stringify(registry, null, 2) + "\n");
+  }
+
+  if (shouldJson) {
+    console.log(JSON.stringify(registry, null, 2));
+  } else {
+    console.log(
+      `Widget similarity: ${registry.summary.widgets} widgets, ` +
+        `${registry.summary.clusters} clusters, ` +
+        `${registry.summary.rankedPairs} ranked pairs, ` +
+        `${registry.summary.nameFamilies} name families, ` +
+        `${registry.summary.absorbCandidates} absorb candidates.`,
+    );
+  }
+} finally {
+  cleanupFingerprints();
+}
+
+function extractCurrentFingerprints() {
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-widget-fingerprints-"));
+  const classification = path.join(tempRoot, "classification.json");
+  const output = path.join(tempRoot, "fingerprints.json");
+  const classificationResult = spawnSync(
+    process.execPath,
+    [
+      "tool/design/generate_widget_classification.mjs",
+      "--out",
+      relativeToRepo(classification),
+    ],
+    {cwd: fromRepo("."), encoding: "utf8"},
   );
+  if (classificationResult.status !== 0) {
+    fs.rmSync(tempRoot, {recursive: true, force: true});
+    throw new Error(
+      `Widget classification generation failed: ${classificationResult.error?.message ?? classificationResult.stderr ?? classificationResult.stdout}`,
+    );
+  }
+  const result = spawnSync(
+    "dart",
+    [
+      "run",
+      "tool/widget_dedupe/bin/extract_fingerprints.dart",
+      "--classification",
+      relativeToRepo(classification),
+      "--out",
+      relativeToRepo(output),
+    ],
+    {cwd: fromRepo("."), encoding: "utf8"},
+  );
+  if (result.status !== 0) {
+    fs.rmSync(tempRoot, {recursive: true, force: true});
+    throw new Error(
+      `Widget fingerprint extraction failed: ${result.error?.message ?? result.stderr ?? result.stdout}`,
+    );
+  }
+  return {
+    path: relativeToRepo(output),
+    cleanup: () => fs.rmSync(tempRoot, {recursive: true, force: true}),
+  };
 }
 
 function buildRegistry() {
@@ -215,8 +262,8 @@ function buildRegistry() {
       fingerprints: fingerprintsLabel,
       visualSignal: visual.signal,
       stream: "coarse",
-      usageCountReceipt:
-        "Record manual spot-checks in docs/audit_registry/widget_consolidation_receipts.md before review handoff.",
+      reviewEvidence:
+        "Use the source decision ledger and review discussion; do not create tracked receipts.",
     },
     params: {
       jaccardStrong: JACCARD_STRONG,

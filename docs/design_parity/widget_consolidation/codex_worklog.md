@@ -3,10 +3,16 @@
 Living queue of mechanical work orders for the widget consolidation initiative.
 Decisions (the *why* and the API designs) are made in review sessions and
 recorded in `decisions.json`; this file is the *how*. Work top-down. Mark each
-order's checkboxes as you complete them and append a receipts line (commands +
-headline numbers) under the order. Do not make design decisions here — if an
+order's checkboxes as you complete them and append a concise verification line
+(commands + headline numbers) under the order. Do not make design decisions here — if an
 instruction is ambiguous or a design question appears, stop that order, note it
 under **Escalations**, and continue with the next order.
+
+Historical completion paragraphs below may name the deleted tracked similarity
+report, consolidation-receipt document, or former readiness command. Those are
+records of the workflow used at the time, not current commands. Generate
+similarity on demand under `build/reports/`, keep durable decisions in
+`decisions.json`, and preserve execution proof in Git and CI.
 
 ## Standing environment facts
 
@@ -57,14 +63,13 @@ under **Escalations**, and continue with the next order.
    ```
 7. Verification suite per order: `flutter analyze lib` (compare against
    baseline above), `cd widgetbook && flutter analyze`, plus item 6.
-8. Append a receipts section per completed order to
-   `docs/audit_registry/widget_consolidation_receipts.md` (commands, counts,
-   spot-checks).
+8. Append a concise verification section per completed order here (commands,
+   counts, spot-checks). Do not create a separate tracked receipt file.
 9. **Escalations live in THIS file's Escalations section.** A skip justified
-   only in the receipts doc is invisible to the review queue (the WO-006
-   divider-skeleton skip was nearly missed this way). Receipts may repeat it;
-   the worklog entry is mandatory.
-10. **Cluster IDs are unstable**: `widget_similarity.json` renumbers clusters
+   only in historical proof is invisible to the review queue (the WO-006
+   divider-skeleton skip was nearly missed this way). The worklog entry is
+   mandatory.
+10. **Cluster IDs are unstable**: the on-demand similarity report renumbers clusters
     on every regeneration. Ledger entries must always carry member names;
     when triaging, match candidates against `decisions.json` by MEMBER SET,
     never by cluster id. The `*-reconciled` ledger-entry pattern is the
@@ -104,7 +109,7 @@ removed the unused `_HostManageRouteScope.themeMode` private API, added
 `CatchSectionHeader.subtitle` catalog coverage, regenerated Widgetbook
 directories, widget classification, and widget similarity, and appended the
 full command receipt in
-`docs/audit_registry/widget_consolidation_receipts.md`. Clean checks:
+the former tracked consolidation-receipt document (now deleted). Clean checks:
 `flutter analyze --no-fatal-infos lib` (192 existing infos, 0
 warnings/errors), widget classification check (1174 entries, 44 review items,
 0 private widget classes flagged), widget similarity check (1066 widgets, 62
@@ -962,7 +967,7 @@ coverage artifacts; and recorded the receipt.
 
 `docs/design_parity/widget_consolidation/consolidation_rules.md` now encodes
 the review session's decision patterns. Sweep every cluster and ranked pair
-in `docs/audit_registry/widget_similarity.json` that has NO entry in
+in the on-demand `build/reports/widget_similarity.json` that has NO entry in
 `decisions.json`:
 
 1. For each candidate, test the KEEP rules (K1–K4), then the MERGE rules
@@ -1160,7 +1165,7 @@ Progress by Codex: added `catchCountLabel(int count)` in
 `catch_count_badge.dart`, switched `CatchCountBadge`,
 `CatchPersonUnreadCountPill`, and the swept `DashboardNotificationBellButton`
 clamp to the helper, ran the `99+` clamp sweep, refreshed the audit registry
-(no generated file changes), fixed the stale `CatchDetailHeroScrim` test
+(historical command, now retired; it produced no generated file changes), fixed the stale `CatchDetailHeroScrim` test
 reference to `CatchScrim`, and recorded the receipt.
 
 ---

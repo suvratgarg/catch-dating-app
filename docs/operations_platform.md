@@ -1,7 +1,7 @@
 ---
 doc_id: operations_platform
-version: 1.9.0
-updated: 2026-07-27
+version: 1.9.1
+updated: 2026-08-07
 owner: operations_platform
 status: active
 ---
@@ -573,12 +573,12 @@ npm --prefix functions run build
 node tool/contracts/validate_schema_contracts.mjs
 node tool/run.mjs check --manifest-only
 node tool/check_repository_root_hygiene.mjs
-node tool/agent/check_agent_readiness.mjs
+git diff --check
 ```
 
 Add focused Functions/admin/data-contract checks when persistence, callables,
-or UI projections change. Cleanup and refactor passes also refresh and stamp the
-audit registry. `Tools CI / Operations platform` installs from
+or UI projections change. Git and CI preserve the resulting proof. `Tools CI /
+Operations platform` installs from
 `operations/package-lock.json` and runs the full package check whenever
 `operations/**` or `contracts/operations/**` changes, so this safety boundary is
 enforced on pull requests rather than remaining a local convention.

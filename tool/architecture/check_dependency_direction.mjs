@@ -8,7 +8,7 @@ import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
 const defaultBaselinePath =
   "tool/architecture/dependency_direction_baseline.json";
 const architectureRegistryPath =
-  "docs/audit_registry/architecture_pattern_adoption.json";
+  "tool/architecture/pattern_adoption.json";
 
 const hardGateRules = new Set([
   "barrelPresentationExport",

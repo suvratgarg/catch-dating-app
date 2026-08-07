@@ -130,9 +130,9 @@ Non-goals:
    before `flutter analyze` / `flutter test` / `flutter gen-l10n`.
    `flutter analyze` is authoritative over IDE state.
 6. **Verification** after each phase: focused tests for touched files, then
-   `flutter analyze`, then the phase's gates in §11. Stamp cleanup passes in
-   `docs/audit_registry/passes.jsonl`. Record hard-won regressions in
-   `docs/agent_regression_ledger.json`.
+   `flutter analyze`, then the phase's gates in §11. Preserve the exact-SHA
+   result in Git/CI. Turn hard-won regressions into focused tests or owning
+   scanners; do not update frozen audit or regression ledgers.
 7. **Widgetbook/design registries**: screens added or restructured in Phase 3
    need `design/screens/catch.screens.json` entries and
    `docs/design_parity/state_matrix.json` states, keeping
@@ -569,10 +569,10 @@ preset's description (already available via
 
 - Delete now-unused pieces of `host_club_profile.dart` (media/defaults
   state machine, advanced section) and `host_club_edit_helpers.dart` entries
-  that only served them. `dart tool/audit_registry.dart refresh` if the
-  registry tracks the removed widgets; ledger any removed `Catch*` usages per
-  the consolidation worklog rules only if a consolidation decision is
-  touched (none expected).
+  that only served them. Update the owning widget catalog or component
+  contract if it tracks a removed widget; ledger any removed `Catch*` usages
+  per the consolidation worklog rules only if a consolidation decision is
+  touched (none expected). Do not recreate removed audit evidence.
 - Keep `HostClubTab` enum as edit/insights/preview (unchanged tab rail).
 
 ### 7.7 Acceptance
@@ -585,8 +585,8 @@ preset's description (already available via
 - All four `EventSuccessSetupBody` surfaces compile against the single
   callback API; `test/event_success/` suite green.
 - `flutter analyze`; `flutter test test/hosts test/event_success`;
-  design gates (§3.7) green including new screen contracts;
-  `node tool/agent/check_agent_readiness.mjs` before handoff.
+  design gates (§3.7) green including new screen contracts; `git diff --check`
+  green; exact-SHA proof preserved in Git/CI.
 
 ## 8. Phase 4 — Module consolidation (domain; GATED)
 
@@ -697,14 +697,14 @@ node tool/run.mjs check design:widgetbook-coverage
 node tool/run.mjs check design:section-headers
 node tool/run.mjs check --manifest-only            # if any tool entries changed
 ./tool/check_data_contract.sh                      # Phase 4 only
-node tool/agent/check_agent_readiness.mjs
+git diff --check
 ```
 
 Plus: copy checks wired in the manifest (`tool/copy/check_l10n_key_usage.mjs`,
-`tool/copy/check_mobile_copy_catalog.mjs`), `node tool/test_inventory.mjs`
-regeneration if test files were added, `docs/audit_registry/passes.jsonl`
-stamp per phase, and a `docs/agent_regression_ledger.json` entry for any
-hard-won regression.
+`tool/copy/check_mobile_copy_catalog.mjs`), affected source-contract updates,
+and a focused test or owning scanner for any hard-won regression. Git owns the
+test filenames, and Git plus CI preserve the run evidence; frozen inventory or
+audit snapshots are not written.
 
 ## 12. Confirmed healthy — do NOT "fix"
 

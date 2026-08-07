@@ -3,11 +3,9 @@
   "updated": "2026-08-07",
   "ciImpact": {
     "mandatoryCheckIds": [
-      "agent:readiness",
-      "docs:version-monotonic",
+      "docs:metadata",
       "meta:enforcement-integrity",
-      "meta:repository-root-hygiene",
-      "meta:test-inventory"
+      "meta:repository-root-hygiene"
     ],
     "additionalFullPaths": [
       "functions/package.json",
@@ -26,49 +24,27 @@
       "id": "tool:runner",
       "category": "meta",
       "path": "tool/run.mjs",
-      "impactPaths": [
-        "tool/harness/lib/task_execution_context.mjs"
-      ],
       "command": "node tool/run.mjs",
       "safety": "local",
       "status": "active",
-      "description": "Lists, validates, dispatches, and impact-selects repo tools while failing closed on empty filtered selections and enforcing live, base-derived managed-task phase, planning, output-write, cancellation, and full process-group authority.",
+      "description": "Validates the tool manifest, lists and dispatches registered commands, and fail-closed selects checks from explicit or affected paths without creating a second execution-authority layer.",
       "role": "gate",
-      "rules": [
-        "AGENT-HARNESS-001"
-      ],
       "checks": [
         "node --check tool/run.mjs",
-        "node --check tool/harness/lib/task_execution_context.mjs",
         "node --test tool/run.test.mjs tool/lib/tool_impact.test.mjs"
       ],
       "vacuityProof": {
         "type": "test",
         "path": "tool/run.test.mjs",
         "contains": [
-          "filtered checks fail when a category matches no tools",
-          "direct checks cannot select inactive tool ids",
-          "platform-specific tools run only on declared operating systems",
-          "impact routing reports the owning relationship and checks",
-          "impact routing includes field inventory for Flutter design consumers",
-          "impact routing fails closed for an unmapped changed path",
-          "impact routing includes untracked files",
-          "affected-tool routing selects the checker and mandatory guards",
-          "affected-tool routing ignores companion files owned by other lanes",
-          "affected-tool routing cannot ignore declared full-impact companions",
-          "affected-tool routing fails closed for any unmapped lane input",
-          "affected-tool routing keeps control-plane and explicit full runs full",
-          "shared task-phase authority is dual-owned and remains full-control-plane",
-          "managed workers reject parent, mixed, unplanned, platform, and direct execution atomically",
-          "managed execution rejects live command-definition drift for an allowed id",
-          "execution and finish share one lease across the complete child lifetime",
-          "a crashed runner cannot release the gate while its check process group survives",
-          "SIGINT cancels a background-only managed check group and releases the gate",
-          "managed execution rechecks live task state before every child",
-          "canonical task worktrees cannot become unmanaged when metadata is missing",
-          "managed workers fail closed on malformed, legacy, stale, and forged receipts",
-          "active tool entries cannot be vacuous",
-          "tool manifest validation rejects malformed checkSafety"
+          "unknown commands and empty filtered selections fail clearly",
+          "direct check selection rejects inactive and unknown ids",
+          "impact routing fails closed for an unmapped path",
+          "affected-tool routing selects owners and mandatory guards",
+          "the runner executes manifest checks without task authority metadata",
+          "manifest validation rejects vacuous tools before dispatch",
+          "manifest validation rejects malformed safety and platform metadata",
+          "manifest validation rejects unregistered scripts and duplicate ids"
         ]
       }
     },
@@ -86,9 +62,6 @@
         ]
       },
       "role": "gate",
-      "rules": [
-        "AGENT-HARNESS-001"
-      ],
       "description": "Validates active rule-to-tool enforcement bindings, manifest roles, doc anchors, sunset reviews, vacuity proofs, architecture scanner ownership, and ratchet baselines without requiring tracked metric receipts.",
       "checks": [
         "node --check tool/check_enforcement_integrity.mjs",
@@ -103,8 +76,7 @@
           "fails satisfied sunset signals without review",
           "fails role-less covered runtime tools",
           "fails gate tools that only run count or syntax checks",
-          "accepts ratchet baselines without a separate metric receipt",
-          "fails broad flutter regression guards without plain-name or evidence"
+          "accepts ratchet baselines without a separate metric receipt"
         ]
       }
     },
@@ -121,9 +93,6 @@
         "node --test tool/git/audit_merge_drops.test.mjs"
       ],
       "role": "gate",
-      "rules": [
-        "AGENT-HARNESS-001"
-      ],
       "vacuityProof": {
         "type": "test",
         "path": "tool/git/audit_merge_drops.test.mjs",
@@ -134,15 +103,14 @@
       }
     },
     {
-      "id": "docs:version-monotonic",
+      "id": "docs:metadata",
       "category": "audit",
-      "path": "tool/docs/check_doc_version_monotonic.mjs",
+      "path": "tool/docs/check_doc_metadata.mjs",
       "impactPaths": [
-        "tool/docs/check_doc_version_monotonic.test.mjs",
-        "docs/widget_catalog.md",
-        "docs/audit_registry/doc_versions.json"
+        "tool/docs/check_doc_metadata.test.mjs",
+        "docs/widget_catalog.md"
       ],
-      "command": "node tool/docs/check_doc_version_monotonic.mjs --base origin/main",
+      "command": "node tool/docs/check_doc_metadata.mjs --base origin/main",
       "safety": "local-readonly",
       "status": "active",
       "ciRequirements": {
@@ -151,50 +119,25 @@
           "node"
         ]
       },
-      "description": "Rejects semantic version decreases and removal inconsistencies, requiring governed Markdown frontmatter as its sole retirement authority while retaining catalog lifecycle only for non-Markdown artifacts.",
+      "description": "Validates source-owned Markdown identity, version, date, owner, and lifecycle metadata; rejects duplicate identities, semantic version decreases, and identity swaps while reporting reviewed deletions without a duplicate catalog.",
       "checks": [
-        "node --check tool/docs/check_doc_version_monotonic.mjs",
-        "node --test tool/docs/check_doc_version_monotonic.test.mjs",
-        "node tool/docs/check_doc_version_monotonic.mjs --self-test"
+        "node --check tool/docs/check_doc_metadata.mjs",
+        "node --test tool/docs/check_doc_metadata.test.mjs",
+        "node tool/docs/check_doc_metadata.mjs --self-test"
       ],
       "role": "gate",
       "rules": [
+        "DOC-HYGIENE-001",
         "WIDGET-CATALOG-001"
       ],
       "vacuityProof": {
         "type": "test",
-        "path": "tool/docs/check_doc_version_monotonic.test.mjs",
+        "path": "tool/docs/check_doc_metadata.test.mjs",
         "contains": [
-          "catalog comparator fails only semantic decreases and removal inconsistencies",
-          "known-bad self-test proves decrease and removal detection",
-          "current lifecycle catalog rejects duplicate or missing authority",
-          "widget catalog keeps current inventory ahead of Git-owned history"
-        ]
-      }
-    },
-    {
-      "id": "docs:build-state",
-      "category": "audit",
-      "path": "tool/docs/build_doc_state.mjs",
-      "command": "node tool/docs/build_doc_state.mjs",
-      "safety": "local-readonly",
-      "status": "active",
-      "description": "Builds immutable Git-derived document revision state without committing integration-time metadata back to authored docs.",
-      "checks": [
-        "node --check tool/docs/build_doc_state.mjs",
-        "node --test tool/docs/build_doc_state.test.mjs"
-      ],
-      "role": "generator",
-      "rules": [
-        "DOC-HYGIENE-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/docs/build_doc_state.test.mjs",
-        "contains": [
-          "derived document state keeps semantic metadata separate from Git state",
-          "derived document state rejects duplicate catalog paths",
-          "derived document state rejects missing lifecycle authority"
+          "governed source requires complete metadata and unique identity",
+          "comparison rejects decreases and identity swaps while reporting deletions",
+          "known-bad self-test proves decrease detection and deletion reporting",
+          "widget catalog stays current inventory instead of inline history"
         ]
       }
     },
@@ -203,8 +146,41 @@
       "category": "agent",
       "path": "tool/harness.mjs",
       "command": "node tool/harness.mjs",
-      "safety": "remote-write-git-branch-and-local-worktree-explicit",
-      "checkSafety": "local-readonly",
+      "safety": "local-readonly",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "description": "Plans fail-closed CI, release, and deploy impact from the source-owned component graph and runs only explicitly allowlisted compile-codegen checks.",
+      "checks": [
+        "node --check tool/harness.mjs",
+        "node --check tool/harness/lib/component_graph.mjs",
+        "node --check tool/harness/lib/check_flutter_l10n_generated.mjs",
+        "node --test tool/harness/component_graph.test.mjs tool/harness/check_flutter_l10n_generated.test.mjs tool/harness/harness_cli.test.mjs tool/harness/workflow_wiring.test.mjs",
+        "node tool/harness.mjs validate"
+      ],
+      "role": "gate",
+      "rules": [
+        "AGENT-HARNESS-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/harness/harness_cli.test.mjs",
+        "contains": [
+          "bounded plan outputs contain no changed-path inventory",
+          "plan CLI fails closed before writing outputs for an unknown path"
+        ]
+      }
+    },
+    {
+      "id": "git:worktree-guard",
+      "category": "git",
+      "path": "tool/git/worktree_guard.mjs",
+      "command": "node tool/git/worktree_guard.mjs help",
+      "safety": "local-write-git-worktree-explicit",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -213,36 +189,161 @@
         ]
       },
       "impactPaths": [
-        "tool/agent/lib/task_input.mjs",
-        "tool/agent/task_input.test.mjs",
-        "tool/harness/lib/task_contract.mjs",
-        "tool/harness/lib/task_execution_context.mjs",
-        "tool/harness/lib/worktree_lifecycle.mjs",
-        "tool/harness/worktree_lifecycle.test.mjs"
+        "tool/git/worktree_guard.test.mjs"
       ],
-      "description": "Plans authoritative fail-closed CI, release, and deploy impact, runs allowlisted compile-codegen checks, and owns explicit sparse task-worktree lifecycle commands; v5 tasks separate the local state mirror from parent-issued authority, share task-phase and descendant-process authority with the tool runner, start pushes a collision-free task branch to origin, and reap is report-only.",
+      "description": "Adds a thin local safety boundary around ordinary Git worktrees: exact bases, disjoint claimed paths, dirty/out-of-scope diagnosis, and refusal to close unpushed unique work. It never installs, validates, pushes, deletes, or keeps completed-task history.",
       "checks": [
-        "node --check tool/harness.mjs",
-        "node --check tool/harness/lib/component_graph.mjs",
-        "node --check tool/harness/lib/check_flutter_l10n_generated.mjs",
-        "node --check tool/harness/lib/task_contract.mjs",
-        "node --check tool/harness/lib/task_execution_context.mjs",
-        "node --check tool/harness/lib/worktree_lifecycle.mjs",
-        "node --test tool/agent/task_input.test.mjs tool/harness/component_graph.test.mjs tool/harness/check_flutter_l10n_generated.test.mjs tool/harness/harness_cli.test.mjs tool/harness/workflow_wiring.test.mjs tool/harness/worktree_lifecycle.test.mjs",
-        "node tool/harness.mjs validate"
+        "node --check tool/git/worktree_guard.mjs",
+        "node --test tool/git/worktree_guard.test.mjs",
+        "node tool/git/worktree_guard.mjs help"
       ],
       "role": "gate",
       "rules": [
-        "AGENT-HARNESS-001",
         "AGENT-DELEGATION-001"
       ],
       "vacuityProof": {
         "type": "test",
-        "path": "tool/harness/harness_cli.test.mjs",
+        "path": "tool/git/worktree_guard.test.mjs",
         "contains": [
-          "bounded plan outputs contain no changed-path inventory",
-          "plan CLI fails closed before writing outputs for an unknown path",
-          "task CLI dispatches lifecycle commands before planner validation"
+          "start refuses overlapping claims and permits disjoint worktrees",
+          "doctor detects committed out-of-scope changes while keeping committed in-scope work clean",
+          "finish refuses uncommitted, upstream-less, and unpushed unique work",
+          "stale reports old claims and unclaimed worktrees without deleting either"
+        ]
+      }
+    },
+    {
+      "id": "ci:delivery-core",
+      "category": "ci",
+      "path": "tool/ci/delivery_core.mjs",
+      "command": "node tool/ci/delivery_core.mjs",
+      "safety": "local-writes-build-artifacts",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "index",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/ci/delivery_core.test.mjs"
+      ],
+      "description": "Creates and verifies ephemeral exact-SHA, source-run, and SHA-256 artifact provenance plus ordered idempotent deployment checkpoints for CI/CD promotion and resume.",
+      "checks": [
+        "node --check tool/ci/delivery_core.mjs",
+        "node --test tool/ci/delivery_core.test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/ci/delivery_core.test.mjs",
+        "contains": [
+          "refuses artifact tampering and mismatched expected source SHA or CI run",
+          "resumes in manifest order and treats a passed-stage replay as idempotent",
+          "refuses checkpoint provenance mismatch and malformed checkpoint order"
+        ]
+      }
+    },
+    {
+      "id": "ci:firebase-delivery-package",
+      "category": "ci",
+      "path": "tool/ci/package_firebase_delivery.mjs",
+      "command": "node --test tool/ci/package_firebase_delivery.test.mjs",
+      "safety": "local-writes-build-artifacts",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/ci/package_firebase_delivery.test.mjs",
+        "firebase.json",
+        ".firebaserc",
+        "functions/package.json",
+        "functions/package-lock.json",
+        "functions/src/index.ts",
+        "functions/scripts/set-callable-invokers-public.cjs",
+        "tool/firebase/plan_firebase_deploy_targets.mjs"
+      ],
+      "description": "Projects the CI-authorized backend into one bounded no-predeploy Firebase package, binding the exact source/base SHAs, source CI run, impact-plan digest, compiled Functions, ordered stages, and permitted targets.",
+      "checks": [
+        "node --check tool/ci/package_firebase_delivery.mjs",
+        "node --test tool/ci/package_firebase_delivery.test.mjs"
+      ],
+      "role": "generator"
+    },
+    {
+      "id": "ci:firebase-delivery-workflow",
+      "category": "ci",
+      "path": "tool/ci/firebase_delivery_workflow.test.mjs",
+      "command": "node --test tool/ci/firebase_delivery_workflow.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        ".github/workflows/ci.yml",
+        ".github/workflows/functions-ci.yml",
+        ".github/workflows/delivery.yml",
+        ".github/workflows/_firebase-promote.yml",
+        "tool/ci/firebase_delivery_workflow.test.mjs",
+        "tool/deploy_firebase_targets.sh"
+      ],
+      "description": "Guards the sole automatic backend-delivery path: every completed CI run safely wakes the cursor queue, workflow-generation-bound successful-attempt authorities reference immutable artifact ids and digests, queue discovery performs bounded verification work, promotion is dev-to-staging-to-protected-prod, and recovery is source-bound.",
+      "checks": [
+        "node --check tool/ci/firebase_delivery_workflow.test.mjs",
+        "node --test tool/ci/firebase_delivery_workflow.test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/ci/firebase_delivery_workflow.test.mjs",
+        "contains": [
+          "CI packages one immutable backend from its exact plan and tested Functions",
+          "Delivery treats every completed CI trigger as a queue wakeup and trusts only exact artifacts",
+          "high-cardinality queue metadata still resolves one cursor and one oldest authority",
+          "promotion is ordered dev to staging to protected prod",
+          "automatic target planning rejects broad and unrelated Firebase products"
+        ]
+      }
+    },
+    {
+      "id": "firebase:index-readiness-waiter",
+      "category": "firebase",
+      "path": "tool/firebase/wait_firestore_indexes_ready.mjs",
+      "command": "node tool/firebase/wait_firestore_indexes_ready.mjs --self-test",
+      "safety": "remote-readonly",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        ".github/workflows/_firebase-promote.yml",
+        "tool/firebase/wait_firestore_indexes_ready.test.mjs"
+      ],
+      "description": "Polls project-bound Firestore composite-index metadata until every desired packaged index is READY, failing closed on terminal states or timeout before dependent backend stages continue.",
+      "checks": [
+        "node --check tool/firebase/wait_firestore_indexes_ready.mjs",
+        "node --test tool/firebase/wait_firestore_indexes_ready.test.mjs",
+        "node tool/firebase/wait_firestore_indexes_ready.mjs --self-test"
+      ],
+      "role": "operator",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/firebase/wait_firestore_indexes_ready.test.mjs",
+        "contains": [
+          "missing and building indexes remain pending while failed indexes stop",
+          "waiter polls metadata until every desired index is ready",
+          "gcloud query is metadata-only, project-bound, and quiet"
         ]
       }
     },
@@ -260,20 +361,15 @@
         ]
       },
       "impactPaths": [
-        "tool/agent/lib/task_input.mjs",
-        "tool/agent/task_input.test.mjs",
-        "tool/harness/lib/task_contract.mjs",
-        "tool/harness/lib/worktree_lifecycle.mjs",
-        "tool/harness/worktree_lifecycle.test.mjs",
-        "tool/run.test.mjs"
+        "tool/agent/lib/context_plan.mjs",
+        "tool/agent/context_plan.test.mjs"
       ],
-      "description": "Builds a base-bound AI-agent context packet whose owned paths cap writes, whose planned impacts select owner docs, checks, and guards, whose output suffix cannot disagree with serialization, and whose parent lifecycle plan comes from one canonical task-command contract.",
+      "description": "Prints optional read-only guidance from the current Git SHA and source-owned scope, skills, rules, owner docs, and locally safe checks. It grants no execution or write authority and stores no receipt.",
       "checks": [
         "node --check tool/agent/context_pack.mjs",
-        "node --check tool/agent/lib/task_input.mjs",
-        "node --test tool/agent/task_input.test.mjs",
-        "node --test --test-name-pattern \"parallel delegation context mode|context-pack output|task help derives\" tool/run.test.mjs tool/harness/worktree_lifecycle.test.mjs",
-        "node tool/agent/context_pack.mjs --task agent-readiness --owned-paths AGENTS.md,docs/agent_operating_model.md --output build/agent-context/agent-readiness.json"
+        "node --check tool/agent/lib/context_plan.mjs",
+        "node --test tool/agent/context_plan.test.mjs",
+        "node tool/agent/context_pack.mjs --task agent-guidance --paths AGENTS.md,docs/agent_operating_model.md --json"
       ],
       "role": "finder"
     },
@@ -302,56 +398,6 @@
           "resolves entrypoint 'lib/main_prod.dart'; caller supplied 'lib/main_consumer_prod.dart'"
         ]
       }
-    },
-    {
-      "id": "agent:readiness",
-      "category": "agent",
-      "path": "tool/agent/check_agent_readiness.mjs",
-      "command": "node tool/agent/check_agent_readiness.mjs",
-      "safety": "local",
-      "status": "active",
-      "impactPaths": [
-        "tool/agent/check_agent_readiness.test.mjs"
-      ],
-      "ciRequirements": {
-        "repositoryView": "index",
-        "setup": [
-          "node"
-        ]
-      },
-      "description": "Validates the remaining Catch agent routing, project-local skills, task-scope guidance, tool registration, and canonical test-inventory freshness without writing repository evidence.",
-      "checks": [
-        "node --check tool/agent/check_agent_readiness.mjs",
-        "node --test tool/agent/check_agent_readiness.test.mjs",
-        "node tool/agent/check_agent_readiness.mjs"
-      ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/agent/check_agent_readiness.mjs",
-        "contains": [
-          "Agent readiness score"
-        ]
-      }
-    },
-    {
-      "id": "audit:registry",
-      "category": "audit",
-      "path": "tool/audit_registry.dart",
-      "impactPaths": [
-        "tool/lib/audit_registry_paths.dart",
-        "test/tool/audit_registry_paths_test.dart"
-      ],
-      "command": "dart tool/audit_registry.dart",
-      "safety": "local-readonly",
-      "status": "internal",
-      "description": "Reads frozen legacy audit snapshots during migration; repository-writing refresh and pass stamping are retired.",
-      "checks": [
-        "flutter analyze --no-fatal-infos tool/audit_registry.dart tool/lib/audit_registry_paths.dart test/tool/audit_registry_paths_test.dart",
-        "flutter test test/tool/audit_registry_paths_test.dart",
-        "dart tool/audit_registry.dart docs --path widget"
-      ],
-      "role": "finder"
     },
     {
       "id": "audit:backend-errors",
@@ -407,7 +453,7 @@
       "category": "audit",
       "path": "tool/scan_architecture.py",
       "command": "python3 tool/scan_architecture.py",
-      "safety": "local-writes-audit-json",
+      "safety": "local-writes-build-artifacts",
       "status": "active",
       "description": "Scans async-state handling, repository error wrapping, controller mutations, and structural widget overlap.",
       "checks": [
@@ -912,7 +958,7 @@
       "command": "node tool/web/check_react_component_governance.mjs",
       "safety": "local",
       "status": "active",
-      "description": "Checks React website/admin feature code routes governed component families through shared primitives, and verifies adopted admin form families declare valid shared field-row interaction modes. The governed-family registry is generated by --families-json and checked in at docs/audit_registry/react_component_governance_families.json.",
+      "description": "Checks React website/admin feature code routes governed component families through shared primitives, and verifies adopted admin form families declare valid shared field-row interaction modes directly from current source and authored component contracts.",
       "checks": [
         "node --check tool/web/check_react_component_governance.mjs",
         "node tool/web/check_react_component_governance.mjs --self-test",
@@ -1183,9 +1229,6 @@
         "node tool/ci/check_tool_category_coverage.mjs"
       ],
       "role": "gate",
-      "rules": [
-        "AGENT-HARNESS-001"
-      ],
       "vacuityProof": {
         "type": "test",
         "path": "tool/ci/check_tool_category_coverage.test.mjs",
@@ -1317,7 +1360,7 @@
       "command": "node tool/contracts/generate_flutter_form_contract_inventory.mjs --check",
       "safety": "local-readonly",
       "status": "active",
-      "description": "Inventories every editable canonical Flutter form control and descriptor instance in both installable apps, rejecting missing generated contracts, serializers, endpoint bindings, or explicit exemptions.",
+      "description": "Scans every editable canonical Flutter form control and descriptor instance directly from both installable apps, rejecting missing generated contracts, serializers, endpoint bindings, or explicit exemptions; an explicit non-check run writes only an ignored build report.",
       "checks": [
         "node --check tool/contracts/generate_flutter_form_contract_inventory.mjs",
         "node --test tool/contracts/generate_flutter_form_contract_inventory.test.mjs",
@@ -2031,7 +2074,7 @@
         "path": "tool/firebase/check_environment_readiness.test.mjs",
         "contains": [
           "secret metadata classification never returns payload fields",
-          "deploy workflows run readiness before dependency installation"
+          "backend promotion runs readiness before dependency installation"
         ]
       }
     },
@@ -2054,7 +2097,7 @@
       "command": "node --test tool/firebase/plan_firebase_deploy_targets.test.mjs",
       "safety": "local-test",
       "status": "active",
-      "description": "Plans validated Firebase deploy phases so Functions, including exact targets, run before indexes and rules.",
+      "description": "Expands only CI-authorized backend groups and validated exact targets into indexes-first Firebase phases while rejecting all, hosting, Remote Config, Extensions, and arbitrary extras.",
       "checks": [
         "node --check tool/firebase/plan_firebase_deploy_targets.mjs",
         "node --test tool/firebase/plan_firebase_deploy_targets.test.mjs"
@@ -3668,9 +3711,6 @@
         "node tool/design/check_feature_coverage.mjs --check"
       ],
       "role": "gate",
-      "rules": [
-        "AGENT-HARNESS-001"
-      ],
       "vacuityProof": {
         "type": "test",
         "path": "tool/design/check_feature_coverage.test.mjs",
@@ -3766,12 +3806,19 @@
       "id": "design:widget-classification-generate",
       "category": "design",
       "path": "tool/design/generate_widget_classification.mjs",
-      "command": "node tool/design/generate_widget_classification.mjs",
-      "safety": "local-writes-audit-json",
+      "impactPaths": [
+        "tool/design/check_widget_classification.mjs",
+        "tool/design/check_widget_classification.test.mjs"
+      ],
+      "command": "node tool/design/generate_widget_classification.mjs --check",
+      "safety": "local-readonly",
       "status": "active",
-      "description": "Generates the exhaustive widget role, ownership, catalog, and consolidation classification registry from Dart source, component contracts, and Widgetbook.",
+      "role": "generator",
+      "description": "Builds the exhaustive widget role, ownership, catalog, and consolidation classification from current Dart source, component contracts, and Widgetbook; explicit generation writes only an ignored build report.",
       "checks": [
-        "node --check tool/design/generate_widget_classification.mjs"
+        "node --check tool/design/generate_widget_classification.mjs",
+        "node --test tool/design/check_widget_classification.test.mjs",
+        "node tool/design/generate_widget_classification.mjs --check"
       ]
     },
     {
@@ -3838,29 +3885,20 @@
       }
     },
     {
-      "id": "design:widget-concept-report",
-      "category": "design",
-      "path": "tool/design/build_widget_concept_report.mjs",
-      "command": "node tool/design/build_widget_concept_report.mjs --check",
-      "safety": "local",
-      "status": "active",
-      "description": "Generates machine-readable and Markdown metrics for concept/class deltas, members, unclassified entries, collisions, ledger and Widgetbook coverage, Figma health, Claude parity, and owner-review queue size.",
-      "checks": [
-        "node --check tool/design/build_widget_concept_report.mjs",
-        "node tool/design/build_widget_concept_report.mjs --check"
-      ],
-      "role": "finder"
-    },
-    {
       "id": "design:widget-classification-check",
       "category": "design",
       "path": "tool/design/check_widget_classification.mjs",
+      "impactPaths": [
+        "tool/design/generate_widget_classification.mjs",
+        "tool/design/check_widget_classification.test.mjs"
+      ],
       "command": "node tool/design/check_widget_classification.mjs",
-      "safety": "local",
+      "safety": "local-readonly",
       "status": "active",
-      "description": "Validates the generated widget classification registry and blocks private-helper remediation paths.",
+      "description": "Validates the source-derived widget classification contract and blocks private-helper remediation paths without reading a tracked inventory snapshot.",
       "checks": [
         "node --check tool/design/check_widget_classification.mjs",
+        "node --test tool/design/check_widget_classification.test.mjs",
         "node tool/design/check_widget_classification.mjs"
       ],
       "role": "finder"
@@ -3897,7 +3935,7 @@
       "category": "design",
       "path": "tool/design/check_new_widget_inventory.mjs",
       "command": "node tool/design/check_new_widget_inventory.mjs",
-      "safety": "local-writes-audit-json",
+      "safety": "local-writes-build-artifacts",
       "status": "active",
       "description": "Compares the working tree against a base ref to find newly introduced widget classes, private widget classes, Widget-returning helpers, and Widgetbook/catalog coverage gaps.",
       "checks": [
@@ -4034,6 +4072,7 @@
       "category": "design",
       "path": "tool/design/widgetbook_compare_server.mjs",
       "impactPaths": [
+        "tool/design/generate_widget_classification.mjs",
         "tool/design/generate_widget_variant_inventory.mjs",
         "tool/design/widgetbook_compare_server.test.mjs"
       ],
@@ -4041,12 +4080,12 @@
       "safety": "local-server",
       "status": "active",
       "ciRequirements": {
-        "repositoryView": "index",
+        "repositoryView": "full",
         "setup": [
           "node"
         ]
       },
-      "description": "Serves the interactive Widgetbook comparison and canonical decision logging UI from current Widgetbook and widget-classification sources, with pattern-family review first and dedupe evidence as a secondary queue.",
+      "description": "Serves the interactive Widgetbook comparison and canonical decision logging UI from current Widgetbook, classification, and on-demand source-derived similarity data, with pattern-family review first and dedupe evidence as a secondary queue.",
       "checks": [
         "node --check tool/design/widgetbook_compare_server.mjs",
         "node --test tool/design/widgetbook_compare_server.test.mjs"
@@ -4473,13 +4512,26 @@
       "id": "design:widget-similarity-registry",
       "category": "design",
       "path": "tool/design/build_widget_similarity.mjs",
+      "impactPaths": [
+        "tool/design/generate_widget_classification.mjs",
+        "tool/design/build_widget_similarity.test.mjs"
+      ],
       "command": "node tool/design/build_widget_similarity.mjs --check",
-      "safety": "local",
+      "safety": "local-writes-build-artifacts",
       "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "flutter",
+          "flutter-pub"
+        ]
+      },
       "role": "generator",
-      "description": "Builds and checks the generated widget similarity registry from widget dedupe fingerprints.",
+      "description": "Builds widget similarity directly from current dedupe fingerprints and authored decisions; check mode is read-only and explicit generation writes only an ignored build report.",
       "checks": [
-        "node --check tool/design/build_widget_similarity.mjs"
+        "node --check tool/design/build_widget_similarity.mjs",
+        "node --test tool/design/build_widget_similarity.test.mjs"
       ]
     },
     {
@@ -4504,13 +4556,18 @@
       "id": "design:widget-dedupe-fingerprints",
       "category": "design",
       "path": "tool/widget_dedupe/bin/extract_fingerprints.dart",
+      "impactPaths": [
+        "tool/widget_dedupe/lib/src/fingerprint_extractor.dart",
+        "tool/widget_dedupe/test/fingerprint_extractor_test.dart"
+      ],
       "command": "dart run tool/widget_dedupe/bin/extract_fingerprints.dart --help",
       "safety": "local",
       "status": "active",
       "role": "generator",
-      "description": "Extracts structural fingerprints for Dart widgets for dedupe and similarity analysis.",
+      "description": "Extracts structural fingerprints for explicit Dart widget files or an explicit disposable classification input for dedupe and similarity analysis.",
       "checks": [
-        "dart run tool/widget_dedupe/bin/extract_fingerprints.dart --help"
+        "dart run tool/widget_dedupe/bin/extract_fingerprints.dart --help",
+        "dart test tool/widget_dedupe/test/fingerprint_extractor_test.dart"
       ]
     },
     {
@@ -5022,9 +5079,9 @@
       "category": "design",
       "path": "tool/design/generate_flutter_field_surface_inventory.mjs",
       "command": "node tool/design/generate_flutter_field_surface_inventory.mjs --check",
-      "safety": "local-writes-audit-json",
+      "safety": "local-writes-build-artifacts",
       "status": "active",
-      "description": "Validates the ranked Flutter field-surface adoption ledger, proves every remaining legacy product callsite is classified, and checks its deterministic evidence snapshot.",
+      "description": "Validates the authored Flutter field-surface adoption ledger directly against current routes, screens, anchors, and legacy product callsites; an explicit non-check run writes only an ignored build report.",
       "checks": [
         "node --check tool/design/generate_flutter_field_surface_inventory.mjs",
         "node --test tool/design/generate_flutter_field_surface_inventory.test.mjs",
@@ -5049,9 +5106,9 @@
       "category": "design",
       "path": "tool/design/generate_field_inventory.mjs",
       "command": "node tool/design/generate_field_inventory.mjs --check",
-      "safety": "local-writes-audit-json",
+      "safety": "local-writes-build-artifacts",
       "status": "active",
-      "description": "Generates the CatchField facade, mode, parameter, semantic-slot, use-when, and forbidden-surface inventory from the live Flutter API and rejects drift from the shared interaction contract.",
+      "description": "Validates the live CatchField facade and section contracts deterministically; an explicit non-check run writes an ignored build report rather than tracked governance evidence.",
       "checks": [
         "node --check tool/design/generate_field_inventory.mjs",
         "node --test tool/design/generate_field_inventory.test.mjs",
@@ -5166,29 +5223,6 @@
         "node --check tool/repository_hygiene.mjs",
         "node --test tool/repository_hygiene.test.mjs",
         "node tool/repository_hygiene.mjs --json"
-      ]
-    },
-    {
-      "id": "meta:test-inventory",
-      "category": "meta",
-      "path": "tool/test_inventory.mjs",
-      "command": "node tool/test_inventory.mjs --check",
-      "safety": "local",
-      "status": "active",
-      "ciRequirements": {
-        "repositoryView": "index",
-        "setup": [
-          "node"
-        ]
-      },
-      "taskPaths": [
-        "docs/audit_registry/test_inventory.json"
-      ],
-      "role": "generator",
-      "description": "Generates and drift-checks the Git-backed cross-surface test inventory.",
-      "checks": [
-        "node --test tool/test_inventory.test.mjs",
-        "node tool/test_inventory.mjs --check"
       ]
     },
     {

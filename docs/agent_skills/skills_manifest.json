@@ -1,34 +1,33 @@
 {
-  "version": 142,
+  "version": 144,
   "updated": "2026-08-07",
   "owner": "agent_operating_model",
   "skills": [
     {
       "skill_id": "catch-architecture-refactor",
       "path": "docs/agent_skills/catch-architecture-refactor.md",
-      "version": "1.1.1",
+      "version": "1.2.0",
       "updated": "2026-08-07",
       "applies_to": [
         "lib/**",
         "test/**",
         "docs/app_architecture.md",
-        "docs/audit_registry/architecture_pattern_adoption.json",
+        "tool/architecture/pattern_adoption.json",
         "lib/README.md"
       ],
       "source_docs": [
         "AGENTS.md",
         "docs/agent_operating_model.md",
         "docs/app_architecture.md",
-        "docs/audit_registry/architecture_pattern_adoption.json",
-        "lib/README.md",
-        "docs/audit_registry/README.md"
+        "tool/architecture/pattern_adoption.json",
+        "lib/README.md"
       ],
-      "required_tools": [
-        "agent:context-pack"
-      ],
+      "required_tools": [],
       "required_commands": [
-        "node tool/agent/context_pack.mjs --task architecture-refactor --owned-paths lib,docs/app_architecture.md,docs/audit_registry/architecture_pattern_adoption.json",
         "flutter analyze --no-fatal-infos"
+      ],
+      "optional_guidance": [
+        "node tool/agent/context_pack.mjs --task architecture-refactor --paths lib,docs/app_architecture.md,tool/architecture/pattern_adoption.json"
       ],
       "success_evidence": "Focused tests/analyzer pass, relevant scanners run, generated artifacts are current, and Git or CI output preserves the evidence.",
       "known_failure_modes": [
@@ -41,7 +40,7 @@
     {
       "skill_id": "catch-marketing-website",
       "path": "docs/agent_skills/catch-marketing-website.md",
-      "version": "1.1.116",
+      "version": "1.1.117",
       "updated": "2026-08-07",
       "applies_to": [
         "website/**",
@@ -64,11 +63,9 @@
         "website/README.md",
         "packages/web-config/README.md",
         "design/website/routes.json",
-        "design/website/components.json",
-        "docs/audit_registry/README.md"
+        "design/website/components.json"
       ],
       "required_tools": [
-        "agent:context-pack",
         "marketing:website-routes",
         "marketing:website-components",
         "web:react-architecture-boundaries",
@@ -79,7 +76,6 @@
         "design:tokens"
       ],
       "required_commands": [
-        "node tool/agent/context_pack.mjs --task marketing-website --owned-paths website,packages/web-config,tool/marketing,design/website,.github/workflows/marketing-website.yml",
         "node tool/run.mjs check marketing:website-routes",
         "node tool/run.mjs check marketing:website-components",
         "node tool/run.mjs check web:react-architecture-boundaries",
@@ -88,6 +84,9 @@
         "npm --workspace catch-marketing run typecheck",
         "npm --workspace catch-marketing run build",
         "npm --workspace catch-marketing run build:storybook"
+      ],
+      "optional_guidance": [
+        "node tool/agent/context_pack.mjs --task marketing-website --paths website,packages/web-config,tool/marketing,design/website,.github/workflows/marketing-website.yml"
       ],
       "success_evidence": "Website architecture, route contract, component registry, generated listings, static metadata, marketing docs, Storybook coverage, CI path filters, and website build/typecheck proof stay aligned.",
       "known_failure_modes": [
@@ -106,7 +105,7 @@
     {
       "skill_id": "catch-react-surface-refactor",
       "path": "docs/agent_skills/catch-react-surface-refactor.md",
-      "version": "1.0.138",
+      "version": "1.0.139",
       "updated": "2026-08-07",
       "applies_to": [
         "website/**",
@@ -119,7 +118,7 @@
         "design/website/**",
         "design/admin/**",
         "design/web-ui/**",
-        "docs/audit_registry/web_shared_primitive_adoption.json",
+        "design/web-ui/shared_primitive_adoption.json",
         "docs/web_surface_architecture.md",
         "docs/marketing_website_architecture.md"
       ],
@@ -134,11 +133,9 @@
         "website/README.md",
         "packages/web-config/README.md",
         "tool/tools_manifest.json",
-        "docs/audit_registry/README.md",
-        "docs/audit_registry/web_shared_primitive_adoption.json"
+        "design/web-ui/shared_primitive_adoption.json"
       ],
       "required_tools": [
-        "agent:context-pack",
         "web:react-architecture-boundaries",
         "web:react-ui-primitives",
         "web:react-component-governance",
@@ -155,7 +152,6 @@
         "admin:import-boundaries"
       ],
       "required_commands": [
-        "node tool/agent/context_pack.mjs --task react-surface-refactor --owned-paths website,admin,packages/web-config,docs/web_surface_architecture.md,docs/marketing_website_architecture.md,design/website,tool",
         "node tool/run.mjs check web:react-architecture-boundaries",
         "node tool/run.mjs check web:react-ui-primitives",
         "node tool/run.mjs check web:react-component-governance",
@@ -174,6 +170,9 @@
         "npm --workspace catch-marketing run build",
         "npm --workspace catch-admin run build",
         "node tool/run.mjs check --manifest-only"
+      ],
+      "optional_guidance": [
+        "node tool/agent/context_pack.mjs --task react-surface-refactor --paths website,admin,packages/web-config,docs/web_surface_architecture.md,docs/marketing_website_architecture.md,design/website,tool"
       ],
       "success_evidence": "React surface pass keeps route shells thin, feature controllers/query seams explicit, UI primitives centralized, route/component registries current, admin boundaries intact, and scanner/build checks pass with output retained by Git or CI.",
       "known_failure_modes": [
@@ -194,7 +193,7 @@
     {
       "skill_id": "catch-ui-implementation",
       "path": "docs/agent_skills/catch-ui-implementation.md",
-      "version": "1.0.1",
+      "version": "1.1.0",
       "updated": "2026-08-07",
       "applies_to": [
         "lib/**/presentation/**",
@@ -211,14 +210,15 @@
         "docs/app_architecture.md"
       ],
       "required_tools": [
-        "agent:context-pack",
         "design:widget-classification-check",
         "design:widgetbook-coverage"
       ],
       "required_commands": [
-        "node tool/agent/context_pack.mjs --task ui-implementation --owned-paths lib",
         "node tool/run.mjs check --category design",
         "flutter analyze --no-fatal-infos"
+      ],
+      "optional_guidance": [
+        "node tool/agent/context_pack.mjs --task ui-implementation --paths lib"
       ],
       "success_evidence": "UI change is tied to component contracts or Widgetbook states where relevant and passes focused UI/design checks.",
       "known_failure_modes": [
@@ -230,7 +230,7 @@
     {
       "skill_id": "catch-design-parity",
       "path": "docs/agent_skills/catch-design-parity.md",
-      "version": "1.0.1",
+      "version": "1.1.0",
       "updated": "2026-08-07",
       "applies_to": [
         "docs/design_parity/**",
@@ -250,15 +250,16 @@
         "docs/widget_catalog.md"
       ],
       "required_tools": [
-        "agent:context-pack",
         "design:parity-gate",
         "design:context-pack"
       ],
       "required_commands": [
-        "node tool/agent/context_pack.mjs --task design-parity --owned-paths docs/design_parity,widgetbook,lib/core/widgets",
         "node tool/run.mjs check --category design"
       ],
-      "success_evidence": "Review uses canonical/repair/unify/register/discard decisions and updates contracts, Widgetbook, ledgers, or docs in the same pass.",
+      "optional_guidance": [
+        "node tool/agent/context_pack.mjs --task design-parity --paths docs/design_parity,widgetbook,lib/core/widgets"
+      ],
+      "success_evidence": "Review uses canonical/repair/unify/register/discard decisions and updates owning contracts, Widgetbook coverage, or docs in the same pass.",
       "known_failure_modes": [
         "Aliases or feature-only buckets survive as final state.",
         "Widgetbook route or generated directory state is stale.",
@@ -268,7 +269,7 @@
     {
       "skill_id": "catch-doc-hygiene",
       "path": "docs/agent_skills/catch-doc-hygiene.md",
-      "version": "1.1.1",
+      "version": "1.2.0",
       "updated": "2026-08-07",
       "applies_to": [
         "docs/**",
@@ -282,10 +283,13 @@
         "docs/README.md"
       ],
       "required_tools": [
-        "agent:context-pack"
+        "docs:metadata"
       ],
       "required_commands": [
-        "node tool/agent/context_pack.mjs --task doc-hygiene --owned-paths docs"
+        "node tool/docs/check_doc_metadata.mjs --base origin/main"
+      ],
+      "optional_guidance": [
+        "node tool/agent/context_pack.mjs --task doc-hygiene --paths docs"
       ],
       "success_evidence": "Durable guidance is folded into owner docs, duplicate docs are deleted or explicitly temporary, links pass, and source metadata remains valid.",
       "known_failure_modes": [
@@ -297,7 +301,7 @@
     {
       "skill_id": "catch-contract-change",
       "path": "docs/agent_skills/catch-contract-change.md",
-      "version": "1.0.1",
+      "version": "1.1.0",
       "updated": "2026-08-07",
       "applies_to": [
         "contracts/**",
@@ -312,16 +316,16 @@
         "AGENTS.md",
         "docs/agent_operating_model.md",
         "docs/data_contracts.md",
-        "docs/backend_operation_catalog.md",
-        "docs/audit_registry/README.md"
+        "docs/backend_operation_catalog.md"
       ],
       "required_tools": [
-        "agent:context-pack",
         "contracts:check-all"
       ],
       "required_commands": [
-        "node tool/agent/context_pack.mjs --task contract-change --owned-paths contracts,functions/src,firestore.rules,lib",
         "./tool/check_data_contract.sh"
+      ],
+      "optional_guidance": [
+        "node tool/agent/context_pack.mjs --task contract-change --paths contracts,functions/src,firestore.rules,lib"
       ],
       "success_evidence": "Schema/rules/model/tooling sources agree, generated contracts are refreshed, and data-contract checks pass or external blockers are documented.",
       "known_failure_modes": [
@@ -333,7 +337,7 @@
     {
       "skill_id": "catch-tooling-automation",
       "path": "docs/agent_skills/catch-tooling-automation.md",
-      "version": "1.0.1",
+      "version": "1.1.0",
       "updated": "2026-08-07",
       "applies_to": [
         "tool/**"
@@ -344,12 +348,13 @@
         "tool/README.md"
       ],
       "required_tools": [
-        "agent:context-pack",
         "tool:runner"
       ],
       "required_commands": [
-        "node tool/agent/context_pack.mjs --task tooling-automation --owned-paths tool",
         "node tool/run.mjs check --manifest-only"
+      ],
+      "optional_guidance": [
+        "node tool/agent/context_pack.mjs --task tooling-automation --paths tool"
       ],
       "success_evidence": "The tool is manifest-owned, its focused and affected checks pass, and manifest validation is clean.",
       "known_failure_modes": [
@@ -362,7 +367,7 @@
     {
       "skill_id": "catch-release-check",
       "path": "docs/agent_skills/catch-release-check.md",
-      "version": "1.0.1",
+      "version": "1.1.0",
       "updated": "2026-08-07",
       "applies_to": [
         ".github/workflows/**",
@@ -382,12 +387,13 @@
         "tool/README.md"
       ],
       "required_tools": [
-        "agent:context-pack",
         "tool:runner"
       ],
       "required_commands": [
-        "node tool/agent/context_pack.mjs --task release-check --owned-paths .github,tool/firebase,ios,android,docs/release_operations.md",
         "node tool/run.mjs check --manifest-only"
+      ],
+      "optional_guidance": [
+        "node tool/agent/context_pack.mjs --task release-check --paths .github,tool/firebase,ios,android,docs/release_operations.md"
       ],
       "success_evidence": "Local CI-equivalent checks are run, branch/workflow/deploy state is verified when required, and release docs stay current.",
       "known_failure_modes": [

@@ -86,13 +86,12 @@ function createFixture(t, {registry = validRegistry(), registryPath = defaultReg
   );
   writeFile(
     root,
-    "docs/audit_registry/widget_classification.json",
-    `${JSON.stringify({widgets: [{name: "LegacyChip"}]}, null, 2)}\n`,
-  );
-  writeFile(
-    root,
     "lib/design/repair_chip.dart",
-    "class RepairChip extends StatelessWidget {}\n",
+    [
+      "class LegacyChip extends StatelessWidget {}",
+      "class RepairChip extends StatelessWidget {}",
+      "",
+    ].join("\n"),
   );
   return {root, registryPath};
 }
@@ -365,7 +364,7 @@ test("rejects a required preview missing from generated Widgetbook directories",
   );
 });
 
-test("rejects a source-only symbol with no classification or Dart source evidence", (t) => {
+test("rejects a source-only symbol with no Dart source evidence", (t) => {
   const errors = errorsFor(t, (registry) => {
     registry.families[0].members.push({
       symbol: "MissingSourceChip",
@@ -379,7 +378,7 @@ test("rejects a source-only symbol with no classification or Dart source evidenc
     errors.some(
       (error) =>
         error.includes("'MissingSourceChip'") &&
-        error.includes("no current Dart classification or lib source evidence"),
+        error.includes("no current lib source evidence"),
     ),
   );
 });

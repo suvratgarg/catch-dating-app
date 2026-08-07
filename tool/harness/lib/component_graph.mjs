@@ -1,5 +1,3 @@
-import {spawnSync} from "node:child_process";
-
 const operationKeys = [
   "ciTargets",
   "checkIds",
@@ -44,6 +42,11 @@ export function validateComponentGraph(graph, {knownCheckIds} = {}) {
     ? graph.classifications
     : [];
   const generators = Array.isArray(graph.compileCodegen) ? graph.compileCodegen : [];
+  const deployGroupRequirements = validateDeployGroupRequirements(
+    graph.deployGroupRequirements,
+    targets,
+    errors,
+  );
 
   validateCiCheckout(graph.ciCheckout, targets, errors);
 
@@ -88,8 +91,10 @@ export function validateComponentGraph(graph, {knownCheckIds} = {}) {
           operation,
           location: `${profileId}.${relationship}.${mode}`,
           relationship,
+          mode,
           targets,
           generatorIds,
+          deployGroupRequirements,
           knownCheckIds,
           errors,
         });
@@ -414,60 +419,14 @@ export function deriveAppRoles(plan) {
   return [...roles].sort();
 }
 
-export function selectCompileCodegen({plan, graph, platform = process.platform}) {
-  const byId = new Map(graph.compileCodegen.map((entry) => [entry.id, entry]));
-  const selectedIds = new Set(plan.operations.codegenIds);
-  for (const entry of graph.compileCodegen) {
-    if (
-      plan.full ||
-      plan.changedPaths.some((changedPath) =>
-        [...entry.inputs, ...entry.outputs].some((pattern) =>
-          matchesGlob(changedPath, pattern)
-        )
-      )
-    ) {
-      selectedIds.add(entry.id);
-    }
-  }
-  const selected = [];
-  const unsupported = [];
-  for (const id of [...selectedIds].sort()) {
-    const entry = byId.get(id);
-    if (!entry) throw new Error(`Plan references unknown compile-codegen entry "${id}".`);
-    if (!entry.platforms.includes(platform)) unsupported.push(id);
-    else selected.push(entry);
-  }
-  return {selected, unsupported};
-}
-
-export function runCodegenChecks({entries, cwd, runner = runCommand}) {
-  const results = [];
-  for (const entry of entries) {
-    const startedAt = Date.now();
-    const result = runner(entry.checkCommand, {
-      cwd,
-      timeoutSeconds: entry.timeoutSeconds,
-    });
-    results.push({
-      id: entry.id,
-      command: entry.checkCommand,
-      status: result.status,
-      signal: result.signal ?? null,
-      durationMs: Date.now() - startedAt,
-      stdout: result.stdout ?? "",
-      stderr: result.stderr ?? "",
-    });
-    if (result.status !== 0) break;
-  }
-  return results;
-}
-
 function validateOperation({
   operation,
   location,
   relationship,
+  mode,
   targets,
   generatorIds,
+  deployGroupRequirements,
   knownCheckIds,
   errors,
 }) {
@@ -499,6 +458,23 @@ function validateOperation({
       errors.push(`${location} references unknown release role "${role}".`);
     }
   }
+  const selectedTargets = new Set(operation.ciTargets ?? []);
+  for (const deployGroup of operation.deployGroups ?? []) {
+    const requiredTargets = deployGroupRequirements.get(deployGroup);
+    if (!requiredTargets) {
+      errors.push(`${location} references unknown deploy group "${deployGroup}".`);
+      continue;
+    }
+    if (mode === "main") {
+      for (const requiredTarget of requiredTargets) {
+        if (!selectedTargets.has(requiredTarget)) {
+          errors.push(
+            `${location} deploy group "${deployGroup}" requires CI target "${requiredTarget}".`,
+          );
+        }
+      }
+    }
+  }
   if (relationship === "affected") {
     if ((operation.deployGroups ?? []).length > 0) {
       errors.push(`${location} cannot authorize deployment from an affected edge.`);
@@ -507,6 +483,35 @@ function validateOperation({
       errors.push(`${location} cannot authorize release from an affected edge.`);
     }
   }
+}
+
+function validateDeployGroupRequirements(value, targets, errors) {
+  const result = new Map();
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    errors.push("deployGroupRequirements must be an object.");
+    return result;
+  }
+  for (const [deployGroup, requiredTargets] of Object.entries(value)) {
+    if (!deployGroup) {
+      errors.push("deployGroupRequirements uses an empty deploy group id.");
+      continue;
+    }
+    const validatedTargets = uniqueStringSet(
+      requiredTargets,
+      `deployGroupRequirements.${deployGroup}`,
+      errors,
+      {required: true},
+    );
+    for (const target of validatedTargets) {
+      if (!targets.has(target)) {
+        errors.push(
+          `deployGroupRequirements.${deployGroup} references unknown CI target "${target}".`,
+        );
+      }
+    }
+    result.set(deployGroup, validatedTargets);
+  }
+  return result;
 }
 
 function validateCiCheckout(ciCheckout, targets, errors) {
@@ -669,16 +674,6 @@ function parseCommand(command) {
     throw new Error(`unsupported executable "${tokens[0]}".`);
   }
   return tokens;
-}
-
-function runCommand(command, {cwd, timeoutSeconds}) {
-  const [executable, ...args] = parseCommand(command);
-  return spawnSync(executable, args, {
-    cwd,
-    encoding: "utf8",
-    timeout: timeoutSeconds * 1000,
-    shell: false,
-  });
 }
 
 function validatePathSet(pathSet, location, errors) {

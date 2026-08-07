@@ -1,7 +1,7 @@
 ---
 doc_id: composition_migration_spec
-version: 0.1.1
-updated: 2026-06-22
+version: 0.1.2
+updated: 2026-08-07
 owner: product_design_parity
 status: active
 ---
@@ -49,7 +49,8 @@ The practical loop is:
 5. Refactor components bottom-up until each layer consumes only lower layers.
 6. Refactor the screen so it only maps state and composes sections.
 7. Capture and test every state.
-8. Stamp the pass.
+8. Run `git diff --check` and report the focused check results in the task or
+   CI run.
 
 ## Standards Position
 

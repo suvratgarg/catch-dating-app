@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
 import test from "node:test";
-import {planFirebaseDeployTargets} from "./plan_firebase_deploy_targets.mjs";
+import {
+  planFirebaseDeployGroups,
+  planFirebaseDeployTargets,
+} from "./plan_firebase_deploy_targets.mjs";
 
 const exportsList = [
   "functions:createEvent",
@@ -8,15 +12,15 @@ const exportsList = [
   "functions:startClubHostConversation",
 ];
 
-test("exact Functions deploy before indexes and rules", () => {
+test("indexes always precede Functions and rules", () => {
   assert.deepEqual(
     planFirebaseDeployTargets(
       "functions:sendEventBroadcast,firestore:indexes,firestore:rules",
       {functionTargets: exportsList},
     ),
     [
-      {phase: "functions", deployOnly: "functions:sendEventBroadcast"},
       {phase: "firestore:indexes", deployOnly: "firestore:indexes"},
+      {phase: "functions", deployOnly: "functions:sendEventBroadcast"},
       {phase: "firestore:rules", deployOnly: "firestore:rules"},
     ],
   );
@@ -41,31 +45,63 @@ test("deduplicates whitespace and exact targets", () => {
   );
 });
 
-test("all keeps the documented safe order", () => {
+test("CI deploy groups expand only explicit bounded backend products", () => {
   assert.deepEqual(
-    planFirebaseDeployTargets("all", {functionTargets: exportsList})
-      .map((plan) => plan.phase),
-    ["functions", "firestore:indexes", "firestore:rules", "storage", "hosting"],
+    planFirebaseDeployGroups(
+      ["functions", "firestore-indexes", "firestore-rules", "storage-rules"],
+      {functionTargets: exportsList},
+    ).map((plan) => plan.phase),
+    ["firestore:indexes", "functions", "firestore:rules", "storage"],
   );
 });
 
-test("arbitrary extras remain last", () => {
-  assert.deepEqual(
-    planFirebaseDeployTargets("hosting,extensions:demo", {
+test("rejects validation-only, broad, hosting, remote config, extensions, and unknown groups", () => {
+  for (const targets of [
+    "all",
+    "hosting",
+    "remoteconfig",
+    "extensions:demo",
+    "functions,hosting",
+  ]) {
+    assert.throws(
+      () => planFirebaseDeployTargets(targets, {functionTargets: exportsList}),
+      /not allowed/,
+    );
+  }
+  assert.throws(
+    () => planFirebaseDeployGroups(["remoteconfig"], {
       functionTargets: exportsList,
     }),
-    [
-      {phase: "hosting", deployOnly: "hosting"},
-      {phase: "extra", deployOnly: "extensions:demo"},
-    ],
+    /deploy group is not allowed/,
   );
+  for (const group of ["backend-contracts", "firebase-config", "unknown"]) {
+    assert.throws(
+      () => planFirebaseDeployGroups([group], {functionTargets: exportsList}),
+      /deploy group is not allowed/,
+    );
+  }
 });
 
 test("rejects empty, malformed, and control-character targets", () => {
-  for (const targets of ["", " , ", "functions:", "hosting\nfirestore"]) {
+  for (const targets of ["", " , ", "functions:", "storage\nfirestore"]) {
     assert.throws(
       () => planFirebaseDeployTargets(targets, {functionTargets: exportsList}),
-      /No Firebase deploy targets|Invalid Firebase deploy target/,
+      /No Firebase deploy targets|Invalid Firebase deploy target|not allowed/,
     );
   }
+});
+
+test("release guidance routes Remote Config outside the bounded backend helper", () => {
+  const releaseGuide = fs.readFileSync(
+    new URL("../../docs/release_operations.md", import.meta.url),
+    "utf8",
+  );
+  assert.doesNotMatch(
+    releaseGuide,
+    /deploy_firebase_targets\.sh[^\n]*remoteconfig/u,
+  );
+  assert.match(
+    releaseGuide,
+    /firebase_with_env\.sh[^\n]*deploy --only remoteconfig/u,
+  );
 });

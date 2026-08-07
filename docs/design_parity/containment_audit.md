@@ -1,7 +1,7 @@
 ---
 doc_id: containment_audit
-version: 1.0.0
-updated: 2026-07-05
+version: 1.0.1
+updated: 2026-08-07
 owner: design_parity_review
 status: ready-for-implementation
 ---
@@ -15,9 +15,9 @@ classifies every bordered/filled surface in feature presentation code
 (236 widgets inventoried 2026-07-05) and turns the failures into flatten
 work items.
 
-Workflow for Codex: same as the parity specs (verify claims with `rg`
-before changing; per-item commits; focused tests + analyzer; widgetbook;
-catalog/doc_versions/passes stamps; readiness gate). Every flatten item
+Workflow for Codex: verify claims with `rg` before changing, inspect the
+read-only impact plan, use per-item commits, and run focused tests, analyzer,
+Widgetbook, and catalog checks. Git and CI preserve proof. Every flatten item
 lists its skeleton mimics — skeletons always follow their subject.
 Lab/manual-QA screens (`event_policy_lab`, `event_success_lab`,
 `manual_qa`) are review harnesses: SKIPPED, not audited.
@@ -146,7 +146,7 @@ them, record the rule the box earns. Same check covers
 `IntegrationNotesCard`, `ChatEventContextHeader`: per surface, apply the
 test — input/editor modules and pickers keep their box (R2); pure grouping
 or explainer text flattens to `CatchSection`/fieldRows grammar. Record the
-verdict per surface in the receipt; expected outcome is most of the six
+verdict per surface in the same reviewed change; expected outcome is most of the six
 EventPolicyStep boxes collapse into one section with divided rows.
 
 ---

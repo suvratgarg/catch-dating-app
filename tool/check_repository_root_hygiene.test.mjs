@@ -11,11 +11,13 @@ import {
   matchesPattern,
   portableLinkViolations,
   relationshipViolations,
+  retiredEvidenceViolations,
 } from "./check_repository_root_hygiene.mjs";
 
 test("glob matching covers dynamic root logs without widening paths", () => {
   assert.equal(matchesPattern("flutter_12.log", "flutter_*.log"), true);
   assert.equal(matchesPattern("nested/flutter_12.log", "flutter_*.log"), false);
+  assert.equal(matchesPattern("firebase-debug.log", "firebase-debug.log"), true);
 });
 
 test("classification reports an unknown and an ambiguous entry", () => {
@@ -31,6 +33,22 @@ test("portable links reject machine paths but accept repository links", () => {
 test("impact globs distinguish recursive paths from sibling roots", () => {
   assert.equal(matchesImpactPath("widgetbook/lib/main.dart", "widgetbook/**"), true);
   assert.equal(matchesImpactPath("website/src/main.tsx", "widgetbook/**"), false);
+});
+
+test("retired tracked governance evidence cannot return", () => {
+  const present = new Set([
+    "docs/agent_regression_ledger.json",
+    "tool/policy/rules.json",
+  ]);
+  assert.deepEqual(retiredEvidenceViolations({
+    exists: (value) => present.has(value),
+    listPaths: ({prefix}) => prefix === "docs/audit_registry/"
+      ? ["docs/audit_registry/arbitrary-new-receipt.json"]
+      : [],
+  }), [
+    "docs/agent_regression_ledger.json: retired governance evidence must remain absent",
+    "docs/audit_registry/arbitrary-new-receipt.json: retired governance evidence must remain absent",
+  ]);
 });
 
 test("relationship validation rejects unknown tools and unmapped files", () => {

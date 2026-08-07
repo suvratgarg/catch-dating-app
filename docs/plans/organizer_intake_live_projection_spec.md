@@ -1,7 +1,7 @@
 ---
 doc_id: organizer_intake_live_projection_spec
-version: 2.1.0
-updated: 2026-07-27
+version: 2.1.1
+updated: 2026-08-07
 owner: admin_operations
 status: active
 ---
@@ -210,7 +210,7 @@ npm --prefix operations run check
 node tool/organizer_intake/check_admin_review_bridge.mjs
 node tool/run.mjs check web:react-architecture-boundaries
 node tool/run.mjs check web:admin-feature-ui-size
-node tool/agent/check_agent_readiness.mjs
+git diff --check
 ```
 
 Plus the admin typecheck/test loop, `web:admin-bundle-budget` after the admin
@@ -524,7 +524,7 @@ node tool/organizer_intake/check_admin_review_bridge.mjs
 npm --prefix functions run build
 npm --prefix functions test
 node tool/check_remote_ops_manifest.mjs --check
-node tool/agent/check_agent_readiness.mjs
+git diff --check
 ```
 
 The former `check_promotion_bridge.mjs` and

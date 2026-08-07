@@ -1,6 +1,6 @@
 ---
 doc_id: section_gutter_divider_followups
-version: 1.0.1
+version: 1.0.2
 updated: 2026-08-07
 owner: design_parity_review
 status: ready-for-implementation
@@ -14,7 +14,7 @@ This spec is the review-approved follow-up batch to the 2026-07-04 gutter and
 section-ownership work (commits `13c59c95b`, `da174c1d6`, `3dc879be1`,
 `8391daa40`, `ebb5ff4e2`, `f6dd76853`, `918297d5a`, `ab3041649`). All design
 decisions below are already made — do not re-litigate them; escalate in the
-receipt only where this spec says to.
+task or PR summary only where this spec says to.
 
 ## Required workflow
 
@@ -30,12 +30,11 @@ receipt only where this spec says to.
    parallel.
 5. Finish the batch with: full `flutter analyze --no-fatal-infos` (must exit
    clean — fixtures under `tool/design/fixtures/**` are analyzer-excluded as
-   of `ab3041649`), `node tool/agent/check_agent_readiness.mjs` (must stay
-   100/100), an update to the affected current-inventory row in
-   `docs/widget_catalog.md` for any widget contract change, and one pass stamp
-   in `docs/audit_registry/passes.jsonl`. Bump the catalog contract version and
-   its `doc_versions.json` entry only when the catalog's reader contract or
-   structure changes.
+   of `ab3041649`), all named scanners, `git diff --check`, and an update to
+   the affected current-inventory row in `docs/widget_catalog.md` for any
+   widget contract change. Bump the catalog's source frontmatter version only
+   when its reader contract or structure changes. Git and CI preserve the
+   exact-SHA results; do not write frozen audit evidence.
 6. Widget contract changes need widgetbook coverage kept current for the
    changed types. Hand-edit `@UseCase` blocks (never regex across them), then
    regenerate.
@@ -66,7 +65,7 @@ contained section lose their 16pt self-inset; row content, trailing
 affordances, and any internal dividers align to the card's `s4` content
 padding. Survey the affected surfaces before/after (grep
 `CatchSection.contained(` call sites and check which contain `CatchField`)
-and list them in the receipt.
+and list them in the task or PR summary.
 
 **Tests.**
 - Add a primitive test in `test/core/catch_primitives_test.dart` mirroring
@@ -100,8 +99,8 @@ writing) is the worklist: `node tool/run.mjs check design:section-dividers`.
 2. Separator between blocks/sections/regions → `CatchDivider.section`.
 3. Divider on a dark/editorial overlay surface, or one whose color is a
    semantic accent rather than `t.line`-derived → KEEP the existing widget
-   unchanged and record it in the receipt with one line of reasoning. Do not
-   force these into the roles.
+   unchanged and record it in the task or PR summary with one line of
+   reasoning. Do not force these into the roles.
 4. Hairlines that are not dividers (chart strokes, ticket perforations,
    skeleton bones, progress tracks) are out of scope — leave them.
 
@@ -111,11 +110,11 @@ Replacement covers raw `Divider(...)`, hand-rolled
 Where an existing divider's alpha differs from the role's
 (`t.line` full vs `fieldRowDivider` alpha), the role's treatment WINS — this
 standardization is review-approved; note each such visual delta in the
-receipt.
+task or PR summary.
 
 **Acceptance.** `design:section-dividers` medium count drops to 0 or every
-survivor is a rule-3 keep listed in the receipt; no new raw dividers in
-touched files; visual deltas enumerated.
+survivor is a rule-3 keep listed in the task or PR summary; no new raw dividers
+in touched files; visual deltas enumerated.
 
 ---
 
@@ -144,7 +143,8 @@ Never spell a page gutter as `CatchSpacing.s5` or raw `screenPx` inside
   bottomPadding)`.
 
 If a genuinely recurring rhythm has no role, propose a new
-`CatchInsets.pageBody*` role in the receipt — do not mint one silently.
+`CatchInsets.pageBody*` role in the task or PR summary — do not mint one
+silently.
 
 **Acceptance.** Scanner HIGH count = 0; MEDIUM/LOW inventory may remain
 (tracked debt — the ratchet decision stays with the owner and is out of
@@ -204,17 +204,17 @@ into the row value slot` — the duplication may already be handled). If, and
 only if, the header body still renders alongside the selected-chip display
 when expanded, apply the prompt pattern: `body: null` while expanded,
 collapsed behavior unchanged, update the affected tests, and note the visual
-delta in the receipt. If the current rendering is already single-source,
-record "no change needed" and stop.
+delta in the task or PR summary. If the current rendering is already single-
+source, record "no change needed" and stop.
 
 ---
 
 ## Completion checklist
 
 - [ ] Item 1: contained flush scope + primitive test + surface survey
-- [ ] Item 2: divider migration, scanner medium count 0 (or receipted keeps)
+- [ ] Item 2: divider migration, scanner medium count 0 (or documented keeps)
 - [ ] Item 3: gutter HIGH count 0
 - [ ] Item 4: token respellings + `fieldTrailingValueMaxWidth`
 - [ ] Item 5: scanner flag inventory + tests
-- [ ] Current widget-catalog inventory rows updated; passes.jsonl stamped
-- [ ] Full analyze clean; readiness 100/100; all named scanners green
+- [ ] Current widget-catalog inventory rows updated; Git/CI proof attached
+- [ ] Full analyze clean; `git diff --check` and all named scanners green

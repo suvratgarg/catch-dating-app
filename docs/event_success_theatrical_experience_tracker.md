@@ -1,7 +1,7 @@
 ---
 doc_id: event_success_theatrical_experience_tracker
-version: 0.1.0
-updated: 2026-05-24
+version: 0.1.1
+updated: 2026-08-07
 owner: recursive_audit_loop
 status: temporary_active
 ---
@@ -54,7 +54,7 @@ Status: complete for V1; keep this phase open only for manual device feedback.
   check-in/live-entry, and guide completion.
 - [x] Refactor the manual QA harness around one in-memory fixture store so host
   and attendee state changes stay synchronized during visual testing.
-- [x] Complete focused verification and audit-registry stamping.
+- [x] Complete focused verification with proof preserved in Git and CI.
 
 Acceptance criteria:
 
@@ -284,9 +284,8 @@ Status: deferred pending manual review of native haptics/system sounds.
 - Phase 1B passed: `git diff --check`
 - Phase 1B visual check: hot reloaded running macOS debug app and inspected
   `/dev/event-success-manual-qa` attendee pane via Computer Use screenshot.
-- Phase 1B stamped: `dart tool/audit_registry.dart mark-pass --pass
-  2026-05-24-event-success-companion-stage`
-- Phase 1B reported: `dart tool/audit_registry.dart report`
+- Historical note: Phase 1B used the former audit-stamp/report commands. Those
+  commands are retired; Git retains the original record.
 - Phase 2/3 passed: `flutter test test/payments/payment_confirmation_controller_test.dart test/payments/payment_confirmation_screen_test.dart test/events/event_detail_widgets_test.dart test/event_success/event_success_live_screens_test.dart`
 - Phase 2/3 passed: focused `flutter analyze --no-fatal-infos` on touched event,
   payment, host, and event-success files.
@@ -297,21 +296,15 @@ Status: deferred pending manual review of native haptics/system sounds.
   blocking failures, remaining matches are broader pre-existing widget cleanup
   candidates plus stage/snackbar implementation candidates to revisit during a
   dedicated cleanup pass).
-- Phase 2/3 stamped: `dart tool/audit_registry.dart mark-pass --pass
-  2026-05-24-event-success-invite-afterglow`
-- Phase 2/3 stamped new files after registry refresh: `dart
-  tool/audit_registry.dart mark-pass --pass
-  2026-05-24-event-success-invite-afterglow-new-files`
-- Phase 2/3 reported: `dart tool/audit_registry.dart report`
+- Historical note: Phase 2/3 used the former audit-stamp/report commands. They
+  are not part of the current completion loop.
 - Phase 3B passed: `flutter test test/event_success/event_success_runtime_test.dart test/event_success/event_success_playbooks_test.dart test/event_success/event_success_live_screens_test.dart test/event_success/event_success_manual_qa_screen_test.dart`
 - Phase 3B passed: `flutter test test/event_success`
 - Phase 3B passed: `flutter analyze --no-fatal-infos`
 - Phase 3B passed: `git diff --check`
 - Phase 3B ran: `bash tool/widget_cleanup_scan.sh` (triage-only scanner; no
   blocking failures, remaining matches are broader widget cleanup candidates).
-- Phase 3B stamped: `dart tool/audit_registry.dart mark-pass --pass
-  2026-05-24-event-success-first-hello`
-- Phase 3B reported: `dart tool/audit_registry.dart report`
+- Historical note: the Phase 3B audit-stamp/report commands are retired.
 - Phase 3B backend/QR passed: `npm run build`
 - Phase 3B backend/QR passed: `npm run lint`
 - Phase 3B backend/QR passed: `node --test
@@ -324,12 +317,10 @@ Status: deferred pending manual review of native haptics/system sounds.
 - Phase 3B backend/QR passed: `./tool/check_data_contract.sh`
 - Phase 3B backend/QR passed: `flutter analyze --no-fatal-infos`
 - Phase 3B backend/QR passed: `git diff --check`
-- Phase 3B backend/QR stamped: `dart tool/audit_registry.dart mark-pass --pass
-  2026-05-24-event-success-first-hello-backend-qr`
-- Phase 3B backend/QR reported: `dart tool/audit_registry.dart report`
+- Historical note: the backend/QR audit-stamp/report commands are retired.
 - Ran: `bash tool/widget_cleanup_scan.sh`
-- Stamped: `dart tool/audit_registry.dart mark-pass --pass 2026-05-24-event-success-live-ceremony`
-- Reported: `dart tool/audit_registry.dart report`
+- Historical note: the final audit-stamp/report commands are retired; preserve
+  current proof in focused check output and Git.
 
 ## Resume Notes
 

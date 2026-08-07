@@ -127,8 +127,6 @@ jobs:
           sparse-checkout: |
             /tool/
             /.github/actions/load-toolchain/action.yml
-            /docs/audit_registry/doc_versions.json
-            /docs/audit_registry/test_inventory.json
 
       - name: Checkout full affected repository
         if: ${{ needs.preflight.outputs.repository_view != 'index' }}
@@ -185,7 +183,7 @@ jobs:
       matrix:
         include:
           - name: core-audit
-            categories: meta audit remote-ops branding agent architecture
+            categories: meta audit remote-ops branding agent architecture ci git
           - name: lint-scanners
             categories: lint test
           - name: contracts-data

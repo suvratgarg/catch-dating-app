@@ -1,57 +1,56 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import path from "node:path";
+import {fileURLToPath} from "node:url";
 import {fromRepo} from "../lib/repo_paths.mjs";
 import {collisionKeyFor} from "./component_concepts.mjs";
 
-const outputPath = fromRepo("docs/audit_registry/widget_classification.json");
-const contractsPath = fromRepo("design/components/catch.components.json");
-const widgetbookPath = fromRepo("widgetbook/lib/main.directories.g.dart");
-const today = new Date().toISOString().slice(0, 10);
+const DEFAULT_OUTPUT = "build/reports/widget_classification.json";
 
-const contracts = readJson(contractsPath).components ?? [];
-const contractsBySymbol = buildContractSymbolMap(contracts);
-const widgetbookNames = readWidgetbookNames();
-const dartFiles = listDartFiles(fromRepo("lib"));
-const widgets = [];
+export function buildWidgetClassification({
+  repoRoot = fromRepo("."),
+  updated = new Date().toISOString().slice(0, 10),
+} = {}) {
+  const contractsPath = path.join(repoRoot, "design/components/catch.components.json");
+  const widgetbookPath = path.join(repoRoot, "widgetbook/lib/main.directories.g.dart");
+  const contracts = readJson(contractsPath).components ?? [];
+  const contractsBySymbol = buildContractSymbolMap(contracts);
+  const widgetbookNames = readWidgetbookNames(widgetbookPath);
+  const widgets = [];
 
-for (const filePath of dartFiles) {
-  const relativeFile = path.relative(fromRepo("."), filePath);
-  const source = fs.readFileSync(filePath, "utf8");
-  const imports = collectImports(source);
-  for (const declaration of collectWidgetDeclarations(source)) {
-    widgets.push(classifyDeclaration({
-      ...declaration,
-      file: relativeFile,
-      imports,
-      source,
-    }));
+  for (const filePath of listDartFiles(path.join(repoRoot, "lib"))) {
+    const relativeFile = path.relative(repoRoot, filePath).split(path.sep).join("/");
+    const source = fs.readFileSync(filePath, "utf8");
+    const imports = collectImports(source);
+    for (const declaration of collectWidgetDeclarations(source)) {
+      widgets.push(classifyDeclaration({
+        ...declaration,
+        file: relativeFile,
+        imports,
+        source,
+      }, {contractsBySymbol, widgetbookNames}));
+    }
   }
+
+  widgets.sort((a, b) => a.file.localeCompare(b.file) || a.name.localeCompare(b.name));
+  return {
+    version: 2,
+    updated,
+    sourceOfTruth: {
+      scope:
+        "On-demand inventory for production Flutter widget and widget-state classes under lib/**. Widgetbook/test scaffolds are intentionally out of scope.",
+      canonicalContracts:
+        "design/components/catch.components.json owns canonical global component contracts and governance metadata.",
+      catalog:
+        "widgetbook/lib/main.directories.g.dart is the generated review-surface inventory used to determine catalog coverage.",
+      privateHelperPolicy:
+        "Private helper widgets are not an allowed destination. Private widget classes must be promoted, merged into a canonical public widget, or inlined/deleted.",
+      generator: "tool/design/generate_widget_classification.mjs",
+    },
+    summary: summarize(widgets, widgetbookNames),
+    widgets,
+  };
 }
-
-widgets.sort((a, b) => a.file.localeCompare(b.file) || a.name.localeCompare(b.name));
-
-const registry = {
-  $schema: "./widget_classification.schema.json",
-  version: 2,
-  updated: today,
-  sourceOfTruth: {
-    scope:
-      "Generated inventory for production Flutter widget and widget-state classes under lib/**. Widgetbook/test scaffolds are intentionally out of scope.",
-    canonicalContracts:
-      "design/components/catch.components.json owns canonical global component contracts and governance metadata.",
-    catalog:
-      "widgetbook/lib/main.directories.g.dart is the generated review-surface inventory used to determine catalog coverage.",
-    privateHelperPolicy:
-      "Private helper widgets are not an allowed destination. Private widget classes must be promoted, merged into a canonical public widget, or inlined/deleted.",
-    generator: "tool/design/generate_widget_classification.mjs",
-  },
-  summary: summarize(widgets),
-  widgets,
-};
-
-fs.writeFileSync(outputPath, JSON.stringify(registry, null, 2) + "\n");
-console.log(`Wrote ${path.relative(fromRepo("."), outputPath)} (${widgets.length} entries).`);
 
 function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
@@ -70,7 +69,7 @@ function listDartFiles(root) {
   return results;
 }
 
-function readWidgetbookNames() {
+function readWidgetbookNames(widgetbookPath) {
   if (!fs.existsSync(widgetbookPath)) return new Set();
   const source = fs.readFileSync(widgetbookPath, "utf8");
   const names = new Set();
@@ -130,11 +129,11 @@ function collectWidgetDeclarations(source) {
   return declarations;
 }
 
-function classifyDeclaration(entry) {
+function classifyDeclaration(entry, {contractsBySymbol, widgetbookNames}) {
   const contract = contractsBySymbol.get(entry.name);
   const visibility = entry.name.startsWith("_") ? "private" : "public";
   const role = roleFor(entry, contract);
-  const catalogStatus = catalogStatusFor(entry, contract, visibility);
+  const catalogStatus = catalogStatusFor(entry, contract, visibility, widgetbookNames);
   const flags = flagsFor(entry, role, contract, catalogStatus, visibility);
   const decision = decisionFor(entry, contract, catalogStatus, visibility, flags);
   const governance = governanceFor(entry, role);
@@ -240,7 +239,7 @@ function isComposition(name, file) {
   );
 }
 
-function catalogStatusFor(entry, contract, visibility) {
+function catalogStatusFor(entry, contract, visibility, widgetbookNames) {
   if (contract) return "contracted";
   if (entry.classKind === "widget-state") return "not-applicable";
   if (widgetbookNames.has(entry.name)) return "cataloged";
@@ -373,7 +372,7 @@ function slug(value) {
     .toLowerCase();
 }
 
-function summarize(rows) {
+function summarize(rows, widgetbookNames) {
   const publicWidgets = rows.filter(
     (row) => row.classKind === "widget" && row.visibility === "public",
   );
@@ -437,4 +436,56 @@ function countBy(rows, field) {
     [...rows.reduce((map, row) => map.set(row[field], (map.get(row[field]) ?? 0) + 1), new Map())]
       .sort(([a], [b]) => a.localeCompare(b)),
   );
+}
+
+function parseArgs(argv) {
+  const valueAfter = (flag) => {
+    const index = argv.indexOf(flag);
+    if (index === -1) return null;
+    const value = argv[index + 1];
+    if (!value || value.startsWith("--")) throw new Error(`${flag} requires a value`);
+    return value;
+  };
+  return {
+    check: argv.includes("--check"),
+    json: argv.includes("--json"),
+    help: argv.includes("--help") || argv.includes("-h"),
+    output: valueAfter("--out"),
+    repoRoot: path.resolve(valueAfter("--repo-root") ?? fromRepo(".")),
+  };
+}
+
+function runCli(argv) {
+  const args = parseArgs(argv);
+  if (args.help) {
+    console.log(`Usage:
+  node tool/design/generate_widget_classification.mjs [--check] [--json]
+    [--repo-root <path>] [--out <path>]
+
+Builds the current widget classification from Dart, component contracts, and
+Widgetbook. Check/JSON modes are read-only; explicit generation writes an
+ignored build report unless --out is supplied.`);
+    return;
+  }
+  const registry = buildWidgetClassification({repoRoot: args.repoRoot});
+  if (!args.check && !args.json) {
+    const outputPath = path.resolve(args.repoRoot, args.output ?? DEFAULT_OUTPUT);
+    fs.mkdirSync(path.dirname(outputPath), {recursive: true});
+    fs.writeFileSync(outputPath, `${JSON.stringify(registry, null, 2)}\n`);
+    console.log(
+      `Wrote ${path.relative(args.repoRoot, outputPath)} (${registry.widgets.length} entries).`,
+    );
+    return;
+  }
+  if (args.json) process.stdout.write(`${JSON.stringify(registry, null, 2)}\n`);
+  else console.log(`Widget classification source is valid (${registry.widgets.length} entries).`);
+}
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  try {
+    runCli(process.argv.slice(2));
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : String(error));
+    process.exitCode = 1;
+  }
 }

@@ -11,13 +11,30 @@ import 'package:path/path.dart' as p;
 Map<String, Object?> extractFingerprints({
   required String repoRoot,
   List<String>? files,
+  String? classificationPath,
   DateTime? generatedAt,
 }) {
   final normalizedRoot = p.normalize(repoRoot);
-  final registry = _readClassificationRegistry(normalizedRoot);
+  final hasExplicitFiles = files != null && files.isNotEmpty;
+  final normalizedClassificationPath = classificationPath?.trim();
+  if (!hasExplicitFiles &&
+      (normalizedClassificationPath == null ||
+          normalizedClassificationPath.isEmpty)) {
+    throw ArgumentError(
+      'classificationPath is required when files are not supplied.',
+    );
+  }
+  final registry =
+      normalizedClassificationPath == null ||
+          normalizedClassificationPath.isEmpty
+      ? const _ClassificationRegistry([])
+      : _readClassificationRegistry(
+          normalizedRoot,
+          normalizedClassificationPath,
+        );
   final registryEntries = registry.entries;
   final tokenClasses = _collectTokenClasses(normalizedRoot);
-  final targetFiles = files == null || files.isEmpty
+  final targetFiles = !hasExplicitFiles
       ? registryEntries
             .where((entry) => entry.classKind == 'widget')
             .map((entry) => entry.file)
@@ -75,7 +92,7 @@ Map<String, Object?> extractFingerprints({
     }
 
     final classes = _classesByName(parsed.unit);
-    final fileEntries = files == null || files.isEmpty
+    final fileEntries = !hasExplicitFiles
         ? (entriesByFile[relativeFile] ?? const <_RegistryEntry>[])
         : _entriesForExplicitFile(
             relativeFile,
@@ -187,14 +204,22 @@ Map<String, Object?> extractFingerprints({
   };
 }
 
-_ClassificationRegistry _readClassificationRegistry(String repoRoot) {
-  final path = p.join(
-    repoRoot,
-    'docs/audit_registry/widget_classification.json',
-  );
-  if (!File(path).existsSync()) return const _ClassificationRegistry([]);
-  final json =
-      jsonDecode(File(path).readAsStringSync()) as Map<String, Object?>;
+_ClassificationRegistry _readClassificationRegistry(
+  String repoRoot,
+  String classificationPath,
+) {
+  final path = p.isAbsolute(classificationPath)
+      ? p.normalize(classificationPath)
+      : p.normalize(p.join(repoRoot, classificationPath));
+  final file = File(path);
+  if (!file.existsSync()) {
+    throw ArgumentError.value(
+      classificationPath,
+      'classificationPath',
+      'Classification file does not exist.',
+    );
+  }
+  final json = jsonDecode(file.readAsStringSync()) as Map<String, Object?>;
   final widgets = (json['widgets'] as List<Object?>? ?? const [])
       .whereType<Map<String, Object?>>()
       .map(_RegistryEntry.fromJson)

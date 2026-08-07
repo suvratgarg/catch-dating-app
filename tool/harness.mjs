@@ -8,16 +8,9 @@ import {
   deriveAppRoles,
   planAffected,
   resolveTargetCheckout,
-  runCodegenChecks,
-  selectCompileCodegen,
   summarizeCoverage,
   validateComponentGraph,
 } from "./harness/lib/component_graph.mjs";
-import {
-  executeTaskCommand,
-  TaskUsageError,
-  taskHelp,
-} from "./harness/lib/worktree_lifecycle.mjs";
 import {collectLocalReadonlyCheckIds} from "./lib/tool_impact.mjs";
 
 const graphPath = fromRepo("tool/harness/component_graph.json");
@@ -35,9 +28,6 @@ export function parseArgs(args) {
       ? null
       : pathsValue.split(",").map((value) => value.trim()).filter(Boolean),
     json: args.includes("--json"),
-    affected: args.includes("--affected"),
-    checkOnly: args.includes("--check"),
-    dryRun: args.includes("--dry-run"),
     full: args.includes("--full"),
     githubOutput: valueAfter(args, "--github-output"),
   };
@@ -103,8 +93,6 @@ export function changedPathsSince({base, head = "HEAD", cwd = repoRoot}) {
 
 export function main({
   args = process.argv.slice(2),
-  checkExecutor = executeCheckIds,
-  taskExecutor = executeTaskCommand,
   setExitCode = (status) => {
     process.exitCode = status;
   },
@@ -116,17 +104,6 @@ export function main({
       printHelp();
       return;
     }
-    if (options.command === "task") {
-      if (["help", "--help", "-h"].includes(args[1] ?? "help")) {
-        console.log(taskHelp());
-        return;
-      }
-      const execution = taskExecutor({args: args.slice(1), cwd: repoRoot});
-      printResult(execution.result, options.json);
-      if (execution.status !== 0) setExitCode(execution.status);
-      return;
-    }
-
     const graph = readJson(graphPath);
     const toolsManifest = readJson(toolsManifestPath);
     const knownCheckIds = collectKnownCheckIds(toolsManifest);
@@ -180,80 +157,16 @@ export function main({
       printResult(plan, options.json);
       return;
     }
-    if (options.command === "check") {
-      requireAffected(options);
-      if (!plan.complete) {
-        printResult(plan, options.json);
-        setClassificationExitCode(plan, setExitCode);
-        return;
-      }
-      let execution = options.dryRun
-        ? {status: 0, skipped: "dry-run", stdout: "", stderr: ""}
-        : {status: 0, skipped: "no selected check ids", stdout: "", stderr: ""};
-      if (!options.dryRun && plan.operations.checkIds.length > 0) {
-        execution = checkExecutor({ids: plan.operations.checkIds});
-        if (!options.json) {
-          if (execution.stdout) process.stdout.write(execution.stdout);
-          if (execution.stderr) process.stderr.write(execution.stderr);
-        }
-        if (execution.status !== 0) setExitCode(execution.status ?? 1);
-      }
-      printResult({plan, execution}, options.json);
-      return;
-    }
-    if (options.command === "generate") {
-      requireAffected(options);
-      if (!options.checkOnly) {
-        throw new UsageError(
-          "Harness only permits compile-codegen in explicit --check mode.",
-        );
-      }
-      if (!plan.complete) {
-        printResult(plan, options.json);
-        setClassificationExitCode(plan, setExitCode);
-        return;
-      }
-      const selection = selectCompileCodegen({plan, graph});
-      const results = runCodegenChecks({entries: selection.selected, cwd: repoRoot});
-      const output = {plan, selection, results};
-      printResult(output, options.json);
-      if (selection.unsupported.length > 0 || results.some((result) => result.status !== 0)) {
-        process.exitCode = 1;
-      }
-      return;
-    }
-
     throw new UsageError(`Unknown harness command "${options.command}".`);
   } catch (error) {
     console.error(error.message);
     if (error instanceof UsageError) printHelp();
-    if (error instanceof TaskUsageError) console.error(taskHelp());
-    process.exitCode = error instanceof UsageError || error instanceof TaskUsageError ? 64 : 1;
+    process.exitCode = error instanceof UsageError ? 64 : 1;
   }
 }
 
 export function collectKnownCheckIds(toolsManifest) {
   return collectLocalReadonlyCheckIds(toolsManifest);
-}
-
-function requireAffected(options) {
-  if (!options.affected) {
-    throw new UsageError(`${options.command} requires --affected to make scope explicit.`);
-  }
-}
-
-export function executeCheckIds({ids, cwd = repoRoot, runner = spawnSync}) {
-  const result = runner(
-    process.execPath,
-    ["tool/run.mjs", "check", ...ids],
-    {cwd, encoding: "utf8", shell: false},
-  );
-  return {
-    status: result.status,
-    signal: result.signal ?? null,
-    stdout: result.stdout ?? "",
-    stderr: result.stderr ?? "",
-  };
 }
 
 function setClassificationExitCode(plan, setExitCode) {
@@ -292,26 +205,6 @@ function printResult(value, json) {
     console.log(JSON.stringify(value, null, 2));
     return;
   }
-  if (value.operation === "reap") {
-    console.log(`Harness task reap ${value.mode}: ${value.worktrees.length} registered worktrees`);
-    console.log(`Classifications: ${Object.entries(value.counts).map(([key, count]) => `${key}=${count}`).join(", ")}`);
-    console.log(
-      `Legacy review only: ${value.legacyReview.count} worktrees, ` +
-      `${value.legacyReview.allocatedBytes} allocated bytes`,
-    );
-    console.log(`Deletion authorized: ${value.deletionAuthorized}`);
-    console.log(`Report digest: ${value.reportDigest}`);
-    return;
-  }
-  if (value.plan) {
-    printPlan(value.plan);
-    if (value.results) {
-      for (const result of value.results) {
-        console.log(`codegen ${result.id}: ${result.status === 0 ? "passed" : "failed"} (${result.durationMs}ms)`);
-      }
-    }
-    return;
-  }
   if (value.directComponents) {
     printPlan(value);
     return;
@@ -338,15 +231,15 @@ function printHelp() {
   console.log(`Usage: node tool/harness.mjs <command> [options]
 
 Commands:
-  task start|doctor|finish|reap
   validate
   coverage [--json]
   explain [--paths a,b | --base ref | --full] [--mode mode] [--json]
   plan [--paths a,b | --base ref | --full] [--mode mode] [--github-output path] [--json]
-  check --affected [--paths a,b | --base ref] [--dry-run] [--json]
-  generate --affected --check [--paths a,b | --base ref] [--json]
 
-Compile-codegen executes only declared, deterministic, network-free checks.`);
+Harness is read-only: it explains affected checks, builds, codegen freshness
+checks, and delivery lanes but never executes them. Use node tool/run.mjs check
+for explicit check execution. Worktree coordination is a separate Git helper:
+node tool/git/worktree_guard.mjs help`);
 }
 
 class UsageError extends Error {}

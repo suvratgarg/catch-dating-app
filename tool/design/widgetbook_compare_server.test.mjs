@@ -11,6 +11,7 @@ const retiredDerivedPaths = [
   "docs/design_parity/widgetbook_coverage_audit_plan.json",
   "docs/design_parity/widgetbook_coverage_report.json",
   "docs/audit_registry/widget_variant_inventory.json",
+  "docs/audit_registry/widget_similarity.json",
   "tool/design/build_widgetbook_compare.mjs",
 ];
 
@@ -65,5 +66,9 @@ test("Widgetbook comparison keeps derived snapshots out of trunk", () => {
   assert.doesNotMatch(
     serverSource,
     /docs\/audit_registry\/widget_variant_inventory\.json/u,
+  );
+  assert.doesNotMatch(
+    serverSource,
+    /docs\/audit_registry\/widget_similarity\.json/u,
   );
 });

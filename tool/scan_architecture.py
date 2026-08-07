@@ -219,7 +219,7 @@ def main():
         'controllers_raw_try_catch': controllers_raw_trycatch,
     }
 
-    out = REPO_ROOT / 'docs' / 'audit_registry' / 'architecture_scan.json'
+    out = REPO_ROOT / 'build' / 'reports' / 'architecture_scan.json'
     out.parent.mkdir(parents=True, exist_ok=True)
     with open(out, 'w') as fp:
         json.dump(report, fp, indent=2)

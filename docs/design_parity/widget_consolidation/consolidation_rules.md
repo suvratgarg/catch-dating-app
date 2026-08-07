@@ -94,7 +94,7 @@ Before creating a work order:
    orders.
 6. Repair or establish the canonical reference first, then migrate siblings,
    rerender the whole family, and close with contracts, Widgetbook, tests,
-   scanners, registries, receipts, and readiness proof.
+   scanners, the authored decision ledger, and reviewable render evidence.
 
 Raw `dedupe-pair-*` and `dedupe-cluster-*` ids must never be direct work-order
 owners. Cluster ids are regeneration evidence and are not stable decisions.
@@ -209,7 +209,7 @@ Raw dimensions/alphas/icon sizes in files you are already editing: replace
 with an existing exact-or-nearest token when the value is skeleton/jitter
 noise; otherwise escalate with a proposed token name. Never add tokens
 yourself except where an order names one explicitly. Report every fix in the
-receipt.
+work-order decision ledger and PR summary.
 *Evidence: `size: 11` → CatchIcon.micro; MapPill 0.93 alpha; raw skeleton
 title widths.*
 

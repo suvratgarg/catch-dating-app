@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_relative_lib_imports
 
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:test/test.dart';
@@ -7,7 +8,7 @@ import 'package:test/test.dart';
 import '../lib/src/fingerprint_extractor.dart';
 
 void main() {
-  final repoRoot = Directory.current.path;
+  final repoRoot = _findRepoRoot(Directory.current).path;
   final fixtureFiles = [
     'tool/widget_dedupe/fixtures/probe_dupe_a.dart',
     'tool/widget_dedupe/fixtures/probe_dupe_b.dart',
@@ -107,4 +108,70 @@ void main() {
     expect(widget['hasWidgetHelpers'], isTrue);
     expect(widget['widgetsUsed'], contains('SizedBox'));
   });
+
+  test('explicit classification drives targets and preserves metadata', () {
+    final tempDirectory = Directory.systemTemp.createTempSync(
+      'catch-widget-classification-',
+    );
+    addTearDown(() => tempDirectory.deleteSync(recursive: true));
+    final classification =
+        File('${tempDirectory.path}/widget_classification.json')
+          ..writeAsStringSync(
+            jsonEncode({
+              'widgets': [
+                {
+                  'name': 'ProbeDupeA',
+                  'file': 'tool/widget_dedupe/fixtures/probe_dupe_a.dart',
+                  'classKind': 'widget',
+                  'role': 'pattern',
+                  'contractId': 'probe.dupe',
+                },
+              ],
+            }),
+          );
+
+    final result = extractFingerprints(
+      repoRoot: repoRoot,
+      classificationPath: classification.path,
+      generatedAt: DateTime.utc(2026, 7, 2),
+    );
+
+    expect(result['failures'], isEmpty);
+    final widget = (result['widgets'] as List<Object?>)
+        .cast<Map<String, Object?>>()
+        .single;
+    expect(widget['role'], 'pattern');
+    expect(widget['contractId'], 'probe.dupe');
+  });
+
+  test('classification is required when no explicit files are supplied', () {
+    expect(
+      () => extractFingerprints(
+        repoRoot: repoRoot,
+        generatedAt: DateTime.utc(2026, 7, 2),
+      ),
+      throwsA(
+        isA<ArgumentError>().having(
+          (error) => error.message,
+          'message',
+          contains('classificationPath is required'),
+        ),
+      ),
+    );
+  });
+}
+
+Directory _findRepoRoot(Directory start) {
+  var current = start.absolute;
+  while (true) {
+    if (File('${current.path}/AGENTS.md').existsSync() &&
+        Directory('${current.path}/tool/widget_dedupe').existsSync()) {
+      return current;
+    }
+    final parent = current.parent;
+    if (parent.path == current.path) {
+      throw StateError('Could not find the Catch repository root from ${start.path}.');
+    }
+    current = parent;
+  }
 }

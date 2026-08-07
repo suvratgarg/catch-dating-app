@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.10.0
-updated: 2026-08-06
+version: 1.11.0
+updated: 2026-08-07
 owner: recursive_audit_loop
 status: active
 ---
@@ -43,7 +43,7 @@ Read this before changing:
 | Tool-side schema registry and validators | `tool/contracts/generated/` |
 | Firestore operation ownership metadata | `tool/contracts/firestore_contract.json` |
 | Human operation map | `docs/backend_operation_catalog.md` |
-| Active backlog/rules | `docs/audit_registry/backlog.json` and `docs/audit_registry/rules.json` |
+| Active policy rules | `tool/policy/rules.json` |
 
 Do not hand-edit generated outputs. Change the contract source, run the schema
 generator, and commit the generated diff.
@@ -313,8 +313,8 @@ bounds and steps. Explicit UI values may narrow a contract for product policy
 but cannot relax it. Composite controls bind each independently stored endpoint.
 
 Every editable canonical control and descriptor instance under production
-`lib/` is covered by
-`docs/audit_registry/flutter_form_contract_inventory.json`. The source scanner
+`lib/` is covered by the source scanner. Its optional report is generated at
+`build/reports/flutter_form_contract_inventory.json`. The scanner
 recognizes `CatchField`, `CatchChipField`, selectable chips, option groups/cards,
 range sliders, toggles, OTP entry, direct and top-bar search fields,
 `CatchForm*Row`, and the retained self-profile descriptors. It fails when a
@@ -935,6 +935,6 @@ the canonical `events` and `organizers` collections.
 
 ## Historical Evidence
 
-Detailed phase logs and proof commands were moved out of active Markdown. Use
-`docs/audit_registry/passes.jsonl`, `docs/audit_registry/files.jsonl`, and git
-history when exact historical wording or old command output matters.
+Detailed phase logs and old proof commands were removed from active Markdown.
+Use Git history when exact historical wording or retired command output
+matters.

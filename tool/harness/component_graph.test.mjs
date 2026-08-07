@@ -6,8 +6,6 @@ import {
   deriveAppRoles,
   planAffected,
   resolveTargetCheckout,
-  runCodegenChecks,
-  selectCompileCodegen,
   summarizeCoverage,
   validateComponentGraph,
 } from "./lib/component_graph.mjs";
@@ -57,8 +55,7 @@ test("CI checkout requirements keep planner and docs narrow with a full fallback
     coneMode: false,
     timeoutMinutes: 3,
     paths: [
-      "/docs/audit_registry/doc_versions.json",
-      "/tool/docs/check_doc_version_monotonic.mjs",
+      "/tool/docs/check_doc_metadata.mjs",
     ],
   });
   assert.deepEqual(resolveTargetCheckout({graph, target: "policy_docs"}), {
@@ -195,7 +192,10 @@ test("agent policy remains distinct from ordinary documentation", () => {
   const result = plan("AGENTS.md");
   assert.deepEqual(result.directComponents, ["policy.agent"]);
   assert.deepEqual(result.operations.ciTargets, ["policy_docs"]);
-  assert.deepEqual(result.operations.checkIds, ["agent:readiness"]);
+  assert.deepEqual(result.operations.checkIds, [
+    "docs:metadata",
+    "meta:enforcement-integrity",
+  ]);
 });
 
 test("terminal Functions documentation never inherits deploy authority", () => {
@@ -252,7 +252,7 @@ test("native and Firebase role fixtures retain platform-specific validation", ()
 
   const firebaseRoot = plan("firebase.json", "main");
   assert.deepEqual(firebaseRoot.directComponents, ["infra.firebase"]);
-  assert.deepEqual(firebaseRoot.operations.deployGroups, ["firebase-config"]);
+  assert.deepEqual(firebaseRoot.operations.deployGroups, []);
 
   const packageIos = plan("apps/host/ios/Runner/Info.plist", "main");
   assert.deepEqual(packageIos.directComponents, ["app.host.native.ios"]);
@@ -285,13 +285,26 @@ test("shared React primitives expand to both web consumers", () => {
   assert.deepEqual(result.operations.ciTargets, ["admin", "marketing", "tools"]);
 });
 
+test("Flutter field adoption stays on the Flutter design lane", () => {
+  const result = plan("design/components/flutter_field_surface_adoption.json");
+  assert.deepEqual(result.directComponents, ["app.design-field-adoption"]);
+  assert.deepEqual(result.affectedComponents, []);
+  assert.deepEqual(result.operations.ciTargets, [
+    "flutter",
+    "tools",
+    "visual_integration",
+  ]);
+});
+
 test("authored contracts expand to every declared validation consumer", () => {
   const result = plan("contracts/users/v1.schema.json");
   assert.deepEqual(result.directComponents, ["contracts.source"]);
   assert.deepEqual(result.affectedComponents, [
     "app.contract-consumer",
+    "backend.firestore-indexes",
+    "backend.firestore-rules",
     "backend.functions",
-    "backend.rules",
+    "backend.storage-rules",
     "operations.contract-consumer",
     "web.admin",
     "web.marketing",
@@ -336,9 +349,32 @@ test("only direct ownership can authorize deploy groups", () => {
   }]);
 
   const contractPlan = plan("contracts/users/v1.schema.json", "main");
-  assert.deepEqual(contractPlan.operations.deployGroups, ["backend-contracts"]);
-  assert.ok(contractPlan.operationSources.deployGroups.every(
-    (source) => source.relationship === "direct",
+  assert.deepEqual(contractPlan.operations.deployGroups, []);
+});
+
+test("Firebase mutations are authorized by exact direct owners", () => {
+  const expectations = [
+    ["firestore.indexes.json", ["firestore-indexes"], ["contracts"]],
+    ["firestore.rules", ["firestore-rules"], ["contracts", "firestore_rules"]],
+    ["storage.rules", ["storage-rules"], ["contracts", "firestore_rules"]],
+  ];
+  for (const [path, deployGroups, ciTargets] of expectations) {
+    const result = plan(path, "main");
+    assert.deepEqual(result.operations.deployGroups, deployGroups);
+    assert.deepEqual(result.operations.ciTargets, ciTargets);
+  }
+
+  const extension = plan("extensions/export-bigquery.env", "main");
+  assert.deepEqual(extension.directComponents, ["infra.firebase.extensions"]);
+  assert.deepEqual(extension.operations.deployGroups, []);
+});
+
+test("deploy groups require their mandatory CI validation targets", () => {
+  const unsafe = clone(graph);
+  unsafe.operationProfiles["functions-source"].direct.main.ciTargets = [];
+  const errors = validateComponentGraph(unsafe);
+  assert.ok(errors.some((error) =>
+    error.includes('deploy group "functions" requires CI target "functions"')
   ));
 });
 
@@ -401,27 +437,6 @@ test("graph validation rejects unknown tool check ids when the manifest is suppl
     )),
   });
   assert.ok(errors.some((error) => error.includes('unknown tool check id "missing:check"')));
-});
-
-test("compile-codegen selection is platform bounded and executes check commands only", () => {
-  const contractPlan = plan("contracts/callables/update_event_payload.schema.json");
-  const selection = selectCompileCodegen({plan: contractPlan, graph, platform: "linux"});
-  assert.deepEqual(selection.selected.map((entry) => entry.id), [
-    "admin.callable-validators",
-    "contracts.schema-projections",
-  ]);
-  const invoked = [];
-  const results = runCodegenChecks({
-    entries: selection.selected,
-    cwd: "/tmp",
-    runner(command) {
-      invoked.push(command);
-      return {status: 0, stdout: "ok", stderr: ""};
-    },
-  });
-  assert.deepEqual(invoked, selection.selected.map((entry) => entry.checkCommand));
-  assert.ok(invoked.every((command) => command.includes("check")));
-  assert.ok(results.every((result) => result.status === 0));
 });
 
 test("generator scripts and generated outputs select their declared freshness checks", () => {

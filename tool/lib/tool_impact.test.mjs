@@ -72,7 +72,7 @@ test("primary and declared impact paths select their active owner plus guards", 
   }
 });
 
-test("widget variant changes stay index-only with Node setup", () => {
+test("widget variants stay narrow while their comparison consumer closes safely", () => {
   const widgetbookPlan = planAffectedToolChecks({
     changedPaths: ["widgetbook/lib/example.dart"],
     manifest: productionManifest,
@@ -89,7 +89,7 @@ test("widget variant changes stay index-only with Node setup", () => {
     componentGraph: componentGraph(),
   });
   assert.equal(finderPlan.mode, "affected");
-  assert.equal(finderPlan.repositoryView, "index");
+  assert.equal(finderPlan.repositoryView, "full");
   assert.deepEqual(finderPlan.setupRequirements, ["node"]);
   assert.ok(finderPlan.toolIds.includes("design:widget-variant-inventory"));
   assert.ok(finderPlan.toolIds.includes("design:widgetbook-compare-server"));

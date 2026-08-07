@@ -706,7 +706,7 @@ function fixtureRoot({
   if (trackedRootSources.length > 0) {
     write(
       root,
-      "docs/audit_registry/architecture_pattern_adoption.json",
+      "tool/architecture/pattern_adoption.json",
       JSON.stringify({
         patterns: [
           {

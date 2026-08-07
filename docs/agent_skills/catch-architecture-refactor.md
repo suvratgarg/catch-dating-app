@@ -6,14 +6,17 @@ repository, widget-ownership, and testability refactors under `lib/**`.
 Read: `docs/app_architecture.md`, `lib/README.md`, and the owning
 architecture/design contracts for the changed surface.
 
-Loop: generate a read-only architecture plan, edit a coherent batch, run focused
+Optional orientation:
+`node tool/agent/context_pack.mjs --task architecture-refactor --paths lib,docs/app_architecture.md,tool/architecture/pattern_adoption.json`.
+
+Loop: inspect the read-only impact plan, edit a coherent batch, run focused
 tests/analyzer/scanners, and keep compile-critical generated artifacts current.
 Git and CI output preserve the evidence.
 
 For repeated architecture patterns, prototype first:
 
 1. Create or reuse a pattern id from
-   `docs/audit_registry/architecture_pattern_adoption.json`.
+   `tool/architecture/pattern_adoption.json`.
 2. Build one high-quality reference implementation before broad migration.
 3. Copy the reference code excerpt into `docs/app_architecture.md` as an
    exhibit.

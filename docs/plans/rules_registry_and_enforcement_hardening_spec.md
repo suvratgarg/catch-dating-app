@@ -1,19 +1,27 @@
 ---
 doc_id: rules_registry_and_enforcement_hardening_spec
-version: 1.0.1
-updated: 2026-08-06
+version: 1.0.3
+updated: 2026-08-07
 owner: app
-status: active
+status: superseded
 ---
 
 # Rules Registry & Enforcement Hardening — Implementation Spec
 
+> **Historical implementation record.** These phases were written before the
+> evidence freeze in `docs/agent_operating_model.md`. Preserve their rule and
+> scanner rationale, but do not execute instructions that append audit passes,
+> baseline receipts, readiness metrics, document versions, or regression-ledger
+> entries. Current changes use focused checks with proof preserved by Git and
+> CI.
+
 ## 0. Context for the implementing agent (read this first)
 
-Catch converts architecture rules into machine enforcement. The pieces already
-exist and pass CI:
+At the time of this implementation, Catch converted architecture rules into
+machine enforcement through these pieces:
 
-- `docs/audit_registry/rules.json` — the rule registry (~50 active rules, each
+- historical `docs/audit_registry/rules.json` — the rule registry at the time;
+  current rules live in `tool/policy/rules.json` (~50 active rules, each
   with `enforcement` entries binding rules to tools, stages, and doc anchors).
 - `tool/architecture/*.mjs` — architecture scanners with unit tests
   (`check_dependency_direction.mjs` is the reference implementation: exported
@@ -22,15 +30,16 @@ exist and pass CI:
   that validates rule→tool→doc→baseline integrity.
 - `tool/tools_manifest.json` — tool inventory with `role`, `rules`,
   `vacuityProof`, `baseline` metadata on enforcement tools.
-- `docs/audit_registry/agent_metrics.jsonl` — append-only receipts, including
-  `enforcement_baseline` events the meta-gate cross-checks.
+- `docs/audit_registry/agent_metrics.jsonl` — the former append-only baseline-
+  receipt layer, now deleted; Git retains its historical content.
 
 A staff review found the remaining defects: six rules with text problems, two
 recent policy decisions with no rule home, sunset conditions that have silently
-fired, two meta-gate loopholes, and five rules that are `manual` despite having
-trivial mechanical detectors. This spec fixes all of them.
+fired, two meta-gate loopholes, and five rules that were `manual` despite having
+trivial mechanical detectors. This spec records the implementation that fixed
+them.
 
-**Hard constraints:**
+**Historical implementation constraints:**
 
 - Do NOT modify any file under `lib/` or `test/` (app code). All new scanner
   rules ratchet existing violations via baselines.
@@ -43,25 +52,27 @@ trivial mechanical detectors. This spec fixes all of them.
   manifest mapping (`role`, `rules`, `vacuityProof`), and a rules.json
   `enforcement` entry. `node tool/run.mjs check --category meta` must pass at
   the end of every phase.
-- Follow the required loop from `AGENTS.md`: readiness gate before handoff,
-  pass receipt in `docs/audit_registry/passes.jsonl`, refresh
-  `dart tool/audit_registry.dart refresh` after doc changes.
+- Follow the current `AGENTS.md` loop. The earlier readiness, pass-receipt, and
+  audit-refresh requirements are retired and must not be restored.
 - Commit per phase with focused messages (existing style: `fix:`/`refactor:`/
   `feat:` + short lowercase summary).
 
-Verification commands used throughout:
+The durable verification commands from the implementation were:
 
 ```sh
 node tool/run.mjs check --category meta
 node tool/run.mjs check --category audit
 node --test tool/architecture/check_dependency_direction.test.mjs
 node tool/check_enforcement_integrity.mjs
-node tool/agent/check_agent_readiness.mjs
 ```
 
 ---
 
-## Phase 1 — Rule text repairs in `docs/audit_registry/rules.json`
+## Phase 1 — Historical Rule Text Repairs
+
+This phase targeted the retired `docs/audit_registry/rules.json` path. The
+current authored source is `tool/policy/rules.json`; do not run the historical
+path instructions literally.
 
 Replace the `instruction` fields exactly as written below. Bump the registry's
 top-level `version` once (patch) for the whole phase. Do not change rule ids.
@@ -242,9 +253,10 @@ Populate now:
   audit:mutation-error-surfaces` + `sunset_review` `{decision: "keep", note:
   "scanner shipped 2026-07-02; rule stays active until the per-mutation
   analyzer diagnostic replaces the file-level heuristic"}`.
-- `AUDIT-REGISTRY-001`: signal `tool-exists: meta:enforcement-integrity` +
-  `sunset_review` `{decision: "keep", note: "meta-gate automates registry
-  integrity; pass-stamping discipline remains manual"}`.
+- `AUDIT-REGISTRY-001`: the historical implementation used signal
+  `tool-exists: meta:enforcement-integrity` plus a `sunset_review` decision to
+  keep the rule. Evidence Freeze later retired pass stamping and this rule's
+  completion authority; do not restore it from this record.
 - `STREAM-LIFECYCLE-001`: signal `tool-exists: audit:dependency-direction`
   (satisfied after Phase 4 adds the timeout rule) + review decision `keep`.
 - `ROUTE-STRING-001`, `IMAGE-NETWORK-PRIMITIVE-001`: `tool-exists` signals for
@@ -271,24 +283,21 @@ Exempt paths for now (dirty web lane): `tool/web/**`, `tool/marketing/**`,
 catches (expected: few or none — investigate each; `role: "finder"` for
 report-only tools, with `vacuityProof` not required for finders).
 
-### 3.3 Growth guard for `allowedFindings` baselines
+### 3.3 Historical growth guard for `allowedFindings` baselines (retired)
 
-Currently only `maxCounts` baselines are receipt-checked. Extend: when a
-`tool.baseline` JSON contains `allowedFindings`, require the latest
-`enforcement_baseline` receipt in `agent_metrics.jsonl` for that baseline path
-to carry `{"counts": {"allowedFindings": <N>}}` matching the file's current
-array length. FAIL on mismatch or missing receipt. Append the initial receipt
-for `tool/architecture/dependency_direction_baseline.json` with its
-post-Phase-4 count as part of this work (one JSON line; copy the existing
-receipt shape).
+The historical implementation extended the then-current `maxCounts` receipt
+check to `allowedFindings` baselines and required an `enforcement_baseline`
+entry in `agent_metrics.jsonl` matching the array length. Evidence Freeze later
+removed that receipt dependency because run history belongs in Git/CI. The
+snapshot is immutable migration input; do not append an initial or replacement
+receipt.
 
 ### 3.4 Tests
 
-Extend `tool/check_enforcement_integrity.test.mjs` with fixture-driven cases:
-satisfied signal without review → fails; satisfied signal with review →
-passes; role-less gate tool in a covered path → fails; allowedFindings count
-drift without receipt → fails; matching receipt → passes. Keep the existing
-tests green.
+The historical implementation added fixture-driven cases for satisfied sunset
+signals, role-less gate tools, and allowed-findings receipt drift. Current tests
+should retain only the executable rule/tool/baseline integrity cases that do
+not depend on tracked run receipts.
 
 ---
 
@@ -329,7 +338,9 @@ Define a `pluginPackages` set — the existing `disallowedDomainPackages` minus
 1. Add the rules + unit tests (bad fixture, good fixture, exemption fixture
    for each — extend `check_dependency_direction.test.mjs`).
 2. Run `--write-baseline`; commit the regenerated baseline.
-3. Append the `enforcement_baseline` receipt (per 3.3).
+3. The historical rollout appended an `enforcement_baseline` receipt. That
+   receipt mechanism is now retired; current baseline changes require focused
+   tests and exact-SHA Git/CI proof instead.
 4. Add enforcement entries: `INJECTED-CLOCK-001`, `STREAM-LIFECYCLE-001`,
    `EXTERNAL-SIDE-EFFECT-001` each gain
    `{tool: audit:dependency-direction, stage: scanner-ratchet, docAnchor: <the
@@ -372,13 +383,15 @@ architecture scanners, category `audit`, role `gate`:
    - Sweep the one remaining stale pre-refactor snippet: search for
      `isHost: vm.isHost` and `_eventDetailCompanionState(` outside
      exhibit-marker blocks; update to the current reference shape.
-   - Bump doc version; run `dart tool/audit_registry.dart refresh`.
-2. `docs/audit_registry/backlog.json`: add a debt entry (follow the existing
-   schema exactly) — id `DEBT-AUTH-LOADING-STATE-001`: "CalendarScreen and
+   - Bump the document's source frontmatter version. Do not recreate removed
+     audit evidence.
+2. Historical backlog instruction, retired: the former entry
+   `DEBT-AUTH-LOADING-STATE-001` described how "CalendarScreen and
    SavedEventsScreen conflate uidProvider loading with signed-out and render
    the signed-out/empty state while auth resolves
    (`ref.watch(uidProvider).asData?.value == null`). Distinguish auth-loading,
-   signed-out, and signed-in-empty."
+   signed-out, and signed-in-empty." Actionable debt now belongs in GitHub
+   Issues; do not recreate the deleted repository backlog.
 3. `tool/README.md`: add a "Where enforcement lives" section: analyzer
    diagnostics → `packages/catch_ui_lints` (probe-tested via
    `tool/check_catch_ui_lints.sh`); repo scanners with registry awareness →
@@ -391,7 +404,7 @@ architecture scanners, category `audit`, role `gate`:
 
 ---
 
-## Phase 6 — Verification & receipts (definition of done)
+## Phase 6 — Current re-verification boundary
 
 All of the following, in order, must pass and be reported in the final
 summary:
@@ -402,20 +415,15 @@ node --test tool/check_enforcement_integrity.test.mjs
 node tool/run.mjs check --category meta
 node tool/run.mjs check --category audit
 node tool/run.mjs check --manifest-only
-node tool/agent/check_agent_readiness.mjs        # must be 100/100
 git diff --check
 ```
 
-Then:
-
-- Stamp a pass receipt in `docs/audit_registry/passes.jsonl` (id
-  `2026-07-XX-rules-registry-hardening`) listing: rules edited, rules added,
-  scanner rules added, meta-gate checks added, baselines regenerated with
-  counts, and the backlog entry id.
-- Final summary must report: per-phase commit SHAs, the new baseline counts
-  per rule (domainClockAccess / dataStreamTimeout / presentationPluginImport
-  file counts), any tool the role-loophole check caught, and any deviation
-  from this spec with the reason.
+Git and CI preserve these results for the exact SHA. Do not stamp a pass
+receipt or write a replacement metrics record. A current final summary should
+report per-phase commit SHAs, the new baseline counts per rule
+(`domainClockAccess`, `dataStreamTimeout`, `presentationPluginImport` file
+counts), any tool the role-loophole check caught, and any deviation from this
+spec with the reason.
 
 **Historical scope boundary:** this implementation did not promote analyzer
 lints or retire diagnostic-specific compatibility wrappers. Harness v2 later

@@ -3,15 +3,28 @@ import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 
 const safeOrder = [
-  "functions",
   "firestore:indexes",
+  "functions",
   "firestore:rules",
   "storage",
-  "hosting",
-  "remoteconfig",
 ];
 const firebaseTargetPattern =
   /^[A-Za-z0-9_.-]+(?::[A-Za-z0-9_.-]+)*$/;
+const deployGroupTargets = Object.freeze({
+  functions: ["functions"],
+  "firestore-indexes": ["firestore:indexes"],
+  "firestore-rules": ["firestore:rules"],
+  "storage-rules": ["storage"],
+});
+
+function rejectUnsafeTarget(target) {
+  if (!firebaseTargetPattern.test(target)) {
+    throw new Error(`Invalid Firebase deploy target: ${JSON.stringify(target)}`);
+  }
+  throw new Error(
+    `Firebase deploy target is not allowed in automatic delivery: ${target}`,
+  );
+}
 
 export function planFirebaseDeployTargets(
   targetsCsv,
@@ -19,40 +32,27 @@ export function planFirebaseDeployTargets(
 ) {
   const selected = new Set();
   const exactFunctions = new Set();
-  const extras = [];
   let deployAllFunctions = false;
 
-  const select = (target) => selected.add(target);
   for (const rawTarget of String(targetsCsv).split(",")) {
     const target = rawTarget.trim();
     if (!target) continue;
-    if (!firebaseTargetPattern.test(target)) {
-      throw new Error(`Invalid Firebase deploy target: ${JSON.stringify(target)}`);
-    }
-    if (target === "all") {
-      deployAllFunctions = true;
-      for (const expanded of [
-        "functions",
-        "firestore:indexes",
-        "firestore:rules",
-        "storage",
-        "hosting",
-      ]) {
-        select(expanded);
-      }
-    } else if (target === "firestore") {
-      select("firestore:indexes");
-      select("firestore:rules");
+    if (target === "firestore") {
+      selected.add("firestore:indexes");
+      selected.add("firestore:rules");
     } else if (target === "functions") {
       deployAllFunctions = true;
-      select("functions");
+      selected.add("functions");
     } else if (target.startsWith("functions:")) {
+      if (!firebaseTargetPattern.test(target) || target === "functions:") {
+        rejectUnsafeTarget(target);
+      }
       exactFunctions.add(target);
-      select("functions");
+      selected.add("functions");
     } else if (safeOrder.includes(target)) {
-      select(target);
-    } else if (!extras.includes(target)) {
-      extras.push(target);
+      selected.add(target);
+    } else {
+      rejectUnsafeTarget(target);
     }
   }
 
@@ -71,13 +71,31 @@ export function planFirebaseDeployTargets(
       plans.push({phase, deployOnly: phase});
     }
   }
-  for (const target of extras) {
-    plans.push({phase: "extra", deployOnly: target});
-  }
   if (plans.length === 0) {
     throw new Error("No Firebase deploy targets were selected.");
   }
   return plans;
+}
+
+export function planFirebaseDeployGroups(
+  deployGroups,
+  {functionTargets = []} = {},
+) {
+  if (!Array.isArray(deployGroups) || deployGroups.length === 0) {
+    throw new Error("No Firebase deploy groups were selected.");
+  }
+  const targets = new Set();
+  for (const rawGroup of deployGroups) {
+    const group = String(rawGroup).trim();
+    const mappedTargets = deployGroupTargets[group];
+    if (!mappedTargets) {
+      throw new Error(
+        `CI deploy group is not allowed in automatic delivery: ${group}`,
+      );
+    }
+    for (const target of mappedTargets) targets.add(target);
+  }
+  return planFirebaseDeployTargets([...targets].join(","), {functionTargets});
 }
 
 function currentFunctionTargets() {
@@ -100,15 +118,20 @@ function currentFunctionTargets() {
 function main() {
   const args = process.argv.slice(2);
   const format = args.includes("--json") ? "json" : "tsv";
-  const targetsCsv = args.find((arg) => !arg.startsWith("--"));
-  if (!targetsCsv) {
+  const groupsIndex = args.indexOf("--groups");
+  const targetsCsv = args.find((arg, index) =>
+    !arg.startsWith("--") && index !== groupsIndex + 1,
+  );
+  const groupsCsv = groupsIndex >= 0 ? args[groupsIndex + 1] : undefined;
+  if ((!groupsCsv && !targetsCsv) || (groupsCsv && targetsCsv)) {
     throw new Error(
-      "Usage: node plan_firebase_deploy_targets.mjs <targets> [--json|--tsv]",
+      "Usage: node plan_firebase_deploy_targets.mjs <targets> [--json|--tsv] OR --groups <groups> [--json|--tsv]",
     );
   }
-  const plans = planFirebaseDeployTargets(targetsCsv, {
-    functionTargets: currentFunctionTargets(),
-  });
+  const options = {functionTargets: currentFunctionTargets()};
+  const plans = groupsCsv
+    ? planFirebaseDeployGroups(groupsCsv.split(",").filter(Boolean), options)
+    : planFirebaseDeployTargets(targetsCsv, options);
   if (format === "json") {
     process.stdout.write(`${JSON.stringify(plans, null, 2)}\n`);
     return;

@@ -2,6 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
+import {buildWidgetClassification} from "./generate_widget_classification.mjs";
 
 const args = process.argv.slice(2);
 const writeIndex = args.indexOf("--write");
@@ -169,10 +170,8 @@ function classifyRoleCoverage({
 }
 
 function loadClassifications() {
-  const parsed = JSON.parse(
-    fs.readFileSync(fromRepo("docs/audit_registry/widget_classification.json"), "utf8"),
-  );
-  return new Map((parsed.widgets ?? [])
+  const classification = buildWidgetClassification({repoRoot: fromRepo(".")});
+  return new Map((classification.widgets ?? [])
     .filter((entry) => entry.classKind === "widget")
     .map((entry) => [`${entry.file}::${entry.name}`, entry]));
 }

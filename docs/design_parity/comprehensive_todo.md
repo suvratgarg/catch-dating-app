@@ -1,7 +1,7 @@
 ---
 doc_id: design_parity_comprehensive_todo
-version: 0.2.321
-updated: 2026-07-23
+version: 0.2.322
+updated: 2026-08-07
 owner: product_design_parity
 status: active
 ---
@@ -333,15 +333,15 @@ design-system migration goal is complete.
 - [ ] Keep `design/screens/screen_coverage.json`,
   `design/screens/catch.screens.json`, `docs/design_parity/state_matrix.json`,
   `tool/ui_capture/capture_coverage.json`, Widgetbook generated ids,
-  `docs/widget_catalog.md`, `design/reference_screens/manifest.json`, this
-  tracker, and audit receipts synchronized in every pass.
+  `docs/widget_catalog.md`, `design/reference_screens/manifest.json`, and this
+  tracker synchronized in every pass.
 - [ ] Keep route inventory generated from app routing, but keep rich design
   metadata in the portable design ledgers so Flutter, Widgetbook, the website,
   social templates, and design-tool exports can share it.
 - [ ] Revisit alias and excluded routes quarterly, or immediately when a lab,
   manual-QA, or dev-only route becomes product-facing.
 - [ ] Close screen-registry and state-matrix gaps only when implementation,
-  capture or preview proof, tests, scanner proof, and audit proof exist.
+  capture or preview proof, tests, scanner proof, and Git/CI proof exist.
 
 ### P1. Reference Export And Pixel Baselines
 
@@ -361,7 +361,7 @@ design-system migration goal is complete.
   Start animated reel, reduced-motion, text-scale, and alternate theme states.
 - [ ] For every exported reference, add the PNG, `masks.json`, manifest entry,
   `catch.screens.json` design ref, state-matrix ref, advisory compare run, and
-  audit pass receipt.
+  exact-SHA Git/CI proof.
 - [ ] Keep pixel comparison advisory until repeated local and CI runs prove
   masks, thresholds, fixture clocks, dynamic image sources, and export
   dimensions are stable.
@@ -501,8 +501,8 @@ the detail, acceptance criteria, and screen-by-screen state inventory.
      Manage setup/guests/live/report now have scoped design-phone advisory
      comparison proof recorded in `catch.screens.json` and `state_matrix.json`.
    - Acceptance: PNG, mask, manifest entry, `catch.screens.json` design ref,
-     `state_matrix.json` state ref, advisory comparison output, and audit pass
-     receipt exist for every exported state.
+     `state_matrix.json` state ref, advisory comparison output, and exact-SHA
+     Git/CI proof exist for every exported state.
 3. [ ] `TODO-NEXT-CAP-P1-001` Close highest-risk P1 capture and interaction
    gaps.
    - Cover Event Success stage changes, Catches mutation failures/offline
@@ -559,14 +559,14 @@ the detail, acceptance criteria, and screen-by-screen state inventory.
 - [ ] `TODO-PASS-001` Update all affected ledgers together:
   `screen_coverage.json`, `catch.screens.json`, `state_matrix.json`,
   `capture_coverage.json`, Widgetbook generated ids, `docs/widget_catalog.md`,
-  design-reference manifests, tracker docs, and audit registry receipts.
+  design-reference manifests, and tracker docs.
 - [ ] `TODO-PASS-002` Run the relevant proof stack:
   `npm run design:parity:check`, focused Flutter tests, focused analyzer with
   `--no-fatal-infos`, route/capture/reference checks, Widgetbook generation or
   ref checks when use cases change, `git diff --check`, and relevant scanners.
-- [ ] `TODO-PASS-003` Stamp every completed pass in
-  `docs/audit_registry/passes.jsonl` and touched file entries in
-  `docs/audit_registry/files.jsonl`.
+- [ ] `TODO-PASS-003` Preserve the exact changed paths and selected check
+  results in Git and CI; do not update the frozen audit inventory or pass
+  ledger.
 - [ ] `TODO-PASS-004` Keep follow-up tasks here or in the JSON ledgers; do not
   leave new design-parity work only in chat history.
 
@@ -656,7 +656,8 @@ the detail, acceptance criteria, and screen-by-screen state inventory.
 - [ ] For every new reference: export PNGs, add masks, update
   `design/reference_screens/manifest.json`, wire the `designRefs` in
   `catch.screens.json`, mirror state refs in `state_matrix.json`, run advisory
-  comparison, and record the proof in an audit pass.
+  comparison, and keep the references, contracts, and review output in the same
+  PR and CI run.
 
 ### P1 Execution Queue
 
@@ -710,7 +711,7 @@ the detail, acceptance criteria, and screen-by-screen state inventory.
 
 - [ ] Keep the route inventory, screen coverage, capture coverage, screen
   contracts, state matrix, component contracts, Widgetbook ids, widget catalog,
-  and audit registry synchronized in every pass.
+  and this tracker synchronized in every pass.
 - [ ] Add provider-free Widgetbook previews for all meaningful contracted
   sections once their screen adapters exist.
 - [ ] Reuse fixture data between Widgetbook and route captures so preview and
@@ -784,13 +785,13 @@ from those ledgers rather than hand-editing counts.
 
 This is the high-level backlog. A feature is not design-parity complete until
 each relevant layer below is done and the proof is recorded in the JSON ledgers,
-tests, captures, Widgetbook, and audit receipts.
+tests, captures, Widgetbook, Git, and CI.
 
 ### 0. Ledger And Source-Of-Truth Hygiene
 
 - [ ] `TODO-MASTER-LEDGER-001` Keep route inventory, screen coverage, capture
   coverage, screen contracts, state matrix, Widgetbook ids, component
-  contracts, widget catalog, and audit receipts synchronized in the same pass.
+  contracts, widget catalog, and this tracker synchronized in the same pass.
 - [ ] `TODO-MASTER-LEDGER-002` When a route is added, removed, renamed, or
   aliased, update `tool/ui_capture/route_inventory.json`,
   `design/screens/screen_coverage.json`,
@@ -1079,7 +1080,7 @@ tests, captures, Widgetbook, and audit receipts.
     exports can share the same contracts.
 - [ ] `TODO-SOT-008` Keep `screen_coverage.json`, `catch.screens.json`,
   `state_matrix.json`, `capture_coverage.json`, generated Widgetbook ids,
-  `docs/widget_catalog.md`, this tracker, and audit receipts synchronized in
+  `docs/widget_catalog.md`, and this tracker synchronized in
   every parity pass.
 - [ ] `TODO-SOT-009` Revisit alias and excluded routes quarterly, or whenever a
   dev/lab/manual-QA route becomes product-facing.
@@ -1407,13 +1408,13 @@ tests, captures, Widgetbook, and audit receipts.
   captures, Widgetbook entries, design references, and current contract gaps
   before editing visuals.
 - [ ] `TODO-CADENCE-003` Update coverage JSON, screen contracts, state matrix,
-  Widgetbook/capture entries, docs, tests, and audit receipts together.
+  Widgetbook/capture entries, docs, and tests together.
 - [ ] `TODO-CADENCE-004` Run Widgetbook code generation whenever annotated
   Widgetbook use cases change.
 - [ ] `TODO-CADENCE-005` Verify each pass with `npm run design:parity:check`,
   focused Flutter tests, focused analyzer with `--no-fatal-infos`, JSON syntax
-  checks where relevant, `git diff --check`, relevant scanners, and audit
-  stamping.
+  checks where relevant, `git diff --check`, and relevant scanners. Preserve
+  the result in Git and CI.
 - [ ] `TODO-CADENCE-006` Keep follow-up gaps in this tracker, not chat history.
 
 ## J. Screen-By-Screen To-Do Index
@@ -1744,5 +1745,5 @@ A screen is done when all of these are true:
   exist.
 - [ ] Drift-prevention scanners pass or record stable, intentional advisory
   findings.
-- [ ] `docs/widget_catalog.md`, design parity docs, and audit registry receipts
-  are updated in the same pass.
+- [ ] `docs/widget_catalog.md`, design parity docs, and the relevant authored
+  contracts are updated in the same pass.
