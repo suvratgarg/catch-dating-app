@@ -1,6 +1,6 @@
 ---
 doc_id: harness_v2_decision_and_cicd_delivery_plan
-version: 0.3.32
+version: 0.3.33
 updated: 2026-08-07
 owner: agent_operating_model
 status: execution-in-progress
@@ -912,12 +912,12 @@ Issues discovered during this tranche:
   Git/worktree integrity but not the root Flutter workspace's executable
   closure. The broker now includes workspace manifests, local path packages,
   and declared assets; a fresh first-run Flutter test proves the repair.
-- `H2-TRANSITION-033` — task creation records logical recursive bytes while
+- `H2-TRANSITION-033` — closed in Checkpoint 26. Task creation recorded logical recursive bytes while
   doctor reports allocated `du` bytes under the same apparent size series. The
   canary was 62,953,704 logical bytes at creation and 68,816,896 allocated bytes
   at doctor before build output. Rename and expose both units; do not calculate
   worktree growth by subtracting one from the other.
-- `H2-TRANSITION-034` — the lifecycle tests remove their fixture contents but
+- `H2-TRANSITION-034` — closed in Checkpoint 26. The lifecycle tests removed their fixture contents but
   leave an empty ignored `.claude/test-fixtures` directory. Terminal inspection
   collapses this to an unknown `.claude/` path, so a clean remote-equal task can
   accumulate a false ignored-payload hazard. Test cleanup should remove only
@@ -958,6 +958,44 @@ Issues discovered during this tranche:
   reject the plan before installation. Removing only the three regenerable
   task-local `node_modules` trees restored the task to 56,750,080 allocated
   bytes and a healthy terminal state.
+
+### Checkpoint 26 — truthful task lifecycle receipts (2026-08-07)
+
+| Signal | Before this slice | Current result |
+|---|---|---|
+| Storage contract | V1 wrote `estimatedTrackedBytes` and `materializedBytes` from logical recursive sizes, then doctor/reap exposed allocated `du` bytes as `sizeBytes`. One observed task appeared to grow from 25,355,083 to 26,079,232 bytes solely because the unit changed, a false 724,149-byte / 2.86% delta. | New tasks write `catch.harness-task/v2` with explicit tracked-logical, projected-allocated, initial-logical, and initial-allocated fields. Budget, current size, reap totals, and growth are allocated-byte contracts. The exact canary separately reports 32,060,516 logical and 34,045,952 allocated initial bytes, then a valid allocated delta of zero. V1 remains dual-read but its allocated delta is `null`; new v2 output contains none of the three ambiguous keys. |
+| Handoff truth | Doctor could reject metadata-path, sparse-checkout, base-ancestry, storage, ignored-payload, dependency, or reserve drift while finish independently missed several of those blockers. An unreachable origin was collapsed into `remote_head_not_preserved`, indistinguishable from a real remote mismatch. Unknown ignored payload could become terminal before reap rejected it. | Doctor and finish share one integrity implementation. Finish additionally returns a structured live origin result and separates `remote_head_query_unavailable` from `remote_head_not_preserved`. Reap blocks malformed v2 storage metadata. Failed validation cannot unlock the worktree or transition its receipt. |
+| Fixture ownership | The nine-test lifecycle suite left an empty ignored `.claude/test-fixtures`; Git collapsed it to `!! .claude/`, creating a false unknown-payload hazard. A first cleanup attempt passed alone but failed under concurrent test processes because each test pruned shared parents. | One process-owned session remains nonempty for the module lifetime; tests remove only exact owned children, and module teardown uses `lstat` plus empty-only `rmdir` without following symlinks or recursively deleting shared parents. Four simultaneous focused processes passed 68/68 tests in 7.0s and left no `.claude` residue; files, symlinks, nonempty directories, and legitimate siblings fail closed or remain preserved. |
+| Fresh proof and timing | Focused coverage was 9/9 in 2.10s and did not assert units, v1 compatibility, doctor/finish parity, ignored handoff state, remote-query state, or concurrent cleanup. The original sparse task could not physically start all checks named by its own context pack. | Core commit `77a915b04` is +679/−109, committed in 0.02s, pushed in 2.46s, and closed through the live remote check in 0.89s. A fresh full-tool v2 canary started and pushed in 2.91s, passed doctor in 0.31s, passed 17/17 focused tests in 5.67s, all 74 Harness tests in 6.34s, manifest, 83-rule/92-tool enforcement, live and 6/6 tested root hygiene, test inventory, 5,033/5,033 readiness, and retained zero ignored payload with zero allocated growth. |
+| Line accounting | The 24 prior measured commits were cumulatively net −349,120 lines. | Core commit `77a915b04` is net +570. This evidence receipt is +42/−3, net +39; the 26-commit measured series is therefore net −348,511 lines. |
+
+Issues closed or discovered during this tranche:
+
+- `H2-TRANSITION-033` — closed. V2 names every storage unit and permits only
+  allocated-to-allocated growth; v1 stays readable without an invented
+  baseline.
+- `H2-TRANSITION-034` — closed. Process-owned fixture sessions remove exact
+  children and prune shared parents only when ordinary and empty. Unknown or
+  uninspectable ignored payload now blocks doctor and finish.
+- `H2-TRANSITION-037` — closed. Finish now distinguishes an unavailable live
+  origin query from a verified remote-head mismatch and exposes expected and
+  observed heads when available.
+- `H2-TRANSITION-038` — open. The core task's context pack named full Harness,
+  manifest, enforcement-integrity, root-hygiene, readiness, and audit-refresh
+  commands, but its manually declared sparse paths omitted
+  `tool/repository_root_manifest.json`, `tool/run.mjs`, the enforcement/root
+  entrypoints, and `tool/audit_registry.dart`. The focused test passed while the
+  broader commands failed before execution. Context-pack acceptance commands
+  must emit a machine-readable physical closure consumed by `task start`, or
+  task start must accept check ids and materialize their declared closure. A
+  doctor should reject the task before edits when a required command entrypoint
+  is absent. The evidence canary avoided repair by declaring the full `tool/`
+  scope; no ad hoc sparse expansion was used.
+
+`H2-TRANSITION-035` (same-worktree mutator lease) and
+`H2-TRANSITION-036` (setup-footprint projection) remain open; this unit and
+receipt migration supplies their stable metadata boundary but does not claim
+to solve either one.
 
 Durable outcomes are PR wall-clock p50/p95 and escaped defects. Record the
 baseline from the ten most recent comparable PRs and compare after ten v2 PRs.
