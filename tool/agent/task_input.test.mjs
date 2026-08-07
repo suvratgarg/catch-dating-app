@@ -165,6 +165,47 @@ test("broad ownership does not broaden impact-based skill and regression selecti
   assert.deepEqual(selection.matchedRegressions.map((entry) => entry.id), ["REG-UI"]);
 });
 
+test("task selection adds only lifecycle and explicitly required checks", () => {
+  const delegated = deriveTaskCheckSelection({
+    task: "delegated-tool-change",
+    mode: TASK_START_MODE,
+    impactPaths: ["tool/example.mjs"],
+    skills: [],
+    regressions: [],
+  });
+  assert.deepEqual(delegated.requests, [{
+    id: "agent:harness-v2",
+    sources: [`mode:${TASK_START_MODE}`],
+  }]);
+  assert.ok(!delegated.requests.some((entry) => entry.id === "agent:readiness"));
+  assert.ok(!delegated.requests.some((entry) => entry.id === "agent:record-delegation"));
+
+  const standard = deriveTaskCheckSelection({
+    task: "ordinary-change",
+    mode: "standard",
+    impactPaths: ["lib/example.dart"],
+    skills: [],
+    regressions: [],
+  });
+  assert.deepEqual(standard.requests, []);
+
+  const skillRequired = deriveTaskCheckSelection({
+    task: "tooling-change",
+    mode: "standard",
+    impactPaths: ["tool/example.mjs"],
+    skills: [{
+      skill_id: "tooling",
+      applies_to: ["tool/**"],
+      required_tools: ["agent:readiness"],
+    }],
+    regressions: [],
+  });
+  assert.deepEqual(skillRequired.requests, [{
+    id: "agent:readiness",
+    sources: ["skill:tooling"],
+  }]);
+});
+
 test("task-start contracts separate scope, support paths, and deferred checks", () => {
   const requests = [
     {id: "task-check", sources: ["skill:one"]},
@@ -384,7 +425,7 @@ test("unknown checks and dirty source state make task input incomplete", () => {
   ]);
 });
 
-test("trusted selection prevents a caller from dropping mandatory checks", () => {
+test("trusted selection prevents a caller from dropping a skill-required check", () => {
   const authorityManifest = {
     tools: [
       ...manifest.tools,
@@ -426,7 +467,7 @@ test("trusted selection prevents a caller from dropping mandatory checks", () =>
     taskStart,
   };
   const trusted = trustedSelection([
-    {id: "agent:readiness", sources: ["baseline"]},
+    {id: "agent:readiness", sources: ["skill:tooling"]},
     ...underscopedRequests,
   ]);
   const result = validateTaskStartContract({

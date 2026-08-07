@@ -134,10 +134,8 @@ export function deriveTaskCheckSelection({
   const matchedRegressions = selectTaskRegressions(regressions ?? [], normalizedImpactPaths);
   const requests = new Map();
   const deferredRegressionIds = [];
-  addStructuredCheck(requests, "agent:readiness", "baseline");
   if (mode === TASK_START_MODE) {
     addStructuredCheck(requests, "agent:harness-v2", `mode:${TASK_START_MODE}`);
-    addStructuredCheck(requests, "agent:record-delegation", `mode:${TASK_START_MODE}`);
   }
   for (const skill of matchedSkills) {
     for (const id of skill.required_tools ?? []) {

@@ -68,13 +68,10 @@ Node platform names (`darwin`, `linux`, or `win32`). Category checks report and
 skip incompatible entries; direct `run` calls fail with exit 64 instead of
 executing a platform-incompatible command.
 
-The audit registry refresh strictly parses regular files from Git's index, so
-it is safe inside a sparse worktree and fails before a malformed listing can
-truncate the registry. Stage new files and deletions before `refresh`.
-`mark-pass` verifies both the live index and registry instead of silently
-skipping scope; name deleted files in receipt proof and stamp their surviving
-governing files. The manifest gate runs `refresh --check`, making exact sorted
-path parity a CI invariant rather than a manual receipt.
+The legacy audit snapshots are frozen pending deletion. Plain refresh, pass
+stamping, readiness-metric recording, and delegation recording are retired.
+Read-only compatibility queries may inspect the old files, but they are not
+required handoff gates and no command may update them.
 
 `impacted` joins changed paths through
 `tool/repository_root_manifest.json#relationships` to their source, generated
@@ -128,8 +125,8 @@ safe-codegen are restricted to nightly mode; write commands remain disabled.
 - `harness/`: authoritative component graph, safe compile-codegen catalog,
   planner kernel, and fixtures.
 - `lib/`: shared Node helper modules for repo paths, CLI parsing, and Firebase project selection.
-- Completed one-time migration tools are retired after prod verification; historical
-  evidence lives in the audit registry and migration contract metadata.
+- Completed one-time migration tools are retired after production verification;
+  Git and the owning contract retain the history.
 - `marketing/`: app-derived website media manifests and screenshot sync checks.
 - `platform/`: Apple/platform configuration helpers.
 - `store/`: deterministic App Store and Google Play asset generators.
@@ -149,8 +146,8 @@ appear in LCOV.
 at or below 1,200 lines. The exact reviewed legacy debt lives in
 `tool/test/flutter_test_size_baseline.json`; growth and stale reductions both
 fail so every improvement is ratcheted. `tool/test_inventory.mjs --check`
-remains the cross-surface filename inventory, and the agent readiness gate also
-performs that exact freshness proof.
+remains the cross-surface filename inventory until its live-only migration
+completes.
 
 ```sh
 node --test tool/test/flutter_coverage_report.test.mjs
@@ -568,112 +565,52 @@ for local visual review but never substitute for the Linux CI baseline.
 
 ## Agent Harness
 
-The agent harness turns project instructions into small context packets and
-validation gates. Use it before broad cleanup, architecture refactors, docs
-consolidation, design-parity work, and any task where an agent needs to preserve
-hard-won prior fixes.
+The permanent agent-facing layer is deliberately small. Git remains the source
+of truth for code and history, and GitHub Actions remains the source of truth
+for checks, artifacts, approvals, and deployments.
+
+`tool/harness.mjs explain|plan|check|generate` maps a Git diff through the
+Catch component graph. Planning is read-only with respect to tracked source;
+the optional GitHub output file is workflow plumbing, not repository state.
+The planner selects existing checks and safe compile-codegen verification. It
+does not create receipts, scores, metrics, or audit records.
 
 ```sh
-node tool/agent/context_pack.mjs --task architecture-refactor --owned-paths lib/events,lib/explore
-node tool/agent/context_pack.mjs --task doc-hygiene --owned-paths docs --planned-impact-paths docs/README.md,docs/audit_registry/doc_versions.json --mode parallel-delegation --output build/agent-context/doc-hygiene.json
-node tool/agent/check_agent_readiness.mjs
-node tool/agent/check_agent_readiness.mjs --record-metric
-node tool/agent/record_delegation_outcome.mjs --task-id example --mode worker-patch --status integrated --parent-review-outcome accepted --dry-run
-node tool/run.mjs check --category agent
+node tool/harness.mjs explain --base origin/main --head HEAD --mode pr
+node tool/harness.mjs check --affected --base origin/main --head HEAD --mode pr
+node tool/harness.mjs generate --affected --check --base origin/main --head HEAD --mode pr
 ```
 
-Delegated worktrees use one fail-closed lifecycle instead of direct
-`git worktree` shell sequences:
+`tool/agent/context_pack.mjs` remains optional, read-only planning help for
+broad work. `tool/agent/check_agent_readiness.mjs` is a compatibility gate
+during migration; it must not write metrics or become a completion receipt.
 
-```sh
-node tool/harness.mjs task start --task-id <id> --base-sha <40-character-sha> --stack-parent <ref> --owned-paths <path[,path...]> --context-pack build/agent-context/<id>.json --budget-mib 256
-node tool/harness.mjs task doctor --worktree <path>
-node tool/harness.mjs task finish --worktree <path>
-node tool/harness.mjs task recover-lease --worktree <path>
-node tool/harness.mjs task reap --dry-run
-```
+The current `harness task` implementation is migration-era code. Its permanent
+replacement is only a thin guard around Git worktrees:
 
-Context packs request this lifecycle with `--mode parallel-delegation`; there
-is no separate adapter skill or command recipe. JSON packs expose a base-bound
-task-start contract built from skill `required_tools` and regression
-`guard.check_ids`. Raw command strings remain human instructions. Index-view
-checks form the sparse task capability closure; full-view checks are deferred
-to parent integration so repository-wide scanners cannot pass against omitted
-source. Command regressions not yet migrated to `check_ids` are also named as
-deferred parent regressions; their shell strings never grant sparse checkout
-authority. Optional manifest `taskPaths` add support-only paths for an index-safe
-tool without expanding the agent's owned/write scope.
+- create from an exact base SHA under the repository-owned worktree root;
+- reject claimed paths that overlap another active local task;
+- report dirty or out-of-scope changes;
+- refuse close when unique work is uncommitted or unpushed; and
+- report stale worktrees without deleting them.
 
-`--owned-paths` declares the owned write ceiling and sparse projection;
-`--planned-impact-paths` declares the narrower expected diff used for
-skill/rule/regression/check selection. Existing planned-impact directories
-expand to tracked descendants at the exact base SHA but do not authorize new
-descendants; every future file is an exact planned leaf. Planned impact must
-stay inside ownership, and delegated
-directory ownership requires an explicit impact list. Every command
-plan entry has an owner and phase: workers receive only preflight and bounded
-task checks; lifecycle, full-view integration, raw skill guidance, and deferred
-regressions remain parent-owned. Start, finish, explicit stale-lease recovery,
-and reap all come from one canonical task-command contract; recovery is a
-parent-owned lifecycle phase and is never implied by a worker failure. With
-`--output`, `.json` selects JSON and `.md` or `.markdown` selects Markdown,
-case-insensitively. `--json` remains the explicit JSON override for an
-unrecognized suffix, but it cannot contradict a recognized Markdown suffix.
-An ambiguous suffix without `--json` fails before creating or overwriting the
-target. The compact stdout receipt uses the resolved artifact format and is
-emitted only after the write succeeds, keeping CI and agent logs bounded.
+The guard does not install dependencies, execute checks, push branches, manage
+child processes, schedule work, keep leases, authorize commands, or create
+tracked evidence. Task coordination state is local and disposable; Git branches
+and commits remain authoritative.
 
-That phase split is an executable capability boundary. In a managed task,
-`node tool/run.mjs check <id...>` binds the Git-local v5 state mirror to a
-write-once parent authority keyed by the actual linked-worktree administrative
-id, the current branch/base ancestry, and the authority-bound Git lock. Check
-ownership is recomputed from the authority's base SHA, and the complete set is
-validated only after an atomic task gate is acquired. That gate is held across
-all output and child processes, and `task finish` needs the same gate before
-inspection. Selected tools must also retain the exact executable manifest
-signature recorded at the base SHA; keeping an allowed id while changing its
-command is denied. Affected and impacted execution additionally binds every
-planning manifest to its base-SHA value before selection or output. Managed
-checks on POSIX run inside a recorded child process group, so cancellation
-reaches the whole group and a killed runner cannot make the gate recoverable
-while its descendants remain alive. Managed Windows dispatch fails closed until
-it has an equivalent process-tree boundary. A missing receipt or authority,
-invalid registration/lock, or a locally self-consistent but worker-forged scope
-fails closed. Worker ids run; a
-parent-deferred or unplanned id makes the entire batch exit 77 without partial
-execution, and live state is rechecked before each child. `node tool/run.mjs run/exec` is parent-only because its forwarded
-arguments are not covered by the task check contract. Legacy, finishing, and
-terminal receipts also fail closed. `list`, stdout-only impact planning, and
-`check --manifest-only` remain usable in workers. Because `--github-output`
-writes a file, even a planning-only invocation must pass the same gate and
-whole-plan authorization. A normal checkout with no task receipt is unchanged.
+The following legacy snapshots are frozen migration inputs and must not be
+updated:
 
-`start` creates a bounded sparse worktree under `.claude/worktrees/`, locks it,
-records lifecycle metadata outside tracked source, and pushes its collision-free
-branch to `origin`. Support paths are materialized capabilities, not write
-ownership. `doctor` and `finish` enforce the same receipt, sparse, storage,
-command-closure, ownership, and planned-impact boundaries; `finish` also proves
-the exact remote head and records terminal state without deleting anything.
-If the runner dies while holding the gate, the parent can run
-`node tool/harness.mjs task recover-lease --worktree <path>`; recovery requires
-an explicit call, dead owner and transition-claim PIDs, and dead recorded child
-process groups. Gate, child, and transition publication is generation-scoped,
-fsynced, and atomic. Recovery takes over a dead claim atomically, rejects
-unexpected or symlinked layouts, and unlocks only by renaming the complete gate;
-old publishers and cleanup therefore cannot touch a replacement generation. It
-never steals a live or malformed lease.
-`reap --dry-run` is a digested report with no apply mode. The authoritative
-schema/legacy matrix, storage semantics, and handoff policy live in
-`docs/agent_operating_model.md`; do not duplicate them here.
+- `docs/audit_registry/files.jsonl`
+- `docs/audit_registry/passes.jsonl`
+- `docs/audit_registry/agent_metrics.jsonl`
+- `docs/audit_registry/doc_versions.json`
+- `docs/agent_regression_ledger.json`
 
-`AGENTS.md` is the short entrypoint. Durable process guidance lives in
-`docs/agent_operating_model.md`, regression guards in
-`docs/agent_regression_ledger.json`, project-local skill routers in
-`docs/agent_skills/`, and trendable measurements in
-`docs/audit_registry/agent_metrics.jsonl`.
-When using parallel agents, keep subagent work in disposable Git worktrees and
-record the parent-reviewed result with
-`tool/agent/record_delegation_outcome.mjs`.
+Do not refresh, stamp, append, or regenerate them. Active invariants belong in
+tests, linters, component risk gates, or expiring waivers. Git and CI provide
+the durable proof of work.
 
 ## Feature Contract Compiler
 

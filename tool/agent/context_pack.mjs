@@ -37,9 +37,7 @@ const plannedImpactPaths = args.plannedImpactPaths.length > 0
 const selectionPaths = expandSelectionPaths(plannedImpactPaths);
 const generatedAt = new Date().toISOString();
 
-const docVersions = readJson("docs/audit_registry/doc_versions.json", {});
 const rulesFile = readJson("docs/audit_registry/rules.json", {rules: {}});
-const regressionLedger = readJson("docs/agent_regression_ledger.json", {entries: []});
 const skillManifest = readJson("docs/agent_skills/skills_manifest.json", {skills: []});
 const toolsManifest = readJson("tool/tools_manifest.json", {tools: []});
 
@@ -48,10 +46,10 @@ const selection = deriveTaskCheckSelection({
   mode,
   impactPaths: selectionPaths,
   skills: skillManifest.skills ?? [],
-  regressions: regressionLedger.entries ?? [],
+  regressions: [],
 });
 const matchedSkills = selection.matchedSkills;
-const ownerDocs = buildOwnerDocs({task, selectionPaths, matchedSkills, docVersions});
+const ownerDocs = buildOwnerDocs({task, selectionPaths, matchedSkills});
 const matchedRules = selectRules(rulesFile.rules ?? {}, selectionPaths, mode);
 const matchedRegressions = selection.matchedRegressions.map(projectRegression);
 const sourceState = readSourceState();
@@ -128,7 +126,7 @@ const pack = {
     version: skill.version,
     required_tools: skill.required_tools ?? [],
     required_commands: skill.required_commands ?? [],
-    success_receipt: skill.success_receipt,
+    success_evidence: skill.success_evidence,
   })),
   activeRules: matchedRules,
   regressionGuards: matchedRegressions,
@@ -167,85 +165,81 @@ if (args.output) {
   process.stdout.write(rendered);
 }
 
-function buildOwnerDocs({task, selectionPaths, matchedSkills, docVersions}) {
+function buildOwnerDocs({task, selectionPaths, matchedSkills}) {
   const docs = new Map();
 
-  addDoc(docs, "AGENTS.md", "Agent routing entrypoint.", null);
-  addDoc(docs, "docs/agent_operating_model.md", "Execution mode and completion contract.", docVersions.agent_operating_model);
-  addDoc(docs, "docs/agent_regression_ledger.json", "Regression guards for repeated failure modes.", docVersions.agent_regression_ledger);
-  addDoc(docs, "docs/audit_registry/README.md", "Audit registry workflow and pass receipts.", docVersions.audit_registry);
+  addDoc(docs, "AGENTS.md", "Agent routing entrypoint.");
+  addDoc(docs, "docs/agent_operating_model.md", "Execution mode and completion contract.");
 
   for (const skill of matchedSkills) {
-    addDoc(docs, skill.path, `Project-local skill ${skill.skill_id}.`, null);
+    addDoc(docs, skill.path, `Project-local skill ${skill.skill_id}.`);
     for (const sourceDoc of skill.source_docs ?? []) {
-      addDoc(docs, sourceDoc, `Required by ${skill.skill_id}.`, docVersionForPath(sourceDoc, docVersions));
+      addDoc(docs, sourceDoc, `Required by ${skill.skill_id}.`);
     }
   }
 
   if (matchesTaskScopePatterns(selectionPaths, ["lib/**", "test/**"])) {
-    addDoc(docs, "docs/app_architecture.md", "Canonical app architecture for lib/test changes.", docVersions.app_architecture);
-    addDoc(docs, "lib/README.md", "Feature map for lib/.", docVersions.lib_code_map);
+    addDoc(docs, "docs/app_architecture.md", "Canonical app architecture for lib/test changes.");
+    addDoc(docs, "lib/README.md", "Feature map for lib/.");
   }
   if (matchesTaskScopePatterns(selectionPaths, ["docs/**", "PROJECT_CONTEXT.md", "README.md", "AGENTS.md"])) {
-    addDoc(docs, "docs/README.md", "Docs source-of-truth index and hygiene policy.", docVersions.docs_index);
-    addDoc(docs, "docs/audit_registry/doc_versions.json", "Versioned read policies.", docVersions.audit_doc_versions);
+    addDoc(docs, "docs/README.md", "Docs source-of-truth index and hygiene policy.");
   }
   if (matchesTaskScopePatterns(selectionPaths, ["tool/**"])) {
-    addDoc(docs, "tool/README.md", "Tool ownership, registration, and validation policy.", null);
+    addDoc(docs, "tool/README.md", "Tool ownership, registration, and validation policy.");
   }
   if (matchesTaskScopePatterns(selectionPaths, ["website/**", "packages/web-config/**", "tool/marketing/**", "design/website/**", "docs/marketing_website_architecture.md", "docs/web_surface_architecture.md", "docs/marketing_landing_page_research.md", "docs/marketing_app_media_pipeline.md"])) {
-    addDoc(docs, "docs/marketing_website_architecture.md", "Marketing website feature structure and refactor ownership.", docVersions.marketing_website_architecture);
-    addDoc(docs, "docs/web_surface_architecture.md", "Marketing website route, deployment, and public surface ownership.", docVersions.web_surface_architecture);
-    addDoc(docs, "docs/marketing_landing_page_research.md", "Marketing page positioning, content, and redesign guardrails.", docVersions.marketing_landing_page_research);
-    addDoc(docs, "docs/marketing_app_media_pipeline.md", "App-derived marketing media ownership and drift checks.", docVersions.marketing_app_media_pipeline);
-    addDoc(docs, "website/README.md", "Marketing app local workflow and analytics setup.", docVersionForPath("website/README.md", docVersions));
-    addDoc(docs, "packages/web-config/README.md", "Shared React web config and token plumbing.", docVersionForPath("packages/web-config/README.md", docVersions));
-    addDoc(docs, "design/website/routes.json", "Machine-readable marketing website route contract.", docVersionForPath("design/website/routes.json", docVersions));
+    addDoc(docs, "docs/marketing_website_architecture.md", "Marketing website feature structure and refactor ownership.");
+    addDoc(docs, "docs/web_surface_architecture.md", "Marketing website route, deployment, and public surface ownership.");
+    addDoc(docs, "docs/marketing_landing_page_research.md", "Marketing page positioning, content, and redesign guardrails.");
+    addDoc(docs, "docs/marketing_app_media_pipeline.md", "App-derived marketing media ownership and drift checks.");
+    addDoc(docs, "website/README.md", "Marketing app local workflow and analytics setup.");
+    addDoc(docs, "packages/web-config/README.md", "Shared React web config and token plumbing.");
+    addDoc(docs, "design/website/routes.json", "Machine-readable marketing website route contract.");
   }
   if (matchesTaskScopePatterns(selectionPaths, ["contracts/**", "functions/src/**", "firestore.rules", "storage.rules", "lib/**/data/**", "lib/**/domain/**"])) {
-    addDoc(docs, "docs/data_contracts.md", "Data/schema/rules contract source of truth.", docVersions.data_contracts);
-    addDoc(docs, "docs/backend_operation_catalog.md", "Backend write and projection ownership catalog.", docVersions.backend_operation_catalog);
+    addDoc(docs, "docs/data_contracts.md", "Data/schema/rules contract source of truth.");
+    addDoc(docs, "docs/backend_operation_catalog.md", "Backend write and projection ownership catalog.");
   }
   if (matchesTaskScopePatterns(selectionPaths, ["lib/**/presentation/**", "lib/core/widgets/**", "widgetbook/**", "docs/design_parity/**", "design/components/**", "design/screens/**", "design/tokens/**", "design_context_pack/**"])) {
-    addDoc(docs, "docs/design_parity/README.md", "Design parity workflow and state matrix owner.", docVersions.design_parity_tracker);
-    addDoc(docs, "docs/widget_catalog.md", "Widget ownership and catalog update rules.", docVersions.widget_catalog);
-    addDoc(docs, "docs/design_language.md", "Visual identity and design language source of truth.", docVersions.design_language);
+    addDoc(docs, "docs/design_parity/README.md", "Design parity workflow and state matrix owner.");
+    addDoc(docs, "docs/widget_catalog.md", "Widget ownership and catalog update rules.");
+    addDoc(docs, "docs/design_language.md", "Visual identity and design language source of truth.");
   }
   if (matchesTaskScopePatterns(selectionPaths, [".github/workflows/**", "firebase.json", ".firebaserc", "ios/**", "android/**"])) {
-    addDoc(docs, "docs/release_operations.md", "Release, CI, deploy, and environment gates.", docVersions.release_operations);
-    addDoc(docs, "docs/web_surface_architecture.md", "Web/deploy surface ownership.", docVersions.web_surface_architecture);
+    addDoc(docs, "docs/release_operations.md", "Release, CI, deploy, and environment gates.");
+    addDoc(docs, "docs/web_surface_architecture.md", "Web/deploy surface ownership.");
   }
 
   if (task.includes("doc")) {
-    addDoc(docs, "docs/README.md", "Task name indicates documentation work.", docVersions.docs_index);
+    addDoc(docs, "docs/README.md", "Task name indicates documentation work.");
   }
 
   return [...docs.values()].filter((doc) => fileExists(doc.path));
 }
 
-function addDoc(docs, docPath, reason, versionEntry) {
+function addDoc(docs, docPath, reason) {
   const existing = docs.get(docPath);
   const nextReason = existing ? `${existing.reason} ${reason}` : reason;
   const markdown = docPath.endsWith(".md");
+  const source = markdown ? repositorySnapshot.readText(docPath) ?? "" : "";
   const status = markdown
-    ? parseDocumentLifecycleStatus(repositorySnapshot.readText(docPath) ?? "")
-    : versionEntry?.status ?? null;
-  if (markdown && versionEntry != null && status == null) {
-    throw new Error(
-      `Governed Markdown ${docPath} has no single valid source-frontmatter lifecycle status.`,
-    );
-  }
+    ? parseDocumentLifecycleStatus(source)
+    : null;
   docs.set(docPath, {
     path: docPath,
-    version: versionEntry?.version ?? null,
+    version: markdown ? parseDocumentVersion(source) : null,
     status,
-    read_policy: versionEntry?.read_policy ?? null,
+    read_policy: null,
     reason: nextReason.trim(),
   });
 }
 
-function docVersionForPath(docPath, docVersions) {
-  return Object.values(docVersions).find((entry) => entry.path === docPath) ?? null;
+function parseDocumentVersion(source) {
+  const frontmatter = /^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/u.exec(source)?.[1];
+  if (frontmatter == null) return null;
+  const raw = /^version:\s*["']?([^\s"'#]+)["']?\s*(?:#.*)?$/mu.exec(frontmatter)?.[1];
+  return raw ?? null;
 }
 
 function selectRules(rules, selectionPaths, mode) {
@@ -302,12 +296,6 @@ function buildCommandPlan({matchedSkills, matchedRegressions, mode, checkPlan}) 
       owner: "parent",
       phase: "maintenance",
     });
-    addCommand(
-      commands,
-      "node tool/agent/record_delegation_outcome.mjs --help",
-      "Record the parent-reviewed delegation outcome.",
-      {owner: "parent", phase: "receipt-guidance"},
-    );
     addCheckCommand(commands, checkPlan.task, "worker", "task-check", "Run the bounded task checks.");
     addCheckCommand(
       commands,
@@ -316,11 +304,6 @@ function buildCommandPlan({matchedSkills, matchedRegressions, mode, checkPlan}) 
       "integration-check",
       "Run checks that require the full repository view.",
     );
-  } else {
-    addCommand(commands, "node tool/agent/check_agent_readiness.mjs", "Validate agent harness before handoff.", {
-      owner: "current-agent",
-      phase: "current-task",
-    });
   }
   for (const skill of matchedSkills) {
     for (const command of skill.required_commands ?? []) {
@@ -364,16 +347,13 @@ function buildAcceptance({task, ownedPaths, plannedImpactPaths, matchedSkills, m
     "Owned write paths, planned impact paths, and excluded dirty work are stated before edits.",
     "Owner docs are updated or explicitly left unchanged.",
     "Relevant checks from the command plan are run or blockers are documented.",
-    "New recurring debt or regression risk has a stable id.",
+    "A recurring invariant is encoded in a focused test, lint, or expiring waiver.",
   ];
-  if (matchedSkills.some((skill) => skill.skill_id.includes("architecture") || skill.skill_id.includes("doc"))) {
-    items.push("Audit registry is refreshed and cleanup/refactor proof is stamped when source files change.");
-  }
   if (matchedSkills.some((skill) => skill.skill_id.includes("ui") || skill.skill_id.includes("design"))) {
     items.push("Widgetbook, contracts, captures, or design ledgers are refreshed when UI/API coverage changed.");
   }
   if (mode === "parallel-delegation") {
-    items.push("Worker runs only worker-owned commands; parent retains integration checks, canonical docs, registries, audit receipts, and final verification.");
+    items.push("Worker stays inside its claimed paths; parent owns integration and final verification.");
   }
   if (ownedPaths.length === 0 || plannedImpactPaths.length === 0 || task === "unspecified") {
     items.unshift("Task name and paths are narrowed before implementation.");

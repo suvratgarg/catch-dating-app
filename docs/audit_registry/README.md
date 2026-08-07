@@ -1,217 +1,70 @@
 ---
 doc_id: audit_registry
-version: 3.0.2
+version: 4.0.0
 updated: 2026-08-07
-owner: recursive_audit_loop
+owner: agent_operating_model
 status: active
 ---
 
-# Recursive Audit Registry
+# Legacy Audit Snapshots
 
-This folder is the durable state for repeated architecture, widget, controller,
-state-management, testability, and documentation cleanup passes.
+The audit registry previously stored generated file history, pass receipts,
+agent metrics, document routing, rules, backlogs, and design inventories in one
+tracked directory. That model is being retired because every branch rewrote the
+same evidence and made ordinary work conflict with unrelated work.
 
-Use this registry before reading long tracker docs. The goal is to answer:
+## Frozen Files
 
-1. Which files exist in the active audit surface?
-2. Which pass last reviewed each file?
-3. Which versioned rules and docs were applied?
-4. What proof shows the pass actually closed the loop?
+These files are immutable migration inputs and must not be changed:
 
-## Files
+- `files.jsonl`
+- `passes.jsonl`
+- `agent_metrics.jsonl`
+- `doc_versions.json`
+- `../agent_regression_ledger.json`
 
-| File | Purpose |
+Plain `dart tool/audit_registry.dart refresh`, `mark-pass`, readiness metric
+recording, and delegation recording are retired. Historical references remain
+searchable through Git. Do not create an archive or replacement ledger.
+
+## Where Current Authority Lives
+
+| Concern | Current authority |
 |---|---|
-| `files.jsonl` | One JSON object per tracked file. Generated and updated by `tool/audit_registry.dart`. |
-| `passes.jsonl` | Append-only pass receipts with scope, rules, commands, outcomes, and new debt. |
-| `rules.json` | Active/watch/archived rules used by recursive cleanup passes. |
-| `doc_versions.json` | Version metadata for durable docs that Codex reads repeatedly. |
-| `backlog.json` | Active backlog, next-up order, stable debt ids, and scanner counts. |
-| `agent_metrics.jsonl` | Append-only measurements for agent-readiness score, check counts, delegation outcomes, and workflow-quality trend events. |
-| `architecture_pattern_adoption.json` | Machine-readable tracker for architecture reference exhibits, prototype files, adopters, variants, exceptions, and back-propagation obligations. |
-| `react_component_governance_families.json` | Generated reader snapshot of React component families governed by `tool/web/check_react_component_governance.mjs --families-json`. |
-| `web_shared_primitive_adoption.json` | Active cross-React primitive compatibility decisions plus the running usability, performance, organization, test, and tooling improvement queue. |
-| `react_staff_review_remediation.json` | Staff review item tracker for the 2026-07-02 organizer publication, public listing, and claim CTA remediation pass. |
-| `admin_console_design_adoption.json` | Production adoption tracker for the comprehensive admin-console design export, including implemented, partial, blocked, and prototype-only behavior. |
-| `widget_classification.json` | Generated registry of every Dart widget class, its role, ownership boundaries, catalog status, and allowed public remediation path. |
-| `widget_classification.schema.json` | JSON schema for the generated widget classification registry. |
-| `widget_similarity.json` | Generated structural-similarity registry for widget consolidation review packets. |
-| `widget_consolidation_receipts.md` | Command receipts, spot-checks, calibration notes, and known limitations for the widget consolidation pipeline. |
-| `new_widget_inventory_scan.json` | Generated report comparing the working tree to a base ref for newly added widgets, private widget classes, widget-returning helpers, and Widgetbook/catalog coverage gaps. |
-| `archive/` | Historical detail that should be searched only when a debt id or rule requires it. |
+| Repository paths and change history | Git |
+| Path-to-component and affected-operation routing | `tool/harness/component_graph.json` |
+| Executable checks | `tool/tools_manifest.json` and their owning tests/scanners |
+| Document lifecycle and ownership | Source frontmatter and `docs/README.md` |
+| Architecture decisions | Owning architecture document or authored domain contract |
+| Generated inventories and run proof | Ignored local output or expiring CI artifacts |
+| Regression prevention | Focused tests, lints, scanners, or an expiring owner-doc waiver |
 
-`doc_versions.json` owns semantic version/path/read routing; the retired
-`doc_summaries.json` registry no longer duplicates that authority. For governed
-Markdown, exactly one valid source-frontmatter `status` is the sole lifecycle
-authority and catalog rows must omit that field. Missing, malformed, duplicate,
-or unclosed source status fails closed. Governed non-Markdown artifacts continue
-to require catalog lifecycle status.
+Some authored decision files still live under `docs/audit_registry/` while
+they migrate to their durable domain owners. They remain normal reviewed
+source, not proof that every task must update this directory.
 
-The inventory includes native Android, iOS, macOS, Flutter web, and Functions
-operator scripts in addition to Dart, tests, tooling, design, and documentation,
-so release identity and trusted operations changes receive the same pass history
-as application code.
+## Read-Only Compatibility
 
-Paths governed as aggregate evidence, generated platform assets, or vendored
-packages in
-`tool/repository_root_manifest.json#auditPolicies` remain inventoried, but use
-the `aggregate` status instead of inflating the file-level unreviewed queue.
-Their owning manifest, digest, build, or platform check is the review unit;
-product source, native manifests/build settings, and other critical
-configuration retain file-level pass history. Each aggregate record preserves
-its prior `file_status` and `file_kind` so narrowing or removing a policy does
-not erase earlier review state.
-
-## Enforcement Metadata
-
-Active rules declare `enforcement` entries. Machine-backed entries bind to a
-tool id in `tool/tools_manifest.json`; manual entries use `stage: manual` so
-the absence of a scanner is explicit. Manifest tools that enforce rules declare
-their `role`, reverse `rules` mapping, and, for gates or ratchets,
-`vacuityProof`. Active tools under `tool/*.sh`, `tool/architecture/**`, or
-`tool/audit/**`, and any active tool with a non-syntax manifest check, must
-declare a `role` so runtime checks cannot hide from enforcement review. Ratchet
-tools with checked baselines should also have a matching receipt in
-`agent_metrics.jsonl` when the baseline changes. For `maxCounts` baselines, the
-receipt stores the matching `maxCounts`; for `allowedFindings` baselines, it
-stores `allowedFindingsCount`.
-
-Validate this layer with:
+During deletion migration, read-only commands may inspect the frozen snapshots:
 
 ```sh
-node tool/check_enforcement_integrity.mjs
-node tool/run.mjs check --category meta
+dart tool/audit_registry.dart report
+dart tool/audit_registry.dart rules --status active
+dart tool/audit_registry.dart docs --path <topic>
+dart tool/audit_registry.dart refresh --check
 ```
 
-## Workflow
+`refresh --check` is compatibility diagnostics only and is not a required
+handoff gate. It may report intentional drift after a retired producer or
+snapshot path is removed.
 
-1. Refresh the inventory:
+## Completion
 
-   ```sh
-   dart tool/audit_registry.dart refresh
-   ```
+Run the checks owned by the changed component. Git and CI output preserve the
+result. A cleanup or refactor is not required to stamp files, append a receipt,
+record a score, update a documentation catalog, or add a regression-ledger
+entry.
 
-2. Pick scope:
-
-   ```sh
-   dart tool/audit_registry.dart next --screen-limit 20
-   dart tool/audit_registry.dart next --code-only --screen-limit 20
-   dart tool/audit_registry.dart backlog
-   dart tool/audit_registry.dart rules --status active
-   dart tool/audit_registry.dart docs --path widget
-   dart tool/audit_registry.dart stale --doc widget_cleanup --version 2.0.0
-   ```
-
-   `next` prints non-blocked screen-contract gaps from
-   `design/screens/catch.screens.json` before the raw unreviewed-file list, so
-   broad agent loops keep choosing product-relevant migration work when the
-   backlog is blocked on owner/device input.
-   Use `--code-only` for autonomous refactor loops; it filters gaps classified
-   as reference-only or future-design work while preserving them in the default
-   queue for design/capture passes.
-
-3. Work in a focused batch and verify with scoped analyzer/tests/scanners.
-
-   For widget-system work, regenerate and check the exhaustive role registry:
-
-   ```sh
-    npm run design:widgets:classify
-    npm run design:widgets:check
-    npm run design:widgets:new
-    node tool/design/check_widgetbook_coverage.mjs --check
-    npm run design:fields:inventory:check
-    npm run design:fields:facades:check
-    ```
-
-   Private helper widgets are not an allowed destination. A widget that is too
-   local or too redundant must still resolve through a public catalog action:
-    merge into a canonical public widget, promote to the catalog, or inline/delete
-    the duplicate.
-
-   Widgetbook coverage is computed live. Use `--json` or `--write` only for an
-   ephemeral review artifact outside the tracked docs tree; the current
-   classification registry and canonical decision ledger remain its inputs.
-
-   Flutter field migrations are ranked in
-   `flutter_field_surface_adoption.json`; the inventory check validates its
-   route/screen bindings, exact callsite anchors, and zero unclassified legacy
-   product callsites before handoff.
-
-   The separate generated `field_facade_inventory.json` describes every live
-   `CatchField` facade, parameter list, semantic slot, owner-reviewed use case,
-   and forbidden storytelling surface. Its check also pins the cross-stack
-   `field_row` modes and slots plus the live `CatchSection` variants.
-
-   The broad widget cleanup inventory is a live ratchet, not a stored-zero
-   assertion. `bash tool/widget_cleanup_scan.sh --check` compares every current
-   category with `tool/audit/widget_cleanup_baseline.json`; reductions pass,
-   while increases, missing categories, and newly unbaselined categories fail.
-
-   For Riverpod, Freezed, json_serializable, envied, or other build_runner-backed
-   source edits, keep generated files synchronized. During iterative cleanup
-   loops, prefer:
-
-   ```sh
-   dart run build_runner watch --delete-conflicting-outputs
-   ```
-
-   Do not manually revert generated output just to reduce diff size when the
-   source change legitimately caused regeneration.
-
-4. Stamp the pass:
-
-   ```sh
-   dart tool/audit_registry.dart mark-pass \
-     --pass 2026-05-05-widget-test-cleanup \
-     --rules WIDGET-TEST-001,TEST-ASYNC-001 \
-     --paths test/runs/create_run_screen_test.dart,test/test_pump_helpers.dart \
-     --proof "flutter test test/runs/create_run_screen_test.dart" \
-     --proof "flutter analyze --no-fatal-infos test/runs/create_run_screen_test.dart"
-   ```
-
-5. Use the report when handing off:
-
-   ```sh
-   dart tool/audit_registry.dart report
-   ```
-
-6. If the pass used parallel agents or disposable worktrees, record the
-   parent-reviewed outcome:
-
-   ```sh
-   node tool/agent/record_delegation_outcome.mjs \
-     --task-id <task-id> \
-     --mode worker-patch \
-     --status integrated \
-     --parent-review-outcome accepted-with-edits
-   ```
-
-## Completion Criteria
-
-A pass is complete only when:
-
-- touched files are stamped in `files.jsonl`;
-- new recurring findings are added to `rules.json` or an existing rule;
-- focused analyzer has no errors or warnings for the touched scope;
-- focused tests pass, or the failure is documented as external/deferred;
-- relevant scanners were run and counts were reduced, justified, or marked noisy;
-- new debt has a stable debt id; and
-- any human device-debug logs used during the pass are summarized in
-  `passes.jsonl`.
-- any parallel-agent work that influenced the parent branch is recorded in
-  `agent_metrics.jsonl`.
-
-## Pruning Policy
-
-Keep active instructions small. When a repeated concern is solved, move its rule
-from `active` to `watch`, then to `archived` after the sunset criteria are met.
-Archived rules remain searchable but should not be loaded into every pass.
-
-Long docs should expose version metadata and a short read policy at the top. Do
-not reread full historical snapshots unless the current task explicitly depends
-on them.
-
-Current-state owner docs must not accumulate per-change release notes or
-Git-reconstructible changelogs. Preserve durable decisions in the owning
-current section, preserve implementation proof in `passes.jsonl`, and rely on
-Git when commit-by-commit history is required.
+The migration is complete when active tools and instructions no longer read the
+frozen files, the files are deleted, and two representative product changes
+finish with zero governance-file modifications.

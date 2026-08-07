@@ -67,11 +67,9 @@ export function checkEnforcementIntegrity({
   const errors = [];
   const rulesPath = "docs/audit_registry/rules.json";
   const manifestPath = "tool/tools_manifest.json";
-  const metricsPath = "docs/audit_registry/agent_metrics.jsonl";
   const regressionLedgerPath = "docs/agent_regression_ledger.json";
   const rulesDocument = snapshot.readJson(rulesPath, {required: true});
   const manifest = snapshot.readJson(manifestPath, {required: true});
-  const metrics = readJsonLines(snapshot, metricsPath);
 
   const rules = Object.entries(rulesDocument.rules ?? {}).map(([id, value]) => ({
     id,
@@ -132,7 +130,7 @@ export function checkEnforcementIntegrity({
         }
       }
     }
-    validateToolMetadata({tool, snapshot, metrics, errors});
+    validateToolMetadata({tool, snapshot, errors});
   }
 
   for (const relativePath of discoverArchitectureScripts(snapshot)) {
@@ -330,7 +328,7 @@ function isValidSunsetReview(review) {
   );
 }
 
-function validateToolMetadata({tool, snapshot, metrics, errors}) {
+function validateToolMetadata({tool, snapshot, errors}) {
   if (requiresExplicitRole(tool) && tool.role == null) {
     errors.push(`${tool.id}: active checked tool must declare role.`);
   }
@@ -347,7 +345,6 @@ function validateToolMetadata({tool, snapshot, metrics, errors}) {
   }
   if (tool.baseline) {
     validateRepoFile({snapshot, filePath: tool.baseline, owner: tool.id, errors});
-    validateBaselineMetric({tool, snapshot, metrics, errors});
   }
 }
 
@@ -394,40 +391,6 @@ function validateVacuityProof({tool, snapshot, errors}) {
   errors.push(`${tool.id}: unsupported vacuityProof type ${proof.type}.`);
 }
 
-function validateBaselineMetric({tool, snapshot, metrics, errors}) {
-  const baseline = snapshot.readJson(tool.baseline, {required: true});
-  const requiredReceipt = baselineReceiptFields(baseline);
-  if (requiredReceipt == null) return;
-  const matchingMetrics = metrics.filter((entry) => {
-    return (
-      entry.event === "enforcement_baseline" &&
-      entry.baseline === tool.baseline
-    );
-  });
-  const latestMetric = matchingMetrics.at(-1);
-  if (!latestMetric) {
-    errors.push(`${tool.id}: baseline ${tool.baseline} has no metric receipt.`);
-    return;
-  }
-  if (
-    requiredReceipt.maxCounts != null &&
-    JSON.stringify(latestMetric.maxCounts) !== JSON.stringify(requiredReceipt.maxCounts)
-  ) {
-    errors.push(
-      `${tool.id}: latest baseline metric does not match ${tool.baseline} maxCounts.`,
-    );
-  }
-  if (
-    requiredReceipt.allowedFindingsCount != null &&
-    latestMetric.counts?.allowedFindings !==
-      requiredReceipt.allowedFindingsCount
-  ) {
-    errors.push(
-      `${tool.id}: latest baseline metric does not match ${tool.baseline} allowedFindings count.`,
-    );
-  }
-}
-
 function hasRuntimeCheck(tool) {
   return (tool.checks ?? []).some((check) => {
     if (/\b(--check|--self-test)\b/u.test(check)) return true;
@@ -469,15 +432,6 @@ function isRealManifestRun(check) {
   if (trimmed.startsWith("dart analyze ")) return false;
   if (/^python3\b.+\bast\.parse\b/u.test(trimmed)) return false;
   return trimmed.length > 0;
-}
-
-function baselineReceiptFields(baseline) {
-  const fields = {};
-  if (baseline.maxCounts != null) fields.maxCounts = baseline.maxCounts;
-  if (Array.isArray(baseline.allowedFindings)) {
-    fields.allowedFindingsCount = baseline.allowedFindings.length;
-  }
-  return Object.keys(fields).length > 0 ? fields : null;
 }
 
 function toolForEntry(entry, toolsById, toolsByPath) {
@@ -530,15 +484,6 @@ function discoverArchitectureScripts(snapshot) {
       return !name.includes("/") && name.endsWith(".mjs") &&
         !name.endsWith(".test.mjs");
     });
-}
-
-function readJsonLines(snapshot, filePath) {
-  const source = snapshot.readText(filePath);
-  if (source == null) return [];
-  return source
-    .split(/\r?\n/u)
-    .filter((line) => line.trim().length > 0)
-    .map((line) => JSON.parse(line));
 }
 
 function readTextIfExists(snapshot, filePath) {

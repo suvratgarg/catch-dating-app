@@ -87,10 +87,9 @@
       },
       "role": "gate",
       "rules": [
-        "AGENT-HARNESS-001",
-        "AUDIT-REGISTRY-001"
+        "AGENT-HARNESS-001"
       ],
-      "description": "Validates rule-to-tool enforcement bindings, manifest roles, doc anchors, sunset signal reviews, vacuity proof declarations, architecture scanner ownership, and ratchet baseline receipts for maxCounts and allowedFindings baselines.",
+      "description": "Validates active rule-to-tool enforcement bindings, manifest roles, doc anchors, sunset reviews, vacuity proofs, architecture scanner ownership, and ratchet baselines without requiring tracked metric receipts.",
       "checks": [
         "node --check tool/check_enforcement_integrity.mjs",
         "node --test tool/check_enforcement_integrity.test.mjs",
@@ -104,7 +103,7 @@
           "fails satisfied sunset signals without review",
           "fails role-less covered runtime tools",
           "fails gate tools that only run count or syntax checks",
-          "fails allowedFindings baselines without matching metric receipt",
+          "accepts ratchet baselines without a separate metric receipt",
           "fails broad flutter regression guards without plain-name or evidence"
         ]
       }
@@ -160,7 +159,6 @@
       ],
       "role": "gate",
       "rules": [
-        "DOC-HYGIENE-001",
         "WIDGET-CATALOG-001"
       ],
       "vacuityProof": {
@@ -321,16 +319,13 @@
           "node"
         ]
       },
-      "description": "Validates the Catch agent harness, project-local skills, regression ledger, tool registration, canonical test-inventory freshness, and metrics parseability.",
+      "description": "Validates the remaining Catch agent routing, project-local skills, task-scope guidance, tool registration, and canonical test-inventory freshness without writing repository evidence.",
       "checks": [
         "node --check tool/agent/check_agent_readiness.mjs",
         "node --test tool/agent/check_agent_readiness.test.mjs",
         "node tool/agent/check_agent_readiness.mjs"
       ],
       "role": "gate",
-      "rules": [
-        "AGENT-HARNESS-001"
-      ],
       "vacuityProof": {
         "type": "test",
         "path": "tool/agent/check_agent_readiness.mjs",
@@ -338,20 +333,6 @@
           "Agent readiness score"
         ]
       }
-    },
-    {
-      "id": "agent:record-delegation",
-      "category": "agent",
-      "path": "tool/agent/record_delegation_outcome.mjs",
-      "command": "node tool/agent/record_delegation_outcome.mjs",
-      "safety": "local-writes-audit-jsonl",
-      "status": "active",
-      "description": "Records parent-reviewed parallel agent/worktree delegation outcomes in the agent metrics ledger.",
-      "checks": [
-        "node --check tool/agent/record_delegation_outcome.mjs",
-        "node tool/agent/record_delegation_outcome.mjs --help"
-      ],
-      "role": "generator"
     },
     {
       "id": "audit:registry",
@@ -362,16 +343,15 @@
         "test/tool/audit_registry_paths_test.dart"
       ],
       "command": "dart tool/audit_registry.dart",
-      "safety": "local",
-      "status": "active",
-      "description": "Maintains the recursive audit registry.",
+      "safety": "local-readonly",
+      "status": "internal",
+      "description": "Reads frozen legacy audit snapshots during migration; repository-writing refresh and pass stamping are retired.",
       "checks": [
         "flutter analyze --no-fatal-infos tool/audit_registry.dart tool/lib/audit_registry_paths.dart test/tool/audit_registry_paths_test.dart",
         "flutter test test/tool/audit_registry_paths_test.dart",
-        "dart tool/audit_registry.dart docs --path widget",
-        "dart tool/audit_registry.dart refresh --check"
+        "dart tool/audit_registry.dart docs --path widget"
       ],
-      "role": "generator"
+      "role": "finder"
     },
     {
       "id": "audit:backend-errors",
@@ -503,8 +483,7 @@
         "INJECTED-CLOCK-001",
         "STREAM-LIFECYCLE-001",
         "EXTERNAL-SIDE-EFFECT-001",
-        "CONTROLLER-BOUNDARY-001",
-        "AUDIT-REGISTRY-001"
+        "CONTROLLER-BOUNDARY-001"
       ],
       "baseline": "tool/architecture/dependency_direction_baseline.json",
       "vacuityProof": {
@@ -593,9 +572,6 @@
         "bash tool/widget_cleanup_scan.sh --check"
       ],
       "role": "ratchet",
-      "rules": [
-        "AUDIT-REGISTRY-001"
-      ],
       "baseline": "tool/audit/widget_cleanup_baseline.json",
       "vacuityProof": {
         "type": "test",

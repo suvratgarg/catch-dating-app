@@ -1,8 +1,8 @@
 ---
 doc_id: app_architecture
-version: 1.8.4
+version: 1.8.5
 updated: 2026-08-07
-owner: recursive_audit_loop
+owner: app_architecture
 status: active
 ---
 
@@ -2245,9 +2245,9 @@ The workflow is:
    - A migration batch is not complete if earlier adopters silently lag behind
      an edited exhibit.
 
-6. Stamp the pass with pattern evidence.
-   - Include the pattern id, prototype path, adopter paths, and verification
-     commands in the audit-registry pass receipt.
+6. Preserve pattern evidence in source and checks.
+   - Include the pattern id, prototype path, and adopter paths in the authored
+     owner contract; preserve verification in the commit and CI checks.
 
 Exhibit freshness is owned by this doc plus
 `docs/audit_registry/architecture_pattern_adoption.json`. Every exhibit block
@@ -3052,10 +3052,12 @@ Firestore index-parity check whenever query shape changes.
 
 Use this order for architecture cleanup:
 
-1. Refresh audit state.
-   - `dart tool/audit_registry.dart refresh`
-   - `dart tool/audit_registry.dart rules --status active`
-   - relevant doc read policies from `dart tool/audit_registry.dart docs --path <topic>`
+1. Plan from current source.
+   - inspect the Git diff and the relevant owner docs;
+   - use `node tool/harness.mjs explain --base <base> --head HEAD --mode pr`
+     when the affected surface is broad; and
+   - treat legacy audit snapshots as frozen migration input, never as writable
+     completion state.
 
 2. Inventory the current surface.
    - `python3 tool/scan_architecture.py`
@@ -3068,8 +3070,8 @@ Use this order for architecture cleanup:
    - Do not run a whole-app rewrite in one batch.
    - Prefer features with active repository reads in widgets, raw async
      branches, or mutation-error drift.
-   - If the batch rolls out an architecture pattern, update
-     `docs/audit_registry/architecture_pattern_adoption.json` before edits.
+   - If the batch rolls out an architecture pattern, update its authored owner
+     contract or focused adoption test before edits.
    - If no reference exhibit exists for the pattern, create the prototype and
      exhibit first.
 
@@ -3105,10 +3107,10 @@ Use this order for architecture cleanup:
    - Promote deterministic, low-noise rules into analyzer diagnostics.
    - Add explicit overrides only with reason and debt/expiry.
 
-10. Verify and stamp.
+10. Verify and hand off.
     - Run focused analyzer/tests/scanners.
     - Update docs/catalogs when ownership changes.
-    - Stamp touched files through the audit registry.
+    - Preserve proof in the commit and CI checks; do not write audit receipts.
 
 ## Definition Of Done
 
@@ -3125,7 +3127,8 @@ An architecture migration slice is done when:
 - reusable widgets have catalog/Widgetbook/component-contract ownership;
 - focused analyzer/tests pass;
 - relevant scanners are clean, reduced, or have documented debt;
-- docs and audit registry are updated in the same pass.
+- owner docs are updated when behavior or ownership changes, with no generated
+  governance evidence churn.
 
 ## Implementation Notes For New Features
 

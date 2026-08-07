@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {scanDependencyDirection} from "../architecture/check_dependency_direction.mjs";
@@ -18,10 +17,6 @@ function runCli() {
   const args = parseArgs(process.argv.slice(2));
   const snapshot = createRepositorySnapshot({root: fromRepo()});
   const result = evaluateAgentReadiness({snapshot});
-
-  if (args.recordMetric) {
-    appendReadinessMetric(result, snapshot);
-  }
 
   if (args.json) {
     console.log(JSON.stringify(result, null, 2));
@@ -53,7 +48,6 @@ export function evaluateAgentReadiness({snapshot}) {
     throw new Error("Agent readiness requires a repository snapshot.");
   }
 
-  const metricsPath = "docs/audit_registry/agent_metrics.jsonl";
   const repositoryFiles = snapshot.listFiles();
   const skillMarkdownPaths = repositoryFiles.filter((relativePath) =>
     relativePath.startsWith("docs/agent_skills/") && relativePath.endsWith(".md"));
@@ -61,10 +55,7 @@ export function evaluateAgentReadiness({snapshot}) {
     "AGENTS.md",
     "docs/README.md",
     "docs/agent_operating_model.md",
-    "docs/agent_regression_ledger.json",
     "docs/agent_skills/skills_manifest.json",
-    "docs/audit_registry/agent_metrics.jsonl",
-    "docs/audit_registry/doc_versions.json",
     "docs/audit_registry/test_inventory.json",
     "tool/architecture/dependency_direction_baseline.json",
     "tool/README.md",
@@ -88,27 +79,18 @@ export function evaluateAgentReadiness({snapshot}) {
     check(sourceFor(relativePath)?.includes(needle) === true, message);
   };
 
-  const docVersions = readJson("docs/audit_registry/doc_versions.json");
   const toolsManifest = readJson("tool/tools_manifest.json");
-  const regressionLedger = readJson("docs/agent_regression_ledger.json");
   const skillsManifest = readJson("docs/agent_skills/skills_manifest.json");
 
   checkPath("AGENTS.md", "Agent entrypoint exists.");
   checkPath("docs/agent_operating_model.md", "Agent operating model exists.");
-  checkPath("docs/agent_regression_ledger.json", "Regression ledger exists.");
   checkPath("docs/agent_skills/skills_manifest.json", "Skill manifest exists.");
-  checkPath(metricsPath, "Agent metrics ledger exists.");
   checkPath("tool/agent/context_pack.mjs", "Context pack tool exists.");
   checkPath("tool/agent/check_agent_readiness.mjs", "Readiness tool exists.");
   checkPath(
     "docs/audit_registry/test_inventory.json",
     "Canonical test inventory exists.",
   );
-  checkPath(
-    "tool/agent/record_delegation_outcome.mjs",
-    "Delegation outcome recorder exists.",
-  );
-
   checkContains(
     "AGENTS.md",
     "docs/agent_operating_model.md",
@@ -118,16 +100,6 @@ export function evaluateAgentReadiness({snapshot}) {
     "AGENTS.md",
     "tool/agent/context_pack.mjs",
     "AGENTS.md names the context-pack tool.",
-  );
-  checkContains(
-    "AGENTS.md",
-    "tool/agent/check_agent_readiness.mjs",
-    "AGENTS.md names the readiness tool.",
-  );
-  checkContains(
-    "AGENTS.md",
-    "tool/agent/record_delegation_outcome.mjs",
-    "AGENTS.md names the delegation recorder.",
   );
   checkContains(
     "docs/agent_operating_model.md",
@@ -150,11 +122,6 @@ export function evaluateAgentReadiness({snapshot}) {
     "Operating model requires mechanical merge-drop audits.",
   );
   checkContains(
-    "docs/agent_operating_model.md",
-    "tool/docs/check_doc_version_monotonic.mjs",
-    "Operating model requires monotonic governed document versions.",
-  );
-  checkContains(
     "docs/README.md",
     "agent_operating_model.md",
     "Docs index includes the operating model.",
@@ -172,19 +139,6 @@ export function evaluateAgentReadiness({snapshot}) {
     "Canonical test inventory matches tracked and untracked test files.",
   );
 
-  for (const [docId, expectedPath] of Object.entries({
-    agent_entrypoint: "AGENTS.md",
-    agent_operating_model: "docs/agent_operating_model.md",
-    agent_regression_ledger: "docs/agent_regression_ledger.json",
-    agent_skills: "docs/agent_skills/README.md",
-  })) {
-    const entry = docVersions?.[docId];
-    check(Boolean(entry), `doc_versions includes ${docId}.`);
-    if (entry) {
-      check(entry.path === expectedPath, `${docId} points to ${expectedPath}.`);
-    }
-  }
-
   const toolIds = new Set((toolsManifest?.tools ?? []).map((tool) => tool.id));
   const eligibleCheckIds = collectLocalReadonlyCheckIds(toolsManifest);
   for (const id of [
@@ -195,30 +149,17 @@ export function evaluateAgentReadiness({snapshot}) {
   ]) {
     check(toolIds.has(id), `Tool manifest includes ${id}.`);
   }
-  check(
-    toolIds.has("agent:record-delegation"),
-    "Tool manifest includes agent:record-delegation.",
-  );
-
   const dependencyDirectionBaseline = readDependencyDirectionBaselineSnapshot({
     baseline: readJson("tool/architecture/dependency_direction_baseline.json"),
     snapshot,
   });
-  const metricsSource = sourceFor(metricsPath);
-  const metricsEntries = readMetricEntries(metricsSource);
-  const warnings = dependencyBaselineGrowthWarnings(
-    metricsEntries,
-    dependencyDirectionBaseline,
-  );
 
   const checker = {check, checkPath, sourceFor};
-  validateRegressionLedger(regressionLedger, eligibleCheckIds, checker);
   validateSkills(skillsManifest, eligibleCheckIds, checker);
   validateTaskScopeGuidance(
     ["AGENTS.md", "docs/agent_operating_model.md", "tool/README.md", ...skillMarkdownPaths],
     checker,
   );
-  validateMetrics(metricsSource, metricsPath, checker);
 
   const passed = checks.filter((entry) => entry.ok).length;
   const failed = checks.length - passed;
@@ -234,50 +175,13 @@ export function evaluateAgentReadiness({snapshot}) {
     failed,
     total: checks.length,
     failures: checks.filter((entry) => !entry.ok).map((entry) => entry.message),
-    warnings,
+    warnings: [],
     architecture_baselines: {
       dependency_direction: dependencyDirectionBaseline,
     },
   };
 
   return result;
-}
-
-function validateRegressionLedger(ledger, eligibleCheckIds, {check, checkPath}) {
-  check(Boolean(ledger && Array.isArray(ledger.entries)), "Regression ledger has an entries array.");
-  const seenIds = new Set();
-  for (const entry of ledger?.entries ?? []) {
-    check(Boolean(entry.id), "Regression entry has id.");
-    if (entry.id) {
-      check(!seenIds.has(entry.id), `Regression id is unique: ${entry.id}.`);
-      seenIds.add(entry.id);
-    }
-    check(["active", "watch", "archived"].includes(entry.status), `${entry.id} has valid status.`);
-    check(Array.isArray(entry.applies_to) && entry.applies_to.length > 0, `${entry.id} declares applies_to.`);
-    check(Boolean(entry.symptom), `${entry.id} declares symptom.`);
-    check(Boolean(entry.guard?.type), `${entry.id} declares guard type.`);
-    if (["active", "watch"].includes(entry.status)) {
-      check(Boolean(entry.guard?.command), `${entry.id} active/watch entry declares guard command.`);
-    }
-    if (Object.hasOwn(entry.guard ?? {}, "check_ids")) {
-      const checkIds = entry.guard.check_ids;
-      const safeCheckIds = Array.isArray(checkIds) ? checkIds : [];
-      check(safeCheckIds.length > 0, `${entry.id} check_ids is non-empty.`);
-      check(
-        Array.isArray(checkIds) && new Set(safeCheckIds).size === safeCheckIds.length,
-        `${entry.id} check_ids is unique.`,
-      );
-      for (const toolId of safeCheckIds) {
-        check(eligibleCheckIds.has(toolId), `${entry.id} check id is eligible: ${toolId}.`);
-      }
-    }
-    for (const ownerDoc of entry.owner_docs ?? []) {
-      checkPath(ownerDoc, `${entry.id} owner doc exists: ${ownerDoc}.`);
-    }
-    for (const commandPath of extractCommandPaths(entry.guard?.command ?? "")) {
-      checkPath(commandPath, `${entry.id} guard command path exists: ${commandPath}.`);
-    }
-  }
 }
 
 function validateSkills(manifest, eligibleCheckIds, {check, checkPath}) {
@@ -300,7 +204,7 @@ function validateSkills(manifest, eligibleCheckIds, {check, checkPath}) {
       !requiredCommands.some(usesRetiredTaskScopeFlag),
       `${skill.skill_id} required commands use canonical task-scope flags.`,
     );
-    check(Boolean(skill.success_receipt), `${skill.skill_id} declares success receipt.`);
+    check(Boolean(skill.success_evidence), `${skill.skill_id} declares success evidence.`);
     for (const sourceDoc of skill.source_docs ?? []) {
       checkPath(sourceDoc, `${skill.skill_id} source doc exists: ${sourceDoc}.`);
     }
@@ -420,58 +324,6 @@ function commandTokens(source) {
     .filter(Boolean);
 }
 
-function validateMetrics(source, relativePath, {check}) {
-  if (source == null) return;
-  const lines = source.split(/\r?\n/).filter(Boolean);
-  for (const [index, line] of lines.entries()) {
-    try {
-      const entry = JSON.parse(line);
-      check(true, `${relativePath}:${index + 1} is valid JSON.`);
-      validateMetricEntry(entry, `${relativePath}:${index + 1}`, {check});
-    } catch {
-      check(false, `${relativePath}:${index + 1} is valid JSON.`);
-    }
-  }
-}
-
-function validateMetricEntry(entry, label, {check}) {
-  if (entry?.event === "agent_readiness_check") {
-    validateReadinessMetric(entry, label, {check});
-    return;
-  }
-  if (entry?.event !== "agent_delegation_outcome") return;
-  for (const field of ["task_id", "mode", "status", "parent_review_outcome", "timestamp"]) {
-    check(Boolean(entry[field]), `${label} delegation metric declares ${field}.`);
-  }
-  check(Array.isArray(entry.files_changed), `${label} delegation metric files_changed is an array.`);
-  check(Array.isArray(entry.checks_run), `${label} delegation metric checks_run is an array.`);
-  check(Array.isArray(entry.checks_failed), `${label} delegation metric checks_failed is an array.`);
-  check(Number.isFinite(entry.conflicts_count), `${label} delegation metric conflicts_count is numeric.`);
-  check(Number.isFinite(entry.parent_edits_required), `${label} delegation metric parent_edits_required is numeric.`);
-}
-
-function validateReadinessMetric(entry, label, {check}) {
-  const snapshot = extractDependencyBaselineSnapshot(entry);
-  if (snapshot == null) return;
-  check(
-    Number.isFinite(snapshot.baseline_total),
-    `${label} readiness metric dependency baseline total is numeric.`,
-  );
-  check(
-    Number.isFinite(snapshot.new_findings_total),
-    `${label} readiness metric dependency new findings total is numeric.`,
-  );
-  check(
-    Number.isFinite(snapshot.checked_files),
-    `${label} readiness metric dependency checked files is numeric.`,
-  );
-  check(
-    snapshot.baseline_by_rule &&
-      Object.values(snapshot.baseline_by_rule).every(Number.isFinite),
-    `${label} readiness metric dependency baseline by-rule counts are numeric.`,
-  );
-}
-
 function readDependencyDirectionBaselineSnapshot({baseline, snapshot}) {
   const result = scanDependencyDirection({
     snapshot,
@@ -485,83 +337,8 @@ function readDependencyDirectionBaselineSnapshot({baseline, snapshot}) {
   };
 }
 
-function readMetricEntries(source) {
-  if (source == null) return [];
-  const entries = [];
-  for (const line of source.split(/\r?\n/)) {
-    if (!line.trim()) continue;
-    try {
-      entries.push(JSON.parse(line));
-    } catch {
-      // validateMetrics reports malformed JSON; growth warnings ignore it.
-    }
-  }
-  return entries;
-}
-
-export function extractDependencyBaselineSnapshot(entry) {
-  if (
-    entry?.event === "enforcement_baseline" &&
-    entry.baseline === "tool/architecture/dependency_direction_baseline.json"
-  ) {
-    return {
-      baseline_total: Number(
-        entry.counts?.allowedFindings ?? entry.allowedFindingsCount ?? 0,
-      ),
-      baseline_by_rule: Object.fromEntries(
-        Object.entries(entry.ruleCounts ?? {}).map(([rule, count]) => [
-          rule,
-          Number(count),
-        ]),
-      ),
-      new_findings_total: 0,
-      checked_files: 0,
-    };
-  }
-
-  const snapshot = entry?.architecture_baselines?.dependency_direction;
-  if (snapshot == null) return null;
-  return {
-    baseline_total: Number(snapshot.baseline_total),
-    baseline_by_rule: Object.fromEntries(
-      Object.entries(snapshot.baseline_by_rule ?? {}).map(([rule, count]) => [
-        rule,
-        Number(count),
-      ]),
-    ),
-    new_findings_total: Number(snapshot.new_findings_total ?? 0),
-    checked_files: Number(snapshot.checked_files ?? 0),
-  };
-}
-
 export function testInventoryMatches(currentSource, expectedInventory) {
   return currentSource === renderInventory(expectedInventory);
-}
-
-export function dependencyBaselineGrowthWarnings(entries, currentSnapshot) {
-  const previousSnapshot = entries
-    .map(extractDependencyBaselineSnapshot)
-    .filter(Boolean)
-    .at(-1);
-  if (previousSnapshot == null) return [];
-  if (currentSnapshot.baseline_total <= previousSnapshot.baseline_total) {
-    return [];
-  }
-
-  const ruleGrowth = [];
-  const rules = new Set([
-    ...Object.keys(previousSnapshot.baseline_by_rule),
-    ...Object.keys(currentSnapshot.baseline_by_rule),
-  ]);
-  for (const rule of [...rules].sort()) {
-    const previous = previousSnapshot.baseline_by_rule[rule] ?? 0;
-    const current = currentSnapshot.baseline_by_rule[rule] ?? 0;
-    if (current > previous) ruleGrowth.push(`${rule} ${previous}->${current}`);
-  }
-  const detail = ruleGrowth.length > 0 ? ` (${ruleGrowth.join(", ")})` : "";
-  return [
-    `Dependency direction baseline grew ${previousSnapshot.baseline_total}->${currentSnapshot.baseline_total}${detail}. Burn down or update the baseline intentionally.`,
-  ];
 }
 
 export function extractCommandPaths(command) {
@@ -587,37 +364,6 @@ export function extractCommandPaths(command) {
     });
 }
 
-export function appendReadinessMetric(result, snapshot) {
-  const entry = {
-    timestamp: new Date().toISOString(),
-    event: "agent_readiness_check",
-    readiness_score: result.score,
-    checks_passed: result.passed,
-    checks_failed: result.failed,
-    checks_total: result.total,
-    architecture_baselines: result.architecture_baselines,
-  };
-  const metricsPath = "docs/audit_registry/agent_metrics.jsonl";
-  const fullPath = path.join(snapshot.root, metricsPath);
-  let stat = null;
-  try {
-    stat = fs.lstatSync(fullPath);
-  } catch (error) {
-    if (error?.code !== "ENOENT" && error?.code !== "ENOTDIR") throw error;
-  }
-  if (snapshot.exists(metricsPath) && stat == null) {
-    throw new Error(
-      `Refusing to write sparse-omitted repository path: ${metricsPath}`,
-    );
-  }
-  if (stat == null || !stat.isFile()) {
-    throw new Error(
-      `Readiness metric target must be a materialized regular file: ${metricsPath}`,
-    );
-  }
-  fs.appendFileSync(fullPath, `${JSON.stringify(entry)}\n`);
-}
-
 function parseJsonSource(source) {
   if (source == null) return null;
   try {
@@ -634,10 +380,9 @@ function repositoryPathExists(snapshot, relativePath) {
 }
 
 function parseArgs(argv) {
-  const parsed = {json: false, recordMetric: false};
+  const parsed = {json: false};
   for (const arg of argv) {
     if (arg === "--json") parsed.json = true;
-    else if (arg === "--record-metric") parsed.recordMetric = true;
     else if (arg === "--help" || arg === "-h") {
       printHelp();
       process.exit(0);
@@ -649,9 +394,9 @@ function parseArgs(argv) {
 }
 
 function printHelp() {
-  console.log(`Usage: node tool/agent/check_agent_readiness.mjs [--json] [--record-metric]
+  console.log(`Usage: node tool/agent/check_agent_readiness.mjs [--json]
 
-Validates AGENTS.md, project-local skills, regression ledger, tool manifest
-registration, and parseable agent metrics.
+Validates AGENTS.md, project-local skills, task-scope guidance, and tool
+registration without writing repository evidence.
 `);
 }

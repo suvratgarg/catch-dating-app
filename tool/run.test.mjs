@@ -1171,7 +1171,7 @@ test("runner and context pack agree when canonical inputs are materialized or sp
     ),
   );
   assert.ok(normalizedContext.activeRules.length > 0);
-  assert.ok(normalizedContext.regressionGuards.length > 0);
+  assert.deepEqual(normalizedContext.regressionGuards, []);
   assert.equal(normalizedContext.schema, "catch.agent-context-pack/v3");
   assert.ok(
     normalizedContext.taskStart.blockers.includes("task_start_requires_parallel_delegation_mode"),
@@ -1180,9 +1180,7 @@ test("runner and context pack agree when canonical inputs are materialized or sp
     normalizedContext.taskStart.blockers.includes("source_worktree_not_clean"),
     normalizedContext.sourceClean === false,
   );
-  assert.ok(
-    normalizedContext.taskStart.deferredRegressionIds.length > 0,
-  );
+  assert.deepEqual(normalizedContext.taskStart.deferredRegressionIds, []);
 });
 
 test("parallel delegation context mode is lifecycle-complete without an adapter skill", () => {
@@ -1205,19 +1203,32 @@ test("parallel delegation context mode is lifecycle-complete without an adapter 
     "planned_impact_required_for_owned_directory",
   ), false);
   assert.ok(pack.ownerDocs.some((doc) => doc.path === "docs/agent_operating_model.md"));
+  assert.ok(!pack.ownerDocs.some((doc) => [
+    "docs/agent_regression_ledger.json",
+    "docs/audit_registry/doc_versions.json",
+  ].includes(doc.path)));
+  assert.deepEqual(pack.regressionGuards, []);
+  assert.deepEqual(pack.taskStart.deferredRegressionIds, []);
   assert.ok(pack.activeRules.some((rule) => rule.id === "AGENT-DELEGATION-001"));
   assert.ok(!pack.skills.some((skill) => skill.skill_id === "catch-parallel-delegation"));
   const commands = pack.commandPlan.map((entry) => entry.command);
+  assert.ok(!commands.some((command) => command.includes("audit_registry.dart refresh")));
+  assert.ok(!pack.taskStart.blockers.some((blocker) =>
+    blocker.includes("unknown_or_inactive_check:audit:registry")));
   for (const command of [
     "node tool/harness.mjs task start --task-id <task-id> --base-sha <40-character-sha> --stack-parent <ref> --owned-paths <path[,path...]> --context-pack <pack.json> [--budget-mib 256]",
     "node tool/harness.mjs task doctor --worktree <task-worktree>",
     "node tool/harness.mjs task finish --worktree <task-worktree>",
     "node tool/harness.mjs task recover-lease --worktree <task-worktree>",
     "node tool/harness.mjs task reap --dry-run [--merged-into origin/main] [--stale-days 7]",
-    "node tool/agent/record_delegation_outcome.mjs --help",
   ]) {
     assert.ok(commands.includes(command), command);
   }
+  assert.ok(!commands.some((command) => command.includes("record_delegation_outcome")));
+  assert.ok(![
+    ...pack.checkPlan.task,
+    ...pack.checkPlan.integration,
+  ].some((entry) => entry.id === "agent:record-delegation"));
   assert.ok(pack.commandPlan.every((entry) => entry.owner && entry.phase));
   assert.equal(
     pack.commandPlan.find((entry) => entry.command.includes("task doctor"))?.owner,
@@ -1683,6 +1694,7 @@ function createManagedTaskFixture(primaryRoot, {allowedCheckCount = 1} = {}) {
     "--sparse",
     "lib/fixture_scope.txt",
     "tool/run.mjs",
+    "tool/agent/lib/task_input.mjs",
     "tool/harness/lib/task_execution_context.mjs",
     "tool/harness/lib/worktree_lifecycle.mjs",
   ]);
