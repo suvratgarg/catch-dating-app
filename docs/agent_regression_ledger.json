@@ -1,5 +1,5 @@
 {
-  "version": 154,
+  "version": 157,
   "updated": "2026-08-07",
   "owner": "agent_operating_model",
   "entries": [
@@ -4354,6 +4354,33 @@
         "docs/plans/harness_v2_decision_and_cicd_delivery_plan.md"
       ],
       "notes": "CLI removals and their live callsites ship in one atomic commit. Transitional aliases may exist only in a preceding safe compatibility commit with a named closeout task."
+    },
+    {
+      "id": "REG-HARNESS-TASK-PHASE-AUTHORITY-001",
+      "title": "Sparse worker executes parent-owned or unplanned checks before integration",
+      "status": "active",
+      "applies_to": [
+        "tool/run.mjs",
+        "tool/run.test.mjs",
+        "tool/tools_manifest.json",
+        "tool/harness/lib/task_execution_context.mjs",
+        "tool/harness/lib/worktree_lifecycle.mjs",
+        "tool/harness/worktree_lifecycle.test.mjs",
+        "docs/agent_operating_model.md",
+        "docs/plans/harness_v2_decision_and_cicd_delivery_plan.md"
+      ],
+      "symptom": "A managed sparse task launches a parent-deferred, unplanned, mixed, platform-specific, or raw direct tool command, causing dependency setup, local artifacts, a sparse-omission failure, or a vacuous pass before the parent integration phase.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/run.test.mjs tool/harness/worktree_lifecycle.test.mjs",
+        "check_ids": ["tool:runner", "agent:harness-v2"],
+        "guardEvidence": "new starts write v5 state plus a read-only parent authority keyed by the live linked-worktree administrative id; execution requires exact authority, metadata, physical registration, branch, ancestry, authority-bound lock, base-SHA tool-command agreement, and base-SHA equality for every affected/impacted planning source; it reconstructs checks from the authoritative base SHA and authorizes the full selected set plus output writes only while holding the shared execution/finish gate; coherent base/scope/check forgeries, command or planning-definition drift, missing registration, unlock or wrong lock reason, malformed or legacy state, inactive phase, missing entrypoints, and invalid digests fail closed; parent, mixed, unplanned, platform, category, impacted, affected, run, and exec denials leave child and GitHub-output sentinels absent; POSIX command groups retain the gate through shell exit, background descendants, failure, cancellation, and runner crashes, while managed Windows dispatch fails closed; exact generation layout, staged publication, claim takeover, whole-gate retirement, symlink rejection, publisher/claimant races, and replacement-generation ABA tests prove recovery cannot unlock live work or mutate a successor lease; real finish owns the gate before inspection and through unlock, and v1-v4 close out without v5 authority"
+      },
+      "owner_docs": [
+        "docs/agent_operating_model.md",
+        "docs/plans/harness_v2_decision_and_cicd_delivery_plan.md"
+      ],
+      "notes": "Discovery, stdout-only non-executing impact planning, and manifest-only validation stay available in workers; --github-output is a gated write. The local task JSON is a state mirror, not its own authority. Parent authority remains unchanged through finish. Mutable execution receipts are lease-generation-scoped, fully staged before publication, and retired only by one whole-gate rename; runner, descendants, recovery, and finish coordinate through that gate. POSIX process groups are enforced; Windows managed dispatch remains deliberately unavailable until equivalent process-tree isolation exists. V1-V4 remain lifecycle-readable for closeout but cannot dispatch. The local control plane protects against accidental or buggy same-user agents, not a deliberately hostile process that can rewrite common Git storage."
     }
   ]
 }

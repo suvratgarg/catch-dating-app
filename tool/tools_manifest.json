@@ -26,16 +26,20 @@
       "id": "tool:runner",
       "category": "meta",
       "path": "tool/run.mjs",
+      "impactPaths": [
+        "tool/harness/lib/task_execution_context.mjs"
+      ],
       "command": "node tool/run.mjs",
       "safety": "local",
       "status": "active",
-      "description": "Lists, validates, dispatches, and impact-selects repo tools while failing closed on empty filtered selections.",
+      "description": "Lists, validates, dispatches, and impact-selects repo tools while failing closed on empty filtered selections and enforcing live, base-derived managed-task phase, planning, output-write, cancellation, and full process-group authority.",
       "role": "gate",
       "rules": [
         "AGENT-HARNESS-001"
       ],
       "checks": [
         "node --check tool/run.mjs",
+        "node --check tool/harness/lib/task_execution_context.mjs",
         "node --test tool/run.test.mjs tool/lib/tool_impact.test.mjs"
       ],
       "vacuityProof": {
@@ -54,6 +58,15 @@
           "affected-tool routing cannot ignore declared full-impact companions",
           "affected-tool routing fails closed for any unmapped lane input",
           "affected-tool routing keeps control-plane and explicit full runs full",
+          "shared task-phase authority is dual-owned and remains full-control-plane",
+          "managed workers reject parent, mixed, unplanned, platform, and direct execution atomically",
+          "managed execution rejects live command-definition drift for an allowed id",
+          "execution and finish share one lease across the complete child lifetime",
+          "a crashed runner cannot release the gate while its check process group survives",
+          "SIGINT cancels a background-only managed check group and releases the gate",
+          "managed execution rechecks live task state before every child",
+          "canonical task worktrees cannot become unmanaged when metadata is missing",
+          "managed workers fail closed on malformed, legacy, stale, and forged receipts",
           "active tool entries cannot be vacuous",
           "tool manifest validation rejects malformed checkSafety"
         ]
@@ -205,15 +218,17 @@
         "tool/agent/lib/task_input.mjs",
         "tool/agent/task_input.test.mjs",
         "tool/harness/lib/task_contract.mjs",
+        "tool/harness/lib/task_execution_context.mjs",
         "tool/harness/lib/worktree_lifecycle.mjs",
         "tool/harness/worktree_lifecycle.test.mjs"
       ],
-      "description": "Plans authoritative fail-closed CI, release, and deploy impact, runs allowlisted compile-codegen checks, and owns explicit sparse task-worktree lifecycle commands; v4 tasks separate owned write authority from planned impact, start pushes a collision-free task branch to origin, and reap is report-only.",
+      "description": "Plans authoritative fail-closed CI, release, and deploy impact, runs allowlisted compile-codegen checks, and owns explicit sparse task-worktree lifecycle commands; v5 tasks separate the local state mirror from parent-issued authority, share task-phase and descendant-process authority with the tool runner, start pushes a collision-free task branch to origin, and reap is report-only.",
       "checks": [
         "node --check tool/harness.mjs",
         "node --check tool/harness/lib/component_graph.mjs",
         "node --check tool/harness/lib/check_flutter_l10n_generated.mjs",
         "node --check tool/harness/lib/task_contract.mjs",
+        "node --check tool/harness/lib/task_execution_context.mjs",
         "node --check tool/harness/lib/worktree_lifecycle.mjs",
         "node --test tool/agent/task_input.test.mjs tool/harness/component_graph.test.mjs tool/harness/check_flutter_l10n_generated.test.mjs tool/harness/harness_cli.test.mjs tool/harness/workflow_wiring.test.mjs tool/harness/worktree_lifecycle.test.mjs",
         "node tool/harness.mjs validate"

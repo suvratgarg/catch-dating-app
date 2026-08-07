@@ -2,12 +2,27 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import {spawnSync} from "node:child_process";
-import {createHash} from "node:crypto";
+import {createHash, randomUUID} from "node:crypto";
 import {taskCommandTemplates} from "./task_contract.mjs";
+import {
+  TASK_METADATA_SCHEMA_V5,
+  acquireTaskExecutionLease,
+  createTaskAuthorityFile,
+  deriveTaskSelectionAtCommit,
+  expandSelectionPathsAtCommit,
+  parseWorktreePorcelain,
+  readTaskExecutionContext,
+  readTaskMetadataFile,
+  readJsonAtCommit,
+  removeTaskAuthorityFile,
+  recoverStaleTaskExecutionLease,
+  taskExecutionMetadataBlockers,
+  taskStartContractFromMetadata,
+} from "./task_execution_context.mjs";
+export {parseWorktreePorcelain} from "./task_execution_context.mjs";
 import {
   CONTEXT_PACK_SCHEMA_V2,
   CONTEXT_PACK_SCHEMA_V3,
-  deriveTaskCheckSelection,
   isCanonicalTaskPath,
   isValidTaskId,
   normalizeTaskScopePaths,
@@ -32,6 +47,7 @@ const SUPPORTED_TASK_METADATA_SCHEMAS = new Set([
   TASK_METADATA_SCHEMA_V2,
   TASK_METADATA_SCHEMA_V3,
   TASK_METADATA_SCHEMA_V4,
+  TASK_METADATA_SCHEMA_V5,
 ]);
 const TEMP_ROOTS = [...new Set([
   "/tmp",
@@ -61,40 +77,6 @@ export const taskSparseAnchorPaths = Object.freeze([
 ]);
 
 export class TaskUsageError extends Error {}
-
-export function parseWorktreePorcelain(source) {
-  const records = [];
-  let current = null;
-  for (const line of String(source).split(/\r?\n/u)) {
-    if (line === "") {
-      if (current) records.push(current);
-      current = null;
-      continue;
-    }
-    const separator = line.indexOf(" ");
-    const key = separator === -1 ? line : line.slice(0, separator);
-    const value = separator === -1 ? true : line.slice(separator + 1);
-    if (key === "worktree") {
-      if (current) records.push(current);
-      current = {path: value, bare: false, detached: false, locked: false, prunable: false};
-      continue;
-    }
-    if (!current) throw new Error(`Malformed worktree porcelain line: ${line}`);
-    if (key === "HEAD") current.head = value;
-    else if (key === "branch") current.branchRef = value;
-    else if (key === "bare") current.bare = true;
-    else if (key === "detached") current.detached = true;
-    else if (key === "locked") {
-      current.locked = true;
-      current.lockReason = value === true ? null : value;
-    } else if (key === "prunable") {
-      current.prunable = true;
-      current.prunableReason = value === true ? null : value;
-    }
-  }
-  if (current) records.push(current);
-  return records;
-}
 
 export function isOsTempPath(targetPath) {
   const resolved = resolvePhysicalPath(targetPath);
@@ -254,6 +236,9 @@ export function executeTaskCommand({
   if (options.command === "finish") {
     return finishTask({options, context, runner, statfs, now});
   }
+  if (options.command === "recover-lease") {
+    return recoverTaskLease({options, context, runner});
+  }
   if (options.command === "reap") {
     return reapTasks({options, context, runner, now});
   }
@@ -269,6 +254,7 @@ function parseTaskArgs(args) {
     start: new Set(["--task-id", "--base-sha", "--stack-parent", "--branch", "--owned-paths", "--context-pack", "--budget-mib", "--reserve-mib", "--json"]),
     doctor: new Set(["--worktree", "--json"]),
     finish: new Set(["--worktree", "--json"]),
+    "recover-lease": new Set(["--worktree", "--json"]),
     reap: new Set(["--dry-run", "--merged-into", "--stale-days", "--json"]),
   }[command];
   if (!supported) return {command};
@@ -408,6 +394,7 @@ function startTask({options, context, runner, statfs, now, pid}) {
   });
 
   let registered = false;
+  let authorityCreated = false;
   try {
     gitText({
       cwd: context.primaryRoot,
@@ -437,9 +424,16 @@ function startTask({options, context, runner, statfs, now, pid}) {
       );
     }
     const metadataPath = gitText({cwd: targetPath, args: ["rev-parse", "--git-path", "catch-task.json"], runner});
+    const worktreeAdminId = path.basename(gitText({
+      cwd: targetPath,
+      args: ["rev-parse", "--absolute-git-dir"],
+      runner,
+    }));
     const metadata = {
-      schema: TASK_METADATA_SCHEMA_V4,
+      schema: TASK_METADATA_SCHEMA_V5,
       status: "active",
+      authorityId: randomUUID(),
+      worktreeAdminId,
       taskId: options.taskId,
       baseSha: options.baseSha,
       stackParent: options.stackParent,
@@ -471,9 +465,21 @@ function startTask({options, context, runner, statfs, now, pid}) {
       createdAt: now().toISOString(),
     };
     fs.writeFileSync(metadataPath, `${JSON.stringify(metadata, null, 2)}\n`, {encoding: "utf8", flag: "wx"});
+    createTaskAuthorityFile({
+      cwd: targetPath,
+      metadata,
+      gitRunner: taskAuthorityGitRunner(runner),
+    });
+    authorityCreated = true;
     gitText({
       cwd: context.primaryRoot,
-      args: ["worktree", "lock", "--reason", `catch-task:${options.taskId}`, targetPath],
+      args: [
+        "worktree",
+        "lock",
+        "--reason",
+        `catch-task:${options.taskId}:${metadata.authorityId}`,
+        targetPath,
+      ],
       runner,
       allowEmpty: true,
     });
@@ -492,6 +498,12 @@ function startTask({options, context, runner, statfs, now, pid}) {
     return {status: 0, result: {operation: "start", created: true, capacity, metadata}};
   } catch (error) {
     if (registered) {
+      if (authorityCreated) {
+        removeTaskAuthorityFile({
+          cwd: targetPath,
+          gitRunner: taskAuthorityGitRunner(runner),
+        });
+      }
       runIgnoringFailure({cwd: context.primaryRoot, args: ["worktree", "unlock", targetPath], runner});
       runIgnoringFailure({cwd: context.primaryRoot, args: ["worktree", "remove", "--force", targetPath], runner});
       runIgnoringFailure({cwd: context.primaryRoot, args: ["branch", "-D", options.branch], runner});
@@ -515,6 +527,15 @@ function inspectTaskIntegrity({inspection, targetPath, context, runner, statfs})
     inspection.sparsePaths,
   )) blockers.push("sparse_checkout_metadata_mismatch");
   if (!hasValidStorageMetrics(inspection.metadata)) blockers.push("invalid_storage_metrics");
+  if (inspection.metadata?.schema === TASK_METADATA_SCHEMA_V5) {
+    const executionContext = readTaskExecutionContext({
+      cwd: targetPath,
+      gitRunner: taskAuthorityGitRunner(runner),
+    });
+    if (executionContext.kind !== "managed") {
+      blockers.push(...executionContext.blockers);
+    }
+  }
   blockers.push(...contextPackIntegrityBlockers({
     metadata: inspection.metadata,
     targetPath,
@@ -550,7 +571,9 @@ function inspectTaskIntegrity({inspection, targetPath, context, runner, statfs})
 }
 
 function contextPackIntegrityBlockers({metadata, targetPath, context, runner}) {
-  if (![TASK_METADATA_SCHEMA_V3, TASK_METADATA_SCHEMA_V4].includes(metadata?.schema)) return [];
+  if (![TASK_METADATA_SCHEMA_V3, TASK_METADATA_SCHEMA_V4, TASK_METADATA_SCHEMA_V5].includes(
+    metadata?.schema,
+  )) return [];
   const receipt = metadata.contextPack;
   const legacy = metadata.schema === TASK_METADATA_SCHEMA_V3;
   const expectedPackSchema = legacy ? CONTEXT_PACK_SCHEMA_V2 : CONTEXT_PACK_SCHEMA_V3;
@@ -572,23 +595,31 @@ function contextPackIntegrityBlockers({metadata, targetPath, context, runner}) {
   ].every(isUniqueNonemptyStringArray)) {
     return ["invalid_context_pack_receipt"];
   }
-  const taskStart = {
-    schema: receipt.taskInputSchema,
-    taskId: metadata.taskId,
-    mode: receipt.mode,
-    baseSha: metadata.baseSha,
-    ...(legacy
-      ? {scopePaths: receiptPaths}
-      : {ownedPaths: receiptPaths, plannedImpactPaths: receiptImpactPaths}),
-    checkIds: receipt.checkIds,
-    requiredEntrypoints: receipt.requiredEntrypoints,
-    supportPaths: receipt.supportPaths,
-    deferredCheckIds: receipt.deferredCheckIds,
-    deferredRegressionIds: receipt.deferredRegressionIds,
-    complete: true,
-    blockers: [],
-    digest: receipt.digest,
-  };
+  if (metadata.schema === TASK_METADATA_SCHEMA_V5 && taskExecutionMetadataBlockers({
+    metadata,
+    worktreePath: targetPath,
+    validateMaterialization: false,
+    validateLiveGit: false,
+  }).length > 0) {
+    return ["context_pack_receipt_mismatch"];
+  }
+  const taskStart = legacy
+    ? {
+        schema: receipt.taskInputSchema,
+        taskId: metadata.taskId,
+        mode: receipt.mode,
+        baseSha: metadata.baseSha,
+        scopePaths: receiptPaths,
+        checkIds: receipt.checkIds,
+        requiredEntrypoints: receipt.requiredEntrypoints,
+        supportPaths: receipt.supportPaths,
+        deferredCheckIds: receipt.deferredCheckIds,
+        deferredRegressionIds: receipt.deferredRegressionIds,
+        complete: true,
+        blockers: [],
+        digest: receipt.digest,
+      }
+    : taskStartContractFromMetadata(metadata);
   let manifest;
   let selection;
   try {
@@ -596,7 +627,7 @@ function contextPackIntegrityBlockers({metadata, targetPath, context, runner}) {
       cwd: context.primaryRoot,
       baseSha: metadata.baseSha,
       relativePath: "tool/tools_manifest.json",
-      runner,
+      gitRunner: taskAuthorityGitRunner(runner),
     });
     selection = deriveTaskSelectionAtCommit({
       cwd: context.primaryRoot,
@@ -604,7 +635,7 @@ function contextPackIntegrityBlockers({metadata, targetPath, context, runner}) {
       taskId: metadata.taskId,
       mode: receipt.mode,
       impactPaths: legacy ? receiptPaths : receiptImpactPaths,
-      runner,
+      gitRunner: taskAuthorityGitRunner(runner),
     });
   } catch {
     return ["context_pack_base_authority_unavailable"];
@@ -665,8 +696,10 @@ function contextPackIntegrityBlockers({metadata, targetPath, context, runner}) {
 }
 
 function taskBoundaryBlockers({metadata, targetPath, context, runner}) {
-  if (![TASK_METADATA_SCHEMA_V3, TASK_METADATA_SCHEMA_V4].includes(metadata?.schema)) return [];
-  const current = metadata.schema === TASK_METADATA_SCHEMA_V4;
+  if (![TASK_METADATA_SCHEMA_V3, TASK_METADATA_SCHEMA_V4, TASK_METADATA_SCHEMA_V5].includes(
+    metadata?.schema,
+  )) return [];
+  const current = metadata.schema !== TASK_METADATA_SCHEMA_V3;
   const rawOwnedPaths = metadata.schema === TASK_METADATA_SCHEMA_V3
     ? metadata.requestedSparsePaths?.map(stripSparsePath)
     : metadata.ownedPaths;
@@ -727,7 +760,7 @@ function taskBoundaryBlockers({metadata, targetPath, context, runner}) {
         cwd: context.primaryRoot,
         baseSha: metadata.baseSha,
         scopePaths: plannedImpactPaths,
-        runner,
+        gitRunner: taskAuthorityGitRunner(runner),
       }));
     }
   } catch {
@@ -791,7 +824,7 @@ function doctorTask({options, context, runner, statfs}) {
   if (inspection.metadata?.status === "finishing") blockers.push("finish_transition_incomplete");
   if (inspection.metadata?.status === "terminal" && inspection.locked) blockers.push("terminal_worktree_still_locked");
   if (["active", "finishing"].includes(inspection.metadata?.status) &&
-      inspection.lockReason !== `catch-task:${inspection.metadata.taskId}`) {
+      inspection.lockReason !== expectedTaskLockReason(inspection.metadata)) {
     blockers.push("task_lock_reason_mismatch");
   }
   return {
@@ -808,6 +841,34 @@ function doctorTask({options, context, runner, statfs}) {
 
 function finishTask({options, context, runner, statfs, now}) {
   const targetPath = resolveTargetWorktree(options.worktree, context.currentWorktree);
+  const lease = acquireTaskExecutionLease({
+    cwd: targetPath,
+    owner: "task-finish",
+    gitRunner: taskAuthorityGitRunner(runner),
+    now,
+  });
+  if (!lease.acquired) {
+    return {
+      status: 1,
+      result: {
+        operation: "finish",
+        readyForHandoff: false,
+        deletionAuthorized: false,
+        blockers: lease.blockers,
+        availableAllocatedBytes: availableAllocatedBytesFromStatfs(statfs(targetPath)),
+        remoteVerification: null,
+        worktree: null,
+      },
+    };
+  }
+  try {
+    return finishTaskWithLease({targetPath, context, runner, statfs, now});
+  } finally {
+    lease.release();
+  }
+}
+
+function finishTaskWithLease({targetPath, context, runner, statfs, now}) {
   const record = findWorktreeRecord({targetPath, context, runner});
   const inspection = inspectSingleWorktree({targetPath, context, runner, record, mergedInto: null});
   const integrity = inspectTaskIntegrity({inspection, targetPath, context, runner, statfs});
@@ -818,7 +879,7 @@ function finishTask({options, context, runner, statfs, now}) {
   const finishingUnlocked = inspection.metadata?.status === "finishing" && !inspection.locked;
   if (!inspection.locked && !finishingUnlocked) blockers.push("worktree_not_locked");
   if (inspection.metadata && inspection.locked &&
-      inspection.lockReason !== `catch-task:${inspection.metadata.taskId}`) {
+      inspection.lockReason !== expectedTaskLockReason(inspection.metadata)) {
     blockers.push("task_lock_reason_mismatch");
   }
   if (!inspection.branch) blockers.push("detached_head");
@@ -842,7 +903,7 @@ function finishTask({options, context, runner, statfs, now}) {
       terminalUpstream: inspection.upstream,
       finishStartedAt: inspection.metadata.finishStartedAt ?? now().toISOString(),
     };
-    fs.writeFileSync(metadataPath, `${JSON.stringify(finishingMetadata, null, 2)}\n`, "utf8");
+    writeJsonAtomically(metadataPath, finishingMetadata);
     if (inspection.locked) {
       gitText({
         cwd: context.primaryRoot,
@@ -856,7 +917,7 @@ function finishTask({options, context, runner, statfs, now}) {
       status: "terminal",
       finishedAt: now().toISOString(),
     };
-    fs.writeFileSync(metadataPath, `${JSON.stringify(metadata, null, 2)}\n`, "utf8");
+    writeJsonAtomically(metadataPath, metadata);
     inspection.metadata = metadata;
     inspection.locked = false;
   }
@@ -870,6 +931,25 @@ function finishTask({options, context, runner, statfs, now}) {
       availableAllocatedBytes: integrity.availableAllocatedBytes,
       remoteVerification,
       worktree: inspection,
+    },
+  };
+}
+
+function recoverTaskLease({options, context, runner}) {
+  const targetPath = resolveTargetWorktree(options.worktree, context.currentWorktree);
+  findWorktreeRecord({targetPath, context, runner});
+  const recovery = recoverStaleTaskExecutionLease({
+    cwd: targetPath,
+    gitRunner: taskAuthorityGitRunner(runner),
+  });
+  return {
+    status: recovery.recovered ? 0 : 1,
+    result: {
+      operation: "recover-lease",
+      recovered: recovery.recovered,
+      blockers: recovery.blockers,
+      worktreePath: targetPath,
+      lease: recovery.lease ?? null,
     },
   };
 }
@@ -1071,7 +1151,7 @@ function inspectSingleWorktree({targetPath, context, runner, record = {}, merged
     inspection.headAgeDays = Math.max(0, (now().getTime() / 1000 - Number(commitTime.stdout.trim())) / 86400);
   }
   inspection.metadata = readTaskMetadata({cwd: resolved, runner});
-  if ([TASK_METADATA_SCHEMA_V2, TASK_METADATA_SCHEMA_V3, TASK_METADATA_SCHEMA_V4].includes(
+  if ([TASK_METADATA_SCHEMA_V2, TASK_METADATA_SCHEMA_V3, TASK_METADATA_SCHEMA_V4, TASK_METADATA_SCHEMA_V5].includes(
     inspection.metadata?.schema,
   ) &&
       Number.isFinite(inspection.metadata.initialMaterializedAllocatedBytes) &&
@@ -1102,14 +1182,18 @@ function findWorktreeRecord({targetPath, context, runner}) {
 }
 
 function readTaskMetadata({cwd, runner}) {
-  const location = gitResult({cwd, args: ["rev-parse", "--git-path", "catch-task.json"], runner, tolerateFailure: true});
-  if (location.status !== 0 || !fs.existsSync(location.stdout.trim())) return null;
-  try {
-    const value = JSON.parse(fs.readFileSync(location.stdout.trim(), "utf8"));
-    return SUPPORTED_TASK_METADATA_SCHEMAS.has(value?.schema) ? value : null;
-  } catch {
-    return null;
-  }
+  const file = readTaskMetadataFile({
+    cwd,
+    gitRunner: ({cwd: gitCwd, args}) => gitResult({
+      cwd: gitCwd,
+      args,
+      runner,
+      tolerateFailure: true,
+    }),
+  });
+  return file.kind === "present" && SUPPORTED_TASK_METADATA_SCHEMAS.has(file.metadata?.schema)
+    ? file.metadata
+    : null;
 }
 
 function findDependencyHazards(worktreePath) {
@@ -1232,7 +1316,7 @@ function loadAndValidateContextPack({options, context, runner}) {
     cwd: context.primaryRoot,
     baseSha: options.baseSha,
     relativePath: "tool/tools_manifest.json",
-    runner,
+    gitRunner: taskAuthorityGitRunner(runner),
   });
   const validation = validateTaskStartContract({
     pack,
@@ -1247,7 +1331,7 @@ function loadAndValidateContextPack({options, context, runner}) {
       taskId: options.taskId,
       mode: pack.mode,
       impactPaths: plannedImpactPaths,
-      runner,
+      gitRunner: taskAuthorityGitRunner(runner),
     }),
   });
   if (validation.errors.length > 0) {
@@ -1282,61 +1366,8 @@ function loadAndValidateContextPack({options, context, runner}) {
   return {...validation.expected, packSchema: pack.schema};
 }
 
-function readJsonAtCommit({cwd, baseSha, relativePath, runner}) {
-  const result = gitResult({
-    cwd,
-    args: ["show", `${baseSha}:${relativePath}`],
-    runner,
-  });
-  try {
-    return JSON.parse(result.stdout);
-  } catch (error) {
-    throw new Error(`Repository JSON ${relativePath} is invalid at ${baseSha}: ${error.message}`);
-  }
-}
-
-function deriveTaskSelectionAtCommit({cwd, baseSha, taskId, mode, impactPaths, runner}) {
-  if (mode !== TASK_START_MODE) {
-    throw new Error(`Task context pack mode must be ${TASK_START_MODE}.`);
-  }
-  const skills = readJsonAtCommit({
-    cwd,
-    baseSha,
-    relativePath: "docs/agent_skills/skills_manifest.json",
-    runner,
-  });
-  const regressions = readJsonAtCommit({
-    cwd,
-    baseSha,
-    relativePath: "docs/agent_regression_ledger.json",
-    runner,
-  });
-  if (!Array.isArray(skills?.skills) || !Array.isArray(regressions?.entries)) {
-    throw new Error("Task selection authorities are malformed at the base SHA.");
-  }
-  const selectionPaths = expandSelectionPathsAtCommit({
-    cwd,
-    baseSha,
-    scopePaths: impactPaths,
-    runner,
-  });
-  return deriveTaskCheckSelection({
-    task: taskId,
-    mode,
-    impactPaths: selectionPaths,
-    skills: skills.skills,
-    regressions: regressions.entries,
-  });
-}
-
-function expandSelectionPathsAtCommit({cwd, baseSha, scopePaths, runner}) {
-  const result = gitResult({
-    cwd,
-    args: ["ls-tree", "-r", "--name-only", "-z", baseSha, "--", ...scopePaths],
-    runner,
-  });
-  const descendants = result.stdout.split("\0").filter(Boolean);
-  return normalizeTaskScopePaths([...scopePaths, ...descendants]);
+function taskAuthorityGitRunner(runner) {
+  return ({cwd, args}) => gitResult({cwd, args, runner});
 }
 
 function inspectPathAtCommit({cwd, baseSha, relativePath, runner}) {
@@ -1455,15 +1486,21 @@ function logicalDirectorySize(targetPath) {
 
 function taskBudgetAllocatedBytes(metadata) {
   if (!metadata) return null;
-  if ([TASK_METADATA_SCHEMA_V2, TASK_METADATA_SCHEMA_V3, TASK_METADATA_SCHEMA_V4].includes(metadata.schema)) {
+  if ([TASK_METADATA_SCHEMA_V2, TASK_METADATA_SCHEMA_V3, TASK_METADATA_SCHEMA_V4, TASK_METADATA_SCHEMA_V5].includes(metadata.schema)) {
     return metadata.budgetAllocatedBytes;
   }
   return Number.isFinite(metadata.budgetMiB) ? metadata.budgetMiB * MIB : null;
 }
 
+function expectedTaskLockReason(metadata) {
+  return metadata?.schema === TASK_METADATA_SCHEMA_V5
+    ? `catch-task:${metadata.taskId}:${metadata.authorityId}`
+    : `catch-task:${metadata?.taskId}`;
+}
+
 function taskReserveAllocatedBytes(metadata) {
   if (!metadata) return null;
-  if ([TASK_METADATA_SCHEMA_V2, TASK_METADATA_SCHEMA_V3, TASK_METADATA_SCHEMA_V4].includes(metadata.schema)) {
+  if ([TASK_METADATA_SCHEMA_V2, TASK_METADATA_SCHEMA_V3, TASK_METADATA_SCHEMA_V4, TASK_METADATA_SCHEMA_V5].includes(metadata.schema)) {
     return metadata.reserveAllocatedBytes;
   }
   return Number.isFinite(metadata.reserveMiB) ? metadata.reserveMiB * MIB : null;
@@ -1474,7 +1511,7 @@ function hasValidStorageMetrics(metadata) {
   if (metadata.schema === TASK_METADATA_SCHEMA_V1) {
     return positiveFinite(metadata.budgetMiB) && positiveFinite(metadata.reserveMiB);
   }
-  if (![TASK_METADATA_SCHEMA_V2, TASK_METADATA_SCHEMA_V3, TASK_METADATA_SCHEMA_V4].includes(
+  if (![TASK_METADATA_SCHEMA_V2, TASK_METADATA_SCHEMA_V3, TASK_METADATA_SCHEMA_V4, TASK_METADATA_SCHEMA_V5].includes(
     metadata.schema,
   )) return false;
   return positiveFinite(metadata.budgetAllocatedBytes) &&
@@ -1514,6 +1551,27 @@ function lstatOrNull(targetPath) {
     return fs.lstatSync(targetPath);
   } catch (error) {
     if (error?.code === "ENOENT" || error?.code === "ENOTDIR") return null;
+    throw error;
+  }
+}
+
+function writeJsonAtomically(targetPath, value) {
+  const temporaryPath = `${targetPath}.pending-${randomUUID()}`;
+  let fd = null;
+  try {
+    fd = fs.openSync(temporaryPath, "wx", 0o600);
+    fs.writeFileSync(fd, `${JSON.stringify(value, null, 2)}\n`, "utf8");
+    fs.fsyncSync(fd);
+    fs.closeSync(fd);
+    fd = null;
+    fs.renameSync(temporaryPath, targetPath);
+  } catch (error) {
+    if (fd != null) fs.closeSync(fd);
+    try {
+      fs.unlinkSync(temporaryPath);
+    } catch {
+      // The temporary file may not have been created or may already be renamed.
+    }
     throw error;
   }
 }
@@ -1593,5 +1651,9 @@ function formatMiB(bytes) {
 }
 
 export function taskHelp() {
-  return `Harness task lifecycle:\n  ${Object.values(taskCommandTemplates).join("\n  ")}\n\nTask worktrees are sparse, remotely preserved, locked, and live under .claude/worktrees/. Reap never deletes.`;
+  const commands = [
+    ...Object.values(taskCommandTemplates),
+    "node tool/harness.mjs task recover-lease --worktree <task-worktree>",
+  ];
+  return `Harness task lifecycle:\n  ${commands.join("\n  ")}\n\nTask worktrees are sparse, remotely preserved, locked, and live under .claude/worktrees/. Reap never deletes.`;
 }

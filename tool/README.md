@@ -616,12 +616,45 @@ regressions remain parent-owned. When `--output` is supplied, the complete pack
 is written there while stdout emits only a compact receipt, keeping CI and
 agent logs bounded.
 
+That phase split is an executable capability boundary. In a managed task,
+`node tool/run.mjs check <id...>` binds the Git-local v5 state mirror to a
+write-once parent authority keyed by the actual linked-worktree administrative
+id, the current branch/base ancestry, and the authority-bound Git lock. Check
+ownership is recomputed from the authority's base SHA, and the complete set is
+validated only after an atomic task gate is acquired. That gate is held across
+all output and child processes, and `task finish` needs the same gate before
+inspection. Selected tools must also retain the exact executable manifest
+signature recorded at the base SHA; keeping an allowed id while changing its
+command is denied. Affected and impacted execution additionally binds every
+planning manifest to its base-SHA value before selection or output. Managed
+checks on POSIX run inside a recorded child process group, so cancellation
+reaches the whole group and a killed runner cannot make the gate recoverable
+while its descendants remain alive. Managed Windows dispatch fails closed until
+it has an equivalent process-tree boundary. A missing receipt or authority,
+invalid registration/lock, or a locally self-consistent but worker-forged scope
+fails closed. Worker ids run; a
+parent-deferred or unplanned id makes the entire batch exit 77 without partial
+execution, and live state is rechecked before each child. `node tool/run.mjs run/exec` is parent-only because its forwarded
+arguments are not covered by the task check contract. Legacy, finishing, and
+terminal receipts also fail closed. `list`, stdout-only impact planning, and
+`check --manifest-only` remain usable in workers. Because `--github-output`
+writes a file, even a planning-only invocation must pass the same gate and
+whole-plan authorization. A normal checkout with no task receipt is unchanged.
+
 `start` creates a bounded sparse worktree under `.claude/worktrees/`, locks it,
 records lifecycle metadata outside tracked source, and pushes its collision-free
 branch to `origin`. Support paths are materialized capabilities, not write
 ownership. `doctor` and `finish` enforce the same receipt, sparse, storage,
 command-closure, ownership, and planned-impact boundaries; `finish` also proves
 the exact remote head and records terminal state without deleting anything.
+If the runner dies while holding the gate, the parent can run
+`node tool/harness.mjs task recover-lease --worktree <path>`; recovery requires
+an explicit call, dead owner and transition-claim PIDs, and dead recorded child
+process groups. Gate, child, and transition publication is generation-scoped,
+fsynced, and atomic. Recovery takes over a dead claim atomically, rejects
+unexpected or symlinked layouts, and unlocks only by renaming the complete gate;
+old publishers and cleanup therefore cannot touch a replacement generation. It
+never steals a live or malformed lease.
 `reap --dry-run` is a digested report with no apply mode. The authoritative
 schema/legacy matrix, storage semantics, and handoff policy live in
 `docs/agent_operating_model.md`; do not duplicate them here.
