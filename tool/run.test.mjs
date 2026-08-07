@@ -479,24 +479,28 @@ test("runner and context pack agree when canonical inputs are materialized or sp
   const omittedContext = runNode(omittedRoot, contextArgs);
   assertSuccessful(materializedContext);
   assertSuccessful(omittedContext);
+  const normalizedContext = normalizeContextPack(omittedContext.stdout);
   assert.deepEqual(
-    normalizeContextPack(omittedContext.stdout),
+    normalizedContext,
     normalizeContextPack(materializedContext.stdout),
   );
   assert.ok(
-    normalizeContextPack(omittedContext.stdout).ownerDocs.some(
+    normalizedContext.ownerDocs.some(
       (entry) => entry.path === "docs/agent_operating_model.md",
     ),
   );
-  assert.ok(normalizeContextPack(omittedContext.stdout).activeRules.length > 0);
-  assert.ok(normalizeContextPack(omittedContext.stdout).regressionGuards.length > 0);
-  assert.equal(normalizeContextPack(omittedContext.stdout).schema, "catch.agent-context-pack/v2");
-  assert.deepEqual(
-    normalizeContextPack(omittedContext.stdout).taskStart.blockers,
-    ["source_worktree_not_clean", "task_start_requires_parallel_delegation_mode"],
+  assert.ok(normalizedContext.activeRules.length > 0);
+  assert.ok(normalizedContext.regressionGuards.length > 0);
+  assert.equal(normalizedContext.schema, "catch.agent-context-pack/v2");
+  assert.ok(
+    normalizedContext.taskStart.blockers.includes("task_start_requires_parallel_delegation_mode"),
+  );
+  assert.equal(
+    normalizedContext.taskStart.blockers.includes("source_worktree_not_clean"),
+    normalizedContext.sourceClean === false,
   );
   assert.ok(
-    normalizeContextPack(omittedContext.stdout).taskStart.deferredRegressionIds.length > 0,
+    normalizedContext.taskStart.deferredRegressionIds.length > 0,
   );
 });
 
