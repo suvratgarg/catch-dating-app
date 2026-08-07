@@ -6,7 +6,9 @@ import {
 } from "../../lib/tool_impact.mjs";
 
 export const CONTEXT_PACK_SCHEMA_V2 = "catch.agent-context-pack/v2";
+export const CONTEXT_PACK_SCHEMA_V3 = "catch.agent-context-pack/v3";
 export const TASK_INPUT_SCHEMA_V1 = "catch.harness-task-input/v1";
+export const TASK_INPUT_SCHEMA_V2 = "catch.harness-task-input/v2";
 export const TASK_START_MODE = "parallel-delegation";
 const TASK_ID_PATTERN = /^[a-z0-9][a-z0-9._-]{2,79}$/u;
 
@@ -83,18 +85,53 @@ export function taskStartabilityBlockers({taskId, scopePaths, inspectPath}) {
   return [...new Set(blockers)].sort();
 }
 
+export function taskImpactBlockers({ownedPaths, plannedImpactPaths, inspectPath}) {
+  const blockers = [];
+  let normalizedOwnedPaths;
+  let normalizedPlannedImpactPaths;
+  try {
+    normalizedOwnedPaths = normalizeTaskScopePaths(ownedPaths);
+    normalizedPlannedImpactPaths = normalizeTaskScopePaths(plannedImpactPaths);
+  } catch {
+    return ["invalid_planned_impact_path"];
+  }
+  if (normalizedPlannedImpactPaths.length === 0) blockers.push("planned_impact_empty");
+  if (typeof inspectPath !== "function") {
+    return [...new Set([...blockers, "planned_impact_inspection_unavailable"])].sort();
+  }
+  const owned = [];
+  try {
+    for (const ownedPath of normalizedOwnedPaths) {
+      const record = inspectPath(ownedPath);
+      const type = typeof record === "string" ? record : record?.type ?? null;
+      owned.push({path: ownedPath, tree: type === "tree"});
+    }
+    for (const impactPath of normalizedPlannedImpactPaths) {
+      const record = inspectPath(impactPath);
+      const type = typeof record === "string" ? record : record?.type ?? null;
+      if (type != null && !["blob", "tree"].includes(type)) {
+        blockers.push(`planned_impact_path_unsupported:${impactPath}`);
+      }
+      const covered = owned.some((entry) => impactPath === entry.path ||
+        (entry.tree && impactPath.startsWith(`${entry.path}/`)));
+      if (!covered) blockers.push(`planned_impact_outside_owned_scope:${impactPath}`);
+    }
+  } catch {
+    blockers.push("planned_impact_inspection_unavailable");
+  }
+  return [...new Set(blockers)].sort();
+}
+
 export function deriveTaskCheckSelection({
   task,
   mode,
-  scopePaths,
-  selectionPaths = scopePaths,
+  impactPaths,
   skills,
   regressions,
 }) {
-  const normalizedScopePaths = normalizeTaskScopePaths(scopePaths);
-  const normalizedSelectionPaths = normalizeTaskScopePaths(selectionPaths);
-  const matchedSkills = selectTaskSkills(skills ?? [], task, normalizedSelectionPaths);
-  const matchedRegressions = selectTaskRegressions(regressions ?? [], normalizedSelectionPaths);
+  const normalizedImpactPaths = normalizeTaskScopePaths(impactPaths);
+  const matchedSkills = selectTaskSkills(skills ?? [], task, normalizedImpactPaths);
+  const matchedRegressions = selectTaskRegressions(regressions ?? [], normalizedImpactPaths);
   const requests = new Map();
   const deferredRegressionIds = [];
   addStructuredCheck(requests, "agent:readiness", "baseline");
@@ -262,13 +299,18 @@ export function buildTaskStartContract({
   taskId,
   mode,
   sourceSha,
-  scopePaths,
+  ownedPaths,
+  plannedImpactPaths,
   checkPlan,
   sourceClean,
   blockers = [],
   deferredRegressionIds = [],
+  schema = TASK_INPUT_SCHEMA_V2,
 }) {
-  const normalizedScopePaths = normalizeTaskScopePaths(scopePaths ?? []);
+  const normalizedOwnedPaths = normalizeTaskScopePaths(ownedPaths ?? []);
+  const normalizedPlannedImpactPaths = normalizeTaskScopePaths(
+    plannedImpactPaths ?? normalizedOwnedPaths,
+  );
   const taskChecks = checkPlan?.task ?? [];
   const integrationChecks = checkPlan?.integration ?? [];
   const requiredEntrypoints = uniqueSorted(taskChecks.map((entry) => entry.entrypoint));
@@ -277,12 +319,11 @@ export function buildTaskStartContract({
     ...taskChecks.flatMap((entry) => entry.taskPaths ?? []),
     ...requiredEntrypoints.filter((entry) => !entry.startsWith("tool/")),
   ]);
-  const payload = {
-    schema: TASK_INPUT_SCHEMA_V1,
+  const common = {
+    schema,
     taskId,
     mode,
     baseSha: sourceSha,
-    scopePaths: normalizedScopePaths,
     checkIds: uniqueSorted(taskChecks.map((entry) => entry.id)),
     requiredEntrypoints,
     supportPaths,
@@ -294,6 +335,13 @@ export function buildTaskStartContract({
       ...blockers,
     ]),
   };
+  const payload = schema === TASK_INPUT_SCHEMA_V1
+    ? {...common, scopePaths: normalizedOwnedPaths}
+    : {
+        ...common,
+        ownedPaths: normalizedOwnedPaths,
+        plannedImpactPaths: normalizedPlannedImpactPaths,
+      };
   return {...payload, digest: digestTaskStart(payload)};
 }
 
@@ -302,18 +350,25 @@ export function validateTaskStartContract({
   manifest,
   taskId,
   baseSha,
-  scopePaths,
+  ownedPaths,
+  plannedImpactPaths,
   selection,
   receiptOnly = false,
 }) {
   const errors = [];
-  let normalizedScopePaths = [];
+  let normalizedOwnedPaths = [];
+  let normalizedPlannedImpactPaths = [];
   try {
-    normalizedScopePaths = normalizeTaskScopePaths(scopePaths);
+    normalizedOwnedPaths = normalizeTaskScopePaths(ownedPaths);
+    normalizedPlannedImpactPaths = normalizeTaskScopePaths(
+      plannedImpactPaths ?? normalizedOwnedPaths,
+    );
   } catch {
     errors.push("invalid_requested_scope");
   }
-  if (pack?.schema !== CONTEXT_PACK_SCHEMA_V2) errors.push("unsupported_context_pack_schema");
+  const legacyPack = pack?.schema === CONTEXT_PACK_SCHEMA_V2;
+  const currentPack = pack?.schema === CONTEXT_PACK_SCHEMA_V3;
+  if (!legacyPack && !currentPack) errors.push("unsupported_context_pack_schema");
   if (pack?.task !== taskId) errors.push("context_pack_task_mismatch");
   if (pack?.sourceSha !== baseSha) errors.push("context_pack_base_mismatch");
   if (pack?.mode !== TASK_START_MODE || selection?.mode !== TASK_START_MODE) {
@@ -321,17 +376,31 @@ export function validateTaskStartContract({
   }
   if (!receiptOnly) {
     if (pack?.sourceClean !== true) errors.push("context_pack_source_not_clean");
-    if (!sameStringArray(pack?.scope?.paths, normalizedScopePaths)) {
+    if (legacyPack && !sameStringArray(pack?.scope?.paths, normalizedOwnedPaths)) {
       errors.push("context_pack_envelope_scope_mismatch");
+    }
+    if (currentPack && !sameStringArray(pack?.scope?.ownedPaths, normalizedOwnedPaths)) {
+      errors.push("context_pack_envelope_ownership_mismatch");
+    }
+    if (currentPack && !sameStringArray(
+      pack?.scope?.plannedImpactPaths,
+      normalizedPlannedImpactPaths,
+    )) {
+      errors.push("context_pack_envelope_impact_mismatch");
     }
   }
   const input = pack?.taskStart;
-  if (input?.schema !== TASK_INPUT_SCHEMA_V1) errors.push("unsupported_task_input_schema");
+  const legacyInput = input?.schema === TASK_INPUT_SCHEMA_V1;
+  const currentInput = input?.schema === TASK_INPUT_SCHEMA_V2;
+  if (!legacyInput && !currentInput) errors.push("unsupported_task_input_schema");
+  if (legacyPack !== legacyInput || currentPack !== currentInput) {
+    errors.push("context_pack_task_input_schema_mismatch");
+  }
   if (input?.taskId !== taskId) errors.push("context_pack_task_input_task_mismatch");
   if (input?.mode !== TASK_START_MODE) errors.push("context_pack_task_input_mode_invalid");
   if (input?.complete !== true) errors.push("context_pack_incomplete");
   const arrayFields = [
-    "scopePaths",
+    ...(legacyInput ? ["scopePaths"] : ["ownedPaths", "plannedImpactPaths"]),
     "checkIds",
     "requiredEntrypoints",
     "supportPaths",
@@ -342,11 +411,27 @@ export function validateTaskStartContract({
   for (const field of arrayFields) {
     if (!isUniqueStringArray(input?.[field])) errors.push(`invalid_task_input_${field}`);
   }
-  if (!sameStringArray(input?.scopePaths, normalizedScopePaths)) errors.push("context_pack_scope_mismatch");
+  if (legacyInput && !sameStringArray(input?.scopePaths, normalizedOwnedPaths)) {
+    errors.push("context_pack_scope_mismatch");
+  }
+  if (currentInput && !sameStringArray(input?.ownedPaths, normalizedOwnedPaths)) {
+    errors.push("context_pack_owned_paths_mismatch");
+  }
+  if (currentInput && !sameStringArray(input?.plannedImpactPaths, normalizedPlannedImpactPaths)) {
+    errors.push("context_pack_planned_impact_paths_mismatch");
+  }
+  if (normalizedPlannedImpactPaths.length === 0) errors.push("planned_impact_empty");
+  if (!normalizedPlannedImpactPaths.every((impactPath) => normalizedOwnedPaths.some(
+    (ownedPath) => impactPath === ownedPath || impactPath.startsWith(`${ownedPath}/`),
+  ))) errors.push("context_pack_planned_impact_outside_owned_scope");
   if (!safeStringArray(input?.deferredRegressionIds).every(
     (id) => typeof id === "string" && /^REG-[A-Z0-9-]+$/u.test(id),
   )) errors.push("invalid_deferred_regression_id");
-  for (const field of ["scopePaths", "requiredEntrypoints", "supportPaths"]) {
+  for (const field of [
+    ...(legacyInput ? ["scopePaths"] : ["ownedPaths", "plannedImpactPaths"]),
+    "requiredEntrypoints",
+    "supportPaths",
+  ]) {
     if (safeStringArray(input?.[field]).some((entry) => !isCanonicalTaskPath(entry))) {
       errors.push(`invalid_task_input_${field}`);
     }
@@ -366,11 +451,13 @@ export function validateTaskStartContract({
       taskId,
       mode: selection.mode,
       sourceSha: baseSha,
-      scopePaths: normalizedScopePaths,
+      ownedPaths: normalizedOwnedPaths,
+      plannedImpactPaths: normalizedPlannedImpactPaths,
       checkPlan: expectedPlan,
       sourceClean: true,
       blockers: expectedPlan.blockers,
       deferredRegressionIds: selection.deferredRegressionIds,
+      schema: input?.schema,
     });
   } catch {
     errors.push("context_pack_check_plan_invalid");

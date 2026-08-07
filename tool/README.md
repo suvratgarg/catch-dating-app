@@ -575,7 +575,7 @@ hard-won prior fixes.
 
 ```sh
 node tool/agent/context_pack.mjs --task architecture-refactor --paths lib/events,lib/explore
-node tool/agent/context_pack.mjs --task doc-hygiene --paths docs --json --output build/agent-context/doc-hygiene.json
+node tool/agent/context_pack.mjs --task doc-hygiene --paths docs --impact-paths docs/README.md,docs/audit_registry/doc_versions.json --mode parallel-delegation --json --output build/agent-context/doc-hygiene.json
 node tool/agent/check_agent_readiness.mjs
 node tool/agent/check_agent_readiness.mjs --record-metric
 node tool/agent/record_delegation_outcome.mjs --task-id example --mode worker-patch --status integrated --parent-review-outcome accepted --dry-run
@@ -603,9 +603,13 @@ deferred parent regressions; their shell strings never grant sparse checkout
 authority. Optional manifest `taskPaths` add support-only paths for an index-safe
 tool without expanding the agent's owned/write scope.
 
-Directory scopes are selection roots, not literal-only matches. The generator
-expands their tracked descendants for skill/rule/regression/check selection,
-and task start recomputes that expansion from the exact base SHA. Every command
+`--paths` declares the owned write ceiling and sparse projection;
+`--impact-paths` declares the narrower expected diff used for
+skill/rule/regression/check selection. Existing planned-impact directories
+expand to tracked descendants at the exact base SHA but do not authorize new
+descendants; every future file is an exact planned leaf. Planned impact must
+stay inside ownership, and delegated
+directory ownership requires an explicit impact list. Every command
 plan entry has an owner and phase: workers receive only preflight and bounded
 task checks; lifecycle, full-view integration, raw skill guidance, and deferred
 regressions remain parent-owned. When `--output` is supplied, the complete pack
@@ -614,25 +618,13 @@ agent logs bounded.
 
 `start` creates a bounded sparse worktree under `.claude/worktrees/`, locks it,
 records lifecycle metadata outside tracked source, and pushes its collision-free
-branch to `origin`. Closure-aware v3 receipts additionally bind the pack SHA,
-scope, digest, structured task/deferred check ids, support paths, and exact
-physical command entrypoints. Every new start requires this pack; v1/v2
-receipts remain readable for tasks created before the cutover. Support paths
-are materialized capabilities, not write ownership, and doctor/finish reject
-changes outside the pack's owned scope.
-V2 and v3 receipts separate tracked logical bytes, projected
-allocated bytes, initial logical bytes, and initial allocated bytes. The budget,
-current size, and growth delta use allocated bytes; v1 receipts remain readable
-but cannot claim an allocated growth delta. `doctor` fails on lifecycle,
-sparse-materialization, allocated capacity, shared-cache hazards, or unknown
-ignored payload. `finish` repeats those shared task-integrity checks,
-distinguishes an unavailable live origin query from a mismatched remote head,
-and records terminal state; it does not delete anything. For v3 it also
-recomputes the base-manifest closure and rejects a missing or replaced physical
-entrypoint. `reap --dry-run`
-refreshes live remote heads and returns a digested, report-only allocated-byte
-inventory. It has no apply mode, and legacy or incompletely inspected worktrees remain
-blocked.
+branch to `origin`. Support paths are materialized capabilities, not write
+ownership. `doctor` and `finish` enforce the same receipt, sparse, storage,
+command-closure, ownership, and planned-impact boundaries; `finish` also proves
+the exact remote head and records terminal state without deleting anything.
+`reap --dry-run` is a digested report with no apply mode. The authoritative
+schema/legacy matrix, storage semantics, and handoff policy live in
+`docs/agent_operating_model.md`; do not duplicate them here.
 
 `AGENTS.md` is the short entrypoint. Durable process guidance lives in
 `docs/agent_operating_model.md`, regression guards in

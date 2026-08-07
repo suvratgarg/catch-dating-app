@@ -491,7 +491,7 @@ test("runner and context pack agree when canonical inputs are materialized or sp
   );
   assert.ok(normalizedContext.activeRules.length > 0);
   assert.ok(normalizedContext.regressionGuards.length > 0);
-  assert.equal(normalizedContext.schema, "catch.agent-context-pack/v2");
+  assert.equal(normalizedContext.schema, "catch.agent-context-pack/v3");
   assert.ok(
     normalizedContext.taskStart.blockers.includes("task_start_requires_parallel_delegation_mode"),
   );
@@ -511,6 +511,8 @@ test("parallel delegation context mode is lifecycle-complete without an adapter 
     "parallel-work",
     "--paths",
     "docs/agent_operating_model.md,tool/agent",
+    "--impact-paths",
+    "docs/agent_operating_model.md,tool/agent",
     "--mode",
     "parallel-delegation",
     "--json",
@@ -518,6 +520,9 @@ test("parallel delegation context mode is lifecycle-complete without an adapter 
   assertSuccessful(result);
   const pack = JSON.parse(result.stdout);
   assert.equal(pack.mode, "parallel-delegation");
+  assert.equal(pack.taskStart.blockers.includes(
+    "planned_impact_required_for_owned_directory",
+  ), false);
   assert.ok(pack.ownerDocs.some((doc) => doc.path === "docs/agent_operating_model.md"));
   assert.ok(pack.activeRules.some((rule) => rule.id === "AGENT-DELEGATION-001"));
   assert.ok(!pack.skills.some((skill) => skill.skill_id === "catch-parallel-delegation"));
@@ -576,6 +581,98 @@ test("directory scopes select skills from tracked descendants", () => {
   assert.ok(skillIds.includes("catch-contract-change"), JSON.stringify(skillIds));
 });
 
+test("broad ownership and narrow planned impact select only the narrow closure", () => {
+  const impactPaths = [
+    "docs/audit_registry/doc_versions.json",
+    "docs/audit_registry/files.jsonl",
+    "docs/audit_registry/passes.jsonl",
+  ];
+  const generate = (ownedPaths) => {
+    const result = runNode(process.cwd(), [
+      "tool/agent/context_pack.mjs",
+      "--task",
+      "audit-receipt-slice",
+      "--paths",
+      ownedPaths.join(","),
+      "--impact-paths",
+      impactPaths.join(","),
+      "--mode",
+      "parallel-delegation",
+      "--json",
+    ]);
+    assertSuccessful(result);
+    return JSON.parse(result.stdout);
+  };
+  const broad = generate(["docs/audit_registry"]);
+  const exact = generate(impactPaths);
+  assert.deepEqual(broad.scope, {
+    ownedPaths: ["docs/audit_registry"],
+    plannedImpactPaths: impactPaths,
+    note: "Owned paths are the write ceiling; planned impacts select checks and constrain the actual diff.",
+  });
+  assert.deepEqual(broad.taskStart.ownedPaths, ["docs/audit_registry"]);
+  assert.deepEqual(broad.taskStart.plannedImpactPaths, impactPaths);
+  assert.deepEqual(
+    broad.skills.map((entry) => entry.skill_id),
+    exact.skills.map((entry) => entry.skill_id),
+  );
+  assert.deepEqual(
+    broad.regressionGuards.map((entry) => entry.id),
+    exact.regressionGuards.map((entry) => entry.id),
+  );
+  assert.deepEqual(
+    broad.checkPlan.task.map((entry) => entry.id),
+    exact.checkPlan.task.map((entry) => entry.id),
+  );
+  assert.deepEqual(
+    broad.checkPlan.integration.map((entry) => entry.id),
+    exact.checkPlan.integration.map((entry) => entry.id),
+  );
+});
+
+test("parallel directory ownership requires an explicit planned impact", () => {
+  const result = runNode(process.cwd(), [
+    "tool/agent/context_pack.mjs",
+    "--task",
+    "explicit-impact",
+    "--paths",
+    "docs/audit_registry",
+    "--mode",
+    "parallel-delegation",
+    "--json",
+  ]);
+  assertSuccessful(result);
+  const pack = JSON.parse(result.stdout);
+  assert.ok(pack.taskStart.blockers.includes("planned_impact_required_for_owned_directory"));
+  assert.equal(pack.taskStart.complete, false);
+});
+
+test("planned future leaves are valid only beneath the owned boundary", () => {
+  const generate = (impactPath) => {
+    const result = runNode(process.cwd(), [
+      "tool/agent/context_pack.mjs",
+      "--task",
+      "future-impact",
+      "--paths",
+      "docs",
+      "--impact-paths",
+      impactPath,
+      "--mode",
+      "parallel-delegation",
+      "--json",
+    ]);
+    assertSuccessful(result);
+    return JSON.parse(result.stdout);
+  };
+  const future = generate("docs/future-impact.md");
+  assert.equal(future.taskStart.blockers.some((entry) =>
+    entry.startsWith("planned_impact_")), false, JSON.stringify(future.taskStart.blockers));
+  const outside = generate("lib/explore/explore_page.dart");
+  assert.ok(outside.taskStart.blockers.includes(
+    "planned_impact_outside_owned_scope:lib/explore/explore_page.dart",
+  ));
+});
+
 test("context-pack output writes the full artifact but prints a compact receipt", (context) => {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-context-output-"));
   context.after(() => fs.rmSync(directory, {recursive: true, force: true}));
@@ -596,6 +693,9 @@ test("context-pack output writes the full artifact but prints a compact receipt"
   assert.equal(receipt.output, output);
   assert.equal(receipt.task, pack.task);
   assert.equal(receipt.digest, pack.taskStart.digest);
+  assert.equal(receipt.blockerCount, pack.taskStart.blockers.length);
+  assert.deepEqual(receipt.blockers, pack.taskStart.blockers.slice(0, 10));
+  assert.equal(receipt.blockersTruncated, pack.taskStart.blockers.length > 10);
   assert.ok(result.stdout.length < 500, result.stdout.length);
   assert.ok(fs.statSync(output).size > result.stdout.length * 10);
 });

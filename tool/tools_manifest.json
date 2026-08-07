@@ -208,7 +208,7 @@
         "tool/harness/lib/worktree_lifecycle.mjs",
         "tool/harness/worktree_lifecycle.test.mjs"
       ],
-      "description": "Plans authoritative fail-closed CI, release, and deploy impact, runs allowlisted compile-codegen checks, and owns explicit sparse task-worktree lifecycle commands; start pushes a collision-free task branch to origin and reap is report-only.",
+      "description": "Plans authoritative fail-closed CI, release, and deploy impact, runs allowlisted compile-codegen checks, and owns explicit sparse task-worktree lifecycle commands; v4 tasks separate owned write authority from planned impact, start pushes a collision-free task branch to origin, and reap is report-only.",
       "checks": [
         "node --check tool/harness.mjs",
         "node --check tool/harness/lib/component_graph.mjs",
@@ -250,7 +250,7 @@
         "tool/agent/lib/task_input.mjs",
         "tool/agent/task_input.test.mjs"
       ],
-      "description": "Builds a scoped AI-agent context packet from owner docs, project-local skills, active rules, regression guards, and command plans.",
+      "description": "Builds a base-bound AI-agent context packet whose owned paths cap writes and whose planned impacts select owner docs, project-local skills, active rules, regression guards, and command plans.",
       "checks": [
         "node --check tool/agent/context_pack.mjs",
         "node --check tool/agent/lib/task_input.mjs",
