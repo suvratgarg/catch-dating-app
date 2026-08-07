@@ -1,6 +1,6 @@
 ---
 doc_id: harness_v2_decision_and_cicd_delivery_plan
-version: 0.3.34
+version: 0.3.35
 updated: 2026-08-07
 owner: agent_operating_model
 status: execution-in-progress
@@ -983,10 +983,10 @@ Issues closed or discovered during this tranche:
 - `H2-TRANSITION-038` — closed in Checkpoint 27. Every new start requires a
   clean, base-bound context pack; structured check ids derive exact physical
   entrypoints and support-only paths; directory selection is recomputed from
-  tracked descendants at the base SHA; v3 receipts bind task, mode, scope,
-  checks, closure, and digest; doctor/finish enforce the same owned-versus-
-  support boundary. V1/v2 stay read-compatible, but the old v2 writer path is
-  deleted.
+  tracked descendants at the base SHA; context-pack v3 receipts bind task,
+  mode, scope, checks, closure, and digest; doctor/finish enforce the same
+  owned-versus-support boundary. Lifecycle metadata v1-v3 stays read-compatible,
+  while new tasks write only v4.
 
 `H2-TRANSITION-035` (same-worktree mutator lease) remains open.
 `H2-TRANSITION-036` (setup-footprint projection) is partially improved: the
@@ -997,7 +997,7 @@ but a repository-wide install-footprint budget is still absent.
 
 | Signal | Before this slice | Current result |
 |---|---|---|
-| Start authorization | New worktrees could be created from manually typed paths while the context pack named commands whose entrypoints were absent. The pack's task id, cleanliness, base, directory descendants, and selected checks were not one startability contract. | New starts are v3-only and require a complete `parallel-delegation` pack. Task id, mode, clean base SHA, normalized owned scope, tracked descendant selection, structured task/deferred checks, physical entrypoints, support paths, and digest are recomputed from base authorities and fail closed before registration. Absolute/traversal/missing paths, stale or under-scoped packs, malformed receipts, symlink escape, and support-path edits are covered. V1/v2 readers remain; no legacy writer remains. |
+| Start authorization | New worktrees could be created from manually typed paths while the context pack named commands whose entrypoints were absent. The pack's task id, cleanliness, base, directory descendants, and selected checks were not one startability contract. | New starts require a complete context-pack v3 `parallel-delegation` receipt and write lifecycle metadata v4. Task id, mode, clean base SHA, normalized owned scope, tracked descendant selection, structured task/deferred checks, physical entrypoints, support paths, and digest are recomputed from base authorities and fail closed before registration. Absolute/traversal/missing paths, stale or under-scoped packs, malformed receipts, symlink escape, and support-path edits are covered. Lifecycle metadata v1-v3 readers remain; no legacy writer remains. |
 | Execution ownership | One undifferentiated command list mixed worker checks, lifecycle mutation, full-repository integration, Flutter analysis, canonical registry writes, and raw regression commands. | Every command carries `owner` and `phase`. The evidence worker received only `doctor` plus `agent:readiness` and root hygiene; the parent retained start/finish, full-view integration, canonical evidence, and unstructured guidance. Exact three-file evidence scope produced two worker and eight parent commands. |
 | Routing/setup fanout | A change to shared task-input logic could conservatively fan out across all 227 active tools and all seven setup categories. Tool-only scopes also fell back to documentation hygiene. | Exact ownership selects 7/227 active tools, a 96.9% reduction, with one Node setup category, an 85.7% reduction. A new 15-line tooling router replaces the documentation fallback. An Explore projection estimates 855 files / 20.88 MiB instead of 7,276 files / 156.75 MiB: 88.2% fewer files and 86.7% fewer tracked bytes. |
 | Log volume | `--output` still duplicated the complete JSON pack to stdout; one measured pack was 95,531 bytes. | The artifact remains complete on disk while stdout is a 217-byte task/digest receipt, a 99.77% reduction. The registered context-pack owner check now uses this path. |
@@ -1014,14 +1014,48 @@ Issues closed or discovered during this tranche:
   `/private/tmp` correctly made 15 lifecycle fixtures refuse OS-temp task roots.
   Full lifecycle integration rehearsals now run from a non-temp disposable
   clone; production safety was not weakened to accommodate the test runner.
-- `H2-TRANSITION-040` — open. One owned directory is still both the write
-  ceiling and the impact-selection root. `docs/audit_registry` selected three
-  skills, 22 regressions, 20 deferred checks, and 40 parent commands; naming
-  the three actually writable files selected one skill, five deferred checks,
-  and eight parent commands (75% fewer deferred checks and 80% fewer parent
-  commands). A later slice should split `ownedPaths` from reviewed
-  `plannedImpactPaths`, then reconcile actual diff paths at finish, rather than
-  teaching users to over-broaden or hand-minimize one overloaded field.
+- `H2-TRANSITION-040` — closed in Checkpoint 28. Owned paths now define only
+  the sparse/write ceiling, while reviewed planned-impact paths select the
+  task closure and constrain the actual diff through doctor and finish.
+
+### Checkpoint 28 — owned/impact split and v4 canary (2026-08-07)
+
+| Signal | Before this slice | Current result |
+|---|---|---|
+| Scope semantics | One overloaded path list had to be broad enough to materialize a safe write ceiling and narrow enough to avoid irrelevant skills, regressions, checks, and parent commands. Operators either over-broadened the plan or risked a sparse checkout that could not perform the work. | Context-pack v3 and lifecycle metadata v4 carry separate `ownedPaths` and `plannedImpactPaths`. Ownership is the hard write ceiling; planned impact selects owner docs, skills, rules, regressions, task checks, support closure, and deferred parent checks. Support paths remain derived and read-only. |
+| Diff enforcement | Doctor and finish could identify edits outside ownership, but a broad owned directory silently authorized unrelated edits inside that directory. Missing planned directories could also be mistaken for future subtrees. | The task-boundary diff is computed once and checked against both contracts. Outside ownership reports `out_of_owned_scope`; inside ownership but outside impact reports `unplanned_impact`. An existing planned directory authorizes only descendants tracked at the base SHA; every new future path must be an exact planned leaf. |
+| Routing fanout | Broad `docs/audit_registry` ownership produced an 80,092-byte pack, 21 owner docs, three skills, ten rules, 20 regressions, 20 deferred checks, 42 commands, and 40 parent commands. | Keeping that ownership ceiling while planning three exact audit files produced a 25,582-byte pack (−68.1%), seven owner docs (−66.7%), one skill, six rules, seven regressions, six deferred checks (−70%), 11 commands (−73.8%), and nine parent commands (−77.5%). Pack-generation p50 fell from 221.88ms to 158.12ms (−28.7%). Worker commands remained two because the same bounded worker checks were still required. |
+| Operator language | `--paths` meant ownership in some commands and generic routing input elsewhere; `--impact-paths` did not make its relationship to ownership obvious. Positional context-pack paths were silently accepted. | Canonical context-pack scope flags are `--owned-paths` and `--planned-impact-paths`; canonical task start uses `--owned-paths`. The entrypoint, owner doc, tool guide, command template, registered check, and regression guard use the explicit names. Compatibility spellings remain accepted for one bounded migration because ten live project-skill examples still emit them; H2-TRANSITION-043 removes the bridge only after those callsites and their enforcement move atomically. |
+| Live canary | The corrected v3 rehearsal used exact write paths and therefore did not prove that broad ownership could coexist with a narrow reviewed diff. | Core `4e19a0ccc` is +834/−166, committed in 0.03s and pushed in 2.38s. This v4 canary kept broad audit ownership but planned 15 exact files. Its pack completed in 0.20s; task start took 4.96s, doctor 0.67s, and initial materialization was 32,202,053 logical / 34,197,504 allocated bytes with zero initial growth. The start is 49.4% slower than the 3.32s exact-path rehearsal, so start/materialization variance is tracked separately rather than credited to the routing reduction. |
+| Verification | The split initially permitted new descendants beneath an existing planned directory, which would have weakened the reviewed-diff contract. | Independent review found that edge before commit. The implementation now requires base-tracked descendants or exact future leaves. The 68 focused lifecycle/runner tests cover owned/planned boundaries, canonical names, and transitional callsite compatibility; registered owner checks, generated-registry parity, readiness, and a live healthy v4 doctor are recorded here. Commit, push, remote equality, and finish remain handoff state instead of self-referential in-commit claims. |
+| Line accounting | The 29 prior measured commits were cumulatively net −346,326 lines. | Core `4e19a0ccc` is net +668. This CLI/canary receipt is +193/−99, net +94, leaving the 31-commit measured series at net −345,564 lines. The migration remains overwhelmingly deletion-negative despite this contract-and-test tranche. |
+
+Issues closed or discovered during this tranche:
+
+- `H2-TRANSITION-040` — closed. Ownership, planned impact, and derived support
+  capabilities are distinct contracts, and live doctor/finish reconciliation
+  prevents either selection drift or post-plan diff drift.
+- `H2-TRANSITION-041` — open. One broad-ownership canary started in 4.96s,
+  49.4% slower than the prior 3.32s exact-path rehearsal even though pack
+  generation became faster. Benchmark repeated starts by materialized closure
+  size and separate Git/network variance from schema overhead before setting a
+  task-start SLO.
+- `H2-TRANSITION-042` — open. The context receipt correctly classified
+  `audit:registry` as parent-deferred, but a direct runner invocation inside the
+  sparse worker still began Flutter setup before failing on the intentionally
+  absent test path. The mistake cost 1.84s and added 188,416 allocated bytes of
+  known, inspectable task-local artifacts; doctor remained healthy. Make the
+  runner enforce task-phase ownership before setup so an operator cannot
+  accidentally execute a parent-only check from a worker view.
+- `H2-TRANSITION-043` — open and bounded for the next stacked commit. A live
+  callsite scan found ten retired `context_pack.mjs --paths` examples across
+  `docs/agent_skills/skills_manifest.json` and
+  `docs/agent_skills/catch-react-surface-refactor.md`; readiness still passed.
+  This review changed the rollout before commit: compatibility spellings remain
+  accepted temporarily, so every current command still runs. Migrate those
+  project-skill commands and teach readiness or manifest validation to reject
+  retired context-pack flags, then delete the compatibility parser and its
+  transitional tests in the same commit.
 
 Durable outcomes are PR wall-clock p50/p95 and escaped defects. Record the
 baseline from the ten most recent comparable PRs and compare after ten v2 PRs.

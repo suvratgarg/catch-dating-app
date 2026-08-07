@@ -574,8 +574,8 @@ consolidation, design-parity work, and any task where an agent needs to preserve
 hard-won prior fixes.
 
 ```sh
-node tool/agent/context_pack.mjs --task architecture-refactor --paths lib/events,lib/explore
-node tool/agent/context_pack.mjs --task doc-hygiene --paths docs --impact-paths docs/README.md,docs/audit_registry/doc_versions.json --mode parallel-delegation --json --output build/agent-context/doc-hygiene.json
+node tool/agent/context_pack.mjs --task architecture-refactor --owned-paths lib/events,lib/explore
+node tool/agent/context_pack.mjs --task doc-hygiene --owned-paths docs --planned-impact-paths docs/README.md,docs/audit_registry/doc_versions.json --mode parallel-delegation --json --output build/agent-context/doc-hygiene.json
 node tool/agent/check_agent_readiness.mjs
 node tool/agent/check_agent_readiness.mjs --record-metric
 node tool/agent/record_delegation_outcome.mjs --task-id example --mode worker-patch --status integrated --parent-review-outcome accepted --dry-run
@@ -586,7 +586,7 @@ Delegated worktrees use one fail-closed lifecycle instead of direct
 `git worktree` shell sequences:
 
 ```sh
-node tool/harness.mjs task start --task-id <id> --base-sha <40-character-sha> --stack-parent <ref> --paths <path[,path...]> --context-pack build/agent-context/<id>.json --budget-mib 256
+node tool/harness.mjs task start --task-id <id> --base-sha <40-character-sha> --stack-parent <ref> --owned-paths <path[,path...]> --context-pack build/agent-context/<id>.json --budget-mib 256
 node tool/harness.mjs task doctor --worktree <path>
 node tool/harness.mjs task finish --worktree <path>
 node tool/harness.mjs task reap --dry-run
@@ -603,8 +603,8 @@ deferred parent regressions; their shell strings never grant sparse checkout
 authority. Optional manifest `taskPaths` add support-only paths for an index-safe
 tool without expanding the agent's owned/write scope.
 
-`--paths` declares the owned write ceiling and sparse projection;
-`--impact-paths` declares the narrower expected diff used for
+`--owned-paths` declares the owned write ceiling and sparse projection;
+`--planned-impact-paths` declares the narrower expected diff used for
 skill/rule/regression/check selection. Existing planned-impact directories
 expand to tracked descendants at the exact base SHA but do not authorize new
 descendants; every future file is an exact planned leaf. Planned impact must

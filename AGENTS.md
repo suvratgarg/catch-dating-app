@@ -1,7 +1,7 @@
 ---
 doc_id: agent_entrypoint
-version: 1.4.12
-updated: 2026-08-06
+version: 1.4.13
+updated: 2026-08-07
 owner: agent_operating_model
 status: active
 ---
@@ -20,7 +20,7 @@ the right verification loop.
 3. For broad cleanup or refactors, generate a context pack before editing:
 
    ```sh
-   node tool/agent/context_pack.mjs --task <task-name> --paths <path[,path...]>
+   node tool/agent/context_pack.mjs --task <task-name> --owned-paths <path[,path...]>
    ```
 
 4. Run the agent readiness gate before handoff:
@@ -50,7 +50,7 @@ the right verification loop.
 | Marketing website architecture, routes, components, public pages, SEO metadata, generated organizer listings | `docs/marketing_website_architecture.md`, `docs/web_surface_architecture.md`, `docs/marketing_landing_page_research.md`, `design/website/routes.json`, `design/website/components.json` | Update the route contract before public route changes; update the component registry before Storybook/component changes; run `node tool/run.mjs check marketing:website-routes`, `node tool/run.mjs check marketing:website-components`, `node tool/run.mjs check web:website-import-boundaries`, `node tool/run.mjs check web:react-ui-primitives`, `node tool/run.mjs check web:react-component-governance`, and the marketing build/typecheck loop |
 | Widget consolidation / dedupe (work-order execution, cluster triage) | `docs/design_parity/widget_consolidation/codex_worklog.md` (queue + standing gotchas), `docs/design_parity/widget_consolidation/consolidation_rules.md` (decision criteria), `docs/design_parity/widget_consolidation/decisions.json` (ledger) | Apply only the rulebook's K/R/D rules; a candidate matching no rule exactly is escalated, never stretched. Naming new `Catch*` primitives, new-primitive API design, concept-identity calls, and visual-change trade-offs belong to the review session. Ledger every outcome (incl. keeps) as `codex-rule:<id>`; per-order registry regen + receipts per the worklog's standing gotchas |
 | Tooling or automation | `tool/README.md`, `tool/tools_manifest.json` | Add tool manifest entries; `node tool/run.mjs check --manifest-only` |
-| Parallel agent delegation | `docs/agent_operating_model.md` | Generate `node tool/agent/context_pack.mjs --mode parallel-delegation`, use `node tool/harness.mjs task start` from the exact parent SHA, require `task doctor` before edits, close with `task finish`, review commits before importing, record outcomes with `node tool/agent/record_delegation_outcome.mjs`, and treat `task reap --dry-run` as report-only |
+| Parallel agent delegation | `docs/agent_operating_model.md` | Generate `node tool/agent/context_pack.mjs --mode parallel-delegation --owned-paths <write-ceiling> --planned-impact-paths <expected-diff>`, use `node tool/harness.mjs task start --owned-paths <same-write-ceiling>` from the exact parent SHA, require `task doctor` before edits, close with `task finish`, review commits before importing, record outcomes with `node tool/agent/record_delegation_outcome.mjs`, and treat `task reap --dry-run` as report-only |
 
 ## Non-Negotiable Rules
 

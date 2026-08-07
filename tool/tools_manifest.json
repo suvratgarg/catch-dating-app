@@ -255,7 +255,7 @@
         "node --check tool/agent/context_pack.mjs",
         "node --check tool/agent/lib/task_input.mjs",
         "node --test tool/agent/task_input.test.mjs",
-        "node tool/agent/context_pack.mjs --task agent-readiness --paths AGENTS.md,docs/agent_operating_model.md --json --output build/agent-context/agent-readiness.json"
+        "node tool/agent/context_pack.mjs --task agent-readiness --owned-paths AGENTS.md,docs/agent_operating_model.md --json --output build/agent-context/agent-readiness.json"
       ],
       "role": "finder"
     },

@@ -471,7 +471,7 @@ test("runner and context pack agree when canonical inputs are materialized or sp
     "tool/agent/context_pack.mjs",
     "--task",
     "snapshot-callsite-equivalence",
-    "--paths",
+    "--owned-paths",
     "tool/run.mjs,tool/agent/context_pack.mjs",
     "--json",
   ];
@@ -509,9 +509,9 @@ test("parallel delegation context mode is lifecycle-complete without an adapter 
     "tool/agent/context_pack.mjs",
     "--task",
     "parallel-work",
-    "--paths",
+    "--owned-paths",
     "docs/agent_operating_model.md,tool/agent",
-    "--impact-paths",
+    "--planned-impact-paths",
     "docs/agent_operating_model.md,tool/agent",
     "--mode",
     "parallel-delegation",
@@ -528,7 +528,7 @@ test("parallel delegation context mode is lifecycle-complete without an adapter 
   assert.ok(!pack.skills.some((skill) => skill.skill_id === "catch-parallel-delegation"));
   const commands = pack.commandPlan.map((entry) => entry.command);
   for (const command of [
-    "node tool/harness.mjs task start --task-id <task-id> --base-sha <40-character-sha> --stack-parent <ref> --paths <path[,path...]> --context-pack <pack.json> [--budget-mib 256]",
+    "node tool/harness.mjs task start --task-id <task-id> --base-sha <40-character-sha> --stack-parent <ref> --owned-paths <path[,path...]> --context-pack <pack.json> [--budget-mib 256]",
     "node tool/harness.mjs task doctor --worktree <task-worktree>",
     "node tool/harness.mjs task finish --worktree <task-worktree>",
     "node tool/harness.mjs task reap --dry-run [--merged-into origin/main] [--stale-days 7]",
@@ -556,7 +556,7 @@ test("tool scopes select the tooling router without a documentation fallback", (
     "tool/agent/context_pack.mjs",
     "--task",
     "task-input-tooling",
-    "--paths",
+    "--owned-paths",
     "tool/agent/lib/task_input.mjs",
     "--json",
   ]);
@@ -571,7 +571,7 @@ test("directory scopes select skills from tracked descendants", () => {
     "tool/agent/context_pack.mjs",
     "--task",
     "explore-feature",
-    "--paths",
+    "--owned-paths",
     "lib/explore",
     "--json",
   ]);
@@ -592,9 +592,9 @@ test("broad ownership and narrow planned impact select only the narrow closure",
       "tool/agent/context_pack.mjs",
       "--task",
       "audit-receipt-slice",
-      "--paths",
+      "--owned-paths",
       ownedPaths.join(","),
-      "--impact-paths",
+      "--planned-impact-paths",
       impactPaths.join(","),
       "--mode",
       "parallel-delegation",
@@ -635,7 +635,7 @@ test("parallel directory ownership requires an explicit planned impact", () => {
     "tool/agent/context_pack.mjs",
     "--task",
     "explicit-impact",
-    "--paths",
+    "--owned-paths",
     "docs/audit_registry",
     "--mode",
     "parallel-delegation",
@@ -647,15 +647,46 @@ test("parallel directory ownership requires an explicit planned impact", () => {
   assert.equal(pack.taskStart.complete, false);
 });
 
+test("context-pack CLI keeps retired path spellings during callsite migration", () => {
+  for (const {args, ownedPaths, plannedImpactPaths} of [
+    {
+      args: ["--task", "compatibility-owned-alias", "--paths", "docs", "--json"],
+      ownedPaths: ["docs"],
+      plannedImpactPaths: ["docs"],
+    },
+    {
+      args: ["--task", "compatibility-singular-alias", "--path", "docs/README.md", "--json"],
+      ownedPaths: ["docs/README.md"],
+      plannedImpactPaths: ["docs/README.md"],
+    },
+    {
+      args: ["--task", "compatibility-impact-alias", "--owned-paths", "docs", "--impact-paths", "docs/README.md", "--json"],
+      ownedPaths: ["docs"],
+      plannedImpactPaths: ["docs/README.md"],
+    },
+    {
+      args: ["--task", "compatibility-positional-alias", "docs/README.md", "--json"],
+      ownedPaths: ["docs/README.md"],
+      plannedImpactPaths: ["docs/README.md"],
+    },
+  ]) {
+    const result = runNode(process.cwd(), ["tool/agent/context_pack.mjs", ...args]);
+    assertSuccessful(result);
+    const pack = JSON.parse(result.stdout);
+    assert.deepEqual(pack.scope.ownedPaths, ownedPaths);
+    assert.deepEqual(pack.scope.plannedImpactPaths, plannedImpactPaths);
+  }
+});
+
 test("planned future leaves are valid only beneath the owned boundary", () => {
   const generate = (impactPath) => {
     const result = runNode(process.cwd(), [
       "tool/agent/context_pack.mjs",
       "--task",
       "future-impact",
-      "--paths",
+      "--owned-paths",
       "docs",
-      "--impact-paths",
+      "--planned-impact-paths",
       impactPath,
       "--mode",
       "parallel-delegation",
@@ -681,7 +712,7 @@ test("context-pack output writes the full artifact but prints a compact receipt"
     "tool/agent/context_pack.mjs",
     "--task",
     "compact-output",
-    "--paths",
+    "--owned-paths",
     "tool/agent/lib/task_input.mjs",
     "--json",
     "--output",
@@ -709,7 +740,7 @@ test("context packs mark invalid task ids and unmaterializable scopes incomplete
     {
       args: [
         "--task", "Not A Harness Id",
-        "--paths", "docs",
+        "--owned-paths", "docs",
         "--mode", "parallel-delegation",
         "--json",
       ],
@@ -718,7 +749,7 @@ test("context packs mark invalid task ids and unmaterializable scopes incomplete
     {
       args: [
         "--task", "missing-scope",
-        "--paths", "definitely/not/a/repository/path",
+        "--owned-paths", "definitely/not/a/repository/path",
         "--mode", "parallel-delegation",
         "--json",
       ],

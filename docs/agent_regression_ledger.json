@@ -1,5 +1,5 @@
 {
-  "version": 152,
+  "version": 153,
   "updated": "2026-08-07",
   "owner": "agent_operating_model",
   "entries": [
@@ -4327,7 +4327,7 @@
         "docs/agent_operating_model.md",
         "docs/plans/harness_v2_decision_and_cicd_delivery_plan.md"
       ],
-      "notes": "Parallel directory ownership requires an explicit --impact-paths declaration. Planned impact must be nonempty and stay within the owned write ceiling. Support paths remain machine-derived read-only capabilities and never grant impact or ownership."
+      "notes": "Parallel directory ownership requires an explicit --planned-impact-paths declaration. Planned impact must be nonempty and stay within the owned write ceiling. Support paths remain machine-derived read-only capabilities and never grant impact or ownership. Canonical guidance uses explicit names; temporary legacy aliases remain only until H2-TRANSITION-043 migrates all project-skill callsites and adds an enforcement guard."
     }
   ]
 }
