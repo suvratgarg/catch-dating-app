@@ -46,6 +46,7 @@ test("CI checkout requirements keep planner and docs narrow with a full fallback
       "/tool/harness/component_graph.json",
       "/tool/harness/lib/component_graph.mjs",
       "/tool/lib/repo_paths.mjs",
+      "/tool/lib/tool_impact.mjs",
       "/tool/tools_manifest.json",
     ],
   });

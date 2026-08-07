@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import path from "node:path";
 import test from "node:test";
 import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
 
@@ -83,6 +84,11 @@ function literalSparsePaths(step) {
     .trimEnd()
     .split("\n")
     .map((line) => line.trim());
+}
+
+function localModuleImports(source) {
+  return [...source.matchAll(/(?:\bfrom\s+|\bimport\s*\(\s*)["'](\.[^"']+)["']/gu)]
+    .map((match) => match[1]);
 }
 
 test("Flutter UI lint wiring uses one analyzer census and no legacy wrappers", () => {
@@ -269,6 +275,31 @@ test("planner and ordinary docs consume the graph-owned checkout closure", () =>
     fullPolicy,
     new RegExp(`fetch-depth: ${graph.ciCheckout.default.fetchDepth}`),
   );
+});
+
+test("planner sparse checkout contains its recursive local module closure", () => {
+  const declared = new Set(
+    graph.ciCheckout.planner.paths.map((entry) => entry.replace(/^\//u, "")),
+  );
+  const pending = ["tool/harness.mjs"];
+  const visited = new Set();
+  while (pending.length > 0) {
+    const modulePath = pending.pop();
+    if (visited.has(modulePath)) continue;
+    visited.add(modulePath);
+    const source = repositorySnapshot.readText(modulePath, {required: true});
+    for (const specifier of localModuleImports(source)) {
+      let importedPath = path.posix.normalize(
+        path.posix.join(path.posix.dirname(modulePath), specifier),
+      );
+      if (path.posix.extname(importedPath) === "") importedPath += ".mjs";
+      assert.ok(
+        declared.has(importedPath),
+        `${modulePath} imports ${importedPath}, which is absent from ciCheckout.planner.paths`,
+      );
+      if (importedPath.endsWith(".mjs")) pending.push(importedPath);
+    }
+  }
 });
 
 test("tools fanout selects exactly one affected or full execution path", () => {
