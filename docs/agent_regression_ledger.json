@@ -1,5 +1,5 @@
 {
-  "version": 149,
+  "version": 150,
   "updated": "2026-08-07",
   "owner": "agent_operating_model",
   "entries": [
@@ -4241,6 +4241,29 @@
         "docs/plans/harness_v2_decision_and_cicd_delivery_plan.md"
       ],
       "notes": "The canonical setup order is node, flutter, ripgrep, flutter-pub, root-npm, functions-npm, playwright. Node is always required; flutter-pub requires flutter; playwright requires root-npm. Every active repositoryView index declaration is Node-only. The affected workflow consumes index through a root-anchored non-cone closure, keeps fetch-depth 0 and all blobs local, and sends every other value to the full checkout."
+    },
+    {
+      "id": "REG-HARNESS-TASK-LIFECYCLE-001",
+      "title": "Task receipts mix storage units, hide ignored payload, or leak fixture residue",
+      "status": "active",
+      "applies_to": [
+        "tool/harness.mjs",
+        "tool/harness/lib/worktree_lifecycle.mjs",
+        "tool/harness/worktree_lifecycle.test.mjs",
+        "docs/agent_operating_model.md",
+        "docs/plans/harness_v2_decision_and_cicd_delivery_plan.md"
+      ],
+      "symptom": "Task start records logical bytes while doctor or reap silently relabels allocated bytes as the same size series, a cross-unit subtraction is reported as growth, malformed storage metadata is accepted, finish bypasses a sparse or metadata-path integrity blocker, lifecycle tests leave an empty ignored .claude parent, unknown ignored payload reaches terminal handoff, or an unreachable origin is reported as if the remote head were known to be missing.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/harness/worktree_lifecycle.test.mjs",
+        "guardEvidence": "new tasks write explicit v2 logical and allocated measurements; current growth is allocated-to-allocated; v1 receipts remain readable with a null delta; malformed v2 storage fails closed in doctor, finish, and reap; doctor and finish share task-integrity blockers; fixture sessions remove only owned empty parents under concurrent processes; and finish distinguishes remote-query failure from head mismatch"
+      },
+      "owner_docs": [
+        "docs/agent_operating_model.md",
+        "docs/plans/harness_v2_decision_and_cicd_delivery_plan.md"
+      ],
+      "notes": "The --budget-mib limit and disk reserve are allocated-byte contracts. V2 records both initial logical and allocated materialization without legacy aliases. V1 metadata is dual-read only and never supplies an invented allocated baseline. Shared fixture parents are pruned with non-recursive empty-directory removal; arbitrary .claude payload is never allowlisted."
     }
   ]
 }

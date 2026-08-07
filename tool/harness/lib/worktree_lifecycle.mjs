@@ -8,6 +8,12 @@ const MIB = 1024 * 1024;
 const DEFAULT_BUDGET_MIB = 256;
 const DEFAULT_RESERVE_MIB = 1024;
 const DEFAULT_STALE_DAYS = 7;
+const TASK_METADATA_SCHEMA_V1 = "catch.harness-task/v1";
+const TASK_METADATA_SCHEMA_V2 = "catch.harness-task/v2";
+const SUPPORTED_TASK_METADATA_SCHEMAS = new Set([
+  TASK_METADATA_SCHEMA_V1,
+  TASK_METADATA_SCHEMA_V2,
+]);
 const TEMP_ROOTS = [...new Set([
   "/tmp",
   "/private/tmp",
@@ -135,29 +141,41 @@ function normalizeExplicitSparsePaths(values) {
   return [...normalized].sort();
 }
 
-export function availableBytesFromStatfs(stat) {
+export function availableAllocatedBytesFromStatfs(stat) {
   const availableBlocks = stat.bavail ?? stat.bfree;
   return Number(availableBlocks) * Number(stat.bsize);
 }
 
-export function assertCapacity({availableBytes, budgetBytes, reserveBytes, estimatedBytes}) {
-  if (!Number.isFinite(availableBytes) || availableBytes < 0) {
+export function assertCapacity({
+  availableAllocatedBytes,
+  budgetAllocatedBytes,
+  reserveAllocatedBytes,
+  projectedInitialAllocatedBytes,
+}) {
+  if (!Number.isFinite(availableAllocatedBytes) || availableAllocatedBytes < 0) {
     throw new Error("Unable to determine available filesystem capacity.");
   }
-  if (estimatedBytes > budgetBytes) {
+  if (projectedInitialAllocatedBytes > budgetAllocatedBytes) {
     throw new Error(
-      `Sparse task estimate ${formatMiB(estimatedBytes)} exceeds its ${formatMiB(budgetBytes)} budget.`,
+      `Sparse task allocated-size projection ${formatMiB(projectedInitialAllocatedBytes)} ` +
+      `exceeds its ${formatMiB(budgetAllocatedBytes)} allocated budget.`,
     );
   }
-  const requiredBytes = reserveBytes + budgetBytes;
-  if (availableBytes < requiredBytes) {
+  const requiredAllocatedBytes = reserveAllocatedBytes + budgetAllocatedBytes;
+  if (availableAllocatedBytes < requiredAllocatedBytes) {
     throw new Error(
-      `Insufficient task-worktree capacity: ${formatMiB(availableBytes)} available; ` +
-      `${formatMiB(requiredBytes)} required (${formatMiB(reserveBytes)} reserve + ` +
-      `${formatMiB(budgetBytes)} task budget).`,
+      `Insufficient task-worktree capacity: ${formatMiB(availableAllocatedBytes)} allocated bytes available; ` +
+      `${formatMiB(requiredAllocatedBytes)} required (${formatMiB(reserveAllocatedBytes)} allocated reserve + ` +
+      `${formatMiB(budgetAllocatedBytes)} allocated task budget).`,
     );
   }
-  return {availableBytes, requiredBytes, budgetBytes, reserveBytes, estimatedBytes};
+  return {
+    availableAllocatedBytes,
+    requiredAllocatedBytes,
+    budgetAllocatedBytes,
+    reserveAllocatedBytes,
+    projectedInitialAllocatedBytes,
+  };
 }
 
 export function classifyReapCandidate({
@@ -180,6 +198,7 @@ export function classifyReapCandidate({
   if (worktree.metadata?.status !== "terminal" && worktree.livePid === true) reasons.push("live_creator_pid");
   if (!worktree.metadata && !worktree.prunable) reasons.push("missing_terminal_metadata");
   if (worktree.metadata && worktree.metadata.status !== "terminal") reasons.push(`task_${worktree.metadata.status ?? "state_unknown"}`);
+  if (worktree.metadata && !hasValidStorageMetrics(worktree.metadata)) reasons.push("invalid_storage_metrics");
   if (worktree.ignoredInspectionAvailable === false) reasons.push("ignored_payload_inspection_unavailable");
   if ((worktree.unknownIgnoredPathCount ?? 0) > 0) reasons.push("unknown_ignored_payload");
   if (worktree.ageDays != null && worktree.ageDays < staleDays) reasons.push("recent");
@@ -235,7 +254,7 @@ export function executeTaskCommand({
     return doctorTask({options, context, runner, statfs});
   }
   if (options.command === "finish") {
-    return finishTask({options, context, runner, now});
+    return finishTask({options, context, runner, statfs, now});
   }
   if (options.command === "reap") {
     return reapTasks({options, context, runner, now});
@@ -363,18 +382,18 @@ function startTask({options, context, runner, statfs, now, pid}) {
     requestedSparsePaths: options.requestedSparsePaths,
     runner,
   });
-  const estimatedTrackedBytes = estimateTrackedBytes({
+  const estimatedTrackedLogicalBytes = estimateTrackedLogicalBytes({
     cwd: context.primaryRoot,
     baseSha: options.baseSha,
     sparsePaths: options.sparsePaths,
     runner,
   });
-  const estimatedBytes = estimatedTrackedBytes + 32 * MIB;
+  const projectedInitialAllocatedBytes = estimatedTrackedLogicalBytes + 32 * MIB;
   const capacity = assertCapacity({
-    availableBytes: availableBytesFromStatfs(statfs(context.primaryRoot)),
-    budgetBytes: options.budgetMiB * MIB,
-    reserveBytes: options.reserveMiB * MIB,
-    estimatedBytes,
+    availableAllocatedBytes: availableAllocatedBytesFromStatfs(statfs(context.primaryRoot)),
+    budgetAllocatedBytes: options.budgetMiB * MIB,
+    reserveAllocatedBytes: options.reserveMiB * MIB,
+    projectedInitialAllocatedBytes,
   });
 
   let registered = false;
@@ -394,15 +413,20 @@ function startTask({options, context, runner, statfs, now, pid}) {
       allowEmpty: true,
     });
     gitText({cwd: targetPath, args: ["checkout", "--force", options.branch], runner, allowEmpty: true});
-    const actualBytes = directorySize(targetPath);
-    if (actualBytes > capacity.budgetBytes) {
+    const initialMaterializedLogicalBytes = logicalDirectorySize(targetPath);
+    const initialMaterializedAllocatedBytes = allocatedDirectorySize(targetPath);
+    if (initialMaterializedAllocatedBytes == null) {
+      throw new Error("Unable to measure initial allocated task-worktree size.");
+    }
+    if (initialMaterializedAllocatedBytes > capacity.budgetAllocatedBytes) {
       throw new Error(
-        `Materialized task worktree ${formatMiB(actualBytes)} exceeds its ${formatMiB(capacity.budgetBytes)} budget.`,
+        `Materialized task worktree ${formatMiB(initialMaterializedAllocatedBytes)} allocated ` +
+        `exceeds its ${formatMiB(capacity.budgetAllocatedBytes)} allocated budget.`,
       );
     }
     const metadataPath = gitText({cwd: targetPath, args: ["rev-parse", "--git-path", "catch-task.json"], runner});
     const metadata = {
-      schema: "catch.harness-task/v1",
+      schema: TASK_METADATA_SCHEMA_V2,
       status: "active",
       taskId: options.taskId,
       baseSha: options.baseSha,
@@ -412,10 +436,12 @@ function startTask({options, context, runner, statfs, now, pid}) {
       worktreePath: targetPath,
       sparsePaths: options.sparsePaths,
       requestedSparsePaths: options.requestedSparsePaths,
-      budgetMiB: options.budgetMiB,
-      reserveMiB: options.reserveMiB,
-      estimatedTrackedBytes,
-      materializedBytes: actualBytes,
+      budgetAllocatedBytes: capacity.budgetAllocatedBytes,
+      reserveAllocatedBytes: capacity.reserveAllocatedBytes,
+      estimatedTrackedLogicalBytes,
+      projectedInitialAllocatedBytes,
+      initialMaterializedLogicalBytes,
+      initialMaterializedAllocatedBytes,
       creatorPid: pid,
       createdAt: now().toISOString(),
     };
@@ -449,14 +475,49 @@ function startTask({options, context, runner, statfs, now, pid}) {
   }
 }
 
-function doctorTask({options, context, runner, statfs}) {
-  const targetPath = resolveTargetWorktree(options.worktree, context.currentWorktree);
-  const record = findWorktreeRecord({targetPath, context, runner});
-  const inspection = inspectSingleWorktree({targetPath, context, runner, record, mergedInto: null});
+function inspectTaskIntegrity({inspection, targetPath, context, runner, statfs}) {
   const blockers = [];
   if (isOsTempPath(targetPath)) blockers.push("os_temp_path");
   if (!isInsidePath(context.canonicalRoot, targetPath)) blockers.push("outside_canonical_root");
   if (!inspection.metadata) blockers.push("missing_task_metadata");
+  if (inspection.metadata && path.resolve(inspection.metadata.worktreePath) !== targetPath) {
+    blockers.push("metadata_path_mismatch");
+  }
+  if (inspection.metadata && inspection.metadata.branch !== inspection.branch) blockers.push("metadata_branch_mismatch");
+  if (inspection.metadata && inspection.sparsePaths == null) blockers.push("sparse_checkout_missing");
+  if (inspection.metadata && inspection.sparsePaths && !sameStringSet(
+    inspection.metadata.sparsePaths,
+    inspection.sparsePaths,
+  )) blockers.push("sparse_checkout_metadata_mismatch");
+  if (!hasValidStorageMetrics(inspection.metadata)) blockers.push("invalid_storage_metrics");
+  if (inspection.materializedAllocatedBytes == null) blockers.push("materialized_allocated_size_unknown");
+  const budgetAllocatedBytes = taskBudgetAllocatedBytes(inspection.metadata);
+  if (budgetAllocatedBytes != null &&
+      inspection.materializedAllocatedBytes > budgetAllocatedBytes) {
+    blockers.push("materialized_allocated_budget_exceeded");
+  }
+  if (inspection.metadata && inspection.metadata.baseSha && !isAncestor({
+    cwd: targetPath,
+    ancestor: inspection.metadata.baseSha,
+    descendant: "HEAD",
+    runner,
+  })) blockers.push("base_not_ancestor_of_head");
+  blockers.push(...ignoredPayloadBlockers(inspection));
+  blockers.push(...inspection.dependencyHazards);
+  const availableAllocatedBytes = availableAllocatedBytesFromStatfs(statfs(targetPath));
+  const reserveAllocatedBytes = taskReserveAllocatedBytes(inspection.metadata);
+  if (reserveAllocatedBytes != null && availableAllocatedBytes < reserveAllocatedBytes) {
+    blockers.push("filesystem_reserve_exhausted");
+  }
+  return {blockers, availableAllocatedBytes};
+}
+
+function doctorTask({options, context, runner, statfs}) {
+  const targetPath = resolveTargetWorktree(options.worktree, context.currentWorktree);
+  const record = findWorktreeRecord({targetPath, context, runner});
+  const inspection = inspectSingleWorktree({targetPath, context, runner, record, mergedInto: null});
+  const integrity = inspectTaskIntegrity({inspection, targetPath, context, runner, statfs});
+  const blockers = [...integrity.blockers];
   if (inspection.metadata && !["active", "finishing", "terminal"].includes(inspection.metadata.status)) {
     blockers.push("invalid_task_state");
   }
@@ -467,42 +528,24 @@ function doctorTask({options, context, runner, statfs}) {
       inspection.lockReason !== `catch-task:${inspection.metadata.taskId}`) {
     blockers.push("task_lock_reason_mismatch");
   }
-  if (inspection.metadata && path.resolve(inspection.metadata.worktreePath) !== targetPath) {
-    blockers.push("metadata_path_mismatch");
-  }
-  if (inspection.metadata && inspection.metadata.branch !== inspection.branch) blockers.push("metadata_branch_mismatch");
-  if (inspection.metadata && inspection.sparsePaths == null) blockers.push("sparse_checkout_missing");
-  if (inspection.metadata && inspection.sparsePaths && !sameStringSet(
-    inspection.metadata.sparsePaths,
-    inspection.sparsePaths,
-  )) blockers.push("sparse_checkout_metadata_mismatch");
-  if (inspection.sizeBytes == null) blockers.push("materialized_size_unknown");
-  if (inspection.metadata?.budgetMiB && inspection.sizeBytes > inspection.metadata.budgetMiB * MIB) {
-    blockers.push("materialized_budget_exceeded");
-  }
-  if (inspection.metadata && inspection.metadata.baseSha && !isAncestor({
-    cwd: targetPath,
-    ancestor: inspection.metadata.baseSha,
-    descendant: "HEAD",
-    runner,
-  })) blockers.push("base_not_ancestor_of_head");
-  blockers.push(...inspection.dependencyHazards);
-  const capacity = availableBytesFromStatfs(statfs(targetPath));
-  if (inspection.metadata?.reserveMiB && capacity < inspection.metadata.reserveMiB * MIB) {
-    blockers.push("filesystem_reserve_exhausted");
-  }
   return {
     status: blockers.length === 0 ? 0 : 1,
-    result: {operation: "doctor", healthy: blockers.length === 0, blockers, availableBytes: capacity, worktree: inspection},
+    result: {
+      operation: "doctor",
+      healthy: blockers.length === 0,
+      blockers,
+      availableAllocatedBytes: integrity.availableAllocatedBytes,
+      worktree: inspection,
+    },
   };
 }
 
-function finishTask({options, context, runner, now}) {
+function finishTask({options, context, runner, statfs, now}) {
   const targetPath = resolveTargetWorktree(options.worktree, context.currentWorktree);
   const record = findWorktreeRecord({targetPath, context, runner});
   const inspection = inspectSingleWorktree({targetPath, context, runner, record, mergedInto: null});
-  const blockers = [];
-  if (!inspection.metadata) blockers.push("missing_task_metadata");
+  const integrity = inspectTaskIntegrity({inspection, targetPath, context, runner, statfs});
+  const blockers = [...integrity.blockers];
   if (inspection.metadata && !["active", "finishing"].includes(inspection.metadata.status)) {
     blockers.push("task_not_active");
   }
@@ -512,15 +555,18 @@ function finishTask({options, context, runner, now}) {
       inspection.lockReason !== `catch-task:${inspection.metadata.taskId}`) {
     blockers.push("task_lock_reason_mismatch");
   }
-  if (inspection.metadata && inspection.metadata.branch !== inspection.branch) blockers.push("metadata_branch_mismatch");
   if (!inspection.branch) blockers.push("detached_head");
   if (inspection.dirty !== false) blockers.push(inspection.dirty ? "dirty" : "cleanliness_unknown");
   if (!inspection.upstream) blockers.push("missing_upstream");
   if (inspection.ahead !== 0) blockers.push(inspection.ahead == null ? "push_state_unknown" : "unpushed_unique_commits");
-  if (inspection.branch && remoteBranchHead({cwd: targetPath, branch: inspection.branch, runner}) !== inspection.head) {
+  const remoteVerification = inspection.branch
+    ? inspectRemoteBranchHead({cwd: targetPath, branch: inspection.branch, expectedHead: inspection.head, runner})
+    : null;
+  if (remoteVerification && !remoteVerification.available) {
+    blockers.push("remote_head_query_unavailable");
+  } else if (remoteVerification && !remoteVerification.matched) {
     blockers.push("remote_head_not_preserved");
   }
-  blockers.push(...inspection.dependencyHazards);
   if (blockers.length === 0) {
     const metadataPath = gitText({cwd: targetPath, args: ["rev-parse", "--git-path", "catch-task.json"], runner});
     const finishingMetadata = {
@@ -555,6 +601,8 @@ function finishTask({options, context, runner, now}) {
       readyForHandoff: blockers.length === 0,
       deletionAuthorized: false,
       blockers,
+      availableAllocatedBytes: integrity.availableAllocatedBytes,
+      remoteVerification,
       worktree: inspection,
     },
   };
@@ -611,9 +659,9 @@ function reapTasks({options, context, runner, now}) {
       worktrees.filter((item) => item.classification === classification).length,
     ]),
   );
-  const ownerReviewBytes = worktrees
+  const ownerReviewAllocatedBytes = worktrees
     .filter((item) => item.classification === "owner_review")
-    .reduce((sum, item) => sum + (item.sizeBytes ?? 0), 0);
+    .reduce((sum, item) => sum + (item.materializedAllocatedBytes ?? 0), 0);
   const legacyReviewCandidates = worktrees.filter((item) =>
     !item.metadata &&
     item.prunable !== true &&
@@ -639,12 +687,15 @@ function reapTasks({options, context, runner, now}) {
     },
     staleDays: options.staleDays,
     counts,
-    ownerReviewBytes,
+    ownerReviewAllocatedBytes,
     legacyReview: {
       deletionAuthorized: false,
       reason: "activity_and_terminal_ownership_unknown",
       count: legacyReviewCandidates.length,
-      bytes: legacyReviewCandidates.reduce((sum, item) => sum + (item.sizeBytes ?? 0), 0),
+      allocatedBytes: legacyReviewCandidates.reduce(
+        (sum, item) => sum + (item.materializedAllocatedBytes ?? 0),
+        0,
+      ),
       paths: legacyReviewCandidates.map((item) => item.path),
     },
     worktrees,
@@ -686,7 +737,8 @@ function inspectSingleWorktree({targetPath, context, runner, record = {}, merged
     unknownIgnoredPathCount: 0,
     unknownIgnoredPathSample: [],
     sparsePaths: null,
-    sizeBytes: exists ? allocatedDirectorySize(resolved) : 0,
+    materializedAllocatedBytes: exists ? allocatedDirectorySize(resolved) : 0,
+    materializedAllocatedDeltaBytes: null,
   };
   if (!exists || prunable) return inspection;
   const status = gitResult({cwd: resolved, args: ["status", "--porcelain"], runner, tolerateFailure: true});
@@ -753,6 +805,12 @@ function inspectSingleWorktree({targetPath, context, runner, record = {}, merged
     inspection.headAgeDays = Math.max(0, (now().getTime() / 1000 - Number(commitTime.stdout.trim())) / 86400);
   }
   inspection.metadata = readTaskMetadata({cwd: resolved, runner});
+  if (inspection.metadata?.schema === TASK_METADATA_SCHEMA_V2 &&
+      Number.isFinite(inspection.metadata.initialMaterializedAllocatedBytes) &&
+      inspection.materializedAllocatedBytes != null) {
+    inspection.materializedAllocatedDeltaBytes =
+      inspection.materializedAllocatedBytes - inspection.metadata.initialMaterializedAllocatedBytes;
+  }
   const activityValue = inspection.metadata?.status === "terminal"
     ? inspection.metadata.finishedAt
     : inspection.metadata?.createdAt;
@@ -780,7 +838,7 @@ function readTaskMetadata({cwd, runner}) {
   if (location.status !== 0 || !fs.existsSync(location.stdout.trim())) return null;
   try {
     const value = JSON.parse(fs.readFileSync(location.stdout.trim(), "utf8"));
-    return value?.schema === "catch.harness-task/v1" ? value : null;
+    return SUPPORTED_TASK_METADATA_SCHEMAS.has(value?.schema) ? value : null;
   } catch {
     return null;
   }
@@ -830,7 +888,7 @@ function isAllowlistedIgnoredPath(relativePath) {
   return /(^|\/)\.flutter-plugins-dependencies$/u.test(normalized);
 }
 
-function estimateTrackedBytes({cwd, baseSha, sparsePaths, runner}) {
+function estimateTrackedLogicalBytes({cwd, baseSha, sparsePaths, runner}) {
   const requestedPaths = sparsePaths.map((entry) => entry.replace(/^\//u, "").replace(/\/$/u, ""));
   const result = gitResult({
     cwd,
@@ -865,16 +923,33 @@ function validateRequestedSparsePaths({cwd, baseSha, requestedSparsePaths, runne
   }
 }
 
-function remoteBranchHead({cwd, branch, runner}) {
+function inspectRemoteBranchHead({cwd, branch, expectedHead, runner}) {
   const result = gitResult({
     cwd,
     args: ["ls-remote", "--heads", "origin", `refs/heads/${branch}`],
     runner,
     tolerateFailure: true,
   });
-  if (result.status !== 0) return null;
+  if (result.status !== 0) {
+    return {
+      available: false,
+      branch,
+      expectedHead,
+      remoteHead: null,
+      matched: false,
+      error: "origin_head_query_failed",
+    };
+  }
   const match = result.stdout.trim().match(/^([0-9a-f]{40})\s/u);
-  return match?.[1] ?? null;
+  const remoteHead = match?.[1] ?? null;
+  return {
+    available: true,
+    branch,
+    expectedHead,
+    remoteHead,
+    matched: remoteHead === expectedHead,
+    error: null,
+  };
 }
 
 function loadRemoteHeads({cwd, runner}) {
@@ -916,12 +991,57 @@ function isProcessLive(pid) {
   }
 }
 
-function directorySize(targetPath) {
+function logicalDirectorySize(targetPath) {
   const stat = fs.lstatSync(targetPath);
   if (stat.isSymbolicLink() || !stat.isDirectory()) return stat.size;
   let total = stat.size;
-  for (const entry of fs.readdirSync(targetPath)) total += directorySize(path.join(targetPath, entry));
+  for (const entry of fs.readdirSync(targetPath)) {
+    total += logicalDirectorySize(path.join(targetPath, entry));
+  }
   return total;
+}
+
+function taskBudgetAllocatedBytes(metadata) {
+  if (!metadata) return null;
+  if (metadata.schema === TASK_METADATA_SCHEMA_V2) return metadata.budgetAllocatedBytes;
+  return Number.isFinite(metadata.budgetMiB) ? metadata.budgetMiB * MIB : null;
+}
+
+function taskReserveAllocatedBytes(metadata) {
+  if (!metadata) return null;
+  if (metadata.schema === TASK_METADATA_SCHEMA_V2) return metadata.reserveAllocatedBytes;
+  return Number.isFinite(metadata.reserveMiB) ? metadata.reserveMiB * MIB : null;
+}
+
+function hasValidStorageMetrics(metadata) {
+  if (!metadata) return true;
+  if (metadata.schema === TASK_METADATA_SCHEMA_V1) {
+    return positiveFinite(metadata.budgetMiB) && positiveFinite(metadata.reserveMiB);
+  }
+  if (metadata.schema !== TASK_METADATA_SCHEMA_V2) return false;
+  return positiveFinite(metadata.budgetAllocatedBytes) &&
+    positiveFinite(metadata.reserveAllocatedBytes) &&
+    nonnegativeFinite(metadata.estimatedTrackedLogicalBytes) &&
+    nonnegativeFinite(metadata.projectedInitialAllocatedBytes) &&
+    nonnegativeFinite(metadata.initialMaterializedLogicalBytes) &&
+    nonnegativeFinite(metadata.initialMaterializedAllocatedBytes);
+}
+
+function positiveFinite(value) {
+  return Number.isFinite(value) && value > 0;
+}
+
+function nonnegativeFinite(value) {
+  return Number.isFinite(value) && value >= 0;
+}
+
+function ignoredPayloadBlockers(inspection) {
+  const blockers = [];
+  if (inspection.ignoredInspectionAvailable !== true) {
+    blockers.push("ignored_payload_inspection_unavailable");
+  }
+  if ((inspection.unknownIgnoredPathCount ?? 0) > 0) blockers.push("unknown_ignored_payload");
+  return blockers;
 }
 
 function allocatedDirectorySize(targetPath) {
