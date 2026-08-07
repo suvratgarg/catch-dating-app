@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {spawnSync} from "node:child_process";
+import {spawn, spawnSync} from "node:child_process";
+import {randomUUID} from "node:crypto";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -9,13 +10,26 @@ import {
   toolSupportsPlatform,
   validateToolPlatforms,
 } from "./lib/tool_platform.mjs";
+import {digestTaskStart} from "./agent/lib/task_input.mjs";
+import {
+  acquireTaskExecutionLease,
+  createTaskAuthorityFile,
+  deriveTaskStartContractAtBase,
+  readTaskExecutionContext,
+  taskPlanningAuthorityBlockers,
+  taskProcessIsolationBlockers,
+  taskStartContractFromMetadata,
+} from "./harness/lib/task_execution_context.mjs";
+import {executeTaskCommand} from "./harness/lib/worktree_lifecycle.mjs";
 
 const repositoryRoot = process.cwd();
 const sparseExecutableClosure = [
   "/tool/agent/context_pack.mjs",
   "/tool/agent/lib/task_input.mjs",
   "/tool/docs/check_doc_version_monotonic.mjs",
+  "/tool/docs/check_doc_version_monotonic.test.mjs",
   "/tool/harness/lib/component_graph.mjs",
+  "/tool/harness/lib/task_execution_context.mjs",
   "/tool/harness/lib/worktree_lifecycle.mjs",
   "/tool/harness/lib/task_contract.mjs",
   "/tool/lib/repo_paths.mjs",
@@ -26,6 +40,10 @@ const sparseExecutableClosure = [
 ];
 const materializedSnapshotInputClosure = [
   ...sparseExecutableClosure,
+  "/lib/fixture_scope.txt",
+  "/tool/agent/check_agent_readiness.mjs",
+  "/tool/check_enforcement_integrity.mjs",
+  "/tool/check_repository_root_hygiene.mjs",
   "/AGENTS.md",
   "/docs/README.md",
   "/docs/agent_operating_model.md",
@@ -230,6 +248,28 @@ test("shared task-input ownership stays exact and needs only Node setup", () => 
   assert.deepEqual(payload.fullReasons, []);
 });
 
+test("shared task-phase authority is dual-owned and remains full-control-plane", () => {
+  const result = run([
+    "affected-tools",
+    "--paths",
+    "tool/harness/lib/task_execution_context.mjs",
+    "--json",
+  ]);
+  assert.equal(result.status, 0, result.stderr);
+  const payload = JSON.parse(result.stdout);
+  assert.equal(payload.mode, "full");
+  assert.equal(payload.full, true);
+  assert.deepEqual(
+    payload.ownersByPath["tool/harness/lib/task_execution_context.mjs"],
+    ["agent:harness-v2", "tool:runner"],
+  );
+  assert.deepEqual(payload.toolIds, []);
+  assert.ok(payload.fullReasons.includes(
+    "control-plane path changed: tool/harness/lib/task_execution_context.mjs",
+  ));
+  assert.deepEqual(payload.unmappedPaths, []);
+});
+
 test("affected-tool routing ignores companion files owned by other lanes", () => {
   const result = run([
     "affected-tools",
@@ -266,8 +306,13 @@ test("affected-tool routing cannot ignore declared full-impact companions", () =
   }
 });
 
-test("affected-tool routing fails closed for any unmapped lane input", () => {
-  const result = run([
+test("affected-tool routing fails closed for any unmapped lane input", (context) => {
+  const temporaryRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-full-lane-"));
+  context.after(() => fs.rmSync(temporaryRoot, {recursive: true, force: true}));
+  createSnapshotFixtureClone(temporaryRoot, {
+    checkoutPaths: materializedSnapshotInputClosure,
+  });
+  const result = runNode(temporaryRoot, ["tool/run.mjs",
     "affected-tools",
     "--paths",
     "design/screens/catch.screens.json",
@@ -278,7 +323,7 @@ test("affected-tool routing fails closed for any unmapped lane input", () => {
   assert.equal(payload.mode, "full");
   assert.deepEqual(payload.unmappedPaths, ["design/screens/catch.screens.json"]);
 
-  const execution = run([
+  const execution = runNode(temporaryRoot, ["tool/run.mjs",
     "affected-tools",
     "--paths",
     "design/screens/catch.screens.json",
@@ -381,6 +426,641 @@ test("tool manifest validation binds taskPaths to existing index-view inputs", (
   assert.match(malformed.stderr, /taskPaths must be an array of non-empty strings/u);
 });
 
+test("managed workers reject parent, mixed, unplanned, platform, and direct execution atomically", (context) => {
+  const primaryRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-task-phase-"));
+  context.after(() => fs.rmSync(primaryRoot, {recursive: true, force: true}));
+  createSnapshotFixtureClone(primaryRoot, {
+    checkoutPaths: materializedSnapshotInputClosure,
+  });
+  const {metadata, taskRoot} = createManagedTaskFixture(primaryRoot);
+  const allowedId = metadata.contextPack.checkIds[0];
+  const deferredId = metadata.contextPack.deferredCheckIds.find((id) => id === "audit:registry") ??
+    metadata.contextPack.deferredCheckIds[0];
+  const manifest = configureTaskPhaseSentinel({
+    root: taskRoot,
+    allowedId,
+    deferredId,
+  });
+  const unplannedId = manifest.tools.find((tool) =>
+    tool.status === "active" &&
+    !metadata.contextPack.checkIds.includes(tool.id) &&
+    !metadata.contextPack.deferredCheckIds.includes(tool.id))?.id;
+  assert.ok(unplannedId);
+  const deferredCategory = manifest.tools.find((tool) => tool.id === deferredId).category;
+  const sentinelPath = path.join(taskRoot, "task-phase-sentinel.txt");
+  const githubOutput = path.join(taskRoot, "task-phase-github-output.txt");
+
+  const cases = [
+    {
+      args: ["tool/run.mjs", "check", deferredId],
+      reason: `parent_deferred_check:${deferredId}`,
+    },
+    {
+      args: ["tool/run.mjs", "check", allowedId, deferredId],
+      reason: `parent_deferred_check:${deferredId}`,
+    },
+    {
+      args: ["tool/run.mjs", "check", unplannedId],
+      reason: `unplanned_task_check:${unplannedId}`,
+    },
+    {
+      args: ["tool/run.mjs", "check", "--category", deferredCategory],
+    },
+    {
+      args: [
+        "tool/run.mjs",
+        "impacted",
+        "--paths",
+        "contracts/firestore/users.schema.json",
+        "--check",
+      ],
+    },
+    {
+      args: [
+        "tool/run.mjs",
+        "affected-tools",
+        "--paths",
+        "tool/docs/check_doc_version_monotonic.mjs",
+        "--check",
+        "--github-output",
+        githubOutput,
+      ],
+    },
+    {
+      args: [
+        "tool/run.mjs",
+        "affected-tools",
+        "--paths",
+        "tool/docs/check_doc_version_monotonic.mjs",
+        "--github-output",
+        githubOutput,
+      ],
+    },
+    {
+      args: ["tool/run.mjs", "run", deferredId],
+      reason: `parent_owned_direct_execution:${deferredId}`,
+    },
+    {
+      args: ["tool/run.mjs", "exec", deferredId],
+      reason: `parent_owned_direct_execution:${deferredId}`,
+    },
+  ];
+  for (const fixture of cases) {
+    fs.rmSync(sentinelPath, {force: true});
+    fs.rmSync(githubOutput, {force: true});
+    const result = runNode(taskRoot, fixture.args);
+    assert.equal(result.status, 77, result.stderr || result.stdout);
+    if (fixture.reason) assert.match(result.stderr, new RegExp(fixture.reason));
+    assert.doesNotMatch(result.stdout, /==>/u);
+    assert.equal(fs.existsSync(sentinelPath), false, fixture.args.join(" "));
+    assert.equal(fs.existsSync(githubOutput), false, fixture.args.join(" "));
+    assert.equal(fs.existsSync(path.join(taskRoot, ".dart_tool")), false);
+  }
+
+  const manifestOnly = runNode(taskRoot, [
+    "tool/run.mjs",
+    "check",
+    "--manifest-only",
+  ]);
+  assertSuccessful(manifestOnly);
+
+  const allowed = runNode(taskRoot, [
+    "tool/run.mjs",
+    "check",
+    allowedId,
+  ]);
+  assertSuccessful(allowed);
+  assert.match(allowed.stdout, new RegExp(`==> ${allowedId}`));
+  assert.equal(fs.readFileSync(sentinelPath, "utf8"), "child-dispatched\n");
+});
+
+test("parent authority rejects coherent worker scope and base forgeries", (context) => {
+  const primaryRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-task-forgery-"));
+  context.after(() => fs.rmSync(primaryRoot, {recursive: true, force: true}));
+  createSnapshotFixtureClone(primaryRoot, {checkoutPaths: materializedSnapshotInputClosure});
+  const {metadata, taskRoot} = createManagedTaskFixture(primaryRoot);
+  const allowedId = metadata.contextPack.checkIds[0];
+  const originalCheckIds = new Set(metadata.contextPack.checkIds);
+  const deferredId = metadata.contextPack.deferredCheckIds[0];
+  configureTaskPhaseSentinel({root: taskRoot, allowedId, deferredId});
+  const sentinelPath = path.join(taskRoot, "task-phase-sentinel.txt");
+  const authorityPath = taskAuthorityPath(taskRoot);
+  const authorityBefore = fs.readFileSync(authorityPath, "utf8");
+  let forgedCheckId = null;
+
+  writeManagedTaskMetadata(taskRoot, (forged) => {
+    forged.baseSha = gitText(taskRoot, ["rev-parse", "HEAD^"]);
+    forged.contextPack.sourceSha = forged.baseSha;
+    forged.ownedPaths = ["lib/fixture_scope.txt", "tool"];
+    forged.plannedImpactPaths = ["tool/run.mjs"];
+    const expected = deriveTaskStartContractAtBase({metadata: forged, cwd: taskRoot});
+    forgedCheckId = expected.checkIds.find((id) => !originalCheckIds.has(id)) ?? null;
+    Object.assign(forged.contextPack, {
+      digest: expected.digest,
+      checkIds: expected.checkIds,
+      deferredCheckIds: expected.deferredCheckIds,
+      deferredRegressionIds: expected.deferredRegressionIds,
+      supportPaths: expected.supportPaths,
+      requiredEntrypoints: expected.requiredEntrypoints,
+    });
+  });
+  assert.ok(forgedCheckId, "forged scope must promote a previously unauthorized check");
+
+  const result = runNode(taskRoot, ["tool/run.mjs", "check", forgedCheckId]);
+  assert.equal(result.status, 77, result.stderr || result.stdout);
+  assert.match(result.stderr, /task_authority_metadata_mismatch/u);
+  assert.doesNotMatch(result.stdout, /==>/u);
+  assert.equal(fs.existsSync(sentinelPath), false);
+  assert.equal(fs.readFileSync(authorityPath, "utf8"), authorityBefore);
+});
+
+test("managed execution requires live registration and the authority-bound worktree lock", (context) => {
+  const primaryRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-task-binding-"));
+  context.after(() => fs.rmSync(primaryRoot, {recursive: true, force: true}));
+  createSnapshotFixtureClone(primaryRoot, {checkoutPaths: materializedSnapshotInputClosure});
+  const {metadata, taskRoot} = createManagedTaskFixture(primaryRoot);
+  const allowedId = metadata.contextPack.checkIds[0];
+  const deferredId = metadata.contextPack.deferredCheckIds[0];
+  configureTaskPhaseSentinel({root: taskRoot, allowedId, deferredId});
+  const sentinelPath = path.join(taskRoot, "task-phase-sentinel.txt");
+
+  runGit(primaryRoot, ["worktree", "unlock", taskRoot]);
+  const unlocked = runNode(taskRoot, ["tool/run.mjs", "check", allowedId]);
+  assert.equal(unlocked.status, 77, unlocked.stderr || unlocked.stdout);
+  assert.match(unlocked.stderr, /active_worktree_not_locked/u);
+  assert.equal(fs.existsSync(sentinelPath), false);
+
+  runGit(primaryRoot, ["worktree", "lock", "--reason", "catch-task:wrong-authority", taskRoot]);
+  const wrongReason = runNode(taskRoot, ["tool/run.mjs", "check", allowedId]);
+  assert.equal(wrongReason.status, 77, wrongReason.stderr || wrongReason.stdout);
+  assert.match(wrongReason.stderr, /task_lock_reason_mismatch/u);
+  assert.equal(fs.existsSync(sentinelPath), false);
+
+  const missingRegistration = readTaskExecutionContext({
+    cwd: taskRoot,
+    gitRunner: ({cwd, args}) => args[0] === "worktree"
+      ? processResult("")
+      : spawnSync("git", args, {cwd, encoding: "utf8"}),
+  });
+  assert.equal(missingRegistration.kind, "blocked");
+  assert.ok(missingRegistration.blockers.includes("task_worktree_not_registered"));
+
+  runGit(primaryRoot, ["worktree", "unlock", taskRoot]);
+  runGit(primaryRoot, [
+    "worktree",
+    "lock",
+    "--reason",
+    `catch-task:${metadata.taskId}:${metadata.authorityId}`,
+    taskRoot,
+  ]);
+  const allowed = runNode(taskRoot, ["tool/run.mjs", "check", allowedId]);
+  assertSuccessful(allowed);
+  assert.equal(fs.readFileSync(sentinelPath, "utf8"), "child-dispatched\n");
+});
+
+test("managed execution rejects live command-definition drift for an allowed id", (context) => {
+  const primaryRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-task-command-drift-"));
+  context.after(() => fs.rmSync(primaryRoot, {recursive: true, force: true}));
+  createSnapshotFixtureClone(primaryRoot, {checkoutPaths: materializedSnapshotInputClosure});
+  const {allowedId, deferredId, taskRoot} = createManagedTaskFixture(primaryRoot);
+  configureTaskPhaseSentinel({root: taskRoot, allowedId, deferredId});
+  const manifestPath = path.join(taskRoot, "tool", "tools_manifest.json");
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+  const selected = manifest.tools.find((tool) => tool.id === allowedId);
+  const unauthorizedScript = path.join(taskRoot, "tool", "fixtures", "unauthorized_task_command.mjs");
+  const unauthorizedSentinel = path.join(taskRoot, "unauthorized-task-command.txt");
+  fs.mkdirSync(path.dirname(unauthorizedScript), {recursive: true});
+  fs.writeFileSync(
+    unauthorizedScript,
+    'import fs from "node:fs";\nfs.writeFileSync("unauthorized-task-command.txt", "ran\\n");\n',
+  );
+  selected.checks = ["node tool/fixtures/unauthorized_task_command.mjs"];
+  fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+  runGit(taskRoot, [
+    "add",
+    "--sparse",
+    "tool/tools_manifest.json",
+    "tool/fixtures/unauthorized_task_command.mjs",
+  ]);
+
+  const result = runNode(taskRoot, ["tool/run.mjs", "check", allowedId]);
+  assert.equal(result.status, 77, result.stderr || result.stdout);
+  assert.match(result.stderr, new RegExp(`task_tool_definition_drift:${allowedId}`));
+  assert.equal(fs.existsSync(unauthorizedSentinel), false);
+
+  configureTaskPhaseSentinel({root: taskRoot, allowedId, deferredId});
+  const planningManifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+  planningManifest.ciImpact.mandatoryCheckIds = [allowedId];
+  planningManifest.tools.find((tool) => tool.id === allowedId).impactPaths = [
+    "tool/fixtures/promoted_scope.txt",
+  ];
+  const planningContext = readTaskExecutionContext({cwd: taskRoot});
+  assert.deepEqual(
+    taskPlanningAuthorityBlockers({
+      context: planningContext,
+      sources: [{relativePath: "tool/tools_manifest.json", value: planningManifest}],
+      cwd: taskRoot,
+    }),
+    ["task_planning_authority_drift:tool/tools_manifest.json"],
+  );
+  assert.deepEqual(
+    taskProcessIsolationBlockers({context: planningContext, platform: "win32"}),
+    ["task_process_group_isolation_unavailable"],
+  );
+});
+
+test("execution and finish share one lease across the complete child lifetime", async (context) => {
+  const primaryRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-task-lease-"));
+  const synchronizationRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-task-sync-"));
+  context.after(() => fs.rmSync(primaryRoot, {recursive: true, force: true}));
+  context.after(() => fs.rmSync(synchronizationRoot, {recursive: true, force: true}));
+  createSnapshotFixtureClone(primaryRoot, {checkoutPaths: materializedSnapshotInputClosure});
+  const {metadata, taskRoot} = createManagedTaskFixture(primaryRoot);
+  const allowedId = metadata.contextPack.checkIds[0];
+  const deferredId = metadata.contextPack.deferredCheckIds[0];
+  const startedPath = path.join(synchronizationRoot, "started");
+  const releasePath = path.join(synchronizationRoot, "release");
+  configureTaskPhaseSentinel({
+    root: taskRoot,
+    allowedId,
+    deferredId,
+    script: [
+      'import fs from "node:fs";',
+      'import {spawn} from "node:child_process";',
+      "const source = [",
+      "  'const fs = require(\\\"node:fs\\\");',",
+      "  'const waitArray = new Int32Array(new SharedArrayBuffer(4));',",
+      "  'while (!fs.existsSync(process.env.CATCH_TEST_RELEASE)) Atomics.wait(waitArray, 0, 0, 20);',",
+      "  'fs.writeFileSync(\\\"task-phase-sentinel.txt\\\", \\\"child-dispatched\\\\n\\\");',",
+      "].join('\\n');",
+      "const background = spawn(process.execPath, ['-e', source], {",
+      "  env: process.env,",
+      "  stdio: 'ignore',",
+      "});",
+      "background.unref();",
+      'fs.writeFileSync(process.env.CATCH_TEST_STARTED, "foreground-returned\\n");',
+      "",
+    ].join("\n"),
+  });
+
+  const finishGate = acquireTaskExecutionLease({cwd: taskRoot, owner: "task-finish-test"});
+  assert.equal(finishGate.acquired, true);
+  const deniedWhileFinishing = runNode(taskRoot, ["tool/run.mjs", "check", allowedId]);
+  assert.equal(deniedWhileFinishing.status, 77, deniedWhileFinishing.stderr);
+  assert.match(deniedWhileFinishing.stderr, /task_execution_lease_active/u);
+  assert.equal(fs.existsSync(path.join(taskRoot, "task-phase-sentinel.txt")), false);
+  finishGate.release();
+
+  const child = spawn(process.execPath, ["tool/run.mjs", "check", allowedId], {
+    cwd: taskRoot,
+    env: {
+      ...process.env,
+      GIT_CONFIG_NOSYSTEM: "1",
+      CATCH_TEST_STARTED: startedPath,
+      CATCH_TEST_RELEASE: releasePath,
+    },
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+  const childResultPromise = collectChildResult(child);
+  context.after(() => {
+    if (child.exitCode == null) child.kill("SIGKILL");
+  });
+  await waitForPath(startedPath);
+  await new Promise((resolve) => setTimeout(resolve, 100));
+  assert.equal(child.exitCode, null, "wrapper must wait for background process-group members");
+
+  const finish = executeTaskCommand({args: ["finish"], cwd: taskRoot});
+  assert.equal(finish.status, 1);
+  assert.deepEqual(finish.result.blockers, ["task_execution_lease_active"]);
+  assert.equal(JSON.parse(fs.readFileSync(taskMetadataPath(taskRoot), "utf8")).status, "active");
+  assert.match(
+    gitText(primaryRoot, ["worktree", "list", "--porcelain"]),
+    new RegExp(`locked catch-task:${metadata.taskId}:${metadata.authorityId}`),
+  );
+
+  fs.writeFileSync(releasePath, "release\n");
+  const childResult = await childResultPromise;
+  assert.equal(childResult.status, 0, childResult.stderr || childResult.stdout);
+  assert.equal(fs.existsSync(taskGatePath(taskRoot)), false);
+  const afterChild = executeTaskCommand({args: ["finish"], cwd: taskRoot});
+  assert.equal(afterChild.result.blockers.includes("task_execution_lease_active"), false);
+});
+
+test("a crashed runner cannot release the gate while its check process group survives", async (context) => {
+  const primaryRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-task-orphan-"));
+  const synchronizationRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-task-orphan-sync-"));
+  context.after(() => fs.rmSync(primaryRoot, {recursive: true, force: true}));
+  context.after(() => fs.rmSync(synchronizationRoot, {recursive: true, force: true}));
+  createSnapshotFixtureClone(primaryRoot, {checkoutPaths: materializedSnapshotInputClosure});
+  const {metadata, taskRoot} = createManagedTaskFixture(primaryRoot);
+  const allowedId = metadata.contextPack.checkIds[0];
+  const deferredId = metadata.contextPack.deferredCheckIds[0];
+  const startedPath = path.join(synchronizationRoot, "started");
+  const releasePath = path.join(synchronizationRoot, "release");
+  const completedPath = path.join(synchronizationRoot, "completed");
+  context.after(() => {
+    if (fs.existsSync(synchronizationRoot)) fs.writeFileSync(releasePath, "release\n");
+  });
+  configureTaskPhaseSentinel({
+    root: taskRoot,
+    allowedId,
+    deferredId,
+    script: [
+      'import fs from "node:fs";',
+      'fs.writeFileSync(process.env.CATCH_TEST_STARTED, "started\\n");',
+      "const waitArray = new Int32Array(new SharedArrayBuffer(4));",
+      "while (!fs.existsSync(process.env.CATCH_TEST_RELEASE)) Atomics.wait(waitArray, 0, 0, 20);",
+      'fs.writeFileSync(process.env.CATCH_TEST_COMPLETED, "completed\\n");',
+      "",
+    ].join("\n"),
+  });
+
+  const runner = spawn(process.execPath, ["tool/run.mjs", "check", allowedId], {
+    cwd: taskRoot,
+    env: {
+      ...process.env,
+      GIT_CONFIG_NOSYSTEM: "1",
+      CATCH_TEST_STARTED: startedPath,
+      CATCH_TEST_RELEASE: releasePath,
+      CATCH_TEST_COMPLETED: completedPath,
+    },
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+  const runnerResultPromise = collectChildResult(runner);
+  await waitForPath(startedPath);
+  const childRecord = await waitForTaskChildRecord(taskRoot);
+  process.kill(childRecord.pid, "SIGKILL");
+  await new Promise((resolve) => setTimeout(resolve, 100));
+  assert.doesNotThrow(() => process.kill(-childRecord.processGroupId, 0));
+  const runnerExitPromise = new Promise((resolve) => runner.once("exit", resolve));
+  assert.equal(runner.kill("SIGKILL"), true);
+  await runnerExitPromise;
+
+  const recoveryWhileChildRuns = executeTaskCommand({args: ["recover-lease"], cwd: taskRoot});
+  assert.equal(recoveryWhileChildRuns.status, 1);
+  assert.deepEqual(recoveryWhileChildRuns.result.blockers, ["task_execution_lease_active"]);
+  const finishWhileChildRuns = executeTaskCommand({args: ["finish"], cwd: taskRoot});
+  assert.equal(finishWhileChildRuns.status, 1);
+  assert.deepEqual(finishWhileChildRuns.result.blockers, ["task_execution_lease_active"]);
+
+  fs.writeFileSync(releasePath, "release\n");
+  await waitForPath(completedPath);
+  const runnerResult = await runnerResultPromise;
+  assert.equal(runnerResult.status, null);
+  assert.equal(runnerResult.signal, "SIGKILL");
+  const recovered = executeTaskCommand({args: ["recover-lease"], cwd: taskRoot});
+  assert.equal(recovered.status, 0, JSON.stringify(recovered.result));
+  assert.equal(recovered.result.recovered, true);
+  assert.equal(fs.existsSync(taskGatePath(taskRoot)), false);
+});
+
+test("SIGINT cancels a background-only managed check group and releases the gate", async (context) => {
+  const primaryRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-task-cancel-"));
+  const synchronizationRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-task-cancel-sync-"));
+  context.after(() => fs.rmSync(primaryRoot, {recursive: true, force: true}));
+  context.after(() => fs.rmSync(synchronizationRoot, {recursive: true, force: true}));
+  createSnapshotFixtureClone(primaryRoot, {checkoutPaths: materializedSnapshotInputClosure});
+  const {allowedId, deferredId, taskRoot} = createManagedTaskFixture(primaryRoot);
+  const startedPath = path.join(synchronizationRoot, "started");
+  configureTaskPhaseSentinel({
+    root: taskRoot,
+    allowedId,
+    deferredId,
+    script: [
+      'import fs from "node:fs";',
+      'import {spawn} from "node:child_process";',
+      "const background = spawn(process.execPath, ['-e', 'setInterval(() => {}, 1000)'], {",
+      "  stdio: 'ignore',",
+      "});",
+      "background.unref();",
+      'fs.writeFileSync(process.env.CATCH_TEST_STARTED, "foreground-returned\\n");',
+      "",
+    ].join("\n"),
+  });
+
+  const runner = spawn(process.execPath, ["tool/run.mjs", "check", allowedId], {
+    cwd: taskRoot,
+    env: {
+      ...process.env,
+      GIT_CONFIG_NOSYSTEM: "1",
+      CATCH_TEST_STARTED: startedPath,
+    },
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+  const resultPromise = collectChildResult(runner);
+  context.after(() => {
+    if (runner.exitCode == null) runner.kill("SIGKILL");
+  });
+  await waitForPath(startedPath);
+  const childRecord = await waitForTaskChildRecord(taskRoot);
+  await new Promise((resolve) => setTimeout(resolve, 150));
+  assert.equal(runner.exitCode, null);
+  assert.doesNotThrow(() => process.kill(-childRecord.processGroupId, 0));
+  assert.equal(runner.kill("SIGINT"), true);
+  const result = await resultPromise;
+  assert.equal(result.status, 130, result.stderr || result.stdout);
+  assert.equal(result.signal, null);
+  assert.equal(fs.existsSync(taskGatePath(taskRoot)), false);
+});
+
+test("a failed child releases the task execution lease", (context) => {
+  const primaryRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-task-failed-lease-"));
+  context.after(() => fs.rmSync(primaryRoot, {recursive: true, force: true}));
+  createSnapshotFixtureClone(primaryRoot, {checkoutPaths: materializedSnapshotInputClosure});
+  const {metadata, taskRoot} = createManagedTaskFixture(primaryRoot);
+  const allowedId = metadata.contextPack.checkIds[0];
+  const deferredId = metadata.contextPack.deferredCheckIds[0];
+  configureTaskPhaseSentinel({
+    root: taskRoot,
+    allowedId,
+    deferredId,
+    script: "process.exit(9);\n",
+  });
+  const failed = runNode(taskRoot, ["tool/run.mjs", "check", allowedId]);
+  assert.equal(failed.status, 9, failed.stderr || failed.stdout);
+  assert.equal(fs.existsSync(taskGatePath(taskRoot)), false);
+
+  configureTaskPhaseSentinel({root: taskRoot, allowedId, deferredId});
+  const retried = runNode(taskRoot, ["tool/run.mjs", "check", allowedId]);
+  assertSuccessful(retried);
+  assert.equal(fs.existsSync(taskGatePath(taskRoot)), false);
+});
+
+test("managed execution rechecks live task state before every child", (context) => {
+  const primaryRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-task-recheck-"));
+  context.after(() => fs.rmSync(primaryRoot, {recursive: true, force: true}));
+  createSnapshotFixtureClone(primaryRoot, {checkoutPaths: materializedSnapshotInputClosure});
+  const {allowedId, deferredId, taskRoot} = createManagedTaskFixture(primaryRoot, {
+    allowedCheckCount: 2,
+  });
+  const countPath = path.join(taskRoot, "task-phase-count.txt");
+  configureTaskPhaseSentinel({
+    root: taskRoot,
+    allowedId,
+    deferredId,
+    allowedCheckCount: 2,
+    script: [
+      'import fs from "node:fs";',
+      'import {spawnSync} from "node:child_process";',
+      'const countPath = "task-phase-count.txt";',
+      'const count = fs.existsSync(countPath) ? Number(fs.readFileSync(countPath, "utf8")) + 1 : 1;',
+      'fs.writeFileSync(countPath, String(count));',
+      'if (count === 1) {',
+      '  const location = spawnSync("git", ["rev-parse", "--git-path", "catch-task.json"], {encoding: "utf8"});',
+      '  const metadataPath = location.stdout.trim();',
+      '  const metadata = JSON.parse(fs.readFileSync(metadataPath, "utf8"));',
+      '  metadata.status = "finishing";',
+      '  fs.writeFileSync(metadataPath, `${JSON.stringify(metadata, null, 2)}\\n`);',
+      '}',
+      "",
+    ].join("\n"),
+  });
+
+  const result = runNode(taskRoot, ["tool/run.mjs", "check", allowedId]);
+  assert.equal(result.status, 77, result.stderr || result.stdout);
+  assert.match(result.stderr, /task_phase_not_active:finishing/u);
+  assert.equal(fs.readFileSync(countPath, "utf8"), "1");
+  assert.equal(fs.existsSync(taskGatePath(taskRoot)), false);
+});
+
+test("canonical task worktrees cannot become unmanaged when metadata is missing", (context) => {
+  const primaryRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-missing-task-receipt-"));
+  context.after(() => fs.rmSync(primaryRoot, {recursive: true, force: true}));
+  const taskRoot = path.join(primaryRoot, ".claude", "worktrees", "fixture-task");
+  fs.mkdirSync(taskRoot, {recursive: true});
+  const metadataPath = path.join(
+    primaryRoot,
+    ".git",
+    "worktrees",
+    "fixture-task",
+    "catch-task.json",
+  );
+  const gitRunner = ({args}) => {
+    if (args.includes("--show-toplevel")) return processResult(taskRoot);
+    if (args.includes("--git-common-dir")) return processResult(path.join(primaryRoot, ".git"));
+    if (args.includes("--absolute-git-dir")) {
+      return processResult(path.join(primaryRoot, ".git", "worktrees", "fixture-task"));
+    }
+    if (args.includes("--git-path")) return processResult(metadataPath);
+    return processResult("", 1);
+  };
+  const managed = readTaskExecutionContext({cwd: taskRoot, gitRunner});
+  assert.equal(managed.kind, "blocked");
+  assert.deepEqual(managed.blockers, ["managed_task_metadata_missing"]);
+
+  const ordinaryMetadata = path.join(primaryRoot, ".git", "catch-task.json");
+  const ordinary = readTaskExecutionContext({
+    cwd: primaryRoot,
+    gitRunner: ({args}) => {
+      if (args.includes("--show-toplevel")) return processResult(primaryRoot);
+      if (args.includes("--git-common-dir")) return processResult(path.join(primaryRoot, ".git"));
+      if (args.includes("--absolute-git-dir")) return processResult(path.join(primaryRoot, ".git"));
+      if (args.includes("--git-path")) return processResult(ordinaryMetadata);
+      return processResult("", 1);
+    },
+  });
+  assert.equal(ordinary.kind, "unmanaged");
+});
+
+test("managed workers fail closed on malformed, legacy, stale, and forged receipts", (context) => {
+  const primaryRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-task-receipt-"));
+  context.after(() => fs.rmSync(primaryRoot, {recursive: true, force: true}));
+  createSnapshotFixtureClone(primaryRoot, {
+    checkoutPaths: materializedSnapshotInputClosure,
+  });
+
+  const {metadata: initialMetadata, taskRoot} = createManagedTaskFixture(primaryRoot);
+  const allowedId = initialMetadata.contextPack.checkIds[0];
+  const metadataPath = taskMetadataPath(taskRoot);
+  const cases = [
+    {
+      prepare() {
+        fs.writeFileSync(metadataPath, "{ definitely not json\n");
+      },
+      reason: "task_metadata_invalid_json",
+    },
+    {
+      prepare() {
+        writeManagedTaskMetadata(taskRoot, (metadata) => {
+          metadata.schema = "catch.harness-task/v3";
+        }, {recomputeDigest: false});
+      },
+      reason: "task_metadata_schema_not_current",
+    },
+    {
+      prepare() {
+        writeManagedTaskMetadata(taskRoot, (metadata) => {
+          metadata.status = "terminal";
+        });
+      },
+      reason: "task_phase_not_active:terminal",
+    },
+    {
+      prepare() {
+        writeManagedTaskMetadata(taskRoot, (metadata) => {
+          metadata.status = "finishing";
+        });
+      },
+      reason: "task_phase_not_active:finishing",
+    },
+    {
+      prepare() {
+        writeManagedTaskMetadata(taskRoot, (metadata) => {
+          metadata.contextPack.digest = "f".repeat(64);
+        }, {recomputeDigest: false});
+      },
+      reason: "task_context_digest_mismatch",
+    },
+    {
+      prepare() {
+        writeManagedTaskMetadata(taskRoot, (metadata) => {
+          metadata.branch = "codex/not-the-current-branch";
+        });
+      },
+      reason: "task_metadata_branch_mismatch",
+    },
+    {
+      prepare() {
+        writeManagedTaskMetadata(taskRoot, (metadata) => {
+          metadata.baseSha = "f".repeat(40);
+          metadata.contextPack.sourceSha = metadata.baseSha;
+        });
+      },
+      reason: "task_base_not_ancestor_of_head",
+    },
+    {
+      prepare() {
+        writeManagedTaskMetadata(taskRoot, (metadata) => {
+          const promoted = metadata.contextPack.deferredCheckIds[0];
+          metadata.contextPack.deferredCheckIds = metadata.contextPack.deferredCheckIds
+            .filter((id) => id !== promoted);
+          metadata.contextPack.checkIds = [...metadata.contextPack.checkIds, promoted].sort();
+        });
+      },
+      reason: "task_authority_metadata_mismatch",
+    },
+    {
+      prepare() {
+        writeManagedTaskMetadata(taskRoot, (metadata) => {
+          metadata.contextPack.requiredEntrypoints = ["tool/not-materialized.mjs"];
+        });
+      },
+      reason: "task_required_entrypoint_missing:tool/not-materialized.mjs",
+    },
+  ];
+  for (const fixture of cases) {
+    fixture.prepare();
+    const result = runNode(taskRoot, [
+      "tool/run.mjs",
+      "check",
+      allowedId,
+    ]);
+    assert.equal(result.status, 77, result.stderr || result.stdout);
+    assert.match(result.stderr, new RegExp(fixture.reason));
+    assert.doesNotMatch(result.stdout, /==>/u);
+  }
+});
+
 test("index-view tools stay inside the fixed Node-only checkout contract", () => {
   const manifest = JSON.parse(fs.readFileSync("tool/tools_manifest.json", "utf8"));
   const incompatible = manifest.tools
@@ -399,8 +1079,9 @@ test("index-view tools stay inside the fixed Node-only checkout contract", () =>
 test("affected-tool GitHub outputs carry bounded control signals only", (context) => {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-tool-impact-"));
   context.after(() => fs.rmSync(directory, {recursive: true, force: true}));
+  createSnapshotFixtureClone(directory, {checkoutPaths: materializedSnapshotInputClosure});
   const outputPath = path.join(directory, "github-output");
-  const result = run([
+  const result = runNode(directory, ["tool/run.mjs",
     "affected-tools",
     "--paths",
     "tool/docs/check_doc_version_monotonic.mjs",
@@ -831,6 +1512,7 @@ function createSnapshotFixtureClone(destination, {checkoutPaths}) {
     "tool/agent/lib/task_input.mjs",
     "tool/docs/check_doc_version_monotonic.mjs",
     "tool/harness/lib/task_contract.mjs",
+    "tool/harness/lib/task_execution_context.mjs",
     "tool/harness/lib/worktree_lifecycle.mjs",
     "tool/lib/tool_impact.mjs",
   ]) {
@@ -880,6 +1562,233 @@ function runGit(cwd, args) {
     0,
     `git ${args.join(" ")} failed:\n${result.stderr || result.stdout}`,
   );
+}
+
+function createManagedTaskFixture(primaryRoot, {allowedCheckCount = 1} = {}) {
+  runGit(primaryRoot, ["config", "user.name", "Catch Test"]);
+  runGit(primaryRoot, ["config", "user.email", "catch-test@example.com"]);
+  runGit(primaryRoot, ["switch", "-c", "fixture-primary"]);
+  fs.mkdirSync(path.join(primaryRoot, "lib"), {recursive: true});
+  fs.writeFileSync(path.join(primaryRoot, "lib", "fixture_scope.txt"), "fixture scope\n");
+  runGit(primaryRoot, [
+    "add",
+    "--sparse",
+    "lib/fixture_scope.txt",
+    "tool/run.mjs",
+    "tool/harness/lib/task_execution_context.mjs",
+    "tool/harness/lib/worktree_lifecycle.mjs",
+  ]);
+  runGit(primaryRoot, ["commit", "-m", "fixture current task authority"]);
+  const taskId = "fixture-task-phase-authority";
+  const branch = `codex/${taskId}`;
+  const provisionalBaseSha = gitText(primaryRoot, ["rev-parse", "HEAD"]);
+  const provisionalMetadata = {
+    taskId,
+    baseSha: provisionalBaseSha,
+    ownedPaths: ["lib/fixture_scope.txt", "tool"],
+    plannedImpactPaths: ["lib/fixture_scope.txt"],
+    contextPack: {
+      mode: "parallel-delegation",
+      taskInputSchema: "catch.harness-task-input/v2",
+    },
+  };
+  const provisional = deriveTaskStartContractAtBase({
+    metadata: provisionalMetadata,
+    cwd: primaryRoot,
+  });
+  const allowedId = provisional.checkIds[0];
+  const deferredId = provisional.deferredCheckIds[0];
+  assert.ok(allowedId);
+  assert.ok(deferredId);
+  const sentinelManifest = configureTaskPhaseSentinel({
+    root: primaryRoot,
+    allowedId,
+    deferredId,
+    allowedCheckCount,
+  });
+  runGit(primaryRoot, ["commit", "-m", "fixture authorized sentinel command"]);
+  const taskRoot = path.join(primaryRoot, ".claude", "worktrees", taskId);
+  fs.mkdirSync(path.dirname(taskRoot), {recursive: true});
+  runGit(primaryRoot, ["worktree", "add", "-b", branch, taskRoot, "HEAD"]);
+  const baseSha = gitText(taskRoot, ["rev-parse", "HEAD"]);
+  const metadata = {
+    schema: "catch.harness-task/v5",
+    status: "active",
+    authorityId: randomUUID(),
+    worktreeAdminId: path.basename(gitText(taskRoot, ["rev-parse", "--absolute-git-dir"])),
+    taskId,
+    baseSha,
+    stackParent: "fixture-primary",
+    stackParentSha: baseSha,
+    branch,
+    worktreePath: taskRoot,
+    sparsePaths: materializedSnapshotInputClosure,
+    ownedPaths: ["lib/fixture_scope.txt", "tool"],
+    plannedImpactPaths: ["lib/fixture_scope.txt"],
+    contextPack: {
+      packSchema: "catch.agent-context-pack/v3",
+      taskInputSchema: "catch.harness-task-input/v2",
+      mode: "parallel-delegation",
+      sourceSha: baseSha,
+    },
+    budgetAllocatedBytes: 1024 * 1024 * 1024,
+    reserveAllocatedBytes: 1,
+    estimatedTrackedLogicalBytes: 1,
+    projectedInitialAllocatedBytes: 1,
+    initialMaterializedLogicalBytes: 1,
+    initialMaterializedAllocatedBytes: 1,
+    creatorPid: process.pid,
+    createdAt: new Date().toISOString(),
+  };
+  const expected = deriveTaskStartContractAtBase({metadata, cwd: taskRoot});
+  Object.assign(metadata.contextPack, {
+    digest: expected.digest,
+    checkIds: expected.checkIds,
+    deferredCheckIds: expected.deferredCheckIds,
+    deferredRegressionIds: expected.deferredRegressionIds,
+    supportPaths: expected.supportPaths,
+    requiredEntrypoints: expected.requiredEntrypoints,
+  });
+  fs.writeFileSync(taskMetadataPath(taskRoot), `${JSON.stringify(metadata, null, 2)}\n`, {
+    encoding: "utf8",
+    flag: "wx",
+  });
+  createTaskAuthorityFile({cwd: taskRoot, metadata});
+  runGit(primaryRoot, [
+    "worktree",
+    "lock",
+    "--reason",
+    `catch-task:${taskId}:${metadata.authorityId}`,
+    taskRoot,
+  ]);
+  return {allowedId, deferredId, manifest: sentinelManifest, metadata, primaryRoot, taskRoot};
+}
+
+function writeManagedTaskMetadata(
+  root,
+  mutate = () => {},
+  {recomputeDigest = true} = {},
+) {
+  const authority = JSON.parse(fs.readFileSync(taskAuthorityPath(root), "utf8"));
+  const metadata = {
+    schema: "catch.harness-task/v5",
+    status: "active",
+    ...structuredClone(authority.payload),
+  };
+  mutate(metadata);
+  if (recomputeDigest && metadata.schema === "catch.harness-task/v5") {
+    const {digest: _digest, ...payload} = taskStartContractFromMetadata(metadata);
+    metadata.contextPack.digest = digestTaskStart(payload);
+  }
+  fs.writeFileSync(taskMetadataPath(root), `${JSON.stringify(metadata, null, 2)}\n`);
+  return metadata;
+}
+
+function configureTaskPhaseSentinel({
+  root,
+  allowedId,
+  deferredId,
+  allowedCheckCount = 1,
+  script = 'import fs from "node:fs";\nfs.writeFileSync("task-phase-sentinel.txt", "child-dispatched\\n");\n',
+}) {
+  const manifestPath = path.join(root, "tool", "tools_manifest.json");
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+  const command = "node tool/fixtures/task_phase_sentinel.mjs";
+  const allowed = manifest.tools.find((tool) => tool.id === allowedId);
+  const deferred = manifest.tools.find((tool) => tool.id === deferredId);
+  assert.ok(allowed, allowedId);
+  assert.ok(deferred, deferredId);
+  allowed.checks = Array.from({length: allowedCheckCount}, () => command);
+  allowed.command = command;
+  deferred.checks = [command];
+  deferred.command = command;
+  deferred.platforms = [process.platform === "darwin" ? "linux" : "darwin"];
+  const sentinelScript = path.join(root, "tool", "fixtures", "task_phase_sentinel.mjs");
+  fs.mkdirSync(path.dirname(sentinelScript), {recursive: true});
+  fs.writeFileSync(sentinelScript, script);
+  fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+  runGit(root, [
+    "add",
+    "--sparse",
+    "tool/tools_manifest.json",
+    "tool/fixtures/task_phase_sentinel.mjs",
+  ]);
+  return manifest;
+}
+
+function taskMetadataPath(root) {
+  return path.resolve(root, gitText(root, ["rev-parse", "--git-path", "catch-task.json"]));
+}
+
+function taskAuthorityPath(root) {
+  return path.join(
+    path.resolve(root, gitText(root, ["rev-parse", "--git-common-dir"])),
+    "catch-harness",
+    "tasks",
+    path.basename(gitText(root, ["rev-parse", "--absolute-git-dir"])),
+    "authority.json",
+  );
+}
+
+function taskGatePath(root) {
+  return path.join(path.dirname(taskAuthorityPath(root)), "gate");
+}
+
+async function waitForPath(targetPath, timeoutMs = 5000) {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    if (fs.existsSync(targetPath)) return;
+    await new Promise((resolve) => setTimeout(resolve, 20));
+  }
+  throw new Error(`Timed out waiting for ${targetPath}`);
+}
+
+async function waitForTaskChildRecord(taskRoot, timeoutMs = 5000) {
+  const gatePath = taskGatePath(taskRoot);
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    try {
+      const owner = JSON.parse(fs.readFileSync(path.join(gatePath, "owner.json"), "utf8"));
+      const childrenPath = path.join(gatePath, `generation-${owner.token}`, "children");
+      if (fs.existsSync(childrenPath)) {
+        const entry = fs.readdirSync(childrenPath).find((name) => name.endsWith(".json"));
+        if (entry) return JSON.parse(fs.readFileSync(path.join(childrenPath, entry), "utf8"));
+      }
+    } catch {
+      // The gate can be between atomic generations while the runner starts or exits.
+    }
+    await new Promise((resolve) => setTimeout(resolve, 20));
+  }
+  throw new Error(`Timed out waiting for a task child record in ${gatePath}`);
+}
+
+function collectChildResult(child) {
+  let stdout = "";
+  let stderr = "";
+  child.stdout.on("data", (chunk) => {
+    stdout += chunk;
+  });
+  child.stderr.on("data", (chunk) => {
+    stderr += chunk;
+  });
+  return new Promise((resolve, reject) => {
+    child.once("error", reject);
+    child.once("close", (status, signal) => resolve({status, signal, stdout, stderr}));
+  });
+}
+
+function gitText(cwd, args) {
+  const result = spawnSync("git", args, {cwd, encoding: "utf8"});
+  assert.equal(
+    result.status,
+    0,
+    `git ${args.join(" ")} failed:\n${result.stderr || result.stdout}`,
+  );
+  return result.stdout.trim();
+}
+
+function processResult(stdout, status = 0) {
+  return {status, stdout: `${stdout}\n`, stderr: ""};
 }
 
 function runNode(cwd, args) {

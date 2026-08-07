@@ -1,6 +1,6 @@
 ---
 doc_id: agent_operating_model
-version: 1.6.4
+version: 1.6.7
 updated: 2026-08-07
 owner: agent_operating_model
 status: active
@@ -205,6 +205,7 @@ node tool/harness.mjs task start \
   --budget-mib 256
 node tool/harness.mjs task doctor --worktree <task-worktree>
 node tool/harness.mjs task finish --worktree <task-worktree>
+node tool/harness.mjs task recover-lease --worktree <task-worktree>
 node tool/harness.mjs task reap --dry-run
 ```
 
@@ -212,7 +213,8 @@ node tool/harness.mjs task reap --dry-run
 |---|---|---|
 | Context pack | `catch.agent-context-pack/v3` | V2 is reconstructed only to verify existing task-metadata v3 receipts. |
 | Digested task input | `catch.harness-task-input/v2` | V1 is reconstructed only to verify existing task-metadata v3 receipts. |
-| Task lifecycle metadata | `catch.harness-task/v4` | V1, V2, and V3 remain readable and are never upgraded in place. |
+| Task lifecycle state mirror | `catch.harness-task/v5` | V1-V4 remain readable for doctor/finish closeout and are never upgraded in place; they cannot authorize worker execution. |
+| Parent-issued task authority | `catch.harness-task-authority/v1` | No legacy authority is inferred from worker-editable metadata. |
 
 The context pack keeps human commands for execution guidance, but task
 materialization is authorized only by structured tool ids. `--owned-paths` declares
@@ -229,6 +231,53 @@ cannot pass vacuously against a sparse projection. Generated command plans name
 an owner and phase: the worker runs only worker-owned preflight/task checks,
 while the parent owns lifecycle creation/finish, full-view integration,
 unstructured regression guards, canonical records, and final verification.
+This split is enforced at execution, not left to operator memory. Before any
+execution output or child command, `node tool/run.mjs check ...` locates the
+actual linked-worktree administrative id, then requires three agreeing control
+signals: the Git-local v5 state mirror, the write-once parent authority under
+the common Git directory, and the registered live worktree lock whose reason
+contains the task and authority ids. It binds physical path, branch, base
+ancestry, owned/planned scope, sparse closure, storage limits, and worker/deferred
+ids to that parent record, then recomputes the check contract from the
+authority's base-SHA manifest, skills, and regression ledger. Each selected
+tool's executable manifest signature is also compared with that base view, so a
+worker cannot keep an allowed id while replacing its command. Affected and
+impacted execution also compares the complete live tool manifest, component
+graph, and repository relationship manifest used for planning with the same
+base-SHA values; a worker cannot preserve an allowed command while rewriting
+which commands the planner selects. A missing receipt or authority beneath the
+canonical task root is an error, not an ordinary checkout. The complete selected
+id set must be a subset of the base-proven worker `checkIds`; a mixed set is
+rejected atomically with exit 77.
+
+The runner atomically publishes a populated task execution gate, rereads live
+authority, holds that gate through every child, and releases it in `finally`;
+`task finish` must own the same gate before its first integrity snapshot. Every
+mutable receipt lives under the lease token's generation directory, and child
+and transition receipts are fsynced in unique staging paths before atomic
+publication. Recovery or release publishes one immutable transition plus a
+single PID-named claim. A dead claim is taken over by atomically renaming that
+claim directory; exact gate layout, ordinary-directory ancestry, and all live
+child groups are rechecked before the entire gate is atomically retired. That
+whole-gate rename is the only unlock point. A delayed publisher from an old
+generation therefore cannot write into a replacement lease, and a crash before
+retirement leaves a complete resumable gate rather than a half-deleted marker.
+
+On POSIX, managed commands run through a detached helper that records its
+process group before starting the command. Interrupts are forwarded to the
+whole group, the outer runner waits for descendants after the shell exits, and
+explicit recovery cannot retire the gate until the owner and every recorded
+group are dead. Managed execution on Windows fails closed with exit 77 until an
+equivalent job-object process-tree boundary exists. Live task state is also
+checked again before each child;
+parent-deferred ids report `parent_deferred_check`, and ids outside both phases
+report `unplanned_task_check`. Direct `run`/`exec` dispatch is unavailable in a
+managed task because forwarded arguments cannot be proven by the check plan.
+Malformed, legacy, finishing, or terminal task authority fails closed. Full
+checkouts with no task receipt retain ordinary runner behavior. Read-only
+discovery and stdout-only planning remain available, including `list`, impact
+planning without `--check`, and `check --manifest-only`; `--github-output` is a
+write and therefore crosses the same gate and whole-plan authorization boundary.
 The pack is consumable only when its source worktree is clean, its SHA and
 owned and planned-impact scopes match task start, and every selected id
 resolves to an active manifest tool. Command regressions awaiting structured ids remain explicit
@@ -240,19 +289,30 @@ stdout contains only a compact task/digest receipt.
 and context-pack digest. It checks a fixed allocated-disk reserve plus the
 allocated task budget, rejects local and
 remote branch collisions, creates the worktree under ignored
-`.claude/worktrees/`, Git-locks the active worktree, and pushes the new branch
-to `origin`. Closure-aware starts record v4 metadata that separates owned paths,
+`.claude/worktrees/`, writes a read-only parent authority keyed by Git's linked-
+worktree id, Git-locks the active worktree with the task and authority ids, and
+pushes the new branch to `origin`. Closure-aware starts record v5 state that separates owned paths,
 planned impact paths, support-only materialization, required physical
 entrypoints, task check ids, deferred integration ids, base SHA, and digest.
-New starts cannot bypass the pack contract. The reader retains v1/v2/v3
-compatibility for tasks created before this cutover; only v4 is written. V2,
-v3, and v4
+New starts cannot bypass the pack contract. The lifecycle reader retains
+v1-v4 compatibility for closeout; only v5 plus authority v1 are written, and
+only that pair can dispatch worker checks. V2, v3, v4, and v5
 receipts name the tracked logical estimate, projected initial allocation,
 initial logical materialization, and initial allocated materialization
 separately. Current allocation and growth are allocated-to-allocated
 measurements; never subtract a logical measurement from an allocated one. V1
 allocated growth remains unknown because v1 recorded only an initial logical
 measurement. Task worktrees never use `/tmp` or `/private/tmp`.
+
+An interrupted child can leave a stale execution gate, but it is never stolen
+implicitly. `task recover-lease` acts only after an explicit parent call, dead
+owner and claim PIDs, dead recorded process groups, an exact generation layout,
+and an atomic claim takeover. A live, malformed, symlinked, or unexpected gate
+stays fail-closed. Retired-gate cleanup is non-authoritative and can never touch
+a replacement generation. The authority and gate are an operational boundary
+against accidental or buggy parallel agents, not a hostile same-Unix-user
+security sandbox. Hostile workers require an external broker or credentials
+unavailable inside worker sandboxes.
 
 1. Parent records its current branch and 40-character HEAD, chooses disjoint
    owned paths and narrower planned impacts, generates the JSON context pack
@@ -266,7 +326,10 @@ measurement. Task worktrees never use `/tmp` or `/private/tmp`.
    `git branch --show-current`, `git rev-parse HEAD`, and
    `git status --short --branch`. Any doctor blocker or mismatch stops the
    task without editing.
-4. The subagent commits and pushes its proposal, then reports the commit SHA,
+4. The subagent runs only the receipt's worker-owned check ids through
+   `node tool/run.mjs check <id...>`. It does not invoke deferred ids or use
+   `node tool/run.mjs run/exec` from the sparse task. It then commits and pushes
+   its proposal and reports the commit SHA,
    changed files, checks run, blockers, and quality risks.
 5. Parent reviews with `git show`, `git diff`, or `cherry-pick -n`, then imports
    only the accepted changes into the parent branch.

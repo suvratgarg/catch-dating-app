@@ -1,6 +1,6 @@
 ---
 doc_id: harness_v2_decision_and_cicd_delivery_plan
-version: 0.3.36
+version: 0.3.39
 updated: 2026-08-07
 owner: agent_operating_model
 status: execution-in-progress
@@ -1078,6 +1078,56 @@ Issues closed or carried forward:
   compatibility parsing is deleted, and readiness now fails future drift.
 - `H2-TRANSITION-042` remains open: direct runner invocations inside a task
   still need task-phase ownership enforcement before dependency setup.
+
+### Checkpoint 30 — executable task-phase authority (2026-08-07)
+
+| Signal | Before this slice | Current result |
+|---|---|---|
+| Worker/parent boundary | Context-pack v3 correctly recorded worker `checkIds` and parent `deferredCheckIds`, but `tool/run.mjs` never read that receipt. A worker could therefore launch a full-view or dependency-heavy parent check from a sparse projection. The first implementation still let a worker coherently rewrite its base/scope and re-digest the same mutable metadata. | New starts write a v5 state mirror plus authority v1 under the parent common-Git control plane, keyed by Git's live linked-worktree administrative id. Execution requires exact authority/mirror/physical registration/branch/ancestry/lock agreement and derives selection only from the parent authority's base SHA. Tool command definitions and the complete manifest/root-manifest/component-graph inputs used by affected or impacted planning must still equal that base. The lock reason binds task and random authority ids. Missing metadata or authority beneath the canonical root fails closed; v1-v4 tasks can close out but cannot dispatch. |
+| Failure cost | The first live mistake ran for 1.84s and allocated 188,416 bytes. A controlled repeat in the a1 worker ran for 1.93s and allocated 155,648 bytes before Flutter failed on a sparse-omitted test. | The final base-proven guard rejected three steady-state `audit:registry` samples in 0.21s, 0.18s, and 0.18s (0.18s p50), a 90.7% reduction against the controlled repeat. It printed no `==>` dispatch marker, created zero ignored paths, and added zero bytes across a before/after guard-only measurement: 100% of accidental setup storage was eliminated. |
+| Atomicity and bypasses | A mixed worker/parent selection, category selection, affected execution, platform skip, or direct command could bypass a prose-only phase convention. The initial per-child reread still left a gap in which `task finish` could mark terminal after authorization but before or during a child. Later review found shell-exit, crash-recovery, transition-publication, and old-generation ABA windows that a runner-PID-only lease could not close. | The central guard covers explicit, category, impacted, and affected dispatch plus both direct aliases. It authorizes the whole batch before `--github-output`, and finish owns the same gate before inspection. POSIX checks run in a recorded process group that is cancelled and drained as a unit; managed Windows execution fails closed until equivalent tree isolation exists. Gate, child, and transition receipts are staged and atomically published under a lease-token generation. A PID-named transition claim has one atomic takeover winner, exact/symlinked layouts fail closed, and one whole-gate rename is the only unlock. Deterministic tests prove two publishers, two claimants, delayed real child publication, interrupted recovery, and old-finalizer/new-gate interleavings cannot corrupt or unlock a successor generation. |
+| Scope correction | The first task planned only runner and docs files. Review showed that putting lifecycle-receipt parsing directly in `run.mjs` would create a second authority implementation. | The clean a1 canary was closed at the unchanged, remotely verified base in 1.18s. A2 deliberately widened immutable scope to one shared leaf plus lifecycle reuse, runner wiring, manifest ownership, and both test surfaces. Its pack generated in 0.15s, start took 3.98s, initial doctor took 0.64s, and initial materialization remained 32,248,460 logical / 34,242,560 allocated bytes with zero growth. |
+| Verification and accounting | There was no stable regression binding receipt ownership to actual command execution. The 32 measured commits were cumulatively net −345,311 lines. The first 72-test pass missed mutable-scope authority, live lock/registration, and finish/dispatch exclusion; later review exposed planning drift, process descendants, cancellation, crash recovery, competing publishers/claimants, symlink layouts, and old-generation ABA. | Independent re-review converted every finding into executable evidence. The consolidated sparse task checkout passes 84/84 lifecycle/runner tests in 34.55s, and the synchronized full-view clone passes 84/84 in 35.77s, including real linked worktrees and deterministic filesystem interleavings; the focused seven-test concurrency/process review passes in 8.49s. The full-clone suite is 15.65s (77.8%) above the earlier 20.12s suite, so the fast focused set remains the iteration loop and the complete suite remains the owner/handoff gate. In exchange, a wrong-phase command now fails in 0.18s p50 with zero setup bytes instead of 1.93s and 155,648 bytes. The registered owner closure passes 70 runner, 105 Harness, 13 context-input, 4 doc-state, 4 audit-path, and 14 operations-boundary tests plus focused Flutter analysis. Readiness is 5,171/5,171, enforcement 83 rules/92 tools, and audit parity 7,210 files with a 13-path receipt. Across 20 live samples, `git worktree list --porcelain` costs 16.87ms p50 / 20.82ms p95. Final pre-commit accounting is +3,743/−222, net +3,521, leaving the 33-commit series net −341,790 lines. Exact-commit replay, commit/push equality, and terminal finish remain post-commit evidence. |
+
+Issues closed or discovered during this tranche:
+
+- `H2-TRANSITION-042` — closed. Structured task ownership is now enforced
+  before tool dispatch, including mixed selections and direct-command bypasses.
+  Parent-issued authority, live Git registration/lock binding, and the shared
+  execution/finish gate close the coherent-forgery and terminal-race findings
+  from independent review.
+- `H2-TRANSITION-044` — open. `context_pack.mjs --output <name>.json` writes
+  Markdown unless `--json` is also supplied. The a2 pack therefore produced a
+  12,224-byte Markdown file with a JSON suffix in 0.16s; it was caught before
+  task registration and regenerated as a valid 65,336-byte JSON artifact in
+  0.15s. Make output format explicit or infer it safely from the requested
+  artifact so a plausible filename cannot create an invalid task-start input.
+- `H2-TRANSITION-045` — open. Task lifecycle commands report their internal
+  duration, but approval and scheduling can materially widen observed wall
+  time. A2 start performed 3.98s of Harness work while the enclosing tool call
+  took 7.7s. Future telemetry should report Harness phases separately from
+  external approval/network latency rather than attributing both to Git or
+  schema work.
+- `H2-TRANSITION-046` — open and non-blocking. A process killed while building
+  a unique staging receipt, or after atomically retiring a gate but before
+  cleanup, can leave a non-authoritative `gate.*.pending-*` or
+  `gate.retired-*` artifact under common Git storage. These paths cannot block,
+  authorize, or contaminate a later generation, but no bounded janitor measures
+  or removes them yet. Add exact-prefix, ordinary-directory-only inventory and
+  reviewed cleanup rather than recursive best-effort deletion.
+- `H2-TRANSITION-047` — open for Windows workers. POSIX process-group ownership
+  is now complete; managed task dispatch deliberately exits 77 on `win32` until
+  a job-object or equivalent whole-process-tree contract can provide the same
+  cancellation and recovery proof. Ordinary unmanaged Windows runner behavior
+  remains unchanged.
+- `H2-TRANSITION-048` — open and next. `task recover-lease` is implemented and
+  documented, but the canonical lifecycle templates and generated
+  parallel-delegation context packs still expose only start, doctor, finish,
+  and reap. The lifecycle help currently compensates with a second hard-coded
+  recovery string. Move recovery into the canonical task-command contract,
+  project it as a parent-owned lifecycle-recovery instruction, delete the
+  duplicate literal, and make the lifecycle-complete test assert it. Combine
+  this context-pack correction with `H2-TRANSITION-044` in the next tranche.
 
 Durable outcomes are PR wall-clock p50/p95 and escaped defects. Record the
 baseline from the ten most recent comparable PRs and compare after ten v2 PRs.

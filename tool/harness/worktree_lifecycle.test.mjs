@@ -22,6 +22,12 @@ import {
   TASK_INPUT_SCHEMA_V1,
   TASK_START_MODE,
 } from "../agent/lib/task_input.mjs";
+import {
+  acquireTaskExecutionLease,
+  recoverStaleTaskExecutionLease,
+  registerTaskExecutionChild,
+  TASK_EXECUTION_CHILD_SCHEMA_V1,
+} from "./lib/task_execution_context.mjs";
 
 const MIB = 1024 * 1024;
 const TEST_CLAUDE_ROOT = path.join(process.cwd(), ".claude");
@@ -160,7 +166,7 @@ test("capacity preflight fails before a worktree can consume the reserve", () =>
   );
 });
 
-test("closure-aware start materializes exact command support and records v4 metadata", (context) => {
+test("closure-aware start materializes exact command support and records v5 authority", (context) => {
   const fixture = createClosureFixture(context);
   const baseSha = git(fixture, ["rev-parse", "HEAD"]);
   writeContextPack(fixture, {taskId: "closure-aware", baseSha});
@@ -179,7 +185,9 @@ test("closure-aware start materializes exact command support and records v4 meta
     statfs: () => ({bavail: 4096, bsize: MIB}),
   });
   assert.equal(execution.status, 0);
-  assert.equal(execution.result.metadata.schema, "catch.harness-task/v4");
+  assert.equal(execution.result.metadata.schema, "catch.harness-task/v5");
+  assert.match(execution.result.metadata.authorityId, /^[0-9a-f-]{36}$/u);
+  assert.equal(execution.result.metadata.worktreeAdminId, "closure-aware");
   assert.deepEqual(execution.result.metadata.ownedPaths, ["lib/profile.txt"]);
   assert.deepEqual(execution.result.metadata.plannedImpactPaths, ["lib/profile.txt"]);
   assert.equal(Object.hasOwn(execution.result.metadata, "requestedSparsePaths"), false);
@@ -454,7 +462,7 @@ test("planned impact outside ownership is refused before worktree registration",
   assert.doesNotMatch(git(fixture, ["worktree", "list", "--porcelain"]), /outside-impact/u);
 });
 
-test("malformed v4 receipt arrays block doctor and finish without changing state", (context) => {
+test("malformed v5 receipt arrays block doctor and finish without changing state", (context) => {
   const fixture = createClosureFixture(context);
   const baseSha = git(fixture, ["rev-parse", "HEAD"]);
   writeContextPack(fixture, {taskId: "malformed-receipt", baseSha});
@@ -487,7 +495,7 @@ test("malformed v4 receipt arrays block doctor and finish without changing state
   assert.equal(JSON.parse(fs.readFileSync(metadataPath, "utf8")).status, "active");
 });
 
-test("malformed v4 planned-impact receipts block doctor and finish", (context) => {
+test("malformed v5 planned-impact receipts block doctor and finish", (context) => {
   const {metadata, metadataPath, target} = createStartedTask(context, "malformed-impact");
   fs.writeFileSync(metadataPath, `${JSON.stringify({
     ...metadata,
@@ -677,7 +685,7 @@ test("start uses an explicit sparse worktree and records local task metadata", (
   assert.equal(fs.existsSync(path.join(target, "unrelated.txt")), false);
   const metadataPath = git(target, ["rev-parse", "--git-path", "catch-task.json"]);
   const metadata = JSON.parse(fs.readFileSync(metadataPath, "utf8"));
-  assert.equal(metadata.schema, "catch.harness-task/v4");
+  assert.equal(metadata.schema, "catch.harness-task/v5");
   assert.equal(metadata.baseSha, baseSha);
   assert.equal(metadata.creatorPid, 4242);
   assert.equal(metadata.stackParent, "main");
@@ -701,6 +709,15 @@ test("start uses an explicit sparse worktree and records local task metadata", (
     ],
   );
   assert.match(git(fixture, ["worktree", "list", "--porcelain"]), /locked catch-task:profile-slice/u);
+  const authorityPath = path.join(
+    path.resolve(target, git(target, ["rev-parse", "--git-common-dir"])),
+    "catch-harness",
+    "tasks",
+    metadata.worktreeAdminId,
+    "authority.json",
+  );
+  const authorityBefore = fs.readFileSync(authorityPath, "utf8");
+  assert.equal(fs.lstatSync(authorityPath).mode & 0o222, 0);
 
   const lowCapacityDoctor = executeTaskCommand({
     args: ["doctor"],
@@ -768,6 +785,7 @@ test("start uses an explicit sparse worktree and records local task metadata", (
   assert.equal(finish.result.readyForHandoff, true);
   assert.equal(finish.result.deletionAuthorized, false);
   assert.equal(JSON.parse(fs.readFileSync(metadataPath, "utf8")).status, "terminal");
+  assert.equal(fs.readFileSync(authorityPath, "utf8"), authorityBefore);
   assert.doesNotMatch(git(fixture, ["worktree", "list", "--porcelain"]), /locked catch-task:profile-slice/u);
 
   const beforeReap = git(fixture, ["worktree", "list", "--porcelain"]);
@@ -790,7 +808,7 @@ test("start uses an explicit sparse worktree and records local task metadata", (
 });
 
 test("legacy v1 task metadata remains readable without inventing an allocated baseline", (context) => {
-  const {metadata, metadataPath, target} = createStartedTask(context, "legacy-v1");
+  const {fixture, metadata, metadataPath, target} = createStartedTask(context, "legacy-v1");
   const legacyMetadata = {
     ...metadata,
     schema: "catch.harness-task/v1",
@@ -811,6 +829,7 @@ test("legacy v1 task metadata remains readable without inventing an allocated ba
   ]) delete legacyMetadata[key];
   delete legacyMetadata.contextPack;
   fs.writeFileSync(metadataPath, `${JSON.stringify(legacyMetadata, null, 2)}\n`);
+  relockLegacyTask({fixture, target, taskId: "legacy-v1"});
 
   const doctor = executeTaskCommand({args: ["doctor"], cwd: target});
   assert.equal(doctor.status, 0, JSON.stringify(doctor.result));
@@ -825,12 +844,13 @@ test("legacy v1 task metadata remains readable without inventing an allocated ba
 });
 
 test("legacy v2 task metadata remains readable and keeps its schema", (context) => {
-  const {metadata, metadataPath, target} = createStartedTask(context, "legacy-v2");
+  const {fixture, metadata, metadataPath, target} = createStartedTask(context, "legacy-v2");
   const legacyMetadata = {...metadata, schema: "catch.harness-task/v2"};
   delete legacyMetadata.contextPack;
   delete legacyMetadata.ownedPaths;
   delete legacyMetadata.plannedImpactPaths;
   fs.writeFileSync(metadataPath, `${JSON.stringify(legacyMetadata, null, 2)}\n`);
+  relockLegacyTask({fixture, target, taskId: "legacy-v2"});
 
   const doctor = executeTaskCommand({args: ["doctor"], cwd: target});
   assert.equal(doctor.status, 0, JSON.stringify(doctor.result));
@@ -840,7 +860,7 @@ test("legacy v2 task metadata remains readable and keeps its schema", (context) 
 });
 
 test("legacy v3 task metadata preserves its original context and owned-scope semantics", (context) => {
-  const {metadata, metadataPath, target} = createStartedTask(context, "legacy-v3");
+  const {fixture, metadata, metadataPath, target} = createStartedTask(context, "legacy-v3");
   const legacyPayload = {
     schema: TASK_INPUT_SCHEMA_V1,
     taskId: metadata.taskId,
@@ -869,6 +889,7 @@ test("legacy v3 task metadata preserves its original context and owned-scope sem
   delete legacyMetadata.ownedPaths;
   delete legacyMetadata.plannedImpactPaths;
   fs.writeFileSync(metadataPath, `${JSON.stringify(legacyMetadata, null, 2)}\n`);
+  relockLegacyTask({fixture, target, taskId: "legacy-v3"});
 
   const doctor = executeTaskCommand({args: ["doctor"], cwd: target});
   assert.equal(doctor.status, 0, JSON.stringify(doctor.result));
@@ -877,6 +898,68 @@ test("legacy v3 task metadata preserves its original context and owned-scope sem
   const persisted = JSON.parse(fs.readFileSync(metadataPath, "utf8"));
   assert.equal(persisted.schema, "catch.harness-task/v3");
   assert.equal(Object.hasOwn(persisted, "plannedImpactPaths"), false);
+});
+
+test("legacy v4 task metadata closes without synthesizing v5 authority", (context) => {
+  const {fixture, metadata, metadataPath, target} = createStartedTask(context, "legacy-v4");
+  const commonPath = path.resolve(target, git(target, ["rev-parse", "--git-common-dir"]));
+  const authorityPath = path.join(
+    commonPath,
+    "catch-harness",
+    "tasks",
+    metadata.worktreeAdminId,
+    "authority.json",
+  );
+  const legacyMetadata = {...metadata, schema: "catch.harness-task/v4"};
+  delete legacyMetadata.authorityId;
+  delete legacyMetadata.worktreeAdminId;
+  fs.writeFileSync(metadataPath, `${JSON.stringify(legacyMetadata, null, 2)}\n`);
+  relockLegacyTask({fixture, target, taskId: "legacy-v4"});
+
+  const doctor = executeTaskCommand({args: ["doctor"], cwd: target});
+  assert.equal(doctor.status, 0, JSON.stringify(doctor.result));
+  assert.equal(fs.existsSync(authorityPath), false);
+  const finish = executeTaskCommand({args: ["finish"], cwd: target});
+  assert.equal(finish.status, 0, JSON.stringify(finish.result));
+  const persisted = JSON.parse(fs.readFileSync(metadataPath, "utf8"));
+  assert.equal(persisted.schema, "catch.harness-task/v4");
+  assert.equal(persisted.status, "terminal");
+  assert.equal(fs.existsSync(authorityPath), false);
+  assert.doesNotMatch(
+    git(fixture, ["worktree", "list", "--porcelain"]),
+    /locked catch-task:legacy-v4/u,
+  );
+});
+
+test("finish owns the task gate before inspection and through unlock", (context) => {
+  const {fixture, metadata, target} = createStartedTask(context, "finish-gate-order");
+  const commonPath = path.resolve(target, git(target, ["rev-parse", "--git-common-dir"]));
+  const gatePath = path.join(
+    commonPath,
+    "catch-harness",
+    "tasks",
+    metadata.worktreeAdminId,
+    "gate",
+  );
+  const observed = {inspection: false, unlock: false};
+  const gateObservingRunner = (command, args, options) => {
+    if (command === "git" && args[0] === "worktree" && args[1] === "list") {
+      observed.inspection ||= fs.existsSync(gatePath);
+    }
+    if (command === "git" && args[0] === "worktree" && args[1] === "unlock") {
+      observed.unlock ||= fs.existsSync(gatePath);
+    }
+    return spawnSync(command, args, options);
+  };
+
+  const finish = executeTaskCommand({
+    args: ["finish"],
+    cwd: target,
+    runner: gateObservingRunner,
+  });
+  assert.equal(finish.status, 0, JSON.stringify(finish.result));
+  assert.deepEqual(observed, {inspection: true, unlock: true});
+  assert.equal(fs.existsSync(gatePath), false);
 });
 
 test("malformed v2 storage measurements fail closed", (context) => {
@@ -1025,6 +1108,311 @@ test("finish distinguishes an unavailable origin query from an unpreserved head"
     matched: false,
     error: "origin_head_query_failed",
   });
+});
+
+test("stale task execution leases require explicit PID-safe recovery", (context) => {
+  const {target} = createStartedTask(context, "stale-execution-lease");
+  const liveLease = acquireTaskExecutionLease({cwd: target, owner: "live-test"});
+  assert.equal(liveLease.acquired, true);
+  const liveRecovery = executeTaskCommand({args: ["recover-lease"], cwd: target});
+  assert.equal(liveRecovery.status, 1);
+  assert.deepEqual(liveRecovery.result.blockers, ["task_execution_lease_active"]);
+  liveLease.release();
+
+  const staleLease = acquireTaskExecutionLease({
+    cwd: target,
+    owner: "stale-test",
+    pid: 999999,
+  });
+  assert.equal(staleLease.acquired, true);
+  const blockedFinish = executeTaskCommand({args: ["finish"], cwd: target});
+  assert.equal(blockedFinish.status, 1);
+  assert.deepEqual(blockedFinish.result.blockers, ["task_execution_lease_stale"]);
+  const recovered = executeTaskCommand({args: ["recover-lease"], cwd: target});
+  assert.equal(recovered.status, 0, JSON.stringify(recovered.result));
+  assert.equal(recovered.result.recovered, true);
+  assert.deepEqual(recovered.result.blockers, []);
+  const doctor = executeTaskCommand({args: ["doctor"], cwd: target});
+  assert.equal(doctor.status, 0, JSON.stringify(doctor.result));
+
+  const racedLease = acquireTaskExecutionLease({
+    cwd: target,
+    owner: "registration-race-test",
+    pid: 999999,
+  });
+  assert.equal(racedLease.acquired, true);
+  let racedChildPath = null;
+  let concurrentRecovery = null;
+  const racedRecovery = recoverStaleTaskExecutionLease({
+    cwd: target,
+    beforeChildDirectoryRemoval: ({childrenPath, leaseToken}) => {
+      concurrentRecovery = recoverStaleTaskExecutionLease({cwd: target});
+      racedChildPath = path.join(childrenPath, "in-flight-child.json");
+      fs.writeFileSync(racedChildPath, `${JSON.stringify({
+        schema: TASK_EXECUTION_CHILD_SCHEMA_V1,
+        token: "in-flight-child",
+        leaseToken,
+        pid: process.pid,
+        processGroupId: null,
+        createdAt: new Date().toISOString(),
+      })}\n`);
+    },
+  });
+  assert.equal(racedRecovery.recovered, false);
+  assert.deepEqual(racedRecovery.blockers, ["task_execution_lease_active"]);
+  assert.equal(concurrentRecovery?.recovered, false);
+  assert.deepEqual(concurrentRecovery?.blockers, ["task_execution_lease_transition_active"]);
+  assert.equal(fs.existsSync(path.join(racedLease.leasePath, "owner.json")), true);
+  assert.equal(fs.existsSync(markTransitionClaimDead(racedLease)), true);
+  fs.unlinkSync(racedChildPath);
+  const recoveredAfterRace = recoverStaleTaskExecutionLease({cwd: target});
+  assert.equal(recoveredAfterRace.recovered, true);
+  assert.equal(fs.existsSync(racedLease.leasePath), false);
+
+  const interruptedLease = acquireTaskExecutionLease({
+    cwd: target,
+    owner: "transition-crash-test",
+    pid: 999999,
+  });
+  assert.equal(interruptedLease.acquired, true);
+  assert.throws(
+    () => recoverStaleTaskExecutionLease({
+      cwd: target,
+      afterChildDirectoryRemoval: () => {
+        throw new Error("injected transition crash");
+      },
+    }),
+    /injected transition crash/u,
+  );
+  assert.equal(fs.existsSync(interruptedLease.leasePath), true);
+  assert.equal(fs.existsSync(markTransitionClaimDead(interruptedLease)), true);
+  const recoveredAfterCrash = recoverStaleTaskExecutionLease({cwd: target});
+  assert.equal(recoveredAfterCrash.recovered, true);
+  assert.equal(fs.existsSync(interruptedLease.leasePath), false);
+
+  const oldGenerationLease = acquireTaskExecutionLease({
+    cwd: target,
+    owner: "generation-aba-test",
+    pid: 999999,
+  });
+  assert.equal(oldGenerationLease.acquired, true);
+  const oldChildrenPath = path.join(
+    oldGenerationLease.leasePath,
+    `generation-${oldGenerationLease.lease.token}`,
+    "children",
+  );
+  const delayedChildStagingPath = path.join(
+    path.dirname(oldGenerationLease.leasePath),
+    "delayed-old-generation-child.json",
+  );
+  const delayedTransitionStagingPath = path.join(
+    path.dirname(oldGenerationLease.leasePath),
+    "delayed-old-generation-transition",
+  );
+  fs.writeFileSync(delayedChildStagingPath, "{}\n");
+  fs.mkdirSync(delayedTransitionStagingPath);
+  fs.writeFileSync(path.join(delayedTransitionStagingPath, "owner.json"), "{}\n");
+  let replacementLease = null;
+  const retiredOldGeneration = recoverStaleTaskExecutionLease({
+    cwd: target,
+    afterGateRetirement: () => {
+      replacementLease = acquireTaskExecutionLease({
+        cwd: target,
+        owner: "generation-aba-replacement",
+      });
+      assert.equal(replacementLease.acquired, true);
+      assert.throws(
+        () => fs.renameSync(
+          delayedChildStagingPath,
+          path.join(oldChildrenPath, "late-child.json"),
+        ),
+        (error) => error?.code === "ENOENT",
+      );
+      assert.throws(
+        () => fs.renameSync(
+          delayedTransitionStagingPath,
+          path.join(path.dirname(oldChildrenPath), "transition"),
+        ),
+        (error) => error?.code === "ENOENT",
+      );
+      assert.deepEqual(
+        fs.readdirSync(path.join(
+          replacementLease.leasePath,
+          `generation-${replacementLease.lease.token}`,
+          "children",
+        )),
+        [],
+      );
+    },
+  });
+  assert.equal(retiredOldGeneration.recovered, true);
+  assert.equal(fs.existsSync(delayedChildStagingPath), true);
+  fs.unlinkSync(delayedChildStagingPath);
+  assert.equal(fs.existsSync(delayedTransitionStagingPath), true);
+  fs.unlinkSync(path.join(delayedTransitionStagingPath, "owner.json"));
+  fs.rmdirSync(delayedTransitionStagingPath);
+  assert.equal(
+    JSON.parse(fs.readFileSync(path.join(replacementLease.leasePath, "owner.json"), "utf8")).token,
+    replacementLease.lease.token,
+  );
+  replacementLease.release();
+  assert.equal(fs.existsSync(replacementLease.leasePath), false);
+
+  const symlinkLease = acquireTaskExecutionLease({
+    cwd: target,
+    owner: "lease-symlink-test",
+    pid: 999999,
+  });
+  assert.equal(symlinkLease.acquired, true);
+  const displacedGatePath = `${symlinkLease.leasePath}.unsafe-target`;
+  fs.renameSync(symlinkLease.leasePath, displacedGatePath);
+  fs.symlinkSync(displacedGatePath, symlinkLease.leasePath);
+  symlinkLease.release();
+  assert.equal(fs.existsSync(path.join(
+    displacedGatePath,
+    `generation-${symlinkLease.lease.token}`,
+    "transition",
+  )), false);
+  const symlinkRecovery = recoverStaleTaskExecutionLease({cwd: target});
+  assert.equal(symlinkRecovery.recovered, false);
+  assert.deepEqual(symlinkRecovery.blockers, ["task_execution_lease_invalid"]);
+  assert.equal(fs.existsSync(path.join(displacedGatePath, "owner.json")), true);
+  fs.unlinkSync(symlinkLease.leasePath);
+  fs.renameSync(displacedGatePath, symlinkLease.leasePath);
+  const recoveredAfterSymlink = recoverStaleTaskExecutionLease({cwd: target});
+  assert.equal(recoveredAfterSymlink.recovered, true);
+  assert.equal(fs.existsSync(symlinkLease.leasePath), false);
+
+  const malformedLease = acquireTaskExecutionLease({
+    cwd: target,
+    owner: "lease-layout-test",
+    pid: 999999,
+  });
+  assert.equal(malformedLease.acquired, true);
+  const roguePath = path.join(
+    malformedLease.leasePath,
+    `generation-${malformedLease.lease.token}`,
+    "rogue",
+  );
+  fs.writeFileSync(roguePath, "must survive failed recovery\n");
+  const malformedRecovery = recoverStaleTaskExecutionLease({cwd: target});
+  assert.equal(malformedRecovery.recovered, false);
+  assert.deepEqual(malformedRecovery.blockers, ["task_execution_lease_invalid"]);
+  assert.equal(fs.readFileSync(roguePath, "utf8"), "must survive failed recovery\n");
+  fs.unlinkSync(roguePath);
+  const recoveredAfterLayoutRepair = recoverStaleTaskExecutionLease({cwd: target});
+  assert.equal(recoveredAfterLayoutRepair.recovered, true);
+  assert.equal(fs.existsSync(malformedLease.leasePath), false);
+});
+
+test("task execution publication races preserve the winning generation and claim", (context) => {
+  const {target} = createStartedTask(context, "execution-publication-races");
+
+  const publisherLease = acquireTaskExecutionLease({
+    cwd: target,
+    owner: "publisher-race",
+    pid: 999999,
+  });
+  assert.equal(publisherLease.acquired, true);
+  let losingTransitionStagingPath = null;
+  let nestedPublisherPaused = false;
+  const publisherRace = recoverStaleTaskExecutionLease({
+    cwd: target,
+    beforeTransitionPublish: ({stagingPath}) => {
+      losingTransitionStagingPath = stagingPath;
+      try {
+        recoverStaleTaskExecutionLease({
+          cwd: target,
+          afterChildDirectoryRemoval: () => {
+            throw new Error("pause winning publisher");
+          },
+        });
+      } catch (error) {
+        nestedPublisherPaused = error?.message === "pause winning publisher";
+      }
+    },
+  });
+  assert.equal(nestedPublisherPaused, true);
+  assert.equal(publisherRace.recovered, false);
+  assert.deepEqual(publisherRace.blockers, ["task_execution_lease_transition_active"]);
+  assert.equal(fs.existsSync(losingTransitionStagingPath), false);
+  assert.equal(fs.existsSync(markTransitionClaimDead(publisherLease)), true);
+  assert.equal(recoverStaleTaskExecutionLease({cwd: target}).recovered, true);
+
+  const claimantLease = acquireTaskExecutionLease({
+    cwd: target,
+    owner: "claimant-race",
+    pid: 999999,
+  });
+  assert.equal(claimantLease.acquired, true);
+  assert.throws(
+    () => recoverStaleTaskExecutionLease({
+      cwd: target,
+      afterChildDirectoryRemoval: () => {
+        throw new Error("seed dead claim");
+      },
+    }),
+    /seed dead claim/u,
+  );
+  markTransitionClaimDead(claimantLease);
+  let nestedClaimantPaused = false;
+  const claimantRace = recoverStaleTaskExecutionLease({
+    cwd: target,
+    beforeTransitionClaim: () => {
+      try {
+        recoverStaleTaskExecutionLease({
+          cwd: target,
+          afterChildDirectoryRemoval: () => {
+            throw new Error("pause winning claimant");
+          },
+        });
+      } catch (error) {
+        nestedClaimantPaused = error?.message === "pause winning claimant";
+      }
+    },
+  });
+  assert.equal(nestedClaimantPaused, true);
+  assert.equal(claimantRace.recovered, false);
+  assert.deepEqual(claimantRace.blockers, ["task_execution_lease_transition_active"]);
+  const claimantTransitionPath = markTransitionClaimDead(claimantLease);
+  assert.equal(
+    fs.readdirSync(claimantTransitionPath).filter((entry) => entry.startsWith("claim-")).length,
+    1,
+  );
+  assert.equal(recoverStaleTaskExecutionLease({cwd: target}).recovered, true);
+
+  const retiringLease = acquireTaskExecutionLease({
+    cwd: target,
+    owner: "child-publisher-race",
+  });
+  assert.equal(retiringLease.acquired, true);
+  let replacementLease = null;
+  let childStagingPath = null;
+  const registration = registerTaskExecutionChild({
+    leasePath: retiringLease.leasePath,
+    leaseToken: retiringLease.lease.token,
+    pid: process.pid,
+    processGroupId: null,
+    beforePublish: ({stagingPath}) => {
+      childStagingPath = stagingPath;
+      retiringLease.release();
+      replacementLease = acquireTaskExecutionLease({
+        cwd: target,
+        owner: "child-publisher-replacement",
+      });
+    },
+  });
+  assert.equal(registration.registered, false);
+  assert.equal(registration.blocker, "task_execution_child_registration_failed");
+  assert.equal(fs.existsSync(childStagingPath), false);
+  assert.equal(replacementLease?.acquired, true);
+  assert.deepEqual(fs.readdirSync(path.join(
+    replacementLease.leasePath,
+    `generation-${replacementLease.lease.token}`,
+    "children",
+  )), []);
+  replacementLease.release();
+  assert.equal(fs.existsSync(replacementLease.leasePath), false);
 });
 
 test("low-capacity start refuses before worktree registration", (context) => {
@@ -1186,6 +1574,25 @@ function createStartedTask(context, taskId) {
   };
 }
 
+function relockLegacyTask({fixture, target, taskId}) {
+  const commonPath = path.resolve(target, git(target, ["rev-parse", "--git-common-dir"]));
+  const adminId = path.basename(git(target, ["rev-parse", "--absolute-git-dir"]));
+  const authorityPath = path.join(
+    commonPath,
+    "catch-harness",
+    "tasks",
+    adminId,
+    "authority.json",
+  );
+  if (fs.existsSync(authorityPath)) {
+    fs.chmodSync(authorityPath, 0o600);
+    fs.unlinkSync(authorityPath);
+    fs.rmdirSync(path.dirname(authorityPath));
+  }
+  git(fixture, ["worktree", "unlock", target]);
+  git(fixture, ["worktree", "lock", "--reason", `catch-task:${taskId}`, target]);
+}
+
 function createGitFixture(context) {
   const session = createFixtureSession();
   const fixture = fs.mkdtempSync(path.join(session, "catch-worktree-lifecycle-"));
@@ -1331,6 +1738,23 @@ function fixtureSkills() {
     applies_to: ["lib/profile.txt"],
     required_tools: ["fixture:check"],
   }];
+}
+
+function markTransitionClaimDead(lease) {
+  const transitionPath = path.join(
+    lease.leasePath,
+    `generation-${lease.lease.token}`,
+    "transition",
+  );
+  const claimName = fs.readdirSync(transitionPath)
+    .find((entry) => entry.startsWith("claim-"));
+  assert.ok(claimName);
+  const deadClaimPath = path.join(
+    transitionPath,
+    claimName.replace(/^claim-[0-9]+-/u, "claim-999999-"),
+  );
+  fs.renameSync(path.join(transitionPath, claimName), deadClaimPath);
+  return transitionPath;
 }
 
 function createFixtureSession() {
