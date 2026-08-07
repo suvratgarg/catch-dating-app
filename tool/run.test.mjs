@@ -1689,9 +1689,28 @@ function createManagedTaskFixture(primaryRoot, {allowedCheckCount = 1} = {}) {
   runGit(primaryRoot, ["switch", "-c", "fixture-primary"]);
   fs.mkdirSync(path.join(primaryRoot, "lib"), {recursive: true});
   fs.writeFileSync(path.join(primaryRoot, "lib", "fixture_scope.txt"), "fixture scope\n");
+  const skillsPath = path.join(
+    primaryRoot,
+    "docs",
+    "agent_skills",
+    "skills_manifest.json",
+  );
+  const skillsManifest = JSON.parse(fs.readFileSync(skillsPath, "utf8"));
+  skillsManifest.skills.push({
+    skill_id: "fixture-managed-task",
+    applies_to: ["lib/fixture_scope.txt"],
+    required_tools: ["agent:readiness"],
+  });
+  skillsManifest.skills.push({
+    skill_id: "fixture-forged-scope",
+    applies_to: ["tool/run.mjs"],
+    required_tools: ["meta:enforcement-integrity"],
+  });
+  fs.writeFileSync(skillsPath, `${JSON.stringify(skillsManifest, null, 2)}\n`);
   runGit(primaryRoot, [
     "add",
     "--sparse",
+    "docs/agent_skills/skills_manifest.json",
     "lib/fixture_scope.txt",
     "tool/run.mjs",
     "tool/agent/lib/task_input.mjs",

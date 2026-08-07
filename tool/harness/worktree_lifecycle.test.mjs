@@ -201,13 +201,9 @@ test("closure-aware start materializes exact command support and records v5 auth
   assert.deepEqual(execution.result.metadata.ownedPaths, ["lib/profile.txt"]);
   assert.deepEqual(execution.result.metadata.plannedImpactPaths, ["lib/profile.txt"]);
   assert.equal(Object.hasOwn(execution.result.metadata, "requestedSparsePaths"), false);
-  assert.deepEqual(execution.result.metadata.contextPack.checkIds, [
-    "agent:readiness",
-    "fixture:check",
-  ]);
+  assert.deepEqual(execution.result.metadata.contextPack.checkIds, ["fixture:check"]);
   assert.deepEqual(execution.result.metadata.contextPack.deferredCheckIds, [
     "agent:harness-v2",
-    "agent:record-delegation",
   ]);
   const target = execution.result.metadata.worktreePath;
   assert.equal(fs.readFileSync(path.join(target, "tool", "check.mjs"), "utf8"), "export const ok = true;\n");
@@ -1639,10 +1635,6 @@ function createClosureFixture(context, {entrypoint = "tool/check.mjs"} = {}) {
     path.join(fixture, "docs", "agent_skills", "skills_manifest.json"),
     `${JSON.stringify({skills: fixtureSkills()}, null, 2)}\n`,
   );
-  fs.writeFileSync(
-    path.join(fixture, "docs", "agent_regression_ledger.json"),
-    `${JSON.stringify({entries: []}, null, 2)}\n`,
-  );
   git(fixture, ["add", "tool", "docs"]);
   git(fixture, ["commit", "-m", "add closure fixture"]);
   git(fixture, ["push"]);
@@ -1709,22 +1701,7 @@ function closureManifest(entrypoint) {
   return {
     tools: [
       {
-        id: "agent:readiness",
-        status: "active",
-        path: entrypoint,
-        safety: "local-readonly",
-        checks: [`node ${entrypoint}`],
-        ciRequirements: {repositoryView: "index", setup: ["node"]},
-      },
-      {
         id: "agent:harness-v2",
-        status: "active",
-        path: entrypoint,
-        safety: "local-readonly",
-        checks: [`node ${entrypoint}`],
-      },
-      {
-        id: "agent:record-delegation",
         status: "active",
         path: entrypoint,
         safety: "local-readonly",
