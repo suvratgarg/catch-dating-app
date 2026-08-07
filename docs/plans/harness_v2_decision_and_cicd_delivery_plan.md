@@ -1,6 +1,6 @@
 ---
 doc_id: harness_v2_decision_and_cicd_delivery_plan
-version: 0.3.31
+version: 0.3.32
 updated: 2026-08-07
 owner: agent_operating_model
 status: execution-in-progress
@@ -924,6 +924,40 @@ Issues discovered during this tranche:
   its empty session parents, or ignored inspection should distinguish empty
   directory markers from payload without allowlisting arbitrary `.claude/`
   contents.
+
+### Checkpoint 25 — live-only React dependency topology (2026-08-07)
+
+| Signal | Before this slice | Current result |
+|---|---|---|
+| Evidence authority | Three committed React dependency views totaled 24,529 lines / 768,053 bytes: a full JSON graph, Mermaid projection, and generated README. They changed in 23 commits and produced 28,247 lines of historical diff churn even though no live consumer read them. | All three projections are deleted and guarded from returning. The live TypeScript-AST graph is the only topology authority; deterministic `--summary` and `--json` evidence is emitted on demand. Exact recovery remains available from blobs `bf5b5507af6886253d6822324571b4ebc7bed1e7`, `967fc50ee1dc2dd30c26b09c31c1c299c6f07390`, and `c9dabac664de5aa178c496b021a41a6bff12da37`. |
+| Live behavior | Snapshot freshness, repository-writing `--write`, an output-directory contract, and README/Mermaid renderers were mixed into the safety gate. The root-owned tool imported TypeScript only through accidental workspace hoisting. | Repository-writing and output-directory flags now exit 64. `--check`, `--summary`, and `--json` build the graph once; combined evidence/check mode prints inspectable JSON before a blocking failure. The root manifest now directly owns TypeScript 6.0.3. The live graph reports 359 scanned modules, 18 dependency leaves, 1,288 edges, zero unresolved imports or direct website/admin violations, and report-only counts of six runtime cycles, seven type-inclusive cycles, and zero nonliteral dynamic imports. |
+| Affected CI | A graph-tool edit inherited seven setup categories; a `packages/web-ui` input was unmapped and forced full fallback. Admin and Marketing workflows also treated changes to the generated docs projection as deploy-worthy input. | Graph-tool, test, and shared web-ui inputs are complete affected plans with the required full repository view but only Node plus root npm: seven setup categories fall to two, a 71.4% reduction. Both generated-only workflow triggers are gone; the reusable React validation workflow retains the live check, while real Admin, Marketing, and shared-package inputs still trigger their owning surface lanes. |
+| Fresh proof and timing | A sparse task could not prove the root tool installed its own parser dependency, and retry behavior obscured the difference between an install failure and an orchestration race. | Core commit `c3d516026` took 0.04s and pushed in 4.24s. A fresh exact-SHA canary started in 3.46s at 52,614,289 logical tracked bytes, passed doctor in 0.47s, completed one task-cache-scoped `npm ci` in 22.56s, resolved root TypeScript 6.0.3, passed the full graph tool in 1.19s, web-ui typecheck in 1.06s, 35/35 Harness/impact tests in 0.29s, manifest, 83-rule/92-tool enforcement, four document-version increases, test inventory, 5,023/5,023 readiness, 7,205-entry registry parity, and clean remote-equal finish in 0.97s. |
+| Line accounting | The 22 prior measured commits were cumulatively net −324,700 lines. | Core commit `c3d516026` is +300/−24,755, net −24,455. This checkpoint and canary receipt are +39/−4, net +35; the 24-commit measured series is therefore net −349,120 lines. |
+
+Issues discovered during this tranche:
+
+- `H2-TRANSITION-035` — a yielded dependency installer can remain active while
+  an escalated retry starts in the same worktree. Two overlapping `npm ci`
+  processes then delete and extract into the same dependency tree: all 317
+  observed registry requests succeeded, but the retry produced 303 extraction
+  path `ENOENT` failures and package extraction continued 61 seconds after the
+  retry exited. This is a missing same-worktree execution lease, not cache,
+  network, sparse-checkout, or Git isolation failure. Exclusive setup commands
+  must expose PID, argv, start time, and session identity; reject a concurrent
+  mutator before it starts; PID-validate stale leases; and wait for or explicitly
+  terminate the original process before retry. The single-process canary with a
+  task-scoped npm cache passed in 22.56s.
+- `H2-TRANSITION-036` — task creation budgets tracked materialization but not the
+  dependency footprint implied by declared setup. This 256 MiB task started at
+  52,614,289 logical tracked bytes, then root npm expanded the allocated
+  worktree to 504,016,896 bytes (480.7 MiB, 1.88× budget), so doctor correctly
+  blocked closeout with `materialized_budget_exceeded` after all checks passed.
+  Setup planning must project or reserve dependency bytes, keep logical and
+  allocated units explicit, and either assign a sufficient effective budget or
+  reject the plan before installation. Removing only the three regenerable
+  task-local `node_modules` trees restored the task to 56,750,080 allocated
+  bytes and a healthy terminal state.
 
 Durable outcomes are PR wall-clock p50/p95 and escaped defects. Record the
 baseline from the ten most recent comparable PRs and compare after ten v2 PRs.
