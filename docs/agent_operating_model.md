@@ -1,6 +1,6 @@
 ---
 doc_id: agent_operating_model
-version: 1.6.3
+version: 1.6.4
 updated: 2026-08-07
 owner: agent_operating_model
 status: active
@@ -192,15 +192,15 @@ Use Git worktrees as the isolation boundary, but do not create them with ad hoc
 node tool/agent/context_pack.mjs \
   --task <task-id> \
   --mode parallel-delegation \
-  --paths <owned-path[,owned-path...]> \
-  --impact-paths <planned-change-path[,planned-change-path...]> \
+  --owned-paths <owned-path[,owned-path...]> \
+  --planned-impact-paths <planned-change-path[,planned-change-path...]> \
   --json \
   --output build/agent-context/<task-id>.json
 node tool/harness.mjs task start \
   --task-id <task-id> \
   --base-sha <40-character-parent-sha> \
   --stack-parent <parent-ref> \
-  --paths <owned-path[,owned-path...]> \
+  --owned-paths <owned-path[,owned-path...]> \
   --context-pack build/agent-context/<task-id>.json \
   --budget-mib 256
 node tool/harness.mjs task doctor --worktree <task-worktree>
@@ -215,8 +215,8 @@ node tool/harness.mjs task reap --dry-run
 | Task lifecycle metadata | `catch.harness-task/v4` | V1, V2, and V3 remain readable and are never upgraded in place. |
 
 The context pack keeps human commands for execution guidance, but task
-materialization is authorized only by structured tool ids. `--paths` declares
-the hard write ceiling and sparse ownership projection. `--impact-paths`
+materialization is authorized only by structured tool ids. `--owned-paths` declares
+the hard write ceiling and sparse ownership projection. `--planned-impact-paths`
 declares the narrower expected diff used to select owner docs, skills, rules,
 regressions, and checks. Planned impact must stay within ownership. Existing
 planned directories expand to their tracked descendants at the exact base

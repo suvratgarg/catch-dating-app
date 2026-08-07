@@ -266,7 +266,7 @@ function parseTaskArgs(args) {
     throw new TaskUsageError("Harness task command is required.");
   }
   const supported = {
-    start: new Set(["--task-id", "--base-sha", "--stack-parent", "--branch", "--paths", "--context-pack", "--budget-mib", "--reserve-mib", "--json"]),
+    start: new Set(["--task-id", "--base-sha", "--stack-parent", "--branch", "--owned-paths", "--paths", "--context-pack", "--budget-mib", "--reserve-mib", "--json"]),
     doctor: new Set(["--worktree", "--json"]),
     finish: new Set(["--worktree", "--json"]),
     reap: new Set(["--dry-run", "--merged-into", "--stale-days", "--json"]),
@@ -291,10 +291,19 @@ function parseTaskArgs(args) {
     if (!/^[0-9a-f]{40}$/u.test(baseSha)) {
       throw new TaskUsageError("--base-sha must be an explicit full 40-character commit SHA.");
     }
+    const canonicalOwnedPaths = valueAfter(args, "--owned-paths");
+    const compatibilityOwnedPaths = valueAfter(args, "--paths");
+    if (canonicalOwnedPaths != null && compatibilityOwnedPaths != null) {
+      throw new TaskUsageError("Use either --owned-paths or the transitional --paths alias, not both.");
+    }
     const requestedPaths = normalizeExplicitSparsePaths(
-      requiredValue(args, "--paths").split(",").filter(Boolean),
+      (canonicalOwnedPaths ?? compatibilityOwnedPaths ?? requiredValue(args, "--owned-paths"))
+        .split(",")
+        .filter(Boolean),
     ).map(stripSparsePath);
-    if (requestedPaths.length === 0) throw new TaskUsageError("--paths must select at least one repository path.");
+    if (requestedPaths.length === 0) {
+      throw new TaskUsageError("--owned-paths must select at least one repository path.");
+    }
     const branch = valueAfter(args, "--branch") ?? `codex/${taskId}`;
     if (!/^codex\/[A-Za-z0-9._/-]+$/u.test(branch) || branch.includes("..")) {
       throw new TaskUsageError("Task branch must use the codex/ prefix and a valid ref name.");

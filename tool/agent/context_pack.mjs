@@ -22,9 +22,9 @@ const args = parseArgs(process.argv.slice(2));
 const repositorySnapshot = createRepositorySnapshot();
 const task = args.task ?? "unspecified";
 const mode = args.mode ?? "standard";
-const ownedPaths = normalizePaths(args.paths);
-const plannedImpactPaths = args.impactPaths.length > 0
-  ? normalizePaths(args.impactPaths)
+const ownedPaths = normalizePaths(args.ownedPaths);
+const plannedImpactPaths = args.plannedImpactPaths.length > 0
+  ? normalizePaths(args.plannedImpactPaths)
   : ownedPaths;
 const selectionPaths = expandSelectionPaths(plannedImpactPaths);
 const generatedAt = new Date().toISOString();
@@ -76,7 +76,7 @@ const impactBlockers = taskImpactBlockers({
     return null;
   },
 });
-const explicitImpactBlockers = mode === TASK_START_MODE && args.impactPaths.length === 0 &&
+const explicitImpactBlockers = mode === TASK_START_MODE && args.plannedImpactPaths.length === 0 &&
   ownedPaths.some((relativePath) =>
     repositorySnapshot.listPaths({prefix: `${relativePath}/`}).length > 0)
   ? ["planned_impact_required_for_owned_directory"]
@@ -450,8 +450,8 @@ function parseArgs(argv) {
   const parsed = {
     task: null,
     mode: null,
-    paths: [],
-    impactPaths: [],
+    ownedPaths: [],
+    plannedImpactPaths: [],
     output: null,
     json: false,
   };
@@ -459,8 +459,12 @@ function parseArgs(argv) {
     const arg = argv[i];
     if (arg === "--task") parsed.task = requireValue(argv, ++i, arg);
     else if (arg === "--mode") parsed.mode = requireValue(argv, ++i, arg);
-    else if (arg === "--path" || arg === "--paths") parsed.paths.push(requireValue(argv, ++i, arg));
-    else if (arg === "--impact-paths") parsed.impactPaths.push(requireValue(argv, ++i, arg));
+    else if (arg === "--owned-paths" || arg === "--path" || arg === "--paths") {
+      parsed.ownedPaths.push(requireValue(argv, ++i, arg));
+    }
+    else if (arg === "--planned-impact-paths" || arg === "--impact-paths") {
+      parsed.plannedImpactPaths.push(requireValue(argv, ++i, arg));
+    }
     else if (arg === "--output") parsed.output = requireValue(argv, ++i, arg);
     else if (arg === "--json") parsed.json = true;
     else if (arg === "--help" || arg === "-h") {
@@ -468,9 +472,7 @@ function parseArgs(argv) {
       process.exit(0);
     } else if (arg.startsWith("--")) {
       throw new Error(`Unknown argument: ${arg}`);
-    } else {
-      parsed.paths.push(arg);
-    }
+    } else parsed.ownedPaths.push(arg);
   }
   if (parsed.mode != null && parsed.mode !== "parallel-delegation") {
     throw new Error(`Unsupported context-pack mode: ${parsed.mode}`);
@@ -507,13 +509,13 @@ function fileExists(relativePath) {
 }
 
 function printHelp() {
-  console.log(`Usage: node tool/agent/context_pack.mjs --task <name> --paths <owned-path[,owned-path...]> [--impact-paths <path[,path...]>] [--mode parallel-delegation]
+  console.log(`Usage: node tool/agent/context_pack.mjs --task <name> --owned-paths <path[,path...]> [--planned-impact-paths <path[,path...]>] [--mode parallel-delegation]
 
 Options:
   --task name          Task label used to select matching skills.
   --mode mode          Add the canonical parallel-delegation lifecycle.
-  --paths paths        Comma-separated or repeated owned/write paths.
-  --impact-paths paths Comma-separated or repeated expected change paths. Defaults to --paths except delegated directory ownership requires an explicit value.
+  --owned-paths paths          Comma-separated or repeated owned/write paths.
+  --planned-impact-paths paths Comma-separated or repeated expected change paths. Defaults to owned paths except delegated directory ownership requires an explicit value.
   --output path        Write the pack to a file and print only a compact receipt.
   --json               Print JSON instead of Markdown.
 `);
