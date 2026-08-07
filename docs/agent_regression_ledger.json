@@ -1,5 +1,5 @@
 {
-  "version": 157,
+  "version": 158,
   "updated": "2026-08-07",
   "owner": "agent_operating_model",
   "entries": [
@@ -4267,13 +4267,13 @@
         "type": "command",
         "command": "node --test tool/harness/worktree_lifecycle.test.mjs",
         "check_ids": ["agent:harness-v2"],
-        "guardEvidence": "new tasks write v4 receipts with explicit logical and allocated measurements; current growth is allocated-to-allocated; v1/v2/v3 receipts remain readable with a null legacy delta where appropriate; malformed v2/v3/v4 storage fails closed in doctor, finish, and reap; doctor and finish share task-integrity blockers; fixture sessions remove only owned empty parents under concurrent processes; and finish distinguishes remote-query failure from head mismatch"
+        "guardEvidence": "new tasks write a v5 state mirror plus parent-issued authority v1 with explicit logical and allocated measurements; current growth is allocated-to-allocated; v1-v4 receipts remain readable for closeout without execution authority and with a null legacy delta where appropriate; malformed v2-v5 storage fails closed in doctor, finish, and reap; doctor and finish share task-integrity blockers; fixture sessions remove only owned empty parents under concurrent processes; and finish distinguishes remote-query failure from head mismatch"
       },
       "owner_docs": [
         "docs/agent_operating_model.md",
         "docs/plans/harness_v2_decision_and_cicd_delivery_plan.md"
       ],
-      "notes": "The --budget-mib limit and disk reserve are allocated-byte contracts. V2/v3/v4 record both initial logical and allocated materialization without legacy aliases; the writer now emits v4 only. V1/v2/v3 metadata is read-only compatible and v1 never supplies an invented allocated baseline. Shared fixture parents are pruned with non-recursive empty-directory removal; arbitrary .claude payload is never allowlisted."
+      "notes": "The --budget-mib limit and disk reserve are allocated-byte contracts. V2-v5 record both initial logical and allocated materialization without legacy aliases; the writer emits v5 plus authority v1 only. V1-v4 metadata is closeout-readable but cannot dispatch, and v1 never supplies an invented allocated baseline. Shared fixture parents are pruned with non-recursive empty-directory removal; arbitrary .claude payload is never allowlisted."
     },
     {
       "id": "REG-HARNESS-TASK-COMMAND-CLOSURE-001",
@@ -4286,22 +4286,24 @@
         "tool/harness/lib/task_contract.mjs",
         "tool/harness/lib/worktree_lifecycle.mjs",
         "tool/harness/worktree_lifecycle.test.mjs",
+        "tool/run.test.mjs",
+        "tool/tools_manifest.json",
         "docs/agent_regression_ledger.json",
         "docs/agent_operating_model.md",
         "docs/plans/harness_v2_decision_and_cicd_delivery_plan.md"
       ],
-      "symptom": "A context pack lists acceptance commands but task start materializes only a manually typed ownership scope, a missing entrypoint is hidden by a selected parent directory, or a full-repository scanner runs against a sparse projection and passes vacuously.",
+      "symptom": "A context pack lists acceptance commands but task start materializes only a manually typed ownership scope, a missing entrypoint is hidden by a selected parent directory, a full-repository scanner runs against a sparse projection and passes vacuously, an output suffix disagrees with the serialized artifact, or one canonical lifecycle command is missing, duplicated, or projected with the wrong owner, phase, or safety reason.",
       "guard": {
         "type": "command",
         "command": "node --test tool/agent/task_input.test.mjs tool/harness/worktree_lifecycle.test.mjs tool/run.test.mjs",
         "check_ids": ["agent:context-pack", "agent:harness-v2", "tool:runner"],
-        "guardEvidence": "every new start requires a base-bound context-pack v3 and writes task metadata v4; tracked planned-impact directory descendants select skills and guards identically at generation and base-SHA validation; structured tool ids separate worker task checks from parent integration; command entries carry owner and phase; absolute, missing, under-scoped, malformed, or support-path edits fail closed; doctor and finish reject missing physical entrypoints; mixed unknown tool ids fail closed"
+        "guardEvidence": "every new start requires a base-bound context-pack v3 and writes a v5 state mirror plus authority v1; tracked planned-impact directory descendants select skills and guards identically at generation and base-SHA validation; structured tool ids separate worker task checks from parent integration; every canonical lifecycle command is present and the canonical recovery command appears exactly once with its required owner, phase, and safety reason; JSON and Markdown suffix inference, explicit JSON compatibility, conflict and ambiguity rejection, no-write failure, and format-bearing bounded receipts are tested; absolute, missing, under-scoped, malformed, or support-path edits fail closed; doctor and finish reject missing physical entrypoints; mixed unknown tool ids fail closed"
       },
       "owner_docs": [
         "docs/agent_operating_model.md",
         "docs/plans/harness_v2_decision_and_cicd_delivery_plan.md"
       ],
-      "notes": "Raw shell command strings remain human instructions only. Closure-aware v4 receipts are base-bound and keep ownership, planned impact, and support-only materialization separate. The writer produces v4 only; v1, v2, and v3 metadata remain read-only compatible. Output-file generation prints a compact receipt instead of duplicating the full pack in logs."
+      "notes": "Raw shell command strings remain human instructions only. Closure-aware v5 state and parent authority are base-bound and keep ownership, planned impact, and support-only materialization separate; v1-v4 metadata remains closeout-readable without execution authority. Output-file generation resolves .json/.md/.markdown case-insensitively, rejects ambiguous or contradictory output before mutation, and prints a compact receipt in the resolved artifact format only after a successful write."
     },
     {
       "id": "REG-HARNESS-PLANNED-IMPACT-001",
@@ -4321,7 +4323,7 @@
         "type": "command",
         "command": "node --test tool/agent/task_input.test.mjs tool/harness/worktree_lifecycle.test.mjs tool/run.test.mjs",
         "check_ids": ["agent:context-pack", "agent:harness-v2", "tool:runner"],
-        "guardEvidence": "context-pack v3 and task-input v2 bind independent ownedPaths and plannedImpactPaths; only planned impact selects routing; v4 metadata uses ownership for sparse/write authority; doctor and finish reject unplanned changes; missing planned paths and new descendants of planned directories require exact leaf declarations; and legacy v1/v2/v3 task metadata remains readable without reinterpretation"
+        "guardEvidence": "context-pack v3 and task-input v2 bind independent ownedPaths and plannedImpactPaths; only planned impact selects routing; v5 state plus parent authority uses ownership for sparse/write authority; doctor and finish reject unplanned changes; missing planned paths and new descendants of planned directories require exact leaf declarations; and legacy v1-v4 task metadata remains readable for closeout without reinterpretation or execution authority"
       },
       "owner_docs": [
         "docs/agent_operating_model.md",

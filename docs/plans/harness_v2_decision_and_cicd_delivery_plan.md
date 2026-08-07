@@ -1,6 +1,6 @@
 ---
 doc_id: harness_v2_decision_and_cicd_delivery_plan
-version: 0.3.39
+version: 0.3.40
 updated: 2026-08-07
 owner: agent_operating_model
 status: execution-in-progress
@@ -1128,6 +1128,36 @@ Issues closed or discovered during this tranche:
   project it as a parent-owned lifecycle-recovery instruction, delete the
   duplicate literal, and make the lifecycle-complete test assert it. Combine
   this context-pack correction with `H2-TRANSITION-044` in the next tranche.
+
+### Checkpoint 31 — suffix-safe packs and canonical recovery (2026-08-07)
+
+| Signal | Before this slice | Current result |
+|---|---|---|
+| Artifact-format safety | `context_pack.mjs --output <name>.json` silently rendered Markdown unless the caller also supplied `--json`. The a2 task first produced a 12,224-byte Markdown artifact with a JSON suffix in 0.16s, then required a second 0.15s generation to obtain the valid 65,336-byte JSON input. | The existing interface is now deterministic: `--json` remains the sole explicit JSON override; `.json`, `.md`, and `.markdown` suffixes infer format case-insensitively; a recognized suffix cannot conflict with `--json`; unknown or extensionless output paths require `--json`; and stdout remains Markdown by default. Invalid invocations exit 64 with concise stderr, empty stdout, and no file mutation. A compact success receipt is emitted only after the artifact is written and records the resolved format. |
+| Lifecycle recovery | Recovery existed in the lifecycle implementation and prose, but not in the canonical task-command templates or generated parallel-delegation plan. Help compensated with a second literal, so agents could receive an apparently complete plan that omitted the command needed after a stale lease. | `recover-lease` is a canonical task-command template and help derives only from that contract. Every generated parallel-delegation plan carries exactly one parent-owned `lifecycle-recovery` instruction whose safety text requires the owner, transition claimant, and recorded child process groups to be dead. Lifecycle and context-pack regressions assert the exact command, owner, phase, reason, and multiplicity. |
+| Scope discipline | A first review recommendation introduced `--format`, but the readiness parser's recognized context-pack flags are owned outside this task's immutable 14-path boundary. Keeping that flag would have made the changed command valid in one layer and invalid in another. | Independent runner review exposed the boundary before commit. The tranche removed the new vocabulary, preserved the supported `--json` contract, and obtained suffix safety without expanding ownership or creating a compatibility bridge. The registered live context-pack check now deliberately omits `--json` while writing `.json`, so ordinary enforcement dogfoods inference. |
+| Lifecycle timing | The immediately preceding a2 pack generated in 0.15s, task start took 3.98s, and initial doctor took 0.64s. | This 14-path task generated its complete pack in 0.18s, started in 5.51s, and passed initial doctor in 1.05s. Initial materialization was 27,632,382 logical / 29,532,160 allocated bytes with zero growth. The one-sample start variance reinforces H2-TRANSITION-041 and H2-TRANSITION-045; it is recorded, not attributed to the format or recovery changes. |
+| Verification cost | The pushed phase-authority baseline passed 84 lifecycle/runner tests in 35.96s and readiness at 5,171/5,171. | The new focused contract loop passes 4/4 tests in 2.48s. The combined lifecycle/runner suite passes 86/86 in 38.23s, +2.27s or 6.3% versus the immediate baseline. Registered owner closure passes 71 runner, 106 Harness, 13 task-input, four focused context, four docs-state, focused Flutter audit analysis/tests, and 14 operations-boundary tests. Readiness reached 5,237/5,237 before the receipt and 5,270/5,270 after the 14-path audit stamp; enforcement remains 83 rules/92 tools. Root hygiene, test inventory, manifest validation, document monotonicity, and 7,210-file registry parity pass. Exact-commit replay and handoff state remain post-commit evidence rather than self-referential pre-commit claims. |
+| Line accounting | The 33 prior measured commits were cumulatively net −341,790 lines. | This tranche is +268/−53, net +215, leaving the 34-commit measured series at net −341,575 lines. Most growth is adversarial contract coverage and durable evidence; the migration remains overwhelmingly deletion-negative. |
+
+Issues closed or carried forward:
+
+- `H2-TRANSITION-044` — closed. Plausible output filenames can no longer create
+  invalid task inputs, ambiguous paths fail without mutation, and the live
+  registered check exercises suffix inference instead of relying only on unit
+  tests.
+- `H2-TRANSITION-048` — closed. Recovery now comes from one canonical command
+  contract and is projected exactly once with explicit parent ownership and a
+  fail-safe precondition.
+- `H2-TRANSITION-041`, `H2-TRANSITION-045`, `H2-TRANSITION-046`, and
+  `H2-TRANSITION-047` remain open. This tranche does not infer a deterministic
+  regression from one slower task start and does not widen into telemetry,
+  janitor, or Windows process-tree work.
+- `H2-TRANSITION-049` — open and non-blocking. Successful context-pack output
+  still writes directly to the destination, so an OS interruption can leave a
+  partial artifact. Task start rejects that artifact, preserving authority, but
+  a later bounded tranche should write a unique same-directory staging file,
+  atomically rename it, and define exact-prefix cleanup alongside H2-046.
 
 Durable outcomes are PR wall-clock p50/p95 and escaped defects. Record the
 baseline from the ten most recent comparable PRs and compare after ten v2 PRs.

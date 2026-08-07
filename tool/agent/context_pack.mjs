@@ -18,7 +18,15 @@ import {
   taskStartabilityBlockers,
 } from "./lib/task_input.mjs";
 
-const args = parseArgs(process.argv.slice(2));
+let parsedCli;
+try {
+  const parsedArgs = parseArgs(process.argv.slice(2));
+  parsedCli = {args: parsedArgs, outputFormat: resolveOutputFormat(parsedArgs)};
+} catch (error) {
+  console.error(error instanceof Error ? error.message : String(error));
+  process.exit(64);
+}
+const {args, outputFormat} = parsedCli;
 const repositorySnapshot = createRepositorySnapshot();
 const task = args.task ?? "unspecified";
 const mode = args.mode ?? "standard";
@@ -130,7 +138,9 @@ const pack = {
   acceptance,
 };
 
-const rendered = args.json ? `${JSON.stringify(pack, null, 2)}\n` : renderMarkdown(pack);
+const rendered = outputFormat === "json"
+  ? `${JSON.stringify(pack, null, 2)}\n`
+  : renderMarkdown(pack);
 
 if (args.output) {
   const outputPath = path.isAbsolute(args.output) ? args.output : fromRepo(args.output);
@@ -141,6 +151,7 @@ if (args.output) {
     output: relativeOutput === "" || relativeOutput.startsWith("..")
       ? outputPath
       : relativeOutput,
+    format: outputFormat,
     schema: pack.schema,
     task: pack.task,
     complete: pack.taskStart.complete,
@@ -149,9 +160,9 @@ if (args.output) {
     blockers: pack.taskStart.blockers.slice(0, 10),
     blockersTruncated: pack.taskStart.blockers.length > 10,
   };
-  process.stdout.write(args.json
+  process.stdout.write(outputFormat === "json"
     ? `${JSON.stringify(receipt)}\n`
-    : `Context pack written: ${receipt.output} (${receipt.task}, complete=${receipt.complete}, blockers=${receipt.blockers.join(",") || "none"}, digest=${receipt.digest})\n`);
+    : `Context pack written: ${receipt.output} (format=${receipt.format}, task=${receipt.task}, complete=${receipt.complete}, blockers=${receipt.blockers.join(",") || "none"}, digest=${receipt.digest})\n`);
 } else {
   process.stdout.write(rendered);
 }
@@ -281,6 +292,12 @@ function buildCommandPlan({matchedSkills, matchedRegressions, mode, checkPlan}) 
       owner: "parent",
       phase: "lifecycle-finish",
     });
+    addCommand(
+      commands,
+      taskCommandTemplates.recoverLease,
+      "Recover a stale execution lease only after its owner, transition claimant, and recorded child process groups are dead.",
+      {owner: "parent", phase: "lifecycle-recovery"},
+    );
     addCommand(commands, taskCommandTemplates.reap, "Report stale terminal worktrees without mutating them.", {
       owner: "parent",
       phase: "maintenance",
@@ -478,6 +495,28 @@ function parseArgs(argv) {
   return parsed;
 }
 
+function resolveOutputFormat({json, output}) {
+  const explicitFormat = json ? "json" : null;
+  const extension = output == null ? "" : path.extname(output).toLowerCase();
+  const inferredFormat = extension === ".json"
+    ? "json"
+    : ([".md", ".markdown"].includes(extension) ? "markdown" : null);
+
+  if (explicitFormat != null && inferredFormat != null && explicitFormat !== inferredFormat) {
+    throw new Error(
+      `Output suffix ${extension} conflicts with requested ${explicitFormat} format: ${output}`,
+    );
+  }
+  if (explicitFormat != null) return explicitFormat;
+  if (inferredFormat != null) return inferredFormat;
+  if (output != null) {
+    throw new Error(
+      "--output requires a .json, .md, or .markdown suffix unless --json is supplied.",
+    );
+  }
+  return "markdown";
+}
+
 function requireValue(argv, index, flag) {
   const value = argv[index];
   if (!value || value.startsWith("--")) throw new Error(`${flag} requires a value.`);
@@ -514,7 +553,7 @@ Options:
   --mode mode          Add the canonical parallel-delegation lifecycle.
   --owned-paths paths          Comma-separated or repeated owned/write paths.
   --planned-impact-paths paths Comma-separated or repeated expected change paths. Defaults to owned paths except delegated directory ownership requires an explicit value.
-  --output path        Write the pack to a file and print only a compact receipt.
-  --json               Print JSON instead of Markdown.
+  --output path        Write the pack and print only a compact receipt. .json, .md, and .markdown infer format.
+  --json               Serialize as JSON. Required for an unrecognized output suffix and must agree with recognized suffixes.
 `);
 }

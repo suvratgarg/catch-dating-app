@@ -11,8 +11,10 @@ import {
   executeTaskCommand,
   normalizeSparsePaths,
   parseWorktreePorcelain,
+  taskHelp,
   taskSparseAnchorPaths,
 } from "./lib/worktree_lifecycle.mjs";
+import {taskCommandTemplates} from "./lib/task_contract.mjs";
 import {
   buildTaskStartContract,
   CONTEXT_PACK_SCHEMA_V3,
@@ -34,6 +36,14 @@ const TEST_CLAUDE_ROOT = path.join(process.cwd(), ".claude");
 const TEST_FIXTURE_PARENT = path.join(TEST_CLAUDE_ROOT, "test-fixtures");
 const closedOwnedFixturePaths = new Set();
 let processFixtureSession = null;
+
+test("task help derives every lifecycle command from the canonical contract", () => {
+  const help = taskHelp();
+  for (const command of Object.values(taskCommandTemplates)) {
+    assert.equal(help.split(command).length - 1, 1, command);
+  }
+  assert.equal(help.match(/task recover-lease/gu)?.length, 1);
+});
 
 pruneSharedFixtureParents();
 after(() => {

@@ -575,7 +575,7 @@ hard-won prior fixes.
 
 ```sh
 node tool/agent/context_pack.mjs --task architecture-refactor --owned-paths lib/events,lib/explore
-node tool/agent/context_pack.mjs --task doc-hygiene --owned-paths docs --planned-impact-paths docs/README.md,docs/audit_registry/doc_versions.json --mode parallel-delegation --json --output build/agent-context/doc-hygiene.json
+node tool/agent/context_pack.mjs --task doc-hygiene --owned-paths docs --planned-impact-paths docs/README.md,docs/audit_registry/doc_versions.json --mode parallel-delegation --output build/agent-context/doc-hygiene.json
 node tool/agent/check_agent_readiness.mjs
 node tool/agent/check_agent_readiness.mjs --record-metric
 node tool/agent/record_delegation_outcome.mjs --task-id example --mode worker-patch --status integrated --parent-review-outcome accepted --dry-run
@@ -589,6 +589,7 @@ Delegated worktrees use one fail-closed lifecycle instead of direct
 node tool/harness.mjs task start --task-id <id> --base-sha <40-character-sha> --stack-parent <ref> --owned-paths <path[,path...]> --context-pack build/agent-context/<id>.json --budget-mib 256
 node tool/harness.mjs task doctor --worktree <path>
 node tool/harness.mjs task finish --worktree <path>
+node tool/harness.mjs task recover-lease --worktree <path>
 node tool/harness.mjs task reap --dry-run
 ```
 
@@ -612,9 +613,15 @@ stay inside ownership, and delegated
 directory ownership requires an explicit impact list. Every command
 plan entry has an owner and phase: workers receive only preflight and bounded
 task checks; lifecycle, full-view integration, raw skill guidance, and deferred
-regressions remain parent-owned. When `--output` is supplied, the complete pack
-is written there while stdout emits only a compact receipt, keeping CI and
-agent logs bounded.
+regressions remain parent-owned. Start, finish, explicit stale-lease recovery,
+and reap all come from one canonical task-command contract; recovery is a
+parent-owned lifecycle phase and is never implied by a worker failure. With
+`--output`, `.json` selects JSON and `.md` or `.markdown` selects Markdown,
+case-insensitively. `--json` remains the explicit JSON override for an
+unrecognized suffix, but it cannot contradict a recognized Markdown suffix.
+An ambiguous suffix without `--json` fails before creating or overwriting the
+target. The compact stdout receipt uses the resolved artifact format and is
+emitted only after the write succeeds, keeping CI and agent logs bounded.
 
 That phase split is an executable capability boundary. In a managed task,
 `node tool/run.mjs check <id...>` binds the Git-local v5 state mirror to a

@@ -1,6 +1,6 @@
 ---
 doc_id: agent_operating_model
-version: 1.6.7
+version: 1.6.8
 updated: 2026-08-07
 owner: agent_operating_model
 status: active
@@ -194,7 +194,6 @@ node tool/agent/context_pack.mjs \
   --mode parallel-delegation \
   --owned-paths <owned-path[,owned-path...]> \
   --planned-impact-paths <planned-change-path[,planned-change-path...]> \
-  --json \
   --output build/agent-context/<task-id>.json
 node tool/harness.mjs task start \
   --task-id <task-id> \
@@ -229,8 +228,10 @@ checks become task checks; full-view checks are
 recorded as deferred integration checks for the parent so a repository scanner
 cannot pass vacuously against a sparse projection. Generated command plans name
 an owner and phase: the worker runs only worker-owned preflight/task checks,
-while the parent owns lifecycle creation/finish, full-view integration,
-unstructured regression guards, canonical records, and final verification.
+while the parent owns lifecycle creation/finish, explicit stale-lease recovery,
+maintenance, full-view integration, unstructured regression guards, canonical
+records, and final verification. Every lifecycle instruction is projected from
+the same canonical task-command contract.
 This split is enforced at execution, not left to operator memory. Before any
 execution output or child command, `node tool/run.mjs check ...` locates the
 actual linked-worktree administrative id, then requires three agreeing control
@@ -282,8 +283,13 @@ The pack is consumable only when its source worktree is clean, its SHA and
 owned and planned-impact scopes match task start, and every selected id
 resolves to an active manifest tool. Command regressions awaiting structured ids remain explicit
 deferred parent checks; their display strings never authorize sparse
-materialization. With `--output`, the full artifact is written to disk and
-stdout contains only a compact task/digest receipt.
+materialization. With `--output`, a `.json` suffix selects JSON and `.md` or
+`.markdown` selects Markdown, case-insensitively. `--json` remains an explicit
+JSON override for an unrecognized suffix but cannot contradict a recognized
+Markdown suffix. Ambiguous output without that explicit override fails before
+the target is created or replaced. The compact stdout receipt uses the resolved
+artifact format, includes that format, and is emitted only after the full pack
+is written successfully.
 
 `task start` requires and validates the exact parent SHA, explicit owned paths,
 and context-pack digest. It checks a fixed allocated-disk reserve plus the
