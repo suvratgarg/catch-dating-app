@@ -58,6 +58,7 @@ test("expanded app directories enforce payload size but not archive size", () =>
 
 test("cross-role comparison rejects identical compiled products", () => {
   const report = {
+    platform: "ios",
     appBinaries: [{sha256: "same"}],
     entries: [{path: "Payload/App"}],
   };
@@ -68,6 +69,22 @@ test("cross-role comparison rejects identical compiled products", () => {
       "Consumer and Host package entry sets are identical.",
     ],
   );
+});
+
+test("cross-role comparison fails closed on missing or asymmetric binaries", () => {
+  const findings = comparePackageReports({
+    consumer: {platform: "android", appBinaries: [], entries: [{path: "consumer"}]},
+    host: {
+      platform: "android",
+      appBinaries: [{sha256: "host"}],
+      entries: [{path: "host"}],
+    },
+    policy,
+  });
+  assert.deepEqual(findings, [
+    "Consumer and Host package reports must each contain compiled app binaries.",
+    "Consumer and Host package reports must contain the same app-binary count.",
+  ]);
 });
 
 test("signed-package baselines must fit inside bounded budget headroom", () => {

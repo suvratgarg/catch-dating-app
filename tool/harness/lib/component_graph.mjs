@@ -3,9 +3,16 @@ const operationKeys = [
   "checkIds",
   "codegenIds",
   "buildTargets",
+  "releaseTargets",
   "deployGroups",
   "releaseRoles",
 ];
+const signedMobileReleaseTargets = new Set([
+  "consumer-android",
+  "consumer-ios",
+  "host-android",
+  "host-ios",
+]);
 const ciCheckoutKeys = ["planner", "default", "targetOverrides"];
 const checkoutRequirementKeys = [
   "mode",
@@ -400,7 +407,10 @@ export function planAffected({changedPaths, graph, mode = "pr", full = false}) {
 
 export function deriveAppRoles(plan) {
   const roles = new Set(plan.operations.releaseRoles ?? []);
-  for (const target of plan.operations.buildTargets ?? []) {
+  for (const target of [
+    ...(plan.operations.buildTargets ?? []),
+    ...(plan.operations.releaseTargets ?? []),
+  ]) {
     if (target.startsWith("consumer-")) roles.add("consumer");
     if (target.startsWith("host-")) roles.add("host");
   }
@@ -458,6 +468,38 @@ function validateOperation({
       errors.push(`${location} references unknown release role "${role}".`);
     }
   }
+  const declaredReleaseRoles = new Set(operation.releaseRoles ?? []);
+  const impliedReleaseRoles = new Set();
+  for (const releaseTarget of operation.releaseTargets ?? []) {
+    if (!signedMobileReleaseTargets.has(releaseTarget)) {
+      errors.push(`${location} references unknown signed mobile release target "${releaseTarget}".`);
+      continue;
+    }
+    const [role, platform] = releaseTarget.split("-");
+    impliedReleaseRoles.add(role);
+    if (mode === "main" && !(operation.ciTargets ?? []).includes(`flutter_build_${platform}`)) {
+      errors.push(
+        `${location} release target "${releaseTarget}" requires CI target "flutter_build_${platform}".`,
+      );
+    }
+    if (mode === "release" && !(operation.buildTargets ?? []).includes(releaseTarget)) {
+      errors.push(
+        `${location} release target "${releaseTarget}" requires matching build target "${releaseTarget}".`,
+      );
+    }
+  }
+  if ((operation.releaseTargets ?? []).length > 0 && !["main", "release"].includes(mode)) {
+    errors.push(`${location} can authorize signed mobile release only in main or release mode.`);
+  }
+  if (declaredReleaseRoles.size > 0 && impliedReleaseRoles.size === 0) {
+    errors.push(`${location}.releaseRoles must be backed by exact releaseTargets.`);
+  }
+  if (
+    declaredReleaseRoles.size !== impliedReleaseRoles.size ||
+    [...declaredReleaseRoles].some((role) => !impliedReleaseRoles.has(role))
+  ) {
+    errors.push(`${location}.releaseRoles must exactly match roles implied by releaseTargets.`);
+  }
   const selectedTargets = new Set(operation.ciTargets ?? []);
   for (const deployGroup of operation.deployGroups ?? []) {
     const requiredTargets = deployGroupRequirements.get(deployGroup);
@@ -481,6 +523,9 @@ function validateOperation({
     }
     if ((operation.releaseRoles ?? []).length > 0) {
       errors.push(`${location} cannot authorize release from an affected edge.`);
+    }
+    if ((operation.releaseTargets ?? []).length > 0) {
+      errors.push(`${location} cannot authorize signed mobile release from an affected edge.`);
     }
   }
 }

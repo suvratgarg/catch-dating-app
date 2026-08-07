@@ -5,12 +5,16 @@ on:
     branches: [main]
     paths:
       - ".github/actions/**"
+      - ".github/workflows/_web-hosting-build.yml"
+      - ".github/workflows/_web-hosting-promote.yml"
       - ".github/workflows/marketing-website.yml"
       - ".github/workflows/react-surface-validation.yml"
       - ".firebaserc"
       - "firebase.json"
       - "package.json"
       - "package-lock.json"
+      - "functions/package.json"
+      - "functions/package-lock.json"
       - "website/**"
       - "packages/web-config/**"
       - "packages/web-ui/**"
@@ -23,6 +27,13 @@ on:
       - "contracts/public/website_host_listing_projection.schema.json"
       - "design/web-ui/shared_primitive_adoption.json"
       - "tool/ci/toolchain.env"
+      - "tool/ci/delivery_core.mjs"
+      - "tool/ci/package_web_hosting.mjs"
+      - "tool/ci/package_web_hosting.test.mjs"
+      - "tool/ci/web_hosting_workflow.test.mjs"
+      - "tool/contracts/generated/schema_contract_validators.mjs"
+      - "tool/contracts/generated/schema_contract_registry.mjs"
+      - "tool/demo/demo_seed/scenarios/**"
       - "tool/design_tokens.dart"
       - "tool/design/check_component_lexicon.mjs"
       - "tool/design/check_component_lexicon.test.mjs"
@@ -45,10 +56,30 @@ on:
         required: false
         type: boolean
         default: false
-
-concurrency:
-  group: marketing-website-${{ github.ref }}
-  cancel-in-progress: true
+      recovery_artifact_digest:
+        description: Exact sha256 digest from a failed source run's Web Hosting artifact
+        required: false
+        type: string
+      recovery_artifact_id:
+        description: Exact artifact id from a failed source run (leave empty for validation-only dispatch)
+        required: false
+        type: string
+      recovery_reason:
+        description: Operator reason required for exact-artifact recovery
+        required: false
+        type: string
+      recovery_source_run_attempt:
+        description: Producing failed workflow run attempt
+        required: false
+        type: string
+      recovery_source_run_id:
+        description: Producing failed workflow run id
+        required: false
+        type: string
+      recovery_source_sha:
+        description: Exact 40-character source SHA from the failed run
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -56,84 +87,59 @@ permissions:
 jobs:
   validate:
     name: Validate marketing website
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.recovery_artifact_id == '' }}
     uses: ./.github/workflows/react-surface-validation.yml
     with:
       surface: marketing
       update_visual_baselines: ${{ github.event_name == 'workflow_dispatch' && inputs.update_visual_baselines }}
+      skip_deployable_build: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
 
-  deploy:
-    name: Deploy marketing Hosting
+  package:
+    name: Package exact marketing Hosting bytes
     needs: validate
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    environment: prod-hosting
-    timeout-minutes: 20
+    uses: ./.github/workflows/_web-hosting-build.yml
+    with:
+      surface: marketing
+    secrets: inherit
     permissions:
+      actions: read
       contents: read
       id-token: write
 
-    steps:
-      - uses: actions/checkout@v6
+  promote:
+    name: Promote exact marketing Hosting bytes
+    needs: package
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.package.result == 'success' }}
+    uses: ./.github/workflows/_web-hosting-promote.yml
+    with:
+      artifact_digest: ${{ needs.package.outputs.artifact_digest }}
+      artifact_id: ${{ needs.package.outputs.artifact_id }}
+      source_ci_run_attempt: ${{ needs.package.outputs.source_ci_run_attempt }}
+      source_ci_run_id: ${{ needs.package.outputs.source_ci_run_id }}
+      source_sha: ${{ needs.package.outputs.source_sha }}
+      surface: marketing
+    secrets: inherit
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
 
-      - id: toolchain
-        uses: ./.github/actions/load-toolchain
-
-      - uses: actions/setup-node@v6
-        with:
-          node-version: ${{ steps.toolchain.outputs.node-version }}
-          cache: npm
-          cache-dependency-path: package-lock.json
-
-      - run: npm ci
-
-      - name: Install Firestore read dependencies
-        run: npm --prefix functions ci --omit=dev
-
-      - run: npm install -g firebase-tools@${{ steps.toolchain.outputs.firebase-tools-version }}
-
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v3
-        with:
-          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ vars.GCP_SERVICE_ACCOUNT_EMAIL }}
-
-      - name: Validate production marketing environment
-        env:
-          VITE_GTM_ID: ${{ vars.VITE_GTM_ID || 'GTM-K7KLNQXP' }}
-          VITE_STORE_LINKS_MODE: ${{ vars.VITE_STORE_LINKS_MODE || 'prelaunch' }}
-          VITE_APP_STORE_URL: ${{ vars.VITE_APP_STORE_URL }}
-          VITE_PLAY_STORE_URL: ${{ vars.VITE_PLAY_STORE_URL }}
-          VITE_WEBSITE_APPCHECK_SITE_KEY: ${{ vars.VITE_WEBSITE_APPCHECK_SITE_KEY }}
-          VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
-          VITE_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}
-          VITE_FIREBASE_PROJECT_ID: ${{ vars.VITE_FIREBASE_PROJECT_ID }}
-          VITE_FIREBASE_STORAGE_BUCKET: ${{ vars.VITE_FIREBASE_STORAGE_BUCKET }}
-          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ vars.VITE_FIREBASE_MESSAGING_SENDER_ID }}
-          VITE_FIREBASE_APP_ID: ${{ vars.VITE_FIREBASE_APP_ID }}
-          VITE_FIREBASE_MEASUREMENT_ID: ${{ vars.VITE_FIREBASE_MEASUREMENT_ID }}
-        run: node tool/env/check_web_hosting_env.mjs marketing --expected-project-id catch-dating-app-64e51
-
-      - name: Materialize production organizer listings from Firestore
-        run: npm --workspace catch-marketing run materialize:organizer-listings:deploy
-
-      - name: Deploy production marketing site
-        env:
-          VITE_GTM_ID: ${{ vars.VITE_GTM_ID || 'GTM-K7KLNQXP' }}
-          VITE_STORE_LINKS_MODE: ${{ vars.VITE_STORE_LINKS_MODE || 'prelaunch' }}
-          VITE_APP_STORE_URL: ${{ vars.VITE_APP_STORE_URL }}
-          VITE_PLAY_STORE_URL: ${{ vars.VITE_PLAY_STORE_URL }}
-          VITE_WEBSITE_APPCHECK_SITE_KEY: ${{ vars.VITE_WEBSITE_APPCHECK_SITE_KEY }}
-          VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
-          VITE_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}
-          VITE_FIREBASE_PROJECT_ID: ${{ vars.VITE_FIREBASE_PROJECT_ID }}
-          VITE_FIREBASE_STORAGE_BUCKET: ${{ vars.VITE_FIREBASE_STORAGE_BUCKET }}
-          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ vars.VITE_FIREBASE_MESSAGING_SENDER_ID }}
-          VITE_FIREBASE_APP_ID: ${{ vars.VITE_FIREBASE_APP_ID }}
-          VITE_FIREBASE_MEASUREMENT_ID: ${{ vars.VITE_FIREBASE_MEASUREMENT_ID }}
-        run: ./tool/firebase_with_env.sh prod deploy --only hosting:marketing --non-interactive
-
-      - name: Verify production unknown paths return HTTP 404
-        run: node website/scripts/verifyHosting404.mjs https://catchdates.com
-
-      - name: Verify launch-critical production routes
-        run: node website/scripts/probeProduction.mjs --base-url https://catchdates.com --json
+  recover:
+    name: Recover exact marketing Hosting bytes
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.recovery_artifact_id != '' }}
+    uses: ./.github/workflows/_web-hosting-promote.yml
+    with:
+      artifact_digest: ${{ inputs.recovery_artifact_digest }}
+      artifact_id: ${{ inputs.recovery_artifact_id }}
+      recovery: true
+      recovery_reason: ${{ inputs.recovery_reason }}
+      source_ci_run_attempt: ${{ inputs.recovery_source_run_attempt }}
+      source_ci_run_id: ${{ inputs.recovery_source_run_id }}
+      source_sha: ${{ inputs.recovery_source_sha }}
+      surface: marketing
+    secrets: inherit
+    permissions:
+      actions: read
+      contents: read
+      id-token: write

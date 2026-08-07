@@ -111,7 +111,7 @@
         "docs/widget_catalog.md"
       ],
       "command": "node tool/docs/check_doc_metadata.mjs --base origin/main",
-      "safety": "local-readonly",
+      "safety": "local-writes-build-artifacts",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "index",
@@ -228,6 +228,11 @@
       "impactPaths": [
         "tool/ci/delivery_core.test.mjs"
       ],
+      "alsoCheckIds": [
+        "ci:firebase-delivery-package",
+        "ci:web-hosting-delivery-package",
+        "ci:mobile-release-package"
+      ],
       "description": "Creates and verifies ephemeral exact-SHA, source-run, and SHA-256 artifact provenance plus ordered idempotent deployment checkpoints for CI/CD promotion and resume.",
       "checks": [
         "node --check tool/ci/delivery_core.mjs",
@@ -310,6 +315,253 @@
           "high-cardinality queue metadata still resolves one cursor and one oldest authority",
           "promotion is ordered dev to staging to protected prod",
           "automatic target planning rejects broad and unrelated Firebase products"
+        ]
+      }
+    },
+    {
+      "id": "ci:web-hosting-delivery-package",
+      "category": "ci",
+      "path": "tool/ci/package_web_hosting.mjs",
+      "command": "node --test tool/ci/package_web_hosting.test.mjs",
+      "safety": "local-writes-build-artifacts",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/ci/package_web_hosting.test.mjs",
+        "firebase.json",
+        ".firebaserc"
+      ],
+      "alsoCheckIds": [
+        "ci:web-hosting-delivery-workflow"
+      ],
+      "description": "Projects one production Admin or Marketing Hosting bundle into a bounded lifecycle-hook-free Firebase package for the exact Catch production project and surface site, with exact workflow/run/source binding and a strict per-file digest inventory.",
+      "checks": [
+        "node --check tool/ci/package_web_hosting.mjs",
+        "node --test tool/ci/package_web_hosting.test.mjs"
+      ],
+      "role": "generator",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/ci/package_web_hosting.test.mjs",
+        "contains": [
+          "marketing package contains one lifecycle-hook-free target and exact byte inventory",
+          "prepare rejects the wrong production project or Hosting site",
+          "verification rejects added, removed, or modified site bytes",
+          "verification rejects run, workflow-generation, and source binding mismatches"
+        ]
+      }
+    },
+    {
+      "id": "ci:web-hosting-delivery-workflow",
+      "category": "ci",
+      "path": "tool/ci/web_hosting_workflow.test.mjs",
+      "command": "node --test tool/ci/web_hosting_workflow.test.mjs website/scripts/marketingDeployWorkflow.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        ".github/workflows/_web-hosting-build.yml",
+        ".github/workflows/_web-hosting-promote.yml",
+        ".github/workflows/admin-website.yml",
+        ".github/workflows/marketing-website.yml",
+        ".github/workflows/react-surface-validation.yml",
+        "tool/ci/web_hosting_workflow.test.mjs",
+        "website/scripts/marketingDeployWorkflow.test.mjs"
+      ],
+      "description": "Guards the exact Admin and Marketing Hosting path: one production build, immutable artifact-id and digest promotion, no deploy-time rebuild, current-main freshness, and terminal source-bound recovery.",
+      "checks": [
+        "node --check tool/ci/web_hosting_workflow.test.mjs",
+        "node --test tool/ci/web_hosting_workflow.test.mjs website/scripts/marketingDeployWorkflow.test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/ci/web_hosting_workflow.test.mjs",
+        "contains": [
+          "main builds the deployable Vite output once while validation-only dispatch remains a no-op",
+          "promotion downloads only the immutable artifact id and verifies bytes before credentials",
+          "stale recovery and an older partial-rerun artifact fail before mutation"
+        ]
+      }
+    },
+    {
+      "id": "ci:mobile-release-package",
+      "category": "ci",
+      "path": "tool/ci/package_mobile_release.mjs",
+      "command": "node --test tool/ci/package_mobile_release.test.mjs",
+      "safety": "local-writes-build-artifacts",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/ci/package_mobile_release.test.mjs",
+        "tool/ci/delivery_core.mjs",
+        "tool/platform/check_mobile_package.mjs",
+        "tool/platform/verify_android_release_bundle.mjs",
+        "tool/platform/verify_ios_release_identity.mjs",
+        ".github/workflows/mobile-internal-release.yml"
+      ],
+      "alsoCheckIds": [
+        "ci:mobile-release-workflow",
+        "ci:mobile-promotion-core",
+        "platform:app-targets"
+      ],
+      "description": "Packages one CI-authorized signed IPA or AAB for an exact role/platform release target with delivery provenance, identity and policy evidence, immutable upload binding, and a strict aggregate build authority.",
+      "checks": [
+        "node --check tool/ci/package_mobile_release.mjs",
+        "node --test tool/ci/package_mobile_release.test.mjs"
+      ],
+      "role": "generator",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/ci/package_mobile_release.test.mjs",
+        "contains": [
+          "packages exact iOS and Android targets with delivery provenance v2",
+          "refuses a target that the exact CI plan did not authorize",
+          "identity and package-policy evidence reject same-name byte substitution",
+          "verification rejects artifact, provenance, and source-binding tampering",
+          "aggregate authority strictly binds the post-comparison target and artifacts"
+        ]
+      }
+    },
+    {
+      "id": "ci:mobile-promotion-core",
+      "category": "ci",
+      "path": "tool/ci/mobile_promotion_core.mjs",
+      "command": "node --test tool/ci/mobile_promotion_core.test.mjs",
+      "safety": "local-writes-build-artifacts",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/ci/mobile_promotion_core.test.mjs",
+        "tool/ci/package_mobile_release.mjs",
+        "tool/platform/check_mobile_package.mjs",
+        "tool/platform/verify_android_release_bundle.mjs",
+        "tool/platform/verify_ios_release_identity.mjs",
+        ".github/workflows/mobile-internal-promote.yml"
+      ],
+      "alsoCheckIds": [
+        "ci:mobile-promotion-workflow"
+      ],
+      "description": "Selects one exact role/platform package only from a verified aggregate mobile build authority, reverifies the packaged binary and provenance, and writes one bounded immutable store-result receipt after promotion.",
+      "checks": [
+        "node --check tool/ci/mobile_promotion_core.mjs",
+        "node --test tool/ci/mobile_promotion_core.test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/ci/mobile_promotion_core.test.mjs",
+        "contains": [
+          "selects the exact current target package only from build authority",
+          "rejects stale attempts, wrong targets, and substituted artifact names",
+          "reverifies packaged bytes against the aggregate authority",
+          "promotion receipt binds immutable exact package and uploaded store result"
+        ]
+      }
+    },
+    {
+      "id": "ci:mobile-promotion-workflow",
+      "category": "ci",
+      "path": "tool/ci/mobile_promotion_workflow.test.mjs",
+      "command": "node --test tool/ci/mobile_promotion_workflow.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        ".github/workflows/mobile-internal-promote.yml",
+        "tool/ci/mobile_promotion_workflow.test.mjs",
+        "tool/ci/mobile_promotion_core.mjs",
+        "tool/ci/package_mobile_release.mjs",
+        "tool/platform/upload_google_play_bundle.mjs",
+        "tool/app_targets.json"
+      ],
+      "description": "Guards manual exact mobile promotion: current successful producer attempt, immutable authority/package ids and digests, final fresh re-extraction before credentials, target-scoped queueing, and zero rebuild or resigning work.",
+      "checks": [
+        "node --check tool/ci/mobile_promotion_workflow.test.mjs",
+        "node --test tool/ci/mobile_promotion_workflow.test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/ci/mobile_promotion_workflow.test.mjs",
+        "contains": [
+          "promotion is a confirmed manual-only operation with one queue per exact target",
+          "producer attempt and current promoter implementation are fail-closed",
+          "authority selects the package id, name, and digest and metadata cannot be substituted",
+          "producer head S2 is separate from authority source S1 and superseded source attempts reject",
+          "prior claims are exact, attempt-bound, and ambiguous Apple identity fails closed",
+          "fresh source, artifact, and package verification immediately precedes credentials",
+          "promotion uses one exact Play authority and never rebuilds, archives, or signs",
+          "credentials are removed before one immutable 90-day claim is persisted"
+        ]
+      }
+    },
+    {
+      "id": "ci:mobile-release-workflow",
+      "category": "ci",
+      "path": "tool/ci/mobile_release_workflow.test.mjs",
+      "command": "node --test tool/ci/mobile_release_workflow.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        ".github/workflows/mobile-internal-release.yml",
+        "tool/ci/mobile_release_workflow.test.mjs",
+        "tool/harness.mjs",
+        "tool/harness/component_graph.json",
+        "tool/harness/component_graph.schema.json",
+        "tool/harness/lib/component_graph.mjs",
+        "tool/platform/check_app_targets.mjs",
+        "tool/app_targets.json"
+      ],
+      "description": "Guards the producer-only mobile release path: successful main CI authority, exact role/platform target matrices, source-bound 90-day signed packages, post-comparison aggregate authority, and zero App Store or Play mutation.",
+      "checks": [
+        "node --check tool/ci/mobile_release_workflow.test.mjs",
+        "node --test tool/ci/mobile_release_workflow.test.mjs",
+        "node tool/platform/check_app_targets.mjs --check"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/ci/mobile_release_workflow.test.mjs",
+        "contains": [
+          "mobile producer consumes only a successful same-repository main CI attempt",
+          "source CI attempt must still be latest immediately before authority upload",
+          "mobile producer downloads the CI authority and plan by immutable id and digest",
+          "exact releaseTargets select role-platform builds without Cartesian widening",
+          "partial producer reruns fail closed with a current-attempt completeness authority",
+          "finalizer downloads and re-verifies exact package bytes before authority",
+          "producer performs no App Store, Play, or legacy-owner mutation"
         ]
       }
     },
@@ -2413,7 +2665,16 @@
         "node --check tool/platform/check_app_targets.mjs",
         "bash tool/flutter_with_env.test.sh",
         "node --test tool/platform/check_app_targets.test.mjs",
+        "node --test tool/platform/mobile_release_target_contract.test.mjs",
         "node tool/platform/check_app_targets.mjs --check"
+      ],
+      "impactPaths": [
+        "tool/app_targets.json",
+        "tool/platform/check_app_targets.test.mjs",
+        "tool/platform/mobile_release_target_contract.test.mjs",
+        "tool/harness/component_graph.json",
+        "tool/harness/component_graph.schema.json",
+        "tool/harness/lib/component_graph.mjs"
       ],
       "role": "gate",
       "rules": [

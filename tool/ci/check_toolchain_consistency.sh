@@ -75,12 +75,13 @@ fi
 
 apple_native_workflows=(
   ".github/workflows/app-build-matrix.yml"
+  ".github/workflows/mobile-internal-promote.yml"
   ".github/workflows/mobile-internal-release.yml"
   ".github/workflows/visual-integration-ci.yml"
 )
 for workflow in "${apple_native_workflows[@]}"; do
-  if ! grep -Fq "runs-on: $APPLE_CI_RUNNER" "$repo_root/$workflow"; then
-    echo "$workflow must use runs-on: $APPLE_CI_RUNNER to satisfy XCODE_MIN_VERSION $XCODE_MIN_VERSION."
+  if ! grep -Eq "^[[:space:]]*runs-on:.*${APPLE_CI_RUNNER}" "$repo_root/$workflow"; then
+    echo "$workflow must use $APPLE_CI_RUNNER on a runs-on line to satisfy XCODE_MIN_VERSION $XCODE_MIN_VERSION."
     exit 1
   fi
 done

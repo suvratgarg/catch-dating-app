@@ -52,6 +52,9 @@
       "status": "complete_local",
       "evidence": [
         ".github/workflows/mobile-internal-release.yml",
+        ".github/workflows/mobile-internal-promote.yml",
+        "tool/ci/package_mobile_release.mjs",
+        "tool/ci/mobile_promotion_core.mjs",
         "tool/platform/verify_ios_release_identity.mjs",
         "tool/platform/verify_android_release_bundle.mjs"
       ]
@@ -68,9 +71,10 @@
   "releasePolicy": {
     "owner": "github-actions",
     "workflow": ".github/workflows/mobile-internal-release.yml",
-    "trigger": "role-impacted-main-push-for-artifacts-and-consumer-testflight",
+    "promotionWorkflow": ".github/workflows/mobile-internal-promote.yml",
+    "trigger": "successful-main-ci-exact-artifact-authority",
     "environment": "prod-mobile",
-    "approvalMode": "consumer-testflight-automatic-otherwise-manual",
+    "approvalMode": "build-only-no-store-mutation",
     "branchPolicy": "main-only",
     "roles": [
       "consumer",
@@ -79,10 +83,8 @@
     "ios": {
       "channel": "testflight",
       "artifactMode": "automatic-role-impacted-main",
-      "uploadMode": "automatic-selected-roles-on-main-or-manual-dispatch",
-      "automaticRoles": [
-        "consumer"
-      ],
+      "uploadMode": "separate-promotion-workflow",
+      "automaticRoles": [],
       "signingStyle": "automatic",
       "developmentIdentitySource": "reusable-ci-p12",
       "distributionSigningStage": "export",
@@ -93,7 +95,7 @@
       "channel": "play-internal",
       "track": "qa",
       "artifactMode": "automatic-role-impacted-main",
-      "uploadMode": "manual-dispatch-and-gated-until-play-ready",
+      "uploadMode": "separate-promotion-workflow",
       "publisherAuth": "github-oidc",
       "publisherServiceAccount": "github-actions-play-publisher@catch-dating-app-64e51.iam.gserviceaccount.com",
       "uploadCertificateSha256": "3088F763A60FD9F7CA99204D6A68EF93A30263A697E563EF883B29DBBC7AE23E"
@@ -429,9 +431,9 @@
       },
       "release": {
         "owner": "github-actions",
-        "githubMode": "automatic-artifact-automatic-testflight",
+        "githubMode": "automatic-exact-artifact",
         "githubWorkflow": ".github/workflows/mobile-internal-release.yml",
-        "automaticTestFlightOnMain": true,
+        "automaticTestFlightOnMain": false,
         "appStoreConnectAppId": "6765646860",
         "googlePlayPackageName": "com.catchdates.app",
         "legacyXcodeCloudWorkflow": "Default",
@@ -494,7 +496,7 @@
       },
       "release": {
         "owner": "github-actions",
-        "githubMode": "automatic-artifact-manual-upload",
+        "githubMode": "automatic-exact-artifact",
         "githubWorkflow": ".github/workflows/mobile-internal-release.yml",
         "automaticTestFlightOnMain": false,
         "appStoreConnectAppId": "6778927317",
@@ -511,15 +513,16 @@
     {
       "id": "APP-TARGET-IOS-GITHUB-CUTOVER-001",
       "status": "blocked_external",
-      "reason": "GitHub Actions is the canonical iOS owner, both role uploads processed, and both legacy Xcode Cloud workflows are disabled. Closure remains externally blocked only on intended TestFlight group assignment plus install and launch proof.",
+      "reason": "GitHub Actions is the canonical iOS package and exact-promotion owner, historical uploads for both roles processed, and both legacy Xcode Cloud workflows are disabled. Closure remains externally blocked on exercising the split promoter for the next intended packages plus TestFlight group assignment, install, and launch proof.",
       "externalPrerequisites": [
         "select and record the intended Consumer and Host internal TestFlight groups",
+        "promote the next intended Consumer and Host IPAs through Mobile Internal Exact Promotion",
         "assign the GitHub-processed Consumer and Host builds to those groups",
         "install and launch both GitHub-owned builds with role-specific runtime smoke proof"
       ],
       "githubBuildNumberNamespace": "<UTC YYYYMMDD><8-digit GitHub run><2-digit attempt>",
       "removalProof": [
-        "Mobile Internal Release run 29168074271: Consumer and Host build 202607110000000301 processed VALID",
+        "historical pre-split Mobile Internal Release run 29168074271: Consumer and Host build 202607110000000301 processed VALID",
         "processing receipts bound to Mobile Internal Release run 29168074271",
         "retirement run 29168662623: both app-scoped Default workflows disabled",
         "tester-group assignments",
@@ -529,13 +532,13 @@
     {
       "id": "APP-TARGET-ANDROID-PLAY-001",
       "status": "blocked_external",
-      "reason": "The unified workflow, Android Publisher API, dedicated zero-project-role service account, and prod-mobile OIDC binding are ready, but Play internal upload stays disabled until both Play app records grant app-scoped testing-track access.",
+      "reason": "The split exact package producer/promoter, Android Publisher API, dedicated zero-project-role service account, and prod-mobile OIDC binding are ready, but Play internal upload stays disabled until both Play app records grant app-scoped testing-track access.",
       "externalPrerequisites": [
         "create com.catchdates.app and com.catchdates.host Play records",
         "enroll both apps in Play App Signing",
         "grant GOOGLE_PLAY_SERVICE_ACCOUNT_EMAIL release access to both apps",
         "configure both internal tester lists",
-        "dispatch probe_play_access for both qa tracks and keep the edit uncommitted",
+        "run the separately authenticated probe_google_play_access tool for both qa tracks and keep each edit uncommitted",
         "set GOOGLE_PLAY_UPLOAD_ENABLED=true only after both authenticated access probes pass"
       ],
       "playTrack": "qa",

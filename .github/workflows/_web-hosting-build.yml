@@ -1,0 +1,406 @@
+name: Web Hosting Exact Build
+
+on:
+  workflow_call:
+    inputs:
+      surface:
+        description: Exact React surface to build (admin or marketing).
+        required: true
+        type: string
+    outputs:
+      artifact_digest:
+        description: GitHub SHA-256 digest of the uploaded artifact ZIP.
+        value: ${{ jobs.build.outputs.artifact_digest }}
+      artifact_id:
+        description: Immutable GitHub artifact id.
+        value: ${{ jobs.build.outputs.artifact_id }}
+      artifact_name:
+        description: Exact run-attempt-bound artifact name.
+        value: ${{ jobs.build.outputs.artifact_name }}
+      source_ci_run_attempt:
+        value: ${{ jobs.build.outputs.source_ci_run_attempt }}
+      source_ci_run_id:
+        value: ${{ jobs.build.outputs.source_ci_run_id }}
+      source_ci_run_number:
+        value: ${{ jobs.build.outputs.source_ci_run_number }}
+      source_ci_workflow_id:
+        value: ${{ jobs.build.outputs.source_ci_workflow_id }}
+      source_sha:
+        value: ${{ jobs.build.outputs.source_sha }}
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  marketing_snapshot:
+    name: Materialize read-only marketing listing inputs
+    if: ${{ inputs.surface == 'marketing' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: prod-hosting
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+    outputs:
+      artifact_digest: ${{ format('sha256:{0}', steps.upload.outputs.artifact-digest) }}
+      artifact_id: ${{ steps.upload.outputs.artifact-id }}
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Bind the snapshot to the canonical marketing main push
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_EVENT_NAME" = "push"
+          test "$GITHUB_REF" = "refs/heads/main"
+          [[ "$GITHUB_SHA" =~ ^[0-9a-f]{40}$ ]]
+          current_attempt="$(gh api \
+            "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/attempts/$GITHUB_RUN_ATTEMPT")"
+          jq -e \
+            --arg path ".github/workflows/marketing-website.yml" \
+            --arg repository "$GITHUB_REPOSITORY" \
+            --arg run_id "$GITHUB_RUN_ID" \
+            --arg source_sha "$GITHUB_SHA" \
+            --argjson run_attempt "$GITHUB_RUN_ATTEMPT" \
+            --argjson run_number "$GITHUB_RUN_NUMBER" '
+              (.id | tostring) == $run_id and
+              .run_attempt == $run_attempt and
+              .run_number == $run_number and
+              .head_sha == $source_sha and
+              (.path | split("@")[0]) == $path and
+              .event == "push" and
+              .head_branch == "main" and
+              .head_repository.full_name == $repository
+            ' <<< "$current_attempt" > /dev/null
+
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+          cache: npm
+          cache-dependency-path: functions/package-lock.json
+
+      - name: Install only the Firestore snapshot dependencies
+        run: npm --prefix functions ci --omit=dev --ignore-scripts
+
+      - name: Require the dedicated read-only Web Hosting identity
+        env:
+          READONLY_SERVICE_ACCOUNT: ${{ vars.GCP_WEB_HOSTING_READONLY_SERVICE_ACCOUNT_EMAIL }}
+          READONLY_WORKLOAD_IDENTITY_PROVIDER: ${{ vars.GCP_WEB_HOSTING_READONLY_WORKLOAD_IDENTITY_PROVIDER }}
+        run: |
+          set -euo pipefail
+          test -n "$READONLY_WORKLOAD_IDENTITY_PROVIDER"
+          test -n "$READONLY_SERVICE_ACCOUNT"
+
+      - name: Authenticate only the read-only Firestore snapshot
+        uses: google-github-actions/auth@v3
+        with:
+          create_credentials_file: true
+          export_environment_variables: true
+          workload_identity_provider: ${{ vars.GCP_WEB_HOSTING_READONLY_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_WEB_HOSTING_READONLY_SERVICE_ACCOUNT_EMAIL }}
+
+      - name: Materialize the production organizer projection
+        run: npm --workspace catch-marketing run materialize:organizer-listings:deploy
+
+      - name: Remove read-only credentials before artifact handling
+        run: |
+          set -euo pipefail
+          credential_file="${GOOGLE_GHA_CREDS_PATH:-}"
+          test -n "$credential_file"
+          case "$credential_file" in
+            "$GITHUB_WORKSPACE"/gha-creds-*.json) ;;
+            *) echo "Unexpected Google credential path: $credential_file" >&2; exit 64 ;;
+          esac
+          rm -f -- "$credential_file"
+          test ! -e "$credential_file"
+          {
+            echo "CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE="
+            echo "GOOGLE_APPLICATION_CREDENTIALS="
+            echo "GOOGLE_GHA_CREDS_PATH="
+          } >> "$GITHUB_ENV"
+
+      - name: Stage only the generated listing inputs
+        run: |
+          set -euo pipefail
+          test ! -e build/marketing-listing-inputs
+          mkdir -p build/marketing-listing-inputs
+          cp website/src/generated/hostListings.json \
+            build/marketing-listing-inputs/hostListings.json
+          cp website/src/generated/hostListings.demo.json \
+            build/marketing-listing-inputs/hostListings.demo.json
+          test "$(find build/marketing-listing-inputs -type f | wc -l | tr -d ' ')" = "2"
+          test "$(find build/marketing-listing-inputs -type l | wc -l | tr -d ' ')" = "0"
+
+      - id: upload
+        name: Upload only the exact marketing listing inputs
+        uses: actions/upload-artifact@v7
+        env:
+          ACTIONS_ID_TOKEN_REQUEST_TOKEN: ""
+          ACTIONS_ID_TOKEN_REQUEST_URL: ""
+          CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE: ""
+          GOOGLE_APPLICATION_CREDENTIALS: ""
+          GOOGLE_GHA_CREDS_PATH: ""
+        with:
+          name: marketing-listing-inputs-${{ github.run_id }}-${{ github.run_attempt }}
+          path: build/marketing-listing-inputs
+          if-no-files-found: error
+          retention-days: 7
+
+  build:
+    name: Build exact ${{ inputs.surface }} Hosting artifact
+    needs: marketing_snapshot
+    if: ${{ !cancelled() && (inputs.surface == 'admin' || needs.marketing_snapshot.result == 'success') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    environment: prod-hosting
+    permissions:
+      actions: read
+      contents: read
+    outputs:
+      artifact_digest: ${{ format('sha256:{0}', steps.upload.outputs.artifact-digest) }}
+      artifact_id: ${{ steps.upload.outputs.artifact-id }}
+      artifact_name: ${{ steps.binding.outputs.artifact_name }}
+      source_ci_run_attempt: ${{ github.run_attempt }}
+      source_ci_run_id: ${{ github.run_id }}
+      source_ci_run_number: ${{ github.run_number }}
+      source_ci_workflow_id: ${{ steps.binding.outputs.workflow_id }}
+      source_sha: ${{ github.sha }}
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - id: binding
+        name: Bind the package to the current canonical workflow attempt
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SURFACE: ${{ inputs.surface }}
+        run: |
+          set -euo pipefail
+          [[ "$SURFACE" =~ ^(admin|marketing)$ ]]
+          test "$GITHUB_EVENT_NAME" = "push"
+          test "$GITHUB_REF" = "refs/heads/main"
+          [[ "$GITHUB_SHA" =~ ^[0-9a-f]{40}$ ]]
+          current_attempt="$(gh api \
+            "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/attempts/$GITHUB_RUN_ATTEMPT")"
+          workflow_id="$(jq -er \
+            --arg path ".github/workflows/${SURFACE}-website.yml" \
+            --arg repository "$GITHUB_REPOSITORY" \
+            --arg run_id "$GITHUB_RUN_ID" \
+            --arg source_sha "$GITHUB_SHA" \
+            --argjson run_attempt "$GITHUB_RUN_ATTEMPT" \
+            --argjson run_number "$GITHUB_RUN_NUMBER" '
+              select(
+                (.id | tostring) == $run_id and
+                .run_attempt == $run_attempt and
+                .run_number == $run_number and
+                .head_sha == $source_sha and
+                (.path | split("@")[0]) == $path and
+                .event == "push" and
+                .head_branch == "main" and
+                .head_repository.full_name == $repository and
+                (.workflow_id | type == "number" and . > 0 and floor == .)
+              ) |
+              .workflow_id
+            ' <<< "$current_attempt")"
+          [[ "$workflow_id" =~ ^[1-9][0-9]*$ ]]
+          artifact_name="web-hosting-v1-${SURFACE}-${workflow_id}-${GITHUB_RUN_NUMBER}-${GITHUB_RUN_ID}-${GITHUB_SHA}-${GITHUB_RUN_ATTEMPT}"
+          echo "workflow_id=$workflow_id" >> "$GITHUB_OUTPUT"
+          echo "artifact_name=$artifact_name" >> "$GITHUB_OUTPUT"
+
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - run: npm ci
+
+      - name: Validate production marketing environment before build
+        if: ${{ inputs.surface == 'marketing' }}
+        env:
+          VITE_GTM_ID: ${{ vars.VITE_GTM_ID || 'GTM-K7KLNQXP' }}
+          VITE_STORE_LINKS_MODE: ${{ vars.VITE_STORE_LINKS_MODE || 'prelaunch' }}
+          VITE_APP_STORE_URL: ${{ vars.VITE_APP_STORE_URL }}
+          VITE_PLAY_STORE_URL: ${{ vars.VITE_PLAY_STORE_URL }}
+          VITE_WEBSITE_APPCHECK_SITE_KEY: ${{ vars.VITE_WEBSITE_APPCHECK_SITE_KEY }}
+          VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ vars.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET: ${{ vars.VITE_FIREBASE_STORAGE_BUCKET }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ vars.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_APP_ID: ${{ vars.VITE_FIREBASE_APP_ID }}
+          VITE_FIREBASE_MEASUREMENT_ID: ${{ vars.VITE_FIREBASE_MEASUREMENT_ID }}
+        run: node tool/env/check_web_hosting_env.mjs marketing --expected-project-id catch-dating-app-64e51
+
+      - name: Download and verify only the exact marketing listing inputs
+        if: ${{ inputs.surface == 'marketing' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SNAPSHOT_ARTIFACT_DIGEST: ${{ needs.marketing_snapshot.outputs.artifact_digest }}
+          SNAPSHOT_ARTIFACT_ID: ${{ needs.marketing_snapshot.outputs.artifact_id }}
+        run: |
+          set -euo pipefail
+          [[ "$SNAPSHOT_ARTIFACT_ID" =~ ^[1-9][0-9]*$ ]]
+          [[ "$SNAPSHOT_ARTIFACT_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]
+          test ! -e build/marketing-listing-inputs
+          mkdir -p build/marketing-listing-inputs
+          snapshot_artifact="$(gh api \
+            -H "X-GitHub-Api-Version: 2026-03-10" \
+            "repos/$GITHUB_REPOSITORY/actions/artifacts/$SNAPSHOT_ARTIFACT_ID")"
+          repository_id="$(gh api "repos/$GITHUB_REPOSITORY" --jq '.id')"
+          expected_name="marketing-listing-inputs-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          jq -e \
+            --arg digest "$SNAPSHOT_ARTIFACT_DIGEST" \
+            --arg name "$expected_name" \
+            --arg run_id "$GITHUB_RUN_ID" \
+            --arg source_sha "$GITHUB_SHA" \
+            --argjson artifact_id "$SNAPSHOT_ARTIFACT_ID" \
+            --argjson repository_id "$repository_id" '
+              .id == $artifact_id and
+              .expired == false and
+              .name == $name and
+              .digest == $digest and
+              (.workflow_run.id | tostring) == $run_id and
+              .workflow_run.repository_id == $repository_id and
+              .workflow_run.head_repository_id == $repository_id and
+              .workflow_run.head_branch == "main" and
+              .workflow_run.head_sha == $source_sha
+            ' <<< "$snapshot_artifact" > /dev/null
+          gh api \
+            "repos/$GITHUB_REPOSITORY/actions/artifacts/$SNAPSHOT_ARTIFACT_ID/zip" \
+            > build/marketing-listing-inputs.zip
+          test "sha256:$(sha256sum build/marketing-listing-inputs.zip | awk '{print $1}')" = \
+            "$SNAPSHOT_ARTIFACT_DIGEST"
+          unzip -Z1 build/marketing-listing-inputs.zip | \
+            awk '/(^\/|(^|\/)\.\.($|\/))/ { exit 64 }'
+          unzip -q build/marketing-listing-inputs.zip \
+            -d build/marketing-listing-inputs
+          test "$(find build/marketing-listing-inputs -type f | wc -l | tr -d ' ')" = "2"
+          test "$(find build/marketing-listing-inputs -type l | wc -l | tr -d ' ')" = "0"
+          test -f build/marketing-listing-inputs/hostListings.json
+          test -f build/marketing-listing-inputs/hostListings.demo.json
+          cp build/marketing-listing-inputs/hostListings.json \
+            website/src/generated/hostListings.json
+          cp build/marketing-listing-inputs/hostListings.demo.json \
+            website/src/generated/hostListings.demo.json
+          npm --workspace catch-marketing run check:organizer-listings
+
+      - name: Build the exact production marketing bytes once
+        if: ${{ inputs.surface == 'marketing' }}
+        env:
+          VITE_GTM_ID: ${{ vars.VITE_GTM_ID || 'GTM-K7KLNQXP' }}
+          VITE_STORE_LINKS_MODE: ${{ vars.VITE_STORE_LINKS_MODE || 'prelaunch' }}
+          VITE_APP_STORE_URL: ${{ vars.VITE_APP_STORE_URL }}
+          VITE_PLAY_STORE_URL: ${{ vars.VITE_PLAY_STORE_URL }}
+          VITE_WEBSITE_APPCHECK_SITE_KEY: ${{ vars.VITE_WEBSITE_APPCHECK_SITE_KEY }}
+          VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ vars.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET: ${{ vars.VITE_FIREBASE_STORAGE_BUCKET }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ vars.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_APP_ID: ${{ vars.VITE_FIREBASE_APP_ID }}
+          VITE_FIREBASE_MEASUREMENT_ID: ${{ vars.VITE_FIREBASE_MEASUREMENT_ID }}
+        run: |
+          npm --workspace catch-marketing exec -- vite build
+          node website/scripts/postbuild.mjs
+
+      - name: Validate production admin environment before build
+        if: ${{ inputs.surface == 'admin' }}
+        env:
+          VITE_ADMIN_DATA_MODE: ${{ vars.VITE_ADMIN_DATA_MODE }}
+          VITE_ADMIN_FIREBASE_ENV: ${{ vars.VITE_ADMIN_FIREBASE_ENV }}
+          VITE_ADMIN_APPCHECK_SITE_KEY: ${{ vars.VITE_ADMIN_APPCHECK_SITE_KEY }}
+          VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ vars.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET: ${{ vars.VITE_FIREBASE_STORAGE_BUCKET }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ vars.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_APP_ID: ${{ vars.VITE_FIREBASE_APP_ID }}
+          VITE_FIREBASE_MEASUREMENT_ID: ${{ vars.VITE_FIREBASE_MEASUREMENT_ID }}
+        run: node tool/env/check_web_hosting_env.mjs admin --expected-firebase-env prod --expected-project-id catch-dating-app-64e51
+
+      - name: Verify production Admin callable dependencies before build
+        if: ${{ inputs.surface == 'admin' }}
+        run: node tool/web/check_admin_live_data_sources.mjs --check --verify-live --environment prod --summary
+
+      - name: Build the exact production admin bytes once
+        if: ${{ inputs.surface == 'admin' }}
+        env:
+          VITE_ADMIN_DATA_MODE: ${{ vars.VITE_ADMIN_DATA_MODE }}
+          VITE_ADMIN_FIREBASE_ENV: ${{ vars.VITE_ADMIN_FIREBASE_ENV }}
+          VITE_ADMIN_APPCHECK_SITE_KEY: ${{ vars.VITE_ADMIN_APPCHECK_SITE_KEY }}
+          VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ vars.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET: ${{ vars.VITE_FIREBASE_STORAGE_BUCKET }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ vars.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_APP_ID: ${{ vars.VITE_FIREBASE_APP_ID }}
+          VITE_FIREBASE_MEASUREMENT_ID: ${{ vars.VITE_FIREBASE_MEASUREMENT_ID }}
+        run: |
+          npm --workspace catch-admin exec -- vite build
+          npm --workspace catch-admin run check:bundle-budget
+
+      - name: Package and verify the exact Hosting bytes
+        env:
+          SOURCE_CI_WORKFLOW_ID: ${{ steps.binding.outputs.workflow_id }}
+          SURFACE: ${{ inputs.surface }}
+        run: |
+          set -euo pipefail
+          test ! -e build/web-delivery
+          mkdir -p build/web-delivery/upload
+          node tool/ci/package_web_hosting.mjs prepare \
+            --surface "$SURFACE" \
+            --source-sha "$GITHUB_SHA" \
+            --ci-workflow-id "$SOURCE_CI_WORKFLOW_ID" \
+            --ci-run-number "$GITHUB_RUN_NUMBER" \
+            --ci-run-id "$GITHUB_RUN_ID" \
+            --ci-run-attempt "$GITHUB_RUN_ATTEMPT" \
+            --stage-dir build/web-delivery/package
+          archive="build/web-delivery/upload/web-hosting-${SURFACE}.tar.gz"
+          tar --sort=name --mtime='UTC 1970-01-01' \
+            --owner=0 --group=0 --numeric-owner \
+            -czf "$archive" -C build/web-delivery/package .
+          node tool/ci/delivery_core.mjs manifest \
+            --artifact "$archive" \
+            --source-sha "$GITHUB_SHA" \
+            --ci-run-id "$GITHUB_RUN_ID" \
+            --ci-run-attempt "$GITHUB_RUN_ATTEMPT" \
+            --stages "hosting-${SURFACE}" \
+            --output build/web-delivery/upload/web-hosting-provenance.json
+          node tool/ci/delivery_core.mjs verify \
+            --manifest build/web-delivery/upload/web-hosting-provenance.json \
+            --artifact "$archive" \
+            --source-sha "$GITHUB_SHA" \
+            --ci-run-id "$GITHUB_RUN_ID" \
+            --ci-run-attempt "$GITHUB_RUN_ATTEMPT"
+          node tool/ci/package_web_hosting.mjs verify \
+            --surface "$SURFACE" \
+            --package-dir build/web-delivery/package \
+            --source-sha "$GITHUB_SHA" \
+            --ci-workflow-id "$SOURCE_CI_WORKFLOW_ID" \
+            --ci-run-number "$GITHUB_RUN_NUMBER" \
+            --ci-run-id "$GITHUB_RUN_ID" \
+            --ci-run-attempt "$GITHUB_RUN_ATTEMPT" \
+            --provenance-manifest build/web-delivery/upload/web-hosting-provenance.json
+          test "$(find build/web-delivery/upload -type f | wc -l | tr -d ' ')" = "2"
+
+      - id: upload
+        name: Upload the immutable Web Hosting package
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.binding.outputs.artifact_name }}
+          path: build/web-delivery/upload
+          if-no-files-found: error
+          retention-days: 90

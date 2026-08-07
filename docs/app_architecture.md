@@ -1960,10 +1960,12 @@ Current native policy:
 - Force-update minimum builds and store URLs are role-prefixed. Consumer may
   temporarily fall back to the legacy unprefixed remote values during rollout;
   Host never does.
-- GitHub Actions is the routine mobile release owner for both roles. One
-  approval-free merge-driven workflow fans out only for impacted roles and
-  produces verified iOS/Android artifacts. TestFlight or Play mutation requires
-  an explicit manual dispatch and recorded release reason. Its
+- GitHub Actions is the routine mobile release owner for both roles. The
+  approval-free merge-driven producer fans out only for CI-authorized exact
+  role/platform targets and publishes verified iOS/Android packages plus a
+  post-comparison authority without touching either store. A separate exact
+  promoter requires an explicit manual dispatch and recorded release reason;
+  it uploads one already-signed package and cannot rebuild or resign it. Their
   credentials live in the main-only `prod-mobile` environment, not the shared
   backend/data `prod` environment. Each ephemeral iOS runner imports the same
   dedicated, fingerprint-checked CI Apple Development identity before invoking
@@ -1975,7 +1977,7 @@ Current native policy:
   are proven.
 
 Run
-`node tool/run.mjs check platform:app-targets platform:app-package-graphs`
+`node tool/run.mjs check ci:mobile-release-package ci:mobile-release-workflow ci:mobile-promotion-core ci:mobile-promotion-workflow platform:app-targets platform:app-package-graphs`
 whenever app identity, package roots, native configuration, Firebase
 registration, links, force-update policy, or release ownership changes.
 

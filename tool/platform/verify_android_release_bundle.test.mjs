@@ -1,8 +1,13 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import {spawnSync} from "node:child_process";
 import test from "node:test";
 import {
   buildAndroidReleaseReceipt,
   collectAndroidBundleFindings,
+  verifyJarSignature,
 } from "./verify_android_release_bundle.mjs";
 
 const target = {
@@ -115,4 +120,49 @@ test("Android release receipt records role, flavor, and release owner", () => {
   assert.equal(receipt.signatureVerified, true);
   assert.equal(receipt.uploadCertificateSha256, "AABBCC");
   assert.equal(receipt.compiledIdentity.firebaseAppId, "firebase-host-app");
+});
+
+test("strict bundle signature verification rejects an added unsigned entry", (t) => {
+  const required = ["jar", "jarsigner", "keytool"];
+  if (required.some((command) => spawnSync(command, ["-help"]).error?.code === "ENOENT")) {
+    t.skip("JDK signing tools are unavailable");
+    return;
+  }
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-android-signature-"));
+  try {
+    const content = path.join(tempRoot, "content");
+    const bundle = path.join(tempRoot, "synthetic.aab");
+    const keyStore = path.join(tempRoot, "test.jks");
+    fs.mkdirSync(content);
+    fs.writeFileSync(path.join(content, "signed.txt"), "signed");
+    let result = spawnSync(
+      "jar",
+      ["--create", "--file", bundle, "-C", content, "signed.txt"],
+      {encoding: "utf8"},
+    );
+    assert.equal(result.status, 0, result.stderr);
+    result = spawnSync("keytool", [
+      "-genkeypair", "-noprompt", "-alias", "test", "-keyalg", "RSA",
+      "-dname", "CN=Catch Test", "-validity", "1", "-keystore", keyStore,
+      "-storepass", "changeit", "-keypass", "changeit",
+    ], {encoding: "utf8"});
+    assert.equal(result.status, 0, result.stderr);
+    result = spawnSync("jarsigner", [
+      "-keystore", keyStore, "-storepass", "changeit", "-keypass", "changeit",
+      bundle, "test",
+    ], {encoding: "utf8"});
+    assert.equal(result.status, 0, result.stderr);
+    assert.equal(verifyJarSignature(bundle, {allowFailure: true}).status, 0);
+
+    fs.writeFileSync(path.join(content, "unsigned.txt"), "unsigned");
+    result = spawnSync(
+      "jar",
+      ["--update", "--file", bundle, "-C", content, "unsigned.txt"],
+      {encoding: "utf8"},
+    );
+    assert.equal(result.status, 0, result.stderr);
+    assert.notEqual(verifyJarSignature(bundle, {allowFailure: true}).status, 0);
+  } finally {
+    fs.rmSync(tempRoot, {recursive: true, force: true});
+  }
 });

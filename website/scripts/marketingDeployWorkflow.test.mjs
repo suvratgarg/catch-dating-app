@@ -15,11 +15,19 @@ const surfaceValidationWorkflow = fs.readFileSync(
   path.join(repoRoot, ".github", "workflows", "react-surface-validation.yml"),
   "utf8"
 );
+const exactBuildWorkflow = fs.readFileSync(
+  path.join(repoRoot, ".github", "workflows", "_web-hosting-build.yml"),
+  "utf8"
+);
+const exactPromoteWorkflow = fs.readFileSync(
+  path.join(repoRoot, ".github", "workflows", "_web-hosting-promote.yml"),
+  "utf8"
+);
 const packageJson = JSON.parse(
   fs.readFileSync(path.join(websiteRoot, "package.json"), "utf8")
 );
 
-test("production deploy materializes organizer projections from Firestore before Firebase predeploy", () => {
+test("production snapshot materializes organizer projections before its one uncredentialed exact build", () => {
   assert.equal(
     packageJson.scripts["materialize:organizer-listings:deploy"],
     "node scripts/generateOrganizerListings.mjs " +
@@ -30,26 +38,46 @@ test("production deploy materializes organizer projections from Firestore before
       "npm run check:organizer-listings"
   );
 
-  const materializeStep = workflow.indexOf(
-    "- name: Materialize production organizer listings from Firestore"
+  const materializeStep = exactBuildWorkflow.indexOf(
+    "- name: Materialize the production organizer projection"
   );
-  const deployStep = workflow.indexOf("- name: Deploy production marketing site");
+  const buildStep = exactBuildWorkflow.indexOf(
+    "- name: Build the exact production marketing bytes once"
+  );
 
   assert.ok(materializeStep >= 0, "Firestore materialization step must exist");
   assert.ok(
-    deployStep > materializeStep,
-    "Firebase predeploy must run after Firestore projections are materialized"
+    buildStep > materializeStep,
+    "the exact Vite build must run after Firestore projections are materialized"
   );
 
-  const materializeContract = workflow.slice(materializeStep, deployStep);
+  const materializeContract = exactBuildWorkflow.slice(materializeStep, buildStep);
   assert.match(
     materializeContract,
     /run: npm --workspace catch-marketing run materialize:organizer-listings:deploy/u
   );
   assert.doesNotMatch(materializeContract, /organizer-claim-target-readiness/u);
+  assert.match(exactBuildWorkflow,
+    /GCP_WEB_HOSTING_READONLY_WORKLOAD_IDENTITY_PROVIDER/u);
+  assert.match(exactBuildWorkflow,
+    /GCP_WEB_HOSTING_READONLY_SERVICE_ACCOUNT_EMAIL/u);
+  const packageBuild = exactBuildWorkflow.slice(
+    exactBuildWorkflow.indexOf("  build:")
+  );
+  assert.match(packageBuild,
+    /actions\/artifacts\/\$SNAPSHOT_ARTIFACT_ID\/zip/u);
+  assert.doesNotMatch(packageBuild,
+    /google-github-actions\/auth|id-token: write|materialize:organizer-listings:deploy/u);
   assert.doesNotMatch(
     surfaceValidationWorkflow,
     /check_promotion_bridge\.mjs/u,
     "marketing validation must not invoke the retired repo-backed promotion bridge"
   );
+  assert.match(workflow, /uses: \.\/\.github\/workflows\/_web-hosting-build\.yml/u);
+  assert.match(workflow, /uses: \.\/\.github\/workflows\/_web-hosting-promote\.yml/u);
+  assert.match(exactBuildWorkflow, /package_web_hosting\.mjs prepare/u);
+  assert.match(exactPromoteWorkflow,
+    /working-directory: build\/web-delivery\/package[\s\S]*--config firebase\.json/u);
+  assert.doesNotMatch(exactPromoteWorkflow,
+    /materialize:organizer-listings:deploy|vite build|web:marketing:build/u);
 });

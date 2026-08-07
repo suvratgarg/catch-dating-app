@@ -88,24 +88,25 @@ checks run before expensive fan-out. A normal Flutter presentation change
 should select Flutter validation and the affected app-role smoke build, not
 Functions, rules, every website, and device builds.
 
-Deployment begins only from a trusted, successful integrated commit. A
-deployment workflow:
+Delivery begins only from trusted integrated source and uses three deliberately
+different exact-artifact patterns:
 
-1. checks environment prerequisites before installs or expensive validation;
-2. selects the oldest unprocessed successful-attempt authority after the
-   workflow-id-bound delivery cursor, or the oldest authority in the current CI
-   workflow generation when no cursor exists yet;
-3. checks out that run's exact SHA and downloads the plan/package by immutable
-   artifact id, verifying GitHub's archive digest without rebuilding it;
-4. applies affected deployment groups in their declared order;
-5. records stage postconditions in GitHub artifacts;
-6. resumes the first incomplete idempotent stage for the same SHA, producing
-   run attempt, artifact, environment, and target project.
-
-The queue scans artifact metadata once, then fully verifies one cursor and one
-authority. It never loops over retained artifacts with API calls. The selected
-plan must continue exactly from the cursor SHA, and CI run numbers are compared
-only inside the same numeric workflow id.
+- Backend delivery selects the oldest unprocessed successful-attempt authority
+  after a workflow-id-bound cursor, verifies one plan/package by immutable
+  artifact id and digest, applies only declared groups in order, and resumes
+  artifact-bound stage checkpoints. Its metadata scan is bounded; the selected
+  plan must continue exactly from the cursor SHA, and run numbers are compared
+  only within one CI workflow id.
+- Admin and Marketing Hosting build the production Vite output once, package a
+  single lifecycle-hook-free Firebase target, and promote that current-main
+  artifact without reinstalling source dependencies, rebuilding, or joining the
+  backend cursor. Marketing's Firestore projection is a separate read-only
+  snapshot input to the uncredentialed build.
+- Mobile CI produces only the exact authorized role/platform IPA or AAB and a
+  post-comparison build authority. A separate manual promoter selects one
+  current producer package, reverifies its bytes immediately before credentials,
+  and reconciles the bounded TestFlight or Play `qa` mutation without rebuilding
+  or resigning.
 
 Environment approval and secrets remain GitHub/platform responsibilities.
 Rollback and roll-forward remain explicit per deployment target.

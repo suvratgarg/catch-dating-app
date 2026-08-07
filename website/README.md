@@ -37,11 +37,13 @@ Production organizer projection deliberately excludes `catchDemo` records.
 Storybook/sales fixture and is checked independently. Home discovery further
 filters production data to future Catch-bookable events in configured live
 market cities; external events remain visible only on organizer listings.
-The production Hosting job regenerates `src/generated/hostListings.json` from
-canonical `organizers/{id}` documents in Firestore. The checked-in file is a
-build projection for deterministic pull-request validation, not an operational
-editing surface. The generator has no legacy scraped-seed input; database
-materialization is the only production content path.
+The production read-only snapshot job regenerates
+`src/generated/hostListings.json` from canonical `organizers/{id}` documents in
+Firestore and passes only the two validated listing JSON files to the
+uncredentialed exact build. The checked-in file is a build projection for
+deterministic pull-request validation, not an operational editing surface. The
+generator has no legacy scraped-seed input; database materialization is the
+only production content path.
 
 Firebase Hosting deploys run
 `node tool/env/check_web_hosting_env.mjs marketing` before building. Production
@@ -55,19 +57,26 @@ HTTPS `VITE_APP_STORE_URL` and `VITE_PLAY_STORE_URL` product links. The deploy
 workflow defaults an unset GitHub Environment mode to `prelaunch`; set
 `VITE_STORE_LINKS_MODE=live` in `prod-hosting` only when both listings exist.
 
-The production deploy job reads the canonical organizer collection directly.
+The production snapshot job reads the canonical organizer collection directly.
 Content publication does not itself enable claim or public-review mutations;
 those capabilities remain fail-closed until a separate Firestore-owned
 capability decision is implemented. Fixture-generated sync previews cannot
 enable production capabilities.
 
-The deploy job uses the repo's existing `prod` Firebase alias and Google Cloud
-Workload Identity variables:
+The snapshot job uses a dedicated Firestore-read-only identity in the
+`prod-hosting` GitHub Environment:
+
+- `GCP_WEB_HOSTING_READONLY_WORKLOAD_IDENTITY_PROVIDER`
+- `GCP_WEB_HOSTING_READONLY_SERVICE_ACCOUNT_EMAIL`
+
+The separate exact promoter uses the production Firebase deploy identity:
 
 - `GCP_WORKLOAD_IDENTITY_PROVIDER`
 - `GCP_SERVICE_ACCOUNT_EMAIL`
 
-It deploys only `hosting:marketing`. If a marketing change also modifies the
+The package is hard-bound to Firebase project `catch-dating-app-64e51` and site
+`catch-dating-app-64e51`; promotion deploys only `hosting:marketing`. If a
+marketing change also modifies the
 waitlist Cloud Function, deploy Functions separately through the existing
 Firebase deploy workflow.
 

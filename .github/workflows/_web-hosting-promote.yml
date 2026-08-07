@@ -1,0 +1,454 @@
+name: Web Hosting Exact Promotion
+
+on:
+  workflow_call:
+    inputs:
+      artifact_digest:
+        description: Exact GitHub SHA-256 digest for the artifact ZIP.
+        required: true
+        type: string
+      artifact_id:
+        description: Immutable GitHub artifact id.
+        required: true
+        type: string
+      recovery:
+        description: Whether this is an explicit terminal-run recovery.
+        required: false
+        default: false
+        type: boolean
+      recovery_reason:
+        description: Required operator reason for bounded recovery.
+        required: false
+        default: ""
+        type: string
+      source_ci_run_attempt:
+        required: true
+        type: string
+      source_ci_run_id:
+        required: true
+        type: string
+      source_sha:
+        required: true
+        type: string
+      surface:
+        description: Exact Hosting target (admin or marketing).
+        required: true
+        type: string
+
+permissions:
+  actions: read
+  contents: read
+  id-token: write
+
+jobs:
+  promote:
+    name: Promote exact ${{ inputs.surface }} Hosting bytes
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: prod-hosting
+    concurrency:
+      group: web-hosting-${{ inputs.surface }}
+      cancel-in-progress: false
+      queue: max
+
+    steps:
+      - id: authorize
+        name: Authorize one exact producing workflow attempt and artifact
+        env:
+          ARTIFACT_DIGEST: ${{ inputs.artifact_digest }}
+          ARTIFACT_ID: ${{ inputs.artifact_id }}
+          GH_TOKEN: ${{ github.token }}
+          IS_RECOVERY: ${{ inputs.recovery }}
+          RECOVERY_REASON: ${{ inputs.recovery_reason }}
+          SOURCE_CI_RUN_ATTEMPT: ${{ inputs.source_ci_run_attempt }}
+          SOURCE_CI_RUN_ID: ${{ inputs.source_ci_run_id }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          SURFACE: ${{ inputs.surface }}
+        run: |
+          set -euo pipefail
+          [[ "$SURFACE" =~ ^(admin|marketing)$ ]]
+          [[ "$ARTIFACT_ID" =~ ^[1-9][0-9]*$ ]]
+          [[ "$ARTIFACT_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]
+          [[ "$SOURCE_CI_RUN_ID" =~ ^[1-9][0-9]*$ ]]
+          [[ "$SOURCE_CI_RUN_ATTEMPT" =~ ^[1-9][0-9]*$ ]]
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          expected_path=".github/workflows/${SURFACE}-website.yml"
+          if [[ "$SURFACE" == "admin" ]]; then
+            expected_name="Admin Website"
+          else
+            expected_name="Marketing Website"
+          fi
+
+          if [[ "$IS_RECOVERY" == "true" ]]; then
+            test "$GITHUB_EVENT_NAME" = "workflow_dispatch"
+            test "$GITHUB_REF" = "refs/heads/main"
+            if (( GITHUB_RUN_ATTEMPT > 1 )); then
+              echo "A recovery rerun can replay stale authorization. Start a fresh manual dispatch for the same exact artifact."
+              exit 64
+            fi
+            if [[ -z "${RECOVERY_REASON//[[:space:]]/}" ]]; then
+              echo "Bounded Web Hosting recovery requires a non-empty operator reason."
+              exit 64
+            fi
+            test "$SOURCE_CI_RUN_ID" != "$GITHUB_RUN_ID"
+          else
+            test "$GITHUB_EVENT_NAME" = "push"
+            test "$GITHUB_REF" = "refs/heads/main"
+            test "$SOURCE_CI_RUN_ID" = "$GITHUB_RUN_ID"
+            test "$SOURCE_CI_RUN_ATTEMPT" = "$GITHUB_RUN_ATTEMPT"
+            test "$SOURCE_SHA" = "$GITHUB_SHA"
+          fi
+
+          source_attempt="$(gh api \
+            "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_CI_RUN_ID/attempts/$SOURCE_CI_RUN_ATTEMPT")"
+          source_binding="$(jq -ce \
+            --arg expected_name "$expected_name" \
+            --arg expected_path "$expected_path" \
+            --arg is_recovery "$IS_RECOVERY" \
+            --arg repository "$GITHUB_REPOSITORY" \
+            --arg run_id "$SOURCE_CI_RUN_ID" \
+            --arg source_sha "$SOURCE_SHA" \
+            --argjson run_attempt "$SOURCE_CI_RUN_ATTEMPT" '
+              select(
+                (.id | tostring) == $run_id and
+                .run_attempt == $run_attempt and
+                .head_sha == $source_sha and
+                .name == $expected_name and
+                (.path | split("@")[0]) == $expected_path and
+                .event == "push" and
+                .head_branch == "main" and
+                .head_repository.full_name == $repository and
+                (.workflow_id | type == "number" and . > 0 and floor == .) and
+                (.run_number | type == "number" and . > 0 and floor == .) and
+                (
+                  $is_recovery != "true" or
+                  (
+                    .status == "completed" and
+                    (
+                      .conclusion == "failure" or
+                      .conclusion == "cancelled" or
+                      .conclusion == "timed_out" or
+                      .conclusion == "stale" or
+                      .conclusion == "action_required" or
+                      .conclusion == "startup_failure"
+                    )
+                  )
+                )
+              ) |
+              {workflowId: .workflow_id, runNumber: .run_number}
+            ' <<< "$source_attempt")"
+          workflow_id="$(jq -er '.workflowId' <<< "$source_binding")"
+          run_number="$(jq -er '.runNumber' <<< "$source_binding")"
+          current_source_run="$(gh api \
+            "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_CI_RUN_ID")"
+          jq -e \
+            --arg expected_name "$expected_name" \
+            --arg expected_path "$expected_path" \
+            --arg repository "$GITHUB_REPOSITORY" \
+            --arg run_id "$SOURCE_CI_RUN_ID" \
+            --arg source_sha "$SOURCE_SHA" \
+            --argjson run_attempt "$SOURCE_CI_RUN_ATTEMPT" '
+              (.id | tostring) == $run_id and
+              .run_attempt == $run_attempt and
+              .head_sha == $source_sha and
+              .name == $expected_name and
+              (.path | split("@")[0]) == $expected_path and
+              .event == "push" and
+              .head_branch == "main" and
+              .head_repository.full_name == $repository
+            ' <<< "$current_source_run" > /dev/null
+          canonical_workflow="$(gh api \
+            "repos/$GITHUB_REPOSITORY/actions/workflows/${SURFACE}-website.yml")"
+          canonical_workflow_id="$(jq -er \
+            --arg expected_path "$expected_path" '
+              select(
+                (.path | split("@")[0]) == $expected_path and
+                (.id | type == "number" and . > 0 and floor == .)
+              ) |
+              .id
+            ' <<< "$canonical_workflow")"
+          test "$canonical_workflow_id" = "$workflow_id"
+          latest_surface_push="$(gh api \
+            "repos/$GITHUB_REPOSITORY/actions/workflows/$workflow_id/runs?branch=main&event=push&per_page=1")"
+          jq -e \
+            --arg run_id "$SOURCE_CI_RUN_ID" \
+            --arg source_sha "$SOURCE_SHA" \
+            --argjson run_number "$run_number" '
+              .workflow_runs | length == 1 and
+              (.[0].id | tostring) == $run_id and
+              .[0].run_number == $run_number and
+              .[0].head_sha == $source_sha and
+              .[0].head_branch == "main" and
+              .[0].event == "push"
+            ' <<< "$latest_surface_push" > /dev/null
+          expected_artifact_name="web-hosting-v1-${SURFACE}-${workflow_id}-${run_number}-${SOURCE_CI_RUN_ID}-${SOURCE_SHA}-${SOURCE_CI_RUN_ATTEMPT}"
+
+          artifact="$(gh api \
+            -H "X-GitHub-Api-Version: 2026-03-10" \
+            "repos/$GITHUB_REPOSITORY/actions/artifacts/$ARTIFACT_ID")"
+          repository_id="$(gh api "repos/$GITHUB_REPOSITORY" --jq '.id')"
+          jq -e \
+            --arg digest "$ARTIFACT_DIGEST" \
+            --arg name "$expected_artifact_name" \
+            --arg run_id "$SOURCE_CI_RUN_ID" \
+            --arg source_sha "$SOURCE_SHA" \
+            --argjson artifact_id "$ARTIFACT_ID" \
+            --argjson repository_id "$repository_id" '
+              .id == $artifact_id and
+              .expired == false and
+              .name == $name and
+              .digest == $digest and
+              (.workflow_run.id | tostring) == $run_id and
+              .workflow_run.repository_id == $repository_id and
+              .workflow_run.head_repository_id == $repository_id and
+              .workflow_run.head_branch == "main" and
+              .workflow_run.head_sha == $source_sha
+            ' <<< "$artifact" > /dev/null
+
+          run_artifacts="$(gh api --paginate --slurp \
+            -H "X-GitHub-Api-Version: 2026-03-10" \
+            "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_CI_RUN_ID/artifacts?per_page=100")"
+          artifact_prefix="web-hosting-v1-${SURFACE}-${workflow_id}-${run_number}-${SOURCE_CI_RUN_ID}-${SOURCE_SHA}-"
+          selected_count="$(jq -r \
+            --arg name "$expected_artifact_name" '
+              [.[].artifacts[] | select(.expired == false and .name == $name)] | length
+            ' <<< "$run_artifacts")"
+          freshest_attempt="$(jq -r \
+            --arg prefix "$artifact_prefix" '
+              [
+                .[].artifacts[] |
+                select(.expired == false and (.name | startswith($prefix))) |
+                .name |
+                capture("-(?<attempt>[1-9][0-9]*)$").attempt |
+                tonumber
+              ] |
+              max // 0
+            ' <<< "$run_artifacts")"
+          if [[ "$selected_count" != "1" || "$freshest_attempt" != "$SOURCE_CI_RUN_ATTEMPT" ]]; then
+            echo "The selected artifact is not the unique freshest package for its producing run. Refusing stale recovery or a partial-rerun artifact."
+            exit 64
+          fi
+          echo "workflow_id=$workflow_id" >> "$GITHUB_OUTPUT"
+          echo "run_number=$run_number" >> "$GITHUB_OUTPUT"
+          echo "artifact_name=$expected_artifact_name" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout the exact producing source
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.source_sha }}
+          fetch-depth: 0
+
+      - name: Require the producing source to remain safely ordered on main
+        env:
+          IS_RECOVERY: ${{ inputs.recovery }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git fetch origin main:refs/remotes/origin/main --no-tags
+          git merge-base --is-ancestor "$SOURCE_SHA" refs/remotes/origin/main
+          if [[ "$IS_RECOVERY" == "true" ]]; then
+            test "$(git rev-parse refs/remotes/origin/main)" = "$SOURCE_SHA"
+          fi
+
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+
+      - name: Download only the immutable artifact id and verify its GitHub digest
+        env:
+          ARTIFACT_DIGEST: ${{ inputs.artifact_digest }}
+          ARTIFACT_ID: ${{ inputs.artifact_id }}
+          GH_TOKEN: ${{ github.token }}
+          SURFACE: ${{ inputs.surface }}
+        run: |
+          set -euo pipefail
+          mkdir -p build/web-delivery/source
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$ARTIFACT_ID/zip" \
+            > build/web-delivery/source.zip
+          test "sha256:$(sha256sum build/web-delivery/source.zip | awk '{print $1}')" = "$ARTIFACT_DIGEST"
+          unzip -Z1 build/web-delivery/source.zip | \
+            awk '/(^\/|(^|\/)\.\.($|\/))/ { exit 64 }'
+          unzip -q build/web-delivery/source.zip -d build/web-delivery/source
+          test "$(find build/web-delivery/source -type l | wc -l | tr -d ' ')" = "0"
+          test -f "build/web-delivery/source/web-hosting-${SURFACE}.tar.gz"
+          test -f build/web-delivery/source/web-hosting-provenance.json
+          test "$(find build/web-delivery/source -type f | wc -l | tr -d ' ')" = "2"
+
+      - name: Verify provenance and every packaged byte before credentials
+        env:
+          SOURCE_CI_RUN_ATTEMPT: ${{ inputs.source_ci_run_attempt }}
+          SOURCE_CI_RUN_ID: ${{ inputs.source_ci_run_id }}
+          SOURCE_CI_RUN_NUMBER: ${{ steps.authorize.outputs.run_number }}
+          SOURCE_CI_WORKFLOW_ID: ${{ steps.authorize.outputs.workflow_id }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          SURFACE: ${{ inputs.surface }}
+        run: |
+          set -euo pipefail
+          archive="build/web-delivery/source/web-hosting-${SURFACE}.tar.gz"
+          provenance=build/web-delivery/source/web-hosting-provenance.json
+          node tool/ci/delivery_core.mjs verify \
+            --manifest "$provenance" \
+            --artifact "$archive" \
+            --source-sha "$SOURCE_SHA" \
+            --ci-run-id "$SOURCE_CI_RUN_ID" \
+            --ci-run-attempt "$SOURCE_CI_RUN_ATTEMPT"
+          tar -tzf "$archive" | \
+            awk '/(^\/|(^|\/)\.\.($|\/))/ { exit 64 }'
+          tar -tvzf "$archive" | \
+            awk 'substr($0, 1, 1) != "-" && substr($0, 1, 1) != "d" { exit 64 }'
+          mkdir -p build/web-delivery/package
+          tar -xzf "$archive" --no-same-owner --no-same-permissions \
+            -C build/web-delivery/package
+          test "$(find build/web-delivery/package -type l | wc -l | tr -d ' ')" = "0"
+          node tool/ci/package_web_hosting.mjs verify \
+            --surface "$SURFACE" \
+            --package-dir build/web-delivery/package \
+            --source-sha "$SOURCE_SHA" \
+            --ci-workflow-id "$SOURCE_CI_WORKFLOW_ID" \
+            --ci-run-number "$SOURCE_CI_RUN_NUMBER" \
+            --ci-run-id "$SOURCE_CI_RUN_ID" \
+            --ci-run-attempt "$SOURCE_CI_RUN_ATTEMPT" \
+            --provenance-manifest "$provenance"
+
+      - name: Verify production Admin callable dependencies
+        if: ${{ inputs.surface == 'admin' }}
+        run: node tool/web/check_admin_live_data_sources.mjs --check --verify-live --environment prod --summary
+
+      - name: Install the pinned Firebase CLI before deployment credentials
+        run: npm install -g firebase-tools@${{ steps.toolchain.outputs.firebase-tools-version }}
+
+      - name: Re-extract and reverify immutable bytes before deployment credentials
+        env:
+          ARTIFACT_DIGEST: ${{ inputs.artifact_digest }}
+          SOURCE_CI_RUN_ATTEMPT: ${{ inputs.source_ci_run_attempt }}
+          SOURCE_CI_RUN_ID: ${{ inputs.source_ci_run_id }}
+          SOURCE_CI_RUN_NUMBER: ${{ steps.authorize.outputs.run_number }}
+          SOURCE_CI_WORKFLOW_ID: ${{ steps.authorize.outputs.workflow_id }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          SURFACE: ${{ inputs.surface }}
+        run: |
+          set -euo pipefail
+          test "sha256:$(sha256sum build/web-delivery/source.zip | awk '{print $1}')" = \
+            "$ARTIFACT_DIGEST"
+          rm -rf build/web-delivery/source build/web-delivery/package
+          mkdir -p build/web-delivery/source build/web-delivery/package
+          unzip -Z1 build/web-delivery/source.zip | \
+            awk '/(^\/|(^|\/)\.\.($|\/))/ { exit 64 }'
+          unzip -q build/web-delivery/source.zip -d build/web-delivery/source
+          test "$(find build/web-delivery/source -type l | wc -l | tr -d ' ')" = "0"
+          test -f "build/web-delivery/source/web-hosting-${SURFACE}.tar.gz"
+          test -f build/web-delivery/source/web-hosting-provenance.json
+          test "$(find build/web-delivery/source -type f | wc -l | tr -d ' ')" = "2"
+          archive="build/web-delivery/source/web-hosting-${SURFACE}.tar.gz"
+          provenance=build/web-delivery/source/web-hosting-provenance.json
+          node tool/ci/delivery_core.mjs verify \
+            --manifest "$provenance" \
+            --artifact "$archive" \
+            --source-sha "$SOURCE_SHA" \
+            --ci-run-id "$SOURCE_CI_RUN_ID" \
+            --ci-run-attempt "$SOURCE_CI_RUN_ATTEMPT"
+          tar -tzf "$archive" | \
+            awk '/(^\/|(^|\/)\.\.($|\/))/ { exit 64 }'
+          tar -tvzf "$archive" | \
+            awk 'substr($0, 1, 1) != "-" && substr($0, 1, 1) != "d" { exit 64 }'
+          tar -xzf "$archive" --no-same-owner --no-same-permissions \
+            -C build/web-delivery/package
+          test "$(find build/web-delivery/package -type l | wc -l | tr -d ' ')" = "0"
+          node tool/ci/package_web_hosting.mjs verify \
+            --surface "$SURFACE" \
+            --package-dir build/web-delivery/package \
+            --source-sha "$SOURCE_SHA" \
+            --ci-workflow-id "$SOURCE_CI_WORKFLOW_ID" \
+            --ci-run-number "$SOURCE_CI_RUN_NUMBER" \
+            --ci-run-id "$SOURCE_CI_RUN_ID" \
+            --ci-run-attempt "$SOURCE_CI_RUN_ATTEMPT" \
+            --provenance-manifest "$provenance"
+
+      - name: Authenticate to Google Cloud only for final freshness and mutation
+        uses: google-github-actions/auth@v3
+        with:
+          create_credentials_file: true
+          export_environment_variables: true
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT_EMAIL }}
+
+      - name: Refuse to overtake a newer main push immediately before mutation
+        env:
+          GH_TOKEN: ${{ github.token }}
+          IS_RECOVERY: ${{ inputs.recovery }}
+          SOURCE_CI_RUN_ATTEMPT: ${{ inputs.source_ci_run_attempt }}
+          SOURCE_CI_RUN_ID: ${{ inputs.source_ci_run_id }}
+          SOURCE_CI_RUN_NUMBER: ${{ steps.authorize.outputs.run_number }}
+          SOURCE_CI_WORKFLOW_ID: ${{ steps.authorize.outputs.workflow_id }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+        run: |
+          set -euo pipefail
+          git fetch origin main:refs/remotes/origin/main --no-tags
+          git merge-base --is-ancestor "$SOURCE_SHA" refs/remotes/origin/main
+          if [[ "$IS_RECOVERY" == "true" ]]; then
+            test "$(git rev-parse refs/remotes/origin/main)" = "$SOURCE_SHA"
+          fi
+          current_source_run="$(gh api \
+            "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_CI_RUN_ID")"
+          jq -e \
+            --arg run_id "$SOURCE_CI_RUN_ID" \
+            --arg source_sha "$SOURCE_SHA" \
+            --argjson run_attempt "$SOURCE_CI_RUN_ATTEMPT" '
+              (.id | tostring) == $run_id and
+              .run_attempt == $run_attempt and
+              .head_sha == $source_sha and
+              .event == "push" and
+              .head_branch == "main"
+            ' <<< "$current_source_run" > /dev/null
+          latest_surface_push="$(gh api \
+            "repos/$GITHUB_REPOSITORY/actions/workflows/$SOURCE_CI_WORKFLOW_ID/runs?branch=main&event=push&per_page=1")"
+          jq -e \
+            --arg run_id "$SOURCE_CI_RUN_ID" \
+            --arg source_sha "$SOURCE_SHA" \
+            --argjson run_number "$SOURCE_CI_RUN_NUMBER" '
+              .workflow_runs | length == 1 and
+              (.[0].id | tostring) == $run_id and
+              .[0].run_number == $run_number and
+              .[0].head_sha == $source_sha and
+              .[0].head_branch == "main" and
+              .[0].event == "push"
+            ' <<< "$latest_surface_push" > /dev/null
+
+      - name: Deploy only the verified production Hosting target without rebuilding
+        working-directory: build/web-delivery/package
+        env:
+          SURFACE: ${{ inputs.surface }}
+        run: >-
+          "$GITHUB_WORKSPACE/tool/firebase_with_env.sh" prod deploy
+          --config firebase.json
+          --only "hosting:${SURFACE}"
+          --non-interactive
+
+      - name: Remove deploy credentials before postconditions
+        run: |
+          set -euo pipefail
+          credential_file="${GOOGLE_GHA_CREDS_PATH:-}"
+          test -n "$credential_file"
+          case "$credential_file" in
+            "$GITHUB_WORKSPACE"/gha-creds-*.json) ;;
+            *) echo "Unexpected Google credential path: $credential_file" >&2; exit 64 ;;
+          esac
+          rm -f -- "$credential_file"
+          test ! -e "$credential_file"
+          {
+            echo "CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE="
+            echo "GOOGLE_APPLICATION_CREDENTIALS="
+            echo "GOOGLE_GHA_CREDS_PATH="
+          } >> "$GITHUB_ENV"
+
+      - name: Verify marketing production unknown paths return HTTP 404
+        if: ${{ inputs.surface == 'marketing' }}
+        run: node website/scripts/verifyHosting404.mjs https://catchdates.com
+
+      - name: Verify launch-critical marketing production routes
+        if: ${{ inputs.surface == 'marketing' }}
+        run: node website/scripts/probeProduction.mjs --base-url https://catchdates.com --json

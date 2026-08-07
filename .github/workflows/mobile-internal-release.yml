@@ -1,212 +1,310 @@
 name: Mobile Internal Release
 
 on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
-    inputs:
-      app_role:
-        description: App role to release.
-        required: true
-        default: both
-        type: choice
-        options:
-          - consumer
-          - host
-          - both
-      platform:
-        description: Store platform to release.
-        required: true
-        default: all
-        type: choice
-        options:
-          - ios
-          - android
-          - all
-      upload_to_internal:
-        description: Upload manual artifacts to TestFlight or Play internal testing.
-        required: true
-        default: false
-        type: boolean
-      release_reason:
-        description: Required when a manual store upload or Xcode Cloud retirement is requested.
-        required: false
-        default: ''
-        type: string
-      retire_xcode_cloud:
-        description: Disable legacy Xcode Cloud only after exact GitHub builds are processed for both apps.
-        required: true
-        default: false
-        type: boolean
-      consumer_processed_ios_build_number:
-        description: Processed Consumer GitHub build number required for Xcode Cloud retirement.
-        required: false
-        default: ''
-        type: string
-      host_processed_ios_build_number:
-        description: Processed Host GitHub build number required for Xcode Cloud retirement.
-        required: false
-        default: ''
-        type: string
-      source_mobile_release_run_id:
-        description: Mobile Internal Release run whose processing receipts authorize retirement.
-        required: false
-        default: ''
-        type: string
-      probe_play_access:
-        description: Probe both Play qa tracks through an uncommitted edit; never uploads a bundle.
-        required: true
-        default: false
-        type: boolean
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+    branches: [main]
 
 permissions:
+  actions: read
   contents: read
 
 concurrency:
-  group: catch-mobile-store-release
+  group: catch-mobile-package-producer-${{ github.event.workflow_run.id }}
   cancel-in-progress: false
 
 jobs:
-  resolve:
-    name: Resolve mobile release matrix
+  authorize:
+    name: Verify exact successful CI authority
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 20
     outputs:
-      roles: ${{ steps.matrix.outputs.roles }}
-      release_required: ${{ steps.matrix.outputs.release_required }}
+      source_ci_workflow_id: ${{ steps.source.outputs.source_ci_workflow_id }}
+      source_ci_run_number: ${{ steps.source.outputs.source_ci_run_number }}
+      source_ci_run_id: ${{ steps.source.outputs.source_ci_run_id }}
+      source_ci_run_attempt: ${{ steps.source.outputs.source_ci_run_attempt }}
+      source_ci_utc_date: ${{ steps.source.outputs.source_ci_utc_date }}
+      source_sha: ${{ steps.source.outputs.source_sha }}
+      release_targets: ${{ steps.source.outputs.release_targets }}
+      release_roles: ${{ steps.source.outputs.release_roles }}
+      ios_targets: ${{ steps.source.outputs.ios_targets }}
+      android_targets: ${{ steps.source.outputs.android_targets }}
+      has_ios_targets: ${{ steps.source.outputs.has_ios_targets }}
+      has_android_targets: ${{ steps.source.outputs.has_android_targets }}
+      release_required: ${{ steps.source.outputs.release_required }}
+      source_bundle_name: ${{ steps.source.outputs.source_bundle_name }}
     steps:
-      - name: Guard production release ref
+      - id: source
+        name: Verify CI attempt, authority, and exact impact plan
         env:
-          RELEASE_REF: ${{ github.ref }}
+          EVENT_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          EVENT_HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          EVENT_HEAD_REPOSITORY_ID: ${{ github.event.workflow_run.head_repository.id }}
+          EVENT_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          EVENT_NAME: ${{ github.event.workflow_run.event }}
+          EVENT_RUN_ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
+          EVENT_RUN_ID: ${{ github.event.workflow_run.id }}
+          EVENT_RUN_NUMBER: ${{ github.event.workflow_run.run_number }}
+          EVENT_WORKFLOW_ID: ${{ github.event.workflow_run.workflow_id }}
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY_ID: ${{ github.repository_id }}
         run: |
-          if [[ "$RELEASE_REF" != "refs/heads/main" ]]; then
-            echo "Signed production mobile releases are restricted to refs/heads/main."
+          set -euo pipefail
+          for numeric in \
+            "$EVENT_RUN_ATTEMPT" \
+            "$EVENT_RUN_ID" \
+            "$EVENT_RUN_NUMBER" \
+            "$EVENT_WORKFLOW_ID" \
+            "$REPOSITORY_ID"; do
+            [[ "$numeric" =~ ^[1-9][0-9]*$ ]]
+          done
+          if [[ "$EVENT_CONCLUSION" != "success" || \
+                "$EVENT_NAME" != "push" || \
+                "$EVENT_HEAD_BRANCH" != "main" || \
+                "$EVENT_HEAD_REPOSITORY_ID" != "$REPOSITORY_ID" || \
+                ! "$EVENT_HEAD_SHA" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "Mobile packages require a successful same-repository main push CI attempt."
             exit 64
           fi
 
-      - uses: actions/checkout@v6
-        if: ${{ github.event_name == 'push' }}
+          current_workflow="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/ci.yml")"
+          current_workflow_id="$(jq -er '
+            select(
+              (.id | type == "number" and . > 0 and floor == .) and
+              (.path | split("@")[0]) == ".github/workflows/ci.yml"
+            ) | .id
+          ' <<< "$current_workflow")"
+          test "$EVENT_WORKFLOW_ID" = "$current_workflow_id"
+
+          latest_run="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$EVENT_RUN_ID")"
+          if ! jq -e \
+            --arg repository "$GITHUB_REPOSITORY" \
+            --arg run_id "$EVENT_RUN_ID" \
+            --arg source_sha "$EVENT_HEAD_SHA" \
+            --argjson run_attempt "$EVENT_RUN_ATTEMPT" \
+            --argjson run_number "$EVENT_RUN_NUMBER" \
+            --argjson workflow_id "$current_workflow_id" '
+              .name == "CI" and
+              (.path | split("@")[0]) == ".github/workflows/ci.yml" and
+              .workflow_id == $workflow_id and
+              .event == "push" and
+              .head_branch == "main" and
+              .head_repository.full_name == $repository and
+              (.id | tostring) == $run_id and
+              .run_attempt == $run_attempt and
+              .run_number == $run_number and
+              .head_sha == $source_sha and
+              .status == "completed" and
+              .conclusion == "success"
+            ' <<< "$latest_run" > /dev/null; then
+            echo "The successful historical CI attempt is no longer the current attempt."
+            exit 64
+          fi
+
+          historical_attempt="$(gh api \
+            "repos/$GITHUB_REPOSITORY/actions/runs/$EVENT_RUN_ID/attempts/$EVENT_RUN_ATTEMPT")"
+          jq -e \
+            --arg repository "$GITHUB_REPOSITORY" \
+            --arg run_id "$EVENT_RUN_ID" \
+            --arg source_sha "$EVENT_HEAD_SHA" \
+            --argjson run_attempt "$EVENT_RUN_ATTEMPT" \
+            --argjson run_number "$EVENT_RUN_NUMBER" \
+            --argjson workflow_id "$current_workflow_id" '
+              .name == "CI" and
+              (.path | split("@")[0]) == ".github/workflows/ci.yml" and
+              .workflow_id == $workflow_id and
+              .event == "push" and
+              .head_branch == "main" and
+              .head_repository.full_name == $repository and
+              (.id | tostring) == $run_id and
+              .run_attempt == $run_attempt and
+              .run_number == $run_number and
+              .head_sha == $source_sha and
+              .status == "completed" and
+              .conclusion == "success"
+            ' <<< "$historical_attempt" > /dev/null
+          source_ci_utc_date="$(date -u -d "$(jq -er '.created_at' <<< "$historical_attempt")" +%Y%m%d)"
+          [[ "$source_ci_utc_date" =~ ^[0-9]{8}$ ]]
+
+          artifact_pages="$(gh api --paginate --slurp \
+            -H "X-GitHub-Api-Version: 2026-03-10" \
+            "repos/$GITHUB_REPOSITORY/actions/runs/$EVENT_RUN_ID/artifacts?per_page=100")"
+          authority_name="harness-success-v3-${current_workflow_id}-${EVENT_RUN_NUMBER}-${EVENT_RUN_ID}-${EVENT_HEAD_SHA}-${EVENT_RUN_ATTEMPT}"
+          plan_name="harness-plan-${EVENT_RUN_NUMBER}-${EVENT_RUN_ID}-${EVENT_HEAD_SHA}-${EVENT_RUN_ATTEMPT}"
+          for artifact_name in "$authority_name" "$plan_name"; do
+            count="$(jq -r --arg name "$artifact_name" \
+              '[.[].artifacts[] | select(.expired == false and .name == $name)] | length' \
+              <<< "$artifact_pages")"
+            if [[ "$count" != "1" ]]; then
+              echo "Expected exactly one unexpired source artifact named $artifact_name; found $count."
+              exit 64
+            fi
+          done
+
+          mkdir -p build/mobile/source/authority build/mobile/source/plan
+          authority_metadata="$(jq -c --arg name "$authority_name" \
+            '[.[].artifacts[] | select(.expired == false and .name == $name)][0]' \
+            <<< "$artifact_pages")"
+          authority_id="$(jq -er '.id' <<< "$authority_metadata")"
+          authority_digest="$(jq -er '.digest' <<< "$authority_metadata")"
+          [[ "$authority_id" =~ ^[1-9][0-9]*$ ]]
+          [[ "$authority_digest" =~ ^sha256:[0-9a-f]{64}$ ]]
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$authority_id/zip" \
+            > build/mobile/source/authority.zip
+          test "sha256:$(sha256sum build/mobile/source/authority.zip | awk '{print $1}')" = \
+            "$authority_digest"
+          unzip -Z1 build/mobile/source/authority.zip | \
+            awk '/(^\/|(^|\/)\.\.($|\/))/ { exit 64 }'
+          unzip -q build/mobile/source/authority.zip -d build/mobile/source/authority
+          test "$(find build/mobile/source/authority -type l | wc -l | tr -d ' ')" = "0"
+          authority_file=build/mobile/source/authority/ci-delivery-authority.json
+          test -f "$authority_file"
+          test "$(find build/mobile/source/authority -type f | wc -l | tr -d ' ')" = "1"
+
+          plan_metadata="$(jq -c --arg name "$plan_name" \
+            '[.[].artifacts[] | select(.expired == false and .name == $name)][0]' \
+            <<< "$artifact_pages")"
+          plan_id="$(jq -er '.id' <<< "$plan_metadata")"
+          plan_digest="$(jq -er '.digest' <<< "$plan_metadata")"
+          [[ "$plan_id" =~ ^[1-9][0-9]*$ ]]
+          [[ "$plan_digest" =~ ^sha256:[0-9a-f]{64}$ ]]
+          expected_package="firebase-delivery-${EVENT_HEAD_SHA}-${EVENT_RUN_ATTEMPT}"
+          jq -e \
+            --arg authority_name "$authority_name" \
+            --arg expected_package "$expected_package" \
+            --arg plan_digest "$plan_digest" \
+            --arg plan_name "$plan_name" \
+            --arg run_attempt "$EVENT_RUN_ATTEMPT" \
+            --arg run_id "$EVENT_RUN_ID" \
+            --arg source_sha "$EVENT_HEAD_SHA" \
+            --argjson plan_id "$plan_id" \
+            --argjson run_number "$EVENT_RUN_NUMBER" \
+            --argjson workflow_id "$current_workflow_id" '
+              (keys | sort) == [
+                "deployRequired", "packageArtifact", "planArtifact", "schema",
+                "sourceCiRunAttempt", "sourceCiRunId", "sourceCiRunNumber",
+                "sourceCiWorkflowId", "sourceSha"
+              ] and
+              .schema == "catch.ci-delivery-authority/v3" and
+              .sourceCiWorkflowId == $workflow_id and
+              .sourceCiRunNumber == $run_number and
+              .sourceCiRunId == $run_id and
+              .sourceCiRunAttempt == $run_attempt and
+              .sourceSha == $source_sha and
+              (.deployRequired | type == "boolean") and
+              (.planArtifact | keys | sort) == ["digest", "id", "name"] and
+              .planArtifact.id == $plan_id and
+              .planArtifact.name == $plan_name and
+              .planArtifact.digest == $plan_digest and
+              ((.deployRequired == true and
+                (.packageArtifact | keys | sort) == ["digest", "id", "name"] and
+                (.packageArtifact.id | type == "number" and . > 0 and floor == .) and
+                (.packageArtifact.digest | type == "string" and
+                  test("^sha256:[0-9a-f]{64}$")) and
+                .packageArtifact.name == $expected_package) or
+               (.deployRequired == false and .packageArtifact == null)) and
+              $authority_name == (
+                "harness-success-v3-" + (.sourceCiWorkflowId | tostring) + "-" +
+                (.sourceCiRunNumber | tostring) + "-" + .sourceCiRunId + "-" +
+                .sourceSha + "-" + .sourceCiRunAttempt
+              )
+            ' "$authority_file" > /dev/null
+
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$plan_id/zip" \
+            > build/mobile/source/plan.zip
+          test "sha256:$(sha256sum build/mobile/source/plan.zip | awk '{print $1}')" = \
+            "$plan_digest"
+          unzip -Z1 build/mobile/source/plan.zip | \
+            awk '/(^\/|(^|\/)\.\.($|\/))/ { exit 64 }'
+          unzip -q build/mobile/source/plan.zip -d build/mobile/source/plan
+          test "$(find build/mobile/source/plan -type l | wc -l | tr -d ' ')" = "0"
+          plan_file=build/mobile/source/plan/impact-plan.json
+          test -f "$plan_file"
+          test "$(find build/mobile/source/plan -type f | wc -l | tr -d ' ')" = "1"
+          jq -e \
+            --arg run_attempt "$EVENT_RUN_ATTEMPT" \
+            --arg run_id "$EVENT_RUN_ID" \
+            --arg source_sha "$EVENT_HEAD_SHA" '
+              .complete == true and
+              .mode == "main" and
+              .sourceSha == $source_sha and
+              .sourceCiRunId == $run_id and
+              .sourceCiRunAttempt == $run_attempt and
+              (.operations.releaseTargets | type == "array") and
+              (.operations.releaseRoles | type == "array") and
+              (.operations.releaseTargets == (.operations.releaseTargets | unique | sort)) and
+              (.operations.releaseRoles == (.operations.releaseRoles | unique | sort)) and
+              all(.operations.releaseTargets[];
+                test("^(consumer|host)-(android|ios)$")) and
+              ([.operations.releaseTargets[] | split("-")[0]] | unique | sort) ==
+                .operations.releaseRoles
+            ' "$plan_file" > /dev/null
+
+          release_targets="$(jq -c '.operations.releaseTargets' "$plan_file")"
+          release_roles="$(jq -c '.operations.releaseRoles' "$plan_file")"
+          ios_targets="$(jq -c '[.operations.releaseTargets[] | select(endswith("-ios"))]' \
+            "$plan_file")"
+          android_targets="$(jq -c \
+            '[.operations.releaseTargets[] | select(endswith("-android"))]' "$plan_file")"
+          source_bundle_name="mobile-source-v1-${EVENT_RUN_ID}-${EVENT_RUN_ATTEMPT}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          mkdir -p build/mobile/source-bundle
+          cp "$authority_file" build/mobile/source-bundle/ci-delivery-authority.json
+          cp "$plan_file" build/mobile/source-bundle/impact-plan.json
+          {
+            echo "source_ci_workflow_id=$current_workflow_id"
+            echo "source_ci_run_number=$EVENT_RUN_NUMBER"
+            echo "source_ci_run_id=$EVENT_RUN_ID"
+            echo "source_ci_run_attempt=$EVENT_RUN_ATTEMPT"
+            echo "source_ci_utc_date=$source_ci_utc_date"
+            echo "source_sha=$EVENT_HEAD_SHA"
+            echo "release_targets=$release_targets"
+            echo "release_roles=$release_roles"
+            echo "ios_targets=$ios_targets"
+            echo "android_targets=$android_targets"
+            echo "has_ios_targets=$([[ "$ios_targets" == "[]" ]] && echo false || echo true)"
+            echo "has_android_targets=$([[ "$android_targets" == "[]" ]] && echo false || echo true)"
+            echo "release_required=$([[ "$release_targets" == "[]" ]] && echo false || echo true)"
+            echo "source_bundle_name=$source_bundle_name"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Upload verified source binding for selected build jobs
+        if: ${{ steps.source.outputs.release_required == 'true' }}
+        uses: actions/upload-artifact@v7
         with:
-          fetch-depth: 0
-
-      - id: impact
-        name: Resolve mobile release impact
-        if: ${{ github.event_name == 'push' }}
-        env:
-          BEFORE_SHA: ${{ github.event.before }}
-          HEAD_SHA: ${{ github.sha }}
-        run: |
-          set -euo pipefail
-          if [[ -z "$BEFORE_SHA" || "$BEFORE_SHA" =~ ^0+$ ]]; then
-            echo 'release_roles=[]' >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          node tool/harness.mjs plan \
-            --base "$BEFORE_SHA" \
-            --head "$HEAD_SHA" \
-            --mode main \
-            --github-output "$GITHUB_OUTPUT" \
-            --json
-
-      - id: matrix
-        env:
-          APP_ROLE_INPUT: ${{ inputs.app_role || 'both' }}
-          EVENT_NAME: ${{ github.event_name }}
-          IMPACT_ROLES: ${{ steps.impact.outputs.release_roles }}
-        run: |
-          set -euo pipefail
-          if [[ "$EVENT_NAME" == "push" ]]; then
-            roles="${IMPACT_ROLES:-[]}"
-          else
-            case "$APP_ROLE_INPUT" in
-              consumer) roles='["consumer"]' ;;
-              host) roles='["host"]' ;;
-              both) roles='["consumer","host"]' ;;
-              *) echo "Unsupported app role: $APP_ROLE_INPUT"; exit 64 ;;
-            esac
-          fi
-          echo "roles=$roles" >> "$GITHUB_OUTPUT"
-          if [[ "$roles" == "[]" ]]; then
-            echo "release_required=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "release_required=true" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Guard manual release mutation
-        if: ${{ github.event_name == 'workflow_dispatch' && (inputs.upload_to_internal || inputs.retire_xcode_cloud || inputs.probe_play_access) }}
-        env:
-          RELEASE_REASON: ${{ inputs.release_reason }}
-        run: |
-          if [[ -z "${RELEASE_REASON//[[:space:]]/}" ]]; then
-            echo "Manual store uploads and Xcode Cloud retirement require a release reason."
-            exit 64
-          fi
-
-      - name: Guard Google Play access probe
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.probe_play_access }}
-        env:
-          APP_ROLE_INPUT: ${{ inputs.app_role }}
-          PLATFORM_INPUT: ${{ inputs.platform }}
-          UPLOAD_TO_INTERNAL_INPUT: ${{ inputs.upload_to_internal }}
-          RETIRE_XCODE_CLOUD_INPUT: ${{ inputs.retire_xcode_cloud }}
-        run: |
-          if [[ "$APP_ROLE_INPUT" != "both" || "$PLATFORM_INPUT" != "android" ]]; then
-            echo "The Play access probe must target both Android roles."
-            exit 64
-          fi
-          if [[ "$UPLOAD_TO_INTERNAL_INPUT" == "true" || "$RETIRE_XCODE_CLOUD_INPUT" == "true" ]]; then
-            echo "The Play access probe cannot upload or retire another release owner."
-            exit 64
-          fi
-
-      - name: Guard Xcode Cloud retirement proof
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.retire_xcode_cloud }}
-        env:
-          APP_ROLE_INPUT: ${{ inputs.app_role }}
-          PLATFORM_INPUT: ${{ inputs.platform }}
-          UPLOAD_TO_INTERNAL_INPUT: ${{ inputs.upload_to_internal }}
-          CONSUMER_BUILD: ${{ inputs.consumer_processed_ios_build_number }}
-          HOST_BUILD: ${{ inputs.host_processed_ios_build_number }}
-          SOURCE_RUN_ID: ${{ inputs.source_mobile_release_run_id }}
-        run: |
-          set -euo pipefail
-          if [[ "$APP_ROLE_INPUT" != "both" || "$PLATFORM_INPUT" != "ios" ]]; then
-            echo "Xcode Cloud retirement must target both roles and only iOS."
-            exit 64
-          fi
-          if [[ "$UPLOAD_TO_INTERNAL_INPUT" == "true" ]]; then
-            echo "Upload and retirement are intentionally separate operations; first process both GitHub builds."
-            exit 64
-          fi
-          if [[ ! "$CONSUMER_BUILD" =~ ^[0-9]{18}$ || ! "$HOST_BUILD" =~ ^[0-9]{18}$ ]]; then
-            echo "Both processed build numbers must use the canonical 18-digit GitHub namespace."
-            exit 64
-          fi
-          if [[ ! "$SOURCE_RUN_ID" =~ ^[0-9]+$ ]]; then
-            echo "A numeric source Mobile Internal Release run id is required."
-            exit 64
-          fi
+          name: ${{ steps.source.outputs.source_bundle_name }}
+          path: build/mobile/source-bundle
+          if-no-files-found: error
+          retention-days: 1
 
   prod-ios:
-    name: iOS internal (${{ matrix.app_role }})
-    needs: resolve
-    if: ${{ needs.resolve.outputs.release_required == 'true' && !inputs.retire_xcode_cloud && !inputs.probe_play_access && (github.event_name == 'push' || inputs.platform == 'ios' || inputs.platform == 'all') }}
+    name: Build signed package (${{ matrix.release_target }})
+    needs: authorize
+    if: ${{ needs.authorize.outputs.has_ios_targets == 'true' }}
     strategy:
       fail-fast: false
       matrix:
-        app_role: ${{ fromJSON(needs.resolve.outputs.roles) }}
+        release_target: ${{ fromJSON(needs.authorize.outputs.ios_targets) }}
     runs-on: macos-26
     environment: prod-mobile
     timeout-minutes: 90
 
-    env:
-      ASC_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
-      ASC_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
-      ASC_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
-
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.authorize.outputs.source_sha }}
+
+      - name: Verify exact source checkout
+        env:
+          SOURCE_SHA: ${{ needs.authorize.outputs.source_sha }}
+        run: test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+
+      - name: Download verified CI source binding
+        uses: actions/download-artifact@v7
+        with:
+          name: ${{ needs.authorize.outputs.source_bundle_name }}
+          path: build/mobile/source
 
       - id: toolchain
         uses: ./.github/actions/load-toolchain
@@ -221,43 +319,42 @@ jobs:
       - id: release-target
         name: Resolve release target
         env:
-          APP_ROLE_INPUT: ${{ matrix.app_role }}
-          UPLOAD_TO_INTERNAL_INPUT: ${{ inputs.upload_to_internal || 'false' }}
+          RELEASE_TARGET_INPUT: ${{ matrix.release_target }}
+          SOURCE_CI_RUN_ATTEMPT: ${{ needs.authorize.outputs.source_ci_run_attempt }}
+          SOURCE_CI_RUN_NUMBER: ${{ needs.authorize.outputs.source_ci_run_number }}
+          SOURCE_CI_UTC_DATE: ${{ needs.authorize.outputs.source_ci_utc_date }}
         run: |
           set -euo pipefail
 
-          app_role="$APP_ROLE_INPUT"
-          upload_to_testflight="$UPLOAD_TO_INTERNAL_INPUT"
+          case "$RELEASE_TARGET_INPUT" in
+            consumer-ios) app_role=consumer ;;
+            host-ios) app_role=host ;;
+            *) echo "Unsupported iOS release target: $RELEASE_TARGET_INPUT"; exit 64 ;;
+          esac
 
           target_fields="$(node tool/platform/resolve_app_target.mjs \
             --role "$app_role" \
             --environment prod \
-            --fields id,projectRoot,ios.bundleId,ios.configurations.release,ios.scheme,release.appStoreConnectAppId,release.automaticTestFlightOnMain)"
-          IFS=$'\t' read -r target_id app_project_root expected_bundle_id ios_configuration ios_scheme app_store_connect_app_id automatic_testflight_on_main <<< "$target_fields"
+            --fields id,projectRoot,ios.bundleId,ios.configurations.release,ios.scheme,release.appStoreConnectAppId)"
+          IFS=$'\t' read -r target_id app_project_root expected_bundle_id ios_configuration ios_scheme app_store_connect_app_id <<< "$target_fields"
           if [[ -z "$target_id" || -z "$app_project_root" || -z "$expected_bundle_id" || -z "$ios_configuration" || -z "$ios_scheme" || -z "$app_store_connect_app_id" ]]; then
             echo "Could not resolve complete prod iOS target metadata for role '$app_role'."
             exit 1
-          fi
-          if [[ "$automatic_testflight_on_main" != "true" && "$automatic_testflight_on_main" != "false" ]]; then
-            echo "Prod iOS target '$target_id' must declare release.automaticTestFlightOnMain as true or false."
-            exit 1
-          fi
-          if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
-            upload_to_testflight="$automatic_testflight_on_main"
           fi
           archive_name="${target_id//-/_}"
           export_path="build/ios/export/$target_id"
 
           version_line="$(awk '/^version: / { print $2; exit }' "$app_project_root/pubspec.yaml")"
           build_name="${version_line%%+*}"
-          build_number="${FLUTTER_BUILD_NUMBER:-$(node tool/platform/compute_mobile_build_number.mjs \
+          build_number="$(node tool/platform/compute_mobile_build_number.mjs \
             --platform ios \
-            --utc-date "$(date -u +%Y%m%d)" \
-            --run-number "$GITHUB_RUN_NUMBER" \
-            --run-attempt "$GITHUB_RUN_ATTEMPT")}"
+            --utc-date "$SOURCE_CI_UTC_DATE" \
+            --run-number "$SOURCE_CI_RUN_NUMBER" \
+            --run-attempt "$SOURCE_CI_RUN_ATTEMPT")"
 
           {
             echo "APP_ROLE=$app_role"
+            echo "RELEASE_TARGET=$RELEASE_TARGET_INPUT"
             echo "APP_PROJECT_ROOT=$app_project_root"
             echo "ARCHIVE_NAME=$archive_name"
             echo "EXPECTED_BUNDLE_ID=$expected_bundle_id"
@@ -265,11 +362,9 @@ jobs:
             echo "IOS_CONFIGURATION=$ios_configuration"
             echo "IOS_SCHEME=$ios_scheme"
             echo "APP_STORE_CONNECT_APP_ID=$app_store_connect_app_id"
-            echo "UPLOAD_TO_TESTFLIGHT=$upload_to_testflight"
             echo "FLUTTER_BUILD_NAME=$build_name"
             echo "FLUTTER_BUILD_NUMBER=$build_number"
           } >> "$GITHUB_ENV"
-          echo "upload_to_testflight=$upload_to_testflight" >> "$GITHUB_OUTPUT"
 
       - name: Verify client callable dependencies
         run: |
@@ -289,30 +384,6 @@ jobs:
         env:
           GOOGLE_MAPS_IOS_API_KEY_PROD: ${{ secrets.GOOGLE_MAPS_IOS_API_KEY_PROD }}
         run: ./tool/write_ios_maps_key_xcconfig.sh prod "$APP_PROJECT_ROOT/ios/Flutter/GoogleMapsKeys.xcconfig"
-
-      - name: Write App Store Connect API key
-        run: |
-          set -euo pipefail
-          if [[ -z "${ASC_KEY_ID:-}" || -z "${ASC_ISSUER_ID:-}" || -z "${ASC_KEY_BASE64:-}" ]]; then
-            echo "Missing App Store Connect API key secrets."
-            exit 1
-          fi
-          asc_key_dir="$HOME/.appstoreconnect/private_keys"
-          mkdir -p "$asc_key_dir"
-          asc_key_path="$asc_key_dir/AuthKey_${ASC_KEY_ID}.p8"
-          echo "ASC_KEY_PATH=$asc_key_path" >> "$GITHUB_ENV"
-          /usr/bin/printf '%s' "$ASC_KEY_BASE64" | /usr/bin/base64 -D > "$asc_key_path"
-          chmod 600 "$asc_key_path"
-
-      - name: Verify App Store build-number floor
-        run: |
-          node tool/platform/verify_app_store_build.mjs \
-            --app-id "$APP_STORE_CONNECT_APP_ID" \
-            --build-number "$FLUTTER_BUILD_NUMBER" \
-            --key-id "$ASC_KEY_ID" \
-            --issuer-id "$ASC_ISSUER_ID" \
-            --key-path "$ASC_KEY_PATH" \
-            --check-candidate
 
       - name: Install reusable iOS CI development identity
         env:
@@ -426,8 +497,27 @@ jobs:
         run: ./tool/flutter_with_env.sh prod --role "$APP_ROLE" build ios --release --config-only --build-name="$FLUTTER_BUILD_NAME" --build-number="$FLUTTER_BUILD_NUMBER"
 
       - name: Archive prod iOS app
+        env:
+          ASC_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
+          ASC_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
         run: |
           set -euo pipefail
+          if [[ -z "${ASC_KEY_ID:-}" || -z "${ASC_ISSUER_ID:-}" || -z "${ASC_KEY_BASE64:-}" ]]; then
+            echo "Missing App Store Connect API key secrets."
+            exit 1
+          fi
+          asc_key_path="$RUNNER_TEMP/AuthKey_${ASC_KEY_ID}.p8"
+          trap 'rm -f "$asc_key_path"' EXIT
+          /usr/bin/printf '%s' "$ASC_KEY_BASE64" | /usr/bin/base64 -D > "$asc_key_path"
+          chmod 600 "$asc_key_path"
+          node tool/platform/verify_app_store_build.mjs \
+            --app-id "$APP_STORE_CONNECT_APP_ID" \
+            --build-number "$FLUTTER_BUILD_NUMBER" \
+            --key-id "$ASC_KEY_ID" \
+            --issuer-id "$ASC_ISSUER_ID" \
+            --key-path "$asc_key_path" \
+            --check-candidate
           xcodebuild \
             -workspace "$APP_PROJECT_ROOT/ios/Runner.xcworkspace" \
             -scheme "$IOS_SCHEME" \
@@ -435,7 +525,7 @@ jobs:
             -destination generic/platform=iOS \
             -archivePath "$ARCHIVE_PATH" \
             -allowProvisioningUpdates \
-            -authenticationKeyPath "$ASC_KEY_PATH" \
+            -authenticationKeyPath "$asc_key_path" \
             -authenticationKeyID "$ASC_KEY_ID" \
             -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
             -hideShellScriptEnvironment \
@@ -466,15 +556,27 @@ jobs:
             --ios-built-plist "$archived_app/Info.plist"
 
       - name: Export prod IPA
+        env:
+          ASC_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
+          ASC_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
         run: |
           set -euo pipefail
+          if [[ -z "${ASC_KEY_ID:-}" || -z "${ASC_ISSUER_ID:-}" || -z "${ASC_KEY_BASE64:-}" ]]; then
+            echo "Missing App Store Connect API key secrets."
+            exit 1
+          fi
+          asc_key_path="$RUNNER_TEMP/AuthKey_${ASC_KEY_ID}.p8"
+          trap 'rm -f "$asc_key_path"' EXIT
+          /usr/bin/printf '%s' "$ASC_KEY_BASE64" | /usr/bin/base64 -D > "$asc_key_path"
+          chmod 600 "$asc_key_path"
           xcodebuild \
             -exportArchive \
             -archivePath "$ARCHIVE_PATH" \
             -exportPath "$EXPORT_PATH" \
             -exportOptionsPlist "$APP_PROJECT_ROOT/ios/ExportOptions.prod.plist" \
             -allowProvisioningUpdates \
-            -authenticationKeyPath "$ASC_KEY_PATH" \
+            -authenticationKeyPath "$asc_key_path" \
             -authenticationKeyID "$ASC_KEY_ID" \
             -authenticationKeyIssuerID "$ASC_ISSUER_ID"
 
@@ -482,23 +584,14 @@ jobs:
         run: |
           set -euo pipefail
           ipa_path="$(find "$EXPORT_PATH" -maxdepth 1 -type f -name '*.ipa' -print -quit)"
-          extract_dir="$RUNNER_TEMP/${APP_ROLE}-ipa"
 
           if [[ -z "$ipa_path" ]]; then
             echo "Could not find exported IPA under $EXPORT_PATH."
             exit 1
           fi
-          rm -rf "$extract_dir"
-          mkdir -p "$extract_dir"
-          ditto -x -k "$ipa_path" "$extract_dir"
-          exported_app="$(find "$extract_dir/Payload" -maxdepth 1 -type d -name '*.app' -print -quit)"
-          if [[ -z "$exported_app" ]]; then
-            echo "Could not find exported .app inside $ipa_path."
-            exit 1
-          fi
 
           node tool/platform/verify_ios_release_identity.mjs \
-            --app "$exported_app" \
+            --ipa "$ipa_path" \
             --role "$APP_ROLE" \
             --environment prod \
             --expected-version "$FLUTTER_BUILD_NAME" \
@@ -507,12 +600,6 @@ jobs:
 
           echo "IPA_PATH=$ipa_path" >> "$GITHUB_ENV"
           /usr/bin/shasum -a 256 "$ipa_path" > "build/ios/release-evidence/${APP_ROLE}-ipa.sha256"
-
-          node tool/firebase/validate_google_maps_config.mjs \
-            --env prod \
-            --platform ios \
-            --project-root "$APP_PROJECT_ROOT" \
-            --ios-built-plist "$exported_app/Info.plist"
 
           {
             echo "## iOS export verification"
@@ -534,53 +621,53 @@ jobs:
             --platform ios \
             --output "build/ios/release-evidence/${APP_ROLE}-package.json"
 
-      - name: Upload IPA artifact
-        uses: actions/upload-artifact@v6
-        with:
-          name: catch-ios-${{ matrix.app_role }}-prod-ipa
-          path: |
-            build/ios/export/**/*.ipa
-            build/ios/release-evidence/*.json
-            build/ios/release-evidence/*.sha256
-          if-no-files-found: error
-          retention-days: 14
-
-      - name: Upload to TestFlight
-        if: ${{ steps.release-target.outputs.upload_to_testflight == 'true' }}
+      - name: Package exact signed iOS artifact and source receipts
+        env:
+          PRODUCER_RUN_ATTEMPT: ${{ github.run_attempt }}
+          PRODUCER_RUN_ID: ${{ github.run_id }}
         run: |
-          set -euo pipefail
-          /usr/bin/shasum -a 256 --check "build/ios/release-evidence/${APP_ROLE}-ipa.sha256"
-          xcrun altool \
-            --upload-package "$IPA_PATH" \
-            --platform ios \
-            --apple-id "$APP_STORE_CONNECT_APP_ID" \
-            --bundle-id "$EXPECTED_BUNDLE_ID" \
-            --bundle-version "$FLUTTER_BUILD_NUMBER" \
-            --bundle-short-version-string "$FLUTTER_BUILD_NAME" \
-            --api-key "$ASC_KEY_ID" \
-            --api-issuer "$ASC_ISSUER_ID"
+          node tool/ci/package_mobile_release.mjs prepare \
+            --source-root . \
+            --artifact "$IPA_PATH" \
+            --release-target "$RELEASE_TARGET" \
+            --impact-plan build/mobile/source/impact-plan.json \
+            --ci-authority build/mobile/source/ci-delivery-authority.json \
+            --identity-receipt "build/ios/release-evidence/${APP_ROLE}-export.json" \
+            --package-policy-receipt "build/ios/release-evidence/${APP_ROLE}-package.json" \
+            --package-dir "build/mobile/packages/${RELEASE_TARGET}" \
+            --producer-run-id "$PRODUCER_RUN_ID" \
+            --producer-run-attempt "$PRODUCER_RUN_ATTEMPT"
 
-      - name: Verify TestFlight processing
-        if: ${{ steps.release-target.outputs.upload_to_testflight == 'true' }}
-        run: |
-          node tool/platform/verify_app_store_build.mjs \
-            --app-id "$APP_STORE_CONNECT_APP_ID" \
-            --build-number "$FLUTTER_BUILD_NUMBER" \
-            --key-id "$ASC_KEY_ID" \
-            --issuer-id "$ASC_ISSUER_ID" \
-            --key-path "$ASC_KEY_PATH" \
-            --wait-processed \
-            --github-run-id "$GITHUB_RUN_ID" \
-            --receipt "build/ios/release-evidence/${APP_ROLE}-testflight.json"
-
-      - name: Upload TestFlight processing receipt
-        if: ${{ steps.release-target.outputs.upload_to_testflight == 'true' }}
-        uses: actions/upload-artifact@v6
+      - id: upload-package
+        name: Upload immutable iOS package
+        uses: actions/upload-artifact@v7
         with:
-          name: catch-ios-${{ matrix.app_role }}-testflight-receipt
-          path: build/ios/release-evidence/${{ matrix.app_role }}-testflight.json
+          name: mobile-package-v1-${{ matrix.release_target }}-${{ needs.authorize.outputs.source_ci_run_id }}-${{ needs.authorize.outputs.source_ci_run_attempt }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: build/mobile/packages/${{ matrix.release_target }}
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 90
+
+      - name: Bind immutable package artifact metadata
+        env:
+          PACKAGE_ARTIFACT_DIGEST: ${{ format('sha256:{0}', steps.upload-package.outputs.artifact-digest) }}
+          PACKAGE_ARTIFACT_ID: ${{ steps.upload-package.outputs.artifact-id }}
+          PACKAGE_ARTIFACT_NAME: mobile-package-v1-${{ matrix.release_target }}-${{ needs.authorize.outputs.source_ci_run_id }}-${{ needs.authorize.outputs.source_ci_run_attempt }}-${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          node tool/ci/package_mobile_release.mjs bind-upload \
+            --source-root . \
+            --package-dir "build/mobile/packages/${RELEASE_TARGET}" \
+            --receipt-dir "build/mobile/upload-receipts/${RELEASE_TARGET}" \
+            --package-artifact-id "$PACKAGE_ARTIFACT_ID" \
+            --package-artifact-name "$PACKAGE_ARTIFACT_NAME" \
+            --package-artifact-digest "$PACKAGE_ARTIFACT_DIGEST"
+
+      - name: Upload iOS package receipt
+        uses: actions/upload-artifact@v7
+        with:
+          name: mobile-package-receipt-v1-${{ matrix.release_target }}-${{ needs.authorize.outputs.source_ci_run_id }}-${{ needs.authorize.outputs.source_ci_run_attempt }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: build/mobile/upload-receipts/${{ matrix.release_target }}
+          if-no-files-found: error
+          retention-days: 90
 
       - name: Remove ephemeral iOS signing material
         if: ${{ always() }}
@@ -591,37 +678,38 @@ jobs:
           fi
           for secret_path in \
             "${IOS_CI_P12_PATH:-}" \
-            "${IOS_CI_CERTIFICATE_PEM_PATH:-}" \
-            "${ASC_KEY_PATH:-}"; do
+            "${IOS_CI_CERTIFICATE_PEM_PATH:-}"; do
             if [[ -n "$secret_path" ]]; then
               rm -f "$secret_path"
             fi
           done
 
   prod-android:
-    name: Android internal (${{ matrix.app_role }})
-    needs: resolve
-    if: ${{ needs.resolve.outputs.release_required == 'true' && !inputs.retire_xcode_cloud && !inputs.probe_play_access && (github.event_name == 'push' || inputs.platform == 'android' || inputs.platform == 'all') }}
+    name: Build signed package (${{ matrix.release_target }})
+    needs: authorize
+    if: ${{ needs.authorize.outputs.has_android_targets == 'true' }}
     strategy:
       fail-fast: false
       matrix:
-        app_role: ${{ fromJSON(needs.resolve.outputs.roles) }}
+        release_target: ${{ fromJSON(needs.authorize.outputs.android_targets) }}
     runs-on: ubuntu-latest
     environment: prod-mobile
     timeout-minutes: 35
-    permissions:
-      contents: read
-      id-token: write
-
-    env:
-      ANDROID_UPLOAD_KEYSTORE_BASE64: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_BASE64 }}
-      ANDROID_UPLOAD_STORE_PASSWORD: ${{ secrets.ANDROID_UPLOAD_STORE_PASSWORD }}
-      ANDROID_UPLOAD_KEY_ALIAS: ${{ secrets.ANDROID_UPLOAD_KEY_ALIAS }}
-      ANDROID_UPLOAD_KEY_PASSWORD: ${{ secrets.ANDROID_UPLOAD_KEY_PASSWORD }}
-      GOOGLE_MAPS_ANDROID_API_KEY_PROD: ${{ secrets.GOOGLE_MAPS_ANDROID_API_KEY_PROD }}
-
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.authorize.outputs.source_sha }}
+
+      - name: Verify exact source checkout
+        env:
+          SOURCE_SHA: ${{ needs.authorize.outputs.source_sha }}
+        run: test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+
+      - name: Download verified CI source binding
+        uses: actions/download-artifact@v7
+        with:
+          name: ${{ needs.authorize.outputs.source_bundle_name }}
+          path: build/mobile/source
 
       - id: toolchain
         uses: ./.github/actions/load-toolchain
@@ -657,16 +745,24 @@ jobs:
 
       - name: Resolve release target
         env:
-          APP_ROLE_INPUT: ${{ matrix.app_role }}
+          RELEASE_TARGET_INPUT: ${{ matrix.release_target }}
+          SOURCE_CI_RUN_ATTEMPT: ${{ needs.authorize.outputs.source_ci_run_attempt }}
+          SOURCE_CI_RUN_NUMBER: ${{ needs.authorize.outputs.source_ci_run_number }}
+          SOURCE_CI_UTC_DATE: ${{ needs.authorize.outputs.source_ci_utc_date }}
         run: |
           set -euo pipefail
+          case "$RELEASE_TARGET_INPUT" in
+            consumer-android) app_role=consumer ;;
+            host-android) app_role=host ;;
+            *) echo "Unsupported Android release target: $RELEASE_TARGET_INPUT"; exit 64 ;;
+          esac
           target_fields="$(node tool/platform/resolve_app_target.mjs \
-            --role "$APP_ROLE_INPUT" \
+            --role "$app_role" \
             --environment prod \
             --fields id,projectRoot,android.applicationId,android.flavor)"
           IFS=$'\t' read -r target_id app_project_root application_id android_flavor <<< "$target_fields"
           if [[ -z "$target_id" || -z "$app_project_root" || -z "$application_id" || -z "$android_flavor" ]]; then
-            echo "Could not resolve complete prod Android target metadata for '$APP_ROLE_INPUT'."
+            echo "Could not resolve complete prod Android target metadata for '$app_role'."
             exit 1
           fi
 
@@ -674,12 +770,13 @@ jobs:
           build_name="${version_line%%+*}"
           build_number="$(node tool/platform/compute_mobile_build_number.mjs \
             --platform android \
-            --utc-date "$(date -u +%Y%m%d)" \
-            --run-number "$GITHUB_RUN_NUMBER" \
-            --run-attempt "$GITHUB_RUN_ATTEMPT")"
+            --utc-date "$SOURCE_CI_UTC_DATE" \
+            --run-number "$SOURCE_CI_RUN_NUMBER" \
+            --run-attempt "$SOURCE_CI_RUN_ATTEMPT")"
 
           {
-            echo "APP_ROLE=$APP_ROLE_INPUT"
+            echo "APP_ROLE=$app_role"
+            echo "RELEASE_TARGET=$RELEASE_TARGET_INPUT"
             echo "APP_PROJECT_ROOT=$app_project_root"
             echo "APP_TARGET_ID=$target_id"
             echo "ANDROID_APPLICATION_ID=$application_id"
@@ -696,6 +793,11 @@ jobs:
             --verify-live
 
       - name: Materialize Android upload signing
+        env:
+          ANDROID_UPLOAD_KEYSTORE_BASE64: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_BASE64 }}
+          ANDROID_UPLOAD_STORE_PASSWORD: ${{ secrets.ANDROID_UPLOAD_STORE_PASSWORD }}
+          ANDROID_UPLOAD_KEY_ALIAS: ${{ secrets.ANDROID_UPLOAD_KEY_ALIAS }}
+          ANDROID_UPLOAD_KEY_PASSWORD: ${{ secrets.ANDROID_UPLOAD_KEY_PASSWORD }}
         run: |
           set -euo pipefail
           for variable in \
@@ -720,6 +822,8 @@ jobs:
           chmod 600 "$APP_PROJECT_ROOT/android/key.properties"
 
       - name: Write prod Android Maps key
+        env:
+          GOOGLE_MAPS_ANDROID_API_KEY_PROD: ${{ secrets.GOOGLE_MAPS_ANDROID_API_KEY_PROD }}
         run: |
           if [[ -z "${GOOGLE_MAPS_ANDROID_API_KEY_PROD:-}" ]]; then
             echo "Missing GOOGLE_MAPS_ANDROID_API_KEY_PROD secret."
@@ -761,125 +865,337 @@ jobs:
             --platform android \
             --output "build/android/release-evidence/${APP_ROLE}-package.json"
 
-      - name: Upload Android release artifact
-        uses: actions/upload-artifact@v6
-        with:
-          name: catch-android-${{ matrix.app_role }}-prod-aab
-          path: |
-            apps/${{ matrix.app_role }}/build/app/outputs/bundle/**/*.aab
-            build/android/release-evidence/*.json
-          if-no-files-found: error
-          retention-days: 14
-
-      - name: Guard requested Play upload readiness
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.upload_to_internal && vars.GOOGLE_PLAY_UPLOAD_ENABLED != 'true' }}
-        run: |
-          echo "Play internal upload is not enabled. Complete APP-TARGET-ANDROID-PLAY-001 and set GOOGLE_PLAY_UPLOAD_ENABLED=true."
-          exit 1
-
-      - id: play-auth
-        name: Authenticate to Google Play publisher
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.upload_to_internal && vars.GOOGLE_PLAY_UPLOAD_ENABLED == 'true' }}
-        uses: google-github-actions/auth@v3
-        with:
-          token_format: access_token
-          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ vars.GOOGLE_PLAY_SERVICE_ACCOUNT_EMAIL }}
-          access_token_scopes: https://www.googleapis.com/auth/androidpublisher
-
-      - name: Upload to Play internal testing
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.upload_to_internal && vars.GOOGLE_PLAY_UPLOAD_ENABLED == 'true' }}
+      - name: Package exact signed Android artifact and source receipts
         env:
-          GOOGLE_PLAY_ACCESS_TOKEN: ${{ steps.play-auth.outputs.access_token }}
+          PRODUCER_RUN_ATTEMPT: ${{ github.run_attempt }}
+          PRODUCER_RUN_ID: ${{ github.run_id }}
         run: |
-          node tool/platform/upload_google_play_bundle.mjs \
-            --package-name "$ANDROID_APPLICATION_ID" \
-            --bundle "$ANDROID_BUNDLE_PATH" \
-            --track qa \
-            --release-name "GitHub $APP_TARGET_ID $FLUTTER_BUILD_NAME ($FLUTTER_BUILD_NUMBER)" \
-            --apply \
-            --allow-prod
+          node tool/ci/package_mobile_release.mjs prepare \
+            --source-root . \
+            --artifact "$ANDROID_BUNDLE_PATH" \
+            --release-target "$RELEASE_TARGET" \
+            --impact-plan build/mobile/source/impact-plan.json \
+            --ci-authority build/mobile/source/ci-delivery-authority.json \
+            --identity-receipt "build/android/release-evidence/${APP_ROLE}-bundle.json" \
+            --package-policy-receipt "build/android/release-evidence/${APP_ROLE}-package.json" \
+            --package-dir "build/mobile/packages/${RELEASE_TARGET}" \
+            --producer-run-id "$PRODUCER_RUN_ID" \
+            --producer-run-attempt "$PRODUCER_RUN_ATTEMPT"
+
+      - id: upload-package
+        name: Upload immutable Android package
+        uses: actions/upload-artifact@v7
+        with:
+          name: mobile-package-v1-${{ matrix.release_target }}-${{ needs.authorize.outputs.source_ci_run_id }}-${{ needs.authorize.outputs.source_ci_run_attempt }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: build/mobile/packages/${{ matrix.release_target }}
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Bind immutable package artifact metadata
+        env:
+          PACKAGE_ARTIFACT_DIGEST: ${{ format('sha256:{0}', steps.upload-package.outputs.artifact-digest) }}
+          PACKAGE_ARTIFACT_ID: ${{ steps.upload-package.outputs.artifact-id }}
+          PACKAGE_ARTIFACT_NAME: mobile-package-v1-${{ matrix.release_target }}-${{ needs.authorize.outputs.source_ci_run_id }}-${{ needs.authorize.outputs.source_ci_run_attempt }}-${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          node tool/ci/package_mobile_release.mjs bind-upload \
+            --source-root . \
+            --package-dir "build/mobile/packages/${RELEASE_TARGET}" \
+            --receipt-dir "build/mobile/upload-receipts/${RELEASE_TARGET}" \
+            --package-artifact-id "$PACKAGE_ARTIFACT_ID" \
+            --package-artifact-name "$PACKAGE_ARTIFACT_NAME" \
+            --package-artifact-digest "$PACKAGE_ARTIFACT_DIGEST"
+
+      - name: Upload Android package receipt
+        uses: actions/upload-artifact@v7
+        with:
+          name: mobile-package-receipt-v1-${{ matrix.release_target }}-${{ needs.authorize.outputs.source_ci_run_id }}-${{ needs.authorize.outputs.source_ci_run_attempt }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: build/mobile/upload-receipts/${{ matrix.release_target }}
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Remove ephemeral Android signing and Maps material
+        if: ${{ always() }}
+        run: |
+          set +e
+          rm -f \
+            "$APP_PROJECT_ROOT/android/key.properties" \
+            "$APP_PROJECT_ROOT/android/keystore/upload-keystore.jks"
+          if [[ -f "$APP_PROJECT_ROOT/android/local.properties" ]]; then
+            sed -i.bak '/^GOOGLE_MAPS_ANDROID_API_KEY_PROD=/d' \
+              "$APP_PROJECT_ROOT/android/local.properties"
+            rm -f "$APP_PROJECT_ROOT/android/local.properties.bak"
+          fi
 
   compare-role-packages:
     name: Compare Consumer and Host packages
-    needs: [resolve, prod-ios, prod-android]
+    needs: [authorize, prod-ios, prod-android]
     if: >-
       always() &&
-      needs.resolve.outputs.release_required == 'true' &&
-      needs.resolve.outputs.roles == '["consumer","host"]' &&
-      !inputs.retire_xcode_cloud &&
-      !inputs.probe_play_access
+      needs.authorize.result == 'success' &&
+      needs.authorize.outputs.release_required == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.authorize.outputs.source_sha }}
+
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
 
       - name: Require selected package builds
         env:
           ANDROID_RESULT: ${{ needs.prod-android.result }}
+          HAS_ANDROID_TARGETS: ${{ needs.authorize.outputs.has_android_targets }}
+          HAS_IOS_TARGETS: ${{ needs.authorize.outputs.has_ios_targets }}
           IOS_RESULT: ${{ needs.prod-ios.result }}
         run: |
           set -euo pipefail
-          for result in "$ANDROID_RESULT" "$IOS_RESULT"; do
-            case "$result" in
-              success|skipped) ;;
-              *) echo "A selected mobile package build ended with: $result"; exit 1 ;;
-            esac
-          done
-          if [[ "$ANDROID_RESULT" == "skipped" && "$IOS_RESULT" == "skipped" ]]; then
-            echo "Both package platforms were skipped."
+          if [[ "$HAS_IOS_TARGETS" == "true" && "$IOS_RESULT" != "success" ]]; then
+            echo "Selected iOS package build ended with: $IOS_RESULT"
+            exit 1
+          fi
+          if [[ "$HAS_ANDROID_TARGETS" == "true" && "$ANDROID_RESULT" != "success" ]]; then
+            echo "Selected Android package build ended with: $ANDROID_RESULT"
             exit 1
           fi
 
-      - name: Download iOS package receipts
-        if: ${{ needs.prod-ios.result == 'success' }}
-        uses: actions/download-artifact@v7
-        with:
-          pattern: catch-ios-*-prod-ipa
-          path: build/compare/ios
-          merge-multiple: true
-
-      - name: Compare iOS role packages
-        if: ${{ needs.prod-ios.result == 'success' }}
+      - name: Require a complete current producer attempt
+        env:
+          EXPECTED_SOURCE_BUNDLE_NAME: ${{ needs.authorize.outputs.source_bundle_name }}
+          GH_TOKEN: ${{ github.token }}
+          PRODUCER_RUN_ATTEMPT: ${{ github.run_attempt }}
+          PRODUCER_RUN_ID: ${{ github.run_id }}
+          RELEASE_TARGETS: ${{ needs.authorize.outputs.release_targets }}
+          SOURCE_CI_RUN_ATTEMPT: ${{ needs.authorize.outputs.source_ci_run_attempt }}
+          SOURCE_CI_RUN_ID: ${{ needs.authorize.outputs.source_ci_run_id }}
+          SOURCE_SHA: ${{ needs.authorize.outputs.source_sha }}
         run: |
           set -euo pipefail
-          consumer="$(find build/compare/ios -name consumer-package.json -print -quit)"
-          host="$(find build/compare/ios -name host-package.json -print -quit)"
-          node tool/platform/check_mobile_package.mjs --compare "$consumer,$host"
+          partial_attempt() {
+            echo "::error::This mobile producer attempt is incomplete. Partial job reruns cannot mix evidence across attempts."
+            echo "::error::Use Re-run all jobs for Mobile Internal Release."
+            exit 64
+          }
 
-      - name: Download Android package receipts
-        if: ${{ needs.prod-android.result == 'success' }}
+          current_run="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$PRODUCER_RUN_ID")"
+          jq -e \
+            --arg repository "$GITHUB_REPOSITORY" \
+            --arg run_id "$PRODUCER_RUN_ID" \
+            --argjson run_attempt "$PRODUCER_RUN_ATTEMPT" '
+              .name == "Mobile Internal Release" and
+              (.path | split("@")[0]) == ".github/workflows/mobile-internal-release.yml" and
+              .event == "workflow_run" and
+              .repository.full_name == $repository and
+              (.id | tostring) == $run_id and
+              .run_attempt == $run_attempt and
+              .status == "in_progress"
+            ' <<< "$current_run" > /dev/null || partial_attempt
+
+          suffix="${SOURCE_CI_RUN_ID}-${SOURCE_CI_RUN_ATTEMPT}-${PRODUCER_RUN_ID}-${PRODUCER_RUN_ATTEMPT}"
+          source_bundle_name="mobile-source-v1-${SOURCE_CI_RUN_ID}-${SOURCE_CI_RUN_ATTEMPT}-${PRODUCER_RUN_ID}-${PRODUCER_RUN_ATTEMPT}"
+          [[ "$EXPECTED_SOURCE_BUNDLE_NAME" == "$source_bundle_name" ]] || partial_attempt
+          artifact_pages="$(gh api --paginate --slurp \
+            -H "X-GitHub-Api-Version: 2026-03-10" \
+            "repos/$GITHUB_REPOSITORY/actions/runs/$PRODUCER_RUN_ID/artifacts?per_page=100")"
+          source_count="$(jq -r --arg name "$source_bundle_name" \
+            '[.[].artifacts[] | select(.expired == false and .name == $name)] | length' \
+            <<< "$artifact_pages")"
+          [[ "$source_count" == "1" ]] || partial_attempt
+
+          mkdir -p build/mobile/attempt/entries
+          while IFS= read -r release_target; do
+            package_name="mobile-package-v1-${release_target}-${suffix}"
+            receipt_name="mobile-package-receipt-v1-${release_target}-${suffix}"
+            package_count="$(jq -r --arg name "$package_name" \
+              '[.[].artifacts[] | select(.expired == false and .name == $name)] | length' \
+              <<< "$artifact_pages")"
+            receipt_count="$(jq -r --arg name "$receipt_name" \
+              '[.[].artifacts[] | select(.expired == false and .name == $name)] | length' \
+              <<< "$artifact_pages")"
+            [[ "$package_count" == "1" && "$receipt_count" == "1" ]] || partial_attempt
+            package_metadata="$(jq -c --arg name "$package_name" \
+              '[.[].artifacts[] | select(.expired == false and .name == $name)][0]' \
+              <<< "$artifact_pages")"
+            receipt_metadata="$(jq -c --arg name "$receipt_name" \
+              '[.[].artifacts[] | select(.expired == false and .name == $name)][0]' \
+              <<< "$artifact_pages")"
+            package_id="$(jq -er '.id' <<< "$package_metadata")"
+            package_digest="$(jq -er '.digest' <<< "$package_metadata")"
+            receipt_id="$(jq -er '.id' <<< "$receipt_metadata")"
+            receipt_digest="$(jq -er '.digest' <<< "$receipt_metadata")"
+            [[ "$package_id" =~ ^[1-9][0-9]*$ && \
+               "$receipt_id" =~ ^[1-9][0-9]*$ && \
+               "$package_digest" =~ ^sha256:[0-9a-f]{64}$ && \
+               "$receipt_digest" =~ ^sha256:[0-9a-f]{64}$ ]] || partial_attempt
+            jq -n \
+              --arg package_digest "$package_digest" \
+              --arg package_name "$package_name" \
+              --arg receipt_digest "$receipt_digest" \
+              --arg receipt_name "$receipt_name" \
+              --arg release_target "$release_target" \
+              --argjson package_id "$package_id" \
+              --argjson receipt_id "$receipt_id" '{
+                releaseTarget: $release_target,
+                packageArtifact: {
+                  id: $package_id,
+                  name: $package_name,
+                  digest: $package_digest
+                },
+                receiptArtifact: {
+                  id: $receipt_id,
+                  name: $receipt_name,
+                  digest: $receipt_digest
+                }
+              }' > "build/mobile/attempt/entries/${release_target}.json"
+          done < <(jq -r '.[]' <<< "$RELEASE_TARGETS")
+
+      - name: Download exact package receipt artifacts
         uses: actions/download-artifact@v7
         with:
-          pattern: catch-android-*-prod-aab
-          path: build/compare/android
-          merge-multiple: true
+          pattern: mobile-package-receipt-v1-*-${{ needs.authorize.outputs.source_ci_run_id }}-${{ needs.authorize.outputs.source_ci_run_attempt }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: build/mobile/compare
 
-      - name: Compare Android role packages
-        if: ${{ needs.prod-android.result == 'success' }}
+      - name: Verify every selected package receipt
+        env:
+          PRODUCER_RUN_ATTEMPT: ${{ github.run_attempt }}
+          PRODUCER_RUN_ID: ${{ github.run_id }}
+          RELEASE_TARGETS: ${{ needs.authorize.outputs.release_targets }}
+          SOURCE_CI_RUN_ATTEMPT: ${{ needs.authorize.outputs.source_ci_run_attempt }}
+          SOURCE_CI_RUN_ID: ${{ needs.authorize.outputs.source_ci_run_id }}
+          SOURCE_SHA: ${{ needs.authorize.outputs.source_sha }}
         run: |
           set -euo pipefail
-          consumer="$(find build/compare/android -name consumer-package.json -print -quit)"
-          host="$(find build/compare/android -name host-package.json -print -quit)"
-          node tool/platform/check_mobile_package.mjs --compare "$consumer,$host"
+          expected_count="$(jq -r 'length' <<< "$RELEASE_TARGETS")"
+          actual_count="$(find build/mobile/compare -name mobile-package-upload-receipt.json \
+            -type f | wc -l | tr -d ' ')"
+          test "$actual_count" = "$expected_count"
+          while IFS= read -r release_target; do
+            receipt_file="$(find build/mobile/compare -path \
+              "*/mobile-package-receipt-v1-${release_target}-${SOURCE_CI_RUN_ID}-${SOURCE_CI_RUN_ATTEMPT}-${PRODUCER_RUN_ID}-${PRODUCER_RUN_ATTEMPT}/mobile-package-upload-receipt.json" \
+              -type f -print -quit)"
+            test -n "$receipt_file"
+            receipt_dir="$(dirname "$receipt_file")"
+            package_id="$(jq -er '.packageArtifact.id' "$receipt_file")"
+            package_name="$(jq -er '.packageArtifact.name' "$receipt_file")"
+            package_digest="$(jq -er '.packageArtifact.digest' "$receipt_file")"
+            node tool/ci/package_mobile_release.mjs verify-upload \
+              --receipt-dir "$receipt_dir" \
+              --release-target "$release_target" \
+              --source-sha "$SOURCE_SHA" \
+              --ci-run-id "$SOURCE_CI_RUN_ID" \
+              --ci-run-attempt "$SOURCE_CI_RUN_ATTEMPT" \
+              --producer-run-id "$PRODUCER_RUN_ID" \
+              --producer-run-attempt "$PRODUCER_RUN_ATTEMPT" \
+              --package-artifact-id "$package_id" \
+              --package-artifact-name "$package_name" \
+              --package-artifact-digest "$package_digest"
+          done < <(jq -r '.[]' <<< "$RELEASE_TARGETS")
 
-  probe-play-access:
-    name: Probe Play qa access (${{ matrix.app_role }})
-    needs: resolve
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.probe_play_access }}
-    strategy:
-      fail-fast: false
-      matrix:
-        app_role: ${{ fromJSON(needs.resolve.outputs.roles) }}
+      - name: Compare every selected cross-role platform pair
+        env:
+          PRODUCER_RUN_ATTEMPT: ${{ github.run_attempt }}
+          PRODUCER_RUN_ID: ${{ github.run_id }}
+          RELEASE_TARGETS: ${{ needs.authorize.outputs.release_targets }}
+          SOURCE_CI_RUN_ATTEMPT: ${{ needs.authorize.outputs.source_ci_run_attempt }}
+          SOURCE_CI_RUN_ID: ${{ needs.authorize.outputs.source_ci_run_id }}
+        run: |
+          set -euo pipefail
+          suffix="${SOURCE_CI_RUN_ID}-${SOURCE_CI_RUN_ATTEMPT}-${PRODUCER_RUN_ID}-${PRODUCER_RUN_ATTEMPT}"
+          for platform in ios android; do
+            if jq -e --arg platform "$platform" '
+              (index("consumer-" + $platform) != null) and
+              (index("host-" + $platform) != null)
+            ' <<< "$RELEASE_TARGETS" > /dev/null; then
+              consumer="$(find build/mobile/compare -path \
+                "*/mobile-package-receipt-v1-consumer-${platform}-${suffix}/package-policy-receipt.json" \
+                -type f -print -quit)"
+              host="$(find build/mobile/compare -path \
+                "*/mobile-package-receipt-v1-host-${platform}-${suffix}/package-policy-receipt.json" \
+                -type f -print -quit)"
+              test -n "$consumer"
+              test -n "$host"
+              node tool/platform/check_mobile_package.mjs --compare "$consumer,$host"
+            fi
+          done
+
+      - name: Create current-attempt completeness authority
+        env:
+          PRODUCER_RUN_ATTEMPT: ${{ github.run_attempt }}
+          PRODUCER_RUN_ID: ${{ github.run_id }}
+          RELEASE_TARGETS: ${{ needs.authorize.outputs.release_targets }}
+          SOURCE_CI_RUN_ATTEMPT: ${{ needs.authorize.outputs.source_ci_run_attempt }}
+          SOURCE_CI_RUN_ID: ${{ needs.authorize.outputs.source_ci_run_id }}
+          SOURCE_SHA: ${{ needs.authorize.outputs.source_sha }}
+        run: |
+          set -euo pipefail
+          artifacts="$(jq -s 'sort_by(.releaseTarget)' build/mobile/attempt/entries/*.json)"
+          ios_comparison="$(jq -r '
+            if (index("consumer-ios") != null and index("host-ios") != null)
+            then "passed" else "not-required" end
+          ' <<< "$RELEASE_TARGETS")"
+          android_comparison="$(jq -r '
+            if (index("consumer-android") != null and index("host-android") != null)
+            then "passed" else "not-required" end
+          ' <<< "$RELEASE_TARGETS")"
+          jq -n \
+            --arg android_comparison "$android_comparison" \
+            --arg ios_comparison "$ios_comparison" \
+            --arg producer_attempt "$PRODUCER_RUN_ATTEMPT" \
+            --arg producer_run_id "$PRODUCER_RUN_ID" \
+            --arg source_attempt "$SOURCE_CI_RUN_ATTEMPT" \
+            --arg source_run_id "$SOURCE_CI_RUN_ID" \
+            --arg source_sha "$SOURCE_SHA" \
+            --argjson artifacts "$artifacts" \
+            --argjson release_targets "$RELEASE_TARGETS" '{
+              schema: "catch.mobile-attempt-completeness-authority/v1",
+              sourceCiRunId: $source_run_id,
+              sourceCiRunAttempt: $source_attempt,
+              sourceSha: $source_sha,
+              producerRunId: $producer_run_id,
+              producerRunAttempt: $producer_attempt,
+              releaseTargets: $release_targets,
+              crossRoleComparisons: {
+                ios: $ios_comparison,
+                android: $android_comparison
+              },
+              artifacts: $artifacts
+            }' > build/mobile/attempt/mobile-attempt-completeness-authority.json
+          node tool/ci/package_mobile_release.mjs verify-attempt \
+            --authority build/mobile/attempt/mobile-attempt-completeness-authority.json \
+            --ci-run-id "$SOURCE_CI_RUN_ID" \
+            --ci-run-attempt "$SOURCE_CI_RUN_ATTEMPT" \
+            --source-sha "$SOURCE_SHA" \
+            --producer-run-id "$PRODUCER_RUN_ID" \
+            --producer-run-attempt "$PRODUCER_RUN_ATTEMPT" \
+            --release-targets "$RELEASE_TARGETS"
+
+      - name: Upload current-attempt completeness authority
+        uses: actions/upload-artifact@v7
+        with:
+          name: mobile-attempt-completeness-v1-${{ needs.authorize.outputs.source_ci_run_id }}-${{ needs.authorize.outputs.source_ci_run_attempt }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: build/mobile/attempt/mobile-attempt-completeness-authority.json
+          if-no-files-found: error
+          retention-days: 90
+
+  publish-authority:
+    name: Publish verified mobile build authority
+    needs: [authorize, compare-role-packages]
+    if: >-
+      always() &&
+      needs.authorize.result == 'success' &&
+      needs.authorize.outputs.release_required == 'true' &&
+      needs.compare-role-packages.result == 'success'
     runs-on: ubuntu-latest
-    environment: prod-mobile
-    timeout-minutes: 10
-    permissions:
-      contents: read
-      id-token: write
-
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.authorize.outputs.source_sha }}
 
       - id: toolchain
         uses: ./.github/actions/load-toolchain
@@ -888,168 +1204,320 @@ jobs:
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
 
-      - name: Resolve Play package
+      - name: Verify exact package and receipt artifact metadata
         env:
-          APP_ROLE: ${{ matrix.app_role }}
-        run: |
-          package_name="$(node tool/platform/resolve_app_target.mjs \
-            --role "$APP_ROLE" \
-            --environment prod \
-            --field release.googlePlayPackageName)"
-          if [[ -z "$package_name" ]]; then
-            echo "Missing Play package for $APP_ROLE."
-            exit 1
-          fi
-          echo "GOOGLE_PLAY_PACKAGE_NAME=$package_name" >> "$GITHUB_ENV"
-
-      - id: play-probe-auth
-        name: Authenticate probe identity
-        uses: google-github-actions/auth@v3
-        with:
-          token_format: access_token
-          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ vars.GOOGLE_PLAY_SERVICE_ACCOUNT_EMAIL }}
-          access_token_scopes: https://www.googleapis.com/auth/androidpublisher
-
-      - name: Probe uncommitted Play qa edit
-        env:
-          GOOGLE_PLAY_ACCESS_TOKEN: ${{ steps.play-probe-auth.outputs.access_token }}
-        run: |
-          node tool/platform/probe_google_play_access.mjs \
-            --package-name "$GOOGLE_PLAY_PACKAGE_NAME" \
-            --track qa \
-            --apply \
-            --allow-prod
-
-  retire-xcode-cloud:
-    name: Retire legacy Xcode Cloud workflows
-    needs: resolve
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.retire_xcode_cloud }}
-    runs-on: ubuntu-latest
-    environment: prod-mobile
-    timeout-minutes: 15
-    permissions:
-      actions: read
-      contents: read
-    env:
-      ASC_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
-      ASC_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
-      ASC_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
-      CONSUMER_PROCESSED_BUILD: ${{ inputs.consumer_processed_ios_build_number }}
-      HOST_PROCESSED_BUILD: ${{ inputs.host_processed_ios_build_number }}
-      SOURCE_MOBILE_RELEASE_RUN_ID: ${{ inputs.source_mobile_release_run_id }}
-
-    steps:
-      - uses: actions/checkout@v6
-
-      - id: toolchain
-        uses: ./.github/actions/load-toolchain
-
-      - uses: actions/setup-node@v6
-        with:
-          node-version: ${{ steps.toolchain.outputs.node-version }}
-
-      - name: Download source processing receipts
-        uses: actions/download-artifact@v6
-        with:
-          github-token: ${{ github.token }}
-          run-id: ${{ inputs.source_mobile_release_run_id }}
-          pattern: catch-ios-*-testflight-receipt
-          path: build/ios/retirement-evidence
-          merge-multiple: true
-
-      - name: Verify receipts came from the declared GitHub release run
-        run: |
-          node tool/platform/verify_ios_processing_receipts.mjs \
-            --directory build/ios/retirement-evidence \
-            --github-run-id "$SOURCE_MOBILE_RELEASE_RUN_ID" \
-            --consumer-build "$CONSUMER_PROCESSED_BUILD" \
-            --host-build "$HOST_PROCESSED_BUILD"
-
-      - name: Write App Store Connect API key
+          EXPECTED_SOURCE_BUNDLE_NAME: ${{ needs.authorize.outputs.source_bundle_name }}
+          GH_TOKEN: ${{ github.token }}
+          PRODUCER_RUN_ATTEMPT: ${{ github.run_attempt }}
+          PRODUCER_RUN_ID: ${{ github.run_id }}
+          RELEASE_TARGETS: ${{ needs.authorize.outputs.release_targets }}
+          SOURCE_CI_RUN_ATTEMPT: ${{ needs.authorize.outputs.source_ci_run_attempt }}
+          SOURCE_CI_RUN_ID: ${{ needs.authorize.outputs.source_ci_run_id }}
+          SOURCE_CI_RUN_NUMBER: ${{ needs.authorize.outputs.source_ci_run_number }}
+          SOURCE_CI_WORKFLOW_ID: ${{ needs.authorize.outputs.source_ci_workflow_id }}
+          SOURCE_SHA: ${{ needs.authorize.outputs.source_sha }}
         run: |
           set -euo pipefail
-          key_path="$RUNNER_TEMP/AuthKey_${ASC_KEY_ID}.p8"
-          printf '%s' "$ASC_KEY_BASE64" | base64 --decode > "$key_path"
-          chmod 600 "$key_path"
-          echo "ASC_KEY_PATH=$key_path" >> "$GITHUB_ENV"
+          partial_attempt() {
+            echo "::error::This mobile producer attempt is incomplete. Partial job reruns cannot mix evidence across attempts."
+            echo "::error::Use Re-run all jobs for Mobile Internal Release."
+            exit 64
+          }
+          current_run="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$PRODUCER_RUN_ID")"
+          jq -e \
+            --arg repository "$GITHUB_REPOSITORY" \
+            --arg run_id "$PRODUCER_RUN_ID" \
+            --argjson run_attempt "$PRODUCER_RUN_ATTEMPT" '
+              .name == "Mobile Internal Release" and
+              (.path | split("@")[0]) == ".github/workflows/mobile-internal-release.yml" and
+              .event == "workflow_run" and
+              .repository.full_name == $repository and
+              (.id | tostring) == $run_id and
+              .run_attempt == $run_attempt and
+              .status == "in_progress"
+            ' <<< "$current_run" > /dev/null || partial_attempt
 
-      - name: Verify processed GitHub builds and legacy workflow plan
-        run: |
-          set -euo pipefail
-          for role in consumer host; do
-            fields="$(node tool/platform/resolve_app_target.mjs \
-              --role "$role" \
-              --environment prod \
-              --fields release.appStoreConnectAppId,release.legacyXcodeCloudWorkflow)"
-            IFS=$'\t' read -r app_store_id workflow_name <<< "$fields"
-            if [[ -z "$app_store_id" || -z "$workflow_name" ]]; then
-              echo "Missing legacy Xcode Cloud metadata for $role."
-              exit 1
-            fi
-            if [[ "$role" == "consumer" ]]; then
-              processed_build="$CONSUMER_PROCESSED_BUILD"
-            else
-              processed_build="$HOST_PROCESSED_BUILD"
-            fi
-            node tool/platform/verify_app_store_build.mjs \
-              --app-id "$app_store_id" \
-              --build-number "$processed_build" \
-              --key-id "$ASC_KEY_ID" \
-              --issuer-id "$ASC_ISSUER_ID" \
-              --key-path "$ASC_KEY_PATH" \
-              --wait-processed
-            node tool/platform/set_xcode_cloud_workflow_state.mjs \
-              --app-id "$app_store_id" \
-              --workflow-name "$workflow_name" \
-              --key-id "$ASC_KEY_ID" \
-              --issuer-id "$ASC_ISSUER_ID" \
-              --key-path "$ASC_KEY_PATH" \
-              --disable
+          mkdir -p \
+            build/mobile/final/attempt \
+            build/mobile/final/entries \
+            build/mobile/final/packages \
+            build/mobile/final/receipts
+          artifact_pages="$(gh api --paginate --slurp \
+            -H "X-GitHub-Api-Version: 2026-03-10" \
+            "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/artifacts?per_page=100")"
+          suffix="${SOURCE_CI_RUN_ID}-${SOURCE_CI_RUN_ATTEMPT}-${PRODUCER_RUN_ID}-${PRODUCER_RUN_ATTEMPT}"
+          source_bundle_name="mobile-source-v1-${SOURCE_CI_RUN_ID}-${SOURCE_CI_RUN_ATTEMPT}-${PRODUCER_RUN_ID}-${PRODUCER_RUN_ATTEMPT}"
+          attempt_name="mobile-attempt-completeness-v1-${suffix}"
+          [[ "$EXPECTED_SOURCE_BUNDLE_NAME" == "$source_bundle_name" ]] || partial_attempt
+          for artifact_name in "$source_bundle_name" "$attempt_name"; do
+            count="$(jq -r --arg name "$artifact_name" \
+              '[.[].artifacts[] | select(.expired == false and .name == $name)] | length' \
+              <<< "$artifact_pages")"
+            [[ "$count" == "1" ]] || partial_attempt
           done
 
-      - name: Disable legacy Xcode Cloud workflows atomically where possible
-        run: |
-          set -euo pipefail
-          disabled_roles=()
-          for role in consumer host; do
-            fields="$(node tool/platform/resolve_app_target.mjs \
-              --role "$role" \
-              --environment prod \
-              --fields release.appStoreConnectAppId,release.legacyXcodeCloudWorkflow)"
-            IFS=$'\t' read -r app_store_id workflow_name <<< "$fields"
-            if apply_result="$(node tool/platform/set_xcode_cloud_workflow_state.mjs \
-              --app-id "$app_store_id" \
-              --workflow-name "$workflow_name" \
-              --key-id "$ASC_KEY_ID" \
-              --issuer-id "$ASC_ISSUER_ID" \
-              --key-path "$ASC_KEY_PATH" \
-              --disable \
-              --apply \
-              --allow-prod)"; then
-              echo "$apply_result"
-              if node -e 'process.exit(JSON.parse(process.argv[1]).changed ? 0 : 1)' "$apply_result"; then
-                disabled_roles+=("$role")
+          attempt_metadata="$(jq -c --arg name "$attempt_name" \
+            '[.[].artifacts[] | select(.expired == false and .name == $name)][0]' \
+            <<< "$artifact_pages")"
+          attempt_id="$(jq -er '.id' <<< "$attempt_metadata")"
+          attempt_digest="$(jq -er '.digest' <<< "$attempt_metadata")"
+          [[ "$attempt_id" =~ ^[1-9][0-9]*$ && \
+             "$attempt_digest" =~ ^sha256:[0-9a-f]{64}$ ]] || partial_attempt
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$attempt_id/zip" \
+            > build/mobile/final/attempt/attempt.zip
+          test "sha256:$(sha256sum build/mobile/final/attempt/attempt.zip | awk '{print $1}')" = \
+            "$attempt_digest"
+          unzip -Z1 build/mobile/final/attempt/attempt.zip | \
+            awk '/(^\/|(^|\/)\.\.($|\/))/ { exit 64 }'
+          unzip -q build/mobile/final/attempt/attempt.zip -d build/mobile/final/attempt/content
+          test "$(find build/mobile/final/attempt/content -type l | wc -l | tr -d ' ')" = "0"
+          test "$(find build/mobile/final/attempt/content -type f | wc -l | tr -d ' ')" = "1"
+          attempt_authority="build/mobile/final/attempt/content/mobile-attempt-completeness-authority.json"
+          test -f "$attempt_authority"
+          node tool/ci/package_mobile_release.mjs verify-attempt \
+            --authority "$attempt_authority" \
+            --ci-run-id "$SOURCE_CI_RUN_ID" \
+            --ci-run-attempt "$SOURCE_CI_RUN_ATTEMPT" \
+            --source-sha "$SOURCE_SHA" \
+            --producer-run-id "$PRODUCER_RUN_ID" \
+            --producer-run-attempt "$PRODUCER_RUN_ATTEMPT" \
+            --release-targets "$RELEASE_TARGETS"
+
+          expected_count="$(( $(jq -r 'length' <<< "$RELEASE_TARGETS") * 2 ))"
+          current_count="$(jq -r --arg suffix "$suffix" '
+            [.[].artifacts[] |
+              select(
+                .expired == false and
+                ((.name | startswith("mobile-package-v1-")) or
+                 (.name | startswith("mobile-package-receipt-v1-"))) and
+                (.name | endswith($suffix))
+              )
+            ] | length
+          ' <<< "$artifact_pages")"
+          if [[ "$current_count" != "$expected_count" ]]; then
+            partial_attempt
+          fi
+
+          while IFS= read -r release_target; do
+            package_name="mobile-package-v1-${release_target}-${suffix}"
+            receipt_name="mobile-package-receipt-v1-${release_target}-${suffix}"
+            for artifact_name in "$package_name" "$receipt_name"; do
+              count="$(jq -r --arg name "$artifact_name" \
+                '[.[].artifacts[] | select(.expired == false and .name == $name)] | length' \
+                <<< "$artifact_pages")"
+              if [[ "$count" != "1" ]]; then
+                echo "Expected exactly one artifact named $artifact_name; found $count."
+                exit 64
               fi
-              continue
-            fi
-
-            echo "Retirement failed for $role; rolling back workflows disabled in this operation."
-            for disabled_role in "${disabled_roles[@]}"; do
-              rollback_fields="$(node tool/platform/resolve_app_target.mjs \
-                --role "$disabled_role" \
-                --environment prod \
-                --fields release.appStoreConnectAppId,release.legacyXcodeCloudWorkflow)"
-              IFS=$'\t' read -r rollback_app_id rollback_workflow_name <<< "$rollback_fields"
-              node tool/platform/set_xcode_cloud_workflow_state.mjs \
-                --app-id "$rollback_app_id" \
-                --workflow-name "$rollback_workflow_name" \
-                --key-id "$ASC_KEY_ID" \
-                --issuer-id "$ASC_ISSUER_ID" \
-                --key-path "$ASC_KEY_PATH" \
-                --enable \
-                --apply \
-                --allow-prod || true
             done
-            exit 1
+            package_metadata="$(jq -c --arg name "$package_name" \
+              '[.[].artifacts[] | select(.expired == false and .name == $name)][0]' \
+              <<< "$artifact_pages")"
+            receipt_metadata="$(jq -c --arg name "$receipt_name" \
+              '[.[].artifacts[] | select(.expired == false and .name == $name)][0]' \
+              <<< "$artifact_pages")"
+            package_id="$(jq -er '.id' <<< "$package_metadata")"
+            package_digest="$(jq -er '.digest' <<< "$package_metadata")"
+            receipt_id="$(jq -er '.id' <<< "$receipt_metadata")"
+            receipt_digest="$(jq -er '.digest' <<< "$receipt_metadata")"
+            [[ "$package_id" =~ ^[1-9][0-9]*$ ]]
+            [[ "$receipt_id" =~ ^[1-9][0-9]*$ ]]
+            [[ "$package_digest" =~ ^sha256:[0-9a-f]{64}$ ]]
+            [[ "$receipt_digest" =~ ^sha256:[0-9a-f]{64}$ ]]
+
+            jq -e \
+              --arg package_digest "$package_digest" \
+              --arg package_name "$package_name" \
+              --arg receipt_digest "$receipt_digest" \
+              --arg receipt_name "$receipt_name" \
+              --arg release_target "$release_target" \
+              --argjson package_id "$package_id" \
+              --argjson receipt_id "$receipt_id" '
+                [.artifacts[] | select(.releaseTarget == $release_target)] as $entry |
+                ($entry | length) == 1 and
+                $entry[0].packageArtifact == {
+                  id: $package_id,
+                  name: $package_name,
+                  digest: $package_digest
+                } and
+                $entry[0].receiptArtifact == {
+                  id: $receipt_id,
+                  name: $receipt_name,
+                  digest: $receipt_digest
+                }
+              ' "$attempt_authority" > /dev/null || partial_attempt
+
+            package_root="build/mobile/final/packages/$release_target"
+            mkdir -p "$package_root/content"
+            gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$package_id/zip" \
+              > "$package_root/package.zip"
+            test "sha256:$(sha256sum "$package_root/package.zip" | awk '{print $1}')" = \
+              "$package_digest"
+            unzip -Z1 "$package_root/package.zip" | \
+              awk '/(^\/|(^|\/)\.\.($|\/))/ { exit 64 }'
+            unzip -q "$package_root/package.zip" -d "$package_root/content"
+            test "$(find "$package_root/content" -type l | wc -l | tr -d ' ')" = "0"
+            node tool/ci/package_mobile_release.mjs verify \
+              --package-dir "$package_root/content" \
+              --release-target "$release_target" \
+              --source-sha "$SOURCE_SHA" \
+              --ci-run-id "$SOURCE_CI_RUN_ID" \
+              --ci-run-attempt "$SOURCE_CI_RUN_ATTEMPT" \
+              --producer-run-id "$PRODUCER_RUN_ID" \
+              --producer-run-attempt "$PRODUCER_RUN_ATTEMPT"
+
+            receipt_root="build/mobile/final/receipts/$release_target"
+            mkdir -p "$receipt_root/content"
+            gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$receipt_id/zip" \
+              > "$receipt_root/receipt.zip"
+            test "sha256:$(sha256sum "$receipt_root/receipt.zip" | awk '{print $1}')" = \
+              "$receipt_digest"
+            unzip -Z1 "$receipt_root/receipt.zip" | \
+              awk '/(^\/|(^|\/)\.\.($|\/))/ { exit 64 }'
+            unzip -q "$receipt_root/receipt.zip" -d "$receipt_root/content"
+            test "$(find "$receipt_root/content" -type l | wc -l | tr -d ' ')" = "0"
+            test "$(find "$receipt_root/content" -type f | wc -l | tr -d ' ')" = "2"
+            node tool/ci/package_mobile_release.mjs verify-upload \
+              --receipt-dir "$receipt_root/content" \
+              --release-target "$release_target" \
+              --source-sha "$SOURCE_SHA" \
+              --ci-run-id "$SOURCE_CI_RUN_ID" \
+              --ci-run-attempt "$SOURCE_CI_RUN_ATTEMPT" \
+              --producer-run-id "$PRODUCER_RUN_ID" \
+              --producer-run-attempt "$PRODUCER_RUN_ATTEMPT" \
+              --package-artifact-id "$package_id" \
+              --package-artifact-name "$package_name" \
+              --package-artifact-digest "$package_digest"
+            upload_receipt="$receipt_root/content/mobile-package-upload-receipt.json"
+            jq -S . "$package_root/content/mobile-package-receipt.json" \
+              > "$package_root/package-receipt.sorted.json"
+            jq -S '.packageReceipt' "$upload_receipt" \
+              > "$receipt_root/upload-package-receipt.sorted.json"
+            cmp "$package_root/package-receipt.sorted.json" \
+              "$receipt_root/upload-package-receipt.sorted.json"
+            jq -n \
+              --arg package_digest "$package_digest" \
+              --arg package_name "$package_name" \
+              --arg receipt_digest "$receipt_digest" \
+              --arg receipt_name "$receipt_name" \
+              --arg release_target "$release_target" \
+              --argjson package_id "$package_id" \
+              --argjson receipt_id "$receipt_id" \
+              --slurpfile package_receipt \
+                "$package_root/content/mobile-package-receipt.json" '{
+                releaseTarget: $release_target,
+                artifactSha256: $package_receipt[0].artifact.sha256,
+                provenanceManifestSha256:
+                  $package_receipt[0].provenance.manifestSha256,
+                packageArtifact: {
+                  id: $package_id,
+                  name: $package_name,
+                  digest: $package_digest
+                },
+                receiptArtifact: {
+                  id: $receipt_id,
+                  name: $receipt_name,
+                  digest: $receipt_digest
+                }
+              }' > "build/mobile/final/entries/${release_target}.json"
+          done < <(jq -r '.[]' <<< "$RELEASE_TARGETS")
+
+          for platform in ios android; do
+            if jq -e --arg platform "$platform" '
+              (index("consumer-" + $platform) != null) and
+              (index("host-" + $platform) != null)
+            ' <<< "$RELEASE_TARGETS" > /dev/null; then
+              node tool/platform/check_mobile_package.mjs --compare \
+                "build/mobile/final/packages/consumer-${platform}/content/package-policy-receipt.json,build/mobile/final/packages/host-${platform}/content/package-policy-receipt.json"
+            fi
           done
+
+          packages="$(jq -s 'sort_by(.releaseTarget)' build/mobile/final/entries/*.json)"
+          ios_comparison="$(jq -r '
+            if (index("consumer-ios") != null and index("host-ios") != null)
+            then "passed" else "not-required" end
+          ' <<< "$RELEASE_TARGETS")"
+          android_comparison="$(jq -r '
+            if (index("consumer-android") != null and index("host-android") != null)
+            then "passed" else "not-required" end
+          ' <<< "$RELEASE_TARGETS")"
+          jq -n \
+            --arg android_comparison "$android_comparison" \
+            --arg ios_comparison "$ios_comparison" \
+            --arg producer_attempt "$PRODUCER_RUN_ATTEMPT" \
+            --arg producer_run_id "$PRODUCER_RUN_ID" \
+            --arg source_attempt "$SOURCE_CI_RUN_ATTEMPT" \
+            --arg source_run_id "$SOURCE_CI_RUN_ID" \
+            --arg source_sha "$SOURCE_SHA" \
+            --argjson packages "$packages" \
+            --argjson release_targets "$RELEASE_TARGETS" \
+            --argjson source_run_number "$SOURCE_CI_RUN_NUMBER" \
+            --argjson source_workflow_id "$SOURCE_CI_WORKFLOW_ID" '{
+              schema: "catch.mobile-build-authority/v1",
+              sourceCiWorkflowId: $source_workflow_id,
+              sourceCiRunNumber: $source_run_number,
+              sourceCiRunId: $source_run_id,
+              sourceCiRunAttempt: $source_attempt,
+              sourceSha: $source_sha,
+              producerRunId: $producer_run_id,
+              producerRunAttempt: $producer_attempt,
+              releaseTargets: $release_targets,
+              crossRoleComparisons: {
+                ios: $ios_comparison,
+                android: $android_comparison
+              },
+              packages: $packages
+            }' > build/mobile/final/mobile-build-authority.json
+          node tool/ci/package_mobile_release.mjs verify-authority \
+            --authority build/mobile/final/mobile-build-authority.json \
+            --ci-workflow-id "$SOURCE_CI_WORKFLOW_ID" \
+            --ci-run-number "$SOURCE_CI_RUN_NUMBER" \
+            --ci-run-id "$SOURCE_CI_RUN_ID" \
+            --ci-run-attempt "$SOURCE_CI_RUN_ATTEMPT" \
+            --source-sha "$SOURCE_SHA" \
+            --producer-run-id "$PRODUCER_RUN_ID" \
+            --producer-run-attempt "$PRODUCER_RUN_ATTEMPT" \
+            --release-targets "$RELEASE_TARGETS"
+
+      - name: Reconfirm source CI attempt is still current
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_CI_RUN_ATTEMPT: ${{ needs.authorize.outputs.source_ci_run_attempt }}
+          SOURCE_CI_RUN_ID: ${{ needs.authorize.outputs.source_ci_run_id }}
+          SOURCE_CI_RUN_NUMBER: ${{ needs.authorize.outputs.source_ci_run_number }}
+          SOURCE_CI_WORKFLOW_ID: ${{ needs.authorize.outputs.source_ci_workflow_id }}
+          SOURCE_SHA: ${{ needs.authorize.outputs.source_sha }}
+        run: |
+          set -euo pipefail
+          latest_run="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_CI_RUN_ID")"
+          if ! jq -e \
+            --arg repository "$GITHUB_REPOSITORY" \
+            --arg run_id "$SOURCE_CI_RUN_ID" \
+            --arg source_sha "$SOURCE_SHA" \
+            --argjson run_attempt "$SOURCE_CI_RUN_ATTEMPT" \
+            --argjson run_number "$SOURCE_CI_RUN_NUMBER" \
+            --argjson workflow_id "$SOURCE_CI_WORKFLOW_ID" '
+              .name == "CI" and
+              (.path | split("@")[0]) == ".github/workflows/ci.yml" and
+              .workflow_id == $workflow_id and
+              .event == "push" and
+              .head_branch == "main" and
+              .head_repository.full_name == $repository and
+              (.id | tostring) == $run_id and
+              .run_attempt == $run_attempt and
+              .run_number == $run_number and
+              .head_sha == $source_sha and
+              .status == "completed" and
+              .conclusion == "success"
+            ' <<< "$latest_run" > /dev/null; then
+            echo "::error::Source CI was re-run while mobile packages were building; this attempt is obsolete."
+            exit 64
+          fi
+
+      - name: Upload post-comparison mobile build authority
+        uses: actions/upload-artifact@v7
+        with:
+          name: mobile-build-authority-v1-${{ needs.authorize.outputs.source_ci_workflow_id }}-${{ needs.authorize.outputs.source_ci_run_number }}-${{ needs.authorize.outputs.source_ci_run_id }}-${{ needs.authorize.outputs.source_ci_run_attempt }}-${{ needs.authorize.outputs.source_sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: build/mobile/final/mobile-build-authority.json
+          if-no-files-found: error
+          retention-days: 90
