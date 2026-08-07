@@ -7,15 +7,21 @@ import test from "node:test";
 import {fileURLToPath} from "node:url";
 
 const scriptPath = fileURLToPath(new URL("./organizer_intake.mjs", import.meta.url));
-const foundationBatchPath = fileURLToPath(
-  new URL("./batches/2026-06-17-foundation.json", import.meta.url)
+const foundationBatchesRoot = fileURLToPath(
+  new URL("./test_fixtures", import.meta.url)
+);
+const foundationBatchPath = path.join(
+  foundationBatchesRoot,
+  "2026-06-17-foundation.json"
 );
 
 test("approved review decisions create public projections and claim targets", () => {
   const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-organizer-intake-"));
+  const curationRoot = path.join(tmpRoot, "curation_decisions");
   const reviewRoot = path.join(tmpRoot, "review_decisions");
   const policyGapRoot = path.join(tmpRoot, "policy_gap_decisions");
   const answerPacketsRoot = path.join(tmpRoot, "answer_packets");
+  const rawArtifactsRoot = path.join(tmpRoot, "raw_artifacts");
   const generatedRoot = path.join(tmpRoot, "generated");
   const adminGeneratedRoot = path.join(tmpRoot, "admin_generated");
   fs.mkdirSync(reviewRoot, {recursive: true});
@@ -26,12 +32,18 @@ test("approved review decisions create public projections and claim targets", ()
 
   execFileSync(process.execPath, [
     scriptPath,
+    "--batches-root",
+    foundationBatchesRoot,
+    "--curation-decisions-root",
+    curationRoot,
     "--review-decisions-root",
     reviewRoot,
     "--policy-gap-decisions-root",
     policyGapRoot,
     "--answer-packets-root",
     answerPacketsRoot,
+    "--raw-artifacts-root",
+    rawArtifactsRoot,
     "--generated-root",
     generatedRoot,
     "--admin-generated-root",
@@ -294,12 +306,18 @@ test("approved review decisions create public projections and claim targets", ()
 
   execFileSync(process.execPath, [
     scriptPath,
+    "--batches-root",
+    foundationBatchesRoot,
+    "--curation-decisions-root",
+    curationRoot,
     "--review-decisions-root",
     reviewRoot,
     "--policy-gap-decisions-root",
     policyGapRoot,
     "--answer-packets-root",
     answerPacketsRoot,
+    "--raw-artifacts-root",
+    rawArtifactsRoot,
     "--generated-root",
     generatedRoot,
     "--admin-generated-root",
@@ -310,21 +328,29 @@ test("approved review decisions create public projections and claim targets", ()
 
 test("publication impact preview does not create public projections", () => {
   const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-organizer-preview-"));
+  const curationRoot = path.join(tmpRoot, "curation_decisions");
   const reviewRoot = path.join(tmpRoot, "review_decisions");
   const policyGapRoot = path.join(tmpRoot, "policy_gap_decisions");
   const answerPacketsRoot = path.join(tmpRoot, "answer_packets");
+  const rawArtifactsRoot = path.join(tmpRoot, "raw_artifacts");
   const generatedRoot = path.join(tmpRoot, "generated");
   const adminGeneratedRoot = path.join(tmpRoot, "admin_generated");
   fs.mkdirSync(reviewRoot, {recursive: true});
 
   execFileSync(process.execPath, [
     scriptPath,
+    "--batches-root",
+    foundationBatchesRoot,
+    "--curation-decisions-root",
+    curationRoot,
     "--review-decisions-root",
     reviewRoot,
     "--policy-gap-decisions-root",
     policyGapRoot,
     "--answer-packets-root",
     answerPacketsRoot,
+    "--raw-artifacts-root",
+    rawArtifactsRoot,
     "--generated-root",
     generatedRoot,
     "--admin-generated-root",
@@ -419,6 +445,7 @@ test("approved review decisions must match pre-approval publication packet readi
   const reviewRoot = path.join(tmpRoot, "review_decisions");
   const policyGapRoot = path.join(tmpRoot, "policy_gap_decisions");
   const answerPacketsRoot = path.join(tmpRoot, "answer_packets");
+  const rawArtifactsRoot = path.join(tmpRoot, "raw_artifacts");
   const generatedRoot = path.join(tmpRoot, "generated");
   const adminGeneratedRoot = path.join(tmpRoot, "admin_generated");
   fs.mkdirSync(batchesRoot, {recursive: true});
@@ -453,6 +480,8 @@ test("approved review decisions must match pre-approval publication packet readi
       policyGapRoot,
       "--answer-packets-root",
       answerPacketsRoot,
+      "--raw-artifacts-root",
+      rawArtifactsRoot,
       "--generated-root",
       generatedRoot,
       "--admin-generated-root",
@@ -472,9 +501,11 @@ test("approved review decisions must match pre-approval publication packet readi
 
 test("manual-report publication approvals must persist reviewer acknowledgement", () => {
   const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-organizer-manual-report-"));
+  const curationRoot = path.join(tmpRoot, "curation_decisions");
   const reviewRoot = path.join(tmpRoot, "review_decisions");
   const policyGapRoot = path.join(tmpRoot, "policy_gap_decisions");
   const answerPacketsRoot = path.join(tmpRoot, "answer_packets");
+  const rawArtifactsRoot = path.join(tmpRoot, "raw_artifacts");
   const generatedRoot = path.join(tmpRoot, "generated");
   const adminGeneratedRoot = path.join(tmpRoot, "admin_generated");
   fs.mkdirSync(reviewRoot, {recursive: true});
@@ -488,12 +519,18 @@ test("manual-report publication approvals must persist reviewer acknowledgement"
   assert.throws(
     () => execFileSync(process.execPath, [
       scriptPath,
+      "--batches-root",
+      foundationBatchesRoot,
+      "--curation-decisions-root",
+      curationRoot,
       "--review-decisions-root",
       reviewRoot,
       "--policy-gap-decisions-root",
       policyGapRoot,
       "--answer-packets-root",
       answerPacketsRoot,
+      "--raw-artifacts-root",
+      rawArtifactsRoot,
       "--generated-root",
       generatedRoot,
       "--admin-generated-root",

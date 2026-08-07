@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import test from "node:test";
-import {fileURLToPath} from "node:url";
 import {
   buildClaimTargetSyncPreview,
   buildClaimTargetSyncActions,
@@ -131,11 +133,14 @@ test("buildClaimTargetSyncPreview produces durable review actions", () => {
   assert.match(preview.commands.firestoreDryRun, /sync_claim_targets_to_firestore/);
 });
 
-test("buildReadinessReceipt binds live state to the exact claim target plan", () => {
-  const planPath = fileURLToPath(new URL(
-    "./generated/organizer_claim_targets.json",
-    import.meta.url
-  ));
+test("buildReadinessReceipt binds live state to the exact claim target plan", (t) => {
+  const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-claim-target-plan-"));
+  t.after(() => fs.rmSync(tmpRoot, {recursive: true, force: true}));
+  const planPath = path.join(tmpRoot, "organizer_claim_targets.json");
+  fs.writeFileSync(
+    planPath,
+    `${JSON.stringify({targets: [claimTarget()]}, null, 2)}\n`
+  );
   const actions = buildClaimTargetSyncActions([claimTarget()], new Map());
   const receipt = buildReadinessReceipt({
     actions,
