@@ -589,9 +589,22 @@
       "category": "audit",
       "path": "tool/web/react_dependency_graph.mjs",
       "command": "node tool/web/react_dependency_graph.mjs --check",
-      "safety": "local-writes-generated",
+      "safety": "local-readonly",
       "status": "active",
-      "description": "Generates and checks the deterministic website/admin/web-ui TypeScript dependency topology, unresolved local imports, and direct cross-surface boundaries.",
+      "description": "Checks the live website/admin/web-ui TypeScript dependency topology, unresolved local imports, and direct cross-surface boundaries; deterministic JSON evidence is emitted on demand.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "root-npm"
+        ]
+      },
+      "impactPaths": [
+        "tool/web/react_dependency_graph.test.mjs",
+        "packages/web-ui/src/**",
+        "packages/web-ui/tsconfig.json",
+        "packages/web-ui/package.json"
+      ],
       "checks": [
         "node --check tool/web/react_dependency_graph.mjs",
         "node --test tool/web/react_dependency_graph.test.mjs",
@@ -607,7 +620,10 @@
         "contains": [
           "known-bad unresolved repo-local import makes graph health fail",
           "direct website-to-admin dependency is rejected",
-          "known-bad stale artifact is reported deterministically"
+          "full and summary JSON evidence is deterministic and newline terminated",
+          "CLI accepts live evidence combinations and rejects retired artifact modes",
+          "CLI emits inspectable JSON before a combined check fails",
+          "missing source roots and TypeScript configs fail closed"
         ]
       }
     },

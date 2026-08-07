@@ -16,7 +16,6 @@ on:
       - "design/components/**"
       - "design/web-ui/**"
       - "docs/audit_registry/web_shared_primitive_adoption.json"
-      - "docs/generated/react_dependency_graph/**"
       - "firebase.json"
       - "package.json"
       - "package-lock.json"

@@ -1,15 +1,20 @@
 import assert from "node:assert/strict";
+import {spawnSync} from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
+import {fileURLToPath} from "node:url";
 import {
   assertReactDependencyGraphHealthy,
   buildReactDependencyGraph,
-  checkReactDependencyGraphArtifacts,
+  parseReactDependencyGraphArgs,
   parseModuleReferences,
-  writeReactDependencyGraphArtifacts,
+  reactDependencyGraphSummaryPayload,
+  renderReactDependencyGraphJson,
 } from "./react_dependency_graph.mjs";
+
+const scriptPath = fileURLToPath(new URL("./react_dependency_graph.mjs", import.meta.url));
 
 test("parses imports, dynamic imports, re-exports, aliases, and workspace modules", (t) => {
   const repoRoot = createFixture(t);
@@ -98,18 +103,28 @@ test("known-bad unresolved repo-local import makes graph health fail", (t) => {
   );
 });
 
-test("known-bad stale artifact is reported deterministically", (t) => {
+test("full and summary JSON evidence is deterministic and newline terminated", (t) => {
   const repoRoot = createFixture(t);
-  const outputDir = path.join(repoRoot, "tmp-output");
   const graph = buildReactDependencyGraph({repoRoot});
   assertReactDependencyGraphHealthy(graph);
-  writeReactDependencyGraphArtifacts({graph, outputDir});
-  assert.deepEqual(checkReactDependencyGraphArtifacts({graph, outputDir}), []);
-
-  fs.appendFileSync(path.join(outputDir, "README.md"), "stale\n");
-  assert.deepEqual(checkReactDependencyGraphArtifacts({graph, outputDir}), [
-    {name: "README.md", reason: "stale"},
-  ]);
+  const full = renderReactDependencyGraphJson(graph);
+  const summary = renderReactDependencyGraphJson(
+    reactDependencyGraphSummaryPayload(graph)
+  );
+  assert.equal(full, renderReactDependencyGraphJson(buildReactDependencyGraph({repoRoot})));
+  assert.equal(summary, renderReactDependencyGraphJson(
+    reactDependencyGraphSummaryPayload(buildReactDependencyGraph({repoRoot}))
+  ));
+  assert.ok(full.endsWith("\n"));
+  assert.ok(summary.endsWith("\n"));
+  assert.deepEqual(JSON.parse(full), graph);
+  assert.deepEqual(JSON.parse(summary), {
+    schemaVersion: graph.schemaVersion,
+    generator: graph.generator,
+    policy: graph.policy,
+    summary: graph.summary,
+    health: graph.health,
+  });
 });
 
 test("direct website-to-admin dependency is rejected", (t) => {
@@ -174,6 +189,81 @@ void import(name);
       column: 6,
     },
   ]);
+});
+
+test("CLI accepts live evidence combinations and rejects retired artifact modes", () => {
+  const fixtureRoot = path.resolve("fixture-root");
+  assert.deepEqual(
+    parseReactDependencyGraphArgs(
+      ["--check", "--json", "--repo-root", fixtureRoot],
+      {repoRoot: "/unused"}
+    ),
+    {
+      repoRoot: fixtureRoot,
+      check: true,
+      json: true,
+      summary: false,
+      help: false,
+    }
+  );
+  assert.throws(
+    () => parseReactDependencyGraphArgs(["--json", "--summary"]),
+    /Choose either --json or --summary/u
+  );
+  assert.throws(
+    () => parseReactDependencyGraphArgs(["--write"]),
+    /Unknown argument: --write/u
+  );
+  assert.throws(
+    () => parseReactDependencyGraphArgs(["--output-dir", "tmp"]),
+    /Unknown argument: --output-dir/u
+  );
+  assert.throws(
+    () => parseReactDependencyGraphArgs([]),
+    /Choose --check, --json, --summary/u
+  );
+
+  const retiredMode = spawnSync(process.execPath, [scriptPath, "--write"], {
+    encoding: "utf8",
+  });
+  assert.equal(retiredMode.status, 64);
+  assert.match(retiredMode.stderr, /Unknown argument: --write/u);
+  assert.match(retiredMode.stderr, /Usage: node tool\/web\/react_dependency_graph/u);
+});
+
+test("CLI emits inspectable JSON before a combined check fails", (t) => {
+  const repoRoot = createFixture(t);
+  write(
+    repoRoot,
+    "website/src/features/home/Broken.ts",
+    'import {missing} from "./does-not-exist";\nexport const broken = missing;\n'
+  );
+
+  const result = spawnSync(
+    process.execPath,
+    [scriptPath, "--repo-root", repoRoot, "--check", "--json"],
+    {encoding: "utf8"}
+  );
+  assert.equal(result.status, 1);
+  assert.equal(JSON.parse(result.stdout).summary.unresolvedImports, 1);
+  assert.match(result.stderr, /React dependency graph validation failed/u);
+  assert.match(result.stderr, /cannot resolve repo-local import/u);
+});
+
+test("missing source roots and TypeScript configs fail closed", (t) => {
+  const missingSourceRoot = createFixture(t);
+  fs.rmSync(path.join(missingSourceRoot, "admin/src"), {recursive: true});
+  assert.throws(
+    () => buildReactDependencyGraph({repoRoot: missingSourceRoot}),
+    /source root is missing: admin\/src/u
+  );
+
+  const missingConfig = createFixture(t);
+  fs.rmSync(path.join(missingConfig, "website/tsconfig.json"));
+  assert.throws(
+    () => buildReactDependencyGraph({repoRoot: missingConfig}),
+    /tsconfig is missing: website\/tsconfig.json/u
+  );
 });
 
 function createFixture(t) {
