@@ -195,16 +195,17 @@ Non-goals:
 
 ## 4. Cross-cutting rules
 
-Rules 1–8 of the edit spec §3 apply verbatim (branch discipline, context
-packs, copy pipeline, PATH export, verification, registries, Widgetbook).
+Rules 1–8 of the edit spec §3 apply verbatim (branch discipline, read-only
+planning, copy pipeline, PATH export, verification, authored contracts,
+Widgetbook).
 Additionally:
 
 1. Import path stability: `catch_field.dart` and `catch_section_layout.dart`
    remain the public libraries; splits use `part` files so none of the ~60
    consumer files change imports.
-2. Every phase ends with the §12 gates green and a
-   `docs/audit_registry/passes.jsonl` stamp; `dart tool/audit_registry.dart
-   refresh` if tracked widgets are added/removed.
+2. Every phase ends with the §12 gates green and its exact-SHA result preserved
+   in Git/CI. Update the owning authored widget contracts when widgets are
+   added or removed; do not recreate removed audit evidence.
 3. `docs/widget_catalog.md` is updated in the same PR as any API change
    (slot additions, facade deletions) — the catalog is the contract journal.
 
@@ -427,11 +428,11 @@ flutter test test/core test/user_profile test/hosts test/onboarding
 node tool/run.mjs check design:widgetbook-contract-refs
 node tool/run.mjs check design:widgetbook-coverage
 node tool/run.mjs check design:section-headers
-node tool/agent/check_agent_readiness.mjs
+git diff --check
 ```
 
-Plus widgetbook analyze/build for Phases B/C, catalog + passes.jsonl stamps
-per repo rules, and for Phase B specifically: a PR note confirming
+Plus Widgetbook analyze/build for Phases B/C, source catalog updates when its
+contract changes, and for Phase B specifically: a PR note confirming
 `git diff --stat` touches only `lib/core/widgets/`, `test/`, `widgetbook/`.
 
 ## 13. Confirmed healthy — do NOT "fix"
@@ -531,12 +532,12 @@ activate when the next substantial admin-forms work order lands.
 ### S6. Agent legibility — only when review churn is observed
 
 The repo is operated by agents executing specs. A 10 system is one an agent
-composes correctly first try: the facade inventory, slot map, and §10
-doctrine as a machine-readable registry (audit-registry style) keyed to the
-catalog/Widgetbook/test quartet, with a gate that new modes update all four.
-Activate only if field-system corrections become a recurring theme in
-work-order review; building it before the pain is how design systems become
-the product instead of serving it.
+composes correctly first try: the facade inventory, slot map, and §10 doctrine
+as an authored component contract keyed to the catalog/Widgetbook/test quartet,
+with a read-only gate that new modes update all four. It must not record run
+history or create another evidence ledger. Activate only if field-system
+corrections become a recurring theme in work-order review; building it before
+the pain is how design systems become the product instead of serving it.
 
 ### Calibration (owner-ratified)
 

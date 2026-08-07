@@ -1,0 +1,279 @@
+{
+  "schemaVersion": 1,
+  "version": 16,
+  "updated": "2026-07-23",
+  "owner": "web_platform",
+  "goal": "Define reusable primitive families shared by the marketing and admin React surfaces and their accepted @catch/web-ui adoption state.",
+  "sourceDocs": [
+    "docs/web_surface_architecture.md",
+    "docs/marketing_website_architecture.md",
+    "docs/design_language.md"
+  ],
+  "referenceImplementation": {
+    "id": "WEB-SHARED-TOGGLE-001",
+    "status": "adopted",
+    "pattern": "The package owns native semantics and accessibility state; website/admin adapters own density, visual class names, content, and domain mapping.",
+    "acceptance": [
+      "Website ChoiceChip and ChoiceCard expose aria-pressed through the package control.",
+      "Admin SegmentedControl exposes a labelled group and pressed state through the same package control.",
+      "Both surface APIs and visual class contracts remain stable.",
+      "Package unit tests, Storybook state coverage, lexicon links, and visual baselines cover the shared behavior."
+    ]
+  },
+  "candidates": [
+    {
+      "id": "WEB-SHARED-CLASSNAMES-001",
+      "family": "class-name-composition",
+      "priority": "p0",
+      "status": "adopted",
+      "packageSymbols": [
+        "classNames"
+      ],
+      "website": {
+        "source": "website/src/shared/ui/primitives/foundation.tsx",
+        "symbols": [
+          "classNames"
+        ]
+      },
+      "admin": {
+        "source": "admin/src/shared/ui/AdminPrimitives/shared.ts",
+        "symbols": [
+          "classNames"
+        ]
+      },
+      "rationale": "Pure behavior with identical semantics and no surface styling."
+    },
+    {
+      "id": "WEB-SHARED-UI-LABEL-001",
+      "family": "structural-ui-label",
+      "priority": "p0",
+      "status": "adopted",
+      "packageSymbols": [
+        "UiLabel"
+      ],
+      "website": {
+        "source": "website/src/shared/ui/primitives/layout.tsx",
+        "symbols": [
+          "UiLabel"
+        ]
+      },
+      "admin": {
+        "source": "admin/src/shared/ui/AdminPrimitives/shell.tsx",
+        "symbols": [
+          "AdminEyebrow"
+        ]
+      },
+      "rationale": "The package owns span/div element selection while each surface owns its label styling."
+    },
+    {
+      "id": "WEB-SHARED-CHECKBOX-001",
+      "family": "checkbox-control",
+      "priority": "p0",
+      "status": "adopted",
+      "packageSymbols": [
+        "CheckboxControl"
+      ],
+      "website": {
+        "source": "website/src/shared/ui/primitives/forms.tsx",
+        "symbols": [
+          "CheckboxField"
+        ]
+      },
+      "admin": {
+        "source": "admin/src/shared/ui/AdminPrimitives/forms.tsx",
+        "symbols": [
+          "CheckboxField"
+        ]
+      },
+      "rationale": "Native checkbox type ownership is compatible; label layout and controlled-value adapters remain surface-owned."
+    },
+    {
+      "id": "WEB-SHARED-TOGGLE-001",
+      "family": "toggle-and-segmented-controls",
+      "priority": "p0",
+      "status": "adopted",
+      "packageSymbols": [
+        "ToggleButtonControl",
+        "ToggleGroupControl"
+      ],
+      "website": {
+        "source": "website/src/shared/ui/primitives/layout2.tsx",
+        "symbols": [
+          "ChoiceChip",
+          "ChoiceCard",
+          "ChoiceChipGrid"
+        ]
+      },
+      "admin": {
+        "source": "admin/src/shared/ui/AdminPrimitives/actions.tsx",
+        "symbols": [
+          "SegmentedControl"
+        ]
+      },
+      "rationale": "Both surfaces represent one-of-many choices but currently omit consistent pressed/group semantics."
+    },
+    {
+      "id": "WEB-SHARED-BUTTON-001",
+      "family": "button-and-button-link",
+      "priority": "p1",
+      "status": "adopted",
+      "packageSymbols": [
+        "ButtonControl"
+      ],
+      "website": {
+        "source": "website/src/shared/ui/primitives/actions.tsx",
+        "symbols": [
+          "Button",
+          "ButtonLink"
+        ]
+      },
+      "admin": {
+        "source": "admin/src/shared/ui/AdminPrimitives/overview.tsx",
+        "symbols": [
+          "AdminButton"
+        ]
+      },
+      "rationale": "The lexicon already defines compatible variant, size, loading, icon, disabled, and full-width states; surface density can remain adapter-owned."
+    },
+    {
+      "id": "WEB-SHARED-FIELD-001",
+      "family": "field-controls",
+      "priority": "p1",
+      "status": "adopted",
+      "packageSymbols": [
+        "TextInputControl",
+        "SelectControl",
+        "TextareaControl"
+      ],
+      "website": {
+        "source": "website/src/shared/ui/primitives/forms.tsx",
+        "symbols": [
+          "TextField",
+          "SelectField",
+          "TextAreaField",
+          "CheckboxField"
+        ]
+      },
+      "admin": {
+        "source": "admin/src/shared/ui/AdminPrimitives/forms.tsx",
+        "symbols": [
+          "TextField",
+          "SelectField",
+          "TextareaField",
+          "CheckboxField"
+        ]
+      },
+      "rationale": "Native control semantics are reusable, but website uncontrolled/id-based fields and admin controlled/data-option fields need stable surface adapters."
+    },
+    {
+      "id": "WEB-SHARED-EMPTY-STATE-001",
+      "family": "empty-state-composition",
+      "priority": "p1",
+      "status": "adopted",
+      "packageSymbols": [
+        "EmptyStateControl"
+      ],
+      "website": {
+        "source": "website/src/shared/ui/primitives/feedback.tsx",
+        "symbols": [
+          "EmptyState"
+        ]
+      },
+      "admin": {
+        "source": "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
+        "symbols": [
+          "EmptyState"
+        ]
+      },
+      "rationale": "The Flutter contract supplies the missing shared title, message, icon, action, surface, and stacked/inline anatomy; surface-specific variants should map into that core."
+    },
+    {
+      "id": "WEB-SHARED-DATA-TABLE-001",
+      "family": "data-table-frame",
+      "priority": "p1",
+      "status": "adopted",
+      "packageSymbols": [
+        "DataTableControl"
+      ],
+      "website": {
+        "source": "website/src/shared/ui/primitives/actions2.tsx",
+        "symbols": [
+          "DataTable"
+        ]
+      },
+      "admin": {
+        "source": "admin/src/shared/ui/AdminPrimitives/data.tsx",
+        "symbols": [
+          "DataTable"
+        ]
+      },
+      "rationale": "Both own the same wrapper/table anatomy; extraction should add a consistent accessible-name contract without erasing compact/workbench styling."
+    },
+    {
+      "id": "WEB-SHARED-BADGE-001",
+      "family": "badge-and-status-chip",
+      "priority": "p2",
+      "status": "adopted",
+      "packageSymbols": [
+        "BadgeControl"
+      ],
+      "website": {
+        "source": "website/src/shared/ui/primitives/feedback.tsx",
+        "symbols": [
+          "StatusBadge",
+          "ReviewSignalBadge"
+        ]
+      },
+      "admin": {
+        "source": "admin/src/shared/ui/AdminPrimitives/cards.tsx",
+        "symbols": [
+          "StatusChip",
+          "AdminTag"
+        ]
+      },
+      "rationale": "The common neutral/success/warning/danger tone model is reusable after domain-specific tones are mapped by adapters."
+    },
+    {
+      "id": "WEB-SHARED-PANEL-001",
+      "family": "panel-and-card-containment",
+      "priority": "p2",
+      "status": "keep_surface_specific",
+      "packageSymbols": [],
+      "website": {
+        "source": "website/src/shared/ui/primitives/layout.tsx",
+        "symbols": [
+          "PanelShell",
+          "ProductShell"
+        ]
+      },
+      "admin": {
+        "source": "admin/src/shared/ui/AdminPrimitives/data.tsx",
+        "symbols": [
+          "Panel",
+          "AdminPanel"
+        ]
+      },
+      "rationale": "Marketing product/claim panels and admin operational panels have different containment semantics; sharing the current wrappers would create variant sprawl."
+    },
+    {
+      "id": "WEB-SHARED-METRIC-001",
+      "family": "metric-cards",
+      "priority": "p2",
+      "status": "keep_surface_specific",
+      "packageSymbols": [],
+      "website": {
+        "source": "website/src/shared/ui/primitives/layout2.tsx",
+        "symbols": [
+          "MetricCard"
+        ]
+      },
+      "admin": {
+        "source": "admin/src/shared/ui/AdminPrimitives/metrics.tsx",
+        "symbols": [
+          "AdminMetricCard"
+        ]
+      },
+      "rationale": "Marketing metrics are sparse proof points while admin metrics carry operational tone and dense supporting evidence."
+    }
+  ]
+}

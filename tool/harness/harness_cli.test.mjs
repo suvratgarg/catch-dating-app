@@ -6,7 +6,6 @@ import path from "node:path";
 import test from "node:test";
 import {
   collectKnownCheckIds,
-  executeCheckIds,
   formatGithubOutputs,
   main,
   parseArgs,
@@ -16,11 +15,6 @@ import {
 const graph = JSON.parse(
   fs.readFileSync(new URL("./component_graph.json", import.meta.url), "utf8"),
 );
-
-test("check executes by default and dry-run must be explicit", () => {
-  assert.equal(parseArgs(["check", "--affected"]).dryRun, false);
-  assert.equal(parseArgs(["check", "--affected", "--dry-run"]).dryRun, true);
-});
 
 test("Harness check selection distinguishes command safety from check safety", () => {
   const remoteTool = {
@@ -46,23 +40,6 @@ test("Harness check selection distinguishes command safety from check safety", (
       [],
     );
   }
-});
-
-test("task CLI dispatches lifecycle commands before planner validation", () => {
-  let received = null;
-  let exitCode = 0;
-  main({
-    args: ["task", "reap", "--dry-run", "--json"],
-    taskExecutor(input) {
-      received = input;
-      return {status: 0, result: {operation: "reap", mode: "dry-run"}};
-    },
-    setExitCode(status) {
-      exitCode = status;
-    },
-  });
-  assert.deepEqual(received.args, ["reap", "--dry-run", "--json"]);
-  assert.equal(exitCode, 0);
 });
 
 test("plan parses an explicit GitHub output destination", () => {
@@ -103,8 +80,7 @@ test("bounded plan outputs contain no changed-path inventory", () => {
       coneMode: false,
       timeoutMinutes: 3,
       paths: [
-        "/docs/audit_registry/doc_versions.json",
-        "/tool/docs/check_doc_version_monotonic.mjs",
+        "/tool/docs/check_doc_metadata.mjs",
       ],
     },
   );
@@ -176,59 +152,18 @@ test("output projection rejects an invalid checkout contract", () => {
   );
 });
 
-test("captured check execution keeps stdout available for structured JSON", () => {
-  const calls = [];
-  const execution = executeCheckIds({
-    ids: ["docs:version-monotonic"],
-    cwd: "/repo",
-    runner(executable, args, options) {
-      calls.push({executable, args, options});
-      return {status: 0, signal: null, stdout: "check output\n", stderr: ""};
-    },
-  });
-  assert.equal(calls.length, 1);
-  assert.deepEqual(calls[0].args, [
-    "tool/run.mjs",
-    "check",
-    "docs:version-monotonic",
-  ]);
-  assert.equal(calls[0].options.shell, false);
-  assert.deepEqual(execution, {
-    status: 0,
-    signal: null,
-    stdout: "check output\n",
-    stderr: "",
-  });
-  assert.doesNotThrow(() => JSON.parse(JSON.stringify({execution})));
-});
-
-test("check CLI propagates a selected check failure", () => {
-  let exitCode = 0;
-  let selectedIds = [];
-  main({
-    args: ["check", "--affected", "--paths", "README.md", "--json"],
-    checkExecutor({ids}) {
-      selectedIds = ids;
-      return {status: 7, signal: null, stdout: "", stderr: "fixture failure"};
-    },
-    setExitCode(status) {
-      exitCode = status;
-    },
-  });
-  assert.deepEqual(selectedIds, ["docs:version-monotonic"]);
-  assert.equal(exitCode, 7);
-});
-
-test("check CLI executes a selected repository check end to end", () => {
-  const result = spawnSync(
-    process.execPath,
-    ["tool/harness.mjs", "check", "--affected", "--paths", "README.md", "--json"],
-    {encoding: "utf8"},
-  );
-  assert.equal(result.status, 0, result.stderr);
-  const output = JSON.parse(result.stdout);
-  assert.deepEqual(output.plan.operations.checkIds, ["docs:version-monotonic"]);
-  assert.equal(output.execution.status, 0);
+test("execution subcommands are rejected instead of dispatching work", () => {
+  for (const command of ["check", "generate"]) {
+    const result = spawnSync(
+      process.execPath,
+      ["tool/harness.mjs", command, "--paths", "README.md", "--json"],
+      {encoding: "utf8"},
+    );
+    assert.equal(result.status, 64);
+    assert.match(result.stderr, new RegExp(`Unknown harness command "${command}"`));
+    assert.match(result.stdout, /Harness is read-only/);
+    assert.doesNotMatch(result.stdout, /\n  check\b|\n  generate\b/);
+  }
 });
 
 test("plan CLI fails closed before writing outputs for an unknown path", () => {

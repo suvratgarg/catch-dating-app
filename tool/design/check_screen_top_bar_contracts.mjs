@@ -6,7 +6,7 @@ import {repoRoot} from "../lib/repo_paths.mjs";
 
 const defaultManifestPath = "tool/design/screen_top_bar_contracts.json";
 const architectureAdoptionPath =
-  "docs/audit_registry/architecture_pattern_adoption.json";
+  "tool/architecture/pattern_adoption.json";
 const screenChromeArchitectureId = "ARCH-SCREEN-CHROME-001";
 const appBarPattern = /\bappBar\s*:\s*([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)?)/gu;
 const routeTopBarBuilderPattern =

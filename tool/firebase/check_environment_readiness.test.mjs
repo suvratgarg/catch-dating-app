@@ -478,25 +478,20 @@ test("manifest accepts only terminal prerequisite states", () => {
   );
 });
 
-test("deploy workflows run readiness before dependency installation", () => {
-  for (const workflowPath of [
-    ".github/workflows/firebase-dev-deploy.yml",
-    ".github/workflows/firebase-deploy.yml",
-  ]) {
+test("backend promotion runs readiness before dependency installation", () => {
+  for (const workflowPath of [".github/workflows/_firebase-promote.yml"]) {
     const source = fs.readFileSync(path.join(repoRoot, workflowPath), "utf8");
     const auth = source.indexOf("name: Authenticate to Google Cloud");
     const readiness = source.indexOf(
-      "name: Verify Firebase environment prerequisites",
+      "name: Verify environment prerequisites for the approved targets",
     );
     assert.ok(auth >= 0, `${workflowPath} authenticates before probing`);
     assert.ok(readiness > auth, `${workflowPath} probes after authentication`);
     for (const expensiveStep of [
       "id: toolchain",
       "uses: actions/setup-node@v6",
-      "uses: actions/setup-java@v5",
-      "run: npm --prefix functions ci",
       "run: npm install -g firebase-tools@",
-      "name: Contract check",
+      "npm --prefix build/delivery/deploy-tree/functions ci",
     ]) {
       const expensiveIndex = source.indexOf(expensiveStep);
       assert.ok(

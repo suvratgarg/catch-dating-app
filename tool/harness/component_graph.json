@@ -6,7 +6,6 @@
   "targets": [
     "admin",
     "contracts",
-    "doc_state",
     "docs",
     "firestore_rules",
     "flutter",
@@ -21,6 +20,12 @@
     "tools",
     "visual_integration"
   ],
+  "deployGroupRequirements": {
+    "firestore-indexes": ["contracts"],
+    "functions": ["functions"],
+    "firestore-rules": ["firestore_rules"],
+    "storage-rules": ["firestore_rules"]
+  },
   "ciCheckout": {
     "planner": {
       "mode": "sparse",
@@ -47,8 +52,7 @@
         "coneMode": false,
         "timeoutMinutes": 3,
         "paths": [
-          "/docs/audit_registry/doc_versions.json",
-          "/tool/docs/check_doc_version_monotonic.mjs"
+          "/tool/docs/check_doc_metadata.mjs"
         ]
       }
     }
@@ -56,28 +60,28 @@
   "operationProfiles": {
     "docs": {
       "direct": {
-        "pr": {"ciTargets": ["docs"], "checkIds": ["docs:version-monotonic"]},
-        "merge_group": {"ciTargets": ["docs"], "checkIds": ["docs:version-monotonic"]},
-        "main": {"ciTargets": ["docs"], "checkIds": ["docs:version-monotonic"]},
-        "nightly": {"ciTargets": ["docs"], "checkIds": ["docs:version-monotonic"]}
+        "pr": {"ciTargets": ["docs"], "checkIds": ["docs:metadata"]},
+        "merge_group": {"ciTargets": ["docs"], "checkIds": ["docs:metadata"]},
+        "main": {"ciTargets": ["docs"], "checkIds": ["docs:metadata"]},
+        "nightly": {"ciTargets": ["docs"], "checkIds": ["docs:metadata"]}
       },
       "affected": {}
     },
     "policy": {
       "direct": {
-        "pr": {"ciTargets": ["policy_docs"], "checkIds": ["agent:readiness"]},
-        "merge_group": {"ciTargets": ["policy_docs"], "checkIds": ["agent:readiness"]},
-        "main": {"ciTargets": ["policy_docs"], "checkIds": ["agent:readiness"]},
-        "nightly": {"ciTargets": ["policy_docs"], "checkIds": ["agent:readiness"]}
+        "pr": {"ciTargets": ["policy_docs"], "checkIds": ["docs:metadata", "meta:enforcement-integrity"]},
+        "merge_group": {"ciTargets": ["policy_docs"], "checkIds": ["docs:metadata", "meta:enforcement-integrity"]},
+        "main": {"ciTargets": ["policy_docs"], "checkIds": ["docs:metadata", "meta:enforcement-integrity"]},
+        "nightly": {"ciTargets": ["policy_docs"], "checkIds": ["docs:metadata", "meta:enforcement-integrity"]}
       },
       "affected": {}
     },
     "harness-full": {
       "direct": {
-        "pr": {"ciTargets": ["admin", "contracts", "doc_state", "docs", "firestore_rules", "flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "flutter_web_smoke", "functions", "marketing", "operations", "policy_docs", "tools", "visual_integration"], "checkIds": ["agent:harness-v2"]},
-        "merge_group": {"ciTargets": ["admin", "contracts", "doc_state", "docs", "firestore_rules", "flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "flutter_web_smoke", "functions", "marketing", "operations", "policy_docs", "tools", "visual_integration"], "checkIds": ["agent:harness-v2"]},
-        "main": {"ciTargets": ["admin", "contracts", "doc_state", "docs", "firestore_rules", "flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "flutter_web_smoke", "functions", "marketing", "operations", "policy_docs", "tools", "visual_integration"], "checkIds": ["agent:harness-v2"]},
-        "nightly": {"ciTargets": ["admin", "contracts", "doc_state", "docs", "firestore_rules", "flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "flutter_web_smoke", "functions", "marketing", "operations", "policy_docs", "tools", "visual_integration"], "checkIds": ["agent:harness-v2"]}
+        "pr": {"ciTargets": ["admin", "contracts", "docs", "firestore_rules", "flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "flutter_web_smoke", "functions", "marketing", "operations", "policy_docs", "tools", "visual_integration"], "checkIds": ["agent:harness-v2"]},
+        "merge_group": {"ciTargets": ["admin", "contracts", "docs", "firestore_rules", "flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "flutter_web_smoke", "functions", "marketing", "operations", "policy_docs", "tools", "visual_integration"], "checkIds": ["agent:harness-v2"]},
+        "main": {"ciTargets": ["admin", "contracts", "docs", "firestore_rules", "flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "flutter_web_smoke", "functions", "marketing", "operations", "policy_docs", "tools", "visual_integration"], "checkIds": ["agent:harness-v2"]},
+        "nightly": {"ciTargets": ["admin", "contracts", "docs", "firestore_rules", "flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "flutter_web_smoke", "functions", "marketing", "operations", "policy_docs", "tools", "visual_integration"], "checkIds": ["agent:harness-v2"]}
       },
       "affected": {}
     },
@@ -85,9 +89,9 @@
       "direct": {
         "pr": {"ciTargets": ["contracts"], "checkIds": ["contracts:generate-schemas", "contracts:validate-schemas"]},
         "merge_group": {"ciTargets": ["contracts"], "checkIds": ["contracts:generate-schemas", "contracts:validate-schemas"]},
-        "main": {"ciTargets": ["contracts"], "deployGroups": ["backend-contracts"]},
+        "main": {"ciTargets": ["contracts"]},
         "nightly": {"ciTargets": ["contracts"], "checkIds": ["contracts:generate-schemas", "contracts:validate-schemas"]},
-        "release": {"deployGroups": ["backend-contracts"]}
+        "release": {}
       },
       "affected": {}
     },
@@ -133,13 +137,43 @@
       },
       "affected": {}
     },
-    "rules-source": {
+    "firestore-indexes-source": {
       "direct": {
-        "pr": {"ciTargets": ["contracts", "firestore_rules", "functions"]},
-        "merge_group": {"ciTargets": ["contracts", "firestore_rules", "functions"]},
-        "main": {"ciTargets": ["contracts", "firestore_rules", "functions"], "deployGroups": ["firestore-indexes", "firestore-rules", "storage-rules"]},
-        "nightly": {"ciTargets": ["contracts", "firestore_rules", "functions"]},
-        "release": {"deployGroups": ["firestore-indexes", "firestore-rules", "storage-rules"]}
+        "pr": {"ciTargets": ["contracts"]},
+        "merge_group": {"ciTargets": ["contracts"]},
+        "main": {"ciTargets": ["contracts"], "deployGroups": ["firestore-indexes"]},
+        "nightly": {"ciTargets": ["contracts"]},
+        "release": {"deployGroups": ["firestore-indexes"]}
+      },
+      "affected": {
+        "pr": {"ciTargets": ["contracts"]},
+        "merge_group": {"ciTargets": ["contracts"]},
+        "main": {"ciTargets": ["contracts"]},
+        "nightly": {"ciTargets": ["contracts"]}
+      }
+    },
+    "firestore-rules-source": {
+      "direct": {
+        "pr": {"ciTargets": ["contracts", "firestore_rules"]},
+        "merge_group": {"ciTargets": ["contracts", "firestore_rules"]},
+        "main": {"ciTargets": ["contracts", "firestore_rules"], "deployGroups": ["firestore-rules"]},
+        "nightly": {"ciTargets": ["contracts", "firestore_rules"]},
+        "release": {"deployGroups": ["firestore-rules"]}
+      },
+      "affected": {
+        "pr": {"ciTargets": ["firestore_rules"]},
+        "merge_group": {"ciTargets": ["firestore_rules"]},
+        "main": {"ciTargets": ["firestore_rules"]},
+        "nightly": {"ciTargets": ["firestore_rules"]}
+      }
+    },
+    "storage-rules-source": {
+      "direct": {
+        "pr": {"ciTargets": ["contracts", "firestore_rules"]},
+        "merge_group": {"ciTargets": ["contracts", "firestore_rules"]},
+        "main": {"ciTargets": ["contracts", "firestore_rules"], "deployGroups": ["storage-rules"]},
+        "nightly": {"ciTargets": ["contracts", "firestore_rules"]},
+        "release": {"deployGroups": ["storage-rules"]}
       },
       "affected": {
         "pr": {"ciTargets": ["firestore_rules"]},
@@ -458,9 +492,9 @@
       "direct": {
         "pr": {"ciTargets": ["admin", "contracts", "firestore_rules", "functions", "marketing"]},
         "merge_group": {"ciTargets": ["admin", "contracts", "firestore_rules", "functions", "marketing"]},
-        "main": {"ciTargets": ["admin", "contracts", "firestore_rules", "functions", "marketing"], "deployGroups": ["firebase-config"]},
+        "main": {"ciTargets": ["admin", "contracts", "firestore_rules", "functions", "marketing"]},
         "nightly": {"ciTargets": ["admin", "contracts", "firestore_rules", "functions", "marketing"]},
-        "release": {"deployGroups": ["firebase-config"]}
+        "release": {}
       },
       "affected": {}
     },
@@ -666,8 +700,11 @@
     {"id": "content.structured", "owner": "content_system", "risk": "standard", "operationProfile": "content-shared", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Structured domain-copy catalog, templates, and deterministic Flutter projections."},
     {"id": "backend.functions", "owner": "backend_platform", "risk": "high", "operationProfile": "functions-source", "pathType": "component", "ownedPaths": {"include": ["functions/**"], "exclude": ["functions/README.md", "functions/src/shared/generated/**"]}, "dependsOn": ["contracts.source"], "alsoAffects": [], "description": "Handwritten Cloud Functions source."},
     {"id": "backend.functions-doc", "owner": "backend_platform", "risk": "standard", "operationProfile": "functions-doc", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Functions export inventory contract."},
-    {"id": "backend.rules", "owner": "backend_platform", "risk": "high", "operationProfile": "rules-source", "pathType": "component", "ownedPaths": {"include": ["firestore.rules", "storage.rules", "firestore.indexes.json", "extensions/**"]}, "dependsOn": ["contracts.source"], "alsoAffects": [], "description": "Firestore/Storage policy and index configuration."},
-    {"id": "web.shared", "owner": "web_platform", "risk": "standard", "operationProfile": "web-shared", "pathType": "component", "ownedPaths": {"include": ["packages/web-ui/**", "design/web-ui/**", "design/components/**"]}, "dependsOn": [], "alsoAffects": [], "description": "Shared React primitives consumed by admin and marketing."},
+    {"id": "backend.firestore-indexes", "owner": "backend_platform", "risk": "high", "operationProfile": "firestore-indexes-source", "pathType": "component", "ownedPaths": {"include": ["firestore.indexes.json"]}, "dependsOn": ["contracts.source"], "alsoAffects": [], "description": "Firestore composite-index configuration."},
+    {"id": "backend.firestore-rules", "owner": "backend_platform", "risk": "high", "operationProfile": "firestore-rules-source", "pathType": "component", "ownedPaths": {"include": ["firestore.rules"]}, "dependsOn": ["contracts.source"], "alsoAffects": [], "description": "Firestore authorization policy."},
+    {"id": "backend.storage-rules", "owner": "backend_platform", "risk": "high", "operationProfile": "storage-rules-source", "pathType": "component", "ownedPaths": {"include": ["storage.rules"]}, "dependsOn": ["contracts.source"], "alsoAffects": [], "description": "Cloud Storage authorization policy."},
+    {"id": "infra.firebase.extensions", "owner": "backend_platform", "risk": "high", "operationProfile": "firebase-config", "pathType": "component", "ownedPaths": {"include": ["extensions/**"]}, "dependsOn": [], "alsoAffects": [], "description": "Firebase extension configuration is validation-only until an explicit extension delivery adapter exists."},
+    {"id": "web.shared", "owner": "web_platform", "risk": "standard", "operationProfile": "web-shared", "pathType": "component", "ownedPaths": {"include": ["packages/web-ui/**", "design/web-ui/**", "design/components/**"], "exclude": ["design/components/flutter_field_surface_adoption.json"]}, "dependsOn": [], "alsoAffects": [], "description": "Shared React primitives consumed by admin and marketing."},
     {"id": "web.admin", "owner": "web_platform", "risk": "standard", "operationProfile": "admin-source", "pathType": "component", "ownedPaths": {"include": ["admin/**", "design/admin/**"], "exclude": ["admin/src/generated/**"]}, "dependsOn": ["contracts.source", "web.shared"], "alsoAffects": [], "description": "Admin React surface."},
     {"id": "web.marketing", "owner": "web_platform", "risk": "standard", "operationProfile": "marketing-source", "pathType": "component", "ownedPaths": {"include": ["website/**", "design/website/**", "packages/web-config/**"], "exclude": ["website/src/generated/**"]}, "dependsOn": ["contracts.source", "web.shared"], "alsoAffects": [], "description": "Marketing React surface."},
     {"id": "app.shared", "owner": "app_platform", "risk": "standard", "operationProfile": "app-shared", "pathType": "component", "ownedPaths": {"include": ["lib/**"], "exclude": ["lib/hosts/**", "lib/main_host*.dart", "lib/main_consumer*.dart", "lib/core/schema_contracts/generated/**", "lib/l10n/generated/**", "lib/l10n/app_en.arb"]}, "dependsOn": [], "alsoAffects": [], "description": "Shared Flutter product source used by both installable roles."},
@@ -689,6 +726,7 @@
     {"id": "operations.source", "owner": "operations_platform", "risk": "standard", "operationProfile": "operations-doc", "pathType": "component", "ownedPaths": {"include": ["operations/**"], "exclude": ["operations/**/README.md"]}, "dependsOn": [], "alsoAffects": [], "description": "Durable operations workflows and their validation surface."},
     {"id": "app.tests", "owner": "app_platform", "risk": "standard", "operationProfile": "flutter-tests", "pathType": "component", "ownedPaths": {"include": ["test/**", "integration_test/**"]}, "dependsOn": [], "alsoAffects": [], "description": "Flutter unit, widget, golden, and integration tests."},
     {"id": "app.design", "owner": "design_system", "risk": "standard", "operationProfile": "flutter-design", "pathType": "component", "ownedPaths": {"include": ["design/**", "design_context_pack/**", "widgetbook/**", "artifacts/**"], "exclude": ["design/admin/**", "design/website/**", "design/web-ui/**", "design/components/**"]}, "dependsOn": [], "alsoAffects": [], "description": "Flutter design contracts, Widgetbook, capture inputs, and visual baselines."},
+    {"id": "app.design-field-adoption", "owner": "design_system", "risk": "standard", "operationProfile": "flutter-design", "pathType": "component", "ownedPaths": {"include": ["design/components/flutter_field_surface_adoption.json"]}, "dependsOn": [], "alsoAffects": [], "description": "Authored Flutter field-surface adoption decisions separated from derived inventories."},
     {"id": "app.native.android.host", "owner": "app_platform", "risk": "high", "operationProfile": "native-host-android", "pathType": "component", "ownedPaths": {"include": ["android/app/src/host*/**"]}, "dependsOn": [], "alsoAffects": [], "description": "Host-only Android native configuration and branding."},
     {"id": "app.native.android.consumer", "owner": "app_platform", "risk": "high", "operationProfile": "native-consumer-android", "pathType": "component", "ownedPaths": {"include": ["android/app/src/consumer*/**"]}, "dependsOn": [], "alsoAffects": [], "description": "Consumer-only Android native configuration and branding."},
     {"id": "app.native.android.shared", "owner": "app_platform", "risk": "high", "operationProfile": "native-shared-android", "pathType": "component", "ownedPaths": {"include": ["android/**"], "exclude": ["android/app/src/host*/**", "android/app/src/consumer*/**"]}, "dependsOn": [], "alsoAffects": [], "description": "Shared Android build and runtime configuration."},

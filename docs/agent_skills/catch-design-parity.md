@@ -7,6 +7,9 @@ Read: `docs/design_parity/README.md`,
 `docs/design_parity/composition_migration_spec.md`, and
 `docs/widget_catalog.md`.
 
+Optional orientation:
+`node tool/agent/context_pack.mjs --task design-parity --paths docs/design_parity,widgetbook,lib/core/widgets`.
+
 Loop: inspect the real Widgetbook or design artifact, classify decisions as
 `canonical`, `repair`, `unify`, `register`, or `discard`, update contracts and
 Widgetbook coverage, then run the design parity gate.

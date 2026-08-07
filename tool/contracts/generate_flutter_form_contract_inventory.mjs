@@ -6,7 +6,7 @@ import {fileURLToPath} from "node:url";
 const TOOL_FILE = fileURLToPath(import.meta.url);
 const DEFAULT_ROOT = path.resolve(path.dirname(TOOL_FILE), "../..");
 const DEFAULT_OUTPUT =
-  "docs/audit_registry/flutter_form_contract_inventory.json";
+  "build/reports/flutter_form_contract_inventory.json";
 const EDITABLE_SYMBOLS = new Set([
   "choices",
   "chipField",
@@ -442,16 +442,8 @@ function run() {
   }
   const expected = render(inventory);
   if (process.argv.includes("--check")) {
-    if (!fs.existsSync(output) || fs.readFileSync(output, "utf8") !== expected) {
-      console.error(
-        `${DEFAULT_OUTPUT} is stale; regenerate it with ` +
-          "node tool/contracts/generate_flutter_form_contract_inventory.mjs",
-      );
-      process.exitCode = 1;
-      return;
-    }
     console.log(
-      `Flutter form contracts are current (${inventory.summary.boundCallsites} ` +
+      `Flutter form contracts are valid (${inventory.summary.boundCallsites} ` +
         "bound editable callsites).",
     );
     return;

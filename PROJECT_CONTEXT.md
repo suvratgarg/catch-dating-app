@@ -1,7 +1,7 @@
 ---
 doc_id: project_context
-version: 3.0.1
-updated: 2026-07-12
+version: 3.1.0
+updated: 2026-08-07
 owner: agent_operating_model
 status: active
 ---
@@ -97,7 +97,7 @@ Common local-only state includes build outputs, package caches, IDE metadata, em
 | React website/admin | owning typecheck/build and React boundary gates |
 | Design-system primitive | Widgetbook/contract coverage and design checks |
 | Tooling | manifest entry, self-test or seeded failure, `node tool/run.mjs check --manifest-only` |
-| Cleanup/refactor | audit registry refresh, pass receipt, readiness gate |
+| Cleanup/refactor | read-only change plan, focused checks, `git diff --check`, CI proof |
 
 The generated inventory and canonical commands are in [TESTS.md](TESTS.md). Do not maintain competing test lists in feature docs.
 
@@ -108,15 +108,21 @@ The generated inventory and canonical commands are in [TESTS.md](TESTS.md). Do n
 - Cross-surface DTOs should come from generated contracts, not parallel handwritten types.
 - Public organizer evidence does not automatically create app-bookable inventory.
 - Host, consumer, admin, and marketing roles have different authorization and deployment boundaries even when they share concepts.
-- Historic audit snapshots describe their date, not current truth. Prefer current owner docs, generated registries, and live checks.
+- Historic audit snapshots describe their date, not current truth. Prefer
+  current owner docs, source contracts, and live checks.
 
 ## Working loop
 
 1. Check `git status --short` and preserve unrelated work.
-2. Read the owning source-of-truth document and generate a context pack for broad work.
+2. Read the owning source-of-truth document. For broad work, inspect
+   `node tool/harness.mjs plan --base <base> --head HEAD --json`; optionally ask
+   `node tool/agent/context_pack.mjs --task <label> --paths <paths>` for
+   owner-doc and check guidance on stdout.
 3. Make the smallest coherent change at the owning boundary.
 4. Add or update enforceable coverage when the rule can recur.
-5. Run focused checks, then the readiness gate.
-6. Refresh and stamp the audit registry for cleanup or refactor work.
+5. Run focused checks and `git diff --check`; let Git and CI preserve the
+   result.
+6. Do not recreate the removed audit inventory, pass history, documentation
+   catalog, or regression snapshots.
 
 When this map disagrees with a narrower owner document, the narrower active owner document wins and this map should be corrected.

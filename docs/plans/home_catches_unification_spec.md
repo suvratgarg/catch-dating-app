@@ -1,7 +1,7 @@
 ---
 doc_id: home_catches_unification_spec
-version: 1.0.0
-updated: 2026-07-06
+version: 1.0.1
+updated: 2026-08-07
 owner: product (approved direction 2026-07-06)
 status: ready-for-implementation
 depends_on: home_live_layer_product_spec
@@ -67,9 +67,10 @@ events (what the Catches hub already aggregates).
 
 Goal-mode: loop the checklist to complete; one commit per item (pathspecs);
 escalate-and-continue on failed preconditions. Standard workflow (AGENTS.md,
-focused tests + analyzer, sequential Flutter runs, widgetbook, catalog/
-doc_versions/passes stamps, readiness gate). Never edit
-`packages/catch_ui_lints`.
+focused tests + analyzer, sequential Flutter runs, Widgetbook, affected source
+contracts, `git diff --check`, and Git/CI proof). Do not write the frozen audit
+inventory, pass, documentation-version, metrics, or regression snapshots.
+Never edit `packages/catch_ui_lints`.
 
 ---
 
@@ -220,4 +221,5 @@ independent and can interleave.
 - [ ] U3 nav shell: Catches tab removed, catch flow re-parented, deep links preserved, indices verified (tab stays "Home", U-C2) — nav-shell mechanics landed 2026-07-07 for the adaptive tab bar; `SwipeHubScreen`/hub captures remain pending U1/U2/U4 absorption before this phase is fully closed
 - [ ] U4 merged idle/empty state (explainer folded in)
 - [ ] U5 analytics + tests + widgetbook states
-- [ ] full analyze clean; readiness 100/100; scanners green; catalog/doc_versions/passes stamped
+- [ ] full analyze clean; scanners and `git diff --check` green; affected
+      catalog/contracts updated; exact-SHA proof preserved by Git/CI

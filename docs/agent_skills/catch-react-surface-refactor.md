@@ -1,6 +1,6 @@
 ---
 doc_id: agent_skill_catch_react_surface_refactor
-version: 1.0.138
+version: 1.0.141
 updated: 2026-08-07
 owner: agent_operating_model
 status: active
@@ -17,13 +17,13 @@ Read: `AGENTS.md`, `docs/agent_operating_model.md`,
 `docs/web_surface_architecture.md`, `docs/marketing_website_architecture.md`,
 `design/website/routes.json`, `design/website/components.json`,
 `design/admin/components.json`,
-`website/README.md`, `admin/README.md` when present, `packages/web-config/README.md`,
-`tool/tools_manifest.json`, and `docs/audit_registry/README.md`.
+`website/README.md`, `admin/README.md` when present,
+`packages/web-config/README.md`, and `tool/tools_manifest.json`.
 
 Loop:
 
-1. Generate a scoped context pack before editing React architecture:
-   `node tool/agent/context_pack.mjs --task react-surface-refactor --owned-paths website,admin,packages/web-config,docs/web_surface_architecture.md,docs/marketing_website_architecture.md,design/website,tool`.
+1. Optionally print scoped orientation before editing React architecture:
+   `node tool/agent/context_pack.mjs --task react-surface-refactor --paths website,admin,packages/web-config,docs/web_surface_architecture.md,docs/marketing_website_architecture.md,design/website,tool`.
 2. Preserve dirty work outside the declared React scope.
 3. Pick one reference implementation first. Do not migrate sibling screens from
    prose only.
@@ -37,9 +37,9 @@ Loop:
 6. Do not hand-roll interactive controls in feature code. Use the surface's
    shared UI primitive owner and run:
    `node tool/run.mjs check web:react-ui-primitives`.
-7. Do not hand-roll governed component families in feature code. The canonical governed-family registry is emitted by `node tool/web/check_react_component_governance.mjs --families-json` and checked in at `docs/audit_registry/react_component_governance_families.json`. Run `node tool/run.mjs check web:react-component-governance`. This scanner is a known-family blocklist: passing it does not classify novel shell families automatically, so repeated new shell drift must be added to the scanner before handoff.
+7. Do not hand-roll governed component families in feature code. Print the scanner's current governed-family view on demand with `node tool/web/check_react_component_governance.mjs --families-json`; do not check in a generated reader snapshot. Run `node tool/run.mjs check web:react-component-governance`. This scanner is a known-family blocklist: passing it does not classify novel shell families automatically, so repeated new shell drift must be added to the scanner before handoff.
    Cross-surface compatibility decisions live in
-   `docs/audit_registry/web_shared_primitive_adoption.json`; run
+   `design/web-ui/shared_primitive_adoption.json`; run
    `node tool/run.mjs check web:shared-ui-adoption` whenever either surface
    primitive owner or `packages/web-ui` changes. Adopted candidates must route
    through package controls in both surface adapters; styling and feature
@@ -67,8 +67,8 @@ Loop:
     behavior-critical query/mutation controllers to `required` with a named
     importing suite, and run
     `node tool/run.mjs check web:react-controller-test-targets`.
-15. Preserve focused-check output in the task or CI run. Do not stamp the
-    frozen audit registry.
+15. Preserve focused-check output in the task or CI run. Do not create tracked
+    execution history.
 
 Required checks for a cross-React pass:
 
@@ -99,7 +99,7 @@ Failure modes to avoid:
 
 - Adding raw `<button>`, `<a>`, `<input>`, `<select>`, or `<textarea>` in a
   feature file.
-- Rendering a governed component family directly instead of using the shared primitive named by `docs/audit_registry/react_component_governance_families.json`. The scanner is a known-family blocklist; if a new repeated shell family appears, add it to `tool/web/check_react_component_governance.mjs` rather than documenting it only in prose.
+- Rendering a governed component family directly instead of using the shared primitive enforced by `tool/web/check_react_component_governance.mjs`. The scanner is a known-family blocklist; if a new repeated shell family appears, add it to the scanner rather than documenting it only in prose.
 - Recreating or importing `website/src/components/site.tsx` instead of importing
   neutral site chrome from `shared/site`, governed visual primitives from
   `shared/ui/primitives`, or domain adapters from their owning feature folder.

@@ -6,7 +6,7 @@ import {fromRepo} from "../lib/repo_paths.mjs";
 
 const defaultDocPath = "docs/app_architecture.md";
 const defaultPatternTracker =
-  "docs/audit_registry/architecture_pattern_adoption.json";
+  "tool/architecture/pattern_adoption.json";
 
 const stalePatternsByExhibit = {
   "ARCH-SCREEN-001": [

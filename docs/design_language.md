@@ -1,7 +1,7 @@
 ---
 doc_id: design_language
-version: 1.6.2
-updated: 2026-08-05
+version: 1.6.3
+updated: 2026-08-07
 owner: ui_elevation_initiative
 status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
 ---
@@ -285,10 +285,10 @@ The cross-stack vocabulary is machine-readable at
 `design/components/catch.components.json#interactionContracts`. Flutter owns
 the exact mode, slot, save-state, and section-variant names; React surfaces map
 native components onto those semantics rather than sharing implementation.
-`docs/audit_registry/field_facade_inventory.json` is generated from the live
-Flutter API and carries this doctrine's forbidden storytelling surfaces for
-agent consumers. Run `npm run design:fields:facades:check` after changing the
-field or section API.
+The optional `build/reports/field_facade_inventory.json` report is generated
+from the live Flutter API and carries this doctrine's forbidden storytelling
+surfaces for review. Run `npm run design:fields:facades:check` after changing
+the field or section API.
 
 Terse filter and tag labels use `CatchField.choices` and selectable chips.
 Mutually exclusive options with per-option guidance use

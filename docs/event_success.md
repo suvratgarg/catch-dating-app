@@ -1,7 +1,7 @@
 ---
 doc_id: event_success
-version: 1.3.3
-updated: 2026-07-17
+version: 1.3.4
+updated: 2026-08-07
 owner: recursive_audit_loop
 status: active
 ---
@@ -459,8 +459,7 @@ Marketing and sales caveats:
 
 ## Verification
 
-Current code verification is distributed across focused tests and audit-registry
-pass receipts:
+Current code verification is distributed across focused tests:
 
 - `test/event_success/*`
 - `functions/src/eventSuccess/*.test.ts`
@@ -468,8 +467,7 @@ pass receipts:
 - `functions/test/firestore.rules.test.cjs`
 - `tool/demo/seed_demo_data_schema.test.mjs`
 - `test/core/schema_contracts_generated_test.dart`
-- `docs/audit_registry/passes.jsonl`
 
-Do not keep long command transcripts in this doc. Add new proof to
-`docs/audit_registry/passes.jsonl` through `dart tool/audit_registry.dart
-mark-pass`.
+Do not keep long command transcripts in this doc. Git and CI preserve the
+exact-SHA test results; update this owner document only when the durable event-
+success contract changes.

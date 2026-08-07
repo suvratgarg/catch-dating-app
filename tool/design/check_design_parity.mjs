@@ -20,12 +20,15 @@ if (command === "--help" || command === "-h" || command === "help") {
 
 function runGate() {
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "catch-design-parity-"));
+  const classificationPath = path.join(tmpDir, "classification.json");
   const fingerprintsPath = path.join(tmpDir, "fingerprints.json");
   const cleanup = () => fs.rmSync(tmpDir, {recursive: true, force: true});
   process.once("exit", cleanup);
+  const classificationArg = JSON.stringify(relativeToRepo(classificationPath));
   const fingerprintsArg = JSON.stringify(relativeToRepo(fingerprintsPath));
   const blocking = [
-    `dart run tool/widget_dedupe/bin/extract_fingerprints.dart --out ${fingerprintsArg}`,
+    `node tool/design/generate_widget_classification.mjs --out ${classificationArg}`,
+    `dart run tool/widget_dedupe/bin/extract_fingerprints.dart --classification ${classificationArg} --out ${fingerprintsArg}`,
     "node --test tool/design/component_concepts.test.mjs",
     "node tool/design/check_component_contracts.mjs",
     "node tool/design/check_widget_classification.mjs",
@@ -33,7 +36,6 @@ function runGate() {
     "node tool/design/check_widget_pattern_families.mjs --check",
     "node tool/design/import_figma_library_snapshot.mjs --check",
     "node tool/design/build_design_sync_manifest.mjs --check",
-    "node tool/design/build_widget_concept_report.mjs --check",
     "node tool/ui_capture/check_route_inventory.mjs --check",
     "node tool/ui_capture/check_capture_coverage.mjs --check --summary",
     "node tool/design/check_design_parity_matrix.mjs --check",

@@ -21,6 +21,14 @@ flutter analyze
 flutter build web --release
 ```
 
+## Launch Failure Triage
+
+Run Widgetbook from this package, and treat the first compiler error as the
+root signal. Because this package imports the application by path, a compile
+error in `../lib/` is an application-source blocker, not evidence that the
+Widgetbook setup, Chrome device, or port is broken. Fix that first reported
+source error and rerun the same command before changing Widgetbook setup.
+
 ## Add Previews
 
 - Put use cases under `widgetbook/lib/`.

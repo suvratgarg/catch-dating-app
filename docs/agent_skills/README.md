@@ -1,6 +1,6 @@
 ---
 doc_id: agent_skills
-version: 1.3.131
+version: 1.5.0
 updated: 2026-08-07
 owner: agent_operating_model
 status: active
@@ -10,28 +10,31 @@ status: active
 
 These are project-local workflow routers for Catch. They are intentionally
 shorter than global Codex or Claude skills. Their job is to route agents to the
-right source docs, ledgers, tools, and completion proof for repeated Catch work.
+right owner docs and existing checks for repeated Catch work.
 
 `skills_manifest.json` is the machine-readable source. The markdown files are
 human-readable copies for quick review.
 
+Each router names mandatory owner documents and checks. It may also show an
+optional `context_pack.mjs --paths ...` command for stdout-only orientation;
+running that command is never a prerequisite for work.
+
 Validate this folder with:
 
 ```sh
-node tool/agent/check_agent_readiness.mjs
+node tool/run.mjs check agent:context-pack
 ```
 
 Do not add broad doctrine here. Add durable architecture decisions to the owner
 docs and reference them from the manifest.
 
-Document workflow routers use the read policies in `doc_versions.json`; there
-is no parallel document-summary registry.
+Document workflow routers use `AGENTS.md`, source frontmatter, and explicit
+owner-doc mappings. There is no document-summary or version registry.
 
 Repository tooling and automation under `tool/` route through
 `catch-tooling-automation.md`. That router keeps script ownership, exact impact
 routing, checkout/setup requirements, focused tests, manifest validation, and
-readiness proof in one workflow instead of falling back to documentation
-hygiene.
+CI proof in one workflow instead of falling back to documentation hygiene.
 
 Marketing website work routes through `catch-marketing-website.md` so public
 routes, generated organizer listings, static metadata, CI, and route-review

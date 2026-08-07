@@ -6,6 +6,12 @@ import {fileURLToPath} from "node:url";
 import {createRepositorySnapshot} from "./lib/repository_snapshot.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+export const retiredGovernanceEvidencePaths = Object.freeze([
+  "docs/agent_regression_ledger.json",
+]);
+export const retiredGovernanceEvidencePrefixes = Object.freeze([
+  "docs/audit_registry/",
+]);
 
 export function matchesPattern(name, pattern) {
   const escaped = pattern.replace(/[.+^${}()|[\]\\]/g, "\\$&").replaceAll("*", ".*").replaceAll("?", ".");
@@ -93,6 +99,18 @@ export function relationshipViolations({
   return errors;
 }
 
+export function retiredEvidenceViolations(snapshot) {
+  const paths = new Set(
+    retiredGovernanceEvidencePaths.filter((relativePath) => snapshot.exists(relativePath)),
+  );
+  for (const prefix of retiredGovernanceEvidencePrefixes) {
+    for (const relativePath of snapshot.listPaths({prefix})) paths.add(relativePath);
+  }
+  return [...paths]
+    .sort()
+    .map((relativePath) => `${relativePath}: retired governance evidence must remain absent`);
+}
+
 function git(args, {cwd = repoRoot, ...options} = {}) {
   return execFileSync("git", args, {cwd, encoding: "utf8", ...options}).trim();
 }
@@ -105,6 +123,7 @@ export function checkRepository({
   const manifest = snapshot.readJson("tool/repository_root_manifest.json", {required: true});
   const toolsManifest = snapshot.readJson("tool/tools_manifest.json", {required: true});
   const errors = [];
+  errors.push(...retiredEvidenceViolations(snapshot));
   const rootNames = snapshot.listRootEntries().map(({name}) => name);
   for (const name of rootNames) {
     const matches = classify(name, manifest);

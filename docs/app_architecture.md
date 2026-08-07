@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.8.5
+version: 1.9.0
 updated: 2026-08-07
 owner: app_architecture
 status: active
@@ -33,7 +33,7 @@ This spec consolidates and normalizes guidance from:
   token tiers, sizing rules, design-tool boundaries, and analyzer-plugin policy.
 - `docs/widget_catalog.md`: widget ownership, primitive governance, public
   widget catalog, and private-helper remediation.
-- `docs/audit_registry/rules.json`: active enforceable rules such as
+- `tool/policy/rules.json`: active enforceable rules such as
   `ASYNC-UI-001`, `CONTROLLER-BOUNDARY-001`, `PROVIDER-SEAM-001`,
   `ERROR-UI-001`, `MUTATION-ERROR-SURFACE-001`, `PENDING-SNAPSHOT-001`,
   `EXTERNAL-SIDE-EFFECT-001`, `UI-LINT-001`, and
@@ -204,7 +204,7 @@ remain the explicit entrypoints for a full selected-device pass. Do not use
 Do not add an asynchronous localization delegate when the requested behavior is
 already the component's nonlocalized fallback.
 
-<!-- exhibit-freshness: ARCH-ROUTER-LIFECYCLE-001 source=docs/audit_registry/architecture_pattern_adoption.json owner=recursive_audit_loop -->
+<!-- exhibit-freshness: ARCH-ROUTER-LIFECYCLE-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->
 
 Do not create parallel top-level folders such as `services`, `repositories`,
 `view_models`, or `widgets` for feature-owned code. If code is genuinely shared,
@@ -1224,7 +1224,7 @@ implementation.
 
 ### Exhibit ARCH-PENDING-SNAPSHOT-001: Pending Request Snapshot Integrity
 
-<!-- exhibit-freshness: ARCH-PENDING-SNAPSHOT-001 source=docs/audit_registry/architecture_pattern_adoption.json owner=recursive_audit_loop -->
+<!-- exhibit-freshness: ARCH-PENDING-SNAPSHOT-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->
 
 Reference files:
 
@@ -1415,7 +1415,7 @@ section models when that removes business logic from widgets.
 
 ### Exhibit ARCH-PROVIDER-CODEGEN-001: Generated Auto-Dispose Provider Family
 
-<!-- exhibit-freshness: ARCH-PROVIDER-CODEGEN-001 source=docs/audit_registry/architecture_pattern_adoption.json owner=recursive_audit_loop -->
+<!-- exhibit-freshness: ARCH-PROVIDER-CODEGEN-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->
 
 Reference files:
 
@@ -1730,7 +1730,7 @@ must remain bundled and release-reviewed.
 
 ### Exhibit ARCH-COPY-001: Product Copy Boundary
 
-<!-- exhibit-freshness: ARCH-COPY-001 source=docs/audit_registry/architecture_pattern_adoption.json owner=recursive_audit_loop -->
+<!-- exhibit-freshness: ARCH-COPY-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->
 
 Reference implementation:
 
@@ -1990,7 +1990,7 @@ code.
 
 ### Exhibit ARCH-APP-TARGET-001: Installable App Target Resolution
 
-<!-- exhibit-freshness: ARCH-APP-TARGET-001 source=docs/audit_registry/architecture_pattern_adoption.json owner=recursive_audit_loop -->
+<!-- exhibit-freshness: ARCH-APP-TARGET-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->
 
 The build wrapper resolves entrypoint and native identity from the target
 contract before it activates Firebase or invokes Flutter:
@@ -2080,7 +2080,7 @@ Use three enforcement levels.
 
 The enforcement registry is checked by
 `node tool/check_enforcement_integrity.mjs`. When a rule gains, loses, or
-changes enforcement, update `docs/audit_registry/rules.json`,
+changes enforcement, update `tool/policy/rules.json`,
 `tool/tools_manifest.json`, the owner-doc anchor, and the known-bad proof or
 baseline receipt together. Manual enforcement is explicit with `stage: manual`;
 absence of an enforcement entry is drift.
@@ -2103,7 +2103,7 @@ away; only deliberately declared search/filter/tab controls may pin.
 
 ### Exhibit ARCH-ROUTE-CHROME-001: Pushed Route Chrome
 
-<!-- exhibit-freshness: ARCH-ROUTE-CHROME-001 source=docs/audit_registry/architecture_pattern_adoption.json owner=recursive_audit_loop -->
+<!-- exhibit-freshness: ARCH-ROUTE-CHROME-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->
 
 `CatchRouteScaffold` is the reference boundary for pushed Consumer and Host
 routes. The route supplies a `CatchTopBar` builder and body; the shell alone
@@ -2211,7 +2211,7 @@ Architecture migration must proceed from a reference implementation, not from
 abstract prose alone. Before rolling a pattern across many files, create one
 high-quality prototype, copy the relevant code excerpt into this document as an
 exhibit, and record adopters in
-`docs/audit_registry/architecture_pattern_adoption.json`.
+`tool/architecture/pattern_adoption.json`.
 
 The workflow is:
 
@@ -2250,7 +2250,7 @@ The workflow is:
      owner contract; preserve verification in the commit and CI checks.
 
 Exhibit freshness is owned by this doc plus
-`docs/audit_registry/architecture_pattern_adoption.json`. Every exhibit block
+`tool/architecture/pattern_adoption.json`. Every exhibit block
 must carry an `exhibit-freshness` marker naming its tracker source and owner.
 `node tool/architecture/check_app_architecture_exhibits.mjs` checks those
 markers, verifies the tracker points back to the current doc anchor, and rejects
@@ -2258,7 +2258,7 @@ known stale snippets from prior reference shapes.
 
 ### Exhibit ARCH-ENTITY-MATERIAL-001: Entity Material Composition
 
-<!-- exhibit-freshness: ARCH-ENTITY-MATERIAL-001 source=docs/audit_registry/architecture_pattern_adoption.json owner=recursive_audit_loop -->
+<!-- exhibit-freshness: ARCH-ENTITY-MATERIAL-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->
 
 Reference files:
 
@@ -2339,7 +2339,7 @@ still require a sanitized server-owned suggestion response.
 
 ### Exhibit ARCH-CROSS-PATHS-CONSENT-001: Fail-Closed Layered Consent
 
-<!-- exhibit-freshness: ARCH-CROSS-PATHS-CONSENT-001 source=docs/audit_registry/architecture_pattern_adoption.json owner=recursive_audit_loop -->
+<!-- exhibit-freshness: ARCH-CROSS-PATHS-CONSENT-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->
 
 Reference files:
 
@@ -2459,7 +2459,7 @@ Preserve these boundaries in later adopters:
 
 ### Exhibit ARCH-SCREEN-001: Feature Screen Boundary
 
-<!-- exhibit-freshness: ARCH-SCREEN-001 source=docs/audit_registry/architecture_pattern_adoption.json owner=recursive_audit_loop -->
+<!-- exhibit-freshness: ARCH-SCREEN-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->
 
 Reference files:
 
@@ -2738,7 +2738,7 @@ Widget build(BuildContext context) {
 
 ### Exhibit ARCH-SCREEN-CHROME-001: Root Screen Header Chrome
 
-<!-- exhibit-freshness: ARCH-SCREEN-CHROME-001 source=docs/audit_registry/architecture_pattern_adoption.json owner=recursive_audit_loop -->
+<!-- exhibit-freshness: ARCH-SCREEN-CHROME-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->
 
 Reference files:
 
@@ -2842,7 +2842,7 @@ Widget build(BuildContext context) {
 
 ### Exhibit ARCH-UI-STATE-001: Provider-Free Presentation State Model
 
-<!-- exhibit-freshness: ARCH-UI-STATE-001 source=docs/audit_registry/architecture_pattern_adoption.json owner=recursive_audit_loop -->
+<!-- exhibit-freshness: ARCH-UI-STATE-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->
 
 Reference files:
 
@@ -2966,7 +2966,7 @@ class CalendarEventSummary {
 
 ### Exhibit ARCH-FORM-DESCRIPTOR-001: Typed Form Row Orchestration
 
-<!-- exhibit-freshness: ARCH-FORM-DESCRIPTOR-001 source=docs/audit_registry/architecture_pattern_adoption.json owner=recursive_audit_loop -->
+<!-- exhibit-freshness: ARCH-FORM-DESCRIPTOR-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->
 
 Reference files:
 
@@ -2977,7 +2977,7 @@ Reference files:
 - `test/core/forms/catch_form_descriptors_test.dart`
 - `test/core/forms/contract_alignment_test.dart`
 - `test/profile/self_profile_edit_tab_state_test.dart`
-- `docs/audit_registry/flutter_form_contract_inventory.json`
+- on-demand `build/reports/flutter_form_contract_inventory.json`
 - `tool/contracts/generate_flutter_form_contract_inventory.mjs`
 
 Use this pattern when multiple form surfaces need the same row mapping,
@@ -3015,7 +3015,7 @@ CatchFormRowList<UpdateUserProfilePatch>(
 
 ### Exhibit ARCH-DATA-CURSOR-001: Bounded Cursor Read Window
 
-<!-- exhibit-freshness: ARCH-DATA-CURSOR-001 source=docs/audit_registry/architecture_pattern_adoption.json owner=recursive_audit_loop -->
+<!-- exhibit-freshness: ARCH-DATA-CURSOR-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->
 
 Reference implementation:
 

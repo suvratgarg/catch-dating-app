@@ -1,6 +1,6 @@
 ---
 doc_id: web_surface_architecture
-version: 0.10.4
+version: 0.11.0
 updated: 2026-08-07
 owner: web_platform
 status: active
@@ -179,7 +179,7 @@ implementation and proof fails strict mode.
   Firebase, router, query, or feature dependencies; both apps consume its
   structural controls through surface-owned adapters so class names and visual
   variants remain local.
-- `docs/audit_registry/web_shared_primitive_adoption.json` is the active
+- `design/web-ui/shared_primitive_adoption.json` is the active
   cross-surface compatibility and improvement queue. The non-vacuous
   `web:shared-ui-adoption` gate classifies every exact-name primitive overlap,
   every package export, the shared focus contract, and package CI coverage.
@@ -302,8 +302,7 @@ through `docs/agent_skills/catch-react-surface-refactor.md`.
   must not pass `className` directly outside shared primitive owner files. Run
   `node tool/run.mjs check web:react-classname-boundaries` before handoff. The
   scanner-owned family registry is `tool/web/check_react_component_governance.mjs`;
-  the generated reader snapshot is
-  `docs/audit_registry/react_component_governance_families.json`. Run
+  its current family view is printed on demand with `--families-json`. Run
   `node tool/run.mjs check web:react-component-governance` before handoff. This
   scanner is a known-family blocklist, so reviewers must add new repeated shell
   families to the scanner when drift repeats instead of relying on prose.
@@ -667,9 +666,11 @@ tooling, and the marketing deploy path. It used three read-only subagent slices:
 UI/component architecture, data/contracts/API boundaries, and
 delivery/SEO/performance.
 
-Original verification run during the audit:
+Original verification run during the audit. The first command is historical
+and its audit writer has been retired; current changes use the focused checks
+that follow:
 
-- `dart tool/audit_registry.dart refresh`
+- Historical only: audit-registry refresh (command retired)
 - `npm --workspace catch-marketing run build`
 - `node --test website/scripts/checkOrganizerBuildOutputs.test.mjs website/scripts/generateOrganizerListings.test.mjs website/scripts/postbuild.test.mjs`
 - `node website/scripts/checkOrganizerBuildOutputs.mjs`

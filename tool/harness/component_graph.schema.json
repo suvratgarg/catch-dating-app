@@ -9,6 +9,7 @@
     "status",
     "modes",
     "targets",
+    "deployGroupRequirements",
     "ciCheckout",
     "operationProfiles",
     "classifications",
@@ -30,6 +31,16 @@
       "minItems": 1,
       "uniqueItems": true,
       "items": {"type": "string", "minLength": 1}
+    },
+    "deployGroupRequirements": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "array",
+        "minItems": 1,
+        "uniqueItems": true,
+        "items": {"type": "string", "minLength": 1}
+      }
     },
     "ciCheckout": {
       "type": "object",

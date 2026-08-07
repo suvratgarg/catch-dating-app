@@ -34,8 +34,8 @@ specified and mechanical; items tagged `[confirm]` change something visible
 and want a one-line owner sign-off before execution. Codex flips each item
 to `[done <commit>]` as it lands, following the standard workflow
 (AGENTS.md, focused tests, analyzer, relevant scanners, widget_catalog +
-passes.jsonl when contracts change, widgetbook kept current, sequential
-Flutter runs).
+the owning authored contract when behavior changes, Widgetbook kept current,
+and sequential Flutter runs). Git and CI retain execution proof.
 
 Standing doctrine (owner-approved 2026-07-05):
 

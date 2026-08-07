@@ -90,7 +90,9 @@ to build with one item.
 
 ## Open Work Queue
 
-- `ACC-001`: Add this policy to the audit registry as an active rule.
+- `ACC-001` (closed): `ACTION-CARDINALITY-001` in
+  `../tool/policy/rules.json` owns the active rule and executable enforcement
+  bindings.
 - `ACC-002`: Build an action inventory from backend callables and primary UI
   CTAs, then keep it current like the backend operation catalog.
 - `ACC-003`: Continue auditing rapid repeated taps on singleton mutation

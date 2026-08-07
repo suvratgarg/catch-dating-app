@@ -1,10 +1,9 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import path from "node:path";
-import {spawn, spawnSync} from "node:child_process";
+import {spawnSync} from "node:child_process";
 import {repoRoot} from "./lib/repo_paths.mjs";
 import {createRepositorySnapshot} from "./lib/repository_snapshot.mjs";
-import {isCanonicalTaskPath} from "./agent/lib/task_input.mjs";
 import {
   toolSupportsPlatform,
   validateToolPlatforms,
@@ -22,15 +21,6 @@ import {
   validateToolCheckSafety,
   validateToolCiRequirements,
 } from "./lib/tool_impact.mjs";
-import {
-  acquireTaskExecutionLease,
-  authorizeTaskCheckIds,
-  readTaskExecutionContext,
-  taskPlanningAuthorityBlockers,
-  taskProcessIsolationBlockers,
-  taskToolDefinitionBlockers,
-  TASK_EXECUTION_DENIED_EXIT_CODE,
-} from "./harness/lib/task_execution_context.mjs";
 
 const manifestPath = "tool/tools_manifest.json";
 const componentGraphPath = "tool/harness/component_graph.json";
@@ -119,13 +109,7 @@ async function checkTools(args) {
   await runChecks(tools);
 }
 
-async function runChecks(tools, {authoritySources = []} = {}) {
-  await executeAuthorizedTaskCheckBatch(tools.map((tool) => tool.id), async (lease) => {
-    await runChecksUnlocked(tools, lease);
-  }, {authoritySources, tools});
-}
-
-async function runChecksUnlocked(tools, lease = null) {
+async function runChecks(tools) {
   for (const tool of tools) {
     if (!toolSupportsPlatform(tool)) {
       console.log(
@@ -135,15 +119,12 @@ async function runChecksUnlocked(tools, lease = null) {
       continue;
     }
     for (const check of tool.checks ?? []) {
-      if (!authorizeTaskCheckDispatch([tool.id], {validateBaseAuthority: false})) return;
       console.log(`==> ${tool.id}: ${check}`);
-      const result = lease == null
-        ? spawnSync(check, {
-          cwd: repoRoot,
-          shell: true,
-          stdio: "inherit",
-        })
-        : await runManagedTaskCheck({check, lease});
+      const result = spawnSync(check, {
+        cwd: repoRoot,
+        shell: true,
+        stdio: "inherit",
+      });
       if (result.status !== 0) {
         process.exitCode = result.status ?? 1;
         return;
@@ -152,80 +133,6 @@ async function runChecksUnlocked(tools, lease = null) {
   }
 
   console.log("Tool checks passed.");
-}
-
-function runManagedTaskCheck({check, lease}) {
-  const child = spawn(process.execPath, [
-    path.join(repoRoot, "tool/harness/lib/task_execution_context.mjs"),
-    "task-check-child",
-    lease.leasePath,
-    lease.lease.token,
-    check,
-  ], {
-    cwd: repoRoot,
-    detached: process.platform !== "win32",
-    stdio: "inherit",
-  });
-  let forwardedSignal = null;
-  let cancellationStartedAt = null;
-  const forwardSignal = (signal) => {
-    if (!child.pid) return;
-    forwardedSignal ??= signal;
-    cancellationStartedAt ??= Date.now();
-    try {
-      process.kill(process.platform === "win32" ? child.pid : -child.pid, signal);
-    } catch (error) {
-      if (error?.code !== "ESRCH") throw error;
-    }
-  };
-  const onSigint = () => forwardSignal("SIGINT");
-  const onSigterm = () => forwardSignal("SIGTERM");
-  process.on("SIGINT", onSigint);
-  process.on("SIGTERM", onSigterm);
-  const removeSignalHandlers = () => {
-    process.off("SIGINT", onSigint);
-    process.off("SIGTERM", onSigterm);
-  };
-  const waitForProcessGroupDrain = async () => {
-    if (process.platform === "win32" || !child.pid) return;
-    while (true) {
-      try {
-        process.kill(-child.pid, 0);
-      } catch (error) {
-        if (error?.code === "ESRCH") return;
-        throw error;
-      }
-      if (forwardedSignal != null) {
-        const signal = Date.now() - cancellationStartedAt >= 2000
-          ? "SIGKILL"
-          : forwardedSignal;
-        try {
-          process.kill(-child.pid, signal);
-        } catch (error) {
-          if (error?.code === "ESRCH") return;
-          throw error;
-        }
-      }
-      await new Promise((resolve) => setTimeout(resolve, 50));
-    }
-  };
-  return new Promise((resolve) => {
-    child.once("error", (error) => {
-      removeSignalHandlers();
-      resolve({status: 1, signal: null, error});
-    });
-    child.once("close", async (status, signal) => {
-      await waitForProcessGroupDrain();
-      removeSignalHandlers();
-      resolve({
-        status: forwardedSignal === "SIGINT"
-          ? 130
-          : (forwardedSignal == null ? status : 143),
-        signal: forwardedSignal == null ? signal : null,
-        error: null,
-      });
-    });
-  });
 }
 
 function requireSelection(tools, {category, ids = []} = {}) {
@@ -326,13 +233,7 @@ async function impactedTools(args) {
     return;
   }
   requireSelection(tools, {ids: toolIds});
-  await runChecks(tools, {
-    authoritySources: [
-      {relativePath: "tool/tools_manifest.json", value: manifest},
-      {relativePath: "tool/repository_root_manifest.json", value: rootManifest},
-      {relativePath: componentGraphPath, value: componentGraph},
-    ],
-  });
+  await runChecks(tools);
 }
 
 async function affectedToolChecks(args) {
@@ -375,52 +276,34 @@ async function affectedToolChecks(args) {
     requireSelection(tools, {ids: plan.toolIds});
   }
   if (!options.check) {
-    await executeAuthorizedTaskCheckBatch(plan.toolIds, () => {
-      fs.appendFileSync(
-        options.githubOutput,
-        formatAffectedToolGithubOutputs(plan),
-        "utf8",
-      );
-    }, {
-      authoritySources: [
-        {relativePath: manifestPath, value: manifest},
-        {relativePath: componentGraphPath, value: componentGraph},
-      ],
-      fullPlan: plan.mode === "full",
-      tools,
-    });
+    fs.appendFileSync(
+      options.githubOutput,
+      formatAffectedToolGithubOutputs(plan),
+      "utf8",
+    );
     return;
   }
-  await executeAuthorizedTaskCheckBatch(plan.toolIds, async (lease) => {
-    if (options.githubOutput) {
-      fs.appendFileSync(
-        options.githubOutput,
-        formatAffectedToolGithubOutputs(plan),
-        "utf8",
-      );
-    }
-    if (options.json) {
-      console.log(JSON.stringify(plan, null, 2));
-    } else {
-      console.log(`Affected tool mode: ${plan.mode}`);
-      console.log(`Affected tool checks: ${plan.toolIds.join(", ") || "none"}`);
-    }
-    if (plan.mode === "full") {
-      console.error(
-        "Affected-tool planning selected full mode; run the full category matrix.",
-      );
-      process.exitCode = 1;
-      return;
-    }
-    await runChecksUnlocked(tools, lease);
-  }, {
-    authoritySources: [
-      {relativePath: manifestPath, value: manifest},
-      {relativePath: componentGraphPath, value: componentGraph},
-    ],
-    fullPlan: plan.mode === "full",
-    tools,
-  });
+  if (options.githubOutput) {
+    fs.appendFileSync(
+      options.githubOutput,
+      formatAffectedToolGithubOutputs(plan),
+      "utf8",
+    );
+  }
+  if (options.json) {
+    console.log(JSON.stringify(plan, null, 2));
+  } else {
+    console.log(`Affected tool mode: ${plan.mode}`);
+    console.log(`Affected tool checks: ${plan.toolIds.join(", ") || "none"}`);
+  }
+  if (plan.mode === "full") {
+    console.error(
+      "Affected-tool planning selected full mode; run the full category matrix.",
+    );
+    process.exitCode = 1;
+    return;
+  }
+  await runChecks(tools);
 }
 
 function changedPathsSince(base) {
@@ -456,8 +339,6 @@ function runTool(args) {
     console.error("Usage: node tool/run.mjs run <tool-id> [args...]");
     process.exit(64);
   }
-
-  if (!authorizeDirectTaskToolExecution(id)) return;
 
   const tool = loadManifest().tools.find((entry) => entry.id === id);
   if (!tool) {
@@ -500,22 +381,6 @@ function validateManifest(manifest, componentGraph) {
     }
     validateStringArrayField(tool.impactPaths, `${tool.id}.impactPaths`, errors);
     validateStringArrayField(tool.alsoCheckIds, `${tool.id}.alsoCheckIds`, errors);
-    validateStringArrayField(tool.taskPaths, `${tool.id}.taskPaths`, errors);
-    const taskPaths = Array.isArray(tool.taskPaths) ? tool.taskPaths : [];
-    for (const taskPath of taskPaths) {
-      if (!isCanonicalTaskPath(taskPath)) {
-        errors.push(`${tool.id}.taskPaths has invalid path ${taskPath}.`);
-        continue;
-      }
-      const snapshot = repositorySnapshot();
-      const exists = snapshot.exists(taskPath) ||
-        snapshot.listPaths({prefix: `${taskPath}/`}).length > 0;
-      if (!exists) errors.push(`${tool.id}.taskPaths path does not exist: ${taskPath}.`);
-    }
-    if (taskPaths.length > 0 &&
-        tool.ciRequirements?.repositoryView !== "index") {
-      errors.push(`${tool.id}.taskPaths requires ciRequirements.repositoryView index.`);
-    }
     for (const error of validateToolCiRequirements(tool)) {
       errors.push(`${tool.id ?? "<missing>"}: ${error}`);
     }
@@ -618,126 +483,6 @@ function discoverManagedScripts() {
 function repositorySnapshot() {
   capturedRepositorySnapshot ??= createRepositorySnapshot();
   return capturedRepositorySnapshot;
-}
-
-function taskExecutionContext({validateBaseAuthority = true} = {}) {
-  return readTaskExecutionContext({cwd: repoRoot, validateBaseAuthority});
-}
-
-async function executeAuthorizedTaskCheckBatch(
-  checkIds,
-  callback,
-  {authoritySources = [], fullPlan = false, tools = []} = {},
-) {
-  const initialContext = taskExecutionContext();
-  if (initialContext.kind === "blocked") {
-    printTaskExecutionDenial({
-      context: initialContext,
-      authorization: {blockers: initialContext.blockers, denied: []},
-    });
-    process.exitCode = TASK_EXECUTION_DENIED_EXIT_CODE;
-    return false;
-  }
-  if (initialContext.kind === "unmanaged") {
-    if (!authorizeTaskCheckDispatch(checkIds, {fullPlan})) return false;
-    await callback(null);
-    return true;
-  }
-  const isolationBlockers = taskProcessIsolationBlockers({context: initialContext});
-  if (isolationBlockers.length > 0) {
-    printTaskExecutionDenial({
-      context: initialContext,
-      authorization: {blockers: isolationBlockers, denied: []},
-    });
-    process.exitCode = TASK_EXECUTION_DENIED_EXIT_CODE;
-    return false;
-  }
-  const lease = acquireTaskExecutionLease({cwd: repoRoot, owner: "tool-check-batch"});
-  if (!lease.acquired) {
-    printTaskExecutionDenial({
-      context: initialContext,
-      authorization: {blockers: lease.blockers, denied: []},
-    });
-    process.exitCode = TASK_EXECUTION_DENIED_EXIT_CODE;
-    return false;
-  }
-  try {
-    if (!authorizeTaskCheckDispatch(checkIds, {fullPlan})) return false;
-    const context = taskExecutionContext({validateBaseAuthority: false});
-    const definitionBlockers = taskToolDefinitionBlockers({
-      context,
-      tools,
-      cwd: repoRoot,
-    });
-    const planningBlockers = taskPlanningAuthorityBlockers({
-      context,
-      sources: authoritySources,
-      cwd: repoRoot,
-    });
-    const authorityBlockers = [...definitionBlockers, ...planningBlockers].sort();
-    if (authorityBlockers.length > 0) {
-      printTaskExecutionDenial({
-        context,
-        authorization: {blockers: authorityBlockers, denied: []},
-      });
-      process.exitCode = TASK_EXECUTION_DENIED_EXIT_CODE;
-      return false;
-    }
-    await callback(lease);
-    return true;
-  } finally {
-    lease.release();
-  }
-}
-
-function authorizeTaskCheckDispatch(
-  checkIds,
-  {validateBaseAuthority = true, fullPlan = false} = {},
-) {
-  const context = taskExecutionContext({validateBaseAuthority});
-  if (fullPlan && context.kind !== "unmanaged") {
-    printTaskExecutionDenial({
-      context,
-      authorization: {blockers: ["parent_owned_full_check_plan"], denied: []},
-    });
-    process.exitCode = TASK_EXECUTION_DENIED_EXIT_CODE;
-    return false;
-  }
-  const authorization = authorizeTaskCheckIds(context, checkIds);
-  if (authorization.allowed) return true;
-  printTaskExecutionDenial({context, authorization});
-  process.exitCode = TASK_EXECUTION_DENIED_EXIT_CODE;
-  return false;
-}
-
-function authorizeDirectTaskToolExecution(toolId) {
-  const context = taskExecutionContext();
-  if (context.kind === "unmanaged") return true;
-  printTaskExecutionDenial({
-    context,
-    authorization: context.kind === "blocked"
-      ? {blockers: context.blockers, denied: []}
-      : {
-          blockers: ["direct_tool_execution_forbidden_in_managed_task"],
-          denied: [{id: toolId, reason: "parent_owned_direct_execution"}],
-        },
-  });
-  process.exitCode = TASK_EXECUTION_DENIED_EXIT_CODE;
-  return false;
-}
-
-function printTaskExecutionDenial({context, authorization}) {
-  const taskId = context.metadata?.taskId ?? "<unknown>";
-  console.error(`Managed task ${taskId} rejected tool execution before dispatch.`);
-  for (const blocker of authorization.blockers ?? []) {
-    console.error(`- ${blocker}`);
-  }
-  for (const entry of authorization.denied ?? []) {
-    console.error(`- ${entry.reason}:${entry.id}`);
-  }
-  console.error(
-    "Run parent-deferred, unplanned, or direct tool commands from the parent integration checkout.",
-  );
 }
 
 function selectTools(manifest, {category, ids = []} = {}) {

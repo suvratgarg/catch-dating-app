@@ -72,7 +72,7 @@
         "staging",
         "prod"
       ],
-      "purpose": "Deploy Firebase targets in a safe, explicit order with logical target expansion for Functions.",
+      "purpose": "Automatically promote the exact CI-produced Firebase backend package through dev, staging, and protected prod, resuming the authorized stages in index, Functions, Firestore-rules, and Storage-rules order.",
       "entrypoints": [
         {
           "kind": "tool-id",
@@ -88,6 +88,10 @@
         },
         {
           "kind": "tool-id",
+          "ref": "firebase:index-readiness-waiter"
+        },
+        {
+          "kind": "tool-id",
           "ref": "firebase:storage-rules-firestore-iam"
         },
         {
@@ -96,11 +100,11 @@
         },
         {
           "kind": "workflow",
-          "ref": ".github/workflows/firebase-deploy.yml"
+          "ref": ".github/workflows/delivery.yml"
         },
         {
           "kind": "workflow",
-          "ref": ".github/workflows/firebase-dev-deploy.yml"
+          "ref": ".github/workflows/_firebase-promote.yml"
         },
         {
           "kind": "config",
@@ -130,7 +134,9 @@
         "Run node tool/firebase/probe_chat_storage_rules.mjs with an environment, user, active match, and the guarded --apply flags after Storage IAM or chat-image rules change."
       ],
       "notes": [
-        "Known targets deploy in this order: functions, firestore:indexes, firestore:rules, storage, hosting, remoteconfig.",
+        "Delivery promotes only the impact-authorized backend subset in this order: firestore:indexes, functions, firestore:rules, storage; Hosting, Remote Config, and Extensions remain separate owning workflows or explicit operations.",
+        "Manual Delivery dispatch is same-artifact recovery bound to the oldest pending successful same-repository main CI authority and a source/package-authorized terminal non-success Delivery attempt; CI workflow id, run number/id/attempt, source SHA, artifact ids, and digests are verified before recovery.",
+        "Automatic queue discovery scans artifact metadata once, verifies only the selected v4 cursor and oldest v3 successful-attempt authority, refuses cross-workflow-generation ordering, and requires the selected plan base SHA to equal the cursor source SHA.",
         "The target-aware environment preflight runs before dependency installation, allows metadata-only project, secret-version, and TTL reads, forbids secret payload access, and has no apply mode.",
         "Confirmed absence exits 1, indeterminate auth or metadata failures exit 2, and invalid invocation exits 64; every non-zero result blocks deployment.",
         "The Storage phase fails before deploy when its Firestore Rules service-agent IAM binding is missing.",
@@ -504,10 +510,6 @@
         },
         {
           "kind": "doc",
-          "ref": "docs/config_cicd_platform_audit_2026-05-21.md"
-        },
-        {
-          "kind": "doc",
           "ref": "docs/release_operations.md"
         },
         {
@@ -536,7 +538,7 @@
         "functions/test/callable-app-check.test.cjs",
         "tool/validate_firebase_environment.sh <env>",
         "Console evidence for provider registration and enforcement before release or after Firebase app registration changes",
-        "For production admin changes, verify admin.catchdates.com and catchdates-admin.web.app as authorized Auth domains, Phone and Google providers enabled, the deployed reCAPTCHA v3 key paired with a Firebase App Check server secret, and successful live App Check token exchange before sign-in"
+        "For production admin changes, verify admin.catchdates.com and catchdates-admin.web.app as authorized Auth domains, the Phone provider enabled, the Google provider disabled, the deployed reCAPTCHA v3 key paired with a Firebase App Check server secret, and successful live App Check token exchange before sign-in"
       ],
       "notes": [
         "No local script should pretend to prove console enforcement by itself.",

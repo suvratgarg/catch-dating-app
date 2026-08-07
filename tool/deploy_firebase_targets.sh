@@ -34,6 +34,8 @@ deploy_target() {
 
 sync_callable_invokers() {
   local project_id
+  local functions_dir
+  functions_dir="${CATCH_DELIVERY_FUNCTIONS_DIR:-$repo_root/functions}"
   project_id="$(
     node -e '
       const fs = require("fs");
@@ -44,7 +46,7 @@ sync_callable_invokers() {
       process.stdout.write(project);
     ' "$environment" "$repo_root/.firebaserc"
   )"
-  npm --prefix "$repo_root/functions" run sync:callable-invokers -- "$project_id"
+  npm --prefix "$functions_dir" run sync:callable-invokers -- "$project_id"
 }
 
 plan_output="$(

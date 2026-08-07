@@ -9,7 +9,7 @@ import {fromRepo} from "../lib/repo_paths.mjs";
 const DEFAULT_SOURCE = "lib/core/widgets/catch_field.dart";
 const DEFAULT_SECTION_SOURCE = "lib/core/widgets/catch_section_layout.dart";
 const DEFAULT_CONTRACTS = "design/components/catch.components.json";
-const DEFAULT_OUTPUT = "docs/audit_registry/field_facade_inventory.json";
+const DEFAULT_OUTPUT = "build/reports/field_facade_inventory.json";
 
 export const facadeUseWhen = Object.freeze({
   read: "Display a non-interactive value row with optional validity and save status.",
@@ -383,14 +383,12 @@ function runCli(argv) {
   const outputPath = fromRepo(DEFAULT_OUTPUT);
   const expected = serialize(buildFromRepo({repoRoot: fromRepo(".")}));
   if (check) {
-    const actual = fs.existsSync(outputPath) ? fs.readFileSync(outputPath, "utf8") : "";
-    if (actual !== expected) {
-      console.error(`${DEFAULT_OUTPUT} is stale. Run node tool/design/generate_field_inventory.mjs.`);
-      process.exit(1);
-    }
-    console.log("Field facade inventory is current.");
+    const repeated = serialize(buildFromRepo({repoRoot: fromRepo(".")}));
+    if (repeated !== expected) throw new Error("Field facade inventory generation is not deterministic.");
+    console.log("Field facade source contract is valid and deterministic.");
     return;
   }
+  fs.mkdirSync(path.dirname(outputPath), {recursive: true});
   fs.writeFileSync(outputPath, expected);
   console.log(`Wrote ${DEFAULT_OUTPUT}.`);
 }

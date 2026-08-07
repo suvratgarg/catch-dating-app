@@ -23,7 +23,7 @@ node tool/run.mjs check contracts:flutter-form-inventory
 node tool/run.mjs check --category demo
 node tool/run.mjs impacted --paths contracts/firestore/users.schema.json --json
 node tool/run.mjs impacted --check
-node tool/run.mjs affected-tools --paths tool/docs/check_doc_version_monotonic.mjs --json
+node tool/run.mjs affected-tools --paths tool/docs/check_doc_metadata.mjs --json
 node tool/run.mjs affected-tools --base origin/main --check
 node tool/run.mjs run demo:ops --help
 ```
@@ -53,25 +53,21 @@ mandatory and transitive `alsoCheckIds` expansion. A missing declaration keeps
 the conservative full repository view and all seven setup requirements;
 malformed declarations fail preflight. `repositoryView: index` describes the
 required logical read view and is consumed by both the affected Tools job and
-structured agent context packs. The affected Tools job's root-anchored non-cone
-checkout materializes `tool/`, the local toolchain action, and the two canonical
-audit outputs that still require physical files. Task starts instead combine
-fixed task anchors with each selected tool's explicit `taskPaths`. Every
-active index-view tool is ratcheted to Node-only setup; a missing, malformed, or
-non-index view selects the full checkout instead. The preflight job uses its own
-fixed closure for the toolchain pin guard. Both sparse paths retain full history
-and local Git blobs: do not add partial-clone filtering, because logical
-repository reads disable lazy object fetches and fail closed when an omitted
-blob is unavailable. Full tool buckets remain unchanged.
+optional context guidance. The affected Tools job's root-anchored non-cone
+checkout materializes its declared CI closure. Every active index-view tool is
+ratcheted to Node-only setup; a missing, malformed, or non-index view selects
+the full checkout instead. The preflight job uses its own fixed closure for the
+toolchain pin guard. CI sparse checkouts retain full history and local Git
+blobs: do not add partial-clone filtering, because logical repository reads
+disable lazy object fetches and fail closed when an omitted blob is
+unavailable. Full tool buckets remain unchanged.
 Tools that require an operating-system framework declare `platforms` using
 Node platform names (`darwin`, `linux`, or `win32`). Category checks report and
 skip incompatible entries; direct `run` calls fail with exit 64 instead of
 executing a platform-incompatible command.
 
-The legacy audit snapshots are frozen pending deletion. Plain refresh, pass
-stamping, readiness-metric recording, and delegation recording are retired.
-Read-only compatibility queries may inspect the old files, but they are not
-required handoff gates and no command may update them.
+The legacy audit evidence layer has been removed. Repository hygiene prevents
+those paths from returning. Git and CI own change and execution history.
 
 `impacted` joins changed paths through
 `tool/repository_root_manifest.json#relationships` to their source, generated
@@ -82,37 +78,34 @@ targets, role-selective app builds, deployment groups, and mobile-release
 eligibility:
 
 ```sh
-node tool/harness.mjs plan --base origin/main --head HEAD --mode pr --json
-node tool/harness.mjs plan --full --mode nightly --json
+node tool/harness.mjs plan --base origin/main --head HEAD --json
+node tool/harness.mjs plan --full --json
 ```
 
 Harness models exactly one terminal classification or component owner per path,
 then expands through explicit dependency edges. Unmapped or ambiguous paths fail
 before any conditional lane can be mistaken for success. Only direct ownership
 can authorize deploy or release operations; dependency expansion may add
-validation but never mutation. Compile-codegen runs only declared,
-deterministic, network-free check commands.
+validation but never mutation. Compile-codegen entries name declared,
+deterministic, network-free freshness checks for CI or explicit `tool/run.mjs`
+execution; the Harness itself never runs them.
 
 ```sh
 node tool/harness.mjs validate
 node tool/harness.mjs coverage --json
 node tool/harness.mjs explain --paths lib/features/explore/presentation/explore_page.dart --json
-node tool/harness.mjs plan --base origin/main --mode pr --json
-node tool/harness.mjs check --affected --paths contracts/firestore/users.schema.json
-node tool/harness.mjs check --affected --dry-run --paths contracts/firestore/users.schema.json
-node tool/harness.mjs generate --affected --check --paths contracts/firestore/users.schema.json
+node tool/harness.mjs plan --base origin/main --head HEAD --json
 ```
 
 The authored graph and compile-codegen allowlist live in
-`tool/harness/component_graph.json`. `check` executes the selected manifest
-checks unless `--dry-run` is present. Full-graph validation and full
-safe-codegen are restricted to nightly mode; write commands remain disabled.
+`tool/harness/component_graph.json`. Use the plan's check ids with the explicit
+`node tool/run.mjs check <id...>` runner. Harness commands are read-only.
 
 ## Layout
 
 - `audit/`: repo audit and code catalog scripts.
-- `agent/`: AI-agent context-pack and readiness checks for deterministic repo
-  work.
+- `agent/`: optional, read-only AI-agent context guidance and its focused
+  tests.
 - `branding/`: native launcher and splash branding generators.
 - `contracts/`: Firestore, schema, business-rule, and generated contract gates.
 - `copy/`: typed locale-catalog validation, ownership scanners, and generated
@@ -145,15 +138,14 @@ appear in LCOV.
 `tool/test/check_flutter_test_size.mjs` keeps new and split Flutter test specs
 at or below 1,200 lines. The exact reviewed legacy debt lives in
 `tool/test/flutter_test_size_baseline.json`; growth and stale reductions both
-fail so every improvement is ratcheted. `tool/test_inventory.mjs --check`
-remains the cross-surface filename inventory until its live-only migration
-completes.
+fail so every improvement is ratcheted. Git owns the current test filenames;
+focused test runners and coverage output derive their input from source when
+needed instead of maintaining a tracked cross-surface inventory.
 
 ```sh
 node --test tool/test/flutter_coverage_report.test.mjs
 node tool/test/flutter_coverage_report.mjs --lcov coverage/lcov.info
 node tool/test/check_flutter_test_size.mjs --check
-node tool/test_inventory.mjs --check
 ```
 
 ## Analyzer-Backed UI Gate
@@ -208,8 +200,8 @@ resolved by `tool/architecture/check_ui_composition_contracts.dart`.
 
 - Analyzer diagnostics live in `packages/catch_ui_lints` and are probe-tested
   through `tool/check_catch_ui_lints.sh`.
-- Repo scanners with audit-registry awareness live in `tool/architecture/*.mjs`
-  and ship with Node `*.test.mjs` coverage.
+- Repo architecture scanners live in `tool/architecture/*.mjs` and ship with
+  Node `*.test.mjs` coverage.
 - Dart classification scanners live in `tool/audit/*.dart`.
 - Meta-gates that validate other tools live at the `tool/` root.
 - Checks that need the Flutter toolchain gate directly in
@@ -282,32 +274,18 @@ node tool/git/audit_merge_drops.mjs \
 node --test tool/git/audit_merge_drops.test.mjs
 ```
 
-Governed document versions may increase or remain unchanged, but may not
-decrease or silently lose their catalog entry/path metadata. The target defaults
-to the working tree. Governed Markdown requires exactly one valid source
-frontmatter status and never falls back to catalog lifecycle metadata; current
-Markdown catalog rows must omit `status`, while non-Markdown governed artifacts
-must retain it. A retirement still requires both the target file and its catalog
-row to be gone:
+Governed Markdown owns its identity, version, update date, owner, and lifecycle
+in source frontmatter. Versions may increase or remain unchanged but may not
+decrease. Identities must be unique, and reviewed deletions are allowed without
+a preparatory catalog or lifecycle edit. The target defaults to the working
+tree; no parallel catalog or generated integration-state artifact is
+maintained:
 
 ```sh
-node tool/docs/check_doc_version_monotonic.mjs --base origin/main
-node tool/docs/check_doc_version_monotonic.mjs --self-test
-node --test tool/docs/check_doc_version_monotonic.test.mjs
+node tool/docs/check_doc_metadata.mjs --base origin/main
+node tool/docs/check_doc_metadata.mjs --self-test
+node --test tool/docs/check_doc_metadata.test.mjs
 ```
-
-Semantic versions describe authored contract changes; Git describes integration
-state. Build the immutable per-SHA projection without modifying source:
-
-```sh
-node tool/docs/build_doc_state.mjs \
-  --ref HEAD \
-  --output build/ci/doc-state.json
-```
-
-That projection and agent context packs expose Markdown `status` only from
-source frontmatter. Catalog lifecycle metadata is not surfaced as a competing
-Markdown status.
 
 ## Remote Ops Manifest
 
@@ -404,15 +382,27 @@ node tool/firebase/check_environment_readiness.mjs \
   --env staging --targets functions:getCrossPathsSuggestions
 ```
 
-Both Firebase deployment workflows run this gate before runtime setup,
-dependency installation, Firebase CLI installation, and backend validation.
+The reusable Firebase promotion workflow runs this gate after the downloaded
+package is verified and before runtime setup, dependency installation, Firebase
+CLI installation, or remote mutation.
+
+Backend queue selection is artifact-authority based. `Required CI` publishes a
+`catch.ci-delivery-authority/v3` document only after the current main attempt
+owns its exact plan/package artifacts; it records the CI workflow id, run
+number/id/attempt, source SHA, and immutable artifact ids/names/digests.
+`Delivery` scans artifact metadata once, then downloads and verifies one v4
+cursor and one oldest pending authority. It compares run numbers only within
+the same workflow id and requires the selected plan base SHA to equal the
+cursor SHA. Missing/expired authorities and workflow-generation changes fail
+closed instead of skipping queue work.
 
 `tool/firebase/plan_firebase_deploy_targets.mjs` is the pure planner behind
 `tool/deploy_firebase_targets.sh`. It validates target syntax, expands logical
-Functions from source exports, keeps exact `functions:<name>` targets in the
-Functions-first phase, and fails empty plans before any remote command runs.
-The deploy wrapper synchronizes live callable Cloud Run invoker bindings after
-the Functions phase and before indexes or rules.
+Functions from source exports, keeps exact `functions:<name>` targets, orders
+selected stages as indexes → Functions → Firestore rules → Storage rules, and
+fails empty plans before any remote command runs. The deploy wrapper
+synchronizes live callable Cloud Run invoker bindings during the Functions
+stage, after index readiness and before either rules stage.
 
 `tool/firebase/client_callable_dependencies.json` declares production client
 features that require a callable. The static checker reconciles the Dart define,
@@ -494,7 +484,8 @@ primitive ownership, governed component families, and server-state ownership.
 The query-state scanner is a baseline-backed ratchet: current manual async
 state candidates are listed in `tool/web/react_query_state_baseline.json`, and
 new feature controller or `use*` hook loading/saving/submitting/in-flight state
-fails the check unless it is intentionally baselined in an audit pass.
+fails the check unless the owning baseline is deliberately updated in the same
+reviewed change with a source-level rationale.
 
 ```sh
 node tool/run.mjs check web:react-architecture-boundaries
@@ -565,42 +556,47 @@ for local visual review but never substitute for the Linux CI baseline.
 
 ## Agent Harness
 
-The permanent agent-facing layer is deliberately small. Git remains the source
-of truth for code and history, and GitHub Actions remains the source of truth
-for checks, artifacts, approvals, and deployments.
+The permanent agent-facing layer is deliberately small. Git owns code, history,
+branches, and worktrees. GitHub Actions owns shared checks, artifacts,
+approvals, and deployments. Catch adds three pieces.
 
-`tool/harness.mjs explain|plan|check|generate` maps a Git diff through the
-Catch component graph. Planning is read-only with respect to tracked source;
-the optional GitHub output file is workflow plumbing, not repository state.
-The planner selects existing checks and safe compile-codegen verification. It
-does not create receipts, scores, metrics, or audit records.
+First, `tool/harness.mjs explain|plan` maps explicit paths or a Git diff through
+the Catch component graph. The planner selects existing checks and safe
+compile-codegen freshness verification, but it never executes them, coordinates
+agents, or records execution history.
 
 ```sh
-node tool/harness.mjs explain --base origin/main --head HEAD --mode pr
-node tool/harness.mjs check --affected --base origin/main --head HEAD --mode pr
-node tool/harness.mjs generate --affected --check --base origin/main --head HEAD --mode pr
+node tool/harness.mjs explain --base origin/main --head HEAD --json
+node tool/harness.mjs plan --base origin/main --head HEAD --json
 ```
 
-`tool/agent/context_pack.mjs` remains optional, read-only planning help for
-broad work. `tool/agent/check_agent_readiness.mjs` is a compatibility gate
-during migration; it must not write metrics or become a completion receipt.
+Second, `tool/agent/context_pack.mjs` is optional, read-only orientation for
+broad work. It prints owner docs, matching project skills, source rules, and
+suggested checks to stdout. It does not write a context artifact or gate work.
 
-The current `harness task` implementation is migration-era code. Its permanent
-replacement is only a thin guard around Git worktrees:
+```sh
+node tool/agent/context_pack.mjs --task <label> --paths <path[,path...]>
+```
 
-- create from an exact base SHA under the repository-owned worktree root;
-- reject claimed paths that overlap another active local task;
-- report dirty or out-of-scope changes;
-- refuse close when unique work is uncommitted or unpushed; and
-- report stale worktrees without deleting them.
+Third, `tool/git/worktree_guard.mjs` is a thin optional wrapper around ordinary
+Git worktrees. `start` creates from an exact commit and rejects overlap with
+another active local claimed-path set. `doctor` reports dirty and out-of-scope
+work. `finish` refuses to drop the local claim while unique work is uncommitted
+or unpushed. `stale` reports candidates and never deletes them.
 
-The guard does not install dependencies, execute checks, push branches, manage
-child processes, schedule work, keep leases, authorize commands, or create
-tracked evidence. Task coordination state is local and disposable; Git branches
+```sh
+node tool/git/worktree_guard.mjs start \
+  --task-id <task-id> --base-sha <40-character-sha> --paths <paths>
+node tool/git/worktree_guard.mjs doctor --worktree <path>
+node tool/git/worktree_guard.mjs finish --worktree <path>
+node tool/git/worktree_guard.mjs stale --stale-days 7
+```
+
+The guard does not install dependencies, execute checks, push, merge, remove
+worktrees, or authorize commands. Its local claims are disposable; Git branches
 and commits remain authoritative.
 
-The following legacy snapshots are frozen migration inputs and must not be
-updated:
+The following legacy evidence paths were deleted and must remain absent:
 
 - `docs/audit_registry/files.jsonl`
 - `docs/audit_registry/passes.jsonl`
@@ -608,9 +604,9 @@ updated:
 - `docs/audit_registry/doc_versions.json`
 - `docs/agent_regression_ledger.json`
 
-Do not refresh, stamp, append, or regenerate them. Active invariants belong in
-tests, linters, component risk gates, or expiring waivers. Git and CI provide
-the durable proof of work.
+Repository hygiene prevents their return. Active invariants belong in tests,
+linters, component risk gates, or explicitly manual owner-runbook checks. Git
+and CI provide the durable proof of work.
 
 ## Feature Contract Compiler
 
@@ -699,7 +695,6 @@ node tool/run.mjs check design:tokens
 These wrappers intentionally stay at the top level because CI, release runbooks,
 or muscle memory already depend on them:
 
-- `tool/audit_registry.dart`
 - `tool/check_data_contract.sh`
 - `tool/check_catch_ui_lint_drift.sh`
 - `tool/design_tokens.dart`
@@ -766,7 +761,8 @@ ids, non-empty text, and exact generated output.
 1. Put the implementation in the narrowest matching category folder.
 2. Add or update the entry in `tool/tools_manifest.json`.
 3. Include at least one cheap `checks` command unless the tool is an interactive Flutter entrypoint.
-4. Declare `ciRequirements.repositoryView: index` only when sparse Git-index visibility is sound; otherwise the check remains a deferred full-view integration check. Add exact `taskPaths` only for support that must be physically materialized outside `tool/`.
+4. Declare `ciRequirements.repositoryView: index` only when sparse Git-index
+   visibility is sound; otherwise CI uses a full repository checkout.
 5. Use `tool/lib/` helpers for repo paths, CLI flags, and Firebase project selection.
 6. Run `node tool/run.mjs check --manifest-only` before opening a PR.
 

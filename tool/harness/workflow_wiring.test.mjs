@@ -38,20 +38,17 @@ const retiredReactDependencyGraphPaths = [
   "docs/generated/react_dependency_graph/react_dependency_graph.json",
   "docs/generated/react_dependency_graph/react_dependency_graph.mmd",
 ];
-const liveAuditAuthorityPaths = [
+const livePolicyAuthorityPaths = [
   "AGENTS.md",
   "docs/README.md",
   "docs/agent_operating_model.md",
   "docs/app_architecture.md",
-  "docs/audit_registry/README.md",
-  "docs/audit_registry/backlog.json",
-  "docs/audit_registry/doc_versions.json",
-  "docs/audit_registry/rules.json",
   "tool/README.md",
+  "tool/policy/rules.json",
   "tool/tools_manifest.json",
 ];
 const liveReactDependencyGraphAuthorityPaths = [
-  ...liveAuditAuthorityPaths,
+  ...livePolicyAuthorityPaths,
   "docs/web_surface_architecture.md",
   ".github/workflows/admin-website.yml",
   ".github/workflows/marketing-website.yml",
@@ -69,8 +66,6 @@ const toolPreflightCheckoutClosure = [
 const affectedIndexCheckoutClosure = [
   "/tool/",
   "/.github/actions/load-toolchain/action.yml",
-  "/docs/audit_registry/doc_versions.json",
-  "/docs/audit_registry/test_inventory.json",
 ];
 
 function namedStep(source, name) {
@@ -163,11 +158,11 @@ test("retired derived audit artifacts stay out of live authorities", () => {
   for (const relativePath of retiredDerivedAuditPaths) {
     assert.equal(repositorySnapshot.exists(relativePath), false, relativePath);
   }
-  const sources = repositorySnapshot.readTexts(liveAuditAuthorityPaths, {
+  const sources = repositorySnapshot.readTexts(livePolicyAuthorityPaths, {
     required: true,
   });
   const offenders = [];
-  for (const relativePath of liveAuditAuthorityPaths) {
+  for (const relativePath of livePolicyAuthorityPaths) {
     const source = sources.get(relativePath);
     for (const retiredPath of retiredDerivedAuditPaths) {
       const retiredName = retiredPath.split("/").at(-1);
@@ -183,11 +178,11 @@ test("retired provider graph snapshots stay absent from live authorities", () =>
   for (const relativePath of retiredProviderGraphPaths) {
     assert.equal(repositorySnapshot.exists(relativePath), false, relativePath);
   }
-  const sources = repositorySnapshot.readTexts(liveAuditAuthorityPaths, {
+  const sources = repositorySnapshot.readTexts(livePolicyAuthorityPaths, {
     required: true,
   });
   const offenders = [];
-  for (const relativePath of liveAuditAuthorityPaths) {
+  for (const relativePath of livePolicyAuthorityPaths) {
     const source = sources.get(relativePath);
     if (source.includes("docs/generated/provider_graph")) {
       offenders.push(relativePath);
@@ -428,18 +423,7 @@ test("web smoke compiles dev roles without compiling production web", () => {
   );
 });
 
-test("deploy and mobile release workflows consume authorization outputs", () => {
-  const firebase = workflow("firebase-dev-deploy.yml");
-  assert.match(firebase, /steps\.impact\.outputs\.deploy_required/);
-  assert.match(firebase, /steps\.impact\.outputs\.deploy_groups/);
-  assert.match(firebase, /node tool\/harness\.mjs plan/);
-  assert.match(firebase, /--mode main/);
-  assert.doesNotMatch(firebase, new RegExp(retiredPlanner));
-  assert.doesNotMatch(
-    firebase,
-    /steps\.impact\.outputs\.(contracts|firestore_rules|functions)/,
-  );
-
+test("mobile release workflow consumes planner authorization outputs", () => {
   const mobile = workflow("mobile-internal-release.yml");
   assert.match(mobile, /steps\.impact\.outputs\.release_roles/);
   assert.match(mobile, /node tool\/harness\.mjs plan/);

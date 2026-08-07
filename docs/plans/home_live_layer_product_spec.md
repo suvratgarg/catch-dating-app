@@ -1,7 +1,7 @@
 ---
 doc_id: home_live_layer_product_spec
-version: 1.0.2
-updated: 2026-07-10
+version: 1.0.3
+updated: 2026-08-07
 owner: product (approved direction 2026-07-05)
 status: implemented-behind-flag
 ---
@@ -218,6 +218,6 @@ Standard repo workflow per AGENTS.md. Per phase: focused widget tests
 (home state machine states 1A; explore boost/lens 1B; composer quota +
 notification rendering 2), analyzer, `bash tool/widget_cleanup_scan.sh`,
 gutter/section scanners on touched screens, data-contract check (Phase 2),
-`node tool/agent/check_agent_readiness.mjs`, widget catalog + TESTS.md +
-passes.jsonl updates. Phase order is 1A+1B together (one release: club
+widget catalog + TESTS.md updates, and `git diff --check`. Git and CI preserve
+the proof. Phase order is 1A+1B together (one release: club
 membership remains legible in Explore when its Home rail is removed), then 2.

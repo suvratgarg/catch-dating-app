@@ -448,87 +448,6 @@ test("still fails when a referenced ratchet baseline is missing", () => {
   );
 });
 
-test("fails broad flutter regression guards without plain-name or evidence", () => {
-  const root = createFixture({
-    rules: {"RULE-001": manualRule()},
-    ledger: {
-      entries: [
-        {
-          id: "REG-TEST-001",
-          status: "active",
-          guard: {
-            type: "command",
-            command: "flutter test test/example_test.dart",
-          },
-        },
-      ],
-    },
-    files: {"test/example_test.dart": "void main() {}\n"},
-  });
-
-  assert.match(
-    checkEnforcementIntegrity({root}).errors.join("\n"),
-    /REG-TEST-001: active flutter test guard .* needs --plain-name or guardEvidence/u,
-  );
-});
-
-test("passes flutter regression guards with plain-name filters", () => {
-  const root = createFixture({
-    rules: {"RULE-001": manualRule()},
-    ledger: {
-      entries: [
-        {
-          id: "REG-TEST-001",
-          status: "active",
-          guard: {
-            type: "command",
-            command: "flutter test test/example_test.dart --plain-name 'specific regression'",
-          },
-        },
-      ],
-    },
-    files: {"test/example_test.dart": "void main() {}\n"},
-  });
-
-  assert.deepEqual(checkEnforcementIntegrity({root}).errors, []);
-});
-
-test("validates flutter regression guard evidence literals", () => {
-  const root = createFixture({
-    rules: {"RULE-001": manualRule()},
-    ledger: {
-      entries: [
-        {
-          id: "REG-TEST-001",
-          status: "active",
-          guard: {
-            type: "command",
-            command: "flutter test test/example_test.dart",
-            guardEvidence: "specific regression",
-          },
-        },
-        {
-          id: "REG-TEST-002",
-          status: "active",
-          guard: {
-            type: "command",
-            command: "flutter test test/missing_evidence_test.dart",
-            guardEvidence: "absent regression",
-          },
-        },
-      ],
-    },
-    files: {
-      "test/example_test.dart": "test('specific regression', () {});\n",
-      "test/missing_evidence_test.dart": "void main() {}\n",
-    },
-  });
-
-  const errors = checkEnforcementIntegrity({root}).errors.join("\n");
-  assert.doesNotMatch(errors, /REG-TEST-001/u);
-  assert.match(errors, /REG-TEST-002: guardEvidence not found/u);
-});
-
 test("produces the same result after fixture files become sparse omitted", (context) => {
   const root = createFixture({
     rules: {
@@ -564,11 +483,17 @@ test("produces the same result after fixture files become sparse omitted", (cont
 
   const full = checkWithRepositorySnapshot({root});
   git(root, ["sparse-checkout", "init", "--no-cone"]);
-  git(root, ["sparse-checkout", "set", "--no-cone", "/tool/"]);
+  git(root, [
+    "sparse-checkout",
+    "set",
+    "--no-cone",
+    "/tool/architecture/",
+    "/tool/tools_manifest.json",
+  ]);
   const sparse = checkWithRepositorySnapshot({root});
 
   assert.deepEqual(sparse, full);
-  assert.equal(fs.existsSync(path.join(root, "docs/audit_registry/rules.json")), false);
+  assert.equal(fs.existsSync(path.join(root, "tool/policy/rules.json")), false);
 });
 
 function createFixture({
@@ -576,12 +501,10 @@ function createFixture({
   tools = [],
   docs = {},
   files = {},
-  ledger = {entries: []},
 }) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-enforcement-"));
-  writeJson(root, "docs/audit_registry/rules.json", {rules});
+  writeJson(root, "tool/policy/rules.json", {rules});
   writeJson(root, "tool/tools_manifest.json", {version: 1, tools});
-  writeJson(root, "docs/agent_regression_ledger.json", ledger);
   for (const [filePath, contents] of Object.entries({
     "docs/app_architecture.md": "# App Architecture\n",
     ...docs,
@@ -603,7 +526,7 @@ function manualRule() {
     enforcement: [
       {
         stage: "manual",
-        docAnchor: "docs/audit_registry/rules.json",
+        docAnchor: "tool/policy/rules.json",
       },
     ],
   };

@@ -13,8 +13,8 @@ Read: `docs/marketing_website_architecture.md`,
 
 Loop:
 
-1. Generate a scoped context pack for the marketing website paths before
-   editing.
+1. Optionally print scoped orientation before editing:
+   `node tool/agent/context_pack.mjs --task marketing-website --paths website,packages/web-config,tool/marketing,design/website,.github/workflows/marketing-website.yml`.
 2. Use `docs/marketing_website_architecture.md` for source layout,
    page/controller/component boundaries, and refactor order.
 3. Update `design/website/routes.json` before changing public route, metadata,
@@ -36,7 +36,8 @@ Loop:
 9. Run `npm --workspace catch-marketing run build:storybook` when Storybook
    stories, component registry entries, or route/section composition changed.
 10. Keep website source-of-truth docs, tool manifest entries, CI path filters,
-   regression guards, and audit receipts current when enforcement changes.
+   and executable regression guards current when enforcement changes. Preserve
+   execution proof in Git and CI rather than a tracked execution history.
 
 Current route-first contract: public route ownership lives in
 `design/website/routes.json`, is validated by

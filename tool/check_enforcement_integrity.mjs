@@ -65,9 +65,8 @@ export function checkEnforcementIntegrity({
   snapshot = createRepositorySnapshot({root}),
 }) {
   const errors = [];
-  const rulesPath = "docs/audit_registry/rules.json";
+  const rulesPath = "tool/policy/rules.json";
   const manifestPath = "tool/tools_manifest.json";
-  const regressionLedgerPath = "docs/agent_regression_ledger.json";
   const rulesDocument = snapshot.readJson(rulesPath, {required: true});
   const manifest = snapshot.readJson(manifestPath, {required: true});
 
@@ -142,52 +141,12 @@ export function checkEnforcementIntegrity({
     }
   }
 
-  validateRegressionLedgerGuards({
-    snapshot,
-    ledgerPath: regressionLedgerPath,
-    errors,
-  });
-
   return {
     activeRules: rules.filter((rule) => activeRuleStatuses.has(rule.status))
       .length,
     boundTools: boundToolIds.size,
     errors,
   };
-}
-
-function validateRegressionLedgerGuards({snapshot, ledgerPath, errors}) {
-  if (!snapshot.exists(ledgerPath)) return;
-  const ledger = snapshot.readJson(ledgerPath, {required: true});
-  for (const entry of ledger.entries ?? []) {
-    if (entry?.status !== "active") continue;
-    const command = entry.guard?.command;
-    if (typeof command !== "string") continue;
-    const flutterTest = /^flutter\s+test\s+([^\s]+\.dart)(?:\s|$)/u.exec(command);
-    if (!flutterTest) continue;
-    if (/\s--plain-name(?:\s|=|$)/u.test(command)) continue;
-
-    const guardEvidence = entry.guard?.guardEvidence ?? entry.guardEvidence;
-    if (typeof guardEvidence !== "string" || guardEvidence.trim().length === 0) {
-      errors.push(
-        `${entry.id}: active flutter test guard for ${flutterTest[1]} needs --plain-name or guardEvidence.`,
-      );
-      continue;
-    }
-
-    validateRepoFile({
-      snapshot,
-      filePath: flutterTest[1],
-      owner: entry.id,
-      errors,
-    });
-    const targetSource = readTextIfExists(snapshot, flutterTest[1]);
-    if (!targetSource.includes(guardEvidence)) {
-      errors.push(
-        `${entry.id}: guardEvidence not found in ${flutterTest[1]}: ${guardEvidence}`,
-      );
-    }
-  }
 }
 
 function validateRuleEnforcementEntry({

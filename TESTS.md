@@ -1,13 +1,7 @@
-# Catch Test Inventory
+# Catch Tests
 
-The machine-readable inventory is generated from tracked files, so this document does not maintain a manual filename list.
-
-```sh
-node tool/test_inventory.mjs          # regenerate
-node tool/test_inventory.mjs --check  # fail on drift
-```
-
-See [docs/audit_registry/test_inventory.json](docs/audit_registry/test_inventory.json) for counts and paths grouped into Flutter unit/widget, Flutter integration, Functions source, Firebase rules, Functions harness, React web, and repository-tooling tests.
+Git owns the test-file inventory. Use `git ls-files '*test*'` when you need a
+current list; this document owns only the durable commands and testing policy.
 
 ## Standard suites
 

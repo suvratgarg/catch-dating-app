@@ -1,8 +1,12 @@
 # Marketing Website Copy v2 — Implementation Spec (for Codex)
 
-Status: implemented locally; owner-gated destinations/entitlements remain dormant · 2026-07-12
+Status: historical implementation record; owner-gated destinations/entitlements remain dormant · 2026-08-07
 Copy source of truth: [`docs/plans/website_copy_deck.md`](website_copy_deck.md) ("the deck")
 Surface: `website/` (Vite + React, Firebase Hosting target `marketing`, catchdates.com)
+
+> This file preserves the implemented copy migration and its remaining owner-
+> gated prerequisites. Current work must not append frozen audit/readiness
+> evidence; exact-SHA proof belongs in Git and CI.
 
 This spec is self-contained on *structure*: every file, export, component
 change, route change, and verification gate is defined here. String *values*
@@ -710,10 +714,10 @@ Add these proof requirements to §9:
   build;
 - `node tool/run.mjs check --manifest-only` and the relevant meta/enforcement
   checks when the new checker is registered;
-- `node tool/agent/check_agent_readiness.mjs` before handoff;
+- relevant registered checks plus `git diff --check` before handoff;
 - desktop/mobile screenshots for the reordered Home and Host routes, including
   long-copy and empty-data states; and
-- an audit-registry pass receipt covering the refactor and its proof.
+- a task/PR summary linking the exact-SHA CI proof for the refactor.
 
 Split the current PR 3 into two reviewable units:
 
@@ -876,9 +880,9 @@ with un-amended text in §1–10, §13 governs. Sections §1.7, §2 (item 5), §
 - **11.10 (verification + slicing): ACCEPTED** — §10 amended to 5 PRs; add
   the listed proof requirements to §9's gate list (checker/interpolation/
   meta/selector/redirect/analytics tests; built-output assertions incl. OG/
-  Twitter/sitemap/404 status; `checkOrganizerBuildOutputs`; manifest and
-  agent-readiness checks; desktop+mobile screenshots incl. long-copy and
-  empty states; audit-registry pass receipt).
+  Twitter/sitemap/404 status; `checkOrganizerBuildOutputs`; relevant manifest
+  checks; desktop+mobile screenshots incl. long-copy and empty states; exact-
+  SHA Git/CI proof).
 
 ### 13.2 §12 backlog dispositions
 
@@ -1058,8 +1062,8 @@ When the merged route lands, remove or rewrite the current-state paragraphs in
 entries for `HostPreviewPage.tsx` / `HostPreviewSections.tsx`, and
 `EventSuccessShowcase` as a public Host section. Update
 `docs/web_surface_architecture.md`, `website/README.md`, route/component
-contracts, and the audit registry in the same pass. Historical audit receipts
-remain append-only and are not rewritten.
+contracts in the same pass. Historical audit snapshots are frozen read-only;
+do not append or rewrite them.
 
 ### 14.8 Completion searches for the migration PR
 
@@ -1075,8 +1079,8 @@ rg -n 'host-preview|event-success' website/src/styles tool/web/check_react_compo
 
 Then run the route/component/import/copy/governance gates, typecheck, production
 build, Storybook build plus the real axe assertion, redirect and 404 HTTP tests,
-desktop/mobile/200%-reflow captures, and the audit-registry receipt listed in
-§9–§10.
+desktop/mobile/200%-reflow captures, and preserve the exact-SHA results in Git
+and CI as described in §9–§10.
 
 ### 14.9 Fable sign-off on the migration map (2026-07-11)
 
@@ -1119,7 +1123,7 @@ Rulings:
 With §13 + §14 in place the spec is closed for open decisions except the
 five owner items in §13.3. Codex may begin PR 1.
 
-## 15. Local implementation receipt — 2026-07-12
+## 15. Local implementation record — 2026-07-12
 
 - PR 1–2 foundations are active: validated metadata, market pack, event
   eligibility, analytics versioning, owner-gated content tests, and the

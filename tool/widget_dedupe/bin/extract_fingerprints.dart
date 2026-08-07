@@ -13,7 +13,12 @@ void main(List<String> rawArgs) {
     ..addOption(
       'files',
       help:
-          'Comma-separated Dart files to scan. Defaults to every widget in the classification registry.',
+          'Comma-separated Dart files to scan. When omitted, --classification supplies the target inventory.',
+    )
+    ..addOption(
+      'classification',
+      help:
+          'Repo-relative or absolute classification JSON used for target discovery and widget metadata.',
     )
     ..addOption(
       'out',
@@ -34,7 +39,8 @@ void main(List<String> rawArgs) {
 
   if (args.flag('help')) {
     stdout.writeln(
-      'Usage: dart run tool/widget_dedupe/bin/extract_fingerprints.dart [--files a.dart,b.dart] [--out path]',
+      'Usage: dart run tool/widget_dedupe/bin/extract_fingerprints.dart '
+      '[--files a.dart,b.dart] [--classification path] [--out path]',
     );
     stdout.writeln(parser.usage);
     return;
@@ -46,11 +52,24 @@ void main(List<String> rawArgs) {
       .map((value) => value.trim())
       .where((value) => value.isNotEmpty)
       .toList();
+  final classificationPath = args.option('classification')?.trim();
+  if (files.isEmpty &&
+      (classificationPath == null || classificationPath.isEmpty)) {
+    stderr.writeln(
+      '--classification is required when --files is not supplied.',
+    );
+    stderr.writeln(parser.usage);
+    exitCode = 64;
+    return;
+  }
   final outPath = p.normalize(p.join(repoRoot.path, args.option('out')!));
 
   final result = extractFingerprints(
     repoRoot: repoRoot.path,
     files: files.isEmpty ? null : files,
+    classificationPath: classificationPath == null || classificationPath.isEmpty
+        ? null
+        : classificationPath,
   );
 
   final output = File(outPath);

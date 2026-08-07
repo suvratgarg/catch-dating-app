@@ -5,7 +5,7 @@ import {fileURLToPath} from "node:url";
 import {fromRepo} from "../lib/repo_paths.mjs";
 
 const defaultTrackerPath = fromRepo(
-  "docs/audit_registry/architecture_pattern_adoption.json",
+  "tool/architecture/pattern_adoption.json",
 );
 
 const forbiddenImports = [
@@ -57,7 +57,7 @@ export function scanAdoptedArchitectureBoundaries({
   tracker = null,
   trackerPath = path.join(
     root,
-    "docs/audit_registry/architecture_pattern_adoption.json",
+    "tool/architecture/pattern_adoption.json",
   ),
 } = {}) {
   const resolvedTracker = tracker ?? readJson(trackerPath);
@@ -200,7 +200,7 @@ function printHelp() {
   node tool/architecture/check_adopted_architecture_boundaries.mjs --json
   node tool/architecture/check_adopted_architecture_boundaries.mjs --root <repo-root> --tracker <path>
 
-Reads docs/audit_registry/architecture_pattern_adoption.json and enforces that
+Reads tool/architecture/pattern_adoption.json and enforces that
 aligned adopter Dart files with "providerFree": true do not import or use
 Riverpod/provider, routing, data-layer, or repository APIs directly.`);
 }
@@ -224,7 +224,7 @@ function parseArgs(rawArgs) {
       if (parsed.trackerPath === defaultTrackerPath) {
         parsed.trackerPath = path.join(
           parsed.root,
-          "docs/audit_registry/architecture_pattern_adoption.json",
+          "tool/architecture/pattern_adoption.json",
         );
       }
     } else if (arg === "--tracker") {

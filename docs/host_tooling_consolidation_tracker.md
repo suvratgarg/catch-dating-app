@@ -1,7 +1,7 @@
 ---
 doc_id: host_tooling_consolidation_tracker
-version: 1.0.16
-updated: 2026-07-17
+version: 1.0.18
+updated: 2026-08-07
 owner: host_tooling
 status: active
 ---
@@ -228,7 +228,8 @@ multi-purpose Manage shell.
      by hand.
    - Remove obsolete Widgetbook use cases and generated directory entries.
    - Refresh widget classification, similarity, definition, coverage, provider
-     graph, and consolidation receipts required by the removed public symbols.
+     graph, and authored consolidation decisions required by the removed public
+     symbols.
    - Update `docs/widget_catalog.md` so it no longer catalogs deleted prompt or
      summary widgets.
 
@@ -241,14 +242,16 @@ multi-purpose Manage shell.
    - Start this broader card-shell rule as a medium advisory unless its
      structural confidence excludes legitimate content cards. Inventory and
      triage live findings before promoting it to high/fail-on-high.
-   - Update `tool/tools_manifest.json` vacuity proof and the relevant regression
-     ledger entry in the same change.
+   - Update `tool/tools_manifest.json` vacuity proof and add a focused scanner
+     regression fixture in the same change.
 
-8. **Reconcile durable registries and stamp proof.**
+8. **Reconcile authored contracts and preserve proof.**
    - Update/supersede the conflicting widget-consolidation keep records for
      removed symbols.
-   - Refresh generated registries after source and Widgetbook changes.
-   - Record a cleanup pass receipt only after focused UI/tests/scanners pass.
+   - Refresh source-derived design registries after source and Widgetbook
+     changes.
+   - Preserve focused UI, test, and scanner results in Git and CI; do not write
+     frozen cleanup receipts.
 
 ### Primary file scope
 
@@ -267,7 +270,7 @@ Expected production scope:
   (delete)
 - `lib/l10n/app_en.arb` plus generated localization output
 
-Expected proof/registry scope:
+Expected proof and contract scope:
 
 - `test/hosts/host_operations_screen_test.dart`
 - `test/hosts/host_team_management_section_test.dart`
@@ -278,9 +281,9 @@ Expected proof/registry scope:
 - `tool/design/check_section_headers.test.mjs`
 - `tool/tools_manifest.json`
 - `docs/widget_catalog.md`
-- `docs/agent_regression_ledger.json`
-- relevant `docs/design_parity/widget_consolidation/**` and generated audit
-  registries
+- relevant `docs/design_parity/widget_consolidation/**`
+- focused tests or scanner fixtures for any recurring regression found in the
+  pass
 
 Explicitly out of scope:
 
@@ -333,7 +336,6 @@ node tool/design/check_section_headers.mjs --summary --max 100 --include-low
 node tool/run.mjs check --manifest-only
 node tool/check_enforcement_integrity.mjs
 bash tool/widget_cleanup_scan.sh --summary
-node tool/agent/check_agent_readiness.mjs
 git diff --check
 ```
 
@@ -357,7 +359,7 @@ is expected to remain non-zero until all high findings are resolved; the focused
 Host pass should prove that the Host finding disappears without hiding the
 analytics finding.
 
-### Implementation receipt
+### Historical implementation record
 
 - `HostClubOrganizerOverview` now owns only format badges and club metrics.
 - `HostPaymentAccountControllerCard` remains the single payout provider owner;
@@ -496,7 +498,8 @@ analytics finding.
 - [x] Add/adjust focused widget tests for dashboard, event detail, club detail,
   host manage, and attendance.
 - [x] Run focused analyze/tests.
-- [x] Stamp audit registry pass proof.
+- [x] Historical legacy audit proof was stamped under the workflow then in
+  force.
 - [x] Consolidate Event Success into Host Manage as a section while preserving
   the old success route as an alias.
 - [x] Consolidate attendance into Host Manage as a section while preserving the
@@ -546,10 +549,15 @@ analytics finding.
 - How much host history should Dashboard show before past hosted events need a
   dedicated archive/filter route beyond the current Active/Past segmented rail?
 
-## Verification Log
+## Historical Verification Log
 
-- 2026-05-15: Ran audit registry refresh and active-rule lookup before creating
-  this tracker.
+The entries below record what happened under the workflow in force at the
+time. They are historical facts, not instructions to refresh or append to the
+frozen audit snapshots.
+
+- 2026-05-15: Historical setup used the former audit-registry refresh before
+  creating this tracker. That writer is retired; current work uses Git and the
+  read-only impact planner.
 - 2026-05-15: Scanned host tooling references across `lib/`, `test/`, and `docs/`.
 - 2026-05-15: Compared current UI exposure against
   `docs/backend_operation_catalog.md` backend operation status.
@@ -559,8 +567,8 @@ analytics finding.
   actions, attendance sheet header, and host manage stat chips onto shared host
   primitives.
 - 2026-05-15: Focused analysis and widget tests passed for changed host surfaces.
-- 2026-05-15: Stamped audit registry pass proof. New files were stamped after a
-  follow-up inventory refresh.
+- 2026-05-15: Historical workflow stamped pass proof and refreshed the file
+  inventory. Both commands are now retired; Git retains that record.
 - 2026-05-17: Verified Host Manage now exposes cancel and delete actions with
   focused widget coverage. Remaining open host-tooling product decisions are
   Edit event and club archive/delete UX.
@@ -617,4 +625,5 @@ done. Resume from the remaining product decisions:
 4. Decide whether event-success setup persistence should move fully behind
    server-owned callables for atomic create and post-booking freeze enforcement.
 5. If those actions ship, update `docs/backend_operation_catalog.md`, focused
-   host widget tests, and the audit registry in the same pass.
+   host widget tests, and any affected authored contracts in the same pass;
+   preserve execution proof in Git and CI.

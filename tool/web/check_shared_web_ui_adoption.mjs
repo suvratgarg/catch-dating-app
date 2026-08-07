@@ -9,7 +9,7 @@ if (args.has("--self-test")) {
   process.exit(0);
 }
 
-const trackerPath = fromRepo("docs/audit_registry/web_shared_primitive_adoption.json");
+const trackerPath = fromRepo("design/web-ui/shared_primitive_adoption.json");
 const tracker = readJson(trackerPath);
 const findings = validateTracker(tracker);
 
@@ -20,11 +20,9 @@ if (findings.length > 0) {
 }
 
 const statusCounts = countBy(tracker.candidates, (candidate) => candidate.status);
-const improvementCounts = countBy(tracker.improvements, (item) => item.status);
 console.log(
   `Shared web UI adoption check passed: ${tracker.candidates.length} candidate families ` +
-  `(${formatCounts(statusCounts)}); ${tracker.improvements.length} improvement items ` +
-  `(${formatCounts(improvementCounts)}).`
+  `(${formatCounts(statusCounts)}).`
 );
 
 function validateTracker(document) {
@@ -34,10 +32,8 @@ function validateTracker(document) {
     errors.push("candidates must be a non-empty array");
     return errors;
   }
-  if (!Array.isArray(document.improvements)) errors.push("improvements must be an array");
-
   const ids = new Set();
-  for (const item of [...document.candidates, ...(document.improvements ?? [])]) {
+  for (const item of document.candidates) {
     if (!item.id) errors.push("every tracker item needs an id");
     else if (ids.has(item.id)) errors.push(`${item.id}: duplicate tracker id`);
     else ids.add(item.id);

@@ -18,7 +18,6 @@ if (args.selfTest) {
 
 const componentsPath = fromRepo(args.components ?? "design/admin/components.json");
 const schemaPath = fromRepo("design/admin/admin.components.schema.json");
-const adoptionPath = fromRepo("docs/audit_registry/admin_console_design_adoption.json");
 
 const errors = [];
 const warnings = [];
@@ -30,9 +29,6 @@ validateComponents(registry.components ?? []);
 validateExportCoverage(registry.components ?? []);
 validateAdminChrome();
 validateAdminPresentationCopy();
-const adoptionRegistry = readJson(adoptionPath, "admin console design adoption registry");
-validateProposalProof(adoptionRegistry);
-errors.push(...adminDebtErrors(adoptionRegistry));
 
 if (errors.length > 0) {
   console.error("Admin component registry check failed:");
@@ -308,85 +304,6 @@ function adminPresentationCopyErrors(source, label = "admin source") {
   return copyErrors;
 }
 
-function validateProposalProof(value) {
-  errors.push(...proposalProofErrors(value));
-}
-
-function proposalProofErrors(value) {
-  const proofErrors = [];
-  const expectedCount = value?.approvedProposalTranche?.approvedReadyCount;
-  const groups = value?.proposalProofGroups;
-
-  if (expectedCount !== 68) {
-    proofErrors.push("admin console adoption registry must declare exactly 68 approved-ready proposals.");
-  }
-  if (!Array.isArray(groups) || groups.length === 0) {
-    proofErrors.push("admin console adoption registry must include proposalProofGroups.");
-    return proofErrors;
-  }
-
-  const proposalIds = [];
-  for (const [index, group] of groups.entries()) {
-    const label = group?.area ?? `group ${index + 1}`;
-    if (group?.status !== "implemented") {
-      proofErrors.push(`${label}: proposal proof status must be implemented.`);
-    }
-    for (const property of ["proposalIds", "repoEvidence", "verification"]) {
-      const values = group?.[property];
-      if (!Array.isArray(values) || values.length === 0 || values.some((entry) => typeof entry !== "string" || entry.trim() === "")) {
-        proofErrors.push(`${label}: ${property} must be a non-empty string array.`);
-      }
-    }
-    for (const proposalId of group?.proposalIds ?? []) proposalIds.push(proposalId);
-    for (const evidencePath of group?.repoEvidence ?? []) {
-      if (!fs.existsSync(fromRepo(evidencePath))) {
-        proofErrors.push(`${label}: repo evidence does not exist: ${evidencePath}.`);
-      }
-    }
-  }
-
-  if (proposalIds.length !== expectedCount) {
-    proofErrors.push(`admin console proposal proof count ${proposalIds.length} does not match approvedReadyCount ${expectedCount}.`);
-  }
-  if (new Set(proposalIds).size !== proposalIds.length) {
-    proofErrors.push("admin console proposal proof IDs must be unique.");
-  }
-  for (const proposalId of proposalIds) {
-    if (/^ADM-PROP-[A-Z0-9]+-[0-9]{3}$/u.test(proposalId)) continue;
-    proofErrors.push(`invalid admin console proposal proof ID: ${proposalId}.`);
-  }
-
-  return proofErrors;
-}
-
-function adminDebtErrors(value) {
-  const debtErrors = [];
-  const debts = value?.knownDebt;
-  if (!Array.isArray(debts) || debts.length === 0) {
-    return ["admin console adoption registry must record knownDebt with stable IDs."];
-  }
-  const ids = [];
-  const allowedStatuses = new Set(["contract-first", "planned", "watch"]);
-  for (const [index, debt] of debts.entries()) {
-    const label = debt?.id ?? `knownDebt ${index + 1}`;
-    ids.push(debt?.id);
-    if (!/^ADM-DEBT-[A-Z0-9-]+-[0-9]{3}$/u.test(debt?.id ?? "")) {
-      debtErrors.push(`${label}: invalid stable debt ID.`);
-    }
-    if (!allowedStatuses.has(debt?.status)) {
-      debtErrors.push(`${label}: invalid debt status ${debt?.status}.`);
-    }
-    for (const property of ["area", "impact", "mitigation", "nextAction"]) {
-      if (typeof debt?.[property] === "string" && debt[property].trim() !== "") continue;
-      debtErrors.push(`${label}: ${property} must be a non-empty string.`);
-    }
-  }
-  if (new Set(ids).size !== ids.length) {
-    debtErrors.push("admin console known debt IDs must be unique.");
-  }
-  return debtErrors;
-}
-
 function adminChromeErrors(source) {
   const chromeErrors = [];
   if (!source.includes("<AdminBrandTitle>Catch Admin</AdminBrandTitle>")) {
@@ -579,7 +496,8 @@ function printHelp() {
 Validates design/admin/components.json against admin feature route/workspace
 exports, shared UI primitive exports, shared feedback provider exports, and
 ready Storybook catchComponent coverage. It also enforces the restrained admin
-shell brand, single-title top-bar contract, and complete approved-proposal proof.
+shell brand and single-title top-bar contract. Completed design-adoption history
+belongs to Git; actionable debt belongs to GitHub Issues.
 `);
 }
 
@@ -654,40 +572,6 @@ export const StatusBannerStory = {
     "Sample access application was not found. Generated sample bridge.",
     "fixture.ts",
   ).every((error) => error.startsWith("fixture.ts:")));
-
-  const proofGroup = {
-    area: "shared",
-    proposalIds: Array.from({length: 68}, (_, index) =>
-      `ADM-PROP-SHARED-${String(index + 1).padStart(3, "0")}`),
-    status: "implemented",
-    repoEvidence: ["admin/src/app/App.tsx"],
-    verification: ["web:admin-components"],
-  };
-  assert.deepEqual(proposalProofErrors({
-    approvedProposalTranche: {approvedReadyCount: 68},
-    proposalProofGroups: [proofGroup],
-  }), []);
-  const invalidProofErrors = proposalProofErrors({
-    approvedProposalTranche: {approvedReadyCount: 68},
-    proposalProofGroups: [{
-      ...proofGroup,
-      proposalIds: [...proofGroup.proposalIds.slice(0, 67), proofGroup.proposalIds[0]],
-      repoEvidence: [],
-      verification: [],
-    }],
-  });
-  assert.ok(invalidProofErrors.some((error) => error.includes("unique")));
-  assert.ok(invalidProofErrors.some((error) => error.includes("repoEvidence")));
-  assert.ok(invalidProofErrors.some((error) => error.includes("verification")));
-  assert.deepEqual(adminDebtErrors({knownDebt: [{
-    id: "ADM-DEBT-STORYBOOK-STATE-COVERAGE-001",
-    status: "planned",
-    area: "visual qa",
-    impact: "Alternate states need fixtures.",
-    mitigation: "Controller tests cover behavior.",
-    nextAction: "Add deterministic stories.",
-  }]}), []);
-  assert.ok(adminDebtErrors({knownDebt: []}).some((error) => error.includes("knownDebt")));
 
   console.log("Admin component registry checker self-test passed.");
 }

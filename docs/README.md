@@ -1,6 +1,6 @@
 ---
 doc_id: docs_index
-version: 5.0.0
+version: 5.2.0
 updated: 2026-08-07
 owner: agent_operating_model
 status: active
@@ -16,9 +16,9 @@ or duplicated note once it has served its purpose.
 ## Read Policy
 
 Use this index to find the durable owner for a topic, then read only the
-relevant section unless the task requires a full historical audit. The audit
-registry and document-version catalog are frozen migration inputs, not starting
-points for ordinary work.
+relevant section unless the task requires a full historical audit. Source
+frontmatter and this index own documentation metadata; there is no parallel
+document catalog.
 
 ## Documentation Hygiene
 
@@ -32,17 +32,17 @@ points for ordinary work.
 - Date-stamped audits are snapshots. Re-verify counts, statuses, and code paths
   before treating them as current.
 - Treat semantic document versions as authored contract metadata, not an edit
-  counter. CI derives per-SHA content revisions and integration timestamps with
-  `tool/docs/build_doc_state.mjs` and publishes them as artifacts; it does not
-  push generated version/date commits back to `main`.
+  counter. `node tool/docs/check_doc_metadata.mjs --base <base>` validates
+  source metadata and retirement directly from Git without generating a
+  tracked catalog or integration commit.
 
 ## Current Source Of Truth
 
 | Area | Document | Purpose |
 |---|---|---|
-| Agent execution harness | `../AGENTS.md`, `agent_operating_model.md`, `agent_skills/` | Canonical AI-agent routing, read-only change planning, Git/worktree isolation, and focused verification. |
+| Agent execution harness | `../AGENTS.md`, `agent_operating_model.md`, `plans/harness_v2_decision_and_cicd_delivery_plan.md`, `agent_skills/` | Canonical AI-agent routing, durable Harness decision, read-only change planning, Git/worktree isolation, exact-artifact delivery architecture, and focused verification. |
 | AI-first workflow implementation guide | `ai_first_workflow_guide.md` | Shareable map of the Catch planner, existing check runner, thin worktree guard, exact-artifact CI/CD, and no-ledger evidence policy. |
-| Flutter app architecture | `app_architecture.md`, `audit_registry/architecture_pattern_adoption.json`, `../tool/architecture/provider_graph_reviews.json` | Canonical feature/layer/screen/controller/repository/async/error/UI layout/scroll/sizing/widget ownership spec for `lib/**`, plus the live Riverpod topology gate and authored relationship decisions; read before broad app architecture or code-organization work. Architecture rollouts must prototype one reference implementation, copy the exhibit into `app_architecture.md`, and track adopters/variants/exceptions in the JSON tracker. |
+| Flutter app architecture | `app_architecture.md`, `../tool/architecture/pattern_adoption.json`, `../tool/architecture/provider_graph_reviews.json` | Canonical feature/layer/screen/controller/repository/async/error/UI layout/scroll/sizing/widget ownership spec for `lib/**`, plus the live Riverpod topology gate and authored relationship decisions; read before broad app architecture or code-organization work. Architecture rollouts must prototype one reference implementation, copy the exhibit into `app_architecture.md`, and track adopters/variants/exceptions in the JSON tracker. |
 | Widget inventory and reusable widget guidance | `widget_catalog.md` | Current catalog of Flutter widgets, primitive APIs, feature ownership notes, and its compact maintenance contract. Git owns catalog history. |
 | Visual identity / design language | `design_language.md` | Locked editorial identity — palette (B&W base + activity color), typography (Archivo/platform system/IBM Plex Mono), photo grading, ticket/polaroid metaphors, exploration log, and the UI elevation roadmap. |
 | Design parity state matrix, inventory, and composition migration | `design_parity/` | Feature-by-feature design-spec parity matrix plus Claude Design to Widgetbook inventory and layered composition migration spec connecting screens, states, captures, component contracts, previews, lints, token specimens, and visual-diff gaps. |
@@ -71,7 +71,7 @@ points for ordinary work.
 | Demo data seeding | `demo_data_seeding.md` | Demo seeding scenarios, warm account workflows, demo ops, cleanup/reset commands, and validation workflow. |
 | Sales demo persona cohorts | `sales_demo_persona_cohorts.md` | Cohort scope, NYC and India persona-library decisions, roster reuse policy, and city overlay rules for high-fidelity sales demos. |
 | Sales demo image generation | `sales_demo_image_generation_runbook.md` | Mechanical ChatGPT-web image generation, review, local organization, UID-owned Storage upload, and post-upload validation workflow. |
-| Legacy audit snapshots | `audit_registry/` | Frozen file/pass/metric/document snapshots plus authored decision files still migrating to domain owners. No task writes evidence here. |
+| Enforcement rules | `../tool/policy/rules.json` | Authored recurring rules and their executable enforcement bindings. Historical audit receipts and generated pass/file/metric ledgers remain available only through Git history. |
 
 ## Contextual READMEs
 
@@ -102,7 +102,6 @@ durable owners above or closed in code.
 | `ui_elevation_implementation.md` | Execution checklist for the UI elevation initiative (encode tokens/fonts → re-skin proof → flagship Profile → rollout). Self-contained for an implementing agent; pairs with `design_language.md`. **Font section is stale**; see `ds_resync_audit_2026-06.md`. Delete once the rollout completes. |
 | `host_tooling_consolidation_tracker.md` | Host tooling is mostly consolidated, but Edit run and club archive/delete UX are still open product decisions. |
 | `public_profile_overhaul_tracker.md` | Cardless profile surfaces are implemented, but profile prompt picker, richer compatibility reasons, quality coaching, visual regression coverage, device QA, and user-facing "swipe" copy cleanup remain. |
-| `config_cicd_platform_audit_2026-05-21.md` | Config/CI/CD/platform hardening is mostly closed, but Crashlytics script noise, analytics plist verification, contract-source migration, and Razorpay env guard follow-ups remain. |
 | `event_success_theatrical_experience_tracker.md` | Event Success live ceremony polish is active: native sensory cues, attendee moment theatre, host showtime console, invite-loop follow-up, private afterglow recap planning, and the optional First Hello arrival ritual. |
 | `sales_demo_seed_tracker.md` | Sales-grade synthetic supply is active: canonical personas/assets, cohort scope, image production, U.S./India market packs, host sales scenario, event policy coverage, and migration of lower-quality demo surfaces remain. |
 
@@ -114,11 +113,13 @@ route, component, and evidence inventories; they do not replace product intent,
 architecture, business policy, data schemas, copy, release procedures, or
 operational runbooks.
 
-For governed Markdown, source frontmatter is the lifecycle authority.
-`doc_versions.json` is a frozen compatibility snapshot and must not be
-updated. Missing, malformed, duplicate, or unclosed source status fails closed.
+For governed Markdown, source frontmatter is the sole lifecycle and version
+authority. Missing, malformed, duplicate, or unclosed source metadata fails
+closed. The Git comparison rejects identity swaps and version decreases;
+reviewed document deletion is allowed directly and must remove or migrate
+current inbound references in the same change.
 
-All 11 documents classified `retirement_ready` by that audit have now been
+All 11 documents historically classified `retirement_ready` by that audit have now been
 deleted after their current inbound references were moved to durable owner docs,
 contracts, tests, and scanners. Git retains historical proof; do not recreate
 completed implementation handoffs as live documentation.

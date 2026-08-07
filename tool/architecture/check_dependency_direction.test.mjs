@@ -395,7 +395,7 @@ test("scanDependencyDirection flags untracked state adapters as a hard gate", ()
   const snapshot = createFixtureSnapshot({
     "lib/events/presentation/event_detail_screen_state.dart":
       "class EventDetailScreenState { const EventDetailScreenState(); }\n",
-    "docs/audit_registry/architecture_pattern_adoption.json": JSON.stringify({
+    "tool/architecture/pattern_adoption.json": JSON.stringify({
       patterns: [],
     }),
   });
@@ -420,7 +420,7 @@ test("scanDependencyDirection allows registered state adapters", () => {
   const snapshot = createFixtureSnapshot({
     "lib/events/presentation/event_detail_screen_state.dart":
       "class EventDetailScreenState { const EventDetailScreenState(); }\n",
-    "docs/audit_registry/architecture_pattern_adoption.json": JSON.stringify({
+    "tool/architecture/pattern_adoption.json": JSON.stringify({
       patterns: [
         {
           adopters: [
@@ -478,7 +478,7 @@ test("scanDependencyDirection batches snapshot reads and ignores generated Dart"
       "lib/events/domain/event.g.dart": "generated\n",
       "lib/events/domain/event.freezed.dart": "generated\n",
       "lib/events/presentation/event_screen.dart": "class EventScreen {}\n",
-      "docs/audit_registry/architecture_pattern_adoption.json": JSON.stringify({
+      "tool/architecture/pattern_adoption.json": JSON.stringify({
         patterns: [],
       }),
     },
@@ -494,7 +494,7 @@ test("scanDependencyDirection batches snapshot reads and ignores generated Dart"
   assert.deepEqual(batches, [[
     "lib/events/domain/event.dart",
     "lib/events/presentation/event_screen.dart",
-    "docs/audit_registry/architecture_pattern_adoption.json",
+    "tool/architecture/pattern_adoption.json",
   ]]);
 });
 

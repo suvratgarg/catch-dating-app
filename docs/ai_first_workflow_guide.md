@@ -1,6 +1,6 @@
 ---
 doc_id: ai_first_workflow_guide
-version: 2.0.0
+version: 2.2.0
 updated: 2026-08-07
 owner: agent_operating_model
 status: active
@@ -81,9 +81,6 @@ Task state belongs under the common Git directory and is local. It does not
 belong in repository ledgers. The guard must work without GitHub for local
 start, doctor, and reporting; it must never delete a worktree automatically.
 
-The current lifecycle has additional migration compatibility. That code is
-temporary and will be reduced to the boundary above.
-
 ## 4. CI/CD
 
 CI consumes the planner output and runs the existing jobs. Cheap deterministic
@@ -95,11 +92,20 @@ Deployment begins only from a trusted, successful integrated commit. A
 deployment workflow:
 
 1. checks environment prerequisites before installs or expensive validation;
-2. checks out the exact triggering SHA;
-3. downloads or builds a checksum-bound artifact once;
+2. selects the oldest unprocessed successful-attempt authority after the
+   workflow-id-bound delivery cursor, or the oldest authority in the current CI
+   workflow generation when no cursor exists yet;
+3. checks out that run's exact SHA and downloads the plan/package by immutable
+   artifact id, verifying GitHub's archive digest without rebuilding it;
 4. applies affected deployment groups in their declared order;
 5. records stage postconditions in GitHub artifacts;
-6. resumes the first incomplete idempotent stage for the same SHA and artifact.
+6. resumes the first incomplete idempotent stage for the same SHA, producing
+   run attempt, artifact, environment, and target project.
+
+The queue scans artifact metadata once, then fully verifies one cursor and one
+authority. It never loops over retained artifacts with API calls. The selected
+plan must continue exactly from the cursor SHA, and CI run numbers are compared
+only inside the same numeric workflow id.
 
 Environment approval and secrets remain GitHub/platform responsibilities.
 Rollback and roll-forward remain explicit per deployment target.
@@ -109,7 +115,7 @@ Rollback and roll-forward remain explicit per deployment target.
 Repository source contains authored decisions and compile-critical generated
 outputs. It does not contain per-run proof.
 
-These legacy files are frozen pending deletion:
+The former tracked evidence files have been deleted:
 
 - `docs/audit_registry/files.jsonl`;
 - `docs/audit_registry/passes.jsonl`;
@@ -117,15 +123,15 @@ These legacy files are frozen pending deletion:
 - `docs/audit_registry/doc_versions.json`;
 - `docs/agent_regression_ledger.json`.
 
-Do not refresh or append to them. Git contains their history. CI artifacts may
-hold generated inventories, summaries, coverage, and diagnostics for a bounded
-retention period.
+Git contains their history. Repository hygiene prevents their return. CI logs
+or expiring artifacts may hold generated inventories, summaries, coverage, and
+diagnostics when a consumer actually needs them.
 
 ## 6. Normal Task
 
 ```sh
 git status --short
-node tool/harness.mjs plan --mode pr --base <base> --head HEAD
+node tool/harness.mjs plan --base <base> --head HEAD --json
 node tool/run.mjs check <selected-check-id...>
 git diff --check
 ```
@@ -143,7 +149,7 @@ result. Git, task output, the PR, and CI preserve evidence.
 - No check writes to tracked source by default.
 - Derived reports are generated on demand or uploaded as expiring artifacts.
 - No new ledger, receipt file, readiness score, or per-task registry replaces
-  the frozen system.
+  the removed system.
 - New Harness functionality must prevent a demonstrated failure or materially
   reduce wall-clock/runner cost.
 - Nightly broad validation is the backstop for omissions; PR validation stays

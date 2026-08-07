@@ -28,7 +28,7 @@ Generated from live review notes saved through
    the former field-group, design-section, and section-surface APIs are
    removed.
 8. Current: dedupe-assisted consolidation review. The compare tool now promotes
-   the generated `docs/audit_registry/widget_similarity.json` candidates ahead
+   the on-demand `build/reports/widget_similarity.json` candidates ahead
    of the older hand-curated backlog, ranked by detector count and similarity
    score, while still showing the registry rank, detector evidence, similarity
    metrics, Widgetbook previews, source tabs, and suggested actions before a

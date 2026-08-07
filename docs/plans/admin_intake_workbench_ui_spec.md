@@ -1,7 +1,7 @@
 ---
 doc_id: admin_intake_workbench_ui_spec
-version: 1.0.0
-updated: 2026-07-27
+version: 1.0.1
+updated: 2026-08-07
 owner: web_platform
 status: active
 ---
@@ -276,7 +276,7 @@ node tool/run.mjs check web:shared-ui-adoption
 node tool/run.mjs check web:admin-feature-ui-size
 node tool/run.mjs check web:admin-components
 node tool/run.mjs check web:admin-storybook
-node tool/agent/check_agent_readiness.mjs
+git diff --check
 ```
 
 Plus the admin typecheck/test loop, `web:admin-bundle-budget` after the admin

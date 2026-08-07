@@ -1,5 +1,9 @@
 # Reconciliation Recovery Audit — 2026-07-16
 
+> Historical recovery record. Its audit-registry ownership and stamping
+> instructions are retired; use current Git-preservation guidance in
+> `docs/agent_operating_model.md` for new reconciliation work.
+
 Full git-archaeology sweep of every branch and commit from 2026-07-01 through
 2026-07-16, triggered by work lost during Codex's git operations. This is a
 handoff document for Codex: Section 4 is the restore queue, Section 5 needs
@@ -24,8 +28,8 @@ Section 8 is prevention, Section 9 is transferable improvements.
   compatibility re-export over the already-live family-split directory. That
   shadowing shim is now deleted, and website typecheck/build/Storybook plus the
   React import/governance checks pass through the directory index directly.
-- **Audit-registry stamping remains parent-session owned.** Per §6, this pass
-  did not overwrite the active session's `docs/audit_registry/**` edits.
+- **Historical audit-registry boundary.** Per §6, this pass did not overwrite
+  the active session's audit-registry edits. The writer is now retired.
 
 Audit method: three-way blob comparison per file between the preserved branch
 tree (`a59af5662` / `58bc22587`), origin/main (`1e5f49423`, PR #85), and the
