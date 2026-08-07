@@ -365,13 +365,24 @@
       },
       "applies_to": [
         "website/src/**",
+        "website/tsconfig.json",
+        "website/package.json",
         "admin/src/**",
+        "admin/tsconfig.json",
+        "admin/package.json",
         "packages/web-ui/src/**",
+        "packages/web-ui/tsconfig.json",
+        "packages/web-ui/package.json",
+        "functions/src/shared/generated/**",
+        "package.json",
+        "package-lock.json",
         "tool/web/react_dependency_graph.mjs",
-        "docs/generated/react_dependency_graph/**",
-        ".github/workflows/react-surface-validation.yml"
+        "tool/web/react_dependency_graph.test.mjs",
+        ".github/workflows/react-surface-validation.yml",
+        ".github/workflows/admin-website.yml",
+        ".github/workflows/marketing-website.yml"
       ],
-      "instruction": "Keep the checked React dependency graph current. Repo-local imports must resolve, website and admin may share through governed packages rather than importing each other directly, and current strongly connected components remain visible debt rather than hidden by an allowlist. Run node tool/web/react_dependency_graph.mjs --check whenever React imports or workspace exports move.",
+      "instruction": "Check the React dependency graph live from current TypeScript sources. Repo-local imports must resolve, website and admin may share through governed packages rather than importing each other directly, and current strongly connected components remain visible in on-demand summary or JSON evidence rather than hidden by an allowlist. Do not commit generated graph projections. Run node tool/web/react_dependency_graph.mjs --check whenever React imports or workspace exports move.",
       "sunset_when": [
         "Never; deterministic dependency topology is a permanent architecture contract"
       ],
@@ -3243,6 +3254,6 @@
       ]
     }
   },
-  "version": "2.9.1",
+  "version": "2.9.2",
   "updated": "2026-08-07"
 }

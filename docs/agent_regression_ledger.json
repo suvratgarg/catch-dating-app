@@ -1,5 +1,5 @@
 {
-  "version": 148,
+  "version": 149,
   "updated": "2026-08-07",
   "owner": "agent_operating_model",
   "entries": [
@@ -1967,7 +1967,12 @@
         "tool/architecture/provider_graph.dart",
         "tool/architecture/provider_graph_reviews.json",
         "test/tool/provider_graph_test.dart",
+        "tool/web/react_dependency_graph.mjs",
+        "tool/web/react_dependency_graph.test.mjs",
         ".github/workflows/flutter-ci.yml",
+        ".github/workflows/react-surface-validation.yml",
+        ".github/workflows/admin-website.yml",
+        ".github/workflows/marketing-website.yml",
         "tool/design/build_widgetbook_compare.mjs",
         "tool/tools_manifest.json",
         "tool/audit/widget_cleanup_baseline.json",
@@ -1980,20 +1985,21 @@
         "docs/design_parity/widgetbook_coverage_audit_plan.json",
         "docs/design_parity/widgetbook_coverage_report.json"
       ],
-      "symptom": "A syntax-only or regex-overbroad scanner stays green, a physical-filesystem scan mistakes a sparse checkout for repository truth, or a tracked Widgetbook report, localization key-usage inventory, provider graph, variant inventory, or static page drifts from current sources.",
+      "symptom": "A syntax-only or regex-overbroad scanner stays green, a physical-filesystem scan mistakes a sparse checkout for repository truth, or a tracked Widgetbook report, localization key-usage inventory, provider graph, React dependency graph, variant inventory, or static page drifts from current sources.",
       "guard": {
         "type": "command",
-        "command": "node tool/run.mjs check audit:widget-cleanup lint:catch-ui-drift design:widget-variant-inventory design:widgetbook-compare-server copy:l10n-key-usage audit:provider-graph && node tool/design/check_widgetbook_coverage.mjs --self-test && node tool/design/check_widgetbook_coverage.mjs --check && node --test tool/copy/check_l10n_key_usage.test.mjs tool/harness/workflow_wiring.test.mjs tool/lib/tool_impact.test.mjs && node tool/run.mjs check --manifest-only",
-        "guardEvidence": "widget cleanup, coverage, localization usage, and provider topology remain live; only authored baselines and review decisions stay tracked; deterministic detail is emitted on demand; and all retired derived paths stay absent"
+        "command": "node tool/run.mjs check audit:widget-cleanup lint:catch-ui-drift design:widget-variant-inventory design:widgetbook-compare-server copy:l10n-key-usage audit:provider-graph web:react-dependency-graph && node tool/design/check_widgetbook_coverage.mjs --self-test && node tool/design/check_widgetbook_coverage.mjs --check && node --test tool/copy/check_l10n_key_usage.test.mjs tool/harness/workflow_wiring.test.mjs tool/lib/tool_impact.test.mjs && node tool/run.mjs check --manifest-only",
+        "guardEvidence": "widget cleanup, coverage, localization usage, provider topology, and React dependency topology remain live; only authored baselines and review decisions stay tracked; deterministic detail is emitted on demand; and all retired derived paths stay absent"
       },
       "owner_docs": [
         "docs/audit_registry/README.md",
         "docs/design_parity/README.md",
         "docs/plans/widget_consolidation_pipeline_spec.md",
         "docs/app_architecture.md",
+        "docs/web_surface_architecture.md",
         "tool/README.md"
       ],
-      "notes": "Zero is scanner-specific. The widget inventory ratchets live category maxima, analyzer aggregation reads only the machine diagnostic-code field, Widgetbook coverage and variant evidence are derived on demand from the logical Git snapshot, and localization and provider-topology evidence are derived from current sources rather than committed as generated snapshots."
+      "notes": "Zero is scanner-specific. The widget inventory ratchets live category maxima, analyzer aggregation reads only the machine diagnostic-code field, Widgetbook coverage and variant evidence are derived on demand from the logical Git snapshot, and localization, provider-topology, and React dependency-topology evidence are derived from current sources rather than committed as generated snapshots."
     },
     {
       "id": "REG-SHELL-001",
@@ -4177,17 +4183,17 @@
         "docs/audit_registry/backlog.json",
         "docs/audit_registry"
       ],
-      "symptom": "A stale machine-generated definition dump, heuristic consolidation queue, widget-antipattern report, provider-graph projection, or unsafe mechanical migrator is committed or registered as authority despite having no current consumer and being superseded by focused live gates and authored decision ledgers.",
+      "symptom": "A stale machine-generated definition dump, heuristic consolidation queue, widget-antipattern report, provider-graph projection, React dependency-graph projection, or unsafe mechanical migrator is committed or registered as authority despite having no current consumer and being superseded by focused live gates and authored decision ledgers.",
       "guard": {
         "type": "command",
         "command": "node --test tool/harness/workflow_wiring.test.mjs && node tool/run.mjs check --manifest-only",
-        "guardEvidence": "the required Harness full-index snapshot proves all eleven retired paths are absent and current audit authorities contain no retired names or provider-snapshot route; manifest validation proves obsolete generators and migrators are no longer registered"
+        "guardEvidence": "the required Harness full-index snapshot proves all fourteen retired paths are absent and current audit authorities contain no retired names, provider-snapshot route, or React-graph snapshot route; manifest validation proves obsolete generators and migrators are no longer registered"
       },
       "owner_docs": [
         "docs/audit_registry/README.md",
         "docs/plans/harness_v2_decision_and_cicd_delivery_plan.md"
       ],
-      "notes": "Historical pass and widget-consolidation receipts remain immutable. Current consolidation state is reconstructed from widget classification, similarity, new-widget inventory, reviewed decision ledgers, live cleanup and provider-topology gates, and Git history rather than repository-wide heuristic dumps, committed projections, or source-rewriting helpers."
+      "notes": "Historical pass and widget-consolidation receipts remain immutable. Current consolidation state is reconstructed from widget classification, similarity, new-widget inventory, reviewed decision ledgers, live cleanup, provider-topology, and React dependency-topology gates, plus Git history rather than repository-wide heuristic dumps, committed projections, or source-rewriting helpers."
     },
     {
       "id": "REG-DOC-INLINE-HISTORY-001",

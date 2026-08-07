@@ -33,6 +33,11 @@ const retiredProviderGraphPaths = [
   "docs/generated/provider_graph/provider_graph.json",
   "docs/generated/provider_graph/provider_graph.mmd",
 ];
+const retiredReactDependencyGraphPaths = [
+  "docs/generated/react_dependency_graph/README.md",
+  "docs/generated/react_dependency_graph/react_dependency_graph.json",
+  "docs/generated/react_dependency_graph/react_dependency_graph.mmd",
+];
 const liveAuditAuthorityPaths = [
   "AGENTS.md",
   "docs/README.md",
@@ -44,6 +49,13 @@ const liveAuditAuthorityPaths = [
   "docs/audit_registry/rules.json",
   "tool/README.md",
   "tool/tools_manifest.json",
+];
+const liveReactDependencyGraphAuthorityPaths = [
+  ...liveAuditAuthorityPaths,
+  "docs/web_surface_architecture.md",
+  ".github/workflows/admin-website.yml",
+  ".github/workflows/marketing-website.yml",
+  ".github/workflows/react-surface-validation.yml",
 ];
 const toolPreflightCheckoutClosure = [
   "/tool/",
@@ -182,6 +194,28 @@ test("retired provider graph snapshots stay absent from live authorities", () =>
     }
   }
   assert.deepEqual(offenders, []);
+});
+
+test("retired React graph snapshots stay absent while the live CI gate remains", () => {
+  for (const relativePath of retiredReactDependencyGraphPaths) {
+    assert.equal(repositorySnapshot.exists(relativePath), false, relativePath);
+  }
+  const sources = repositorySnapshot.readTexts(
+    liveReactDependencyGraphAuthorityPaths,
+    {required: true},
+  );
+  const offenders = [];
+  for (const relativePath of liveReactDependencyGraphAuthorityPaths) {
+    const source = sources.get(relativePath);
+    if (source.includes("docs/generated/react_dependency_graph")) {
+      offenders.push(relativePath);
+    }
+  }
+  assert.deepEqual(offenders, []);
+  assert.match(
+    workflow("react-surface-validation.yml"),
+    /node tool\/web\/react_dependency_graph\.mjs --check/u,
+  );
 });
 
 test("required CI consumes every bounded Harness v2 target", () => {

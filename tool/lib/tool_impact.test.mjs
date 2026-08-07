@@ -135,6 +135,26 @@ test("provider graph changes keep a bounded Flutter source closure", () => {
   }
 });
 
+test("React dependency graph changes keep a bounded root npm closure", () => {
+  for (const changedPath of [
+    "tool/web/react_dependency_graph.mjs",
+    "tool/web/react_dependency_graph.test.mjs",
+    "packages/web-ui/src/primitives.tsx",
+    "packages/web-ui/tsconfig.json",
+    "packages/web-ui/package.json",
+  ]) {
+    const plan = planAffectedToolChecks({
+      changedPaths: [changedPath],
+      manifest: productionManifest,
+      componentGraph: componentGraph(),
+    });
+    assert.equal(plan.mode, "affected", changedPath);
+    assert.equal(plan.repositoryView, "full", changedPath);
+    assert.deepEqual(plan.setupRequirements, ["node", "root-npm"], changedPath);
+    assert.ok(plan.toolIds.includes("web:react-dependency-graph"), changedPath);
+  }
+});
+
 test("transitive check dependencies are selected once", () => {
   const fixture = manifest([
     {

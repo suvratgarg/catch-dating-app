@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.10.3
-updated: 2026-08-05
+version: 0.10.4
+updated: 2026-08-07
 owner: web_platform
 status: active
 ---
@@ -250,28 +250,30 @@ bundled by Vite through `packages/web-config/styles/catch-web.css`.
 ## React Dependency Topology
 
 `tool/web/react_dependency_graph.mjs` is the deterministic import-topology
-owner for `website/src`, `admin/src`, and `packages/web-ui/src`. Its checked
-artifacts live under `docs/generated/react_dependency_graph/` as reviewable
-JSON, Mermaid, and a concise README. The graph resolves relative imports,
-TypeScript aliases, workspace exports, index modules, dynamic imports,
-re-exports, and type-only edges.
+owner for `website/src`, `admin/src`, and `packages/web-ui/src`. It derives the
+graph live from TypeScript ASTs; no generated graph view is committed. The graph
+resolves relative imports, TypeScript aliases, workspace exports, index modules,
+dynamic imports, re-exports, and type-only edges. Use deterministic `--json` or
+`--summary` output as temporary local or CI evidence when review needs the
+topology rather than only the blocking result.
 
 The blocking health contract is deliberately narrow and non-vacuous:
 
 - every repo-local import must resolve;
 - website and admin must not import each other directly; shared behavior routes
   through a governed package;
-- generated artifacts must match source; and
+- every configured source root and TypeScript config must exist; and
 - the seeded test suite must prove unresolved imports, direct cross-surface
-  edges, and stale artifacts fail.
+  edges, missing inputs, and the live CLI contract fail closed.
 
 Current strongly connected components remain visible report-only debt in the
-generated graph. Do not hide them behind an allowlist or make them blocking
-without first repairing the current cycles. Run:
+live JSON and summary. Do not hide them behind an allowlist or make them
+blocking without first repairing the current cycles. Run:
 
 ```sh
-node tool/web/react_dependency_graph.mjs --write
 node tool/web/react_dependency_graph.mjs --check
+node tool/web/react_dependency_graph.mjs --summary
+node tool/web/react_dependency_graph.mjs --json
 node --test tool/web/react_dependency_graph.test.mjs
 ```
 

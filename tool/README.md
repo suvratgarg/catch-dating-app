@@ -509,12 +509,12 @@ npm run web:ui:test
 npm run web:ui:typecheck
 ```
 
-`web:react-dependency-graph` generates the reviewable website/admin/web-ui
-topology under `docs/generated/react_dependency_graph/`. It blocks unresolved
-repo-local imports, direct website-to-admin dependencies, and stale generated
-artifacts while keeping current strongly connected components visible as
-report-only debt. Refresh deliberately with
-`node tool/web/react_dependency_graph.mjs --write`.
+`web:react-dependency-graph` derives the website/admin/web-ui topology live from
+TypeScript ASTs. It blocks unresolved repo-local imports and direct
+website-to-admin dependencies while keeping current strongly connected
+components visible as report-only debt. No generated graph view is committed;
+use `--summary` or `--json` for deterministic on-demand evidence and redirect it
+into `build/` when a temporary artifact is useful.
 
 `web:shared-ui-adoption` reconciles the cross-surface decision tracker with
 website/admin runtime exports and `@catch/web-ui`. Adopted entries must be used
