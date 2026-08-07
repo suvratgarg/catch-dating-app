@@ -10,6 +10,7 @@ import {
   extractCommandPaths,
   extractDependencyBaselineSnapshot,
   testInventoryMatches,
+  usesRetiredTaskScopeFlag,
 } from "./check_agent_readiness.mjs";
 import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
 
@@ -205,6 +206,115 @@ test("test inventory readiness proof rejects stale generated content", () => {
 
   assert.equal(testInventoryMatches(current, inventory), true);
   assert.equal(testInventoryMatches('{"total":0}\n', inventory), false);
+});
+
+test("task-scope guidance rejects retired or ambiguous task command scope", () => {
+  for (const source of [
+    "node tool/agent/context_pack.mjs --task docs --path docs",
+    "node tool/agent/context_pack.mjs --task docs --paths docs",
+    "node ./tool/agent/context_pack.mjs --task docs --paths docs",
+    "node  tool/agent/context_pack.mjs --task docs --paths docs",
+    "node tool/agent/context_pack.mjs --task docs --owned-paths docs --impact-paths docs/README.md",
+    "node tool/agent/context_pack.mjs --task docs docs/README.md",
+    "node tool/agent/context_pack.mjs --task docs --owned-paths docs docs/README.md",
+    "node tool/harness.mjs task start --task-id docs --paths docs",
+    "node ./tool/harness.mjs task start --task-id docs --owned-paths docs stray",
+    "node tool/agent/context_pack.mjs --paths docs --help",
+    "node tool/harness.mjs task start --help",
+    "node tool/harness.mjs task start --paths docs --help",
+    "node tool/agent/context_pack.mjs \\\n  --task docs \\\n  --paths docs",
+  ]) {
+    assert.equal(usesRetiredTaskScopeFlag(source), true);
+  }
+  for (const source of [
+    "node tool/agent/context_pack.mjs --task docs --owned-paths docs",
+    "node tool/agent/context_pack.mjs --task docs --owned-paths docs --planned-impact-paths docs/README.md",
+    "node ./tool/agent/context_pack.mjs --help",
+    "node tool/agent/context_pack.mjs --task <task-name> --owned-paths <path[,path...]>",
+    "Generate `node tool/agent/context_pack.mjs --mode parallel-delegation --owned-paths <write-ceiling> --planned-impact-paths <expected-diff>` before editing.",
+    "node tool/harness.mjs task start --task-id docs --owned-paths docs",
+    "node tool/harness.mjs task start --task-id <id> --base-sha <40-character-sha> --owned-paths <path[,path...]> --context-pack build/agent-context/<id>.json",
+    "Use tool/agent/context_pack.mjs to generate context.",
+    "node tool/agent/context_pack.mjs \\\n  --task docs \\\n  --owned-paths docs",
+    "node tool/run.mjs impact --paths docs",
+  ]) {
+    assert.equal(usesRetiredTaskScopeFlag(source), false);
+  }
+
+  for (const source of [
+    "Use `node tool/agent/context_pack.mjs` to assemble this packet.",
+    "Run node tool/agent/context_pack.mjs --task docs --owned-paths docs before editing.",
+    "The command node tool/harness.mjs task start --owned-paths docs is canonical.",
+    "Use `node tool/agent/context_pack.mjs` with `--owned-paths docs stray`.",
+    "Use `node tool/harness.mjs task start` with `--bogus docs`.",
+    "See `foo`, then run node tool/agent/context_pack.mjs --task docs --owned-paths docs before `bar`.",
+    "Run node tool/run.mjs impact --paths docs, then node tool/agent/context_pack.mjs --task docs --owned-paths docs.",
+    "Run node tool/run.mjs impact --paths docs before node tool/agent/context_pack.mjs --task docs --owned-paths docs.",
+    "Run node tool/agent/context_pack.mjs --task docs --owned-paths docs and then node tool/run.mjs impact --paths docs.",
+    "Use --paths docs with node tool/agent/context_pack.mjs.",
+    "Pass --paths docs to node tool/harness.mjs task start.",
+    "Use `--paths docs` with `node tool/agent/context_pack.mjs`.",
+    "After node tool/run.mjs impact, use --paths docs with node tool/agent/context_pack.mjs.",
+  ]) {
+    assert.equal(usesRetiredTaskScopeFlag(source, {prose: true}), false);
+  }
+  for (const source of [
+    "Use `node tool/agent/context_pack.mjs --task docs --paths docs` before editing.",
+    "Use `node tool/harness.mjs task start --task-id docs --paths docs` before editing.",
+  ]) {
+    assert.equal(usesRetiredTaskScopeFlag(source, {prose: true}), true);
+  }
+});
+
+test("agent readiness rejects retired task-scope flags in skills and guidance", () => {
+  const source = createRepositorySnapshot();
+  const snapshot = {
+    ...source,
+    readTexts(relativePaths, options) {
+      const texts = source.readTexts(relativePaths, options);
+      const manifestPath = "docs/agent_skills/skills_manifest.json";
+      if (texts.has(manifestPath)) {
+        const manifest = JSON.parse(texts.get(manifestPath));
+        manifest.skills[0].required_commands[0] =
+          "node tool/agent/context_pack.mjs --task stale lib";
+        texts.set(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+      }
+      const skillPath = "docs/agent_skills/catch-react-surface-refactor.md";
+      if (texts.has(skillPath)) {
+        texts.set(
+          skillPath,
+          `${texts.get(skillPath)}\nnode tool/agent/context_pack.mjs --task stale --path website\n`,
+        );
+      }
+      return texts;
+    },
+  };
+
+  const result = evaluateAgentReadiness({snapshot});
+  assert.ok(result.failures.some((failure) =>
+    failure.includes("required commands use canonical task-scope flags")));
+  assert.ok(result.failures.some((failure) =>
+    failure.includes("catch-react-surface-refactor.md uses canonical task-scope flags")));
+});
+
+test("malformed skill commands report readiness failures instead of throwing", () => {
+  const source = createRepositorySnapshot();
+  const snapshot = {
+    ...source,
+    readTexts(relativePaths, options) {
+      const texts = source.readTexts(relativePaths, options);
+      const manifestPath = "docs/agent_skills/skills_manifest.json";
+      if (!texts.has(manifestPath)) return texts;
+      const manifest = JSON.parse(texts.get(manifestPath));
+      manifest.skills[0].required_commands = {};
+      texts.set(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+      return texts;
+    },
+  };
+
+  const result = evaluateAgentReadiness({snapshot});
+  assert.ok(result.failures.some((failure) =>
+    failure.includes("declares required commands")));
 });
 
 test("agent readiness keeps check collection invocation-local", () => {

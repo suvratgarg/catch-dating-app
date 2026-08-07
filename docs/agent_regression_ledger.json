@@ -1,5 +1,5 @@
 {
-  "version": 153,
+  "version": 154,
   "updated": "2026-08-07",
   "owner": "agent_operating_model",
   "entries": [
@@ -4327,7 +4327,33 @@
         "docs/agent_operating_model.md",
         "docs/plans/harness_v2_decision_and_cicd_delivery_plan.md"
       ],
-      "notes": "Parallel directory ownership requires an explicit --planned-impact-paths declaration. Planned impact must be nonempty and stay within the owned write ceiling. Support paths remain machine-derived read-only capabilities and never grant impact or ownership. Canonical guidance uses explicit names; temporary legacy aliases remain only until H2-TRANSITION-043 migrates all project-skill callsites and adds an enforcement guard."
+      "notes": "Parallel directory ownership requires an explicit --planned-impact-paths declaration. Planned impact must be nonempty and stay within the owned write ceiling. Support paths remain machine-derived read-only capabilities and never grant impact or ownership. Canonical guidance uses explicit names; retired aliases are rejected and guarded by REG-HARNESS-CONTEXT-CLI-CALLSITE-001."
+    },
+    {
+      "id": "REG-HARNESS-CONTEXT-CLI-CALLSITE-001",
+      "title": "Context-pack CLI migration leaves executable project-skill guidance stale",
+      "status": "active",
+      "applies_to": [
+        "docs/agent_skills/**",
+        "tool/agent/check_agent_readiness.mjs",
+        "tool/agent/check_agent_readiness.test.mjs",
+        "tool/agent/context_pack.mjs",
+        "tool/harness/lib/worktree_lifecycle.mjs",
+        "tool/harness/worktree_lifecycle.test.mjs",
+        "tool/run.test.mjs"
+      ],
+      "symptom": "A task-scope CLI is renamed before every project-skill command and active guidance file moves atomically, so generated context plans emit commands that fail even while readiness reports 100/100.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/agent/check_agent_readiness.test.mjs tool/harness/worktree_lifecycle.test.mjs tool/run.test.mjs",
+        "check_ids": ["agent:readiness", "agent:context-pack", "agent:harness-v2", "tool:runner"],
+        "guardEvidence": "readiness reads every project-skill Markdown file plus the machine manifest and validates structured required commands plus complete standalone or inline-code command examples; all project-skill context commands use --owned-paths; context-pack rejects --path, --paths, --impact-paths, and positional scope arguments; task start rejects --paths"
+      },
+      "owner_docs": [
+        "docs/agent_operating_model.md",
+        "docs/plans/harness_v2_decision_and_cicd_delivery_plan.md"
+      ],
+      "notes": "CLI removals and their live callsites ship in one atomic commit. Transitional aliases may exist only in a preceding safe compatibility commit with a named closeout task."
     }
   ]
 }

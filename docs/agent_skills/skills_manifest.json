@@ -1,13 +1,13 @@
 {
-  "version": 141,
+  "version": 142,
   "updated": "2026-08-07",
   "owner": "agent_operating_model",
   "skills": [
     {
       "skill_id": "catch-architecture-refactor",
       "path": "docs/agent_skills/catch-architecture-refactor.md",
-      "version": "1.1.0",
-      "updated": "2026-07-01",
+      "version": "1.1.1",
+      "updated": "2026-08-07",
       "applies_to": [
         "lib/**",
         "test/**",
@@ -30,7 +30,7 @@
         "audit:registry"
       ],
       "required_commands": [
-        "node tool/agent/context_pack.mjs --task architecture-refactor --paths lib,docs/app_architecture.md,docs/audit_registry/architecture_pattern_adoption.json",
+        "node tool/agent/context_pack.mjs --task architecture-refactor --owned-paths lib,docs/app_architecture.md,docs/audit_registry/architecture_pattern_adoption.json",
         "dart tool/audit_registry.dart refresh",
         "flutter analyze --no-fatal-infos",
         "node tool/agent/check_agent_readiness.mjs"
@@ -46,8 +46,8 @@
     {
       "skill_id": "catch-marketing-website",
       "path": "docs/agent_skills/catch-marketing-website.md",
-      "version": "1.1.115",
-      "updated": "2026-07-02",
+      "version": "1.1.116",
+      "updated": "2026-08-07",
       "applies_to": [
         "website/**",
         "packages/web-config/**",
@@ -86,7 +86,7 @@
         "design:tokens"
       ],
       "required_commands": [
-        "node tool/agent/context_pack.mjs --task marketing-website --paths website,packages/web-config,tool/marketing,design/website,.github/workflows/marketing-website.yml",
+        "node tool/agent/context_pack.mjs --task marketing-website --owned-paths website,packages/web-config,tool/marketing,design/website,.github/workflows/marketing-website.yml",
         "node tool/run.mjs check marketing:website-routes",
         "node tool/run.mjs check marketing:website-components",
         "node tool/run.mjs check web:react-architecture-boundaries",
@@ -114,8 +114,8 @@
     {
       "skill_id": "catch-react-surface-refactor",
       "path": "docs/agent_skills/catch-react-surface-refactor.md",
-      "version": "1.0.136",
-      "updated": "2026-08-06",
+      "version": "1.0.137",
+      "updated": "2026-08-07",
       "applies_to": [
         "website/**",
         "admin/**",
@@ -165,7 +165,7 @@
         "admin:import-boundaries"
       ],
       "required_commands": [
-        "node tool/agent/context_pack.mjs --task react-surface-refactor --paths website,admin,packages/web-config,docs/web_surface_architecture.md,docs/marketing_website_architecture.md,design/website,tool",
+        "node tool/agent/context_pack.mjs --task react-surface-refactor --owned-paths website,admin,packages/web-config,docs/web_surface_architecture.md,docs/marketing_website_architecture.md,design/website,tool",
         "node tool/run.mjs check web:react-architecture-boundaries",
         "node tool/run.mjs check web:react-ui-primitives",
         "node tool/run.mjs check web:react-component-governance",
@@ -205,8 +205,8 @@
     {
       "skill_id": "catch-ui-implementation",
       "path": "docs/agent_skills/catch-ui-implementation.md",
-      "version": "1.0.0",
-      "updated": "2026-06-30",
+      "version": "1.0.1",
+      "updated": "2026-08-07",
       "applies_to": [
         "lib/**/presentation/**",
         "lib/core/widgets/**",
@@ -228,7 +228,7 @@
         "design:widgetbook-coverage"
       ],
       "required_commands": [
-        "node tool/agent/context_pack.mjs --task ui-implementation --paths lib",
+        "node tool/agent/context_pack.mjs --task ui-implementation --owned-paths lib",
         "node tool/run.mjs check --category design",
         "flutter analyze --no-fatal-infos",
         "node tool/agent/check_agent_readiness.mjs"
@@ -243,8 +243,8 @@
     {
       "skill_id": "catch-design-parity",
       "path": "docs/agent_skills/catch-design-parity.md",
-      "version": "1.0.0",
-      "updated": "2026-06-30",
+      "version": "1.0.1",
+      "updated": "2026-08-07",
       "applies_to": [
         "docs/design_parity/**",
         "design/components/**",
@@ -269,7 +269,7 @@
         "agent:readiness"
       ],
       "required_commands": [
-        "node tool/agent/context_pack.mjs --task design-parity --paths docs/design_parity,widgetbook,lib/core/widgets",
+        "node tool/agent/context_pack.mjs --task design-parity --owned-paths docs/design_parity,widgetbook,lib/core/widgets",
         "node tool/run.mjs check --category design",
         "node tool/agent/check_agent_readiness.mjs"
       ],
@@ -283,8 +283,8 @@
     {
       "skill_id": "catch-doc-hygiene",
       "path": "docs/agent_skills/catch-doc-hygiene.md",
-      "version": "1.1.0",
-      "updated": "2026-08-06",
+      "version": "1.1.1",
+      "updated": "2026-08-07",
       "applies_to": [
         "docs/**",
         "PROJECT_CONTEXT.md",
@@ -303,7 +303,7 @@
         "audit:registry"
       ],
       "required_commands": [
-        "node tool/agent/context_pack.mjs --task doc-hygiene --paths docs",
+        "node tool/agent/context_pack.mjs --task doc-hygiene --owned-paths docs",
         "dart tool/audit_registry.dart refresh",
         "node tool/agent/check_agent_readiness.mjs"
       ],
@@ -317,8 +317,8 @@
     {
       "skill_id": "catch-contract-change",
       "path": "docs/agent_skills/catch-contract-change.md",
-      "version": "1.0.0",
-      "updated": "2026-06-30",
+      "version": "1.0.1",
+      "updated": "2026-08-07",
       "applies_to": [
         "contracts/**",
         "tool/contracts/**",
@@ -341,7 +341,7 @@
         "agent:readiness"
       ],
       "required_commands": [
-        "node tool/agent/context_pack.mjs --task contract-change --paths contracts,functions/src,firestore.rules,lib",
+        "node tool/agent/context_pack.mjs --task contract-change --owned-paths contracts,functions/src,firestore.rules,lib",
         "./tool/check_data_contract.sh",
         "node tool/agent/check_agent_readiness.mjs"
       ],
@@ -355,7 +355,7 @@
     {
       "skill_id": "catch-tooling-automation",
       "path": "docs/agent_skills/catch-tooling-automation.md",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "updated": "2026-08-07",
       "applies_to": [
         "tool/**"
@@ -372,7 +372,7 @@
         "tool:runner"
       ],
       "required_commands": [
-        "node tool/agent/context_pack.mjs --task tooling-automation --paths tool",
+        "node tool/agent/context_pack.mjs --task tooling-automation --owned-paths tool",
         "node tool/run.mjs check --manifest-only",
         "node tool/agent/check_agent_readiness.mjs"
       ],
@@ -387,8 +387,8 @@
     {
       "skill_id": "catch-release-check",
       "path": "docs/agent_skills/catch-release-check.md",
-      "version": "1.0.0",
-      "updated": "2026-06-30",
+      "version": "1.0.1",
+      "updated": "2026-08-07",
       "applies_to": [
         ".github/workflows/**",
         "firebase.json",
@@ -412,7 +412,7 @@
         "tool:runner"
       ],
       "required_commands": [
-        "node tool/agent/context_pack.mjs --task release-check --paths .github,tool/firebase,ios,android,docs/release_operations.md",
+        "node tool/agent/context_pack.mjs --task release-check --owned-paths .github,tool/firebase,ios,android,docs/release_operations.md",
         "node tool/run.mjs check --manifest-only",
         "node tool/agent/check_agent_readiness.mjs"
       ],
