@@ -3,6 +3,17 @@ import os from "node:os";
 import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {createHash} from "node:crypto";
+import {taskCommandTemplates} from "./task_contract.mjs";
+import {
+  CONTEXT_PACK_SCHEMA_V2,
+  deriveTaskCheckSelection,
+  isCanonicalTaskPath,
+  isValidTaskId,
+  normalizeTaskScopePaths,
+  TASK_START_MODE,
+  taskStartabilityBlockers,
+  validateTaskStartContract,
+} from "../../agent/lib/task_input.mjs";
 
 const MIB = 1024 * 1024;
 const DEFAULT_BUDGET_MIB = 256;
@@ -10,9 +21,11 @@ const DEFAULT_RESERVE_MIB = 1024;
 const DEFAULT_STALE_DAYS = 7;
 const TASK_METADATA_SCHEMA_V1 = "catch.harness-task/v1";
 const TASK_METADATA_SCHEMA_V2 = "catch.harness-task/v2";
+const TASK_METADATA_SCHEMA_V3 = "catch.harness-task/v3";
 const SUPPORTED_TASK_METADATA_SCHEMAS = new Set([
   TASK_METADATA_SCHEMA_V1,
   TASK_METADATA_SCHEMA_V2,
+  TASK_METADATA_SCHEMA_V3,
 ]);
 const TEMP_ROOTS = [...new Set([
   "/tmp",
@@ -38,23 +51,8 @@ export const taskSparseAnchorPaths = Object.freeze([
   "/pubspec.yaml",
   "/packages/catch_ui_lints/",
   "/packages/phosphor_flutter/",
-  "/tool/agent/",
-  "/tool/architecture/check_dependency_direction.mjs",
-  "/tool/docs/check_doc_version_monotonic.mjs",
-  "/tool/harness.mjs",
-  "/tool/harness/",
-  "/tool/lib/",
-  "/tool/README.md",
-  "/tool/test_inventory.mjs",
-  "/tool/tools_manifest.json",
+  "/tool/",
 ]);
-
-export const taskCommandTemplates = Object.freeze({
-  start: "node tool/harness.mjs task start --task-id <task-id> --base-sha <40-character-sha> --stack-parent <ref> --paths <path[,path...]> [--budget-mib 256]",
-  doctor: "node tool/harness.mjs task doctor --worktree <task-worktree>",
-  finish: "node tool/harness.mjs task finish --worktree <task-worktree>",
-  reap: "node tool/harness.mjs task reap --dry-run [--merged-into origin/main] [--stale-days 7]",
-});
 
 export class TaskUsageError extends Error {}
 
@@ -120,25 +118,19 @@ export function assertSafeTaskTarget({targetPath, primaryRoot}) {
 }
 
 export function normalizeSparsePaths(values) {
-  const normalized = new Set(taskSparseAnchorPaths);
-  for (const value of normalizeExplicitSparsePaths(values)) normalized.add(value);
-  return [...normalized].sort();
+  const normalized = new Map(taskSparseAnchorPaths.map((value) => [stripSparsePath(value), value]));
+  for (const value of normalizeExplicitSparsePaths(values)) {
+    if (!normalized.has(stripSparsePath(value))) normalized.set(stripSparsePath(value), value);
+  }
+  return [...normalized.values()].sort();
 }
 
 function normalizeExplicitSparsePaths(values) {
-  const normalized = new Set();
-  for (const rawValue of values ?? []) {
-    const value = String(rawValue).trim().replaceAll("\\", "/");
-    if (!value) continue;
-    if (path.posix.isAbsolute(value) || value.split("/").includes("..")) {
-      throw new TaskUsageError(`Sparse path must be repository-relative: ${rawValue}`);
-    }
-    if (/[*?\[\]]/u.test(value) || value === ".git" || value.startsWith(".git/")) {
-      throw new TaskUsageError(`Sparse path must be an explicit tracked path: ${rawValue}`);
-    }
-    normalized.add(`/${value.replace(/^\.\//u, "")}`);
+  try {
+    return normalizeTaskScopePaths(values ?? []).map((value) => `/${value}`);
+  } catch (error) {
+    throw new TaskUsageError(error.message);
   }
-  return [...normalized].sort();
 }
 
 export function availableAllocatedBytesFromStatfs(stat) {
@@ -268,7 +260,7 @@ function parseTaskArgs(args) {
     throw new TaskUsageError("Harness task command is required.");
   }
   const supported = {
-    start: new Set(["--task-id", "--base-sha", "--stack-parent", "--branch", "--paths", "--budget-mib", "--reserve-mib", "--json"]),
+    start: new Set(["--task-id", "--base-sha", "--stack-parent", "--branch", "--paths", "--context-pack", "--budget-mib", "--reserve-mib", "--json"]),
     doctor: new Set(["--worktree", "--json"]),
     finish: new Set(["--worktree", "--json"]),
     reap: new Set(["--dry-run", "--merged-into", "--stale-days", "--json"]),
@@ -287,13 +279,15 @@ function parseTaskArgs(args) {
   if (command === "start") {
     const taskId = requiredValue(args, "--task-id");
     const baseSha = requiredValue(args, "--base-sha");
-    if (!/^[a-z0-9][a-z0-9._-]{2,79}$/u.test(taskId)) {
+    if (!isValidTaskId(taskId)) {
       throw new TaskUsageError("--task-id must be 3-80 lowercase letters, digits, dots, underscores, or hyphens.");
     }
     if (!/^[0-9a-f]{40}$/u.test(baseSha)) {
       throw new TaskUsageError("--base-sha must be an explicit full 40-character commit SHA.");
     }
-    const requestedPaths = requiredValue(args, "--paths").split(",").filter(Boolean);
+    const requestedPaths = normalizeExplicitSparsePaths(
+      requiredValue(args, "--paths").split(",").filter(Boolean),
+    ).map(stripSparsePath);
     if (requestedPaths.length === 0) throw new TaskUsageError("--paths must select at least one repository path.");
     const branch = valueAfter(args, "--branch") ?? `codex/${taskId}`;
     if (!/^codex\/[A-Za-z0-9._/-]+$/u.test(branch) || branch.includes("..")) {
@@ -307,7 +301,7 @@ function parseTaskArgs(args) {
       stackParent: requiredValue(args, "--stack-parent"),
       branch,
       requestedSparsePaths,
-      sparsePaths: normalizeSparsePaths(requestedPaths),
+      contextPackPath: valueAfter(args, "--context-pack"),
       budgetMiB: positiveNumber(valueAfter(args, "--budget-mib") ?? DEFAULT_BUDGET_MIB, "--budget-mib"),
       reserveMiB: positiveNumber(valueAfter(args, "--reserve-mib") ?? DEFAULT_RESERVE_MIB, "--reserve-mib"),
     };
@@ -345,6 +339,14 @@ function startTask({options, context, runner, statfs, now, pid}) {
   const targetPath = path.join(context.canonicalRoot, options.taskId);
   assertSafeTaskTarget({targetPath, primaryRoot: context.primaryRoot});
   if (fs.existsSync(targetPath)) throw new Error(`Task worktree path already exists: ${targetPath}`);
+  if (options.contextPackPath == null) {
+    throw new TaskUsageError("--context-pack is required for every new task start.");
+  }
+  const taskInput = loadAndValidateContextPack({options, context, runner});
+  const sparsePaths = normalizeSparsePaths([
+    ...options.requestedSparsePaths.map(stripSparsePath),
+    ...taskInput.supportPaths,
+  ]);
   const branchRef = `refs/heads/${options.branch}`;
   if (gitStatus({cwd: context.primaryRoot, args: ["show-ref", "--verify", "--quiet", branchRef], runner}) === 0) {
     throw new Error(`Task branch already exists: ${options.branch}`);
@@ -379,13 +381,14 @@ function startTask({options, context, runner, statfs, now, pid}) {
   validateRequestedSparsePaths({
     cwd: context.primaryRoot,
     baseSha: options.baseSha,
+    taskId: options.taskId,
     requestedSparsePaths: options.requestedSparsePaths,
     runner,
   });
   const estimatedTrackedLogicalBytes = estimateTrackedLogicalBytes({
     cwd: context.primaryRoot,
     baseSha: options.baseSha,
-    sparsePaths: options.sparsePaths,
+    sparsePaths,
     runner,
   });
   const projectedInitialAllocatedBytes = estimatedTrackedLogicalBytes + 32 * MIB;
@@ -409,10 +412,11 @@ function startTask({options, context, runner, statfs, now, pid}) {
       cwd: targetPath,
       args: ["sparse-checkout", "set", "--no-cone", "--stdin"],
       runner,
-      input: `${options.sparsePaths.join("\n")}\n`,
+      input: `${sparsePaths.join("\n")}\n`,
       allowEmpty: true,
     });
     gitText({cwd: targetPath, args: ["checkout", "--force", options.branch], runner, allowEmpty: true});
+    assertRequiredEntrypointsMaterialized({targetPath, taskInput});
     const initialMaterializedLogicalBytes = logicalDirectorySize(targetPath);
     const initialMaterializedAllocatedBytes = allocatedDirectorySize(targetPath);
     if (initialMaterializedAllocatedBytes == null) {
@@ -426,7 +430,7 @@ function startTask({options, context, runner, statfs, now, pid}) {
     }
     const metadataPath = gitText({cwd: targetPath, args: ["rev-parse", "--git-path", "catch-task.json"], runner});
     const metadata = {
-      schema: TASK_METADATA_SCHEMA_V2,
+      schema: TASK_METADATA_SCHEMA_V3,
       status: "active",
       taskId: options.taskId,
       baseSha: options.baseSha,
@@ -434,8 +438,20 @@ function startTask({options, context, runner, statfs, now, pid}) {
       stackParentSha,
       branch: options.branch,
       worktreePath: targetPath,
-      sparsePaths: options.sparsePaths,
+      sparsePaths,
       requestedSparsePaths: options.requestedSparsePaths,
+      contextPack: {
+        packSchema: CONTEXT_PACK_SCHEMA_V2,
+        taskInputSchema: taskInput.schema,
+        mode: taskInput.mode,
+        sourceSha: options.baseSha,
+        digest: taskInput.digest,
+        checkIds: taskInput.checkIds,
+        deferredCheckIds: taskInput.deferredCheckIds,
+        deferredRegressionIds: taskInput.deferredRegressionIds,
+        supportPaths: taskInput.supportPaths,
+        requiredEntrypoints: taskInput.requiredEntrypoints,
+      },
       budgetAllocatedBytes: capacity.budgetAllocatedBytes,
       reserveAllocatedBytes: capacity.reserveAllocatedBytes,
       estimatedTrackedLogicalBytes,
@@ -490,6 +506,18 @@ function inspectTaskIntegrity({inspection, targetPath, context, runner, statfs})
     inspection.sparsePaths,
   )) blockers.push("sparse_checkout_metadata_mismatch");
   if (!hasValidStorageMetrics(inspection.metadata)) blockers.push("invalid_storage_metrics");
+  blockers.push(...contextPackIntegrityBlockers({
+    metadata: inspection.metadata,
+    targetPath,
+    context,
+    runner,
+  }));
+  blockers.push(...ownedScopeBlockers({
+    metadata: inspection.metadata,
+    targetPath,
+    context,
+    runner,
+  }));
   if (inspection.materializedAllocatedBytes == null) blockers.push("materialized_allocated_size_unknown");
   const budgetAllocatedBytes = taskBudgetAllocatedBytes(inspection.metadata);
   if (budgetAllocatedBytes != null &&
@@ -510,6 +538,174 @@ function inspectTaskIntegrity({inspection, targetPath, context, runner, statfs})
     blockers.push("filesystem_reserve_exhausted");
   }
   return {blockers, availableAllocatedBytes};
+}
+
+function contextPackIntegrityBlockers({metadata, targetPath, context, runner}) {
+  if (metadata?.schema !== TASK_METADATA_SCHEMA_V3) return [];
+  const receipt = metadata.contextPack;
+  if (!receipt || receipt.packSchema !== CONTEXT_PACK_SCHEMA_V2) {
+    return ["invalid_context_pack_receipt"];
+  }
+  if (!Array.isArray(metadata.requestedSparsePaths) || ![
+    receipt.checkIds,
+    receipt.requiredEntrypoints,
+    receipt.supportPaths,
+    receipt.deferredCheckIds,
+    receipt.deferredRegressionIds,
+  ].every(isUniqueNonemptyStringArray)) {
+    return ["invalid_context_pack_receipt"];
+  }
+  const taskStart = {
+    schema: receipt.taskInputSchema,
+    taskId: metadata.taskId,
+    mode: receipt.mode,
+    baseSha: metadata.baseSha,
+    scopePaths: (metadata.requestedSparsePaths ?? []).map(stripSparsePath),
+    checkIds: receipt.checkIds,
+    requiredEntrypoints: receipt.requiredEntrypoints,
+    supportPaths: receipt.supportPaths,
+    deferredCheckIds: receipt.deferredCheckIds,
+    deferredRegressionIds: receipt.deferredRegressionIds,
+    complete: true,
+    blockers: [],
+    digest: receipt.digest,
+  };
+  let manifest;
+  let selection;
+  try {
+    manifest = readJsonAtCommit({
+      cwd: context.primaryRoot,
+      baseSha: metadata.baseSha,
+      relativePath: "tool/tools_manifest.json",
+      runner,
+    });
+    selection = deriveTaskSelectionAtCommit({
+      cwd: context.primaryRoot,
+      baseSha: metadata.baseSha,
+      taskId: metadata.taskId,
+      mode: receipt.mode,
+      scopePaths: taskStart.scopePaths,
+      runner,
+    });
+  } catch {
+    return ["context_pack_base_authority_unavailable"];
+  }
+  let validation;
+  try {
+    validation = validateTaskStartContract({
+      pack: {
+        schema: receipt.packSchema,
+        task: metadata.taskId,
+        mode: receipt.mode,
+        sourceSha: receipt.sourceSha,
+        taskStart,
+      },
+      manifest,
+      taskId: metadata.taskId,
+      baseSha: metadata.baseSha,
+      scopePaths: taskStart.scopePaths,
+      selection,
+      receiptOnly: true,
+    });
+  } catch {
+    return ["invalid_context_pack_receipt"];
+  }
+  if (validation.errors.length > 0) return ["context_pack_receipt_mismatch"];
+
+  const blockers = [];
+  for (const relativePath of receipt.requiredEntrypoints) {
+    if (!isCanonicalTaskPath(relativePath)) {
+      blockers.push("invalid_context_pack_receipt");
+      continue;
+    }
+    const absolutePath = path.join(targetPath, relativePath);
+    const stat = lstatOrNull(absolutePath);
+    if (!stat || stat.isSymbolicLink() || !stat.isFile() || !isInsidePath(
+      resolvePhysicalPath(targetPath),
+      resolvePhysicalPath(absolutePath),
+    )) {
+      blockers.push(`required_command_entrypoint_missing:${relativePath}`);
+    }
+  }
+  for (const relativePath of receipt.supportPaths) {
+    if (!isCanonicalTaskPath(relativePath)) {
+      blockers.push("invalid_context_pack_receipt");
+      continue;
+    }
+    const absolutePath = path.join(targetPath, relativePath);
+    const stat = lstatOrNull(absolutePath);
+    if (!stat || stat.isSymbolicLink() || (!stat.isFile() && !stat.isDirectory()) || !isInsidePath(
+      resolvePhysicalPath(targetPath),
+      resolvePhysicalPath(absolutePath),
+    )) {
+      blockers.push(`task_support_path_missing:${relativePath}`);
+    }
+  }
+  return [...new Set(blockers)].sort();
+}
+
+function ownedScopeBlockers({metadata, targetPath, context, runner}) {
+  if (metadata?.schema !== TASK_METADATA_SCHEMA_V3) return [];
+  if (!Array.isArray(metadata.requestedSparsePaths) ||
+      !metadata.requestedSparsePaths.every((entry) => typeof entry === "string")) {
+    return ["invalid_owned_scope_receipt"];
+  }
+  let scopePaths;
+  try {
+    scopePaths = normalizeTaskScopePaths(metadata.requestedSparsePaths.map(stripSparsePath));
+  } catch {
+    return ["invalid_owned_scope_receipt"];
+  }
+  const owned = [];
+  try {
+    for (const scopePath of scopePaths) {
+      const record = inspectPathAtCommit({
+        cwd: context.primaryRoot,
+        baseSha: metadata.baseSha,
+        relativePath: scopePath,
+        runner,
+      });
+      if (record && !["blob", "tree"].includes(record.type)) {
+        return ["invalid_owned_scope_receipt"];
+      }
+      owned.push({path: scopePath, tree: record?.type === "tree"});
+    }
+  } catch {
+    return ["owned_scope_base_inspection_unavailable"];
+  }
+
+  let changedPaths;
+  try {
+    changedPaths = changedRepositoryPaths({targetPath, baseSha: metadata.baseSha, runner});
+  } catch {
+    return ["owned_scope_diff_unavailable"];
+  }
+  const blockers = [];
+  for (const changedPath of changedPaths) {
+    if (!isCanonicalTaskPath(changedPath)) {
+      blockers.push("owned_scope_diff_invalid");
+      continue;
+    }
+    const isOwned = owned.some((entry) => changedPath === entry.path ||
+      (entry.tree && changedPath.startsWith(`${entry.path}/`)));
+    if (!isOwned) blockers.push(`out_of_owned_scope:${changedPath}`);
+  }
+  return [...new Set(blockers)].sort();
+}
+
+function changedRepositoryPaths({targetPath, baseSha, runner}) {
+  const commands = [
+    ["diff", "--no-renames", "--name-only", "-z", baseSha, "HEAD", "--"],
+    ["diff", "--no-renames", "--name-only", "-z", "--"],
+    ["diff", "--cached", "--no-renames", "--name-only", "-z", "--"],
+    ["ls-files", "--others", "--exclude-standard", "-z", "--"],
+  ];
+  const changed = new Set();
+  for (const args of commands) {
+    const result = gitResult({cwd: targetPath, args, runner});
+    for (const relativePath of result.stdout.split("\0").filter(Boolean)) changed.add(relativePath);
+  }
+  return [...changed].sort();
 }
 
 function doctorTask({options, context, runner, statfs}) {
@@ -805,7 +1001,7 @@ function inspectSingleWorktree({targetPath, context, runner, record = {}, merged
     inspection.headAgeDays = Math.max(0, (now().getTime() / 1000 - Number(commitTime.stdout.trim())) / 86400);
   }
   inspection.metadata = readTaskMetadata({cwd: resolved, runner});
-  if (inspection.metadata?.schema === TASK_METADATA_SCHEMA_V2 &&
+  if ([TASK_METADATA_SCHEMA_V2, TASK_METADATA_SCHEMA_V3].includes(inspection.metadata?.schema) &&
       Number.isFinite(inspection.metadata.initialMaterializedAllocatedBytes) &&
       inspection.materializedAllocatedBytes != null) {
     inspection.materializedAllocatedDeltaBytes =
@@ -903,24 +1099,185 @@ function estimateTrackedLogicalBytes({cwd, baseSha, sparsePaths, runner}) {
   return total;
 }
 
-function validateRequestedSparsePaths({cwd, baseSha, requestedSparsePaths, runner}) {
-  const existingDirectories = new Set();
-  for (const candidate of requestedSparsePaths.filter((entry) => entry.endsWith("/"))) {
-    const relative = candidate.replace(/^\//u, "").replace(/\/$/u, "");
-    if (gitStatus({cwd, args: ["cat-file", "-e", `${baseSha}:${relative}`], runner}) === 0) {
-      existingDirectories.add(candidate);
-    }
+function validateRequestedSparsePaths({cwd, baseSha, taskId, requestedSparsePaths, runner}) {
+  const blockers = taskStartabilityBlockers({
+    taskId,
+    scopePaths: requestedSparsePaths.map(stripSparsePath),
+    inspectPath: (relativePath) => inspectPathAtCommit({
+      cwd,
+      baseSha,
+      relativePath,
+      runner,
+    }),
+  });
+  if (blockers.length > 0) {
+    throw new Error(`Task start request is not materializable: ${blockers.join(", ")}`);
   }
-  for (const candidate of requestedSparsePaths) {
-    const relative = candidate.replace(/^\//u, "").replace(/\/$/u, "");
-    if (gitStatus({cwd, args: ["cat-file", "-e", `${baseSha}:${relative}`], runner}) === 0) continue;
-    const selectedParent = [...existingDirectories].some((directory) => candidate.startsWith(directory));
-    if (!selectedParent) {
+}
+
+function loadAndValidateContextPack({options, context, runner}) {
+  const packPath = path.resolve(context.currentWorktree, options.contextPackPath);
+  if (!isInsidePath(context.currentWorktree, packPath) || !isInsidePath(
+    resolvePhysicalPath(context.currentWorktree),
+    resolvePhysicalPath(packPath),
+  )) {
+    throw new Error("Context pack must be inside the invoking worktree.");
+  }
+  const stat = lstatOrNull(packPath);
+  if (!stat || stat.isSymbolicLink() || !stat.isFile()) {
+    throw new Error(`Context pack must be an ordinary file: ${packPath}`);
+  }
+  let pack;
+  try {
+    pack = JSON.parse(fs.readFileSync(packPath, "utf8"));
+  } catch (error) {
+    throw new Error(`Context pack is not valid JSON: ${error.message}`);
+  }
+  const manifest = readJsonAtCommit({
+    cwd: context.primaryRoot,
+    baseSha: options.baseSha,
+    relativePath: "tool/tools_manifest.json",
+    runner,
+  });
+  const validation = validateTaskStartContract({
+    pack,
+    manifest,
+    taskId: options.taskId,
+    baseSha: options.baseSha,
+    scopePaths: options.requestedSparsePaths.map(stripSparsePath),
+    selection: deriveTaskSelectionAtCommit({
+      cwd: context.primaryRoot,
+      baseSha: options.baseSha,
+      taskId: options.taskId,
+      mode: pack.mode,
+      scopePaths: options.requestedSparsePaths.map(stripSparsePath),
+      runner,
+    }),
+  });
+  if (validation.errors.length > 0) {
+    throw new Error(`Context pack cannot authorize task creation: ${validation.errors.join(", ")}`);
+  }
+  for (const entrypoint of validation.expected.requiredEntrypoints) {
+    const record = inspectPathAtCommit({
+      cwd: context.primaryRoot,
+      baseSha: options.baseSha,
+      relativePath: entrypoint,
+      runner,
+    });
+    if (!record || record.type !== "blob" || !["100644", "100755"].includes(record.mode)) {
       throw new Error(
-        `Requested sparse path does not exist at ${baseSha} and has no explicitly selected existing parent: ${candidate}`,
+        `Required command entrypoint is not a regular tracked file at ${options.baseSha}: ${entrypoint}`,
       );
     }
   }
+  for (const supportPath of validation.expected.supportPaths) {
+    const record = inspectPathAtCommit({
+      cwd: context.primaryRoot,
+      baseSha: options.baseSha,
+      relativePath: supportPath,
+      runner,
+    });
+    if (!record || !["blob", "tree"].includes(record.type) || ["120000", "160000"].includes(record.mode)) {
+      throw new Error(
+        `Task support path is not a regular tracked file or tree at ${options.baseSha}: ${supportPath}`,
+      );
+    }
+  }
+  return validation.expected;
+}
+
+function readJsonAtCommit({cwd, baseSha, relativePath, runner}) {
+  const result = gitResult({
+    cwd,
+    args: ["show", `${baseSha}:${relativePath}`],
+    runner,
+  });
+  try {
+    return JSON.parse(result.stdout);
+  } catch (error) {
+    throw new Error(`Repository JSON ${relativePath} is invalid at ${baseSha}: ${error.message}`);
+  }
+}
+
+function deriveTaskSelectionAtCommit({cwd, baseSha, taskId, mode, scopePaths, runner}) {
+  if (mode !== TASK_START_MODE) {
+    throw new Error(`Task context pack mode must be ${TASK_START_MODE}.`);
+  }
+  const skills = readJsonAtCommit({
+    cwd,
+    baseSha,
+    relativePath: "docs/agent_skills/skills_manifest.json",
+    runner,
+  });
+  const regressions = readJsonAtCommit({
+    cwd,
+    baseSha,
+    relativePath: "docs/agent_regression_ledger.json",
+    runner,
+  });
+  if (!Array.isArray(skills?.skills) || !Array.isArray(regressions?.entries)) {
+    throw new Error("Task selection authorities are malformed at the base SHA.");
+  }
+  const selectionPaths = expandSelectionPathsAtCommit({
+    cwd,
+    baseSha,
+    scopePaths,
+    runner,
+  });
+  return deriveTaskCheckSelection({
+    task: taskId,
+    mode,
+    scopePaths,
+    selectionPaths,
+    skills: skills.skills,
+    regressions: regressions.entries,
+  });
+}
+
+function expandSelectionPathsAtCommit({cwd, baseSha, scopePaths, runner}) {
+  const result = gitResult({
+    cwd,
+    args: ["ls-tree", "-r", "--name-only", "-z", baseSha, "--", ...scopePaths],
+    runner,
+  });
+  const descendants = result.stdout.split("\0").filter(Boolean);
+  return normalizeTaskScopePaths([...scopePaths, ...descendants]);
+}
+
+function inspectPathAtCommit({cwd, baseSha, relativePath, runner}) {
+  const result = gitResult({
+    cwd,
+    args: ["ls-tree", "-z", baseSha, "--", relativePath],
+    runner,
+  });
+  const records = result.stdout.split("\0").filter(Boolean);
+  const exact = records.find((record) => record.endsWith(`\t${relativePath}`));
+  if (!exact) return null;
+  const match = /^(\d+)\s+(\w+)\s+([0-9a-f]+)\t/u.exec(exact);
+  return match ? {mode: match[1], type: match[2], oid: match[3], path: relativePath} : null;
+}
+
+function assertRequiredEntrypointsMaterialized({targetPath, taskInput}) {
+  for (const relativePath of taskInput.requiredEntrypoints) {
+    const absolutePath = path.join(targetPath, relativePath);
+    const stat = lstatOrNull(absolutePath);
+    if (!stat || stat.isSymbolicLink() || !stat.isFile() || !isInsidePath(
+      resolvePhysicalPath(targetPath),
+      resolvePhysicalPath(absolutePath),
+    )) {
+      throw new Error(`Required command entrypoint was not materialized: ${relativePath}`);
+    }
+  }
+}
+
+function stripSparsePath(value) {
+  return String(value).replace(/^\/+|\/+$/gu, "");
+}
+
+function isUniqueNonemptyStringArray(value) {
+  return Array.isArray(value) &&
+    value.every((entry) => typeof entry === "string" && entry !== "") &&
+    new Set(value).size === value.length;
 }
 
 function inspectRemoteBranchHead({cwd, branch, expectedHead, runner}) {
@@ -1003,13 +1360,17 @@ function logicalDirectorySize(targetPath) {
 
 function taskBudgetAllocatedBytes(metadata) {
   if (!metadata) return null;
-  if (metadata.schema === TASK_METADATA_SCHEMA_V2) return metadata.budgetAllocatedBytes;
+  if ([TASK_METADATA_SCHEMA_V2, TASK_METADATA_SCHEMA_V3].includes(metadata.schema)) {
+    return metadata.budgetAllocatedBytes;
+  }
   return Number.isFinite(metadata.budgetMiB) ? metadata.budgetMiB * MIB : null;
 }
 
 function taskReserveAllocatedBytes(metadata) {
   if (!metadata) return null;
-  if (metadata.schema === TASK_METADATA_SCHEMA_V2) return metadata.reserveAllocatedBytes;
+  if ([TASK_METADATA_SCHEMA_V2, TASK_METADATA_SCHEMA_V3].includes(metadata.schema)) {
+    return metadata.reserveAllocatedBytes;
+  }
   return Number.isFinite(metadata.reserveMiB) ? metadata.reserveMiB * MIB : null;
 }
 
@@ -1018,7 +1379,7 @@ function hasValidStorageMetrics(metadata) {
   if (metadata.schema === TASK_METADATA_SCHEMA_V1) {
     return positiveFinite(metadata.budgetMiB) && positiveFinite(metadata.reserveMiB);
   }
-  if (metadata.schema !== TASK_METADATA_SCHEMA_V2) return false;
+  if (![TASK_METADATA_SCHEMA_V2, TASK_METADATA_SCHEMA_V3].includes(metadata.schema)) return false;
   return positiveFinite(metadata.budgetAllocatedBytes) &&
     positiveFinite(metadata.reserveAllocatedBytes) &&
     nonnegativeFinite(metadata.estimatedTrackedLogicalBytes) &&
@@ -1049,6 +1410,15 @@ function allocatedDirectorySize(targetPath) {
   if (result.status !== 0) return null;
   const match = result.stdout.match(/^(\d+)\s/u);
   return match ? Number(match[1]) * 1024 : null;
+}
+
+function lstatOrNull(targetPath) {
+  try {
+    return fs.lstatSync(targetPath);
+  } catch (error) {
+    if (error?.code === "ENOENT" || error?.code === "ENOTDIR") return null;
+    throw error;
+  }
 }
 
 function resolvePhysicalPath(targetPath) {

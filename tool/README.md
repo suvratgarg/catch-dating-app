@@ -29,7 +29,8 @@ node tool/run.mjs run demo:ops --help
 ```
 
 Filtered `list` and `check` commands fail with exit 64 when no active tool
-matches; an empty category can never count as a successful CI lane. Tools CI
+matches, and a mixed valid/unknown id selection fails before any check runs; an
+empty category can never count as a successful CI lane. Tools CI
 validates the complete category matrix before fanout. Ordinary tool changes run
 the exact active owner declared by `path` or `impactPaths`, its transitive
 `alsoCheckIds`, and the mandatory repository guards in
@@ -51,9 +52,11 @@ planner unions each selected tool's optional `ciRequirements` only after
 mandatory and transitive `alsoCheckIds` expansion. A missing declaration keeps
 the conservative full repository view and all seven setup requirements;
 malformed declarations fail preflight. `repositoryView: index` describes the
-required logical read view and is consumed only by the affected Tools job. Its
-root-anchored non-cone checkout materializes `tool/`, the local toolchain action,
-and the two canonical audit outputs that still require physical files. Every
+required logical read view and is consumed by both the affected Tools job and
+structured agent context packs. The affected Tools job's root-anchored non-cone
+checkout materializes `tool/`, the local toolchain action, and the two canonical
+audit outputs that still require physical files. Task starts instead combine
+fixed task anchors with each selected tool's explicit `taskPaths`. Every
 active index-view tool is ratcheted to Node-only setup; a missing, malformed, or
 non-index view selects the full checkout instead. The preflight job uses its own
 fixed closure for the toolchain pin guard. Both sparse paths retain full history
@@ -572,7 +575,7 @@ hard-won prior fixes.
 
 ```sh
 node tool/agent/context_pack.mjs --task architecture-refactor --paths lib/events,lib/explore
-node tool/agent/context_pack.mjs --task doc-hygiene --paths docs --json
+node tool/agent/context_pack.mjs --task doc-hygiene --paths docs --json --output build/agent-context/doc-hygiene.json
 node tool/agent/check_agent_readiness.mjs
 node tool/agent/check_agent_readiness.mjs --record-metric
 node tool/agent/record_delegation_outcome.mjs --task-id example --mode worker-patch --status integrated --parent-review-outcome accepted --dry-run
@@ -583,25 +586,50 @@ Delegated worktrees use one fail-closed lifecycle instead of direct
 `git worktree` shell sequences:
 
 ```sh
-node tool/harness.mjs task start --task-id <id> --base-sha <40-character-sha> --stack-parent <ref> --paths <path[,path...]> --budget-mib 256
+node tool/harness.mjs task start --task-id <id> --base-sha <40-character-sha> --stack-parent <ref> --paths <path[,path...]> --context-pack build/agent-context/<id>.json --budget-mib 256
 node tool/harness.mjs task doctor --worktree <path>
 node tool/harness.mjs task finish --worktree <path>
 node tool/harness.mjs task reap --dry-run
 ```
 
 Context packs request this lifecycle with `--mode parallel-delegation`; there
-is no separate adapter skill or command recipe.
+is no separate adapter skill or command recipe. JSON packs expose a base-bound
+task-start contract built from skill `required_tools` and regression
+`guard.check_ids`. Raw command strings remain human instructions. Index-view
+checks form the sparse task capability closure; full-view checks are deferred
+to parent integration so repository-wide scanners cannot pass against omitted
+source. Command regressions not yet migrated to `check_ids` are also named as
+deferred parent regressions; their shell strings never grant sparse checkout
+authority. Optional manifest `taskPaths` add support-only paths for an index-safe
+tool without expanding the agent's owned/write scope.
+
+Directory scopes are selection roots, not literal-only matches. The generator
+expands their tracked descendants for skill/rule/regression/check selection,
+and task start recomputes that expansion from the exact base SHA. Every command
+plan entry has an owner and phase: workers receive only preflight and bounded
+task checks; lifecycle, full-view integration, raw skill guidance, and deferred
+regressions remain parent-owned. When `--output` is supplied, the complete pack
+is written there while stdout emits only a compact receipt, keeping CI and
+agent logs bounded.
 
 `start` creates a bounded sparse worktree under `.claude/worktrees/`, locks it,
 records lifecycle metadata outside tracked source, and pushes its collision-free
-branch to `origin`. New v2 receipts separate tracked logical bytes, projected
+branch to `origin`. Closure-aware v3 receipts additionally bind the pack SHA,
+scope, digest, structured task/deferred check ids, support paths, and exact
+physical command entrypoints. Every new start requires this pack; v1/v2
+receipts remain readable for tasks created before the cutover. Support paths
+are materialized capabilities, not write ownership, and doctor/finish reject
+changes outside the pack's owned scope.
+V2 and v3 receipts separate tracked logical bytes, projected
 allocated bytes, initial logical bytes, and initial allocated bytes. The budget,
 current size, and growth delta use allocated bytes; v1 receipts remain readable
 but cannot claim an allocated growth delta. `doctor` fails on lifecycle,
 sparse-materialization, allocated capacity, shared-cache hazards, or unknown
 ignored payload. `finish` repeats those shared task-integrity checks,
 distinguishes an unavailable live origin query from a mismatched remote head,
-and records terminal state; it does not delete anything. `reap --dry-run`
+and records terminal state; it does not delete anything. For v3 it also
+recomputes the base-manifest closure and rejects a missing or replaced physical
+entrypoint. `reap --dry-run`
 refreshes live remote heads and returns a digested, report-only allocated-byte
 inventory. It has no apply mode, and legacy or incompletely inspected worktrees remain
 blocked.
@@ -769,8 +797,9 @@ ids, non-empty text, and exact generated output.
 1. Put the implementation in the narrowest matching category folder.
 2. Add or update the entry in `tool/tools_manifest.json`.
 3. Include at least one cheap `checks` command unless the tool is an interactive Flutter entrypoint.
-4. Use `tool/lib/` helpers for repo paths, CLI flags, and Firebase project selection.
-5. Run `node tool/run.mjs check --manifest-only` before opening a PR.
+4. Declare `ciRequirements.repositoryView: index` only when sparse Git-index visibility is sound; otherwise the check remains a deferred full-view integration check. Add exact `taskPaths` only for support that must be physically materialized outside `tool/`.
+5. Use `tool/lib/` helpers for repo paths, CLI flags, and Firebase project selection.
+6. Run `node tool/run.mjs check --manifest-only` before opening a PR.
 
 Remote write tools should default to dry-run/read-only behavior, require an
 explicit apply flag, and carry a `safety` label that reflects the blast radius.

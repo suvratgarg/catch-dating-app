@@ -195,13 +195,27 @@
       "safety": "remote-write-git-branch-and-local-worktree-explicit",
       "checkSafety": "local-readonly",
       "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/agent/lib/task_input.mjs",
+        "tool/agent/task_input.test.mjs",
+        "tool/harness/lib/task_contract.mjs",
+        "tool/harness/lib/worktree_lifecycle.mjs",
+        "tool/harness/worktree_lifecycle.test.mjs"
+      ],
       "description": "Plans authoritative fail-closed CI, release, and deploy impact, runs allowlisted compile-codegen checks, and owns explicit sparse task-worktree lifecycle commands; start pushes a collision-free task branch to origin and reap is report-only.",
       "checks": [
         "node --check tool/harness.mjs",
         "node --check tool/harness/lib/component_graph.mjs",
         "node --check tool/harness/lib/check_flutter_l10n_generated.mjs",
+        "node --check tool/harness/lib/task_contract.mjs",
         "node --check tool/harness/lib/worktree_lifecycle.mjs",
-        "node --test tool/harness/component_graph.test.mjs tool/harness/check_flutter_l10n_generated.test.mjs tool/harness/harness_cli.test.mjs tool/harness/workflow_wiring.test.mjs tool/harness/worktree_lifecycle.test.mjs",
+        "node --test tool/agent/task_input.test.mjs tool/harness/component_graph.test.mjs tool/harness/check_flutter_l10n_generated.test.mjs tool/harness/harness_cli.test.mjs tool/harness/workflow_wiring.test.mjs tool/harness/worktree_lifecycle.test.mjs",
         "node tool/harness.mjs validate"
       ],
       "role": "gate",
@@ -226,10 +240,22 @@
       "command": "node tool/agent/context_pack.mjs",
       "safety": "local",
       "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/agent/lib/task_input.mjs",
+        "tool/agent/task_input.test.mjs"
+      ],
       "description": "Builds a scoped AI-agent context packet from owner docs, project-local skills, active rules, regression guards, and command plans.",
       "checks": [
         "node --check tool/agent/context_pack.mjs",
-        "node tool/agent/context_pack.mjs --task agent-readiness --paths AGENTS.md,docs/agent_operating_model.md --json"
+        "node --check tool/agent/lib/task_input.mjs",
+        "node --test tool/agent/task_input.test.mjs",
+        "node tool/agent/context_pack.mjs --task agent-readiness --paths AGENTS.md,docs/agent_operating_model.md --json --output build/agent-context/agent-readiness.json"
       ],
       "role": "finder"
     },
@@ -266,6 +292,9 @@
       "command": "node tool/agent/check_agent_readiness.mjs",
       "safety": "local",
       "status": "active",
+      "impactPaths": [
+        "tool/agent/check_agent_readiness.test.mjs"
+      ],
       "ciRequirements": {
         "repositoryView": "index",
         "setup": [
@@ -5156,6 +5185,9 @@
           "node"
         ]
       },
+      "taskPaths": [
+        "docs/audit_registry/test_inventory.json"
+      ],
       "role": "generator",
       "description": "Generates and drift-checks the Git-backed cross-surface test inventory.",
       "checks": [

@@ -225,6 +225,26 @@ test("agent readiness keeps check collection invocation-local", () => {
   }
 });
 
+test("malformed regression check_ids report readiness failures instead of throwing", () => {
+  const source = createRepositorySnapshot();
+  const snapshot = {
+    ...source,
+    readTexts(relativePaths, options) {
+      const texts = source.readTexts(relativePaths, options);
+      const relativePath = "docs/agent_regression_ledger.json";
+      if (!texts.has(relativePath)) return texts;
+      const ledger = JSON.parse(texts.get(relativePath));
+      ledger.entries[0].guard.check_ids = {};
+      texts.set(relativePath, `${JSON.stringify(ledger, null, 2)}\n`);
+      return texts;
+    },
+  };
+
+  const result = evaluateAgentReadiness({snapshot});
+  assert.ok(result.failures.some((failure) => failure.includes("check_ids is non-empty")));
+  assert.ok(result.failures.some((failure) => failure.includes("check_ids is unique")));
+});
+
 test("readiness metric write refuses a sparse-omitted target", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-readiness-metric-"));
   const snapshot = {

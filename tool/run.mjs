@@ -4,6 +4,7 @@ import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {repoRoot} from "./lib/repo_paths.mjs";
 import {createRepositorySnapshot} from "./lib/repository_snapshot.mjs";
+import {isCanonicalTaskPath} from "./agent/lib/task_input.mjs";
 import {
   toolSupportsPlatform,
   validateToolPlatforms,
@@ -94,6 +95,14 @@ function checkTools(args) {
 
   if (manifestOnly) {
     console.log("Tool manifest validation passed.");
+    return;
+  }
+
+  const selectedIds = new Set(tools.map((tool) => tool.id));
+  const missingIds = ids.filter((id) => !selectedIds.has(id));
+  if (missingIds.length > 0) {
+    console.error(`Unknown or inactive tool ids: ${missingIds.join(", ")}.`);
+    process.exitCode = 64;
     return;
   }
 
@@ -361,6 +370,22 @@ function validateManifest(manifest, componentGraph) {
     }
     validateStringArrayField(tool.impactPaths, `${tool.id}.impactPaths`, errors);
     validateStringArrayField(tool.alsoCheckIds, `${tool.id}.alsoCheckIds`, errors);
+    validateStringArrayField(tool.taskPaths, `${tool.id}.taskPaths`, errors);
+    const taskPaths = Array.isArray(tool.taskPaths) ? tool.taskPaths : [];
+    for (const taskPath of taskPaths) {
+      if (!isCanonicalTaskPath(taskPath)) {
+        errors.push(`${tool.id}.taskPaths has invalid path ${taskPath}.`);
+        continue;
+      }
+      const snapshot = repositorySnapshot();
+      const exists = snapshot.exists(taskPath) ||
+        snapshot.listPaths({prefix: `${taskPath}/`}).length > 0;
+      if (!exists) errors.push(`${tool.id}.taskPaths path does not exist: ${taskPath}.`);
+    }
+    if (taskPaths.length > 0 &&
+        tool.ciRequirements?.repositoryView !== "index") {
+      errors.push(`${tool.id}.taskPaths requires ciRequirements.repositoryView index.`);
+    }
     for (const error of validateToolCiRequirements(tool)) {
       errors.push(`${tool.id ?? "<missing>"}: ${error}`);
     }

@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "generatedFrom": "git ls-files --cached --others --exclude-standard",
   "generatedBy": "node tool/test_inventory.mjs",
-  "total": 628,
+  "total": 629,
   "categories": {
     "firebase_rules": {
       "count": 2,
@@ -433,10 +433,11 @@
       ]
     },
     "tooling": {
-      "count": 153,
+      "count": 154,
       "files": [
         "tool/admin/generate_admin_action_catalog.test.mjs",
         "tool/agent/check_agent_readiness.test.mjs",
+        "tool/agent/task_input.test.mjs",
         "tool/architecture/check_adopted_architecture_boundaries.test.mjs",
         "tool/architecture/check_app_architecture_exhibits.test.mjs",
         "tool/architecture/check_dependency_direction.test.mjs",
