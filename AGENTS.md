@@ -1,6 +1,6 @@
 ---
 doc_id: agent_entrypoint
-version: 1.4.13
+version: 2.0.0
 updated: 2026-08-07
 owner: agent_operating_model
 status: active
@@ -8,89 +8,77 @@ status: active
 
 # Catch Agent Entrypoint
 
-This file is the first routing document for AI agents working in this repo.
-Keep it short. Do not duplicate the architecture docs, design docs, contracts,
-or release runbooks here. Use this file to choose the right source of truth and
-the right verification loop.
+This is a routing document, not a task ledger. Git owns history, the Catch
+planner selects affected operations, existing tests and scanners prove
+correctness, and CI stores run evidence.
 
-## Required Starting Loop
+## Starting Loop
 
-1. Check `git status --short` and preserve unrelated dirty work.
-2. Read `docs/agent_operating_model.md` for the execution mode.
-3. For broad cleanup or refactors, generate a context pack before editing:
-
-   ```sh
-   node tool/agent/context_pack.mjs --task <task-name> --owned-paths <path[,path...]>
-   ```
-
-4. Run the agent readiness gate before handoff:
+1. Run `git status --short` and preserve unrelated work.
+2. Read the owner document for the changed surface.
+3. For broad work, generate a read-only plan or context pack before editing:
 
    ```sh
-   node tool/agent/check_agent_readiness.mjs
+   node tool/agent/context_pack.mjs --task <task> --owned-paths <paths>
+   node tool/harness.mjs plan --mode pr --base <base> --head HEAD
    ```
 
-5. For cleanup/refactor passes, stamp proof in `docs/audit_registry/passes.jsonl`.
-6. If using parallel agents, create and close their sparse task worktrees with
-   `node tool/harness.mjs task ...` as specified in
-   `docs/agent_operating_model.md`; the parent agent owns final integration,
-   canonical docs, generated registries, audit stamps, and verification.
+4. Run the focused checks selected by the changed surface. Use
+   `node tool/run.mjs check <id...>` when a registered check exists.
+5. Use a separate Git worktree for concurrent changes. The parent reviews and
+   integrates each result; task, Git, PR, and CI output are the evidence.
 
 ## Source-Of-Truth Routing
 
-| Work type | Read first | Required local loop |
+| Work type | Read first | Verification |
 |---|---|---|
-| App architecture, feature folders, controllers, async, error UI, widget ownership | `docs/app_architecture.md`, `docs/audit_registry/architecture_pattern_adoption.json` | Prototype one reference implementation first; update the architecture exhibit and pattern-adoption tracker; `dart tool/audit_registry.dart refresh`; focused tests/analyzer; relevant scanners |
-| Documentation cleanup | `docs/README.md`, `docs/audit_registry/doc_versions.json` | Update owner doc; remove or mark superseded docs; run readiness gate |
-| Design-system or UI implementation | `docs/design_language.md`, `docs/design_parity/README.md`, `docs/widget_catalog.md` | Widgetbook/contract coverage where relevant; design checks; focused Flutter tests |
-| Catch UI lint or composition enforcement | `docs/app_architecture.md`, `design/components/README.md`, `design/screens/catch.screens.json` | Verify with `bash tool/check_catch_ui_lints.sh`, the root-only drift helper, generated enforcement coverage, and the resolved composition checker. `flutter analyze` and targeted `dart analyze lib` do not prove the Catch plugin loaded. |
-| Data contracts, Firestore, Functions writes | `docs/data_contracts.md`, `docs/backend_operation_catalog.md` | `./tool/check_data_contract.sh` when contract/rules behavior changed |
-| Durable business workflows, workers, autonomous agents, run queues, leases, receipts, or workflow learning | `docs/operations_platform.md`, `contracts/operations/README.md`, and the owning `operations/src/workflows/<workflow>/` README/manifest | Keep `tool/` limited to utilities and compatibility producers; use shadow-safe defaults; validate operation schemas; dry-run any admin projection import before an explicitly confirmed apply; run `npm --prefix operations test`, `npm --prefix operations run check`, focused Functions/admin checks, manifest validation, and readiness |
-| Release, deploy, CI, environment config | `docs/release_operations.md`, `docs/web_surface_architecture.md` | Local CI-equivalent checks; verify workflow/deploy state before declaring done |
-| React web architecture across website/admin, shared UI primitives, React Router, TanStack Query, feature folders, component governance | `docs/web_surface_architecture.md`, `docs/agent_skills/catch-react-surface-refactor.md`, `docs/marketing_website_architecture.md`, `design/admin/components.json` | Prototype one reference implementation first; keep canonical docs/registries parent-owned; run `node tool/run.mjs check web:react-architecture-boundaries`, `node tool/run.mjs check web:website-import-boundaries` when website imports move, `node tool/run.mjs check web:react-ui-primitives`, `node tool/run.mjs check web:react-component-governance`, `node tool/run.mjs check web:shared-ui-adoption`, `node tool/run.mjs check web:react-controller-test-targets`, `node tool/run.mjs check web:admin-feature-ui-size`, `node tool/run.mjs check web:admin-bundle-budget` after the admin production build, `node tool/run.mjs check web:admin-storybook-bundle-budget` after the admin Storybook build, `node tool/run.mjs check web:admin-feature-exports` and `node tool/run.mjs check web:admin-components` when admin feature/shared UI exports move, `node tool/run.mjs check web:admin-storybook` when admin preview coverage changes, relevant route/component/admin boundary checks, and all shared/React app test, typecheck, and build loops |
-| Marketing website architecture, routes, components, public pages, SEO metadata, generated organizer listings | `docs/marketing_website_architecture.md`, `docs/web_surface_architecture.md`, `docs/marketing_landing_page_research.md`, `design/website/routes.json`, `design/website/components.json` | Update the route contract before public route changes; update the component registry before Storybook/component changes; run `node tool/run.mjs check marketing:website-routes`, `node tool/run.mjs check marketing:website-components`, `node tool/run.mjs check web:website-import-boundaries`, `node tool/run.mjs check web:react-ui-primitives`, `node tool/run.mjs check web:react-component-governance`, and the marketing build/typecheck loop |
-| Widget consolidation / dedupe (work-order execution, cluster triage) | `docs/design_parity/widget_consolidation/codex_worklog.md` (queue + standing gotchas), `docs/design_parity/widget_consolidation/consolidation_rules.md` (decision criteria), `docs/design_parity/widget_consolidation/decisions.json` (ledger) | Apply only the rulebook's K/R/D rules; a candidate matching no rule exactly is escalated, never stretched. Naming new `Catch*` primitives, new-primitive API design, concept-identity calls, and visual-change trade-offs belong to the review session. Ledger every outcome (incl. keeps) as `codex-rule:<id>`; per-order registry regen + receipts per the worklog's standing gotchas |
-| Tooling or automation | `tool/README.md`, `tool/tools_manifest.json` | Add tool manifest entries; `node tool/run.mjs check --manifest-only` |
-| Parallel agent delegation | `docs/agent_operating_model.md` | Generate `node tool/agent/context_pack.mjs --mode parallel-delegation --owned-paths <write-ceiling> --planned-impact-paths <expected-diff>`, use `node tool/harness.mjs task start --owned-paths <same-write-ceiling>` from the exact parent SHA, require `task doctor` before edits, close with `task finish`, review commits before importing, record outcomes with `node tool/agent/record_delegation_outcome.mjs`, and treat `task reap --dry-run` as report-only |
+| Flutter architecture, controllers, async, errors, widget ownership | `docs/app_architecture.md` | Focused tests/analyzer and registered architecture checks |
+| Documentation cleanup | `docs/README.md` | Source metadata, link/reference, and relevant owner checks |
+| Design system or app UI | `docs/design_language.md`, `docs/design_parity/README.md`, `docs/widget_catalog.md` | Widgetbook/contracts, design checks, focused Flutter tests |
+| Catch UI lint/composition | `docs/app_architecture.md`, `design/components/README.md`, `design/screens/catch.screens.json` | `bash tool/check_catch_ui_lints.sh` and relevant composition checks |
+| Data contracts, Firestore, Functions | `docs/data_contracts.md`, `docs/backend_operation_catalog.md` | `./tool/check_data_contract.sh` when behavior changes |
+| Durable operations workflows | `docs/operations_platform.md`, `contracts/operations/README.md` | Operations tests/checks plus focused Functions/admin checks |
+| Release, deploy, CI, environments | `docs/release_operations.md`, `docs/web_surface_architecture.md` | Local CI-equivalent checks and exact workflow/deploy-state verification |
+| React website/admin architecture | `docs/web_surface_architecture.md`, `docs/agent_skills/catch-react-surface-refactor.md` | Registered React boundary, primitive, component, test, typecheck, and build checks |
+| Marketing routes/components/SEO | `docs/marketing_website_architecture.md`, `design/website/routes.json`, `design/website/components.json` | Route/component/import checks and marketing typecheck/build |
+| Widget consolidation or dedupe | `docs/design_parity/widget_consolidation/codex_worklog.md`, `docs/design_parity/widget_consolidation/consolidation_rules.md`, `docs/design_parity/widget_consolidation/decisions.json` | Apply only exact K/R/D rules; escalate unmatched identity or visual trade-offs; keep the decision ledger current |
+| Tooling or automation | `tool/README.md`, `tool/tools_manifest.json` | `node tool/run.mjs check --manifest-only` plus focused tool tests |
+| Parallel worktrees | `docs/agent_operating_model.md` | Current `node tool/harness.mjs task ...` lifecycle until the thin guard replaces it |
+
+## Evidence Freeze
+
+The following legacy snapshots are immutable pending deletion:
+
+- `docs/audit_registry/files.jsonl`
+- `docs/audit_registry/passes.jsonl`
+- `docs/audit_registry/agent_metrics.jsonl`
+- `docs/audit_registry/doc_versions.json`
+- `docs/agent_regression_ledger.json`
+
+Do not refresh, stamp, append, version-bump, or add entries to them. Any older
+instruction that requires those writes is superseded by this section. Put a
+recurring safety rule in an executable test or scanner; use an expiring waiver
+in the owning source document only when automation is not possible. Store
+generated inventories and run evidence in ignored local output or expiring CI
+artifacts, never in a replacement repository ledger.
 
 ## Non-Negotiable Rules
 
-- Prose is not enforcement. If a rule matters repeatedly, add a scanner, lint,
-  test, contract check, Widgetbook coverage gate, or explicit manual status.
-- Broad tasks need a declared scope and acceptance criteria before edits.
-- Every hard-won regression should become a stable entry in
-  `docs/agent_regression_ledger.json`.
-- Do not create parallel controller, UI, or error architecture docs. Fold
-  durable app-code guidance into `docs/app_architecture.md`.
-- Do not solve drift by adding aliases or feature-only primitive buckets. Same
-  concepts should converge on one canonical contract and coverage path.
-- Do not start a repeated architecture migration from prose only. Create or
-  reuse a reference exhibit and keep
-  `docs/audit_registry/architecture_pattern_adoption.json` current.
-- Do not let subagents become independent sources of truth. Subagents may
-  explore or produce isolated branch commits, but the parent agent is the only
-  default writer for canonical docs, generated registries, audit receipts, and
-  final verification.
-- Push a new working branch immediately. Before ending a dirty agent session,
-  make and push a bounded `chore(wip)` snapshot on that session branch; never
-  rely on one machine's working tree as the only copy.
-- Before rebase, reset, amend, or a conflict-heavy merge, create a dated
-  `backup/` ref. Never rewrite a branch with a shared upstream. Reconciliation
-  merges touching more than 50 paths require `git:audit-merge-drops` output and
-  explicit discard receipts before handoff.
-- React website/admin UI shells must route through shared primitives. When a
-  repeated component family matters, add or update the React component-governance
-  scanner plus the matching source-of-truth docs, component registry, and audit
-  receipt.
-- Do not run multiple Flutter test/analyzer processes in parallel. Parallelize
-  read-only inspection, Git review, JSON/Node scanners, and disjoint patch
-  proposals; run Flutter verification sequentially.
+- Prose is not enforcement. Repeated rules belong in tests, lints, scanners, or
+  explicit manual review in the owning document.
+- Broad tasks need a declared goal, scope, exclusions, checks, and acceptance.
+- Do not create parallel architecture documents for the same concept.
+- Preserve unrelated dirty work and never let a task's only copy remain
+  uncommitted or unpushed.
+- Before rewriting shared Git history, create a recoverable backup ref and
+  verify the exact target.
+- Do not run multiple Flutter analyzer/test processes concurrently.
+- Do not add a new registry, receipt file, metrics ledger, or generated
+  snapshot to replace the frozen evidence.
 
 ## Completion Standard
 
-A task is complete only when the changed surface has:
-
-- source-of-truth docs updated or deliberately untouched;
-- generated artifacts refreshed when the source changed;
-- relevant checks run and reported;
-- new debt recorded with a stable id; and
-- audit/pass proof recorded for cleanup or refactor work.
+A task is complete when its intended source and contract changes are present,
+the relevant focused checks pass, generated compile-critical outputs are
+current, and the exact commit or working diff is preserved. Ordinary product
+work must not modify any frozen evidence file.

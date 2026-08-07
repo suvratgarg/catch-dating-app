@@ -1,6 +1,6 @@
 ---
 doc_id: agent_skill_catch_react_surface_refactor
-version: 1.0.137
+version: 1.0.138
 updated: 2026-08-07
 owner: agent_operating_model
 status: active
@@ -67,9 +67,8 @@ Loop:
     behavior-critical query/mutation controllers to `required` with a named
     importing suite, and run
     `node tool/run.mjs check web:react-controller-test-targets`.
-15. Stamp the pass with `dart tool/audit_registry.dart mark-pass`, including
-    `WEB-UI-PRIMITIVE-001` and `WEB-UI-COMPONENT-001` whenever UI primitive or
-    component-family enforcement is relevant.
+15. Preserve focused-check output in the task or CI run. Do not stamp the
+    frozen audit registry.
 
 Required checks for a cross-React pass:
 
@@ -91,7 +90,6 @@ npm --workspace @catch/web-ui run typecheck
 npm --workspace catch-marketing run build
 npm --workspace catch-admin run build
 node tool/run.mjs check --manifest-only
-node tool/agent/check_agent_readiness.mjs
 ```
 
 Add marketing route/component checks when `website/` route or Storybook coverage
@@ -118,5 +116,5 @@ Failure modes to avoid:
 - Migrating generated/static data into TanStack Query just to match a pattern.
 - Leaving admin navigation as hidden local state after adding route-like
   behavior.
-- Letting subagents update canonical docs, generated registries, or audit
-  receipts without parent integration.
+- Letting subagents update canonical docs or authored contracts without parent
+  integration.

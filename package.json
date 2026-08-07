@@ -10,8 +10,6 @@
   "scripts": {
     "agent:context": "node tool/agent/context_pack.mjs",
     "agent:readiness": "node tool/agent/check_agent_readiness.mjs",
-    "agent:readiness:record": "node tool/agent/check_agent_readiness.mjs --record-metric",
-    "agent:delegation:record": "node tool/agent/record_delegation_outcome.mjs",
     "repo:hygiene": "node tool/repository_hygiene.mjs --json",
     "repo:hygiene:check": "node tool/check_repository_root_hygiene.mjs",
     "test:inventory": "node tool/test_inventory.mjs",

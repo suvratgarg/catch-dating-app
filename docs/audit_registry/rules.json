@@ -1,8 +1,8 @@
 {
   "rules": {
     "AUDIT-REGISTRY-001": {
-      "title": "Stamp every cleanup pass in the audit registry",
-      "status": "active",
+      "title": "Retired tracked audit-pass evidence",
+      "status": "archived",
       "kind": "process",
       "introduced_in": {
         "doc_id": "docs_index",
@@ -16,7 +16,7 @@
         "tool/**",
         "docs/**"
       ],
-      "instruction": "Refresh file inventory before broad work, then stamp touched files and pass proof before finalizing.",
+      "instruction": "Do not refresh tracked inventories or stamp audit passes. Preserve proof in Git commits and CI checks; move durable invariants into focused tests or linters.",
       "sunset_when": [
         "The registry update is enforced by automation or CI",
         "Three consecutive cleanup passes include complete pass receipts"
@@ -28,38 +28,11 @@
         }
       ],
       "sunset_review": {
-        "date": "2026-07-02",
-        "decision": "keep",
-        "note": "meta-gate automates registry integrity; pass-stamping discipline remains manual"
+        "date": "2026-08-07",
+        "decision": "retire",
+        "note": "Tracked inventories and pass receipts created shared merge churn and duplicate Git and CI history. Writers are disabled before snapshot deletion."
       },
-      "enforcement": [
-        {
-          "tool": "meta:enforcement-integrity",
-          "stage": "scanner-gate",
-          "docAnchor": "docs/agent_operating_model.md#operating-principle"
-        },
-        {
-          "stage": "manual",
-          "docAnchor": "docs/audit_registry/README.md#workflow"
-        },
-        {
-          "tool": "audit:dependency-direction",
-          "stage": "scanner-gate",
-          "docAnchor": "docs/app_architecture.md#reference-implementation-workflow"
-        },
-        {
-          "tool": "audit:dependency-direction",
-          "stage": "scanner-ratchet",
-          "docAnchor": "docs/app_architecture.md#screen-definition",
-          "baseline": "tool/architecture/dependency_direction_baseline.json"
-        },
-        {
-          "tool": "audit:widget-cleanup",
-          "stage": "scanner-ratchet",
-          "docAnchor": "docs/audit_registry/README.md#workflow",
-          "baseline": "tool/audit/widget_cleanup_baseline.json"
-        }
-      ]
+      "enforcement": []
     },
     "DOC-HYGIENE-001": {
       "title": "Prefer versioned owners over new markdown sprawl",
@@ -74,9 +47,9 @@
         "PROJECT_CONTEXT.md",
         "README.md"
       ],
-      "instruction": "Update an existing source-of-truth doc or registry entry before creating a new doc. Mark stale snapshots historical instead of letting conflicting instructions accumulate. Governed document versions may increase or remain stable but must never decrease or silently lose their catalog identity/path.",
+      "instruction": "Update an existing source-of-truth document before creating a new one. Mark stale snapshots historical or delete them after their durable content moves. Markdown frontmatter is the document's metadata authority; do not update a parallel version catalog.",
       "sunset_when": [
-        "Docs index and doc_versions remain current for five broad passes"
+        "Owner documents and link checks prevent conflicting active guidance without a parallel metadata catalog"
       ],
       "sunset_signals": [
         {
@@ -84,11 +57,6 @@
         }
       ],
       "enforcement": [
-        {
-          "tool": "docs:version-monotonic",
-          "stage": "scanner-gate",
-          "docAnchor": "docs/audit_registry/README.md#workflow"
-        },
         {
           "tool": "docs:build-state",
           "stage": "scanner-gate",
@@ -188,10 +156,9 @@
         "docs/**",
         "tool/**"
       ],
-      "instruction": "Before broad cleanup, refactor, docs consolidation, design parity, or workflow-harness work, generate a scoped context pack, check matching regression guards, run the agent readiness gate, and record proof or blockers in the audit registry. Add durable failure modes to docs/agent_regression_ledger.json instead of relying on thread memory.",
+      "instruction": "For broad work, inspect the Git diff and use the read-only Catch planner to explain affected components and checks. Run the selected checks and preserve proof in Git and CI. Do not write registry receipts, readiness metrics, or regression ledgers.",
       "sunset_when": [
-        "The agent readiness gate is mandatory in CI for broad-work branches",
-        "Five consecutive broad passes include context-pack proof, readiness proof, and no missing regression-ledger updates"
+        "The read-only affected planner and thin worktree guard are the only permanent agent-specific repository layer"
       ],
       "sunset_signals": [
         {
@@ -203,11 +170,6 @@
           "tool": "meta:enforcement-integrity",
           "stage": "scanner-gate",
           "docAnchor": "docs/agent_operating_model.md#operating-principle"
-        },
-        {
-          "tool": "agent:readiness",
-          "stage": "scanner-gate",
-          "docAnchor": "docs/agent_operating_model.md#done-criteria-for-this-harness"
         },
         {
           "tool": "agent:harness-v2",
@@ -238,7 +200,7 @@
     },
     "AGENT-DELEGATION-001": {
       "title": "Keep parallel agent work parent-integrated and worktree-isolated",
-      "status": "active",
+      "status": "watch",
       "kind": "process",
       "introduced_in": {
         "doc_id": "agent_operating_model",
@@ -256,10 +218,9 @@
         "lib/**",
         "test/**"
       ],
-      "instruction": "When using subagents for speed, generate a clean exact-SHA JSON context pack, create a closure-aware sparse task with agent:harness-v2, keep owned paths separate from support-only command materialization, defer full-view checks to parent integration, require doctor before edits, assign disjoint write scopes, keep canonical docs/generated registries/audit receipts parent-owned by default, review and preserve commits before importing, close with finish, treat reap as report-only, run final verification in the parent branch, and record a delegation outcome metric.",
+      "instruction": "Use an exact-base Git worktree for parallel tasks, declare disjoint claimed paths, reject overlap with active local tasks, review commits before integration, refuse close while unique work is uncommitted or unpushed, and run final verification in the integration branch. Keep coordination state local and disposable; do not write delegation metrics or receipts.",
       "sunset_when": [
-        "Delegation outcome metrics show five consecutive accepted batches with no file-ownership conflicts",
-        "The readiness gate validates delegation protocol coverage and metrics shape"
+        "The thin guard enforces exact base, overlap refusal, scope cleanliness, and unpushed-work protection without a task orchestration layer"
       ],
       "sunset_signals": [
         {
@@ -3256,6 +3217,6 @@
       ]
     }
   },
-  "version": "2.9.3",
+  "version": "2.10.0",
   "updated": "2026-08-07"
 }

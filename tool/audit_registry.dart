@@ -7,7 +7,6 @@ import 'lib/audit_registry_paths.dart';
 
 const registryDir = 'docs/audit_registry';
 const filesPath = '$registryDir/files.jsonl';
-const passesPath = '$registryDir/passes.jsonl';
 const docVersionsPath = '$registryDir/doc_versions.json';
 const backlogPath = '$registryDir/backlog.json';
 const rulesPath = '$registryDir/rules.json';
@@ -68,7 +67,13 @@ void main(List<String> args) {
       if (unknown.isNotEmpty) {
         _fail('Unknown refresh option(s): ${unknown.join(', ')}');
       }
-      _refresh(check: options.contains('--check'));
+      if (!options.contains('--check')) {
+        _fail(
+          'Audit registry writes are retired. Use `refresh --check` for a '
+          'read-only compatibility check.',
+        );
+      }
+      _checkRefresh();
     case 'report':
       _report();
     case 'backlog':
@@ -82,7 +87,10 @@ void main(List<String> args) {
     case 'stale':
       _stale(args.skip(1).toList());
     case 'mark-pass':
-      _markPass(args.skip(1).toList());
+      _fail(
+        'Audit pass receipts are retired. `mark-pass` no longer writes '
+        '$filesPath or $registryDir/passes.jsonl.',
+      );
     default:
       _fail('Unknown command: ${args.first}');
   }
@@ -93,7 +101,7 @@ void _printHelp() {
 Usage: dart tool/audit_registry.dart <command>
 
 Commands:
-  refresh [--check]       Regenerate tracked file inventory, or verify exact parity.
+  refresh --check         Verify tracked file inventory without modifying it.
   report                  Print compact counts by status, kind, and area.
   backlog [--stored-scanner]
                           Print active backlog, next-up queue, and live scanner counts.
@@ -104,13 +112,11 @@ Commands:
                           --code-only skips reference-only/product-conditional gaps.
   stale --doc id --version x.y.z [--limit n]
                           Print files reviewed before a doc version.
-  mark-pass --pass id --rules A,B --paths p1,p2 [--proof "..."] [--status clean]
-                          Stamp touched files and append a pass receipt.
+  mark-pass [options]     Retired; exits without modifying registry snapshots.
 ''');
 }
 
-void _refresh({bool check = false}) {
-  Directory(registryDir).createSync(recursive: true);
+void _checkRefresh() {
   final existing = _readFileEntries();
   final paths = _trackedFiles();
   final rootManifest = _readRequiredJsonFile(rootManifestPath);
@@ -152,25 +158,19 @@ void _refresh({bool check = false}) {
     });
   }
 
-  if (check) {
-    final actual = File(filesPath).existsSync()
-        ? File(filesPath).readAsStringSync()
-        : '';
-    final expected = _encodeJsonLines(entries);
-    if (actual != expected) {
-      _fail(
-        'Audit registry inventory is stale. Stage additions/deletions and run '
-        '`dart tool/audit_registry.dart refresh`.',
-      );
-    }
-    stdout.writeln(
-      'Audit registry inventory is current (${entries.length} file entries).',
+  final actual = File(filesPath).existsSync()
+      ? File(filesPath).readAsStringSync()
+      : '';
+  final expected = _encodeJsonLines(entries);
+  if (actual != expected) {
+    _fail(
+      'Audit registry inventory is stale. This compatibility check is '
+      'read-only and cannot refresh the tracked snapshot.',
     );
-    return;
   }
-
-  _writeJsonLines(filesPath, entries);
-  stdout.writeln('Refreshed ${entries.length} file entries.');
+  stdout.writeln(
+    'Audit registry inventory is current (${entries.length} file entries).',
+  );
 }
 
 void _report() {
@@ -481,96 +481,6 @@ void _stale(List<String> args) {
   stdout.writeln('Stale matches: ${entries.length}');
 }
 
-void _markPass(List<String> args) {
-  final passId = _stringOption(args, '--pass');
-  final rules = _csvOption(args, '--rules');
-  final paths = _csvOption(args, '--paths');
-  final proof = _multiOption(args, '--proof');
-  final status = _stringOption(args, '--status') ?? 'reviewed';
-  final notes = _stringOption(args, '--notes') ?? '';
-  if (passId == null || passId.isEmpty) {
-    _fail('mark-pass requires --pass.');
-  }
-  if (paths.isEmpty) {
-    _fail('mark-pass requires --paths.');
-  }
-
-  final docVersions = _readDocVersions();
-  final entries = _readFileEntries();
-  if (entries.isEmpty) {
-    _refresh();
-    entries.addAll(_readFileEntries());
-  }
-
-  final activeDocVersions = <String, String>{};
-  for (final item in docVersions.entries) {
-    final value = item.value;
-    if (value is Map && value['version'] is String) {
-      activeDocVersions[item.key] = value['version'] as String;
-    }
-  }
-
-  final absentFromIndex = missingAuditPaths(
-    requested: paths,
-    available: _trackedFiles(),
-  );
-  if (absentFromIndex.isNotEmpty) {
-    _fail(
-      'Audit pass scope is absent from the Git index: '
-      '${absentFromIndex.join(', ')}. Record staged deletions in receipt proof '
-      'and stamp their surviving governing files.',
-    );
-  }
-
-  final missingPaths = missingAuditPaths(
-    requested: paths,
-    available: entries.keys,
-  );
-  if (missingPaths.isNotEmpty) {
-    _fail(
-      'Audit registry is missing indexed path(s): ${missingPaths.join(', ')}. '
-      'Stage new files, run refresh, then retry mark-pass.',
-    );
-  }
-
-  for (final path in paths) {
-    final entry = entries[path];
-    if (entry == null) continue;
-    entry['status'] = status;
-    entry['last_pass_id'] = passId;
-    entry['doc_versions'] = {
-      ...?entry['doc_versions'] as Map?,
-      ...activeDocVersions,
-    };
-    entry['rules_applied'] = _mergedList(entry['rules_applied'], rules);
-    entry['proof'] = _mergedList(entry['proof'], proof);
-    if (notes.isNotEmpty) {
-      entry['notes'] = notes;
-    }
-  }
-
-  _writeJsonLines(
-    filesPath,
-    entries.values.toList()
-      ..sort((a, b) => (a['path'] as String).compareTo(b['path'] as String)),
-  );
-
-  final receipt = {
-    'pass_id': passId,
-    'started': DateTime.now().toIso8601String().split('T').first,
-    'scope': paths,
-    'rules_applied': rules,
-    'commands': proof,
-    'outcome': status,
-    'new_debt': <String>[],
-    if (notes.isNotEmpty) 'notes': notes,
-  };
-  File(
-    passesPath,
-  ).writeAsStringSync('${jsonEncode(receipt)}\n', mode: FileMode.append);
-  stdout.writeln('Stamped ${paths.length} path(s) for $passId.');
-}
-
 Map<String, Map<String, dynamic>> _readFileEntries() {
   final file = File(filesPath);
   if (!file.existsSync()) return {};
@@ -672,10 +582,6 @@ String _kindFor(String path) {
   return 'source';
 }
 
-void _writeJsonLines(String path, List<Map<String, dynamic>> entries) {
-  File(path).writeAsStringSync(_encodeJsonLines(entries));
-}
-
 String _encodeJsonLines(List<Map<String, dynamic>> entries) {
   final buffer = StringBuffer();
   for (final entry in entries) {
@@ -734,38 +640,10 @@ int _statusRank(Map<String, dynamic> entry) {
   }
 }
 
-List<String> _mergedList(Object? existing, List<String> additions) {
-  final values = <String>{
-    if (existing is List) ...existing.whereType<String>(),
-    ...additions,
-  }.toList()..sort();
-  return values;
-}
-
 String? _stringOption(List<String> args, String name) {
   final index = args.indexOf(name);
   if (index == -1 || index + 1 >= args.length) return null;
   return args[index + 1];
-}
-
-List<String> _csvOption(List<String> args, String name) {
-  final value = _stringOption(args, name);
-  if (value == null || value.isEmpty) return [];
-  return value
-      .split(',')
-      .map((item) => item.trim())
-      .where((item) => item.isNotEmpty)
-      .toList();
-}
-
-List<String> _multiOption(List<String> args, String name) {
-  final values = <String>[];
-  for (var i = 0; i < args.length; i += 1) {
-    if (args[i] == name && i + 1 < args.length) {
-      values.add(args[i + 1]);
-    }
-  }
-  return values;
 }
 
 int? _intOption(List<String> args, String name) {

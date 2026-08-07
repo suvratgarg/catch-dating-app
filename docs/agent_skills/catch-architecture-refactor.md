@@ -3,14 +3,12 @@
 Use for broad app code organization, feature-boundary, controller, async-state,
 repository, widget-ownership, and testability refactors under `lib/**`.
 
-Read: `docs/app_architecture.md`, `lib/README.md`,
-`docs/audit_registry/README.md`,
-`docs/audit_registry/architecture_pattern_adoption.json`, and
-`docs/agent_regression_ledger.json`.
+Read: `docs/app_architecture.md`, `lib/README.md`, and the owning
+architecture/design contracts for the changed surface.
 
-Loop: generate an architecture context pack, refresh the audit registry, edit a
-coherent batch, run focused tests/analyzer/scanners, refresh generated artifacts
-that changed, and stamp a pass receipt.
+Loop: generate a read-only architecture plan, edit a coherent batch, run focused
+tests/analyzer/scanners, and keep compile-critical generated artifacts current.
+Git and CI output preserve the evidence.
 
 For repeated architecture patterns, prototype first:
 
@@ -24,6 +22,6 @@ For repeated architecture patterns, prototype first:
 5. If a later candidate improves the pattern, update the exhibit first and
    revisit all earlier adopters in the same pass.
 
-Failure modes to avoid: ad hoc file choice, stale generated metadata, and
+Failure modes to avoid: ad hoc file choice, stale generated output, and
 feature-boundary moves that do not update the canonical architecture doc or the
 pattern-adoption tracker.

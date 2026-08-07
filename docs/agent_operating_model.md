@@ -1,6 +1,6 @@
 ---
 doc_id: agent_operating_model
-version: 1.6.8
+version: 2.0.0
 updated: 2026-08-07
 owner: agent_operating_model
 status: active
@@ -9,23 +9,31 @@ status: active
 # Agent Operating Model
 
 Catch should be easy for an AI agent to understand because the repo contains
-small routing docs, machine-readable contracts, deterministic checks, and proof
-ledgers. The goal is not to make agents remember more. The goal is to make the
-correct workflow cheaper than a partial fix.
+small routing docs, machine-readable contracts, and deterministic checks. The
+goal is not to make agents remember more. The goal is to make the correct
+workflow cheaper than a partial fix.
 
 ## Operating Principle
 
 Treat every agent as a capable contributor with unreliable ambient memory.
 Instructions that matter must be one of:
 
-- executable: lint, scanner, test, contract check, generated manifest, Widgetbook
-  coverage, CI job;
-- versioned: canonical docs and registries with clear owners;
-- measured: pass receipts, regression ids, readiness scores, and trendable
-  metrics; or
+- executable: lint, scanner, test, contract check, Widgetbook coverage, or CI
+  job;
+- authored: canonical source documents and domain contracts with clear owners;
+- derived: read-only planner output, Git history, or expiring CI artifacts; or
 - explicitly manual: a named human review point with a stable checklist.
 
 If a rule is only a paragraph in a long doc, expect it to drift.
+
+## Evidence Freeze
+
+The file inventory, pass ledger, agent metrics, document-version catalog, and
+regression ledger are frozen migration inputs. No agent or tool may append,
+refresh, stamp, or version-bump them. Older instructions requiring those writes
+are superseded by this section. Git and CI own execution history; generated
+reports are ephemeral; recurring regressions move into their owning tests or
+scanners. Do not create a replacement ledger.
 
 ## Enforcement Integrity
 
@@ -39,13 +47,13 @@ ratchets, a `vacuityProof`. Manual enforcement is explicit with
 validates active-rule coverage, reverse rule/tool mappings, doc anchors,
 non-count runtime checks for gates and ratchets, known-bad proof declarations,
 runtime-checked tool role declarations, architecture-scanner ownership, and
-ratchet baseline receipts for both `maxCounts` and `allowedFindings` baselines.
+directly exercised ratchet baselines.
 It is registered in `tool/tools_manifest.json` under category `meta`, so
 `node tool/run.mjs check --category meta` is the local and CI entrypoint.
 
 When adding or changing an enforcement asset, update the rule entry, manifest
-entry, doc anchor, vacuity proof, and ratchet baseline or metric receipt in the
-same pass. If a rule is not yet machine-checkable, keep it as a manual
+entry, doc anchor, vacuity proof, and ratchet baseline in the same pass. If a
+rule is not yet machine-checkable, keep it as a manual
 enforcement entry with a stable owner doc rather than leaving it absent.
 
 ## Execution Modes
@@ -54,10 +62,10 @@ enforcement entry with a stable owner doc rather than leaving it absent.
 |---|---|---|
 | `answer` | The user asks a pointed question | Read the narrow source of truth and answer with file-backed current state. |
 | `focused-change` | The user asks for a specific code/doc change | Read owner docs, edit the smallest safe surface, run focused checks. |
-| `broad-cleanup` | The user asks for cleanup, migration, consolidation, or refactor | Generate a context pack, declare scope, classify findings, fix a coherent batch, stamp proof. |
+| `broad-cleanup` | The user asks for cleanup, migration, consolidation, or refactor | Generate a read-only plan, declare scope, classify findings, fix a coherent batch, and run the selected checks. |
 | `design-implementation` | The user gives a design/handoff/screenshot | Convert intent into component contracts and Widgetbook states before or alongside Flutter implementation. |
 | `release-operation` | The task affects deploy, release, CI, Firebase, App Store, or production data | Use documented runbooks and verify live/workflow state when the answer depends on it. |
-| `parallel-delegation` | The user authorizes parallel agents or the current batch has independent sidecar work | Use short-lived Git worktrees, assign disjoint scopes, review branch commits before importing, keep canonical docs/stamps parent-owned, and record a delegation outcome metric. |
+| `parallel-delegation` | The user authorizes parallel agents or the current batch has independent sidecar work | Use short-lived Git worktrees, assign disjoint scopes, review branch commits before importing, and keep final integration parent-owned. |
 | `strategy` | The user asks what to do | Separate current-state facts from recommendations and propose an executable next pass. |
 
 ## Broad Cleanup Contract
@@ -67,17 +75,13 @@ Before editing in `broad-cleanup`, the agent must be able to state:
 - goal: the durable outcome, not just a file list;
 - scope: included paths and explicitly excluded paths;
 - owner docs: source-of-truth files that govern the change;
-- active rules: audit or architecture rules that apply;
-- regression ids: relevant entries from `docs/agent_regression_ledger.json`;
+- active executable rules and component relationships that apply;
 - commands: checks that prove the batch;
 - acceptance: what must be true to call the batch done.
 
-Use `node tool/agent/context_pack.mjs` to assemble this packet. If the packet is
-too broad, split the work into numbered batches and record remaining debt.
-For autonomous refactor loops, prefer
-`dart tool/audit_registry.dart next --code-only --screen-limit <n>` after each
-pass so reference-only or future-design gaps stay tracked without blocking code
-work.
+Use `node tool/agent/context_pack.mjs` as read-only planning help. If the
+packet is too broad, split the work into numbered batches. It is not execution
+authority and does not create a completion receipt.
 
 ## Reference Pattern Contract
 
@@ -92,7 +96,7 @@ implementing a repeated app architecture pattern, the agent must:
   required checks in the tracker;
 - if a later candidate improves or changes the pattern, update the exhibit first
   and revisit all existing adopters in the tracker; and
-- stamp the pass with the pattern id and adopter list.
+- run the pattern's focused checks for the prototype and adopters.
 
 This makes migration quality ratchet forward: the file edited at the start of a
 round must remain comparable to the file edited at the end of the round.
@@ -134,30 +138,26 @@ node tool/git/audit_merge_drops.mjs \
 `both-diverged` paths still require semantic review; exact blob classification
 cannot prove that one side's behavior was incorporated.
 
-Governed document metadata has two deliberately separate clocks:
+Document metadata is moving to source:
 
-- `docs/audit_registry/doc_versions.json` stores authored semantic versions,
-  ownership, and read policy. For governed non-Markdown artifacts it also owns
-  lifecycle status. Governed Markdown owns lifecycle status exclusively in one
-  valid frontmatter field; missing, malformed, or duplicate status fails closed
-  for deletion. Change a semantic version only when the document's contract,
-  schema, protocol, or reader workflow changes. Ordinary prose corrections do
-  not require a version bump.
+- `docs/audit_registry/doc_versions.json` is a frozen compatibility snapshot.
+  Do not update it. Governed Markdown owns lifecycle status in source
+  frontmatter; non-Markdown contracts should own version and lifecycle in their
+  existing schema or manifest.
 - `tool/docs/build_doc_state.mjs` derives Markdown lifecycle status, content
   revision, last integrated commit, and integration timestamp from source and
   Git. CI publishes that state as an immutable artifact for the integrated SHA;
   it never commits generated version/date churn back to an author branch.
 
-Authored versions may stay unchanged or move monotonically:
+During migration, the old monotonic check remains read-only compatibility:
 
 ```sh
 node tool/docs/check_doc_version_monotonic.mjs --base origin/main
 node tool/docs/build_doc_state.mjs --ref HEAD --output build/ci/doc-state.json
 ```
 
-Do not use a CI bot to push version bumps to `main`. Integration metadata is a
-derived receipt, while intentional semantic version changes remain normal
-reviewed source edits.
+Do not use a CI bot or agent to update the frozen catalog. Integration metadata
+is derived evidence.
 
 After a squash/merge is proven on `origin/main`, delete its remote branch,
 remove its disposable worktree, and prune local tracking refs. Do not reuse it
@@ -167,8 +167,8 @@ for the next slice.
 
 Parallel agents may speed up Catch work only when they preserve a single
 integration owner. The parent agent owns architecture decisions, final diffs,
-canonical docs, generated registries, audit receipts, and verification. A
-subagent owns only its assigned branch/worktree task.
+canonical source, and verification. A subagent owns only its assigned
+branch/worktree task.
 
 Use delegation for sidecar work that can run while the parent continues the
 critical path:
@@ -179,9 +179,8 @@ critical path:
 - alternative implementation sketches for a named pattern.
 
 Do not delegate final architecture decisions, shared primitive API decisions,
-app-wide naming, docs consolidation, audit stamping, or generated registry
-updates unless the parent explicitly makes that subagent the owner for that
-single file set and later reviews the result.
+app-wide naming, or docs consolidation unless the parent explicitly makes that
+subagent the owner for that single file set and later reviews the result.
 
 ### Git Protocol
 
@@ -229,8 +228,8 @@ recorded as deferred integration checks for the parent so a repository scanner
 cannot pass vacuously against a sparse projection. Generated command plans name
 an owner and phase: the worker runs only worker-owned preflight/task checks,
 while the parent owns lifecycle creation/finish, explicit stale-lease recovery,
-maintenance, full-view integration, unstructured regression guards, canonical
-records, and final verification. Every lifecycle instruction is projected from
+maintenance, full-view integration, canonical owner docs, and final
+verification. Every lifecycle instruction is projected from
 the same canonical task-command contract.
 This split is enforced at execution, not left to operator memory. Before any
 execution output or child command, `node tool/run.mjs check ...` locates the
@@ -240,7 +239,8 @@ the common Git directory, and the registered live worktree lock whose reason
 contains the task and authority ids. It binds physical path, branch, base
 ancestry, owned/planned scope, sparse closure, storage limits, and worker/deferred
 ids to that parent record, then recomputes the check contract from the
-authority's base-SHA manifest, skills, and regression ledger. Each selected
+authority's base-SHA manifest and skills. The frozen regression ledger is not a
+planning or execution authority. Each selected
 tool's executable manifest signature is also compared with that base view, so a
 worker cannot keep an allowed id while replacing its command. Affected and
 impacted execution also compares the complete live tool manifest, component
@@ -339,9 +339,8 @@ unavailable inside worker sandboxes.
    changed files, checks run, blockers, and quality risks.
 5. Parent reviews with `git show`, `git diff`, or `cherry-pick -n`, then imports
    only the accepted changes into the parent branch.
-6. Parent runs the pack's deferred integration checks plus final checks, updates
-   canonical docs/registries, stamps the audit pass, commits the integrated
-   loop, and records the delegation outcome.
+6. Parent runs the relevant integration checks, reviews the final diff,
+   commits the accepted result, and leaves evidence in Git, task output, and CI.
 7. After the task branch is clean and its exact head exists at `origin`, run
    `task finish`. Doctor and finish share the same root, metadata-path,
    sparse-checkout, command-entrypoint closure, owned-scope, planned-impact,
@@ -359,9 +358,8 @@ unavailable inside worker sandboxes.
 
 If a subagent is discovered on the parent worktree or on a branch that includes
 unreviewed parent-only commits, interrupt it immediately. Accept only reviewed
-commit diffs by cherry-picking them onto the intended parent branch, record the
-isolation failure in delegation metrics, and do not delegate more patch work
-until the next worker can pass the preflight.
+commit diffs by cherry-picking them onto the intended parent branch, and do not
+delegate more patch work until the next worker can pass the preflight.
 
 If the parent branch advances while a subagent is still working, finish the
 existing task after preserving its proposal and create a new task from the new
@@ -373,9 +371,8 @@ of the operating model.
 - One file has one writer per loop. If two agents need the same file, make that
   file parent-owned.
 - Parent-owned by default: `AGENTS.md`, `docs/agent_operating_model.md`,
-  `docs/app_architecture.md`, `docs/README.md`, `docs/audit_registry/**`,
-  `docs/design_parity/**`, `docs/widget_catalog.md`, `tool/tools_manifest.json`,
-  generated files, and pass receipts.
+  `docs/app_architecture.md`, `docs/README.md`, authored design contracts,
+  `docs/widget_catalog.md`, and `tool/tools_manifest.json`.
 - Subagent patch branches should avoid generated artifacts unless generation is
   the explicit task.
 - Flutter tests, Flutter analyzer, emulator-backed checks, and native builds run
@@ -412,26 +409,13 @@ do_not_merge_if:
 write `none`. If the subagent found a better pattern, it must describe the
 candidate change instead of silently inventing a variant.
 
-### Metrics
+### Measurement
 
-After every delegated task that informs the parent branch, record an outcome:
-
-```sh
-node tool/agent/record_delegation_outcome.mjs \
-  --task-id <task-id> \
-  --mode worker-patch \
-  --status integrated \
-  --parent-review-outcome accepted-with-edits \
-  --subagent-branch <branch> \
-  --subagent-commit <sha> \
-  --files-changed path/one.dart,path/two.dart \
-  --checks-run "flutter test test/example_test.dart"
-```
-
-Use these measurements to decide whether delegation is actually faster and
-higher quality than parent-only execution. If a delegated path creates repeated
-merge conflicts, parent rewrites, or scanner regressions, update this operating
-model or the relevant skill before repeating it.
+Use caller wall time, GitHub job duration, and task/PR output to decide whether
+delegation is actually faster and higher quality than parent-only execution.
+Do not append those samples to the repository. If a delegated path repeatedly
+creates merge conflicts, parent rewrites, or scanner regressions, simplify the
+workflow before repeating it.
 
 ## UI And Design Implementation Contract
 
@@ -450,28 +434,20 @@ design or handoff
 When design intent is ambiguous, ask for a narrow decision only after inspecting
 the actual design artifact or Widgetbook surface.
 
-## Regression Ledger
+## Regression Migration
 
-`docs/agent_regression_ledger.json` is the durable list of hard-won fixes that
-should not be reintroduced. Each entry has:
-
-- `id`: stable id referenced by context packs and pass receipts;
-- `title`: short failure description;
-- `status`: `active`, `watch`, or `archived`;
-- `applies_to`: paths or globs;
-- `symptom`: what regressed;
-- `guard`: command, test, scanner, or manual check; command guards may add
-  structured `check_ids`, while the command string remains display guidance;
-- `owner_docs`: canonical docs to read before touching the area.
-
-Add a ledger entry whenever a bug or drift pattern has cost enough time that the
-next agent should see it before editing.
+`docs/agent_regression_ledger.json` is a frozen migration input. Existing
+entries may be inspected only during their one-time classification; current
+planners, context packs, readiness checks, and task authorization must not load
+them. Do not add or update entries. Move executable value into the owning test,
+scanner, or component risk gate; move genuinely manual external verification
+to the owning runbook with an expiry.
 
 ## Skill Freshness
 
 Project-local agent skills live under `docs/agent_skills/`. They are not a
 second architecture system. They are short workflow routers that point to
-canonical docs, commands, ledgers, and acceptance criteria.
+canonical docs, commands, and acceptance criteria.
 
 Each skill must declare:
 
@@ -480,49 +456,28 @@ Each skill must declare:
 - `updated`;
 - `source_docs`;
 - `required_commands`;
-- `success_receipt`;
+- success evidence;
 - `known_failure_modes`.
 
-The readiness gate checks that skill source docs and commands still exist. When
+The compatibility readiness gate checks that skill source docs and commands
+still exist. When
 a guard explicitly builds Functions before running compiled `functions/lib`
 tests, readiness validates the corresponding tracked `functions/src` test. This
 keeps clean checkouts authoritative instead of relying on local build residue.
 
 ## Measuring Workflow Quality
 
-The readiness gate reports an `agent readiness score`. The score is intentionally
-simple at first:
-
-- required docs exist and are indexed;
-- regression ledger is valid and every active entry has a guard;
-- project-local skills resolve their source docs and commands;
-- tool manifest includes the agent scripts;
-- metric files are parseable.
-
-Append durable measurements to `docs/audit_registry/agent_metrics.jsonl` after
-meaningful broad passes. Useful metrics:
-
-- readiness score;
-- context-pack count generated for the pass;
-- checks planned versus checks run;
-- scanner count deltas;
-- regressions added, moved to watch, or archived;
-- user-reported rework after the pass.
-- delegation outcomes, including mode, base SHA, branch/commit, files changed,
-  checks run, parent review outcome, conflicts, and whether the parent accepted,
-  edited, rejected, or used the result as information only.
-
-Over time, workflows with higher pass rates and lower rework should become the
-default recommended path in `AGENTS.md` and the relevant skill.
+Measure PR wall-clock, runner-minutes, selected operations, escaped defects, and
+user rework in GitHub summaries or bounded analysis output. Do not commit
+per-run metrics. Prefer ten comparable samples before optimizing a path.
 
 ## Done Criteria For This Harness
 
 This operating model is active only if:
 
 - `AGENTS.md` routes agents here;
-- `docs/README.md` and `docs/audit_registry/doc_versions.json` index this doc;
-- `tool/agent/context_pack.mjs` can build scoped packets;
-- `tool/agent/check_agent_readiness.mjs` validates the harness; and
-- `tool/agent/record_delegation_outcome.mjs` records parseable delegation
-  outcomes when parallel agents are used; and
-- `node tool/run.mjs check --category agent` passes.
+- `docs/README.md` indexes this doc;
+- the Catch planner explains affected operations without writing source;
+- registered checks execute through `tool/run.mjs`;
+- parallel work stays isolated in Git worktrees; and
+- ordinary product work changes zero frozen evidence files.

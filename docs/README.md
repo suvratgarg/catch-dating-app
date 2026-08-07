@@ -1,8 +1,8 @@
 ---
 doc_id: docs_index
-version: 4.14.2
+version: 5.0.0
 updated: 2026-08-07
-owner: recursive_audit_loop
+owner: agent_operating_model
 status: active
 ---
 
@@ -15,10 +15,10 @@ or duplicated note once it has served its purpose.
 
 ## Read Policy
 
-Start with `docs/audit_registry/README.md` and
-`docs/audit_registry/doc_versions.json` before rereading long docs. Use this
-index to find the durable owner for a topic, then read only the relevant
-section unless the task requires a full historical audit.
+Use this index to find the durable owner for a topic, then read only the
+relevant section unless the task requires a full historical audit. The audit
+registry and document-version catalog are frozen migration inputs, not starting
+points for ordinary work.
 
 ## Documentation Hygiene
 
@@ -40,10 +40,10 @@ section unless the task requires a full historical audit.
 
 | Area | Document | Purpose |
 |---|---|---|
-| Agent execution harness | `../AGENTS.md`, `agent_operating_model.md`, `agent_regression_ledger.json`, `agent_skills/` | Canonical AI-agent entrypoint, execution modes, parent-led Git/worktree delegation protocol, regression guards, project-local skills, readiness workflow, and metrics recording for deterministic Catch cleanup/refactor/design work. |
-| AI-first workflow implementation guide | `ai_first_workflow_guide.md` | Shareable companion guide explaining how the agent entrypoint, context packs, docs registry, rules, scanners, lints, generated registries, audit receipts, CI gates, and readiness metrics combine into the Catch AI-first workflow. Descriptive only; canonical rules remain in owner docs. |
+| Agent execution harness | `../AGENTS.md`, `agent_operating_model.md`, `agent_skills/` | Canonical AI-agent routing, read-only change planning, Git/worktree isolation, and focused verification. |
+| AI-first workflow implementation guide | `ai_first_workflow_guide.md` | Shareable map of the Catch planner, existing check runner, thin worktree guard, exact-artifact CI/CD, and no-ledger evidence policy. |
 | Flutter app architecture | `app_architecture.md`, `audit_registry/architecture_pattern_adoption.json`, `../tool/architecture/provider_graph_reviews.json` | Canonical feature/layer/screen/controller/repository/async/error/UI layout/scroll/sizing/widget ownership spec for `lib/**`, plus the live Riverpod topology gate and authored relationship decisions; read before broad app architecture or code-organization work. Architecture rollouts must prototype one reference implementation, copy the exhibit into `app_architecture.md`, and track adopters/variants/exceptions in the JSON tracker. |
-| Widget inventory and reusable widget guidance | `widget_catalog.md` | Current catalog of Flutter widgets, primitive APIs, feature ownership notes, and its compact maintenance contract. Git and audit receipts own catalog history. |
+| Widget inventory and reusable widget guidance | `widget_catalog.md` | Current catalog of Flutter widgets, primitive APIs, feature ownership notes, and its compact maintenance contract. Git owns catalog history. |
 | Visual identity / design language | `design_language.md` | Locked editorial identity — palette (B&W base + activity color), typography (Archivo/platform system/IBM Plex Mono), photo grading, ticket/polaroid metaphors, exploration log, and the UI elevation roadmap. |
 | Design parity state matrix, inventory, and composition migration | `design_parity/` | Feature-by-feature design-spec parity matrix plus Claude Design to Widgetbook inventory and layered composition migration spec connecting screens, states, captures, component contracts, previews, lints, token specimens, and visual-diff gaps. |
 | Cross-surface feature contracts | `../design/features/feature_contract.schema.json`, `../design/features/feature_coverage.json` | Executable feature identities spanning Flutter, marketing, and admin authorities while keeping each runtime's routes, actions, components, data contracts, previews, captures, and tests explicit. The coverage registry is the exhaustive migration ledger. |
@@ -71,7 +71,7 @@ section unless the task requires a full historical audit.
 | Demo data seeding | `demo_data_seeding.md` | Demo seeding scenarios, warm account workflows, demo ops, cleanup/reset commands, and validation workflow. |
 | Sales demo persona cohorts | `sales_demo_persona_cohorts.md` | Cohort scope, NYC and India persona-library decisions, roster reuse policy, and city overlay rules for high-fidelity sales demos. |
 | Sales demo image generation | `sales_demo_image_generation_runbook.md` | Mechanical ChatGPT-web image generation, review, local organization, UID-owned Storage upload, and post-upload validation workflow. |
-| Recursive audit registry | `audit_registry/` | Machine-readable file inventory, pass receipts, active rules, backlog, compact doc summaries, and doc versions for repeated cleanup loops. |
+| Legacy audit snapshots | `audit_registry/` | Frozen file/pass/metric/document snapshots plus authored decision files still migrating to domain owners. No task writes evidence here. |
 
 ## Contextual READMEs
 
@@ -114,19 +114,14 @@ route, component, and evidence inventories; they do not replace product intent,
 architecture, business policy, data schemas, copy, release procedures, or
 operational runbooks.
 
-For governed Markdown, exactly one valid frontmatter `status` is the lifecycle
-authority. `doc_versions.json` owns version/path routing but cannot authorize a
-Markdown deletion; Markdown catalog rows must omit `status`, and missing,
-malformed, duplicate, or unclosed source status fails closed. Catalog lifecycle
-status remains required only for governed non-Markdown artifacts. The
-retirement gate also proves that both the target source path and catalog row are
-gone.
+For governed Markdown, source frontmatter is the lifecycle authority.
+`doc_versions.json` is a frozen compatibility snapshot and must not be
+updated. Missing, malformed, duplicate, or unclosed source status fails closed.
 
 All 11 documents classified `retirement_ready` by that audit have now been
 deleted after their current inbound references were moved to durable owner docs,
-contracts, registries, tests, and scanners. Historical pass and merge receipts
-remain immutable; do not recreate completed implementation handoffs as live
-documentation.
+contracts, tests, and scanners. Git retains historical proof; do not recreate
+completed implementation handoffs as live documentation.
 
 Feature-related docs that remain intentionally active include Event Success
 theatre, Home live-layer and Home/Catches unification, Host Edit/Live Guide,
@@ -144,7 +139,7 @@ host/consumer split tracker, host sales gap tracker, organizer claim workflow
 plan, integration-test architecture tracker, admin dashboard tracker, marketing
 landing-page tracker, website mockup functionality tracker, duplicate design
 parity todo, and no-work-left UI lint/debt trackers. Their durable decisions now
-live in the owner docs above plus `docs/audit_registry/passes.jsonl`.
+live in the owner docs above; Git retains the removed history.
 
 ## Before Adding A New Doc
 

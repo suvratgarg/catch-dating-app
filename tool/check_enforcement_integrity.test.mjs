@@ -347,199 +347,105 @@ test("fails missing doc anchors and missing vacuity proof text", () => {
   assert.match(errors, /does not contain known bad/u);
 });
 
-test("fails baseline maxCounts without matching metric receipt", () => {
+test("accepts ratchet baselines without a separate metric receipt", () => {
   const root = createFixture({
     rules: {
-      "RULE-001": {
+      "MAX-COUNTS-001": {
         ...manualRule(),
         enforcement: [
           {
-            tool: "audit:sample",
+            tool: "audit:max-counts",
             stage: "scanner-ratchet",
             docAnchor: "docs/app_architecture.md#error-scanners",
-            baseline: "tool/sample_baseline.json",
+            baseline: "tool/max_counts_baseline.json",
+          },
+        ],
+      },
+      "ALLOWED-FINDINGS-001": {
+        ...manualRule(),
+        enforcement: [
+          {
+            tool: "audit:allowed-findings",
+            stage: "scanner-ratchet",
+            docAnchor: "docs/app_architecture.md#error-scanners",
+            baseline: "tool/allowed_findings_baseline.json",
           },
         ],
       },
     },
     tools: [
       gateTool({
-        id: "audit:sample",
-        path: "tool/architecture/check_sample.mjs",
-        command: "node tool/architecture/check_sample.mjs",
+        id: "audit:max-counts",
+        path: "tool/architecture/check_max_counts.mjs",
+        command: "node tool/architecture/check_max_counts.mjs",
         role: "ratchet",
-        rules: ["RULE-001"],
-        proofPath: "tool/architecture/check_sample.test.mjs",
-        baseline: "tool/sample_baseline.json",
+        rules: ["MAX-COUNTS-001"],
+        proofPath: "tool/architecture/check_max_counts.test.mjs",
+        baseline: "tool/max_counts_baseline.json",
       }),
-    ],
-    docs: {"docs/app_architecture.md": "# App Architecture\n\n### Error Scanners\n"},
-    files: {
-      "tool/architecture/check_sample.mjs": "#!/usr/bin/env node\n",
-      "tool/architecture/check_sample.test.mjs": "flags bad input\n",
-      "tool/sample_baseline.json": JSON.stringify({maxCounts: {review: 1}}),
-    },
-  });
-
-  assert.match(
-    checkEnforcementIntegrity({root}).errors.join("\n"),
-    /baseline tool\/sample_baseline\.json has no metric receipt/u,
-  );
-});
-
-test("fails allowedFindings baselines without matching metric receipt", () => {
-  const root = createFixture({
-    rules: {
-      "RULE-001": {
-        ...manualRule(),
-        enforcement: [
-          {
-            tool: "audit:sample",
-            stage: "scanner-ratchet",
-            docAnchor: "docs/app_architecture.md#error-scanners",
-            baseline: "tool/sample_baseline.json",
-          },
-        ],
-      },
-    },
-    tools: [
       gateTool({
-        id: "audit:sample",
-        path: "tool/architecture/check_sample.mjs",
-        command: "node tool/architecture/check_sample.mjs",
+        id: "audit:allowed-findings",
+        path: "tool/architecture/check_allowed_findings.mjs",
+        command: "node tool/architecture/check_allowed_findings.mjs",
         role: "ratchet",
-        rules: ["RULE-001"],
-        proofPath: "tool/architecture/check_sample.test.mjs",
-        baseline: "tool/sample_baseline.json",
+        rules: ["ALLOWED-FINDINGS-001"],
+        proofPath: "tool/architecture/check_allowed_findings.test.mjs",
+        baseline: "tool/allowed_findings_baseline.json",
       }),
     ],
     docs: {"docs/app_architecture.md": "# App Architecture\n\n### Error Scanners\n"},
     files: {
-      "tool/architecture/check_sample.mjs": "#!/usr/bin/env node\n",
-      "tool/architecture/check_sample.test.mjs": "flags bad input\n",
-      "tool/sample_baseline.json": JSON.stringify({
-        allowedFindings: [
-          {
-            rule: "sample",
-            path: "lib/example.dart",
-            import: "package:example/example.dart",
-          },
-        ],
+      "tool/architecture/check_max_counts.mjs": "#!/usr/bin/env node\n",
+      "tool/architecture/check_max_counts.test.mjs": "flags bad input\n",
+      "tool/architecture/check_allowed_findings.mjs": "#!/usr/bin/env node\n",
+      "tool/architecture/check_allowed_findings.test.mjs": "flags bad input\n",
+      "tool/max_counts_baseline.json": JSON.stringify({maxCounts: {review: 1}}),
+      "tool/allowed_findings_baseline.json": JSON.stringify({
+        allowedFindings: [{rule: "sample", path: "lib/example.dart"}],
       }),
     },
-  });
-
-  assert.match(
-    checkEnforcementIntegrity({root}).errors.join("\n"),
-    /baseline tool\/sample_baseline\.json has no metric receipt/u,
-  );
-});
-
-test("fails allowedFindings baselines with stale metric receipt", () => {
-  const root = createFixture({
-    rules: {
-      "RULE-001": {
-        ...manualRule(),
-        enforcement: [
-          {
-            tool: "audit:sample",
-            stage: "scanner-ratchet",
-            docAnchor: "docs/app_architecture.md#error-scanners",
-            baseline: "tool/sample_baseline.json",
-          },
-        ],
-      },
-    },
-    tools: [
-      gateTool({
-        id: "audit:sample",
-        path: "tool/architecture/check_sample.mjs",
-        command: "node tool/architecture/check_sample.mjs",
-        role: "ratchet",
-        rules: ["RULE-001"],
-        proofPath: "tool/architecture/check_sample.test.mjs",
-        baseline: "tool/sample_baseline.json",
-      }),
-    ],
-    docs: {"docs/app_architecture.md": "# App Architecture\n\n### Error Scanners\n"},
-    files: {
-      "tool/architecture/check_sample.mjs": "#!/usr/bin/env node\n",
-      "tool/architecture/check_sample.test.mjs": "flags bad input\n",
-      "tool/sample_baseline.json": JSON.stringify({
-        allowedFindings: [
-          {
-            rule: "sample",
-            path: "lib/example.dart",
-            import: "package:example/example.dart",
-          },
-        ],
-      }),
-    },
-    metrics: [
-      {
-        event: "enforcement_baseline",
-        baseline: "tool/sample_baseline.json",
-        counts: {allowedFindings: 2},
-      },
-    ],
-  });
-
-  assert.match(
-    checkEnforcementIntegrity({root}).errors.join("\n"),
-    /allowedFindings count/u,
-  );
-});
-
-test("passes allowedFindings baselines with matching metric receipt", () => {
-  const root = createFixture({
-    rules: {
-      "RULE-001": {
-        ...manualRule(),
-        enforcement: [
-          {
-            tool: "audit:sample",
-            stage: "scanner-ratchet",
-            docAnchor: "docs/app_architecture.md#error-scanners",
-            baseline: "tool/sample_baseline.json",
-          },
-        ],
-      },
-    },
-    tools: [
-      gateTool({
-        id: "audit:sample",
-        path: "tool/architecture/check_sample.mjs",
-        command: "node tool/architecture/check_sample.mjs",
-        role: "ratchet",
-        rules: ["RULE-001"],
-        proofPath: "tool/architecture/check_sample.test.mjs",
-        baseline: "tool/sample_baseline.json",
-      }),
-    ],
-    docs: {"docs/app_architecture.md": "# App Architecture\n\n### Error Scanners\n"},
-    files: {
-      "tool/architecture/check_sample.mjs": "#!/usr/bin/env node\n",
-      "tool/architecture/check_sample.test.mjs": "flags bad input\n",
-      "tool/sample_baseline.json": JSON.stringify({
-        allowedFindings: [
-          {
-            rule: "sample",
-            path: "lib/example.dart",
-            import: "package:example/example.dart",
-          },
-        ],
-      }),
-    },
-    metrics: [
-      {
-        event: "enforcement_baseline",
-        baseline: "tool/sample_baseline.json",
-        counts: {allowedFindings: 1},
-      },
-    ],
   });
 
   assert.deepEqual(checkEnforcementIntegrity({root}).errors, []);
+});
+
+test("still fails when a referenced ratchet baseline is missing", () => {
+  const root = createFixture({
+    rules: {
+      "RULE-001": {
+        ...manualRule(),
+        enforcement: [
+          {
+            tool: "audit:sample",
+            stage: "scanner-ratchet",
+            docAnchor: "docs/app_architecture.md#error-scanners",
+            baseline: "tool/sample_baseline.json",
+          },
+        ],
+      },
+    },
+    tools: [
+      gateTool({
+        id: "audit:sample",
+        path: "tool/architecture/check_sample.mjs",
+        command: "node tool/architecture/check_sample.mjs",
+        role: "ratchet",
+        rules: ["RULE-001"],
+        proofPath: "tool/architecture/check_sample.test.mjs",
+        baseline: "tool/sample_baseline.json",
+      }),
+    ],
+    docs: {"docs/app_architecture.md": "# App Architecture\n\n### Error Scanners\n"},
+    files: {
+      "tool/architecture/check_sample.mjs": "#!/usr/bin/env node\n",
+      "tool/architecture/check_sample.test.mjs": "flags bad input\n",
+    },
+  });
+
+  assert.match(
+    checkEnforcementIntegrity({root}).errors.join("\n"),
+    /audit:sample: referenced file does not exist: tool\/sample_baseline\.json/u,
+  );
 });
 
 test("fails broad flutter regression guards without plain-name or evidence", () => {
@@ -670,18 +576,12 @@ function createFixture({
   tools = [],
   docs = {},
   files = {},
-  metrics = [],
   ledger = {entries: []},
 }) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-enforcement-"));
   writeJson(root, "docs/audit_registry/rules.json", {rules});
   writeJson(root, "tool/tools_manifest.json", {version: 1, tools});
   writeJson(root, "docs/agent_regression_ledger.json", ledger);
-  writeFile(
-    root,
-    "docs/audit_registry/agent_metrics.jsonl",
-    metrics.map((metric) => JSON.stringify(metric)).join("\n"),
-  );
   for (const [filePath, contents] of Object.entries({
     "docs/app_architecture.md": "# App Architecture\n",
     ...docs,

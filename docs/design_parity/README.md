@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_tracker
-version: 0.1.44
+version: 0.1.45
 updated: 2026-08-07
 owner: product_design_parity
 status: active
@@ -61,7 +61,8 @@ checks in one durable matrix.
    ```
 
 6. Run focused analyzer/tests/scanners for the touched feature.
-7. Stamp the pass in `docs/audit_registry/passes.jsonl`.
+7. Preserve the result in the commit and CI checks; do not write an audit
+   receipt or generated evidence file.
 
 ## New Route Workflow
 
