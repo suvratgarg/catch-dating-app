@@ -228,6 +228,20 @@ export function toolChecksAreLocalReadonly(tool) {
   return isLocalOnlySafety(tool?.safety);
 }
 
+export function collectLocalReadonlyCheckIds(toolsManifest) {
+  const tools = Array.isArray(toolsManifest?.tools) ? toolsManifest.tools : [];
+  const counts = new Map();
+  for (const tool of tools) counts.set(tool?.id, (counts.get(tool?.id) ?? 0) + 1);
+  return new Set(tools
+    .filter((tool) =>
+      counts.get(tool.id) === 1 &&
+      tool.status === "active" &&
+      hasExecutableChecks(tool) &&
+      toolChecksAreLocalReadonly(tool) &&
+      validateToolCiRequirements(tool).length === 0)
+    .map((tool) => tool.id));
+}
+
 function isLocalOnlySafety(safety) {
   return typeof safety === "string" &&
     safety.startsWith("local") &&

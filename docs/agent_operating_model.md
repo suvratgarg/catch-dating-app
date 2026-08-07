@@ -1,6 +1,6 @@
 ---
 doc_id: agent_operating_model
-version: 1.6.1
+version: 1.6.2
 updated: 2026-08-07
 owner: agent_operating_model
 status: active
@@ -189,35 +189,65 @@ Use Git worktrees as the isolation boundary, but do not create them with ad hoc
 `git worktree add` commands. The Harness lifecycle is the canonical broker:
 
 ```sh
+node tool/agent/context_pack.mjs \
+  --task <task-id> \
+  --mode parallel-delegation \
+  --paths <owned-path[,owned-path...]> \
+  --json \
+  --output build/agent-context/<task-id>.json
 node tool/harness.mjs task start \
   --task-id <task-id> \
   --base-sha <40-character-parent-sha> \
   --stack-parent <parent-ref> \
   --paths <owned-path[,owned-path...]> \
+  --context-pack build/agent-context/<task-id>.json \
   --budget-mib 256
 node tool/harness.mjs task doctor --worktree <task-worktree>
 node tool/harness.mjs task finish --worktree <task-worktree>
 node tool/harness.mjs task reap --dry-run
 ```
 
-`task start` validates the exact parent SHA and explicit sparse paths, checks a
-fixed allocated-disk reserve plus the allocated task budget, rejects local and
+The context pack keeps human commands for execution guidance, but task
+materialization is authorized only by structured tool ids. Scope directories
+are expanded to their tracked descendants when skills, rules, regressions, and
+checks are selected; task start recomputes that same expansion from the exact
+base commit. Index-view checks become task checks; full-view checks are
+recorded as deferred integration checks for the parent so a repository scanner
+cannot pass vacuously against a sparse projection. Generated command plans name
+an owner and phase: the worker runs only worker-owned preflight/task checks,
+while the parent owns lifecycle creation/finish, full-view integration,
+unstructured regression guards, canonical records, and final verification.
+The pack is consumable only when its source worktree is clean, its SHA and
+owned scope match task start, and every selected id resolves to an active
+manifest tool. Command regressions awaiting structured ids remain explicit
+deferred parent checks; their display strings never authorize sparse
+materialization. With `--output`, the full artifact is written to disk and
+stdout contains only a compact task/digest receipt.
+
+`task start` requires and validates the exact parent SHA, explicit owned paths,
+and context-pack digest. It checks a fixed allocated-disk reserve plus the
+allocated task budget, rejects local and
 remote branch collisions, creates the worktree under ignored
-`.claude/worktrees/`, records v2 task metadata in the worktree Git directory,
-Git-locks the active worktree, and pushes the new branch to `origin`. V2
+`.claude/worktrees/`, Git-locks the active worktree, and pushes the new branch
+to `origin`. Closure-aware starts record v3 metadata that separates owned paths,
+support-only materialization, required physical entrypoints, task check ids,
+deferred integration ids, base SHA, and digest. New starts cannot bypass the
+pack contract. The reader retains v1/v2 compatibility for tasks created before
+this cutover. V2 and v3
 receipts name the tracked logical estimate, projected initial allocation,
 initial logical materialization, and initial allocated materialization
 separately. Current allocation and growth are allocated-to-allocated
-measurements; never subtract a logical measurement from an allocated one. The
-reader remains compatible with v1 receipts, but their allocated growth is
-unknown because v1 recorded only an initial logical measurement. Task
-worktrees never use `/tmp` or `/private/tmp`.
+measurements; never subtract a logical measurement from an allocated one. V1
+allocated growth remains unknown because v1 recorded only an initial logical
+measurement. Task worktrees never use `/tmp` or `/private/tmp`.
 
 1. Parent records its current branch and 40-character HEAD, chooses disjoint
-   owned paths, then runs `task start` from that exact SHA.
+   owned paths, generates the JSON context pack from that clean exact SHA, then
+   runs `task start` with the same owned paths and `--context-pack`.
 2. Each subagent receives the task id, generated worktree path and branch,
-   owned paths, excluded paths, required owner docs, allowed checks, and the
-   structured result format.
+   owned paths, excluded paths, required owner docs, its worker-owned command
+   phases, and the structured result format. Parent-owned command phases are
+   not delegated.
 3. Before editing, the subagent runs `task doctor` and reports `pwd`,
    `git branch --show-current`, `git rev-parse HEAD`, and
    `git status --short --branch`. Any doctor blocker or mismatch stops the
@@ -226,13 +256,15 @@ worktrees never use `/tmp` or `/private/tmp`.
    changed files, checks run, blockers, and quality risks.
 5. Parent reviews with `git show`, `git diff`, or `cherry-pick -n`, then imports
    only the accepted changes into the parent branch.
-6. Parent runs final checks, updates canonical docs/registries, stamps the audit
-   pass, commits the integrated loop, and records the delegation outcome.
+6. Parent runs the pack's deferred integration checks plus final checks, updates
+   canonical docs/registries, stamps the audit pass, commits the integrated
+   loop, and records the delegation outcome.
 7. After the task branch is clean and its exact head exists at `origin`, run
    `task finish`. Doctor and finish share the same root, metadata-path,
-   sparse-checkout, storage, base-ancestry, ignored-payload, dependency, and
-   filesystem-reserve integrity checks; allowlisted task-local dependency/build
-   directories remain valid. Finish additionally performs a live origin-head
+   sparse-checkout, command-entrypoint closure, owned-scope, storage, base-ancestry,
+   ignored-payload, dependency, and filesystem-reserve integrity checks;
+   allowlisted task-local dependency/build directories remain valid. Finish
+   additionally performs a live origin-head
    query, reports an unavailable query separately from a mismatched remote
    head, records terminal metadata, and unlocks the worktree. It never removes
    a worktree or deletes a branch.
@@ -344,7 +376,8 @@ should not be reintroduced. Each entry has:
 - `status`: `active`, `watch`, or `archived`;
 - `applies_to`: paths or globs;
 - `symptom`: what regressed;
-- `guard`: command, test, scanner, or manual check;
+- `guard`: command, test, scanner, or manual check; command guards may add
+  structured `check_ids`, while the command string remains display guidance;
 - `owner_docs`: canonical docs to read before touching the area.
 
 Add a ledger entry whenever a bug or drift pattern has cost enough time that the

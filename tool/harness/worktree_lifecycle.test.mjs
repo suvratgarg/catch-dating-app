@@ -13,6 +13,13 @@ import {
   parseWorktreePorcelain,
   taskSparseAnchorPaths,
 } from "./lib/worktree_lifecycle.mjs";
+import {
+  buildTaskStartContract,
+  CONTEXT_PACK_SCHEMA_V2,
+  deriveTaskCheckSelection,
+  resolveStructuredCheckPlan,
+  TASK_START_MODE,
+} from "../agent/lib/task_input.mjs";
 
 const MIB = 1024 * 1024;
 const TEST_CLAUDE_ROOT = path.join(process.cwd(), ".claude");
@@ -95,7 +102,7 @@ test("task paths are canonical and sparse paths cannot escape", () => {
     /OS-temp task worktree path/u,
   );
   assert.throws(() => normalizeSparsePaths(["../outside"]), /repository-relative/u);
-  assert.throws(() => normalizeSparsePaths(["lib/**"]), /explicit tracked path/u);
+  assert.throws(() => normalizeSparsePaths(["lib/**"]), /repository-relative and explicit/u);
   const paths = normalizeSparsePaths(["lib/user_profile/", "functions/src/index.ts"]);
   assert.ok(paths.includes("/AGENTS.md"));
   assert.ok(paths.includes("/analysis_options.yaml"));
@@ -106,7 +113,7 @@ test("task paths are canonical and sparse paths cannot escape", () => {
   assert.ok(paths.includes("/packages/phosphor_flutter/"));
   assert.ok(paths.includes("/pubspec.lock"));
   assert.ok(paths.includes("/pubspec.yaml"));
-  assert.ok(paths.includes("/lib/user_profile/"));
+  assert.ok(paths.includes("/lib/user_profile"));
   assert.ok(paths.includes("/functions/src/index.ts"));
 
   for (const entrypoint of ["check_agent_readiness.mjs", "context_pack.mjs"]) {
@@ -148,6 +155,194 @@ test("capacity preflight fails before a worktree can consume the reserve", () =>
       projectedInitialAllocatedBytes: 65 * MIB,
     }),
     /exceeds its 64.0 MiB allocated budget/u,
+  );
+});
+
+test("closure-aware start materializes exact command support and records v3 metadata", (context) => {
+  const fixture = createClosureFixture(context);
+  const baseSha = git(fixture, ["rev-parse", "HEAD"]);
+  writeContextPack(fixture, {taskId: "closure-aware", baseSha});
+  const execution = executeTaskCommand({
+    args: [
+      "start",
+      "--task-id", "closure-aware",
+      "--base-sha", baseSha,
+      "--stack-parent", "main",
+      "--paths", "lib/profile.txt",
+      "--context-pack", ".task-pack.json",
+      "--budget-mib", "64",
+      "--reserve-mib", "1",
+    ],
+    cwd: fixture,
+    statfs: () => ({bavail: 4096, bsize: MIB}),
+  });
+  assert.equal(execution.status, 0);
+  assert.equal(execution.result.metadata.schema, "catch.harness-task/v3");
+  assert.deepEqual(execution.result.metadata.requestedSparsePaths, ["/lib/profile.txt"]);
+  assert.deepEqual(execution.result.metadata.contextPack.checkIds, [
+    "agent:readiness",
+    "fixture:check",
+  ]);
+  assert.deepEqual(execution.result.metadata.contextPack.deferredCheckIds, [
+    "agent:harness-v2",
+    "agent:record-delegation",
+  ]);
+  const target = execution.result.metadata.worktreePath;
+  assert.equal(fs.readFileSync(path.join(target, "tool", "check.mjs"), "utf8"), "export const ok = true;\n");
+  assert.equal(fs.existsSync(path.join(target, "unrelated.txt")), false);
+  const doctor = executeTaskCommand({args: ["doctor"], cwd: target});
+  assert.equal(doctor.status, 0, JSON.stringify(doctor.result));
+
+  fs.unlinkSync(path.join(target, "tool", "check.mjs"));
+  const missingDoctor = executeTaskCommand({args: ["doctor"], cwd: target});
+  assert.equal(missingDoctor.status, 1);
+  assert.ok(missingDoctor.result.blockers.includes(
+    "required_command_entrypoint_missing:tool/check.mjs",
+  ));
+  const missingFinish = executeTaskCommand({args: ["finish"], cwd: target});
+  assert.equal(missingFinish.status, 1);
+  assert.ok(missingFinish.result.blockers.includes(
+    "required_command_entrypoint_missing:tool/check.mjs",
+  ));
+});
+
+test("closure-aware start rejects stale, tampered, and missing entrypoints before registration", (context) => {
+  const fixture = createClosureFixture(context, {entrypoint: "tool/missing.mjs"});
+  const baseSha = git(fixture, ["rev-parse", "HEAD"]);
+  const pack = writeContextPack(fixture, {
+    taskId: "missing-entrypoint",
+    baseSha,
+    entrypoint: "tool/missing.mjs",
+  });
+  const common = [
+    "start",
+    "--task-id", "missing-entrypoint",
+    "--base-sha", baseSha,
+    "--stack-parent", "main",
+    "--paths", "lib/profile.txt",
+    "--context-pack", ".task-pack.json",
+  ];
+  assert.throws(
+    () => executeTaskCommand({args: common, cwd: fixture}),
+    /Required command entrypoint is not a regular tracked file/u,
+  );
+  assert.doesNotMatch(git(fixture, ["worktree", "list", "--porcelain"]), /missing-entrypoint/u);
+  assert.equal(git(fixture, ["branch", "--list", "codex/missing-entrypoint"]), "");
+
+  pack.taskStart.digest = "0".repeat(64);
+  fs.writeFileSync(path.join(fixture, ".task-pack.json"), `${JSON.stringify(pack, null, 2)}\n`);
+  assert.throws(
+    () => executeTaskCommand({args: common, cwd: fixture}),
+    /context_pack_closure_mismatch|context_pack_digest_mismatch/u,
+  );
+});
+
+test("new starts cannot bypass the context-pack contract", (context) => {
+  const fixture = createGitFixture(context);
+  const baseSha = git(fixture, ["rev-parse", "HEAD"]);
+  assert.throws(
+    () => executeTaskCommand({
+      args: [
+        "start",
+        "--task-id", "pack-required",
+        "--base-sha", baseSha,
+        "--stack-parent", "main",
+        "--paths", "lib/profile.txt",
+      ],
+      cwd: fixture,
+    }),
+    /--context-pack is required/u,
+  );
+  assert.doesNotMatch(git(fixture, ["worktree", "list", "--porcelain"]), /pack-required/u);
+});
+
+test("support-only command paths remain read-only through doctor and finish", (context) => {
+  const fixture = createClosureFixture(context);
+  const baseSha = git(fixture, ["rev-parse", "HEAD"]);
+  writeContextPack(fixture, {taskId: "owned-scope", baseSha});
+  const execution = executeTaskCommand({
+    args: [
+      "start",
+      "--task-id", "owned-scope",
+      "--base-sha", baseSha,
+      "--stack-parent", "main",
+      "--paths", "lib/profile.txt/",
+      "--context-pack", ".task-pack.json",
+      "--budget-mib", "64",
+      "--reserve-mib", "1",
+    ],
+    cwd: fixture,
+    statfs: () => ({bavail: 4096, bsize: MIB}),
+  });
+  const target = execution.result.metadata.worktreePath;
+  assert.deepEqual(execution.result.metadata.requestedSparsePaths, ["/lib/profile.txt"]);
+  fs.appendFileSync(path.join(target, "tool", "check.mjs"), "// support edit\n");
+  git(target, ["add", "tool/check.mjs"]);
+  git(target, ["commit", "-m", "edit support only path"]);
+  git(target, ["push"]);
+
+  const doctor = executeTaskCommand({args: ["doctor"], cwd: target});
+  assert.equal(doctor.status, 1);
+  assert.ok(doctor.result.blockers.includes("out_of_owned_scope:tool/check.mjs"));
+  const finish = executeTaskCommand({args: ["finish"], cwd: target});
+  assert.equal(finish.status, 1);
+  assert.ok(finish.result.blockers.includes("out_of_owned_scope:tool/check.mjs"));
+});
+
+test("malformed v3 receipt arrays block doctor and finish without changing state", (context) => {
+  const fixture = createClosureFixture(context);
+  const baseSha = git(fixture, ["rev-parse", "HEAD"]);
+  writeContextPack(fixture, {taskId: "malformed-receipt", baseSha});
+  const execution = executeTaskCommand({
+    args: [
+      "start",
+      "--task-id", "malformed-receipt",
+      "--base-sha", baseSha,
+      "--stack-parent", "main",
+      "--paths", "lib/profile.txt",
+      "--context-pack", ".task-pack.json",
+      "--budget-mib", "64",
+      "--reserve-mib", "1",
+    ],
+    cwd: fixture,
+    statfs: () => ({bavail: 4096, bsize: MIB}),
+  });
+  const target = execution.result.metadata.worktreePath;
+  const metadataPath = git(target, ["rev-parse", "--git-path", "catch-task.json"]);
+  const metadata = JSON.parse(fs.readFileSync(metadataPath, "utf8"));
+  metadata.contextPack.checkIds = "fixture:check";
+  fs.writeFileSync(metadataPath, `${JSON.stringify(metadata, null, 2)}\n`);
+
+  const doctor = executeTaskCommand({args: ["doctor"], cwd: target});
+  assert.equal(doctor.status, 1);
+  assert.ok(doctor.result.blockers.includes("invalid_context_pack_receipt"));
+  const finish = executeTaskCommand({args: ["finish"], cwd: target});
+  assert.equal(finish.status, 1);
+  assert.ok(finish.result.blockers.includes("invalid_context_pack_receipt"));
+  assert.equal(JSON.parse(fs.readFileSync(metadataPath, "utf8")).status, "active");
+});
+
+test("context packs cannot escape through a symlinked ancestor", (context) => {
+  const fixture = createClosureFixture(context);
+  const baseSha = git(fixture, ["rev-parse", "HEAD"]);
+  const pack = writeContextPack(fixture, {taskId: "pack-symlink", baseSha});
+  const outside = fs.mkdtempSync(path.join(createFixtureSession(), "outside-pack-"));
+  context.after(() => cleanupOwnedFixtureChildren(processFixtureSession, [outside]));
+  fs.writeFileSync(path.join(outside, "pack.json"), `${JSON.stringify(pack, null, 2)}\n`);
+  fs.symlinkSync(outside, path.join(fixture, "pack-link"));
+  assert.throws(
+    () => executeTaskCommand({
+      args: [
+        "start",
+        "--task-id", "pack-symlink",
+        "--base-sha", baseSha,
+        "--stack-parent", "main",
+        "--paths", "lib/profile.txt",
+        "--context-pack", "pack-link/pack.json",
+      ],
+      cwd: fixture,
+    }),
+    /Context pack must be inside the invoking worktree/u,
   );
 });
 
@@ -275,8 +470,9 @@ test("reap refuses dirty, live, temp, current, and locked worktrees", () => {
 });
 
 test("start uses an explicit sparse worktree and records local task metadata", (context) => {
-  const fixture = createGitFixture(context);
+  const fixture = createClosureFixture(context);
   const baseSha = git(fixture, ["rev-parse", "HEAD"]);
+  writeContextPack(fixture, {taskId: "profile-slice", baseSha});
   const execution = executeTaskCommand({
     args: [
       "start",
@@ -284,6 +480,7 @@ test("start uses an explicit sparse worktree and records local task metadata", (
       "--base-sha", baseSha,
       "--stack-parent", "main",
       "--paths", "lib/profile.txt",
+      "--context-pack", ".task-pack.json",
       "--budget-mib", "64",
       "--reserve-mib", "1",
     ],
@@ -299,7 +496,7 @@ test("start uses an explicit sparse worktree and records local task metadata", (
   assert.equal(fs.existsSync(path.join(target, "unrelated.txt")), false);
   const metadataPath = git(target, ["rev-parse", "--git-path", "catch-task.json"]);
   const metadata = JSON.parse(fs.readFileSync(metadataPath, "utf8"));
-  assert.equal(metadata.schema, "catch.harness-task/v2");
+  assert.equal(metadata.schema, "catch.harness-task/v3");
   assert.equal(metadata.baseSha, baseSha);
   assert.equal(metadata.creatorPid, 4242);
   assert.equal(metadata.stackParent, "main");
@@ -429,6 +626,7 @@ test("legacy v1 task metadata remains readable without inventing an allocated ba
     "initialMaterializedLogicalBytes",
     "initialMaterializedAllocatedBytes",
   ]) delete legacyMetadata[key];
+  delete legacyMetadata.contextPack;
   fs.writeFileSync(metadataPath, `${JSON.stringify(legacyMetadata, null, 2)}\n`);
 
   const doctor = executeTaskCommand({args: ["doctor"], cwd: target});
@@ -445,10 +643,13 @@ test("legacy v1 task metadata remains readable without inventing an allocated ba
 
 test("malformed v2 storage measurements fail closed", (context) => {
   const {metadata, metadataPath, target} = createStartedTask(context, "malformed-storage");
-  fs.writeFileSync(metadataPath, `${JSON.stringify({
+  const malformed = {
     ...metadata,
+    schema: "catch.harness-task/v2",
     initialMaterializedAllocatedBytes: "unknown",
-  }, null, 2)}\n`);
+  };
+  delete malformed.contextPack;
+  fs.writeFileSync(metadataPath, `${JSON.stringify(malformed, null, 2)}\n`);
 
   const doctor = executeTaskCommand({args: ["doctor"], cwd: target});
   assert.equal(doctor.status, 1);
@@ -572,8 +773,9 @@ test("finish distinguishes an unavailable origin query from an unpreserved head"
 });
 
 test("low-capacity start refuses before worktree registration", (context) => {
-  const fixture = createGitFixture(context);
+  const fixture = createClosureFixture(context);
   const baseSha = git(fixture, ["rev-parse", "HEAD"]);
+  writeContextPack(fixture, {taskId: "capacity-refusal", baseSha});
   assert.throws(
     () => executeTaskCommand({
       args: [
@@ -582,6 +784,7 @@ test("low-capacity start refuses before worktree registration", (context) => {
         "--base-sha", baseSha,
         "--stack-parent", "main",
         "--paths", "lib/profile.txt",
+        "--context-pack", ".task-pack.json",
       ],
       cwd: fixture,
       statfs: () => ({bavail: 197, bsize: MIB}),
@@ -594,9 +797,10 @@ test("low-capacity start refuses before worktree registration", (context) => {
 });
 
 test("start refuses remote branch collisions and missing sparse paths before registration", (context) => {
-  const fixture = createGitFixture(context);
+  const fixture = createClosureFixture(context);
   const baseSha = git(fixture, ["rev-parse", "HEAD"]);
   git(fixture, ["push", "origin", "main:refs/heads/codex/remote-collision"]);
+  writeContextPack(fixture, {taskId: "remote-collision", baseSha});
   assert.throws(
     () => executeTaskCommand({
       args: [
@@ -605,11 +809,17 @@ test("start refuses remote branch collisions and missing sparse paths before reg
         "--base-sha", baseSha,
         "--stack-parent", "main",
         "--paths", "lib/profile.txt",
+        "--context-pack", ".task-pack.json",
       ],
       cwd: fixture,
     }),
     /Remote task branch already exists/u,
   );
+  writeContextPack(fixture, {
+    taskId: "missing-scope",
+    baseSha,
+    scopePath: "lib/proflie.txt",
+  });
   assert.throws(
     () => executeTaskCommand({
       args: [
@@ -618,10 +828,11 @@ test("start refuses remote branch collisions and missing sparse paths before reg
         "--base-sha", baseSha,
         "--stack-parent", "main",
         "--paths", "lib/proflie.txt",
+        "--context-pack", ".task-pack.json",
       ],
       cwd: fixture,
     }),
-    /Requested sparse path does not exist/u,
+    /task_scope_path_missing:lib\/proflie\.txt/u,
   );
   const listing = git(fixture, ["worktree", "list", "--porcelain"]);
   assert.doesNotMatch(listing, /remote-collision|missing-scope/u);
@@ -692,8 +903,9 @@ test("focused lifecycle fixtures remove every child path owned by this process",
 });
 
 function createStartedTask(context, taskId) {
-  const fixture = createGitFixture(context);
+  const fixture = createClosureFixture(context);
   const baseSha = git(fixture, ["rev-parse", "HEAD"]);
+  writeContextPack(fixture, {taskId, baseSha});
   const execution = executeTaskCommand({
     args: [
       "start",
@@ -701,6 +913,7 @@ function createStartedTask(context, taskId) {
       "--base-sha", baseSha,
       "--stack-parent", "main",
       "--paths", "lib/profile.txt",
+      "--context-pack", ".task-pack.json",
       "--budget-mib", "64",
       "--reserve-mib", "1",
     ],
@@ -735,6 +948,119 @@ function createGitFixture(context) {
   git(fixture, ["remote", "add", "origin", origin]);
   git(fixture, ["push", "--set-upstream", "origin", "main"]);
   return fixture;
+}
+
+function createClosureFixture(context, {entrypoint = "tool/check.mjs"} = {}) {
+  const fixture = createGitFixture(context);
+  fs.mkdirSync(path.join(fixture, "tool"), {recursive: true});
+  fs.mkdirSync(path.join(fixture, "docs", "agent_skills"), {recursive: true});
+  const manifest = closureManifest(entrypoint);
+  fs.writeFileSync(
+    path.join(fixture, "tool", "tools_manifest.json"),
+    `${JSON.stringify(manifest, null, 2)}\n`,
+  );
+  if (entrypoint === "tool/check.mjs") {
+    fs.writeFileSync(path.join(fixture, "tool", "check.mjs"), "export const ok = true;\n");
+  }
+  fs.writeFileSync(
+    path.join(fixture, "docs", "agent_skills", "skills_manifest.json"),
+    `${JSON.stringify({skills: fixtureSkills()}, null, 2)}\n`,
+  );
+  fs.writeFileSync(
+    path.join(fixture, "docs", "agent_regression_ledger.json"),
+    `${JSON.stringify({entries: []}, null, 2)}\n`,
+  );
+  git(fixture, ["add", "tool", "docs"]);
+  git(fixture, ["commit", "-m", "add closure fixture"]);
+  git(fixture, ["push"]);
+  return fixture;
+}
+
+function writeContextPack(
+  fixture,
+  {taskId, baseSha, entrypoint = "tool/check.mjs", scopePath = "lib/profile.txt"},
+) {
+  const manifest = closureManifest(entrypoint);
+  const selection = deriveTaskCheckSelection({
+    task: taskId,
+    mode: TASK_START_MODE,
+    scopePaths: [scopePath],
+    skills: fixtureSkills(),
+    regressions: [],
+  });
+  const checkPlan = resolveStructuredCheckPlan({
+    manifest,
+    requestedChecks: selection.requests,
+  });
+  const taskStart = buildTaskStartContract({
+    taskId,
+    mode: TASK_START_MODE,
+    sourceSha: baseSha,
+    scopePaths: [scopePath],
+    checkPlan,
+    sourceClean: true,
+    blockers: checkPlan.blockers,
+    deferredRegressionIds: selection.deferredRegressionIds,
+  });
+  const pack = {
+    schema: CONTEXT_PACK_SCHEMA_V2,
+    sourceSha: baseSha,
+    sourceClean: true,
+    task: taskId,
+    mode: TASK_START_MODE,
+    scope: {paths: [scopePath]},
+    skills: selection.matchedSkills,
+    regressionGuards: selection.matchedRegressions,
+    checkPlan,
+    taskStart,
+  };
+  fs.writeFileSync(path.join(fixture, ".task-pack.json"), `${JSON.stringify(pack, null, 2)}\n`);
+  return pack;
+}
+
+function closureManifest(entrypoint) {
+  return {
+    tools: [
+      {
+        id: "agent:readiness",
+        status: "active",
+        path: entrypoint,
+        safety: "local-readonly",
+        checks: [`node ${entrypoint}`],
+        ciRequirements: {repositoryView: "index", setup: ["node"]},
+      },
+      {
+        id: "agent:harness-v2",
+        status: "active",
+        path: entrypoint,
+        safety: "local-readonly",
+        checks: [`node ${entrypoint}`],
+      },
+      {
+        id: "agent:record-delegation",
+        status: "active",
+        path: entrypoint,
+        safety: "local-readonly",
+        checks: [`node ${entrypoint}`],
+      },
+      {
+        id: "fixture:check",
+        status: "active",
+        path: entrypoint,
+        safety: "local-readonly",
+        checks: [`node ${entrypoint}`],
+        ciRequirements: {repositoryView: "index", setup: ["node"]},
+      },
+    ],
+  };
+}
+
+function fixtureSkills() {
+  return [{
+    skill_id: "fixture-skill",
+    applies_to: ["lib/profile.txt"],
+    required_tools: ["fixture:check"],
+  }];
 }
 
 function createFixtureSession() {

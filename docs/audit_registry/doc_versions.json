@@ -67,9 +67,9 @@
   },
   "agent_operating_model": {
     "path": "docs/agent_operating_model.md",
-    "version": "1.6.1",
+    "version": "1.6.2",
     "updated": "2026-08-07",
-    "read_policy": "Read before broad AI-assisted cleanup, architecture refactors, repeated pattern rollouts, design implementation, doc consolidation, workflow-harness changes, parallel worktree delegation, or enforcement-integrity metadata changes including manifest roles and ratchet baseline receipts. The task lifecycle section owns v1/v2 receipt compatibility, explicit logical-versus-allocated storage measurements, ignored-payload handoff blocking, and live remote-head finish semantics."
+    "read_policy": "Read before broad AI-assisted cleanup, architecture refactors, repeated pattern rollouts, design implementation, doc consolidation, workflow-harness changes, parallel worktree delegation, or enforcement-integrity metadata changes including manifest roles and ratchet baseline receipts. The task lifecycle section owns v1/v2/v3 receipt compatibility, structured context-pack check ids, owned-versus-support path separation, deferred full-view integration checks, explicit logical-versus-allocated storage measurements, ignored-payload handoff blocking, and live remote-head finish semantics."
   },
   "ai_first_workflow_guide": {
     "path": "docs/ai_first_workflow_guide.md",
@@ -79,15 +79,15 @@
   },
   "agent_regression_ledger": {
     "path": "docs/agent_regression_ledger.json",
-    "version": "150",
+    "version": "151",
     "updated": "2026-08-07",
     "status": "active",
-    "read_policy": "Use before touching a scope with hard-won prior fixes; context packs surface matching active/watch regression guards, including section-ownership drift, parallel-delegation ownership, enforcement-integrity drift, Git-owned document history, and reconciliation merges that can hide dropped conflict-resolution intent."
+    "read_policy": "Use before touching a scope with hard-won prior fixes; context packs surface matching active/watch regression guards and structured check ids, including task command-closure drift, section-ownership drift, parallel-delegation ownership, enforcement-integrity drift, Git-owned document history, and reconciliation merges that can hide dropped conflict-resolution intent."
   },
   "agent_skills": {
     "path": "docs/agent_skills/README.md",
-    "version": "1.3.130",
-    "updated": "2026-08-06",
+    "version": "1.3.131",
+    "updated": "2026-08-07",
     "read_policy": "Use for project-local Catch workflow routers, including React surface refactors, governed component-family passes through the retired website legacy site barrel/import boundary, website page shells, admin directory/detail screen shells, admin workbench layouts, admin editor section/form shells, admin layout span classes, admin eyebrow labels, admin card/stat layout shells, admin marketing studio shell/tabs, admin marketing post-board shells, admin marketing composer flow shells, admin marketing picker list/row shells, admin marketing feature-shot grid/card shells, admin marketing brand-contract shells, admin marketing help/compliance text/list shells, admin marketing event-library grid/card/link shells, admin marketing media-library grid/card shells, admin marketing new-post grid/card shells, admin marketing guide shells, admin marketing stacked-section shells, admin marketing app-media shells, admin marketing field shells, admin diff list shells, admin publishing utility primitives, admin event supply shells, admin selected table rows, admin marketing tag rows, admin marketing query lists, admin marketing slide editor/list shells, admin marketing recommendation list/item shells, admin marketing audit list/row shells, admin feature-drop feature editor/list shells, admin feature-drop controls/preview shells, admin marketing preview/export shells, admin marketing carousel preview shells, admin marketing image editor shells, admin guardrail lists, admin intake source lists, admin intake gate lists, admin intake decision shells, admin intake workspace shells, admin organizer intake curation shells, admin overview queue shells, admin overview analytics shells, admin command lists, admin intake tag lists, admin intake section/search-candidate shells, admin intake state grids, admin row/tag cell shells, admin roadmap lists, admin intake/status chips, admin quality rows, admin quality lists, website capture-card shells, website empty-state variants, website badge/status rows, website identity display shells, website process status panels, website UI label spans, website section headings, website action groups, website control rows, website waitlist/application sections, website waitlist form shells, website configured success grids, website claim shells, website claim-flow route/root/auth-row shells, website content grids, website panel shells, website product shells including product-module grids, website row/list shells, Host Preview route shells, Host Page route shells, Host Application flow shells, Host feature section shells, marketing section shells, marketing info-card shells, marketing loop-list shells, marketing consent banner shells, featured organizer card shells, app-download CTA group/shells, organizer listing shells, organizer listing intro shells, organizer listing hero shells, organizer listing review shells including review-signal and owner-response shells, organizer listing claim shells, organizer listing card-grid shells, organizer listing event section shells including event-action cards, organizer listing source ledger shells, organizer search section shells, organizer search result shells, and website search-form shells including PublicSearchBar ownership, direct public-search slot composition, and public event-card shells; machine-readable skill definitions live in docs/agent_skills/skills_manifest.json. Harness context-mode delegation is owned outside this router catalog. React admin feature export boundary scanner obligations. Admin component registry scanner obligations. Admin Storybook preview coverage obligations."
   },
   "audit_rules": {

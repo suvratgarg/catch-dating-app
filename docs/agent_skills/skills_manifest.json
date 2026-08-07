@@ -1,6 +1,6 @@
 {
-  "version": 140,
-  "updated": "2026-08-06",
+  "version": 141,
+  "updated": "2026-08-07",
   "owner": "agent_operating_model",
   "skills": [
     {
@@ -350,6 +350,38 @@
         "Client model nullability diverges from Firestore schema.",
         "Rules tests are run without required emulators.",
         "Backfill or repair tooling is missing for existing data drift."
+      ]
+    },
+    {
+      "skill_id": "catch-tooling-automation",
+      "path": "docs/agent_skills/catch-tooling-automation.md",
+      "version": "1.0.0",
+      "updated": "2026-08-07",
+      "applies_to": [
+        "tool/**"
+      ],
+      "source_docs": [
+        "AGENTS.md",
+        "docs/agent_operating_model.md",
+        "tool/README.md",
+        "docs/agent_regression_ledger.json"
+      ],
+      "required_tools": [
+        "agent:context-pack",
+        "agent:readiness",
+        "tool:runner"
+      ],
+      "required_commands": [
+        "node tool/agent/context_pack.mjs --task tooling-automation --paths tool",
+        "node tool/run.mjs check --manifest-only",
+        "node tool/agent/check_agent_readiness.mjs"
+      ],
+      "success_receipt": "The tool is manifest-owned, its focused checks and exact affected checks pass, manifest validation is clean, and agent readiness passes.",
+      "known_failure_modes": [
+        "A new script or supporting file has no exact manifest owner.",
+        "One shared implementation path fans out to every active tool instead of its real consumers.",
+        "An index-safe check defaults to a full repository checkout or unnecessary setup.",
+        "Prose claims enforcement that has no executable check and focused test."
       ]
     },
     {

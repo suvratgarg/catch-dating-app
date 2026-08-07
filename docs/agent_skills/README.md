@@ -1,7 +1,7 @@
 ---
 doc_id: agent_skills
-version: 1.3.130
-updated: 2026-08-06
+version: 1.3.131
+updated: 2026-08-07
 owner: agent_operating_model
 status: active
 ---
@@ -26,6 +26,12 @@ docs and reference them from the manifest.
 
 Document workflow routers use the read policies in `doc_versions.json`; there
 is no parallel document-summary registry.
+
+Repository tooling and automation under `tool/` route through
+`catch-tooling-automation.md`. That router keeps script ownership, exact impact
+routing, checkout/setup requirements, focused tests, manifest validation, and
+readiness proof in one workflow instead of falling back to documentation
+hygiene.
 
 Marketing website work routes through `catch-marketing-website.md` so public
 routes, generated organizer listings, static metadata, CI, and route-review

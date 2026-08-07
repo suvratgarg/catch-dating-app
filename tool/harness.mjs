@@ -18,7 +18,7 @@ import {
   TaskUsageError,
   taskHelp,
 } from "./harness/lib/worktree_lifecycle.mjs";
-import {toolChecksAreLocalReadonly} from "./lib/tool_impact.mjs";
+import {collectLocalReadonlyCheckIds} from "./lib/tool_impact.mjs";
 
 const graphPath = fromRepo("tool/harness/component_graph.json");
 const toolsManifestPath = fromRepo("tool/tools_manifest.json");
@@ -233,16 +233,7 @@ export function main({
 }
 
 export function collectKnownCheckIds(toolsManifest) {
-  return new Set(
-    (toolsManifest?.tools ?? [])
-      .filter((tool) =>
-        tool.status === "active" &&
-        toolChecksAreLocalReadonly(tool) &&
-        Array.isArray(tool.checks) &&
-        tool.checks.length > 0
-      )
-      .map((tool) => tool.id),
-  );
+  return collectLocalReadonlyCheckIds(toolsManifest);
 }
 
 function requireAffected(options) {

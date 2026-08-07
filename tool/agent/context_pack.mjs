@@ -1,32 +1,89 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import path from "node:path";
+import {spawnSync} from "node:child_process";
 import {fromRepo} from "../lib/repo_paths.mjs";
 import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
 import {parseDocumentLifecycleStatus} from "../docs/check_doc_version_monotonic.mjs";
-import {taskCommandTemplates} from "../harness/lib/worktree_lifecycle.mjs";
+import {taskCommandTemplates} from "../harness/lib/task_contract.mjs";
+import {
+  buildTaskStartContract,
+  CONTEXT_PACK_SCHEMA_V2,
+  deriveTaskCheckSelection,
+  matchesTaskScopePatterns,
+  normalizeTaskScopePaths,
+  resolveStructuredCheckPlan,
+  TASK_START_MODE,
+  taskStartabilityBlockers,
+} from "./lib/task_input.mjs";
 
 const args = parseArgs(process.argv.slice(2));
 const repositorySnapshot = createRepositorySnapshot();
 const task = args.task ?? "unspecified";
 const mode = args.mode ?? "standard";
 const scopePaths = normalizePaths(args.paths);
+const selectionPaths = expandSelectionPaths(scopePaths);
 const generatedAt = new Date().toISOString();
 
 const docVersions = readJson("docs/audit_registry/doc_versions.json", {});
 const rulesFile = readJson("docs/audit_registry/rules.json", {rules: {}});
 const regressionLedger = readJson("docs/agent_regression_ledger.json", {entries: []});
 const skillManifest = readJson("docs/agent_skills/skills_manifest.json", {skills: []});
+const toolsManifest = readJson("tool/tools_manifest.json", {tools: []});
 
-const matchedSkills = selectSkills(skillManifest.skills ?? [], task, scopePaths);
-const ownerDocs = buildOwnerDocs({task, scopePaths, matchedSkills, docVersions});
-const matchedRules = selectRules(rulesFile.rules ?? {}, scopePaths, mode);
-const matchedRegressions = selectRegressions(regressionLedger.entries ?? [], scopePaths);
-const commands = buildCommandPlan({matchedSkills, matchedRegressions, mode});
+const selection = deriveTaskCheckSelection({
+  task,
+  mode,
+  scopePaths,
+  selectionPaths,
+  skills: skillManifest.skills ?? [],
+  regressions: regressionLedger.entries ?? [],
+});
+const matchedSkills = selection.matchedSkills;
+const ownerDocs = buildOwnerDocs({task, selectionPaths, matchedSkills, docVersions});
+const matchedRules = selectRules(rulesFile.rules ?? {}, selectionPaths, mode);
+const matchedRegressions = selection.matchedRegressions.map(projectRegression);
+const sourceState = readSourceState();
+const checkPlan = resolveStructuredCheckPlan({
+  manifest: toolsManifest,
+  requestedChecks: selection.requests,
+});
+const commands = buildCommandPlan({
+  matchedSkills,
+  matchedRegressions,
+  mode,
+  checkPlan,
+});
 const acceptance = buildAcceptance({task, scopePaths, matchedSkills, mode});
+const startabilityBlockers = taskStartabilityBlockers({
+  taskId: task,
+  scopePaths,
+  inspectPath: (relativePath) => {
+    if (repositorySnapshot.exists(relativePath)) return "blob";
+    if (repositorySnapshot.listPaths({prefix: `${relativePath}/`}).length > 0) return "tree";
+    return null;
+  },
+});
+const taskStart = buildTaskStartContract({
+  taskId: task,
+  mode,
+  sourceSha: sourceState.sha,
+  scopePaths,
+  checkPlan,
+  sourceClean: sourceState.clean,
+  blockers: [
+    ...(mode === TASK_START_MODE ? [] : ["task_start_requires_parallel_delegation_mode"]),
+    ...startabilityBlockers,
+    ...checkPlan.blockers,
+  ],
+  deferredRegressionIds: selection.deferredRegressionIds,
+});
 
 const pack = {
+  schema: CONTEXT_PACK_SCHEMA_V2,
   generatedAt,
+  sourceSha: sourceState.sha,
+  sourceClean: sourceState.clean,
   task,
   mode,
   scope: {
@@ -47,6 +104,8 @@ const pack = {
   activeRules: matchedRules,
   regressionGuards: matchedRegressions,
   commandPlan: commands,
+  checkPlan,
+  taskStart,
   acceptance,
 };
 
@@ -56,11 +115,24 @@ if (args.output) {
   const outputPath = path.isAbsolute(args.output) ? args.output : fromRepo(args.output);
   fs.mkdirSync(path.dirname(outputPath), {recursive: true});
   fs.writeFileSync(outputPath, rendered);
+  const relativeOutput = path.relative(fromRepo(), outputPath);
+  const receipt = {
+    output: relativeOutput === "" || relativeOutput.startsWith("..")
+      ? outputPath
+      : relativeOutput,
+    schema: pack.schema,
+    task: pack.task,
+    complete: pack.taskStart.complete,
+    digest: pack.taskStart.digest,
+  };
+  process.stdout.write(args.json
+    ? `${JSON.stringify(receipt)}\n`
+    : `Context pack written: ${receipt.output} (${receipt.task}, complete=${receipt.complete}, digest=${receipt.digest})\n`);
+} else {
+  process.stdout.write(rendered);
 }
 
-process.stdout.write(rendered);
-
-function buildOwnerDocs({task, scopePaths, matchedSkills, docVersions}) {
+function buildOwnerDocs({task, selectionPaths, matchedSkills, docVersions}) {
   const docs = new Map();
 
   addDoc(docs, "AGENTS.md", "Agent routing entrypoint.", null);
@@ -75,18 +147,18 @@ function buildOwnerDocs({task, scopePaths, matchedSkills, docVersions}) {
     }
   }
 
-  if (matchesAny(scopePaths, ["lib/**", "test/**"])) {
+  if (matchesTaskScopePatterns(selectionPaths, ["lib/**", "test/**"])) {
     addDoc(docs, "docs/app_architecture.md", "Canonical app architecture for lib/test changes.", docVersions.app_architecture);
     addDoc(docs, "lib/README.md", "Feature map for lib/.", docVersions.lib_code_map);
   }
-  if (matchesAny(scopePaths, ["docs/**", "PROJECT_CONTEXT.md", "README.md", "AGENTS.md"])) {
+  if (matchesTaskScopePatterns(selectionPaths, ["docs/**", "PROJECT_CONTEXT.md", "README.md", "AGENTS.md"])) {
     addDoc(docs, "docs/README.md", "Docs source-of-truth index and hygiene policy.", docVersions.docs_index);
     addDoc(docs, "docs/audit_registry/doc_versions.json", "Versioned read policies.", docVersions.audit_doc_versions);
   }
-  if (matchesAny(scopePaths, ["tool/**"])) {
+  if (matchesTaskScopePatterns(selectionPaths, ["tool/**"])) {
     addDoc(docs, "tool/README.md", "Tool ownership, registration, and validation policy.", null);
   }
-  if (matchesAny(scopePaths, ["website/**", "packages/web-config/**", "tool/marketing/**", "design/website/**", "docs/marketing_website_architecture.md", "docs/web_surface_architecture.md", "docs/marketing_landing_page_research.md", "docs/marketing_app_media_pipeline.md"])) {
+  if (matchesTaskScopePatterns(selectionPaths, ["website/**", "packages/web-config/**", "tool/marketing/**", "design/website/**", "docs/marketing_website_architecture.md", "docs/web_surface_architecture.md", "docs/marketing_landing_page_research.md", "docs/marketing_app_media_pipeline.md"])) {
     addDoc(docs, "docs/marketing_website_architecture.md", "Marketing website feature structure and refactor ownership.", docVersions.marketing_website_architecture);
     addDoc(docs, "docs/web_surface_architecture.md", "Marketing website route, deployment, and public surface ownership.", docVersions.web_surface_architecture);
     addDoc(docs, "docs/marketing_landing_page_research.md", "Marketing page positioning, content, and redesign guardrails.", docVersions.marketing_landing_page_research);
@@ -95,16 +167,16 @@ function buildOwnerDocs({task, scopePaths, matchedSkills, docVersions}) {
     addDoc(docs, "packages/web-config/README.md", "Shared React web config and token plumbing.", docVersionForPath("packages/web-config/README.md", docVersions));
     addDoc(docs, "design/website/routes.json", "Machine-readable marketing website route contract.", docVersionForPath("design/website/routes.json", docVersions));
   }
-  if (matchesAny(scopePaths, ["contracts/**", "functions/src/**", "firestore.rules", "storage.rules", "lib/**/data/**", "lib/**/domain/**"])) {
+  if (matchesTaskScopePatterns(selectionPaths, ["contracts/**", "functions/src/**", "firestore.rules", "storage.rules", "lib/**/data/**", "lib/**/domain/**"])) {
     addDoc(docs, "docs/data_contracts.md", "Data/schema/rules contract source of truth.", docVersions.data_contracts);
     addDoc(docs, "docs/backend_operation_catalog.md", "Backend write and projection ownership catalog.", docVersions.backend_operation_catalog);
   }
-  if (matchesAny(scopePaths, ["lib/**/presentation/**", "lib/core/widgets/**", "widgetbook/**", "docs/design_parity/**", "design/components/**", "design/screens/**", "design/tokens/**", "design_context_pack/**"])) {
+  if (matchesTaskScopePatterns(selectionPaths, ["lib/**/presentation/**", "lib/core/widgets/**", "widgetbook/**", "docs/design_parity/**", "design/components/**", "design/screens/**", "design/tokens/**", "design_context_pack/**"])) {
     addDoc(docs, "docs/design_parity/README.md", "Design parity workflow and state matrix owner.", docVersions.design_parity_tracker);
     addDoc(docs, "docs/widget_catalog.md", "Widget ownership and catalog update rules.", docVersions.widget_catalog);
     addDoc(docs, "docs/design_language.md", "Visual identity and design language source of truth.", docVersions.design_language);
   }
-  if (matchesAny(scopePaths, [".github/workflows/**", "firebase.json", ".firebaserc", "ios/**", "android/**"])) {
+  if (matchesTaskScopePatterns(selectionPaths, [".github/workflows/**", "firebase.json", ".firebaserc", "ios/**", "android/**"])) {
     addDoc(docs, "docs/release_operations.md", "Release, CI, deploy, and environment gates.", docVersions.release_operations);
     addDoc(docs, "docs/web_surface_architecture.md", "Web/deploy surface ownership.", docVersions.web_surface_architecture);
   }
@@ -141,25 +213,13 @@ function docVersionForPath(docPath, docVersions) {
   return Object.values(docVersions).find((entry) => entry.path === docPath) ?? null;
 }
 
-function selectSkills(skills, task, scopePaths) {
-  const scoped = skills.filter((skill) => matchesAny(scopePaths, skill.applies_to ?? []));
-  if (scoped.length > 0) return scoped;
-
-  const taskText = task.toLowerCase();
-  const selected = skills.filter((skill) => {
-    const id = String(skill.skill_id ?? "").toLowerCase();
-    return taskText.split(/[^a-z0-9]+/).some((part) => part.length > 2 && id.includes(part));
-  });
-  return selected.length > 0 ? selected : skills.filter((skill) => skill.skill_id === "catch-doc-hygiene");
-}
-
-function selectRules(rules, scopePaths, mode) {
+function selectRules(rules, selectionPaths, mode) {
   return Object.entries(rules)
     .filter(([, rule]) => ["active", "watch"].includes(rule.status))
     .filter(([id, rule]) => {
       if (mode === "parallel-delegation" && id === "AGENT-DELEGATION-001") return true;
-      if (scopePaths.length === 0) return ["AUDIT-REGISTRY-001", "DOC-HYGIENE-001"].includes(id);
-      return matchesAny(scopePaths, rule.applies_to ?? []);
+      if (selectionPaths.length === 0) return ["AUDIT-REGISTRY-001", "DOC-HYGIENE-001"].includes(id);
+      return matchesTaskScopePatterns(selectionPaths, rule.applies_to ?? []);
     })
     .map(([id, rule]) => ({
       id,
@@ -170,55 +230,92 @@ function selectRules(rules, scopePaths, mode) {
     }));
 }
 
-function selectRegressions(entries, scopePaths) {
-  return entries
-    .filter((entry) => ["active", "watch"].includes(entry.status))
-    .filter((entry) => scopePaths.length === 0 || matchesAny(scopePaths, entry.applies_to ?? []))
-    .map((entry) => ({
-      id: entry.id,
-      title: entry.title,
-      status: entry.status,
-      applies_to: entry.applies_to ?? [],
-      symptom: entry.symptom,
-      guard: entry.guard,
-      owner_docs: entry.owner_docs ?? [],
-    }));
+function projectRegression(entry) {
+  return {
+    id: entry.id,
+    title: entry.title,
+    status: entry.status,
+    applies_to: entry.applies_to ?? [],
+    symptom: entry.symptom,
+    guard: entry.guard,
+    owner_docs: entry.owner_docs ?? [],
+  };
 }
 
-function buildCommandPlan({matchedSkills, matchedRegressions, mode}) {
+function buildCommandPlan({matchedSkills, matchedRegressions, mode, checkPlan}) {
   const commands = [];
-  addCommand(commands, "node tool/agent/check_agent_readiness.mjs", "Validate agent harness before handoff.");
-  if (mode === "parallel-delegation") {
-    for (const command of Object.values(taskCommandTemplates)) {
-      addCommand(commands, command, "Required by the canonical Harness task lifecycle.");
-    }
+  if (mode === TASK_START_MODE) {
+    addCommand(commands, taskCommandTemplates.start, "Create the bounded task worktree from this pack.", {
+      owner: "parent",
+      phase: "lifecycle-start",
+    });
+    addCommand(commands, taskCommandTemplates.doctor, "Verify task integrity before worker execution.", {
+      owner: "worker",
+      phase: "preflight",
+    });
+    addCommand(commands, taskCommandTemplates.finish, "Verify, close, and unlock the pushed task branch.", {
+      owner: "parent",
+      phase: "lifecycle-finish",
+    });
+    addCommand(commands, taskCommandTemplates.reap, "Report stale terminal worktrees without mutating them.", {
+      owner: "parent",
+      phase: "maintenance",
+    });
     addCommand(
       commands,
       "node tool/agent/record_delegation_outcome.mjs --help",
       "Record the parent-reviewed delegation outcome.",
+      {owner: "parent", phase: "receipt-guidance"},
     );
+    addCheckCommand(commands, checkPlan.task, "worker", "task-check", "Run the bounded task checks.");
+    addCheckCommand(
+      commands,
+      checkPlan.integration,
+      "parent",
+      "integration-check",
+      "Run checks that require the full repository view.",
+    );
+  } else {
+    addCommand(commands, "node tool/agent/check_agent_readiness.mjs", "Validate agent harness before handoff.", {
+      owner: "current-agent",
+      phase: "current-task",
+    });
   }
   for (const skill of matchedSkills) {
     for (const command of skill.required_commands ?? []) {
-      addCommand(commands, command, `Required by ${skill.skill_id}.`);
+      addCommand(commands, command, `Guidance from ${skill.skill_id}; the parent owns integration.`, {
+        owner: mode === TASK_START_MODE ? "parent" : "current-agent",
+        phase: mode === TASK_START_MODE ? "integration-guidance" : "current-task",
+      });
     }
   }
   for (const regression of matchedRegressions) {
-    if (regression.guard?.type === "command") {
-      addCommand(commands, regression.guard.command, `Regression guard ${regression.id}.`);
+    if (regression.guard?.type === "command" &&
+        (!Array.isArray(regression.guard.check_ids) || regression.guard.check_ids.length === 0)) {
+      addCommand(commands, regression.guard.command, `Unstructured regression guard ${regression.id}.`, {
+        owner: mode === TASK_START_MODE ? "parent" : "current-agent",
+        phase: mode === TASK_START_MODE ? "deferred-regression" : "current-task",
+      });
     }
   }
   return commands;
 }
 
-function addCommand(commands, command, reason) {
+function addCheckCommand(commands, checks, owner, phase, reason) {
+  const ids = checks.map((entry) => entry.id);
+  if (ids.length === 0) return;
+  addCommand(commands, `node tool/run.mjs check ${ids.join(" ")}`, reason, {owner, phase});
+}
+
+function addCommand(commands, command, reason, {owner, phase}) {
   if (!command) return;
-  const existing = commands.find((entry) => entry.command === command);
+  const existing = commands.find((entry) =>
+    entry.command === command && entry.owner === owner && entry.phase === phase);
   if (existing) {
     existing.reason = `${existing.reason} ${reason}`.trim();
     return;
   }
-  commands.push({command, reason});
+  commands.push({command, owner, phase, reason});
 }
 
 function buildAcceptance({task, scopePaths, matchedSkills, mode}) {
@@ -235,7 +332,7 @@ function buildAcceptance({task, scopePaths, matchedSkills, mode}) {
     items.push("Widgetbook, contracts, captures, or design ledgers are refreshed when UI/API coverage changed.");
   }
   if (mode === "parallel-delegation") {
-    items.push("Parent retains canonical docs, registries, audit receipts, and final verification.");
+    items.push("Worker runs only worker-owned commands; parent retains integration checks, canonical docs, registries, audit receipts, and final verification.");
   }
   if (scopePaths.length === 0 || task === "unspecified") {
     items.unshift("Task name and paths are narrowed before implementation.");
@@ -272,17 +369,56 @@ function renderMarkdown(pack) {
     lines.push(`- ${regression.id}: ${regression.title} (${regression.guard?.type ?? "unknown"})`);
   }
   lines.push("");
-  lines.push("## Command Plan");
-  for (const command of pack.commandPlan) {
-    lines.push(`- \`${command.command}\`: ${command.reason}`);
-  }
+  lines.push("## Task Start Contract");
+  lines.push(`- Schema: ${pack.taskStart.schema}`);
+  lines.push(`- Source SHA: ${pack.sourceSha}`);
+  lines.push(`- Complete: ${pack.taskStart.complete}`);
+  lines.push(`- Task checks: ${pack.taskStart.checkIds.join(", ") || "(none)"}`);
+  lines.push(`- Deferred integration checks: ${pack.taskStart.deferredCheckIds.join(", ") || "(none)"}`);
+  lines.push(`- Deferred unstructured regressions: ${pack.taskStart.deferredRegressionIds.join(", ") || "(none)"}`);
+  lines.push(`- Support paths: ${pack.taskStart.supportPaths.join(", ") || "(none)"}`);
+  lines.push(`- Required entrypoints: ${pack.taskStart.requiredEntrypoints.join(", ") || "(none)"}`);
+  for (const blocker of pack.taskStart.blockers) lines.push(`- Blocker: ${blocker}`);
   lines.push("");
+  for (const group of [
+    {title: "Worker Task Commands", owners: ["worker"]},
+    {title: "Parent Integration Commands", owners: ["parent"]},
+    {title: "Current-Agent Commands", owners: ["current-agent"]},
+  ]) {
+    const commands = pack.commandPlan.filter((entry) => group.owners.includes(entry.owner));
+    if (commands.length === 0) continue;
+    lines.push(`## ${group.title}`);
+    for (const command of commands) {
+      lines.push(`- [${command.phase}] \`${command.command}\`: ${command.reason}`);
+    }
+    lines.push("");
+  }
   lines.push("## Acceptance");
   for (const item of pack.acceptance) {
     lines.push(`- ${item}`);
   }
   lines.push("");
   return `${lines.join("\n")}\n`;
+}
+
+function readSourceState() {
+  const sha = runGit(["rev-parse", "HEAD"]).trim();
+  const status = runGit(["status", "--porcelain", "--untracked-files=normal"]);
+  return {sha, clean: status.trim() === ""};
+}
+
+function runGit(args) {
+  const result = spawnSync("git", args, {
+    cwd: fromRepo(),
+    encoding: "utf8",
+    shell: false,
+    env: {...process.env, GIT_OPTIONAL_LOCKS: "0", GIT_NO_LAZY_FETCH: "1"},
+  });
+  if (result.error) throw result.error;
+  if (result.status !== 0) {
+    throw new Error(result.stderr || `git ${args.join(" ")} failed.`);
+  }
+  return result.stdout;
 }
 
 function parseArgs(argv) {
@@ -322,12 +458,17 @@ function requireValue(argv, index, flag) {
 }
 
 function normalizePaths(values) {
-  return values
-    .flatMap((value) => String(value).split(","))
-    .map((value) => value.trim())
-    .filter(Boolean)
-    .map((value) => value.replace(/^\.?\//, ""))
-    .filter((value, index, all) => all.indexOf(value) === index);
+  return normalizeTaskScopePaths(values);
+}
+
+function expandSelectionPaths(scopePaths) {
+  const selected = new Set(scopePaths);
+  for (const scopePath of scopePaths) {
+    for (const descendant of repositorySnapshot.listPaths({prefix: `${scopePath}/`})) {
+      selected.add(descendant);
+    }
+  }
+  return [...selected].sort();
 }
 
 function readJson(relativePath, fallback) {
@@ -338,35 +479,6 @@ function fileExists(relativePath) {
   return repositorySnapshot.exists(relativePath);
 }
 
-function matchesAny(candidates, patterns) {
-  if (!patterns || patterns.length === 0) return false;
-  return candidates.some((candidate) => patterns.some((pattern) => matchesPattern(candidate, pattern)));
-}
-
-function matchesPattern(candidate, pattern) {
-  if (!candidate || !pattern) return false;
-  const normalizedCandidate = candidate.replace(/^\.?\//, "");
-  const normalizedPattern = pattern.replace(/^\.?\//, "");
-  if (normalizedPattern === normalizedCandidate) return true;
-  if (normalizedPattern.endsWith("/**")) {
-    const prefix = normalizedPattern.slice(0, -3);
-    return normalizedCandidate === prefix || normalizedCandidate.startsWith(`${prefix}/`);
-  }
-  if (!normalizedPattern.includes("*")) {
-    return normalizedCandidate.startsWith(`${normalizedPattern}/`);
-  }
-  const globPattern = escapeRegex(normalizedPattern)
-    .replaceAll("**", "__DOUBLE_STAR__")
-    .replaceAll("*", "[^/]*")
-    .replaceAll("__DOUBLE_STAR__", ".*");
-  const regex = new RegExp(`^${globPattern}$`);
-  return regex.test(normalizedCandidate);
-}
-
-function escapeRegex(value) {
-  return value.replace(/[.+?^${}()|[\]\\]/g, "\\$&");
-}
-
 function printHelp() {
   console.log(`Usage: node tool/agent/context_pack.mjs --task <name> --paths <path[,path...]> [--mode parallel-delegation]
 
@@ -374,7 +486,7 @@ Options:
   --task name          Task label used to select matching skills.
   --mode mode          Add the canonical parallel-delegation lifecycle.
   --paths paths        Comma-separated or repeated path scope.
-  --output path        Write the rendered pack to a file.
+  --output path        Write the pack to a file and print only a compact receipt.
   --json               Print JSON instead of Markdown.
 `);
 }

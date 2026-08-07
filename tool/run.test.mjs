@@ -13,9 +13,11 @@ import {
 const repositoryRoot = process.cwd();
 const sparseExecutableClosure = [
   "/tool/agent/context_pack.mjs",
+  "/tool/agent/lib/task_input.mjs",
   "/tool/docs/check_doc_version_monotonic.mjs",
   "/tool/harness/lib/component_graph.mjs",
   "/tool/harness/lib/worktree_lifecycle.mjs",
+  "/tool/harness/lib/task_contract.mjs",
   "/tool/lib/repo_paths.mjs",
   "/tool/lib/repository_snapshot.mjs",
   "/tool/lib/tool_impact.mjs",
@@ -75,7 +77,13 @@ test("category checks select active tools only", () => {
 test("direct checks cannot select inactive tool ids", () => {
   const result = run(["check", "audit:widget-function-migrator"]);
   assert.equal(result.status, 64);
-  assert.match(result.stderr, /No active tools matched tool ids/u);
+  assert.match(result.stderr, /Unknown or inactive tool ids/u);
+});
+
+test("direct checks reject a mixed valid and unknown tool-id selection", () => {
+  const result = run(["check", "docs:version-monotonic", "definitely-missing"]);
+  assert.equal(result.status, 64);
+  assert.match(result.stderr, /Unknown or inactive tool ids: definitely-missing/u);
 });
 
 test("platform-specific tools run only on declared operating systems", () => {
@@ -201,6 +209,27 @@ test("affected-tool routing selects the checker and mandatory guards", () => {
   assert.deepEqual(payload.unmappedPaths, []);
 });
 
+test("shared task-input ownership stays exact and needs only Node setup", () => {
+  const result = run([
+    "affected-tools",
+    "--paths",
+    "tool/agent/lib/task_input.mjs",
+    "--json",
+  ]);
+  assert.equal(result.status, 0, result.stderr);
+  const payload = JSON.parse(result.stdout);
+  assert.equal(payload.mode, "affected");
+  assert.equal(payload.full, false);
+  assert.deepEqual(payload.ownersByPath["tool/agent/lib/task_input.mjs"], [
+    "agent:context-pack",
+    "agent:harness-v2",
+  ]);
+  assert.equal(payload.toolIds.length, 7);
+  assert.deepEqual(payload.setupRequirements, ["node"]);
+  assert.deepEqual(payload.unmappedPaths, []);
+  assert.deepEqual(payload.fullReasons, []);
+});
+
 test("affected-tool routing ignores companion files owned by other lanes", () => {
   const result = run([
     "affected-tools",
@@ -319,6 +348,39 @@ test("tool manifest validation rejects malformed checkSafety", (context) => {
   assert.match(result.stderr, /agent:harness-v2: checkSafety must be one of local-readonly/u);
 });
 
+test("tool manifest validation binds taskPaths to existing index-view inputs", (context) => {
+  const temporaryRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-task-paths-"));
+  context.after(() => fs.rmSync(temporaryRoot, {recursive: true, force: true}));
+  createSnapshotFixtureClone(temporaryRoot, {
+    checkoutPaths: materializedSnapshotInputClosure,
+  });
+  const manifestPath = path.join(temporaryRoot, "tool/tools_manifest.json");
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+  const tool = manifest.tools.find((entry) => entry.id === "agent:harness-v2");
+  tool.taskPaths = ["docs/not-real.json"];
+  fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+  runGit(temporaryRoot, ["add", "tool/tools_manifest.json"]);
+
+  const missing = runNode(temporaryRoot, ["tool/run.mjs", "check", "--manifest-only"]);
+  assert.equal(missing.status, 1);
+  assert.match(missing.stderr, /taskPaths path does not exist: docs\/not-real\.json/u);
+
+  tool.taskPaths = ["docs/audit_registry/test_inventory.json"];
+  delete tool.ciRequirements;
+  fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+  runGit(temporaryRoot, ["add", "tool/tools_manifest.json"]);
+  const fullView = runNode(temporaryRoot, ["tool/run.mjs", "check", "--manifest-only"]);
+  assert.equal(fullView.status, 1);
+  assert.match(fullView.stderr, /taskPaths requires ciRequirements\.repositoryView index/u);
+
+  tool.taskPaths = {};
+  fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+  runGit(temporaryRoot, ["add", "tool/tools_manifest.json"]);
+  const malformed = runNode(temporaryRoot, ["tool/run.mjs", "check", "--manifest-only"]);
+  assert.equal(malformed.status, 1);
+  assert.match(malformed.stderr, /taskPaths must be an array of non-empty strings/u);
+});
+
 test("index-view tools stay inside the fixed Node-only checkout contract", () => {
   const manifest = JSON.parse(fs.readFileSync("tool/tools_manifest.json", "utf8"));
   const incompatible = manifest.tools
@@ -428,6 +490,14 @@ test("runner and context pack agree when canonical inputs are materialized or sp
   );
   assert.ok(normalizeContextPack(omittedContext.stdout).activeRules.length > 0);
   assert.ok(normalizeContextPack(omittedContext.stdout).regressionGuards.length > 0);
+  assert.equal(normalizeContextPack(omittedContext.stdout).schema, "catch.agent-context-pack/v2");
+  assert.deepEqual(
+    normalizeContextPack(omittedContext.stdout).taskStart.blockers,
+    ["source_worktree_not_clean", "task_start_requires_parallel_delegation_mode"],
+  );
+  assert.ok(
+    normalizeContextPack(omittedContext.stdout).taskStart.deferredRegressionIds.length > 0,
+  );
 });
 
 test("parallel delegation context mode is lifecycle-complete without an adapter skill", () => {
@@ -449,7 +519,7 @@ test("parallel delegation context mode is lifecycle-complete without an adapter 
   assert.ok(!pack.skills.some((skill) => skill.skill_id === "catch-parallel-delegation"));
   const commands = pack.commandPlan.map((entry) => entry.command);
   for (const command of [
-    "node tool/harness.mjs task start --task-id <task-id> --base-sha <40-character-sha> --stack-parent <ref> --paths <path[,path...]> [--budget-mib 256]",
+    "node tool/harness.mjs task start --task-id <task-id> --base-sha <40-character-sha> --stack-parent <ref> --paths <path[,path...]> --context-pack <pack.json> [--budget-mib 256]",
     "node tool/harness.mjs task doctor --worktree <task-worktree>",
     "node tool/harness.mjs task finish --worktree <task-worktree>",
     "node tool/harness.mjs task reap --dry-run [--merged-into origin/main] [--stale-days 7]",
@@ -457,7 +527,107 @@ test("parallel delegation context mode is lifecycle-complete without an adapter 
   ]) {
     assert.ok(commands.includes(command), command);
   }
+  assert.ok(pack.commandPlan.every((entry) => entry.owner && entry.phase));
+  assert.equal(
+    pack.commandPlan.find((entry) => entry.command.includes("task doctor"))?.owner,
+    "worker",
+  );
+  assert.equal(
+    pack.commandPlan.find((entry) => entry.command.includes("task finish"))?.owner,
+    "parent",
+  );
+  assert.ok(pack.commandPlan
+    .filter((entry) => entry.command.includes("audit_registry.dart") || entry.command.includes("flutter analyze"))
+    .every((entry) => entry.owner === "parent"));
   assert.ok(!commands.some((command) => command.includes("--task parallel-delegation")));
+});
+
+test("tool scopes select the tooling router without a documentation fallback", () => {
+  const result = runNode(process.cwd(), [
+    "tool/agent/context_pack.mjs",
+    "--task",
+    "task-input-tooling",
+    "--paths",
+    "tool/agent/lib/task_input.mjs",
+    "--json",
+  ]);
+  assertSuccessful(result);
+  const pack = JSON.parse(result.stdout);
+  assert.ok(pack.skills.some((skill) => skill.skill_id === "catch-tooling-automation"));
+  assert.ok(!pack.skills.some((skill) => skill.skill_id === "catch-doc-hygiene"));
+});
+
+test("directory scopes select skills from tracked descendants", () => {
+  const result = runNode(process.cwd(), [
+    "tool/agent/context_pack.mjs",
+    "--task",
+    "explore-feature",
+    "--paths",
+    "lib/explore",
+    "--json",
+  ]);
+  assertSuccessful(result);
+  const skillIds = JSON.parse(result.stdout).skills.map((skill) => skill.skill_id);
+  assert.ok(skillIds.includes("catch-ui-implementation"), JSON.stringify(skillIds));
+  assert.ok(skillIds.includes("catch-contract-change"), JSON.stringify(skillIds));
+});
+
+test("context-pack output writes the full artifact but prints a compact receipt", (context) => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-context-output-"));
+  context.after(() => fs.rmSync(directory, {recursive: true, force: true}));
+  const output = path.join(directory, "pack.json");
+  const result = runNode(process.cwd(), [
+    "tool/agent/context_pack.mjs",
+    "--task",
+    "compact-output",
+    "--paths",
+    "tool/agent/lib/task_input.mjs",
+    "--json",
+    "--output",
+    output,
+  ]);
+  assertSuccessful(result);
+  const receipt = JSON.parse(result.stdout);
+  const pack = JSON.parse(fs.readFileSync(output, "utf8"));
+  assert.equal(receipt.output, output);
+  assert.equal(receipt.task, pack.task);
+  assert.equal(receipt.digest, pack.taskStart.digest);
+  assert.ok(result.stdout.length < 500, result.stdout.length);
+  assert.ok(fs.statSync(output).size > result.stdout.length * 10);
+});
+
+test("context packs mark invalid task ids and unmaterializable scopes incomplete", () => {
+  const cases = [
+    {
+      args: ["--mode", "parallel-delegation", "--json"],
+      blockers: ["invalid_task_id", "task_scope_empty"],
+    },
+    {
+      args: [
+        "--task", "Not A Harness Id",
+        "--paths", "docs",
+        "--mode", "parallel-delegation",
+        "--json",
+      ],
+      blockers: ["invalid_task_id"],
+    },
+    {
+      args: [
+        "--task", "missing-scope",
+        "--paths", "definitely/not/a/repository/path",
+        "--mode", "parallel-delegation",
+        "--json",
+      ],
+      blockers: ["task_scope_path_missing:definitely/not/a/repository/path"],
+    },
+  ];
+  for (const fixture of cases) {
+    const result = runNode(process.cwd(), ["tool/agent/context_pack.mjs", ...fixture.args]);
+    assertSuccessful(result);
+    const pack = JSON.parse(result.stdout);
+    assert.equal(pack.taskStart.complete, false);
+    for (const blocker of fixture.blockers) assert.ok(pack.taskStart.blockers.includes(blocker));
+  }
 });
 
 test("tool preflight checkout closure runs the pin guard without product files", (context) => {
@@ -541,7 +711,9 @@ function createSnapshotFixtureClone(destination, {checkoutPaths}) {
   for (const relativePath of [
     "tool/run.mjs",
     "tool/agent/context_pack.mjs",
+    "tool/agent/lib/task_input.mjs",
     "tool/docs/check_doc_version_monotonic.mjs",
+    "tool/harness/lib/task_contract.mjs",
     "tool/harness/lib/worktree_lifecycle.mjs",
     "tool/lib/tool_impact.mjs",
   ]) {

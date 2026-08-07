@@ -6,6 +6,7 @@ import {scanDependencyDirection} from "../architecture/check_dependency_directio
 import {fromRepo} from "../lib/repo_paths.mjs";
 import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
 import {buildInventory, renderInventory} from "../test_inventory.mjs";
+import {collectLocalReadonlyCheckIds} from "../lib/tool_impact.mjs";
 
 const isCliEntrypoint =
   process.argv[1] != null &&
@@ -180,6 +181,7 @@ export function evaluateAgentReadiness({snapshot}) {
   }
 
   const toolIds = new Set((toolsManifest?.tools ?? []).map((tool) => tool.id));
+  const eligibleCheckIds = collectLocalReadonlyCheckIds(toolsManifest);
   for (const id of [
     "agent:context-pack",
     "agent:readiness",
@@ -205,8 +207,8 @@ export function evaluateAgentReadiness({snapshot}) {
   );
 
   const checker = {check, checkPath};
-  validateRegressionLedger(regressionLedger, checker);
-  validateSkills(skillsManifest, toolIds, checker);
+  validateRegressionLedger(regressionLedger, eligibleCheckIds, checker);
+  validateSkills(skillsManifest, eligibleCheckIds, checker);
   validateMetrics(metricsSource, metricsPath, checker);
 
   const passed = checks.filter((entry) => entry.ok).length;
@@ -232,7 +234,7 @@ export function evaluateAgentReadiness({snapshot}) {
   return result;
 }
 
-function validateRegressionLedger(ledger, {check, checkPath}) {
+function validateRegressionLedger(ledger, eligibleCheckIds, {check, checkPath}) {
   check(Boolean(ledger && Array.isArray(ledger.entries)), "Regression ledger has an entries array.");
   const seenIds = new Set();
   for (const entry of ledger?.entries ?? []) {
@@ -248,6 +250,18 @@ function validateRegressionLedger(ledger, {check, checkPath}) {
     if (["active", "watch"].includes(entry.status)) {
       check(Boolean(entry.guard?.command), `${entry.id} active/watch entry declares guard command.`);
     }
+    if (Object.hasOwn(entry.guard ?? {}, "check_ids")) {
+      const checkIds = entry.guard.check_ids;
+      const safeCheckIds = Array.isArray(checkIds) ? checkIds : [];
+      check(safeCheckIds.length > 0, `${entry.id} check_ids is non-empty.`);
+      check(
+        Array.isArray(checkIds) && new Set(safeCheckIds).size === safeCheckIds.length,
+        `${entry.id} check_ids is unique.`,
+      );
+      for (const toolId of safeCheckIds) {
+        check(eligibleCheckIds.has(toolId), `${entry.id} check id is eligible: ${toolId}.`);
+      }
+    }
     for (const ownerDoc of entry.owner_docs ?? []) {
       checkPath(ownerDoc, `${entry.id} owner doc exists: ${ownerDoc}.`);
     }
@@ -257,7 +271,7 @@ function validateRegressionLedger(ledger, {check, checkPath}) {
   }
 }
 
-function validateSkills(manifest, toolIds, {check, checkPath}) {
+function validateSkills(manifest, eligibleCheckIds, {check, checkPath}) {
   check(Boolean(manifest && Array.isArray(manifest.skills)), "Skill manifest has a skills array.");
   const seenIds = new Set();
   for (const skill of manifest?.skills ?? []) {
@@ -275,7 +289,7 @@ function validateSkills(manifest, toolIds, {check, checkPath}) {
       checkPath(sourceDoc, `${skill.skill_id} source doc exists: ${sourceDoc}.`);
     }
     for (const toolId of skill.required_tools ?? []) {
-      check(toolIds.has(toolId), `${skill.skill_id} required tool exists: ${toolId}.`);
+      check(eligibleCheckIds.has(toolId), `${skill.skill_id} required tool is eligible: ${toolId}.`);
     }
     for (const command of skill.required_commands ?? []) {
       for (const commandPath of extractCommandPaths(command)) {

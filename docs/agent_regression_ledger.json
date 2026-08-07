@@ -1,5 +1,5 @@
 {
-  "version": 150,
+  "version": 151,
   "updated": "2026-08-07",
   "owner": "agent_operating_model",
   "entries": [
@@ -405,6 +405,7 @@
       "guard": {
         "type": "command",
         "command": "node tool/run.mjs check operations:boundaries",
+        "check_ids": ["operations:boundaries"],
         "guardEvidence": "boundary checker rejects legacy growth, operations imports in any new tool root, per-file orchestration markers, and split-file markers aggregated by tool subtree"
       },
       "owner_docs": [
@@ -693,7 +694,8 @@
       "symptom": "A broad cleanup edits ad hoc files, omits registry refresh or pass proof, and leaves future agents without a durable receipt.",
       "guard": {
         "type": "command",
-        "command": "dart tool/audit_registry.dart refresh"
+        "command": "dart tool/audit_registry.dart refresh",
+        "check_ids": ["audit:registry"]
       },
       "owner_docs": [
         "AGENTS.md",
@@ -741,7 +743,8 @@
       "symptom": "CI or local checks fail after a logic-safe refactor because generated inventories, context packs, Widgetbook directories, or tool manifest entries were not refreshed.",
       "guard": {
         "type": "command",
-        "command": "node tool/run.mjs check --manifest-only"
+        "command": "node tool/run.mjs check --manifest-only",
+        "check_ids": ["tool:runner"]
       },
       "owner_docs": [
         "tool/README.md",
@@ -832,7 +835,8 @@
       "symptom": "Parallel agents make independent edits to canonical docs, generated registries, audit receipts, or the same source files, causing merge conflicts and multiple local truths.",
       "guard": {
         "type": "command",
-        "command": "node --test tool/harness/worktree_lifecycle.test.mjs tool/harness/harness_cli.test.mjs && node tool/agent/check_agent_readiness.mjs"
+        "command": "node --test tool/harness/worktree_lifecycle.test.mjs tool/harness/harness_cli.test.mjs && node tool/agent/check_agent_readiness.mjs",
+        "check_ids": ["agent:harness-v2", "agent:readiness"]
       },
       "owner_docs": [
         "AGENTS.md",
@@ -856,7 +860,8 @@
       "symptom": "A scanner, lint wrapper, manifest check, or CI step stays green while no active rule points to it, the rule has no doc anchor, the tool is only syntax/count checked, or the known-bad probe no longer proves the diagnostic fires.",
       "guard": {
         "type": "command",
-        "command": "node tool/check_enforcement_integrity.mjs"
+        "command": "node tool/check_enforcement_integrity.mjs",
+        "check_ids": ["meta:enforcement-integrity"]
       },
       "owner_docs": [
         "docs/agent_operating_model.md",
@@ -2089,6 +2094,7 @@
       "guard": {
         "type": "command",
         "command": "node tool/check_repository_root_hygiene.mjs && node --test tool/check_repository_root_hygiene.test.mjs",
+        "check_ids": ["meta:repository-root-hygiene"],
         "guardEvidence": "seeded tests prove unknown and ambiguous classifications plus non-portable links are detected"
       },
       "owner_docs": [
@@ -2538,6 +2544,7 @@
       "guard": {
         "type": "command",
         "command": "node --test tool/agent/check_agent_readiness.test.mjs && node tool/agent/check_agent_readiness.mjs",
+        "check_ids": ["agent:readiness"],
         "guardEvidence": "focused extraction tests prove declared Functions build outputs resolve to tracked TypeScript sources while an undeclared generated path still fails closed"
       },
       "owner_docs": [
@@ -3437,6 +3444,7 @@
       "guard": {
         "type": "command",
         "command": "node --test tool/docs/build_doc_state.test.mjs && node tool/docs/build_doc_state.mjs --ref HEAD --output build/doc-state/doc-state.json",
+        "check_ids": ["docs:build-state"],
         "guardEvidence": "semantic versions remain authored contract metadata while per-document content revisions, last integrated commits, integration timestamps, and source SHA are immutable CI artifacts derived from Git without repository writes"
       },
       "owner_docs": [
@@ -4187,6 +4195,7 @@
       "guard": {
         "type": "command",
         "command": "node --test tool/harness/workflow_wiring.test.mjs && node tool/run.mjs check --manifest-only",
+        "check_ids": ["agent:harness-v2", "tool:runner"],
         "guardEvidence": "the required Harness full-index snapshot proves all fourteen retired paths are absent and current audit authorities contain no retired names, provider-snapshot route, or React-graph snapshot route; manifest validation proves obsolete generators and migrators are no longer registered"
       },
       "owner_docs": [
@@ -4257,13 +4266,42 @@
       "guard": {
         "type": "command",
         "command": "node --test tool/harness/worktree_lifecycle.test.mjs",
-        "guardEvidence": "new tasks write explicit v2 logical and allocated measurements; current growth is allocated-to-allocated; v1 receipts remain readable with a null delta; malformed v2 storage fails closed in doctor, finish, and reap; doctor and finish share task-integrity blockers; fixture sessions remove only owned empty parents under concurrent processes; and finish distinguishes remote-query failure from head mismatch"
+        "check_ids": ["agent:harness-v2"],
+        "guardEvidence": "new tasks write v3 receipts with explicit logical and allocated measurements; current growth is allocated-to-allocated; v1/v2 receipts remain readable with a null legacy delta where appropriate; malformed v2/v3 storage fails closed in doctor, finish, and reap; doctor and finish share task-integrity blockers; fixture sessions remove only owned empty parents under concurrent processes; and finish distinguishes remote-query failure from head mismatch"
       },
       "owner_docs": [
         "docs/agent_operating_model.md",
         "docs/plans/harness_v2_decision_and_cicd_delivery_plan.md"
       ],
-      "notes": "The --budget-mib limit and disk reserve are allocated-byte contracts. V2 records both initial logical and allocated materialization without legacy aliases. V1 metadata is dual-read only and never supplies an invented allocated baseline. Shared fixture parents are pruned with non-recursive empty-directory removal; arbitrary .claude payload is never allowlisted."
+      "notes": "The --budget-mib limit and disk reserve are allocated-byte contracts. V2/v3 record both initial logical and allocated materialization without legacy aliases; the writer now emits v3 only. V1/v2 metadata is dual-read only and v1 never supplies an invented allocated baseline. Shared fixture parents are pruned with non-recursive empty-directory removal; arbitrary .claude payload is never allowlisted."
+    },
+    {
+      "id": "REG-HARNESS-TASK-COMMAND-CLOSURE-001",
+      "title": "Sparse task starts without the commands its context pack promises",
+      "status": "active",
+      "applies_to": [
+        "tool/agent/context_pack.mjs",
+        "tool/agent/lib/task_input.mjs",
+        "tool/agent/task_input.test.mjs",
+        "tool/harness/lib/task_contract.mjs",
+        "tool/harness/lib/worktree_lifecycle.mjs",
+        "tool/harness/worktree_lifecycle.test.mjs",
+        "docs/agent_regression_ledger.json",
+        "docs/agent_operating_model.md",
+        "docs/plans/harness_v2_decision_and_cicd_delivery_plan.md"
+      ],
+      "symptom": "A context pack lists acceptance commands but task start materializes only a manually typed ownership scope, a missing entrypoint is hidden by a selected parent directory, or a full-repository scanner runs against a sparse projection and passes vacuously.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/agent/task_input.test.mjs tool/harness/worktree_lifecycle.test.mjs tool/run.test.mjs",
+        "check_ids": ["agent:context-pack", "agent:harness-v2", "tool:runner"],
+        "guardEvidence": "every new start requires a base-bound v3 pack; tracked directory descendants select skills and guards identically at generation and base-SHA validation; structured tool ids separate worker task checks from parent integration; command entries carry owner and phase; absolute, missing, under-scoped, malformed, or support-path edits fail closed; doctor and finish reject missing physical entrypoints; mixed unknown tool ids fail closed"
+      },
+      "owner_docs": [
+        "docs/agent_operating_model.md",
+        "docs/plans/harness_v2_decision_and_cicd_delivery_plan.md"
+      ],
+      "notes": "Raw shell command strings remain human instructions only. Closure-aware v3 receipts are base-bound and keep ownership paths separate from support-only materialization. The writer produces v3 only; v1 and v2 receipts remain read-only compatible. Output-file generation prints a compact receipt instead of duplicating the full pack in logs."
     }
   ]
 }
