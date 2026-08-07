@@ -263,14 +263,19 @@
       },
       "impactPaths": [
         "tool/agent/lib/task_input.mjs",
-        "tool/agent/task_input.test.mjs"
+        "tool/agent/task_input.test.mjs",
+        "tool/harness/lib/task_contract.mjs",
+        "tool/harness/lib/worktree_lifecycle.mjs",
+        "tool/harness/worktree_lifecycle.test.mjs",
+        "tool/run.test.mjs"
       ],
-      "description": "Builds a base-bound AI-agent context packet whose owned paths cap writes and whose planned impacts select owner docs, project-local skills, active rules, regression guards, and command plans.",
+      "description": "Builds a base-bound AI-agent context packet whose owned paths cap writes, whose planned impacts select owner docs, checks, and guards, whose output suffix cannot disagree with serialization, and whose parent lifecycle plan comes from one canonical task-command contract.",
       "checks": [
         "node --check tool/agent/context_pack.mjs",
         "node --check tool/agent/lib/task_input.mjs",
         "node --test tool/agent/task_input.test.mjs",
-        "node tool/agent/context_pack.mjs --task agent-readiness --owned-paths AGENTS.md,docs/agent_operating_model.md --json --output build/agent-context/agent-readiness.json"
+        "node --test --test-name-pattern \"parallel delegation context mode|context-pack output|task help derives\" tool/run.test.mjs tool/harness/worktree_lifecycle.test.mjs",
+        "node tool/agent/context_pack.mjs --task agent-readiness --owned-paths AGENTS.md,docs/agent_operating_model.md --output build/agent-context/agent-readiness.json"
       ],
       "role": "finder"
     },

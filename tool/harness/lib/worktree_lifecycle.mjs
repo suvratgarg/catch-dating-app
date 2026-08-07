@@ -1651,9 +1651,6 @@ function formatMiB(bytes) {
 }
 
 export function taskHelp() {
-  const commands = [
-    ...Object.values(taskCommandTemplates),
-    "node tool/harness.mjs task recover-lease --worktree <task-worktree>",
-  ];
+  const commands = Object.values(taskCommandTemplates);
   return `Harness task lifecycle:\n  ${commands.join("\n  ")}\n\nTask worktrees are sparse, remotely preserved, locked, and live under .claude/worktrees/. Reap never deletes.`;
 }

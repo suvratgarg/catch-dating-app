@@ -1212,6 +1212,7 @@ test("parallel delegation context mode is lifecycle-complete without an adapter 
     "node tool/harness.mjs task start --task-id <task-id> --base-sha <40-character-sha> --stack-parent <ref> --owned-paths <path[,path...]> --context-pack <pack.json> [--budget-mib 256]",
     "node tool/harness.mjs task doctor --worktree <task-worktree>",
     "node tool/harness.mjs task finish --worktree <task-worktree>",
+    "node tool/harness.mjs task recover-lease --worktree <task-worktree>",
     "node tool/harness.mjs task reap --dry-run [--merged-into origin/main] [--stale-days 7]",
     "node tool/agent/record_delegation_outcome.mjs --help",
   ]) {
@@ -1225,6 +1226,19 @@ test("parallel delegation context mode is lifecycle-complete without an adapter 
   assert.equal(
     pack.commandPlan.find((entry) => entry.command.includes("task finish"))?.owner,
     "parent",
+  );
+  assert.equal(
+    pack.commandPlan.filter((entry) => entry.command.includes("task recover-lease")).length,
+    1,
+  );
+  assert.deepEqual(
+    pack.commandPlan.find((entry) => entry.command.includes("task recover-lease")),
+    {
+      command: "node tool/harness.mjs task recover-lease --worktree <task-worktree>",
+      reason: "Recover a stale execution lease only after its owner, transition claimant, and recorded child process groups are dead.",
+      owner: "parent",
+      phase: "lifecycle-recovery",
+    },
   );
   assert.ok(pack.commandPlan
     .filter((entry) => entry.command.includes("audit_registry.dart") || entry.command.includes("flutter analyze"))
@@ -1367,17 +1381,16 @@ test("planned future leaves are valid only beneath the owned boundary", () => {
   ));
 });
 
-test("context-pack output writes the full artifact but prints a compact receipt", (context) => {
+test("context-pack output infers JSON from its suffix and prints a compact receipt", (context) => {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-context-output-"));
   context.after(() => fs.rmSync(directory, {recursive: true, force: true}));
-  const output = path.join(directory, "pack.json");
+  const output = path.join(directory, "pack.JSON");
   const result = runNode(process.cwd(), [
     "tool/agent/context_pack.mjs",
     "--task",
     "compact-output",
     "--owned-paths",
     "tool/agent/lib/task_input.mjs",
-    "--json",
     "--output",
     output,
   ]);
@@ -1385,6 +1398,7 @@ test("context-pack output writes the full artifact but prints a compact receipt"
   const receipt = JSON.parse(result.stdout);
   const pack = JSON.parse(fs.readFileSync(output, "utf8"));
   assert.equal(receipt.output, output);
+  assert.equal(receipt.format, "json");
   assert.equal(receipt.task, pack.task);
   assert.equal(receipt.digest, pack.taskStart.digest);
   assert.equal(receipt.blockerCount, pack.taskStart.blockers.length);
@@ -1392,6 +1406,100 @@ test("context-pack output writes the full artifact but prints a compact receipt"
   assert.equal(receipt.blockersTruncated, pack.taskStart.blockers.length > 10);
   assert.ok(result.stdout.length < 500, result.stdout.length);
   assert.ok(fs.statSync(output).size > result.stdout.length * 10);
+});
+
+test("context-pack output format is explicit or suffix-safe", (context) => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-context-format-"));
+  context.after(() => fs.rmSync(directory, {recursive: true, force: true}));
+  const baseArgs = [
+    "tool/agent/context_pack.mjs",
+    "--task",
+    "format-contract",
+    "--owned-paths",
+    "tool/agent/context_pack.mjs",
+  ];
+  const missingParent = path.join(directory, "must-not-be-created");
+  const failures = [
+    {
+      args: ["--output", path.join(missingParent, "pack")],
+      pattern: /requires a \.json, \.md, or \.markdown suffix/u,
+    },
+    {
+      args: ["--json", "--output", path.join(directory, "pack.md")],
+      pattern: /suffix \.md conflicts with requested json/u,
+    },
+  ];
+  for (const fixture of failures) {
+    const result = runNode(process.cwd(), [...baseArgs, ...fixture.args]);
+    assert.equal(result.status, 64, result.stderr || result.stdout);
+    assert.equal(result.stdout, "");
+    assert.match(result.stderr, fixture.pattern);
+    assert.doesNotMatch(result.stderr, /\n\s+at /u);
+  }
+  assert.equal(fs.existsSync(missingParent), false);
+
+  for (const extension of [".md", ".markdown", ".MD"]) {
+    const markdownOutput = path.join(directory, `pack${extension}`);
+    const markdown = runNode(process.cwd(), [...baseArgs, "--output", markdownOutput]);
+    assertSuccessful(markdown);
+    assert.match(markdown.stdout, /^Context pack written:/u);
+    assert.match(markdown.stdout, /format=markdown/u);
+    assert.doesNotMatch(markdown.stdout, /# Agent Context Pack/u);
+    assert.match(fs.readFileSync(markdownOutput, "utf8"), /^# Agent Context Pack/u);
+  }
+
+  const explicitOutput = path.join(directory, "pack.artifact");
+  const explicit = runNode(process.cwd(), [
+    ...baseArgs,
+    "--json",
+    "--output",
+    explicitOutput,
+  ]);
+  assertSuccessful(explicit);
+  assert.equal(JSON.parse(explicit.stdout).format, "json");
+  assert.equal(JSON.parse(fs.readFileSync(explicitOutput, "utf8")).task, "format-contract");
+
+  const stdoutMarkdown = runNode(process.cwd(), baseArgs);
+  assertSuccessful(stdoutMarkdown);
+  assert.match(stdoutMarkdown.stdout, /^# Agent Context Pack/u);
+  const stdoutJson = runNode(process.cwd(), [...baseArgs, "--json"]);
+  assertSuccessful(stdoutJson);
+  assert.equal(JSON.parse(stdoutJson.stdout).task, "format-contract");
+
+  const legacyOutput = path.join(directory, "legacy.json");
+  const legacyJson = runNode(process.cwd(), [
+    ...baseArgs,
+    "--json",
+    "--output",
+    legacyOutput,
+  ]);
+  assertSuccessful(legacyJson);
+  assert.equal(JSON.parse(legacyJson.stdout).format, "json");
+  assert.equal(JSON.parse(fs.readFileSync(legacyOutput, "utf8")).task, "format-contract");
+
+  const sentinelOutput = path.join(directory, "sentinel.md");
+  fs.writeFileSync(sentinelOutput, "sentinel\n");
+  const conflict = runNode(process.cwd(), [
+    ...baseArgs,
+    "--json",
+    "--output",
+    sentinelOutput,
+  ]);
+  assert.equal(conflict.status, 64);
+  assert.equal(conflict.stdout, "");
+  assert.equal(fs.readFileSync(sentinelOutput, "utf8"), "sentinel\n");
+
+  const directoryOutput = path.join(directory, "directory.json");
+  fs.mkdirSync(directoryOutput);
+  const writeFailure = runNode(process.cwd(), [...baseArgs, "--output", directoryOutput]);
+  assert.notEqual(writeFailure.status, 0);
+  assert.equal(writeFailure.stdout, "");
+
+  const help = runNode(process.cwd(), ["tool/agent/context_pack.mjs", "--help"]);
+  assertSuccessful(help);
+  assert.match(help.stdout, /\.json, \.md, and \.markdown infer format/u);
+  assert.match(help.stdout, /Required for an unrecognized output suffix/u);
+  assert.match(help.stdout, /must agree with recognized suffixes/u);
 });
 
 test("context packs mark invalid task ids and unmaterializable scopes incomplete", () => {
