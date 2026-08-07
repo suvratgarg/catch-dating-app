@@ -2301,7 +2301,9 @@ function buildPublicationDecisionImpactPreview({
         decision: "approve_public",
         decisionBatchId: "impact-preview-only",
         entityId: packet.entityId,
+        indexStatus: "indexed",
         note: "Impact preview only; no review decision has been recorded.",
+        publishStatus: "published",
         reviewer: "impact-preview",
       });
       const simulatedProjectionPlan = buildProjectionPlan(
