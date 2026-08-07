@@ -250,6 +250,8 @@
         "docs/agent_skills/**",
         "docs/audit_registry/**",
         "tool/agent/**",
+        "tool/harness.mjs",
+        "tool/harness/**",
         "tool/tools_manifest.json",
         "lib/**",
         "test/**"

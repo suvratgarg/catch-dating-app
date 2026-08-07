@@ -1,7 +1,7 @@
 ---
 doc_id: agent_operating_model
-version: 1.6.0
-updated: 2026-08-06
+version: 1.6.1
+updated: 2026-08-07
 owner: agent_operating_model
 status: active
 ---
@@ -201,10 +201,17 @@ node tool/harness.mjs task reap --dry-run
 ```
 
 `task start` validates the exact parent SHA and explicit sparse paths, checks a
-fixed disk reserve plus the task budget, rejects local and remote branch
-collisions, creates the worktree under ignored `.claude/worktrees/`, records
-task metadata in the worktree Git directory, Git-locks the active worktree, and
-pushes the new branch to `origin`. It never uses `/tmp` or `/private/tmp`.
+fixed allocated-disk reserve plus the allocated task budget, rejects local and
+remote branch collisions, creates the worktree under ignored
+`.claude/worktrees/`, records v2 task metadata in the worktree Git directory,
+Git-locks the active worktree, and pushes the new branch to `origin`. V2
+receipts name the tracked logical estimate, projected initial allocation,
+initial logical materialization, and initial allocated materialization
+separately. Current allocation and growth are allocated-to-allocated
+measurements; never subtract a logical measurement from an allocated one. The
+reader remains compatible with v1 receipts, but their allocated growth is
+unknown because v1 recorded only an initial logical measurement. Task
+worktrees never use `/tmp` or `/private/tmp`.
 
 1. Parent records its current branch and 40-character HEAD, chooses disjoint
    owned paths, then runs `task start` from that exact SHA.
@@ -222,8 +229,13 @@ pushes the new branch to `origin`. It never uses `/tmp` or `/private/tmp`.
 6. Parent runs final checks, updates canonical docs/registries, stamps the audit
    pass, commits the integrated loop, and records the delegation outcome.
 7. After the task branch is clean and its exact head exists at `origin`, run
-   `task finish`. Finish records terminal metadata and unlocks the worktree; it
-   never removes a worktree or deletes a branch.
+   `task finish`. Doctor and finish share the same root, metadata-path,
+   sparse-checkout, storage, base-ancestry, ignored-payload, dependency, and
+   filesystem-reserve integrity checks; allowlisted task-local dependency/build
+   directories remain valid. Finish additionally performs a live origin-head
+   query, reports an unavailable query separately from a mismatched remote
+   head, records terminal metadata, and unlocks the worktree. It never removes
+   a worktree or deletes a branch.
 8. `task reap --dry-run` refreshes remote refs and emits a digested inventory.
    It is report-only. Removal requires a separate, exact owner acknowledgment;
    dirty, active, remotely unpreserved, legacy-unknown, or inspection-failed

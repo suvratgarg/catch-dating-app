@@ -3,7 +3,7 @@ import {spawnSync} from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import test from "node:test";
+import test, {after} from "node:test";
 import {
   assertCapacity,
   assertSafeTaskTarget,
@@ -15,6 +15,19 @@ import {
 } from "./lib/worktree_lifecycle.mjs";
 
 const MIB = 1024 * 1024;
+const TEST_CLAUDE_ROOT = path.join(process.cwd(), ".claude");
+const TEST_FIXTURE_PARENT = path.join(TEST_CLAUDE_ROOT, "test-fixtures");
+const closedOwnedFixturePaths = new Set();
+let processFixtureSession = null;
+
+pruneSharedFixtureParents();
+after(() => {
+  if (processFixtureSession) {
+    removeOwnedEmptyDirectory(processFixtureSession);
+    processFixtureSession = null;
+  }
+  pruneSharedFixtureParents();
+});
 
 test("worktree porcelain preserves lifecycle safety fields", () => {
   assert.deepEqual(
@@ -120,21 +133,21 @@ test("task paths are canonical and sparse paths cannot escape", () => {
 test("capacity preflight fails before a worktree can consume the reserve", () => {
   assert.throws(
     () => assertCapacity({
-      availableBytes: 197 * MIB,
-      budgetBytes: 256 * MIB,
-      reserveBytes: 1024 * MIB,
-      estimatedBytes: 40 * MIB,
+      availableAllocatedBytes: 197 * MIB,
+      budgetAllocatedBytes: 256 * MIB,
+      reserveAllocatedBytes: 1024 * MIB,
+      projectedInitialAllocatedBytes: 40 * MIB,
     }),
     /Insufficient task-worktree capacity/u,
   );
   assert.throws(
     () => assertCapacity({
-      availableBytes: 4096 * MIB,
-      budgetBytes: 64 * MIB,
-      reserveBytes: 1024 * MIB,
-      estimatedBytes: 65 * MIB,
+      availableAllocatedBytes: 4096 * MIB,
+      budgetAllocatedBytes: 64 * MIB,
+      reserveAllocatedBytes: 1024 * MIB,
+      projectedInitialAllocatedBytes: 65 * MIB,
     }),
-    /exceeds its 64.0 MiB budget/u,
+    /exceeds its 64.0 MiB allocated budget/u,
   );
 });
 
@@ -170,7 +183,7 @@ test("reap classification never treats weak evidence as deletion authority", () 
   const review = classifyReapCandidate({
     worktree: {
       ...shared,
-      metadata: {schema: "catch.harness-task/v1", status: "terminal"},
+      metadata: validV1Metadata(),
       pushed: true,
       mergedIntoTarget: false,
     },
@@ -183,7 +196,7 @@ test("reap classification never treats weak evidence as deletion authority", () 
     classifyReapCandidate({
       worktree: {
         ...shared,
-        metadata: {schema: "catch.harness-task/v1", status: "terminal"},
+        metadata: validV1Metadata(),
         pushed: true,
         mergedIntoTarget: false,
         ignoredInspectionAvailable: false,
@@ -203,6 +216,24 @@ test("reap classification never treats weak evidence as deletion authority", () 
     }).classification,
     "blocked",
   );
+  const malformedStorage = classifyReapCandidate({
+    worktree: {
+      ...shared,
+      metadata: {
+        schema: "catch.harness-task/v2",
+        status: "terminal",
+        budgetAllocatedBytes: "unknown",
+      },
+      pushed: true,
+      mergedIntoTarget: true,
+      ignoredInspectionAvailable: true,
+    },
+    primaryRoot: "/repo",
+    currentWorktree: "/repo/.claude/worktrees/current",
+    canonicalRoot: "/repo/.claude/worktrees",
+  });
+  assert.equal(malformedStorage.classification, "blocked");
+  assert.ok(malformedStorage.reasons.includes("invalid_storage_metrics"));
 });
 
 test("reap refuses dirty, live, temp, current, and locked worktrees", () => {
@@ -214,14 +245,14 @@ test("reap refuses dirty, live, temp, current, and locked worktrees", () => {
     detached: false,
     livePid: false,
     ageDays: 20,
-    metadata: {schema: "catch.harness-task/v1", status: "terminal"},
+    metadata: validV1Metadata(),
     pushed: true,
     mergedIntoTarget: true,
   };
   for (const mutation of [
     {dirty: true},
     {locked: true},
-    {livePid: true, metadata: {schema: "catch.harness-task/v1", status: "active"}},
+    {livePid: true, metadata: validV1Metadata("active")},
     {path: "/private/tmp/task"},
   ]) {
     const result = classifyReapCandidate({
@@ -268,9 +299,29 @@ test("start uses an explicit sparse worktree and records local task metadata", (
   assert.equal(fs.existsSync(path.join(target, "unrelated.txt")), false);
   const metadataPath = git(target, ["rev-parse", "--git-path", "catch-task.json"]);
   const metadata = JSON.parse(fs.readFileSync(metadataPath, "utf8"));
+  assert.equal(metadata.schema, "catch.harness-task/v2");
   assert.equal(metadata.baseSha, baseSha);
   assert.equal(metadata.creatorPid, 4242);
   assert.equal(metadata.stackParent, "main");
+  assert.equal(metadata.budgetAllocatedBytes, 64 * MIB);
+  assert.equal(metadata.reserveAllocatedBytes, MIB);
+  assert.ok(metadata.estimatedTrackedLogicalBytes > 0);
+  assert.ok(metadata.projectedInitialAllocatedBytes > metadata.estimatedTrackedLogicalBytes);
+  assert.ok(metadata.initialMaterializedLogicalBytes > 0);
+  assert.ok(metadata.initialMaterializedAllocatedBytes > 0);
+  for (const ambiguousKey of ["estimatedTrackedBytes", "materializedBytes", "sizeBytes"]) {
+    assert.equal(Object.hasOwn(metadata, ambiguousKey), false, ambiguousKey);
+  }
+  assert.deepEqual(
+    Object.keys(execution.result.capacity).sort(),
+    [
+      "availableAllocatedBytes",
+      "budgetAllocatedBytes",
+      "projectedInitialAllocatedBytes",
+      "requiredAllocatedBytes",
+      "reserveAllocatedBytes",
+    ],
+  );
   assert.match(git(fixture, ["worktree", "list", "--porcelain"]), /locked catch-task:profile-slice/u);
 
   const lowCapacityDoctor = executeTaskCommand({
@@ -292,6 +343,14 @@ test("start uses an explicit sparse worktree and records local task metadata", (
   const doctor = executeTaskCommand({args: ["doctor"], cwd: target});
   assert.equal(doctor.status, 0, JSON.stringify(doctor.result));
   assert.equal(doctor.result.healthy, true);
+  assert.ok(doctor.result.availableAllocatedBytes > 0);
+  assert.equal(Object.hasOwn(doctor.result, "availableBytes"), false);
+  assert.equal(Object.hasOwn(doctor.result.worktree, "sizeBytes"), false);
+  assert.equal(
+    doctor.result.worktree.materializedAllocatedBytes,
+    metadata.initialMaterializedAllocatedBytes,
+  );
+  assert.equal(doctor.result.worktree.materializedAllocatedDeltaBytes, 0);
 
   fs.writeFileSync(path.join(target, "lib", "profile.txt"), "dirty\n");
   const dirtyFinish = executeTaskCommand({args: ["finish"], cwd: target});
@@ -342,8 +401,174 @@ test("start uses an explicit sparse worktree and records local task metadata", (
   assert.equal(reap.status, 0);
   assert.equal(reap.result.deletionAuthorized, false);
   assert.equal(reap.result.counts.owner_review, 1);
+  assert.equal(
+    reap.result.ownerReviewAllocatedBytes,
+    reap.result.worktrees.find((item) => item.path === target).materializedAllocatedBytes,
+  );
+  assert.equal(Object.hasOwn(reap.result, "ownerReviewBytes"), false);
+  assert.equal(Object.hasOwn(reap.result.legacyReview, "bytes"), false);
   assert.match(reap.result.reportDigest, /^[0-9a-f]{64}$/u);
   assert.equal(git(fixture, ["worktree", "list", "--porcelain"]), beforeReap);
+});
+
+test("legacy v1 task metadata remains readable without inventing an allocated baseline", (context) => {
+  const {metadata, metadataPath, target} = createStartedTask(context, "legacy-v1");
+  const legacyMetadata = {
+    ...metadata,
+    schema: "catch.harness-task/v1",
+    budgetMiB: metadata.budgetAllocatedBytes / MIB,
+    reserveMiB: metadata.reserveAllocatedBytes / MIB,
+    estimatedTrackedBytes: metadata.estimatedTrackedLogicalBytes,
+    materializedBytes: metadata.initialMaterializedLogicalBytes,
+  };
+  for (const key of [
+    "budgetAllocatedBytes",
+    "reserveAllocatedBytes",
+    "estimatedTrackedLogicalBytes",
+    "projectedInitialAllocatedBytes",
+    "initialMaterializedLogicalBytes",
+    "initialMaterializedAllocatedBytes",
+  ]) delete legacyMetadata[key];
+  fs.writeFileSync(metadataPath, `${JSON.stringify(legacyMetadata, null, 2)}\n`);
+
+  const doctor = executeTaskCommand({args: ["doctor"], cwd: target});
+  assert.equal(doctor.status, 0, JSON.stringify(doctor.result));
+  assert.equal(doctor.result.worktree.materializedAllocatedDeltaBytes, null);
+
+  const finish = executeTaskCommand({args: ["finish"], cwd: target});
+  assert.equal(finish.status, 0, JSON.stringify(finish.result));
+  assert.equal(finish.result.readyForHandoff, true);
+  const persisted = JSON.parse(fs.readFileSync(metadataPath, "utf8"));
+  assert.equal(persisted.schema, "catch.harness-task/v1");
+  assert.equal(Object.hasOwn(persisted, "initialMaterializedAllocatedBytes"), false);
+});
+
+test("malformed v2 storage measurements fail closed", (context) => {
+  const {metadata, metadataPath, target} = createStartedTask(context, "malformed-storage");
+  fs.writeFileSync(metadataPath, `${JSON.stringify({
+    ...metadata,
+    initialMaterializedAllocatedBytes: "unknown",
+  }, null, 2)}\n`);
+
+  const doctor = executeTaskCommand({args: ["doctor"], cwd: target});
+  assert.equal(doctor.status, 1);
+  assert.ok(doctor.result.blockers.includes("invalid_storage_metrics"));
+  assert.equal(doctor.result.worktree.materializedAllocatedDeltaBytes, null);
+
+  const finish = executeTaskCommand({args: ["finish"], cwd: target});
+  assert.equal(finish.status, 1);
+  assert.ok(finish.result.blockers.includes("invalid_storage_metrics"));
+  assert.equal(JSON.parse(fs.readFileSync(metadataPath, "utf8")).status, "active");
+});
+
+test("doctor and finish enforce the same allocated-byte budget", (context) => {
+  const {metadata, metadataPath, target} = createStartedTask(context, "allocated-budget");
+  fs.writeFileSync(metadataPath, `${JSON.stringify({
+    ...metadata,
+    budgetAllocatedBytes: 1,
+  }, null, 2)}\n`);
+
+  const doctor = executeTaskCommand({args: ["doctor"], cwd: target});
+  assert.equal(doctor.status, 1);
+  assert.ok(doctor.result.blockers.includes("materialized_allocated_budget_exceeded"));
+  const finish = executeTaskCommand({args: ["finish"], cwd: target});
+  assert.equal(finish.status, 1);
+  assert.ok(finish.result.blockers.includes("materialized_allocated_budget_exceeded"));
+});
+
+test("finish cannot bypass task-integrity blockers reported by doctor", (context) => {
+  const {metadata, metadataPath, target} = createStartedTask(context, "integrity-parity");
+  fs.writeFileSync(metadataPath, `${JSON.stringify({
+    ...metadata,
+    worktreePath: "/wrong/task/path",
+  }, null, 2)}\n`);
+  git(target, ["sparse-checkout", "add", "/unrelated.txt"]);
+
+  const doctor = executeTaskCommand({args: ["doctor"], cwd: target});
+  assert.equal(doctor.status, 1);
+  assert.ok(doctor.result.blockers.includes("metadata_path_mismatch"));
+  assert.ok(doctor.result.blockers.includes("sparse_checkout_metadata_mismatch"));
+  const finish = executeTaskCommand({args: ["finish"], cwd: target});
+  assert.equal(finish.status, 1);
+  assert.ok(finish.result.blockers.includes("metadata_path_mismatch"));
+  assert.ok(finish.result.blockers.includes("sparse_checkout_metadata_mismatch"));
+});
+
+test("ignored payload must be inspectable and known before doctor or finish", (context) => {
+  const {fixture, metadataPath, target} = createStartedTask(context, "ignored-payload");
+  const excludePath = path.resolve(
+    fixture,
+    git(fixture, ["rev-parse", "--git-path", "info/exclude"]),
+  );
+  fs.appendFileSync(excludePath, "\n.scratch/\nnode_modules/\n");
+
+  fs.mkdirSync(path.join(target, "node_modules"));
+  fs.writeFileSync(path.join(target, "node_modules", "cache.txt"), "generated\n");
+  const allowlistedDoctor = executeTaskCommand({args: ["doctor"], cwd: target});
+  assert.equal(allowlistedDoctor.status, 0, JSON.stringify(allowlistedDoctor.result));
+  assert.equal(allowlistedDoctor.result.worktree.unknownIgnoredPathCount, 0);
+  fs.rmSync(path.join(target, "node_modules"), {recursive: true});
+
+  fs.mkdirSync(path.join(target, ".scratch"));
+  fs.writeFileSync(path.join(target, ".scratch", "payload.txt"), "local-only\n");
+  const unknownDoctor = executeTaskCommand({args: ["doctor"], cwd: target});
+  assert.equal(unknownDoctor.status, 1);
+  assert.ok(unknownDoctor.result.blockers.includes("unknown_ignored_payload"));
+  const unknownFinish = executeTaskCommand({args: ["finish"], cwd: target});
+  assert.equal(unknownFinish.status, 1);
+  assert.ok(unknownFinish.result.blockers.includes("unknown_ignored_payload"));
+  assert.equal(JSON.parse(fs.readFileSync(metadataPath, "utf8")).status, "active");
+  fs.rmSync(path.join(target, ".scratch"), {recursive: true});
+
+  const failedIgnoredInspectionRunner = (command, args, options) => {
+    if (command === "git" && args[0] === "status" && args.includes("--ignored=matching")) {
+      return {status: 1, stdout: "", stderr: "injected ignored inspection failure"};
+    }
+    return spawnSync(command, args, options);
+  };
+  const unavailableDoctor = executeTaskCommand({
+    args: ["doctor"],
+    cwd: target,
+    runner: failedIgnoredInspectionRunner,
+  });
+  assert.equal(unavailableDoctor.status, 1);
+  assert.ok(unavailableDoctor.result.blockers.includes("ignored_payload_inspection_unavailable"));
+  const unavailableFinish = executeTaskCommand({
+    args: ["finish"],
+    cwd: target,
+    runner: failedIgnoredInspectionRunner,
+  });
+  assert.equal(unavailableFinish.status, 1);
+  assert.ok(unavailableFinish.result.blockers.includes("ignored_payload_inspection_unavailable"));
+
+  const recoveredDoctor = executeTaskCommand({args: ["doctor"], cwd: target});
+  assert.equal(recoveredDoctor.status, 0, JSON.stringify(recoveredDoctor.result));
+});
+
+test("finish distinguishes an unavailable origin query from an unpreserved head", (context) => {
+  const {target} = createStartedTask(context, "remote-query");
+  const unavailableRemoteRunner = (command, args, options) => {
+    if (command === "git" && args[0] === "ls-remote") {
+      return {status: 128, stdout: "", stderr: "injected network failure"};
+    }
+    return spawnSync(command, args, options);
+  };
+  const finish = executeTaskCommand({
+    args: ["finish"],
+    cwd: target,
+    runner: unavailableRemoteRunner,
+  });
+  assert.equal(finish.status, 1);
+  assert.ok(finish.result.blockers.includes("remote_head_query_unavailable"));
+  assert.equal(finish.result.blockers.includes("remote_head_not_preserved"), false);
+  assert.deepEqual(finish.result.remoteVerification, {
+    available: false,
+    branch: "codex/remote-query",
+    expectedHead: git(target, ["rev-parse", "HEAD"]),
+    remoteHead: null,
+    matched: false,
+    error: "origin_head_query_failed",
+  });
 });
 
 test("low-capacity start refuses before worktree registration", (context) => {
@@ -403,10 +628,10 @@ test("start refuses remote branch collisions and missing sparse paths before reg
 });
 
 test("task lifecycle root cannot escape through a symlink", (context) => {
-  const primaryRoot = fs.mkdtempSync(path.join(testFixtureRoot(), "catch-worktree-symlink-"));
-  const outside = fs.mkdtempSync(path.join(testFixtureRoot(), "catch-worktree-outside-"));
-  context.after(() => fs.rmSync(primaryRoot, {recursive: true, force: true}));
-  context.after(() => fs.rmSync(outside, {recursive: true, force: true}));
+  const session = createFixtureSession();
+  const primaryRoot = fs.mkdtempSync(path.join(session, "catch-worktree-symlink-"));
+  const outside = fs.mkdtempSync(path.join(session, "catch-worktree-outside-"));
+  context.after(() => cleanupOwnedFixtureChildren(session, [primaryRoot, outside]));
   fs.mkdirSync(path.join(primaryRoot, ".claude"));
   fs.symlinkSync(outside, path.join(primaryRoot, ".claude", "worktrees"));
   assert.throws(
@@ -418,11 +643,86 @@ test("task lifecycle root cannot escape through a symlink", (context) => {
   );
 });
 
+test("fixture cleanup removes only empty owned directories and never follows payload", (context) => {
+  const sandbox = fs.mkdtempSync(path.join(os.tmpdir(), "catch-fixture-cleanup-"));
+  context.after(() => fs.rmSync(sandbox, {recursive: true, force: true}));
+
+  const empty = path.join(sandbox, "empty");
+  fs.mkdirSync(empty);
+  removeOwnedEmptyDirectory(empty);
+  assert.equal(fs.existsSync(empty), false);
+
+  const nonempty = path.join(sandbox, "nonempty");
+  fs.mkdirSync(nonempty);
+  fs.writeFileSync(path.join(nonempty, "sentinel.txt"), "preserve\n");
+  assert.throws(() => removeOwnedEmptyDirectory(nonempty), /not empty/u);
+  assert.equal(fs.readFileSync(path.join(nonempty, "sentinel.txt"), "utf8"), "preserve\n");
+
+  const regularFile = path.join(sandbox, "file");
+  fs.writeFileSync(regularFile, "preserve\n");
+  assert.throws(() => removeOwnedEmptyDirectory(regularFile), /ordinary directory/u);
+  assert.equal(fs.readFileSync(regularFile, "utf8"), "preserve\n");
+
+  const outside = path.join(sandbox, "outside");
+  const link = path.join(sandbox, "link");
+  fs.mkdirSync(outside);
+  fs.writeFileSync(path.join(outside, "sentinel.txt"), "outside\n");
+  fs.symlinkSync(outside, link);
+  assert.throws(() => removeOwnedEmptyDirectory(link), /ordinary directory/u);
+  assert.equal(fs.readFileSync(path.join(outside, "sentinel.txt"), "utf8"), "outside\n");
+
+  const dangling = path.join(sandbox, "dangling");
+  fs.symlinkSync(path.join(sandbox, "missing-target"), dangling);
+  assert.throws(() => removeOwnedEmptyDirectory(dangling), /ordinary directory/u);
+  assert.equal(fs.lstatSync(dangling).isSymbolicLink(), true);
+
+  const shared = path.join(sandbox, "shared");
+  fs.mkdirSync(shared);
+  fs.mkdirSync(path.join(shared, "legitimate-sibling"));
+  assert.equal(removeSharedDirectoryIfEmpty(shared), false);
+  assert.equal(fs.existsSync(path.join(shared, "legitimate-sibling")), true);
+});
+
+test("focused lifecycle fixtures remove every child path owned by this process", () => {
+  assert.ok(closedOwnedFixturePaths.size > 0);
+  for (const ownedPath of closedOwnedFixturePaths) {
+    assert.equal(lstatOrNull(ownedPath), null, ownedPath);
+  }
+  assert.equal(fs.lstatSync(processFixtureSession).isDirectory(), true);
+});
+
+function createStartedTask(context, taskId) {
+  const fixture = createGitFixture(context);
+  const baseSha = git(fixture, ["rev-parse", "HEAD"]);
+  const execution = executeTaskCommand({
+    args: [
+      "start",
+      "--task-id", taskId,
+      "--base-sha", baseSha,
+      "--stack-parent", "main",
+      "--paths", "lib/profile.txt",
+      "--budget-mib", "64",
+      "--reserve-mib", "1",
+    ],
+    cwd: fixture,
+    statfs: () => ({bavail: 4096, bsize: MIB}),
+  });
+  assert.equal(execution.status, 0);
+  const target = path.join(fs.realpathSync(fixture), ".claude", "worktrees", taskId);
+  const metadataPath = git(target, ["rev-parse", "--git-path", "catch-task.json"]);
+  return {
+    fixture,
+    target,
+    metadataPath,
+    metadata: JSON.parse(fs.readFileSync(metadataPath, "utf8")),
+  };
+}
+
 function createGitFixture(context) {
-  const fixture = fs.mkdtempSync(path.join(testFixtureRoot(), "catch-worktree-lifecycle-"));
+  const session = createFixtureSession();
+  const fixture = fs.mkdtempSync(path.join(session, "catch-worktree-lifecycle-"));
   const origin = `${fixture}-origin.git`;
-  context.after(() => fs.rmSync(fixture, {recursive: true, force: true}));
-  context.after(() => fs.rmSync(origin, {recursive: true, force: true}));
+  context.after(() => cleanupOwnedFixtureChildren(session, [fixture, origin]));
   git(fixture, ["init", "-b", "main"]);
   git(fixture, ["config", "user.name", "Catch Test"]);
   git(fixture, ["config", "user.email", "catch-test@example.com"]);
@@ -437,10 +737,115 @@ function createGitFixture(context) {
   return fixture;
 }
 
-function testFixtureRoot() {
-  const root = path.join(process.cwd(), ".claude", "test-fixtures");
-  fs.mkdirSync(root, {recursive: true});
-  return `${root}${path.sep}`;
+function createFixtureSession() {
+  if (processFixtureSession) return processFixtureSession;
+  for (let attempt = 0; attempt < 4; attempt += 1) {
+    try {
+      ensureFixtureParents();
+      processFixtureSession = fs.mkdtempSync(
+        path.join(TEST_FIXTURE_PARENT, `worktree-lifecycle-${process.pid}-`),
+      );
+      return processFixtureSession;
+    } catch (error) {
+      if (!new Set(["ENOENT", "EINVAL"]).has(error?.code)) throw error;
+    }
+  }
+  throw new Error(`Unable to create fixture session under ${TEST_FIXTURE_PARENT}`);
+}
+
+function cleanupOwnedFixtureChildren(session, ownedChildren) {
+  assert.equal(session, processFixtureSession);
+  for (const child of ownedChildren) fs.rmSync(child, {recursive: true, force: true});
+  for (const child of ownedChildren) closedOwnedFixturePaths.add(child);
+}
+
+function ensureFixtureParents() {
+  for (let attempt = 0; attempt < 4; attempt += 1) {
+    ensureOrdinaryDirectory(TEST_CLAUDE_ROOT);
+    try {
+      ensureOrdinaryDirectory(TEST_FIXTURE_PARENT);
+      return;
+    } catch (error) {
+      if (error?.code !== "ENOENT") throw error;
+    }
+  }
+  throw new Error(`Unable to create shared fixture parent ${TEST_FIXTURE_PARENT}`);
+}
+
+function ensureOrdinaryDirectory(targetPath) {
+  for (let attempt = 0; attempt < 4; attempt += 1) {
+    let stat = lstatOrNull(targetPath);
+    if (!stat) {
+      try {
+        fs.mkdirSync(targetPath);
+      } catch (error) {
+        if (error?.code === "EEXIST") continue;
+        throw error;
+      }
+      stat = lstatOrNull(targetPath);
+    }
+    if (!stat) continue;
+    if (stat.isSymbolicLink() || !stat.isDirectory()) {
+      throw new Error(`Fixture path must be an ordinary directory: ${targetPath}`);
+    }
+    return;
+  }
+  const error = new Error(`Fixture directory disappeared during creation: ${targetPath}`);
+  error.code = "ENOENT";
+  throw error;
+}
+
+function removeOwnedEmptyDirectory(targetPath) {
+  const stat = lstatOrNull(targetPath);
+  if (!stat) {
+    throw new Error(`Owned fixture directory disappeared before cleanup: ${targetPath}`);
+  }
+  if (stat.isSymbolicLink() || !stat.isDirectory()) {
+    throw new Error(`Owned fixture path is not an ordinary directory: ${targetPath}`);
+  }
+  if (fs.readdirSync(targetPath).length > 0) {
+    throw new Error(`Owned fixture directory is not empty: ${targetPath}`);
+  }
+  fs.rmdirSync(targetPath);
+}
+
+function removeSharedDirectoryIfEmpty(targetPath) {
+  const stat = lstatOrNull(targetPath);
+  if (!stat) return false;
+  if (stat.isSymbolicLink() || !stat.isDirectory()) {
+    throw new Error(`Shared fixture path is not an ordinary directory: ${targetPath}`);
+  }
+  try {
+    fs.rmdirSync(targetPath);
+    return true;
+  } catch (error) {
+    if (error?.code === "ENOTEMPTY" || error?.code === "EEXIST") return false;
+    if (error?.code === "ENOENT") return false;
+    throw error;
+  }
+}
+
+function lstatOrNull(targetPath) {
+  try {
+    return fs.lstatSync(targetPath);
+  } catch (error) {
+    if (error?.code === "ENOENT") return null;
+    throw error;
+  }
+}
+
+function pruneSharedFixtureParents() {
+  removeSharedDirectoryIfEmpty(TEST_FIXTURE_PARENT);
+  removeSharedDirectoryIfEmpty(TEST_CLAUDE_ROOT);
+}
+
+function validV1Metadata(status = "terminal") {
+  return {
+    schema: "catch.harness-task/v1",
+    status,
+    budgetMiB: 64,
+    reserveMiB: 1024,
+  };
 }
 
 function git(cwd, args) {

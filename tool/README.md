@@ -594,11 +594,16 @@ is no separate adapter skill or command recipe.
 
 `start` creates a bounded sparse worktree under `.claude/worktrees/`, locks it,
 records lifecycle metadata outside tracked source, and pushes its collision-free
-branch to `origin`. `doctor` fails on lifecycle, sparse-materialization,
-capacity, or shared-cache hazards. `finish` requires a clean, remotely preserved
-head and records terminal state; it does not delete anything. `reap --dry-run`
-refreshes live remote heads and returns a digested, report-only inventory. It
-has no apply mode, and legacy or incompletely inspected worktrees remain
+branch to `origin`. New v2 receipts separate tracked logical bytes, projected
+allocated bytes, initial logical bytes, and initial allocated bytes. The budget,
+current size, and growth delta use allocated bytes; v1 receipts remain readable
+but cannot claim an allocated growth delta. `doctor` fails on lifecycle,
+sparse-materialization, allocated capacity, shared-cache hazards, or unknown
+ignored payload. `finish` repeats those shared task-integrity checks,
+distinguishes an unavailable live origin query from a mismatched remote head,
+and records terminal state; it does not delete anything. `reap --dry-run`
+refreshes live remote heads and returns a digested, report-only allocated-byte
+inventory. It has no apply mode, and legacy or incompletely inspected worktrees remain
 blocked.
 
 `AGENTS.md` is the short entrypoint. Durable process guidance lives in

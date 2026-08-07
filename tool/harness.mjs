@@ -304,7 +304,10 @@ function printResult(value, json) {
   if (value.operation === "reap") {
     console.log(`Harness task reap ${value.mode}: ${value.worktrees.length} registered worktrees`);
     console.log(`Classifications: ${Object.entries(value.counts).map(([key, count]) => `${key}=${count}`).join(", ")}`);
-    console.log(`Legacy review only: ${value.legacyReview.count} worktrees, ${value.legacyReview.bytes} bytes`);
+    console.log(
+      `Legacy review only: ${value.legacyReview.count} worktrees, ` +
+      `${value.legacyReview.allocatedBytes} allocated bytes`,
+    );
     console.log(`Deletion authorized: ${value.deletionAuthorized}`);
     console.log(`Report digest: ${value.reportDigest}`);
     return;
