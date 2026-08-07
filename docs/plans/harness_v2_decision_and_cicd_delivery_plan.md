@@ -1,6 +1,6 @@
 ---
 doc_id: harness_v2_decision_and_cicd_delivery_plan
-version: 0.3.33
+version: 0.3.34
 updated: 2026-08-07
 owner: agent_operating_model
 status: execution-in-progress
@@ -980,22 +980,48 @@ Issues closed or discovered during this tranche:
 - `H2-TRANSITION-037` — closed. Finish now distinguishes an unavailable live
   origin query from a verified remote-head mismatch and exposes expected and
   observed heads when available.
-- `H2-TRANSITION-038` — open. The core task's context pack named full Harness,
-  manifest, enforcement-integrity, root-hygiene, readiness, and audit-refresh
-  commands, but its manually declared sparse paths omitted
-  `tool/repository_root_manifest.json`, `tool/run.mjs`, the enforcement/root
-  entrypoints, and `tool/audit_registry.dart`. The focused test passed while the
-  broader commands failed before execution. Context-pack acceptance commands
-  must emit a machine-readable physical closure consumed by `task start`, or
-  task start must accept check ids and materialize their declared closure. A
-  doctor should reject the task before edits when a required command entrypoint
-  is absent. The evidence canary avoided repair by declaring the full `tool/`
-  scope; no ad hoc sparse expansion was used.
+- `H2-TRANSITION-038` — closed in Checkpoint 27. Every new start requires a
+  clean, base-bound context pack; structured check ids derive exact physical
+  entrypoints and support-only paths; directory selection is recomputed from
+  tracked descendants at the base SHA; v3 receipts bind task, mode, scope,
+  checks, closure, and digest; doctor/finish enforce the same owned-versus-
+  support boundary. V1/v2 stay read-compatible, but the old v2 writer path is
+  deleted.
 
-`H2-TRANSITION-035` (same-worktree mutator lease) and
-`H2-TRANSITION-036` (setup-footprint projection) remain open; this unit and
-receipt migration supplies their stable metadata boundary but does not claim
-to solve either one.
+`H2-TRANSITION-035` (same-worktree mutator lease) remains open.
+`H2-TRANSITION-036` (setup-footprint projection) is partially improved: the
+shared task-input path now selects Node only instead of all seven setup groups,
+but a repository-wide install-footprint budget is still absent.
+
+### Checkpoint 27 — task command closure and clean-clone canary (2026-08-07)
+
+| Signal | Before this slice | Current result |
+|---|---|---|
+| Start authorization | New worktrees could be created from manually typed paths while the context pack named commands whose entrypoints were absent. The pack's task id, cleanliness, base, directory descendants, and selected checks were not one startability contract. | New starts are v3-only and require a complete `parallel-delegation` pack. Task id, mode, clean base SHA, normalized owned scope, tracked descendant selection, structured task/deferred checks, physical entrypoints, support paths, and digest are recomputed from base authorities and fail closed before registration. Absolute/traversal/missing paths, stale or under-scoped packs, malformed receipts, symlink escape, and support-path edits are covered. V1/v2 readers remain; no legacy writer remains. |
+| Execution ownership | One undifferentiated command list mixed worker checks, lifecycle mutation, full-repository integration, Flutter analysis, canonical registry writes, and raw regression commands. | Every command carries `owner` and `phase`. The evidence worker received only `doctor` plus `agent:readiness` and root hygiene; the parent retained start/finish, full-view integration, canonical evidence, and unstructured guidance. Exact three-file evidence scope produced two worker and eight parent commands. |
+| Routing/setup fanout | A change to shared task-input logic could conservatively fan out across all 227 active tools and all seven setup categories. Tool-only scopes also fell back to documentation hygiene. | Exact ownership selects 7/227 active tools, a 96.9% reduction, with one Node setup category, an 85.7% reduction. A new 15-line tooling router replaces the documentation fallback. An Explore projection estimates 855 files / 20.88 MiB instead of 7,276 files / 156.75 MiB: 88.2% fewer files and 86.7% fewer tracked bytes. |
+| Log volume | `--output` still duplicated the complete JSON pack to stdout; one measured pack was 95,531 bytes. | The artifact remains complete on disk while stdout is a 217-byte task/digest receipt, a 99.77% reduction. The registered context-pack owner check now uses this path. |
+| Live canary and failure discovery | Dirty implementation worktrees could mask assumptions that fail only after commit. Full-view checks were often attempted late or inside a sparse worker. | Core `4e5bd7814` committed in 0.04s and pushed in 4.92s. Canary a1 started in 3.20s, passed doctor in 0.45s and worker checks in 3.33s, then its clean full clone exposed one environment-dependent assertion. The bounded one-file fix `306bc6410` committed in 0.02s, pushed in 2.01s, passed 33/33 runner tests in 11.24s, worker checks in 1.49s, and the exact full parent closure in 79.41s. A non-temp full clone was required because OS-temp task roots intentionally fail closed. |
+| Corrected v3 rehearsal | The prior evidence canary declared the whole `tool/` tree to avoid missing entrypoints. | Canary a2 started from exact fix SHA `306bc6410` in 3.32s with only the plan plus two audit ledgers writable. It materialized 27,111,194 logical / 29,011,968 allocated bytes, passed doctor in 0.46s, passed its 19 worker tests plus live checks in 3.47s at 5,099/5,099 readiness, and retained zero allocated growth before the evidence edit. Parent full-view checks had already passed at the exact base SHA. |
+| Verification | Focused checks did not prove the same tree from dirty, clean, sparse, and full views. | The implementation tree passed 137/137 focused checks, then exact registered owners passed 54 runner, 91 Harness, 11 task-input, 13 readiness, 19 enforcement, six root-hygiene, and two inventory tests in 26.98s. Harness validation, 83-rule/92-tool enforcement, manifest validation, audit parity, root hygiene, inventory, and 5,099/5,099 readiness pass. Independent clean-clone review reproduced the one canary defect before the fix. |
+| Line accounting | The 26 prior measured commits were cumulatively net −348,511 lines. | Core `4e5bd7814` is +2,406/−252, net +2,154; clean-clone fix `306bc6410` is +13/−9, net +4; this evidence receipt is +47/−20, net +27. The 29-commit measured series remains net −346,326 lines. This tranche deliberately adds the missing executable contract and tests while deleting the unreachable v2 writer branches; the preceding retirement tranches remain overwhelmingly deletion-negative. |
+
+Issues closed or discovered during this tranche:
+
+- `H2-TRANSITION-038` — closed. Structured closure now reaches start, sparse
+  materialization, doctor, worker checks, parent integration, and finish.
+- `H2-TRANSITION-039` — closed operationally. A full integration clone under
+  `/private/tmp` correctly made 15 lifecycle fixtures refuse OS-temp task roots.
+  Full lifecycle integration rehearsals now run from a non-temp disposable
+  clone; production safety was not weakened to accommodate the test runner.
+- `H2-TRANSITION-040` — open. One owned directory is still both the write
+  ceiling and the impact-selection root. `docs/audit_registry` selected three
+  skills, 22 regressions, 20 deferred checks, and 40 parent commands; naming
+  the three actually writable files selected one skill, five deferred checks,
+  and eight parent commands (75% fewer deferred checks and 80% fewer parent
+  commands). A later slice should split `ownedPaths` from reviewed
+  `plannedImpactPaths`, then reconcile actual diff paths at finish, rather than
+  teaching users to over-broaden or hand-minimize one overloaded field.
 
 Durable outcomes are PR wall-clock p50/p95 and escaped defects. Record the
 baseline from the ten most recent comparable PRs and compare after ten v2 PRs.
