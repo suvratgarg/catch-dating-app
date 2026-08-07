@@ -714,6 +714,7 @@ reports 3 listing routes, 2 legacy routes, and 2 sitemap listing routes.
 | Search and listing selectors need scalable selectors before inventory grows. | Resolved | Organizer filtering, URL state, cached search text, future-event lookup, profile strength, and summary counts live in selectors/controllers. |
 | Marketing workflow path filters miss helper scripts used by deploy. | Resolved | `.github/workflows/marketing-website.yml` watches `tool/env/check_web_hosting_env.mjs`, `tool/firebase_with_env.sh`, and `tool/marketing/**`. |
 | Generated listing drift is masked by build-time regeneration. | Resolved | CI runs `npm --workspace catch-marketing run check:organizer-listings` before the marketing build. |
+| Hosting validation and deployment rebuild different bytes. | Resolved | Main source validation skips the redundant deployable bundle; `_web-hosting-build.yml` builds once and packages one lifecycle-hook-free target, while `_web-hosting-promote.yml` verifies its immutable artifact id, GitHub digest, and exact file inventory before deploying without installing source dependencies or rebuilding Vite. |
 | Above-fold media is heavy. | Resolved | The homepage/host hero use responsive JPEG variants under `website/public/assets/marketing/` instead of the original PNG. |
 | Direct organizer analytics is not consent-gated. | Resolved | Organizer analytics suppresses session id creation, callable writes, and dataLayer mirrors until analytics consent is accepted; `docs/ads_conversion_spec.md` records the rule. |
 

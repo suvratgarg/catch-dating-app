@@ -5,12 +5,15 @@ on:
     branches: [main]
     paths:
       - ".github/actions/**"
+      - ".github/workflows/_web-hosting-build.yml"
+      - ".github/workflows/_web-hosting-promote.yml"
       - ".github/workflows/admin-website.yml"
       - ".github/workflows/react-surface-validation.yml"
       - ".firebaserc"
       - "admin/**"
       - "contracts/callables/**"
       - "contracts/callable_responses/**"
+      - "contracts/admin/admin_live_data_sources.json"
       - "contracts/shared/**"
       - "design/admin/**"
       - "design/components/**"
@@ -19,14 +22,23 @@ on:
       - "firebase.json"
       - "package.json"
       - "package-lock.json"
+      - "packages/web-config/**"
       - "packages/web-ui/**"
       - "tool/ci/toolchain.env"
+      - "tool/ci/delivery_core.mjs"
+      - "tool/ci/package_web_hosting.mjs"
+      - "tool/ci/package_web_hosting.test.mjs"
+      - "tool/ci/web_hosting_workflow.test.mjs"
       - "tool/env/check_web_hosting_env.mjs"
+      - "tool/firebase/check_client_callable_dependencies.mjs"
+      - "tool/firebase/firebase_project_resolver.mjs"
+      - "tool/firebase_with_env.sh"
       - "tool/design/check_component_lexicon.mjs"
       - "tool/design/check_component_lexicon.test.mjs"
       - "tool/web/check_shared_web_ui_adoption.mjs"
       - "tool/web/check_storybook_visuals.mjs"
       - "tool/web/check_react_controller_test_targets.mjs"
+      - "tool/web/check_admin_live_data_sources.mjs"
       - "tool/web/react_controller_test_targets.json"
       - "tool/web/react_dependency_graph.mjs"
       - "tool/web/react_dependency_graph.test.mjs"
@@ -38,10 +50,30 @@ on:
         required: false
         type: boolean
         default: false
-
-concurrency:
-  group: admin-website-${{ github.ref }}
-  cancel-in-progress: true
+      recovery_artifact_digest:
+        description: Exact sha256 digest from a failed source run's Web Hosting artifact
+        required: false
+        type: string
+      recovery_artifact_id:
+        description: Exact artifact id from a failed source run (leave empty for validation-only dispatch)
+        required: false
+        type: string
+      recovery_reason:
+        description: Operator reason required for exact-artifact recovery
+        required: false
+        type: string
+      recovery_source_run_attempt:
+        description: Producing failed workflow run attempt
+        required: false
+        type: string
+      recovery_source_run_id:
+        description: Producing failed workflow run id
+        required: false
+        type: string
+      recovery_source_sha:
+        description: Exact 40-character source SHA from the failed run
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -49,71 +81,59 @@ permissions:
 jobs:
   validate:
     name: Validate admin website
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.recovery_artifact_id == '' }}
     uses: ./.github/workflows/react-surface-validation.yml
     with:
       surface: admin
       update_visual_baselines: ${{ github.event_name == 'workflow_dispatch' && inputs.update_visual_baselines }}
+      skip_deployable_build: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
 
-  deploy:
-    name: Deploy admin Hosting
+  package:
+    name: Package exact admin Hosting bytes
     needs: validate
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    environment: prod-hosting
-    timeout-minutes: 20
+    uses: ./.github/workflows/_web-hosting-build.yml
+    with:
+      surface: admin
+    secrets: inherit
     permissions:
+      actions: read
       contents: read
       id-token: write
 
-    steps:
-      - uses: actions/checkout@v6
+  promote:
+    name: Promote exact admin Hosting bytes
+    needs: package
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.package.result == 'success' }}
+    uses: ./.github/workflows/_web-hosting-promote.yml
+    with:
+      artifact_digest: ${{ needs.package.outputs.artifact_digest }}
+      artifact_id: ${{ needs.package.outputs.artifact_id }}
+      source_ci_run_attempt: ${{ needs.package.outputs.source_ci_run_attempt }}
+      source_ci_run_id: ${{ needs.package.outputs.source_ci_run_id }}
+      source_sha: ${{ needs.package.outputs.source_sha }}
+      surface: admin
+    secrets: inherit
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
 
-      - id: toolchain
-        uses: ./.github/actions/load-toolchain
-
-      - uses: actions/setup-node@v6
-        with:
-          node-version: ${{ steps.toolchain.outputs.node-version }}
-          cache: npm
-          cache-dependency-path: package-lock.json
-
-      - run: npm ci
-
-      - run: npm install -g firebase-tools@${{ steps.toolchain.outputs.firebase-tools-version }}
-
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v3
-        with:
-          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ vars.GCP_SERVICE_ACCOUNT_EMAIL }}
-
-      - name: Validate production admin environment
-        env:
-          VITE_ADMIN_DATA_MODE: ${{ vars.VITE_ADMIN_DATA_MODE }}
-          VITE_ADMIN_FIREBASE_ENV: ${{ vars.VITE_ADMIN_FIREBASE_ENV }}
-          VITE_ADMIN_APPCHECK_SITE_KEY: ${{ vars.VITE_ADMIN_APPCHECK_SITE_KEY }}
-          VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
-          VITE_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}
-          VITE_FIREBASE_PROJECT_ID: ${{ vars.VITE_FIREBASE_PROJECT_ID }}
-          VITE_FIREBASE_STORAGE_BUCKET: ${{ vars.VITE_FIREBASE_STORAGE_BUCKET }}
-          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ vars.VITE_FIREBASE_MESSAGING_SENDER_ID }}
-          VITE_FIREBASE_APP_ID: ${{ vars.VITE_FIREBASE_APP_ID }}
-          VITE_FIREBASE_MEASUREMENT_ID: ${{ vars.VITE_FIREBASE_MEASUREMENT_ID }}
-        run: node tool/env/check_web_hosting_env.mjs admin --expected-firebase-env prod --expected-project-id catch-dating-app-64e51
-
-      - name: Verify production Admin callable dependencies
-        run: node tool/web/check_admin_live_data_sources.mjs --check --verify-live --environment prod --summary
-
-      - name: Deploy production admin site
-        env:
-          VITE_ADMIN_DATA_MODE: ${{ vars.VITE_ADMIN_DATA_MODE }}
-          VITE_ADMIN_FIREBASE_ENV: ${{ vars.VITE_ADMIN_FIREBASE_ENV }}
-          VITE_ADMIN_APPCHECK_SITE_KEY: ${{ vars.VITE_ADMIN_APPCHECK_SITE_KEY }}
-          VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
-          VITE_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}
-          VITE_FIREBASE_PROJECT_ID: ${{ vars.VITE_FIREBASE_PROJECT_ID }}
-          VITE_FIREBASE_STORAGE_BUCKET: ${{ vars.VITE_FIREBASE_STORAGE_BUCKET }}
-          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ vars.VITE_FIREBASE_MESSAGING_SENDER_ID }}
-          VITE_FIREBASE_APP_ID: ${{ vars.VITE_FIREBASE_APP_ID }}
-          VITE_FIREBASE_MEASUREMENT_ID: ${{ vars.VITE_FIREBASE_MEASUREMENT_ID }}
-        run: ./tool/firebase_with_env.sh prod deploy --only hosting:admin --non-interactive
+  recover:
+    name: Recover exact admin Hosting bytes
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.recovery_artifact_id != '' }}
+    uses: ./.github/workflows/_web-hosting-promote.yml
+    with:
+      artifact_digest: ${{ inputs.recovery_artifact_digest }}
+      artifact_id: ${{ inputs.recovery_artifact_id }}
+      recovery: true
+      recovery_reason: ${{ inputs.recovery_reason }}
+      source_ci_run_attempt: ${{ inputs.recovery_source_run_attempt }}
+      source_ci_run_id: ${{ inputs.recovery_source_run_id }}
+      source_sha: ${{ inputs.recovery_source_sha }}
+      surface: admin
+    secrets: inherit
+    permissions:
+      actions: read
+      contents: read
+      id-token: write

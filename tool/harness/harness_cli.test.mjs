@@ -47,6 +47,18 @@ test("plan parses an explicit GitHub output destination", () => {
     parseArgs(["plan", "--github-output", "/tmp/github-output"]).githubOutput,
     "/tmp/github-output",
   );
+  assert.equal(
+    parseArgs(["plan", "--base", "origin/main", "--head", "HEAD"]).head,
+    "HEAD",
+  );
+});
+
+test("help documents the explicit base-to-head planning range", () => {
+  const result = spawnSync(process.execPath, ["tool/harness.mjs", "--help"], {
+    encoding: "utf8",
+  });
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /--base ref \[--head ref\]/u);
 });
 
 test("bounded plan outputs contain no changed-path inventory", () => {
@@ -62,6 +74,7 @@ test("bounded plan outputs contain no changed-path inventory", () => {
     operations: {
       ciTargets: ["docs"],
       buildTargets: [],
+      releaseTargets: [],
       releaseRoles: [],
       deployGroups: [],
     },
@@ -72,6 +85,8 @@ test("bounded plan outputs contain no changed-path inventory", () => {
   assert.match(output, /^docs=true$/m);
   assert.match(output, /^flutter=false$/m);
   assert.match(output, /^app_roles=\[\]$/m);
+  assert.match(output, /^release_targets=\[\]$/m);
+  assert.match(output, /^has_release_targets=false$/m);
   assert.deepEqual(
     JSON.parse(output.match(/^docs_checkout=(.*)$/m)[1]),
     {
@@ -94,6 +109,7 @@ test("plan output derives roles and deployment authorization from bounded operat
     operations: {
       ciTargets: ["flutter_build_ios", "functions"],
       buildTargets: ["host-ios"],
+      releaseTargets: ["host-ios"],
       releaseRoles: ["host"],
       deployGroups: ["functions"],
     },
@@ -102,6 +118,8 @@ test("plan output derives roles and deployment authorization from bounded operat
   assert.equal(output.flutter_build_ios, true);
   assert.equal(output.flutter_build_android, false);
   assert.equal(output.app_roles, '["host"]');
+  assert.equal(output.release_targets, '["host-ios"]');
+  assert.equal(output.has_release_targets, true);
   assert.equal(output.release_roles, '["host"]');
   assert.equal(output.has_release_roles, true);
   assert.equal(output.deploy_groups, '["functions"]');
@@ -116,6 +134,7 @@ test("output projection rejects incomplete plans and unsafe multiline values", (
         operations: {
           ciTargets: [],
           buildTargets: [],
+          releaseTargets: [],
           releaseRoles: [],
           deployGroups: [],
         },
@@ -142,6 +161,7 @@ test("output projection rejects an invalid checkout contract", () => {
         operations: {
           ciTargets: ["docs"],
           buildTargets: [],
+          releaseTargets: [],
           releaseRoles: [],
           deployGroups: [],
         },

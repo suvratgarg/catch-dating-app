@@ -3,7 +3,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import {spawnSync} from "node:child_process";
-import {X509Certificate} from "node:crypto";
+import {createHash, X509Certificate} from "node:crypto";
 import {fileURLToPath} from "node:url";
 import {
   defaultRepoRoot,
@@ -64,6 +64,7 @@ export function buildAndroidReleaseReceipt({
   firebaseAppId,
   firebaseProjectId,
   signerFingerprint,
+  artifactBinding,
 }) {
   return {
     $schema: "catch.android-release-identity/v1",
@@ -83,9 +84,23 @@ export function buildAndroidReleaseReceipt({
       debuggable: false,
     },
     bundle: path.basename(bundlePath),
+    ...(artifactBinding ? {artifactBinding} : {}),
     signatureVerified: true,
     uploadCertificateSha256: normalizeFingerprint(signerFingerprint),
     releaseOwner: target.release?.owner ?? null,
+  };
+}
+
+export function buildArtifactBinding(artifactPath) {
+  const resolved = path.resolve(artifactPath);
+  const stat = fs.lstatSync(resolved);
+  if (!stat.isFile() || stat.isSymbolicLink()) {
+    throw new Error(`Release artifact must be a regular non-symlink file: ${resolved}`);
+  }
+  return {
+    path: path.basename(resolved),
+    sizeBytes: stat.size,
+    sha256: createHash("sha256").update(fs.readFileSync(resolved)).digest("hex"),
   };
 }
 
@@ -106,6 +121,7 @@ export function verifyAndroidReleaseBundle({
   if (!fs.existsSync(resolvedBundle)) {
     throw new Error(`Android App Bundle does not exist: ${resolvedBundle}`);
   }
+  const artifactBindingBefore = buildArtifactBinding(resolvedBundle);
 
   const bundletool = path.resolve(bundletoolPath || process.env.BUNDLETOOL_JAR || "");
   if (!bundletoolPath && !process.env.BUNDLETOOL_JAR) {
@@ -117,7 +133,7 @@ export function verifyAndroidReleaseBundle({
     throw new Error("GOOGLE_MAPS_ANDROID_API_KEY_PROD is required for compiled Maps verification");
   }
 
-  const signature = run("jarsigner", ["-verify", resolvedBundle], {allowFailure: true});
+  const signature = verifyJarSignature(resolvedBundle, {allowFailure: true});
   const signerFingerprint = readSignerFingerprint(resolvedBundle);
   const applicationId = dumpManifestValue(bundletool, resolvedBundle, "/manifest/@package");
   const versionName = dumpManifestValue(bundletool, resolvedBundle, "/manifest/@android:versionName");
@@ -174,6 +190,10 @@ export function verifyAndroidReleaseBundle({
     throw new Error(`Android release identity verification failed:\n- ${findings.join("\n- ")}`);
   }
 
+  const artifactBinding = buildArtifactBinding(resolvedBundle);
+  if (JSON.stringify(artifactBinding) !== JSON.stringify(artifactBindingBefore)) {
+    throw new Error("Android App Bundle bytes changed during identity verification");
+  }
   const receipt = buildAndroidReleaseReceipt({
     target,
     bundlePath: resolvedBundle,
@@ -185,6 +205,7 @@ export function verifyAndroidReleaseBundle({
     firebaseAppId,
     firebaseProjectId,
     signerFingerprint,
+    artifactBinding,
   });
   if (receiptPath) {
     const resolvedReceipt = path.resolve(root, receiptPath);
@@ -192,6 +213,28 @@ export function verifyAndroidReleaseBundle({
     fs.writeFileSync(resolvedReceipt, `${JSON.stringify(receipt, null, 2)}\n`);
   }
   return receipt;
+}
+
+export function verifyJarSignature(bundlePath, {allowFailure = false} = {}) {
+  const result = run(
+    "jarsigner",
+    ["-verify", "-strict", path.resolve(bundlePath)],
+    {allowFailure: true},
+  );
+  // Android upload certificates are intentionally self-signed. jarsigner's
+  // strict status 4 represents that expected chain warning; every other
+  // strict bit (including 16 for unsigned entries) remains fatal.
+  const normalized = {
+    ...result,
+    strictStatus: result.status,
+    status: result.status === 0 || result.status === 4 ? 0 : result.status,
+  };
+  if (!allowFailure && normalized.status !== 0) {
+    throw new Error(
+      `jarsigner -verify -strict ${bundlePath} failed: ${(result.stderr || result.stdout).trim()}`,
+    );
+  }
+  return normalized;
 }
 
 function dumpManifestValue(bundletoolPath, bundlePath, xpath) {

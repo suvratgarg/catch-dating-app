@@ -13,6 +13,9 @@ import {
 const graph = JSON.parse(
   fs.readFileSync(new URL("./component_graph.json", import.meta.url), "utf8"),
 );
+const graphSchema = JSON.parse(
+  fs.readFileSync(new URL("./component_graph.schema.json", import.meta.url), "utf8"),
+);
 const rootManifest = JSON.parse(
   fs.readFileSync(new URL("../repository_root_manifest.json", import.meta.url), "utf8"),
 );
@@ -30,9 +33,17 @@ test("component graph validates and affected edges cannot authorize release", ()
   for (const profile of Object.values(graph.operationProfiles)) {
     for (const operation of Object.values(profile.affected)) {
       assert.deepEqual(operation.deployGroups ?? [], []);
+      assert.deepEqual(operation.releaseTargets ?? [], []);
       assert.deepEqual(operation.releaseRoles ?? [], []);
     }
   }
+});
+
+test("component graph schema admits only signed mobile release targets", () => {
+  assert.deepEqual(
+    graphSchema.$defs.operation.properties.releaseTargets.items.enum,
+    ["consumer-android", "consumer-ios", "host-android", "host-ios"],
+  );
 });
 
 test("CI checkout requirements keep planner and docs narrow with a full fallback", () => {
@@ -159,6 +170,7 @@ test("nightly full mode selects every declared validation component without depl
   assert.equal(result.full, true);
   assert.equal(result.directComponents.length, graph.components.length);
   assert.deepEqual(result.operations.deployGroups, []);
+  assert.deepEqual(result.operations.releaseTargets, []);
   assert.deepEqual(result.operations.releaseRoles, []);
   assert.ok(result.operations.ciTargets.includes("flutter"));
   assert.ok(result.operations.ciTargets.includes("functions"));
@@ -244,11 +256,13 @@ test("native and Firebase role fixtures retain platform-specific validation", ()
   const nativeHost = plan("android/app/src/hostProd/AndroidManifest.xml", "main");
   assert.deepEqual(nativeHost.directComponents, ["app.native.android.host"]);
   assert.deepEqual(nativeHost.operations.ciTargets, ["flutter_build_android"]);
+  assert.deepEqual(nativeHost.operations.releaseTargets, ["host-android"]);
   assert.deepEqual(nativeHost.operations.releaseRoles, ["host"]);
 
   const firebaseConsumer = plan("firebase/prod/android/google-services.json", "main");
   assert.deepEqual(firebaseConsumer.directComponents, ["infra.firebase.consumer-android"]);
   assert.deepEqual(firebaseConsumer.operations.ciTargets, ["flutter_build_android", "tools"]);
+  assert.deepEqual(firebaseConsumer.operations.releaseTargets, ["consumer-android"]);
   assert.deepEqual(firebaseConsumer.operations.releaseRoles, ["consumer"]);
 
   const firebaseRoot = plan("firebase.json", "main");
@@ -258,6 +272,7 @@ test("native and Firebase role fixtures retain platform-specific validation", ()
   const packageIos = plan("apps/host/ios/Runner/Info.plist", "main");
   assert.deepEqual(packageIos.directComponents, ["app.host.native.ios"]);
   assert.deepEqual(packageIos.operations.ciTargets, ["flutter_build_ios"]);
+  assert.deepEqual(packageIos.operations.releaseTargets, ["host-ios"]);
   assert.deepEqual(packageIos.operations.releaseRoles, ["host"]);
 
   const packageAndroid = plan(
@@ -266,6 +281,7 @@ test("native and Firebase role fixtures retain platform-specific validation", ()
   );
   assert.deepEqual(packageAndroid.directComponents, ["app.consumer.native.android"]);
   assert.deepEqual(packageAndroid.operations.ciTargets, ["flutter_build_android"]);
+  assert.deepEqual(packageAndroid.operations.releaseTargets, ["consumer-android"]);
   assert.deepEqual(packageAndroid.operations.releaseRoles, ["consumer"]);
 
   const packageBoundary = plan("apps/host/pubspec.yaml");
@@ -279,8 +295,75 @@ test("native and Firebase role fixtures retain platform-specific validation", ()
   ]);
 });
 
+test("signed mobile authority preserves platform ownership instead of widening roles", () => {
+  const fixtures = [
+    {
+      path: "apps/host/ios/Runner/Info.plist",
+      targets: ["host-ios"],
+      roles: ["host"],
+    },
+    {
+      path: "apps/consumer/android/app/src/main/AndroidManifest.xml",
+      targets: ["consumer-android"],
+      roles: ["consumer"],
+    },
+    {
+      path: "ios/Runner.xcodeproj/project.pbxproj",
+      targets: ["consumer-ios", "host-ios"],
+      roles: ["consumer", "host"],
+    },
+    {
+      path: "android/gradle.properties",
+      targets: ["consumer-android", "host-android"],
+      roles: ["consumer", "host"],
+    },
+  ];
+
+  for (const fixture of fixtures) {
+    const result = plan(fixture.path, "main");
+    assert.deepEqual(result.operations.releaseTargets, fixture.targets, fixture.path);
+    assert.deepEqual(result.operations.releaseRoles, fixture.roles, fixture.path);
+  }
+
+  const mixed = planAffected({
+    changedPaths: [
+      "apps/host/ios/Runner/Info.plist",
+      "apps/consumer/android/app/src/main/AndroidManifest.xml",
+    ],
+    graph,
+    mode: "main",
+  });
+  assert.deepEqual(mixed.operations.releaseTargets, ["consumer-android", "host-ios"]);
+  assert.deepEqual(mixed.operations.releaseRoles, ["consumer", "host"]);
+});
+
+test("web and desktop shells cannot authorize a signed mobile release", () => {
+  for (const path of [
+    "apps/host/web/index.html",
+    "apps/consumer/web/index.html",
+    "web/index.html",
+    "macos/Runner/Info.plist",
+  ]) {
+    const main = plan(path, "main");
+    assert.deepEqual(main.operations.releaseTargets, [], path);
+    assert.deepEqual(main.operations.releaseRoles, [], path);
+
+    const release = plan(path, "release");
+    assert.deepEqual(release.operations.releaseTargets, [], path);
+    assert.deepEqual(release.operations.releaseRoles, [], path);
+    assert.ok(release.operations.buildTargets.every((target) => target.endsWith("-web")));
+  }
+});
+
 test("shared React primitives expand to both web consumers", () => {
   const result = plan("packages/web-ui/src/Button.tsx");
+  assert.deepEqual(result.directComponents, ["web.shared"]);
+  assert.deepEqual(result.affectedComponents, ["web.admin", "web.marketing"]);
+  assert.deepEqual(result.operations.ciTargets, ["admin", "marketing", "tools"]);
+});
+
+test("shared React build configuration expands to both web consumers", () => {
+  const result = plan("packages/web-config/vite-react.ts");
   assert.deepEqual(result.directComponents, ["web.shared"]);
   assert.deepEqual(result.affectedComponents, ["web.admin", "web.marketing"]);
   assert.deepEqual(result.operations.ciTargets, ["admin", "marketing", "tools"]);
@@ -422,11 +505,68 @@ test("compile-codegen rejects mutation and network commands", () => {
 
 test("graph validation rejects release authority on an affected edge", () => {
   const unsafe = clone(graph);
-  unsafe.operationProfiles["app-host"].affected.main = {releaseRoles: ["host"]};
+  unsafe.operationProfiles["app-host"].affected.main = {
+    ciTargets: ["flutter_build_ios"],
+    releaseTargets: ["host-ios"],
+    releaseRoles: ["host"],
+  };
   const errors = validateComponentGraph(unsafe);
   assert.ok(errors.some((error) =>
     error.includes("cannot authorize release from an affected edge")
   ));
+  assert.ok(errors.some((error) =>
+    error.includes("cannot authorize signed mobile release from an affected edge")
+  ));
+});
+
+test("graph validation rejects role-only, cross-platform, and web release widening", () => {
+  const cases = [
+    {
+      name: "legacy role-only authority",
+      mutate(value) {
+        value.operationProfiles["native-host-web"].direct.main.releaseRoles = ["host"];
+      },
+      expected: "must be backed by exact releaseTargets",
+    },
+    {
+      name: "web target masquerading as signed mobile",
+      mutate(value) {
+        value.operationProfiles["native-host-web"].direct.main.releaseTargets = ["host-web"];
+        value.operationProfiles["native-host-web"].direct.main.releaseRoles = ["host"];
+      },
+      expected: 'unknown signed mobile release target "host-web"',
+    },
+    {
+      name: "iOS owner widening into Android",
+      mutate(value) {
+        value.operationProfiles["native-host-ios"].direct.main.releaseTargets = ["host-android"];
+      },
+      expected: 'requires CI target "flutter_build_android"',
+    },
+    {
+      name: "target and compatibility role disagree",
+      mutate(value) {
+        value.operationProfiles["native-host-ios"].direct.main.releaseTargets = ["consumer-ios"];
+      },
+      expected: "must exactly match roles implied by releaseTargets",
+    },
+    {
+      name: "release target lacks matching build",
+      mutate(value) {
+        value.operationProfiles["native-host-ios"].direct.release.buildTargets = [];
+      },
+      expected: 'requires matching build target "host-ios"',
+    },
+  ];
+
+  for (const fixture of cases) {
+    const unsafe = clone(graph);
+    fixture.mutate(unsafe);
+    assert.ok(
+      validateComponentGraph(unsafe).some((error) => error.includes(fixture.expected)),
+      fixture.name,
+    );
+  }
 });
 
 test("graph validation rejects unknown tool check ids when the manifest is supplied", () => {

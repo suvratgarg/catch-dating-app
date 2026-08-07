@@ -8,11 +8,49 @@ import {spawnSync} from "node:child_process";
 import test from "node:test";
 import {fileURLToPath} from "node:url";
 import {
+  assertStableArtifactBinding,
+  buildArtifactBinding,
   collectReleaseIdentityFindings,
+  extractIpaForIdentity,
   parseFlutterBuildXcconfig,
   readArchiveInfoPlist,
   resolveReleaseTarget,
+  verifyCodeSignature,
 } from "./verify_ios_release_identity.mjs";
+
+test("rejects a changed IPA container after the app was extracted", () => {
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-ios-container-"));
+  let extracted;
+  try {
+    const ipaPath = path.join(tempRoot, "Catch.ipa");
+    const staleApp = path.join(tempRoot, "stale", "Payload", "Stale.app");
+    const signedApp = path.join(tempRoot, "signed", "Payload", "Current.app");
+    fs.mkdirSync(staleApp, {recursive: true});
+    fs.mkdirSync(signedApp, {recursive: true});
+    fs.writeFileSync(path.join(staleApp, "identity.txt"), "stale-a");
+    fs.writeFileSync(path.join(signedApp, "identity.txt"), "current-b");
+    const zip = spawnSync("/usr/bin/zip", ["-qry", ipaPath, "Payload"], {
+      cwd: path.join(tempRoot, "signed"),
+      encoding: "utf8",
+    });
+    assert.equal(zip.status, 0, zip.stderr);
+    extracted = extractIpaForIdentity(ipaPath);
+    assert.equal(path.basename(extracted.appPath), "Current.app");
+    assert.notEqual(path.resolve(extracted.appPath), path.resolve(staleApp));
+    fs.writeFileSync(ipaPath, "same-name-substituted-container");
+    const afterIdentityInspection = buildArtifactBinding(ipaPath);
+    assert.throws(
+      () => assertStableArtifactBinding(
+        extracted.artifactBindingBefore,
+        afterIdentityInspection,
+      ),
+      /changed after export identity extraction/,
+    );
+  } finally {
+    extracted?.cleanup();
+    fs.rmSync(tempRoot, {recursive: true, force: true});
+  }
+});
 
 const manifest = {
   targets: [
@@ -92,6 +130,115 @@ function appInfoFor(target) {
     CFBundleVersion: "202607101",
   };
 }
+
+test("export identity rejects Maps evidence from a stale extracted app", () => {
+  const expectedKey = `AIza${"A".repeat(28)}`;
+  const staleAppInfo = {...appInfoFor(consumerTarget), GoogleMapsApiKey: expectedKey};
+  const substitutedAppInfo = {...staleAppInfo};
+  delete substitutedAppInfo.GoogleMapsApiKey;
+  const findings = collectReleaseIdentityFindings({
+    target: consumerTarget,
+    roleEntitlements: baseConsumerEntitlements,
+    appInfo: substitutedAppInfo,
+    firebaseInfo: firebaseInfoFor(consumerTarget),
+    archiveInfo: null,
+    signedEntitlements: baseSignedConsumerEntitlements,
+    expectedVersion: "1.2.3",
+    expectedBuild: "202607101",
+    expectedGoogleMapsApiKey: expectedKey,
+    artifactStage: "export",
+  });
+  assert.ok(findings.some((finding) => finding.includes("compiled Google Maps API key")));
+});
+
+test("strict deep signature verification rejects a tampered signed app", (t) => {
+  if (process.platform !== "darwin") {
+    t.skip("codesign regression requires macOS");
+    return;
+  }
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-ios-signature-"));
+  try {
+    const appPath = path.join(tempRoot, "Synthetic.app");
+    const contents = path.join(appPath, "Contents");
+    fs.mkdirSync(path.join(contents, "MacOS"), {recursive: true});
+    fs.mkdirSync(path.join(contents, "Resources"), {recursive: true});
+    fs.copyFileSync("/usr/bin/true", path.join(contents, "MacOS", "Synthetic"));
+    fs.writeFileSync(path.join(contents, "Resources", "sealed.txt"), "sealed");
+    fs.writeFileSync(path.join(contents, "Info.plist"), `<?xml version="1.0" encoding="UTF-8"?>
+<plist version="1.0"><dict>
+<key>CFBundleExecutable</key><string>Synthetic</string>
+<key>CFBundleIdentifier</key><string>com.catchdates.signature-test</string>
+<key>CFBundlePackageType</key><string>APPL</string>
+<key>CFBundleVersion</key><string>1</string>
+</dict></plist>\n`);
+    const signed = spawnSync(
+      "/usr/bin/codesign",
+      ["--force", "--deep", "--sign", "-", appPath],
+      {encoding: "utf8"},
+    );
+    assert.equal(signed.status, 0, signed.stderr);
+    assert.equal(verifyCodeSignature(appPath), true);
+    fs.writeFileSync(path.join(contents, "Resources", "sealed.txt"), "tampered");
+    assert.throws(() => verifyCodeSignature(appPath), /signature verification failed/);
+  } finally {
+    fs.rmSync(tempRoot, {recursive: true, force: true});
+  }
+});
+
+test("normal IPA CLI emits no receipt for a tampered app signature", (t) => {
+  if (process.platform !== "darwin") {
+    t.skip("codesign regression requires macOS");
+    return;
+  }
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-ios-cli-signature-"));
+  try {
+    const appPath = path.join(tempRoot, "source", "Payload", "Tampered.app");
+    const receiptPath = path.join(tempRoot, "receipt.json");
+    const ipaPath = path.join(tempRoot, "Tampered.ipa");
+    fs.mkdirSync(appPath, {recursive: true});
+    fs.copyFileSync("/usr/bin/true", path.join(appPath, "Tampered"));
+    fs.writeFileSync(path.join(appPath, "sealed.txt"), "sealed");
+    const bundlePlist = `<?xml version="1.0" encoding="UTF-8"?>
+<plist version="1.0"><dict>
+<key>CFBundleExecutable</key><string>Tampered</string>
+<key>CFBundleIdentifier</key><string>com.catchdates.signature-test</string>
+<key>CFBundlePackageType</key><string>APPL</string>
+<key>CFBundleVersion</key><string>1</string>
+</dict></plist>\n`;
+    fs.writeFileSync(path.join(appPath, "Info.plist"), bundlePlist);
+    fs.writeFileSync(path.join(appPath, "GoogleService-Info.plist"), "{}\n");
+    let result = spawnSync(
+      "/usr/bin/codesign",
+      ["--force", "--deep", "--sign", "-", appPath],
+      {encoding: "utf8"},
+    );
+    assert.equal(result.status, 0, result.stderr);
+    fs.writeFileSync(path.join(appPath, "sealed.txt"), "tampered");
+    result = spawnSync("/usr/bin/zip", ["-qry", ipaPath, "Payload"], {
+      cwd: path.join(tempRoot, "source"),
+      encoding: "utf8",
+    });
+    assert.equal(result.status, 0, result.stderr);
+
+    const scriptPath = fileURLToPath(
+      new URL("./verify_ios_release_identity.mjs", import.meta.url),
+    );
+    result = spawnSync(process.execPath, [
+      scriptPath,
+      "--ipa", ipaPath,
+      "--role", "host",
+      "--environment", "prod",
+      "--expected-version", "1.2.3",
+      "--expected-build", "202607101",
+      "--receipt", receiptPath,
+    ], {encoding: "utf8"});
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /signature verification failed/u);
+    assert.equal(fs.existsSync(receiptPath), false);
+  } finally {
+    fs.rmSync(tempRoot, {recursive: true, force: true});
+  }
+});
 
 function firebaseInfoFor(target) {
   return {

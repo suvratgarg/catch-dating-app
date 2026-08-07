@@ -61,6 +61,7 @@ const toolPreflightCheckoutClosure = [
   "/functions/package.json",
   "/pubspec.yaml",
   "/.github/workflows/app-build-matrix.yml",
+  "/.github/workflows/mobile-internal-promote.yml",
   "/.github/workflows/mobile-internal-release.yml",
   "/.github/workflows/visual-integration-ci.yml",
 ];
@@ -454,11 +455,13 @@ test("web smoke compiles dev roles without compiling production web", () => {
   );
 });
 
-test("mobile release workflow consumes planner authorization outputs", () => {
+test("mobile release workflow consumes the exact successful CI plan authority", () => {
   const mobile = workflow("mobile-internal-release.yml");
-  assert.match(mobile, /steps\.impact\.outputs\.release_roles/);
-  assert.match(mobile, /node tool\/harness\.mjs plan/);
-  assert.match(mobile, /--mode main/);
+  assert.match(mobile, /catch\.ci-delivery-authority\/v3/);
+  assert.match(mobile, /\.operations\.releaseTargets/);
+  assert.match(mobile, /needs\.authorize\.outputs\.ios_targets/);
+  assert.match(mobile, /needs\.authorize\.outputs\.android_targets/);
+  assert.doesNotMatch(mobile, /node tool\/harness\.mjs plan/);
   assert.doesNotMatch(mobile, new RegExp(`mobile_release_roles|${retiredPlanner}`));
 });
 

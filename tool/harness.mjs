@@ -46,6 +46,8 @@ export function projectPlanOutputs({plan, graph}) {
     ])),
     app_roles: JSON.stringify(appRoles),
     build_targets: JSON.stringify([...plan.operations.buildTargets].sort()),
+    release_targets: JSON.stringify([...plan.operations.releaseTargets].sort()),
+    has_release_targets: plan.operations.releaseTargets.length > 0,
     release_roles: JSON.stringify([...plan.operations.releaseRoles].sort()),
     has_release_roles: plan.operations.releaseRoles.length > 0,
     deploy_groups: JSON.stringify([...plan.operations.deployGroups].sort()),
@@ -220,6 +222,7 @@ function printPlan(plan) {
   console.log(`Checks: ${plan.operations.checkIds.join(", ") || "none"}`);
   console.log(`Compile-codegen: ${plan.operations.codegenIds.join(", ") || "none"}`);
   console.log(`Deploy groups: ${plan.operations.deployGroups.join(", ") || "none"}`);
+  console.log(`Release targets: ${plan.operations.releaseTargets.join(", ") || "none"}`);
   console.log(`Release roles: ${plan.operations.releaseRoles.join(", ") || "none"}`);
   if (plan.unknownPaths.length > 0) console.error(`Unknown paths: ${plan.unknownPaths.join(", ")}`);
   if (plan.ambiguousPaths.length > 0) {
@@ -233,8 +236,8 @@ function printHelp() {
 Commands:
   validate
   coverage [--json]
-  explain [--paths a,b | --base ref | --full] [--mode mode] [--json]
-  plan [--paths a,b | --base ref | --full] [--mode mode] [--github-output path] [--json]
+  explain [--paths a,b | --base ref [--head ref] | --full] [--mode mode] [--json]
+  plan [--paths a,b | --base ref [--head ref] | --full] [--mode mode] [--github-output path] [--json]
 
 Harness is read-only: it explains affected checks, builds, codegen freshness
 checks, and delivery lanes but never executes them. Use node tool/run.mjs check

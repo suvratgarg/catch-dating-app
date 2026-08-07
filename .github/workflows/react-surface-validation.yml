@@ -12,6 +12,11 @@ on:
         required: false
         type: boolean
         default: false
+      skip_deployable_build:
+        description: Skip the generic site build when the caller will build one exact production artifact.
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -113,12 +118,20 @@ jobs:
         continue-on-error: true
         run: npm --workspace catch-marketing run test:unit:coverage
 
+      - name: Validate marketing build prerequisites without emitting a bundle
+        if: ${{ inputs.surface == 'marketing' && inputs.skip_deployable_build }}
+        run: npm run web:marketing:typecheck
+
+      - name: Validate admin build prerequisites without emitting a bundle
+        if: ${{ inputs.surface == 'admin' && inputs.skip_deployable_build }}
+        run: npm run web:admin:typecheck
+
       - name: Build marketing website
-        if: ${{ inputs.surface == 'marketing' }}
+        if: ${{ inputs.surface == 'marketing' && !inputs.skip_deployable_build }}
         run: npm run web:marketing:build
 
       - name: Build admin website
-        if: ${{ inputs.surface == 'admin' }}
+        if: ${{ inputs.surface == 'admin' && !inputs.skip_deployable_build }}
         run: npm run web:admin:build
 
       - name: Install Storybook accessibility browser

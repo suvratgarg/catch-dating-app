@@ -44,7 +44,7 @@
       "generatedOutputs": ["lib/l10n/**", "lib/core/schema_contracts/generated/**"],
       "consumers": ["test/**", "integration_test/**"],
       "checks": ["design:tokens", "design:parity-gate"],
-      "ciWorkflows": [".github/workflows/flutter-ci.yml", ".github/workflows/visual-integration-ci.yml"]
+      "ciWorkflows": [".github/workflows/flutter-ci.yml", ".github/workflows/visual-integration-ci.yml", ".github/workflows/mobile-internal-release.yml", ".github/workflows/mobile-internal-promote.yml"]
     },
     {
       "id": "backend-contracts",
@@ -62,7 +62,7 @@
       "generatedOutputs": ["admin/src/generated/**", "website/src/generated/**", "packages/web-config/generated/**"],
       "consumers": ["firebase.json", "artifacts/marketing/**"],
       "checks": ["web:react-architecture-boundaries", "web:shared-ui-adoption"],
-      "ciWorkflows": [".github/workflows/react-surface-validation.yml", ".github/workflows/admin-website.yml", ".github/workflows/marketing-website.yml"]
+      "ciWorkflows": [".github/workflows/react-surface-validation.yml", ".github/workflows/_web-hosting-build.yml", ".github/workflows/_web-hosting-promote.yml", ".github/workflows/admin-website.yml", ".github/workflows/marketing-website.yml"]
     },
     {
       "id": "design-system",

@@ -6,9 +6,13 @@ Internal admin and analytics console for Catch operations.
 
 `.github/workflows/admin-website.yml` validates admin-console changes on pull
 requests and deploys the production Firebase Hosting `admin` target after
-matching changes land on `main`. The deploy job requires the prod GitHub
-Environment Vite Firebase/App Check variables and fails before build if the
+matching changes land on `main`. The exact build and promotion jobs use the
+`prod-hosting` GitHub Environment Vite Firebase/App Check variables and fail
+before build if the
 dashboard would point at the wrong Firebase project or stay in sample mode.
+The uncredentialed build runs once; the promoter deploys only the verified
+package bound to Firebase project `catch-dating-app-64e51` and site
+`catchdates-admin`.
 
 ## Local Development
 

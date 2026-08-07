@@ -3,6 +3,7 @@ import test from "node:test";
 import {
   assertCandidateAboveBuilds,
   compareAppleBuildNumbers,
+  preflightAppStorePromotion,
   waitForProcessedBuild,
 } from "./verify_app_store_build.mjs";
 
@@ -27,6 +28,61 @@ test("candidate preflight rejects a non-monotonic build", () => {
   );
 });
 
+test("App Store promotion preflight distinguishes upload from identity-only existing build", async () => {
+  const existing = await preflightAppStorePromotion({
+    appId: "6765646860",
+    buildNumber: "102",
+    token: "jwt",
+    fetchImpl: async () => response({
+      data: [{
+        id: "build-1",
+        attributes: {version: "102", processingState: "VALID", uploadedDate: "2026-08-07"},
+      }],
+    }),
+  });
+  assert.deepEqual(existing, {
+    action: "existing-valid",
+    appId: "6765646860",
+    buildId: "build-1",
+    buildNumber: "102",
+    processingState: "VALID",
+    uploadedDate: "2026-08-07",
+    evidenceLevel: "store-identity-only",
+  });
+  const missing = await preflightAppStorePromotion({
+    appId: "6765646860",
+    buildNumber: "102",
+    token: "jwt",
+    fetchImpl: async () => response({data: []}),
+  });
+  assert.equal(missing.action, "upload-required");
+});
+
+test("App Store promotion preflight rejects terminal or stale identities", async () => {
+  await assert.rejects(
+    preflightAppStorePromotion({
+      appId: "6765646860",
+      buildNumber: "102",
+      token: "jwt",
+      fetchImpl: async () => response({
+        data: [{id: "bad", attributes: {version: "102", processingState: "INVALID"}}],
+      }),
+    }),
+    /is INVALID/u,
+  );
+  await assert.rejects(
+    preflightAppStorePromotion({
+      appId: "6765646860",
+      buildNumber: "102",
+      token: "jwt",
+      fetchImpl: async () => response({
+        data: [{id: "newer", attributes: {version: "103", processingState: "VALID"}}],
+      }),
+    }),
+    /newer build/u,
+  );
+});
+
 test("processed-build wait tolerates discovery lag and processing", async () => {
   const responses = [
     response({data: []}),
@@ -34,7 +90,7 @@ test("processed-build wait tolerates discovery lag and processing", async () => 
     response({data: [{id: "build-1", attributes: {version: "102", processingState: "VALID", uploadedDate: "2026-07-11"}}]}),
   ];
   const result = await waitForProcessedBuild({
-    appId: "app-1",
+    appId: "6765646860",
     buildNumber: "102",
     token: "jwt",
     fetchImpl: async () => responses.shift(),

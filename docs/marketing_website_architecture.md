@@ -88,10 +88,11 @@ The website is already split out of the old monolithic shell:
   reads canonical `organizers/{id}` documents only. Multi-market organizer
   listings expose only their live-market projection in production. Storybook reads the explicit demo-inclusive
   `hostListings.demo.json` projection through `stories/fixtures/hostListings.ts`.
-  The production deploy regenerates `hostListings.json` from canonical
-  Firestore organizer documents; the committed JSON is a static build
-  projection, never the operational source of truth. The pretypecheck gate
-  validates both outputs.
+  The production read-only snapshot stage regenerates `hostListings.json` from
+  canonical Firestore organizer documents and passes only the validated listing
+  outputs to the uncredentialed exact build; promotion never rematerializes
+  them. The committed JSON is a static build projection, never the operational
+  source of truth. The pretypecheck gate validates both outputs.
 - Organizer website URLs come from the canonical document's
   `publicPage.canonicalPath`; the Firestore `organizers/{organizerId}` auto-id
   is an internal identity and is not a URL convention. Route reservations make

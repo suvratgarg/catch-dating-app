@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
 import test from "node:test";
 import {
   androidClientFor,
@@ -171,15 +172,16 @@ function unifiedReleaseManifest() {
   manifest.releasePolicy = {
     owner: "github-actions",
     workflow: ".github/workflows/mobile-internal-release.yml",
-    trigger: "role-impacted-main-push-for-artifacts-and-consumer-testflight",
+    promotionWorkflow: ".github/workflows/mobile-internal-promote.yml",
+    trigger: "successful-main-ci-exact-artifact-authority",
     environment: "prod-mobile",
-    approvalMode: "consumer-testflight-automatic-otherwise-manual",
+    approvalMode: "build-only-no-store-mutation",
     branchPolicy: "main-only",
     roles: ["consumer", "host"],
     ios: {
       channel: "testflight",
-      uploadMode: "automatic-selected-roles-on-main-or-manual-dispatch",
-      automaticRoles: ["consumer"],
+      uploadMode: "separate-promotion-workflow",
+      automaticRoles: [],
       signingStyle: "automatic",
       developmentIdentitySource: "reusable-ci-p12",
       distributionSigningStage: "export",
@@ -189,21 +191,18 @@ function unifiedReleaseManifest() {
     android: {
       channel: "play-internal",
       track: "qa",
-      uploadMode: "gated-until-play-ready",
+      uploadMode: "separate-promotion-workflow",
       publisherAuth: "github-oidc",
       publisherServiceAccount: "github-actions-play-publisher@catch-dating-app-64e51.iam.gserviceaccount.com",
       uploadCertificateSha256: "A".repeat(64),
     },
   };
   for (const target of manifest.targets.filter((candidate) => candidate.environment === "prod")) {
-    const automaticTestFlightOnMain = target.role === "consumer";
     target.release = {
       owner: "github-actions",
-      githubMode: automaticTestFlightOnMain
-        ? "automatic-artifact-automatic-testflight"
-        : "automatic-artifact-manual-upload",
+      githubMode: "automatic-exact-artifact",
       githubWorkflow: ".github/workflows/mobile-internal-release.yml",
-      automaticTestFlightOnMain,
+      automaticTestFlightOnMain: false,
       googlePlayPackageName: target.android.applicationId,
       legacyXcodeCloudWorkflow: `${target.role} legacy`,
     };
@@ -215,121 +214,26 @@ function unifiedReleaseManifest() {
   return manifest;
 }
 
-const unifiedWorkflow = `
-on:
-  push:
-    branches:
-      - main
-concurrency:
-  cancel-in-progress: false
-jobs:
-  resolve:
-    run: |
-      echo refs/heads/main
-      roles='["consumer","host"]'
-      automatic_testflight_on_main="true"
-      if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
-        upload_to_testflight="$automatic_testflight_on_main"
-      fi
-      echo "release.automaticTestFlightOnMain"
-      echo "upload_to_testflight=$upload_to_testflight" >> "$GITHUB_OUTPUT"
-  prod-ios:
-    environment: prod-mobile
-    strategy:
-      matrix:
-        app_role: roles
-    steps:
-      - name: Install reusable iOS CI development identity
-        env:
-          P12: \${{ secrets.IOS_CI_DEVELOPMENT_CERTIFICATE_P12_BASE64 }}
-          PASSWORD: \${{ secrets.IOS_CI_DEVELOPMENT_CERTIFICATE_PASSWORD }}
-          SHA256: \${{ vars.IOS_CI_DEVELOPMENT_CERTIFICATE_SHA256 }}
-          EXPIRES: \${{ vars.IOS_CI_DEVELOPMENT_CERTIFICATE_EXPIRES_AT }}
-        run: |
-          security import "$p12_path" -k "$keychain_path" -f pkcs12 -P "$PASSWORD" -x -T /usr/bin/codesign
-          certificate_subject="CN=Apple Development: CI,OU=$expected_team_id"
-          expected_team_id="$(/usr/libexec/PlistBuddy -c 'Print :teamID' "$APP_PROJECT_ROOT/ios/ExportOptions.prod.plist")"
-          if [[ "$certificate_subject" != *"CN=Apple Development:"* || "$certificate_subject" != *"OU=$expected_team_id"* ]]; then exit 1; fi
-          expected_sha256="$IOS_CI_DEVELOPMENT_CERTIFICATE_SHA256"
-          actual_sha256="$(openssl x509 -in "$certificate_pem_path" -noout -fingerprint -sha256)"
-          if [[ "$actual_sha256" != "$expected_sha256" ]]; then exit 1; fi
-          configured_expiry_epoch="$IOS_CI_DEVELOPMENT_CERTIFICATE_EXPIRES_AT"
-          actual_expiry_epoch="example"
-          if [[ "$actual_expiry_epoch" != "$configured_expiry_epoch" ]]; then exit 1; fi
-          openssl x509 -in "$certificate_pem_path" -checkend 2592000 -noout
-          security find-identity -v -p codesigning "$keychain_path"
-      - name: Upload to TestFlight
-        if: \${{ steps.release-target.outputs.upload_to_testflight == 'true' }}
-      - run: xcodebuild \\
-          -workspace "$APP_PROJECT_ROOT/ios/Runner.xcworkspace" \\
-          archive
-      - run: xcodebuild \\
-          -exportArchive \\
-          -exportOptionsPlist "$APP_PROJECT_ROOT/ios/ExportOptions.prod.plist"
-      - run: node tool/platform/verify_ios_release_identity.mjs \\
-          --app path/to/exported.app
-      - run: /usr/bin/shasum -a 256 --check evidence/consumer-ipa.sha256
-      - run: xcrun altool \\
-          --upload-package "$IPA_PATH" \\
-          --platform ios \\
-          --apple-id "$APP_STORE_CONNECT_APP_ID" \\
-          --bundle-id "$EXPECTED_BUNDLE_ID" \\
-          --bundle-version "$FLUTTER_BUILD_NUMBER" \\
-          --bundle-short-version-string "$FLUTTER_BUILD_NAME" \\
-          --api-key "$ASC_KEY_ID" \\
-          --api-issuer "$ASC_ISSUER_ID"
-      - run: node tool/platform/verify_app_store_build.mjs
-        if: \${{ steps.release-target.outputs.upload_to_testflight == 'true' }}
-      - name: Upload TestFlight processing receipt
-        if: \${{ steps.release-target.outputs.upload_to_testflight == 'true' }}
-      - name: Remove ephemeral iOS signing material
-        if: \${{ always() }}
-        run: security delete-keychain "$IOS_CI_KEYCHAIN_PATH"
-  prod-android:
-    environment: prod-mobile
-    strategy:
-      matrix:
-        app_role: roles
-    steps:
-      - run: echo BUNDLETOOL_SHA256
-      - run: echo "$APP_PROJECT_ROOT/android/key.properties"
-      - run: find "$APP_PROJECT_ROOT/build/app/outputs/bundle" -name '*.aab'
-      - run: node tool/platform/verify_android_release_bundle.mjs --track qa
-      - name: Upload to Play internal testing
-        if: \${{ github.event_name == 'workflow_dispatch' && inputs.upload_to_internal }}
-        run: node tool/platform/upload_google_play_bundle.mjs --track qa
-  probe-play:
-    run: node tool/platform/probe_google_play_access.mjs --track qa
-  retire:
-    run: node tool/platform/verify_ios_processing_receipts.mjs consumer_processed_ios_build_number; node tool/platform/set_xcode_cloud_workflow_state.mjs
-`;
+const unifiedWorkflow = fs.readFileSync(
+  new URL("../../.github/workflows/mobile-internal-release.yml", import.meta.url),
+  "utf8",
+);
 
-test("release ownership accepts one GitHub matrix for both roles and platforms", () => {
+test("release ownership accepts the exact-target producer and separate promoter", () => {
   const manifest = unifiedReleaseManifest();
   const result = validateReleaseOwnership({manifest, workflowSource: unifiedWorkflow});
   assert.deepEqual(result.findings, []);
   assert.equal(result.warnings.length, 2);
 });
 
-test("release ownership rejects disabling Consumer automatic TestFlight upload", () => {
+test("release ownership rejects reintroducing store mutation in the package producer", () => {
   const manifest = unifiedReleaseManifest();
-  manifest.targets.find(
-    (target) => target.id === "consumer-prod",
-  ).release.automaticTestFlightOnMain = false;
-  const workflowSource = unifiedWorkflow.replace(
-    'upload_to_testflight="$automatic_testflight_on_main"',
-    'upload_to_testflight="false"',
-  );
+  const workflowSource = `${unifiedWorkflow}\nxcrun altool --upload-package "$IPA_PATH"\n`;
 
   const result = validateReleaseOwnership({manifest, workflowSource});
   assert.ok(
     result.findings.some((finding) =>
-      finding.includes("consumer-prod: automaticTestFlightOnMain must be true"),
-    ),
-  );
-  assert.ok(
-    result.findings.some((finding) =>
-      finding.includes("role-impacted main upload resolution"),
+      finding.includes("must not contain TestFlight upload"),
     ),
   );
 });
@@ -347,7 +251,7 @@ jobs:
 
   const result = validateReleaseOwnership({manifest, workflowSource});
   assert.ok(result.findings.some((finding) => finding.includes("consumer-prod")));
-  assert.ok(result.findings.some((finding) => finding.includes("Android role matrix")));
+  assert.ok(result.findings.some((finding) => finding.includes("Android target matrix")));
 });
 
 test("release ownership rejects an explicit iOS archive signing identity", () => {
@@ -365,8 +269,8 @@ test("release ownership rejects an explicit iOS archive signing identity", () =>
 test("release ownership rejects a missing reusable iOS CI identity import", () => {
   const manifest = unifiedReleaseManifest();
   const workflowSource = unifiedWorkflow.replace(
-    '          security import "$p12_path" -k "$keychain_path" -f pkcs12 -P "$PASSWORD" -x -T /usr/bin/codesign\n',
-    "",
+    '          security import "$p12_path" \\\n',
+    "          echo missing-identity-import \\\n",
   );
 
   const result = validateReleaseOwnership({manifest, workflowSource});
@@ -380,8 +284,8 @@ test("release ownership rejects a missing reusable iOS CI identity import", () =
 test("release ownership rejects missing reusable iOS identity cleanup", () => {
   const manifest = unifiedReleaseManifest();
   const workflowSource = unifiedWorkflow.replace(
-    '        run: security delete-keychain "$IOS_CI_KEYCHAIN_PATH"\n',
-    "        run: echo cleanup-missing\n",
+    '            security delete-keychain "$IOS_CI_KEYCHAIN_PATH" 2>/dev/null || true\n',
+    "            echo cleanup-missing\n",
   );
 
   const result = validateReleaseOwnership({manifest, workflowSource});
@@ -397,8 +301,8 @@ test("release ownership rejects incomplete reusable iOS identity verification", 
   const workflowSource = unifiedWorkflow
     .replace("-fingerprint -sha256", "-serial")
     .replace(
-      '          if [[ "$actual_expiry_epoch" != "$configured_expiry_epoch" ]]; then exit 1; fi\n',
-      "",
+      '          if [[ "$actual_expiry_epoch" != "$configured_expiry_epoch" ]]; then\n',
+      "          if false; then\n",
     )
     .replace("-checkend 2592000", "-noout");
 
@@ -427,26 +331,22 @@ test("release ownership rejects re-exporting after IPA verification", () => {
   const result = validateReleaseOwnership({manifest, workflowSource});
   assert.ok(
     result.findings.some((finding) =>
-      finding.includes("must export exactly one IPA before verification and upload"),
+      finding.includes("must export exactly one IPA before verification and packaging"),
     ),
   );
 });
 
-test("release ownership rejects incomplete App Store upload authentication and metadata", () => {
+test("release ownership rejects an unbound immutable package upload", () => {
   const manifest = unifiedReleaseManifest();
-  const workflowSource = unifiedWorkflow
-    .replace('--api-issuer "$ASC_ISSUER_ID"', "")
-    .replace('--bundle-version "$FLUTTER_BUILD_NUMBER"', "");
+  const workflowSource = unifiedWorkflow.replaceAll(
+    "package_mobile_release.mjs bind-upload",
+    "package_mobile_release.mjs missing-upload-binding",
+  );
 
   const result = validateReleaseOwnership({manifest, workflowSource});
   assert.ok(
     result.findings.some((finding) =>
-      finding.includes("App Store team-key upload authentication"),
-    ),
-  );
-  assert.ok(
-    result.findings.some((finding) =>
-      finding.includes("App Store upload identity metadata"),
+      finding.includes("immutable package upload binding"),
     ),
   );
 });

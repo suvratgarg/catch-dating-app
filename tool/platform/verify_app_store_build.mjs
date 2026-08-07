@@ -46,6 +46,66 @@ export async function listAppBuilds({appId, token, fetchImpl = fetch}) {
   return response.data ?? [];
 }
 
+export async function preflightAppStorePromotion({
+  appId,
+  buildNumber,
+  token,
+  fetchImpl = fetch,
+}) {
+  if (!/^[1-9][0-9]*$/u.test(String(appId))) {
+    throw new Error("App Store Connect app id is invalid");
+  }
+  parseBuildNumber(buildNumber);
+  if (String(buildNumber).length > 18) {
+    throw new Error("Apple build number exceeds 18 characters");
+  }
+  const builds = await listAppBuilds({appId, token, fetchImpl});
+  const exact = builds.filter(
+    (build) => String(build.attributes?.version ?? "") === String(buildNumber),
+  );
+  if (exact.length > 1) {
+    throw new Error(`App Store Connect returned multiple builds for ${appId}/${buildNumber}`);
+  }
+  if (exact.length === 1) {
+    const build = exact[0];
+    const processingState = String(build.attributes?.processingState ?? "");
+    if (processingState === "VALID" || processingState === "PROCESSING") {
+      const buildId = String(build.id ?? "");
+      if (!/^[A-Za-z0-9-]+$/u.test(buildId)) {
+        throw new Error("App Store Connect returned an invalid build id");
+      }
+      return {
+        action: processingState === "VALID" ? "existing-valid" : "existing-processing",
+        appId,
+        buildId,
+        buildNumber: String(buildNumber),
+        processingState,
+        uploadedDate: build.attributes?.uploadedDate ?? null,
+        evidenceLevel: "store-identity-only",
+      };
+    }
+    throw new Error(`App Store build ${appId}/${buildNumber} is ${processingState || "UNKNOWN"}`);
+  }
+  const newer = builds
+    .map((build) => String(build.attributes?.version ?? ""))
+    .filter(Boolean)
+    .filter((existing) => compareAppleBuildNumbers(existing, buildNumber) > 0);
+  if (newer.length > 0) {
+    throw new Error(
+      `App Store Connect contains newer build(s) than ${buildNumber}: ${newer.join(", ")}`,
+    );
+  }
+  return {
+    action: "upload-required",
+    appId,
+    buildId: null,
+    buildNumber: String(buildNumber),
+    processingState: null,
+    uploadedDate: null,
+    evidenceLevel: "none",
+  };
+}
+
 export async function waitForProcessedBuild({
   appId,
   buildNumber,
@@ -124,7 +184,7 @@ if (isMain) {
   try {
     const args = process.argv.slice(2);
     if (hasFlag(args, "--help") || hasFlag(args, "-h")) {
-      console.log("Usage: node tool/platform/verify_app_store_build.mjs --app-id ID --build-number N --key-id ID --issuer-id ID --key-path PATH <--check-candidate|--wait-processed> [--receipt PATH]");
+      console.log("Usage: node tool/platform/verify_app_store_build.mjs --app-id ID --build-number N --key-id ID --issuer-id ID --key-path PATH <--check-candidate|--preflight|--wait-processed> [--receipt PATH]");
       process.exit(0);
     }
     const appId = valueAfter(args, "--app-id");
@@ -136,8 +196,11 @@ if (isMain) {
       throw new Error("App id, build number, key id, issuer id, and key path are required");
     }
     const checkCandidate = hasFlag(args, "--check-candidate");
+    const preflight = hasFlag(args, "--preflight");
     const waitProcessed = hasFlag(args, "--wait-processed");
-    if (checkCandidate === waitProcessed) throw new Error("Choose exactly one verification mode");
+    if ([checkCandidate, preflight, waitProcessed].filter(Boolean).length !== 1) {
+      throw new Error("Choose exactly one verification mode");
+    }
     const privateKey = fs.readFileSync(path.resolve(keyPath), "utf8");
     const tokenProvider = async () => createAppStoreConnectToken({keyId, issuerId, privateKey});
     const result = checkCandidate
@@ -145,7 +208,13 @@ if (isMain) {
           buildNumber,
           await listAppBuilds({appId, token: await tokenProvider()}),
         )
-      : await waitForProcessedBuild({appId, buildNumber, tokenProvider});
+      : preflight
+        ? await preflightAppStorePromotion({
+            appId,
+            buildNumber,
+            token: await tokenProvider(),
+          })
+        : await waitForProcessedBuild({appId, buildNumber, tokenProvider});
     const githubRunId = valueAfter(args, "--github-run-id");
     if (waitProcessed && githubRunId) result.githubRunId = githubRunId;
     const receiptPath = valueAfter(args, "--receipt");

@@ -317,41 +317,62 @@ node tool/run.mjs check platform:app-targets
 node tool/run.mjs check platform:verify-ios-release-identity
 ```
 
-The release-identity verifier accepts an `.xcarchive` or exported `.app` and
-checks compiled target markers, version/build, embedded Firebase identity and
-OAuth URL scheme, plus role-specific signed entitlements. GitHub and Xcode
-Cloud run it before distribution and persist JSON receipts.
+The release-identity verifier accepts an `.xcarchive`, extracted `.app`, or
+signed `.ipa` and checks compiled target markers, version/build, embedded
+Firebase identity and OAuth URL scheme, plus role-specific signed entitlements.
+The exact producer verifies the IPA container and deep code signature before it
+persists byte-bound JSON receipts; legacy Xcode Cloud receipts remain historical
+cutover evidence only.
 
-`Mobile Internal Release` is the canonical merge-driven internal store workflow. Its iOS
-and Android jobs resolve only impacted Consumer/Host roles from the CI impact
-plan. Main pushes produce signed, verified artifacts; TestFlight and Play
-uploads require explicit manual dispatch. Android release jobs additionally run
-`platform:verify-android-release-identity` before any guarded `qa`-track upload:
+`Mobile Internal Release` is the CI-authorized signed-package producer. Its iOS
+and Android jobs consume exact role/platform targets from the successful `main`
+CI impact plan, publish verified IPA/AAB packages for 90 days, and emit a strict
+post-comparison build authority. It never mutates TestFlight or Play.
+
+`Mobile Internal Exact Promotion` is the separate manual store authority. It
+accepts one current producer attempt and exact build-authority artifact, derives
+the selected package id/digest from that authority, re-extracts and reverifies
+the already-signed bytes immediately before credentials, then uploads to
+TestFlight or the Play `qa` track without Flutter, Gradle, Xcode archive/export,
+or signing work:
 
 ```sh
 node tool/run.mjs check \
+  ci:mobile-release-package \
+  ci:mobile-release-workflow \
+  ci:mobile-promotion-core \
+  ci:mobile-promotion-workflow \
   platform:app-targets \
   platform:mobile-build-number \
   platform:verify-ios-release-identity \
   platform:verify-app-store-build \
-  platform:verify-ios-processing-receipts \
   platform:verify-android-release-identity \
-  platform:probe-google-play-access
+  platform:upload-google-play-bundle
 ```
 
-The Android gate uses a checksum-pinned bundletool jar and compares the compiled
+Promotion persists one immutable, exact-package claim for 90 days only after
+store verification and credential cleanup. Reuse requires the same successful
+promotion attempt, source and producer attempts, authority/package ids and
+digests, signed-byte SHA-256, and store result. App Store Connect
+version/build identity alone cannot prove IPA bytes: if Apple accepted an
+upload but the exact claim was not saved, exact automation fails closed and a
+new build is required. Play may reconcile an ambiguous retry only when the
+completed `qa` readback proves the exact version code and remote SHA-256.
+
+The Android package gate uses a checksum-pinned bundletool jar and compares the compiled
 target, role, Firebase, Maps, debug, package, version, and upload-certificate
-identity. `platform:verify-app-store-build` prevents a non-monotonic Apple build
-and waits for exact App Store processing; `platform:verify-ios-processing-receipts`
-binds Xcode Cloud retirement to those GitHub run artifacts.
+identity. `platform:verify-app-store-build` prevents a non-monotonic Apple build.
+Historical `platform:verify-ios-processing-receipts` evidence still binds the
+completed Xcode Cloud retirement, but current processing evidence belongs to an
+exact promotion run rather than package production.
 `platform:upload-google-play-bundle` refuses the production track and requires
 explicit `--apply --allow-prod`. `platform:xcode-cloud-workflow-state` is a
 guarded cutover operation, not a routine release command.
 
-Before flipping `GOOGLE_PLAY_UPLOAD_ENABLED`, dispatch the workflow with
-`probe_play_access=true`, `app_role=both`, and `platform=android`. The
-`platform:probe-google-play-access` gate creates and deletes an uncommitted edit
-for each `qa` track; it never uploads a bundle or commits a release.
+Before flipping `GOOGLE_PLAY_UPLOAD_ENABLED`, run the separately authenticated,
+apply-guarded `platform:probe-google-play-access` gate for both package names.
+It creates and deletes an uncommitted edit for each `qa` track; it never uploads
+a bundle or commits a release.
 
 Do not add a bundle id, Firebase app id, native flavor, or store product only to
 a workflow or platform file. Add it to the target contract and make the
@@ -395,6 +416,17 @@ cursor and one oldest pending authority. It compares run numbers only within
 the same workflow id and requires the selected plan base SHA to equal the
 cursor SHA. Missing/expired authorities and workflow-generation changes fail
 closed instead of skipping queue work.
+
+Admin and Marketing Hosting use the same exact-byte principle without joining
+the backend mutation queue. `_web-hosting-build.yml` produces one environment-
+bound Vite bundle and `tool/ci/package_web_hosting.mjs` projects it into a
+single-target, lifecycle-hook-free Firebase package with a strict file inventory.
+`_web-hosting-promote.yml` downloads only the recorded artifact id, verifies the
+GitHub ZIP digest plus source/workflow/run binding, verifies every package byte
+before credentials and again immediately before mutation. It installs only the
+pinned Firebase CLI before credentials; it never installs source dependencies,
+rebuilds Vite, or rematerializes organizer data. Recovery is terminal-source-
+bound, current-main-only, and rejects older attempts at the same SHA.
 
 `tool/firebase/plan_firebase_deploy_targets.mjs` is the pure planner behind
 `tool/deploy_firebase_targets.sh`. It validates target syntax, expands logical

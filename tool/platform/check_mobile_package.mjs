@@ -16,6 +16,17 @@ function sha256(filePath) {
   return hash.digest("hex");
 }
 
+function artifactBinding(artifactPath) {
+  const resolved = path.resolve(artifactPath);
+  const stat = fs.lstatSync(resolved);
+  if (!stat.isFile() || stat.isSymbolicLink()) return null;
+  return {
+    path: path.basename(resolved),
+    sizeBytes: stat.size,
+    sha256: sha256(resolved),
+  };
+}
+
 function run(command, args) {
   const result = spawnSync(command, args, {encoding: "utf8"});
   if (result.status !== 0) {
@@ -165,12 +176,29 @@ export function validatePackagePolicy(policy) {
 export function comparePackageReports({consumer, host, policy}) {
   const findings = [];
   if (policy.comparison?.requireDifferentAppBinary) {
-    const consumerHashes = consumer.appBinaries.map((entry) => entry.sha256).sort();
-    const hostHashes = host.appBinaries.map((entry) => entry.sha256).sort();
-    if (
-      consumerHashes.length > 0 &&
-      JSON.stringify(consumerHashes) === JSON.stringify(hostHashes)
-    ) {
+    const consumerBinaries = Array.isArray(consumer.appBinaries) ? consumer.appBinaries : [];
+    const hostBinaries = Array.isArray(host.appBinaries) ? host.appBinaries : [];
+    const platform = consumer.platform;
+    const validPlatform = platform === host.platform && ["ios", "android"].includes(platform);
+    if (!validPlatform) {
+      findings.push("Consumer and Host package reports must use the same mobile platform.");
+    }
+    if (consumerBinaries.length === 0 || hostBinaries.length === 0) {
+      findings.push("Consumer and Host package reports must each contain compiled app binaries.");
+    }
+    if (consumerBinaries.length !== hostBinaries.length) {
+      findings.push("Consumer and Host package reports must contain the same app-binary count.");
+    }
+    if (platform === "ios" &&
+        (consumerBinaries.length !== 1 || hostBinaries.length !== 1)) {
+      findings.push("Each iOS package report must contain exactly one compiled app binary.");
+    }
+    const binaryShapeValid = validPlatform && consumerBinaries.length > 0 &&
+      consumerBinaries.length === hostBinaries.length &&
+      (platform !== "ios" || consumerBinaries.length === 1);
+    const consumerHashes = consumerBinaries.map((entry) => entry.sha256).sort();
+    const hostHashes = hostBinaries.map((entry) => entry.sha256).sort();
+    if (binaryShapeValid && JSON.stringify(consumerHashes) === JSON.stringify(hostHashes)) {
       findings.push("Consumer and Host compiled app binaries are byte-identical.");
     }
   }
@@ -185,6 +213,7 @@ export function comparePackageReports({consumer, host, policy}) {
 }
 
 export function inspectArtifact({artifactPath, role, platform, policy}) {
+  const bindingBefore = artifactBinding(artifactPath);
   const stats = fs.statSync(artifactPath);
   const entries = stats.isDirectory()
     ? walkDirectory(artifactPath)
@@ -199,11 +228,16 @@ export function inspectArtifact({artifactPath, role, platform, policy}) {
         }
       : entry
   );
+  const bindingAfter = artifactBinding(artifactPath);
+  if (JSON.stringify(bindingBefore) !== JSON.stringify(bindingAfter)) {
+    throw new Error("Mobile artifact bytes changed during package-policy inspection.");
+  }
   const report = {
     schemaVersion: "1.1.0",
     role,
     platform,
     artifact: path.basename(artifactPath),
+    artifactBinding: bindingAfter,
     artifactKind: stats.isFile() ? "archive" : "expandedDirectory",
     sizeMetricDefinitions: {
       artifactBytes:

@@ -159,6 +159,35 @@ test("affected-tool routing selects owners and mandatory guards", () => {
   assert.deepEqual(plan.unmappedPaths, []);
 });
 
+test("mobile evidence and target contracts select producer-promoter compatibility gates", () => {
+  for (const changedPath of [
+    "tool/platform/check_mobile_package.mjs",
+    "tool/platform/verify_android_release_bundle.mjs",
+    "tool/platform/verify_ios_release_identity.mjs",
+  ]) {
+    const result = run(["affected-tools", "--paths", changedPath, "--json"]);
+    assert.equal(result.status, 0, result.stderr);
+    const plan = JSON.parse(result.stdout);
+    for (const expected of [
+      "ci:mobile-release-package",
+      "ci:mobile-release-workflow",
+      "ci:mobile-promotion-core",
+      "ci:mobile-promotion-workflow",
+    ]) {
+      assert.ok(plan.toolIds.includes(expected), `${changedPath} must select ${expected}`);
+    }
+  }
+
+  const targets = run([
+    "affected-tools",
+    "--paths",
+    "tool/app_targets.json",
+    "--json",
+  ]);
+  assert.equal(targets.status, 0, targets.stderr);
+  assert.ok(JSON.parse(targets.stdout).toolIds.includes("platform:app-targets"));
+});
+
 test("affected-tool routing preserves mode and escalates control-plane changes", () => {
   const routed = run([
     "affected-tools",

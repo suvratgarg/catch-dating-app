@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import {spawnSync} from "node:child_process";
+import {createHash} from "node:crypto";
 import {fileURLToPath} from "node:url";
 import {
   defaultRepoRoot,
@@ -56,6 +58,7 @@ export function collectReleaseIdentityFindings({
   signedEntitlements,
   expectedVersion,
   expectedBuild,
+  expectedGoogleMapsApiKey,
   artifactStage = "export",
 }) {
   if (!artifactStages.has(artifactStage)) {
@@ -105,6 +108,14 @@ export function collectReleaseIdentityFindings({
   );
   expectEqual(findings, "marketing version", version, expectedVersion);
   expectEqual(findings, "build number", build, expectedBuild);
+  if (expectedGoogleMapsApiKey !== undefined) {
+    expectEqual(
+      findings,
+      "compiled Google Maps API key",
+      stringValue(appInfo.GoogleMapsApiKey),
+      expectedGoogleMapsApiKey,
+    );
+  }
 
   if (!/^\d+(?:\.\d+){0,2}$/u.test(version)) {
     findings.push(`marketing version '${version}' is not an Apple numeric version`);
@@ -155,6 +166,9 @@ export function buildReleaseIdentityReceipt({
   firebaseInfo,
   signedEntitlements,
   artifactStage = "export",
+  artifactBinding,
+  googleMapsApiKey,
+  signatureVerified = false,
 }) {
   const capabilities = Object.fromEntries(
     controlledEntitlements.map((key) => [key, signedEntitlements[key] ?? null]),
@@ -176,9 +190,117 @@ export function buildReleaseIdentityReceipt({
     version: appInfo.CFBundleShortVersionString,
     build: appInfo.CFBundleVersion,
     artifactStage,
+    signatureVerified,
+    ...(artifactBinding ? {artifactBinding} : {}),
+    ...(googleMapsApiKey ? {
+      googleMapsApiKeySha256: createHash("sha256").update(googleMapsApiKey).digest("hex"),
+    } : {}),
     releaseOwner: target.release?.owner ?? null,
     signedCapabilities: capabilities,
   };
+}
+
+export function buildArtifactBinding(artifactPath) {
+  const resolved = path.resolve(artifactPath);
+  const stat = fs.lstatSync(resolved);
+  if (!stat.isFile() || stat.isSymbolicLink()) {
+    throw new Error(`Release artifact must be a regular non-symlink file: ${resolved}`);
+  }
+  return {
+    path: path.basename(resolved),
+    sizeBytes: stat.size,
+    sha256: createHash("sha256").update(fs.readFileSync(resolved)).digest("hex"),
+  };
+}
+
+export function assertStableArtifactBinding(expected, actual) {
+  const validExpected = expected &&
+    typeof expected.path === "string" && expected.path === path.basename(expected.path) &&
+    Number.isSafeInteger(expected.sizeBytes) && expected.sizeBytes >= 0 &&
+    typeof expected.sha256 === "string" && /^[0-9a-f]{64}$/u.test(expected.sha256);
+  if (!validExpected || JSON.stringify(expected) !== JSON.stringify(actual)) {
+    throw new Error("Signed IPA bytes changed after export identity extraction.");
+  }
+  return actual;
+}
+
+export function extractIpaForIdentity(ipaPath) {
+  const resolved = path.resolve(ipaPath);
+  const artifactBindingBefore = buildArtifactBinding(resolved);
+  const listing = spawnSync("/usr/bin/unzip", ["-Z1", resolved], {encoding: "utf8"});
+  if (listing.status !== 0) {
+    throw new Error(`Could not list signed IPA ${resolved}: ${(listing.stderr || listing.stdout).trim()}`);
+  }
+  const entries = listing.stdout.split(/\r?\n/u).filter(Boolean);
+  if (entries.length === 0 || entries.some((entry) =>
+    entry.includes("\\") || entry.startsWith("/") || /(^|\/)\.\.($|\/)/u.test(entry)
+  ) || new Set(entries).size !== entries.length
+  ) {
+    throw new Error("Signed IPA contains an unsafe or empty archive path set.");
+  }
+
+  const extractionRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-ios-identity-"));
+  try {
+    const extraction = spawnSync(
+      "/usr/bin/unzip",
+      ["-q", resolved, "-d", extractionRoot],
+      {encoding: "utf8"},
+    );
+    if (extraction.status !== 0) {
+      throw new Error(
+        `Could not extract signed IPA ${resolved}: ${(extraction.stderr || extraction.stdout).trim()}`,
+      );
+    }
+    const visit = (directory) => {
+      for (const entry of fs.readdirSync(directory, {withFileTypes: true})) {
+        const candidate = path.join(directory, entry.name);
+        const stat = fs.lstatSync(candidate);
+        if (stat.isSymbolicLink()) {
+          throw new Error(`Signed IPA contains a symbolic link: ${path.relative(extractionRoot, candidate)}`);
+        }
+        if (stat.isDirectory()) visit(candidate);
+      }
+    };
+    visit(extractionRoot);
+    const payload = path.join(extractionRoot, "Payload");
+    if (!fs.existsSync(payload) || !fs.lstatSync(payload).isDirectory()) {
+      throw new Error("Signed IPA has no regular Payload directory.");
+    }
+    const apps = fs.readdirSync(payload, {withFileTypes: true})
+      .filter((entry) => entry.isDirectory() && entry.name.endsWith(".app"))
+      .map((entry) => path.join(payload, entry.name));
+    if (apps.length !== 1) {
+      throw new Error(`Expected exactly one Payload/*.app in signed IPA; found ${apps.length}.`);
+    }
+    return {
+      appPath: apps[0],
+      artifactBindingBefore,
+      cleanup: () => fs.rmSync(extractionRoot, {recursive: true, force: true}),
+    };
+  } catch (error) {
+    fs.rmSync(extractionRoot, {recursive: true, force: true});
+    throw error;
+  }
+}
+
+export function readExpectedGoogleMapsKey({root, target}) {
+  const keyPath = path.join(
+    root,
+    target.projectRoot,
+    "ios/Flutter/GoogleMapsKeys.xcconfig",
+  );
+  if (!fs.existsSync(keyPath)) {
+    throw new Error(`Missing protected iOS Maps key file: ${keyPath}`);
+  }
+  const keyName = `GOOGLE_MAPS_IOS_API_KEY_${target.environment.toUpperCase()}`;
+  const match = fs.readFileSync(keyPath, "utf8").match(
+    new RegExp(`^\\s*${keyName}\\s*=\\s*(.+?)\\s*$`, "mu"),
+  );
+  const value = match?.[1]?.trim() ?? "";
+  if (!/^AIza[0-9A-Za-z_-]{20,}$/u.test(value)) {
+    throw new Error(`Missing or invalid ${keyName} in ${keyPath}`);
+  }
+  return value;
 }
 
 export function readPlistFile(plistPath) {
@@ -259,7 +381,8 @@ function parseXmlPlistDictionary(source) {
   return values;
 }
 
-export function readSignedEntitlements(appPath) {
+export function readSignedEntitlements(appPath, {verify = true} = {}) {
+  if (verify) verifyCodeSignature(appPath);
   const result = spawnSync(
     "/usr/bin/codesign",
     ["-d", "--entitlements", ":-", appPath],
@@ -283,6 +406,20 @@ export function readSignedEntitlements(appPath) {
     throw new Error(`Could not parse signed entitlements: ${parsed.stderr.trim()}`);
   }
   return JSON.parse(parsed.stdout);
+}
+
+export function verifyCodeSignature(appPath) {
+  const result = spawnSync(
+    "/usr/bin/codesign",
+    ["--verify", "--deep", "--strict", "--verbose=2", appPath],
+    {encoding: "utf8"},
+  );
+  if (result.status !== 0) {
+    throw new Error(
+      `iOS app signature verification failed for ${appPath}: ${(result.stderr || result.stdout).trim()}`,
+    );
+  }
+  return true;
 }
 
 export function locateArchivedApp(archivePath) {
@@ -407,7 +544,7 @@ function valueAfter(args, flag) {
 function usage() {
   return [
     "Usage: node tool/platform/verify_ios_release_identity.mjs",
-    "  (--archive <path> | --app <path>)",
+    "  (--archive <path> | --app <path> | --ipa <signed.ipa>)",
     "  [--target <id> | --role <role> --environment <env> | --scheme <scheme>]",
     "  (--expected-xcconfig <path> | --expected-version <value> --expected-build <value>)",
     "  [--entitlements-plist <path>] [--receipt <path>]",
@@ -422,8 +559,9 @@ function runCli() {
   }
   const archivePathArg = valueAfter(args, "--archive");
   const appPathArg = valueAfter(args, "--app");
-  if (Boolean(archivePathArg) === Boolean(appPathArg)) {
-    throw new Error("Provide exactly one of --archive or --app.\n" + usage());
+  const ipaPathArg = valueAfter(args, "--ipa");
+  if ([archivePathArg, appPathArg, ipaPathArg].filter(Boolean).length !== 1) {
+    throw new Error("Provide exactly one of --archive, --app, or --ipa.\n" + usage());
   }
 
   const root = defaultRepoRoot;
@@ -456,7 +594,11 @@ function runCli() {
   }
 
   const archivePath = archivePathArg ? path.resolve(archivePathArg) : null;
-  const appPath = archivePath ? locateArchivedApp(archivePath) : path.resolve(appPathArg);
+  const extractedIpa = ipaPathArg ? extractIpaForIdentity(ipaPathArg) : null;
+  const appPath = archivePath
+    ? locateArchivedApp(archivePath)
+    : extractedIpa?.appPath ?? path.resolve(appPathArg);
+  try {
   const infoPath = path.join(appPath, "Info.plist");
   if (!fs.existsSync(infoPath)) throw new Error(`App is missing Info.plist: ${appPath}`);
   const firebaseInfoPath = path.join(appPath, "GoogleService-Info.plist");
@@ -469,15 +611,21 @@ function runCli() {
     manifest.roles[target.role].iosEntitlements,
   );
   const entitlementOverride = valueAfter(args, "--entitlements-plist");
+  let signatureVerified = false;
+  if (ipaPathArg) signatureVerified = verifyCodeSignature(appPath);
   const signedEntitlements = entitlementOverride
     ? readPlistFile(path.resolve(entitlementOverride))
-    : readSignedEntitlements(appPath);
+    : readSignedEntitlements(appPath, {verify: !ipaPathArg});
+  if (!entitlementOverride) signatureVerified = true;
   const appInfo = readPlistFile(infoPath);
   const firebaseInfo = readPlistFile(firebaseInfoPath);
   const archiveInfo = archivePath
     ? readArchiveInfoPlist(path.join(archivePath, "Info.plist"))
     : null;
   const artifactStage = archivePath ? "archive" : "export";
+  const expectedGoogleMapsApiKey = ipaPathArg
+    ? readExpectedGoogleMapsKey({root, target})
+    : undefined;
   const roleEntitlements = readPlistFile(roleEntitlementsPath);
   const findings = collectReleaseIdentityFindings({
     target,
@@ -488,6 +636,7 @@ function runCli() {
     signedEntitlements,
     expectedVersion,
     expectedBuild,
+    expectedGoogleMapsApiKey,
     artifactStage,
   });
   if (findings.length > 0) {
@@ -496,20 +645,33 @@ function runCli() {
     );
   }
 
+  const receiptPath = valueAfter(args, "--receipt");
+  if (receiptPath && artifactStage === "export" && !ipaPathArg) {
+    throw new Error("An exported identity receipt requires --ipa <signed.ipa>.");
+  }
+  const artifactBinding = ipaPathArg ? buildArtifactBinding(ipaPathArg) : undefined;
+  if (extractedIpa) {
+    assertStableArtifactBinding(extractedIpa.artifactBindingBefore, artifactBinding);
+  }
   const receipt = buildReleaseIdentityReceipt({
     target,
     appInfo,
     firebaseInfo,
     signedEntitlements,
     artifactStage,
+    artifactBinding,
+    googleMapsApiKey: ipaPathArg ? stringValue(appInfo.GoogleMapsApiKey) : undefined,
+    signatureVerified,
   });
-  const receiptPath = valueAfter(args, "--receipt");
   if (receiptPath) {
     const resolvedReceipt = path.resolve(receiptPath);
     fs.mkdirSync(path.dirname(resolvedReceipt), {recursive: true});
     fs.writeFileSync(resolvedReceipt, `${JSON.stringify(receipt, null, 2)}\n`);
   }
   console.log(JSON.stringify(receipt, null, 2));
+  } finally {
+    extractedIpa?.cleanup();
+  }
 }
 
 const isMain = process.argv[1]

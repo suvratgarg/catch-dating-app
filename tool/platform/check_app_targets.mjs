@@ -165,27 +165,21 @@ export function validateReleaseOwnership({manifest, workflowSource}) {
   const warnings = [];
   const policy = manifest.releasePolicy ?? {};
   const workflow = ".github/workflows/mobile-internal-release.yml";
+  const promotionWorkflow = ".github/workflows/mobile-internal-promote.yml";
   for (const [label, actual, expected] of [
     ["release owner", policy.owner, "github-actions"],
     ["release workflow", policy.workflow, workflow],
+    ["release promotion workflow", policy.promotionWorkflow, promotionWorkflow],
     [
       "release trigger",
       policy.trigger,
-      "role-impacted-main-push-for-artifacts-and-consumer-testflight",
+      "successful-main-ci-exact-artifact-authority",
     ],
     ["release environment", policy.environment, "prod-mobile"],
-    [
-      "release approval mode",
-      policy.approvalMode,
-      "consumer-testflight-automatic-otherwise-manual",
-    ],
+    ["release approval mode", policy.approvalMode, "build-only-no-store-mutation"],
     ["release branch policy", policy.branchPolicy, "main-only"],
     ["iOS channel", policy.ios?.channel, "testflight"],
-    [
-      "iOS upload mode",
-      policy.ios?.uploadMode,
-      "automatic-selected-roles-on-main-or-manual-dispatch",
-    ],
+    ["iOS upload mode", policy.ios?.uploadMode, "separate-promotion-workflow"],
     ["iOS signing style", policy.ios?.signingStyle, "automatic"],
     [
       "iOS development identity source",
@@ -197,6 +191,7 @@ export function validateReleaseOwnership({manifest, workflowSource}) {
     ["iOS upload tool", policy.ios?.uploadTool, "altool"],
     ["Android channel", policy.android?.channel, "play-internal"],
     ["Android track", policy.android?.track, "qa"],
+    ["Android upload mode", policy.android?.uploadMode, "separate-promotion-workflow"],
     ["Android publisher auth", policy.android?.publisherAuth, "github-oidc"],
     [
       "Android publisher service account",
@@ -209,8 +204,8 @@ export function validateReleaseOwnership({manifest, workflowSource}) {
   if (JSON.stringify(policy.roles) !== JSON.stringify(expectedRoles)) {
     findings.push("release policy roles must be [consumer, host]");
   }
-  if (JSON.stringify(policy.ios?.automaticRoles) !== JSON.stringify(["consumer"])) {
-    findings.push("iOS automatic TestFlight roles must be [consumer]");
+  if (JSON.stringify(policy.ios?.automaticRoles) !== JSON.stringify([])) {
+    findings.push("mobile package producer iOS automatic roles must be empty");
   }
   if (!/^[A-F0-9]{64}$/u.test(policy.android?.uploadCertificateSha256 ?? "")) {
     findings.push("Android upload certificate SHA-256 must be a checked 64-digit hex value");
@@ -218,22 +213,14 @@ export function validateReleaseOwnership({manifest, workflowSource}) {
 
   const prodTargets = (manifest.targets ?? []).filter((target) => target.environment === "prod");
   for (const target of prodTargets) {
-    const automaticTestFlightOnMain = target.role === "consumer";
-    const expectedGithubMode = automaticTestFlightOnMain
-      ? "automatic-artifact-automatic-testflight"
-      : "automatic-artifact-manual-upload";
     if (target.release?.owner !== "github-actions") {
       findings.push(`${target.id}: release owner must be github-actions`);
     }
-    if (target.release?.githubMode !== expectedGithubMode) {
-      findings.push(
-        `${target.id}: githubMode must be ${expectedGithubMode}`,
-      );
+    if (target.release?.githubMode !== "automatic-exact-artifact") {
+      findings.push(`${target.id}: githubMode must be automatic-exact-artifact`);
     }
-    if (target.release?.automaticTestFlightOnMain !== automaticTestFlightOnMain) {
-      findings.push(
-        `${target.id}: automaticTestFlightOnMain must be ${automaticTestFlightOnMain}`,
-      );
+    if (target.release?.automaticTestFlightOnMain !== false) {
+      findings.push(`${target.id}: automaticTestFlightOnMain must be false`);
     }
     if (target.release?.githubWorkflow !== workflow) {
       findings.push(`${target.id}: release workflow must be ${workflow}`);
@@ -247,10 +234,13 @@ export function validateReleaseOwnership({manifest, workflowSource}) {
   }
 
   for (const [label, marker] of [
-    ["push-to-main trigger", /push:\s*[\s\S]*?branches:\s*[\s\S]*?- main/u],
-    ["consumer role matrix", /roles='\["consumer","host"\]'/u],
-    ["iOS role matrix", /prod-ios:[\s\S]*?matrix:[\s\S]*?app_role/u],
-    ["Android role matrix", /prod-android:[\s\S]*?matrix:[\s\S]*?app_role/u],
+    ["successful CI workflow-run trigger", /workflow_run:[\s\S]*?workflows:\s*\["CI"\][\s\S]*?types:\s*\[completed\][\s\S]*?branches:\s*\[main\]/u],
+    ["CI authority v3 verification", /catch\.ci-delivery-authority\/v3/u],
+    ["immutable CI authority artifact download", /actions\/artifacts\/\$authority_id\/zip/u],
+    ["immutable CI plan artifact download", /actions\/artifacts\/\$plan_id\/zip/u],
+    ["exact mobile release target projection", /\.operations\.releaseTargets/u],
+    ["iOS target matrix", /prod-ios:[\s\S]*?matrix:[\s\S]*?release_target/u],
+    ["Android target matrix", /prod-android:[\s\S]*?matrix:[\s\S]*?release_target/u],
     ["mobile credentials environment", /environment:\s*prod-mobile/u],
     [
       "reusable iOS development certificate secret",
@@ -304,23 +294,6 @@ export function validateReleaseOwnership({manifest, workflowSource}) {
       "always-run reusable iOS identity cleanup",
       /Remove ephemeral iOS signing material[\s\S]*?if:\s*\$\{\{ always\(\) \}\}[\s\S]*?security delete-keychain/u,
     ],
-    ["TestFlight upload", /Upload to TestFlight/u],
-    [
-      "target-configured automatic TestFlight policy",
-      /release\.automaticTestFlightOnMain/u,
-    ],
-    [
-      "role-impacted main upload resolution",
-      /if \[\[ "\$GITHUB_EVENT_NAME" == "push" \]\]; then\s*upload_to_testflight="\$automatic_testflight_on_main"/u,
-    ],
-    [
-      "resolved TestFlight upload output",
-      /echo "upload_to_testflight=\$upload_to_testflight" >> "\$GITHUB_OUTPUT"/u,
-    ],
-    [
-      "resolved TestFlight upload guard",
-      /Upload to TestFlight[\s\S]*?if:\s*\$\{\{\s*steps\.release-target\.outputs\.upload_to_testflight == 'true'\s*\}\}/u,
-    ],
     ["automatic iOS distribution export", /xcodebuild\s*\\\s*\n\s*-exportArchive/u],
     [
       "role-specific iOS workspace",
@@ -330,11 +303,8 @@ export function validateReleaseOwnership({manifest, workflowSource}) {
       "role-specific iOS export options",
       /-exportOptionsPlist "\$APP_PROJECT_ROOT\/ios\/ExportOptions\.prod\.plist"/u,
     ],
-    ["post-export iOS identity verification", /verify_ios_release_identity\.mjs\s*\\[\s\S]*?--app/u],
-    ["verified IPA checksum", /shasum\s+-a\s+256\s+--check/u],
-    ["verified IPA TestFlight upload", /xcrun\s+altool[\s\S]*?--upload-package\s+"\$IPA_PATH"/u],
-    ["App Store team-key upload authentication", /--api-key\s+"\$ASC_KEY_ID"[\s\S]*?--api-issuer\s+"\$ASC_ISSUER_ID"/u],
-    ["App Store upload identity metadata", /--platform\s+ios[\s\S]*?--apple-id\s+"\$APP_STORE_CONNECT_APP_ID"[\s\S]*?--bundle-id\s+"\$EXPECTED_BUNDLE_ID"[\s\S]*?--bundle-version\s+"\$FLUTTER_BUILD_NUMBER"[\s\S]*?--bundle-short-version-string\s+"\$FLUTTER_BUILD_NAME"/u],
+    ["post-export iOS identity verification", /verify_ios_release_identity\.mjs\s*\\[\s\S]*?--ipa/u],
+    ["verified IPA checksum", /shasum\s+-a\s+256\s+"\$ipa_path"/u],
     ["signed Android identity verification", /verify_android_release_bundle\.mjs/u],
     [
       "role-specific Android signing root",
@@ -344,19 +314,14 @@ export function validateReleaseOwnership({manifest, workflowSource}) {
       "role-specific Android bundle output",
       /find "\$APP_PROJECT_ROOT\/build\/app\/outputs\/bundle"/u,
     ],
-    [
-      "manual Play upload guard",
-      /Upload to Play internal testing[\s\S]*?if:\s*\$\{\{\s*github\.event_name == 'workflow_dispatch' && inputs\.upload_to_internal/u,
-    ],
-    ["Play internal track", /--track qa/u],
-    ["non-committing Play access probe", /probe_google_play_access\.mjs/u],
-    ["legacy Xcode Cloud retirement", /set_xcode_cloud_workflow_state\.mjs/u],
     ["serialized release concurrency", /concurrency:[\s\S]*?cancel-in-progress:\s*false/u],
-    ["App Store build-floor and processing proof", /verify_app_store_build\.mjs/u],
+    ["read-only App Store build-floor proof", /verify_app_store_build\.mjs[\s\S]*?--check-candidate/u],
     ["pinned bundletool checksum", /BUNDLETOOL_SHA256/u],
-    ["processed-build retirement evidence", /consumer_processed_ios_build_number/u],
-    ["GitHub processing-receipt retirement evidence", /verify_ios_processing_receipts\.mjs/u],
-    ["main-only signed release guard", /refs\/heads\/main/u],
+    ["delivery-core mobile package adapter", /package_mobile_release\.mjs prepare/u],
+    ["immutable package upload binding", /package_mobile_release\.mjs bind-upload/u],
+    ["90-day package retention", /retention-days:\s*90/u],
+    ["cross-role package comparison", /compare-role-packages:[\s\S]*?check_mobile_package\.mjs --compare/u],
+    ["post-comparison build authority", /publish-authority:[\s\S]*?needs:\s*\[authorize, compare-role-packages\][\s\S]*?catch\.mobile-build-authority\/v1/u],
   ]) {
     if (!marker.test(workflowSource)) findings.push(`mobile release workflow is missing ${label}`);
   }
@@ -365,19 +330,23 @@ export function validateReleaseOwnership({manifest, workflowSource}) {
       "mobile release workflow must defer CODE_SIGN_IDENTITY to Xcode automatic signing",
     );
   }
-  const resolvedUploadGuardCount = workflowSource.match(
-    /if:\s*\$\{\{\s*steps\.release-target\.outputs\.upload_to_testflight == 'true'\s*\}\}/gu,
-  )?.length ?? 0;
-  if (resolvedUploadGuardCount !== 3) {
-    findings.push(
-      `mobile release workflow must guard upload, processing, and receipt with the resolved TestFlight policy; found ${resolvedUploadGuardCount} guards`,
-    );
-  }
   const exportArchiveCount = workflowSource.match(/-exportArchive/gu)?.length ?? 0;
   if (exportArchiveCount !== 1) {
     findings.push(
-      `mobile release workflow must export exactly one IPA before verification and upload; found ${exportArchiveCount} -exportArchive commands`,
+      `mobile release workflow must export exactly one IPA before verification and packaging; found ${exportArchiveCount} -exportArchive commands`,
     );
+  }
+  for (const [label, marker] of [
+    ["TestFlight upload", /xcrun\s+altool|--upload-package/u],
+    ["Play upload", /upload_google_play_bundle\.mjs/u],
+    ["Play mutation probe", /probe_google_play_access\.mjs/u],
+    ["legacy Xcode Cloud mutation", /set_xcode_cloud_workflow_state\.mjs/u],
+    ["manual release dispatch", /^\s{2}workflow_dispatch:/mu],
+    ["store apply flag", /--apply|--allow-prod/u],
+  ]) {
+    if (marker.test(workflowSource)) {
+      findings.push(`mobile package producer must not contain ${label}`);
+    }
   }
 
   for (const debtId of [
@@ -543,6 +512,14 @@ export function scanAppTargets({root = defaultRepoRoot} = {}) {
     warnings.push(...releaseResult.warnings);
   } else {
     findings.push("missing .github/workflows/mobile-internal-release.yml");
+  }
+
+  const promotionWorkflow = path.join(
+    root,
+    ".github/workflows/mobile-internal-promote.yml",
+  );
+  if (!fs.existsSync(promotionWorkflow)) {
+    findings.push("missing .github/workflows/mobile-internal-promote.yml");
   }
 
   return {manifest, findings, warnings};

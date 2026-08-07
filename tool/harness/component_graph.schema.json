@@ -193,6 +193,18 @@
         "checkIds": {"$ref": "#/$defs/stringSet"},
         "codegenIds": {"$ref": "#/$defs/stringSet"},
         "buildTargets": {"$ref": "#/$defs/stringSet"},
+        "releaseTargets": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "consumer-android",
+              "consumer-ios",
+              "host-android",
+              "host-ios"
+            ]
+          }
+        },
         "deployGroups": {"$ref": "#/$defs/stringSet"},
         "releaseRoles": {
           "type": "array",
