@@ -459,10 +459,8 @@ function parseArgs(argv) {
     const arg = argv[i];
     if (arg === "--task") parsed.task = requireValue(argv, ++i, arg);
     else if (arg === "--mode") parsed.mode = requireValue(argv, ++i, arg);
-    else if (arg === "--owned-paths" || arg === "--path" || arg === "--paths") {
-      parsed.ownedPaths.push(requireValue(argv, ++i, arg));
-    }
-    else if (arg === "--planned-impact-paths" || arg === "--impact-paths") {
+    else if (arg === "--owned-paths") parsed.ownedPaths.push(requireValue(argv, ++i, arg));
+    else if (arg === "--planned-impact-paths") {
       parsed.plannedImpactPaths.push(requireValue(argv, ++i, arg));
     }
     else if (arg === "--output") parsed.output = requireValue(argv, ++i, arg);
@@ -472,7 +470,7 @@ function parseArgs(argv) {
       process.exit(0);
     } else if (arg.startsWith("--")) {
       throw new Error(`Unknown argument: ${arg}`);
-    } else parsed.ownedPaths.push(arg);
+    } else throw new Error(`Unexpected positional context-pack argument: ${arg}`);
   }
   if (parsed.mode != null && parsed.mode !== "parallel-delegation") {
     throw new Error(`Unsupported context-pack mode: ${parsed.mode}`);

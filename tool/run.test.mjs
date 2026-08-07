@@ -647,34 +647,16 @@ test("parallel directory ownership requires an explicit planned impact", () => {
   assert.equal(pack.taskStart.complete, false);
 });
 
-test("context-pack CLI keeps retired path spellings during callsite migration", () => {
-  for (const {args, ownedPaths, plannedImpactPaths} of [
-    {
-      args: ["--task", "compatibility-owned-alias", "--paths", "docs", "--json"],
-      ownedPaths: ["docs"],
-      plannedImpactPaths: ["docs"],
-    },
-    {
-      args: ["--task", "compatibility-singular-alias", "--path", "docs/README.md", "--json"],
-      ownedPaths: ["docs/README.md"],
-      plannedImpactPaths: ["docs/README.md"],
-    },
-    {
-      args: ["--task", "compatibility-impact-alias", "--owned-paths", "docs", "--impact-paths", "docs/README.md", "--json"],
-      ownedPaths: ["docs"],
-      plannedImpactPaths: ["docs/README.md"],
-    },
-    {
-      args: ["--task", "compatibility-positional-alias", "docs/README.md", "--json"],
-      ownedPaths: ["docs/README.md"],
-      plannedImpactPaths: ["docs/README.md"],
-    },
+test("context-pack CLI rejects retired ambiguous path spellings", () => {
+  for (const args of [
+    ["--task", "retired-owned-alias", "--paths", "docs", "--json"],
+    ["--task", "retired-singular-alias", "--path", "docs/README.md", "--json"],
+    ["--task", "retired-impact-alias", "--owned-paths", "docs", "--impact-paths", "docs/README.md", "--json"],
+    ["--task", "retired-positional-alias", "docs/README.md", "--json"],
   ]) {
     const result = runNode(process.cwd(), ["tool/agent/context_pack.mjs", ...args]);
-    assertSuccessful(result);
-    const pack = JSON.parse(result.stdout);
-    assert.deepEqual(pack.scope.ownedPaths, ownedPaths);
-    assert.deepEqual(pack.scope.plannedImpactPaths, plannedImpactPaths);
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /Unknown argument|Unexpected positional/u);
   }
 });
 

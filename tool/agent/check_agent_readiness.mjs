@@ -54,6 +54,9 @@ export function evaluateAgentReadiness({snapshot}) {
   }
 
   const metricsPath = "docs/audit_registry/agent_metrics.jsonl";
+  const repositoryFiles = snapshot.listFiles();
+  const skillMarkdownPaths = repositoryFiles.filter((relativePath) =>
+    relativePath.startsWith("docs/agent_skills/") && relativePath.endsWith(".md"));
   const sourcePaths = [
     "AGENTS.md",
     "docs/README.md",
@@ -64,9 +67,11 @@ export function evaluateAgentReadiness({snapshot}) {
     "docs/audit_registry/doc_versions.json",
     "docs/audit_registry/test_inventory.json",
     "tool/architecture/dependency_direction_baseline.json",
+    "tool/README.md",
     "tool/tools_manifest.json",
+    ...skillMarkdownPaths,
   ];
-  const sources = snapshot.readTexts(sourcePaths);
+  const sources = snapshot.readTexts([...new Set(sourcePaths)]);
   const sourceFor = (relativePath) => sources.get(relativePath) ?? null;
   const readJson = (relativePath) => parseJsonSource(sourceFor(relativePath));
   const checks = [];
@@ -162,7 +167,7 @@ export function evaluateAgentReadiness({snapshot}) {
   check(
     testInventoryMatches(
       sourceFor("docs/audit_registry/test_inventory.json") ?? "",
-      buildInventory(snapshot.listFiles()),
+      buildInventory(repositoryFiles),
     ),
     "Canonical test inventory matches tracked and untracked test files.",
   );
@@ -206,9 +211,13 @@ export function evaluateAgentReadiness({snapshot}) {
     dependencyDirectionBaseline,
   );
 
-  const checker = {check, checkPath};
+  const checker = {check, checkPath, sourceFor};
   validateRegressionLedger(regressionLedger, eligibleCheckIds, checker);
   validateSkills(skillsManifest, eligibleCheckIds, checker);
+  validateTaskScopeGuidance(
+    ["AGENTS.md", "docs/agent_operating_model.md", "tool/README.md", ...skillMarkdownPaths],
+    checker,
+  );
   validateMetrics(metricsSource, metricsPath, checker);
 
   const passed = checks.filter((entry) => entry.ok).length;
@@ -275,6 +284,9 @@ function validateSkills(manifest, eligibleCheckIds, {check, checkPath}) {
   check(Boolean(manifest && Array.isArray(manifest.skills)), "Skill manifest has a skills array.");
   const seenIds = new Set();
   for (const skill of manifest?.skills ?? []) {
+    const requiredCommands = Array.isArray(skill.required_commands)
+      ? skill.required_commands
+      : [];
     check(Boolean(skill.skill_id), "Skill has skill_id.");
     if (skill.skill_id) {
       check(!seenIds.has(skill.skill_id), `Skill id is unique: ${skill.skill_id}.`);
@@ -283,7 +295,11 @@ function validateSkills(manifest, eligibleCheckIds, {check, checkPath}) {
     checkPath(skill.path, `${skill.skill_id} markdown file exists.`);
     check(Array.isArray(skill.source_docs) && skill.source_docs.length > 0, `${skill.skill_id} declares source docs.`);
     check(Array.isArray(skill.required_tools) && skill.required_tools.length > 0, `${skill.skill_id} declares required tools.`);
-    check(Array.isArray(skill.required_commands) && skill.required_commands.length > 0, `${skill.skill_id} declares required commands.`);
+    check(requiredCommands.length > 0, `${skill.skill_id} declares required commands.`);
+    check(
+      !requiredCommands.some(usesRetiredTaskScopeFlag),
+      `${skill.skill_id} required commands use canonical task-scope flags.`,
+    );
     check(Boolean(skill.success_receipt), `${skill.skill_id} declares success receipt.`);
     for (const sourceDoc of skill.source_docs ?? []) {
       checkPath(sourceDoc, `${skill.skill_id} source doc exists: ${sourceDoc}.`);
@@ -291,12 +307,117 @@ function validateSkills(manifest, eligibleCheckIds, {check, checkPath}) {
     for (const toolId of skill.required_tools ?? []) {
       check(eligibleCheckIds.has(toolId), `${skill.skill_id} required tool is eligible: ${toolId}.`);
     }
-    for (const command of skill.required_commands ?? []) {
+    for (const command of requiredCommands) {
       for (const commandPath of extractCommandPaths(command)) {
         checkPath(commandPath, `${skill.skill_id} command path exists: ${commandPath}.`);
       }
     }
   }
+}
+
+function validateTaskScopeGuidance(relativePaths, {check, sourceFor}) {
+  for (const relativePath of [...new Set(relativePaths)].sort()) {
+    check(
+      !usesRetiredTaskScopeFlag(sourceFor(relativePath) ?? "", {prose: true}),
+      `${relativePath} uses canonical task-scope flags.`,
+    );
+  }
+}
+
+export function usesRetiredTaskScopeFlag(source, {prose = false} = {}) {
+  const logicalSource = String(source).replace(/\\\r?\n\s*/gu, " ");
+  return logicalSource.split(/\r?\n/u).some((line) =>
+    invocationUsesAmbiguousScope(line, {
+      invocation: /\bnode\s+(?:\.\/)?tool\/agent\/context_pack\.mjs(?=$|[\s`.,:;\)\]}])/gu,
+      retiredFlags: new Set(["--path", "--paths", "--impact-paths"]),
+      valueFlags: new Set([
+        "--task",
+        "--mode",
+        "--owned-paths",
+        "--planned-impact-paths",
+        "--output",
+      ]),
+      booleanFlags: new Set(["--json"]),
+      helpFlags: new Set(["--help", "-h"]),
+    }, {prose}) || invocationUsesAmbiguousScope(line, {
+      invocation: /\bnode\s+(?:\.\/)?tool\/harness\.mjs\s+task\s+start(?=$|[\s`.,:;\)\]}])/gu,
+      retiredFlags: new Set(["--paths"]),
+      valueFlags: new Set([
+        "--task-id",
+        "--base-sha",
+        "--stack-parent",
+        "--branch",
+        "--owned-paths",
+        "--context-pack",
+        "--budget-mib",
+        "--reserve-mib",
+      ]),
+      booleanFlags: new Set(["--json"]),
+      helpFlags: new Set(),
+    }, {prose}),
+  );
+}
+
+function invocationUsesAmbiguousScope(
+  line,
+  {invocation, retiredFlags, valueFlags, booleanFlags, helpFlags},
+  {prose},
+) {
+  invocation.lastIndex = 0;
+  for (const match of line.matchAll(invocation)) {
+    const prefix = line.slice(0, match.index);
+    const rawSuffix = line.slice(match.index + match[0].length);
+    const inlineCode = isInlineCodeInvocation(prefix, rawSuffix);
+    if (prose && !inlineCode && !isStandaloneCommandPrefix(prefix)) {
+      continue;
+    }
+
+    const suffix = commandSegment(rawSuffix);
+    const tokens = commandTokens(suffix);
+    if (prose && tokens.length === 0 && inlineCode) {
+      continue;
+    }
+    if (tokens.length === 1 && helpFlags.has(tokens[0])) {
+      continue;
+    }
+    if (tokens.some((token) => retiredFlags.has(token.split("=", 1)[0]))) {
+      return true;
+    }
+    if (!tokens.includes("--owned-paths")) return true;
+
+    for (let index = 0; index < tokens.length; index += 1) {
+      const token = tokens[index];
+      if (valueFlags.has(token)) {
+        const value = tokens[index + 1];
+        if (value == null || value.startsWith("-")) return true;
+        index += 1;
+        continue;
+      }
+      if (booleanFlags.has(token)) continue;
+      return true;
+    }
+  }
+  return false;
+}
+
+function commandSegment(suffix) {
+  const boundary = suffix.search(/(?:&&|\|\||[;|`])/u);
+  return boundary === -1 ? suffix : suffix.slice(0, boundary);
+}
+
+function isInlineCodeInvocation(prefix, suffix) {
+  const openingTicks = prefix.match(/`/gu)?.length ?? 0;
+  return openingTicks % 2 === 1 && suffix.includes("`");
+}
+
+function isStandaloneCommandPrefix(prefix) {
+  return /^\s*(?:(?:[-*+]|\d+\.)\s+)?(?:\$\s*)?$/u.test(prefix);
+}
+
+function commandTokens(source) {
+  return [...String(source).matchAll(/"[^"]*"|'[^']*'|\S+/gu)]
+    .map((match) => match[0].replace(/^[`"']+|[`"'.,:]+$/gu, ""))
+    .filter(Boolean);
 }
 
 function validateMetrics(source, relativePath, {check}) {

@@ -1,6 +1,6 @@
 ---
 doc_id: harness_v2_decision_and_cicd_delivery_plan
-version: 0.3.35
+version: 0.3.36
 updated: 2026-08-07
 owner: agent_operating_model
 status: execution-in-progress
@@ -1056,6 +1056,28 @@ Issues closed or discovered during this tranche:
   project-skill commands and teach readiness or manifest validation to reject
   retired context-pack flags, then delete the compatibility parser and its
   transitional tests in the same commit.
+
+### Checkpoint 29 — atomic project-skill CLI closeout (2026-08-07)
+
+| Signal | Before this slice | Current result |
+|---|---|---|
+| Atomic sequencing | The first CLI-removal draft rejected legacy flags while ten live project-skill callsites still emitted them. Readiness stayed at 5,116/5,116, so the draft could have committed a green but operationally broken repository. | Independent review stopped that commit. `bb89d825f` introduced the explicit names while retaining a named compatibility bridge; this stacked slice migrates all callsites, adds enforcement, and removes the bridge in the same commit. Every intermediate commit remains executable. |
+| Live callsites | `docs/agent_skills/skills_manifest.json` contained nine distinct legacy context-pack commands and `catch-react-surface-refactor.md` duplicated one of them, for ten stale callsites. | All ten use `--owned-paths`. Context-pack rejects `--path`, `--paths`, `--impact-paths`, and positional scope arguments; task start rejects `--paths`. The machine skill manifest advances to 142, and all nine migrated skill contracts carry new per-skill versions dated 2026-08-07 so generated packs expose the new command identity. |
+| Durable enforcement | Readiness verified command paths but not command syntax, and it did not read every project-skill Markdown file. A future CLI rename could therefore repeat the same split-brain failure. | Readiness now reads every project-skill Markdown file plus the machine manifest and active Harness guidance. It strictly validates machine required commands and complete standalone or inline-code command examples, while deliberately not inferring CLI ownership from ordinary prose. That adds 22 direct guidance checks; the new regression contract brings the final gate from 5,116 to 5,156 checks. `REG-HARNESS-CONTEXT-CLI-CALLSITE-001` binds the failure to readiness, context-pack, Harness, and runner tests. |
+| Lifecycle timing | The first similarly sized v4 canary started in 4.96s, 49.4% above the earlier 3.32s rehearsal, leaving schema overhead unresolved. | This task generated its complete pack in 0.15s, started in 3.55s, and passed initial doctor in 0.64s. It materialized 32,221,241 logical / 34,213,888 allocated bytes with zero growth—within 0.06% of the 4.96s canary's logical size while starting 28.4% faster. It is only 6.9% slower than the smaller 3.32s rehearsal, so the apparent deterministic v4 schema regression was not reproduced. One sample per task cannot identify the 1.41s cause or establish p50/p95; H2-TRANSITION-041 remains open in narrowed form for phase timing and longitudinal SLO sampling. |
+| Verification | The first combined implementation run exposed a test-double assumption after 82/83 tests passed; repository behavior was not implicated. | The bounded test fixture was corrected to mutate only requested snapshot paths. Focused, registered-owner, generated-registry, readiness, and live v4 doctor evidence is recorded in the audit receipt; clean full-view, commit, push, remote equality, and finish remain handoff state rather than self-referential in-commit claims. |
+| Line accounting | The 31 prior measured commits were cumulatively net −345,564 lines. | This atomic closeout is +350/−97, net +253, leaving the 32-commit series at net −345,311 lines. Within it, the compatibility parser/test surface is +16/−43, net −27; the overall growth is the versioned skill migration plus the new readiness scanner, regression contract, adversarial tests, and evidence that prevent another split migration. |
+
+Issues closed or carried forward:
+
+- `H2-TRANSITION-041` — narrowed. The apparent deterministic schema-regression
+  alarm is closed because it did not reproduce on a nearly identical v4
+  materialization. Add structured phase timing and retain ordinary-task
+  p50/p95 samples before attributing or optimizing the remaining variance.
+- `H2-TRANSITION-043` — closed. All live project-skill callsites move before
+  compatibility parsing is deleted, and readiness now fails future drift.
+- `H2-TRANSITION-042` remains open: direct runner invocations inside a task
+  still need task-phase ownership enforcement before dependency setup.
 
 Durable outcomes are PR wall-clock p50/p95 and escaped defects. Record the
 baseline from the ten most recent comparable PRs and compare after ten v2 PRs.

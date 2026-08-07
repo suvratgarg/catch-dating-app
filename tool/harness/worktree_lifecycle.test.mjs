@@ -248,14 +248,14 @@ test("new starts cannot bypass the context-pack contract", (context) => {
     () => executeTaskCommand({
       args: [
         "start",
-        "--task-id", "compatibility-path-flag",
+        "--task-id", "retired-path-flag",
         "--base-sha", baseSha,
         "--stack-parent", "main",
         "--paths", "lib/profile.txt",
       ],
       cwd: fixture,
     }),
-    /--context-pack is required/u,
+    /Unsupported start option: --paths/u,
   );
   assert.throws(
     () => executeTaskCommand({
@@ -272,7 +272,7 @@ test("new starts cannot bypass the context-pack contract", (context) => {
   );
   assert.doesNotMatch(
     git(fixture, ["worktree", "list", "--porcelain"]),
-    /compatibility-path-flag|pack-required/u,
+    /retired-path-flag|pack-required/u,
   );
 });
 

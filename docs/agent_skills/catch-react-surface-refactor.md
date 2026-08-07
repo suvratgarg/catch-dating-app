@@ -1,7 +1,7 @@
 ---
 doc_id: agent_skill_catch_react_surface_refactor
-version: 1.0.136
-updated: 2026-08-06
+version: 1.0.137
+updated: 2026-08-07
 owner: agent_operating_model
 status: active
 ---
@@ -23,7 +23,7 @@ Read: `AGENTS.md`, `docs/agent_operating_model.md`,
 Loop:
 
 1. Generate a scoped context pack before editing React architecture:
-   `node tool/agent/context_pack.mjs --task react-surface-refactor --paths website,admin,packages/web-config,docs/web_surface_architecture.md,docs/marketing_website_architecture.md,design/website,tool`.
+   `node tool/agent/context_pack.mjs --task react-surface-refactor --owned-paths website,admin,packages/web-config,docs/web_surface_architecture.md,docs/marketing_website_architecture.md,design/website,tool`.
 2. Preserve dirty work outside the declared React scope.
 3. Pick one reference implementation first. Do not migrate sibling screens from
    prose only.
