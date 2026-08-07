@@ -1,5 +1,5 @@
 {
-  "version": 151,
+  "version": 152,
   "updated": "2026-08-07",
   "owner": "agent_operating_model",
   "entries": [
@@ -4267,13 +4267,13 @@
         "type": "command",
         "command": "node --test tool/harness/worktree_lifecycle.test.mjs",
         "check_ids": ["agent:harness-v2"],
-        "guardEvidence": "new tasks write v3 receipts with explicit logical and allocated measurements; current growth is allocated-to-allocated; v1/v2 receipts remain readable with a null legacy delta where appropriate; malformed v2/v3 storage fails closed in doctor, finish, and reap; doctor and finish share task-integrity blockers; fixture sessions remove only owned empty parents under concurrent processes; and finish distinguishes remote-query failure from head mismatch"
+        "guardEvidence": "new tasks write v4 receipts with explicit logical and allocated measurements; current growth is allocated-to-allocated; v1/v2/v3 receipts remain readable with a null legacy delta where appropriate; malformed v2/v3/v4 storage fails closed in doctor, finish, and reap; doctor and finish share task-integrity blockers; fixture sessions remove only owned empty parents under concurrent processes; and finish distinguishes remote-query failure from head mismatch"
       },
       "owner_docs": [
         "docs/agent_operating_model.md",
         "docs/plans/harness_v2_decision_and_cicd_delivery_plan.md"
       ],
-      "notes": "The --budget-mib limit and disk reserve are allocated-byte contracts. V2/v3 record both initial logical and allocated materialization without legacy aliases; the writer now emits v3 only. V1/v2 metadata is dual-read only and v1 never supplies an invented allocated baseline. Shared fixture parents are pruned with non-recursive empty-directory removal; arbitrary .claude payload is never allowlisted."
+      "notes": "The --budget-mib limit and disk reserve are allocated-byte contracts. V2/v3/v4 record both initial logical and allocated materialization without legacy aliases; the writer now emits v4 only. V1/v2/v3 metadata is read-only compatible and v1 never supplies an invented allocated baseline. Shared fixture parents are pruned with non-recursive empty-directory removal; arbitrary .claude payload is never allowlisted."
     },
     {
       "id": "REG-HARNESS-TASK-COMMAND-CLOSURE-001",
@@ -4295,13 +4295,39 @@
         "type": "command",
         "command": "node --test tool/agent/task_input.test.mjs tool/harness/worktree_lifecycle.test.mjs tool/run.test.mjs",
         "check_ids": ["agent:context-pack", "agent:harness-v2", "tool:runner"],
-        "guardEvidence": "every new start requires a base-bound v3 pack; tracked directory descendants select skills and guards identically at generation and base-SHA validation; structured tool ids separate worker task checks from parent integration; command entries carry owner and phase; absolute, missing, under-scoped, malformed, or support-path edits fail closed; doctor and finish reject missing physical entrypoints; mixed unknown tool ids fail closed"
+        "guardEvidence": "every new start requires a base-bound context-pack v3 and writes task metadata v4; tracked planned-impact directory descendants select skills and guards identically at generation and base-SHA validation; structured tool ids separate worker task checks from parent integration; command entries carry owner and phase; absolute, missing, under-scoped, malformed, or support-path edits fail closed; doctor and finish reject missing physical entrypoints; mixed unknown tool ids fail closed"
       },
       "owner_docs": [
         "docs/agent_operating_model.md",
         "docs/plans/harness_v2_decision_and_cicd_delivery_plan.md"
       ],
-      "notes": "Raw shell command strings remain human instructions only. Closure-aware v3 receipts are base-bound and keep ownership paths separate from support-only materialization. The writer produces v3 only; v1 and v2 receipts remain read-only compatible. Output-file generation prints a compact receipt instead of duplicating the full pack in logs."
+      "notes": "Raw shell command strings remain human instructions only. Closure-aware v4 receipts are base-bound and keep ownership, planned impact, and support-only materialization separate. The writer produces v4 only; v1, v2, and v3 metadata remain read-only compatible. Output-file generation prints a compact receipt instead of duplicating the full pack in logs."
+    },
+    {
+      "id": "REG-HARNESS-PLANNED-IMPACT-001",
+      "title": "Broad task ownership silently broadens check selection or hides an unplanned diff",
+      "status": "active",
+      "applies_to": [
+        "tool/agent/context_pack.mjs",
+        "tool/agent/lib/task_input.mjs",
+        "tool/agent/task_input.test.mjs",
+        "tool/harness/lib/worktree_lifecycle.mjs",
+        "tool/harness/worktree_lifecycle.test.mjs",
+        "tool/run.test.mjs",
+        "docs/agent_operating_model.md"
+      ],
+      "symptom": "A task needs a safe directory-sized write ceiling, so context generation treats every tracked descendant as expected impact, selects unrelated skills and parent checks, emits an oversized pack, or lets doctor and finish accept a changed path that was never part of the reviewed check plan.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/agent/task_input.test.mjs tool/harness/worktree_lifecycle.test.mjs tool/run.test.mjs",
+        "check_ids": ["agent:context-pack", "agent:harness-v2", "tool:runner"],
+        "guardEvidence": "context-pack v3 and task-input v2 bind independent ownedPaths and plannedImpactPaths; only planned impact selects routing; v4 metadata uses ownership for sparse/write authority; doctor and finish reject unplanned changes; missing planned paths and new descendants of planned directories require exact leaf declarations; and legacy v1/v2/v3 task metadata remains readable without reinterpretation"
+      },
+      "owner_docs": [
+        "docs/agent_operating_model.md",
+        "docs/plans/harness_v2_decision_and_cicd_delivery_plan.md"
+      ],
+      "notes": "Parallel directory ownership requires an explicit --impact-paths declaration. Planned impact must be nonempty and stay within the owned write ceiling. Support paths remain machine-derived read-only capabilities and never grant impact or ownership."
     }
   ]
 }

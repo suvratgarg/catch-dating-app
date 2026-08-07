@@ -1,6 +1,6 @@
 ---
 doc_id: agent_operating_model
-version: 1.6.2
+version: 1.6.3
 updated: 2026-08-07
 owner: agent_operating_model
 status: active
@@ -193,6 +193,7 @@ node tool/agent/context_pack.mjs \
   --task <task-id> \
   --mode parallel-delegation \
   --paths <owned-path[,owned-path...]> \
+  --impact-paths <planned-change-path[,planned-change-path...]> \
   --json \
   --output build/agent-context/<task-id>.json
 node tool/harness.mjs task start \
@@ -207,19 +208,30 @@ node tool/harness.mjs task finish --worktree <task-worktree>
 node tool/harness.mjs task reap --dry-run
 ```
 
+| Artifact | Current writer | Legacy reader contract |
+|---|---|---|
+| Context pack | `catch.agent-context-pack/v3` | V2 is reconstructed only to verify existing task-metadata v3 receipts. |
+| Digested task input | `catch.harness-task-input/v2` | V1 is reconstructed only to verify existing task-metadata v3 receipts. |
+| Task lifecycle metadata | `catch.harness-task/v4` | V1, V2, and V3 remain readable and are never upgraded in place. |
+
 The context pack keeps human commands for execution guidance, but task
-materialization is authorized only by structured tool ids. Scope directories
-are expanded to their tracked descendants when skills, rules, regressions, and
-checks are selected; task start recomputes that same expansion from the exact
-base commit. Index-view checks become task checks; full-view checks are
+materialization is authorized only by structured tool ids. `--paths` declares
+the hard write ceiling and sparse ownership projection. `--impact-paths`
+declares the narrower expected diff used to select owner docs, skills, rules,
+regressions, and checks. Planned impact must stay within ownership. Existing
+planned directories expand to their tracked descendants at the exact base
+commit. They do not authorize new descendants; every future leaf must be named
+exactly, and a missing planned path authorizes only that exact leaf. Parallel
+tasks with directory ownership must state planned impact explicitly. Index-view
+checks become task checks; full-view checks are
 recorded as deferred integration checks for the parent so a repository scanner
 cannot pass vacuously against a sparse projection. Generated command plans name
 an owner and phase: the worker runs only worker-owned preflight/task checks,
 while the parent owns lifecycle creation/finish, full-view integration,
 unstructured regression guards, canonical records, and final verification.
 The pack is consumable only when its source worktree is clean, its SHA and
-owned scope match task start, and every selected id resolves to an active
-manifest tool. Command regressions awaiting structured ids remain explicit
+owned and planned-impact scopes match task start, and every selected id
+resolves to an active manifest tool. Command regressions awaiting structured ids remain explicit
 deferred parent checks; their display strings never authorize sparse
 materialization. With `--output`, the full artifact is written to disk and
 stdout contains only a compact task/digest receipt.
@@ -229,11 +241,12 @@ and context-pack digest. It checks a fixed allocated-disk reserve plus the
 allocated task budget, rejects local and
 remote branch collisions, creates the worktree under ignored
 `.claude/worktrees/`, Git-locks the active worktree, and pushes the new branch
-to `origin`. Closure-aware starts record v3 metadata that separates owned paths,
-support-only materialization, required physical entrypoints, task check ids,
-deferred integration ids, base SHA, and digest. New starts cannot bypass the
-pack contract. The reader retains v1/v2 compatibility for tasks created before
-this cutover. V2 and v3
+to `origin`. Closure-aware starts record v4 metadata that separates owned paths,
+planned impact paths, support-only materialization, required physical
+entrypoints, task check ids, deferred integration ids, base SHA, and digest.
+New starts cannot bypass the pack contract. The reader retains v1/v2/v3
+compatibility for tasks created before this cutover; only v4 is written. V2,
+v3, and v4
 receipts name the tracked logical estimate, projected initial allocation,
 initial logical materialization, and initial allocated materialization
 separately. Current allocation and growth are allocated-to-allocated
@@ -242,10 +255,11 @@ allocated growth remains unknown because v1 recorded only an initial logical
 measurement. Task worktrees never use `/tmp` or `/private/tmp`.
 
 1. Parent records its current branch and 40-character HEAD, chooses disjoint
-   owned paths, generates the JSON context pack from that clean exact SHA, then
-   runs `task start` with the same owned paths and `--context-pack`.
+   owned paths and narrower planned impacts, generates the JSON context pack
+   from that clean exact SHA, then runs `task start` with the same owned paths
+   and `--context-pack`.
 2. Each subagent receives the task id, generated worktree path and branch,
-   owned paths, excluded paths, required owner docs, its worker-owned command
+   owned paths, planned impacts, excluded paths, required owner docs, its worker-owned command
    phases, and the structured result format. Parent-owned command phases are
    not delegated.
 3. Before editing, the subagent runs `task doctor` and reports `pwd`,
@@ -261,7 +275,8 @@ measurement. Task worktrees never use `/tmp` or `/private/tmp`.
    loop, and records the delegation outcome.
 7. After the task branch is clean and its exact head exists at `origin`, run
    `task finish`. Doctor and finish share the same root, metadata-path,
-   sparse-checkout, command-entrypoint closure, owned-scope, storage, base-ancestry,
+   sparse-checkout, command-entrypoint closure, owned-scope, planned-impact,
+   storage, base-ancestry,
    ignored-payload, dependency, and filesystem-reserve integrity checks;
    allowlisted task-local dependency/build directories remain valid. Finish
    additionally performs a live origin-head

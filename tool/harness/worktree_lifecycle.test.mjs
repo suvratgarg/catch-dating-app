@@ -15,9 +15,11 @@ import {
 } from "./lib/worktree_lifecycle.mjs";
 import {
   buildTaskStartContract,
-  CONTEXT_PACK_SCHEMA_V2,
+  CONTEXT_PACK_SCHEMA_V3,
   deriveTaskCheckSelection,
+  digestTaskStart,
   resolveStructuredCheckPlan,
+  TASK_INPUT_SCHEMA_V1,
   TASK_START_MODE,
 } from "../agent/lib/task_input.mjs";
 
@@ -158,7 +160,7 @@ test("capacity preflight fails before a worktree can consume the reserve", () =>
   );
 });
 
-test("closure-aware start materializes exact command support and records v3 metadata", (context) => {
+test("closure-aware start materializes exact command support and records v4 metadata", (context) => {
   const fixture = createClosureFixture(context);
   const baseSha = git(fixture, ["rev-parse", "HEAD"]);
   writeContextPack(fixture, {taskId: "closure-aware", baseSha});
@@ -177,8 +179,10 @@ test("closure-aware start materializes exact command support and records v3 meta
     statfs: () => ({bavail: 4096, bsize: MIB}),
   });
   assert.equal(execution.status, 0);
-  assert.equal(execution.result.metadata.schema, "catch.harness-task/v3");
-  assert.deepEqual(execution.result.metadata.requestedSparsePaths, ["/lib/profile.txt"]);
+  assert.equal(execution.result.metadata.schema, "catch.harness-task/v4");
+  assert.deepEqual(execution.result.metadata.ownedPaths, ["lib/profile.txt"]);
+  assert.deepEqual(execution.result.metadata.plannedImpactPaths, ["lib/profile.txt"]);
+  assert.equal(Object.hasOwn(execution.result.metadata, "requestedSparsePaths"), false);
   assert.deepEqual(execution.result.metadata.contextPack.checkIds, [
     "agent:readiness",
     "fixture:check",
@@ -275,7 +279,7 @@ test("support-only command paths remain read-only through doctor and finish", (c
     statfs: () => ({bavail: 4096, bsize: MIB}),
   });
   const target = execution.result.metadata.worktreePath;
-  assert.deepEqual(execution.result.metadata.requestedSparsePaths, ["/lib/profile.txt"]);
+  assert.deepEqual(execution.result.metadata.ownedPaths, ["lib/profile.txt"]);
   fs.appendFileSync(path.join(target, "tool", "check.mjs"), "// support edit\n");
   git(target, ["add", "tool/check.mjs"]);
   git(target, ["commit", "-m", "edit support only path"]);
@@ -289,7 +293,152 @@ test("support-only command paths remain read-only through doctor and finish", (c
   assert.ok(finish.result.blockers.includes("out_of_owned_scope:tool/check.mjs"));
 });
 
-test("malformed v3 receipt arrays block doctor and finish without changing state", (context) => {
+test("broad ownership permits only the narrower planned impact", (context) => {
+  const fixture = createClosureFixture(context);
+  const baseSha = git(fixture, ["rev-parse", "HEAD"]);
+  writeContextPack(fixture, {
+    taskId: "narrow-impact",
+    baseSha,
+    ownedPath: "lib",
+    plannedImpactPath: "lib/profile.txt",
+  });
+  const execution = executeTaskCommand({
+    args: [
+      "start",
+      "--task-id", "narrow-impact",
+      "--base-sha", baseSha,
+      "--stack-parent", "main",
+      "--paths", "lib",
+      "--context-pack", ".task-pack.json",
+      "--budget-mib", "64",
+      "--reserve-mib", "1",
+    ],
+    cwd: fixture,
+    statfs: () => ({bavail: 4096, bsize: MIB}),
+  });
+  const target = execution.result.metadata.worktreePath;
+  assert.deepEqual(execution.result.metadata.ownedPaths, ["lib"]);
+  assert.deepEqual(execution.result.metadata.plannedImpactPaths, ["lib/profile.txt"]);
+  fs.writeFileSync(path.join(target, "lib", "other.txt"), "changed\n");
+  git(target, ["add", "lib/other.txt"]);
+  git(target, ["commit", "-m", "unplanned owned change"]);
+  git(target, ["push"]);
+
+  const doctor = executeTaskCommand({args: ["doctor"], cwd: target});
+  assert.equal(doctor.status, 1);
+  assert.ok(doctor.result.blockers.includes("unplanned_impact:lib/other.txt"));
+  assert.equal(doctor.result.blockers.includes("out_of_owned_scope:lib/other.txt"), false);
+  const finish = executeTaskCommand({args: ["finish"], cwd: target});
+  assert.equal(finish.status, 1);
+  assert.ok(finish.result.blockers.includes("unplanned_impact:lib/other.txt"));
+});
+
+test("a missing planned path is an exact future leaf, not a directory wildcard", (context) => {
+  const fixture = createClosureFixture(context);
+  const baseSha = git(fixture, ["rev-parse", "HEAD"]);
+  writeContextPack(fixture, {
+    taskId: "future-leaf",
+    baseSha,
+    ownedPath: "lib",
+    plannedImpactPath: "lib/new-entry",
+  });
+  const execution = executeTaskCommand({
+    args: [
+      "start",
+      "--task-id", "future-leaf",
+      "--base-sha", baseSha,
+      "--stack-parent", "main",
+      "--paths", "lib",
+      "--context-pack", ".task-pack.json",
+      "--budget-mib", "64",
+      "--reserve-mib", "1",
+    ],
+    cwd: fixture,
+    statfs: () => ({bavail: 4096, bsize: MIB}),
+  });
+  const target = execution.result.metadata.worktreePath;
+  fs.writeFileSync(path.join(target, "lib", "new-entry"), "planned exact leaf\n");
+  git(target, ["add", "lib/new-entry"]);
+  git(target, ["commit", "-m", "planned exact leaf"]);
+  git(target, ["push"]);
+  const exactDoctor = executeTaskCommand({args: ["doctor"], cwd: target});
+  assert.equal(exactDoctor.status, 0, JSON.stringify(exactDoctor.result));
+
+  fs.unlinkSync(path.join(target, "lib", "new-entry"));
+  fs.mkdirSync(path.join(target, "lib", "new-entry"));
+  fs.writeFileSync(path.join(target, "lib", "new-entry", "nested.txt"), "nested\n");
+  git(target, ["add", "--all", "lib/new-entry"]);
+  git(target, ["commit", "-m", "nested unplanned change"]);
+  git(target, ["push"]);
+
+  const doctor = executeTaskCommand({args: ["doctor"], cwd: target});
+  assert.equal(doctor.status, 1);
+  assert.ok(doctor.result.blockers.includes("unplanned_impact:lib/new-entry/nested.txt"));
+});
+
+test("an existing planned directory does not authorize unselected future descendants", (context) => {
+  const fixture = createClosureFixture(context);
+  const baseSha = git(fixture, ["rev-parse", "HEAD"]);
+  writeContextPack(fixture, {
+    taskId: "planned-tree",
+    baseSha,
+    ownedPath: "lib",
+    plannedImpactPath: "lib",
+    selectionImpactPaths: ["lib", "lib/other.txt", "lib/profile.txt"],
+  });
+  const execution = executeTaskCommand({
+    args: [
+      "start",
+      "--task-id", "planned-tree",
+      "--base-sha", baseSha,
+      "--stack-parent", "main",
+      "--paths", "lib",
+      "--context-pack", ".task-pack.json",
+      "--budget-mib", "64",
+      "--reserve-mib", "1",
+    ],
+    cwd: fixture,
+    statfs: () => ({bavail: 4096, bsize: MIB}),
+  });
+  const target = execution.result.metadata.worktreePath;
+  fs.mkdirSync(path.join(target, "lib", "new-area"));
+  fs.writeFileSync(path.join(target, "lib", "new-area", "new.txt"), "new\n");
+  git(target, ["add", "lib/new-area/new.txt"]);
+  git(target, ["commit", "-m", "unselected future descendant"]);
+  git(target, ["push"]);
+
+  const doctor = executeTaskCommand({args: ["doctor"], cwd: target});
+  assert.equal(doctor.status, 1);
+  assert.ok(doctor.result.blockers.includes("unplanned_impact:lib/new-area/new.txt"));
+});
+
+test("planned impact outside ownership is refused before worktree registration", (context) => {
+  const fixture = createClosureFixture(context);
+  const baseSha = git(fixture, ["rev-parse", "HEAD"]);
+  writeContextPack(fixture, {
+    taskId: "outside-impact",
+    baseSha,
+    ownedPath: "lib/profile.txt",
+    plannedImpactPath: "unrelated.txt",
+  });
+  assert.throws(
+    () => executeTaskCommand({
+      args: [
+        "start",
+        "--task-id", "outside-impact",
+        "--base-sha", baseSha,
+        "--stack-parent", "main",
+        "--paths", "lib/profile.txt",
+        "--context-pack", ".task-pack.json",
+      ],
+      cwd: fixture,
+    }),
+    /planned_impact_outside_owned_scope:unrelated\.txt/u,
+  );
+  assert.doesNotMatch(git(fixture, ["worktree", "list", "--porcelain"]), /outside-impact/u);
+});
+
+test("malformed v4 receipt arrays block doctor and finish without changing state", (context) => {
   const fixture = createClosureFixture(context);
   const baseSha = git(fixture, ["rev-parse", "HEAD"]);
   writeContextPack(fixture, {taskId: "malformed-receipt", baseSha});
@@ -319,6 +468,22 @@ test("malformed v3 receipt arrays block doctor and finish without changing state
   const finish = executeTaskCommand({args: ["finish"], cwd: target});
   assert.equal(finish.status, 1);
   assert.ok(finish.result.blockers.includes("invalid_context_pack_receipt"));
+  assert.equal(JSON.parse(fs.readFileSync(metadataPath, "utf8")).status, "active");
+});
+
+test("malformed v4 planned-impact receipts block doctor and finish", (context) => {
+  const {metadata, metadataPath, target} = createStartedTask(context, "malformed-impact");
+  fs.writeFileSync(metadataPath, `${JSON.stringify({
+    ...metadata,
+    plannedImpactPaths: ["lib/profile.txt", "lib/profile.txt"],
+  }, null, 2)}\n`);
+
+  const doctor = executeTaskCommand({args: ["doctor"], cwd: target});
+  assert.equal(doctor.status, 1);
+  assert.ok(doctor.result.blockers.includes("context_pack_receipt_mismatch") ||
+    doctor.result.blockers.includes("invalid_planned_impact_receipt"));
+  const finish = executeTaskCommand({args: ["finish"], cwd: target});
+  assert.equal(finish.status, 1);
   assert.equal(JSON.parse(fs.readFileSync(metadataPath, "utf8")).status, "active");
 });
 
@@ -496,7 +661,7 @@ test("start uses an explicit sparse worktree and records local task metadata", (
   assert.equal(fs.existsSync(path.join(target, "unrelated.txt")), false);
   const metadataPath = git(target, ["rev-parse", "--git-path", "catch-task.json"]);
   const metadata = JSON.parse(fs.readFileSync(metadataPath, "utf8"));
-  assert.equal(metadata.schema, "catch.harness-task/v3");
+  assert.equal(metadata.schema, "catch.harness-task/v4");
   assert.equal(metadata.baseSha, baseSha);
   assert.equal(metadata.creatorPid, 4242);
   assert.equal(metadata.stackParent, "main");
@@ -625,6 +790,8 @@ test("legacy v1 task metadata remains readable without inventing an allocated ba
     "projectedInitialAllocatedBytes",
     "initialMaterializedLogicalBytes",
     "initialMaterializedAllocatedBytes",
+    "ownedPaths",
+    "plannedImpactPaths",
   ]) delete legacyMetadata[key];
   delete legacyMetadata.contextPack;
   fs.writeFileSync(metadataPath, `${JSON.stringify(legacyMetadata, null, 2)}\n`);
@@ -639,6 +806,61 @@ test("legacy v1 task metadata remains readable without inventing an allocated ba
   const persisted = JSON.parse(fs.readFileSync(metadataPath, "utf8"));
   assert.equal(persisted.schema, "catch.harness-task/v1");
   assert.equal(Object.hasOwn(persisted, "initialMaterializedAllocatedBytes"), false);
+});
+
+test("legacy v2 task metadata remains readable and keeps its schema", (context) => {
+  const {metadata, metadataPath, target} = createStartedTask(context, "legacy-v2");
+  const legacyMetadata = {...metadata, schema: "catch.harness-task/v2"};
+  delete legacyMetadata.contextPack;
+  delete legacyMetadata.ownedPaths;
+  delete legacyMetadata.plannedImpactPaths;
+  fs.writeFileSync(metadataPath, `${JSON.stringify(legacyMetadata, null, 2)}\n`);
+
+  const doctor = executeTaskCommand({args: ["doctor"], cwd: target});
+  assert.equal(doctor.status, 0, JSON.stringify(doctor.result));
+  const finish = executeTaskCommand({args: ["finish"], cwd: target});
+  assert.equal(finish.status, 0, JSON.stringify(finish.result));
+  assert.equal(JSON.parse(fs.readFileSync(metadataPath, "utf8")).schema, "catch.harness-task/v2");
+});
+
+test("legacy v3 task metadata preserves its original context and owned-scope semantics", (context) => {
+  const {metadata, metadataPath, target} = createStartedTask(context, "legacy-v3");
+  const legacyPayload = {
+    schema: TASK_INPUT_SCHEMA_V1,
+    taskId: metadata.taskId,
+    mode: metadata.contextPack.mode,
+    baseSha: metadata.baseSha,
+    scopePaths: metadata.ownedPaths,
+    checkIds: metadata.contextPack.checkIds,
+    requiredEntrypoints: metadata.contextPack.requiredEntrypoints,
+    supportPaths: metadata.contextPack.supportPaths,
+    deferredCheckIds: metadata.contextPack.deferredCheckIds,
+    deferredRegressionIds: metadata.contextPack.deferredRegressionIds,
+    complete: true,
+    blockers: [],
+  };
+  const legacyMetadata = {
+    ...metadata,
+    schema: "catch.harness-task/v3",
+    requestedSparsePaths: metadata.ownedPaths.map((entry) => `/${entry}`),
+    contextPack: {
+      ...metadata.contextPack,
+      packSchema: "catch.agent-context-pack/v2",
+      taskInputSchema: TASK_INPUT_SCHEMA_V1,
+      digest: digestTaskStart(legacyPayload),
+    },
+  };
+  delete legacyMetadata.ownedPaths;
+  delete legacyMetadata.plannedImpactPaths;
+  fs.writeFileSync(metadataPath, `${JSON.stringify(legacyMetadata, null, 2)}\n`);
+
+  const doctor = executeTaskCommand({args: ["doctor"], cwd: target});
+  assert.equal(doctor.status, 0, JSON.stringify(doctor.result));
+  const finish = executeTaskCommand({args: ["finish"], cwd: target});
+  assert.equal(finish.status, 0, JSON.stringify(finish.result));
+  const persisted = JSON.parse(fs.readFileSync(metadataPath, "utf8"));
+  assert.equal(persisted.schema, "catch.harness-task/v3");
+  assert.equal(Object.hasOwn(persisted, "plannedImpactPaths"), false);
 });
 
 test("malformed v2 storage measurements fail closed", (context) => {
@@ -693,6 +915,23 @@ test("finish cannot bypass task-integrity blockers reported by doctor", (context
   assert.equal(finish.status, 1);
   assert.ok(finish.result.blockers.includes("metadata_path_mismatch"));
   assert.ok(finish.result.blockers.includes("sparse_checkout_metadata_mismatch"));
+});
+
+test("task-boundary diff inspection fails closed in doctor and finish", (context) => {
+  const {metadataPath, target} = createStartedTask(context, "diff-unavailable");
+  const failedDiffRunner = (command, args, options) => {
+    if (command === "git" && args[0] === "diff") {
+      return {status: 1, stdout: "", stderr: "injected diff failure"};
+    }
+    return spawnSync(command, args, options);
+  };
+  const doctor = executeTaskCommand({args: ["doctor"], cwd: target, runner: failedDiffRunner});
+  assert.equal(doctor.status, 1);
+  assert.ok(doctor.result.blockers.includes("task_diff_unavailable"));
+  const finish = executeTaskCommand({args: ["finish"], cwd: target, runner: failedDiffRunner});
+  assert.equal(finish.status, 1);
+  assert.ok(finish.result.blockers.includes("task_diff_unavailable"));
+  assert.equal(JSON.parse(fs.readFileSync(metadataPath, "utf8")).status, "active");
 });
 
 test("ignored payload must be inspectable and known before doctor or finish", (context) => {
@@ -941,6 +1180,7 @@ function createGitFixture(context) {
   git(fixture, ["config", "user.email", "catch-test@example.com"]);
   fs.mkdirSync(path.join(fixture, "lib"), {recursive: true});
   fs.writeFileSync(path.join(fixture, "lib", "profile.txt"), "profile\n");
+  fs.writeFileSync(path.join(fixture, "lib", "other.txt"), "other\n");
   fs.writeFileSync(path.join(fixture, "unrelated.txt"), "unrelated\n");
   git(fixture, ["add", "."]);
   git(fixture, ["commit", "-m", "fixture"]);
@@ -978,13 +1218,26 @@ function createClosureFixture(context, {entrypoint = "tool/check.mjs"} = {}) {
 
 function writeContextPack(
   fixture,
-  {taskId, baseSha, entrypoint = "tool/check.mjs", scopePath = "lib/profile.txt"},
+  {
+    taskId,
+    baseSha,
+    entrypoint = "tool/check.mjs",
+    ownedPath = "lib/profile.txt",
+    plannedImpactPath = ownedPath,
+    selectionImpactPaths = [plannedImpactPath],
+    scopePath,
+  },
 ) {
+  if (scopePath != null) {
+    ownedPath = scopePath;
+    plannedImpactPath = scopePath;
+    selectionImpactPaths = [scopePath];
+  }
   const manifest = closureManifest(entrypoint);
   const selection = deriveTaskCheckSelection({
     task: taskId,
     mode: TASK_START_MODE,
-    scopePaths: [scopePath],
+    impactPaths: selectionImpactPaths,
     skills: fixtureSkills(),
     regressions: [],
   });
@@ -996,19 +1249,20 @@ function writeContextPack(
     taskId,
     mode: TASK_START_MODE,
     sourceSha: baseSha,
-    scopePaths: [scopePath],
+    ownedPaths: [ownedPath],
+    plannedImpactPaths: [plannedImpactPath],
     checkPlan,
     sourceClean: true,
     blockers: checkPlan.blockers,
     deferredRegressionIds: selection.deferredRegressionIds,
   });
   const pack = {
-    schema: CONTEXT_PACK_SCHEMA_V2,
+    schema: CONTEXT_PACK_SCHEMA_V3,
     sourceSha: baseSha,
     sourceClean: true,
     task: taskId,
     mode: TASK_START_MODE,
-    scope: {paths: [scopePath]},
+    scope: {ownedPaths: [ownedPath], plannedImpactPaths: [plannedImpactPath]},
     skills: selection.matchedSkills,
     regressionGuards: selection.matchedRegressions,
     checkPlan,

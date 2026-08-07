@@ -2,12 +2,13 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   buildTaskStartContract,
-  CONTEXT_PACK_SCHEMA_V2,
+  CONTEXT_PACK_SCHEMA_V3,
   deriveTaskCheckSelection,
   matchesTaskScopePatterns,
   normalizeTaskScopePaths,
   resolveStructuredCheckPlan,
   TASK_START_MODE,
+  taskImpactBlockers,
   taskStartabilityBlockers,
   validateTaskStartContract,
 } from "./lib/task_input.mjs";
@@ -83,8 +84,7 @@ test("recursive scope patterns match nested feature files without treating globs
   const selection = deriveTaskCheckSelection({
     task: "explore-feature",
     mode: TASK_START_MODE,
-    scopePaths: ["lib/explore"],
-    selectionPaths: [
+    impactPaths: [
       "lib/explore",
       "lib/explore/data/repository.dart",
       "lib/explore/presentation/screen.dart",
@@ -120,6 +120,51 @@ test("task startability uses the same task-id and materialized-scope contract", 
   }), ["task_scope_path_missing:missing/path.md"]);
 });
 
+test("planned impact is nonempty, exact, and contained by the owned write boundary", () => {
+  const inspectPath = (relativePath) => ({
+    docs: "tree",
+    "lib/profile.txt": "blob",
+  })[relativePath] ?? null;
+  assert.deepEqual(taskImpactBlockers({
+    ownedPaths: ["docs"],
+    plannedImpactPaths: ["docs/new.md"],
+    inspectPath,
+  }), []);
+  assert.deepEqual(taskImpactBlockers({
+    ownedPaths: ["lib/profile.txt"],
+    plannedImpactPaths: ["lib/profile.txt/new.md"],
+    inspectPath,
+  }), ["planned_impact_outside_owned_scope:lib/profile.txt/new.md"]);
+  assert.deepEqual(taskImpactBlockers({
+    ownedPaths: ["docs"],
+    plannedImpactPaths: ["lib/explore/new.dart"],
+    inspectPath,
+  }), ["planned_impact_outside_owned_scope:lib/explore/new.dart"]);
+  assert.deepEqual(taskImpactBlockers({
+    ownedPaths: ["docs"],
+    plannedImpactPaths: [],
+    inspectPath,
+  }), ["planned_impact_empty"]);
+});
+
+test("broad ownership does not broaden impact-based skill and regression selection", () => {
+  const selection = deriveTaskCheckSelection({
+    task: "narrow-presentation-change",
+    mode: TASK_START_MODE,
+    impactPaths: ["lib/explore/presentation/screen.dart"],
+    skills: [
+      {skill_id: "ui", applies_to: ["lib/**/presentation/**"], required_tools: []},
+      {skill_id: "data", applies_to: ["lib/**/data/**"], required_tools: []},
+    ],
+    regressions: [
+      {id: "REG-UI", status: "active", applies_to: ["lib/**/presentation/**"]},
+      {id: "REG-DATA", status: "active", applies_to: ["lib/**/data/**"]},
+    ],
+  });
+  assert.deepEqual(selection.matchedSkills.map((entry) => entry.skill_id), ["ui"]);
+  assert.deepEqual(selection.matchedRegressions.map((entry) => entry.id), ["REG-UI"]);
+});
+
 test("task-start contracts separate scope, support paths, and deferred checks", () => {
   const requests = [
     {id: "task-check", sources: ["skill:one"]},
@@ -131,7 +176,8 @@ test("task-start contracts separate scope, support paths, and deferred checks", 
     taskId: "profile-task",
     mode: TASK_START_MODE,
     sourceSha: "a".repeat(40),
-    scopePaths: ["lib/profile", "docs/plan.md"],
+    ownedPaths: ["lib/profile", "docs/plan.md"],
+    plannedImpactPaths: ["lib/profile", "docs/plan.md"],
     checkPlan: plan,
     sourceClean: true,
     blockers: plan.blockers,
@@ -143,12 +189,15 @@ test("task-start contracts separate scope, support paths, and deferred checks", 
   assert.deepEqual(taskStart.supportPaths, ["contracts/runtime.json", "tool"]);
 
   const pack = {
-    schema: CONTEXT_PACK_SCHEMA_V2,
+    schema: CONTEXT_PACK_SCHEMA_V3,
     sourceSha: "a".repeat(40),
     sourceClean: true,
     task: "profile-task",
     mode: TASK_START_MODE,
-    scope: {paths: ["docs/plan.md", "lib/profile"]},
+    scope: {
+      ownedPaths: ["docs/plan.md", "lib/profile"],
+      plannedImpactPaths: ["docs/plan.md", "lib/profile"],
+    },
     skills: [],
     regressionGuards: [],
     checkPlan: plan,
@@ -159,7 +208,8 @@ test("task-start contracts separate scope, support paths, and deferred checks", 
     manifest,
     taskId: "profile-task",
     baseSha: "a".repeat(40),
-    scopePaths: ["docs/plan.md", "lib/profile"],
+    ownedPaths: ["docs/plan.md", "lib/profile"],
+    plannedImpactPaths: ["docs/plan.md", "lib/profile"],
     selection,
   }).errors, []);
 
@@ -169,7 +219,8 @@ test("task-start contracts separate scope, support paths, and deferred checks", 
     manifest,
     taskId: "profile-task",
     baseSha: "a".repeat(40),
-    scopePaths: ["docs/plan.md", "lib/profile"],
+    ownedPaths: ["docs/plan.md", "lib/profile"],
+    plannedImpactPaths: ["docs/plan.md", "lib/profile"],
     selection,
   }).errors.includes("context_pack_closure_mismatch"));
 });
@@ -182,18 +233,19 @@ test("pack envelope scope, cleanliness, and check plan are bound to authorizatio
     taskId: "bound-pack",
     mode: TASK_START_MODE,
     sourceSha: "c".repeat(40),
-    scopePaths: ["tool/"],
+    ownedPaths: ["tool/"],
+    plannedImpactPaths: ["tool/"],
     checkPlan: plan,
     sourceClean: true,
     blockers: plan.blockers,
   });
   const basePack = {
-    schema: CONTEXT_PACK_SCHEMA_V2,
+    schema: CONTEXT_PACK_SCHEMA_V3,
     sourceSha: "c".repeat(40),
     sourceClean: true,
     task: "bound-pack",
     mode: TASK_START_MODE,
-    scope: {paths: ["tool"]},
+    scope: {ownedPaths: ["tool"], plannedImpactPaths: ["tool"]},
     skills: [],
     regressionGuards: [],
     checkPlan: plan,
@@ -204,14 +256,28 @@ test("pack envelope scope, cleanliness, and check plan are bound to authorizatio
     manifest,
     taskId: "bound-pack",
     baseSha: "c".repeat(40),
-    scopePaths: ["tool"],
+    ownedPaths: ["tool"],
+    plannedImpactPaths: ["tool"],
     selection,
   }).errors;
   assert.deepEqual(validate(basePack), []);
   assert.ok(validate({...basePack, sourceClean: false}).includes("context_pack_source_not_clean"));
-  assert.ok(validate({...basePack, scope: {paths: ["../../outside"]}}).includes(
-    "context_pack_envelope_scope_mismatch",
+  assert.ok(validate({...basePack, scope: {
+    ...basePack.scope,
+    ownedPaths: ["../../outside"],
+  }}).includes(
+    "context_pack_envelope_ownership_mismatch",
   ));
+  assert.ok(validate({...basePack, scope: {
+    ...basePack.scope,
+    plannedImpactPaths: ["tool/other.mjs"],
+  }}).includes(
+    "context_pack_envelope_impact_mismatch",
+  ));
+  assert.ok(validate({
+    ...basePack,
+    taskStart: {...basePack.taskStart, plannedImpactPaths: ["tool/other.mjs"]},
+  }).includes("context_pack_digest_mismatch"));
   assert.ok(validate({...basePack, checkPlan: {task: [], integration: [], blockers: []}}).includes(
     "context_pack_envelope_check_plan_mismatch",
   ));
@@ -225,18 +291,19 @@ test("malformed task input arrays fail validation without throwing", () => {
     taskId: "malformed-pack",
     mode: TASK_START_MODE,
     sourceSha: "d".repeat(40),
-    scopePaths: ["tool"],
+    ownedPaths: ["tool"],
+    plannedImpactPaths: ["tool"],
     checkPlan: plan,
     sourceClean: true,
     blockers: plan.blockers,
   });
   const pack = {
-    schema: CONTEXT_PACK_SCHEMA_V2,
+    schema: CONTEXT_PACK_SCHEMA_V3,
     sourceSha: "d".repeat(40),
     sourceClean: true,
     task: "malformed-pack",
     mode: TASK_START_MODE,
-    scope: {paths: ["tool"]},
+    scope: {ownedPaths: ["tool"], plannedImpactPaths: ["tool"]},
     skills: [],
     regressionGuards: [],
     checkPlan: plan,
@@ -247,7 +314,8 @@ test("malformed task input arrays fail validation without throwing", () => {
     manifest,
     taskId: "malformed-pack",
     baseSha: "d".repeat(40),
-    scopePaths: ["tool"],
+    ownedPaths: ["tool"],
+    plannedImpactPaths: ["tool"],
     selection,
   });
   assert.ok(result.errors.includes("invalid_task_input_checkIds"));
@@ -303,7 +371,8 @@ test("unknown checks and dirty source state make task input incomplete", () => {
     taskId: "dirty-task",
     mode: TASK_START_MODE,
     sourceSha: "b".repeat(40),
-    scopePaths: ["tool"],
+    ownedPaths: ["tool"],
+    plannedImpactPaths: ["tool"],
     checkPlan: plan,
     sourceClean: false,
     blockers: plan.blockers,
@@ -338,18 +407,19 @@ test("trusted selection prevents a caller from dropping mandatory checks", () =>
     taskId: "under-scoped",
     mode: TASK_START_MODE,
     sourceSha: "e".repeat(40),
-    scopePaths: ["tool"],
+    ownedPaths: ["tool"],
+    plannedImpactPaths: ["tool"],
     checkPlan: underscopedPlan,
     sourceClean: true,
     blockers: underscopedPlan.blockers,
   });
   const pack = {
-    schema: CONTEXT_PACK_SCHEMA_V2,
+    schema: CONTEXT_PACK_SCHEMA_V3,
     sourceSha: "e".repeat(40),
     sourceClean: true,
     task: "under-scoped",
     mode: TASK_START_MODE,
-    scope: {paths: ["tool"]},
+    scope: {ownedPaths: ["tool"], plannedImpactPaths: ["tool"]},
     skills: [],
     regressionGuards: [],
     checkPlan: underscopedPlan,
@@ -364,7 +434,8 @@ test("trusted selection prevents a caller from dropping mandatory checks", () =>
     manifest: authorityManifest,
     taskId: "under-scoped",
     baseSha: "e".repeat(40),
-    scopePaths: ["tool"],
+    ownedPaths: ["tool"],
+    plannedImpactPaths: ["tool"],
     selection: trusted,
   });
   assert.ok(result.errors.includes("context_pack_closure_mismatch"));

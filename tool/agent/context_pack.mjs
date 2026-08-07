@@ -8,12 +8,13 @@ import {parseDocumentLifecycleStatus} from "../docs/check_doc_version_monotonic.
 import {taskCommandTemplates} from "../harness/lib/task_contract.mjs";
 import {
   buildTaskStartContract,
-  CONTEXT_PACK_SCHEMA_V2,
+  CONTEXT_PACK_SCHEMA_V3,
   deriveTaskCheckSelection,
   matchesTaskScopePatterns,
   normalizeTaskScopePaths,
   resolveStructuredCheckPlan,
   TASK_START_MODE,
+  taskImpactBlockers,
   taskStartabilityBlockers,
 } from "./lib/task_input.mjs";
 
@@ -21,8 +22,11 @@ const args = parseArgs(process.argv.slice(2));
 const repositorySnapshot = createRepositorySnapshot();
 const task = args.task ?? "unspecified";
 const mode = args.mode ?? "standard";
-const scopePaths = normalizePaths(args.paths);
-const selectionPaths = expandSelectionPaths(scopePaths);
+const ownedPaths = normalizePaths(args.paths);
+const plannedImpactPaths = args.impactPaths.length > 0
+  ? normalizePaths(args.impactPaths)
+  : ownedPaths;
+const selectionPaths = expandSelectionPaths(plannedImpactPaths);
 const generatedAt = new Date().toISOString();
 
 const docVersions = readJson("docs/audit_registry/doc_versions.json", {});
@@ -34,8 +38,7 @@ const toolsManifest = readJson("tool/tools_manifest.json", {tools: []});
 const selection = deriveTaskCheckSelection({
   task,
   mode,
-  scopePaths,
-  selectionPaths,
+  impactPaths: selectionPaths,
   skills: skillManifest.skills ?? [],
   regressions: regressionLedger.entries ?? [],
 });
@@ -54,43 +57,61 @@ const commands = buildCommandPlan({
   mode,
   checkPlan,
 });
-const acceptance = buildAcceptance({task, scopePaths, matchedSkills, mode});
+const acceptance = buildAcceptance({task, ownedPaths, plannedImpactPaths, matchedSkills, mode});
 const startabilityBlockers = taskStartabilityBlockers({
   taskId: task,
-  scopePaths,
+  scopePaths: ownedPaths,
   inspectPath: (relativePath) => {
     if (repositorySnapshot.exists(relativePath)) return "blob";
     if (repositorySnapshot.listPaths({prefix: `${relativePath}/`}).length > 0) return "tree";
     return null;
   },
 });
+const impactBlockers = taskImpactBlockers({
+  ownedPaths,
+  plannedImpactPaths,
+  inspectPath: (relativePath) => {
+    if (repositorySnapshot.exists(relativePath)) return "blob";
+    if (repositorySnapshot.listPaths({prefix: `${relativePath}/`}).length > 0) return "tree";
+    return null;
+  },
+});
+const explicitImpactBlockers = mode === TASK_START_MODE && args.impactPaths.length === 0 &&
+  ownedPaths.some((relativePath) =>
+    repositorySnapshot.listPaths({prefix: `${relativePath}/`}).length > 0)
+  ? ["planned_impact_required_for_owned_directory"]
+  : [];
 const taskStart = buildTaskStartContract({
   taskId: task,
   mode,
   sourceSha: sourceState.sha,
-  scopePaths,
+  ownedPaths,
+  plannedImpactPaths,
   checkPlan,
   sourceClean: sourceState.clean,
   blockers: [
     ...(mode === TASK_START_MODE ? [] : ["task_start_requires_parallel_delegation_mode"]),
     ...startabilityBlockers,
+    ...impactBlockers,
+    ...explicitImpactBlockers,
     ...checkPlan.blockers,
   ],
   deferredRegressionIds: selection.deferredRegressionIds,
 });
 
 const pack = {
-  schema: CONTEXT_PACK_SCHEMA_V2,
+  schema: CONTEXT_PACK_SCHEMA_V3,
   generatedAt,
   sourceSha: sourceState.sha,
   sourceClean: sourceState.clean,
   task,
   mode,
   scope: {
-    paths: scopePaths,
-    note: scopePaths.length === 0
-      ? "No paths supplied. Treat this as strategy/planning until scope is declared."
-      : "Use these paths as the first pass scope; preserve unrelated dirty work.",
+    ownedPaths,
+    plannedImpactPaths,
+    note: ownedPaths.length === 0
+      ? "No owned paths supplied. Treat this as strategy/planning until write authority is declared."
+      : "Owned paths are the write ceiling; planned impacts select checks and constrain the actual diff.",
   },
   ownerDocs,
   skills: matchedSkills.map((skill) => ({
@@ -124,10 +145,13 @@ if (args.output) {
     task: pack.task,
     complete: pack.taskStart.complete,
     digest: pack.taskStart.digest,
+    blockerCount: pack.taskStart.blockers.length,
+    blockers: pack.taskStart.blockers.slice(0, 10),
+    blockersTruncated: pack.taskStart.blockers.length > 10,
   };
   process.stdout.write(args.json
     ? `${JSON.stringify(receipt)}\n`
-    : `Context pack written: ${receipt.output} (${receipt.task}, complete=${receipt.complete}, digest=${receipt.digest})\n`);
+    : `Context pack written: ${receipt.output} (${receipt.task}, complete=${receipt.complete}, blockers=${receipt.blockers.join(",") || "none"}, digest=${receipt.digest})\n`);
 } else {
   process.stdout.write(rendered);
 }
@@ -318,9 +342,9 @@ function addCommand(commands, command, reason, {owner, phase}) {
   commands.push({command, owner, phase, reason});
 }
 
-function buildAcceptance({task, scopePaths, matchedSkills, mode}) {
+function buildAcceptance({task, ownedPaths, plannedImpactPaths, matchedSkills, mode}) {
   const items = [
-    "Scope and excluded dirty work are stated before edits.",
+    "Owned write paths, planned impact paths, and excluded dirty work are stated before edits.",
     "Owner docs are updated or explicitly left unchanged.",
     "Relevant checks from the command plan are run or blockers are documented.",
     "New recurring debt or regression risk has a stable id.",
@@ -334,7 +358,7 @@ function buildAcceptance({task, scopePaths, matchedSkills, mode}) {
   if (mode === "parallel-delegation") {
     items.push("Worker runs only worker-owned commands; parent retains integration checks, canonical docs, registries, audit receipts, and final verification.");
   }
-  if (scopePaths.length === 0 || task === "unspecified") {
+  if (ownedPaths.length === 0 || plannedImpactPaths.length === 0 || task === "unspecified") {
     items.unshift("Task name and paths are narrowed before implementation.");
   }
   return items;
@@ -346,7 +370,8 @@ function renderMarkdown(pack) {
   lines.push("");
   lines.push(`- Task: ${pack.task}`);
   lines.push(`- Generated: ${pack.generatedAt}`);
-  lines.push(`- Scope: ${pack.scope.paths.length > 0 ? pack.scope.paths.join(", ") : "(none supplied)"}`);
+  lines.push(`- Owned write paths: ${pack.scope.ownedPaths.length > 0 ? pack.scope.ownedPaths.join(", ") : "(none supplied)"}`);
+  lines.push(`- Planned impact paths: ${pack.scope.plannedImpactPaths.length > 0 ? pack.scope.plannedImpactPaths.join(", ") : "(none supplied)"}`);
   lines.push("");
   lines.push("## Owner Docs");
   for (const doc of pack.ownerDocs) {
@@ -426,6 +451,7 @@ function parseArgs(argv) {
     task: null,
     mode: null,
     paths: [],
+    impactPaths: [],
     output: null,
     json: false,
   };
@@ -434,6 +460,7 @@ function parseArgs(argv) {
     if (arg === "--task") parsed.task = requireValue(argv, ++i, arg);
     else if (arg === "--mode") parsed.mode = requireValue(argv, ++i, arg);
     else if (arg === "--path" || arg === "--paths") parsed.paths.push(requireValue(argv, ++i, arg));
+    else if (arg === "--impact-paths") parsed.impactPaths.push(requireValue(argv, ++i, arg));
     else if (arg === "--output") parsed.output = requireValue(argv, ++i, arg);
     else if (arg === "--json") parsed.json = true;
     else if (arg === "--help" || arg === "-h") {
@@ -480,12 +507,13 @@ function fileExists(relativePath) {
 }
 
 function printHelp() {
-  console.log(`Usage: node tool/agent/context_pack.mjs --task <name> --paths <path[,path...]> [--mode parallel-delegation]
+  console.log(`Usage: node tool/agent/context_pack.mjs --task <name> --paths <owned-path[,owned-path...]> [--impact-paths <path[,path...]>] [--mode parallel-delegation]
 
 Options:
   --task name          Task label used to select matching skills.
   --mode mode          Add the canonical parallel-delegation lifecycle.
-  --paths paths        Comma-separated or repeated path scope.
+  --paths paths        Comma-separated or repeated owned/write paths.
+  --impact-paths paths Comma-separated or repeated expected change paths. Defaults to --paths except delegated directory ownership requires an explicit value.
   --output path        Write the pack to a file and print only a compact receipt.
   --json               Print JSON instead of Markdown.
 `);
