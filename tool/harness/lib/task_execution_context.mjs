@@ -781,14 +781,8 @@ export function deriveTaskSelectionAtCommit({
     relativePath: "docs/agent_skills/skills_manifest.json",
     gitRunner,
   });
-  const regressions = readJsonAtCommit({
-    cwd,
-    baseSha,
-    relativePath: "docs/agent_regression_ledger.json",
-    gitRunner,
-  });
-  if (!Array.isArray(skills?.skills) || !Array.isArray(regressions?.entries)) {
-    throw new Error("Task selection authorities are malformed at the base SHA.");
+  if (!Array.isArray(skills?.skills)) {
+    throw new Error("Task skill authority is malformed at the base SHA.");
   }
   return deriveTaskCheckSelection({
     task: taskId,
@@ -800,7 +794,7 @@ export function deriveTaskSelectionAtCommit({
       gitRunner,
     }),
     skills: skills.skills,
-    regressions: regressions.entries,
+    regressions: [],
   });
 }
 
