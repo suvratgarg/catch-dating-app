@@ -128,10 +128,12 @@ The authored graph and compile-codegen allowlist live in
 
 `tool/lib/cli_args.mjs` uses Node's built-in `node:util.parseArgs` for the
 common `env`, `project`, emulator, JSON, help, and opt-in mutation flags used
-by the five current data and intake commands. It tokenizes options only;
-callers retain command-specific validation, enum/path handling, subcommands,
-and every apply or production confirmation boundary. Do not broaden this helper
-by moving product or remote-write policy into a generic parser.
+by fourteen current data and intake commands. Strict callers can reject
+positionals and project custom kebab-case flags to camel-case fields without
+reimplementing token loops. Callers retain command-specific validation,
+enum/path handling, subcommands, and every apply or production confirmation
+boundary. Do not broaden this helper by moving product or remote-write policy
+into a generic parser.
 
 ## Flutter Test Evidence
 
