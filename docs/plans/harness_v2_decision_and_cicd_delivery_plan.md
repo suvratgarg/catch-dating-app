@@ -1,6 +1,6 @@
 ---
 doc_id: harness_v2_decision_and_cicd_delivery_plan
-version: 1.1.1
+version: 1.1.2
 updated: 2026-08-08
 owner: agent_operating_model
 status: active
@@ -245,7 +245,7 @@ database violates this decision even if it is generated automatically.
 | Thin worktree guard | Implemented with focused Git-repository tests in the current migration branch | Integrate, then use only when concurrent local claims need protection |
 | Exact-artifact delivery core | Provenance verification, ordered checkpoint/resume, the Firebase backend adapter, the Admin/Marketing Hosting build/promote adapters, the signed mobile package producer, and the separate no-rebuild internal-store promoter are implemented with adversarial and workflow-wiring tests in the current migration branch | Exercise the web/mobile promotion paths after required live environment access is explicitly approved and configured |
 | Exact mobile release routing | The Harness plan carries role-and-platform-specific signed release targets and the mobile producer consumes the CI-authorized target list without widening web or desktop changes | Keep the compatibility role output only until downstream non-release consumers no longer read it |
-| Owner settings | GitHub secret scanning and push protection are confirmed enabled; dependency alerts, Dependabot security updates, and automated security fixes are confirmed disabled | Owner reviews the nine open Firebase client-key alerts and enables dependency alerts/security updates after the security-only configuration reaches `main`; environment approvals, token rotation, and any organization migration remain separate owner decisions |
+| Owner settings | GitHub secret scanning, push protection, dependency alerts, and Dependabot security updates are enabled; routine version-update PRs remain disabled | The first dependency scan found 38 patchable npm alerts across 11 packages and three lockfiles. Reduce that backlog in bounded security slices, review the nine open Firebase client-key alerts, and keep environment approvals, token rotation, and any organization migration as separate owner decisions |
 
 Workflow adoption must be reported honestly. A reusable delivery primitive is
 not proof that every website, backend, or mobile path already consumes it.

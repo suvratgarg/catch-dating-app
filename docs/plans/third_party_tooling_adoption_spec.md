@@ -1,6 +1,6 @@
 ---
 doc_id: third_party_tooling_adoption_spec
-version: 0.8.0
+version: 0.9.0
 updated: 2026-08-08
 owner: agent_operating_model
 status: active
@@ -210,7 +210,7 @@ personal-repository binding and revisit collaboration tooling later.
   restrictions before resolving or dismissing those alerts; do not print or
   copy key values into repository evidence.
 
-**A3. `node:util.parseArgs` (Node standard library, zero dependency) — adopted in a bounded pilot**
+**A3. `node:util.parseArgs` (Node standard library, zero dependency) — adopted in a bounded pilot; standalone inventory unchanged**
 
 - *Problem:* 99 tools define custom argument parsers; flag syntax and unknown-
   flag behavior vary. `tool/lib/cli_args.mjs` already concentrates a common
@@ -220,6 +220,11 @@ personal-repository binding and revisit collaboration tooling later.
   preserving its existing caller-facing fields, including `allowProd`,
   `confirmProd`, custom underscore-named fields, and the last-flag-wins
   emulator precedence.
+- *Correction after merge:* those five commands already consumed the shared
+  helper before the pilot. The change modernized that helper; it did not
+  convert any of the 99 files that still define their own `parseArgs`
+  function. The earlier statement that 94 remained incorrectly subtracted
+  the helper's five existing consumers from a separate 99-file inventory.
 - *Regression boundary:* four focused tests cover unknown flags, missing
   values, duplicate values, `--x value`, `--x=value`, `-h`, positionals,
   invalid helper declarations, and the exact five consumer imports. The tool
@@ -227,25 +232,28 @@ personal-repository binding and revisit collaboration tooling later.
   documentation metadata checks also pass.
 - *Deliberate boundary:* command-specific validation—subcommands,
   duplicate-option rejection, path resolution, enums, and production-write
-  guards—remains outside the tokenizer. The other 94 custom parser definitions
-  were not bulk-converted; each needs its own equivalence slice before it can
-  join this helper.
+  guards—remains outside the tokenizer. All 99 standalone custom parser
+  definitions remain; each needs a clustered equivalence slice before it can
+  join this helper, and parsers whose custom behavior is product policy should
+  remain local.
 
-**A4. Dependabot — security-only configuration prepared**
+**A4. Dependabot — security-only configuration and repository settings enabled**
 
 - *Problem:* the repository has no automated dependency-update workflow.
 - *Result:* `.github/dependabot.yml` covers the root and five npm manifests,
   eight pub manifests, and GitHub Actions. It groups security updates by
   ecosystem and sets `open-pull-requests-limit: 0`, so this change enables no
   routine version-update PRs.
-- *External checkpoint:* Dependabot alerts and security updates are GitHub
-  repository settings, not repository YAML. Authenticated inspection on
-  2026-08-08 confirms that dependency alerts, Dependabot security updates, and
-  automated security fixes are disabled. Enable dependency alerts and security
-  updates only when this configuration reaches `main`, then observe the first
-  security-update batch before considering grouped weekly version updates.
-- *Acceptance:* a small security-only PR volume that remains reviewable
-  without a merge queue. Version updates remain disabled until measured.
+- *Live result:* PR #179 merged the configuration to `main` on 2026-08-08.
+  Dependency alerts and Dependabot security updates were then enabled; routine
+  version-update PRs remain disabled. The first scan found 38 patchable npm
+  alerts across 11 packages and three lockfiles: 27 in
+  `functions/package-lock.json`, 9 in the root lockfile, and 2 in
+  `operations/package-lock.json`. Severity was 21 high, 16 medium, and 1 low;
+  no automated PR had appeared at the measurement point.
+- *Acceptance:* reduce the initial patchable backlog in bounded package/lockfile
+  slices and measure the resulting security-only PR volume. Version updates
+  remain disabled until that batch is understood.
 - *Kill if:* security updates themselves compete materially with product work;
   keep Dependabot's alerts but remove the PR configuration rather than adding a
   second bot.
