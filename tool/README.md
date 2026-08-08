@@ -427,9 +427,10 @@ recorded as separate release evidence.
 `tool/firebase/environment_readiness.json` declares target-specific remote
 prerequisites. Its checker is offline by default in the tool manifest and can
 run a metadata-only live probe after OIDC authentication. The live probe
-resolves project ids from `.firebaserc`, lists enabled secret-version metadata
-and Firestore TTL policy state, never accesses secret payloads, and has no apply
-mode:
+resolves project ids from `.firebaserc`, lists enabled secret-version metadata,
+verifies the default Functions runtime account has secret-level accessor IAM,
+and reads Firestore TTL policy state. It never accesses secret payloads and has
+no apply mode:
 
 ```sh
 node tool/firebase/check_environment_readiness.mjs --manifest-only

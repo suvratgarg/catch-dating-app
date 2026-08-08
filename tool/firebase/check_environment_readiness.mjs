@@ -15,6 +15,7 @@ const capabilityPattern = /^[a-z][a-z0-9-]*$/u;
 const secretNamePattern = /^[A-Z][A-Z0-9_]*$/u;
 const resourceNamePattern = /^[A-Za-z][A-Za-z0-9_-]*$/u;
 const projectIdPattern = /^[a-z][a-z0-9-]{4,28}[a-z0-9]$/u;
+const projectNumberPattern = /^[1-9][0-9]*$/u;
 const metadataCommandTimeoutMs = 15_000;
 
 export class ReadinessUsageError extends Error {
@@ -432,7 +433,30 @@ export function buildProjectIdentityCommand(projectId) {
     "projects",
     "describe",
     projectId,
-    "--format=json(projectId,lifecycleState)",
+    "--format=json(projectId,projectNumber,lifecycleState)",
+    "--quiet",
+  ]);
+}
+
+export function buildSecretRuntimeAccessCommand({
+  projectId,
+  projectNumber,
+  requirement,
+}) {
+  validateProjectId(projectId);
+  validateProjectNumber(projectNumber);
+  if (requirement?.kind !== "secret-version" ||
+      !secretNamePattern.test(requirement.name ?? "")) {
+    throw new ReadinessUsageError(
+      "Secret runtime access probes require a valid secret-version requirement.",
+    );
+  }
+  return metadataOnlyCommand([
+    "secrets",
+    "get-iam-policy",
+    requirement.name,
+    `--project=${projectId}`,
+    "--format=json(bindings)",
     "--quiet",
   ]);
 }
@@ -487,6 +511,7 @@ export function assertMetadataOnlyCommand(spec) {
   }
   const allowed = (words[0] === "projects" && words[1] === "describe") ||
     words.slice(0, 3).join(" ") === "secrets versions list" ||
+    words.slice(0, 2).join(" ") === "secrets get-iam-policy" ||
     words.slice(0, 4).join(" ") === "firestore fields ttls list";
   if (!allowed) {
     throw new ReadinessUsageError(
@@ -516,13 +541,18 @@ export function classifyProjectIdentity({projectId, result}) {
       status: "unknown",
     });
   }
-  if (payload.projectId !== projectId || payload.lifecycleState !== "ACTIVE") {
+  const projectNumberValid = projectNumberPattern.test(
+    String(payload.projectNumber ?? ""),
+  );
+  if (payload.projectId !== projectId || payload.lifecycleState !== "ACTIVE" ||
+      !projectNumberValid) {
     return readinessResult({
       id: "environment.project-identity",
       kind: "project-identity",
       metadata: {
         lifecycleState: payload.lifecycleState ?? null,
         projectIdMatches: payload.projectId === projectId,
+        projectNumberPresent: projectNumberValid,
       },
       reason: "project-identity-not-active",
       resource: projectId,
@@ -534,9 +564,67 @@ export function classifyProjectIdentity({projectId, result}) {
     kind: "project-identity",
     metadata: {
       lifecycleState: payload.lifecycleState,
+      projectNumber: String(payload.projectNumber),
     },
     reason: "project-active",
     resource: projectId,
+    status: "ready",
+  });
+}
+
+export function classifySecretRuntimeAccess({
+  projectNumber,
+  requirement,
+  result,
+}) {
+  validateProjectNumber(projectNumber);
+  const serviceAccount =
+    `${projectNumber}-compute@developer.gserviceaccount.com`;
+  const resource = `${requirement.name}:${serviceAccount}`;
+  const failure = classifyCommandFailure(result);
+  if (failure) {
+    return readinessResult({
+      id: `${requirement.id}.runtime-access`,
+      kind: "secret-runtime-access",
+      resource,
+      ...failure,
+    });
+  }
+  const payload = parseJsonOutput(result.stdout);
+  if (!payload || Array.isArray(payload) || typeof payload !== "object" ||
+      !Array.isArray(payload.bindings ?? [])) {
+    return readinessResult({
+      id: `${requirement.id}.runtime-access`,
+      kind: "secret-runtime-access",
+      reason: "invalid-metadata-response",
+      resource,
+      status: "unknown",
+    });
+  }
+  const member = `serviceAccount:${serviceAccount}`;
+  const hasAccess = (payload.bindings ?? []).some((binding) =>
+    binding?.role === "roles/secretmanager.secretAccessor" &&
+    binding.condition == null &&
+    Array.isArray(binding.members) && binding.members.includes(member));
+  if (!hasAccess) {
+    return readinessResult({
+      id: `${requirement.id}.runtime-access`,
+      kind: "secret-runtime-access",
+      metadata: {serviceAccount},
+      reason: "runtime-secret-access-missing",
+      resource,
+      status: "not-ready",
+    });
+  }
+  return readinessResult({
+    id: `${requirement.id}.runtime-access`,
+    kind: "secret-runtime-access",
+    metadata: {
+      role: "roles/secretmanager.secretAccessor",
+      serviceAccount,
+    },
+    reason: "runtime-secret-access-present",
+    resource,
     status: "ready",
   });
 }
@@ -642,18 +730,31 @@ export function runEnvironmentReadiness({
       targets,
     });
     const identityCommand = buildProjectIdentityCommand(projectId);
-    const results = [
-      classifyProjectIdentity({
-        projectId,
-        result: executeMetadataCommand(identityCommand, runCommand),
-      }),
-    ];
+    const identityResult = classifyProjectIdentity({
+      projectId,
+      result: executeMetadataCommand(identityCommand, runCommand),
+    });
+    const results = [identityResult];
     for (const requirement of requirements) {
       const command = buildRequirementCommand({projectId, requirement});
       results.push(classifyRequirementResult({
         requirement,
         result: executeMetadataCommand(command, runCommand),
       }));
+      if (requirement.kind === "secret-version" &&
+          identityResult.status === "ready") {
+        const projectNumber = identityResult.metadata.projectNumber;
+        const accessCommand = buildSecretRuntimeAccessCommand({
+          projectId,
+          projectNumber,
+          requirement,
+        });
+        results.push(classifySecretRuntimeAccess({
+          projectNumber,
+          requirement,
+          result: executeMetadataCommand(accessCommand, runCommand),
+        }));
+      }
     }
     const exitCode = exitCodeForResults(results);
     environmentReports.push({
@@ -905,6 +1006,14 @@ function validateStringArray({errors, key, label, value}) {
 function validateProjectId(projectId) {
   if (!projectIdPattern.test(projectId ?? "")) {
     throw new ReadinessUsageError(`Invalid Firebase project id: ${projectId}.`);
+  }
+}
+
+function validateProjectNumber(projectNumber) {
+  if (!projectNumberPattern.test(String(projectNumber ?? ""))) {
+    throw new ReadinessUsageError(
+      `Invalid Google Cloud project number: ${projectNumber}.`,
+    );
   }
 }
 

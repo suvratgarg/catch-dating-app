@@ -2326,7 +2326,7 @@
       "command": "node tool/firebase/check_environment_readiness.mjs --manifest-only",
       "safety": "local-with-optional-remote-readonly",
       "status": "active",
-      "description": "Fails Firebase deploys before dependency installation when target-specific Secret Manager metadata, Firestore TTL policy, project identity, or probe authority is missing; never reads secret payloads.",
+      "description": "Fails Firebase deploys before dependency installation when target-specific Secret Manager versions, runtime secret-access IAM, Firestore TTL policy, project identity, or probe authority is missing; never reads secret payloads.",
       "checks": [
         "node --check tool/firebase/check_environment_readiness.mjs",
         "node --test tool/firebase/check_environment_readiness.test.mjs",
@@ -2337,6 +2337,7 @@
         "type": "test",
         "path": "tool/firebase/check_environment_readiness.test.mjs",
         "contains": [
+          "secret runtime IAM fails closed before Firebase can mutate policy",
           "secret metadata classification never returns payload fields",
           "backend promotion runs readiness before dependency installation"
         ]
