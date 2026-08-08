@@ -63,6 +63,7 @@
   "devDependencies": {
     "ajv": "^8.20.0",
     "ajv-formats": "^3.0.1",
+    "picomatch": "^4.0.4",
     "pngjs": "^7.0.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",

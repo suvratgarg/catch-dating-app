@@ -4,6 +4,7 @@ import fs from "node:fs";
 import test from "node:test";
 import {
   deriveAppRoles,
+  matchesGlob,
   planAffected,
   resolveTargetCheckout,
   summarizeCoverage,
@@ -57,6 +58,7 @@ test("CI checkout requirements keep planner and docs narrow with a full fallback
       "/tool/harness.mjs",
       "/tool/harness/component_graph.json",
       "/tool/harness/lib/component_graph.mjs",
+      "/tool/lib/path_glob.mjs",
       "/tool/lib/repo_paths.mjs",
       "/tool/lib/tool_impact.mjs",
       "/tool/tools_manifest.json",
@@ -76,6 +78,13 @@ test("CI checkout requirements keep planner and docs narrow with a full fallback
     fetchDepth: 0,
     timeoutMinutes: 3,
   });
+});
+
+test("component graph glob semantics include dot paths and zero-depth globstars", () => {
+  assert.equal(matchesGlob(".github/workflows/ci.yml", "**/*"), true);
+  assert.equal(matchesGlob("a/b", "a/**/b"), true);
+  assert.equal(matchesGlob("a/one/b", "a/**/b"), true);
+  assert.equal(matchesGlob("a/one/c", "a/**/b"), false);
 });
 
 test("CI checkout requirements reject unsafe narrowing", () => {

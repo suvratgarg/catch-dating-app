@@ -1,3 +1,5 @@
+import {matchesGlobPath} from "../../lib/path_glob.mjs";
+
 const operationKeys = [
   "ciTargets",
   "checkIds",
@@ -23,16 +25,7 @@ const checkoutRequirementKeys = [
 ];
 
 export function matchesGlob(value, pattern) {
-  const normalizedValue = normalizePath(value);
-  const normalizedPattern = normalizePath(pattern);
-  const doubleStar = "\u0000";
-  const escaped = normalizedPattern
-    .replace(/[.+^${}()|[\]\\]/g, "\\$&")
-    .replaceAll("**", doubleStar)
-    .replaceAll("*", "[^/]*")
-    .replaceAll("?", "[^/]")
-    .replaceAll(doubleStar, ".*");
-  return new RegExp(`^${escaped}$`).test(normalizedValue);
+  return matchesGlobPath(value, pattern);
 }
 
 export function validateComponentGraph(graph, {knownCheckIds} = {}) {
