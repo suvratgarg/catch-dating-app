@@ -1,6 +1,6 @@
 ---
 doc_id: docs_index
-version: 5.3.0
+version: 5.3.1
 updated: 2026-08-08
 owner: agent_operating_model
 status: active
@@ -104,7 +104,6 @@ durable owners above or closed in code.
 | `public_profile_overhaul_tracker.md` | Cardless profile surfaces are implemented, but profile prompt picker, richer compatibility reasons, quality coaching, visual regression coverage, device QA, and user-facing "swipe" copy cleanup remain. |
 | `event_success_theatrical_experience_tracker.md` | Event Success live ceremony polish is active: native sensory cues, attendee moment theatre, host showtime console, invite-loop follow-up, private afterglow recap planning, and the optional First Hello arrival ritual. |
 | `sales_demo_seed_tracker.md` | Sales-grade synthetic supply is active: canonical personas/assets, cohort scope, image production, U.S./India market packs, host sales scenario, event policy coverage, and migration of lower-quality demo surfaces remain. |
-| `plans/third_party_tooling_adoption_spec.md` | Bounded build-versus-adopt candidate queue: current tool-replacement hypotheses, equivalence-oracle requirements, and explicit rejection criteria. Retire after candidate Issues are dispositioned. |
 
 ## Completed Document Retirement
 
