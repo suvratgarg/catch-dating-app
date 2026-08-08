@@ -124,6 +124,15 @@ The authored graph and compile-codegen allowlist live in
 - `remote_ops_manifest.json`: consolidated index for Firebase, App Check, data,
   CI/CD, and App Store/TestFlight operational surfaces.
 
+## Shared CLI Parsing
+
+`tool/lib/cli_args.mjs` uses Node's built-in `node:util.parseArgs` for the
+common `env`, `project`, emulator, JSON, help, and opt-in mutation flags used
+by the five current data and intake commands. It tokenizes options only;
+callers retain command-specific validation, enum/path handling, subcommands,
+and every apply or production confirmation boundary. Do not broaden this helper
+by moving product or remote-write policy into a generic parser.
+
 ## Flutter Test Evidence
 
 `tool/test/flutter_coverage_report.mjs` converts `coverage/lcov.info` into

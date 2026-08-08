@@ -1,6 +1,6 @@
 ---
 doc_id: third_party_tooling_adoption_spec
-version: 0.3.0
+version: 0.4.0
 updated: 2026-08-08
 owner: agent_operating_model
 status: active
@@ -188,19 +188,26 @@ personal-repository binding and revisit collaboration tooling later.
   settings before this candidate proceeds. Do not add Gitleaks merely to hide
   that unverified platform state.
 
-**A3. `node:util.parseArgs` (Node standard library, zero dependency)**
+**A3. `node:util.parseArgs` (Node standard library, zero dependency) — adopted in a bounded pilot**
 
 - *Problem:* 99 tools define custom argument parsers; flag syntax and unknown-
   flag behavior vary. `tool/lib/cli_args.mjs` already concentrates a common
   parser used by five tools.
-- *Slice:* migrate that shared helper and its five consumers. Test unknown and
-  duplicate flags, `--x value`, `--x=value`, short flags, positionals, and
-  missing values.
-- *Acceptance:* keep command-specific validation—subcommands, duplicate-option
-  rejection, path resolution, enums, and production-write guards—outside the
-  tokenizer. Show net deletion without behavioral regression.
-- *Kill if:* compatibility shims restore the same duplication or weaken a
-  safety guard. Do not bulk-convert privileged CLIs.
+- *Result:* the five current consumers now share a `node:util.parseArgs`
+  tokenizer. The helper shrank from 67 to 57 lines (a 10-line reduction) while
+  preserving its existing caller-facing fields, including `allowProd`,
+  `confirmProd`, custom underscore-named fields, and the last-flag-wins
+  emulator precedence.
+- *Regression boundary:* four focused tests cover unknown flags, missing
+  values, duplicate values, `--x value`, `--x=value`, `-h`, positionals,
+  invalid helper declarations, and the exact five consumer imports. The tool
+  runner, manifest, Harness validation, graph coverage, root hygiene, and
+  documentation metadata checks also pass.
+- *Deliberate boundary:* command-specific validation—subcommands,
+  duplicate-option rejection, path resolution, enums, and production-write
+  guards—remains outside the tokenizer. The other 94 custom parser definitions
+  were not bulk-converted; each needs its own equivalence slice before it can
+  join this helper.
 
 **A4. Dependabot**
 

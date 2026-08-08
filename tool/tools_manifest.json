@@ -28,10 +28,14 @@
       "safety": "local",
       "status": "active",
       "description": "Validates the tool manifest, lists and dispatches registered commands, and fail-closed selects checks from explicit or affected paths without creating a second execution-authority layer.",
+      "impactPaths": [
+        "tool/lib/cli_args.mjs",
+        "tool/lib/cli_args.test.mjs"
+      ],
       "role": "gate",
       "checks": [
         "node --check tool/run.mjs",
-        "node --test tool/run.test.mjs tool/lib/tool_impact.test.mjs"
+        "node --test tool/run.test.mjs tool/lib/tool_impact.test.mjs tool/lib/cli_args.test.mjs"
       ],
       "vacuityProof": {
         "type": "test",

@@ -1,67 +1,57 @@
-export function requireValue(argv, index, flag) {
-  const value = argv[index];
-  if (!value || value.startsWith("--")) {
-    throw new Error(`${flag} requires a value.`);
-  }
-  return value;
-}
+import {parseArgs as parseNodeArgs} from "node:util";
+import {pathToFileURL} from "node:url";
+
+const booleanOptions = ["apply", "allow-prod", "confirm-prod", "json", "help", "emulator"];
+const valueOptions = ["env", "project", "emulator-host"];
+const standardOptionNames = new Set([...booleanOptions, ...valueOptions]);
 
 export function parseCommonArgs(argv, {booleanFlags = [], valueFlags = []} = {}) {
+  const options = Object.fromEntries([
+    ...booleanOptions.map((name) => [name, {type: "boolean", ...(name === "help" ? {short: "h"} : {})}]),
+    ...valueOptions.map((name) => [name, {type: "string"}]),
+    ...booleanFlags.map((flag) => [optionName(flag), {type: "boolean"}]),
+    ...valueFlags.map((flag) => [optionName(flag), {type: "string"}]),
+  ]);
+  const {values, positionals, tokens} = parseNodeArgs({
+    args: argv,
+    options,
+    allowPositionals: true,
+    strict: true,
+    tokens: true,
+  });
   const parsed = {
-    env: null,
-    project: null,
+    env: values.env ?? null,
+    project: values.project ?? null,
     emulatorHost: null,
-    apply: false,
-    allowProd: false,
-    confirmProd: false,
-    json: false,
-    help: false,
-    positionals: [],
+    apply: values.apply ?? false,
+    allowProd: values["allow-prod"] ?? false,
+    confirmProd: values["confirm-prod"] ?? false,
+    json: values.json ?? false,
+    help: values.help ?? false,
+    positionals,
   };
-  const booleans = new Set([
-    "--apply",
-    "--allow-prod",
-    "--confirm-prod",
-    "--json",
-    "--help",
-    "-h",
-    "--emulator",
-    ...booleanFlags,
-  ]);
-  const values = new Set([
-    "--env",
-    "--project",
-    "--emulator-host",
-    ...valueFlags,
-  ]);
 
-  for (let i = 0; i < argv.length; i++) {
-    const arg = argv[i];
-    if (arg === "--help" || arg === "-h") parsed.help = true;
-    else if (arg === "--apply") parsed.apply = true;
-    else if (arg === "--allow-prod") parsed.allowProd = true;
-    else if (arg === "--confirm-prod") parsed.confirmProd = true;
-    else if (arg === "--json") parsed.json = true;
-    else if (arg === "--emulator") parsed.emulatorHost = "127.0.0.1:8080";
-    else if (values.has(arg)) {
-      const value = requireValue(argv, ++i, arg);
-      if (arg === "--env") parsed.env = value;
-      else if (arg === "--project") parsed.project = value;
-      else if (arg === "--emulator-host") parsed.emulatorHost = value;
-      else parsed[arg.replace(/^--/, "").replaceAll("-", "_")] = value;
-    } else if (booleans.has(arg)) {
-      parsed[arg.replace(/^--/, "").replaceAll("-", "_")] = true;
-    } else if (arg.startsWith("--")) {
-      throw new Error(`Unknown argument: ${arg}`);
-    } else {
-      parsed.positionals.push(arg);
+  for (const token of tokens) {
+    if (token.kind !== "option") continue;
+    if (token.name === "emulator") {
+      parsed.emulatorHost = "127.0.0.1:8080";
+    } else if (token.name === "emulator-host") {
+      parsed.emulatorHost = token.value;
+    } else if (!standardOptionNames.has(token.name)) {
+      parsed[token.name.replaceAll("-", "_")] = token.value ?? true;
     }
   }
 
   return parsed;
 }
 
+function optionName(flag) {
+  if (typeof flag !== "string" || !/^--[a-z][a-z0-9-]*$/u.test(flag)) {
+    throw new Error(`Common CLI option must be a long flag: ${flag}`);
+  }
+  return flag.slice(2);
+}
+
 export function isMain(importMetaUrl) {
   return process.argv[1] && importMetaUrl === pathToFileURL(process.argv[1]).href;
 }
-import {pathToFileURL} from "node:url";
