@@ -2,6 +2,7 @@
 import path from "node:path";
 import {execFileSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
+import {matchesGlobPath} from "./lib/path_glob.mjs";
 import {createRepositorySnapshot} from "./lib/repository_snapshot.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -13,8 +14,7 @@ export const retiredGovernanceEvidencePrefixes = Object.freeze([
 ]);
 
 export function matchesPattern(name, pattern) {
-  const escaped = pattern.replace(/[.+^${}()|[\]\\]/g, "\\$&").replaceAll("*", ".*").replaceAll("?", ".");
-  return new RegExp(`^${escaped}$`).test(name);
+  return matchesGlobPath(name, pattern);
 }
 
 export function classify(name, manifest) {

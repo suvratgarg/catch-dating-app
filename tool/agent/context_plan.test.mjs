@@ -68,6 +68,8 @@ test("scope patterns route nested files and directory roots", () => {
     ["lib/explore/data/repository.dart"],
     ["lib/**/presentation/**"],
   ), false);
+  assert.equal(matchesScopePatterns(["a/b"], ["a/**/b"]), true);
+  assert.equal(matchesScopePatterns([".github/workflows/ci.yml"], ["**/*"]), true);
 });
 
 test("skill routing prefers path matches and uses task words only as a fallback", () => {

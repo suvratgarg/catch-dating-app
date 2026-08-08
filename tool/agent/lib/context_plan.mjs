@@ -3,6 +3,7 @@ import {
   toolChecksAreLocalReadonly,
   validateToolCiRequirements,
 } from "../../lib/tool_impact.mjs";
+import {matchesScopePath} from "../../lib/path_glob.mjs";
 
 export function normalizeScopePaths(values) {
   if (!Array.isArray(values)) throw new Error("Scope paths must be an array.");
@@ -96,7 +97,7 @@ export function matchesScopePatterns(candidates, patterns) {
   if (!Array.isArray(candidates) || !Array.isArray(patterns) || patterns.length === 0) {
     return false;
   }
-  return candidates.some((candidate) => patterns.some((pattern) => matchesPattern(candidate, pattern)));
+  return candidates.some((candidate) => patterns.some((pattern) => matchesScopePath(candidate, pattern)));
 }
 
 export function resolveCheckPlan({manifest, requestedChecks}) {
@@ -197,28 +198,6 @@ function addCheckRequest(requests, id, source) {
   const sources = requests.get(id) ?? new Set();
   sources.add(source);
   requests.set(id, sources);
-}
-
-function matchesPattern(candidate, pattern) {
-  if (typeof candidate !== "string" || typeof pattern !== "string" ||
-      candidate === "" || pattern === "") return false;
-  const normalizedCandidate = candidate.replace(/^\.\//u, "").replace(/\/+$/gu, "");
-  const normalizedPattern = pattern.replace(/^\.\//u, "").replace(/\/+$/gu, "");
-  if (normalizedPattern === normalizedCandidate) return true;
-  if (!normalizedPattern.includes("*")) {
-    return normalizedCandidate.startsWith(`${normalizedPattern}/`);
-  }
-  if (normalizedPattern.endsWith("/**") && !normalizedPattern.slice(0, -3).includes("*")) {
-    const prefix = normalizedPattern.slice(0, -3);
-    return normalizedCandidate === prefix || normalizedCandidate.startsWith(`${prefix}/`);
-  }
-  const doubleStar = "\u0000";
-  const escaped = normalizedPattern
-    .replace(/[.+?^${}()|[\]\\]/gu, "\\$&")
-    .replaceAll("**", doubleStar)
-    .replaceAll("*", "[^/]*")
-    .replaceAll(doubleStar, ".*");
-  return new RegExp(`^${escaped}$`, "u").test(normalizedCandidate);
 }
 
 function uniqueSorted(values) {

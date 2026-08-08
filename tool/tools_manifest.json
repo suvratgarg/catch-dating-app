@@ -154,12 +154,16 @@
           "node"
         ]
       },
+      "impactPaths": [
+        "tool/lib/path_glob.mjs",
+        "tool/lib/path_glob.test.mjs"
+      ],
       "description": "Plans fail-closed CI, release, and deploy impact from the source-owned component graph and runs only explicitly allowlisted compile-codegen checks.",
       "checks": [
         "node --check tool/harness.mjs",
         "node --check tool/harness/lib/component_graph.mjs",
         "node --check tool/harness/lib/check_flutter_l10n_generated.mjs",
-        "node --test tool/harness/component_graph.test.mjs tool/harness/check_flutter_l10n_generated.test.mjs tool/harness/harness_cli.test.mjs tool/harness/workflow_wiring.test.mjs",
+        "node --test tool/lib/path_glob.test.mjs tool/harness/component_graph.test.mjs tool/harness/check_flutter_l10n_generated.test.mjs tool/harness/harness_cli.test.mjs tool/harness/workflow_wiring.test.mjs",
         "node tool/harness.mjs validate"
       ],
       "role": "gate",
@@ -614,7 +618,9 @@
       },
       "impactPaths": [
         "tool/agent/lib/context_plan.mjs",
-        "tool/agent/context_plan.test.mjs"
+        "tool/agent/context_plan.test.mjs",
+        "tool/lib/path_glob.mjs",
+        "tool/lib/path_glob.test.mjs"
       ],
       "description": "Prints optional read-only guidance from the current Git SHA and source-owned scope, skills, rules, owner docs, and locally safe checks. It grants no execution or write authority and stores no receipt.",
       "checks": [
@@ -5457,6 +5463,10 @@
           "node"
         ]
       },
+      "impactPaths": [
+        "tool/lib/path_glob.mjs",
+        "tool/lib/path_glob.test.mjs"
+      ],
       "role": "gate",
       "description": "Enforces manifest-backed root ownership, retired duplicate-impact-authority absence, Git expectations, protected cleanup boundaries, audit policies, and portable Markdown links.",
       "checks": [

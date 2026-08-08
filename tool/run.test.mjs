@@ -4,6 +4,7 @@ import {spawnSync} from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import {createRequire} from "node:module";
 import {
   supportedToolPlatforms,
   toolSupportsPlatform,
@@ -11,6 +12,7 @@ import {
 } from "./lib/tool_platform.mjs";
 
 const repositoryRoot = process.cwd();
+const require = createRequire(import.meta.url);
 
 function run(args, {cwd = repositoryRoot} = {}) {
   return spawnSync("node", ["tool/run.mjs", ...args], {
@@ -115,6 +117,23 @@ test("affected-tool routing selects owners and mandatory guards", () => {
   assert.ok(plan.ownersByPath["tool/docs/check_doc_metadata.mjs"].includes("docs:metadata"));
   assert.ok(mandatory.every((id) => plan.toolIds.includes(id)));
   assert.deepEqual(plan.unmappedPaths, []);
+});
+
+test("shared glob dependency selects every consuming tool", () => {
+  const result = run([
+    "affected-tools",
+    "--paths",
+    "tool/lib/path_glob.mjs",
+    "--json",
+  ]);
+  assert.equal(result.status, 0, result.stderr);
+  const plan = JSON.parse(result.stdout);
+  assert.deepEqual(plan.ownersByPath["tool/lib/path_glob.mjs"], [
+    "agent:context-pack",
+    "agent:harness-v2",
+    "meta:repository-root-hygiene",
+  ]);
+  assert.equal(plan.full, true);
 });
 
 test("mobile evidence and target contracts select producer-promoter compatibility gates", () => {
@@ -283,6 +302,7 @@ function createRunnerFixture(context) {
     "tool/run.mjs",
     "tool/agent/lib/context_plan.mjs",
     "tool/harness/lib/component_graph.mjs",
+    "tool/lib/path_glob.mjs",
     "tool/lib/repo_paths.mjs",
     "tool/lib/repository_snapshot.mjs",
     "tool/lib/tool_impact.mjs",
@@ -292,6 +312,12 @@ function createRunnerFixture(context) {
     fs.mkdirSync(path.dirname(destination), {recursive: true});
     fs.copyFileSync(path.join(repositoryRoot, relativePath), destination);
   }
+  const picomatchPackage = require.resolve("picomatch/package.json");
+  fs.cpSync(
+    path.dirname(picomatchPackage),
+    path.join(root, "node_modules", "picomatch"),
+    {recursive: true},
+  );
   fs.writeFileSync(
     path.join(root, "tool/check.mjs"),
     'console.log(process.argv.length > 2 ? JSON.stringify(process.argv.slice(2)) : "fixture-check");\n',
