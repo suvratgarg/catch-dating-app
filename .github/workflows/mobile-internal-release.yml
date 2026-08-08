@@ -838,6 +838,8 @@ jobs:
             --build-number="$FLUTTER_BUILD_NUMBER"
 
       - name: Verify signed Android release identity
+        env:
+          GOOGLE_MAPS_ANDROID_API_KEY_PROD: ${{ secrets.GOOGLE_MAPS_ANDROID_API_KEY_PROD }}
         run: |
           set -euo pipefail
           mapfile -t bundles < <(find "$APP_PROJECT_ROOT/build/app/outputs/bundle" -type f -name '*.aab' -print)
