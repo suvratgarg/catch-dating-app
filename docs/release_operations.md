@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.0.1
+version: 2.0.2
 updated: 2026-08-08
 owner: recursive_audit_loop
 status: active
@@ -307,8 +307,10 @@ Live state verified on 2026-08-08: the dedicated service account has only
 `roles/datastore.viewer`, has no user-managed keys, and its sole impersonation
 binding is the exact `prod-hosting` environment subject above. Both GitHub
 Environment variables are present with the expected provider and service
-account values. The identity boundary is deployment-ready; the first main
-Marketing run remains the end-to-end OIDC and Firestore-read proof.
+account values. The first main proof completed successfully in Marketing run
+`31254427583`: the environment-scoped job authenticated, materialized the two
+bounded Firestore listing inputs, removed its credentials, and handed only the
+snapshot artifact to the uncredentialed build job.
 
 Provision and reproduce that boundary with:
 
