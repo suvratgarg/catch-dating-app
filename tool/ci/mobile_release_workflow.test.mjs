@@ -140,6 +140,19 @@ test("publisher-capable and signing secrets are not job-wide", () => {
   assert.doesNotMatch(source, /GOOGLE_PLAY_SERVICE_ACCOUNT|PLAY_PUBLISHER/u);
 });
 
+test("Android Maps authority reaches the compiled identity verifier step", () => {
+  const verifyStart = source.indexOf("- name: Verify signed Android release identity");
+  const verifyEnd = source.indexOf(
+    "- name: Enforce Android package size and payload policy",
+    verifyStart,
+  );
+  assert.ok(verifyStart >= 0 && verifyEnd > verifyStart);
+  const verifyStep = source.slice(verifyStart, verifyEnd);
+  assert.match(verifyStep,
+    /GOOGLE_MAPS_ANDROID_API_KEY_PROD: \$\{\{ secrets\.GOOGLE_MAPS_ANDROID_API_KEY_PROD \}\}/u);
+  assert.match(verifyStep, /verify_android_release_bundle\.mjs/u);
+});
+
 test("producer performs no App Store, Play, or legacy-owner mutation", () => {
   for (const forbidden of [
     /xcrun altool/u,
