@@ -1,0 +1,50 @@
+version: 2
+updates:
+  # Keep the initial rollout security-only. Version-update PRs stay disabled
+  # until security-update volume is observed and shown to be reviewable.
+  - package-ecosystem: "npm"
+    directories:
+      - "/"
+      - "/admin"
+      - "/website"
+      - "/packages/web-ui"
+      - "/functions"
+      - "/operations"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 0
+    groups:
+      security:
+        applies-to: "security-updates"
+        patterns:
+          - "*"
+
+  - package-ecosystem: "pub"
+    directories:
+      - "/"
+      - "/apps/consumer"
+      - "/apps/host"
+      - "/packages/catch_ui_lints"
+      - "/packages/phosphor_flutter"
+      - "/packages/phosphor_flutter/example"
+      - "/tool/widget_dedupe"
+      - "/widgetbook"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 0
+    groups:
+      security:
+        applies-to: "security-updates"
+        patterns:
+          - "*"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 0
+    groups:
+      security:
+        applies-to: "security-updates"
+        patterns:
+          - "*"

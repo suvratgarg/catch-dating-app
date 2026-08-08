@@ -1,6 +1,6 @@
 ---
 doc_id: third_party_tooling_adoption_spec
-version: 0.4.0
+version: 0.5.0
 updated: 2026-08-08
 owner: agent_operating_model
 status: active
@@ -209,16 +209,24 @@ personal-repository binding and revisit collaboration tooling later.
   were not bulk-converted; each needs its own equivalence slice before it can
   join this helper.
 
-**A4. Dependabot**
+**A4. Dependabot — security-only configuration prepared**
 
 - *Problem:* the repository has no automated dependency-update workflow.
-- *Slice:* after the current Harness branch is stable, enable security updates
-  first. Add grouped weekly npm, Functions npm, pub, and GitHub Actions updates
-  only when the security flow is quiet.
-- *Acceptance:* a small capped PR volume that remains reviewable without a
-  merge queue.
-- *Kill if:* routine updates compete materially with product work; keep only
-  security updates rather than adding a second bot.
+- *Result:* `.github/dependabot.yml` covers the root and five npm manifests,
+  eight pub manifests, and GitHub Actions. It groups security updates by
+  ecosystem and sets `open-pull-requests-limit: 0`, so this change enables no
+  routine version-update PRs.
+- *External checkpoint:* Dependabot alerts and security updates are GitHub
+  repository settings, not repository YAML. Their current state could not be
+  inspected with the invalid session token, so an owner must confirm them in
+  GitHub settings after this configuration reaches `main`. Only then observe
+  the first security-update batch before considering grouped weekly version
+  updates.
+- *Acceptance:* a small security-only PR volume that remains reviewable
+  without a merge queue. Version updates remain disabled until measured.
+- *Kill if:* security updates themselves compete materially with product work;
+  keep Dependabot's alerts but remove the PR configuration rather than adding a
+  second bot.
 
 **A5. Fastlane feasibility study — deferred**
 
