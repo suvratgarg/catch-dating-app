@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-08-07",
+  "updated": "2026-08-08",
   "ciImpact": {
     "mandatoryCheckIds": [
       "docs:metadata",
@@ -39,7 +39,7 @@
         "contains": [
           "unknown commands and empty filtered selections fail clearly",
           "direct check selection rejects inactive and unknown ids",
-          "impact routing fails closed for an unmapped path",
+          "unknown Harness ownership refuses affected-tool execution before dispatch",
           "affected-tool routing selects owners and mandatory guards",
           "the runner executes manifest checks without task authority metadata",
           "manifest validation rejects vacuous tools before dispatch",
@@ -5458,7 +5458,7 @@
         ]
       },
       "role": "gate",
-      "description": "Enforces manifest-backed repository ownership and impact relationships, Git expectations, protected cleanup boundaries, audit policies, and portable Markdown links.",
+      "description": "Enforces manifest-backed root ownership, retired duplicate-impact-authority absence, Git expectations, protected cleanup boundaries, audit policies, and portable Markdown links.",
       "checks": [
         "node --test tool/check_repository_root_hygiene.test.mjs",
         "node tool/check_repository_root_hygiene.mjs"

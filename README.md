@@ -52,8 +52,10 @@ node tool/run.mjs check --manifest-only
 ```
 
 Use `node tool/run.mjs list` to discover governed checks. Data-contract changes must also run `./tool/check_data_contract.sh`.
-Use `node tool/run.mjs impacted --check` to derive and run the checks owned by
-the changed root relationships; unmatched changed paths fail closed.
+Use `node tool/harness.mjs plan --base origin/main --head HEAD --json` to plan
+product lanes and `node tool/run.mjs affected-tools --base origin/main --check`
+to select tool checks. Both fail closed when their own ownership contracts are
+incomplete.
 
 ## Repository housekeeping
 

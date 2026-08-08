@@ -1,7 +1,7 @@
 ---
 doc_id: docs_index
-version: 5.2.0
-updated: 2026-08-07
+version: 5.3.0
+updated: 2026-08-08
 owner: agent_operating_model
 status: active
 ---

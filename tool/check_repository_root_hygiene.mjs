@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import fs from "node:fs";
 import path from "node:path";
 import {execFileSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
@@ -35,49 +34,12 @@ export function portableLinkViolations(markdown) {
   return violations;
 }
 
-export function matchesImpactPath(value, pattern) {
-  const doubleStar = "\u0000";
-  const escaped = pattern
-    .replace(/[.+^${}()|[\]\\]/g, "\\$&")
-    .replaceAll("**", doubleStar)
-    .replaceAll("*", "[^/]*")
-    .replaceAll("?", "[^/]")
-    .replaceAll(doubleStar, ".*");
-  return new RegExp(`^${escaped}$`).test(value);
-}
-
-export function relationshipViolations({
-  manifest,
-  toolIds,
-  root,
-  snapshot = null,
-  trackedPaths = [],
-}) {
+export function rootManifestViolations({manifest}) {
   const errors = [];
-  const relationshipIds = new Set();
-  for (const relationship of manifest.relationships ?? []) {
-    if (!relationship.id) errors.push("relationship is missing id");
-    if (relationship.id && relationshipIds.has(relationship.id)) {
-      errors.push(`duplicate relationship id ${relationship.id}`);
-    }
-    if (relationship.id) relationshipIds.add(relationship.id);
-    if (!manifest.ownerVocabulary.includes(relationship.owner)) {
-      errors.push(`${relationship.id}: unknown owner ${relationship.owner}`);
-    }
-    const patterns = [
-      ...(relationship.sources ?? []),
-      ...(relationship.generatedOutputs ?? []),
-      ...(relationship.consumers ?? []),
-    ];
-    if (patterns.length === 0) errors.push(`${relationship.id}: no path relationships`);
-    for (const toolId of relationship.checks ?? []) {
-      if (!toolIds.has(toolId)) errors.push(`${relationship.id}: unknown tool ${toolId}`);
-    }
-    for (const workflow of relationship.ciWorkflows ?? []) {
-      if (!(snapshot?.exists(workflow) ?? fs.existsSync(path.join(root, workflow)))) {
-        errors.push(`${relationship.id}: missing CI workflow ${workflow}`);
-      }
-    }
+  if (Object.hasOwn(manifest, "relationships")) {
+    errors.push(
+      "repository root manifest must not declare relationships; Harness component graph is the sole impact authority",
+    );
   }
   for (const policy of manifest.auditPolicies ?? []) {
     if (!policy.pattern) errors.push("audit policy is missing pattern");
@@ -87,14 +49,6 @@ export function relationshipViolations({
     if (!manifest.ownerVocabulary.includes(policy.owner)) {
       errors.push(`${policy.pattern}: unknown audit owner ${policy.owner}`);
     }
-  }
-  for (const trackedPath of trackedPaths) {
-    const matched = (manifest.relationships ?? []).some((relationship) => [
-      ...(relationship.sources ?? []),
-      ...(relationship.generatedOutputs ?? []),
-      ...(relationship.consumers ?? []),
-    ].some((pattern) => matchesImpactPath(trackedPath, pattern)));
-    if (!matched) errors.push(`${trackedPath}: no impact relationship`);
   }
   return errors;
 }
@@ -121,7 +75,6 @@ export function checkRepository({
   snapshot = createRepositorySnapshot({root}),
 } = {}) {
   const manifest = snapshot.readJson("tool/repository_root_manifest.json", {required: true});
-  const toolsManifest = snapshot.readJson("tool/tools_manifest.json", {required: true});
   const errors = [];
   errors.push(...retiredEvidenceViolations(snapshot));
   const rootNames = snapshot.listRootEntries().map(({name}) => name);
@@ -142,15 +95,7 @@ export function checkRepository({
       errors.push(`${target.path}: cleanup target overlaps protected path`);
     }
   }
-  const trackedPaths = checkGit ?
-    git(["ls-files"], {cwd: root}).split("\n").filter(Boolean) : [];
-  errors.push(...relationshipViolations({
-    manifest,
-    toolIds: new Set((toolsManifest.tools ?? []).map((tool) => tool.id)),
-    root,
-    snapshot,
-    trackedPaths,
-  }));
+  errors.push(...rootManifestViolations({manifest}));
   if (checkGit) {
     const trackedIgnored = git(["ls-files", "-ci", "--exclude-standard"], {cwd: root});
     if (trackedIgnored) errors.push(`tracked files are also ignored:\n${trackedIgnored}`);

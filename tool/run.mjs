@@ -9,11 +9,6 @@ import {
   validateToolPlatforms,
 } from "./lib/tool_platform.mjs";
 import {
-  deriveAppRoles,
-  matchesGlob,
-  planAffected,
-} from "./harness/lib/component_graph.mjs";
-import {
   duplicateCanonicalFullPathOverrides,
   formatAffectedToolGithubOutputs,
   hasExecutableChecks,
@@ -35,8 +30,6 @@ if (command === "help" || command === "--help" || command === "-h") {
   listTools(argv);
 } else if (command === "check") {
   await checkTools(argv);
-} else if (command === "impacted") {
-  await impactedTools(argv);
 } else if (command === "affected-tools") {
   await affectedToolChecks(argv);
 } else if (command === "run" || command === "exec") {
@@ -142,100 +135,6 @@ function requireSelection(tools, {category, ids = []} = {}) {
   process.exit(64);
 }
 
-async function impactedTools(args) {
-  const options = parseImpactedArgs(args);
-  const manifest = loadManifest();
-  const rootManifest = repositorySnapshot().readJson(
-    "tool/repository_root_manifest.json",
-    {required: true},
-  );
-  const componentGraph = loadComponentGraph();
-  const changedPaths = options.paths ?? changedPathsSince(options.base);
-  const relationships = rootManifest.relationships ?? [];
-  const matchedRelationships = relationships.filter((relationship) =>
-    changedPaths.some((changedPath) => relationshipPatterns(relationship)
-      .some((pattern) => matchesGlob(changedPath, pattern)))
-  );
-  const matchedPaths = new Set(changedPaths.filter((changedPath) =>
-    matchedRelationships.some((relationship) => relationshipPatterns(relationship)
-      .some((pattern) => matchesGlob(changedPath, pattern)))
-  ));
-  const toolIds = [...new Set(matchedRelationships.flatMap(
-    (relationship) => relationship.checks ?? [],
-  ))].sort();
-  const ciWorkflows = [...new Set(matchedRelationships.flatMap(
-    (relationship) => relationship.ciWorkflows ?? [],
-  ))].sort();
-  const prPlan = planAffected({
-    changedPaths,
-    graph: componentGraph,
-    mode: "pr",
-  });
-  const mainPlan = planAffected({
-    changedPaths,
-    graph: componentGraph,
-    mode: "main",
-  });
-  const unknownPaths = [...new Set([
-    ...prPlan.unknownPaths,
-    ...mainPlan.unknownPaths,
-  ])].sort();
-  const ambiguousPaths = [...prPlan.ambiguousPaths].sort((left, right) =>
-    left.path.localeCompare(right.path)
-  );
-  const unmatchedPaths = [...new Set([
-    ...changedPaths.filter((changedPath) => !matchedPaths.has(changedPath)),
-    ...unknownPaths,
-    ...ambiguousPaths.map((entry) => entry.path),
-  ])].sort();
-  const result = {
-    base: options.base,
-    changedPaths,
-    relationships: matchedRelationships.map((relationship) => relationship.id).sort(),
-    toolIds,
-    ciWorkflows,
-    ciTargets: prPlan.operations.ciTargets,
-    appRoles: deriveAppRoles(prPlan),
-    buildTargets: prPlan.operations.buildTargets,
-    mobileReleaseRoles: mainPlan.operations.releaseRoles,
-    deployGroups: mainPlan.operations.deployGroups,
-    deployRequired: mainPlan.operations.deployGroups.length > 0,
-    unknownPaths,
-    ambiguousPaths,
-    unmatchedPaths,
-  };
-
-  if (options.json || !options.check) {
-    console.log(JSON.stringify(result, null, 2));
-  } else {
-    console.log(`Impacted relationships: ${result.relationships.join(", ") || "none"}`);
-    console.log(`Impacted tool checks: ${toolIds.join(", ") || "none"}`);
-    console.log(`CI workflows: ${ciWorkflows.join(", ") || "none"}`);
-    console.log(`CI targets: ${result.ciTargets.join(", ") || "none"}`);
-    console.log(`App roles: ${result.appRoles.join(", ") || "none"}`);
-    console.log(
-      `Mobile release roles: ${result.mobileReleaseRoles.join(", ") || "none"}`,
-    );
-    console.log(`Deploy groups: ${result.deployGroups.join(", ") || "none"}`);
-  }
-
-  if (unmatchedPaths.length > 0) {
-    console.error(`Unmapped changed paths: ${unmatchedPaths.join(", ")}`);
-    process.exitCode = 1;
-    return;
-  }
-  if (!options.check || toolIds.length === 0) return;
-  const tools = selectTools(manifest, {ids: toolIds});
-  const missingIds = toolIds.filter((id) => !tools.some((tool) => tool.id === id));
-  if (missingIds.length > 0) {
-    console.error(`Impact graph references unknown tool ids: ${missingIds.join(", ")}`);
-    process.exitCode = 1;
-    return;
-  }
-  requireSelection(tools, {ids: toolIds});
-  await runChecks(tools);
-}
-
 async function affectedToolChecks(args) {
   const options = parseAffectedToolArgs(args);
   const manifest = loadManifest();
@@ -323,14 +222,6 @@ function changedPathsSince(base) {
     for (const line of result.stdout.split(/\r?\n/).filter(Boolean)) paths.add(line);
   }
   return [...paths].sort();
-}
-
-function relationshipPatterns(relationship) {
-  return [
-    ...(relationship.sources ?? []),
-    ...(relationship.generatedOutputs ?? []),
-    ...(relationship.consumers ?? []),
-  ];
 }
 
 function runTool(args) {
@@ -531,20 +422,6 @@ function parseCheckArgs(args) {
   return {category, ids, manifestOnly};
 }
 
-function parseImpactedArgs(args) {
-  const pathsValue = valueAfter(args, "--paths");
-  return {
-    base: valueAfter(args, "--base") ?? "origin/main",
-    paths: pathsValue == null ? null : pathsValue
-      .split(",")
-      .map((value) => value.trim())
-      .filter(Boolean)
-      .sort(),
-    json: args.includes("--json"),
-    check: args.includes("--check"),
-  };
-}
-
 function parseAffectedToolArgs(args) {
   const pathsValue = valueAfter(args, "--paths");
   return {
@@ -582,7 +459,6 @@ function printHelp() {
 Commands:
   list [--category name] [--json]
   check [--category name] [--manifest-only] [tool-id ...]
-  impacted [--base ref | --paths a,b] [--json] [--check]
   affected-tools [--base ref | --paths a,b] [--mode mode] [--full] [--json] [--check]
     [--github-output path]
   run <tool-id> [args...]
@@ -590,7 +466,6 @@ Commands:
 Examples:
   node tool/run.mjs list --category data
   node tool/run.mjs check --manifest-only
-  node tool/run.mjs impacted --base origin/main --check
   node tool/run.mjs affected-tools --base origin/main --check
   node tool/run.mjs run demo:ops list-commands
 `);
