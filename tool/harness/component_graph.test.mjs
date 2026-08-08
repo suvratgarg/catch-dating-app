@@ -55,6 +55,11 @@ test("CI checkout requirements keep planner and docs narrow with a full fallback
     coneMode: false,
     timeoutMinutes: 3,
     paths: [
+      "/package.json",
+      "/package-lock.json",
+      "/admin/package.json",
+      "/website/package.json",
+      "/packages/web-ui/package.json",
       "/tool/harness.mjs",
       "/tool/harness/component_graph.json",
       "/tool/harness/lib/component_graph.mjs",
