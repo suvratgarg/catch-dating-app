@@ -329,6 +329,9 @@ test("manual resume is pinned to the oldest pending CI item and a source-bound t
   assert.match(delivery, /\.scope \| type == "string" and startswith\("firebase:"\)/);
   assert.match(delivery, /\.provenance\.sourceCiRunId == \$run_id[\s\S]*\.provenance\.sourceCiRunAttempt == \$run_attempt/);
   assert.match(promotion, /delivery_core\.mjs restore-decision[\s\S]*--artifact-count "\$count"/);
+  assert.match(promotion, /should_restore="\$\(jq -r '\.shouldRestore'/);
+  assert.match(promotion, /jq -r '\.restartFromFirstStage'/);
+  assert.doesNotMatch(promotion, /jq -er '\.(?:shouldRestore|restartFromFirstStage)'/);
   assert.match(promotion, /No exact checkpoint exists for \$DEPLOY_ENVIRONMENT; restarting its same verified package at the first stage/);
   assert.doesNotMatch(promotion, /prior_jobs|reached_count|was never reached/);
 });
