@@ -1,6 +1,6 @@
 ---
 doc_id: third_party_tooling_adoption_spec
-version: 0.2.0
+version: 0.3.0
 updated: 2026-08-08
 owner: agent_operating_model
 status: active
@@ -143,11 +143,19 @@ personal-repository binding and revisit collaboration tooling later.
 
 ### 6.1 Tier A — strong prior, evaluate first
 
-**A1. `picomatch` with `dot: true` for glob matching**
+**A1. `picomatch` with `dot: true` for glob matching — adopted**
 
 - *Problem:* the custom matcher returns false for `a/**/b` against `a/b`.
-  A differential corpus of 7,248 tracked paths found eight divergences in
-  Harness patterns and 114 active-rule omissions in optional context guidance.
+- *Result:* `97a0f7ed1` replaces the three surviving handwritten matchers with
+  one cached Picomatch adapter. Its oracle compared the legacy matcher,
+  Node's native matcher, and Picomatch across 7,248 tracked paths and 126
+  Harness patterns: 71 individual pattern/path evaluations changed, zero
+  terminal owner classifications changed, and Node native remained unsuitable
+  because it omits dotfiles under the repository's required semantics.
+- *Regression boundary:* tests now cover zero-directory `**`, dotfiles,
+  normalization, literal scope ownership, every consumer's affected-tool
+  closure, and the planner's sparse import closure. The direct dependency is
+  locked at Picomatch 4.0.4 and exercised in the focused suite.
 - *Why not Node alone:* Node 24's `path.matchesGlob` does not preserve the
   repository's intended dotfile behavior. `picomatch` is MIT-licensed,
   zero-runtime-dependency, and already present transitively.
@@ -160,7 +168,7 @@ personal-repository binding and revisit collaboration tooling later.
 - *Priority:* **highest correctness value.** It is the first adoption slice
   after the current Harness PR is integrated.
 
-**A2. GitHub native secret protection plus optional Gitleaks defense in depth**
+**A2. GitHub native secret protection plus optional Gitleaks defense in depth — external checkpoint**
 
 - *Problem:* no tracked repository-defined secret scanner exists, while the
   repository is public and workflows handle production credentials.
@@ -172,6 +180,13 @@ personal-repository binding and revisit collaboration tooling later.
   known-bad fixture proving it cannot pass vacuously.
 - *Kill if:* the local scan cannot reach a clean, low-noise baseline. Do not
   mistake a repository search for proof that GitHub-native protection is off.
+- *Current state (2026-08-08):* public GitHub metadata confirms that the
+  repository is public, but the secret-scanning endpoint correctly returns
+  `401 Requires authentication`; the stored CLI token is invalid and no
+  signed-in browser surface is available to the current session. An owner must
+  verify or enable GitHub secret scanning and push protection in repository
+  settings before this candidate proceeds. Do not add Gitleaks merely to hide
+  that unverified platform state.
 
 **A3. `node:util.parseArgs` (Node standard library, zero dependency)**
 
