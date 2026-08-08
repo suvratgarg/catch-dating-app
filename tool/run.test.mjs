@@ -19,13 +19,13 @@ function run(args, {cwd = repositoryRoot} = {}) {
   });
 }
 
-test("help describes the manifest runner and impact planners", () => {
+test("help describes the manifest runner without a duplicate impact planner", () => {
   const result = run(["help"]);
   assert.equal(result.status, 0, result.stderr);
   assert.match(result.stdout, /check \[--category name\]/u);
-  assert.match(result.stdout, /impacted \[--base ref \| --paths a,b\]/u);
   assert.match(result.stdout, /affected-tools/u);
   assert.match(result.stdout, /run <tool-id>/u);
+  assert.doesNotMatch(result.stdout, /\bimpacted\b/u);
   assert.doesNotMatch(result.stdout, /authority|lease|phase/u);
 });
 
@@ -100,48 +100,6 @@ test("platform declarations remain deterministic", () => {
   assert.deepEqual([...supportedToolPlatforms], ["darwin", "linux", "win32"]);
 });
 
-test("impact routing validates contracts without inventing a deployment", () => {
-  const result = run([
-    "impacted",
-    "--paths",
-    "contracts/firestore/users.schema.json",
-    "--json",
-  ]);
-  assert.equal(result.status, 0, result.stderr);
-  const plan = JSON.parse(result.stdout);
-  assert.ok(plan.relationships.includes("backend-contracts"));
-  assert.ok(plan.toolIds.includes("contracts:validate-schemas"));
-  assert.ok(plan.ciTargets.includes("contracts"));
-  assert.deepEqual(plan.mobileReleaseRoles, []);
-  assert.deepEqual(plan.deployGroups, []);
-  assert.equal(plan.deployRequired, false);
-  assert.deepEqual(plan.unmatchedPaths, []);
-});
-
-test("impact routing preserves product roles and keeps docs out of releases", () => {
-  const host = run([
-    "impacted",
-    "--paths",
-    "apps/host/lib/host_platform_app.dart",
-    "--json",
-  ]);
-  assert.equal(host.status, 0, host.stderr);
-  assert.deepEqual(JSON.parse(host.stdout).appRoles, ["host"]);
-  assert.deepEqual(JSON.parse(host.stdout).mobileReleaseRoles, ["host"]);
-
-  const docs = run(["impacted", "--paths", "README.md", "--json"]);
-  assert.equal(docs.status, 0, docs.stderr);
-  assert.deepEqual(JSON.parse(docs.stdout).ciTargets, ["docs"]);
-  assert.deepEqual(JSON.parse(docs.stdout).mobileReleaseRoles, []);
-});
-
-test("impact routing fails closed for an unmapped path", () => {
-  const result = run(["impacted", "--paths", "unowned/example.txt", "--json"]);
-  assert.equal(result.status, 1);
-  assert.match(result.stderr, /Unmapped changed paths: unowned\/example\.txt/u);
-  assert.deepEqual(JSON.parse(result.stdout).unmatchedPaths, ["unowned/example.txt"]);
-});
-
 test("affected-tool routing selects owners and mandatory guards", () => {
   const manifest = JSON.parse(fs.readFileSync("tool/tools_manifest.json", "utf8"));
   const mandatory = manifest.ciImpact.mandatoryCheckIds;
@@ -212,6 +170,18 @@ test("full affected-tool execution refuses before dispatch", () => {
     "affected-tools",
     "--paths",
     "tool/run.mjs",
+    "--check",
+  ]);
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /selected full mode; run the full category matrix/u);
+  assert.doesNotMatch(result.stdout, /==>/u);
+});
+
+test("unknown Harness ownership refuses affected-tool execution before dispatch", () => {
+  const result = run([
+    "affected-tools",
+    "--paths",
+    "unowned/example.txt",
     "--check",
   ]);
   assert.equal(result.status, 1);

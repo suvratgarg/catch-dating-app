@@ -7,10 +7,9 @@ import {execFileSync} from "node:child_process";
 import {
   checkRepository,
   classify,
-  matchesImpactPath,
   matchesPattern,
   portableLinkViolations,
-  relationshipViolations,
+  rootManifestViolations,
   retiredEvidenceViolations,
 } from "./check_repository_root_hygiene.mjs";
 
@@ -30,11 +29,6 @@ test("portable links reject machine paths but accept repository links", () => {
   assert.deepEqual(portableLinkViolations("[bad](/Users/person/repo/a.md) [ok](docs/a.md)"), ["/Users/person/repo/a.md"]);
 });
 
-test("impact globs distinguish recursive paths from sibling roots", () => {
-  assert.equal(matchesImpactPath("widgetbook/lib/main.dart", "widgetbook/**"), true);
-  assert.equal(matchesImpactPath("website/src/main.tsx", "widgetbook/**"), false);
-});
-
 test("retired tracked governance evidence cannot return", () => {
   const present = new Set([
     "docs/agent_regression_ledger.json",
@@ -51,26 +45,20 @@ test("retired tracked governance evidence cannot return", () => {
   ]);
 });
 
-test("relationship validation rejects unknown tools and unmapped files", () => {
+test("root manifest rejects returned duplicate impact authority and malformed audit policies", () => {
   const manifest = {
     ownerVocabulary: ["repository_tooling"],
-    relationships: [{
-      id: "control",
-      owner: "repository_tooling",
-      sources: ["tool/**"],
-      checks: ["missing:tool"],
-      ciWorkflows: [],
+    relationships: [],
+    auditPolicies: [{
+      pattern: "tool/**",
+      review: "unknown",
+      owner: "missing",
     }],
-    auditPolicies: [],
   };
-  assert.deepEqual(relationshipViolations({
-    manifest,
-    toolIds: new Set(),
-    root: process.cwd(),
-    trackedPaths: ["tool/run.mjs", "README.md"],
-  }), [
-    "control: unknown tool missing:tool",
-    "README.md: no impact relationship",
+  assert.deepEqual(rootManifestViolations({manifest}), [
+    "repository root manifest must not declare relationships; Harness component graph is the sole impact authority",
+    "tool/**: invalid audit review policy unknown",
+    "tool/**: unknown audit owner missing",
   ]);
 });
 
@@ -93,13 +81,6 @@ test("repository findings are identical when docs and workflows are sparse omitt
     prohibitedRootEntries: [],
     cleanupTargets: [],
     protectedPaths: [],
-    relationships: [{
-      id: "control-plane",
-      owner: "repository_tooling",
-      sources: [".github/**", "docs/**", "tool/**"],
-      checks: [],
-      ciWorkflows: [".github/workflows/ci.yml"],
-    }],
     auditPolicies: [],
   };
   write(root, "tool/repository_root_manifest.json", `${JSON.stringify(manifest)}\n`);

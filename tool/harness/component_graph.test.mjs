@@ -9,6 +9,7 @@ import {
   summarizeCoverage,
   validateComponentGraph,
 } from "./lib/component_graph.mjs";
+import {collectLocalReadonlyCheckIds} from "../lib/tool_impact.mjs";
 
 const graph = JSON.parse(
   fs.readFileSync(new URL("./component_graph.json", import.meta.url), "utf8"),
@@ -16,8 +17,8 @@ const graph = JSON.parse(
 const graphSchema = JSON.parse(
   fs.readFileSync(new URL("./component_graph.schema.json", import.meta.url), "utf8"),
 );
-const rootManifest = JSON.parse(
-  fs.readFileSync(new URL("../repository_root_manifest.json", import.meta.url), "utf8"),
+const toolsManifest = JSON.parse(
+  fs.readFileSync(new URL("../tools_manifest.json", import.meta.url), "utf8"),
 );
 
 function plan(path, mode = "pr", sourceGraph = graph) {
@@ -573,9 +574,7 @@ test("graph validation rejects unknown tool check ids when the manifest is suppl
   const invalid = clone(graph);
   invalid.operationProfiles.docs.direct.pr.checkIds = ["missing:check"];
   const errors = validateComponentGraph(invalid, {
-    knownCheckIds: new Set(rootManifest.relationships.flatMap(
-      (relationship) => relationship.checks ?? [],
-    )),
+    knownCheckIds: collectLocalReadonlyCheckIds(toolsManifest),
   });
   assert.ok(errors.some((error) => error.includes('unknown tool check id "missing:check"')));
 });

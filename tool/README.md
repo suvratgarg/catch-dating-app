@@ -21,8 +21,6 @@ node tool/run.mjs check audit:backend-errors
 npm run audit:backend-errors:check
 node tool/run.mjs check contracts:flutter-form-inventory
 node tool/run.mjs check --category demo
-node tool/run.mjs impacted --paths contracts/firestore/users.schema.json --json
-node tool/run.mjs impacted --check
 node tool/run.mjs affected-tools --paths tool/docs/check_doc_metadata.mjs --json
 node tool/run.mjs affected-tools --base origin/main --check
 node tool/run.mjs run demo:ops --help
@@ -69,13 +67,11 @@ executing a platform-incompatible command.
 The legacy audit evidence layer has been removed. Repository hygiene prevents
 those paths from returning. Git and CI own change and execution history.
 
-`impacted` joins changed paths through
-`tool/repository_root_manifest.json#relationships` to their source, generated
-output, and consumer surfaces. It reports the owning checks and workflows,
-fails when any changed path is unmapped, and runs the union of manifest checks
-with `--check`. The Harness component graph independently resolves stable CI
-targets, role-selective app builds, deployment groups, and mobile-release
-eligibility:
+The Harness component graph is the sole product-impact authority. It resolves
+stable CI targets, role-selective app builds, deployment groups, and
+mobile-release eligibility. `affected-tools` derives only registered tool
+checks from that same graph and the tool manifest; it fails closed rather than
+maintaining a second dependency map:
 
 ```sh
 node tool/harness.mjs plan --base origin/main --head HEAD --json
@@ -242,11 +238,11 @@ CI artifact is useful.
 ## Repository Hygiene
 
 `tool/repository_root_manifest.json` is the exact ownership contract for every
-repository-root entry. The gate rejects unclassified or multiply classified
-entries, prohibited roots, unsafe cleanup targets, and machine-local Markdown
-links. Its relationship graph binds sources, generated outputs, consumers,
-checks, and CI workflows, while audit policies identify generated/vendor trees
-reviewed as aggregate units. The cleaner is dry-run by default, preserves
+repository-root entry. It deliberately does not own a dependency graph; the
+Harness component graph does. The gate rejects unclassified or multiply
+classified entries, a returned duplicate relationship authority, prohibited
+roots, unsafe cleanup targets, and machine-local Markdown links. Audit policies
+identify generated/vendor trees reviewed as aggregate units. The cleaner is dry-run by default, preserves
 tracked children in mixed retention directories, refuses candidate-root
 symlinks while counting nested dependency symlinks without following them, and
 rejects protected or path-escaping targets; mutation additionally requires an
