@@ -1,6 +1,6 @@
 ---
 doc_id: harness_v2_decision_and_cicd_delivery_plan
-version: 1.1.0
+version: 1.1.1
 updated: 2026-08-08
 owner: agent_operating_model
 status: active
@@ -262,7 +262,7 @@ not proof that every website, backend, or mobile path already consumes it.
 | High-cardinality queue fixture | 7,500 artifact records; correct cursor and numeric attempt selected in about 0.4 seconds | Candidate history no longer creates one API request or ZIP download per retained merge. |
 | Delivery API shape | catalogue pages + at most 8 fixed calls for a deploying item with an existing cursor | The prior design required roughly three calls per cursor plus one per plan; at 450 retained cursors it exceeded 1,350 calls before package download. The new fixed verification work is a greater-than-99% reduction at that history size, excluding catalogue pagination. |
 | Web deployable builds | 2 → 1 production Vite bundle per Admin or Marketing main run | Promotion installs only the pinned Firebase CLI before credentials, consumes the verified package, and performs zero source dependency installation, Vite rebuild, or organizer rematerialization. |
-| Web read-only identity preflight | The two required `prod-hosting` variables were absent; creating the dedicated service account took 2.53 seconds and granting only `roles/datastore.viewer` took 4.47 seconds | Live inspection caught a deterministic Marketing deployment failure before merge. The exact environment-subject impersonation binding remains explicitly owner-approved work rather than being silently broadened. |
+| Web read-only identity preflight | The dedicated account retains only `roles/datastore.viewer`, has no user-managed keys, and now has one exact `prod-hosting` environment-subject impersonation binding; both GitHub variables match the expected provider/account values | Live inspection caught and then closed the deterministic Marketing deployment blocker without granting the build or reader any Hosting, Functions, Rules, Storage, Secret Manager, or Firestore-write authority. The first main Marketing run remains the end-to-end OIDC proof. |
 | Mobile target routing | Role-wide two-platform expansion → exact `consumer-ios`, `consumer-android`, `host-ios`, or `host-android` targets | The producer now avoids unrelated signed builds and rejects Cartesian role/platform widening. |
 | Mobile package retention | 14 days → 90 days | Exact signed IPA/AAB packages and their upload receipts now remain available for the full bounded internal-promotion and recovery window, a 6.4× increase. |
 | Mobile promotion work | One selected target per dispatch; zero Flutter, Gradle, Xcode archive/export, or signing commands; iOS alone uses `macos-26` while Android uses `ubuntu-24.04` | Internal-store mutation consumes verified signed bytes instead of rebuilding up to four products or spending Android work on an Xcode runner. |
