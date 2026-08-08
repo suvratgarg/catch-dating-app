@@ -1,5 +1,3 @@
-import picomatch from "picomatch";
-
 const matcherCache = new Map();
 
 export function normalizeGlobPath(value) {
@@ -18,13 +16,10 @@ export function matchesGlobPath(value, pattern) {
 
   let matcher = matcherCache.get(normalizedPattern);
   if (!matcher) {
-    matcher = picomatch(normalizedPattern, {
-      dot: true,
-      nonegate: true,
-    });
+    matcher = new RegExp(`^${globToRegexSource(normalizedPattern)}$`, "u");
     matcherCache.set(normalizedPattern, matcher);
   }
-  return matcher(normalizedValue);
+  return matcher.test(normalizedValue);
 }
 
 export function matchesScopePath(candidate, pattern) {
@@ -36,4 +31,52 @@ export function matchesScopePath(candidate, pattern) {
     return normalizedCandidate.startsWith(`${normalizedPattern}/`);
   }
   return matchesGlobPath(normalizedCandidate, normalizedPattern);
+}
+
+function globToRegexSource(pattern) {
+  let source = "";
+  for (let index = 0; index < pattern.length; index += 1) {
+    const character = pattern[index];
+
+    if (character === "/" && pattern.slice(index + 1, index + 3) === "**") {
+      const afterGlobstar = pattern[index + 3];
+      if (afterGlobstar === "/") {
+        source += "/(?:[^/]+/)*";
+        index += 3;
+      } else if (afterGlobstar == null) {
+        source += "(?:/.*)?";
+        index += 2;
+      } else {
+        source += "/.*";
+        index += 2;
+      }
+      continue;
+    }
+
+    if (character === "*" && pattern[index + 1] === "*") {
+      if (pattern[index + 2] === "/") {
+        source += "(?:[^/]+/)*";
+        index += 2;
+      } else {
+        source += ".*";
+        index += 1;
+      }
+      continue;
+    }
+
+    if (character === "*") {
+      source += "[^/]*";
+    } else if (character === "?") {
+      source += "[^/]";
+    } else {
+      source += escapeRegexCharacter(character);
+    }
+  }
+  return source;
+}
+
+function escapeRegexCharacter(character) {
+  return /[\\^$.*+?()[\]{}|]/u.test(character)
+    ? `\\${character}`
+    : character;
 }

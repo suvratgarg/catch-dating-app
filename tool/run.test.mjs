@@ -312,12 +312,6 @@ function createRunnerFixture(context) {
     fs.mkdirSync(path.dirname(destination), {recursive: true});
     fs.copyFileSync(path.join(repositoryRoot, relativePath), destination);
   }
-  const picomatchPackage = require.resolve("picomatch/package.json");
-  fs.cpSync(
-    path.dirname(picomatchPackage),
-    path.join(root, "node_modules", "picomatch"),
-    {recursive: true},
-  );
   fs.writeFileSync(
     path.join(root, "tool/check.mjs"),
     'console.log(process.argv.length > 2 ? JSON.stringify(process.argv.slice(2)) : "fixture-check");\n',

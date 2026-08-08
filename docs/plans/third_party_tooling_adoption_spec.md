@@ -1,6 +1,6 @@
 ---
 doc_id: third_party_tooling_adoption_spec
-version: 0.7.0
+version: 0.8.0
 updated: 2026-08-08
 owner: agent_operating_model
 status: active
@@ -143,19 +143,33 @@ personal-repository binding and revisit collaboration tooling later.
 
 ### 6.1 Tier A — strong prior, evaluate first
 
-**A1. `picomatch` with `dot: true` for glob matching — adopted**
+**A1. `picomatch` with `dot: true` for glob matching — retained as a test oracle, not a bootstrap runtime**
 
 - *Problem:* the custom matcher returns false for `a/**/b` against `a/b`.
-- *Result:* `97a0f7ed1` replaces the three surviving handwritten matchers with
-  one cached Picomatch adapter. Its oracle compared the legacy matcher,
-  Node's native matcher, and Picomatch across 7,248 tracked paths and 126
-  Harness patterns: 71 individual pattern/path evaluations changed, zero
+- *Initial result:* `97a0f7ed1` replaced the three surviving handwritten
+  matchers with one cached Picomatch adapter. Its oracle compared the legacy
+  matcher, Node's native matcher, and Picomatch across 7,248 tracked paths and
+  126 Harness patterns: 71 individual pattern/path evaluations changed, zero
   terminal owner classifications changed, and Node native remained unsuitable
   because it omits dotfiles under the repository's required semantics.
-- *Regression boundary:* tests now cover zero-directory `**`, dotfiles,
+- *Live CI correction:* the first PR run failed before planning because the
+  sparse bootstrap intentionally had no `node_modules`. Adding a 12-package,
+  script-disabled install repaired the 13-second planner, but the next run
+  proved the deeper cost: six independent Functions, contracts, docs, app-
+  target, and tool-preflight jobs imported the shared matcher before their own
+  dependency setup and failed in under 30 seconds. Installing npm packages in
+  every lane would make a path-routing helper a network bootstrap dependency.
+- *Final result:* the runtime now uses one dependency-free canonical matcher
+  with the corrected dotfile and zero-directory-globstar semantics. Picomatch
+  4.0.4 remains a development-only oracle. The committed test compares the
+  bootstrap matcher against Picomatch for every active graph/manifest pattern
+  across more than 7,000 tracked paths; the current 1,436,094 evaluations have
+  zero differences. Only the Harness test lane installs the root dependency.
+- *Regression boundary:* tests cover zero-directory `**`, dotfiles,
   normalization, literal scope ownership, every consumer's affected-tool
-  closure, and the planner's sparse import closure. The direct dependency is
-  locked at Picomatch 4.0.4 and exercised in the focused suite.
+  closure, the planner's sparse import closure, and the repository-wide
+  Picomatch equivalence oracle. The direct development dependency is locked at
+  Picomatch 4.0.4 and never required by the runtime planner.
 - *Why not Node alone:* Node 24's `path.matchesGlob` does not preserve the
   repository's intended dotfile behavior. `picomatch` is MIT-licensed,
   zero-runtime-dependency, and already present transitively.
@@ -165,8 +179,9 @@ personal-repository binding and revisit collaboration tooling later.
 - *Acceptance:* semantic tests cover zero-directory `**`, dotfiles, leading
   `./`, and current component classification. Every divergence is classified;
   the new matchers have no omitted active context rules.
-- *Priority:* **highest correctness value.** It is the first adoption slice
-  after the current Harness PR is integrated.
+- *Decision:* keep mature tooling as an executable oracle when a runtime
+  dependency would widen the bootstrap boundary. Do not trade an 82-line
+  centralized helper for package installation in every CI lane.
 
 **A2. GitHub native secret protection plus optional Gitleaks defense in depth — native retained; Gitleaks rejected**
 
