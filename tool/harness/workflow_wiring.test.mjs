@@ -252,6 +252,16 @@ test("planner and ordinary docs consume the graph-owned checkout closure", () =>
     planner,
     new RegExp(`sparse-checkout-cone-mode: ${graph.ciCheckout.planner.coneMode}`),
   );
+  const plannerInstall = namedStep(ci, "Install planner dependency");
+  assert.match(
+    plannerInstall,
+    /npm ci --ignore-scripts --omit=optional --workspaces=false --no-audit --no-fund/u,
+  );
+  assert.ok(
+    ci.indexOf("      - name: Install planner dependency") <
+      ci.indexOf("      - id: plan"),
+    "the lockfile-pinned dependency must be installed before the planner runs",
+  );
 
   const decode = namedStep(ci, "Decode graph-projected docs checkout");
   assert.match(decode, /DOCS_CHECKOUT: \$\{\{ needs\.plan\.outputs\.docs_checkout \}\}/);
