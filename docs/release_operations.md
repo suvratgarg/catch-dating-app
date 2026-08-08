@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.0.2
+version: 2.0.3
 updated: 2026-08-08
 owner: recursive_audit_loop
 status: active
@@ -1496,12 +1496,22 @@ debuggable, version-name, and version-code identity before any Play edit.
 
 Both roles have checked local/native composition, Firebase identity, distinct
 store identity, App Store Connect records, and manifest-resolved GitHub
-archive and exact-promotion paths. Historical GitHub runs prove prior upload and
-App Store processing, while the current producer deliberately stops at signed
-package authority. The manual exact promoter owns future upload; TestFlight
-processing, group assignment, install, and launch remain remote evidence.
-`APP-TARGET-IOS-GITHUB-CUTOVER-001` remains open until the intended groups,
-installation, and launch proof are recorded.
+archive and exact-promotion paths. The producer deliberately stops at signed
+package authority. The manual exact promoter owns upload; TestFlight group
+assignment, install, and launch remain separate remote evidence.
+`APP-TARGET-IOS-GITHUB-CUTOVER-001` remains open until the Host exact promoter,
+the intended groups, installation, and launch proof are recorded.
+
+Consumer `1.0.2` is the first live proof of the split architecture. Main CI run
+`31266032614` authorized source `c7be024a4e272d4a21759127a4fdd19e5752e30a`;
+producer run `31266556052` created and verified only the Consumer iOS and
+Android packages; promotion run `31267129848` reused iOS package artifact
+`9024464806` and uploaded TestFlight build `202608080000018401` without any
+Flutter build, Xcode archive/export, or signing command. Exact claim artifact
+`9024637372` binds that package and signed-IPA digest to App Store Connect app
+`6765646860`, version `1.0.2`, the remote build id, and all three workflow
+attempts. It does not prove TestFlight group assignment or installed-device
+behavior.
 
 Consumer manual recovery run `30523657375` uploaded commit
 `1cf9739e858e3e458cf1bf70e10d0d496938defe` after PR `#133`; build
@@ -1669,18 +1679,20 @@ CI-triggered producer owns exact role/platform signed iOS/Android packages, and
 the manual promoter owns one verified TestFlight or Play `qa` mutation without
 rebuilding. Neither role uploads automatically from a `main` push.
 
-iOS upload, processing, and legacy-owner retirement are externally complete.
-`APP-TARGET-IOS-GITHUB-CUTOVER-001` remains open only for TestFlight group plus
-install/launch proof. `APP-TARGET-ANDROID-PLAY-001` remains blocked on Play
-enrollment, publisher access, processing, tester, and device proof.
+Consumer exact upload and processing plus legacy-owner retirement are complete.
+`APP-TARGET-IOS-GITHUB-CUTOVER-001` remains open for the Host exact promotion,
+both intended TestFlight groups, and install/launch proof.
+`APP-TARGET-ANDROID-PLAY-001` remains blocked on Play enrollment, publisher
+access, processing, tester, and device proof.
 
 Cutover checklist:
 
 1. Complete historical evidence: Consumer and Host GitHub uploads and App Store
    processing from the pre-split workflow.
 2. Complete: both legacy Xcode Cloud workflows disabled.
-3. Pending: exercise the exact promoter for the next intended iOS packages and
-   record TestFlight processing, group assignment, install, and launch proof.
+3. Consumer exact promotion is complete in run `31267129848`; exercise the
+   Host exact promoter, then record both TestFlight group assignments and
+   install/launch proofs.
 4. Complete Play enrollment and publisher access, then enable the Play flag.
 5. Exercise the exact promoter and record both Play internal
    processing/install/launch proofs and signing
