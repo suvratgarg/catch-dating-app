@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import {spawnSync} from "node:child_process";
 import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import {fileURLToPath} from "node:url";
 import test from "node:test";
 import {
@@ -37,6 +39,30 @@ test("CLI accepts the first positional target and keeps group mode distinct", ()
   assert.equal(grouped.status, 0, grouped.stderr);
   assert.deepEqual(JSON.parse(grouped.stdout), [
     {phase: "firestore:rules", deployOnly: "firestore:rules"},
+  ]);
+});
+
+test("current planner reads an older source export file without executing its tooling", (t) => {
+  const sourceRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-firebase-source-"));
+  t.after(() => fs.rmSync(sourceRoot, {recursive: true, force: true}));
+  fs.mkdirSync(path.join(sourceRoot, "functions/src"), {recursive: true});
+  fs.mkdirSync(path.join(sourceRoot, "tool/firebase"), {recursive: true});
+  fs.writeFileSync(
+    path.join(sourceRoot, "functions/src/index.ts"),
+    'export { historicalOnly } from "./historical";\n',
+  );
+  fs.writeFileSync(
+    path.join(sourceRoot, "tool/firebase/list_firebase_function_targets.mjs"),
+    'throw new Error("historical tooling must not execute");\n',
+  );
+
+  const result = spawnSync(process.execPath, [cliPath, "functions", "--json"], {
+    encoding: "utf8",
+    env: {...process.env, CATCH_FIREBASE_SOURCE_ROOT: sourceRoot},
+  });
+  assert.equal(result.status, 0, result.stderr);
+  assert.deepEqual(JSON.parse(result.stdout), [
+    {phase: "functions", deployOnly: "functions:historicalOnly"},
   ]);
 });
 

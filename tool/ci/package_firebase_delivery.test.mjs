@@ -28,6 +28,7 @@ function fixture(deployGroups = ["functions", "firestore-indexes"]) {
   const functionsLibDir = path.join(source, "build/tested-functions-lib");
   fs.mkdirSync(functionsLibDir, {recursive: true});
   fs.mkdirSync(path.join(source, "functions/scripts"), {recursive: true});
+  fs.mkdirSync(path.join(source, "functions/src"), {recursive: true});
   fs.mkdirSync(path.join(source, "tool/firebase"), {recursive: true});
   fs.writeFileSync(path.join(source, "firebase.json"), JSON.stringify({
     functions: {source: "functions", codebase: "default", predeploy: ["npm test"]},
@@ -63,6 +64,14 @@ function fixture(deployGroups = ["functions", "firestore-indexes"]) {
   fs.writeFileSync(path.join(source, "functions/package-lock.json"), "{}\n");
   fs.writeFileSync(path.join(functionsLibDir, "index.js"),
     "exports.alpha = true; exports.beta = true;\n");
+  fs.writeFileSync(
+    path.join(source, "functions/src/index.ts"),
+    'export { alpha, beta } from "./fixture";\n',
+  );
+  fs.writeFileSync(
+    path.join(source, "tool/firebase/list_firebase_function_targets.mjs"),
+    'throw new Error("historical tooling must not execute");\n',
+  );
   fs.writeFileSync(
     path.join(source, "functions/scripts/set-callable-invokers-public.cjs"),
     "module.exports = {};\n",
@@ -230,6 +239,21 @@ test("verification derives Function targets from an independent expected export 
   assert.throws(() => verify(work, provenanceManifestPath, {
     functionTargets: ["functions:alpha", "functions:beta", "functions:gamma"],
   }), /targets do not match/);
+});
+
+test("verification reads historical exports as data without executing historical tooling", (t) => {
+  const work = fixture(["functions"]);
+  t.after(() => fs.rmSync(work.root, {recursive: true, force: true}));
+  const {plan, provenanceManifestPath} = prepare(work);
+  assert.deepEqual(verifyFirebaseDelivery({
+    sourceRoot: work.source,
+    packageDir: work.output,
+    sourceSha,
+    baseSha,
+    sourceCiRunId,
+    sourceCiRunAttempt,
+    provenanceManifestPath,
+  }), plan);
 });
 
 test("combined verification rejects reordered, omitted, or extra provenance stages", (t) => {
