@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 2.0.0
-updated: 2026-08-07
+version: 2.0.1
+updated: 2026-08-08
 owner: recursive_audit_loop
 status: active
 ---
@@ -303,12 +303,12 @@ authority. Its impersonation policy must be narrower than the shared provider:
 only the current GitHub OIDC subject
 `repo:suvratgarg/catch-dating-app:environment:prod-hosting` may use it.
 
-Live state on 2026-08-07: the dedicated service account exists and has only
-`roles/datastore.viewer`. The exact environment-subject impersonation binding
-and both GitHub Environment variables remain pending explicit owner approval.
-Until those three settings are applied and verified, Marketing production
-packaging intentionally fails closed before reading Firestore; do not describe
-the new Hosting path as deployment-ready.
+Live state verified on 2026-08-08: the dedicated service account has only
+`roles/datastore.viewer`, has no user-managed keys, and its sole impersonation
+binding is the exact `prod-hosting` environment subject above. Both GitHub
+Environment variables are present with the expected provider and service
+account values. The identity boundary is deployment-ready; the first main
+Marketing run remains the end-to-end OIDC and Firestore-read proof.
 
 Provision and reproduce that boundary with:
 
