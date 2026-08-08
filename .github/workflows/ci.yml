@@ -281,7 +281,11 @@ jobs:
       needs.plan.outputs.docs == 'true' ||
       needs.plan.outputs.policy_docs == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # A policy-doc change needs the complete history for Git-backed metadata
+    # validation. Full checkout is normally fast, but a three-minute action
+    # budget caused an otherwise healthy PR to fail before either policy check
+    # began. Keep the lane bounded while leaving time for its actual checks.
+    timeout-minutes: 20
     steps:
       - name: Decode graph-projected docs checkout
         id: docs-checkout
@@ -330,7 +334,7 @@ jobs:
           needs.plan.outputs.policy_docs == 'true' ||
           fromJSON(needs.plan.outputs.docs_checkout).mode == 'full'
         uses: actions/checkout@v6
-        timeout-minutes: 3
+        timeout-minutes: 10
         with:
           fetch-depth: 0
       - name: Check source-owned document metadata

@@ -267,11 +267,8 @@ test("planner and ordinary docs consume the graph-owned checkout closure", () =>
   const fullPolicy = namedStep(ci, "Checkout full policy closure");
   assert.match(fullPolicy, /needs\.plan\.outputs\.policy_docs == 'true'/);
   assert.match(fullPolicy, /fromJSON\(needs\.plan\.outputs\.docs_checkout\)\.mode == 'full'/);
+  assert.match(fullPolicy, /timeout-minutes: 10/u);
   assert.doesNotMatch(fullPolicy, /sparse-checkout/);
-  assert.match(
-    fullPolicy,
-    new RegExp(`timeout-minutes: ${graph.ciCheckout.default.timeoutMinutes}`),
-  );
   assert.match(
     fullPolicy,
     new RegExp(`fetch-depth: ${graph.ciCheckout.default.fetchDepth}`),
