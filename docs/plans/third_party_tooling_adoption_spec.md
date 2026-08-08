@@ -1,6 +1,6 @@
 ---
 doc_id: third_party_tooling_adoption_spec
-version: 0.5.0
+version: 0.6.0
 updated: 2026-08-08
 owner: agent_operating_model
 status: active
@@ -257,6 +257,11 @@ personal-repository binding and revisit collaboration tooling later.
 - *Precondition:* collect the Harness plan's ten comparable PR timing samples.
   The planner itself is about 0.07 seconds; current long poles are actual
   Admin, iOS, coverage, and visual execution.
+- *Current evidence:* the ten latest successful PR runs span 71–1,654 seconds
+  from start to completion: two exceed 20 minutes and eight finish within
+  274 seconds. They are different selected-workload shapes, not a comparable
+  task baseline. Collect ten runs with the same selected lanes before a shadow
+  execution experiment; do not let a single 22-minute broad run select Nx.
 - *Slice, if pursued:* shadow-compare package-task execution, not deployment
   authorization, then measure end-to-end wall time and runner minutes.
 - *Kill if:* there is no material measured improvement or any divergence omits
@@ -277,16 +282,25 @@ personal-repository binding and revisit collaboration tooling later.
   uncredentialed work. Never cache signed packages, deployable artifacts,
   live-data snapshots, or mutation jobs.
 
-**B3. JSON Schema breaking-change detection**
+**B3. JSON Schema breaking-change detection — problem confirmed; no package adopted**
 
 - *Problem:* `contracts/` changes can break deployed consumers, and nothing
   currently proves compatibility — only freshness of generated outputs.
-- *Note:* Protobuf-ecosystem tooling does not apply here (see §6.3). Codex must
-  research current JSON Schema compatibility-checking options under §2 rather
-  than defaulting to writing one.
-- *Hypothesis:* detects a real breaking change in a historical contract commit
-  that CI passed at the time. **If no such historical case exists, that is
-  evidence the problem is theoretical — reject.**
+- *Historical proof:* commit `b9ca7ae7335a43d86c73f88b6fc64b986244adbe`
+  tightened the established Cross Paths response contract by making
+  `event.pairHoldAvailable` required. A disposable run of
+  `json-schema-diff@1.0.0` against the complete prior/current `contracts/`
+  trees returned a nonzero breaking-change result. The need is therefore real,
+  not theoretical.
+- *Candidate result:* do **not** add `json-schema-diff` yet. It has seven direct
+  dependencies, emits a deprecation warning for its embedded
+  `json-schema-ref-parser@9`, and needs full historical contract trees merely
+  to resolve Catch's relative refs. That expands the root tooling surface and
+  needs a bespoke archive wrapper before it can be a safe CI gate.
+- *Boundary:* Protobuf tooling remains inapplicable (see §6.3), and we will not
+  write a homegrown compatibility checker to compensate. Re-open only if a
+  maintained, lower-surface tool handles relative refs without that wrapper, or
+  after an owner decides the confirmed risk justifies the additional runtime.
 
 **B4. Terraform / OpenTofu with the Firebase provider**
 
