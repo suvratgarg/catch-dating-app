@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
+import {listFirebaseFunctionTargets} from "./list_firebase_function_targets.mjs";
 
 const safeOrder = [
   "firestore:indexes",
@@ -99,20 +99,7 @@ export function planFirebaseDeployGroups(
 }
 
 function currentFunctionTargets() {
-  const result = spawnSync(
-    process.execPath,
-    [
-      fileURLToPath(
-        new URL("list_firebase_function_targets.mjs", import.meta.url),
-      ),
-      "--csv",
-    ],
-    {encoding: "utf8"},
-  );
-  if (result.status !== 0) {
-    throw new Error(result.stderr || "Could not list Firebase Functions.");
-  }
-  return result.stdout.trim().split(",").filter(Boolean);
+  return listFirebaseFunctionTargets(process.env.CATCH_FIREBASE_SOURCE_ROOT);
 }
 
 function main() {

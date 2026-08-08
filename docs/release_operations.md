@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 2.0.3
-updated: 2026-08-08
+version: 2.0.4
+updated: 2026-08-09
 owner: recursive_audit_loop
 status: active
 ---
@@ -188,6 +188,13 @@ contract and Firebase configuration changes alone never grant mutation. After
 every selected validation lane passes, CI packages those explicit groups once,
 and Delivery promotes that exact SHA-, run-attempt-, and checksum-bound package
 instead of inferring deployment from validation lanes or rebuilding it.
+The Delivery workflow and its deploy helpers execute from the immutable
+`github.workflow_sha` control-plane commit. The older CI-approved source is
+checked out separately and is used only to verify the package's source-bound
+exports and configuration. Recovery therefore keeps the application payload
+byte-identical while still receiving reviewed fixes to the delivery machinery;
+checking out an old application commit must never reactivate its obsolete CI
+or deploy helpers.
 
 The app package-graph gate must also work in a clean checkout before
 `flutter pub get`. It validates governed native-package declarations directly

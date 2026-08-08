@@ -608,22 +608,34 @@ jobs:
           echo "package_artifact_name=$package_artifact_name" >> "$GITHUB_OUTPUT"
           echo "package_artifact_digest=$package_artifact_digest" >> "$GITHUB_OUTPUT"
 
-      - name: Checkout the exact CI-approved source
+      - name: Checkout the immutable Delivery control plane
+        if: ${{ steps.source.outputs.work_required == 'true' }}
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 0
+
+      - name: Checkout the exact CI-approved source as verification input
         if: ${{ steps.source.outputs.work_required == 'true' }}
         uses: actions/checkout@v6
         with:
           ref: ${{ steps.source.outputs.source_sha }}
           fetch-depth: 0
+          path: build/delivery/source-checkout
 
-      - name: Require the selected main source to remain reachable
+      - name: Require the control plane and selected source to remain exact
         if: ${{ steps.source.outputs.work_required == 'true' }}
         env:
+          CONTROL_PLANE_SHA: ${{ github.workflow_sha }}
+          SOURCE_CHECKOUT: build/delivery/source-checkout
           SOURCE_SHA: ${{ steps.source.outputs.source_sha }}
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-          git fetch origin main:refs/remotes/origin/main --no-tags
-          git merge-base --is-ancestor "$SOURCE_SHA" refs/remotes/origin/main
+          [[ "$CONTROL_PLANE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$CONTROL_PLANE_SHA"
+          test "$(git -C "$SOURCE_CHECKOUT" rev-parse HEAD)" = "$SOURCE_SHA"
+          git -C "$SOURCE_CHECKOUT" fetch origin main:refs/remotes/origin/main --no-tags
+          git -C "$SOURCE_CHECKOUT" merge-base --is-ancestor "$SOURCE_SHA" refs/remotes/origin/main
 
       - name: Download the exact CI impact plan first
         if: ${{ steps.source.outputs.work_required == 'true' }}
@@ -756,6 +768,7 @@ jobs:
           tar -xzf build/delivery/source/firebase-backend.tar.gz \
             -C build/delivery/package
           result="$(node tool/ci/package_firebase_delivery.mjs verify \
+            --source-root build/delivery/source-checkout \
             --package-dir build/delivery/package \
             --source-sha "$SOURCE_SHA" \
             --base-sha "$BASE_SHA" \
@@ -822,6 +835,7 @@ jobs:
     uses: ./.github/workflows/_firebase-promote.yml
     with:
       environment: dev
+      control_plane_sha: ${{ github.workflow_sha }}
       base_sha: ${{ needs.authorize.outputs.base_sha }}
       source_ci_run_attempt: ${{ needs.authorize.outputs.source_ci_run_attempt }}
       source_ci_run_id: ${{ needs.authorize.outputs.source_ci_run_id }}
@@ -842,6 +856,7 @@ jobs:
     uses: ./.github/workflows/_firebase-promote.yml
     with:
       environment: staging
+      control_plane_sha: ${{ github.workflow_sha }}
       base_sha: ${{ needs.authorize.outputs.base_sha }}
       source_ci_run_attempt: ${{ needs.authorize.outputs.source_ci_run_attempt }}
       source_ci_run_id: ${{ needs.authorize.outputs.source_ci_run_id }}
@@ -862,6 +877,7 @@ jobs:
     uses: ./.github/workflows/_firebase-promote.yml
     with:
       environment: prod
+      control_plane_sha: ${{ github.workflow_sha }}
       base_sha: ${{ needs.authorize.outputs.base_sha }}
       source_ci_run_attempt: ${{ needs.authorize.outputs.source_ci_run_attempt }}
       source_ci_run_id: ${{ needs.authorize.outputs.source_ci_run_id }}

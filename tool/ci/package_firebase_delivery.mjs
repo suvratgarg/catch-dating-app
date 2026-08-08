@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 import {createHash} from "node:crypto";
-import {spawnSync} from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {planFirebaseDeployGroups} from "../firebase/plan_firebase_deploy_targets.mjs";
+import {listFirebaseFunctionTargets} from "../firebase/list_firebase_function_targets.mjs";
 
 export const FIREBASE_DELIVERY_PLAN_SCHEMA = "catch.firebase-delivery-plan/v2";
 export const FIREBASE_DELIVERY_INVENTORY_SCHEMA =
@@ -379,14 +379,7 @@ function verifyInventory(packageDir, {allowRuntimeDependencies = false, trustedP
 }
 
 function currentFunctionTargets(sourceRoot) {
-  const result = spawnSync(
-    process.execPath,
-    [path.join(sourceRoot, "tool/firebase/list_firebase_function_targets.mjs"), "--csv"],
-    {cwd: sourceRoot, encoding: "utf8"},
-  );
-  assert(result.status === 0,
-    result.stderr || "Could not resolve the checked-in Firebase Function exports.");
-  return result.stdout.trim().split(",").filter(Boolean);
+  return listFirebaseFunctionTargets(sourceRoot);
 }
 
 export function prepareFirebaseDelivery({

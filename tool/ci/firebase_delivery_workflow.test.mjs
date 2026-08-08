@@ -107,10 +107,31 @@ test("Delivery treats every completed CI trigger as a queue wakeup and trusts on
   assert.match(delivery, /delivery_core\.mjs verify[\s\S]*package_firebase_delivery\.mjs verify/);
   assert.match(delivery, /source_ci_run_attempt/);
   assert.match(delivery, /--ci-run-attempt "\$SOURCE_CI_RUN_ATTEMPT"/);
-  assert.match(delivery, /git merge-base --is-ancestor "\$SOURCE_SHA" refs\/remotes\/origin\/main/);
+  assert.match(delivery, /git -C "\$SOURCE_CHECKOUT" merge-base --is-ancestor "\$SOURCE_SHA" refs\/remotes\/origin\/main/);
   assert.doesNotMatch(delivery, /HEAD\^|github\.sha|remoteconfig|extensions:/);
   assert.equal(fs.existsSync(path.join(repoRoot, ".github/workflows/firebase-dev-deploy.yml")), false);
   assert.equal(fs.existsSync(path.join(repoRoot, ".github/workflows/firebase-deploy.yml")), false);
+});
+
+test("Delivery keeps the current immutable control plane separate from an older source payload", () => {
+  const delivery = workflow("delivery.yml");
+  const promotion = workflow("_firebase-promote.yml");
+
+  assert.match(delivery, /name: Checkout the immutable Delivery control plane[\s\S]*ref: \$\{\{ github\.workflow_sha \}\}/);
+  assert.match(delivery, /name: Checkout the exact CI-approved source as verification input[\s\S]*path: build\/delivery\/source-checkout/);
+  assert.match(delivery, /test "\$\(git rev-parse HEAD\)" = "\$CONTROL_PLANE_SHA"/);
+  assert.match(delivery, /git -C "\$SOURCE_CHECKOUT" merge-base --is-ancestor "\$SOURCE_SHA" refs\/remotes\/origin\/main/);
+  assert.match(delivery, /package_firebase_delivery\.mjs verify[\s\S]*--source-root build\/delivery\/source-checkout/);
+  assert.equal((delivery.match(/control_plane_sha: \$\{\{ github\.workflow_sha \}\}/g) ?? []).length, 3);
+
+  assert.match(promotion, /control_plane_sha:[\s\S]*required: true/);
+  assert.match(promotion, /name: Checkout the immutable Delivery control plane[\s\S]*ref: \$\{\{ inputs\.control_plane_sha \}\}/);
+  assert.match(promotion, /name: Checkout the exact CI-approved source as verification input[\s\S]*path: build\/delivery\/source-checkout/);
+  assert.match(promotion, /test "\$control_project_id" = "\$project_id"/);
+  assert.equal((promotion.match(/--source-root build\/delivery\/source-checkout/g) ?? []).length, 3);
+  assert.match(promotion, /CATCH_FIREBASE_SOURCE_ROOT="\$SOURCE_CHECKOUT"/);
+  assert.match(promotion, /\.\/tool\/deploy_firebase_targets\.sh/);
+  assert.doesNotMatch(promotion, /build\/delivery\/source-checkout\/tool\/deploy_firebase_targets\.sh/);
 });
 
 test("Delivery consumes the always-present plan before deciding package or no-op", () => {
@@ -419,7 +440,7 @@ test("promotion keeps the verified package immutable and reverifies its deploy c
   );
   assert.match(promotion, /restarting its same verified package at the first stage/);
   assert.match(promotion, /\.conclusion == "failure"[\s\S]*\.conclusion == "cancelled"[\s\S]*\.conclusion == "timed_out"/);
-  assert.match(promotion, /git merge-base --is-ancestor "\$SOURCE_SHA" refs\/remotes\/origin\/main/);
+  assert.match(promotion, /git -C "\$SOURCE_CHECKOUT" merge-base --is-ancestor "\$SOURCE_SHA" refs\/remotes\/origin\/main/);
 });
 
 test("automatic target planning rejects broad and unrelated Firebase products", () => {

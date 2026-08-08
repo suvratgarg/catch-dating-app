@@ -279,6 +279,7 @@
         "functions/package-lock.json",
         "functions/src/index.ts",
         "functions/scripts/set-callable-invokers-public.cjs",
+        "tool/firebase/list_firebase_function_targets.mjs",
         "tool/firebase/plan_firebase_deploy_targets.mjs"
       ],
       "description": "Projects the CI-authorized backend into one bounded no-predeploy Firebase package, binding the exact source/base SHAs, source CI run, impact-plan digest, compiled Functions, ordered stages, and permitted targets.",
@@ -2351,6 +2352,10 @@
       "description": "Expands Firebase function deploy target names from Functions exports.",
       "checks": [
         "node --check tool/firebase/list_firebase_function_targets.mjs"
+      ],
+      "alsoCheckIds": [
+        "ci:firebase-delivery-package",
+        "firebase:deploy-target-plan"
       ]
     },
     {

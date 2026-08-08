@@ -11,6 +11,10 @@ on:
         description: Exact base SHA recorded by the trusted CI impact plan.
         required: true
         type: string
+      control_plane_sha:
+        description: Exact commit containing the trusted Delivery workflow and helpers.
+        required: true
+        type: string
       source_ci_run_id:
         description: Trusted source CI run id.
         required: true
@@ -50,6 +54,7 @@ jobs:
     steps:
       - name: Validate bounded promotion inputs
         env:
+          CONTROL_PLANE_SHA: ${{ inputs.control_plane_sha }}
           DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
           BASE_SHA: ${{ inputs.base_sha }}
           SOURCE_CI_RUN_ATTEMPT: ${{ inputs.source_ci_run_attempt }}
@@ -61,26 +66,37 @@ jobs:
             echo "GitHub partial reruns may reuse stale authorize outputs. Start a fresh manual Delivery recovery run instead."
             exit 64
           fi
+          [[ "$CONTROL_PLANE_SHA" =~ ^[0-9a-f]{40}$ ]]
           [[ "$DEPLOY_ENVIRONMENT" =~ ^(dev|staging|prod)$ ]]
           [[ "$BASE_SHA" =~ ^[0-9a-f]{40}$ ]]
           [[ "$SOURCE_CI_RUN_ATTEMPT" =~ ^[1-9][0-9]*$ ]]
           [[ "$SOURCE_CI_RUN_ID" =~ ^[1-9][0-9]*$ ]]
           [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
 
-      - name: Checkout the exact CI-approved source
+      - name: Checkout the immutable Delivery control plane
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.control_plane_sha }}
+          fetch-depth: 0
+
+      - name: Checkout the exact CI-approved source as verification input
         uses: actions/checkout@v6
         with:
           ref: ${{ inputs.source_sha }}
           fetch-depth: 0
+          path: build/delivery/source-checkout
 
-      - name: Require the ordered source to remain reachable from main
+      - name: Require the control plane and ordered source to remain exact
         env:
+          CONTROL_PLANE_SHA: ${{ inputs.control_plane_sha }}
+          SOURCE_CHECKOUT: build/delivery/source-checkout
           SOURCE_SHA: ${{ inputs.source_sha }}
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-          git fetch origin main:refs/remotes/origin/main --no-tags
-          git merge-base --is-ancestor "$SOURCE_SHA" refs/remotes/origin/main
+          test "$(git rev-parse HEAD)" = "$CONTROL_PLANE_SHA"
+          test "$(git -C "$SOURCE_CHECKOUT" rev-parse HEAD)" = "$SOURCE_SHA"
+          git -C "$SOURCE_CHECKOUT" fetch origin main:refs/remotes/origin/main --no-tags
+          git -C "$SOURCE_CHECKOUT" merge-base --is-ancestor "$SOURCE_SHA" refs/remotes/origin/main
 
       - name: Download only the source CI artifact
         uses: actions/download-artifact@v7
@@ -112,6 +128,7 @@ jobs:
           tar -xzf build/delivery/source/firebase-backend.tar.gz \
             -C build/delivery/package
           result="$(node tool/ci/package_firebase_delivery.mjs verify \
+            --source-root build/delivery/source-checkout \
             --package-dir build/delivery/package \
             --source-sha "$SOURCE_SHA" \
             --base-sha "$BASE_SHA" \
@@ -120,7 +137,10 @@ jobs:
             --provenance-manifest build/delivery/source/firebase-provenance.json)"
           project_id="$(jq -er --arg environment "$DEPLOY_ENVIRONMENT" \
             '.projects[$environment]' build/delivery/package/.firebaserc)"
+          control_project_id="$(jq -er --arg environment "$DEPLOY_ENVIRONMENT" \
+            '.projects[$environment]' .firebaserc)"
           [[ "$project_id" =~ ^[a-z][a-z0-9-]{4,28}[a-z0-9]$ ]]
+          test "$control_project_id" = "$project_id"
           echo "targets=$(jq -er '.targets | join(",")' <<< "$result")" >> "$GITHUB_OUTPUT"
           echo "has_functions=$(jq -er '.stages | contains(["functions"])' <<< "$result")" >> "$GITHUB_OUTPUT"
           echo "project_id=$project_id" >> "$GITHUB_OUTPUT"
@@ -255,6 +275,7 @@ jobs:
             --ci-run-id "$SOURCE_CI_RUN_ID" \
             --ci-run-attempt "$SOURCE_CI_RUN_ATTEMPT"
           node tool/ci/package_firebase_delivery.mjs verify \
+            --source-root build/delivery/source-checkout \
             --package-dir build/delivery/package \
             --source-sha "$SOURCE_SHA" \
             --base-sha "$BASE_SHA" \
@@ -262,6 +283,7 @@ jobs:
             --ci-run-attempt "$SOURCE_CI_RUN_ATTEMPT" \
             --provenance-manifest build/delivery/source/firebase-provenance.json
           node tool/ci/package_firebase_delivery.mjs verify \
+            --source-root build/delivery/source-checkout \
             --package-dir build/delivery/deploy-tree \
             --source-sha "$SOURCE_SHA" \
             --base-sha "$BASE_SHA" \
@@ -280,6 +302,7 @@ jobs:
           DELIVERY_FUNCTIONS_DIR: build/delivery/deploy-tree/functions
           PACKAGE_DIR: build/delivery/deploy-tree
           PROJECT_ID: ${{ steps.verify.outputs.project_id }}
+          SOURCE_CHECKOUT: build/delivery/source-checkout
           SOURCE_CI_RUN_ATTEMPT: ${{ inputs.source_ci_run_attempt }}
           SOURCE_CI_RUN_ID: ${{ inputs.source_ci_run_id }}
           SOURCE_SHA: ${{ inputs.source_sha }}
@@ -313,6 +336,7 @@ jobs:
             stage_status=0
             failure_detail="Firebase CLI stage failed; safe to resume this stage."
             CATCH_DELIVERY_FUNCTIONS_DIR="$DELIVERY_FUNCTIONS_DIR" \
+              CATCH_FIREBASE_SOURCE_ROOT="$SOURCE_CHECKOUT" \
               ./tool/deploy_firebase_targets.sh \
                 "$DEPLOY_ENVIRONMENT" "$target" \
                 --config "$PACKAGE_DIR/firebase.json" || stage_status=$?
