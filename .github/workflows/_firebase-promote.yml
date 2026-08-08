@@ -181,8 +181,8 @@ jobs:
               awk '{ total += $1 } END { print total + 0 }')"
             decision="$(node tool/ci/delivery_core.mjs restore-decision \
               --artifact-count "$count")"
-            should_restore="$(jq -er '.shouldRestore' <<< "$decision")"
-            if [[ "$(jq -er '.restartFromFirstStage' <<< "$decision")" == "true" ]]; then
+            should_restore="$(jq -r '.shouldRestore' <<< "$decision")"
+            if [[ "$(jq -r '.restartFromFirstStage' <<< "$decision")" == "true" ]]; then
               echo "No exact checkpoint exists for $DEPLOY_ENVIRONMENT; restarting its same verified package at the first stage."
             fi
           fi
