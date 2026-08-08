@@ -165,6 +165,32 @@ test("marketing package contains one lifecycle-hook-free target and exact byte i
   assert.deepEqual(verified, plan);
 });
 
+test("inventory uses one deterministic code-point order for mixed-case Vite output", async () => {
+  const root = makeSource();
+  fs.writeFileSync(
+    path.join(root, "website", "dist", "assets", "Zebra.js"),
+    "console.log('uppercase asset');\n",
+  );
+  const {stageDir, plan} = prepare(root);
+  const inventory = JSON.parse(fs.readFileSync(
+    path.join(stageDir, "web-delivery-inventory.json"),
+    "utf8",
+  ));
+  const assetPaths = inventory.entries
+    .map((entry) => entry.path)
+    .filter((entryPath) => entryPath.startsWith("site/assets/"));
+
+  assert.deepEqual(assetPaths, ["site/assets/Zebra.js", "site/assets/app.js"]);
+  const provenanceManifestPath = await writeProvenance(root, "marketing");
+  assert.deepEqual(verifyWebHostingDelivery({
+    sourceRoot: root,
+    packageDir: stageDir,
+    surface: "marketing",
+    ...binding,
+    provenanceManifestPath,
+  }), plan);
+});
+
 test("admin package preserves its headers and rewrite but excludes every other product", async () => {
   const root = makeSource("admin");
   const {stageDir, plan} = prepare(root, "admin");
