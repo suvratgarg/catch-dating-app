@@ -97,6 +97,33 @@ The authored graph and compile-codegen allowlist live in
 `tool/harness/component_graph.json`. Use the plan's check ids with the explicit
 `node tool/run.mjs check <id...>` runner. Harness commands are read-only.
 
+## Build Versus Adopt
+
+Before adding a dependency, a general-purpose subsystem, or a substantial
+replacement for shared tooling, state in the implementation Issue or PR:
+
+1. the observable capability or defect being addressed;
+2. at least one platform or established-tool alternative considered; and
+3. why the selected option fits Catch's safety and maintenance boundaries.
+
+Prefer the platform standard library, then a focused zero-dependency library,
+then a maintained framework, and write a shared utility only when those options
+do not fit. A candidate must be actively maintained, permissively licensed,
+proportionate in transitive dependencies, required by current behavior, and
+free of unnecessary privileged or build-time network access. More than roughly
+100 new lines of general-purpose code triggers this review; it is not an
+automatic rejection. Catch-specific schemas, release identities, consent
+rules, and other product policy remain custom when a generic package cannot own
+their semantics.
+
+Replace existing behavior only behind a real repository equivalence oracle.
+Measure the smallest useful slice, retain or reject the candidate explicitly,
+and delete the former authority only after equivalence passes. A mature package
+may serve only as a development-time oracle when making it a bootstrap runtime
+dependency would widen CI failure or network boundaries. Do not add a scanner
+that claims to prove ecosystem research occurred, and do not keep a tracked
+adoption ledger after the bounded decision is complete.
+
 ## Layout
 
 - `audit/`: repo audit and code catalog scripts.

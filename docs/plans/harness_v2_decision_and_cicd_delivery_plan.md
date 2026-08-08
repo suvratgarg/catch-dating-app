@@ -1,6 +1,6 @@
 ---
 doc_id: harness_v2_decision_and_cicd_delivery_plan
-version: 1.1.2
+version: 1.2.0
 updated: 2026-08-08
 owner: agent_operating_model
 status: active
@@ -10,9 +10,9 @@ status: active
 
 ## Status
 
-Accepted and being integrated. This document is the durable architecture
-decision and current status, not an execution diary. The former checkpoint
-tables and daily measurements remain available in Git history.
+Implemented and active. This document is the durable architecture decision and
+current status, not an execution diary. The former checkpoint tables and daily
+measurements remain available in Git history.
 
 The permanent system is ordinary Git and CI/CD with four small Catch-specific
 capabilities:
@@ -237,15 +237,15 @@ database violates this decision even if it is generated automatically.
 
 ## Current Implementation Status
 
-| Capability | Status on 2026-08-07 | Remaining work |
+| Capability | Status on 2026-08-08 | Remaining work |
 |---|---|---|
 | Read-only component planner | Implemented and covered by component, CLI, and workflow-wiring tests | Keep path ownership and selection fixtures current when product surfaces change |
 | Optional context guidance | Implemented as source-derived stdout/JSON output | Keep project-skill paths and active tool ids valid |
-| Tracked evidence retirement | Deletion and source-metadata replacement are in the current migration branch | Merge after stale documentation references and affected checks are clean |
-| Thin worktree guard | Implemented with focused Git-repository tests in the current migration branch | Integrate, then use only when concurrent local claims need protection |
-| Exact-artifact delivery core | Provenance verification, ordered checkpoint/resume, the Firebase backend adapter, the Admin/Marketing Hosting build/promote adapters, the signed mobile package producer, and the separate no-rebuild internal-store promoter are implemented with adversarial and workflow-wiring tests in the current migration branch | Exercise the web/mobile promotion paths after required live environment access is explicitly approved and configured |
+| Tracked evidence retirement | Deleted; source metadata plus Git history now own document and change history | Root hygiene rejects the retired paths if they return |
+| Thin worktree guard | Implemented with focused Git-repository tests and used only for concurrent local claims | Keep it local and disposable; Git branches remain durable |
+| Exact-artifact delivery core | Provenance verification, ordered checkpoint/resume, the Firebase backend adapter, the Admin/Marketing Hosting build/promote adapters, the signed mobile package producer, and the separate no-rebuild internal-store promoter are implemented with adversarial and workflow-wiring tests | Keep adapter-specific postconditions and live environment prerequisites current |
 | Exact mobile release routing | The Harness plan carries role-and-platform-specific signed release targets and the mobile producer consumes the CI-authorized target list without widening web or desktop changes | Keep the compatibility role output only until downstream non-release consumers no longer read it |
-| Owner settings | GitHub secret scanning, push protection, dependency alerts, and Dependabot security updates are enabled; routine version-update PRs remain disabled | The first dependency scan found 38 patchable npm alerts across 11 packages and three lockfiles. Reduce that backlog in bounded security slices, review the nine open Firebase client-key alerts, and keep environment approvals, token rotation, and any organization migration as separate owner decisions |
+| Owner settings | GitHub secret scanning, push protection, dependency alerts, and Dependabot security updates are enabled; routine version-update PRs remain disabled | The initial 38-alert npm backlog is now zero. Nine alerts were mapped to Firebase-generated public client configuration; their GitHub disposition remains an explicit owner security action. Keep environment approvals, token rotation, and any organization migration separate |
 
 Workflow adoption must be reported honestly. A reusable delivery primitive is
 not proof that every website, backend, or mobile path already consumes it.
@@ -270,12 +270,31 @@ not proof that every website, backend, or mobile path already consumes it.
 | First full Harness v2 PR run | 30 jobs passed, 2 intentionally skipped, 22m10s wall time; planner 13s and `Required CI` 4s | The control plane is no longer the long pole. Current optimization targets are Admin validation at 21m44s, iOS builds at 16m28s, coverage at 13m43s, and visual integration at 11m42s. |
 
 These are implementation measurements, not the final developer-velocity SLO.
-The ten-comparable-PR p95/runner-minute acceptance criterion below remains the
-decision point for graph tuning after merge.
+Ten comparable pull requests remain the decision point for later graph or
+native-cache tuning; they are not a reason to hold the simpler architecture
+open or adopt another task graph speculatively.
+
+### Build-Versus-Adopt Closeout
+
+The bounded third-party-tooling queue is dispositioned. The durable review rule
+now lives in `tool/README.md`; the temporary candidate tracker was retired
+rather than becoming another repository ledger.
+
+| Candidate | Measured decision |
+|---|---|
+| Path matching | Keep the dependency-free bootstrap matcher and Picomatch 4.0.4 as its executable development oracle. The oracle covers 1,436,094 active pattern/path evaluations with zero differences; importing Picomatch at runtime had already broken sparse bootstrap lanes. |
+| Secret scanning | Keep GitHub secret scanning and push protection. Gitleaks 8.30.1 scanned 615 commits and 273.36 MB in 62.9 seconds but produced 175 noisy repeats and no additional actionable secret class, so a second CI authority was rejected. |
+| CLI parsing | Adopt the existing `node:util.parseArgs`-backed helper for nine additional data and Organizer Intake commands. Standalone parser definitions fell from 94 to 85; the slice removed 287 net lines and increased shared consumers from 5 to 14 without adding a dependency. |
+| Dependency updates | Keep security-only Dependabot. The initial 38-alert npm backlog across three lockfiles was patched through maintained parent dependencies; all three production audits and the live GitHub alert count are zero. |
+| JSON Schema compatibility | Reject the evaluated packages. `json-schema-diff@1.0.0` added seven dependencies and deprecated ref parsing; `@philiprehberger/schema-diff@0.2.0` was zero-dependency but produced false positives for safe loosening and false negatives for numeric, object-closure, and referenced-schema tightening. Do not replace those failures with a homegrown checker. |
+| Fastlane | Reject for the current exact-artifact architecture. At most about 205 of 2,737 producer/promoter workflow lines are generic archive/upload mechanics (under 8%); the 40% deletion threshold cannot be met after adding Ruby, Bundler, lockfile, tests, and credential plumbing. |
+| Nx and remote task cache | Do not add a second graph or remote cache without the ten-comparable-run prerequisite. Two scheduled runs of the same SHA completed in 19m36s and 19m16s while individual long lanes moved in both directions, which is insufficient evidence for a 40% cache benefit. Native language caches remain the first future experiment. |
+| OpenTofu | Defer declarative infrastructure ownership. The live readiness audit found only two consistent Cross Paths pre-launch prerequisites in each environment—a TTL policy and signing secret—while all four owning Functions remain undeployed. That is a launch gate working as designed, not recurring cross-environment drift. |
 
 ## Measurable Acceptance Criteria
 
-The transition is complete only when all of the following are demonstrated:
+The implementation transition is complete only when all of the following are
+demonstrated:
 
 1. Two ordinary product changes complete with zero tracked governance-evidence
    modifications.
@@ -293,10 +312,13 @@ The transition is complete only when all of the following are demonstrated:
    prove atomic writes and idempotent replay of passed stages.
 7. A deployment adapter promotes the producing run's verified artifact without
    an independent rebuild and resumes from the first incomplete verified stage.
-8. After ten comparable pull requests, ordinary-change p95 wall time improves
-   by at least 40% or runner-minutes by at least 50%, with no escaped defect
-   attributable to an omitted edge. If not, adjust the graph or workflow rather
-   than adding another evidence system.
+
+Post-cutover optimization remains evidence-gated: after ten comparable pull
+requests, measure ordinary-change p95 wall time and runner-minutes. A new graph
+or remote cache requires at least a 40% wall-time or 50% runner-minute
+improvement with no escaped defect attributable to an omitted edge. If the
+threshold is not met, adjust the existing graph or native workflow caches
+rather than adding another evidence system.
 
 ## Owner-Only Settings
 
