@@ -378,7 +378,7 @@ jobs:
             --ci-run-id "$GITHUB_RUN_ID" \
             --ci-run-attempt "$GITHUB_RUN_ATTEMPT" \
             --stages "hosting-${SURFACE}" \
-            --output build/web-delivery/upload/web-hosting-provenance.json
+            --out build/web-delivery/upload/web-hosting-provenance.json
           node tool/ci/delivery_core.mjs verify \
             --manifest build/web-delivery/upload/web-hosting-provenance.json \
             --artifact "$archive" \

@@ -197,6 +197,10 @@ test("the producing job binds workflow generation, builds production bytes, and 
   assert.match(build, /tar --sort=name --mtime='UTC 1970-01-01'/u);
   assert.match(build, /--owner=0 --group=0 --numeric-owner/u);
   assert.match(build, /--stages "hosting-\$\{SURFACE\}"/u);
+  assert.match(build,
+    /delivery_core\.mjs manifest[\s\S]*--out build\/web-delivery\/upload\/web-hosting-provenance\.json[\s\S]*delivery_core\.mjs verify/u);
+  assert.doesNotMatch(build,
+    /delivery_core\.mjs manifest[\s\S]*--output build\/web-delivery\/upload\/web-hosting-provenance\.json/u);
   assert.match(build, /test "\$\(find build\/web-delivery\/upload -type f \| wc -l \| tr -d ' '\)" = "2"/u);
   assert.match(build,
     /artifact_digest: \$\{\{ format\('sha256:\{0\}', steps\.upload\.outputs\.artifact-digest\) \}\}/u);
