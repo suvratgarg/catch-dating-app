@@ -5,7 +5,15 @@ const booleanOptions = ["apply", "allow-prod", "confirm-prod", "json", "help", "
 const valueOptions = ["env", "project", "emulator-host"];
 const standardOptionNames = new Set([...booleanOptions, ...valueOptions]);
 
-export function parseCommonArgs(argv, {booleanFlags = [], valueFlags = []} = {}) {
+export function parseCommonArgs(argv, {
+  booleanFlags = [],
+  valueFlags = [],
+  allowPositionals = true,
+  customFieldCase = "snake",
+} = {}) {
+  if (!["snake", "camel"].includes(customFieldCase)) {
+    throw new Error(`Unsupported custom CLI field case: ${customFieldCase}`);
+  }
   const options = Object.fromEntries([
     ...booleanOptions.map((name) => [name, {type: "boolean", ...(name === "help" ? {short: "h"} : {})}]),
     ...valueOptions.map((name) => [name, {type: "string"}]),
@@ -15,7 +23,7 @@ export function parseCommonArgs(argv, {booleanFlags = [], valueFlags = []} = {})
   const {values, positionals, tokens} = parseNodeArgs({
     args: argv,
     options,
-    allowPositionals: true,
+    allowPositionals,
     strict: true,
     tokens: true,
   });
@@ -38,11 +46,18 @@ export function parseCommonArgs(argv, {booleanFlags = [], valueFlags = []} = {})
     } else if (token.name === "emulator-host") {
       parsed.emulatorHost = token.value;
     } else if (!standardOptionNames.has(token.name)) {
-      parsed[token.name.replaceAll("-", "_")] = token.value ?? true;
+      parsed[customFieldName(token.name, customFieldCase)] = token.value ?? true;
     }
   }
 
   return parsed;
+}
+
+function customFieldName(option, customFieldCase) {
+  if (customFieldCase === "camel") {
+    return option.replace(/-([a-z0-9])/gu, (_, character) => character.toUpperCase());
+  }
+  return option.replaceAll("-", "_");
 }
 
 function optionName(flag) {

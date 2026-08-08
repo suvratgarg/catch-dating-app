@@ -4,6 +4,7 @@ import path from "node:path";
 import {createRequire} from "node:module";
 import {isDeepStrictEqual} from "node:util";
 import {fileURLToPath, pathToFileURL} from "node:url";
+import {parseCommonArgs} from "../lib/cli_args.mjs";
 import {
   assertValidSchemaPayload,
   validatePublicProfileDocument,
@@ -14,13 +15,18 @@ const repoRoot = path.resolve(toolDir, "../..");
 const requireFromFunctions = createRequire(
   path.join(repoRoot, "functions/package.json")
 );
+const firestoreMaintenanceArgOptions = {
+  booleanFlags: ["--summary-only"],
+  allowPositionals: false,
+  customFieldCase: "camel",
+};
 
 if (isMain()) {
   await main();
 }
 
 export async function main(argv = process.argv.slice(2)) {
-  const args = parseArgs(argv);
+  const args = parseCommonArgs(argv, firestoreMaintenanceArgOptions);
   if (args.help) {
     printHelp();
     return;
@@ -215,48 +221,6 @@ function loadProfileReadiness() {
       `Original error: ${error.message}`
     );
   }
-}
-
-function parseArgs(argv) {
-  const parsed = {
-    env: null,
-    project: null,
-    emulatorHost: null,
-    apply: false,
-    allowProd: false,
-    json: false,
-    summaryOnly: false,
-    help: false,
-  };
-
-  for (let i = 0; i < argv.length; i++) {
-    const arg = argv[i];
-    if (arg === "--help" || arg === "-h") parsed.help = true;
-    else if (arg === "--apply") parsed.apply = true;
-    else if (arg === "--allow-prod") parsed.allowProd = true;
-    else if (arg === "--json") parsed.json = true;
-    else if (arg === "--summary-only") parsed.summaryOnly = true;
-    else if (arg === "--emulator") parsed.emulatorHost = "127.0.0.1:8080";
-    else if (arg === "--emulator-host") {
-      parsed.emulatorHost = requireValue(argv, ++i, arg);
-    } else if (arg === "--env") {
-      parsed.env = requireValue(argv, ++i, arg);
-    } else if (arg === "--project") {
-      parsed.project = requireValue(argv, ++i, arg);
-    } else {
-      throw new Error(`Unknown argument: ${arg}`);
-    }
-  }
-
-  return parsed;
-}
-
-function requireValue(argv, index, flag) {
-  const value = argv[index];
-  if (!value || value.startsWith("--")) {
-    throw new Error(`${flag} requires a value.`);
-  }
-  return value;
 }
 
 function resolveProjectId(parsed) {

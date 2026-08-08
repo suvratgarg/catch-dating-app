@@ -2,6 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import {pathToFileURL} from "node:url";
+import {parseCommonArgs} from "../lib/cli_args.mjs";
 import {
   createFunctionsRequire,
   fromRepo,
@@ -20,13 +21,19 @@ const decisionCollection = "organizerEventLocationResolutionDecisions";
 const defaultOutputRoot = fromRepo(
   "tool/organizer_intake/event_location_resolutions"
 );
+const firestoreExportArgOptions = {
+  booleanFlags: ["--allow-empty", "--allow-overwrite", "--check", "--write"],
+  valueFlags: ["--date", "--fixture", "--output", "--source-label"],
+  allowPositionals: false,
+  customFieldCase: "camel",
+};
 
 if (isMain()) {
   await main();
 }
 
 export async function main(argv = process.argv.slice(2)) {
-  const args = parseArgs(argv);
+  const args = parseCommonArgs(argv, firestoreExportArgOptions);
   if (args.help) {
     printHelp();
     return;
@@ -276,50 +283,6 @@ function isFixtureTimestamp(value) {
     typeof value === "object" &&
     Number.isInteger(value._seconds) &&
     Number.isInteger(value._nanoseconds);
-}
-
-function parseArgs(argv) {
-  const parsed = {
-    allowEmpty: false,
-    allowOverwrite: false,
-    check: false,
-    date: null,
-    emulatorHost: null,
-    env: null,
-    fixture: null,
-    help: false,
-    json: false,
-    output: null,
-    project: null,
-    sourceLabel: null,
-    write: false,
-  };
-
-  for (let index = 0; index < argv.length; index += 1) {
-    const arg = argv[index];
-    if (arg === "--help" || arg === "-h") parsed.help = true;
-    else if (arg === "--allow-empty") parsed.allowEmpty = true;
-    else if (arg === "--allow-overwrite") parsed.allowOverwrite = true;
-    else if (arg === "--check") parsed.check = true;
-    else if (arg === "--emulator") parsed.emulatorHost = "127.0.0.1:8080";
-    else if (arg === "--json") parsed.json = true;
-    else if (arg === "--write") parsed.write = true;
-    else if (arg === "--date") parsed.date = requiredValue(argv, ++index, arg);
-    else if (arg === "--emulator-host") parsed.emulatorHost = requiredValue(argv, ++index, arg);
-    else if (arg === "--env") parsed.env = requiredValue(argv, ++index, arg);
-    else if (arg === "--fixture") parsed.fixture = requiredValue(argv, ++index, arg);
-    else if (arg === "--output") parsed.output = requiredValue(argv, ++index, arg);
-    else if (arg === "--project") parsed.project = requiredValue(argv, ++index, arg);
-    else if (arg === "--source-label") parsed.sourceLabel = requiredValue(argv, ++index, arg);
-    else fail(`Unknown argument: ${arg}`);
-  }
-  return parsed;
-}
-
-function requiredValue(argv, index, flag) {
-  const value = argv[index];
-  if (!value || value.startsWith("--")) fail(`${flag} requires a value.`);
-  return value;
 }
 
 function slugify(value) {
