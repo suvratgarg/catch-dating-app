@@ -120,6 +120,12 @@ function jsonEqual(left, right) {
   return JSON.stringify(left) === JSON.stringify(right);
 }
 
+function compareCodePointPaths(left, right) {
+  if (left < right) return -1;
+  if (left > right) return 1;
+  return 0;
+}
+
 function assertNoSymlinkComponents(root, candidate) {
   const relative = path.relative(root, candidate);
   assert(relative !== "" && relative !== ".." && !relative.startsWith(`..${path.sep}`),
@@ -218,7 +224,7 @@ function collectFiles(rootDir) {
     }
   };
   visit(rootDir, "");
-  return entries.sort((left, right) => left.path.localeCompare(right.path));
+  return entries.sort((left, right) => compareCodePointPaths(left.path, right.path));
 }
 
 function validateInventory(value) {
@@ -231,7 +237,7 @@ function validateInventory(value) {
     assertExactKeys(entry, ["path", "sha256", "sizeBytes"],
       `web delivery inventory entry ${index + 1}`);
     const entryPath = normalizedInventoryPath(entry.path);
-    assert(entryPath > previous,
+    assert(compareCodePointPaths(entryPath, previous) > 0,
       "web delivery inventory entries must be unique and sorted by path.");
     previous = entryPath;
     assert(Number.isSafeInteger(entry.sizeBytes) && entry.sizeBytes >= 0,
