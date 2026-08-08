@@ -119,11 +119,18 @@ function main() {
   const args = process.argv.slice(2);
   const format = args.includes("--json") ? "json" : "tsv";
   const groupsIndex = args.indexOf("--groups");
-  const targetsCsv = args.find((arg, index) =>
-    !arg.startsWith("--") && index !== groupsIndex + 1,
+  const positionalTargets = args.filter((arg, index) =>
+    !arg.startsWith("--") &&
+    (groupsIndex < 0 || index !== groupsIndex + 1),
   );
+  const targetsCsv = positionalTargets.length === 1 ?
+    positionalTargets[0] :
+    undefined;
   const groupsCsv = groupsIndex >= 0 ? args[groupsIndex + 1] : undefined;
-  if ((!groupsCsv && !targetsCsv) || (groupsCsv && targetsCsv)) {
+  if (
+    (!groupsCsv && positionalTargets.length !== 1) ||
+    (groupsCsv && positionalTargets.length !== 0)
+  ) {
     throw new Error(
       "Usage: node plan_firebase_deploy_targets.mjs <targets> [--json|--tsv] OR --groups <groups> [--json|--tsv]",
     );
