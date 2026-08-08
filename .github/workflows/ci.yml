@@ -65,11 +65,6 @@ jobs:
           fetch-depth: 0
           sparse-checkout-cone-mode: false
           sparse-checkout: |
-            /package.json
-            /package-lock.json
-            /admin/package.json
-            /website/package.json
-            /packages/web-ui/package.json
             /tool/harness.mjs
             /tool/harness/component_graph.json
             /tool/harness/lib/component_graph.mjs
@@ -77,9 +72,6 @@ jobs:
             /tool/lib/repo_paths.mjs
             /tool/lib/tool_impact.mjs
             /tool/tools_manifest.json
-
-      - name: Install planner dependency
-        run: npm ci --ignore-scripts --omit=optional --workspaces=false --no-audit --no-fund
 
       - id: plan
         name: Resolve fail-closed impact plan
