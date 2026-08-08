@@ -7,8 +7,10 @@ import {
   assertMetadataOnlyCommand,
   buildProjectIdentityCommand,
   buildRequirementCommand,
+  buildSecretRuntimeAccessCommand,
   classifyProjectIdentity,
   classifyRequirementResult,
+  classifySecretRuntimeAccess,
   discoverDefineSecretNames,
   executeReadinessCli,
   exitCodeForResults,
@@ -212,6 +214,11 @@ test("gcloud command construction is metadata-only and forbids secret access", (
   const commands = [
     buildProjectIdentityCommand("catchdates-dev"),
     buildRequirementCommand({projectId: "catchdates-dev", requirement: secret}),
+    buildSecretRuntimeAccessCommand({
+      projectId: "catchdates-dev",
+      projectNumber: "619661127800",
+      requirement: secret,
+    }),
     buildRequirementCommand({projectId: "catchdates-dev", requirement: ttl}),
   ];
 
@@ -223,13 +230,19 @@ test("gcloud command construction is metadata-only and forbids secret access", (
   ]);
   assert.ok(commands[1].args.includes("--filter=state=ENABLED"));
   assert.ok(commands[1].args.includes("--project=catchdates-dev"));
-  assert.deepEqual(commands[2].args.slice(0, 4), [
+  assert.deepEqual(commands[2].args.slice(0, 3), [
+    "secrets",
+    "get-iam-policy",
+    "CROSS_PATHS_SUGGESTION_SIGNING_KEY",
+  ]);
+  assert.ok(commands[2].args.includes("--project=catchdates-dev"));
+  assert.deepEqual(commands[3].args.slice(0, 4), [
     "firestore",
     "fields",
     "ttls",
     "list",
   ]);
-  assert.ok(commands[2].args.includes(
+  assert.ok(commands[3].args.includes(
     "--collection-group=crossPathsSuggestionExposures",
   ));
   for (const command of commands) {
@@ -242,6 +255,60 @@ test("gcloud command construction is metadata-only and forbids secret access", (
     }),
     /Secret payload access is forbidden/u,
   );
+});
+
+test("secret runtime IAM fails closed before Firebase can mutate policy", () => {
+  const requirement = manifest.requirements.find(
+    (entry) => entry.name === "CROSS_PATHS_SUGGESTION_SIGNING_KEY",
+  );
+  const projectNumber = "619661127800";
+  const member =
+    "serviceAccount:619661127800-compute@developer.gserviceaccount.com";
+  const classify = (bindings) => classifySecretRuntimeAccess({
+    projectNumber,
+    requirement,
+    result: {
+      status: 0,
+      stderr: "",
+      stdout: JSON.stringify({bindings}),
+    },
+  });
+
+  const ready = classify([{
+    members: [member],
+    role: "roles/secretmanager.secretAccessor",
+  }]);
+  assert.equal(ready.status, "ready");
+  assert.equal(ready.reason, "runtime-secret-access-present");
+  assert.deepEqual(ready.metadata, {
+    role: "roles/secretmanager.secretAccessor",
+    serviceAccount: "619661127800-compute@developer.gserviceaccount.com",
+  });
+
+  const absent = classify([]);
+  assert.equal(absent.status, "not-ready");
+  assert.equal(absent.reason, "runtime-secret-access-missing");
+
+  const wrongRole = classify([{
+    members: [member],
+    role: "roles/secretmanager.viewer",
+  }]);
+  assert.equal(wrongRole.status, "not-ready");
+
+  const conditional = classify([{
+    condition: {expression: "request.time < timestamp('2026-08-09T00:00:00Z')"},
+    members: [member],
+    role: "roles/secretmanager.secretAccessor",
+  }]);
+  assert.equal(conditional.status, "not-ready");
+
+  const invalid = classifySecretRuntimeAccess({
+    projectNumber,
+    requirement,
+    result: {status: 0, stderr: "", stdout: "[]"},
+  });
+  assert.equal(invalid.status, "unknown");
+  assert.equal(invalid.reason, "invalid-metadata-response");
 });
 
 test("secret metadata classification never returns payload fields", () => {
@@ -352,7 +419,14 @@ test("injected runner receives resolved project and returns a known-missing exit
         };
       }
       if (spec.args[0] === "secrets") {
-        return {status: 0, stderr: "", stdout: "[]"};
+        if (spec.args[1] === "versions") {
+          return {status: 0, stderr: "", stdout: "[]"};
+        }
+        return {
+          status: 0,
+          stderr: "",
+          stdout: JSON.stringify({bindings: []}),
+        };
       }
       return {
         status: 0,
@@ -369,7 +443,7 @@ test("injected runner receives resolved project and returns a known-missing exit
 
   assert.equal(report.exitCode, 1);
   assert.equal(report.status, "not-ready");
-  assert.equal(commands.length, 3);
+  assert.equal(commands.length, 4);
   assert.ok(commands.slice(1).every((spec) =>
     spec.args.includes("--project=catchdates-staging")));
   assert.ok(commands.every((spec) =>
@@ -505,6 +579,21 @@ test("backend promotion runs readiness before dependency installation", () => {
 function readyMetadataRunner(spec) {
   if (spec.args[0] === "projects") {
     return readyProjectMetadata(spec.args[2]);
+  }
+  if (spec.args[0] === "secrets" && spec.args[1] === "get-iam-policy") {
+    const projectNumber = "123";
+    return {
+      status: 0,
+      stderr: "",
+      stdout: JSON.stringify({
+        bindings: [{
+          members: [
+            `serviceAccount:${projectNumber}-compute@developer.gserviceaccount.com`,
+          ],
+          role: "roles/secretmanager.secretAccessor",
+        }],
+      }),
+    };
   }
   return {
     status: 0,

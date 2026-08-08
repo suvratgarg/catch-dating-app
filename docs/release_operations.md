@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.0.4
+version: 2.0.5
 updated: 2026-08-09
 owner: recursive_audit_loop
 status: active
@@ -457,7 +457,12 @@ Use at least 32 random bytes, encoded as a secret string, and use different
 material in dev, staging, and prod. Rotating it intentionally invalidates every
 outstanding ten-minute suggestion token. Never place the value in Remote
 Config, a client build, repository files, or CI logs. Verify secret metadata
-without printing the value before deploying the callable.
+without printing the value before deploying the callable. The default
+Functions runtime service account for that project must also hold
+`roles/secretmanager.secretAccessor` on the individual secret. The metadata-
+only environment-readiness gate verifies both the enabled version and that
+secret-level runtime binding before Firebase can attempt to mutate IAM during
+deployment.
 
 Configure a Firestore TTL policy on
 `crossPathsSuggestionExposures.expiresAt` before enabling the feature in an

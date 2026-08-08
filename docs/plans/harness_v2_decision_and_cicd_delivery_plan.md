@@ -1,7 +1,7 @@
 ---
 doc_id: harness_v2_decision_and_cicd_delivery_plan
-version: 1.2.1
-updated: 2026-08-08
+version: 1.2.2
+updated: 2026-08-09
 owner: agent_operating_model
 status: active
 ---
@@ -245,7 +245,7 @@ database violates this decision even if it is generated automatically.
 | Thin worktree guard | Implemented with focused Git-repository tests and used only for concurrent local claims | Keep it local and disposable; Git branches remain durable |
 | Exact-artifact delivery core | Provenance verification, ordered checkpoint/resume, the Firebase backend adapter, the Admin/Marketing Hosting build/promote adapters, the signed mobile package producer, and the separate no-rebuild internal-store promoter are implemented with adversarial and workflow-wiring tests | Keep adapter-specific postconditions and live environment prerequisites current |
 | Exact mobile release routing | The Harness plan carries role-and-platform-specific signed release targets and the mobile producer consumes the CI-authorized target list without widening web or desktop changes | Keep the compatibility role output only until downstream non-release consumers no longer read it |
-| Owner settings | GitHub secret scanning, push protection, dependency alerts, and Dependabot security updates are enabled; routine version-update PRs remain disabled | The initial 38-alert npm backlog is now zero. Nine alerts were mapped to Firebase-generated public client configuration; their GitHub disposition remains an explicit owner security action. Keep environment approvals, token rotation, and any organization migration separate |
+| Owner settings | GitHub secret scanning, push protection, dependency alerts, and Dependabot security updates are enabled; routine version-update PRs remain disabled | The initial 38-alert npm backlog is zero. Alerts 1–9 were reviewed and resolved as generated Firebase public client configuration. Keep environment approvals, token rotation, and any organization migration separate |
 
 Workflow adoption must be reported honestly. A reusable delivery primitive is
 not proof that every website, backend, or mobile path already consumes it.
@@ -263,6 +263,7 @@ not proof that every website, backend, or mobile path already consumes it.
 | Delivery API shape | catalogue pages + at most 8 fixed calls for a deploying item with an existing cursor | The prior design required roughly three calls per cursor plus one per plan; at 450 retained cursors it exceeded 1,350 calls before package download. The new fixed verification work is a greater-than-99% reduction at that history size, excluding catalogue pagination. |
 | Web deployable builds | 2 → 1 production Vite bundle per Admin or Marketing main run | Promotion installs only the pinned Firebase CLI before credentials, consumes the verified package, and performs zero source dependency installation, Vite rebuild, or organizer rematerialization. |
 | Live exact Hosting proof | Marketing run `31264603146` and Admin run `31264603197` each built one immutable package, promoted it without rebuilding, passed production postconditions, and completed successfully. Package/promotion work took 30s/57s for Marketing and 36s/45s for Admin; public Hosting fingerprints advanced from August 6 to August 8. | The repaired adapter is proven against both production sites. Their 9m26s and 12m46s total run times were dominated by validation, not packaging or deployment. |
+| Live exact backend proof | Delivery run `31273880588` promoted CI run `31264603187`, source `899c0a4c…024`, and one checksum-bound Functions package through dev, staging, protected prod, and the monotonic cursor. Authorization took 35s; dev 8m16s; staging 7m22s; prod 9m26s; cursor finalization 5s. | The live rollout proved exact control-plane/source separation, three environment-specific secrets, active TTL policies, protected production approval, and ordered cursor completion. A preflight gap found during recovery is now executable: readiness verifies secret-level runtime accessor IAM before dependency installation or Firebase mutation. |
 | Web read-only identity preflight | The dedicated account retains only `roles/datastore.viewer`, has no user-managed keys, and has one exact `prod-hosting` environment-subject impersonation binding; both GitHub variables match. Marketing run `31254427583` then completed the first environment-scoped OIDC/Firestore snapshot job and passed only the bounded snapshot artifact to the uncredentialed build | Live inspection caught and closed the deterministic Marketing deployment blocker without granting the build or reader any Hosting, Functions, Rules, Storage, Secret Manager, or Firestore-write authority. |
 | Mobile target routing | Role-wide two-platform expansion → exact `consumer-ios`, `consumer-android`, `host-ios`, or `host-android` targets | The producer now avoids unrelated signed builds and rejects Cartesian role/platform widening. |
 | Mobile package retention | 14 days → 90 days | Exact signed IPA/AAB packages and their upload receipts now remain available for the full bounded internal-promotion and recovery window, a 6.4× increase. |
@@ -291,7 +292,7 @@ rather than becoming another repository ledger.
 | JSON Schema compatibility | Reject the evaluated packages. `json-schema-diff@1.0.0` added seven dependencies and deprecated ref parsing; `@philiprehberger/schema-diff@0.2.0` was zero-dependency but produced false positives for safe loosening and false negatives for numeric, object-closure, and referenced-schema tightening. Do not replace those failures with a homegrown checker. |
 | Fastlane | Reject for the current exact-artifact architecture. At most about 205 of 2,737 producer/promoter workflow lines are generic archive/upload mechanics (under 8%); the 40% deletion threshold cannot be met after adding Ruby, Bundler, lockfile, tests, and credential plumbing. The live no-rebuild TestFlight promotion succeeded, so there is no failed distribution boundary for Fastlane to rescue. |
 | Nx and remote task cache | Do not add a second graph or remote cache without the ten-comparable-run prerequisite. Two scheduled runs of the same SHA completed in 19m36s and 19m16s while individual long lanes moved in both directions, which is insufficient evidence for a 40% cache benefit. Native language caches remain the first future experiment. |
-| OpenTofu | Defer declarative infrastructure ownership. The live readiness audit found only two consistent Cross Paths pre-launch prerequisites in each environment—a TTL policy and signing secret—while all four owning Functions remain undeployed. That is a launch gate working as designed, not recurring cross-environment drift. |
+| OpenTofu | Defer declarative infrastructure ownership. The two Cross Paths prerequisites are now live and consistent in all three environments: active TTL plus distinct signing secret with secret-level runtime accessor IAM. The owning Functions were promoted successfully while rollout flags remained fail-closed. This was one bounded launch cutover, not recurring cross-environment drift that justifies another infrastructure authority. |
 
 ## Measurable Acceptance Criteria
 
