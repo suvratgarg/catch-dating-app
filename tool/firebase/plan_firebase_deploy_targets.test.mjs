@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
+import {spawnSync} from "node:child_process";
 import fs from "node:fs";
+import {fileURLToPath} from "node:url";
 import test from "node:test";
 import {
   planFirebaseDeployGroups,
@@ -11,6 +13,32 @@ const exportsList = [
   "functions:sendEventBroadcast",
   "functions:startClubHostConversation",
 ];
+
+const cliPath = fileURLToPath(
+  new URL("./plan_firebase_deploy_targets.mjs", import.meta.url),
+);
+
+test("CLI accepts the first positional target and keeps group mode distinct", () => {
+  const direct = spawnSync(
+    process.execPath,
+    [cliPath, "functions:createEvent", "--json"],
+    {encoding: "utf8"},
+  );
+  assert.equal(direct.status, 0, direct.stderr);
+  assert.deepEqual(JSON.parse(direct.stdout), [
+    {phase: "functions", deployOnly: "functions:createEvent"},
+  ]);
+
+  const grouped = spawnSync(
+    process.execPath,
+    [cliPath, "--groups", "firestore-rules", "--json"],
+    {encoding: "utf8"},
+  );
+  assert.equal(grouped.status, 0, grouped.stderr);
+  assert.deepEqual(JSON.parse(grouped.stdout), [
+    {phase: "firestore:rules", deployOnly: "firestore:rules"},
+  ]);
+});
 
 test("indexes always precede Functions and rules", () => {
   assert.deepEqual(
