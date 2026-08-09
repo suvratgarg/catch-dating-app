@@ -2,10 +2,10 @@
   "version": 1,
   "source": "test/ui_captures/catalog/screen_capture_catalog.dart",
   "coverage": {
-    "routes": 53,
+    "routes": 49,
     "captures": 610,
     "statusCounts": {
-      "excluded": 6,
+      "excluded": 2,
       "captured": 36,
       "alias": 7,
       "planned": 4
