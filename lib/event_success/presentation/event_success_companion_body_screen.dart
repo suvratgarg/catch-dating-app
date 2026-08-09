@@ -437,7 +437,7 @@ class _EventSuccessCompanionScreenState
       );
     }
 
-    return CompanionStageScaffold(
+    return _CompanionStageScaffold(
       event: event,
       plan: plan,
       presentation: momentPresentation,

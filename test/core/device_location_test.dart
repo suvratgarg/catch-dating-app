@@ -31,17 +31,18 @@ void main() {
       addTearDown(container.dispose);
 
       await container.read(deviceLocationProvider.future);
-      final location = await container
+      final result = await container
           .read(deviceLocationProvider.notifier)
           .request();
 
-      expect(location?.latitude, 22.72);
-      expect(location?.longitude, 75.86);
+      expect(result.location?.latitude, 22.72);
+      expect(result.location?.longitude, 75.86);
+      expect(result.failure, isNull);
       expect(gateway.requestCount, 1);
       expect(gateway.positionCount, 1);
       expect(
         container.read(deviceLocationProvider).asData?.value,
-        same(location),
+        same(result.location),
       );
     },
   );
@@ -74,7 +75,6 @@ void main() {
 
     expect(await container.read(deviceLocationProvider.future), isNull);
     final controller = container.read(deviceLocationProvider.notifier);
-    expect(controller.lastFailure, DeviceLocationFailure.servicesDisabled);
     expect(await controller.openRecoverySettings(), isTrue);
     expect(gateway.locationSettingsCount, 1);
   });
@@ -90,10 +90,6 @@ void main() {
 
     expect(await container.read(deviceLocationProvider.future), isNull);
     final controller = container.read(deviceLocationProvider.notifier);
-    expect(
-      controller.lastFailure,
-      DeviceLocationFailure.permissionDeniedForever,
-    );
     expect(await controller.openRecoverySettings(), isTrue);
     expect(gateway.appSettingsCount, 1);
   });

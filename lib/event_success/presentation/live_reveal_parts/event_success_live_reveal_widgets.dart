@@ -1147,7 +1147,7 @@ class RevealRoundList extends StatelessWidget {
           gapH8,
         ],
         for (var index = 0; index < roundCount; index++)
-          RevealRoundRow(
+          _RevealRoundRow(
             index: index,
             state: index < revealedThrough
                 ? _RevealRoundState.done
@@ -1165,9 +1165,8 @@ class RevealRoundList extends StatelessWidget {
   }
 }
 
-class RevealRoundRow extends StatelessWidget {
-  const RevealRoundRow({
-    super.key,
+class _RevealRoundRow extends StatelessWidget {
+  const _RevealRoundRow({
     required this.index,
     required this.state,
     required this.pairs,

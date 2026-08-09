@@ -31,10 +31,10 @@ test("known-bad fixture reports only the newly orphaned key", () => {
   assert.equal(entries.usedKey.status, "used");
   assert.equal(entries.usedInInterpolation.status, "used");
   assert.deepEqual(entries.usedKey.usages, [
-    {path: "lib/sample.dart", line: 6, column: 23},
+    {path: "lib/sample.dart", line: 8, column: 23},
   ]);
   assert.deepEqual(entries.usedInInterpolation.usages, [
-    {path: "lib/sample.dart", line: 7, column: 32},
+    {path: "lib/sample.dart", line: 9, column: 39},
   ]);
   assert.equal(entries.knownOrphan.status, "orphaned");
   assert.equal(entries.stringOnly.status, "orphaned");
@@ -91,7 +91,7 @@ test("missing-catalog fixture reports exact handwritten getter locations", () =>
 
   assert.equal(first.inventory.schemaVersion, 2);
   assert.deepEqual(validKey.l10nReferences, [
-    {path: "lib/sample.dart", line: 2, column: 22},
+    {path: "lib/sample.dart", line: 4, column: 22},
   ]);
   assert.equal(validKey.l10nReferenceCount, 1);
   assert.deepEqual(first.missingCatalogKeys, ["missingCatalogKey"]);
@@ -99,7 +99,7 @@ test("missing-catalog fixture reports exact handwritten getter locations", () =>
     {
       key: "missingCatalogKey",
       path: "lib/sample.dart",
-      line: 3,
+      line: 5,
       column: 24,
     },
   ]);
@@ -108,7 +108,7 @@ test("missing-catalog fixture reports exact handwritten getter locations", () =>
   assert.equal(first.inventory.summary.missingCatalogKeys, 1);
   assert.equal(first.inventory.summary.missingCatalogReferences, 1);
   assert.deepEqual(first.nonMessageL10nReferences, [
-    {key: "localeName", path: "lib/sample.dart", line: 5, column: 23},
+    {key: "localeName", path: "lib/sample.dart", line: 7, column: 23},
   ]);
   assert.deepEqual(
     first.excludedFiles.map(({path: filePath, reason}) => [filePath, reason]),
@@ -188,7 +188,7 @@ test("CLI always fails missing catalog getters with exact locations", () => {
     assert.equal(result.status, 1, result.stderr);
     assert.match(
       result.stderr,
-      /lib\/sample\.dart:3:24 l10n\.missingCatalogKey/u,
+      /lib\/sample\.dart:5:24 l10n\.missingCatalogKey/u,
     );
     assert.match(result.stderr, /cannot be baselined/u);
     assert.doesNotMatch(result.stderr, /commentOnly|stringOnly|generatedOnly/u);
@@ -204,7 +204,7 @@ test("JSON review records missing getters but exits unsuccessfully", () => {
     {
       key: "missingCatalogKey",
       path: "lib/sample.dart",
-      line: 3,
+      line: 5,
       column: 24,
     },
   ]);

@@ -29,6 +29,13 @@ enum DeviceLocationFailure {
   unavailable,
 }
 
+class DeviceLocationRequestResult {
+  const DeviceLocationRequestResult({this.location, this.failure});
+
+  final LocationCoordinate? location;
+  final DeviceLocationFailure? failure;
+}
+
 class GeolocatorDeviceLocationGateway implements DeviceLocationGateway {
   const GeolocatorDeviceLocationGateway();
 
@@ -68,18 +75,19 @@ final deviceLocationGatewayProvider = Provider<DeviceLocationGateway>(
 class DeviceLocation extends _$DeviceLocation {
   DeviceLocationFailure? _lastFailure;
 
-  DeviceLocationFailure? get lastFailure => _lastFailure;
-
   @override
   Future<LocationCoordinate?> build() => _resolve(requestIfDenied: false);
 
   /// Resolves location after an explicit user action and may show the native
   /// permission prompt. Passive consumers only call [build], which never asks.
-  Future<LocationCoordinate?> request() async {
+  Future<DeviceLocationRequestResult> request() async {
     state = const AsyncLoading<LocationCoordinate?>();
     final next = await AsyncValue.guard(() => _resolve(requestIfDenied: true));
     state = next;
-    return next.asData?.value;
+    return DeviceLocationRequestResult(
+      location: next.asData?.value,
+      failure: _lastFailure,
+    );
   }
 
   Future<bool> openRecoverySettings() {

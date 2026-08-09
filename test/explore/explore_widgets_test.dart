@@ -132,7 +132,10 @@ class _NoDeviceLocation extends DeviceLocation {
   Future<LocationCoordinate?> build() async => null;
 
   @override
-  Future<LocationCoordinate?> request() async => null;
+  Future<DeviceLocationRequestResult> request() async =>
+      const DeviceLocationRequestResult(
+        failure: DeviceLocationFailure.unavailable,
+      );
 }
 
 class _FixedDeviceLocation extends DeviceLocation {
@@ -141,8 +144,10 @@ class _FixedDeviceLocation extends DeviceLocation {
       const LocationCoordinate(19.0608, 72.8365);
 
   @override
-  Future<LocationCoordinate?> request() async =>
-      const LocationCoordinate(19.0608, 72.8365);
+  Future<DeviceLocationRequestResult> request() async =>
+      const DeviceLocationRequestResult(
+        location: LocationCoordinate(19.0608, 72.8365),
+      );
 }
 
 Future<void> _pumpClubsSlivers(

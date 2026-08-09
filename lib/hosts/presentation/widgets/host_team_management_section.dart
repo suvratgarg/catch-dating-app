@@ -54,6 +54,9 @@ class HostTeamManagementSection extends ConsumerWidget {
     ]);
 
     Future<void> showAddHostSheet() async {
+      final addHostFailureReason = context
+          .l10n
+          .hostsHostTeamManagementSectionVisiblecopyHostteammanagementsectionShowaddhostsheetFailed;
       final added = await showCatchBottomSheet<bool>(
         context: context,
         builder: (_) => HostTeamAddHostSheet(
@@ -79,13 +82,7 @@ class HostTeamManagementSection extends ConsumerWidget {
             } catch (error, stackTrace) {
               ref
                   .read(errorLoggerProvider)
-                  .logError(
-                    error,
-                    stackTrace,
-                    reason: context
-                        .l10n
-                        .hostsHostTeamManagementSectionVisiblecopyHostteammanagementsectionShowaddhostsheetFailed,
-                  );
+                  .logError(error, stackTrace, reason: addHostFailureReason);
               rethrow;
             }
           },
@@ -103,6 +100,9 @@ class HostTeamManagementSection extends ConsumerWidget {
       HostTeamHostAction action,
       ClubHostProfile host,
     ) async {
+      final actionFailureReason = context
+          .l10n
+          .hostsHostTeamManagementSectionVisiblecopyHostteammanagementsectionConfirmhostactionFailed;
       final confirmation = HostTeamHostActionConfirmation(
         action: action,
         host: host,
@@ -133,13 +133,7 @@ class HostTeamManagementSection extends ConsumerWidget {
       } catch (error, stackTrace) {
         ref
             .read(errorLoggerProvider)
-            .logError(
-              error,
-              stackTrace,
-              reason: context
-                  .l10n
-                  .hostsHostTeamManagementSectionVisiblecopyHostteammanagementsectionConfirmhostactionFailed,
-            );
+            .logError(error, stackTrace, reason: actionFailureReason);
         return;
       }
       if (!context.mounted) return;
