@@ -50,33 +50,35 @@ Future<void> runCatchApp({
   )) {
     late _InitializedCatchServices services;
     runApp(
-      CatchConsumerBootstrap(
-        initialize: () async {
-          services = await _initializeCatchServices(
-            preloadAppPackageInfo: true,
-          );
-        },
-        initializedAppBuilder: (_) => ProviderScope(
-          overrides: [
-            appAnalyticsProvider.overrideWithValue(services.analytics),
-            errorLoggerProvider.overrideWithValue(services.errorLogger),
-            if (services.appPackageInfo != null)
-              appPackageInfoProvider.overrideWith(
-                (ref) => services.appPackageInfo!,
+      ProviderScope(
+        child: CatchConsumerBootstrap(
+          initialize: () async {
+            services = await _initializeCatchServices(
+              preloadAppPackageInfo: true,
+            );
+          },
+          initializedAppBuilder: (_) => ProviderScope(
+            overrides: [
+              appAnalyticsProvider.overrideWithValue(services.analytics),
+              errorLoggerProvider.overrideWithValue(services.errorLogger),
+              if (services.appPackageInfo != null)
+                appPackageInfoProvider.overrideWith(
+                  (ref) => services.appPackageInfo!,
+                ),
+            ],
+            observers: [
+              _asyncErrorLogger(
+                errorLogger: services.errorLogger,
+                analytics: services.analytics,
               ),
-          ],
-          observers: [
-            _asyncErrorLogger(
-              errorLogger: services.errorLogger,
-              analytics: services.analytics,
+            ],
+            child: CatchStartupAnimationScope(
+              consumerWelcomeReelPlayed: true,
+              child: app,
             ),
-          ],
-          child: CatchStartupAnimationScope(
-            consumerWelcomeReelPlayed: true,
-            child: app,
           ),
+          onNativeSplashReady: CatchNativeSplash.remove,
         ),
-        onNativeSplashReady: CatchNativeSplash.remove,
       ),
     );
     return;
