@@ -9,7 +9,12 @@ import {
 } from "./package_mobile_release.mjs";
 
 export const MOBILE_PROMOTION_RECEIPT_SCHEMA = "catch.mobile-promotion-receipt/v1";
-const SAFE_ARTIFACT_RE = /^[A-Za-z0-9][A-Za-z0-9._-]*\.(?:aab|ipa)$/u;
+// Xcode preserves product display names in exported IPA filenames (for example,
+// `Catch Host.ipa`). Spaces are safe because the package verifier already
+// requires a basename-only regular file and every workflow use is quoted. Keep
+// shell metacharacters, path separators, leading dots, and trailing spaces out.
+const SAFE_ARTIFACT_RE =
+  /^[A-Za-z0-9](?:[A-Za-z0-9 ._-]*[A-Za-z0-9_-])?\.(?:aab|ipa)$/u;
 const IOS_VERSION_RE = /^\d+(?:\.\d+){0,2}$/u;
 const ANDROID_VERSION_NAME_RE = /^[A-Za-z0-9][A-Za-z0-9._+-]*$/u;
 const SHA_RE = /^[0-9a-f]{40}$/u;

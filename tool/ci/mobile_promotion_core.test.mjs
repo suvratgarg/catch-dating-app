@@ -65,17 +65,17 @@ function writeJson(filePath, value) {
   fs.writeFileSync(filePath, `${JSON.stringify(value, null, 2)}\n`);
 }
 
-async function packageFixture(t) {
+async function packageFixture(t, {artifactName = "Catch Host.ipa"} = {}) {
   const root = fs.realpathSync(fs.mkdtempSync(
     path.join(os.tmpdir(), "catch-mobile-promotion-"),
   ));
   t.after(() => fs.rmSync(root, {recursive: true, force: true}));
-  const artifactPath = path.join(root, "signed", "Catch-host.ipa");
+  const artifactPath = path.join(root, "signed", artifactName);
   fs.mkdirSync(path.dirname(artifactPath), {recursive: true});
   fs.writeFileSync(artifactPath, "exact-signed-host-ipa");
   const artifactBytes = fs.readFileSync(artifactPath);
   const artifactBinding = {
-    path: "Catch-host.ipa",
+    path: artifactName,
     sizeBytes: artifactBytes.length,
     sha256: createHash("sha256").update(artifactBytes).digest("hex"),
   };
@@ -129,7 +129,7 @@ async function packageFixture(t) {
     schemaVersion: "1.1.0",
     role: "host",
     platform: "ios",
-    artifact: "Catch-host.ipa",
+    artifact: artifactName,
     artifactBinding,
     findings: [],
   });
@@ -212,7 +212,7 @@ test("reverifies packaged bytes against the aggregate authority", async (t) => {
     expectedProducerRunAttempt: "3",
     expectedSourceSha: SOURCE_SHA,
   });
-  assert.equal(verified.artifactName, "Catch-host.ipa");
+  assert.equal(verified.artifactName, "Catch Host.ipa");
   assert.deepEqual(verified.storeIdentity, {
     bundleIdentifier: "com.catchdates.host",
     version: "1.2.3",
@@ -229,6 +229,24 @@ test("reverifies packaged bytes against the aggregate authority", async (t) => {
     expectedProducerRunAttempt: "3",
     expectedSourceSha: SOURCE_SHA,
   }), /Signed artifact digest does not match/);
+});
+
+test("rejects shell metacharacters in an otherwise valid IPA basename", async (t) => {
+  const {packageDir, receipt} = await packageFixture(t, {
+    artifactName: "Catch;Host.ipa",
+  });
+  const authority = buildAuthority({
+    artifactSha256: receipt.artifact.sha256,
+    provenanceManifestSha256: receipt.provenance.manifestSha256,
+  });
+  await assert.rejects(verifyMobilePromotionPackage({
+    authority,
+    packageDir,
+    releaseTarget: "host-ios",
+    expectedProducerRunId: "7001",
+    expectedProducerRunAttempt: "3",
+    expectedSourceSha: SOURCE_SHA,
+  }), /Signed artifact name is not safe/);
 });
 
 test("promotion receipt binds immutable exact package and uploaded store result", () => {
