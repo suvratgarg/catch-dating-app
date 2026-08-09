@@ -2127,6 +2127,79 @@ void main() {
       },
     );
 
+    test(
+      'signed-in synthetic viewer can see only its hidden-organizer QA event',
+      () async {
+        final user = event_test.buildUser(uid: 'cross_paths_mumbai_qa_user_002');
+        final organizer = buildClub(
+          id: 'courtside',
+          appVisibility: ClubAppVisibility.hidden,
+        );
+        final qaEvent = event_test.buildEvent(
+          id: 'cross_paths_mumbai_qa_run_mumbai_01_01',
+          clubId: organizer.id,
+          synthetic: true,
+          seedPrefix: 'cross_paths_mumbai_qa',
+          startTime: DateTime.now().add(const Duration(days: 1)),
+        );
+        final participation = event_test.buildEventParticipation(
+          event: qaEvent,
+          uid: user.uid,
+        );
+
+        final container = ProviderContainer(
+          overrides: [
+            uidProvider.overrideWith((ref) => Stream.value(user.uid)),
+            watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
+            watchClubsByLocationProvider(
+              _mumbaiMarketId,
+            ).overrideWith((ref) => Stream.value(const <Club>[])),
+            watchActiveClubMembershipsForUserProvider(
+              user.uid,
+            ).overrideWith((ref) => Stream.value(const <ClubMembership>[])),
+            watchEventParticipationsForUserProvider(
+              user.uid,
+            ).overrideWith((ref) => Stream.value([participation])),
+            watchSavedEventsForUserProvider(
+              user.uid,
+            ).overrideWith((ref) => Stream.value(const <SavedEvent>[])),
+            watchEventsByIdsProvider(
+              EventsByIdQuery([qaEvent.id]),
+            ).overrideWith((ref) => Stream.value([qaEvent])),
+            watchClubsForMessagingByIdsProvider(
+              ClubsByIdQuery([organizer.id]),
+            ).overrideWith((ref) => Stream.value([organizer])),
+            eventDiscoveryRepositoryProvider.overrideWithValue(
+              _FakeEventDiscoveryRepository([]),
+            ),
+            externalEventRepositoryProvider.overrideWithValue(
+              _FakeExternalEventRepository([]),
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
+        container
+            .read(exploreFiltersProvider.notifier)
+            .setTimeFilter(ExploreTimeFilter.anytime);
+
+        final subscription = container.listen(
+          exploreFeedViewModelProvider,
+          (_, _) {},
+          fireImmediately: true,
+        );
+        addTearDown(subscription.close);
+        await container.pump();
+        await flushTestEventQueue();
+        await container.pump();
+
+        expect(subscription.read().hasValue, isTrue);
+        expect(subscription.read().value!.items.map((item) => item.event.id), [
+          qaEvent.id,
+        ]);
+        expect(subscription.read().value!.items.single.status, EventTileStatus.joined);
+      },
+    );
+
     test('exploreClubsViewModelProvider surfaces auth uid errors', () async {
       final container = ProviderContainer(
         overrides: [

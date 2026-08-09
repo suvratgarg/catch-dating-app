@@ -528,7 +528,6 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
     for (final participation
         in participationsAsync.asData?.value ?? const <EventParticipation>[])
       if (participation.status == EventParticipationStatus.signedUp &&
-          sourceClubIds.contains(participation.clubId) &&
           !eventsById.containsKey(participation.eventId))
         participation.eventId,
     for (final eventId in savedEventIds)
@@ -564,7 +563,10 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
       participation.eventId: participation,
   };
   for (final event in personalEventsAsync.asData?.value ?? const <Event>[]) {
-    if (sourceClubIds.contains(event.clubId)) {
+    final participation = participationByEventId[event.id];
+    if (sourceClubIds.contains(event.clubId) ||
+        (event.synthetic &&
+            participation?.status == EventParticipationStatus.signedUp)) {
       eventsById[event.id] = event;
     }
   }
@@ -584,7 +586,9 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
   };
   final extraClubsAsync = extraClubIds.isEmpty
       ? const AsyncData<List<Club>>([])
-      : ref.watch(watchClubsByIdsProvider(ClubsByIdQuery(extraClubIds)));
+      : ref.watch(
+          watchClubsForMessagingByIdsProvider(ClubsByIdQuery(extraClubIds)),
+        );
   if (extraClubsAsync.isLoading) return const AsyncLoading();
   if (extraClubsAsync.hasError) {
     return AsyncError(
@@ -602,7 +606,17 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
       .where((event) => event.isUpcomingAt(now))
       .map((event) {
         final club = clubById[event.clubId];
-        if (club == null || !club.isPubliclyBrowseable) return null;
+        final participation = participationByEventId[event.id];
+        final isSignedUpSyntheticFixture =
+            event.synthetic &&
+            participation?.status == EventParticipationStatus.signedUp;
+        if (event.synthetic && !isSignedUpSyntheticFixture) {
+          return null;
+        }
+        if (club == null ||
+            (!club.isPubliclyBrowseable && !isSignedUpSyntheticFixture)) {
+          return null;
+        }
         final isClubMember = membershipClubIds.contains(event.clubId);
         final distanceFromUserKm = _distanceFromUserKm(
           event: event,

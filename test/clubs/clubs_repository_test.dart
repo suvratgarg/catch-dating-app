@@ -191,6 +191,22 @@ void main() {
       );
     });
 
+    test('watchClubsByLocation hides synthetic organizer profiles', () async {
+      final visible = buildClub(id: 'visible');
+      final synthetic = buildClub(id: 'synthetic');
+      await _seedClub(firestore, visible);
+      await _seedClub(firestore, synthetic);
+      await firestore.collection('organizers').doc(synthetic.id).update({
+        'synthetic': true,
+        'seedPrefix': 'cross_paths_mumbai_qa',
+      });
+
+      await expectLater(
+        repository.watchClubsByLocation('in-mh-mumbai'),
+        emits([visible]),
+      );
+    });
+
     test('watchClubsByLocation caps the discovery stream', () async {
       for (var i = 0; i < ReadLimitPolicy.directoryPage + 5; i++) {
         await _seedClub(

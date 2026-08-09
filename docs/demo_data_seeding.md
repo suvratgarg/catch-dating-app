@@ -1,7 +1,7 @@
 ---
 doc_id: demo_data_seeding
-version: 1.3.1
-updated: 2026-08-09
+version: 1.4.0
+updated: 2026-08-10
 owner: recursive_audit_loop
 status: active
 ---
@@ -691,6 +691,7 @@ Before public launch, run a dry run:
 ```bash
 node tool/demo/demo_ops.mjs cleanup-demo-data \
   --env prod \
+  --keep-seed-prefixes cross_paths_mumbai_qa \
   --allow-prod
 ```
 
@@ -699,13 +700,16 @@ Then apply only after reviewing the path count:
 ```bash
 node tool/demo/demo_ops.mjs cleanup-demo-data \
   --env prod \
+  --keep-seed-prefixes cross_paths_mumbai_qa \
   --apply \
   --allow-prod
 ```
 
 Cleanup scans known top-level and nested demo surfaces for `demoOps`,
-`synthetic`, and known `seedPrefix` markers. It deletes match messages before
-match docs and includes `seedEvents` plus `demoOpsEvents` manifests. Event
+`synthetic`, and known `seedPrefix` markers. It includes both legacy `clubs`
+and canonical `organizers`, deletes match messages before match docs, and
+includes `seedEvents` plus `demoOpsEvents` manifests. A keep prefix protects
+documents that carry or reference the retained QA seed. Event
 `validate-demo-state` and the broader Firestore validator after cleanup to prove
 zero demo residue before launch.
 
@@ -822,14 +826,25 @@ node tool/demo/demo_ops.mjs seed-cross-paths --env dev --json
 node tool/demo/demo_ops.mjs seed-cross-paths --env dev --apply
 ```
 
-The command is dry-run-first and refuses staging and production. It reuses the
-existing `demo_beta_2026` synthetic identities. If their old events have moved
+The command is dry-run-first. Dev/emulator runs can use any explicitly selected
+synthetic seed. If an old event has moved
 outside the six-hour-to-fourteen-day Cross Paths window, it creates one fresh,
 free synthetic event with only the selected viewer and candidates signed up.
 The chosen synthetic event is explicitly marked
-`crossPathsDiscoveryEnabled: true`; the backend's synthetic-only exception
-allows this dev fixture without authorizing any real non-Mumbai event. It never
-opts in a real anchor account or changes a real event's pilot switch.
+`crossPathsDiscoveryEnabled: true`; the backend's synthetic-only exception is
+also scoped to an identical non-empty `seedPrefix`, preventing data from two
+synthetic worlds from mixing. It never opts in a real anchor account or changes
+a real event's pilot switch.
+
+Production has one intentionally narrow exception for internal Mumbai QA. It
+accepts only `cross_paths_mumbai_qa`, viewer
+`cross_paths_mumbai_qa_user_002`, event
+`cross_paths_mumbai_qa_run_mumbai_01_01`, hidden organizer `courtside`, exactly
+two candidates, and fictional test phone `+16505550101`. The command requires
+`--allow-prod`, `--allow-prod-cross-paths-fixture`, test-login configuration,
+and all pinned IDs. Synthetic organizers and events remain absent from public
+Explore and Host listings; the selected viewer sees the fixture only through
+their signed-up participation.
 
 For a repeatable Consumer-app login, use a fictional Firebase test phone and a
 six-digit test code. Never use a real person's phone or OTP:

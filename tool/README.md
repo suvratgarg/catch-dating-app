@@ -502,20 +502,28 @@ phone-number verification. That flag is only for Firebase test phone numbers.
 
 ## Cross Paths Demo Fixture
 
-`demo_ops seed-cross-paths` is the guarded dev/emulator-only fixture builder
-for Cross Paths. It selects one synthetic viewer and at most two compatible
-synthetic attendees, creates a fresh synthetic event when necessary, and adds
-current event consent plus fingerprint-bound showcase review state. It also
-sets the selected synthetic event's explicit pilot switch; that synthetic-only
-escape hatch never selects a real event or widens the Mumbai production gate.
-Dry run is the default. `--configure-test-login` additionally requires an
-explicit fictional Firebase test phone and six-digit code.
+`demo_ops seed-cross-paths` is the guarded fixture builder for Cross Paths. It
+selects one synthetic viewer and at most two compatible synthetic attendees,
+creates a fresh synthetic event when necessary, and adds current event consent
+plus fingerprint-bound showcase review state. Dev and emulator use remain
+general. Production accepts only the pinned `cross_paths_mumbai_qa` world, its
+three known identities, its one event, the hidden `courtside` organizer, and a
+fictional Firebase test phone; every other production shape fails closed. Dry
+run is the default and production additionally requires both explicit
+production acknowledgements.
 
 ```sh
 npm --prefix functions run build
 node tool/demo/demo_ops.mjs seed-cross-paths --env dev --json
 node tool/demo/demo_ops.mjs seed-cross-paths --env dev --apply
 ```
+
+Synthetic metadata is decoded by the app and filtered from public organizer,
+event-discovery, search, and Host event lists. Only the signed-in synthetic QA
+viewer can recover its own signed-up fixture through personal-event
+enrichment. Cleanup can preserve that single world with
+`--keep-seed-prefixes cross_paths_mumbai_qa` while deleting older synthetic
+data, including organizer mirrors.
 
 Use `--dart-define=ENABLE_CROSS_PATHS_PREVIEW=true` only on a non-production
 Consumer debug run. It does not change Remote Config and cannot enable the

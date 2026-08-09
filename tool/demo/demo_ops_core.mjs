@@ -1789,12 +1789,14 @@ function addCapability({canDemo, gaps, ok, label, gap}) {
 export async function buildLaunchCleanupPlan({
   db,
   seedPrefixes = [DEFAULT_DEMO_OPS_PREFIX, DEFAULT_SEED_PREFIX],
+  keepSeedPrefixes = [],
 } = {}) {
   const paths = new Set();
   const topLevel = [
     "users",
     "publicProfiles",
     "clubs",
+    "organizers",
     "clubMemberships",
     "clubHostClaims",
     "events",
@@ -1814,7 +1816,8 @@ export async function buildLaunchCleanupPlan({
     const snap = await db.collection(collectionName).get();
     for (const doc of snap.docs) {
       const data = doc.data();
-      if (isDemoOwned(data) || hasDemoPrefix(doc.id, seedPrefixes)) {
+      if ((isDemoOwned(data) || hasDemoPrefix(doc.id, seedPrefixes)) &&
+        !belongsToKeptSeed(data, doc.id, keepSeedPrefixes)) {
         if (collectionName === "matches") {
           const messages = await doc.ref.collection("messages").get();
           for (const message of messages.docs) paths.add(message.ref.path);
@@ -1829,9 +1832,11 @@ export async function buildLaunchCleanupPlan({
     const outgoing = await swiperDoc.ref.collection("outgoing").get();
     for (const doc of outgoing.docs) {
       const data = doc.data();
-      if (isDemoOwned(data) ||
+      if ((isDemoOwned(data) ||
         hasDemoPrefix(swiperDoc.id, seedPrefixes) ||
-        hasDemoPrefix(doc.id, seedPrefixes)) {
+        hasDemoPrefix(doc.id, seedPrefixes)) &&
+        !belongsToKeptSeed(data, doc.id, keepSeedPrefixes) &&
+        !hasDemoPrefix(swiperDoc.id, keepSeedPrefixes)) {
         paths.add(doc.ref.path);
       }
     }
@@ -1842,12 +1847,14 @@ export async function buildLaunchCleanupPlan({
     const items = await userDoc.ref.collection("items").get();
     for (const doc of items.docs) {
       const data = doc.data();
-      if (isDemoOwned(data) ||
+      if ((isDemoOwned(data) ||
         hasDemoPrefix(userDoc.id, seedPrefixes) ||
         hasDemoPrefix(doc.id, seedPrefixes) ||
         hasDemoPrefix(data.matchId, seedPrefixes) ||
         hasDemoPrefix(data.eventId, seedPrefixes) ||
-        hasDemoPrefix(data.clubId, seedPrefixes)) {
+        hasDemoPrefix(data.clubId, seedPrefixes)) &&
+        !belongsToKeptSeed(data, doc.id, keepSeedPrefixes) &&
+        !hasDemoPrefix(userDoc.id, keepSeedPrefixes)) {
         paths.add(doc.ref.path);
       }
     }
@@ -1857,6 +1864,7 @@ export async function buildLaunchCleanupPlan({
     command: "cleanup-demo-data",
     paths: [...paths].sort(),
     seedPrefixes,
+    keepSeedPrefixes,
   };
 }
 
@@ -1955,6 +1963,26 @@ export async function buildStaleEventCleanupPlan({
 function hasDemoPrefix(value, seedPrefixes) {
   return typeof value === "string" &&
     seedPrefixes.some((prefix) => value.startsWith(prefix));
+}
+
+function belongsToKeptSeed(data, docId, keepSeedPrefixes) {
+  if (keepSeedPrefixes.length === 0) return false;
+  if (hasDemoPrefix(docId, keepSeedPrefixes) ||
+    hasDemoPrefix(data?.seedPrefix, keepSeedPrefixes)) {
+    return true;
+  }
+  for (const field of [
+    "uid",
+    "targetId",
+    "eventId",
+    "clubId",
+    "organizerId",
+    "matchId",
+  ]) {
+    if (hasDemoPrefix(data?.[field], keepSeedPrefixes)) return true;
+  }
+  return Array.isArray(data?.eventIds) &&
+    data.eventIds.some((value) => hasDemoPrefix(value, keepSeedPrefixes));
 }
 
 export async function applyDocPlan({db, docs}) {
