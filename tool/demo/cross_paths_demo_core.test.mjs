@@ -3,6 +3,7 @@ import test from "node:test";
 import {
   buildCrossPathsDemoDocuments,
   ensureCrossPathsDemoTestLogin,
+  verifyCrossPathsDemoPlan,
 } from "./cross_paths_demo_core.mjs";
 import {loadFirebaseAdmin} from "./demo_ops_core.mjs";
 
@@ -78,6 +79,46 @@ test("unchanged eligible review remains idempotent", () => {
   assert.equal(review.reviewVersion, 4);
   assert.equal(review.reviewedAt.toMillis(), originalTimestamp.toMillis());
   assert.equal(review.updatedAt.toMillis(), rerunTimestamp.toMillis());
+});
+
+test("read-back verification ignores Firestore map key ordering", async () => {
+  const timestamp = admin.firestore.Timestamp.fromMillis(1_700_000_000_000);
+  const db = {
+    doc: () => ({
+      get: async () => ({
+        exists: true,
+        data: () => ({
+          nested: {
+            timestamp,
+            items: [{second: 2, first: 1}],
+            alpha: true,
+          },
+        }),
+      }),
+    }),
+  };
+
+  const result = await verifyCrossPathsDemoPlan({
+    db,
+    plan: {
+      docs: [{
+        path: "events/demo-event",
+        data: {
+          nested: {
+            alpha: true,
+            items: [{first: 1, second: 2}],
+            timestamp,
+          },
+        },
+      }],
+    },
+  });
+
+  assert.deepEqual(result, {
+    ready: true,
+    missingPaths: [],
+    mismatchedPaths: [],
+  });
 });
 
 test("test login merges Identity config and creates only the named Auth user",
