@@ -366,26 +366,17 @@ export async function ensureCrossPathsDemoTestLogin({
   assertTestPhone(phoneNumber);
   assertTestSmsCode(smsCode);
   const auth = admin.auth();
-  let authUser;
+  let authUser = null;
   try {
     authUser = await auth.getUser(viewerUid);
   } catch (error) {
     if (error?.code !== "auth/user-not-found") throw error;
-    authUser = await auth.createUser({
-      uid: viewerUid,
-      phoneNumber,
-      displayName: "Cross Paths Demo Viewer",
-      disabled: false,
-    });
   }
-  if (authUser.phoneNumber && authUser.phoneNumber !== phoneNumber) {
+  if (authUser?.phoneNumber && authUser.phoneNumber !== phoneNumber) {
     throw new Error(
       `Auth user ${viewerUid} already uses a different phone number. ` +
         "Refusing to replace it."
     );
-  }
-  if (!authUser.phoneNumber) {
-    authUser = await auth.updateUser(viewerUid, {phoneNumber});
   }
 
   const credential = admin.app().options.credential;
@@ -419,30 +410,52 @@ export async function ensureCrossPathsDemoTestLogin({
   const config = await configResponse.json();
   const existing = config?.signIn?.phoneNumber?.testPhoneNumbers ?? {};
   const changed = existing[phoneNumber] !== smsCode;
+  let phoneTemporarilyCleared = false;
   if (changed) {
-    const patchResponse = await fetchImpl(
-      `${configUrl}?updateMask=signIn.phoneNumber.testPhoneNumbers`,
-      {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-          "x-goog-user-project": projectId,
-        },
-        body: JSON.stringify({
-          signIn: {
-            phoneNumber: {
-              testPhoneNumbers: {...existing, [phoneNumber]: smsCode},
-            },
-          },
-        }),
-      }
-    );
-    if (!patchResponse.ok) {
-      throw new Error(
-        `Identity Platform test-phone update failed (${patchResponse.status}).`
-      );
+    if (authUser?.phoneNumber === phoneNumber) {
+      authUser = await auth.updateUser(viewerUid, {phoneNumber: null});
+      phoneTemporarilyCleared = true;
     }
+    try {
+      const patchResponse = await fetchImpl(
+        `${configUrl}?updateMask=signIn.phoneNumber.testPhoneNumbers`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+            "x-goog-user-project": projectId,
+          },
+          body: JSON.stringify({
+            signIn: {
+              phoneNumber: {
+                testPhoneNumbers: {...existing, [phoneNumber]: smsCode},
+              },
+            },
+          }),
+        }
+      );
+      if (!patchResponse.ok) {
+        throw new Error(
+          `Identity Platform test-phone update failed (${patchResponse.status}).`
+        );
+      }
+    } catch (error) {
+      if (phoneTemporarilyCleared) {
+        authUser = await auth.updateUser(viewerUid, {phoneNumber});
+      }
+      throw error;
+    }
+  }
+  if (!authUser) {
+    authUser = await auth.createUser({
+      uid: viewerUid,
+      phoneNumber,
+      displayName: "Cross Paths Demo Viewer",
+      disabled: false,
+    });
+  } else if (!authUser.phoneNumber) {
+    authUser = await auth.updateUser(viewerUid, {phoneNumber});
   }
   return {
     viewerUid,

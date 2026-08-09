@@ -226,6 +226,10 @@ test("test login falls back to the active gcloud principal for config access",
       {method: "GET", authorization: "Bearer gcloud-token"},
       {method: "PATCH", authorization: "Bearer gcloud-token"},
     ]);
+    assert.deepEqual(auth.updates, [
+      {phoneNumber: null},
+      {phoneNumber: "+16505550101"},
+    ]);
   }
 );
 
@@ -250,6 +254,44 @@ test("test login refuses to replace an existing Auth phone", async () => {
     /already uses a different phone number/
   );
 });
+
+test("test login restores an existing phone when config update fails",
+  async () => {
+    const auth = existingAuthUser();
+    const adminStub = {
+      auth: () => auth,
+      app: () => ({
+        options: {
+          credential: {
+            getAccessToken: async () => ({access_token: "admin-token"}),
+          },
+        },
+      }),
+    };
+    const fetchImpl = async (_url, options = {}) => {
+      if (!options.method) {
+        return response({signIn: {phoneNumber: {testPhoneNumbers: {}}}});
+      }
+      return response({}, 400);
+    };
+
+    await assert.rejects(
+      ensureCrossPathsDemoTestLogin({
+        admin: adminStub,
+        projectId: "catchdates-dev",
+        viewerUid: "demo-viewer",
+        phoneNumber: "+16505550101",
+        smsCode: "604219",
+        fetchImpl,
+      }),
+      /test-phone update failed \(400\)/
+    );
+    assert.deepEqual(auth.updates, [
+      {phoneNumber: null},
+      {phoneNumber: "+16505550101"},
+    ]);
+  }
+);
 
 test("test login refuses phone numbers outside the fictional fixture range",
   async () => {
@@ -298,10 +340,19 @@ function fakeAuth() {
 
 function existingAuthUser() {
   return {
+    updates: [],
     async getUser() {
       return {
         uid: "demo-viewer",
         phoneNumber: "+16505550101",
+        metadata: {creationTime: "2026-08-09T00:00:00.000Z"},
+      };
+    },
+    async updateUser(uid, input) {
+      this.updates.push(input);
+      return {
+        uid,
+        phoneNumber: input.phoneNumber,
         metadata: {creationTime: "2026-08-09T00:00:00.000Z"},
       };
     },
