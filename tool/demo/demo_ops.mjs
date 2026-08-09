@@ -60,6 +60,12 @@ import {
   validatePersonaCatalog,
 } from "./demo_persona_catalog.mjs";
 import {
+  DEFAULT_CROSS_PATHS_DEMO_CANDIDATE_COUNT,
+  buildCrossPathsDemoPlan,
+  ensureCrossPathsDemoTestLogin,
+  verifyCrossPathsDemoPlan,
+} from "./cross_paths_demo_core.mjs";
+import {
   DEFAULT_PERSONA_IMAGE_OUTPUT_DIR,
   DEFAULT_PERSONA_IMAGE_PILOT_PATH,
   buildPersonaImageGenerationBatch,
@@ -150,6 +156,8 @@ export async function main(argv = process.argv.slice(2)) {
     await runCleanupDemoData({db, args, projectId});
   } else if (command === "cleanup-stale-events") {
     await runCleanupStaleEvents({db, args, projectId});
+  } else if (command === "seed-cross-paths") {
+    await runSeedCrossPaths({db, args, projectId});
   } else if (command === "make-event-full") {
     await runWritePlan({
       db,
@@ -454,6 +462,71 @@ async function runCleanupStaleEvents({db, args, projectId}) {
     plan,
     manifest: {pathCount: plan.paths.length},
     appliedSummary: args.apply ? {deleted: plan.paths.length, aggregateSummary} : null,
+  });
+}
+
+async function runSeedCrossPaths({db, args, projectId}) {
+  if (projectId !== "catchdates-dev" && !args.emulatorHost) {
+    throw new Error(
+      "seed-cross-paths is dev/emulator-only. It refuses staging and prod."
+    );
+  }
+  if (args.configureTestLogin && !args.apply) {
+    throw new Error("--configure-test-login requires --apply.");
+  }
+  if (args.configureTestLogin && (!args.testPhone || !args.testCode)) {
+    throw new Error(
+      "--configure-test-login requires --test-phone and --test-code."
+    );
+  }
+  const plan = await buildCrossPathsDemoPlan({
+    db,
+    admin,
+    seedPrefix: args.seedPrefix,
+    viewerUid: args.uid,
+    eventId: args.eventId,
+    candidateCount: args.candidateCount,
+    testPhone: args.configureTestLogin ? args.testPhone : null,
+  });
+  let writeSummary = null;
+  let verification = null;
+  let testLogin = null;
+  if (args.apply) {
+    writeSummary = await applyDocPlan({db, docs: plan.docs});
+    verification = await verifyCrossPathsDemoPlan({db, plan});
+    if (!verification.ready) {
+      throw new Error(
+        "Cross Paths fixture read-back failed: " +
+          JSON.stringify(verification)
+      );
+    }
+    if (args.configureTestLogin) {
+      testLogin = await ensureCrossPathsDemoTestLogin({
+        admin,
+        projectId,
+        viewerUid: plan.viewerUid,
+        phoneNumber: args.testPhone,
+        smsCode: args.testCode,
+      });
+    }
+  }
+  const manifest = await writeManifest({
+    db,
+    admin,
+    plan,
+    apply: args.apply,
+  });
+  printPlan({
+    args,
+    projectId,
+    title: "Cross Paths synthetic fixture plan",
+    plan,
+    manifest,
+    appliedSummary: args.apply ? {
+      written: writeSummary.written,
+      verification,
+      testLogin,
+    } : null,
   });
 }
 
@@ -821,6 +894,9 @@ function parseArgs(argv) {
     meetingPoint: undefined,
     text: "Can you check this demo chat?",
     syntheticMatches: 3,
+    candidateCount: DEFAULT_CROSS_PATHS_DEMO_CANDIDATE_COUNT,
+    testPhone: null,
+    testCode: null,
     seedPrefixes: [],
     cleanupPast: true,
     cleanupCancelled: true,
@@ -855,6 +931,7 @@ function parseArgs(argv) {
     emulatorHost: null,
     skipFunctionsBuild: false,
     bypassSuvbotAccess: false,
+    configureTestLogin: false,
     json: false,
     help: false,
   };
@@ -872,6 +949,7 @@ function parseArgs(argv) {
     else if (arg === "--with-messages") args.withMessages = true;
     else if (arg === "--skip-functions-build") args.skipFunctionsBuild = true;
     else if (arg === "--bypass-suvbot-access") args.bypassSuvbotAccess = true;
+    else if (arg === "--configure-test-login") args.configureTestLogin = true;
     else if (arg === "--require-published-assets") args.requirePublishedAssets = true;
     else if (arg === "--allow-empty") args.allowEmpty = true;
     else if (arg === "--via-swipes-only") {
@@ -900,6 +978,8 @@ function parseArgs(argv) {
     else if (arg === "--uid") args.uid = requireValue(argv, ++i, arg);
     else if (arg === "--action") args.action = requireValue(argv, ++i, arg);
     else if (arg === "--target-phone") args.targetPhone = requireValue(argv, ++i, arg);
+    else if (arg === "--test-phone") args.testPhone = requireValue(argv, ++i, arg);
+    else if (arg === "--test-code") args.testCode = requireValue(argv, ++i, arg);
     else if (arg === "--event-id") args.eventId = requireValue(argv, ++i, arg);
     else if (arg === "--lat") args.lat = requireValue(argv, ++i, arg);
     else if (arg === "--lng") args.lng = requireValue(argv, ++i, arg);
@@ -926,11 +1006,17 @@ function parseArgs(argv) {
     else if (arg === "--demo-scenario") args.demoScenario = requireValue(argv, ++i, arg);
     else if (arg === "--synthetic-matches") {
       args.syntheticMatches = Number(requireValue(argv, ++i, arg));
+    } else if (arg === "--candidate-count") {
+      args.candidateCount = Number(requireValue(argv, ++i, arg));
     } else {
       throw new Error(`Unknown argument: ${arg}`);
     }
   }
-  if (command === "seed-world" || command === "append-user") {
+  if (
+    command === "seed-world" ||
+    command === "append-user" ||
+    command === "seed-cross-paths"
+  ) {
     args.seedPrefix = args.seedPrefix === DEFAULT_DEMO_OPS_PREFIX ?
       DEFAULT_SEED_PREFIX :
       args.seedPrefix;
@@ -1364,6 +1450,7 @@ function printCommands() {
 - demo-checklist
 - cleanup-demo-data
 - cleanup-stale-events
+- seed-cross-paths
 - make-event-full
 - mark-attended
 - promote-waitlist
@@ -1395,6 +1482,8 @@ Usage:
   node tool/demo/demo_ops.mjs validate-demo-state --env prod --phones +91...,+91...
   node tool/demo/demo_ops.mjs cleanup-demo-data --env prod --allow-prod
   node tool/demo/demo_ops.mjs cleanup-stale-events --env prod --apply --allow-prod
+  node tool/demo/demo_ops.mjs seed-cross-paths --env dev --apply
+  node tool/demo/demo_ops.mjs seed-cross-paths --env dev --apply --configure-test-login --test-phone +16505550101 --test-code 123456
   node tool/demo/demo_ops.mjs create-check-in-event --env prod --phone +91... --lat 28.6 --lng 77.2 --apply --allow-prod
   node tool/demo/demo_ops.mjs demo-checklist --env prod --phone +91...
   node tool/demo/demo_ops.mjs scenario-info --demo-scenario investor-demo
@@ -1432,6 +1521,12 @@ Command options:
   --with-messages                Create starter chat messages for match-phones.
   --no-messages                  Deprecated; match-phones defaults to no messages.
   --synthetic-matches <n>        warm-user synthetic match count. Default: 3.
+  --candidate-count <1|2>        seed-cross-paths profile count. Default: 2.
+  --configure-test-login         Create/reuse the selected dev Auth user and
+                                 configure its fictional Firebase test phone.
+  --test-phone <phone>           Fictional +1 650-555-01xx test phone.
+  --test-code <six digits>       Firebase test-phone verification code. Never
+                                 commit a real person's phone or OTP.
   --seed-prefixes <prefix,...>   cleanup-demo-data prefixes.
   --keep-past-events               cleanup-stale-events leaves past seeded events.
   --keep-cancelled-events          cleanup-stale-events leaves cancelled seeded events.

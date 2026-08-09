@@ -426,6 +426,17 @@ test("buildLaunchCleanupPlan finds demo-owned top-level and nested docs", async 
       demo_ops_2026_user: {},
       real_user: {},
     },
+    eventCrossPathsConsents: {
+      demo_beta_2026_event_demo_beta_2026_candidate: {
+        eventId: "demo_beta_2026_event",
+        uid: "demo_beta_2026_candidate",
+      },
+      real_event_real_user: {eventId: "real_event", uid: "real_user"},
+    },
+    crossPathsShowcaseEligibility: {
+      demo_beta_2026_candidate: {status: "eligible"},
+      real_user: {status: "eligible"},
+    },
     matches: {
       match_1: {
         demoOps: true,
@@ -455,6 +466,8 @@ test("buildLaunchCleanupPlan finds demo-owned top-level and nested docs", async 
   const plan = await buildLaunchCleanupPlan({db});
 
   assert.deepEqual(plan.paths, [
+    "crossPathsShowcaseEligibility/demo_beta_2026_candidate",
+    "eventCrossPathsConsents/demo_beta_2026_event_demo_beta_2026_candidate",
     "matches/match_1",
     "matches/match_1/messages/message_1",
     "notifications/real_user/items/demo",

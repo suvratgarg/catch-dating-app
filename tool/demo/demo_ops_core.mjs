@@ -1799,6 +1799,8 @@ export async function buildLaunchCleanupPlan({
     "clubHostClaims",
     "events",
     "eventParticipations",
+    "eventCrossPathsConsents",
+    "crossPathsShowcaseEligibility",
     "clubScheduleLocks",
     "userEventScheduleLocks",
     "savedEvents",

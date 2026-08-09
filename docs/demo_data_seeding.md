@@ -1,7 +1,7 @@
 ---
 doc_id: demo_data_seeding
-version: 1.2.8
-updated: 2026-05-25
+version: 1.3.0
+updated: 2026-08-09
 owner: recursive_audit_loop
 status: active
 ---
@@ -807,6 +807,52 @@ node tool/demo/seed_demo_data.mjs --env dev --scenario beta-full --json
 
 The output shows the target project, scenario, anchor users, document counts, and
 manifest path. No documents are written unless `--apply` is present.
+
+## Cross Paths Internal Fixture
+
+Cross Paths needs more than profile documents. A candidate must be signed up
+for an upcoming event, globally opted in, opted in for that event under the
+current terms, objectively showcase-ready, and bound to a reviewed profile
+fingerprint. The dedicated operation creates that complete chain for exactly
+one synthetic viewer and one or two synthetic candidates:
+
+```bash
+npm --prefix functions run build
+node tool/demo/demo_ops.mjs seed-cross-paths --env dev --json
+node tool/demo/demo_ops.mjs seed-cross-paths --env dev --apply
+```
+
+The command is dry-run-first and refuses staging and production. It reuses the
+existing `demo_beta_2026` synthetic identities. If their old events have moved
+outside the six-hour-to-fourteen-day Cross Paths window, it creates one fresh,
+free synthetic event with only the selected viewer and candidates signed up.
+It never opts in a real anchor account.
+
+For a repeatable Consumer-app login, use a fictional Firebase test phone and a
+six-digit test code. Never use a real person's phone or OTP:
+
+```bash
+node tool/demo/demo_ops.mjs seed-cross-paths \
+  --env dev \
+  --apply \
+  --configure-test-login \
+  --test-phone +16505550101 \
+  --test-code 123456
+```
+
+Remote Config rollout flags remain off. To exercise the fixture without
+changing shared rollout state, run a non-production Consumer debug build with
+the compile-time preview switch:
+
+```bash
+./tool/flutter_with_env.sh dev consumer run \
+  -d "<device-id>" \
+  --dart-define=ENABLE_CROSS_PATHS_PREVIEW=true
+```
+
+The preview switch is ignored in profile/release builds and in production. It
+enables consent controls and Explore suggestions only; companion inventory
+continues to use its independent Remote Config flag.
 
 ## Anchor Real TestFlight Users
 

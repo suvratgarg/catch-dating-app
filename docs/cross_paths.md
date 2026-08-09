@@ -1,7 +1,7 @@
 ---
 doc_id: cross_paths
-version: 1.7.0
-updated: 2026-08-06
+version: 1.8.0
+updated: 2026-08-09
 owner: product (approved direction 2026-08-05)
 status: implemented-default-off
 ---
@@ -788,7 +788,11 @@ deletion cleanup, rules denial, and dedicated Admin review workspace also now
 exist. The batched server suggestion contract now adds canonical event
 availability, safety/consent/readiness filtering, deterministic fatigue,
 sanitized output, and signed tokens. Phase 0 still requires external legal
-privacy-policy approval and the synthetic seed policy.
+privacy-policy approval. The synthetic seed policy is now implemented through
+the dev/emulator-only `demo_ops seed-cross-paths` operation: it reuses clearly
+marked synthetic profiles, creates a fresh synthetic event when the older demo
+world is stale, and writes only current consent plus fingerprint-bound
+showcase review state.
 
 - [x] Land/reuse the person-Polaroid and organizer-poster migration.
 - [x] Introduce feature flags with fail-closed defaults.
@@ -798,7 +802,7 @@ privacy-policy approval and the synthetic seed policy.
 - [x] Build the server-owned batched suggestion callable.
 - [x] Migrate post-event Catch candidate resolution off client roster reads.
 - [x] Restrict Firestore participation reads and prove rules under emulators.
-- [ ] Seed consent/eligibility only for synthetic internal/demo profiles.
+- [x] Seed consent/eligibility only for synthetic internal/demo profiles.
 
 Exit gate: arbitrary authenticated users cannot enumerate event rosters, and a
 suggestion cannot be returned without effective consent and reciprocal
