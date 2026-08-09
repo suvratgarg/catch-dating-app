@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import {
   AdminButton,
+  AdminFeatureLoadingState,
   AdminFilterBar,
   AdminMetricCard,
   AdminMetricGrid,
@@ -89,7 +90,7 @@ export function OverviewScreen({
   analyticsRangePreset: OverviewAnalyticsRangePreset;
   analyticsStartDate: string;
   canLoadAnalytics?: boolean;
-  hostAnalytics: HostAnalyticsResponse;
+  hostAnalytics: HostAnalyticsResponse | null;
   isAnalyticsLoading?: boolean;
   isLoading?: boolean;
   isOverviewLoading?: boolean;
@@ -149,7 +150,7 @@ export function OverviewScreen({
         ))}
       </AdminOverviewMainGrid>
 
-      {canLoadAnalytics ? (
+      {canLoadAnalytics && hostAnalytics ? (
         <HostAnalyticsDigest
           analyticsClubId={analyticsClubId}
           analyticsEndDate={analyticsEndDate}
@@ -170,6 +171,15 @@ export function OverviewScreen({
           onClearAnalyticsScope={onClearAnalyticsScope}
           onRefresh={refreshAnalytics}
         />
+      ) : canLoadAnalytics && analyticsError ? (
+        <StatusBanner
+          icon={<FileWarning size={17} strokeWidth={1.9} />}
+          tone="error"
+        >
+          {analyticsError}
+        </StatusBanner>
+      ) : canLoadAnalytics ? (
+        <AdminFeatureLoadingState label="Loading live marketplace analytics" />
       ) : null}
     </>
   );

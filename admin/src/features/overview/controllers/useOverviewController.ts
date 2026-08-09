@@ -7,8 +7,6 @@ import type {
 } from "../../../shared/types/adminTypes";
 import {adminQueryKeys} from "../../../shared/query/queryKeys";
 import {
-  initialOverviewHostAnalytics,
-  initialOverviewSnapshot,
   loadOverviewHostAnalytics,
   loadOverviewSnapshot,
 } from "../api/overviewRepository";
@@ -91,9 +89,8 @@ export function useOverviewController({
     queryFn: () => loadOverviewHostAnalytics(analyticsPayload),
     placeholderData: (previousData) => previousData,
   });
-  const overview = overviewQuery.data ?? initialOverviewSnapshot();
-  const hostAnalytics =
-    hostAnalyticsQuery.data ?? initialOverviewHostAnalytics();
+  const overview = overviewQuery.data ?? null;
+  const hostAnalytics = hostAnalyticsQuery.data ?? null;
   const isOverviewLoading = isSessionReady &&
     (overviewQuery.isPending || overviewQuery.isFetching);
   const isAnalyticsLoading = isSessionReady && canLoadAnalytics &&
