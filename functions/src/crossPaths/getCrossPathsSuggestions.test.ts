@@ -95,6 +95,11 @@ class FakeTransaction {
   private readonly writes: Array<() => void> = [];
   constructor(private readonly firestore: FakeFirestore) {}
   async get(ref: FakeDocRef) {
+    if (this.writes.length > 0) {
+      throw new Error(
+        "Firestore transactions require all reads before all writes"
+      );
+    }
     return ref.get();
   }
   create(ref: FakeDocRef, value: FakeData) {

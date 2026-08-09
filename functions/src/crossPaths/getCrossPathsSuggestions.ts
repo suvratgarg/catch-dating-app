@@ -740,15 +740,22 @@ async function recordExposureReceipts(params: {
   const {db, viewerUid, sessionIdHash, pairs, now} = params;
   if (pairs.length === 0) return;
   await db.runTransaction(async (tx) => {
-    for (const pair of pairs) {
+    const receipts = pairs.map((pair) => {
       const exposureId = sha256(
         `${viewerUid}|${sessionIdHash}|${pair.eventContext.eventId}|` +
         pair.candidateUid
       );
-      const ref = db.collection("crossPathsSuggestionExposures")
-        .doc(exposureId);
-      const existing = await tx.get(ref);
-      if (existing.exists) continue;
+      return {
+        pair,
+        ref: db.collection("crossPathsSuggestionExposures").doc(exposureId),
+      };
+    });
+    const existingReceipts = await Promise.all(
+      receipts.map(({ref}) => tx.get(ref))
+    );
+    receipts.forEach(({pair, ref}, index) => {
+      const existing = existingReceipts[index];
+      if (existing.exists) return;
       tx.create(ref, {
         viewerUid,
         candidateUid: pair.candidateUid,
@@ -760,7 +767,7 @@ async function recordExposureReceipts(params: {
           now.toMillis() + exposureRetentionMillis
         ),
       });
-    }
+    });
   });
 }
 
