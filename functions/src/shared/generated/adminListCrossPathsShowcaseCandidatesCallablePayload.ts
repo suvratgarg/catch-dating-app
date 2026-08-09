@@ -8,6 +8,7 @@
 export interface AdminListCrossPathsShowcaseCandidatesCallablePayload {
   uid?: string | null;
   status?: "all" | "eligible" | "needsReview" | "paused" | null;
+  marketId?: string | null;
   cursor?: string | null;
   limit?: number;
 }

@@ -64,6 +64,9 @@ const schemaAdminUpdateEventDetailsCallablePayloadSchema = <String, Object?>{
             'competitive',
           ],
         },
+        'crossPathsDiscoveryEnabled': <String, Object?>{
+          'type': 'boolean',
+        },
         'eventFormat': <String, Object?>{
           'type': 'object',
           'additionalProperties': false,

@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.11.0
-updated: 2026-08-07
+version: 1.11.1
+updated: 2026-08-09
 owner: recursive_audit_loop
 status: active
 ---
@@ -389,7 +389,13 @@ only when the private global preference is explicitly true, the event is active
 and upcoming, and the caller owns a current `signedUp` participation. Disable
 remains available after those preconditions disappear. Effective visibility is
 the conjunction of both consent values plus later server-owned eligibility;
-neither consent document alone authorizes an Explore identity.
+neither consent document alone authorizes an Explore identity. The optional
+`events/{eventId}.crossPathsDiscoveryEnabled` field is a third, Admin-owned
+pilot gate that defaults to false when absent. Enabling it is restricted to an
+active upcoming Mumbai event (`discoveryMarketId: in-mh-mumbai`), a minimum
+six-hour lead, no companion inventory, and at most three selected upcoming
+events. Disabling it remains available and invalidates pending invitations
+without silently closing an accepted event plan.
 
 Cross Paths showcase eligibility is independently owned by the audited
 `adminSetCrossPathsShowcaseEligibility` callable. The record contains only

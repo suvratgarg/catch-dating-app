@@ -35,6 +35,7 @@ bool crossPathsEventConsentEligible({
   required DateTime now,
 }) =>
     rolloutEnabled &&
+    event.crossPathsDiscoveryEnabled &&
     userProfile?.prefsShowInCrossPaths == true &&
     participation?.status == EventParticipationStatus.signedUp &&
     event.startTime.isAfter(now) &&

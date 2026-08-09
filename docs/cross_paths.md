@@ -1,6 +1,6 @@
 ---
 doc_id: cross_paths
-version: 1.8.0
+version: 1.9.0
 updated: 2026-08-09
 owner: product (approved direction 2026-08-05)
 status: implemented-default-off
@@ -43,6 +43,23 @@ The approved defaults are:
 - General Explore discovery excludes full and waitlist-only events. Reserved
   companion inventory is an explicit organizer-controlled, default-off product
   and never changes normal waitlist rank.
+
+The first live pilot is additionally fixed to these owner-approved defaults:
+
+- Mumbai only, using canonical market id `in-mh-mumbai`.
+- Exactly 2–3 upcoming events selected through an Admin-only event switch.
+- A target pool of 20–50 real members who have each completed the normal
+  global and per-event consent actions themselves.
+- Manual, score-free showcase review. No attractiveness/desirability model or
+  inferred consent is permitted.
+- Normal event booking before a personal invitation. Invitations provide no
+  guaranteed admission, companion inventory, or waitlist priority in this
+  pilot.
+- Selected-event rollout only; no percentage cohort. Companion inventory
+  remains independently off.
+- External legal/privacy approval, adequate opted-in supply, and operational
+  monitoring remain required before either user-facing rollout flag is
+  enabled.
 
 ## Product thesis
 
@@ -238,6 +255,9 @@ filter it.
 
 An event is eligible only when all are true:
 
+- The Admin-owned `crossPathsDiscoveryEnabled` switch is explicitly true.
+- A real event resolves to the Mumbai market id `in-mh-mumbai`. Only a clearly
+  marked synthetic dev fixture may bypass the real-market requirement.
 - It is a first-party Catch event with a supported booking path.
 - It is published/active, upcoming, and not cancelled.
 - It appears in the viewer's current Explore discovery result set.
@@ -376,10 +396,10 @@ Implemented fields:
 The first Phase 0 control is on Event Detail for an upcoming, active event after
 a confirmed booking. The App-Check-protected `setCrossPathsEventConsent`
 callable revalidates the private global preference, current terms version,
-active future event, deterministic participation identity, and `signedUp`
-status before enabling. Revocation remains available at the callable even if
-the booking or global preference later disappears, and does not cancel the
-event booking.
+active future event, the Admin-selected Mumbai pilot switch, deterministic
+participation identity, and `signedUp` status before enabling. Revocation
+remains available at the callable even if the booking, market, event switch, or
+global preference later disappears, and does not cancel the event booking.
 
 Effective visibility is:
 
@@ -816,14 +836,20 @@ gates, current-event association, token expiry, and Event Detail routing are
 implemented behind the default-off Explore suggestions flag. Qualified card
 impression, profile-open, event-open, booking-started, and booking-completed
 analytics are wired without emitting the signed token or candidate identity.
-Production seed supply, legal copy approval, signing-key/TTL operations, and a
-small-market flag cohort remain before live enablement.
+Environment-specific signing keys and exposure TTL policies are provisioned.
+The selected-event Mumbai control plane is implemented, but production still
+has zero eligible upcoming Mumbai events, zero showcase-approved members, and
+zero enabled event-consent edges as of 2026-08-09. Real opted-in supply,
+legal/privacy approval, operational monitoring, and the user-facing flags
+remain before live enablement.
 
 - [x] Add Cross Paths mixed-feed card and profile preview.
 - [x] Enforce the Explore modality budget and no-search/no-map constraints.
 - [x] Link every Polaroid to one still-actionable event.
 - [x] Route unbooked viewers through the existing Event Detail/booking flow.
 - [x] Instrument exposure, profile-open, event-open, and booking conversion.
+- [x] Add an Admin-only, default-false selected-event gate constrained to
+      Mumbai and at most three upcoming events.
 - [ ] Launch to a small market/flag cohort with manual showcase curation.
 
 No invitation is delivered in this phase.
@@ -910,21 +936,24 @@ Implementation is incomplete until the changed phase has all relevant proof:
 
 ## Launch checklist
 
-- [ ] Feature flag is off by default in production.
-- [ ] Existing and missing global preferences resolve to off.
-- [ ] Per-event consent copy and privacy policy are approved.
-- [ ] No consumer query can enumerate an event roster.
-- [ ] Only signed-up candidates and bookable/already-booked viewers qualify.
-- [ ] Reciprocal preferences and blocks are server-enforced.
-- [ ] Showcase readiness is activity-neutral and moderation-aware.
-- [ ] No raw attractiveness or popularity score is stored or exposed.
-- [ ] Explore modality budget and session caps are enforced.
-- [ ] Full, waitlist-only, cancelled, external, and ineligible events suppress
+- [x] All three rollout flags are off by default in production.
+- [x] Existing and missing global preferences resolve to off.
+- [ ] Per-event consent copy and privacy policy are externally approved.
+- [x] No consumer query can enumerate an event roster.
+- [x] Only signed-up candidates and bookable/already-booked viewers qualify.
+- [x] Reciprocal preferences and blocks are server-enforced.
+- [x] Showcase readiness is activity-neutral and moderation-aware.
+- [x] No raw attractiveness or popularity score is stored or exposed.
+- [x] Explore modality budget and session caps are enforced.
+- [x] Full, waitlist-only, cancelled, external, and ineligible events suppress
       suggestions.
-- [ ] Booking succeeds before any invitation is sent.
-- [ ] Invitations cannot alter event capacity or waitlist order.
-- [ ] Accepted plans remain separate from permanent dating matches.
-- [ ] Organizer analytics are aggregate and privacy-thresholded.
+- [x] Real events require the Admin-selected Mumbai event gate.
+- [ ] Two or three eligible upcoming Mumbai events are selected.
+- [ ] Between 20 and 50 real members have opted in globally and per event.
+- [x] Booking succeeds before any invitation is sent in the initial pilot.
+- [x] Invitations cannot alter event capacity or waitlist order.
+- [x] Accepted plans remain separate from permanent dating matches.
+- [x] Organizer analytics are aggregate and privacy-thresholded.
 - [ ] Experiment holdout and all guardrail dashboards are live.
 - [ ] Internal/demo, staged-market, rollback, and support runbooks are tested.
 

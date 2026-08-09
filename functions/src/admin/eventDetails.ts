@@ -30,6 +30,13 @@ import {
   eventTitleLabel,
   eventWithAdminFieldsForSearch,
 } from "./eventAdminSearch";
+import {eventPolicyFromEvent} from "../events/eventPolicy";
+import {
+  crossPathsPilotEventEnabled,
+  crossPathsPilotMarketId,
+  crossPathsPilotMaximumEvents,
+  crossPathsPilotMinimumEventLeadMillis,
+} from "../crossPaths/pilotPolicy";
 
 const eventDetailsRoles = ["admin", "adminOwner", "support"] as const;
 type EventListTimeWindow = "upcoming" | "past" | "all";
@@ -79,6 +86,7 @@ export interface AdminEventDetailsSnapshot {
   bookedCount: number;
   checkedInCount: number;
   waitlistedCount: number;
+  crossPathsDiscoveryEnabled: boolean;
   priceInPaise: number;
   currency: string;
   status: EventDocument["status"];
@@ -110,6 +118,7 @@ export interface AdminEventListRow {
   meetingPoint: string;
   status: EventDocument["status"];
   availability: string | null;
+  crossPathsDiscoveryEnabled: boolean;
   bookedCount: number;
   capacityLimit: number;
   priceInPaise: number;
@@ -260,6 +269,17 @@ export async function adminUpdateEventDetailsHandler(
       "A review note is required for audited event edits."
     );
   }
+  if (
+    rawPatch.crossPathsDiscoveryEnabled !== undefined &&
+    !adminContext.roles.some((role) =>
+      role === "admin" || role === "adminOwner"
+    )
+  ) {
+    throw new HttpsError(
+      "permission-denied",
+      "Admin or Admin Owner access is required to change the Cross Paths pilot."
+    );
+  }
 
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, adminContext.uid, "adminUpdateEventDetails");
@@ -278,10 +298,24 @@ export async function adminUpdateEventDetailsHandler(
     }
     const clubRef = db.collection("organizers")
       .doc(before.organizerId ?? before.clubId);
+    const selectedPilotEventsSnap =
+      rawPatch.crossPathsDiscoveryEnabled === true ?
+        await tx.get(db.collection("events")
+          .where("crossPathsDiscoveryEnabled", "==", true)
+          .limit(crossPathsPilotMaximumEvents + 1)) :
+        null;
     const clubSnap = await tx.get(clubRef);
     const club = clubSnap.exists ?
       requireDoc<ClubDocument>(clubSnap, "ClubDocument") :
       null;
+    if (rawPatch.crossPathsDiscoveryEnabled === true) {
+      assertCrossPathsPilotEventCanBeEnabled({
+        eventId: data.eventId,
+        event: before,
+        selectedEvents: selectedPilotEventsSnap?.docs ?? [],
+        nowMillis: (deps.now?.() ?? new Date()).getTime(),
+      });
+    }
     const patch = mergeEventDetailsPatch(before, rawPatch);
     const nextEvent = eventWithAdminFieldsForSearch(before, patch);
     const fullPatch: Record<string, unknown> = {
@@ -345,6 +379,7 @@ function publicEventListRow(
     meetingPoint: event.meetingPoint,
     status: event.status,
     availability: event.discoveryAvailability ?? null,
+    crossPathsDiscoveryEnabled: event.crossPathsDiscoveryEnabled === true,
     bookedCount: event.bookedCount ?? 0,
     capacityLimit: event.capacityLimit,
     priceInPaise: event.priceInPaise,
@@ -393,6 +428,7 @@ function publicEventDetails(
     bookedCount: event.bookedCount ?? 0,
     checkedInCount: event.checkedInCount ?? 0,
     waitlistedCount: event.waitlistedCount ?? 0,
+    crossPathsDiscoveryEnabled: event.crossPathsDiscoveryEnabled === true,
     priceInPaise: event.priceInPaise,
     currency: event.currency ?? "INR",
     status: event.status,
@@ -428,9 +464,61 @@ function buildFirestorePatch(
     "photoUrl",
     "distanceKm",
     "pace",
+    "crossPathsDiscoveryEnabled",
     "eventFormat",
   ]);
   return patch;
+}
+
+function assertCrossPathsPilotEventCanBeEnabled(params: {
+  eventId: string;
+  event: EventDocument;
+  selectedEvents: FirebaseFirestore.QueryDocumentSnapshot[];
+  nowMillis: number;
+}) {
+  const {eventId, event, selectedEvents, nowMillis} = params;
+  const eventStartMillis = timestampMillis(event.startTime);
+  if (
+    event.status !== "active" ||
+    eventStartMillis === null ||
+    eventStartMillis <= nowMillis + crossPathsPilotMinimumEventLeadMillis
+  ) {
+    throw new HttpsError(
+      "failed-precondition",
+      "Select only active Cross Paths pilot events at least six hours ahead."
+    );
+  }
+  if (event.discoveryMarketId !== crossPathsPilotMarketId) {
+    throw new HttpsError(
+      "failed-precondition",
+      "The initial Cross Paths pilot is limited to Mumbai events."
+    );
+  }
+  if (
+    eventPolicyFromEvent(event).admission.crossPathsPairInventory?.enabled ===
+      true
+  ) {
+    throw new HttpsError(
+      "failed-precondition",
+      "Turn off Cross Paths pair inventory before selecting a pilot event."
+    );
+  }
+  const otherActivePilotEvents = selectedEvents.filter((snapshot) => {
+    if (snapshot.id === eventId) return false;
+    const selected = snapshot.data() as EventDocument;
+    const selectedStartMillis = timestampMillis(selected.startTime);
+    return selected.status === "active" &&
+      selectedStartMillis !== null &&
+      selectedStartMillis > nowMillis &&
+      crossPathsPilotEventEnabled(selected);
+  });
+  if (otherActivePilotEvents.length >= crossPathsPilotMaximumEvents) {
+    throw new HttpsError(
+      "resource-exhausted",
+      `The Mumbai pilot is limited to ${crossPathsPilotMaximumEvents} ` +
+        "upcoming selected events."
+    );
+  }
 }
 
 /**
@@ -801,6 +889,13 @@ function timestampIso(value: unknown): string | null {
   }
   if (value instanceof Date) return value.toISOString();
   return null;
+}
+
+function timestampMillis(value: unknown): number | null {
+  if (value instanceof Date) return value.getTime();
+  const toMillis = (value as {toMillis?: unknown} | null)?.toMillis;
+  return typeof toMillis === "function" ?
+    (toMillis as () => number).call(value) : null;
 }
 
 export const adminListEventDetails = onCall(

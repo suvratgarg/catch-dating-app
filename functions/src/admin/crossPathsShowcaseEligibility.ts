@@ -102,7 +102,8 @@ export async function adminListCrossPathsShowcaseCandidatesHandler(
     [await db.collection(publicProfilesCollection).doc(data.uid).get()] :
     await listPublicProfileSnapshots(db, data, limit, deps);
   const existingProfileSnapshots = profileSnapshots.filter(
-    (snapshot) => snapshot.exists
+    (snapshot) => snapshot.exists &&
+      (!data.marketId || snapshot.data()?.city === data.marketId)
   );
   const eligibilityRefs = existingProfileSnapshots.map((snapshot) =>
     db.collection(eligibilityCollection).doc(snapshot.id)
@@ -255,8 +256,9 @@ async function listPublicProfileSnapshots(
   limit: number,
   deps: CrossPathsShowcaseEligibilityDeps
 ): Promise<FirebaseFirestore.DocumentSnapshot[]> {
-  let query: FirebaseFirestore.Query = db.collection(publicProfilesCollection)
-    .orderBy(deps.documentIdField());
+  let query: FirebaseFirestore.Query = db.collection(publicProfilesCollection);
+  if (data.marketId) query = query.where("city", "==", data.marketId);
+  query = query.orderBy(deps.documentIdField());
   if (data.cursor) query = query.startAfter(data.cursor);
   return (await query.limit(limit).get()).docs;
 }
@@ -346,8 +348,14 @@ function normalizeListPayload(value: unknown): unknown {
     ...data,
     uid: normalizeNullableString(data.uid),
     status: normalizeNullableString(data.status),
+    marketId: normalizeNullableMarketId(data.marketId),
     cursor: normalizeNullableString(data.cursor),
   };
+}
+
+function normalizeNullableMarketId(value: unknown): unknown {
+  const normalized = normalizeNullableString(value);
+  return typeof normalized === "string" ? normalized.toLowerCase() : normalized;
 }
 
 function normalizeSetPayload(value: unknown): unknown {

@@ -36,6 +36,7 @@ describe("useCrossPathsShowcaseController", () => {
     await waitFor(() => expect(result.current.candidates).toHaveLength(1));
     expect(repository.loadCrossPathsShowcaseReviewPage).toHaveBeenCalledWith({
       status: "needsReview",
+      marketId: "in-mh-mumbai",
       cursor: null,
       limit: 25,
     });
@@ -119,7 +120,7 @@ function queuePage() {
       name: "Rhea",
       age: 28,
       gender: "woman",
-      city: "mumbai",
+      city: "in-mh-mumbai",
       photoUrls: ["https://images.example/rhea.jpg"],
       promptAnswers: [],
       relationshipGoal: "longTermRelationship",

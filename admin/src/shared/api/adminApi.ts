@@ -878,7 +878,7 @@ const sampleCrossPathsCandidates:
       name: "Rhea",
       age: 28,
       gender: "woman",
-      city: "mumbai",
+      city: "in-mh-mumbai",
       photoUrls: [
         "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
         "https://images.unsplash.com/photo-1524504388940-b1c1722653e1",
@@ -911,6 +911,7 @@ function sampleCrossPathsShowcaseCandidates(
     generatedAt: sampleCrossPathsGeneratedAt,
     candidates: sampleCrossPathsCandidates.filter((candidate) =>
       (!payload.uid || candidate.uid === payload.uid) &&
+      (!payload.marketId || candidate.city === payload.marketId) &&
       (status === "all" || candidate.effectiveStatus === status)
     ),
     nextCursor: null,
@@ -1962,6 +1963,7 @@ function sampleEventListRow(event: AdminGetEventDetailsResponse["event"]):
     capacityLimit: event.capacityLimit,
     priceInPaise: event.priceInPaise,
     currency: event.currency,
+    crossPathsDiscoveryEnabled: event.crossPathsDiscoveryEnabled,
     searchIndexStatus: event.searchIndexStatus,
   };
 }
@@ -2178,6 +2180,7 @@ function applySampleEventDetailsPatch(
     "photoUrl",
     "distanceKm",
     "pace",
+    "crossPathsDiscoveryEnabled",
   ]));
   if (fields.eventFormat) {
     event.eventFormat = {

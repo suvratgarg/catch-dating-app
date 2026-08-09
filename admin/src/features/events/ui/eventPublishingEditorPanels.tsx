@@ -239,6 +239,21 @@ function EventEditor({
             </AdminEditorSection>
 
             <AdminEditorSection>
+              <legend>Cross Paths pilot</legend>
+              <CheckboxField
+                checked={form.crossPathsDiscoveryEnabled}
+                label="Select this event for the Mumbai Cross Paths pilot"
+                onChange={(checked) =>
+                  update("crossPathsDiscoveryEnabled", checked)}
+              />
+              <AdminWorkbenchNote>
+                Admin or Admin Owner only. The event must be active, at least
+                six hours away, in Mumbai, and use normal admission. This does
+                not enable companion-seat inventory or global rollout flags.
+              </AdminWorkbenchNote>
+            </AdminEditorSection>
+
+            <AdminEditorSection>
               <legend>Format</legend>
               <AdminFieldGrid columns={3}>
                 <SelectField

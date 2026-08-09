@@ -216,6 +216,7 @@ describe("useEventPublishingController", () => {
       meetingPoint: "Indore",
       status: "active",
       availability: "available",
+      crossPathsDiscoveryEnabled: false,
       bookedCount: 8,
       capacityLimit: 8,
       priceInPaise: 120000,

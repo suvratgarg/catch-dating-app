@@ -13,6 +13,7 @@ export interface AdminUpdateEventDetailsCallablePayload {
     photoUrl?: string | null;
     distanceKm?: number;
     pace?: "easy" | "moderate" | "fast" | "competitive";
+    crossPathsDiscoveryEnabled?: boolean;
     eventFormat?: {
       version: 1;
       activityKind:

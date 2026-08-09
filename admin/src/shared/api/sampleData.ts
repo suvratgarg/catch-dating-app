@@ -800,6 +800,8 @@ function sampleCanonicalEvent(
     bookedCount: config.bookedCount,
     checkedInCount: 0,
     waitlistedCount: config.waitlistedCount,
+    crossPathsDiscoveryEnabled:
+      config.eventId === "bandra-sunset-run-1",
     priceInPaise: config.priceInPaise,
     currency: "INR",
     status: "active",

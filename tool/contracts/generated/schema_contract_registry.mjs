@@ -13053,6 +13053,10 @@ export const eventDocumentSchema = {
       },
       "x-catch-ownership": "callable-owned"
     },
+    "crossPathsDiscoveryEnabled": {
+      "type": "boolean",
+      "x-catch-ownership": "callable-owned"
+    },
     "discoveryMarketId": {
       "type": "string",
       "minLength": 1,
@@ -32094,6 +32098,19 @@ export const adminListCrossPathsShowcaseCandidatesCallablePayloadSchema = {
         null
       ]
     },
+    "marketId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "pattern": "^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "cursor": {
       "anyOf": [
         {
@@ -33317,6 +33334,9 @@ export const adminUpdateEventDetailsCallablePayloadSchema = {
             "fast",
             "competitive"
           ]
+        },
+        "crossPathsDiscoveryEnabled": {
+          "type": "boolean"
         },
         "eventFormat": {
           "type": "object",

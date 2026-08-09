@@ -826,7 +826,10 @@ The command is dry-run-first and refuses staging and production. It reuses the
 existing `demo_beta_2026` synthetic identities. If their old events have moved
 outside the six-hour-to-fourteen-day Cross Paths window, it creates one fresh,
 free synthetic event with only the selected viewer and candidates signed up.
-It never opts in a real anchor account.
+The chosen synthetic event is explicitly marked
+`crossPathsDiscoveryEnabled: true`; the backend's synthetic-only exception
+allows this dev fixture without authorizing any real non-Mumbai event. It never
+opts in a real anchor account or changes a real event's pilot switch.
 
 For a repeatable Consumer-app login, use a fictional Firebase test phone and a
 six-digit test code. Never use a real person's phone or OTP:

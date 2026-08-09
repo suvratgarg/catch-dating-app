@@ -977,6 +977,7 @@ export interface AdminEventDetails {
   bookedCount: number;
   checkedInCount: number;
   waitlistedCount: number;
+  crossPathsDiscoveryEnabled: boolean;
   priceInPaise: number;
   currency: string;
   status: AdminEventStatus;
@@ -1015,6 +1016,7 @@ export interface AdminEventListRow {
   meetingPoint: string;
   status: AdminEventStatus;
   availability: string | null;
+  crossPathsDiscoveryEnabled: boolean;
   bookedCount: number;
   capacityLimit: number;
   priceInPaise: number;
@@ -1350,6 +1352,7 @@ export interface AdminUpdateEventDetailsPayload {
     photoUrl?: string | null;
     distanceKm?: number;
     pace?: AdminEventPace;
+    crossPathsDiscoveryEnabled?: boolean;
     eventFormat?: {
       version: 1;
       activityKind: AdminEventActivityKind;

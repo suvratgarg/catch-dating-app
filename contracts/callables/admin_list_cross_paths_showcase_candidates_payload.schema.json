@@ -16,6 +16,12 @@
       "type": ["string", "null"],
       "enum": ["all", "eligible", "needsReview", "paused", null]
     },
+    "marketId": {
+      "anyOf": [
+        {"$ref": "../shared/event_common.schema.json#/definitions/marketId"},
+        {"type": "null"}
+      ]
+    },
     "cursor": {
       "anyOf": [
         {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},

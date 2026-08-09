@@ -11,7 +11,10 @@ void main() {
     'eligibility requires rollout, both consent gates, and a future booking',
     () {
       final now = DateTime(2026, 8, 5, 10);
-      final event = buildEvent(startTime: now.add(const Duration(hours: 2)));
+      final event = buildEvent(
+        startTime: now.add(const Duration(hours: 2)),
+        crossPathsDiscoveryEnabled: true,
+      );
       final profile = buildUser().copyWith(prefsShowInCrossPaths: true);
       final participation = buildEventParticipation(
         event: event,
@@ -32,6 +35,16 @@ void main() {
         crossPathsEventConsentEligible(
           rolloutEnabled: false,
           event: event,
+          participation: participation,
+          userProfile: profile,
+          now: now,
+        ),
+        isFalse,
+      );
+      expect(
+        crossPathsEventConsentEligible(
+          rolloutEnabled: true,
+          event: event.copyWith(crossPathsDiscoveryEnabled: false),
           participation: participation,
           userProfile: profile,
           now: now,

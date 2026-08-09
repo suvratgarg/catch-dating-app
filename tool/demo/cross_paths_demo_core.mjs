@@ -262,7 +262,10 @@ export function buildCrossPathsDemoDocuments({
   existingRecords = new Map(),
 }) {
   const users = [viewer, ...candidates];
-  const docs = users.map((user) => ({
+  const docs = [{
+    path: `events/${eventId}`,
+    data: {crossPathsDiscoveryEnabled: true},
+  }, ...users.map((user) => ({
     path: `users/${user.uid}`,
     data: {
       prefsShowInCrossPaths: true,
@@ -270,7 +273,7 @@ export function buildCrossPathsDemoDocuments({
       ...(user.uid === viewer.uid && testPhone ?
         {phoneNumber: testPhone} : {}),
     },
-  }));
+  }))];
 
   for (const candidate of candidates) {
     const consentPath = `eventCrossPathsConsents/${eventId}_${candidate.uid}`;
@@ -537,6 +540,7 @@ function buildDedicatedCrossPathsEventDocs({
     crossPathsPairHeldCount: 0,
     crossPathsPairConfirmedCount: 0,
     crossPathsPairHeldCohortCounts: {},
+    crossPathsDiscoveryEnabled: true,
     constraints: {
       ...(source.constraints ?? {}),
       minAge: 18,

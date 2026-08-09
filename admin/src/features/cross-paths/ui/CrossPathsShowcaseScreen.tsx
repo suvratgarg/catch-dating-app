@@ -68,6 +68,13 @@ export function CrossPathsShowcaseWorkspace({
         This queue uses completeness, media integrity, and moderation checks.
         It never stores or displays an attractiveness score.
       </StatusBanner>
+      <StatusBanner
+        icon={<ShieldCheck size={17} strokeWidth={1.9} />}
+        tone="success"
+      >
+        Mumbai pilot only. This queue is limited to public profiles whose
+        canonical market is in-mh-mumbai; eligibility never implies consent.
+      </StatusBanner>
       <Panel
         action={controller.generatedAt ?
           `Generated ${formatDateTime(controller.generatedAt)}` :

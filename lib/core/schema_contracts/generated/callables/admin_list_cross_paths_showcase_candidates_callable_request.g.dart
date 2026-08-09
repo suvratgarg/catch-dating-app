@@ -10,18 +10,21 @@ final class AdminListCrossPathsShowcaseCandidatesCallableRequest {
   const AdminListCrossPathsShowcaseCandidatesCallableRequest({
     this.uid,
     this.status,
+    this.marketId,
     this.cursor,
     this.limit,
   });
 
   final String? uid;
   final String? status;
+  final String? marketId;
   final String? cursor;
   final int? limit;
 
   Map<String, Object?> toJson() => {
     'uid': ?uid,
     'status': ?status,
+    'marketId': ?marketId,
     'cursor': ?cursor,
     'limit': ?limit,
   };

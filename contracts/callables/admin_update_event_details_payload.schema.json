@@ -19,6 +19,7 @@
         "photoUrl": {"$ref": "../shared/event_common.schema.json#/definitions/urlOrNull"},
         "distanceKm": {"type": "number", "minimum": 0, "maximum": 100},
         "pace": {"$ref": "../shared/event_common.schema.json#/definitions/paceLevel"},
+        "crossPathsDiscoveryEnabled": {"type": "boolean"},
         "eventFormat": {
           "$ref": "../shared/event_common.schema.json#/definitions/eventFormatSnapshot"
         }

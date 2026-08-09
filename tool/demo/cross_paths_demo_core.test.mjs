@@ -28,6 +28,7 @@ test("Cross Paths fixture writes only explicit synthetic consent and review", ()
   });
 
   assert.deepEqual(docs.map((doc) => doc.path), [
+    "events/demo-event",
     "users/viewer",
     "users/candidate-a",
     "users/candidate-b",
@@ -36,17 +37,18 @@ test("Cross Paths fixture writes only explicit synthetic consent and review", ()
     "eventCrossPathsConsents/demo-event_candidate-b",
     "crossPathsShowcaseEligibility/candidate-b",
   ]);
-  assert.deepEqual(docs[0].data, {
+  assert.deepEqual(docs[0].data, {crossPathsDiscoveryEnabled: true});
+  assert.deepEqual(docs[1].data, {
     prefsShowInCrossPaths: true,
     prefsCrossPathsInvitations: true,
     phoneNumber: "+16505550101",
   });
-  assert.equal(docs[1].data.phoneNumber, undefined);
-  assert.equal(docs[3].data.enabled, true);
-  assert.equal(docs[3].data.termsVersion, 1);
-  assert.equal(docs[4].data.status, "eligible");
-  assert.equal(docs[4].data.profileFingerprint, "a".repeat(64));
-  assert.equal(docs[4].data.reviewedByUid, "cross-paths-demo-seed");
+  assert.equal(docs[2].data.phoneNumber, undefined);
+  assert.equal(docs[4].data.enabled, true);
+  assert.equal(docs[4].data.termsVersion, 1);
+  assert.equal(docs[5].data.status, "eligible");
+  assert.equal(docs[5].data.profileFingerprint, "a".repeat(64));
+  assert.equal(docs[5].data.reviewedByUid, "cross-paths-demo-seed");
 });
 
 test("unchanged eligible review remains idempotent", () => {

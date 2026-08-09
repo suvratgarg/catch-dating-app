@@ -2364,6 +2364,16 @@ const model = {
             null
           ]
         },
+        "marketId": {
+          "anyOf": [
+            {
+              "$ref": "../shared/event_common.schema.json#/definitions/marketId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
         "cursor": {
           "anyOf": [
             {
@@ -3674,6 +3684,9 @@ const model = {
             },
             "pace": {
               "$ref": "../shared/event_common.schema.json#/definitions/paceLevel"
+            },
+            "crossPathsDiscoveryEnabled": {
+              "type": "boolean"
             },
             "eventFormat": {
               "$ref": "../shared/event_common.schema.json#/definitions/eventFormatSnapshot"
