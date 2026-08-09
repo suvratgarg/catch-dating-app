@@ -20,6 +20,10 @@ if grep -Fq "'/lib/labs/'" "$sizing_rule_source"; then
   echo "Catch UI sizing enforcement still references the retired product labs path." >&2
   exit 1
 fi
+if grep -Fq "explore_concept" "$sizing_rule_source"; then
+  echo "Catch UI sizing enforcement still references the retired Explore concept path." >&2
+  exit 1
+fi
 
 cleanup() {
   rm -rf "$probe_root"
