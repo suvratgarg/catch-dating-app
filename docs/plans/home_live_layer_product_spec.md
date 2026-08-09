@@ -1,9 +1,9 @@
 ---
 doc_id: home_live_layer_product_spec
-version: 1.0.3
-updated: 2026-08-07
+version: 1.1.0
+updated: 2026-08-10
 owner: product (approved direction 2026-07-05)
-status: implemented-behind-flag
+status: implemented-live
 ---
 
 # Home = The Live Layer — Product Spec
@@ -137,15 +137,13 @@ follow graph, its join/leave/notification/privacy semantics, and whether it may
 reorder the chronological feed are owner decisions tracked by
 `EXPLORE-PRODUCT-DECISIONS-2026-07-10`.
 
-## Phase 2 — Organizer posts (full-stack, behind a flag)
+## Phase 2 — Organizer posts (full-stack, live)
 
-Gate everything on `AppConfig.enableClubPosts`
-(`bool.fromEnvironment`, same pattern as `enablePushMessaging`).
-
-Status 2026-07-05: implemented behind `ENABLE_CLUB_POSTS`. Contract schemas,
-callable, fanout notification payloads, host composer entry point, home unread
-post module, analytics events, Widgetbook coverage, and data-contract checks
-are wired. Production rollout remains gated by the compile-time flag.
+Status 2026-08-10: contract schemas, callable, fanout notification payloads,
+host composer entry point, home unread post module, analytics events,
+Widgetbook coverage, and data-contract checks are wired. The temporary
+compile-time rollout flag was removed after backend completion; organizer posts
+are part of the normal Host and Consumer product.
 
 ### 2.1 Data contract `[codex]`
 

@@ -11,24 +11,20 @@ const manifest = {
     id: "host-event-broadcast",
     appRole: "host",
     environment: "prod",
-    dartDefine: "ENABLE_HOST_EVENT_BROADCAST",
     callable: "sendEventBroadcast",
     region: "asia-south1",
   }],
 };
 
-test("validates a disabled production dependency without a live call", () => {
+test("validates an always-on production dependency", () => {
   assert.deepEqual(
     validateClientCallableDependencies({
       manifest,
       appRole: "host",
       environment: "prod",
-      envDefines: {ENABLE_HOST_EVENT_BROADCAST: "false"},
-      appConfigSource:
-        "bool.fromEnvironment('ENABLE_HOST_EVENT_BROADCAST')",
       functionTargets: ["functions:sendEventBroadcast"],
     }),
-    [{...manifest.dependencies[0], enabled: false}],
+    manifest.dependencies,
   );
 });
 
@@ -38,9 +34,6 @@ test("fails enabled flags whose callable is not exported", () => {
       manifest,
       appRole: "host",
       environment: "prod",
-      envDefines: {ENABLE_HOST_EVENT_BROADCAST: "true"},
-      appConfigSource:
-        "bool.fromEnvironment('ENABLE_HOST_EVENT_BROADCAST')",
       functionTargets: [],
     }),
     /not exported/,

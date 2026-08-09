@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -303,8 +302,7 @@ class _HostBroadcastComposerSheetState
       widget.requestIdFactory?.call() ??
       HostInboxBroadcastController.generateRequestId(ref);
 
-  bool get _sendingEnabled =>
-      widget.sendingEnabled ?? AppConfig.enableHostEventBroadcast;
+  bool get _sendingEnabled => widget.sendingEnabled ?? true;
 
   void _send() {
     if (ref.read(HostInboxBroadcastController.sendMutation).isPending) return;

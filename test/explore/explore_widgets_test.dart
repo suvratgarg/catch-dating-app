@@ -2312,6 +2312,7 @@ void main() {
         expect(find.text('3'), findsOneWidget);
         expect(find.text('1'), findsOneWidget);
         expect(find.text('₹30'), findsOneWidget);
+        expect(find.text('Post update'), findsOneWidget);
         expect(find.byType(CatchMetricStrip), findsOneWidget);
         expect(find.text('followers'), findsOneWidget);
         expect(find.text('reviews'), findsOneWidget);

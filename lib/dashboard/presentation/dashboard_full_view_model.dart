@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
-import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_arrival_action.dart';
@@ -583,12 +582,10 @@ DashboardFullViewModel dashboardFullViewModel(
   required String uid,
   required List<String> followedClubIds,
 }) {
-  final clubPostNotifications = AppConfig.enableClubPosts
-      ? clubPostNotificationsFromActivity(
-          ref.watch(watchActivityNotificationsProvider(uid)).asData?.value ??
-              const <ActivityNotification>[],
-        )
-      : const <ActivityNotification>[];
+  final clubPostNotifications = clubPostNotificationsFromActivity(
+    ref.watch(watchActivityNotificationsProvider(uid)).asData?.value ??
+        const <ActivityNotification>[],
+  );
 
   return buildDashboardFullViewModel(
     signedUpEvents: signedUpEvents,

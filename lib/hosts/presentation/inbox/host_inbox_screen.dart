@@ -9,7 +9,6 @@ import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_list_bod
 import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_sliver_header.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
@@ -257,8 +256,7 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
     );
   }
 
-  bool get _broadcastEnabled =>
-      widget.broadcastEnabled ?? AppConfig.enableHostEventBroadcast;
+  bool get _broadcastEnabled => widget.broadcastEnabled ?? true;
 }
 
 class HostInboxScopeSelector extends StatefulWidget {

@@ -11,8 +11,6 @@ export function validateClientCallableDependencies({
   manifest,
   appRole,
   environment,
-  envDefines,
-  appConfigSource,
   functionTargets,
 }) {
   if (manifest?.version !== 1 || !Array.isArray(manifest.dependencies)) {
@@ -22,21 +20,10 @@ export function validateClientCallableDependencies({
     (entry) => entry.appRole === appRole && entry.environment === environment,
   );
   for (const entry of matching) {
-    for (const field of ["id", "dartDefine", "callable", "region"]) {
+    for (const field of ["id", "callable", "region"]) {
       if (typeof entry[field] !== "string" || entry[field].trim() === "") {
         throw new Error(`Dependency entry is missing ${field}.`);
       }
-    }
-    const rawFlag = envDefines[entry.dartDefine];
-    if (rawFlag !== "true" && rawFlag !== "false") {
-      throw new Error(
-        `${entry.dartDefine} must be the string "true" or "false" in ` +
-          `${environment}.json.`,
-      );
-    }
-    if (!appConfigSource.includes(`'${entry.dartDefine}'`) &&
-        !appConfigSource.includes(`"${entry.dartDefine}"`)) {
-      throw new Error(`${entry.dartDefine} is not declared in AppConfig.`);
     }
     if (!functionTargets.includes(`functions:${entry.callable}`)) {
       throw new Error(
@@ -44,10 +31,7 @@ export function validateClientCallableDependencies({
       );
     }
   }
-  return matching.map((entry) => ({
-    ...entry,
-    enabled: envDefines[entry.dartDefine] === "true",
-  }));
+  return matching;
 }
 
 export async function probeCallable({
@@ -141,19 +125,11 @@ async function main() {
     manifest: readJson("tool/firebase/client_callable_dependencies.json"),
     appRole,
     environment,
-    envDefines: readJson(`tool/env/dart_defines/${environment}.json`),
-    appConfigSource: fs.readFileSync(
-      path.join(repoRoot, "lib/core/app_config.dart"),
-      "utf8",
-    ),
     functionTargets: sourceFunctionTargets(),
   });
-  const enabled = dependencies.filter((entry) => entry.enabled);
-  if (!flags.has("--verify-live") || enabled.length === 0) {
+  if (!flags.has("--verify-live") || dependencies.length === 0) {
     for (const entry of dependencies) {
-      process.stdout.write(
-        `${entry.id}: ${entry.enabled ? "enabled (static check)" : "disabled"}\n`,
-      );
+      process.stdout.write(`${entry.id}: required (static check)\n`);
     }
     return;
   }
@@ -161,7 +137,7 @@ async function main() {
     env: environment,
     firebaseRcPath: path.join(repoRoot, ".firebaserc"),
   });
-  for (const entry of enabled) {
+  for (const entry of dependencies) {
     const result = await probeCallable({
       projectId,
       region: entry.region,
