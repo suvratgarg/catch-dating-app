@@ -1,6 +1,6 @@
 ---
 doc_id: demo_data_seeding
-version: 1.3.0
+version: 1.3.1
 updated: 2026-08-09
 owner: recursive_audit_loop
 status: active
@@ -839,6 +839,11 @@ node tool/demo/demo_ops.mjs seed-cross-paths \
   --test-phone +16505550101 \
   --test-code 123456
 ```
+
+The operation first uses the Firebase Admin credential. If that principal can
+manage Auth users but cannot read/update Identity Platform configuration, it
+falls back to the active `gcloud` account; that account must have
+`firebaseauth.configs.get` and `firebaseauth.configs.update` permission.
 
 Remote Config rollout flags remain off. To exercise the fixture without
 changing shared rollout state, run a non-production Consumer debug build with

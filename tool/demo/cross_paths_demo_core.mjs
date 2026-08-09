@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import {execFileSync} from "node:child_process";
 import {createRequire} from "node:module";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
@@ -360,6 +361,7 @@ export async function ensureCrossPathsDemoTestLogin({
   phoneNumber,
   smsCode,
   fetchImpl = globalThis.fetch,
+  getFallbackAccessToken = getActiveGcloudAccessToken,
 }) {
   assertTestPhone(phoneNumber);
   assertTestSmsCode(smsCode);
@@ -390,12 +392,23 @@ export async function ensureCrossPathsDemoTestLogin({
   if (!credential || typeof credential.getAccessToken !== "function") {
     throw new Error("Firebase Admin credential cannot update test-phone config.");
   }
-  const token = await credential.getAccessToken();
+  const adminToken = await credential.getAccessToken();
   const configUrl =
     `https://identitytoolkit.googleapis.com/admin/v2/projects/${projectId}/config`;
-  const configResponse = await fetchImpl(configUrl, {
-    headers: {Authorization: `Bearer ${token.access_token}`},
+  let accessToken = adminToken.access_token;
+  let configResponse = await fetchIdentityConfig({
+    fetchImpl,
+    configUrl,
+    accessToken,
   });
+  if (configResponse.status === 401 || configResponse.status === 403) {
+    accessToken = await getFallbackAccessToken();
+    configResponse = await fetchIdentityConfig({
+      fetchImpl,
+      configUrl,
+      accessToken,
+    });
+  }
   if (!configResponse.ok) {
     throw new Error(
       `Identity Platform config read failed (${configResponse.status}).`
@@ -410,7 +423,7 @@ export async function ensureCrossPathsDemoTestLogin({
       {
         method: "PATCH",
         headers: {
-          Authorization: `Bearer ${token.access_token}`,
+          Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -435,6 +448,32 @@ export async function ensureCrossPathsDemoTestLogin({
     authUserCreatedAt: authUser.metadata?.creationTime ?? null,
     testPhoneConfigChanged: changed,
   };
+}
+
+function fetchIdentityConfig({fetchImpl, configUrl, accessToken}) {
+  return fetchImpl(configUrl, {
+    headers: {Authorization: `Bearer ${accessToken}`},
+  });
+}
+
+function getActiveGcloudAccessToken() {
+  try {
+    const token = execFileSync(
+      "gcloud",
+      ["auth", "print-access-token"],
+      {
+        encoding: "utf8",
+        stdio: ["ignore", "pipe", "ignore"],
+      }
+    ).trim();
+    if (token) return token;
+  } catch {
+    // The caller below receives one stable, credential-safe error.
+  }
+  throw new Error(
+    "Identity Platform config requires an active gcloud account with " +
+      "firebaseauth.configs.get/update permission."
+  );
 }
 
 function buildDedicatedCrossPathsEventDocs({

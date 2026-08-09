@@ -172,6 +172,53 @@ test("test login merges Identity config and creates only the named Auth user",
   }
 );
 
+test("test login falls back to the active gcloud principal for config access",
+  async () => {
+    const requests = [];
+    const auth = existingAuthUser();
+    const adminStub = {
+      auth: () => auth,
+      app: () => ({
+        options: {
+          credential: {
+            getAccessToken: async () => ({access_token: "admin-token"}),
+          },
+        },
+      }),
+    };
+    const fetchImpl = async (url, options = {}) => {
+      requests.push({url, options});
+      if (options.headers.Authorization === "Bearer admin-token") {
+        return response({}, 403);
+      }
+      if (!options.method) {
+        return response({signIn: {phone: {testPhoneNumbers: {}}}});
+      }
+      return response({});
+    };
+
+    const result = await ensureCrossPathsDemoTestLogin({
+      admin: adminStub,
+      projectId: "catchdates-dev",
+      viewerUid: "demo-viewer",
+      phoneNumber: "+16505550101",
+      smsCode: "604219",
+      fetchImpl,
+      getFallbackAccessToken: async () => "gcloud-token",
+    });
+
+    assert.equal(result.testPhoneConfigChanged, true);
+    assert.deepEqual(requests.map((request) => ({
+      method: request.options.method ?? "GET",
+      authorization: request.options.headers.Authorization,
+    })), [
+      {method: "GET", authorization: "Bearer admin-token"},
+      {method: "GET", authorization: "Bearer gcloud-token"},
+      {method: "PATCH", authorization: "Bearer gcloud-token"},
+    ]);
+  }
+);
+
 test("test login refuses to replace an existing Auth phone", async () => {
   const adminStub = {
     auth: () => ({
@@ -233,6 +280,18 @@ function fakeAuth() {
       this.created.push(input);
       return {
         ...input,
+        metadata: {creationTime: "2026-08-09T00:00:00.000Z"},
+      };
+    },
+  };
+}
+
+function existingAuthUser() {
+  return {
+    async getUser() {
+      return {
+        uid: "demo-viewer",
+        phoneNumber: "+16505550101",
         metadata: {creationTime: "2026-08-09T00:00:00.000Z"},
       };
     },
