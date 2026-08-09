@@ -400,6 +400,7 @@ export async function ensureCrossPathsDemoTestLogin({
     fetchImpl,
     configUrl,
     accessToken,
+    quotaProjectId: projectId,
   });
   if (configResponse.status === 401 || configResponse.status === 403) {
     accessToken = await getFallbackAccessToken();
@@ -407,6 +408,7 @@ export async function ensureCrossPathsDemoTestLogin({
       fetchImpl,
       configUrl,
       accessToken,
+      quotaProjectId: projectId,
     });
   }
   if (!configResponse.ok) {
@@ -415,20 +417,21 @@ export async function ensureCrossPathsDemoTestLogin({
     );
   }
   const config = await configResponse.json();
-  const existing = config?.signIn?.phone?.testPhoneNumbers ?? {};
+  const existing = config?.signIn?.phoneNumber?.testPhoneNumbers ?? {};
   const changed = existing[phoneNumber] !== smsCode;
   if (changed) {
     const patchResponse = await fetchImpl(
-      `${configUrl}?updateMask=signIn.phone.testPhoneNumbers`,
+      `${configUrl}?updateMask=signIn.phoneNumber.testPhoneNumbers`,
       {
         method: "PATCH",
         headers: {
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
+          "x-goog-user-project": projectId,
         },
         body: JSON.stringify({
           signIn: {
-            phone: {
+            phoneNumber: {
               testPhoneNumbers: {...existing, [phoneNumber]: smsCode},
             },
           },
@@ -450,9 +453,17 @@ export async function ensureCrossPathsDemoTestLogin({
   };
 }
 
-function fetchIdentityConfig({fetchImpl, configUrl, accessToken}) {
+function fetchIdentityConfig({
+  fetchImpl,
+  configUrl,
+  accessToken,
+  quotaProjectId,
+}) {
   return fetchImpl(configUrl, {
-    headers: {Authorization: `Bearer ${accessToken}`},
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "x-goog-user-project": quotaProjectId,
+    },
   });
 }
 

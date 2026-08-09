@@ -138,9 +138,11 @@ test("test login merges Identity config and creates only the named Auth user",
     const fetchImpl = async (url, options = {}) => {
       requests.push({url, options});
       if (!options.method) {
-        return response({
-          signIn: {phone: {testPhoneNumbers: {"+16505550100": "111111"}}},
-        });
+        return response({signIn: {
+          phoneNumber: {
+            testPhoneNumbers: {"+16505550100": "111111"},
+          },
+        }});
       }
       return response({});
     };
@@ -165,10 +167,18 @@ test("test login merges Identity config and creates only the named Auth user",
     }]);
     assert.equal(requests.length, 2);
     const patch = JSON.parse(requests[1].options.body);
-    assert.deepEqual(patch.signIn.phone.testPhoneNumbers, {
+    assert.deepEqual(patch.signIn.phoneNumber.testPhoneNumbers, {
       "+16505550100": "111111",
       "+16505550101": "604219",
     });
+    assert.match(
+      requests[1].url,
+      /updateMask=signIn\.phoneNumber\.testPhoneNumbers$/
+    );
+    assert.equal(
+      requests[1].options.headers["x-goog-user-project"],
+      "catchdates-dev"
+    );
   }
 );
 
@@ -192,7 +202,7 @@ test("test login falls back to the active gcloud principal for config access",
         return response({}, 403);
       }
       if (!options.method) {
-        return response({signIn: {phone: {testPhoneNumbers: {}}}});
+        return response({signIn: {phoneNumber: {testPhoneNumbers: {}}}});
       }
       return response({});
     };
