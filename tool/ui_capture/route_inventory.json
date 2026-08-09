@@ -4,13 +4,13 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "539ce6a2e7002fdefccad65220b96dd081a29b3172f12a269ffee7cb23491a5c",
-    "routeContractSha256": "573de63618a6501a9c52745733059e608733f396df6c01c9bfaa6e4399388d2c",
-    "goRouteCount": 54,
+    "normalizedFileSha256": "f015fe64ad2c6ddf3d8fdf3b3241b881ecec3fadaaa41dfb5658d64d808cce03",
+    "routeContractSha256": "7ca28790f49a7ebe2760b35f00301abf1ea306636586a9cbd873e5490ea7ba69",
+    "goRouteCount": 50,
     "shellBranchCount": 8,
-    "enumRouteCount": 53,
-    "referencedRouteCount": 53,
-    "runtimeRouteCount": 53,
+    "enumRouteCount": 49,
+    "referencedRouteCount": 49,
+    "runtimeRouteCount": 49,
     "routeHelperCount": 2,
     "routeHelpers": [
       "_hostUtilityRoutes",
@@ -657,57 +657,6 @@
       "runtimePathExpression": "':matchId'",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
-    },
-    {
-      "id": "eventPolicyLabScreen",
-      "path": "/dev/event-policy-lab",
-      "pathParameters": [],
-      "requiresFixture": false,
-      "gated": true,
-      "runtimePath": "/dev/event-policy-lab",
-      "runtimeParentId": null,
-      "runtimePathExpression": "Routes.eventPolicyLabScreen.path",
-      "runtimePathMatchesEnum": true,
-      "referencedByGoRouter": true
-    },
-    {
-      "id": "eventSuccessLabScreen",
-      "path": "/dev/event-success-lab",
-      "pathParameters": [],
-      "requiresFixture": false,
-      "gated": true,
-      "runtimePath": "/dev/event-success-lab",
-      "runtimeParentId": null,
-      "runtimePathExpression": "Routes.eventSuccessLabScreen.path",
-      "runtimePathMatchesEnum": true,
-      "referencedByGoRouter": true
-    },
-    {
-      "id": "eventSuccessManualQaScreen",
-      "path": "/dev/event-success-manual-qa",
-      "pathParameters": [],
-      "requiresFixture": false,
-      "gated": true,
-      "runtimePath": "/dev/event-success-manual-qa",
-      "runtimeParentId": null,
-      "runtimePathExpression": "Routes.eventSuccessManualQaScreen.path",
-      "runtimePathMatchesEnum": true,
-      "referencedByGoRouter": true
-    },
-    {
-      "id": "eventSuccessPreviewScreen",
-      "path": "/dev/event-success-preview/:clubId/:eventId",
-      "pathParameters": [
-        "clubId",
-        "eventId"
-      ],
-      "requiresFixture": true,
-      "gated": true,
-      "runtimePath": "/dev/event-success-preview/:clubId/:eventId",
-      "runtimeParentId": null,
-      "runtimePathExpression": "Routes.eventSuccessPreviewScreen.path",
-      "runtimePathMatchesEnum": true,
-      "referencedByGoRouter": true
     }
   ],
   "goRouterRouteReferences": [
@@ -721,12 +670,8 @@
     "dashboardScreen",
     "eventDetailScreen",
     "eventLocationMapScreen",
-    "eventPolicyLabScreen",
     "eventRecapScreen",
     "eventSuccessCompanionScreen",
-    "eventSuccessLabScreen",
-    "eventSuccessManualQaScreen",
-    "eventSuccessPreviewScreen",
     "exploreMapScreen",
     "exploreScreen",
     "filtersScreen",

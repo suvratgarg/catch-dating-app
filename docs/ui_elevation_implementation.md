@@ -101,9 +101,9 @@ As-built reference (already in the tree; do not redo):
   lives in Widgetbook foundation and component-contract surfaces;
   `lib/design_fixtures/**` remains an actively imported fixture library,
   not a pending lab application.
-- `EventPolicyLabScreen` and `EventSuccessLabScreen` remain active dev/staging
-  routes with Widgetbook and test coverage. They live in their owning feature
-  folders and are not retired standalone lab applications.
+- The former Event Policy and Event Success lab routes were removed after their
+  behavior was adopted into the production Host setup/manage and attendee
+  companion flows. Review coverage now lives with those production surfaces.
 - Native/brand surfaces (Android splash, web manifest/index, Razorpay theme) updated off the old
   orange.
 

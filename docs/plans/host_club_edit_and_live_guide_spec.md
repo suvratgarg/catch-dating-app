@@ -664,9 +664,9 @@ Recorded so future work has an anchor; no code in this spec's scope:
    the per-event Setup tab; toggles become edits to a visible run-of-show
    timeline (the playbooks already author `runOfShow` steps with durations).
 2. **Attendee preview everywhere**: "See what attendees see" entry points
-   from defaults surfaces. A per-event preview screen already exists
-   (`Routes.eventSuccessPreviewScreen`); defaults-level preview needs a
-   synthetic event and is a product feature, not a refactor.
+   from defaults surfaces. The production attendee companion is available
+   after event creation; a defaults-level preview would need a synthetic event
+   and remains a product feature, not a refactor.
 3. Routing the generated domain copy catalog through l10n.
 
 ## 10. Sequencing

@@ -17490,12 +17490,6 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['boolean'],
   );
 
-  static const mobileFormStateEventSuccessManualQaScenario = CatchContractFieldConstraints(
-    path: 'mobileFormState.eventSuccessManualQaScenario',
-    valueTypes: <String>['string'],
-    enumValues: <String>['socialRun', 'racketPairs', 'quizTeams', 'singlesMixer'],
-  );
-
   static const mobileFormStateEventSuccessModuleSelected = CatchContractFieldConstraints(
     path: 'mobileFormState.eventSuccessModuleSelected',
     valueTypes: <String>['boolean'],
@@ -31164,7 +31158,6 @@ abstract final class CatchContractConstraints {
     'mobileFormState.eventDurationMinutes': mobileFormStateEventDurationMinutes,
     'mobileFormState.eventDynamicPricingEnabled': mobileFormStateEventDynamicPricingEnabled,
     'mobileFormState.eventSuccessLiveCardIncluded': mobileFormStateEventSuccessLiveCardIncluded,
-    'mobileFormState.eventSuccessManualQaScenario': mobileFormStateEventSuccessManualQaScenario,
     'mobileFormState.eventSuccessModuleSelected': mobileFormStateEventSuccessModuleSelected,
     'mobileFormState.eventSuccessQuestionnaireMode': mobileFormStateEventSuccessQuestionnaireMode,
     'mobileFormState.exploreActivityTag': mobileFormStateExploreActivityTag,

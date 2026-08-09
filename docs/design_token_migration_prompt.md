@@ -41,7 +41,8 @@ bash tool/check_catch_ui_lint_drift.sh --count   # how many candidates (if 0, ST
 bash tool/check_catch_ui_lint_drift.sh           # lists matching analyzer diagnostics, exits 1
 ```
 Scanned: all of `lib/` except generated code, the token DEFINITIONS
-(`lib/core/theme/**`), retired sandboxes (`lib/labs/**`, `*explore_concept*`),
+(`lib/core/theme/**`), design fixtures (`lib/design_fixtures/**`), and retired
+concept files (`*explore_concept*`),
 and color-only art exemptions (`graded_image.dart`,
 `event_activity_visuals.dart`). `Colors.transparent` and transparent
 `Color(0x00...)` literals are allowed; `// token:allow:` works on the same line

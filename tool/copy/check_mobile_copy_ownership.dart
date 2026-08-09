@@ -323,11 +323,8 @@ bool _supportsFileAllowance(String file) =>
     file.startsWith('lib/design_fixtures/') ||
     file == 'lib/core/city_catalog.dart' ||
     file == 'lib/core/country_markets.dart' ||
-    file == 'lib/event_policies/domain/event_policy_preview/catalog.dart' ||
     file ==
-        'lib/explore/presentation/widgets/explore_synthetic_visual_fill.dart' ||
-    file ==
-        'lib/event_success/presentation/event_success_manual_qa_screen.dart';
+        'lib/explore/presentation/widgets/explore_synthetic_visual_fill.dart';
 
 class _CopyVisitor extends RecursiveAstVisitor<void> {
   _CopyVisitor({required this.file, required this.source, required this.unit});

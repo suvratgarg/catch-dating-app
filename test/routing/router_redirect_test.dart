@@ -363,30 +363,6 @@ void main() {
       );
     });
 
-    test('unauthenticated users can open the dev event policy lab', () {
-      expect(
-        _redirect(
-          uidAsync: const AsyncData(null),
-          userProfileAsync: const AsyncData(null),
-          location: '/dev/event-policy-lab',
-          matchedLocation: Routes.eventPolicyLabScreen.path,
-        ),
-        null,
-      );
-    });
-
-    test('unauthenticated users can open the dev event success lab', () {
-      expect(
-        _redirect(
-          uidAsync: const AsyncData(null),
-          userProfileAsync: const AsyncData(null),
-          location: '/dev/event-success-lab',
-          matchedLocation: Routes.eventSuccessLabScreen.path,
-        ),
-        null,
-      );
-    });
-
     test(
       'legacy unauthenticated onboarding links move to start and preserve from',
       () {

@@ -54,15 +54,6 @@ export const mobileFormStateSchema: Record<string, unknown> = {
       ],
       "description": "Presentation mode that derives questionnaire module selection and pairing configuration."
     },
-    "eventSuccessManualQaScenario": {
-      "type": "string",
-      "enum": [
-        "socialRun",
-        "racketPairs",
-        "quizTeams",
-        "singlesMixer"
-      ]
-    },
     "exploreActivityTag": {
       "type": "string",
       "minLength": 1,

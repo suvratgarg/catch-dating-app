@@ -173,8 +173,6 @@ flutter:
     - assets/audio/celebration/
     - assets/fonts/OFL-Archivo.txt
     - assets/fonts/OFL-IBMPlexMono.txt
-    - tool/demo/demo_seed/scenarios/host-demo.json
-    - tool/demo/demo_seed/personas/us_nyc_sales_profile_projection.planned.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

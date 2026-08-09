@@ -23,8 +23,8 @@
       "reason": "Canonical primitive implementations are target owners, not product field surfaces."
     },
     {
-      "pathPrefix": "lib/labs/",
-      "reason": "Design fixtures and prototypes are reviewed through their production owner before migration."
+      "pathPrefix": "lib/design_fixtures/",
+      "reason": "Design fixtures are reviewed through their production owner before migration."
     },
     {
       "pathPrefix": "lib/l10n/generated/",
@@ -284,17 +284,10 @@
       ]
     },
     {
-      "id": "FIELD-SURFACE-EXCLUSION-EVENT-SUCCESS-LAB",
-      "reason": "Developer lab and preview setup flow; production host setup is tracked separately.",
+      "id": "FIELD-SURFACE-EXCLUSION-EVENT-SUCCESS-FEATURE-BLOCKS",
+      "reason": "Review-only feature-block composition; production host setup is tracked separately.",
       "anchors": [
         {"file": "lib/event_success/presentation/event_success_feature_blocks.dart", "symbol": "CatchChip.selectable", "expected": 1}
-      ]
-    },
-    {
-      "id": "FIELD-SURFACE-EXCLUSION-EVENT-SUCCESS-MANUAL-QA",
-      "reason": "Developer-only manual QA surface; production ownership is tracked by the companion candidate.",
-      "anchors": [
-        {"file": "lib/event_success/presentation/event_success_manual_qa_screen.dart", "symbol": "CatchChip.selectable", "expected": 1}
       ]
     }
   ]

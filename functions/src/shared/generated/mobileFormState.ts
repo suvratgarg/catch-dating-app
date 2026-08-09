@@ -38,11 +38,6 @@ export interface MobileFormState {
    * Presentation mode that derives questionnaire module selection and pairing configuration.
    */
   eventSuccessQuestionnaireMode?: "off" | "cluesOnly" | "cluesAndPairing";
-  eventSuccessManualQaScenario?:
-    | "socialRun"
-    | "racketPairs"
-    | "quizTeams"
-    | "singlesMixer";
   exploreActivityTag?: string;
   exploreArea?: string;
   exploreDistanceFilter?: "any" | "oneKm" | "threeKm" | "fiveKm" | "tenKm";

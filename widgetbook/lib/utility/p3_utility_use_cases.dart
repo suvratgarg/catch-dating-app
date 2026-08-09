@@ -14,15 +14,12 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/data/club_name_lookup.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';
-import 'package:catch_dating_app/event_policies/domain/event_policy_preview.dart';
-import 'package:catch_dating_app/event_policies/presentation/event_policy_lab_screen.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -145,12 +142,6 @@ const _forceUpdateConfig = AppVersionConfig(
   storeUrlAndroid: 'https://play.google.com/store/apps/details?id=catch.app',
   storeUrlIos: 'https://apps.apple.com/app/catch/id000000000',
 );
-const _eventPolicyScenarios = [
-  EventPolicyPreviewCatalog.inviteOnlyPrivateEvent,
-  EventPolicyPreviewCatalog.balancedRatioEvent,
-  EventPolicyPreviewCatalog.demandPricedBalancedEvent,
-  EventPolicyPreviewCatalog.membersOnlyEvent,
-];
 final _profilePhotos = ProfileSurfaceFixtures.profilePhotos(
   owner: _viewerUid,
   seed: 'utility',
@@ -1354,275 +1345,6 @@ Widget calendarStatDividerStates(BuildContext context) {
         child: Center(child: CalendarStatDivider()),
       ),
     ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Scenario states',
-  type: EventPolicyLabScreen,
-  path: '[P3 utility surfaces]/Event policy lab',
-)
-Widget eventPolicyLabScreenStates(BuildContext context) {
-  return _UtilityCatalog(
-    title: 'EventPolicyLabScreen',
-    contractId: 'screen.dev.event_policy_lab',
-    children: [
-      for (final scenario in _eventPolicyScenarios)
-        _StateCard(
-          label: scenario.title,
-          child: _DeviceFrame(
-            child: EventPolicyLabScreen(initialScenario: scenario),
-          ),
-        ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Header states',
-  type: EventPolicyLabHeader,
-  path: '[P3 utility surfaces]/Event policy lab',
-)
-Widget eventPolicyLabHeaderStates(BuildContext context) {
-  return _UtilityCatalog(
-    title: 'EventPolicyLabHeader',
-    contractId: 'screen.dev.event_policy_lab.header',
-    children: [
-      for (final scenario in _eventPolicyScenarios.take(2))
-        _StateCard(
-          label: scenario.title,
-          child: EventPolicyLabHeader(scenario: scenario),
-        ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Scenario picker',
-  type: EventPolicyScenarioPicker,
-  path: '[P3 utility surfaces]/Event policy lab',
-)
-Widget eventPolicyScenarioPickerState(BuildContext context) {
-  return _UtilityCatalog(
-    title: 'EventPolicyScenarioPicker',
-    contractId: 'screen.dev.event_policy_lab.scenario_picker',
-    children: [
-      _StateCard(
-        label: 'scenario rail',
-        child: EventPolicyScenarioPicker(
-          selectedScenario: _eventPolicyScenarios.first,
-          onSelected: _noopScenarioSelect,
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Scenario card states',
-  type: EventPolicyScenarioCard,
-  path: '[P3 utility surfaces]/Event policy lab',
-)
-Widget eventPolicyScenarioCardStates(BuildContext context) {
-  return _UtilityCatalog(
-    title: 'EventPolicyScenarioCard',
-    contractId: 'screen.dev.event_policy_lab.scenario_card',
-    children: [
-      _StateCard(
-        label: 'selected',
-        child: EventPolicyScenarioCard(
-          scenario: _eventPolicyScenarios.first,
-          selected: true,
-          onTap: _noop,
-        ),
-      ),
-      _StateCard(
-        label: 'unselected',
-        child: EventPolicyScenarioCard(
-          scenario: _eventPolicyScenarios.last,
-          selected: false,
-          onTap: _noop,
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Summary states',
-  type: EventPolicySummary,
-  path: '[P3 utility surfaces]/Event policy lab',
-)
-Widget eventPolicySummaryStates(BuildContext context) {
-  return _UtilityCatalog(
-    title: 'EventPolicySummary',
-    contractId: 'screen.dev.event_policy_lab.summary',
-    children: [
-      for (final scenario in _eventPolicyScenarios.take(2))
-        _StateCard(
-          label: scenario.title,
-          child: EventPolicySummary(scenario: scenario),
-        ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Preview result rows',
-  type: EventPolicyResultRows,
-  path: '[P3 utility surfaces]/Event policy lab',
-)
-Widget eventPolicyResultRowsStates(BuildContext context) {
-  final result = _eventPolicyResult(_eventPolicyScenarios.first);
-  return _UtilityCatalog(
-    title: 'EventPolicyResultRows',
-    contractId: 'screen.dev.event_policy_lab.result_rows',
-    children: [
-      _StateCard(
-        label: 'result list',
-        child: EventPolicyResultRows(result: result),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Preview result row',
-  type: EventPolicyResultRow,
-  path: '[P3 utility surfaces]/Event policy lab',
-)
-Widget eventPolicyResultRowState(BuildContext context) {
-  final row = _eventPolicyResult(_eventPolicyScenarios.first).rows.first;
-  return _UtilityCatalog(
-    title: 'EventPolicyResultRow',
-    contractId: 'screen.dev.event_policy_lab.result_row',
-    children: [
-      _StateCard(
-        label: row.probeLabel,
-        child: EventPolicyResultRow(row: row),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Cancellation rows',
-  type: EventPolicyCancellationRows,
-  path: '[P3 utility surfaces]/Event policy lab',
-)
-Widget eventPolicyCancellationRowsStates(BuildContext context) {
-  final result = _eventPolicyResult(_eventPolicyScenarios.first);
-  return _UtilityCatalog(
-    title: 'EventPolicyCancellationRows',
-    contractId: 'screen.dev.event_policy_lab.cancellation_rows',
-    children: [
-      _StateCard(
-        label: 'cancellation list',
-        child: EventPolicyCancellationRows(result: result),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Cancellation row',
-  type: EventPolicyCancellationRow,
-  path: '[P3 utility surfaces]/Event policy lab',
-)
-Widget eventPolicyCancellationRowState(BuildContext context) {
-  final row = _eventPolicyResult(
-    _eventPolicyScenarios.first,
-  ).cancellationRows.first;
-  return _UtilityCatalog(
-    title: 'EventPolicyCancellationRow',
-    contractId: 'screen.dev.event_policy_lab.cancellation_row',
-    children: [
-      _StateCard(
-        label: row.probeLabel,
-        child: EventPolicyCancellationRow(row: row),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Debug output',
-  type: EventPolicyDebugOutput,
-  path: '[P3 utility surfaces]/Event policy lab',
-)
-Widget eventPolicyDebugOutputState(BuildContext context) {
-  return _UtilityCatalog(
-    title: 'EventPolicyDebugOutput',
-    contractId: 'screen.dev.event_policy_lab.debug_output',
-    children: [
-      _StateCard(
-        label: 'debug map',
-        child: EventPolicyDebugOutput(
-          result: _eventPolicyResult(_eventPolicyScenarios.first),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Small primitives',
-  type: EventPolicyLabSectionTitle,
-  path: '[P3 utility surfaces]/Event policy lab',
-)
-Widget eventPolicySmallPrimitiveStates(BuildContext context) {
-  return _UtilityCatalog(
-    title: 'EventPolicy small primitives',
-    contractId: 'screen.dev.event_policy_lab.small_primitives',
-    children: [
-      _StateCard(
-        label: 'section title',
-        child: EventPolicyLabSectionTitle(
-          icon: CatchIcons.ruleRounded,
-          title: 'Policy shape',
-        ),
-      ),
-      _StateCard(
-        label: 'summary line',
-        child: EventPolicySummaryLine(
-          icon: CatchIcons.queueOutlined,
-          label: 'Waitlist',
-          value: 'Balanced by cohort',
-        ),
-      ),
-      _StateCard(
-        label: 'divider',
-        child: Builder(
-          builder: (context) =>
-              EventPolicyDividerLine(color: CatchTokens.of(context).line),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Summary line',
-  type: EventPolicySummaryLine,
-  path: '[P3 utility surfaces]/Event policy lab',
-)
-Widget eventPolicySummaryLineState(BuildContext context) {
-  return EventPolicySummaryLine(
-    icon: CatchIcons.paymentsOutlined,
-    label: 'Host payout',
-    value: 'Settled after attendance',
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Divider',
-  type: EventPolicyDividerLine,
-  path: '[P3 utility surfaces]/Event policy lab',
-)
-Widget eventPolicyDividerLineState(BuildContext context) {
-  return Builder(
-    builder: (context) =>
-        EventPolicyDividerLine(color: CatchTokens.of(context).line),
   );
 }
 
@@ -4280,15 +4002,6 @@ Stream<T> _loadingStream<T>() => UtilitySurfaceFixtures.loadingStream<T>();
 
 Stream<T> _errorStream<T>(String message) =>
     UtilitySurfaceFixtures.errorStream<T>(message);
-
-EventPolicyPreviewResult _eventPolicyResult(
-  EventPolicyPreviewScenario scenario,
-) {
-  const harness = EventPolicyPreviewHarness();
-  return harness.preview(scenario);
-}
-
-void _noopScenarioSelect(EventPolicyPreviewScenario scenario) {}
 
 Future<bool> _noopLauncher(Uri uri, {Object? mode}) async {
   return true;

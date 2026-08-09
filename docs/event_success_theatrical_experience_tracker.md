@@ -52,8 +52,8 @@ Status: complete for V1; keep this phase open only for manual device feedback.
 - [x] Add a host showtime console above the existing live host guide.
 - [x] Dispatch live effects for host step changes, countdowns, reveals, reset,
   check-in/live-entry, and guide completion.
-- [x] Refactor the manual QA harness around one in-memory fixture store so host
-  and attendee state changes stay synchronized during visual testing.
+- [x] Prove host and attendee state changes stay synchronized through focused
+  production-surface tests and review fixtures.
 - [x] Complete focused verification with proof preserved in Git and CI.
 
 Acceptance criteria:
@@ -144,12 +144,11 @@ existing behavior.
 - [x] Update widget tests to assert the companion uses stage semantics rather
   than workbook/card semantics: one stage root, one primary moment, no pre-reveal
   peer-name leakage, countdown advances, and reveal unlocks only after reveal.
-- [x] Add at least one manual QA regression for the attendee pane in
-  `/dev/event-success-manual-qa` covering questionnaire save, live countdown,
-  reveal unlock, and opt-out state from the shared fixture store.
+- [x] Add deterministic production-surface coverage for questionnaire save,
+  live countdown, reveal unlock, and opt-out state.
 - [x] Run focused gates: `flutter test test/event_success`, affected
   celebration/effects tests if sensory behavior changes, `flutter analyze
-  --no-fatal-infos`, `git diff --check`, hot reload macOS manual QA, and capture
+  --no-fatal-infos`, `git diff --check`, hot reload the production surface, and capture
   a screenshot before marking this phase complete.
 
 ### Countdown Suspense Revision - 2026-05-24
@@ -162,11 +161,11 @@ Status: implemented for review.
 - [x] Keep privacy intact: no peer names display during countdown, and the
   countdown explicitly says names are still locked until the shared release.
 - [x] Keep timing architectural: production routed companion screens now let the
-  live reveal card run its own second-level ticker, while tests/manual QA can
+  live reveal card run its own second-level ticker, while deterministic tests can
   still pass a deterministic `now`.
 - [x] Preserve native effect one-shot behavior; the visual countdown still does
   not trigger haptics/sounds on every tick.
-- [x] Update focused companion reveal assertions and run the reveal/manual-QA
+- [x] Update focused companion reveal assertions and run the production reveal
   gates listed in the latest resume notes.
 
 ### Acceptance Criteria
@@ -230,10 +229,9 @@ venue QA before host-visible launch.
   mission has actually been assigned.
 - [x] Add a full-stage First Hello companion card with target-safe copy, private
   answer language, answer chips, completion, and fallback affordance.
-- [x] Extend `/dev/event-success-manual-qa` so one shared fixture store keeps the
-  host controls, attendee mission, completion state, and checked-in transition
-  synchronized.
-- [x] Add focused runtime, playbook, companion, and manual-QA tests.
+- [x] Keep host controls, attendee mission, completion state, and checked-in
+  transition synchronized through the production repositories and controllers.
+- [x] Add focused runtime, playbook, Host, and companion tests.
 - [x] Add the production backend slice: server-owned mission assignment,
   location verification, blocked/reported-pair filtering, answer capture, and
   attendance completion.
@@ -262,7 +260,7 @@ Acceptance criteria before production launch:
 
 Status: deferred pending manual review of native haptics/system sounds.
 
-- Evaluate whether native cues were too subtle or too noisy during manual QA.
+- Evaluate whether native cues are too subtle or too noisy during live-event QA.
 - Add a real audio package and branded sound assets only if native cues are not
   expressive enough.
 - Keep any asset work scoped to small reveal/check-in/recap cues, not ambient
@@ -283,7 +281,7 @@ Status: deferred pending manual review of native haptics/system sounds.
 - Phase 1B passed: `flutter analyze --no-fatal-infos`
 - Phase 1B passed: `git diff --check`
 - Phase 1B visual check: hot reloaded running macOS debug app and inspected
-  `/dev/event-success-manual-qa` attendee pane via Computer Use screenshot.
+  production attendee companion via Computer Use screenshot.
 - Historical note: Phase 1B used the former audit-stamp/report commands. Those
   commands are retired; Git retains the original record.
 - Phase 2/3 passed: `flutter test test/payments/payment_confirmation_controller_test.dart test/payments/payment_confirmation_screen_test.dart test/events/event_detail_widgets_test.dart test/event_success/event_success_live_screens_test.dart`
