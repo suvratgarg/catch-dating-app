@@ -16,13 +16,10 @@ import "package:catch_dating_app/event_success/domain/event_success_playbooks.da
 import "package:catch_dating_app/event_success/domain/event_success_structure.dart";
 import "package:catch_dating_app/event_success/presentation/event_success_companion_screen.dart";
 import "package:catch_dating_app/event_success/presentation/event_success_defaults_panel.dart";
-import "package:catch_dating_app/event_success/presentation/event_success_event_preview_screen.dart";
 import "package:catch_dating_app/event_success/presentation/event_success_feature_blocks.dart";
 import "package:catch_dating_app/event_success/presentation/event_success_hero_surface.dart";
 import "package:catch_dating_app/event_success/presentation/event_success_host_screen.dart";
-import "package:catch_dating_app/event_success/presentation/event_success_lab_screen.dart";
 import "package:catch_dating_app/event_success/presentation/event_success_live_reveal_card.dart";
-import "package:catch_dating_app/event_success/presentation/event_success_manual_qa_screen.dart";
 import "package:catch_dating_app/event_success/presentation/event_success_questionnaire_config_editor.dart";
 import "package:catch_dating_app/event_success/presentation/event_success_setup_body.dart";
 import "package:catch_dating_app/event_success/presentation/event_success_skeletons.dart";
@@ -806,110 +803,6 @@ Widget eventSuccessStrictEventSuccessDefaultsPanel(BuildContext context) {
     context,
     surface: _EventSuccessStrictSurface.defaults,
     componentName: "EventSuccessDefaultsPanel",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "EventPreviewHero",
-  type: EventPreviewHero,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Event preview folded states",
-)
-Widget eventSuccessStrictEventPreviewHero(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.eventPreview,
-    componentName: "EventPreviewHero",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "EventPreviewHeroSkeleton",
-  type: EventPreviewHeroSkeleton,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Event preview folded states",
-)
-Widget eventSuccessStrictEventPreviewHeroSkeleton(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.eventPreview,
-    componentName: "EventPreviewHeroSkeleton",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "EventSuccessEventPreviewLoadingBody",
-  type: EventSuccessEventPreviewLoadingBody,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Event preview folded states",
-)
-Widget eventSuccessStrictEventSuccessEventPreviewLoadingBody(
-  BuildContext context,
-) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.eventPreview,
-    componentName: "EventSuccessEventPreviewLoadingBody",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "EventSuccessEventPreviewLoadingScreen",
-  type: EventSuccessEventPreviewLoadingScreen,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Event preview folded states",
-)
-Widget eventSuccessStrictEventSuccessEventPreviewLoadingScreen(
-  BuildContext context,
-) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.eventPreview,
-    componentName: "EventSuccessEventPreviewLoadingScreen",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "EventSuccessEventPreviewRouteScreen",
-  type: EventSuccessEventPreviewRouteScreen,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Event preview folded states",
-)
-Widget eventSuccessStrictEventSuccessEventPreviewRouteScreen(
-  BuildContext context,
-) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.eventPreview,
-    componentName: "EventSuccessEventPreviewRouteScreen",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "EventSuccessEventPreviewScreen",
-  type: EventSuccessEventPreviewScreen,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Event preview folded states",
-)
-Widget eventSuccessStrictEventSuccessEventPreviewScreen(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.eventPreview,
-    componentName: "EventSuccessEventPreviewScreen",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "IntegrationNotesCard",
-  type: IntegrationNotesCard,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Event preview folded states",
-)
-Widget eventSuccessStrictIntegrationNotesCard(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.eventPreview,
-    componentName: "IntegrationNotesCard",
   );
 }
 
@@ -1726,188 +1619,6 @@ Widget eventSuccessStrictWingmanRequestsHostCard(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: "CapacityRow",
-  type: CapacityRow,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Lab screen folded states",
-)
-Widget eventSuccessStrictCapacityRow(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.lab,
-    componentName: "CapacityRow",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "CoachPanel",
-  type: CoachPanel,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Lab screen folded states",
-)
-Widget eventSuccessStrictCoachPanel(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.lab,
-    componentName: "CoachPanel",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "EventSuccessLabScreen",
-  type: EventSuccessLabScreen,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Lab screen folded states",
-)
-Widget eventSuccessStrictEventSuccessLabScreen(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.lab,
-    componentName: "EventSuccessLabScreen",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "LabHero",
-  type: LabHero,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Lab screen folded states",
-)
-Widget eventSuccessStrictLabHero(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.lab,
-    componentName: "LabHero",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "LayerHeader",
-  type: LayerHeader,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Lab screen folded states",
-)
-Widget eventSuccessStrictLayerHeader(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.lab,
-    componentName: "LayerHeader",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "ModuleCard",
-  type: ModuleCard,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Lab screen folded states",
-)
-Widget eventSuccessStrictModuleCard(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.lab,
-    componentName: "ModuleCard",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "ModuleGrid",
-  type: ModuleGrid,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Lab screen folded states",
-)
-Widget eventSuccessStrictModuleGrid(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.lab,
-    componentName: "ModuleGrid",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "NotesList",
-  type: NotesList,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Lab screen folded states",
-)
-Widget eventSuccessStrictNotesList(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.lab,
-    componentName: "NotesList",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "PlaybookCard",
-  type: PlaybookCard,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Lab screen folded states",
-)
-Widget eventSuccessStrictPlaybookCard(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.lab,
-    componentName: "PlaybookCard",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "PromiseCard",
-  type: PromiseCard,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Lab screen folded states",
-)
-Widget eventSuccessStrictPromiseCard(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.lab,
-    componentName: "PromiseCard",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "PromiseGrid",
-  type: PromiseGrid,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Lab screen folded states",
-)
-Widget eventSuccessStrictPromiseGrid(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.lab,
-    componentName: "PromiseGrid",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "RunOfShow",
-  type: RunOfShow,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Lab screen folded states",
-)
-Widget eventSuccessStrictRunOfShow(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.lab,
-    componentName: "RunOfShow",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "Section",
-  type: Section,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Lab screen folded states",
-)
-Widget eventSuccessStrictSection(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.lab,
-    componentName: "Section",
-  );
-}
-
-@widgetbook.UseCase(
   name: "AssignmentUnlockedShell",
   type: AssignmentUnlockedShell,
   path:
@@ -2231,118 +1942,6 @@ Widget eventSuccessStrictWaitingRevealCue(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: "AttendeeQaControls",
-  type: AttendeeQaControls,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Manual QA folded states",
-)
-Widget eventSuccessStrictAttendeeQaControls(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.manualQa,
-    componentName: "AttendeeQaControls",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "ControlLabel",
-  type: ControlLabel,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Manual QA folded states",
-)
-Widget eventSuccessStrictControlLabel(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.manualQa,
-    componentName: "ControlLabel",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "EventSuccessManualQaScreen",
-  type: EventSuccessManualQaScreen,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Manual QA folded states",
-)
-Widget eventSuccessStrictEventSuccessManualQaScreen(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.manualQa,
-    componentName: "EventSuccessManualQaScreen",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "ManualQaControls",
-  type: ManualQaControls,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Manual QA folded states",
-)
-Widget eventSuccessStrictManualQaControls(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.manualQa,
-    componentName: "ManualQaControls",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "ManualQaHero",
-  type: ManualQaHero,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Manual QA folded states",
-)
-Widget eventSuccessStrictManualQaHero(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.manualQa,
-    componentName: "ManualQaHero",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "ManualQaHostManagePane",
-  type: ManualQaHostManagePane,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Manual QA folded states",
-)
-Widget eventSuccessStrictManualQaHostManagePane(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.manualQa,
-    componentName: "ManualQaHostManagePane",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "ManualQaSideBySide",
-  type: ManualQaSideBySide,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Manual QA folded states",
-)
-Widget eventSuccessStrictManualQaSideBySide(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.manualQa,
-    componentName: "ManualQaSideBySide",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "QaDeviceFrame",
-  type: QaDeviceFrame,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Manual QA folded states",
-)
-Widget eventSuccessStrictQaDeviceFrame(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.manualQa,
-    componentName: "QaDeviceFrame",
-  );
-}
-
-@widgetbook.UseCase(
   name: "CustomQuestionnaireFields",
   type: CustomQuestionnaireFields,
   path:
@@ -2509,12 +2108,9 @@ class _SetupBodyKnobPreviewState extends State<_SetupBodyKnobPreview> {
 enum _EventSuccessStrictSurface {
   companion,
   defaults,
-  eventPreview,
   featureBlocks,
   host,
-  lab,
   liveReveal,
-  manualQa,
   questionnaire,
   setup,
   structure,
@@ -2545,18 +2141,6 @@ Widget _eventSuccessStrictPreview(
         subtitle: context.l10n.hostsEventSuccessStepSubtitleSaveASimplePlan,
       ),
     ),
-    _EventSuccessStrictSurface.eventPreview => _StrictCoverageScaffold(
-      componentName: componentName,
-      fullBleed: true,
-      child: EventSuccessEventPreviewScreen(
-        event: EventSuccessCompanionFixtures.socialEvent,
-        userProfile: EventSuccessCompanionFixtures.viewer,
-        roster: EventParticipationRoster.fromParticipations([
-          EventSuccessCompanionFixtures.attendedParticipation(),
-        ]),
-        now: EventSuccessCompanionFixtures.now,
-      ),
-    ),
     _EventSuccessStrictSurface.featureBlocks => _StrictCoverageScaffold(
       componentName: componentName,
       child: const Column(
@@ -2576,12 +2160,10 @@ Widget _eventSuccessStrictPreview(
       componentName: componentName,
       child: ProviderScope(child: _HostCoverageStates()),
     ),
-    _EventSuccessStrictSurface.lab => const EventSuccessLabScreen(),
     _EventSuccessStrictSurface.liveReveal => _StrictCoverageScaffold(
       componentName: componentName,
       child: ProviderScope(child: _LiveRevealCoverageStates()),
     ),
-    _EventSuccessStrictSurface.manualQa => const EventSuccessManualQaScreen(),
     _EventSuccessStrictSurface.questionnaire => _StrictCoverageScaffold(
       componentName: componentName,
       child: EventSuccessQuestionnaireConfigEditor(
@@ -2732,18 +2314,14 @@ class _StrictCoverageScaffold extends StatelessWidget {
   const _StrictCoverageScaffold({
     required this.componentName,
     required this.child,
-    this.fullBleed = false,
   });
 
   final String componentName;
   final Widget child;
-  final bool fullBleed;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    if (fullBleed) return child;
-
     return Scaffold(
       backgroundColor: t.bg,
       body: SafeArea(

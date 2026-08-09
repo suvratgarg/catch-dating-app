@@ -94,22 +94,6 @@ class AppConfig {
   }
 
   @visibleForTesting
-  static bool isEventPolicyLabAvailable({
-    required AppEnvironment environment,
-    required bool requested,
-  }) {
-    return requested && !environment.isProduction;
-  }
-
-  @visibleForTesting
-  static bool isEventSuccessPreviewAvailable({
-    required AppEnvironment environment,
-    required bool requested,
-  }) {
-    return requested && !environment.isProduction;
-  }
-
-  @visibleForTesting
   static bool isCrossPathsPreviewAvailable({
     required AppEnvironment environment,
     required bool debugMode,
@@ -333,26 +317,6 @@ class AppConfig {
         releaseMode: kReleaseMode,
         requested: disableAuthAppVerificationForTesting,
       );
-
-  static const bool _eventPolicyLabRequested = bool.fromEnvironment(
-    'ENABLE_EVENT_POLICY_LAB',
-    defaultValue: true,
-  );
-
-  static bool get enableEventPolicyLab => isEventPolicyLabAvailable(
-    environment: environment,
-    requested: _eventPolicyLabRequested,
-  );
-
-  static const bool _eventSuccessPreviewRequested = bool.fromEnvironment(
-    'ENABLE_EVENT_SUCCESS_PREVIEW',
-    defaultValue: true,
-  );
-
-  static bool get enableEventSuccessPreview => isEventSuccessPreviewAvailable(
-    environment: environment,
-    requested: _eventSuccessPreviewRequested,
-  );
 
   static const String firebaseAppCheckWebRecaptchaEnterpriseSiteKey =
       String.fromEnvironment(

@@ -16,11 +16,7 @@ import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/cross_paths/presentation/cross_paths_invitation_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
-import 'package:catch_dating_app/event_policies/presentation/event_policy_lab_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_event_preview_screen.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_lab_screen.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_manual_qa_screen.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/calendar/calendar_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
@@ -369,37 +365,6 @@ GoRouter _buildGoRouter(Ref ref, {required bool isHostApp}) {
           eventId: state.pathParameters['eventId']!,
         ),
       ),
-      if (AppConfig.enableEventPolicyLab)
-        GoRoute(
-          path: Routes.eventPolicyLabScreen.path,
-          name: Routes.eventPolicyLabScreen.name,
-          builder: (context, state) => const EventPolicyLabScreen(),
-        ),
-      if (AppConfig.enableEventSuccessPreview)
-        GoRoute(
-          path: Routes.eventSuccessLabScreen.path,
-          name: Routes.eventSuccessLabScreen.name,
-          builder: (context, state) => const EventSuccessLabScreen(),
-        ),
-      if (AppConfig.enableEventSuccessPreview)
-        GoRoute(
-          path: Routes.eventSuccessManualQaScreen.path,
-          name: Routes.eventSuccessManualQaScreen.name,
-          builder: (context, state) => const EventSuccessManualQaScreen(),
-        ),
-      if (AppConfig.enableEventSuccessPreview)
-        GoRoute(
-          path: Routes.eventSuccessPreviewScreen.path,
-          name: Routes.eventSuccessPreviewScreen.name,
-          builder: (context, state) => EventSuccessEventPreviewRouteScreen(
-            clubId: state.pathParameters['clubId']!,
-            eventId: state.pathParameters['eventId']!,
-            initialEvent: switch (state.extra) {
-              final Event event => event,
-              _ => null,
-            },
-          ),
-        ),
       if (!isHostApp) ...[
         GoRoute(
           path: Routes.settingsScreen.path,
@@ -910,18 +875,6 @@ String _initialLocationFromPlatform() {
 /// merely because their parent organizer route is public.
 @visibleForTesting
 bool isGuestPublicRoute(String matchedLocation) {
-  if (AppConfig.enableEventPolicyLab &&
-      matchedLocation == Routes.eventPolicyLabScreen.path) {
-    return true;
-  }
-  if (AppConfig.enableEventSuccessPreview &&
-      matchedLocation == Routes.eventSuccessLabScreen.path) {
-    return true;
-  }
-  if (AppConfig.enableEventSuccessPreview &&
-      matchedLocation == Routes.eventSuccessManualQaScreen.path) {
-    return true;
-  }
   if (matchedLocation == Routes.startScreen.path) return true;
   if (matchedLocation == Routes.authScreen.path) return true;
   if (matchedLocation == Routes.exploreScreen.path) return true;

@@ -652,12 +652,12 @@ and a working tap callback.
 
 ### S4. Fixture actions leak into production host panel construction `[watch]`
 
-`EventSuccessHostFixtureActions` is consumed by Widgetbook, tests, manual QA,
+`EventSuccessHostFixtureActions` is consumed by Widgetbook and tests,
 and through `HostEventManageScreen`'s `eventSuccessFixtureActions` seam. It is
 useful for fixture surfaces, but it also means `EventSuccessHostPanel` contains
 fixture-vs-production callback arbitration. That is not a blocker for current
 composition, because production passes `null`, but it is a cleanup candidate if
-this module is split: move fixture adaptation to Widgetbook/manual-QA owners
+this module is split: move fixture adaptation to Widgetbook/test owners
 and pass ordinary typed callbacks into the provider-free panel.
 
 ### S5. Positive calibration — keep the stage grammar distinct
@@ -671,15 +671,11 @@ paper-ticket pre-arrival states. Do not fold these into `CatchSection` or
 the stage grammar (S3), plus eventual component-contract registration if the
 stage language becomes a reusable product system.
 
-### S6. Preview/lab surfaces are not product-screen debt yet
+### S6. Production Event Success surfaces own review coverage
 
-`EventSuccessEventPreviewScreen`, the lab screen, and manual QA screen are
-review harnesses. They can carry their own preview scaffolding as long as they
-compose the production host/companion bodies rather than forking them. Current
-preview code uses `EventSuccessHostSetupFlow`, `EventSuccessLiveHostMode`,
-`EventSuccessAttendeeCompanionPreview`, and report blocks as review slices; no
-product-screen composition work order here until a preview wrapper drifts from
-the production component it is meant to exercise.
+The former preview, lab, and manual-QA routes were removed after Event Success
+was adopted into Host Manage and the attendee companion. Review coverage now
+mounts those production surfaces directly so a parallel wrapper cannot drift.
 
 ---
 

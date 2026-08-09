@@ -505,99 +505,8 @@ class AppLocalizationsEn extends AppLocalizations {
       'Event focus carousel';
 
   @override
-  String get eventPoliciesEventPolicyLabScreenLabelInDevelopment =>
-      'In development';
-
-  @override
-  String get eventPoliciesEventPolicyLabScreenLabelNoLiveWrites =>
-      'No live writes';
-
-  @override
-  String get eventPoliciesEventPolicyLabScreenLabelCapacity => 'Capacity';
-
-  @override
-  String get eventPoliciesEventPolicyLabScreenLabelBase => 'Base';
-
-  @override
-  String get eventPoliciesEventPolicyLabScreenLabelBooked => 'Booked';
-
-  @override
-  String get eventPoliciesEventPolicyLabScreenLabelWaitlist => 'Waitlist';
-
-  @override
-  String get eventPoliciesEventPolicyLabScreenTitleHostConfiguration =>
-      'Host configuration';
-
-  @override
-  String get eventPoliciesEventPolicyLabScreenTitlePolicyShape =>
-      'Policy shape';
-
-  @override
-  String get eventPoliciesEventPolicyLabScreenLabelAdmission => 'Admission';
-
-  @override
-  String get eventPoliciesEventPolicyLabScreenLabelInvite => 'Invite';
-
-  @override
-  String get eventPoliciesEventPolicyLabScreenLabelMembership => 'Membership';
-
-  @override
-  String get eventPoliciesEventPolicyLabScreenLabelHostReview => 'Host review';
-
-  @override
-  String get eventPoliciesEventPolicyLabScreenLabelCohortCaps => 'Cohort caps';
-
-  @override
-  String get eventPoliciesEventPolicyLabScreenLabelRatio => 'Ratio';
-
-  @override
-  String get eventPoliciesEventPolicyLabScreenLabelOutOfRatio => 'Out-of-ratio';
-
-  @override
-  String get eventPoliciesEventPolicyLabScreenLabelCohortPricing =>
-      'Cohort pricing';
-
-  @override
-  String get eventPoliciesEventPolicyLabScreenLabelDemandPricing =>
-      'Demand pricing';
-
-  @override
-  String get eventPoliciesEventPolicyLabScreenLabelCancellation =>
-      'Cancellation';
-
-  @override
-  String get eventPoliciesEventPolicyLabScreenLabelAttendeeTerms =>
-      'Attendee terms';
-
-  @override
-  String get eventPoliciesEventPolicyLabScreenLabelHostPayout => 'Host payout';
-
-  @override
-  String get eventPoliciesEventPolicyLabScreenTitlePreviewOutcomes =>
-      'Preview outcomes';
-
-  @override
-  String get eventPoliciesEventPolicyLabScreenTitleCancellationOutcomes =>
-      'Cancellation outcomes';
-
-  @override
-  String get eventPoliciesEventPolicyLabScreenTitleDebugMap => 'Debug map';
-
-  @override
   String get eventSuccessEventSuccessCompanionScreenTitleEventCompanion =>
       'Event companion';
-
-  @override
-  String get eventSuccessEventSuccessEventPreviewBodyScreenLabelPreviewOnly =>
-      'Preview only';
-
-  @override
-  String get eventSuccessEventSuccessEventPreviewBodyScreenLabelDevStaging =>
-      'Dev/staging';
-
-  @override
-  String get eventSuccessEventSuccessEventPreviewBodyScreenTextHowThisMapsTo =>
-      'How this maps to the live app';
 
   @override
   String get eventSuccessEventSuccessFeatureBlocksTitleHostSetupFlow =>
@@ -696,132 +605,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get eventSuccessEventSuccessFeatureBlocksLabelHostVisible =>
       'Host visible';
-
-  @override
-  String get eventSuccessEventSuccessLabScreenTitleActualWipFeatureBlocks =>
-      'Actual WIP feature blocks';
-
-  @override
-  String get eventSuccessEventSuccessLabScreenTitleProductPromise =>
-      'Product promise';
-
-  @override
-  String get eventSuccessEventSuccessLabScreenTitlePlaybooks => 'Playbooks';
-
-  @override
-  String get eventSuccessEventSuccessLabScreenTitleArchitectureLayers =>
-      'Architecture layers';
-
-  @override
-  String get eventSuccessEventSuccessLabScreenTitleHostCoachSample =>
-      'Host coach sample';
-
-  @override
-  String get eventSuccessEventSuccessLabScreenLabelWorkInProgress =>
-      'Work in progress';
-
-  @override
-  String get eventSuccessEventSuccessLabScreenLabelPreviewOnly =>
-      'Preview only';
-
-  @override
-  String get eventSuccessEventSuccessLabScreenTextEventSuccessLayer =>
-      'Event Success Layer';
-
-  @override
-  String get eventSuccessEventSuccessLabScreenTextAFirstPassWorkspace =>
-      'A first-pass workspace for improving what happens during events: structure, attendance, assignments, live reveal moments, host help, feedback, and coaching.';
-
-  @override
-  String get eventSuccessEventSuccessLabScreenTitleAttendees => 'Attendees';
-
-  @override
-  String get eventSuccessEventSuccessLabScreenTitleHosts => 'Hosts';
-
-  @override
-  String get eventSuccessEventSuccessLabScreenTitleCatch => 'Catch';
-
-  @override
-  String get eventSuccessEventSuccessLabScreenBodyLearnWhichLiveStructures =>
-      'Learn which live structures improve check-in, mixing, matches, chat starts, repeats, and safety.';
-
-  @override
-  String get eventSuccessEventSuccessLabScreenTitleIterationQuestions =>
-      'Iteration questions';
-
-  @override
-  String get eventSuccessEventSuccessLabScreenTitleAntiPatterns =>
-      'Anti-patterns';
-
-  @override
-  String get eventSuccessEventSuccessLabScreenTextRunOfShow => 'Run of show';
-
-  @override
-  String get eventSuccessEventSuccessLabScreenTextSampleDebrief =>
-      'Sample debrief';
-
-  @override
-  String get eventSuccessEventSuccessLabScreenLabelCheckIn => 'Check-in';
-
-  @override
-  String get eventSuccessEventSuccessLabScreenLabelIntroCoverage =>
-      'Intro coverage';
-
-  @override
-  String get eventSuccessEventSuccessLabScreenLabelCaughtSomeone =>
-      'Caught someone';
-
-  @override
-  String get eventSuccessEventSuccessLabScreenLabelHostHelp => 'Host help';
-
-  @override
-  String get eventSuccessEventSuccessLabScreenLabelChatStart => 'Chat start';
-
-  @override
-  String get eventSuccessEventSuccessLabScreenTitleStrengths => 'Strengths';
-
-  @override
-  String get eventSuccessEventSuccessManualQaScreenLabelManualQa => 'Manual QA';
-
-  @override
-  String get eventSuccessEventSuccessManualQaScreenLabelFixtureData =>
-      'Fixture data';
-
-  @override
-  String get eventSuccessEventSuccessManualQaScreenLabelQuestionnaireOff =>
-      'Questionnaire off';
-
-  @override
-  String get eventSuccessEventSuccessManualQaScreenTextFixtureScenario =>
-      'Fixture scenario';
-
-  @override
-  String get eventSuccessEventSuccessManualQaScreenTitleHostManage =>
-      'Host Manage';
-
-  @override
-  String get eventSuccessEventSuccessManualQaScreenTitleAttendeeExperience =>
-      'Attendee experience';
-
-  @override
-  String get eventSuccessEventSuccessManualQaScreenTitleMicroPodsOptOut =>
-      'Micro-pods opt-out';
-
-  @override
-  String get eventSuccessEventSuccessManualQaScreenTitleRotationsOptOut =>
-      'Rotations opt-out';
-
-  @override
-  String get eventSuccessEventSuccessManualQaScreenLabelFirstHelloComplete =>
-      'first hello complete';
-
-  @override
-  String get eventSuccessEventSuccessManualQaScreenLabelFirstHelloSkipped =>
-      'first hello skipped';
-
-  @override
-  String get eventSuccessEventSuccessManualQaScreenLabelFirstHelloPending =>
-      'first hello pending';
 
   @override
   String get eventSuccessEventSuccessQuestionnaireConfigEditorTextQuestionSet =>
@@ -2798,31 +2581,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Manage events and organizers';
 
   @override
-  String get safetySettingsScreenTitleDevelopment => 'Development';
-
-  @override
-  String get safetySettingsScreenTitleEventPolicyLab => 'Event policy lab';
-
-  @override
-  String get safetySettingsScreenBodyStaticBookingPolicyPreviews =>
-      'Static booking policy previews';
-
-  @override
-  String get safetySettingsScreenTitleEventSuccessLab => 'Event success lab';
-
-  @override
-  String get safetySettingsScreenBodyHostAttendeeAndReport =>
-      'Host, attendee, and report previews';
-
-  @override
-  String get safetySettingsScreenTitleEventSuccessManualQa =>
-      'Event success manual QA';
-
-  @override
-  String get safetySettingsScreenBodyHostAndAttendeeSide =>
-      'Host and attendee side by side';
-
-  @override
   String get safetySettingsScreenTitleNotifications => 'Notifications';
 
   @override
@@ -3259,63 +3017,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dashboardEventFocusRailLabelReviewPending => 'Review pending';
 
   @override
-  String get eventPoliciesEventPolicyLabScreenTitleEventPolicyLab =>
-      'Event policy lab';
-
-  @override
-  String
-  get eventSuccessEventSuccessEventPreviewBodyScreenTitleEventSuccessPreview =>
-      'Event success preview';
-
-  @override
-  String
-  get eventSuccessEventSuccessEventPreviewLoadingScreenTitleEventSuccessPreview =>
-      'Event success preview';
-
-  @override
-  String get eventSuccessEventSuccessEventPreviewScreenTitleEventNotFound =>
-      'Event not found';
-
-  @override
-  String get eventSuccessEventSuccessEventPreviewScreenMessageThisEventIsNo =>
-      'This event is no longer available for preview.';
-
-  @override
   String get eventSuccessEventSuccessFeatureBlocksLabelHostOnly => 'Host only';
 
   @override
   String get eventSuccessEventSuccessFeatureBlocksLabelAttendee => 'Attendee';
-
-  @override
-  String get eventSuccessEventSuccessLabScreenTitleEventSuccessLab =>
-      'Event success lab';
-
-  @override
-  String get eventSuccessEventSuccessLabScreenLabelDevStagingRoute =>
-      'Dev/staging route';
-
-  @override
-  String get eventSuccessEventSuccessLabScreenLabelNoFirestoreWrites =>
-      'No Firestore writes';
-
-  @override
-  String get eventSuccessEventSuccessLabScreenLabelNoBookingChanges =>
-      'No booking changes';
-
-  @override
-  String get eventSuccessEventSuccessLabScreenLabelSomeLivePhoneUse =>
-      'some live phone use';
-
-  @override
-  String get eventSuccessEventSuccessLabScreenLabelLivePhone => 'live phone';
-
-  @override
-  String get eventSuccessEventSuccessLabScreenLabelLaterExperiment =>
-      'later experiment';
-
-  @override
-  String get eventSuccessEventSuccessManualQaScreenTitleEventSuccessManualQa =>
-      'Event success manual QA';
 
   @override
   String get eventSuccessEventSuccessSetupBodyLabelNoTimer => 'No timer';
@@ -3618,84 +3323,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String eventPoliciesEventPolicyLabScreenTextLengthFixtures({
-    required Object length,
-  }) {
-    return '$length fixtures';
-  }
-
-  @override
-  String eventPoliciesEventPolicyLabScreenTextLengthProbes({
-    required Object length,
-  }) {
-    return '$length probes';
-  }
-
-  @override
-  String
-  eventPoliciesEventPolicyLabScreenTextBaseFormatpaiseCohortFormatsignedpaise({
-    required Object formatPaise,
-    required Object formatSignedPaise,
-    required Object formatSignedPaise2,
-  }) {
-    return 'Base $formatPaise · cohort $formatSignedPaise · demand $formatSignedPaise2';
-  }
-
-  @override
-  String
-  eventPoliciesEventPolicyLabScreenTextFormatcancellationactorBeforestarthoursHBefore({
-    required Object formatCancellationActor,
-    required Object beforeStartHours,
-  }) {
-    return '$formatCancellationActor · ${beforeStartHours}h before start';
-  }
-
-  @override
-  String eventPoliciesEventPolicyLabScreenLabelRefundFormatpaise({
-    required Object formatPaise,
-  }) {
-    return 'Refund $formatPaise';
-  }
-
-  @override
-  String eventPoliciesEventPolicyLabScreenLabelCreditFormatpaise({
-    required Object formatPaise,
-  }) {
-    return 'Credit $formatPaise';
-  }
-
-  @override
-  String eventSuccessEventSuccessEventPreviewBodyScreenTextClubnameTitle({
-    required Object clubName,
-    required Object title,
-  }) {
-    return '$clubName · $title';
-  }
-
-  @override
-  String
-  eventSuccessEventSuccessEventPreviewBodyScreenLabelCapacitylimitTarget({
-    required Object capacityLimit,
-  }) {
-    return '$capacityLimit target';
-  }
-
-  @override
-  String eventSuccessEventSuccessEventPreviewBodyScreenLabelBookedcountBooked({
-    required Object bookedCount,
-  }) {
-    return '$bookedCount booked';
-  }
-
-  @override
-  String
-  eventSuccessEventSuccessEventPreviewBodyScreenLabelCheckedincountCheckedIn({
-    required Object checkedInCount,
-  }) {
-    return '$checkedInCount checked in';
-  }
-
-  @override
   String eventSuccessEventSuccessFeatureBlocksDetailCheckedincountBookedcount({
     required Object checkedInCount,
     required Object bookedCount,
@@ -3762,110 +3389,6 @@ class AppLocalizationsEn extends AppLocalizations {
     required Object round,
   }) {
     return '$label $round%';
-  }
-
-  @override
-  String eventSuccessEventSuccessLabScreenLabelPlaybookcountPlaybooks({
-    required Object playbookCount,
-  }) {
-    return '$playbookCount playbooks';
-  }
-
-  @override
-  String eventSuccessEventSuccessLabScreenLabelValue1More({
-    required Object value1,
-  }) {
-    return '+$value1 more';
-  }
-
-  @override
-  String eventSuccessEventSuccessLabScreenTextMinMaxAttendees({
-    required Object min,
-    required Object max,
-  }) {
-    return '$min-$max attendees';
-  }
-
-  @override
-  String eventSuccessEventSuccessLabScreenTextDurationminutes({
-    required Object durationMinutes,
-  }) {
-    return '$durationMinutes';
-  }
-
-  @override
-  String eventSuccessEventSuccessLabScreenLabelRound({required Object round}) {
-    return '$round%';
-  }
-
-  @override
-  String eventSuccessEventSuccessManualQaScreenTextManualQaFixtureFailed({
-    required Object error,
-  }) {
-    return 'Manual QA fixture failed to load: $error';
-  }
-
-  @override
-  String eventSuccessEventSuccessManualQaScreenTextTitleLabelLabel2({
-    required Object title,
-    required Object label,
-    required Object label2,
-  }) {
-    return '$title · $label · $label2';
-  }
-
-  @override
-  String eventSuccessEventSuccessManualQaScreenLabelBookedcountBooked({
-    required Object bookedCount,
-  }) {
-    return '$bookedCount booked';
-  }
-
-  @override
-  String eventSuccessEventSuccessManualQaScreenLabelCheckedincountCheckedIn({
-    required Object checkedInCount,
-  }) {
-    return '$checkedInCount checked in';
-  }
-
-  @override
-  String
-  eventSuccessEventSuccessManualQaScreenLabelRevealcountdownsecondsSReveal({
-    required Object revealCountdownSeconds,
-  }) {
-    return '${revealCountdownSeconds}s reveal';
-  }
-
-  @override
-  String eventSuccessEventSuccessManualQaScreenLabelTitleRanking({
-    required Object title,
-  }) {
-    return '$title · ranking';
-  }
-
-  @override
-  String eventSuccessEventSuccessManualQaScreenLabelTitleClues({
-    required Object title,
-  }) {
-    return '$title · clues';
-  }
-
-  @override
-  String
-  eventSuccessEventSuccessManualQaScreenSubtitleProductionHostWorkspaceActivesteplabel({
-    required Object activeStepLabel,
-  }) {
-    return 'Production host workspace · $activeStepLabel';
-  }
-
-  @override
-  String
-  eventSuccessEventSuccessManualQaScreenSubtitlePublicdisplaynameNameActivesteplabel({
-    required Object publicDisplayName,
-    required Object name,
-    required Object activeStepLabel,
-  }) {
-    return '$publicDisplayName · $name · $activeStepLabel';
   }
 
   @override
@@ -8878,11 +8401,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String
   get eventSuccessEventSuccessCompanionScreenStateVisiblecopyCatchOnlyShowsThe =>
       'Catch only shows the live details that are relevant to this event moment.';
-
-  @override
-  String
-  get eventSuccessEventSuccessEventPreviewBodyScreenVisiblecopyThisClub =>
-      'This organizer';
 
   @override
   String eventSuccessEventSuccessStructureConfigEditorVisiblecopyTointPeople({

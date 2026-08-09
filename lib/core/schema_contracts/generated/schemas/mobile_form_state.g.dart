@@ -56,15 +56,6 @@ const schemaMobileFormStateSchema = <String, Object?>{
       ],
       'description': 'Presentation mode that derives questionnaire module selection and pairing configuration.',
     },
-    'eventSuccessManualQaScenario': <String, Object?>{
-      'type': 'string',
-      'enum': <Object?>[
-        'socialRun',
-        'racketPairs',
-        'quizTeams',
-        'singlesMixer',
-      ],
-    },
     'exploreActivityTag': <String, Object?>{
       'type': 'string',
       'minLength': 1,

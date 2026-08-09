@@ -89,37 +89,7 @@
       "owner": "CatchScreenTopBar"
     },
     {
-      "path": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "role": "compact",
-      "expression": "CatchTopBar",
-      "owner": "CatchTopBar"
-    },
-    {
       "path": "lib/event_success/presentation/event_success_companion_screen.dart",
-      "role": "compact",
-      "expression": "CatchTopBar",
-      "owner": "CatchTopBar"
-    },
-    {
-      "path": "lib/event_success/presentation/event_success_event_preview_body_screen.dart",
-      "role": "compact",
-      "expression": "CatchTopBar",
-      "owner": "CatchTopBar"
-    },
-    {
-      "path": "lib/event_success/presentation/event_success_event_preview_loading_screen.dart",
-      "role": "compact",
-      "expression": "CatchTopBar",
-      "owner": "CatchTopBar"
-    },
-    {
-      "path": "lib/event_success/presentation/event_success_lab_screen.dart",
-      "role": "compact",
-      "expression": "CatchTopBar",
-      "owner": "CatchTopBar"
-    },
-    {
-      "path": "lib/event_success/presentation/event_success_manual_qa_screen.dart",
       "role": "compact",
       "expression": "CatchTopBar",
       "owner": "CatchTopBar"
@@ -287,13 +257,6 @@
       "role": "content",
       "owner": "CatchTextStyles.titleL",
       "reason": "Share-card identity copy is content inside a message card, not route navigation chrome."
-    },
-    {
-      "path": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "symbol": "EventPolicyLabHeader",
-      "role": "content",
-      "owner": "CatchTextStyles.titleL",
-      "reason": "The policy lab header labels an internal review module below the canonical compact app bar."
     },
     {
       "path": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",

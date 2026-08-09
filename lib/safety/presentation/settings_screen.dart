@@ -334,63 +334,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         ),
                       ],
                     ),
-                    if (AppConfig.enableEventPolicyLab ||
-                        AppConfig.enableEventSuccessPreview) ...[
-                      CatchSection.fieldRows(
-                        title:
-                            context.l10n.safetySettingsScreenTitleDevelopment,
-                        children: [
-                          if (AppConfig.enableEventPolicyLab)
-                            CatchField.nav(
-                              key: SettingsKeys.eventPolicyLabRow,
-                              title: context
-                                  .l10n
-                                  .safetySettingsScreenTitleEventPolicyLab,
-                              valueText: context
-                                  .l10n
-                                  .safetySettingsScreenBodyStaticBookingPolicyPreviews,
-                              icon: CatchIcons.scienceOutlined,
-                              onTap: operationPending
-                                  ? null
-                                  : () => context.pushNamed(
-                                      Routes.eventPolicyLabScreen.name,
-                                    ),
-                            ),
-                          if (AppConfig.enableEventSuccessPreview)
-                            CatchField.nav(
-                              key: SettingsKeys.eventSuccessLabRow,
-                              title: context
-                                  .l10n
-                                  .safetySettingsScreenTitleEventSuccessLab,
-                              valueText: context
-                                  .l10n
-                                  .safetySettingsScreenBodyHostAttendeeAndReport,
-                              icon: CatchIcons.autoGraphRounded,
-                              onTap: operationPending
-                                  ? null
-                                  : () => context.pushNamed(
-                                      Routes.eventSuccessLabScreen.name,
-                                    ),
-                            ),
-                          if (AppConfig.enableEventSuccessPreview)
-                            CatchField.nav(
-                              key: SettingsKeys.eventSuccessManualQaRow,
-                              title: context
-                                  .l10n
-                                  .safetySettingsScreenTitleEventSuccessManualQa,
-                              valueText: context
-                                  .l10n
-                                  .safetySettingsScreenBodyHostAndAttendeeSide,
-                              icon: CatchIcons.splitscreenRounded,
-                              onTap: operationPending
-                                  ? null
-                                  : () => context.pushNamed(
-                                      Routes.eventSuccessManualQaScreen.name,
-                                    ),
-                            ),
-                        ],
-                      ),
-                    ],
                     CatchSection.fieldRows(
                       title:
                           context.l10n.safetySettingsScreenTitleNotifications,

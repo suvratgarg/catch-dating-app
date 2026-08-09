@@ -976,30 +976,6 @@
         "host_chat_safety_pending_menu"
       ],
       "reason": "Host Chat now has deterministic captures for host inquiry baseline, match loading, match error, missing chat, message loading, message error, offline message load, empty thread, event fallback, blocked chat, text scale 2.0, reduced motion, paired light/dark output, composer ready/send-pending/image-pending/disabled states, keyboard-open multiline safe-area, image/day-separator populated thread, report failure snackbar, block confirmation dialog, and pending safety menu rows. Remaining work is provider-specific offline policy, dedicated references, and pixel comparison."
-    },
-    {
-      "routeId": "eventPolicyLabScreen",
-      "status": "excluded",
-      "priority": "P4",
-      "reason": "Dev-gated lab route."
-    },
-    {
-      "routeId": "eventSuccessLabScreen",
-      "status": "excluded",
-      "priority": "P4",
-      "reason": "Dev-gated lab route."
-    },
-    {
-      "routeId": "eventSuccessManualQaScreen",
-      "status": "excluded",
-      "priority": "P4",
-      "reason": "Manual QA surface, not baseline app review."
-    },
-    {
-      "routeId": "eventSuccessPreviewScreen",
-      "status": "excluded",
-      "priority": "P4",
-      "reason": "Dev-gated preview route."
     }
   ]
 }

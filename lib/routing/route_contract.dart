@@ -94,17 +94,7 @@ enum Routes {
     AppRouteAudience.host,
   ),
   hostInboxScreen('/host/inbox', AppRouteAudience.host),
-  hostChatScreen('/host/inbox/:matchId', AppRouteAudience.host),
-  eventPolicyLabScreen('/dev/event-policy-lab', AppRouteAudience.shared),
-  eventSuccessLabScreen('/dev/event-success-lab', AppRouteAudience.shared),
-  eventSuccessManualQaScreen(
-    '/dev/event-success-manual-qa',
-    AppRouteAudience.shared,
-  ),
-  eventSuccessPreviewScreen(
-    '/dev/event-success-preview/:clubId/:eventId',
-    AppRouteAudience.shared,
-  );
+  hostChatScreen('/host/inbox/:matchId', AppRouteAudience.host);
 
   const Routes(this.path, this.audience);
   final String path;

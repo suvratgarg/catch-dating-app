@@ -1,7 +1,7 @@
 ---
 doc_id: event_success
-version: 1.3.4
-updated: 2026-08-07
+version: 1.3.5
+updated: 2026-08-10
 owner: recursive_audit_loop
 status: active
 ---
@@ -14,13 +14,14 @@ development, runtime, manual-QA, and participant-metrics trackers.
 
 Read this before deleting, moving, auditing, or changing `lib/event_success/**`,
 `test/event_success/**`, event-success Firestore collections, event-success
-Functions, manual QA, event-success scorecards, or participant metrics.
+Functions, production review coverage, event-success scorecards, or participant
+metrics.
 
 ## Current State
 
 Event success is intentional live product code, not dead code. It is wired to
 live event routes, host setup/manage surfaces, attendee companion surfaces,
-manual QA, Firestore rules, generated contracts, demo data, and Functions.
+Firestore rules, generated contracts, demo data, and Functions.
 
 The current production loop remains:
 
@@ -78,7 +79,6 @@ assignment shapes.
 | Host setup/live/report UI | `lib/event_success/presentation/event_success_host_screen.dart` and `host_parts/` |
 | Attendee companion UI | `lib/event_success/presentation/event_success_companion_screen.dart` and `companion_parts/` |
 | Live reveal UI | `lib/event_success/presentation/event_success_live_reveal_card.dart` and `live_reveal_parts/` |
-| Manual QA harness | `lib/event_success/presentation/event_success_manual_qa_screen.dart` |
 | Backend generators/wingman callables | `functions/src/eventSuccess/` |
 | Feedback scorecards/safety mirror | `functions/src/marketplace/eventSuccessScorecards.ts` |
 | Tests | `test/event_success/`, `functions/src/eventSuccess/*.test.ts`, `functions/src/marketplace/eventSuccessScorecards.test.ts` |
@@ -174,7 +174,7 @@ Current theatrical implementation state:
 - the attendee companion stage redesign, invite loop, and private afterglow
   recap are implemented for visual review;
 - First Hello check-in is implemented as an optional arrival module with
-  server-owned mission assignment/completion, a synchronized manual QA harness,
+  server-owned mission assignment/completion, production Host/attendee coverage,
   and a 100m venue radius;
 - QR check-in now has a host QR surface and attendee scanner entry point; the
   existing GPS self-check-in callable remains the attendance write path;
@@ -183,15 +183,16 @@ Current theatrical implementation state:
 - post-event companion follow-up now starts with a private in-app afterglow
   recap and keeps host reporting aggregate-safe.
 
-## Manual QA
+## Production Verification
 
-Use `/dev/event-success-manual-qa` first for visual and state QA. Settings also
-links to it from Development. It renders the production host panel and attendee
-companion side by side from one synchronized in-memory fixture store.
+The former dev-only Event Success lab, preview, and manual-QA routes were
+removed after the functionality became available through Host event setup and
+Manage plus the attendee companion. Review production widgets directly through
+their focused tests, Widgetbook coverage, and real dev/staging event flows.
 
 Check:
 
-- scenario profiles: social run, racket pairs, quiz teams, singles mixer/live
+- activity profiles: social run, racket pairs, quiz teams, singles mixer/live
   reveal;
 - host setup/live/report surface switching;
 - optional First Hello arrival mission from host controls through attendee
