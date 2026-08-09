@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import {execFileSync} from "node:child_process";
 import {createRequire} from "node:module";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
@@ -360,73 +361,101 @@ export async function ensureCrossPathsDemoTestLogin({
   phoneNumber,
   smsCode,
   fetchImpl = globalThis.fetch,
+  getFallbackAccessToken = getActiveGcloudAccessToken,
 }) {
   assertTestPhone(phoneNumber);
   assertTestSmsCode(smsCode);
   const auth = admin.auth();
-  let authUser;
+  let authUser = null;
   try {
     authUser = await auth.getUser(viewerUid);
   } catch (error) {
     if (error?.code !== "auth/user-not-found") throw error;
-    authUser = await auth.createUser({
-      uid: viewerUid,
-      phoneNumber,
-      displayName: "Cross Paths Demo Viewer",
-      disabled: false,
-    });
   }
-  if (authUser.phoneNumber && authUser.phoneNumber !== phoneNumber) {
+  if (authUser?.phoneNumber && authUser.phoneNumber !== phoneNumber) {
     throw new Error(
       `Auth user ${viewerUid} already uses a different phone number. ` +
         "Refusing to replace it."
     );
-  }
-  if (!authUser.phoneNumber) {
-    authUser = await auth.updateUser(viewerUid, {phoneNumber});
   }
 
   const credential = admin.app().options.credential;
   if (!credential || typeof credential.getAccessToken !== "function") {
     throw new Error("Firebase Admin credential cannot update test-phone config.");
   }
-  const token = await credential.getAccessToken();
+  const adminToken = await credential.getAccessToken();
   const configUrl =
     `https://identitytoolkit.googleapis.com/admin/v2/projects/${projectId}/config`;
-  const configResponse = await fetchImpl(configUrl, {
-    headers: {Authorization: `Bearer ${token.access_token}`},
+  let accessToken = adminToken.access_token;
+  let configResponse = await fetchIdentityConfig({
+    fetchImpl,
+    configUrl,
+    accessToken,
+    quotaProjectId: projectId,
   });
+  if (configResponse.status === 401 || configResponse.status === 403) {
+    accessToken = await getFallbackAccessToken();
+    configResponse = await fetchIdentityConfig({
+      fetchImpl,
+      configUrl,
+      accessToken,
+      quotaProjectId: projectId,
+    });
+  }
   if (!configResponse.ok) {
     throw new Error(
       `Identity Platform config read failed (${configResponse.status}).`
     );
   }
   const config = await configResponse.json();
-  const existing = config?.signIn?.phone?.testPhoneNumbers ?? {};
+  const existing = config?.signIn?.phoneNumber?.testPhoneNumbers ?? {};
   const changed = existing[phoneNumber] !== smsCode;
+  let phoneTemporarilyCleared = false;
   if (changed) {
-    const patchResponse = await fetchImpl(
-      `${configUrl}?updateMask=signIn.phone.testPhoneNumbers`,
-      {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token.access_token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          signIn: {
-            phone: {
-              testPhoneNumbers: {...existing, [phoneNumber]: smsCode},
-            },
-          },
-        }),
-      }
-    );
-    if (!patchResponse.ok) {
-      throw new Error(
-        `Identity Platform test-phone update failed (${patchResponse.status}).`
-      );
+    if (authUser?.phoneNumber === phoneNumber) {
+      authUser = await auth.updateUser(viewerUid, {phoneNumber: null});
+      phoneTemporarilyCleared = true;
     }
+    try {
+      const patchResponse = await fetchImpl(
+        `${configUrl}?updateMask=signIn.phoneNumber.testPhoneNumbers`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+            "x-goog-user-project": projectId,
+          },
+          body: JSON.stringify({
+            signIn: {
+              phoneNumber: {
+                testPhoneNumbers: {...existing, [phoneNumber]: smsCode},
+              },
+            },
+          }),
+        }
+      );
+      if (!patchResponse.ok) {
+        throw new Error(
+          `Identity Platform test-phone update failed (${patchResponse.status}).`
+        );
+      }
+    } catch (error) {
+      if (phoneTemporarilyCleared) {
+        authUser = await auth.updateUser(viewerUid, {phoneNumber});
+      }
+      throw error;
+    }
+  }
+  if (!authUser) {
+    authUser = await auth.createUser({
+      uid: viewerUid,
+      phoneNumber,
+      displayName: "Cross Paths Demo Viewer",
+      disabled: false,
+    });
+  } else if (!authUser.phoneNumber) {
+    authUser = await auth.updateUser(viewerUid, {phoneNumber});
   }
   return {
     viewerUid,
@@ -435,6 +464,40 @@ export async function ensureCrossPathsDemoTestLogin({
     authUserCreatedAt: authUser.metadata?.creationTime ?? null,
     testPhoneConfigChanged: changed,
   };
+}
+
+function fetchIdentityConfig({
+  fetchImpl,
+  configUrl,
+  accessToken,
+  quotaProjectId,
+}) {
+  return fetchImpl(configUrl, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "x-goog-user-project": quotaProjectId,
+    },
+  });
+}
+
+function getActiveGcloudAccessToken() {
+  try {
+    const token = execFileSync(
+      "gcloud",
+      ["auth", "print-access-token"],
+      {
+        encoding: "utf8",
+        stdio: ["ignore", "pipe", "ignore"],
+      }
+    ).trim();
+    if (token) return token;
+  } catch {
+    // The caller below receives one stable, credential-safe error.
+  }
+  throw new Error(
+    "Identity Platform config requires an active gcloud account with " +
+      "firebaseauth.configs.get/update permission."
+  );
 }
 
 function buildDedicatedCrossPathsEventDocs({
@@ -656,11 +719,37 @@ function assertTestSmsCode(value) {
 }
 
 function firestoreValueEqual(left, right) {
+  if (Object.is(left, right)) return true;
   if (
     typeof left?.toMillis === "function" &&
     typeof right?.toMillis === "function"
   ) {
     return left.toMillis() === right.toMillis();
   }
-  return JSON.stringify(left) === JSON.stringify(right);
+  if (typeof left?.isEqual === "function") {
+    return left.isEqual(right);
+  }
+  if (Array.isArray(left) || Array.isArray(right)) {
+    return Array.isArray(left) &&
+      Array.isArray(right) &&
+      left.length === right.length &&
+      left.every((value, index) =>
+        firestoreValueEqual(value, right[index])
+      );
+  }
+  if (
+    left != null &&
+    right != null &&
+    typeof left === "object" &&
+    typeof right === "object"
+  ) {
+    const leftKeys = Object.keys(left).sort();
+    const rightKeys = Object.keys(right).sort();
+    return leftKeys.length === rightKeys.length &&
+      leftKeys.every((key, index) =>
+        key === rightKeys[index] &&
+        firestoreValueEqual(left[key], right[key])
+      );
+  }
+  return false;
 }

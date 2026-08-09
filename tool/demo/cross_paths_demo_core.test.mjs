@@ -3,6 +3,7 @@ import test from "node:test";
 import {
   buildCrossPathsDemoDocuments,
   ensureCrossPathsDemoTestLogin,
+  verifyCrossPathsDemoPlan,
 } from "./cross_paths_demo_core.mjs";
 import {loadFirebaseAdmin} from "./demo_ops_core.mjs";
 
@@ -80,6 +81,46 @@ test("unchanged eligible review remains idempotent", () => {
   assert.equal(review.updatedAt.toMillis(), rerunTimestamp.toMillis());
 });
 
+test("read-back verification ignores Firestore map key ordering", async () => {
+  const timestamp = admin.firestore.Timestamp.fromMillis(1_700_000_000_000);
+  const db = {
+    doc: () => ({
+      get: async () => ({
+        exists: true,
+        data: () => ({
+          nested: {
+            timestamp,
+            items: [{second: 2, first: 1}],
+            alpha: true,
+          },
+        }),
+      }),
+    }),
+  };
+
+  const result = await verifyCrossPathsDemoPlan({
+    db,
+    plan: {
+      docs: [{
+        path: "events/demo-event",
+        data: {
+          nested: {
+            alpha: true,
+            items: [{first: 1, second: 2}],
+            timestamp,
+          },
+        },
+      }],
+    },
+  });
+
+  assert.deepEqual(result, {
+    ready: true,
+    missingPaths: [],
+    mismatchedPaths: [],
+  });
+});
+
 test("test login merges Identity config and creates only the named Auth user",
   async () => {
     const requests = [];
@@ -97,9 +138,11 @@ test("test login merges Identity config and creates only the named Auth user",
     const fetchImpl = async (url, options = {}) => {
       requests.push({url, options});
       if (!options.method) {
-        return response({
-          signIn: {phone: {testPhoneNumbers: {"+16505550100": "111111"}}},
-        });
+        return response({signIn: {
+          phoneNumber: {
+            testPhoneNumbers: {"+16505550100": "111111"},
+          },
+        }});
       }
       return response({});
     };
@@ -124,10 +167,69 @@ test("test login merges Identity config and creates only the named Auth user",
     }]);
     assert.equal(requests.length, 2);
     const patch = JSON.parse(requests[1].options.body);
-    assert.deepEqual(patch.signIn.phone.testPhoneNumbers, {
+    assert.deepEqual(patch.signIn.phoneNumber.testPhoneNumbers, {
       "+16505550100": "111111",
       "+16505550101": "604219",
     });
+    assert.match(
+      requests[1].url,
+      /updateMask=signIn\.phoneNumber\.testPhoneNumbers$/
+    );
+    assert.equal(
+      requests[1].options.headers["x-goog-user-project"],
+      "catchdates-dev"
+    );
+  }
+);
+
+test("test login falls back to the active gcloud principal for config access",
+  async () => {
+    const requests = [];
+    const auth = existingAuthUser();
+    const adminStub = {
+      auth: () => auth,
+      app: () => ({
+        options: {
+          credential: {
+            getAccessToken: async () => ({access_token: "admin-token"}),
+          },
+        },
+      }),
+    };
+    const fetchImpl = async (url, options = {}) => {
+      requests.push({url, options});
+      if (options.headers.Authorization === "Bearer admin-token") {
+        return response({}, 403);
+      }
+      if (!options.method) {
+        return response({signIn: {phoneNumber: {testPhoneNumbers: {}}}});
+      }
+      return response({});
+    };
+
+    const result = await ensureCrossPathsDemoTestLogin({
+      admin: adminStub,
+      projectId: "catchdates-dev",
+      viewerUid: "demo-viewer",
+      phoneNumber: "+16505550101",
+      smsCode: "604219",
+      fetchImpl,
+      getFallbackAccessToken: async () => "gcloud-token",
+    });
+
+    assert.equal(result.testPhoneConfigChanged, true);
+    assert.deepEqual(requests.map((request) => ({
+      method: request.options.method ?? "GET",
+      authorization: request.options.headers.Authorization,
+    })), [
+      {method: "GET", authorization: "Bearer admin-token"},
+      {method: "GET", authorization: "Bearer gcloud-token"},
+      {method: "PATCH", authorization: "Bearer gcloud-token"},
+    ]);
+    assert.deepEqual(auth.updates, [
+      {phoneNumber: null},
+      {phoneNumber: "+16505550101"},
+    ]);
   }
 );
 
@@ -152,6 +254,44 @@ test("test login refuses to replace an existing Auth phone", async () => {
     /already uses a different phone number/
   );
 });
+
+test("test login restores an existing phone when config update fails",
+  async () => {
+    const auth = existingAuthUser();
+    const adminStub = {
+      auth: () => auth,
+      app: () => ({
+        options: {
+          credential: {
+            getAccessToken: async () => ({access_token: "admin-token"}),
+          },
+        },
+      }),
+    };
+    const fetchImpl = async (_url, options = {}) => {
+      if (!options.method) {
+        return response({signIn: {phoneNumber: {testPhoneNumbers: {}}}});
+      }
+      return response({}, 400);
+    };
+
+    await assert.rejects(
+      ensureCrossPathsDemoTestLogin({
+        admin: adminStub,
+        projectId: "catchdates-dev",
+        viewerUid: "demo-viewer",
+        phoneNumber: "+16505550101",
+        smsCode: "604219",
+        fetchImpl,
+      }),
+      /test-phone update failed \(400\)/
+    );
+    assert.deepEqual(auth.updates, [
+      {phoneNumber: null},
+      {phoneNumber: "+16505550101"},
+    ]);
+  }
+);
 
 test("test login refuses phone numbers outside the fictional fixture range",
   async () => {
@@ -192,6 +332,27 @@ function fakeAuth() {
       this.created.push(input);
       return {
         ...input,
+        metadata: {creationTime: "2026-08-09T00:00:00.000Z"},
+      };
+    },
+  };
+}
+
+function existingAuthUser() {
+  return {
+    updates: [],
+    async getUser() {
+      return {
+        uid: "demo-viewer",
+        phoneNumber: "+16505550101",
+        metadata: {creationTime: "2026-08-09T00:00:00.000Z"},
+      };
+    },
+    async updateUser(uid, input) {
+      this.updates.push(input);
+      return {
+        uid,
+        phoneNumber: input.phoneNumber,
         metadata: {creationTime: "2026-08-09T00:00:00.000Z"},
       };
     },
