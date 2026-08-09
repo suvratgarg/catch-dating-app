@@ -15,7 +15,7 @@ import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
-import 'package:catch_dating_app/labs/design_fixtures/profile_surface_fixtures.dart';
+import 'package:catch_dating_app/design_fixtures/profile_surface_fixtures.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';

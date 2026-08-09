@@ -1,4 +1,4 @@
-// copy:allow-file(Developer-only deterministic design fixture data)
+// copy:allow-file(Widgetbook and capture-only deterministic fixture data)
 import 'dart:async';
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
@@ -15,7 +15,7 @@ import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/hosts/data/host_analytics_repository.dart';
 import 'package:catch_dating_app/hosts/domain/host_profile.dart';
-import 'package:catch_dating_app/labs/design_fixtures/utility_surface_fixtures.dart';
+import 'package:catch_dating_app/design_fixtures/utility_surface_fixtures.dart';
 import 'package:catch_dating_app/payments/domain/host_payment_account.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 

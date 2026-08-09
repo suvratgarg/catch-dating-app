@@ -9,7 +9,7 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/image_uploads/domain/photo_upload_state.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
-import 'package:catch_dating_app/labs/design_fixtures/profile_surface_fixtures.dart';
+import 'package:catch_dating_app/design_fixtures/profile_surface_fixtures.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/data/onboarding_draft_repository.dart';
 import 'package:catch_dating_app/onboarding/domain/onboarding_draft.dart';

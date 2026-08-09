@@ -36,7 +36,7 @@ import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/labs/design_fixtures/matches_chat_surface_fixtures.dart';
+import 'package:catch_dating_app/design_fixtures/matches_chat_surface_fixtures.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/matches/shared/match_celebration_dialog.dart';

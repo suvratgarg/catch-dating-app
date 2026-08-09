@@ -411,7 +411,7 @@ function shouldSkip(file) {
   return (
     file.endsWith(".g.dart") ||
     file.endsWith(".freezed.dart") ||
-    file.includes("/labs/") ||
+    file.includes("/design_fixtures/") ||
     file.includes("/generated/")
   );
 }

@@ -22,7 +22,7 @@ import 'package:catch_dating_app/event_success/presentation/event_success_live_r
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart'
     show HostTodayClubPill;
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
-import 'package:catch_dating_app/labs/design_fixtures/host_operations_fixtures.dart';
+import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(const PatternFamilyReviewApp());

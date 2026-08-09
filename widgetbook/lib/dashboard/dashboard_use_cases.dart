@@ -28,7 +28,7 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_arrival_action.dart';
 import 'package:catch_dating_app/events/data/event_calendar_links.dart';
 import 'package:catch_dating_app/explore/domain/explore_event_recommendation.dart';
-import 'package:catch_dating_app/labs/design_fixtures/dashboard_surface_fixtures.dart';
+import 'package:catch_dating_app/design_fixtures/dashboard_surface_fixtures.dart';
 import 'package:catch_dating_app/notifications/data/activity_notification_repository.dart';
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
