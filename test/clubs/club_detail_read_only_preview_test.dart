@@ -114,7 +114,6 @@ void main() {
       final club =
           buildClub(
             hostUserId: null,
-            ownerUserId: null,
             hostUserIds: const [],
             hostProfiles: const [],
           ).copyWith(

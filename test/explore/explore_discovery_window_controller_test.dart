@@ -21,13 +21,10 @@ void main() {
     () async {
       final now = DateTime(2026, 7, 18, 10);
       final firstEvent = buildEvent(
-        id: 'event-1',
-        clubId: 'club-1',
         startTime: now.add(const Duration(days: 1)),
       );
       final secondEvent = buildEvent(
         id: 'event-2',
-        clubId: 'club-1',
         startTime: now.add(const Duration(days: 2)),
       );
       final cursorFirestore = FakeFirebaseFirestore();
@@ -99,11 +96,7 @@ void main() {
 
   test('loadNext restores the current page and rethrows failures', () async {
     final now = DateTime(2026, 7, 18, 10);
-    final firstEvent = buildEvent(
-      id: 'event-1',
-      clubId: 'club-1',
-      startTime: now.add(const Duration(days: 1)),
-    );
+    final firstEvent = buildEvent(startTime: now.add(const Duration(days: 1)));
     final cursorFirestore = FakeFirebaseFirestore();
     await cursorFirestore
         .collection('events')

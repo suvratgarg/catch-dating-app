@@ -447,6 +447,7 @@ String _eventSuccessFeaturePercent(double value) => '${(value * 100).round()}%';
 
 class BlockHeader extends StatelessWidget {
   const BlockHeader({
+    super.key,
     required this.icon,
     required this.title,
     required this.subtitle,
@@ -485,7 +486,7 @@ class BlockHeader extends StatelessWidget {
 }
 
 class PlaybookSummaryCard extends StatelessWidget {
-  const PlaybookSummaryCard({required this.draft});
+  const PlaybookSummaryCard({super.key, required this.draft});
 
   final EventSuccessHostDraft draft;
 
@@ -545,6 +546,7 @@ class PlaybookSummaryCard extends StatelessWidget {
 
 class ModuleToggleRow extends StatelessWidget {
   const ModuleToggleRow({
+    super.key,
     required this.module,
     required this.selected,
     required this.onChanged,
@@ -604,7 +606,7 @@ class ModuleToggleRow extends StatelessWidget {
 }
 
 class IssueList extends StatelessWidget {
-  const IssueList({required this.issues});
+  const IssueList({super.key, required this.issues});
 
   final List<String> issues;
 
@@ -642,6 +644,7 @@ class IssueList extends StatelessWidget {
 
 class ProgressRow extends StatelessWidget {
   const ProgressRow({
+    super.key,
     required this.label,
     required this.value,
     required this.detail,
@@ -682,7 +685,7 @@ class ProgressRow extends StatelessWidget {
 }
 
 class LiveStepRow extends StatelessWidget {
-  const LiveStepRow({required this.step, required this.state});
+  const LiveStepRow({super.key, required this.step, required this.state});
 
   final EventRunOfShowStep step;
   final CatchProgressCueState state;
@@ -855,7 +858,7 @@ class EventSuccessConversationCueCard extends StatelessWidget {
 }
 
 class ConversationCueRow extends StatelessWidget {
-  const ConversationCueRow({required this.cue});
+  const ConversationCueRow({super.key, required this.cue});
 
   final EventSuccessConversationCue cue;
 
@@ -904,7 +907,7 @@ class ConversationCueRow extends StatelessWidget {
 }
 
 class WingmanCandidateRow extends StatelessWidget {
-  const WingmanCandidateRow({required this.candidate});
+  const WingmanCandidateRow({super.key, required this.candidate});
 
   final WingmanRequestCandidate candidate;
 

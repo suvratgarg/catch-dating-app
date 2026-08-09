@@ -207,10 +207,12 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
   }
 
   String? get _searchStateText {
-    if (_pendingSuggestion != null)
+    if (_pendingSuggestion != null) {
       return context.l10n.eventsLocationPickerScreenVisiblecopySelecting;
-    if (_searching && _suggestions.isEmpty)
+    }
+    if (_searching && _suggestions.isEmpty) {
       return context.l10n.eventsLocationPickerScreenVisiblecopySearching;
+    }
     return null;
   }
 

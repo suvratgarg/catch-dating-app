@@ -5,6 +5,7 @@ import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_draft.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
+import 'package:catch_dating_app/design_fixtures/utility_surface_fixtures.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -15,7 +16,6 @@ import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/hosts/data/host_analytics_repository.dart';
 import 'package:catch_dating_app/hosts/domain/host_profile.dart';
-import 'package:catch_dating_app/design_fixtures/utility_surface_fixtures.dart';
 import 'package:catch_dating_app/payments/domain/host_payment_account.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 
@@ -270,12 +270,9 @@ final class HostOperationsFixtures {
       openCount: 142,
       requestCount: 28,
       confirmedCount: 11,
-      paidCount: 0,
-      checkedInCount: 0,
       catcherCount: 3,
       matchCount: 2,
       chatStartedCount: 2,
-      disabledAt: null,
       createdAt: now.subtract(const Duration(days: 2)),
       updatedAt: now.subtract(const Duration(hours: 4)),
     ),
@@ -289,8 +286,6 @@ final class HostOperationsFixtures {
       openCount: 64,
       requestCount: 18,
       confirmedCount: 7,
-      paidCount: 0,
-      checkedInCount: 0,
       catcherCount: 1,
       matchCount: 1,
       chatStartedCount: 1,

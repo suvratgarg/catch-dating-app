@@ -14,10 +14,10 @@ class CatchCountBadge extends StatelessWidget {
   const CatchCountBadge({
     super.key,
     required this.count,
-    required Widget child,
+    required Widget this._child,
     this.alignment = Alignment.topRight,
     this.offset = const Offset(-2, 2),
-  }) : _child = child;
+  });
 
   const CatchCountBadge.label({super.key, required this.count})
     : _child = null,

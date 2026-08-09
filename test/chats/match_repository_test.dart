@@ -299,7 +299,7 @@ void main() {
       final collapsed = collapseMatchesByOtherUser([
         _buildMatch(
           id: 'general-inquiry',
-          createdAt: DateTime(2025, 1, 1),
+          createdAt: DateTime(2025),
           conversationType: MatchConversationType.clubHostInquiry,
           clubId: 'club:general',
         ),

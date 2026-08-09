@@ -60,8 +60,8 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light,
-        home: Scaffold(
-          body: const CatchHostRow(
+        home: const Scaffold(
+          body: CatchHostRow(
             activityKind: ActivityKind.dinner,
             name: 'Mira Shah',
           ),

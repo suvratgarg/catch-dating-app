@@ -15,6 +15,7 @@ class FirstHelloActionState {
 
 class FirstHelloCheckInCard extends StatefulWidget {
   const FirstHelloCheckInCard({
+    super.key,
     required this.mission,
     required this.actionState,
     required this.onStart,

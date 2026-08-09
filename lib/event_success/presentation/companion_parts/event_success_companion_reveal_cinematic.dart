@@ -15,6 +15,7 @@ part of '../event_success_companion_screen.dart';
 /// pointer-transparent the entire time.
 class RevealCinematicOverlay extends StatefulWidget {
   const RevealCinematicOverlay({
+    super.key,
     required this.plan,
     required this.referenceNow,
     required this.momentKind,

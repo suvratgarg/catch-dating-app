@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/widgets/confirm_danger_dialog.dart';
-import 'package:flutter/material.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:flutter/material.dart';
 
 Future<bool?> showBlockUserDialog({
   required BuildContext context,

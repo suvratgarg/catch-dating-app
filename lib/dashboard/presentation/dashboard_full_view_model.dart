@@ -65,11 +65,9 @@ class DashboardFullViewModel {
     required this.pendingReviewEvent,
     this.clubPostNotifications = const <ActivityNotification>[],
     required this.attendedEventsSection,
-    DashboardSectionModel<WeeklyActivitySnapshot>? weeklyActivitySection,
-    DashboardSectionModel<List<ExploreEventRecommendation>>?
-    recommendationsSection,
-  }) : _weeklyActivitySection = weeklyActivitySection,
-       _recommendationsSection = recommendationsSection;
+    this._weeklyActivitySection,
+    this._recommendationsSection,
+  });
 
   final List<Event> upcomingEvents;
   final Event? nextEvent;
@@ -140,8 +138,9 @@ class DashboardHomeHeaderModel {
   String title(AppLocalizations l10n) {
     final name = userName;
     final timestamp = now;
-    if (name == null || timestamp == null)
+    if (name == null || timestamp == null) {
       return l10n.dashboardDashboardFullViewModelTitleLetSFindYour;
+    }
     return l10n.dashboardDashboardFullViewModelTitleDashboardgreetingName(
       dashboardGreeting: dashboardGreeting(l10n, timestamp),
       name: name,
@@ -163,20 +162,20 @@ class DashboardHomeScreenState {
   DashboardHomeScreenState.loading()
     : this._(
         status: DashboardHomeScreenStatus.loading,
-        header: DashboardHomeHeaderModel.empty(),
+        header: const DashboardHomeHeaderModel.empty(),
       );
 
   DashboardHomeScreenState.error(DashboardHomeLoadError error)
     : this._(
         status: DashboardHomeScreenStatus.error,
-        header: DashboardHomeHeaderModel.empty(),
+        header: const DashboardHomeHeaderModel.empty(),
         error: error,
       );
 
   DashboardHomeScreenState.empty({String? notificationUid})
     : this._(
         status: DashboardHomeScreenStatus.empty,
-        header: DashboardHomeHeaderModel.empty(),
+        header: const DashboardHomeHeaderModel.empty(),
         notificationUid: notificationUid,
       );
 
@@ -206,8 +205,9 @@ class DashboardHomeScreenState {
 String dashboardGreeting(AppLocalizations l10n, DateTime now) {
   final hour = now.hour;
   if (hour < 12) return l10n.dashboardDashboardFullViewModelVisiblecopyMorning;
-  if (hour < 17)
+  if (hour < 17) {
     return l10n.dashboardDashboardFullViewModelVisiblecopyAfternoon;
+  }
   return l10n.dashboardDashboardFullViewModelVisiblecopyEvening;
 }
 

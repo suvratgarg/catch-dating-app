@@ -13,8 +13,8 @@ export 'domain/event_success_runtime.dart';
 export 'domain/event_success_structure.dart';
 export 'domain/event_success_wingman_request.dart';
 export 'presentation/event_success_companion_screen.dart'; // public-api: route entry point exposed to app routing
-export 'presentation/event_success_conversation_cue_copy.dart'; // public-api: localized presentation copy reused across feature boundaries
 export 'presentation/event_success_controller.dart'; // public-api: command seam for route-owned actions
+export 'presentation/event_success_conversation_cue_copy.dart'; // public-api: localized presentation copy reused across feature boundaries
 export 'presentation/event_success_defaults_panel.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/event_success_host_screen.dart'; // public-api: route entry point exposed to app routing
 export 'presentation/event_success_live_reveal_card.dart'; // public-api: shared presentation component used outside this feature

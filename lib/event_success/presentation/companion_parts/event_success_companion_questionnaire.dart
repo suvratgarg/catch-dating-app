@@ -13,6 +13,7 @@ class CompatibilityQuestionnaireActionState {
 
 class CompatibilityQuestionnaireSection extends StatefulWidget {
   const CompatibilityQuestionnaireSection({
+    super.key,
     required this.event,
     required this.plan,
     required this.response,
@@ -245,6 +246,7 @@ class _CompatibilityQuestionnaireSectionState
 
 class QuestionProgressRail extends StatelessWidget {
   const QuestionProgressRail({
+    super.key,
     required this.activeIndex,
     required this.answeredCount,
     required this.questionCount,

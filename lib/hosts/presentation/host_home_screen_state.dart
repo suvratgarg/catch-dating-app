@@ -176,8 +176,9 @@ class HostEventsWorkspaceState {
 
   String repeatLabel(AppLocalizations l10n) {
     final event = repeatSource;
-    if (event == null)
+    if (event == null) {
       return l10n.hostsHostHomeScreenStateVisiblecopyRepeatLast;
+    }
     final label = event.eventFormat.label.trim();
     return label.isEmpty
         ? l10n.hostsHostHomeScreenStateVisiblecopyRepeatLast

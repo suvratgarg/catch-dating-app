@@ -11,9 +11,9 @@ import 'package:catch_dating_app/core/widgets/catch_bottom_sheet_grabber.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 
 abstract final class RichShareCardSheetKeys {
   static const cardPreview = ValueKey('rich_share_card_sheet.card_preview');

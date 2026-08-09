@@ -194,7 +194,6 @@ void main() {
     final club = buildClub(
       id: 'empty-team-club',
       hostUserId: null,
-      ownerUserId: null,
       hostProfiles: const [],
     );
 

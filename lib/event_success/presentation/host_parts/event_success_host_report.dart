@@ -2,6 +2,7 @@ part of '../event_success_host_screen.dart';
 
 class ReportTab extends StatelessWidget {
   const ReportTab({
+    super.key,
     required this.event,
     required this.plan,
     required this.planIsPersisted,
@@ -129,7 +130,7 @@ class ReportTab extends StatelessWidget {
 }
 
 class HostReportSignalGrid extends StatelessWidget {
-  const HostReportSignalGrid({required this.brief});
+  const HostReportSignalGrid({super.key, required this.brief});
 
   final EventSuccessBrief brief;
 
@@ -210,7 +211,7 @@ class HostReportSignalGrid extends StatelessWidget {
 }
 
 class HostFunnelSummary extends StatelessWidget {
-  const HostFunnelSummary({required this.brief});
+  const HostFunnelSummary({super.key, required this.brief});
 
   final EventSuccessBrief brief;
 
