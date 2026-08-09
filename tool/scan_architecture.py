@@ -22,7 +22,7 @@ LIB_DIR = REPO_ROOT / "lib"
 
 EXCLUDE = [
     r'\.g\.dart$', r'\.freezed\.dart$', r'\.config\.dart$',
-    r'/test/', r'/labs/',
+    r'/test/', r'/design_fixtures/',
 ]
 
 def should_exclude(filepath: str) -> bool:

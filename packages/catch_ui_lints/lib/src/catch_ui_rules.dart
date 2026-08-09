@@ -616,7 +616,8 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
   }
 
   bool _isSizingScannerPath(String path) {
-    return !path.contains('/lib/labs/') && !path.contains('explore_concept');
+    return !path.contains('/lib/design_fixtures/') &&
+        !path.contains('explore_concept');
   }
 
   bool _isUiSystemScannerPath(String path) {

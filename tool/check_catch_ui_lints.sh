@@ -11,6 +11,16 @@ generated_expectations_path="tool/design/generated/enforcement_expectations.json
 
 node tool/design/build_lint_enforcement_tables.mjs --check
 
+sizing_rule_source="packages/catch_ui_lints/lib/src/catch_ui_rules.dart"
+if ! grep -Fq "'/lib/design_fixtures/'" "$sizing_rule_source"; then
+  echo "Catch UI sizing enforcement must exclude the canonical design fixture catalog." >&2
+  exit 1
+fi
+if grep -Fq "'/lib/labs/'" "$sizing_rule_source"; then
+  echo "Catch UI sizing enforcement still references the retired product labs path." >&2
+  exit 1
+fi
+
 cleanup() {
   rm -rf "$probe_root"
 }
