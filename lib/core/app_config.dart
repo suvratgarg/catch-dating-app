@@ -239,14 +239,6 @@ class AppConfig {
     requested: _crossPathsPreviewRequested,
   );
 
-  static const bool enableClubPosts = bool.fromEnvironment('ENABLE_CLUB_POSTS');
-
-  /// Host event announcements stay dark in production until the callable has
-  /// been deployed and the TestFlight dependency preflight can reach it.
-  static const bool enableHostEventBroadcast = bool.fromEnvironment(
-    'ENABLE_HOST_EVENT_BROADCAST',
-  );
-
   static bool get shouldShowEnvironmentBanner => !environment.isProduction;
 
   static String get environmentBannerLabel {

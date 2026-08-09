@@ -2,7 +2,6 @@ import 'package:catch_dating_app/clubs/data/club_posts_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/shared/club_action_keys.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
-import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -156,48 +155,46 @@ class HostClubManagementPanel extends StatelessWidget {
                   icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
                   fullWidth: true,
                 ),
-                if (AppConfig.enableClubPosts) ...[
-                  gapH10,
-                  Consumer(
-                    builder: (context, ref, child) {
-                      final quotaAsync = ref.watch(
-                        watchClubPostRemainingWeeklyQuotaProvider(club.id),
-                      );
-                      final remainingQuota =
-                          quotaAsync.asData?.value ??
-                          ClubPostsRepository.weeklyQuota;
-                      final quotaExhausted = remainingQuota <= 0;
-                      return CatchButton(
-                        label: quotaExhausted
-                            ? context.l10n.hostsHostClubToolsLabelPostQuotaUsed
-                            : context.l10n.hostsHostClubToolsLabelPostUpdate,
-                        onPressed: quotaExhausted
-                            ? null
-                            : () => _showClubPostComposer(
-                                context: context,
-                                club: club,
-                                remainingQuota: remainingQuota,
-                                onSubmitPost: (text) async {
-                                  await ref
-                                      .read(clubPostsRepositoryProvider)
-                                      .createPost(clubId: club.id, text: text);
-                                  ref
-                                      .read(appAnalyticsProvider)
-                                      .logEvent(
-                                        AnalyticsEvents.clubPostCreated,
-                                        parameters: {
-                                          AnalyticsParameters.clubId: club.id,
-                                        },
-                                      );
-                                },
-                              ),
-                        icon: Icon(CatchIcons.megaphone, size: CatchIcon.md),
-                        variant: CatchButtonVariant.secondary,
-                        fullWidth: true,
-                      );
-                    },
-                  ),
-                ],
+                gapH10,
+                Consumer(
+                  builder: (context, ref, child) {
+                    final quotaAsync = ref.watch(
+                      watchClubPostRemainingWeeklyQuotaProvider(club.id),
+                    );
+                    final remainingQuota =
+                        quotaAsync.asData?.value ??
+                        ClubPostsRepository.weeklyQuota;
+                    final quotaExhausted = remainingQuota <= 0;
+                    return CatchButton(
+                      label: quotaExhausted
+                          ? context.l10n.hostsHostClubToolsLabelPostQuotaUsed
+                          : context.l10n.hostsHostClubToolsLabelPostUpdate,
+                      onPressed: quotaExhausted
+                          ? null
+                          : () => _showClubPostComposer(
+                              context: context,
+                              club: club,
+                              remainingQuota: remainingQuota,
+                              onSubmitPost: (text) async {
+                                await ref
+                                    .read(clubPostsRepositoryProvider)
+                                    .createPost(clubId: club.id, text: text);
+                                ref
+                                    .read(appAnalyticsProvider)
+                                    .logEvent(
+                                      AnalyticsEvents.clubPostCreated,
+                                      parameters: {
+                                        AnalyticsParameters.clubId: club.id,
+                                      },
+                                    );
+                              },
+                            ),
+                      icon: Icon(CatchIcons.megaphone, size: CatchIcon.md),
+                      variant: CatchButtonVariant.secondary,
+                      fullWidth: true,
+                    );
+                  },
+                ),
                 gapH10,
                 CatchButton(
                   key: ClubActionKeys.editButton,

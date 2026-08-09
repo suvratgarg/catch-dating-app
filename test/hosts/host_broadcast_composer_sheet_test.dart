@@ -24,7 +24,6 @@ void main() {
           prospectiveCount: 9,
           initialSegment: HostInboxAudienceSegment.booked,
           initialTemplate: HostBroadcastTemplate.reminder,
-          sendingEnabled: true,
           requestIdFactory: () => 'request-${++generatedIds}',
           sendAction:
               ({

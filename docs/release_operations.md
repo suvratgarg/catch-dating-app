@@ -1059,23 +1059,20 @@ fallback prevents a premature TestFlight build from breaking Message Host, but
 it creates a General inquiry and therefore is rollout safety—not event-provenance
 closure. Wrong-club and other new-backend validation failures are never retried.
 
-Host event broadcasts use an intentionally stricter backend-first rollout:
+Host event broadcasts completed their backend-first rollout in August 2026:
 
 1. Merge and deploy `sendEventBroadcast`, its receipt schema, TTL field policy,
    indexes/rules, and callable IAM while
-   `ENABLE_HOST_EVENT_BROADCAST=false` in the production Dart defines.
+   the Host client affordance was still hidden.
 2. Exercise dev, staging, and then production callable reachability. Confirm a
    missing-auth request reaches the Firebase callable adapter and returns a
    callable JSON rejection rather than 404, redirect, HTML/GFE, IAM denial, or
    5xx.
-3. Only after that proof, set the production flag true in a later client merge.
-   The Host job in `Mobile Internal Release` runs the manifest-driven live dependency check
-   before Flutter/Xcode work and refuses to archive if the callable is not
-   reachable.
-
-Dev and staging may keep the flag true for integration testing. Production
-stays dark in source until the live backend proof exists; a client merge is not
-a substitute for the Functions deployment.
+3. After that proof passed in production, the temporary client flag was
+   removed. The Host job in `Mobile Internal Release` still runs the
+   manifest-driven live dependency check before Flutter/Xcode work and refuses
+   to archive if the callable is not reachable. Broadcast visibility is now a
+   product capability, not a rollout flag.
 
 `./tool/deploy_firebase_targets.sh` is the bounded stage executor beneath
 Delivery and an operator-only recovery helper. It plans selected targets in the
