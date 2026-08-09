@@ -71,6 +71,8 @@ abstract class Event with _$Event {
 
   const factory Event({
     @JsonKey(includeToJson: false) required String id,
+    @JsonKey(includeToJson: false) @Default(false) bool synthetic,
+    @JsonKey(includeToJson: false) String? seedPrefix,
     @JsonKey(name: 'organizerId', readValue: _readOrganizerId)
     required String clubId,
     @TimestampConverter() required DateTime startTime,

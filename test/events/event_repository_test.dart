@@ -165,6 +165,27 @@ void main() {
       },
     );
 
+    test('watchEventsForClub excludes synthetic QA events', () async {
+      final real = buildEvent(id: 'real', clubId: 'club-2');
+      final synthetic = buildEvent(
+        id: 'synthetic',
+        clubId: 'club-2',
+        synthetic: true,
+        seedPrefix: 'cross_paths_mumbai_qa',
+      );
+      await _seedEvent(firestore, real);
+      await _seedEvent(firestore, synthetic);
+      await firestore.collection('events').doc(synthetic.id).update({
+        'synthetic': true,
+        'seedPrefix': 'cross_paths_mumbai_qa',
+      });
+
+      await expectLater(
+        repository.watchEventsForClub(clubId: 'club-2'),
+        emits([real]),
+      );
+    });
+
     test(
       'watchEventsForClubs merges hosted clubs in start-time order',
       () async {

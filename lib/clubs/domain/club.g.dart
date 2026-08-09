@@ -8,6 +8,8 @@ part of 'club.dart';
 
 _Club _$ClubFromJson(Map<String, dynamic> json) => _Club(
   id: json['id'] as String,
+  synthetic: json['synthetic'] as bool? ?? false,
+  seedPrefix: json['seedPrefix'] as String?,
   name: json['name'] as String,
   description: json['description'] as String,
   location: json['location'] as String,

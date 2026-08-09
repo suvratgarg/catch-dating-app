@@ -517,12 +517,25 @@ function syntheticScopesMatch(
   user: unknown,
   event: unknown
 ): boolean {
-  return syntheticFlag(user) === syntheticFlag(event);
+  const userSynthetic = syntheticFlag(user);
+  const eventSynthetic = syntheticFlag(event);
+  if (userSynthetic !== eventSynthetic) return false;
+  if (!userSynthetic) return true;
+  const userPrefix = syntheticSeedPrefix(user);
+  const eventPrefix = syntheticSeedPrefix(event);
+  return userPrefix !== null && userPrefix === eventPrefix;
 }
 
 function syntheticFlag(value: unknown): boolean {
   if (!value || typeof value !== "object" || Array.isArray(value)) return false;
   return (value as Record<string, unknown>).synthetic === true;
+}
+
+function syntheticSeedPrefix(value: unknown): string | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const prefix = (value as Record<string, unknown>).seedPrefix;
+  return typeof prefix === "string" && prefix.trim().length > 0 ?
+    prefix.trim() : null;
 }
 
 async function fetchOpenReportBoundary(

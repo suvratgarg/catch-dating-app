@@ -22,6 +22,59 @@ const maximumHorizonMillis = 14 * 24 * 60 * 60 * 1000;
 const reviewerUid = "cross-paths-demo-seed";
 
 export const DEFAULT_CROSS_PATHS_DEMO_CANDIDATE_COUNT = 2;
+export const PRODUCTION_CROSS_PATHS_FIXTURE = Object.freeze({
+  projectId: "catch-dating-app-64e51",
+  seedPrefix: "cross_paths_mumbai_qa",
+  viewerUid: "cross_paths_mumbai_qa_user_002",
+  eventId: "cross_paths_mumbai_qa_run_mumbai_01_01",
+  organizerId: "courtside",
+  candidateCount: 2,
+  testPhone: "+16505550101",
+});
+
+export function assertProductionCrossPathsFixtureRequest({
+  projectId,
+  emulatorHost = null,
+  apply = false,
+  allowProd = false,
+  allowProdCrossPathsFixture = false,
+  configureTestLogin = false,
+  seedPrefix,
+  viewerUid,
+  eventId,
+  organizerId,
+  candidateCount,
+  testPhone,
+  testCode,
+}) {
+  if (emulatorHost || projectId === "catchdates-dev") return;
+  if (projectId !== PRODUCTION_CROSS_PATHS_FIXTURE.projectId) {
+    throw new Error(
+      "seed-cross-paths supports only dev, the emulator, or the exact " +
+        "production Mumbai QA fixture."
+    );
+  }
+  const exact = PRODUCTION_CROSS_PATHS_FIXTURE;
+  const matchesExactFixture = allowProdCrossPathsFixture &&
+    seedPrefix === exact.seedPrefix &&
+    viewerUid === exact.viewerUid &&
+    eventId === exact.eventId &&
+    organizerId === exact.organizerId &&
+    candidateCount === exact.candidateCount;
+  const writeIsAuthorized = !apply || (
+    allowProd &&
+    configureTestLogin &&
+    testPhone === exact.testPhone &&
+    /^\d{6}$/.test(String(testCode ?? ""))
+  );
+  if (!matchesExactFixture || !writeIsAuthorized) {
+    throw new Error(
+      "Production Cross Paths seeding is restricted to the exact Mumbai QA " +
+        "fixture and requires --allow-prod, --allow-prod-cross-paths-fixture, " +
+        "--configure-test-login, and every pinned fixture argument."
+    );
+  }
+}
 
 export function loadCrossPathsDemoHelpers() {
   try {
@@ -61,6 +114,7 @@ export async function buildCrossPathsDemoPlan({
   seedPrefix,
   viewerUid = null,
   eventId = null,
+  organizerId = null,
   candidateCount = DEFAULT_CROSS_PATHS_DEMO_CANDIDATE_COUNT,
   testPhone = null,
   now = new Date(),
@@ -92,6 +146,15 @@ export async function buildCrossPathsDemoPlan({
     );
   }
   assertSyntheticReadyUser(viewer, "viewer");
+
+  if (organizerId) {
+    const organizerSnapshot = await db.collection("organizers")
+      .doc(organizerId)
+      .get();
+    if (!organizerSnapshot.exists) {
+      throw new Error(`Cross Paths fixture organizer ${organizerId} is missing.`);
+    }
+  }
 
   const publicProfiles = new Map();
   const loadPublicProfile = async (uid) => {
@@ -219,18 +282,19 @@ export async function buildCrossPathsDemoPlan({
     eventId: selection.event.id,
     candidateUids: selection.candidates.map((candidate) => candidate.uid),
   });
-  const docs = [
+  const docs = consolidateDocPlan([
     ...fixtureDocs,
     ...buildCrossPathsDemoDocuments({
       viewer,
       candidates: selection.candidates,
       eventId: selection.event.id,
+      organizerId,
       nowTimestamp,
       testPhone,
       helpers,
       existingRecords,
     }),
-  ];
+  ]);
 
   return {
     command: "seed-cross-paths",
@@ -256,6 +320,7 @@ export function buildCrossPathsDemoDocuments({
   viewer,
   candidates,
   eventId,
+  organizerId = null,
   nowTimestamp,
   testPhone,
   helpers,
@@ -264,7 +329,10 @@ export function buildCrossPathsDemoDocuments({
   const users = [viewer, ...candidates];
   const docs = [{
     path: `events/${eventId}`,
-    data: {crossPathsDiscoveryEnabled: true},
+    data: {
+      crossPathsDiscoveryEnabled: true,
+      ...(organizerId ? {clubId: organizerId, organizerId} : {}),
+    },
   }, ...users.map((user) => ({
     path: `users/${user.uid}`,
     data: {
@@ -273,7 +341,10 @@ export function buildCrossPathsDemoDocuments({
       ...(user.uid === viewer.uid && testPhone ?
         {phoneNumber: testPhone} : {}),
     },
-  }))];
+  })), ...(organizerId ? users.map((user) => ({
+    path: `eventParticipations/${eventId}_${user.uid}`,
+    data: {clubId: organizerId},
+  })) : [])];
 
   for (const candidate of candidates) {
     const consentPath = `eventCrossPathsConsents/${eventId}_${candidate.uid}`;
@@ -332,6 +403,18 @@ export function buildCrossPathsDemoDocuments({
     docs.push({path: eligibilityPath, data: eligibility});
   }
   return docs;
+}
+
+function consolidateDocPlan(docs) {
+  const byPath = new Map();
+  for (const doc of docs) {
+    const prior = byPath.get(doc.path);
+    byPath.set(doc.path, {
+      path: doc.path,
+      data: {...(prior?.data ?? {}), ...doc.data},
+    });
+  }
+  return [...byPath.values()];
 }
 
 export async function verifyCrossPathsDemoPlan({db, plan}) {

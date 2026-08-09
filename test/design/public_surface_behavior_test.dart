@@ -44,6 +44,13 @@ void main() {
 
   tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
 
+  test('synthetic organizers are never publicly browseable', () {
+    expect(
+      _clubForValues(const {}).copyWith(synthetic: true).isPubliclyBrowseable,
+      isFalse,
+    );
+  });
+
   test(
     'public surface behavior contract enumerates every registered app row',
     () {

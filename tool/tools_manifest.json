@@ -2208,6 +2208,13 @@
       "safety": "remote-write-apply-guarded",
       "status": "active",
       "description": "Operational wrapper for demo seeding, Cross Paths fixtures, matching, Suvbot, and demo readiness.",
+      "impactPaths": [
+        "tool/demo/demo_ops.mjs",
+        "tool/demo/demo_ops_core.mjs",
+        "tool/demo/demo_ops_core.test.mjs",
+        "tool/demo/cross_paths_demo_core.mjs",
+        "tool/demo/cross_paths_demo_core.test.mjs"
+      ],
       "checks": [
         "node --check tool/demo/demo_ops.mjs",
         "node --test tool/demo/demo_ops_core.test.mjs tool/demo/cross_paths_demo_core.test.mjs",
@@ -2222,7 +2229,12 @@
       "command": "node --test tool/demo/cross_paths_demo_core.test.mjs",
       "safety": "local-test",
       "status": "internal",
-      "description": "Plans and verifies the dev-only, consent-complete Cross Paths synthetic fixture and its optional Firebase test-phone login.",
+      "description": "Plans and verifies consent-complete Cross Paths synthetic fixtures, including the exact production Mumbai QA fixture and its Firebase test-phone login.",
+      "impactPaths": [
+        "tool/demo/cross_paths_demo_core.mjs",
+        "tool/demo/cross_paths_demo_core.test.mjs",
+        "tool/demo/demo_seed/scenarios/cross-paths-mumbai-qa.json"
+      ],
       "checks": [
         "node --check tool/demo/cross_paths_demo_core.mjs",
         "node --test tool/demo/cross_paths_demo_core.test.mjs"
@@ -2236,6 +2248,10 @@
       "safety": "local-test",
       "status": "internal",
       "description": "Shared planning and Firestore helpers for demo operations.",
+      "impactPaths": [
+        "tool/demo/demo_ops_core.mjs",
+        "tool/demo/demo_ops_core.test.mjs"
+      ],
       "checks": [
         "node --check tool/demo/demo_ops_core.mjs"
       ]
@@ -2260,6 +2276,11 @@
       "safety": "local-test",
       "status": "internal",
       "description": "Loads and validates reusable demo seed scenario metadata.",
+      "impactPaths": [
+        "tool/demo/demo_seed_scenario_catalog.mjs",
+        "tool/demo/demo_seed_scenario_catalog.test.mjs",
+        "tool/demo/demo_seed/scenarios/**"
+      ],
       "checks": [
         "node --check tool/demo/demo_seed_scenario_catalog.mjs",
         "node --test tool/demo/demo_seed_scenario_catalog.test.mjs"
@@ -2273,6 +2294,12 @@
       "safety": "remote-write-apply-guarded",
       "status": "active",
       "description": "Builds and optionally writes demo seed worlds.",
+      "impactPaths": [
+        "tool/demo/seed_demo_data.mjs",
+        "tool/demo/seed_demo_data_append.test.mjs",
+        "tool/demo/seed_demo_data_schema.test.mjs",
+        "tool/demo/demo_seed/scenarios/**"
+      ],
       "checks": [
         "node --check tool/demo/seed_demo_data.mjs",
         "node --test tool/demo/seed_demo_data_append.test.mjs tool/demo/seed_demo_data_schema.test.mjs"

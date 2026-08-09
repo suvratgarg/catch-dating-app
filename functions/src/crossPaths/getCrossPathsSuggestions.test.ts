@@ -337,7 +337,10 @@ test("requires a current booking or immediately bookable event", async () => {
 
 test("contains synthetic suggestions to synthetic viewers and events",
   async () => {
-    const syntheticPublic = profile("candidate-a", {synthetic: true});
+    const syntheticPublic = profile("candidate-a", {
+      synthetic: true,
+      seedPrefix: "candidate-world",
+    });
     const realViewer = harness({
       "users/candidate-a": {
         ...user({
@@ -346,6 +349,7 @@ test("contains synthetic suggestions to synthetic viewers and events",
           prefsShowInCrossPaths: true,
         }),
         synthetic: true,
+        seedPrefix: "candidate-world",
       },
       "publicProfiles/candidate-a": syntheticPublic,
       "crossPathsShowcaseEligibility/candidate-a": showcase(syntheticPublic),
@@ -360,6 +364,49 @@ test("contains synthetic suggestions to synthetic viewers and events",
       realViewer.deps
     )).suggestions, []);
   });
+
+test("contains synthetic suggestions within one exact seed world", async () => {
+  const seedPrefix = "cross_paths_mumbai_qa";
+  const syntheticPublic = profile("candidate-a", {synthetic: true, seedPrefix});
+  const h = harness({
+    "users/viewer": {
+      ...user({
+        gender: "man",
+        interestedInGenders: ["woman"],
+        prefsShowInCrossPaths: true,
+      }),
+      synthetic: true,
+      seedPrefix,
+    },
+    "users/candidate-a": {
+      ...user({
+        gender: "woman",
+        interestedInGenders: ["man"],
+        prefsShowInCrossPaths: true,
+      }),
+      synthetic: true,
+      seedPrefix,
+    },
+    "publicProfiles/candidate-a": syntheticPublic,
+    "crossPathsShowcaseEligibility/candidate-a": showcase(syntheticPublic),
+    "events/event-1": event({synthetic: true, seedPrefix}),
+    "eventParticipations/event-1_candidate-b": undefined,
+    "eventParticipations/event-1_candidate-c": undefined,
+  });
+
+  const response = await getCrossPathsSuggestionsHandler(
+    request("viewer", {
+      eventIds: ["event-1"],
+      sessionId: "explore-session-0005a",
+    }),
+    h.deps
+  );
+
+  assert.deepEqual(
+    response.suggestions.map((suggestion) => suggestion.person.uid),
+    ["candidate-a"]
+  );
+});
 
 test("never exceeds two people exposed in one Explore session", async () => {
   const sessionId = "explore-session-0006";

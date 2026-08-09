@@ -61,6 +61,7 @@ import {
 } from "./demo_persona_catalog.mjs";
 import {
   DEFAULT_CROSS_PATHS_DEMO_CANDIDATE_COUNT,
+  assertProductionCrossPathsFixtureRequest,
   buildCrossPathsDemoPlan,
   ensureCrossPathsDemoTestLogin,
   verifyCrossPathsDemoPlan,
@@ -429,6 +430,7 @@ async function runCleanupDemoData({db, args, projectId}) {
     seedPrefixes: args.seedPrefixes.length > 0 ?
       args.seedPrefixes :
       undefined,
+    keepSeedPrefixes: args.keepSeedPrefixes,
   });
   if (args.apply) await applyDeletePlan({db, paths: plan.paths});
   printPlan({
@@ -466,11 +468,21 @@ async function runCleanupStaleEvents({db, args, projectId}) {
 }
 
 async function runSeedCrossPaths({db, args, projectId}) {
-  if (projectId !== "catchdates-dev" && !args.emulatorHost) {
-    throw new Error(
-      "seed-cross-paths is dev/emulator-only. It refuses staging and prod."
-    );
-  }
+  assertProductionCrossPathsFixtureRequest({
+    projectId,
+    emulatorHost: args.emulatorHost,
+    apply: args.apply,
+    allowProd: args.allowProd,
+    allowProdCrossPathsFixture: args.allowProdCrossPathsFixture,
+    configureTestLogin: args.configureTestLogin,
+    seedPrefix: args.seedPrefix,
+    viewerUid: args.uid,
+    eventId: args.eventId,
+    organizerId: args.organizerId,
+    candidateCount: args.candidateCount,
+    testPhone: args.testPhone,
+    testCode: args.testCode,
+  });
   if (args.configureTestLogin && !args.apply) {
     throw new Error("--configure-test-login requires --apply.");
   }
@@ -485,6 +497,7 @@ async function runSeedCrossPaths({db, args, projectId}) {
     seedPrefix: args.seedPrefix,
     viewerUid: args.uid,
     eventId: args.eventId,
+    organizerId: args.organizerId,
     candidateCount: args.candidateCount,
     testPhone: args.configureTestLogin ? args.testPhone : null,
   });
@@ -889,6 +902,7 @@ function parseArgs(argv) {
     action: null,
     targetPhone: null,
     eventId: null,
+    organizerId: null,
     lat: null,
     lng: null,
     meetingPoint: undefined,
@@ -898,6 +912,7 @@ function parseArgs(argv) {
     testPhone: null,
     testCode: null,
     seedPrefixes: [],
+    keepSeedPrefixes: [],
     cleanupPast: true,
     cleanupCancelled: true,
     goldenFile: null,
@@ -924,6 +939,7 @@ function parseArgs(argv) {
     update: false,
     check: false,
     allowProd: false,
+    allowProdCrossPathsFixture: false,
     resetSynthetic: false,
     viaSwipes: false,
     viaSwipesOnly: false,
@@ -944,6 +960,9 @@ function parseArgs(argv) {
     else if (arg === "--update") args.update = true;
     else if (arg === "--check") args.check = true;
     else if (arg === "--allow-prod") args.allowProd = true;
+    else if (arg === "--allow-prod-cross-paths-fixture") {
+      args.allowProdCrossPathsFixture = true;
+    }
     else if (arg === "--reset-synthetic") args.resetSynthetic = true;
     else if (arg === "--via-swipes") args.viaSwipes = true;
     else if (arg === "--with-messages") args.withMessages = true;
@@ -981,11 +1000,13 @@ function parseArgs(argv) {
     else if (arg === "--test-phone") args.testPhone = requireValue(argv, ++i, arg);
     else if (arg === "--test-code") args.testCode = requireValue(argv, ++i, arg);
     else if (arg === "--event-id") args.eventId = requireValue(argv, ++i, arg);
+    else if (arg === "--organizer-id") args.organizerId = requireValue(argv, ++i, arg);
     else if (arg === "--lat") args.lat = requireValue(argv, ++i, arg);
     else if (arg === "--lng") args.lng = requireValue(argv, ++i, arg);
     else if (arg === "--meeting-point") args.meetingPoint = requireValue(argv, ++i, arg);
     else if (arg === "--text") args.text = requireValue(argv, ++i, arg);
     else if (arg === "--seed-prefixes") args.seedPrefixes = splitCsv(requireValue(argv, ++i, arg));
+    else if (arg === "--keep-seed-prefixes") args.keepSeedPrefixes = splitCsv(requireValue(argv, ++i, arg));
     else if (arg === "--golden-file") args.goldenFile = requireValue(argv, ++i, arg);
     else if (arg === "--persona-profile-projection") args.personaProfileProjection = requireValue(argv, ++i, arg);
     else if (arg === "--persona-catalog") args.personaCatalog = requireValue(argv, ++i, arg);
@@ -1484,6 +1505,7 @@ Usage:
   node tool/demo/demo_ops.mjs cleanup-stale-events --env prod --apply --allow-prod
   node tool/demo/demo_ops.mjs seed-cross-paths --env dev --apply
   node tool/demo/demo_ops.mjs seed-cross-paths --env dev --apply --configure-test-login --test-phone +16505550101 --test-code 123456
+  node tool/demo/demo_ops.mjs seed-cross-paths --env prod --seed-prefix cross_paths_mumbai_qa --uid cross_paths_mumbai_qa_user_002 --event-id cross_paths_mumbai_qa_run_mumbai_01_01 --organizer-id courtside --candidate-count 2 --configure-test-login --test-phone +16505550101 --test-code 123456 --apply --allow-prod --allow-prod-cross-paths-fixture
   node tool/demo/demo_ops.mjs create-check-in-event --env prod --phone +91... --lat 28.6 --lng 77.2 --apply --allow-prod
   node tool/demo/demo_ops.mjs demo-checklist --env prod --phone +91...
   node tool/demo/demo_ops.mjs scenario-info --demo-scenario investor-demo
@@ -1500,6 +1522,8 @@ Common options:
   --update                       Update local generated artifacts for commands that support it.
   --check                        Check local generated artifacts for commands that support it.
   --allow-prod                   Required for prod writes.
+  --allow-prod-cross-paths-fixture
+                                 Required for the exact production Mumbai QA fixture.
   --json                         Machine-readable output.
   --emulator / --emulator-host   Use Firestore emulator.
   --skip-functions-build         Use existing functions/lib Suvbot code.
@@ -1513,6 +1537,7 @@ Command options:
   --action <actionId>            Suvbot action id from suvbot-actions.
   --target-phone <phone>         Tester phone for Suvbot matchTesterByPhone.
   --event-id <eventId>           Force match/shared event context.
+  --organizer-id <organizerId>   Bind the Cross Paths QA event to one organizer.
   --lat / --lng                  Event coordinates for host/check-in creation.
   --meeting-point <label>        Meeting label for host/check-in creation.
   --text <message>               Demo chat message text.
@@ -1528,6 +1553,8 @@ Command options:
   --test-code <six digits>       Firebase test-phone verification code. Never
                                  commit a real person's phone or OTP.
   --seed-prefixes <prefix,...>   cleanup-demo-data prefixes.
+  --keep-seed-prefixes <prefix,...>
+                                 Preserve selected synthetic QA worlds during cleanup.
   --keep-past-events               cleanup-stale-events leaves past seeded events.
   --keep-cancelled-events          cleanup-stale-events leaves cancelled seeded events.
   --demo-scenario <name|path>    scenario-info target.

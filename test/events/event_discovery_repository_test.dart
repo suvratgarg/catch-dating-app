@@ -115,6 +115,29 @@ void main() {
       },
     );
 
+    test('excludes synthetic events from public discovery', () async {
+      final firestore = FakeFirebaseFirestore();
+      final repository = EventDiscoveryRepository(firestore);
+      final now = DateTime(2026, 5, 26, 10);
+      final syntheticEvent = buildEvent(
+        id: 'synthetic-event',
+        synthetic: true,
+        seedPrefix: 'cross_paths_mumbai_qa',
+        startTime: now.add(const Duration(days: 1)),
+      );
+      await _seedDiscoverableEvent(firestore, syntheticEvent);
+      await firestore.collection('events').doc(syntheticEvent.id).update({
+        'synthetic': true,
+        'seedPrefix': 'cross_paths_mumbai_qa',
+      });
+
+      final events = await repository.fetchDiscoverableEvents(
+        EventDiscoveryQuery.forCity(marketId: 'in-mh-mumbai', startAt: now),
+      );
+
+      expect(events, isEmpty);
+    });
+
     test('provider builds a repository from Firebase providers', () async {
       final firestore = FakeFirebaseFirestore();
       final event = buildEvent(

@@ -34,6 +34,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 Event buildEvent({
   String id = 'event-1',
+  bool synthetic = false,
+  String? seedPrefix,
   String clubId = 'club-1',
   DateTime? startTime,
   DateTime? endTime,
@@ -72,6 +74,8 @@ Event buildEvent({
       );
   return Event(
     id: id,
+    synthetic: synthetic,
+    seedPrefix: seedPrefix,
     clubId: clubId,
     startTime: start,
     endTime: endTime ?? start.add(const Duration(hours: 1)),

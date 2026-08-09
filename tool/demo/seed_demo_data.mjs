@@ -398,9 +398,9 @@ const meetingPointData = {
     {key: "williamsburg_court_2", label: "McCarren Park court 2", lat: 40.7215, lng: -73.9515, detail: "Meet beside court 2 near the clubhouse gate."},
   ],
   mumbai: [
-    {label: "Bandra Carter Road amphitheatre", lat: 19.0704, lng: 72.8220, detail: "Meet beside the amphitheatre steps facing the promenade."},
-    {label: "Marine Drive police gymkhana gate", lat: 18.9432, lng: 72.8234, detail: "Meet near the sea-facing gate before the promenade warm-up."},
-    {label: "Powai lake garden entrance", lat: 19.1197, lng: 72.9052, detail: "Meet at the garden entrance opposite the lake path."},
+    {key: "bandra_carter_road_amphitheatre", label: "Bandra Carter Road amphitheatre", lat: 19.0704, lng: 72.8220, detail: "Meet beside the amphitheatre steps facing the promenade."},
+    {key: "marine_drive_police_gymkhana", label: "Marine Drive police gymkhana gate", lat: 18.9432, lng: 72.8234, detail: "Meet near the sea-facing gate before the promenade warm-up."},
+    {key: "powai_lake_garden", label: "Powai lake garden entrance", lat: 19.1197, lng: 72.9052, detail: "Meet at the garden entrance opposite the lake path."},
   ],
   delhi: [
     {label: "Lodhi Garden gate 1", lat: 28.5933, lng: 77.2209, detail: "Meet just inside gate 1 near the stone benches."},

@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  PRODUCTION_CROSS_PATHS_FIXTURE,
+  assertProductionCrossPathsFixtureRequest,
   buildCrossPathsDemoDocuments,
   ensureCrossPathsDemoTestLogin,
   verifyCrossPathsDemoPlan,
@@ -8,6 +10,35 @@ import {
 import {loadFirebaseAdmin} from "./demo_ops_core.mjs";
 
 const admin = loadFirebaseAdmin();
+
+test("production seeding accepts only the pinned Mumbai fixture", () => {
+  const exact = PRODUCTION_CROSS_PATHS_FIXTURE;
+  assert.doesNotThrow(() => assertProductionCrossPathsFixtureRequest({
+    ...exact,
+    apply: true,
+    allowProd: true,
+    allowProdCrossPathsFixture: true,
+    configureTestLogin: true,
+    testCode: "123456",
+  }));
+  assert.doesNotThrow(() => assertProductionCrossPathsFixtureRequest({
+    ...exact,
+    allowProdCrossPathsFixture: true,
+  }));
+  assert.throws(() => assertProductionCrossPathsFixtureRequest({
+    ...exact,
+    apply: true,
+    viewerUid: "some-other-user",
+    allowProd: true,
+    allowProdCrossPathsFixture: true,
+    configureTestLogin: true,
+    testCode: "123456",
+  }), /restricted to the exact Mumbai QA fixture/);
+  assert.throws(() => assertProductionCrossPathsFixtureRequest({
+    ...exact,
+    projectId: "catchdates-staging",
+  }), /supports only dev, the emulator, or the exact production/);
+});
 
 test("Cross Paths fixture writes only explicit synthetic consent and review", () => {
   const timestamp = admin.firestore.Timestamp.fromMillis(1_700_000_000_000);
@@ -49,6 +80,44 @@ test("Cross Paths fixture writes only explicit synthetic consent and review", ()
   assert.equal(docs[5].data.status, "eligible");
   assert.equal(docs[5].data.profileFingerprint, "a".repeat(64));
   assert.equal(docs[5].data.reviewedByUid, "cross-paths-demo-seed");
+});
+
+test("fixture can bind the event and participations to one hidden organizer", () => {
+  const timestamp = admin.firestore.Timestamp.fromMillis(1_700_000_000_000);
+  const docs = buildCrossPathsDemoDocuments({
+    viewer: user("viewer"),
+    candidates: [candidate("candidate", "a".repeat(64))],
+    eventId: "demo-event",
+    organizerId: "courtside",
+    nowTimestamp: timestamp,
+    testPhone: null,
+    helpers: {
+      currentCrossPathsTermsVersion: 1,
+      crossPathsShowcaseRuleVersion: 1,
+    },
+  });
+
+  assert.deepEqual(docs[0], {
+    path: "events/demo-event",
+    data: {
+      crossPathsDiscoveryEnabled: true,
+      clubId: "courtside",
+      organizerId: "courtside",
+    },
+  });
+  assert.deepEqual(
+    docs.filter((doc) => doc.path.startsWith("eventParticipations/")),
+    [
+      {
+        path: "eventParticipations/demo-event_viewer",
+        data: {clubId: "courtside"},
+      },
+      {
+        path: "eventParticipations/demo-event_candidate",
+        data: {clubId: "courtside"},
+      },
+    ]
+  );
 });
 
 test("unchanged eligible review remains idempotent", () => {

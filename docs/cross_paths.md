@@ -1,7 +1,7 @@
 ---
 doc_id: cross_paths
-version: 1.9.0
-updated: 2026-08-09
+version: 1.10.0
+updated: 2026-08-10
 owner: product (approved direction 2026-08-05)
 status: implemented-default-off
 ---
@@ -809,10 +809,12 @@ exist. The batched server suggestion contract now adds canonical event
 availability, safety/consent/readiness filtering, deterministic fatigue,
 sanitized output, and signed tokens. Phase 0 still requires external legal
 privacy-policy approval. The synthetic seed policy is now implemented through
-the dev/emulator-only `demo_ops seed-cross-paths` operation: it reuses clearly
-marked synthetic profiles, creates a fresh synthetic event when the older demo
-world is stale, and writes only current consent plus fingerprint-bound
-showcase review state.
+`demo_ops seed-cross-paths`: dev/emulator use remains flexible, while
+production accepts only one pinned three-person Mumbai QA world. Synthetic
+profiles and events must share one non-empty seed prefix, public app/Host
+repositories exclude synthetic supply, and only the selected synthetic viewer
+may recover their own signed-up fixture. The operation writes only current
+synthetic consent plus fingerprint-bound showcase review state.
 
 - [x] Land/reuse the person-Polaroid and organizer-poster migration.
 - [x] Introduce feature flags with fail-closed defaults.

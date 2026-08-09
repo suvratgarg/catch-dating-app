@@ -8,6 +8,8 @@ part of 'event.dart';
 
 _Event _$EventFromJson(Map<String, dynamic> json) => _Event(
   id: json['id'] as String,
+  synthetic: json['synthetic'] as bool? ?? false,
+  seedPrefix: json['seedPrefix'] as String?,
   clubId: _readOrganizerId(json, 'organizerId') as String,
   startTime: const TimestampConverter().fromJson(json['startTime']),
   endTime: const TimestampConverter().fromJson(json['endTime']),

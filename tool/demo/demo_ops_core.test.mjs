@@ -476,6 +476,50 @@ test("buildLaunchCleanupPlan finds demo-owned top-level and nested docs", async 
   ]);
 });
 
+test("buildLaunchCleanupPlan deletes synthetic organizers but preserves one QA seed", async () => {
+  const db = fakeFirestore({
+    users: {
+      demo_beta_2026_user: {synthetic: true, seedPrefix: "demo_beta_2026"},
+      cross_paths_mumbai_qa_user_002: {
+        synthetic: true,
+        seedPrefix: "cross_paths_mumbai_qa",
+      },
+    },
+    organizers: {
+      demo_beta_2026_club: {synthetic: true, seedPrefix: "demo_beta_2026"},
+      cross_paths_mumbai_qa_club: {
+        synthetic: true,
+        seedPrefix: "cross_paths_mumbai_qa",
+      },
+    },
+    eventCrossPathsConsents: {
+      old: {synthetic: true, eventId: "demo_beta_2026_event"},
+      kept: {synthetic: true, eventId: "cross_paths_mumbai_qa_event"},
+    },
+    notifications: {
+      real_user: {
+        items: {
+          old: {synthetic: true, eventId: "demo_beta_2026_event"},
+          kept: {synthetic: true, eventId: "cross_paths_mumbai_qa_event"},
+        },
+      },
+    },
+  });
+
+  const plan = await buildLaunchCleanupPlan({
+    db,
+    keepSeedPrefixes: ["cross_paths_mumbai_qa"],
+  });
+
+  assert.deepEqual(plan.paths, [
+    "eventCrossPathsConsents/old",
+    "notifications/real_user/items/old",
+    "organizers/demo_beta_2026_club",
+    "users/demo_beta_2026_user",
+  ]);
+  assert.deepEqual(plan.keepSeedPrefixes, ["cross_paths_mumbai_qa"]);
+});
+
 test("buildStaleEventCleanupPlan removes stale seeded events and their edges", async () => {
   const db = fakeFirestore({
     events: {

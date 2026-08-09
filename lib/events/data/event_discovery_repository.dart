@@ -257,6 +257,10 @@ class EventDiscoveryRepository {
 }
 
 bool _matchesPostQueryFilters(Event event, EventDiscoveryQuery query) {
+  // Synthetic worlds are internal QA data. Signed-in synthetic viewers receive
+  // their event through the canonical participation enrichment path instead of
+  // the public discovery query.
+  if (event.synthetic) return false;
   if (!event.isUpcomingAt(query.startAt)) return false;
   final endBefore = query.endBefore;
   if (endBefore != null && !event.startTime.isBefore(endBefore)) return false;

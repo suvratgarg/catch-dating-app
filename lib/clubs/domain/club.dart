@@ -43,6 +43,8 @@ abstract class Club with _$Club {
 
   const factory Club({
     @JsonKey(includeToJson: false) required String id,
+    @JsonKey(includeToJson: false) @Default(false) bool synthetic,
+    @JsonKey(includeToJson: false) String? seedPrefix,
     required String name,
     required String description,
     required String location,
@@ -159,7 +161,7 @@ abstract class Club with _$Club {
   /// that has not been suppressed or removed. Web publication/indexing remains
   /// a separate capability because QA/noindex pages may still be previewed.
   bool get isPubliclyBrowseable =>
-      isAppDiscoverable && !organizerAuthority.blocksPublicRead;
+      !synthetic && isAppDiscoverable && !organizerAuthority.blocksPublicRead;
 }
 
 enum ClubHostRole { owner, host }

@@ -134,7 +134,12 @@ class EventRepository {
             .orderBy('startTime')
             .limit(ReadLimitPolicy.historyPage)
             .snapshots()
-            .map((snap) => snap.docs.map((d) => d.data()).toList()),
+            .map(
+              (snap) => snap.docs
+                  .map((d) => d.data())
+                  .where((event) => !event.synthetic)
+                  .toList(),
+            ),
         context: const BackendErrorContext(
           service: BackendService.firestore,
           action: 'watch organizer events',
@@ -151,6 +156,9 @@ class EventRepository {
           action: 'watch events for hosted organizers',
           resource: _collectionPath,
         ),
+      ).map(
+        (events) =>
+            events.where((event) => !event.synthetic).toList(growable: false),
       );
 
   Stream<List<Event>> watchAttendedEvents({required String uid}) =>
