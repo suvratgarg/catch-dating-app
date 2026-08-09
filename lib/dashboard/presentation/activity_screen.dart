@@ -113,6 +113,10 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
         .where((notification) => notification.isUnread)
         .toList(growable: false);
     if (unread.isEmpty) return;
+    final markReadAction =
+        context.l10n.dashboardActivityScreenVisiblecopyMarkNotificationsRead;
+    final activityResource =
+        context.l10n.dashboardActivityScreenVisiblecopyActivityScreen;
     try {
       await ActivityController.markAllReadMutation.run(
         ref,
@@ -129,12 +133,8 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
               stackTrace: stackTrace,
               context: BackendErrorContext(
                 service: BackendService.local,
-                action: context
-                    .l10n
-                    .dashboardActivityScreenVisiblecopyMarkNotificationsRead,
-                resource: context
-                    .l10n
-                    .dashboardActivityScreenVisiblecopyActivityScreen,
+                action: markReadAction,
+                resource: activityResource,
               ),
             ),
           );

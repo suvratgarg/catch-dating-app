@@ -55,6 +55,8 @@ class _RichShareCardSheetState extends State<CatchShareCardSheet> {
   Future<void> _share(BuildContext buttonContext) async {
     if (_sharing) return;
     setState(() => _sharing = true);
+    final shareFailureMessage =
+        buttonContext.l10n.coreCatchShareCardSheetVisiblecopyUnableToShareThis;
 
     try {
       final box = buttonContext.findRenderObject() as RenderBox?;
@@ -78,12 +80,7 @@ class _RichShareCardSheetState extends State<CatchShareCardSheet> {
       if (!mounted) return;
       showCatchErrorSnackBar(
         context,
-        ExternalActionException(
-          buttonContext
-              .l10n
-              .coreCatchShareCardSheetVisiblecopyUnableToShareThis,
-          cause: error,
-        ),
+        ExternalActionException(shareFailureMessage, cause: error),
       );
     } finally {
       if (mounted) setState(() => _sharing = false);

@@ -42,6 +42,9 @@ class HostPaymentAccountControllerCard extends ConsumerWidget {
       required String country,
       required String currency,
     }) async {
+      final failureReason = context
+          .l10n
+          .hostsHostPaymentAccountControllerCardVisiblecopyHostpaymentaccountcontrollercardStartonboardingFailed;
       if (ref
           .read(HostPaymentAccountController.startOnboardingMutation)
           .isPending) {
@@ -57,17 +60,14 @@ class HostPaymentAccountControllerCard extends ConsumerWidget {
       } catch (error, stackTrace) {
         ref
             .read(errorLoggerProvider)
-            .logError(
-              error,
-              stackTrace,
-              reason: context
-                  .l10n
-                  .hostsHostPaymentAccountControllerCardVisiblecopyHostpaymentaccountcontrollercardStartonboardingFailed,
-            );
+            .logError(error, stackTrace, reason: failureReason);
       }
     }
 
     Future<void> refresh() async {
+      final failureReason = context
+          .l10n
+          .hostsHostPaymentAccountControllerCardVisiblecopyHostpaymentaccountcontrollercardRefreshFailed;
       if (ref
           .read(HostPaymentAccountController.refreshStatusMutation)
           .isPending) {
@@ -81,13 +81,7 @@ class HostPaymentAccountControllerCard extends ConsumerWidget {
       } catch (error, stackTrace) {
         ref
             .read(errorLoggerProvider)
-            .logError(
-              error,
-              stackTrace,
-              reason: context
-                  .l10n
-                  .hostsHostPaymentAccountControllerCardVisiblecopyHostpaymentaccountcontrollercardRefreshFailed,
-            );
+            .logError(error, stackTrace, reason: failureReason);
       }
     }
 

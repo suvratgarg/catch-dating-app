@@ -1,4 +1,6 @@
-String renderFixture(dynamic l10n) {
+import '../fixture_localizations.dart';
+
+String renderFixture(FixtureLocalizations l10n) {
   final valid = l10n.validKey;
   final missing = l10n.missingCatalogKey;
   final transformed = resolve(l10n).toUpperCase();
@@ -8,4 +10,4 @@ String renderFixture(dynamic l10n) {
   return '$valid $missing $transformed $locale $ignored';
 }
 
-dynamic resolve(dynamic value) => value;
+String resolve(FixtureLocalizations value) => value.validKey;

@@ -2189,7 +2189,8 @@ class _FakeDeviceLocation extends DeviceLocation {
   Future<LocationCoordinate?> build() async => location;
 
   @override
-  Future<LocationCoordinate?> request() async => location;
+  Future<DeviceLocationRequestResult> request() async =>
+      DeviceLocationRequestResult(location: location);
 }
 
 class _FakeEventDiscoveryRepository extends Fake

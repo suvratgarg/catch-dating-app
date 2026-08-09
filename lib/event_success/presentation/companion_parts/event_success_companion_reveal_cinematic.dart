@@ -13,9 +13,8 @@ part of '../event_success_companion_screen.dart';
 /// The overlay paints above the motif background but below the content
 /// scroll so the hero copy stays legible through the cinematic. It is
 /// pointer-transparent the entire time.
-class RevealCinematicOverlay extends StatefulWidget {
-  const RevealCinematicOverlay({
-    super.key,
+class _RevealCinematicOverlay extends StatefulWidget {
+  const _RevealCinematicOverlay({
     required this.plan,
     required this.referenceNow,
     required this.momentKind,
@@ -33,12 +32,13 @@ class RevealCinematicOverlay extends StatefulWidget {
   final int checkedInCount;
 
   @override
-  State<RevealCinematicOverlay> createState() => _RevealCinematicOverlayState();
+  State<_RevealCinematicOverlay> createState() =>
+      _RevealCinematicOverlayState();
 }
 
 enum _RevealCinematicPhase { idle, anticipation, climax, settle }
 
-class _RevealCinematicOverlayState extends State<RevealCinematicOverlay>
+class _RevealCinematicOverlayState extends State<_RevealCinematicOverlay>
     with TickerProviderStateMixin {
   // Eager initialization (not `late final`) so the Tickers are created
   // while the State is still mounted. `late final` would defer construction
@@ -78,7 +78,7 @@ class _RevealCinematicOverlayState extends State<RevealCinematicOverlay>
   }
 
   @override
-  void didUpdateWidget(covariant RevealCinematicOverlay oldWidget) {
+  void didUpdateWidget(covariant _RevealCinematicOverlay oldWidget) {
     super.didUpdateWidget(oldWidget);
     final nowCounting = _isAnticipationActive();
     final status = widget.plan.revealStatus;

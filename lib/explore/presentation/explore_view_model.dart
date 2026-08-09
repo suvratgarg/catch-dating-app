@@ -422,10 +422,13 @@ class ExploreFilters extends _$ExploreFilters {
 
     final locationController = ref.read(deviceLocationProvider.notifier);
     var location = ref.read(deviceLocationProvider).asData?.value;
-    location ??= await locationController.request();
+    DeviceLocationRequestResult? requestResult;
     if (location == null) {
-      return locationController.lastFailure ??
-          DeviceLocationFailure.unavailable;
+      requestResult = await locationController.request();
+      location = requestResult.location;
+    }
+    if (location == null) {
+      return requestResult?.failure ?? DeviceLocationFailure.unavailable;
     }
 
     setDistanceFilter(filter);

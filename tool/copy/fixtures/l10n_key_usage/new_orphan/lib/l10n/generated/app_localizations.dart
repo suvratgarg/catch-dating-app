@@ -1,3 +1,5 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-String generatedFixture(dynamic l10n) => l10n.generatedOnly;
+import '../../../fixture_localizations.dart';
+
+String generatedFixture(FixtureLocalizations l10n) => l10n.generatedOnly;
