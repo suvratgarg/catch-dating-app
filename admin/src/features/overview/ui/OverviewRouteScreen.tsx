@@ -1,4 +1,9 @@
+import {FileWarning} from "lucide-react";
 import type {DataMode} from "../../../shared/types/adminTypes";
+import {
+  AdminFeatureLoadingState,
+  StatusBanner,
+} from "../../../shared/ui/AdminPrimitives";
 import {useOverviewController} from "../controllers/useOverviewController";
 import {
   OverviewScreen,
@@ -27,6 +32,19 @@ export function OverviewRouteScreen({
     onError,
     onNotice,
   });
+
+  if (!controller.overview) {
+    return controller.overviewError ? (
+      <StatusBanner
+        icon={<FileWarning size={17} strokeWidth={1.9} />}
+        tone="error"
+      >
+        {controller.overviewError}
+      </StatusBanner>
+    ) : (
+      <AdminFeatureLoadingState label="Loading live overview" />
+    );
+  }
 
   return (
     <OverviewScreen

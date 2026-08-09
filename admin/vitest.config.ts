@@ -17,6 +17,9 @@ export default mergeConfig(
           test: {
             name: "unit",
             environment: "jsdom",
+            env: {
+              VITE_ADMIN_DATA_MODE: "sample",
+            },
             include: ["src/**/*.test.{ts,tsx}"],
             mockReset: true,
             restoreMocks: true,

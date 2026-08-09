@@ -1,9 +1,9 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {useState} from "react";
 import {
-  initialOverviewHostAnalytics,
-  initialOverviewSnapshot,
-} from "../features/overview/api/overviewRepository";
+  sampleHostAnalytics,
+  sampleOverview,
+} from "../shared/api/sampleData";
 import type {
   AccessReviewController,
   AccessReviewFormState,
@@ -122,8 +122,8 @@ import {CrossPathsShowcaseWorkspace} from
   "../features/cross-paths/ui/CrossPathsShowcaseScreen";
 import {AdminWorkspace} from "../shared/ui/AdminPrimitives";
 
-const overview = initialOverviewSnapshot();
-const hostAnalytics = initialOverviewHostAnalytics();
+const overview = sampleOverview;
+const hostAnalytics = sampleHostAnalytics;
 const actionExecutionRows: AdminActionExecutionRecord[] = [
   {
     schemaVersion: 1,

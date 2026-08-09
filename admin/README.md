@@ -21,10 +21,10 @@ npm install
 npm run dev
 ```
 
-The app starts in `sample` data mode by default so the UI can be reviewed before
-admin claims and App Check are configured. The account menu discloses that
-local sample data is active and that Firebase authentication is bypassed; no
-sign-out action is shown because no Firebase session is required.
+The app defaults to `live` data mode. Sample data is available only when a local
+development build explicitly sets `VITE_ADMIN_DATA_MODE=sample`; production
+builds resolve that value back to `live`. The account menu discloses explicit
+local sample mode and Firebase authentication is bypassed only in that mode.
 In live mode the shell supports phone OTP sign-in for claimed accounts before
 any callable data loads. Google sign-in is intentionally unsupported. The shell
 shows the signed-in uid and custom admin claims after Auth resolves, blocks
