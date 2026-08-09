@@ -2,6 +2,7 @@ part of '../event_success_host_screen.dart';
 
 class EventSuccessTabPicker extends StatelessWidget {
   const EventSuccessTabPicker({
+    super.key,
     required this.selectedTab,
     required this.onChanged,
   });
@@ -24,6 +25,7 @@ class EventSuccessTabPicker extends StatelessWidget {
 
 class EventSuccessHostTabBody extends StatelessWidget {
   const EventSuccessHostTabBody({
+    super.key,
     required this.embedded,
     required this.children,
   });
@@ -69,6 +71,7 @@ extension on EventSuccessHostTab {
 
 class PlanSummary extends StatelessWidget {
   const PlanSummary({
+    super.key,
     required this.plan,
     required this.draft,
     required this.planIsPersisted,
@@ -100,7 +103,11 @@ class PlanSummary extends StatelessWidget {
 }
 
 class HostActivitySummary extends StatelessWidget {
-  const HostActivitySummary({required this.profile, required this.draft});
+  const HostActivitySummary({
+    super.key,
+    required this.profile,
+    required this.draft,
+  });
 
   final EventSuccessActivityProfile profile;
   final EventSuccessHostDraft draft;
@@ -123,7 +130,7 @@ class HostActivitySummary extends StatelessWidget {
 }
 
 class CompatibilitySignalHostCard extends StatelessWidget {
-  const CompatibilitySignalHostCard({required this.plan});
+  const CompatibilitySignalHostCard({super.key, required this.plan});
 
   final EventSuccessPlan plan;
 
@@ -162,6 +169,7 @@ class CompatibilitySignalHostCard extends StatelessWidget {
 
 class WingmanRequestsHostCard extends StatelessWidget {
   const WingmanRequestsHostCard({
+    super.key,
     required this.requests,
     required this.profiles,
     required this.rotationsEnabled,
@@ -210,6 +218,7 @@ class WingmanRequestsHostCard extends StatelessWidget {
 
 class WingmanRequestHostRow extends StatelessWidget {
   const WingmanRequestHostRow({
+    super.key,
     required this.request,
     required this.requester,
     required this.target,

@@ -178,7 +178,6 @@ void main() {
       final user = buildUser();
       final event = buildEvent(
         startTime: now.add(const Duration(days: 1)),
-        capacityLimit: 20,
         bookedCount: 20,
       );
 

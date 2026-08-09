@@ -304,7 +304,7 @@ void main() {
     );
 
     test('cancelled events do not appear in organizer schedules', () {
-      final now = DateTime(2026, 1, 1);
+      final now = DateTime(2026);
       final cancelled = buildEvent(
         id: 'cancelled',
         startTime: now.add(const Duration(days: 1)),

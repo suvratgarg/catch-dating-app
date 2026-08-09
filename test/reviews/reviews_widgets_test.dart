@@ -133,11 +133,7 @@ void main() {
           body: Column(
             children: [
               ClubReviewsSection(reviews: [], currentUid: 'runner-1'),
-              ReviewsPreviewSection(
-                reviews: [],
-                currentUid: 'runner-1',
-                emptyPresentation: ReviewsEmptyPresentation.standalone,
-              ),
+              ReviewsPreviewSection(reviews: [], currentUid: 'runner-1'),
             ],
           ),
         ),

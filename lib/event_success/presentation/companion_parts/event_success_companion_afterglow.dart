@@ -2,6 +2,7 @@ part of '../event_success_companion_screen.dart';
 
 class PrivateAfterglowRecapCard extends StatelessWidget {
   const PrivateAfterglowRecapCard({
+    super.key,
     required this.event,
     required this.openersEnabled,
     required this.feedbackEnabled,
@@ -163,7 +164,7 @@ class _AfterglowBeat {
 /// the row has finished entering. Gives the afterglow recap a Spotify-Wrapped
 /// style paced reveal instead of dumping all three rows at once.
 class AfterglowBeatGrid extends StatefulWidget {
-  const AfterglowBeatGrid({required this.beats});
+  const AfterglowBeatGrid({super.key, required this.beats});
 
   final List<_AfterglowBeat> beats;
 
@@ -194,7 +195,11 @@ class _AfterglowBeatGridState extends State<AfterglowBeatGrid> {
 }
 
 class AfterglowBeatRow extends StatefulWidget {
-  const AfterglowBeatRow({required this.beat, required this.entryDelay});
+  const AfterglowBeatRow({
+    super.key,
+    required this.beat,
+    required this.entryDelay,
+  });
 
   final _AfterglowBeat beat;
   final Duration entryDelay;

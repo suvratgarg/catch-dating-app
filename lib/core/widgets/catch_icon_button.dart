@@ -116,7 +116,7 @@ class CatchIconButton extends StatelessWidget {
 
   const CatchIconButton._counted({
     super.key,
-    required int count,
+    required int this._count,
     required this.child,
     this.onTap,
     this.variant = CatchIconButtonVariant.bordered,
@@ -130,7 +130,7 @@ class CatchIconButton extends StatelessWidget {
     this.borderRadius,
     this.tooltip,
     this.liveRegion = false,
-  }) : _count = count;
+  });
 
   static const double defaultSize = CatchLayout.iconButtonSize;
   static const double navSize = CatchLayout.iconButtonNavSize;

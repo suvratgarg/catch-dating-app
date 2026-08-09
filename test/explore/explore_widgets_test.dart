@@ -2855,7 +2855,7 @@ void main() {
               body: ClubDetailBody(
                 state: ClubDetailBodyState.fromDomain(
                   club: club,
-                  userProfile: buildSocialReadyUser(uid: 'runner-1'),
+                  userProfile: buildSocialReadyUser(),
                   uid: 'runner-1',
                   isAuthenticated: true,
                 ),
@@ -3907,7 +3907,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.light,
-          home: Scaffold(
+          home: const Scaffold(
             body: ExploreFilterRail(filters: filters, showJoinedOnly: false),
           ),
         ),

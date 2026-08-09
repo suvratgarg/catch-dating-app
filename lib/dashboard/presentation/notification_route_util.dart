@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 
 /// Opens a deep-link [route] through go_router, catching navigation failures
 /// and surfacing them as branded Catch error snackbars.

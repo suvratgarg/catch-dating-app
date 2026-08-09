@@ -22,6 +22,7 @@ final bool _kStageAnimationsEnabled = !Platform.environment.containsKey(
 
 class CompanionStageScaffold extends StatelessWidget {
   const CompanionStageScaffold({
+    super.key,
     required this.event,
     required this.plan,
     required this.presentation,
@@ -119,6 +120,7 @@ class CompanionStageScaffold extends StatelessWidget {
 
 class CompanionPaperScaffold extends StatelessWidget {
   const CompanionPaperScaffold({
+    super.key,
     required this.event,
     required this.plan,
     required this.presentation,
@@ -202,7 +204,7 @@ class CompanionPaperScaffold extends StatelessWidget {
 }
 
 class PaperCompanionNav extends StatelessWidget {
-  const PaperCompanionNav({required this.plan});
+  const PaperCompanionNav({super.key, required this.plan});
 
   final EventSuccessPlan plan;
 
@@ -262,7 +264,11 @@ class PaperCompanionNav extends StatelessWidget {
 }
 
 class PaperProgressRail extends StatelessWidget {
-  const PaperProgressRail({required this.active, required this.total});
+  const PaperProgressRail({
+    super.key,
+    required this.active,
+    required this.total,
+  });
 
   final int active;
   final int total;
@@ -291,7 +297,11 @@ class PaperProgressRail extends StatelessWidget {
 }
 
 class PaperCompanionTicket extends StatelessWidget {
-  const PaperCompanionTicket({required this.event, required this.plan});
+  const PaperCompanionTicket({
+    super.key,
+    required this.event,
+    required this.plan,
+  });
 
   final Event event;
   final EventSuccessPlan plan;
@@ -395,6 +405,7 @@ class PaperCompanionTicket extends StatelessWidget {
 
 class PaperTicketHeader extends StatelessWidget {
   const PaperTicketHeader({
+    super.key,
     required this.event,
     required this.plan,
     required this.swatch,
@@ -496,7 +507,11 @@ class _PaperTicketHeaderPainter extends CustomPainter {
 }
 
 class PaperTicketDetail extends StatelessWidget {
-  const PaperTicketDetail({required this.label, required this.value});
+  const PaperTicketDetail({
+    super.key,
+    required this.label,
+    required this.value,
+  });
 
   final String label;
   final String value;
@@ -526,7 +541,7 @@ class PaperTicketDetail extends StatelessWidget {
 }
 
 class PaperTicketPerforation extends StatelessWidget {
-  const PaperTicketPerforation();
+  const PaperTicketPerforation({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -567,7 +582,7 @@ class _PaperTicketPerforationPainter extends CustomPainter {
 }
 
 class PaperTicketSerial extends StatelessWidget {
-  const PaperTicketSerial({required this.event});
+  const PaperTicketSerial({super.key, required this.event});
 
   final Event event;
 
@@ -587,7 +602,7 @@ class PaperTicketSerial extends StatelessWidget {
 }
 
 class PaperBarcode extends StatelessWidget {
-  const PaperBarcode();
+  const PaperBarcode({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -626,6 +641,7 @@ class _PaperBarcodePainter extends CustomPainter {
 
 class PaperExpectationCard extends StatelessWidget {
   const PaperExpectationCard({
+    super.key,
     required this.event,
     required this.plan,
     required this.showSelfCheckIn,
@@ -675,7 +691,7 @@ class PaperExpectationCard extends StatelessWidget {
 }
 
 class PaperExpectationRow extends StatelessWidget {
-  const PaperExpectationRow({required this.item});
+  const PaperExpectationRow({super.key, required this.item});
 
   final _PaperExpectationItem item;
 
@@ -699,7 +715,7 @@ class PaperExpectationRow extends StatelessWidget {
 }
 
 class PaperPrivacyCard extends StatelessWidget {
-  const PaperPrivacyCard({required this.text});
+  const PaperPrivacyCard({super.key, required this.text});
 
   final String text;
 
@@ -734,6 +750,7 @@ class PaperPrivacyCard extends StatelessWidget {
 
 class PaperSelfCheckInBar extends StatelessWidget {
   const PaperSelfCheckInBar({
+    super.key,
     required this.event,
     required this.actionState,
     required this.onSelfCheckIn,
@@ -841,6 +858,7 @@ String _paperTicketCode(Event event) {
 
 class CompanionMomentStage extends StatelessWidget {
   const CompanionMomentStage({
+    super.key,
     required this.event,
     required this.plan,
     required this.presentation,
@@ -965,7 +983,7 @@ class CompanionMomentStage extends StatelessWidget {
 }
 
 class StageNav extends StatelessWidget {
-  const StageNav({required this.foreground});
+  const StageNav({super.key, required this.foreground});
 
   final Color foreground;
 
@@ -1022,6 +1040,7 @@ class StageNav extends StatelessWidget {
 
 class CompanionHero extends StatelessWidget {
   const CompanionHero({
+    super.key,
     required this.event,
     required this.plan,
     required this.presentation,
@@ -1099,7 +1118,7 @@ class CompanionHero extends StatelessWidget {
 /// Animates a one-shot entry on first build, then breathes the glyph
 /// continuously so the hero element never reads as static between moments.
 class StageGlyph extends StatefulWidget {
-  const StageGlyph({required this.stageTheme, required this.icon});
+  const StageGlyph({super.key, required this.stageTheme, required this.icon});
 
   final _CompanionStageTheme stageTheme;
   final IconData icon;
@@ -1181,7 +1200,11 @@ class _StageGlyphState extends State<StageGlyph> with TickerProviderStateMixin {
 }
 
 class StagePrivacyLine extends StatelessWidget {
-  const StagePrivacyLine({required this.text, required this.stageTheme});
+  const StagePrivacyLine({
+    super.key,
+    required this.text,
+    required this.stageTheme,
+  });
 
   final String text;
   final _CompanionStageTheme stageTheme;
@@ -1226,7 +1249,7 @@ class StagePrivacyLine extends StatelessWidget {
 }
 
 class CompanionMomentStageContent extends StatelessWidget {
-  const CompanionMomentStageContent({required this.children});
+  const CompanionMomentStageContent({super.key, required this.children});
 
   final List<Widget> children;
 
@@ -1248,7 +1271,7 @@ class CompanionMomentStageContent extends StatelessWidget {
 /// Ambient stage card. The border alpha breathes on a 6s sine so the surface
 /// never reads as static — even when no content is changing.
 class StagePanel extends StatefulWidget {
-  const StagePanel({required this.child});
+  const StagePanel({super.key, required this.child});
 
   final Widget child;
 
@@ -1301,7 +1324,7 @@ class _StagePanelState extends State<StagePanel>
 }
 
 class StageActionDock extends StatelessWidget {
-  const StageActionDock({required this.child});
+  const StageActionDock({super.key, required this.child});
 
   final Widget child;
 
@@ -1320,7 +1343,7 @@ class StageActionDock extends StatelessWidget {
 }
 
 class StageSoftBand extends StatelessWidget {
-  const StageSoftBand({required this.child});
+  const StageSoftBand({super.key, required this.child});
 
   final Widget child;
 
@@ -1468,6 +1491,7 @@ enum _StageMotif { path, gate, spark, rhythm, orbit, reveal, signal, afterglow }
 /// motion reads as ambient, not busy.
 class AnimatedStageMotifBackground extends StatefulWidget {
   const AnimatedStageMotifBackground({
+    super.key,
     required this.accent,
     required this.foreground,
     required this.motif,
@@ -1682,6 +1706,7 @@ String _heroBadgeLabel({
 
 class CompanionStageContentTransition extends StatelessWidget {
   const CompanionStageContentTransition({
+    super.key,
     required this.momentKey,
     required this.child,
   });
@@ -1724,6 +1749,7 @@ class CompanionStageContentTransition extends StatelessWidget {
 /// out of place against the gradient + motif backdrop.
 class StageBouncyPress extends StatefulWidget {
   const StageBouncyPress({
+    super.key,
     required this.child,
     required this.onTap,
     this.glowColor,
@@ -1848,6 +1874,7 @@ class _StageBouncyPressState extends State<StageBouncyPress>
 /// styling while using [StageBouncyPress] instead of Material ink.
 class StageBouncyChip extends StatelessWidget {
   const StageBouncyChip({
+    super.key,
     required this.label,
     required this.active,
     required this.onTap,
@@ -1894,6 +1921,7 @@ class StageBouncyChip extends StatelessWidget {
 /// brief scale-pulse when the count climbs.
 class LiveArrivalRing extends StatefulWidget {
   const LiveArrivalRing({
+    super.key,
     required this.checkedInCount,
     required this.stageTheme,
   });
@@ -1957,6 +1985,7 @@ class _LiveArrivalRingState extends State<LiveArrivalRing>
 
 class ArrivalRingCard extends StatelessWidget {
   const ArrivalRingCard({
+    super.key,
     required this.checkedInCount,
     required this.stageTheme,
   });
@@ -2035,7 +2064,7 @@ class ArrivalRingCard extends StatelessWidget {
 /// alone, with a brief alpha-pulse the moment the count climbs. Used on
 /// solo-feeling surfaces (questionnaire, eventually First Hello / wingman).
 class LiveOthersInRoomLine extends StatefulWidget {
-  const LiveOthersInRoomLine({required this.checkedInCount});
+  const LiveOthersInRoomLine({super.key, required this.checkedInCount});
 
   final int checkedInCount;
 
@@ -2175,7 +2204,7 @@ class _ArrivalRingPainter extends CustomPainter {
 }
 
 class NoCompanionActionsCard extends StatelessWidget {
-  const NoCompanionActionsCard();
+  const NoCompanionActionsCard({super.key});
 
   @override
   Widget build(BuildContext context) {

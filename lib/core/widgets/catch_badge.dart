@@ -109,9 +109,8 @@ class CatchBadge extends StatelessWidget {
   const CatchBadge.privacy({
     super.key,
     required this.label,
-    required IconData icon,
-  }) : icon = icon,
-       tone = CatchBadgeTone.neutral,
+    required IconData this.icon,
+  }) : tone = CatchBadgeTone.neutral,
        size = CatchBadgeSize.sm,
        _functional = true,
        accentColor = null,

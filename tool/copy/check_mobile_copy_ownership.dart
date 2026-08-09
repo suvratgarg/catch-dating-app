@@ -787,7 +787,7 @@ class RegistryEntry {
     'file': file,
     'kind': kind,
     'text': text,
-    if (reason != null) 'reason': reason!,
+    'reason': ?reason,
   };
 }
 

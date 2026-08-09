@@ -36,7 +36,7 @@ void main() {
         theme: AppTheme.light,
         home: Scaffold(
           body: CountdownBeatRail(
-            items: [
+            items: const [
               (label: 'Hold', icon: Icons.pan_tool_alt_outlined),
               (label: 'Watch', icon: Icons.visibility_outlined),
               (label: 'Move', icon: Icons.bolt_rounded),

@@ -146,7 +146,6 @@ void main() {
                     catchRate: 1 / 3,
                     feedbackResponseCount: 4,
                   ),
-                  embedded: false,
                 ),
               ),
             ),
@@ -1289,7 +1288,6 @@ void main() {
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: EventSuccessHostPanel(
-                  embedded: false,
                   event: event,
                   plan: plan,
                   planIsPersisted: true,

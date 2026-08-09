@@ -101,7 +101,7 @@ void main() {
 
   test('free events use release-the-spot copy instead of refund language', () {
     final free = eventDetailInformationStateFrom(
-      event: buildEvent(priceInPaise: 0),
+      event: buildEvent(),
       l10n: _l10n,
     );
     final paid = eventDetailInformationStateFrom(

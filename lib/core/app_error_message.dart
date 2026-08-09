@@ -113,8 +113,9 @@ String _localizedExceptionMessage(
   if (exception is SignInRequiredException) {
     return l10n.coreAppErrorMessageVisiblecopyPleaseSignInTo;
   }
-  if (exception is PaymentCancelledException)
+  if (exception is PaymentCancelledException) {
     return l10n.coreAppErrorMessageVisiblecopyPaymentWasCancelled;
+  }
   if (exception is PaymentFailedException) {
     return l10n.coreAppErrorMessageVisiblecopyPaymentFailedPleaseTry;
   }
@@ -197,34 +198,42 @@ String _titleFor(
   AppException? appException,
   AppErrorContext context,
 ) {
-  if (_isNetworkError(error, appException))
+  if (_isNetworkError(error, appException)) {
     return l10n.coreAppErrorMessageVisiblecopyConnectionIssue;
-  if (_isAuthError(error, appException))
+  }
+  if (_isAuthError(error, appException)) {
     return l10n.coreAppErrorMessageVisiblecopySignInRequired;
-  if (_isPermissionError(error, appException))
+  }
+  if (_isPermissionError(error, appException)) {
     return l10n.coreAppErrorMessageVisiblecopyActionUnavailable;
+  }
   if (_isNotFoundError(error, appException)) {
     return _notFoundTitle(l10n, context);
   }
-  if (appException is ValidationException)
+  if (appException is ValidationException) {
     return l10n.coreAppErrorMessageVisiblecopyCheckYourDetails;
-  if (appException is PaymentCancelledException)
+  }
+  if (appException is PaymentCancelledException) {
     return l10n.coreAppErrorMessageVisiblecopyPaymentCancelled;
+  }
   if (appException is PaymentVerificationFailedException) {
     return l10n.coreAppErrorMessageVisiblecopyPaymentVerificationFailed;
   }
-  if (appException is PaymentFailedException)
+  if (appException is PaymentFailedException) {
     return l10n.coreAppErrorMessageVisiblecopyPaymentFailed;
+  }
   if (appException is PaidBookingUnsupportedException) {
     return l10n.coreAppErrorMessageVisiblecopyPaymentUnavailable;
   }
   if (appException is EventBookingFailedException) {
     return l10n.coreAppErrorMessageVisiblecopyEventSignupUnavailable;
   }
-  if (appException is StorageException)
+  if (appException is StorageException) {
     return l10n.coreAppErrorMessageVisiblecopyUploadFailed;
-  if (appException is ExternalActionException)
+  }
+  if (appException is ExternalActionException) {
     return l10n.coreAppErrorMessageVisiblecopyActionFailed;
+  }
   if (appException is BackendOperationException) {
     final backendContext = appException.context;
     return switch (backendContext?.service) {
@@ -308,10 +317,12 @@ String _retryLabelFor(
   AppException? appException,
   AppErrorContext context,
 ) {
-  if (appException is SignInRequiredException)
+  if (appException is SignInRequiredException) {
     return l10n.coreAppErrorMessageVisiblecopySignIn;
-  if (appException is StorageException)
+  }
+  if (appException is StorageException) {
     return l10n.coreAppErrorMessageVisiblecopyTryUploadAgain;
+  }
   if (appException is PaymentFailedException ||
       appException is PaymentVerificationFailedException) {
     return l10n.coreAppErrorMessageVisiblecopyTryPaymentAgain;

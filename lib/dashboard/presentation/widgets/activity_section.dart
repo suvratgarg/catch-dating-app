@@ -164,7 +164,6 @@ class NotificationDayGroups extends StatelessWidget {
           CatchSection.fieldRows(
             title: groupEntry.$2.label,
             first: groupEntry.$1 == 0,
-            bodyGap: CatchSpacing.s2,
             children: [
               for (final row in groupEntry.$2.rows)
                 NotificationRow(

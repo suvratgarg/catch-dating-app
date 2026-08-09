@@ -1,6 +1,6 @@
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 sealed class NotificationsListState {
@@ -201,16 +201,19 @@ String relativeNotificationTime(
   AppLocalizations l10n,
 ) {
   final difference = now.difference(time);
-  if (difference.inMinutes < 1)
+  if (difference.inMinutes < 1) {
     return l10n.dashboardNotificationsListStateVisiblecopyNow;
-  if (difference.inMinutes < 60)
+  }
+  if (difference.inMinutes < 60) {
     return l10n.dashboardNotificationsListStateVisiblecopyInminutesM(
       inMinutes: difference.inMinutes,
     );
-  if (difference.inHours < 24)
+  }
+  if (difference.inHours < 24) {
     return l10n.dashboardNotificationsListStateVisiblecopyInhoursH(
       inHours: difference.inHours,
     );
+  }
   return l10n.dashboardNotificationsListStateVisiblecopyIndaysD(
     inDays: difference.inDays,
   );

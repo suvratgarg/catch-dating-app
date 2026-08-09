@@ -30,12 +30,6 @@ class StepperFooter extends StatelessWidget {
         primaryLabel ??
         (isLastStep ? lastStepLabel : context.l10n.hostsStepperFooterLabelNext);
     return CatchBottomDock(
-      padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.s4,
-        CatchSpacing.s3,
-        CatchSpacing.s4,
-        CatchSpacing.s3,
-      ),
       child: Row(
         children: [
           if (onSaveDraft != null) ...[

@@ -13,6 +13,7 @@ class WingmanRequestActionState {
 
 class WingmanRequestSection extends StatefulWidget {
   const WingmanRequestSection({
+    super.key,
     required this.event,
     required this.candidates,
     required this.actionState,

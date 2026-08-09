@@ -967,12 +967,15 @@ String hostPrivateShareDetail({
   required CatchAsyncState<List<EventInviteLink>>? inviteLinksState,
   required bool sharePending,
 }) {
-  if (sharePending)
+  if (sharePending) {
     return l10n.hostsHostEventManageScreenStateVisiblecopySharing;
-  if (accessState == null)
+  }
+  if (accessState == null) {
     return l10n.hostsHostEventManageScreenStateVisiblecopyPublicEventLink;
-  if (accessState.status == CatchAsyncStatus.loading)
+  }
+  if (accessState.status == CatchAsyncStatus.loading) {
     return l10n.hostsHostEventManageScreenStateVisiblecopyLoadingLink;
+  }
   if (accessState.status == CatchAsyncStatus.error ||
       accessState.value == null) {
     return l10n
@@ -988,8 +991,9 @@ String hostPrivateShareDetail({
         .hostsHostEventManageScreenStateVisiblecopyInviteLinksUnavailable;
   }
   final count = inviteLinksState.value?.length ?? 0;
-  if (count == 1)
+  if (count == 1) {
     return l10n.hostsHostEventManageScreenStateVisiblecopy1InviteLink;
+  }
   return l10n.hostsHostEventManageScreenStateVisiblecopyCountInviteLinks(
     count: count,
   );

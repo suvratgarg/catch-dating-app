@@ -9,7 +9,11 @@ const EdgeInsets _revealAssignmentRowGap = EdgeInsets.only(
 );
 
 class CountdownNumber extends StatelessWidget {
-  const CountdownNumber({required this.value, required this.caption});
+  const CountdownNumber({
+    super.key,
+    required this.value,
+    required this.caption,
+  });
 
   final String value;
   final String caption;
@@ -60,7 +64,7 @@ class CountdownNumber extends StatelessWidget {
 }
 
 class RevealHostCopy extends StatelessWidget {
-  const RevealHostCopy({required this.headline, required this.body});
+  const RevealHostCopy({super.key, required this.headline, required this.body});
 
   final String headline;
   final String body;
@@ -91,7 +95,7 @@ class RevealHostCopy extends StatelessWidget {
 }
 
 class RevealProgressBar extends StatelessWidget {
-  const RevealProgressBar({required this.progress});
+  const RevealProgressBar({super.key, required this.progress});
 
   final double progress;
 
@@ -112,6 +116,7 @@ class RevealProgressBar extends StatelessWidget {
 
 class AttendeeCountdown extends StatelessWidget {
   const AttendeeCountdown({
+    super.key,
     required this.plan,
     required this.now,
     required this.kind,
@@ -268,6 +273,7 @@ class AttendeeCountdown extends StatelessWidget {
 
 class CountdownStageDial extends StatelessWidget {
   const CountdownStageDial({
+    super.key,
     required this.seconds,
     required this.progress,
     required this.intensity,
@@ -386,10 +392,13 @@ class CountdownStageDial extends StatelessWidget {
 }
 
 class CountdownBeatRail extends StatelessWidget {
-  const CountdownBeatRail({required this.items, required this.currentIndex})
-    : assert(items.length > 0),
-      assert(currentIndex >= 0),
-      assert(currentIndex < items.length);
+  const CountdownBeatRail({
+    super.key,
+    required this.items,
+    required this.currentIndex,
+  }) : assert(items.length > 0),
+       assert(currentIndex >= 0),
+       assert(currentIndex < items.length);
 
   final List<({String label, IconData icon})> items;
   final int currentIndex;
@@ -483,7 +492,7 @@ class CountdownBeatRail extends StatelessWidget {
 }
 
 class CountdownCueStack extends StatelessWidget {
-  const CountdownCueStack({required this.clue});
+  const CountdownCueStack({super.key, required this.clue});
 
   final String clue;
 
@@ -515,6 +524,7 @@ class CountdownCueStack extends StatelessWidget {
 
 class CountdownCuePill extends StatelessWidget {
   const CountdownCuePill({
+    super.key,
     required this.icon,
     required this.title,
     required this.body,
@@ -746,7 +756,7 @@ String _countdownStageHeadline(int seconds) {
 }
 
 class WaitingRevealCue extends StatelessWidget {
-  const WaitingRevealCue({required this.kind});
+  const WaitingRevealCue({super.key, required this.kind});
 
   final EventSuccessRevealAssignmentKind kind;
 
@@ -793,6 +803,7 @@ class WaitingRevealCue extends StatelessWidget {
 
 class VisiblePodAssignment extends StatelessWidget {
   const VisiblePodAssignment({
+    super.key,
     required this.assignment,
     required this.peerProfiles,
     required this.peersLoading,
@@ -840,6 +851,7 @@ class VisiblePodAssignment extends StatelessWidget {
 
 class VisibleRotationSlots extends StatelessWidget {
   const VisibleRotationSlots({
+    super.key,
     required this.slots,
     required this.profilesByUid,
     required this.peersLoading,
@@ -882,6 +894,7 @@ class VisibleRotationSlots extends StatelessWidget {
 
 class VisibleGroupRotationSlots extends StatelessWidget {
   const VisibleGroupRotationSlots({
+    super.key,
     required this.slots,
     required this.profilesByUid,
     required this.peersLoading,
@@ -916,7 +929,11 @@ class VisibleGroupRotationSlots extends StatelessWidget {
 }
 
 class AssignmentUnlockedShell extends StatelessWidget {
-  const AssignmentUnlockedShell({required this.title, required this.child});
+  const AssignmentUnlockedShell({
+    super.key,
+    required this.title,
+    required this.child,
+  });
 
   final String title;
   final Widget child;
@@ -948,7 +965,11 @@ class AssignmentUnlockedShell extends StatelessWidget {
 }
 
 class RevealGroupSlotRow extends StatelessWidget {
-  const RevealGroupSlotRow({required this.slot, required this.profilesByUid});
+  const RevealGroupSlotRow({
+    super.key,
+    required this.slot,
+    required this.profilesByUid,
+  });
 
   final EventSuccessGroupRotationSlot slot;
   final Map<String, PublicProfile> profilesByUid;
@@ -1032,7 +1053,7 @@ class RevealGroupSlotRow extends StatelessWidget {
 }
 
 class RevealSlotRow extends StatelessWidget {
-  const RevealSlotRow({required this.slot, required this.peerName});
+  const RevealSlotRow({super.key, required this.slot, required this.peerName});
 
   final EventSuccessRotationSlot slot;
   final String peerName;
@@ -1095,6 +1116,7 @@ enum _RevealRoundState { done, now, hidden }
 /// Pairings only render for rounds the host has already released.
 class RevealRoundList extends StatelessWidget {
   const RevealRoundList({
+    super.key,
     required this.config,
     required this.roundCount,
     required this.revealedThrough,
@@ -1145,6 +1167,7 @@ class RevealRoundList extends StatelessWidget {
 
 class RevealRoundRow extends StatelessWidget {
   const RevealRoundRow({
+    super.key,
     required this.index,
     required this.state,
     required this.pairs,
@@ -1249,6 +1272,7 @@ class RevealRoundRow extends StatelessWidget {
 
 class RevealRoundRail extends StatelessWidget {
   const RevealRoundRail({
+    super.key,
     required this.roundCount,
     required this.activeRoundIndex,
     required this.revealedThrough,
@@ -1297,7 +1321,7 @@ class RevealRoundRail extends StatelessWidget {
 }
 
 class RevealTicker extends StatefulWidget {
-  const RevealTicker({required this.enabled, required this.builder});
+  const RevealTicker({super.key, required this.enabled, required this.builder});
 
   final bool enabled;
   final Widget Function(BuildContext context, DateTime now) builder;

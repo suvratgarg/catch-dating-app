@@ -63,6 +63,13 @@ import 'package:catch_dating_app/dashboard/presentation/activity_controller.dart
 import 'package:catch_dating_app/dashboard/presentation/activity_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
+import 'package:catch_dating_app/design_fixtures/catches_surface_fixtures.dart';
+import 'package:catch_dating_app/design_fixtures/event_success_companion_fixtures.dart';
+import 'package:catch_dating_app/design_fixtures/host_inbox_surface_fixtures.dart';
+import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
+import 'package:catch_dating_app/design_fixtures/matches_chat_surface_fixtures.dart';
+import 'package:catch_dating_app/design_fixtures/profile_surface_fixtures.dart';
+import 'package:catch_dating_app/design_fixtures/utility_surface_fixtures.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_arrival_mission.dart';
@@ -143,13 +150,6 @@ import 'package:catch_dating_app/hosts/presentation/payments/host_payment_accoun
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
-import 'package:catch_dating_app/design_fixtures/catches_surface_fixtures.dart';
-import 'package:catch_dating_app/design_fixtures/event_success_companion_fixtures.dart';
-import 'package:catch_dating_app/design_fixtures/host_inbox_surface_fixtures.dart';
-import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
-import 'package:catch_dating_app/design_fixtures/matches_chat_surface_fixtures.dart';
-import 'package:catch_dating_app/design_fixtures/profile_surface_fixtures.dart';
-import 'package:catch_dating_app/design_fixtures/utility_surface_fixtures.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
