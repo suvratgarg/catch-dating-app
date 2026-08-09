@@ -15,7 +15,7 @@ import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_broadcast_composer_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
-import 'package:catch_dating_app/labs/design_fixtures/host_inbox_surface_fixtures.dart';
+import 'package:catch_dating_app/design_fixtures/host_inbox_surface_fixtures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;

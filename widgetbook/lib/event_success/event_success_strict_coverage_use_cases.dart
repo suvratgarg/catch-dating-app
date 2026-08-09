@@ -28,7 +28,7 @@ import "package:catch_dating_app/event_success/presentation/event_success_setup_
 import "package:catch_dating_app/event_success/presentation/event_success_skeletons.dart";
 import "package:catch_dating_app/event_success/presentation/event_success_structure_config_editor.dart";
 import "package:catch_dating_app/events/domain/event_participation_roster.dart";
-import "package:catch_dating_app/labs/design_fixtures/event_success_companion_fixtures.dart";
+import "package:catch_dating_app/design_fixtures/event_success_companion_fixtures.dart";
 import "package:catch_dating_app/l10n/l10n.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";

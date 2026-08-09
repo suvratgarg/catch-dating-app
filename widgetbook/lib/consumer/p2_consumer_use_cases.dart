@@ -5,7 +5,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
-import 'package:catch_dating_app/labs/design_fixtures/profile_surface_fixtures.dart';
+import 'package:catch_dating_app/design_fixtures/profile_surface_fixtures.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_controller.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_screen.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';

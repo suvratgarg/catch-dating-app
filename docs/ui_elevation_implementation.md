@@ -99,7 +99,7 @@ As-built reference (already in the tree; do not redo):
   Phase 3 migrations swap editorial copy to `proseL/M`.
 - **Removed** the standalone identity/card executable labs. Re-skin review now
   lives in Widgetbook foundation and component-contract surfaces;
-  `lib/labs/design_fixtures/**` remains an actively imported fixture library,
+  `lib/design_fixtures/**` remains an actively imported fixture library,
   not a pending lab application.
 - `EventPolicyLabScreen` and `EventSuccessLabScreen` remain active dev/staging
   routes with Widgetbook and test coverage. They live in their owning feature
@@ -362,7 +362,8 @@ historical implementation detail.
 
 **Then retire dead sandboxes:** verify no `explore_concept/**` sandbox remains under the Explore
 feature and no dev route remains in `lib/routing/` (`rg -n "explore_concept|ExploreConcept" lib/routing`).
-Do not delete `lib/labs/design_fixtures/**`; those fixtures are consumed by Widgetbook and tests.
+Do not delete `lib/design_fixtures/**`; those deterministic fixtures are
+consumed by Widgetbook and tests but are not imported by production routes.
 No standalone executable lab should remain. **DoD:** modernization backlog cleared; no
 placeholder-era screens; anti-drift gate green repo-wide.
 

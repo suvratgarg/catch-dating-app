@@ -2128,7 +2128,7 @@
       "applies_to": [
         "lib/**"
       ],
-      "instruction": "Public symbols (widgets, getters, enum values) outside lib/labs and intentional in-dev features must have at least one live reference. Live references are: production lib/ code, route/config registration, and Widgetbook use cases or capture-catalog entries for components that have a widget-catalog or component-contract entry. Test-only references do not count as live. A symbol whose only live reference is Widgetbook and which has no catalog/contract entry is dead. Orphaned symbols left by superseded migrations must be deleted together with their dead tests.",
+      "instruction": "Public symbols (widgets, getters, enum values) outside the deterministic lib/design_fixtures catalog and intentional in-dev features must have at least one live reference. Live references are: production lib/ code, route/config registration, and Widgetbook use cases or capture-catalog entries for components that have a widget-catalog or component-contract entry. Test-only references do not count as live. A symbol whose only live reference is Widgetbook and which has no catalog/contract entry is dead. Orphaned symbols left by superseded migrations must be deleted together with their dead tests.",
       "sunset_when": [
         "A dead-public-symbol scan is clean (minus the documented in-dev carve-out) for three passes"
       ],
