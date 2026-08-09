@@ -131,6 +131,24 @@
         "value": "false"
       },
       "description": "Enables the in-app launch access application gate. Keep false until routing is explicitly wired to the access flow."
+    },
+    "cross_paths_enable_consent_controls": {
+      "defaultValue": {
+        "value": "false"
+      },
+      "description": "Shows Cross Paths privacy and event-consent controls. Keep false until policy approval and Mumbai pilot supply are ready; the server-selected event gate still applies."
+    },
+    "cross_paths_enable_explore_suggestions": {
+      "defaultValue": {
+        "value": "false"
+      },
+      "description": "Shows consent-safe Cross Paths suggestions in Explore. Keep false until the Mumbai pilot is approved and staffed; only server-selected events can return suggestions."
+    },
+    "cross_paths_enable_pair_inventory": {
+      "defaultValue": {
+        "value": "false"
+      },
+      "description": "Enables companion-seat inventory UI. This is independent from the initial Mumbai Cross Paths pilot and must remain false until a later approved rollout."
     }
   }
 }

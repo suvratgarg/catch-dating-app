@@ -21,6 +21,7 @@ import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {normalizeEventIdPayload} from
   "../events/eventPayloadNormalization";
+import {crossPathsPilotEventEnabled} from "./pilotPolicy";
 
 export const currentCrossPathsTermsVersion = 1;
 
@@ -120,12 +121,13 @@ export async function setCrossPathsEventConsentHandler(
       }
       const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
       if (
+        !crossPathsPilotEventEnabled(event) ||
         event.status !== "active" ||
         event.startTime.toMillis() <= now.toMillis()
       ) {
         throw new HttpsError(
           "failed-precondition",
-          "Cross Paths is available only before an active event starts."
+          "Cross Paths is not enabled for this upcoming event."
         );
       }
       if (!participationSnap.exists) {

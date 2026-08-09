@@ -211,6 +211,7 @@ export interface EventDocument {
   crossPathsPairHeldCohortCounts?: {
     [k: string]: number;
   };
+  crossPathsDiscoveryEnabled?: boolean;
   discoveryMarketId: string;
   discoveryCityName: string;
   discoveryActivityKind:

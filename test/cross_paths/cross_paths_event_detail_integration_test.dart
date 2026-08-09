@@ -21,6 +21,7 @@ void main() {
       final event = buildEvent(
         startTime: DateTime.now().add(const Duration(days: 1)),
         endTime: DateTime.now().add(const Duration(days: 1, hours: 2)),
+        crossPathsDiscoveryEnabled: true,
       );
       final profile = buildUser().copyWith(prefsShowInCrossPaths: true);
 
@@ -75,6 +76,7 @@ void main() {
       final event = buildEvent(
         startTime: DateTime.now().add(const Duration(days: 1)),
         endTime: DateTime.now().add(const Duration(days: 1, hours: 2)),
+        crossPathsDiscoveryEnabled: true,
       );
       final profile = buildUser().copyWith(prefsShowInCrossPaths: false);
       final now = DateTime.now();

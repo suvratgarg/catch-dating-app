@@ -13054,6 +13054,10 @@ export const eventDocumentSchema: Record<string, unknown> = {
       },
       "x-catch-ownership": "callable-owned"
     },
+    "crossPathsDiscoveryEnabled": {
+      "type": "boolean",
+      "x-catch-ownership": "callable-owned"
+    },
     "discoveryMarketId": {
       "type": "string",
       "minLength": 1,
@@ -32095,6 +32099,19 @@ export const adminListCrossPathsShowcaseCandidatesCallablePayloadSchema: Record<
         null
       ]
     },
+    "marketId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "pattern": "^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "cursor": {
       "anyOf": [
         {
@@ -33318,6 +33335,9 @@ export const adminUpdateEventDetailsCallablePayloadSchema: Record<string, unknow
             "fast",
             "competitive"
           ]
+        },
+        "crossPathsDiscoveryEnabled": {
+          "type": "boolean"
         },
         "eventFormat": {
           "type": "object",

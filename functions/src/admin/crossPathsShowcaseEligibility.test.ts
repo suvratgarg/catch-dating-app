@@ -60,6 +60,84 @@ class FakeCollectionRef {
       `${this.path}/${id ?? this.firestore.autoId()}`
     );
   }
+
+  where(field: string, op: string, value: unknown): FakeQuery {
+    return new FakeQuery(this.firestore, this.path)
+      .where(field, op, value);
+  }
+
+  orderBy(field: unknown): FakeQuery {
+    return new FakeQuery(this.firestore, this.path).orderBy(field);
+  }
+}
+
+class FakeQuery {
+  constructor(
+    private readonly firestore: FakeFirestore,
+    private readonly path: string,
+    private readonly filters: Array<{
+      field: string;
+      op: string;
+      value: unknown;
+    }> = [],
+    private readonly cursor: string | null = null,
+    private readonly limitCount = 1000
+  ) {}
+
+  where(field: string, op: string, value: unknown): FakeQuery {
+    return new FakeQuery(
+      this.firestore,
+      this.path,
+      [...this.filters, {field, op, value}],
+      this.cursor,
+      this.limitCount
+    );
+  }
+
+  orderBy(field: unknown): FakeQuery {
+    void field;
+    return this;
+  }
+
+  startAfter(cursor: string): FakeQuery {
+    return new FakeQuery(
+      this.firestore,
+      this.path,
+      this.filters,
+      cursor,
+      this.limitCount
+    );
+  }
+
+  limit(limitCount: number): FakeQuery {
+    return new FakeQuery(
+      this.firestore,
+      this.path,
+      this.filters,
+      this.cursor,
+      limitCount
+    );
+  }
+
+  async get(): Promise<{docs: FakeSnapshot[]}> {
+    const prefix = `${this.path}/`;
+    const docs = this.firestore.entries()
+      .filter(([path, value]) =>
+        path.startsWith(prefix) &&
+        !path.slice(prefix.length).includes("/") &&
+        value !== undefined
+      )
+      .filter(([path]) => !this.cursor ||
+        path.slice(prefix.length).localeCompare(this.cursor) > 0)
+      .filter(([, value]) => this.filters.every(
+        ({field, op, value: expected}) =>
+          op === "==" && value?.[field] === expected
+      ))
+      .sort(([left], [right]) => left.localeCompare(right))
+      .slice(0, this.limitCount)
+      .map(([path, value]) => new FakeSnapshot(path, value));
+    return {docs};
+  }
 }
 
 class FakeTransaction {
@@ -111,6 +189,13 @@ class FakeFirestore {
     this.docs[path] = structuredClone(value);
   }
 
+  entries(): Array<[string, FakeData | undefined]> {
+    return Object.entries(this.docs).map(([path, value]) => [
+      path,
+      value === undefined ? undefined : structuredClone(value),
+    ]);
+  }
+
   autoId(): string {
     this.nextId += 1;
     return `auto-${this.nextId}`;
@@ -141,6 +226,27 @@ test("reviewers can list a score-free exact candidate projection", async () => {
   assert.equal(result.candidates[0]?.effectiveStatus, "needsReview");
   assert.equal("score" in (result.candidates[0] ?? {}), false);
 });
+
+test(
+  "the review queue is bounded to the requested canonical market",
+  async () => {
+    const delhiProfile = readyProfile();
+    delhiProfile.city = "in-dl-delhi-ncr";
+    const harness = createHarness({
+      "publicProfiles/rhea": readyProfile(),
+      "publicProfiles/delhi-member": delhiProfile,
+    });
+
+    const result = await adminListCrossPathsShowcaseCandidatesHandler(
+      request({marketId: " IN-MH-MUMBAI ", status: "all"}, "support"),
+      harness.deps
+    );
+
+    assert.deepEqual(result.candidates.map((candidate) => candidate.uid), [
+      "rhea",
+    ]);
+  }
+);
 
 test(
   "an eligible decision is fingerprint-bound, versioned, and audited",
@@ -259,7 +365,7 @@ function readyProfile(): FakeData {
     name: "Rhea",
     age: 28,
     gender: "woman",
-    city: "mumbai",
+    city: "in-mh-mumbai",
     relationshipGoal: "longTermRelationship",
     activityPreferences: {running: {}},
     profilePhotos: [photo("one"), photo("two"), photo("three")],

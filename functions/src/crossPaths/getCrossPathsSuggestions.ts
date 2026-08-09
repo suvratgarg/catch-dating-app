@@ -46,6 +46,7 @@ import {
   crossPathsConsentId,
   currentCrossPathsTermsVersion,
 } from "./setCrossPathsEventConsent";
+import {crossPathsPilotEventEnabled} from "./pilotPolicy";
 
 export const crossPathsSuggestionSigningKey = defineSecret(
   "CROSS_PATHS_SUGGESTION_SIGNING_KEY"
@@ -345,6 +346,7 @@ async function loadEventContext(params: {
   );
   const startMillis = event.startTime.toMillis();
   if (
+    !crossPathsPilotEventEnabled(event) ||
     event.status !== "active" ||
     startMillis < nowMillis + minimumLeadMillis ||
     startMillis > nowMillis + maximumHorizonMillis ||

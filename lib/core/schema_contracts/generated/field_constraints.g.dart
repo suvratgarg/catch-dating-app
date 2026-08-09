@@ -1710,6 +1710,14 @@ abstract final class CatchContractConstraints {
     maximum: 50,
   );
 
+  static const adminListCrossPathsShowcaseCandidatesCallablePayloadMarketId = CatchContractFieldConstraints(
+    path: 'adminListCrossPathsShowcaseCandidatesCallablePayload.marketId',
+    maxLength: 120,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*\$',
+  );
+
   static const adminListCrossPathsShowcaseCandidatesCallablePayloadStatus = CatchContractFieldConstraints(
     path: 'adminListCrossPathsShowcaseCandidatesCallablePayload.status',
     valueTypes: <String>['string'],
@@ -3332,6 +3340,11 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const adminUpdateEventDetailsCallablePayloadFieldsCrossPathsDiscoveryEnabled = CatchContractFieldConstraints(
+    path: 'adminUpdateEventDetailsCallablePayload.fields.crossPathsDiscoveryEnabled',
+    valueTypes: <String>['boolean'],
   );
 
   static const adminUpdateEventDetailsCallablePayloadFieldsDescription = CatchContractFieldConstraints(
@@ -10162,6 +10175,11 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 0,
     maximum: 120,
+  );
+
+  static const eventDocumentCrossPathsDiscoveryEnabled = CatchContractFieldConstraints(
+    path: 'eventDocument.crossPathsDiscoveryEnabled',
+    valueTypes: <String>['boolean'],
   );
 
   static const eventDocumentCrossPathsPairConfirmedCount = CatchContractFieldConstraints(
@@ -28937,6 +28955,7 @@ abstract final class CatchContractConstraints {
     'adminListClubDetailsCallablePayload.query': adminListClubDetailsCallablePayloadQuery,
     'adminListCrossPathsShowcaseCandidatesCallablePayload.cursor': adminListCrossPathsShowcaseCandidatesCallablePayloadCursor,
     'adminListCrossPathsShowcaseCandidatesCallablePayload.limit': adminListCrossPathsShowcaseCandidatesCallablePayloadLimit,
+    'adminListCrossPathsShowcaseCandidatesCallablePayload.marketId': adminListCrossPathsShowcaseCandidatesCallablePayloadMarketId,
     'adminListCrossPathsShowcaseCandidatesCallablePayload.status': adminListCrossPathsShowcaseCandidatesCallablePayloadStatus,
     'adminListCrossPathsShowcaseCandidatesCallablePayload.uid': adminListCrossPathsShowcaseCandidatesCallablePayloadUid,
     'adminListCrossPathsShowcaseCandidatesCallableResponse.candidates': adminListCrossPathsShowcaseCandidatesCallableResponseCandidates,
@@ -29172,6 +29191,7 @@ abstract final class CatchContractConstraints {
     'adminUpdateClubDetailsCallablePayload.fields.tags.items': adminUpdateClubDetailsCallablePayloadFieldsTagsItems,
     'adminUpdateClubDetailsCallablePayload.reviewNote': adminUpdateClubDetailsCallablePayloadReviewNote,
     'adminUpdateEventDetailsCallablePayload.eventId': adminUpdateEventDetailsCallablePayloadEventId,
+    'adminUpdateEventDetailsCallablePayload.fields.crossPathsDiscoveryEnabled': adminUpdateEventDetailsCallablePayloadFieldsCrossPathsDiscoveryEnabled,
     'adminUpdateEventDetailsCallablePayload.fields.description': adminUpdateEventDetailsCallablePayloadFieldsDescription,
     'adminUpdateEventDetailsCallablePayload.fields.distanceKm': adminUpdateEventDetailsCallablePayloadFieldsDistanceKm,
     'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails': adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetails,
@@ -30120,6 +30140,7 @@ abstract final class CatchContractConstraints {
     'eventDocument.constraints.maxMen': eventDocumentConstraintsMaxMen,
     'eventDocument.constraints.maxWomen': eventDocumentConstraintsMaxWomen,
     'eventDocument.constraints.minAge': eventDocumentConstraintsMinAge,
+    'eventDocument.crossPathsDiscoveryEnabled': eventDocumentCrossPathsDiscoveryEnabled,
     'eventDocument.crossPathsPairConfirmedCount': eventDocumentCrossPathsPairConfirmedCount,
     'eventDocument.crossPathsPairHeldCohortCounts': eventDocumentCrossPathsPairHeldCohortCounts,
     'eventDocument.crossPathsPairHeldCount': eventDocumentCrossPathsPairHeldCount,

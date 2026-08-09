@@ -20,6 +20,7 @@ ExploreEventItem _item({
     id: id,
     clubId: club.id,
     startTime: startTime,
+    crossPathsDiscoveryEnabled: true,
   );
   return ExploreEventItem(
     event: event.copyWith(
@@ -149,6 +150,23 @@ void main() {
         ),
       ),
       ['open', 'joined'],
+    );
+    final unselected = item('unselected', ViewerEventAvailabilityStatus.open);
+    expect(
+      crossPathsExploreEventIds(
+        ExploreFeedViewModel(
+          items: [
+            ExploreEventItem(
+              event: unselected.event.copyWith(
+                crossPathsDiscoveryEnabled: false,
+              ),
+              club: unselected.club,
+              availability: unselected.availability,
+            ),
+          ],
+        ),
+      ),
+      isEmpty,
     );
   });
 

@@ -124,6 +124,8 @@ function harness(overrides: Record<string, FakeData | undefined> = {}) {
     "events/event-1": {
       startTime: timestamp(1_888_888_888_000),
       status: "active",
+      crossPathsDiscoveryEnabled: true,
+      discoveryMarketId: "in-mh-mumbai",
     },
     "eventParticipations/event-1_runner-1": {
       eventId: "event-1",
@@ -217,16 +219,49 @@ test("fails closed when global consent is missing or booking is not confirmed",
     );
   });
 
+test(
+  "enabling consent fails closed outside a selected Mumbai event",
+  async () => {
+    for (const event of [
+      {
+        startTime: timestamp(1_888_888_888_000),
+        status: "active",
+        crossPathsDiscoveryEnabled: false,
+        discoveryMarketId: "in-mh-mumbai",
+      },
+      {
+        startTime: timestamp(1_888_888_888_000),
+        status: "active",
+        crossPathsDiscoveryEnabled: true,
+        discoveryMarketId: "in-dl-delhi-ncr",
+      },
+    ]) {
+      const h = harness({"events/event-1": event});
+      await assert.rejects(
+        setCrossPathsEventConsentHandler(
+          request("runner-1", enabledPayload(true)),
+          h.deps
+        ),
+        hasCode("failed-precondition")
+      );
+    }
+  }
+);
+
 test("fails closed for missing, cancelled, or past events", async () => {
   for (const event of [
     undefined,
     {
       startTime: timestamp(1_888_888_888_000),
       status: "cancelled",
+      crossPathsDiscoveryEnabled: true,
+      discoveryMarketId: "in-mh-mumbai",
     },
     {
       startTime: timestamp(1_700_000_000_000),
       status: "active",
+      crossPathsDiscoveryEnabled: true,
+      discoveryMarketId: "in-mh-mumbai",
     },
   ]) {
     const h = harness({"events/event-1": event});

@@ -964,6 +964,10 @@ const schemaEventDocumentSchema = <String, Object?>{
       },
       'x-catch-ownership': 'callable-owned',
     },
+    'crossPathsDiscoveryEnabled': <String, Object?>{
+      'type': 'boolean',
+      'x-catch-ownership': 'callable-owned',
+    },
     'discoveryMarketId': <String, Object?>{
       'type': 'string',
       'minLength': 1,

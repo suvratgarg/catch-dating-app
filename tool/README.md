@@ -505,9 +505,11 @@ phone-number verification. That flag is only for Firebase test phone numbers.
 `demo_ops seed-cross-paths` is the guarded dev/emulator-only fixture builder
 for Cross Paths. It selects one synthetic viewer and at most two compatible
 synthetic attendees, creates a fresh synthetic event when necessary, and adds
-current event consent plus fingerprint-bound showcase review state. Dry run is
-the default. `--configure-test-login` additionally requires an explicit
-fictional Firebase test phone and six-digit code.
+current event consent plus fingerprint-bound showcase review state. It also
+sets the selected synthetic event's explicit pilot switch; that synthetic-only
+escape hatch never selects a real event or widens the Mumbai production gate.
+Dry run is the default. `--configure-test-login` additionally requires an
+explicit fictional Firebase test phone and six-digit code.
 
 ```sh
 npm --prefix functions run build

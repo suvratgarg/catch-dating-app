@@ -237,6 +237,22 @@ test("sends one durable invitation for two eligible attendees", async () => {
 });
 
 test(
+  "sending fails closed when the selected-event pilot gate is off",
+  async () => {
+    const h = harness({
+      "events/event-1": {...event(), crossPathsDiscoveryEnabled: false},
+    });
+    await assert.rejects(
+      sendCrossPathsInvitationHandler(
+        request("sender", sendPayload()),
+        h.deps
+      ),
+      hasCode("failed-precondition")
+    );
+  }
+);
+
+test(
   "fails closed for missing consent, booking, review, and blocks",
   async () => {
     const cases: Record<string, FakeData | undefined>[] = [
@@ -430,6 +446,8 @@ function matches(actual: unknown, op: string, expected: unknown): boolean {
 function event(): FakeData {
   return {
     status: "active",
+    crossPathsDiscoveryEnabled: true,
+    discoveryMarketId: "in-mh-mumbai",
     clubId: "organizer-1",
     organizerId: "organizer-1",
     capacityLimit: 20,

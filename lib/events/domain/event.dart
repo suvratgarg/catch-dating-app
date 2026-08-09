@@ -95,6 +95,7 @@ abstract class Event with _$Event {
     @Default(0) int crossPathsPairHeldCount,
     @Default(0) int crossPathsPairConfirmedCount,
     @Default({}) Map<String, int> crossPathsPairHeldCohortCounts,
+    @Default(false) bool crossPathsDiscoveryEnabled,
     @Default(EventLifecycleStatus.active) EventLifecycleStatus status,
     @NullableTimestampConverter() DateTime? cancelledAt,
     String? cancellationReason,

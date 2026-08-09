@@ -49,6 +49,8 @@ _Event _$EventFromJson(Map<String, dynamic> json) => _Event(
         (k, e) => MapEntry(k, (e as num).toInt()),
       ) ??
       const {},
+  crossPathsDiscoveryEnabled:
+      json['crossPathsDiscoveryEnabled'] as bool? ?? false,
   status:
       $enumDecodeNullable(_$EventLifecycleStatusEnumMap, json['status']) ??
       EventLifecycleStatus.active,
@@ -101,6 +103,7 @@ Map<String, dynamic> _$EventToJson(_Event instance) => <String, dynamic>{
   'crossPathsPairHeldCount': instance.crossPathsPairHeldCount,
   'crossPathsPairConfirmedCount': instance.crossPathsPairConfirmedCount,
   'crossPathsPairHeldCohortCounts': instance.crossPathsPairHeldCohortCounts,
+  'crossPathsDiscoveryEnabled': instance.crossPathsDiscoveryEnabled,
   'status': _$EventLifecycleStatusEnumMap[instance.status]!,
   'cancelledAt': const NullableTimestampConverter().toJson(
     instance.cancelledAt,

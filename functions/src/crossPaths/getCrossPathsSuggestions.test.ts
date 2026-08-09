@@ -252,6 +252,26 @@ test("returns at most two sanitized, deterministic suggestions", async () => {
   );
 });
 
+test(
+  "returns no suggestions for unselected or non-Mumbai real events",
+  async () => {
+    for (const eventOverride of [
+      {crossPathsDiscoveryEnabled: false},
+      {discoveryMarketId: "in-dl-delhi-ncr"},
+    ]) {
+      const h = harness({"events/event-1": event(eventOverride)});
+      const response = await getCrossPathsSuggestionsHandler(
+        request("viewer", {
+          eventIds: ["event-1"],
+          sessionId: "explore-session-gated",
+        }),
+        h.deps
+      );
+      assert.deepEqual(response.suggestions, []);
+    }
+  }
+);
+
 test("fails closed across consent, review, safety, and match boundaries",
   async () => {
     const publicB = profile("candidate-b");
@@ -425,6 +445,8 @@ function event(overrides: FakeData = {}): FakeData {
     constraints: {minAge: 21, maxAge: 40},
     cohortCounts: {womenInterestedInMen: 3},
     waitlistedCohortCounts: {},
+    crossPathsDiscoveryEnabled: true,
+    discoveryMarketId: "in-mh-mumbai",
     discoveryAvailability: "open",
     photoUrl: "https://example.com/event.jpg",
     ...overrides,

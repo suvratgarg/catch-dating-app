@@ -77,7 +77,8 @@ Future<List<CrossPathsSuggestion>> exploreCrossPathsSuggestions(Ref ref) async {
 
 List<String> crossPathsExploreEventIds(ExploreFeedViewModel feed) => <String>[
   for (final item in feed.items)
-    if (item.availability?.canBookNow == true ||
-        item.availability?.status == ViewerEventAvailabilityStatus.joined)
+    if (item.event.crossPathsDiscoveryEnabled &&
+        (item.availability?.canBookNow == true ||
+            item.availability?.status == ViewerEventAvailabilityStatus.joined))
       item.event.id,
 ].take(maximumCrossPathsExploreEventIds).toList(growable: false);

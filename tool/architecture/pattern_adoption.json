@@ -1,6 +1,6 @@
 {
-  "version": "1.9.0",
-  "updated": "2026-08-07",
+  "version": "1.10.0",
+  "updated": "2026-08-09",
   "sourceOfTruth": "docs/app_architecture.md#reference-implementation-workflow",
   "purpose": "Defines architecture reference exhibits, adopter files, candidate status, and back-propagation obligations enforced by architecture checks.",
   "patterns": [
@@ -1791,6 +1791,8 @@
         "lib/cross_paths/presentation/cross_paths_event_consent_controller.dart",
         "lib/cross_paths/presentation/cross_paths_event_consent_state.dart",
         "lib/cross_paths/presentation/cross_paths_event_consent_section.dart",
+        "lib/events/domain/event.dart",
+        "functions/src/crossPaths/pilotPolicy.ts",
         "functions/src/crossPaths/setCrossPathsEventConsent.ts",
         "functions/src/crossPaths/invitations.ts",
         "functions/src/crossPaths/pairHolds.ts",
@@ -1818,8 +1820,18 @@
         },
         {
           "path": "lib/cross_paths/presentation/cross_paths_event_consent_state.dart",
-          "role": "provider-free eligibility and display-state adapter",
+          "role": "provider-free selected-event, booking, global-consent, and display-state adapter",
           "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/events/domain/event.dart and functions/src/crossPaths/pilotPolicy.ts",
+          "role": "shared default-false event field plus canonical Mumbai selected-event policy; synthetic bypass is limited to explicit demo records",
+          "status": "aligned"
+        },
+        {
+          "path": "functions/src/admin/eventDetails.ts and admin/src/features/events",
+          "role": "Admin-only audited selection for two or three upcoming Mumbai events with six-hour lead, no companion inventory, and a hard maximum of three",
           "status": "aligned"
         },
         {
@@ -1882,7 +1894,7 @@
       ],
       "candidateQueue": [],
       "exceptions": [],
-      "requiredBackPropagation": "When Cross Paths consent terms, global preference semantics, event-edge fields, suggestion response/ranking versions, companion inventory/hold/payment semantics, enablement preconditions, rollout flags, revocation behavior, or funnel attribution changes, update the JSON schemas, generated Dart and TypeScript contracts, callable, Firestore rules, Settings, Explore, Event Detail, Host policy and payment adopters, analytics names, disclosure copy, focused tests, docs/cross_paths.md, and this exhibit in one pass.",
+      "requiredBackPropagation": "When Cross Paths consent terms, global preference semantics, event-edge fields, selected-event/market policy, suggestion response/ranking versions, companion inventory/hold/payment semantics, enablement preconditions, rollout flags, revocation behavior, or funnel attribution changes, update the JSON schemas, generated Dart and TypeScript contracts, callable, Firestore rules, Admin event controls, Settings, Explore, Event Detail, Host policy and payment adopters, analytics names, disclosure copy, focused tests, docs/cross_paths.md, and this exhibit in one pass.",
       "requiredChecks": [
         "./tool/check_data_contract.sh",
         "flutter test test/analytics/app_analytics_test.dart test/cross_paths test/chats/chat_screen_test.dart test/chats/chat_inbox_screen_test.dart test/explore/explore_view_model_test.dart test/safety/settings_screen_test.dart test/events/event_detail_widgets_test.dart test/hosts/host_create_event_state_test.dart test/events/event_booking_controller_test.dart",
@@ -1890,7 +1902,7 @@
         "bash tool/check_catch_ui_lints.sh",
         "node tool/architecture/check_app_architecture_exhibits.mjs"
       ],
-      "notes": "This reference now covers permission storage, server-owned suggestion resolution, fail-closed Explore consumption, participant-only invitations, organizer-controlled companion holds, canonical checkout conversion, and temporary event plans. All three rollout flags remain off by default, and external privacy-policy approval is required before enabling identifiable discovery beyond internal review."
+      "notes": "This reference now covers permission storage, Admin-selected Mumbai events, server-owned suggestion resolution, fail-closed Explore consumption, participant-only invitations, organizer-controlled companion holds, canonical checkout conversion, and temporary event plans. All three rollout flags remain off by default, and external privacy-policy approval plus 20-50 real self-consented members across 2-3 selected events is required before enabling identifiable discovery beyond internal review."
     },
     {
       "id": "ARCH-ENTITY-MATERIAL-001",

@@ -389,6 +389,7 @@ function eventDoc(overrides: FakeData = {}): FakeData {
       womenInterestedInMen: 9,
     },
     waitlistedCohortCounts: {},
+    crossPathsDiscoveryEnabled: false,
     discoveryCityName: "indore",
     discoveryMarketId: "in-mp-indore",
     discoveryActivityKind: "socialRun",
@@ -591,7 +592,114 @@ test("adminGetEventDetailsHandler returns editable event details", async () => {
   assert.equal(result.event.description, "Source-backed social run.");
   assert.equal(result.event.eventFormat.activityKind, "socialRun");
   assert.equal(result.event.discovery.citySlug, "in-mp-indore");
+  assert.equal(result.event.crossPathsDiscoveryEnabled, false);
 });
+
+test(
+  "admin owners can select a bounded upcoming Mumbai pilot event",
+  async () => {
+    const h = harness({
+      "organizers/bandra-runners": clubDoc({
+        name: "Bandra Runners",
+        location: "in-mh-mumbai",
+        locationCityId: "in-mh-mumbai",
+        locationMarketId: "in-mh-mumbai",
+        cityName: "Mumbai",
+      }),
+      "events/bandra-run-1": eventDoc({
+        clubId: "bandra-runners",
+        organizerId: "bandra-runners",
+        discoveryCityName: "mumbai",
+        discoveryMarketId: "in-mh-mumbai",
+      }),
+    });
+
+    const result = await adminUpdateEventDetailsHandler(
+      callableRequest("admin-1", {
+        eventId: "bandra-run-1",
+        fields: {crossPathsDiscoveryEnabled: true},
+        reviewNote: "Selected for the approved Mumbai pilot.",
+      }, {adminOwner: true}),
+      h.deps
+    );
+
+    assert.equal(result.updatedFieldCount, 1);
+    assert.equal(
+      h.firestore.get("events/bandra-run-1")?.crossPathsDiscoveryEnabled,
+      true
+    );
+    assert.equal(h.firestore.auditLogs().length, 1);
+  }
+);
+
+test("support cannot change the Cross Paths selected-event gate", async () => {
+  const h = harness({
+    "organizers/bandra-runners": clubDoc(),
+    "events/bandra-run-1": eventDoc({
+      discoveryMarketId: "in-mh-mumbai",
+    }),
+  });
+
+  await assert.rejects(
+    () => adminUpdateEventDetailsHandler(
+      callableRequest("support-1", {
+        eventId: "bandra-run-1",
+        fields: {crossPathsDiscoveryEnabled: true},
+        reviewNote: "Attempted pilot selection.",
+      }, {support: true}),
+      h.deps
+    ),
+    (error) => assertHttpsCode(error, "permission-denied")
+  );
+});
+
+test(
+  "the selected-event gate rejects non-Mumbai and over-broad pilots",
+  async () => {
+    const selected = Object.fromEntries([1, 2, 3].map((index) => [
+      `events/mumbai-selected-${index}`,
+      eventDoc({
+        discoveryMarketId: "in-mh-mumbai",
+        crossPathsDiscoveryEnabled: true,
+        startTime: new Date(`2026-07-0${index + 4}T01:30:00.000Z`),
+      }),
+    ]));
+    const overBroad = harness({
+      "organizers/bandra-runners": clubDoc(),
+      ...selected,
+      "events/bandra-run-1": eventDoc({
+        discoveryMarketId: "in-mh-mumbai",
+      }),
+    });
+    await assert.rejects(
+      () => adminUpdateEventDetailsHandler(
+        callableRequest("admin-1", {
+          eventId: "bandra-run-1",
+          fields: {crossPathsDiscoveryEnabled: true},
+          reviewNote: "Would exceed the three-event pilot.",
+        }, {admin: true}),
+        overBroad.deps
+      ),
+      (error) => assertHttpsCode(error, "resource-exhausted")
+    );
+
+    const nonMumbai = harness({
+      "organizers/afterfly": clubDoc(),
+      "events/afterfly-social-run-1": eventDoc(),
+    });
+    await assert.rejects(
+      () => adminUpdateEventDetailsHandler(
+        callableRequest("admin-1", {
+          eventId: "afterfly-social-run-1",
+          fields: {crossPathsDiscoveryEnabled: true},
+          reviewNote: "Wrong market.",
+        }, {admin: true}),
+        nonMumbai.deps
+      ),
+      (error) => assertHttpsCode(error, "failed-precondition")
+    );
+  }
+);
 
 test("adminUpdateEventDetailsHandler saves audited safe fields", async () => {
   const h = harness({

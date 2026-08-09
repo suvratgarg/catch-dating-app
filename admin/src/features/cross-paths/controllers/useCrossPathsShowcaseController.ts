@@ -18,6 +18,7 @@ export type CrossPathsShowcaseCandidate =
   AdminListCrossPathsShowcaseCandidatesCallableResponse["candidates"][number];
 export type CrossPathsShowcaseDecision =
   AdminSetCrossPathsShowcaseEligibilityCallablePayload;
+export const crossPathsPilotMarketId = "in-mh-mumbai";
 
 export interface CrossPathsShowcaseController {
   candidates: CrossPathsShowcaseCandidate[];
@@ -52,6 +53,7 @@ export function useCrossPathsShowcaseController({
     queryKey,
     queryFn: () => loadCrossPathsShowcaseReviewPage({
       status: filter,
+      marketId: crossPathsPilotMarketId,
       cursor,
       limit: 25,
     }),

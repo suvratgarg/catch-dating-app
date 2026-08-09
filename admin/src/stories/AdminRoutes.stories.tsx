@@ -1485,6 +1485,7 @@ function eventListRowFromDetails(event: AdminEventDetails): AdminEventListRow {
     capacityLimit: event.capacityLimit,
     citySlug: event.discovery.citySlug,
     clubId: event.clubId,
+    crossPathsDiscoveryEnabled: event.crossPathsDiscoveryEnabled,
     currency: event.currency,
     eventId: event.eventId,
     meetingPoint: event.meetingPoint,

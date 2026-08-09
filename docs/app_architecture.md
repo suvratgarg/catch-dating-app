@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.9.0
-updated: 2026-08-07
+version: 1.9.1
+updated: 2026-08-09
 owner: app_architecture
 status: active
 ---
@@ -2359,7 +2359,9 @@ Reference files:
 - `lib/cross_paths/presentation/cross_paths_event_consent_controller.dart`
 - `lib/cross_paths/presentation/cross_paths_event_consent_state.dart`
 - `lib/cross_paths/presentation/cross_paths_event_consent_section.dart`
+- `lib/events/domain/event.dart`
 - `lib/safety/presentation/settings_screen.dart`
+- `functions/src/crossPaths/pilotPolicy.ts`
 - `functions/src/crossPaths/setCrossPathsEventConsent.ts`
 - `functions/src/crossPaths/invitations.ts`
 - `functions/src/crossPaths/pairHolds.ts`
@@ -2369,9 +2371,11 @@ Reference files:
 
 Use layered consent for an identifiable people surface: a private default-false
 global preference is the master permission, a deterministic caller-scoped edge
-is the event permission, and the server owns all effective-eligibility and
-ranking decisions. Consent records are inputs to `getCrossPathsSuggestions`;
-they are never themselves a roster or suggestion source.
+is the event permission, an Admin-owned default-false event switch selects the
+small set of events allowed into the Mumbai pilot, and the server owns all
+effective-eligibility and ranking decisions. Consent records and the event
+switch are inputs to `getCrossPathsSuggestions`; they are never themselves a
+roster or suggestion source.
 
 The Event Detail reference gate is intentionally fail-closed:
 
@@ -2408,6 +2412,8 @@ Preserve these boundaries in later adopters:
   the disabled state;
 - a missing global field, missing event edge, loading state, or read failure
   never resolves to enabled;
+- a missing/false event switch or a real event outside `in-mh-mumbai` never
+  resolves to consent-eligible or suggestion-eligible;
 - an existing enabled event edge remains caller-readable and revocable after
   booking or global eligibility disappears, while an ineligible disabled edge
   remains hidden;
@@ -2419,8 +2425,8 @@ Preserve these boundaries in later adopters:
 - Settings writes the private master through the typed user-profile patch;
 - the client queries only the caller's own event edge and never writes it;
 - the App-Check-protected callable revalidates the master preference, terms,
-  active future event, deterministic participation identity, and `signedUp`
-  state before enabling;
+  Admin-selected Mumbai event, deterministic participation identity, and
+  `signedUp` state before enabling;
 - disable remains callable-owned and available after eligibility disappears;
 - Explore consumes only the sanitized, versioned, short-lived batched response
   from `getCrossPathsSuggestions`; it never joins participation, profile,

@@ -470,6 +470,45 @@ environment. The callable writes a 30-day expiry, but the field does not delete
 documents by itself until that environment policy exists. Account deletion
 independently deletes exposure receipts involving the member.
 
+### Mumbai selected-event pilot
+
+The first live Cross Paths pilot uses three independent, default-false Remote
+Config controls:
+
+- `cross_paths_enable_consent_controls`
+- `cross_paths_enable_explore_suggestions`
+- `cross_paths_enable_pair_inventory`
+
+Code deployment does not authorize live discovery. Every real event must also
+have Admin-owned `crossPathsDiscoveryEnabled: true`, and the backend accepts
+that switch only for an active event at least six hours away in canonical
+market `in-mh-mumbai`. At most three upcoming events may be selected. Pair
+inventory remains false for this pilot.
+
+Use this rollout order:
+
+1. Obtain external approval for the privacy-policy and per-event consent copy.
+2. Select 2–3 eligible upcoming Mumbai events in Admin with an audit note.
+3. Onboard 20–50 real members through the normal user-controlled global and
+   per-event consent actions; never seed or backfill affirmative consent.
+4. Curate the Mumbai showcase queue through the score-free human checklist.
+5. Prove eligible-supply, exposure, invitation-abuse, cancellation, safety,
+   and support monitoring.
+6. Enable consent controls for the selected pilot audience, then enable
+   Explore suggestions only after consent/supply evidence is sufficient.
+7. Keep pair inventory false until a separately reviewed later pilot.
+
+Rollback is additive and fail-closed: first disable Explore suggestions, then
+disable selected event switches if necessary. Turning off an event switch
+invalidates pending invitations but preserves an explicitly accepted plan.
+Keep consent controls available long enough for members and support to revoke
+or inspect consent, and never use rollback to rewrite consent history.
+
+Production inventory checked on 2026-08-09 contained zero upcoming active
+Mumbai events, zero showcase-eligible members, and zero enabled event-consent
+edges. The Mumbai pilot therefore remains intentionally dormant after code
+delivery; none of the rollout flags may be enabled on that inventory.
+
 ## Required Secrets
 
 Build workflows need environment-specific Google Maps SDK secrets. Do not rely

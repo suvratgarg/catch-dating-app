@@ -76,6 +76,10 @@ import {
   releaseCrossPathsPairHold,
   releaseCrossPathsPairHoldInTransaction,
 } from "./pairHolds";
+import {
+  crossPathsEventWriteInvalidationMode,
+  crossPathsPilotEventEnabled,
+} from "./pilotPolicy";
 
 export {
   crossPathsEventPlanId,
@@ -1033,8 +1037,22 @@ export const onCrossPathsConsentWritten = onDocumentWritten(
 export const onCrossPathsEventWritten = onDocumentWritten(
   "events/{eventId}",
   async (event) => {
+    const before = event.data?.before.data() as EventDocument | undefined;
     const after = event.data?.after.data() as EventDocument | undefined;
-    if (after?.status === "active") return;
+    const invalidationMode = crossPathsEventWriteInvalidationMode(
+      before,
+      after
+    );
+    if (invalidationMode === "none") return;
+    if (invalidationMode === "pending") {
+      await invalidateCrossPathsInvitations({
+        db: admin.firestore(),
+        eventId: event.params.eventId,
+        reason: "event_unavailable",
+        includeAccepted: false,
+      });
+      return;
+    }
     await invalidateCrossPathsInvitations({
       db: admin.firestore(),
       eventId: event.params.eventId,
@@ -1114,7 +1132,11 @@ function validUpcomingEvent(
   const event = requireDoc<EventDocument>(snap, "EventDocument");
   const minimumStart = now.toMillis() +
     (requireLead ? minimumInvitationLeadMillis : responseBufferMillis);
-  if (event.status !== "active" || event.startTime.toMillis() <= minimumStart) {
+  if (
+    !crossPathsPilotEventEnabled(event) ||
+    event.status !== "active" ||
+    event.startTime.toMillis() <= minimumStart
+  ) {
     throw unavailable();
   }
   return event;

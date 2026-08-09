@@ -20,6 +20,7 @@ export interface EventPublishingFormState {
   customActivityLabel: string;
   distanceKm: string;
   pace: AdminEventPace;
+  crossPathsDiscoveryEnabled: boolean;
   reviewNote: string;
 }
 
@@ -108,6 +109,7 @@ export function formFromEventProfile(
     customActivityLabel: event.eventFormat.customActivityLabel ?? "",
     distanceKm: String(event.distanceKm),
     pace: event.pace,
+    crossPathsDiscoveryEnabled: event.crossPathsDiscoveryEnabled,
     reviewNote: "",
   };
 }
@@ -149,6 +151,12 @@ export function buildEventSavePayload(
     normalizeDistance(form.distanceKm)
   );
   addChanged(fields, "pace", original.pace, form.pace);
+  addChanged(
+    fields,
+    "crossPathsDiscoveryEnabled",
+    original.crossPathsDiscoveryEnabled,
+    form.crossPathsDiscoveryEnabled
+  );
 
   const eventFormatChanged =
     original.activityKind !== form.activityKind ||
