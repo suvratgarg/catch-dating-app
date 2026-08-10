@@ -438,7 +438,7 @@ test("affected tools install only planner-declared setup requirements", () => {
   for (const [stepMarker, requirement] of [
     ["uses: ./.github/actions/setup-flutter", "flutter"],
     ["name: Install scanner dependencies", "ripgrep"],
-    ["run: flutter pub get", "flutter-pub"],
+    ["name: Resolve Flutter and standalone Dart tool dependencies", "flutter-pub"],
     ["run: npm ci", "root-npm"],
     ["run: npm --prefix functions ci", "functions-npm"],
     ["name: Install marketing design browser", "playwright"],
@@ -458,6 +458,12 @@ test("affected tools install only planner-declared setup requirements", () => {
       ),
     );
   }
+  const pubSetup = affectedJob.match(
+    /      - name: Resolve Flutter and standalone Dart tool dependencies(?<body>[\s\S]*?)(?=\n      - |$)/u,
+  )?.groups?.body;
+  assert.ok(pubSetup, "standalone Dart tool dependency setup must remain present");
+  assert.match(pubSetup, /flutter pub get/u);
+  assert.match(pubSetup, /dart pub get -C tool\/widget_dedupe/u);
 });
 
 function escapeRegex(value) {
