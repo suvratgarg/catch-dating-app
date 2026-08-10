@@ -950,7 +950,7 @@ let sampleMarketingOpsBridgeState: MarketingOpsBridge | null = null;
 
 export async function loadMarketingOpsBridge():
   Promise<AdminGetMarketingOpsDashboardResponse> {
-  if (import.meta.env.VITE_ADMIN_DATA_MODE !== "live") {
+  if (dataMode() === "sample") {
     await new Promise((resolve) => window.setTimeout(resolve, 180));
     return {bridge: await loadSampleMarketingOpsBridge()};
   }
@@ -965,7 +965,7 @@ export async function loadMarketingOpsBridge():
 
 export async function loadEventIntakeDashboard():
   Promise<AdminGetEventIntakeDashboardResponse> {
-  if (import.meta.env.VITE_ADMIN_DATA_MODE !== "live") {
+  if (dataMode() === "sample") {
     await new Promise((resolve) => window.setTimeout(resolve, 180));
     return {bridge: structuredClone(sampleEventIntakeBridge)};
   }
@@ -1016,7 +1016,7 @@ export async function listActionExecutions(
 export async function createMarketingContentDraft(
   payload: AdminCreateMarketingContentDraftPayload
 ): Promise<AdminCreateMarketingContentDraftResponse> {
-  if (import.meta.env.VITE_ADMIN_DATA_MODE !== "live") {
+  if (dataMode() === "sample") {
     await new Promise((resolve) => window.setTimeout(resolve, 240));
     const sampleBridge = await loadSampleMarketingOpsBridge();
     const draft = buildSampleMarketingDraft(
@@ -1810,7 +1810,7 @@ export async function listExternalEventDetails(
 
 export async function loadEventSupplyReadiness():
   Promise<AdminGetEventSupplyReadinessResponse> {
-  if (import.meta.env.VITE_ADMIN_DATA_MODE !== "live") {
+  if (dataMode() === "sample") {
     await new Promise((resolve) => window.setTimeout(resolve, 120));
     return structuredClone(sampleEventSupplyReadiness);
   }
