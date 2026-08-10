@@ -389,7 +389,7 @@
         "tool/ci/web_hosting_workflow.test.mjs",
         "website/scripts/marketingDeployWorkflow.test.mjs"
       ],
-      "description": "Guards the exact Admin, standalone Host, and Marketing Hosting path: one production build, immutable artifact-id and digest promotion, no deploy-time rebuild, current-main freshness, and terminal source-bound recovery.",
+      "description": "Guards the exact Admin, standalone Host, and Marketing Hosting path: runtime-complete triggers, one production build, immutable artifact-id and digest promotion, no deploy-time rebuild, current-main freshness, and terminal source-bound recovery.",
       "checks": [
         "node --check tool/ci/web_hosting_workflow.test.mjs",
         "node --test tool/ci/web_hosting_workflow.test.mjs website/scripts/marketingDeployWorkflow.test.mjs"
@@ -400,6 +400,7 @@
         "path": "tool/ci/web_hosting_workflow.test.mjs",
         "contains": [
           "standalone Host web uses the same immutable build and promotion authority",
+          "caller triggers cover the exact build dependency closure",
           "main builds the deployable Vite output once while validation-only dispatch remains a no-op",
           "promotion downloads only the immutable artifact id and verifies bytes before credentials",
           "stale recovery and an older partial-rerun artifact fail before mutation"

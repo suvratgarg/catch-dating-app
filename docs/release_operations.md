@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.0.15
+version: 2.0.16
 updated: 2026-08-11
 owner: recursive_audit_loop
 status: active
@@ -226,6 +226,12 @@ The current workflows are:
 | `.github/workflows/mobile-internal-promote.yml` | Manual exact-artifact promoter. It verifies one current successful producer attempt and its authority/package ids, digests, provenance, and target before uploading the already-signed IPA to TestFlight or AAB to Play `qa`; it never rebuilds or resigns. |
 | `.github/workflows/observability-evidence.yml` | Manual Crashlytics and Analytics evidence capture. |
 | `.github/workflows/website-production-observability.yml` | Scheduled and manual production website status, canonical-metadata, and launch-content probes. |
+
+The Host Website push filter follows its production byte closure explicitly:
+Host/runtime source, declared assets and fixtures, production Host Firebase
+configuration, the app-target resolver, and the environment wrappers. It must
+not use `tool/platform/**`; validator-only and external-store-status changes
+belong to CI and must not rebuild or deploy production Hosting.
 
 ### Dependency maintenance
 

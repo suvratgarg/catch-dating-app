@@ -113,6 +113,25 @@ test("caller triggers cover the exact build dependency closure", () => {
     assert.ok(marketing.includes(`- "${dependency}"`),
       `marketing is missing materialization dependency ${dependency}`);
   }
+
+  const host = caller("host");
+  for (const dependency of [
+    "firebase/prod/host/**",
+    "packages/phosphor_flutter/**",
+    "tool/app_targets.json",
+    "tool/demo/demo_seed/personas/us_nyc_sales_profile_projection.planned.json",
+    "tool/demo/demo_seed/scenarios/host-demo.json",
+    "tool/platform/resolve_app_target.mjs",
+    "tool/use_firebase_environment.sh",
+    "tool/validate_firebase_environment.sh",
+  ]) {
+    assert.ok(host.includes(`- "${dependency}"`),
+      `host is missing runtime build dependency ${dependency}`);
+  }
+  assert.doesNotMatch(host, /- "tool\/platform\/\*\*"/u,
+    "Host validation helpers must not trigger a production Hosting deploy");
+  assert.ok(!host.includes("tool/app_target_external_gates.json"),
+    "external store status must not trigger a production Hosting deploy");
 });
 
 test("three pushes and manual interference cannot replace a pending promotion", () => {
