@@ -3775,18 +3775,6 @@ abstract class AppLocalizations {
   /// Product copy used by lib/launch_access/presentation/launch_access_application_screen.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'Access gate is off'**
-  String get launchAccessLaunchAccessApplicationScreenTitleAccessGateIsOff;
-
-  /// Product copy used by lib/launch_access/presentation/launch_access_application_screen.dart (message).
-  ///
-  /// In en, this message translates to:
-  /// **'Remote Config has not enabled launch access for this build.'**
-  String get launchAccessLaunchAccessApplicationScreenMessageRemoteConfigHasNot;
-
-  /// Product copy used by lib/launch_access/presentation/launch_access_application_screen.dart (title).
-  ///
-  /// In en, this message translates to:
   /// **'Verify your phone'**
   String get launchAccessLaunchAccessApplicationScreenTitleVerifyYourPhone;
 
@@ -3800,7 +3788,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/launch_access/presentation/launch_access_application_screen.dart (message).
   ///
   /// In en, this message translates to:
-  /// **'Access is approved. Profile creation can be unlocked once the router uses this gate.'**
+  /// **'Access approved. You\'\'re ready for the next Catch city drop.'**
   String
   get launchAccessLaunchAccessApplicationScreenMessageAccessIsApprovedProfile;
 

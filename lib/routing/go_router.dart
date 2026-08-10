@@ -33,6 +33,7 @@ import 'package:catch_dating_app/hosts/presentation/host_home_screen_state.dart'
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
+import 'package:catch_dating_app/launch_access/presentation/launch_access_application_screen.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/welcome_page.dart';
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
@@ -370,6 +371,11 @@ GoRouter _buildGoRouter(Ref ref, {required bool isHostApp}) {
           path: Routes.settingsScreen.path,
           name: Routes.settingsScreen.name,
           builder: (context, state) => const SettingsScreen(),
+        ),
+        GoRoute(
+          path: Routes.launchAccessScreen.path,
+          name: Routes.launchAccessScreen.name,
+          builder: (context, state) => const LaunchAccessApplicationScreen(),
         ),
         GoRoute(
           path: Routes.publicProfileScreen.path,

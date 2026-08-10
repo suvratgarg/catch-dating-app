@@ -1,7 +1,7 @@
 ---
 doc_id: admin_analytics_dashboard_spec
-version: 0.2.0
-updated: 2026-06-30
+version: 0.2.1
+updated: 2026-08-10
 owner: admin_analytics
 status: draft
 ---
@@ -97,9 +97,9 @@ business facts.
 - The analytics facade defines many event names, but current production call
   sites are sparse. Rich funnel analysis needs explicit instrumentation across
   auth, onboarding, booking, payment, swipe, chat, referral, and host flows.
-- Platform access applications are scaffolded, but the gate is intentionally not
-  wired into routing and `accessApplications` does not appear to have a live
-  Firestore rules/admin review path yet.
+- Platform access applications are live from Consumer Settings through
+  owner-scoped Firestore rules, and Admin review decisions use the deployed
+  `adminDecideAccessApplication` callable.
 - Referral attribution is not modeled as a durable graph. Share/invite copy
   exists, but referral codes, invite opens, attributed signups, and activated
   referrals need implementation.
@@ -135,7 +135,7 @@ Current implementation queue:
 | ID | Status | Work |
 |---|---|---|
 | ADM-004 | Pending | Make live local admin mode work against deployed or emulated Functions with App Check/dev token setup and an admin custom claim. |
-| ADM-007 | Pending | Add Firestore rules and rules tests for app-side launch access submissions if launch access remains live. |
+| ADM-007 | Complete | Owner-scoped Firestore rules and emulator tests protect app-side launch access submissions; Admin callables retain review-field ownership. |
 | ADM-008 | Pending | Add safety report review actions with status transitions, reviewer notes, and notification policy. |
 | ADM-009 | Pending | Add payment issue queue actions with refund/retry/reconciliation constraints. |
 | ADM-010 | Pending | Add an admin audit-log viewer. |

@@ -4352,20 +4352,6 @@
     "x-owner": "product",
     "x-surface": "image_uploads.shared.profile_photo_editor_screen"
   },
-  "launchAccessLaunchAccessApplicationScreenTitleAccessGateIsOff": "Access gate is off",
-  "@launchAccessLaunchAccessApplicationScreenTitleAccessGateIsOff": {
-    "description": "Product copy used by lib/launch_access/presentation/launch_access_application_screen.dart (title).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "launch_access.presentation.launch_access_application_screen"
-  },
-  "launchAccessLaunchAccessApplicationScreenMessageRemoteConfigHasNot": "Remote Config has not enabled launch access for this build.",
-  "@launchAccessLaunchAccessApplicationScreenMessageRemoteConfigHasNot": {
-    "description": "Product copy used by lib/launch_access/presentation/launch_access_application_screen.dart (message).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "launch_access.presentation.launch_access_application_screen"
-  },
   "launchAccessLaunchAccessApplicationScreenTitleVerifyYourPhone": "Verify your phone",
   "@launchAccessLaunchAccessApplicationScreenTitleVerifyYourPhone": {
     "description": "Product copy used by lib/launch_access/presentation/launch_access_application_screen.dart (title).",
@@ -4380,7 +4366,7 @@
     "x-owner": "product",
     "x-surface": "launch_access.presentation.launch_access_application_screen"
   },
-  "launchAccessLaunchAccessApplicationScreenMessageAccessIsApprovedProfile": "Access is approved. Profile creation can be unlocked once the router uses this gate.",
+  "launchAccessLaunchAccessApplicationScreenMessageAccessIsApprovedProfile": "Access approved. You''re ready for the next Catch city drop.",
   "@launchAccessLaunchAccessApplicationScreenMessageAccessIsApprovedProfile": {
     "description": "Product copy used by lib/launch_access/presentation/launch_access_application_screen.dart (message).",
     "x-audience": "consumer",

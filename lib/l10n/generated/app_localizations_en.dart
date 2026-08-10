@@ -2152,15 +2152,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Delete photo unavailable';
 
   @override
-  String get launchAccessLaunchAccessApplicationScreenTitleAccessGateIsOff =>
-      'Access gate is off';
-
-  @override
-  String
-  get launchAccessLaunchAccessApplicationScreenMessageRemoteConfigHasNot =>
-      'Remote Config has not enabled launch access for this build.';
-
-  @override
   String get launchAccessLaunchAccessApplicationScreenTitleVerifyYourPhone =>
       'Verify your phone';
 
@@ -2172,7 +2163,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String
   get launchAccessLaunchAccessApplicationScreenMessageAccessIsApprovedProfile =>
-      'Access is approved. Profile creation can be unlocked once the router uses this gate.';
+      'Access approved. You\'re ready for the next Catch city drop.';
 
   @override
   String

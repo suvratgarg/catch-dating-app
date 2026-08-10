@@ -15,7 +15,6 @@ import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/launch_access/data/launch_access_config_provider.dart';
 import 'package:catch_dating_app/launch_access/data/launch_access_repository.dart';
 import 'package:catch_dating_app/launch_access/domain/launch_access_application.dart';
 import 'package:catch_dating_app/launch_access/presentation/launch_access_controller.dart';
@@ -27,7 +26,6 @@ class LaunchAccessApplicationScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final config = ref.watch(launchAccessConfigProvider);
     final uidAsync = ref.watch(uidProvider);
 
     return Scaffold(
@@ -40,71 +38,56 @@ class LaunchAccessApplicationScreen extends ConsumerWidget {
         top: false,
         child: Padding(
           padding: CatchInsets.contentHorizontal,
-          child: !config.gateEnabled
-              ? Center(
+          child: CatchAsyncValueView<String?>(
+            value: uidAsync,
+            builder: (context, uid) {
+              if (uid == null || uid.isEmpty) {
+                return Center(
                   child: CatchEmptyState(
-                    icon: CatchIcons.lockOpenRounded,
+                    icon: CatchIcons.phoneAndroidRounded,
                     title: context
                         .l10n
-                        .launchAccessLaunchAccessApplicationScreenTitleAccessGateIsOff,
+                        .launchAccessLaunchAccessApplicationScreenTitleVerifyYourPhone,
                     message: context
                         .l10n
-                        .launchAccessLaunchAccessApplicationScreenMessageRemoteConfigHasNot,
+                        .launchAccessLaunchAccessApplicationScreenMessagePhoneVerificationIsRequired,
                   ),
-                )
-              : CatchAsyncValueView<String?>(
-                  value: uidAsync,
-                  builder: (context, uid) {
-                    if (uid == null || uid.isEmpty) {
-                      return Center(
-                        child: CatchEmptyState(
-                          icon: CatchIcons.phoneAndroidRounded,
-                          title: context
-                              .l10n
-                              .launchAccessLaunchAccessApplicationScreenTitleVerifyYourPhone,
-                          message: context
-                              .l10n
-                              .launchAccessLaunchAccessApplicationScreenMessagePhoneVerificationIsRequired,
-                        ),
-                      );
-                    }
-                    final applicationAsync = ref.watch(
-                      watchLaunchAccessApplicationProvider(uid),
-                    );
-                    return CatchAsyncValueView<LaunchAccessApplication?>(
-                      value: applicationAsync,
-                      loadingBuilder: (_) => const LaunchAccessLoadingBody(),
-                      errorContext: AppErrorContext.auth,
-                      onRetry: () => ref.invalidate(
-                        watchLaunchAccessApplicationProvider(uid),
+                );
+              }
+              final applicationAsync = ref.watch(
+                watchLaunchAccessApplicationProvider(uid),
+              );
+              return CatchAsyncValueView<LaunchAccessApplication?>(
+                value: applicationAsync,
+                loadingBuilder: (_) => const LaunchAccessLoadingBody(),
+                errorContext: AppErrorContext.auth,
+                onRetry: () =>
+                    ref.invalidate(watchLaunchAccessApplicationProvider(uid)),
+                builder: (context, application) {
+                  if (application != null &&
+                      !application.status.canEditApplication) {
+                    return Center(
+                      child: CatchEmptyState(
+                        icon: application.status.unlocksProfileCreation
+                            ? CatchIcons.checkCircleOutlineRounded
+                            : CatchIcons.hourglassTopRounded,
+                        title: application.status.label,
+                        message: application.status.unlocksProfileCreation
+                            ? context
+                                  .l10n
+                                  .launchAccessLaunchAccessApplicationScreenMessageAccessIsApprovedProfile
+                            : context
+                                  .l10n
+                                  .launchAccessLaunchAccessApplicationScreenMessageYourApplicationIsSaved,
                       ),
-                      builder: (context, application) {
-                        if (application != null &&
-                            !application.status.canEditApplication) {
-                          return Center(
-                            child: CatchEmptyState(
-                              icon: application.status.unlocksProfileCreation
-                                  ? CatchIcons.checkCircleOutlineRounded
-                                  : CatchIcons.hourglassTopRounded,
-                              title: application.status.label,
-                              message: application.status.unlocksProfileCreation
-                                  ? context
-                                        .l10n
-                                        .launchAccessLaunchAccessApplicationScreenMessageAccessIsApprovedProfile
-                                  : context
-                                        .l10n
-                                        .launchAccessLaunchAccessApplicationScreenMessageYourApplicationIsSaved,
-                            ),
-                          );
-                        }
-                        return LaunchAccessApplicationForm(
-                          application: application,
-                        );
-                      },
                     );
-                  },
-                  onRetry: () => ref.invalidate(uidProvider),
-                ),
+                  }
+                  return LaunchAccessApplicationForm(application: application);
+                },
+              );
+            },
+            onRetry: () => ref.invalidate(uidProvider),
+          ),
         ),
       ),
     );
