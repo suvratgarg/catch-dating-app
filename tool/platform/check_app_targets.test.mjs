@@ -8,6 +8,7 @@ import {
   validateAppleFirebaseLockstep,
   validateAutomaticAppleSigningSettings,
   validateAndroidBuildSource,
+  validateExternalGateContract,
   validateManifestShape,
   validateReleaseOwnership,
   validateSharedAndroidManifestSource,
@@ -50,13 +51,36 @@ function validManifest() {
     }
   }
   return {
+    $schema: "catch.app-target-external-gates/v1",
     schemaVersion: 1,
     logicalName: "catch-installable-app-targets",
     appleNativeDependencies: {},
     roles,
     environments,
     targets,
-    transitionalDebt: [],
+  };
+}
+
+function validExternalGates() {
+  return {
+    schemaVersion: 1,
+    logicalName: "catch-app-target-external-gates",
+    gates: [
+      {
+        id: "APP-TARGET-IOS-GITHUB-CUTOVER-001",
+        status: "blocked_external",
+        issue: 218,
+        scope: "consumer-and-host-testflight-internal-distribution",
+        closureCriteria: ["assign and smoke-test both exact builds"],
+      },
+      {
+        id: "APP-TARGET-ANDROID-PLAY-001",
+        status: "blocked_external",
+        issue: 199,
+        scope: "consumer-and-host-google-play-internal-distribution",
+        closureCriteria: ["verify the account and process both qa builds"],
+      },
+    ],
   };
 }
 
@@ -132,6 +156,42 @@ test("validateManifestShape rejects a duplicate role/environment target", () => 
   assert.ok(
     validateManifestShape(manifest).includes("duplicate target pair consumer/prod"),
   );
+});
+
+test("signed app-target authority rejects operational release evidence", () => {
+  const manifest = validManifest();
+  manifest.transitionalDebt = [];
+  manifest.targets.find((target) => target.id === "consumer-prod").release = {
+    testFlightEvidence: "run 123",
+  };
+
+  const findings = validateManifestShape(manifest);
+  assert.ok(findings.some((finding) => finding.includes("transitionalDebt")));
+  assert.ok(findings.some((finding) => finding.includes("testFlightEvidence")));
+});
+
+test("external gate contract rejects missing gates and tracked run evidence", () => {
+  const contract = validExternalGates();
+  contract.gates[0].removalProof = ["run 123"];
+  contract.gates.pop();
+
+  const findings = validateExternalGateContract(contract);
+  assert.ok(findings.some((finding) => finding.includes("removalProof")));
+  assert.ok(findings.some((finding) =>
+    finding.includes("missing external gate APP-TARGET-ANDROID-PLAY-001")));
+});
+
+test("resolved external gates are a clean terminal state", () => {
+  const externalGates = validExternalGates();
+  for (const gate of externalGates.gates) gate.status = "resolved";
+
+  const result = validateReleaseOwnership({
+    externalGates,
+    manifest: unifiedReleaseManifest(),
+    workflowSource: unifiedWorkflow,
+  });
+  assert.deepEqual(result.findings, []);
+  assert.deepEqual(result.warnings, []);
 });
 
 test("androidClientFor selects the Host client instead of client zero", () => {
@@ -270,10 +330,6 @@ function unifiedReleaseManifest() {
       legacyXcodeCloudWorkflow: `${target.role} legacy`,
     };
   }
-  manifest.transitionalDebt.push(
-    {id: "APP-TARGET-IOS-GITHUB-CUTOVER-001", status: "blocked_external"},
-    {id: "APP-TARGET-ANDROID-PLAY-001", status: "blocked_external"},
-  );
   return manifest;
 }
 
@@ -284,7 +340,11 @@ const unifiedWorkflow = fs.readFileSync(
 
 test("release ownership accepts the exact-target producer and separate promoter", () => {
   const manifest = unifiedReleaseManifest();
-  const result = validateReleaseOwnership({manifest, workflowSource: unifiedWorkflow});
+  const result = validateReleaseOwnership({
+    externalGates: validExternalGates(),
+    manifest,
+    workflowSource: unifiedWorkflow,
+  });
   assert.deepEqual(result.findings, []);
   assert.equal(result.warnings.length, 2);
 });
@@ -293,7 +353,11 @@ test("release ownership rejects reintroducing store mutation in the package prod
   const manifest = unifiedReleaseManifest();
   const workflowSource = `${unifiedWorkflow}\nxcrun altool --upload-package "$IPA_PATH"\n`;
 
-  const result = validateReleaseOwnership({manifest, workflowSource});
+  const result = validateReleaseOwnership({
+    externalGates: validExternalGates(),
+    manifest,
+    workflowSource,
+  });
   assert.ok(
     result.findings.some((finding) =>
       finding.includes("must not contain TestFlight upload"),
@@ -312,7 +376,11 @@ jobs:
     environment: prod-mobile
 `;
 
-  const result = validateReleaseOwnership({manifest, workflowSource});
+  const result = validateReleaseOwnership({
+    externalGates: validExternalGates(),
+    manifest,
+    workflowSource,
+  });
   assert.ok(result.findings.some((finding) => finding.includes("consumer-prod")));
   assert.ok(result.findings.some((finding) => finding.includes("Android target matrix")));
 });
@@ -321,7 +389,11 @@ test("release ownership rejects an explicit iOS archive signing identity", () =>
   const manifest = unifiedReleaseManifest();
   const workflowSource = `${unifiedWorkflow}\nCODE_SIGN_IDENTITY=Apple Distribution\n`;
 
-  const result = validateReleaseOwnership({manifest, workflowSource});
+  const result = validateReleaseOwnership({
+    externalGates: validExternalGates(),
+    manifest,
+    workflowSource,
+  });
   assert.ok(
     result.findings.some((finding) =>
       finding.includes("defer CODE_SIGN_IDENTITY to Xcode automatic signing"),
@@ -336,7 +408,11 @@ test("release ownership rejects a missing reusable iOS CI identity import", () =
     "          echo missing-identity-import \\\n",
   );
 
-  const result = validateReleaseOwnership({manifest, workflowSource});
+  const result = validateReleaseOwnership({
+    externalGates: validExternalGates(),
+    manifest,
+    workflowSource,
+  });
   assert.ok(
     result.findings.some((finding) =>
       finding.includes("non-extractable reusable iOS identity import"),
@@ -351,7 +427,11 @@ test("release ownership rejects missing reusable iOS identity cleanup", () => {
     "            echo cleanup-missing\n",
   );
 
-  const result = validateReleaseOwnership({manifest, workflowSource});
+  const result = validateReleaseOwnership({
+    externalGates: validExternalGates(),
+    manifest,
+    workflowSource,
+  });
   assert.ok(
     result.findings.some((finding) =>
       finding.includes("always-run reusable iOS identity cleanup"),
@@ -369,7 +449,11 @@ test("release ownership rejects incomplete reusable iOS identity verification", 
     )
     .replace("-checkend 2592000", "-noout");
 
-  const result = validateReleaseOwnership({manifest, workflowSource});
+  const result = validateReleaseOwnership({
+    externalGates: validExternalGates(),
+    manifest,
+    workflowSource,
+  });
   assert.ok(
     result.findings.some((finding) =>
       finding.includes("reusable iOS identity fingerprint derivation"),
@@ -391,7 +475,11 @@ test("release ownership rejects re-exporting after IPA verification", () => {
   const manifest = unifiedReleaseManifest();
   const workflowSource = `${unifiedWorkflow}\nxcodebuild \\\n  -exportArchive\n`;
 
-  const result = validateReleaseOwnership({manifest, workflowSource});
+  const result = validateReleaseOwnership({
+    externalGates: validExternalGates(),
+    manifest,
+    workflowSource,
+  });
   assert.ok(
     result.findings.some((finding) =>
       finding.includes("must export exactly one IPA before verification and packaging"),
@@ -406,7 +494,11 @@ test("release ownership rejects an unbound immutable package upload", () => {
     "package_mobile_release.mjs missing-upload-binding",
   );
 
-  const result = validateReleaseOwnership({manifest, workflowSource});
+  const result = validateReleaseOwnership({
+    externalGates: validExternalGates(),
+    manifest,
+    workflowSource,
+  });
   assert.ok(
     result.findings.some((finding) =>
       finding.includes("immutable package upload binding"),

@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.10.2
+version: 1.10.3
 updated: 2026-08-11
 owner: app_architecture
 status: active
@@ -1934,6 +1934,13 @@ owns each target's entrypoint, display name, Apple scheme/configurations/bundle
 id/icon/URL scheme, Android flavor/application id/icon source set, Firebase
 project and app registrations, capability policy, deep-link ownership,
 role-scoped force-update prefix, store product, and routine release owner.
+
+Unresolved store-account and tester/device prerequisites are not target
+identity. `tool/app_target_external_gates.json` owns only their stable Issue,
+status, scope, and closure criteria. GitHub Issues and
+`docs/release_operations.md` own live run and artifact evidence. The Harness
+routes the external-gate contract through validation only; changing it cannot
+authorize signed packages, while changing `tool/app_targets.json` still can.
 
 Target identity must not be reconstructed independently in shell scripts,
 Gradle, Xcode generators, Firebase activation scripts, or CI workflows. Those

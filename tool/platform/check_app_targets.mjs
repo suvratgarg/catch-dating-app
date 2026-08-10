@@ -10,6 +10,22 @@ import {
 
 const expectedRoles = ["consumer", "host"];
 const expectedEnvironments = ["dev", "staging", "prod"];
+const expectedExternalGates = new Map([
+  [
+    "APP-TARGET-IOS-GITHUB-CUTOVER-001",
+    {
+      issue: 218,
+      scope: "consumer-and-host-testflight-internal-distribution",
+    },
+  ],
+  [
+    "APP-TARGET-ANDROID-PLAY-001",
+    {
+      issue: 199,
+      scope: "consumer-and-host-google-play-internal-distribution",
+    },
+  ],
+]);
 
 export function packageVersionFromPubLock(source, packageName) {
   const lines = source.split(/\r?\n/u);
@@ -89,6 +105,13 @@ export function validateManifestShape(manifest) {
   if (manifest?.logicalName !== "catch-installable-app-targets") {
     findings.push("logicalName must be catch-installable-app-targets");
   }
+  for (const operationalKey of ["currentPhase", "phases", "transitionalDebt"]) {
+    if (Object.hasOwn(manifest ?? {}, operationalKey)) {
+      findings.push(
+        `${operationalKey} is operational evidence and must not live in the signed app-target authority`,
+      );
+    }
+  }
   if (!manifest?.appleNativeDependencies) {
     findings.push("appleNativeDependencies is required");
   }
@@ -141,6 +164,18 @@ export function validateManifestShape(manifest) {
       );
     }
     androidApplicationIds.add(target.android?.applicationId);
+    for (const operationalKey of [
+      "legacyXcodeCloudState",
+      "legacyXcodeCloudRetirementRunId",
+      "testFlightEvidence",
+      "playInternalEvidence",
+    ]) {
+      if (Object.hasOwn(target.release ?? {}, operationalKey)) {
+        findings.push(
+          `${target.id}.release.${operationalKey} is operational evidence and must not authorize a signed build`,
+        );
+      }
+    }
   }
   for (const role of expectedRoles) {
     for (const environment of expectedEnvironments) {
@@ -148,6 +183,62 @@ export function validateManifestShape(manifest) {
         findings.push(`missing target pair ${role}/${environment}`);
       }
     }
+  }
+  return findings;
+}
+
+export function validateExternalGateContract(contract) {
+  const findings = [];
+  if (contract?.$schema !== "catch.app-target-external-gates/v1") {
+    findings.push(
+      "external gates $schema must be catch.app-target-external-gates/v1",
+    );
+  }
+  if (contract?.schemaVersion !== 1) {
+    findings.push("external gates schemaVersion must be 1");
+  }
+  if (contract?.logicalName !== "catch-app-target-external-gates") {
+    findings.push(
+      "external gates logicalName must be catch-app-target-external-gates",
+    );
+  }
+  const gates = Array.isArray(contract?.gates) ? contract.gates : [];
+  if (gates.length !== expectedExternalGates.size) {
+    findings.push(
+      `expected ${expectedExternalGates.size} external gates, found ${gates.length}`,
+    );
+  }
+  const seen = new Set();
+  for (const gate of gates) {
+    const expected = expectedExternalGates.get(gate?.id);
+    if (!expected) {
+      findings.push(`unknown external gate ${gate?.id ?? "<missing-id>"}`);
+      continue;
+    }
+    if (seen.has(gate.id)) findings.push(`duplicate external gate ${gate.id}`);
+    seen.add(gate.id);
+    if (!["blocked_external", "resolved"].includes(gate.status)) {
+      findings.push(`${gate.id}: status must be blocked_external or resolved`);
+    }
+    if (gate.issue !== expected.issue) {
+      findings.push(`${gate.id}: issue must be ${expected.issue}`);
+    }
+    if (gate.scope !== expected.scope) {
+      findings.push(`${gate.id}: scope must be ${expected.scope}`);
+    }
+    if (!Array.isArray(gate.closureCriteria) || gate.closureCriteria.length === 0 ||
+        gate.closureCriteria.some((criterion) =>
+          typeof criterion !== "string" || criterion.trim().length === 0)) {
+      findings.push(`${gate.id}: closureCriteria must contain non-empty strings`);
+    }
+    for (const retiredKey of ["evidence", "removalProof", "runIds"]) {
+      if (Object.hasOwn(gate, retiredKey)) {
+        findings.push(`${gate.id}: ${retiredKey} belongs in Git, Issues, or the release runbook`);
+      }
+    }
+  }
+  for (const gateId of expectedExternalGates.keys()) {
+    if (!seen.has(gateId)) findings.push(`missing external gate ${gateId}`);
   }
   return findings;
 }
@@ -229,13 +320,17 @@ export function validateAutomaticAppleSigningSettings({
   return findings;
 }
 
-export function hasActiveDebt(manifest, debtId) {
-  return (manifest.transitionalDebt ?? []).some(
-    (debt) => debt.id === debtId && debt.status !== "resolved",
+export function hasActiveExternalGate(contract, gateId) {
+  return (contract?.gates ?? []).some(
+    (gate) => gate.id === gateId && gate.status !== "resolved",
   );
 }
 
-export function validateReleaseOwnership({manifest, workflowSource}) {
+export function validateReleaseOwnership({
+  externalGates,
+  manifest,
+  workflowSource,
+}) {
   const findings = [];
   const warnings = [];
   const policy = manifest.releasePolicy ?? {};
@@ -424,14 +519,17 @@ export function validateReleaseOwnership({manifest, workflowSource}) {
     }
   }
 
-  for (const debtId of [
+  for (const gateId of [
     "APP-TARGET-IOS-GITHUB-CUTOVER-001",
     "APP-TARGET-ANDROID-PLAY-001",
   ]) {
-    if (hasActiveDebt(manifest, debtId)) {
-      warnings.push(`${debtId}: external store distribution proof remains pending`);
-    } else {
-      findings.push(`${debtId}: missing active external-proof debt record`);
+    const gate = (externalGates?.gates ?? []).find(
+      (candidate) => candidate.id === gateId,
+    );
+    if (!gate) {
+      findings.push(`${gateId}: missing external gate`);
+    } else if (hasActiveExternalGate(externalGates, gateId)) {
+      warnings.push(`${gateId}: external store distribution proof remains pending`);
     }
   }
   return {findings, warnings};
@@ -441,6 +539,19 @@ export function scanAppTargets({root = defaultRepoRoot} = {}) {
   const manifest = loadAppTargets({root});
   const findings = validateManifestShape(manifest);
   const warnings = [];
+  const externalGatesPath = path.join(
+    root,
+    "tool/app_target_external_gates.json",
+  );
+  let externalGates = null;
+  try {
+    externalGates = JSON.parse(fs.readFileSync(externalGatesPath, "utf8"));
+    findings.push(...validateExternalGateContract(externalGates));
+  } catch (error) {
+    findings.push(
+      `tool/app_target_external_gates.json: ${error.message}`,
+    );
+  }
   const read = (relativePath) =>
     fs.readFileSync(resolveRepoPath(root, relativePath, findings), "utf8");
 
@@ -616,6 +727,7 @@ export function scanAppTargets({root = defaultRepoRoot} = {}) {
   const prodWorkflow = path.join(root, ".github/workflows/mobile-internal-release.yml");
   if (fs.existsSync(prodWorkflow)) {
     const releaseResult = validateReleaseOwnership({
+      externalGates,
       manifest,
       workflowSource: fs.readFileSync(prodWorkflow, "utf8"),
     });
@@ -1018,7 +1130,7 @@ function unquoteBuildSetting(value) {
 function runCli() {
   const result = scanAppTargets();
   console.log(
-    `App targets: ${result.manifest.targets.length} checked, ${result.findings.length} finding(s), ${result.warnings.length} transitional warning(s).`,
+    `App targets: ${result.manifest.targets.length} checked, ${result.findings.length} finding(s), ${result.warnings.length} external warning(s).`,
   );
   for (const warning of result.warnings) console.warn(`- warning: ${warning}`);
   if (result.findings.length > 0) {
