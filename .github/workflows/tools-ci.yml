@@ -154,8 +154,11 @@ jobs:
         if: ${{ contains(fromJSON(needs.preflight.outputs.setup_requirements), 'ripgrep') }}
         run: sudo apt-get update && sudo apt-get install -y ripgrep
 
-      - run: flutter pub get
+      - name: Resolve Flutter and standalone Dart tool dependencies
         if: ${{ contains(fromJSON(needs.preflight.outputs.setup_requirements), 'flutter-pub') }}
+        run: |
+          flutter pub get
+          dart pub get -C tool/widget_dedupe
 
       - run: npm ci
         if: ${{ contains(fromJSON(needs.preflight.outputs.setup_requirements), 'root-npm') }}
@@ -217,7 +220,10 @@ jobs:
       - name: Install scanner dependencies
         run: sudo apt-get update && sudo apt-get install -y ripgrep
 
-      - run: flutter pub get
+      - name: Resolve Flutter and standalone Dart tool dependencies
+        run: |
+          flutter pub get
+          dart pub get -C tool/widget_dedupe
 
       - run: npm ci
 

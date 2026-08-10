@@ -28,7 +28,7 @@ function runGate() {
   const fingerprintsArg = JSON.stringify(relativeToRepo(fingerprintsPath));
   const blocking = [
     `node tool/design/generate_widget_classification.mjs --out ${classificationArg}`,
-    `dart run tool/widget_dedupe/bin/extract_fingerprints.dart --classification ${classificationArg} --out ${fingerprintsArg}`,
+    `dart run --packages=tool/widget_dedupe/.dart_tool/package_config.json tool/widget_dedupe/bin/extract_fingerprints.dart --classification ${classificationArg} --out ${fingerprintsArg}`,
     "node --test tool/design/component_concepts.test.mjs",
     "node tool/design/check_component_contracts.mjs",
     "node tool/design/check_widget_classification.mjs",
