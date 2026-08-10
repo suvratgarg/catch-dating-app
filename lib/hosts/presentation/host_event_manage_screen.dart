@@ -161,6 +161,130 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
             sharePending: shareMutation.isPending,
           )
         : null;
+    final inviteLinksListState = HostInviteLinksListDisplayState.resolve(
+      createPending: createInviteLinkMutation.isPending,
+      copyPending: copyInviteLinkMutation.isPending,
+      disablePending: disableInviteLinkMutation.isPending,
+    );
+    final inviteLinksMutationError = _firstMutationError([
+      createInviteLinkMutation,
+      copyInviteLinkMutation,
+      disableInviteLinkMutation,
+    ]);
+    final actionError = _firstMutationError([cancelMutation, deleteMutation]);
+    final selectedSectionChildren = switch (screenState.selectedSection) {
+      HostEventManageSection.setup => <Widget>[
+        if (_showsCapacityNotice(event)) ...[
+          const HostFullCapacityBanner(),
+          gapH12,
+        ],
+        HostFullCapacityApron(event: event, roster: roster),
+        gapH20,
+        HostEventActionsSection(
+          club: club,
+          event: event,
+          actionState: actionState,
+          actionError: actionError,
+          privateLinkActionState: privateLinkActionState,
+          onEditEvent: () {
+            unawaited(
+              _handleHostEventActionIntent(
+                HostEventManageActionIntent.editEvent,
+                event: event,
+                onDeleted: onBackToSuccess,
+              ),
+            );
+          },
+          onCancelEvent: () => _handleHostEventActionIntent(
+            HostEventManageActionIntent.cancelEvent,
+            event: event,
+            onDeleted: onBackToSuccess,
+          ),
+          onDeleteEvent: () => _handleHostEventActionIntent(
+            HostEventManageActionIntent.deleteEvent,
+            event: event,
+            onDeleted: onBackToSuccess,
+          ),
+          onSharePrivateLink: (inviteLink) => _shareHostPrivateLink(
+            club: club,
+            event: event,
+            inviteLink: inviteLink,
+          ),
+        ),
+        if (event.effectiveEventPolicy.usesInviteOnly) ...[
+          gapH20,
+          HostPrivateAccessCard(
+            club: club,
+            event: event,
+            accessAsync: accessAsync!,
+            inviteLinksAsync: inviteLinksAsync!,
+            shareMutation: shareMutation,
+            inviteLinksListState: inviteLinksListState,
+            inviteLinksMutationError: inviteLinksMutationError,
+            onRetryPrivateAccess: () =>
+                ref.invalidate(watchEventPrivateAccessProvider(event.id)),
+            onRetryInviteLinks: () =>
+                ref.invalidate(watchEventInviteLinksProvider(event.id)),
+            onSharePrivateLink: (inviteLink) => _shareHostPrivateLink(
+              club: club,
+              event: event,
+              inviteLink: inviteLink,
+            ),
+            onCreateInviteLink: (draft) => _createNamedInviteLink(
+              event: event,
+              inviteCode: privateLinkActionState!.inviteCode!,
+              draft: draft,
+            ),
+            onCopyInviteLink: (link, url) =>
+                unawaited(_copyNamedInviteLink(link: link, url: url)),
+            onDisableInviteLink: (link) =>
+                unawaited(_disableNamedInviteLink(event: event, link: link)),
+          ),
+        ],
+        gapH20,
+        HostEventSummaryCard(club: club, event: event),
+        gapH20,
+        EventSuccessHostSection(
+          event: event,
+          showTabs: false,
+          fixtureActions: widget.eventSuccessFixtureActions,
+        ),
+      ],
+      HostEventManageSection.guests => <Widget>[
+        HostEventParticipantsPanel(
+          eventId: event.id,
+          mode:
+              hostEventAttendanceStateFor(event: event, now: DateTime.now()) ==
+                  HostEventAttendanceState.open
+              ? HostEventParticipantsMode.live
+              : HostEventParticipantsMode.setup,
+          initialSearchQuery: widget.initialParticipantSearchQuery,
+        ),
+      ],
+      HostEventManageSection.live => <Widget>[
+        EventSuccessHostSection(
+          event: event,
+          initialTab: EventSuccessHostTab.live,
+          showTabs: false,
+          compactLiveControls: true,
+          fixtureActions: widget.eventSuccessFixtureActions,
+        ),
+      ],
+      HostEventManageSection.report => <Widget>[
+        HostEventParticipantsPanel(
+          eventId: event.id,
+          mode: HostEventParticipantsMode.report,
+          initialSearchQuery: widget.initialParticipantSearchQuery,
+        ),
+        gapH20,
+        EventSuccessHostSection(
+          event: event,
+          initialTab: EventSuccessHostTab.report,
+          showTabs: false,
+          fixtureActions: widget.eventSuccessFixtureActions,
+        ),
+      ],
+    };
     return CatchMutationErrorListener(
       mutation: HostEventManageController.sharePrivateLinkMutation,
       errorContext: AppErrorContext.event,
@@ -211,167 +335,10 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
             context.l10n.hostsHostEventManageScreenBodyHostEventManageScroll,
           ),
           padding: CatchInsets.pageBody,
-          children: [
-            ..._selectedSectionChildren(
-              section: screenState.selectedSection,
-              club: club,
-              event: event,
-              roster: roster,
-              privateAccessAsync: accessAsync,
-              inviteLinksAsync: inviteLinksAsync,
-              shareMutation: shareMutation,
-              inviteLinksListState: HostInviteLinksListDisplayState.resolve(
-                createPending: createInviteLinkMutation.isPending,
-                copyPending: copyInviteLinkMutation.isPending,
-                disablePending: disableInviteLinkMutation.isPending,
-              ),
-              inviteLinksMutationError: _firstMutationError([
-                createInviteLinkMutation,
-                copyInviteLinkMutation,
-                disableInviteLinkMutation,
-              ]),
-              onDeleted: onBackToSuccess,
-              actionState: actionState,
-              actionError: _firstMutationError([
-                cancelMutation,
-                deleteMutation,
-              ]),
-              privateLinkActionState: privateLinkActionState,
-            ),
-          ],
+          children: selectedSectionChildren,
         ),
       ),
     );
-  }
-
-  List<Widget> _selectedSectionChildren({
-    required HostEventManageSection section,
-    required Club club,
-    required Event event,
-    required EventParticipationRoster? roster,
-    required AsyncValue<EventPrivateAccess?>? privateAccessAsync,
-    required AsyncValue<List<EventInviteLink>>? inviteLinksAsync,
-    required MutationState<dynamic> shareMutation,
-    required HostInviteLinksListDisplayState inviteLinksListState,
-    required Object? inviteLinksMutationError,
-    required VoidCallback onDeleted,
-    required HostEventActionDisplayState actionState,
-    required Object? actionError,
-    required HostPrivateLinkActionState? privateLinkActionState,
-  }) {
-    return switch (section) {
-      HostEventManageSection.setup => [
-        if (_showsCapacityNotice(event)) ...[
-          const HostFullCapacityBanner(),
-          gapH12,
-        ],
-        HostFullCapacityApron(event: event, roster: roster),
-        gapH20,
-        HostEventActionsSection(
-          club: club,
-          event: event,
-          actionState: actionState,
-          actionError: actionError,
-          privateLinkActionState: privateLinkActionState,
-          onEditEvent: () {
-            unawaited(
-              _handleHostEventActionIntent(
-                HostEventManageActionIntent.editEvent,
-                event: event,
-                onDeleted: onDeleted,
-              ),
-            );
-          },
-          onCancelEvent: () => _handleHostEventActionIntent(
-            HostEventManageActionIntent.cancelEvent,
-            event: event,
-            onDeleted: onDeleted,
-          ),
-          onDeleteEvent: () => _handleHostEventActionIntent(
-            HostEventManageActionIntent.deleteEvent,
-            event: event,
-            onDeleted: onDeleted,
-          ),
-          onSharePrivateLink: (inviteLink) => _shareHostPrivateLink(
-            club: club,
-            event: event,
-            inviteLink: inviteLink,
-          ),
-        ),
-        if (event.effectiveEventPolicy.usesInviteOnly) ...[
-          gapH20,
-          HostPrivateAccessCard(
-            club: club,
-            event: event,
-            accessAsync: privateAccessAsync!,
-            inviteLinksAsync: inviteLinksAsync!,
-            shareMutation: shareMutation,
-            inviteLinksListState: inviteLinksListState,
-            inviteLinksMutationError: inviteLinksMutationError,
-            onRetryPrivateAccess: () =>
-                ref.invalidate(watchEventPrivateAccessProvider(event.id)),
-            onRetryInviteLinks: () =>
-                ref.invalidate(watchEventInviteLinksProvider(event.id)),
-            onSharePrivateLink: (inviteLink) => _shareHostPrivateLink(
-              club: club,
-              event: event,
-              inviteLink: inviteLink,
-            ),
-            onCreateInviteLink: (draft) => _createNamedInviteLink(
-              event: event,
-              inviteCode: privateLinkActionState!.inviteCode!,
-              draft: draft,
-            ),
-            onCopyInviteLink: (link, url) =>
-                unawaited(_copyNamedInviteLink(link: link, url: url)),
-            onDisableInviteLink: (link) =>
-                unawaited(_disableNamedInviteLink(event: event, link: link)),
-          ),
-        ],
-        gapH20,
-        HostEventSummaryCard(club: club, event: event),
-        gapH20,
-        EventSuccessHostSection(
-          event: event,
-          showTabs: false,
-          fixtureActions: widget.eventSuccessFixtureActions,
-        ),
-      ],
-      HostEventManageSection.guests => [
-        HostEventParticipantsPanel(
-          eventId: event.id,
-          mode:
-              hostEventAttendanceStateFor(event: event, now: DateTime.now()) ==
-                  HostEventAttendanceState.open
-              ? HostEventParticipantsMode.live
-              : HostEventParticipantsMode.setup,
-          initialSearchQuery: widget.initialParticipantSearchQuery,
-        ),
-      ],
-      HostEventManageSection.live => [
-        EventSuccessHostSection(
-          event: event,
-          initialTab: EventSuccessHostTab.live,
-          showTabs: false,
-          compactLiveControls: true,
-          fixtureActions: widget.eventSuccessFixtureActions,
-        ),
-      ],
-      HostEventManageSection.report => [
-        HostEventParticipantsPanel(
-          eventId: event.id,
-          mode: HostEventParticipantsMode.report,
-          initialSearchQuery: widget.initialParticipantSearchQuery,
-        ),
-        gapH20,
-        EventSuccessHostSection(
-          event: event,
-          initialTab: EventSuccessHostTab.report,
-          showTabs: false,
-          fixtureActions: widget.eventSuccessFixtureActions,
-        ),
-      ],
-    };
   }
 
   Future<void> _handleHostEventActionIntent(

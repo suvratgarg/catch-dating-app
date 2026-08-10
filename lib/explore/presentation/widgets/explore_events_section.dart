@@ -112,24 +112,26 @@ List<Widget> buildExploreEventsSlivers(
                 onSetTimeFilter: onSetTimeFilter,
               ),
             ]
-          : _exploreContentSlivers(
-              value,
-              l10n: l10n,
-              candidateClubs: candidateClubs,
-              joinedClubIds: joinedClubIds,
-              pinnedDayHeaders: pinnedDayHeaders,
-              promoteFeaturedItem: promoteFeaturedItem,
-              showThisWeekList:
-                  filters.timeFilter == ExploreTimeFilter.thisWeek &&
-                  searchQuery.trim().isEmpty,
-              now: now,
-              onEventSelected: onEventSelected,
-              onExternalEventOpened: onExternalEventOpened,
-              crossPathsSuggestions: crossPathsSuggestions,
-              onCrossPathsProfileSelected: onCrossPathsProfileSelected,
-              onCrossPathsImpression: onCrossPathsImpression,
-              onClubSelected: onClubSelected,
-            );
+          : [
+              ExploreFeedContentSliver(
+                viewModel: value,
+                l10n: l10n,
+                candidateClubs: candidateClubs,
+                joinedClubIds: joinedClubIds,
+                pinnedDayHeaders: pinnedDayHeaders,
+                promoteFeaturedItem: promoteFeaturedItem,
+                showThisWeekList:
+                    filters.timeFilter == ExploreTimeFilter.thisWeek &&
+                    searchQuery.trim().isEmpty,
+                now: now,
+                onEventSelected: onEventSelected,
+                onExternalEventOpened: onExternalEventOpened,
+                crossPathsSuggestions: crossPathsSuggestions,
+                onCrossPathsProfileSelected: onCrossPathsProfileSelected,
+                onCrossPathsImpression: onCrossPathsImpression,
+                onClubSelected: onClubSelected,
+              ),
+            ];
     }(),
   };
 }
@@ -194,174 +196,199 @@ class ExploreEventsSection extends StatelessWidget {
   }
 }
 
-List<Widget> _exploreContentSlivers(
-  ExploreFeedViewModel viewModel, {
-  required AppLocalizations l10n,
-  required List<Club> candidateClubs,
-  required Set<String> joinedClubIds,
-  required bool pinnedDayHeaders,
-  required bool promoteFeaturedItem,
-  required bool showThisWeekList,
-  required DateTime? now,
-  required ExploreEventSelected? onEventSelected,
-  required ValueChanged<ExploreExternalEventItem>? onExternalEventOpened,
-  required List<CrossPathsSuggestion> crossPathsSuggestions,
-  required CrossPathsProfileSelected? onCrossPathsProfileSelected,
-  required CrossPathsImpression? onCrossPathsImpression,
-  required ValueChanged<Club>? onClubSelected,
-}) {
-  final effectiveCandidateClubs = withDebugSyntheticExploreClubs(
-    candidateClubs,
-    joinedClubIds: joinedClubIds,
-  );
-  final effectiveItems = withDebugSyntheticExploreItems(
-    viewModel.items,
-    seedClubs: [
-      for (final item in viewModel.items) item.club,
-      ...effectiveCandidateClubs,
-    ],
-  );
-  final layoutViewModel = identical(effectiveItems, viewModel.items)
-      ? viewModel
-      : ExploreFeedViewModel(
-          items: effectiveItems,
-          featuredEventId: viewModel.featuredEventId,
-          externalItems: viewModel.externalItems,
-          dateSupplyCounts: viewModel.dateSupplyCounts,
-          isExhaustive: viewModel.isExhaustive,
-          isLoadingMore: viewModel.isLoadingMore,
-          windowRequest: viewModel.windowRequest,
-        );
-  final sectionState = ExploreFeedSectionState.from(
-    l10n: l10n,
-    viewModel: layoutViewModel,
-    candidateClubs: effectiveCandidateClubs,
-    joinedClubIds: joinedClubIds,
-    showThisWeekList: showThisWeekList,
-    promoteFeaturedItem: promoteFeaturedItem,
-    now: now,
-    crossPathsSuggestions: crossPathsSuggestions,
-  );
-  if (sectionState.isEmpty) {
-    return const [SliverToBoxAdapter(child: SizedBox.shrink())];
-  }
-  final resultCountPadding = CatchInsets.pageBody.copyWith(
-    top: pinnedDayHeaders ? CatchSpacing.s4 : CatchSpacing.s3,
-    bottom: CatchSpacing.s1,
-  );
-  final thisWeekPadding = CatchInsets.pageBody.copyWith(
-    top: CatchSpacing.s3,
-    bottom: sectionState.cards.isEmpty ? CatchSpacing.s4 : CatchSpacing.s2,
-  );
+class ExploreFeedContentSliver extends StatelessWidget {
+  const ExploreFeedContentSliver({
+    super.key,
+    required this.viewModel,
+    required this.l10n,
+    required this.candidateClubs,
+    required this.joinedClubIds,
+    required this.pinnedDayHeaders,
+    required this.promoteFeaturedItem,
+    required this.showThisWeekList,
+    required this.now,
+    required this.onEventSelected,
+    required this.onExternalEventOpened,
+    required this.crossPathsSuggestions,
+    required this.onCrossPathsProfileSelected,
+    required this.onCrossPathsImpression,
+    required this.onClubSelected,
+  });
 
-  return [
-    if (sectionState.totalCount > 0)
-      SliverToBoxAdapter(
-        child: Padding(
-          padding: resultCountPadding,
-          child: Builder(
-            builder: (context) => CatchMonoLabel(
-              sectionState.resultCountLabel,
-              color: CatchTokens.of(context).ink3,
+  final ExploreFeedViewModel viewModel;
+  final AppLocalizations l10n;
+  final List<Club> candidateClubs;
+  final Set<String> joinedClubIds;
+  final bool pinnedDayHeaders;
+  final bool promoteFeaturedItem;
+  final bool showThisWeekList;
+  final DateTime? now;
+  final ExploreEventSelected? onEventSelected;
+  final ValueChanged<ExploreExternalEventItem>? onExternalEventOpened;
+  final List<CrossPathsSuggestion> crossPathsSuggestions;
+  final CrossPathsProfileSelected? onCrossPathsProfileSelected;
+  final CrossPathsImpression? onCrossPathsImpression;
+  final ValueChanged<Club>? onClubSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final effectiveCandidateClubs = withDebugSyntheticExploreClubs(
+      candidateClubs,
+      joinedClubIds: joinedClubIds,
+    );
+    final effectiveItems = withDebugSyntheticExploreItems(
+      viewModel.items,
+      seedClubs: [
+        for (final item in viewModel.items) item.club,
+        ...effectiveCandidateClubs,
+      ],
+    );
+    final layoutViewModel = identical(effectiveItems, viewModel.items)
+        ? viewModel
+        : ExploreFeedViewModel(
+            items: effectiveItems,
+            featuredEventId: viewModel.featuredEventId,
+            externalItems: viewModel.externalItems,
+            dateSupplyCounts: viewModel.dateSupplyCounts,
+            isExhaustive: viewModel.isExhaustive,
+            isLoadingMore: viewModel.isLoadingMore,
+            windowRequest: viewModel.windowRequest,
+          );
+    final sectionState = ExploreFeedSectionState.from(
+      l10n: l10n,
+      viewModel: layoutViewModel,
+      candidateClubs: effectiveCandidateClubs,
+      joinedClubIds: joinedClubIds,
+      showThisWeekList: showThisWeekList,
+      promoteFeaturedItem: promoteFeaturedItem,
+      now: now,
+      crossPathsSuggestions: crossPathsSuggestions,
+    );
+    if (sectionState.isEmpty) {
+      return const SliverToBoxAdapter(child: SizedBox.shrink());
+    }
+    final resultCountPadding = CatchInsets.pageBody.copyWith(
+      top: pinnedDayHeaders ? CatchSpacing.s4 : CatchSpacing.s3,
+      bottom: CatchSpacing.s1,
+    );
+    final thisWeekPadding = CatchInsets.pageBody.copyWith(
+      top: CatchSpacing.s3,
+      bottom: sectionState.cards.isEmpty ? CatchSpacing.s4 : CatchSpacing.s2,
+    );
+
+    return SliverMainAxisGroup(
+      slivers: [
+        if (sectionState.totalCount > 0)
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: resultCountPadding,
+              child: Builder(
+                builder: (context) => CatchMonoLabel(
+                  sectionState.resultCountLabel,
+                  color: CatchTokens.of(context).ink3,
+                ),
+              ),
             ),
           ),
-        ),
-      ),
-    if (sectionState.thisWeekItems.isNotEmpty)
-      SliverToBoxAdapter(
-        child: Padding(
-          padding: thisWeekPadding,
-          child: Builder(
-            builder: (context) => ThisWeekRecommendationsSection(
-              items: sectionState.thisWeekItems,
-              onEventSelected: onEventSelected,
+        if (sectionState.thisWeekItems.isNotEmpty)
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: thisWeekPadding,
+              child: Builder(
+                builder: (context) => ThisWeekRecommendationsSection(
+                  items: sectionState.thisWeekItems,
+                  onEventSelected: onEventSelected,
+                ),
+              ),
             ),
           ),
-        ),
-      ),
-    for (final group in sectionState.cardGroups) ...[
-      if (group.label != null && pinnedDayHeaders)
-        SliverPersistentHeader(
-          pinned: true,
-          delegate: CatchDaySectionHeaderDelegate(
-            label: group.label!,
-            count: group.timedCardCount,
-          ),
-        ),
-      if (group.label != null && !pinnedDayHeaders)
-        SliverToBoxAdapter(
-          child: CatchDaySectionHeader(
-            label: group.label!,
-            count: group.timedCardCount,
-          ),
-        ),
-      SliverPadding(
-        padding: CatchInsets.pageHorizontal.copyWith(
-          top: group.label == null ? CatchSpacing.s4 : 0,
-          bottom: CatchSpacing.s4,
-        ),
-        sliver: SliverList.separated(
-          itemCount: group.cards.length,
-          separatorBuilder: (_, index) => SizedBox(
-            height:
-                group.cards[index] is ExploreMixedEventRowCard &&
-                    group.cards[index + 1] is ExploreMixedEventRowCard
-                ? 0
-                : CatchSpacing.s4,
-          ),
-          itemBuilder: (context, index) {
-            final cards = group.cards;
-            final position = _exploreMixedFeedPosition(
-              sectionState.cardGroups,
-              group,
-              index,
-            );
-            return switch (cards[index]) {
-              ExploreMixedEventRowCard(:final item) => ExploreFeedEventRow(
-                item: item,
-                stripPosition: exploreMixedEventStripPosition(cards, index),
-                onEventSelected: onEventSelected,
+        for (final group in sectionState.cardGroups) ...[
+          if (group.label != null && pinnedDayHeaders)
+            SliverPersistentHeader(
+              pinned: true,
+              delegate: CatchDaySectionHeaderDelegate(
+                label: group.label!,
+                count: group.timedCardCount,
               ),
-              ExploreMixedExternalEventRowCard(:final item) =>
-                ExploreExternalEventRow(
-                  item: item,
-                  onExternalEventOpened: onExternalEventOpened,
-                ),
-              ExploreMixedClubSpotlightCard(:final club) =>
-                ExploreOrganizerPosterCard(
-                  club: club,
-                  onClubSelected: onClubSelected,
-                ),
-              ExploreMixedClubRowCard(:final club) => ExploreFeedClubRow(
-                club: club,
-                onClubSelected: onClubSelected,
+            ),
+          if (group.label != null && !pinnedDayHeaders)
+            SliverToBoxAdapter(
+              child: CatchDaySectionHeader(
+                label: group.label!,
+                count: group.timedCardCount,
               ),
-              ExploreMixedPersonCard(:final suggestion, :final eventItem) =>
-                CrossPathsExploreCard(
-                  suggestion: suggestion,
-                  event: eventItem.event,
-                  onProfileSelected: onCrossPathsProfileSelected == null
-                      ? null
-                      : () =>
-                            onCrossPathsProfileSelected(suggestion, eventItem),
-                  onEventSelected: onEventSelected == null
-                      ? null
-                      : () => onEventSelected(eventItem, 'cross_paths'),
-                  onImpression: onCrossPathsImpression == null
-                      ? null
-                      : () => onCrossPathsImpression(
-                          suggestion,
-                          eventItem,
-                          position,
-                        ),
-                ),
-            };
-          },
-        ),
-      ),
-    ],
-    const SliverToBoxAdapter(child: SizedBox(height: CatchSpacing.s6)),
-  ];
+            ),
+          SliverPadding(
+            padding: CatchInsets.pageHorizontal.copyWith(
+              top: group.label == null ? CatchSpacing.s4 : 0,
+              bottom: CatchSpacing.s4,
+            ),
+            sliver: SliverList.separated(
+              itemCount: group.cards.length,
+              separatorBuilder: (_, index) => SizedBox(
+                height:
+                    group.cards[index] is ExploreMixedEventRowCard &&
+                        group.cards[index + 1] is ExploreMixedEventRowCard
+                    ? 0
+                    : CatchSpacing.s4,
+              ),
+              itemBuilder: (context, index) {
+                final cards = group.cards;
+                final position = _exploreMixedFeedPosition(
+                  sectionState.cardGroups,
+                  group,
+                  index,
+                );
+                return switch (cards[index]) {
+                  ExploreMixedEventRowCard(:final item) => ExploreFeedEventRow(
+                    item: item,
+                    stripPosition: exploreMixedEventStripPosition(cards, index),
+                    onEventSelected: onEventSelected,
+                  ),
+                  ExploreMixedExternalEventRowCard(:final item) =>
+                    ExploreExternalEventRow(
+                      item: item,
+                      onExternalEventOpened: onExternalEventOpened,
+                    ),
+                  ExploreMixedClubSpotlightCard(:final club) =>
+                    ExploreOrganizerPosterCard(
+                      club: club,
+                      onClubSelected: onClubSelected,
+                    ),
+                  ExploreMixedClubRowCard(:final club) => ExploreFeedClubRow(
+                    club: club,
+                    onClubSelected: onClubSelected,
+                  ),
+                  ExploreMixedPersonCard(:final suggestion, :final eventItem) =>
+                    CrossPathsExploreCard(
+                      suggestion: suggestion,
+                      event: eventItem.event,
+                      onProfileSelected: onCrossPathsProfileSelected == null
+                          ? null
+                          : () => onCrossPathsProfileSelected!(
+                              suggestion,
+                              eventItem,
+                            ),
+                      onEventSelected: onEventSelected == null
+                          ? null
+                          : () => onEventSelected!(eventItem, 'cross_paths'),
+                      onImpression: onCrossPathsImpression == null
+                          ? null
+                          : () => onCrossPathsImpression!(
+                              suggestion,
+                              eventItem,
+                              position,
+                            ),
+                    ),
+                };
+              },
+            ),
+          ),
+        ],
+        const SliverToBoxAdapter(child: SizedBox(height: CatchSpacing.s6)),
+      ],
+    );
+  }
 }
 
 int _exploreMixedFeedPosition(

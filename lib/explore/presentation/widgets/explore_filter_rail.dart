@@ -69,8 +69,6 @@ class ExploreFilterRail extends StatelessWidget {
     final effectiveDateStripState =
         dateStripState ??
         ExploreDateStripState.from(viewModel: null, l10n: context.l10n);
-    final appliedFilters = _appliedFilterChips(context);
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -89,18 +87,58 @@ class ExploreFilterRail extends StatelessWidget {
             onTap: onOpenFilters ?? () => _showExploreFilterSheet(context),
           ),
         ),
-        if (appliedFilters.isNotEmpty)
-          SingleChildScrollView(
-            key: const ValueKey('explore-applied-filter-row'),
-            scrollDirection: Axis.horizontal,
-            padding: CatchInsets.exploreAppliedFilters,
-            child: Row(spacing: CatchSpacing.s2, children: appliedFilters),
-          ),
+        _ExploreAppliedFilterChips(
+          filters: filters,
+          showJoinedOnly: showJoinedOnly,
+          onDistanceFilterSelected: onDistanceFilterSelected,
+          onToggleJoinedOnly: onToggleJoinedOnly,
+          onToggleHighRatedOnly: onToggleHighRatedOnly,
+          onToggleActivityTag: onToggleActivityTag,
+          onToggleArea: onToggleArea,
+        ),
       ],
     );
   }
 
-  List<Widget> _appliedFilterChips(BuildContext context) {
+  Future<void> _showExploreFilterSheet(BuildContext context) {
+    return showCatchBottomSheet<void>(
+      context: context,
+      builder: (_) => ExploreFilterSheet(
+        filters: filters,
+        state: sheetState,
+        onDistanceFilterSelected: onDistanceFilterSelected,
+        onToggleJoinedOnly: onToggleJoinedOnly,
+        onToggleHighRatedOnly: onToggleHighRatedOnly,
+        onToggleActivityTag: onToggleActivityTag,
+        onToggleArea: onToggleArea,
+        onClearFilters: onClearFilters,
+        showJoinedOnly: showJoinedOnly,
+      ),
+    );
+  }
+}
+
+class _ExploreAppliedFilterChips extends StatelessWidget {
+  const _ExploreAppliedFilterChips({
+    required this.filters,
+    required this.showJoinedOnly,
+    required this.onDistanceFilterSelected,
+    required this.onToggleJoinedOnly,
+    required this.onToggleHighRatedOnly,
+    required this.onToggleActivityTag,
+    required this.onToggleArea,
+  });
+
+  final ExploreFilterSelection filters;
+  final bool showJoinedOnly;
+  final ValueChanged<ExploreDistanceFilter>? onDistanceFilterSelected;
+  final VoidCallback? onToggleJoinedOnly;
+  final VoidCallback? onToggleHighRatedOnly;
+  final ValueChanged<String>? onToggleActivityTag;
+  final ValueChanged<String>? onToggleArea;
+
+  @override
+  Widget build(BuildContext context) {
     final chips = <Widget>[];
     if (filters.distanceFilter != ExploreDistanceFilter.any) {
       final option = exploreDistanceFilterOptions(
@@ -143,7 +181,7 @@ class ExploreFilterRail extends StatelessWidget {
       chips.add(
         CatchChip.removable(
           key: const ValueKey('explore-applied-activity'),
-          label: _activityFilterLabel(activityTag),
+          label: _exploreActivityFilterLabel(activityTag),
           onRemove: () => onToggleActivityTag?.call(activityTag),
           enabled: onToggleActivityTag != null,
         ),
@@ -160,32 +198,21 @@ class ExploreFilterRail extends StatelessWidget {
         ),
       );
     }
-    return chips;
-  }
-
-  String _activityFilterLabel(String selected) {
-    for (final kind in primaryBrowseActivityKinds) {
-      if (_activityFilterActive(selected, kind)) return kind.label;
-    }
-    return selected;
-  }
-
-  Future<void> _showExploreFilterSheet(BuildContext context) {
-    return showCatchBottomSheet<void>(
-      context: context,
-      builder: (_) => ExploreFilterSheet(
-        filters: filters,
-        state: sheetState,
-        onDistanceFilterSelected: onDistanceFilterSelected,
-        onToggleJoinedOnly: onToggleJoinedOnly,
-        onToggleHighRatedOnly: onToggleHighRatedOnly,
-        onToggleActivityTag: onToggleActivityTag,
-        onToggleArea: onToggleArea,
-        onClearFilters: onClearFilters,
-        showJoinedOnly: showJoinedOnly,
-      ),
+    if (chips.isEmpty) return const SizedBox.shrink();
+    return SingleChildScrollView(
+      key: const ValueKey('explore-applied-filter-row'),
+      scrollDirection: Axis.horizontal,
+      padding: CatchInsets.exploreAppliedFilters,
+      child: Row(spacing: CatchSpacing.s2, children: chips),
     );
   }
+}
+
+String _exploreActivityFilterLabel(String selected) {
+  for (final kind in primaryBrowseActivityKinds) {
+    if (_activityFilterActive(selected, kind)) return kind.label;
+  }
+  return selected;
 }
 
 class ExploreFilterSheet extends StatelessWidget {
