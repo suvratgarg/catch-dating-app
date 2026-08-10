@@ -223,13 +223,75 @@ class _CustomQuestionnaireFieldsState extends State<CustomQuestionnaireFields> {
             var questionIndex = 0;
             questionIndex < questions.length;
             questionIndex++
-          )
-            ..._questionFields(
-              context,
-              questions[questionIndex],
-              questionIndex,
-              questions,
+          ) ...[
+            _inputField(
+              key: _promptKey(questions[questionIndex]),
+              title: context.l10n
+                  .eventSuccessEventSuccessQuestionnaireConfigEditorTextQuestionValue1(
+                    value1: questionIndex + 1,
+                  ),
+              contract: CatchContractConstraints
+                  .eventSuccessPlanDocumentQuestionnaireConfigCustomQuestionsItemsPrompt,
+              maxLines: 3,
+              onCommit: (prompt) => _updateQuestion(
+                questionIndex,
+                questions[questionIndex].copyWith(prompt: prompt),
+              ),
             ),
+            for (
+              var optionIndex = 0;
+              optionIndex < questions[questionIndex].options.length;
+              optionIndex++
+            )
+              _inputField(
+                key: _optionKey(
+                  questions[questionIndex],
+                  questions[questionIndex].options[optionIndex],
+                ),
+                title: context.l10n
+                    .eventSuccessEventSuccessQuestionnaireConfigEditorTitleOptionValue1(
+                      value1: optionIndex + 1,
+                    ),
+                contract: CatchContractConstraints
+                    .eventSuccessPlanDocumentQuestionnaireConfigCustomQuestionsItemsOptionsItemsLabel,
+                onCommit: (label) {
+                  final question = questions[questionIndex];
+                  final nextOptions = [...question.options];
+                  nextOptions[optionIndex] = nextOptions[optionIndex].copyWith(
+                    label: label,
+                  );
+                  _updateQuestion(
+                    questionIndex,
+                    question.copyWith(options: nextOptions),
+                  );
+                },
+              ),
+            if (questions.length > 1)
+              CatchFieldLanes.single(
+                child: CatchField.action(
+                  key: ValueKey(
+                    'custom-question-remove-${questions[questionIndex].id}',
+                  ),
+                  title: context
+                      .l10n
+                      .eventSuccessEventSuccessQuestionnaireConfigEditorMessageRemoveQuestion,
+                  icon: CatchIcons.deleteOutlineRounded,
+                  tone: CatchFieldTone.danger,
+                  onTap: widget.enabled
+                      ? () {
+                          _accordion.collapse();
+                          final nextQuestions = [...questions]
+                            ..removeAt(questionIndex);
+                          widget.onChanged(
+                            widget.value.copyWith(
+                              customQuestions: nextQuestions,
+                            ),
+                          );
+                        }
+                      : null,
+                ),
+              ),
+          ],
           CatchField.add(
             title: context
                 .l10n
@@ -263,79 +325,6 @@ class _CustomQuestionnaireFieldsState extends State<CustomQuestionnaireFields> {
         ],
       ),
     );
-  }
-
-  List<Widget> _questionFields(
-    BuildContext context,
-    EventSuccessCompatibilityQuestion question,
-    int questionIndex,
-    List<EventSuccessCompatibilityQuestion> questions,
-  ) {
-    final fields = <Widget>[
-      _inputField(
-        key: _promptKey(question),
-        title: context.l10n
-            .eventSuccessEventSuccessQuestionnaireConfigEditorTextQuestionValue1(
-              value1: questionIndex + 1,
-            ),
-        contract: CatchContractConstraints
-            .eventSuccessPlanDocumentQuestionnaireConfigCustomQuestionsItemsPrompt,
-        maxLines: 3,
-        onCommit: (prompt) =>
-            _updateQuestion(questionIndex, question.copyWith(prompt: prompt)),
-      ),
-    ];
-    for (
-      var optionIndex = 0;
-      optionIndex < question.options.length;
-      optionIndex++
-    ) {
-      final option = question.options[optionIndex];
-      fields.add(
-        _inputField(
-          key: _optionKey(question, option),
-          title: context.l10n
-              .eventSuccessEventSuccessQuestionnaireConfigEditorTitleOptionValue1(
-                value1: optionIndex + 1,
-              ),
-          contract: CatchContractConstraints
-              .eventSuccessPlanDocumentQuestionnaireConfigCustomQuestionsItemsOptionsItemsLabel,
-          onCommit: (label) {
-            final nextOptions = [...question.options];
-            nextOptions[optionIndex] = option.copyWith(label: label);
-            _updateQuestion(
-              questionIndex,
-              question.copyWith(options: nextOptions),
-            );
-          },
-        ),
-      );
-    }
-    if (questions.length > 1) {
-      fields.add(
-        CatchFieldLanes.single(
-          child: CatchField.action(
-            key: ValueKey('custom-question-remove-${question.id}'),
-            title: context
-                .l10n
-                .eventSuccessEventSuccessQuestionnaireConfigEditorMessageRemoveQuestion,
-            icon: CatchIcons.deleteOutlineRounded,
-            tone: CatchFieldTone.danger,
-            onTap: widget.enabled
-                ? () {
-                    _accordion.collapse();
-                    final nextQuestions = [...questions]
-                      ..removeAt(questionIndex);
-                    widget.onChanged(
-                      widget.value.copyWith(customQuestions: nextQuestions),
-                    );
-                  }
-                : null,
-          ),
-        ),
-      );
-    }
-    return fields;
   }
 
   CatchFieldLanes _inputField({

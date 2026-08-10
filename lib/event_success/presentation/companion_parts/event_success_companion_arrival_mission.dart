@@ -167,13 +167,15 @@ class _FirstHelloCheckInCardState extends State<FirstHelloCheckInCard>
     return Stack(
       children: [
         StagePanel(
-          child: _missionEditor(
-            context,
-            mission,
-            selectedAnswerId,
-            t,
+          child: _FirstHelloMissionEditor(
+            mission: mission,
+            selectedAnswerId: selectedAnswerId,
             saving: saving,
             skipping: skipping,
+            onAnswerSelected: (answerId) =>
+                setState(() => _answerId = answerId),
+            onComplete: widget.onComplete == null ? null : _complete,
+            onSkip: widget.onSkip,
           ),
         ),
         if (_celebrating)
@@ -224,14 +226,70 @@ class _FirstHelloCheckInCardState extends State<FirstHelloCheckInCard>
     );
   }
 
-  Widget _missionEditor(
-    BuildContext context,
-    EventSuccessArrivalMission mission,
-    String? selectedAnswerId,
-    CatchTokens t, {
-    required bool saving,
-    required bool skipping,
-  }) {
+  Future<void> _start() async {
+    final onStart = widget.onStart;
+    if (onStart == null) return;
+    setState(() => _starting = true);
+    try {
+      await onStart();
+    } finally {
+      if (mounted) setState(() => _starting = false);
+    }
+  }
+
+  Future<void> _complete(String answerId) async {
+    final mission = widget.mission;
+    final onComplete = widget.onComplete;
+    if (mission == null || onComplete == null) return;
+    setState(() {
+      _saving = true;
+      _celebrating = true;
+    });
+    // Layer haptic + chime first so the user feels the celebration land
+    // before the gradient sweep finishes.
+    final playCompleteEffect = widget.onPlayCompleteEffect;
+    if (playCompleteEffect != null) unawaited(playCompleteEffect());
+    final celebrationFuture = _kStageAnimationsEnabled
+        ? _celebration.forward(from: 0)
+        : Future<void>.value();
+    try {
+      // Run the celebration animation in parallel with the network call.
+      // Both must complete before we hand off to the next moment, otherwise
+      // the gradient sweep snaps off mid-animation when the moment changes.
+      await Future.wait([celebrationFuture, onComplete(mission, answerId)]);
+    } finally {
+      if (mounted) {
+        setState(() {
+          _saving = false;
+          _celebrating = false;
+        });
+      }
+    }
+  }
+}
+
+class _FirstHelloMissionEditor extends StatelessWidget {
+  const _FirstHelloMissionEditor({
+    required this.mission,
+    required this.selectedAnswerId,
+    required this.saving,
+    required this.skipping,
+    required this.onAnswerSelected,
+    required this.onComplete,
+    required this.onSkip,
+  });
+
+  final EventSuccessArrivalMission mission;
+  final String? selectedAnswerId;
+  final bool saving;
+  final bool skipping;
+  final ValueChanged<String> onAnswerSelected;
+  final ValueChanged<String>? onComplete;
+  final VoidCallback? onSkip;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -292,9 +350,7 @@ class _FirstHelloCheckInCardState extends State<FirstHelloCheckInCard>
               StageBouncyChip(
                 label: option.label,
                 active: selectedAnswerId == option.id,
-                onTap: saving
-                    ? null
-                    : () => setState(() => _answerId = option.id),
+                onTap: saving ? null : () => onAnswerSelected(option.id),
               ),
           ],
         ),
@@ -317,11 +373,9 @@ class _FirstHelloCheckInCardState extends State<FirstHelloCheckInCard>
                 icon: Icon(CatchIcons.checkRounded),
                 isLoading: saving,
                 onPressed:
-                    selectedAnswerId == null ||
-                        saving ||
-                        widget.onComplete == null
+                    selectedAnswerId == null || saving || onComplete == null
                     ? null
-                    : () => _complete(selectedAnswerId),
+                    : () => onComplete!(selectedAnswerId!),
                 fullWidth: true,
               ),
               gapH8,
@@ -332,7 +386,7 @@ class _FirstHelloCheckInCardState extends State<FirstHelloCheckInCard>
                 variant: CatchButtonVariant.ghost,
                 icon: Icon(CatchIcons.swapHorizRounded),
                 isLoading: skipping,
-                onPressed: saving || skipping ? null : widget.onSkip,
+                onPressed: saving || skipping ? null : onSkip,
                 fullWidth: true,
               ),
             ],
@@ -340,46 +394,5 @@ class _FirstHelloCheckInCardState extends State<FirstHelloCheckInCard>
         ),
       ],
     );
-  }
-
-  Future<void> _start() async {
-    final onStart = widget.onStart;
-    if (onStart == null) return;
-    setState(() => _starting = true);
-    try {
-      await onStart();
-    } finally {
-      if (mounted) setState(() => _starting = false);
-    }
-  }
-
-  Future<void> _complete(String answerId) async {
-    final mission = widget.mission;
-    final onComplete = widget.onComplete;
-    if (mission == null || onComplete == null) return;
-    setState(() {
-      _saving = true;
-      _celebrating = true;
-    });
-    // Layer haptic + chime first so the user feels the celebration land
-    // before the gradient sweep finishes.
-    final playCompleteEffect = widget.onPlayCompleteEffect;
-    if (playCompleteEffect != null) unawaited(playCompleteEffect());
-    final celebrationFuture = _kStageAnimationsEnabled
-        ? _celebration.forward(from: 0)
-        : Future<void>.value();
-    try {
-      // Run the celebration animation in parallel with the network call.
-      // Both must complete before we hand off to the next moment, otherwise
-      // the gradient sweep snaps off mid-animation when the moment changes.
-      await Future.wait([celebrationFuture, onComplete(mission, answerId)]);
-    } finally {
-      if (mounted) {
-        setState(() {
-          _saving = false;
-          _celebrating = false;
-        });
-      }
-    }
   }
 }

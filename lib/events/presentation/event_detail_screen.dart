@@ -369,41 +369,54 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                         .setConsent(eventId: vm.event.id, enabled: enabled),
                   ),
             ),
-            bottomNavigationBar: _eventDetailBottomNavigationBar(
-              event: vm.event,
-              userProfile: vm.userProfile,
-              clubId: widget.clubId,
-              isAuthenticated: vm.isAuthenticated,
-              isSaved: vm.isSaved,
-              isHosted: vm.isHost,
-              isClubMember: vm.isClubMember,
-              participation: vm.participation,
-              organizerCapabilities:
-                  clubAsync.asData?.value?.supplyCapabilities ??
-                  const OrganizerSupplyCapabilities.unclaimedReadOnly(
-                    claimable: false,
-                  ),
-              inviteCode: widget.inviteCode,
-              inviteLinkId: widget.inviteLinkId,
-              now: now,
-              darkSurface: isSpotlightDark,
-              sectionVisibility: sectionVisibility,
-              completeProfileLabel: context
-                  .l10n
-                  .eventsEventDetailScreenLabelCompleteBookingProfile,
-              onGuestBook: () => _openEventSignIn(
-                context,
-                clubId: widget.clubId,
-                eventId: vm.event.id,
-                inviteCode: widget.inviteCode,
-                inviteLinkId: widget.inviteLinkId,
-              ),
-              onCompleteProfile: () => _openEventProfileCompletion(
-                context,
-                clubId: widget.clubId,
-                eventId: vm.event.id,
-              ),
-            ),
+            bottomNavigationBar:
+                _showsEventDetailBottomNavigation(
+                  event: vm.event,
+                  userProfile: vm.userProfile,
+                  isAuthenticated: vm.isAuthenticated,
+                  organizerCapabilities:
+                      clubAsync.asData?.value?.supplyCapabilities ??
+                      const OrganizerSupplyCapabilities.unclaimedReadOnly(
+                        claimable: false,
+                      ),
+                  now: now,
+                  sectionVisibility: sectionVisibility,
+                )
+                ? _EventDetailBottomNavigationBar(
+                    event: vm.event,
+                    userProfile: vm.userProfile,
+                    clubId: widget.clubId,
+                    isAuthenticated: vm.isAuthenticated,
+                    isSaved: vm.isSaved,
+                    isHosted: vm.isHost,
+                    isClubMember: vm.isClubMember,
+                    participation: vm.participation,
+                    organizerCapabilities:
+                        clubAsync.asData?.value?.supplyCapabilities ??
+                        const OrganizerSupplyCapabilities.unclaimedReadOnly(
+                          claimable: false,
+                        ),
+                    inviteCode: widget.inviteCode,
+                    inviteLinkId: widget.inviteLinkId,
+                    now: now,
+                    darkSurface: isSpotlightDark,
+                    completeProfileLabel: context
+                        .l10n
+                        .eventsEventDetailScreenLabelCompleteBookingProfile,
+                    onGuestBook: () => _openEventSignIn(
+                      context,
+                      clubId: widget.clubId,
+                      eventId: vm.event.id,
+                      inviteCode: widget.inviteCode,
+                      inviteLinkId: widget.inviteLinkId,
+                    ),
+                    onCompleteProfile: () => _openEventProfileCompletion(
+                      context,
+                      clubId: widget.clubId,
+                      eventId: vm.event.id,
+                    ),
+                  )
+                : null,
           ),
         ),
       );
@@ -497,29 +510,41 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
           heroTag: widget.heroTag,
           enableMapNetworkTiles: widget.enableMapNetworkTiles,
         ),
-        bottomNavigationBar: _eventDetailBottomNavigationBar(
-          event: event,
-          userProfile: null,
-          clubId: widget.clubId,
-          isAuthenticated: false,
-          participation: null,
-          organizerCapabilities: clubAsync.asData!.value!.supplyCapabilities,
-          inviteCode: widget.inviteCode,
-          inviteLinkId: widget.inviteLinkId,
-          now: now,
-          darkSurface: isSpotlightDark,
-          sectionVisibility: sectionVisibility,
-          completeProfileLabel:
-              context.l10n.eventsEventDetailScreenLabelCompleteBookingProfile,
-          onGuestBook: () => _openEventSignIn(
-            context,
-            clubId: widget.clubId,
-            eventId: event.id,
-            inviteCode: widget.inviteCode,
-            inviteLinkId: widget.inviteLinkId,
-          ),
-          onCompleteProfile: () {},
-        ),
+        bottomNavigationBar:
+            _showsEventDetailBottomNavigation(
+              event: event,
+              userProfile: null,
+              isAuthenticated: false,
+              organizerCapabilities:
+                  clubAsync.asData!.value!.supplyCapabilities,
+              now: now,
+              sectionVisibility: sectionVisibility,
+            )
+            ? _EventDetailBottomNavigationBar(
+                event: event,
+                userProfile: null,
+                clubId: widget.clubId,
+                isAuthenticated: false,
+                participation: null,
+                organizerCapabilities:
+                    clubAsync.asData!.value!.supplyCapabilities,
+                inviteCode: widget.inviteCode,
+                inviteLinkId: widget.inviteLinkId,
+                now: now,
+                darkSurface: isSpotlightDark,
+                completeProfileLabel: context
+                    .l10n
+                    .eventsEventDetailScreenLabelCompleteBookingProfile,
+                onGuestBook: () => _openEventSignIn(
+                  context,
+                  clubId: widget.clubId,
+                  eventId: event.id,
+                  inviteCode: widget.inviteCode,
+                  inviteLinkId: widget.inviteLinkId,
+                ),
+                onCompleteProfile: () {},
+              )
+            : null,
       );
     }
 
@@ -643,59 +668,97 @@ EventDetailSurfaceStyle _eventDetailSurfaceStyle(
   );
 }
 
-Widget? _eventDetailBottomNavigationBar({
+bool _showsEventDetailBottomNavigation({
   required Event event,
   required UserProfile? userProfile,
-  required String clubId,
   required bool isAuthenticated,
-  bool isSaved = false,
-  bool isHosted = false,
-  bool isClubMember = false,
-  required EventParticipation? participation,
   required OrganizerSupplyCapabilities organizerCapabilities,
-  required String? inviteCode,
-  required String? inviteLinkId,
   required DateTime now,
-  required bool darkSurface,
   required EventDetailSectionVisibilityState sectionVisibility,
-  required String completeProfileLabel,
-  required VoidCallback onGuestBook,
-  required VoidCallback onCompleteProfile,
 }) {
-  if (!organizerCapabilities.bookable) return null;
-  if (!sectionVisibility.showBottomNavigation) return null;
+  if (!organizerCapabilities.bookable) return false;
+  if (!sectionVisibility.showBottomNavigation) return false;
 
   if (!isAuthenticated) {
-    if (event.isCancelled || !event.startTime.isAfter(now)) return null;
-    return GuestBookCta(onPressed: onGuestBook, darkSurface: darkSurface);
+    return !event.isCancelled && event.startTime.isAfter(now);
   }
 
   if (!sectionVisibility.showConsumerActions) {
-    return null;
+    return false;
   }
 
   if (!eventDetailHasBookingReadyProfile(userProfile, now: now)) {
-    if (event.isCancelled || !event.startTime.isAfter(now)) return null;
-    return EventBookingDock(
-      label: completeProfileLabel,
-      onPressed: onCompleteProfile,
-    );
+    return !event.isCancelled && event.startTime.isAfter(now);
   }
 
-  return EventDetailCta(
-    event: event,
-    userProfile: userProfile!,
-    clubId: clubId,
-    participation: participation,
-    organizerCapabilities: organizerCapabilities,
-    isSaved: isSaved,
-    isHosted: isHosted,
-    isClubMember: isClubMember,
-    inviteCode: inviteCode,
-    inviteLinkId: inviteLinkId,
-    now: now,
-    darkSurface: darkSurface,
-  );
+  return true;
+}
+
+class _EventDetailBottomNavigationBar extends StatelessWidget {
+  const _EventDetailBottomNavigationBar({
+    required this.event,
+    required this.userProfile,
+    required this.clubId,
+    required this.isAuthenticated,
+    this.isSaved = false,
+    this.isHosted = false,
+    this.isClubMember = false,
+    required this.participation,
+    required this.organizerCapabilities,
+    required this.inviteCode,
+    required this.inviteLinkId,
+    required this.now,
+    required this.darkSurface,
+    required this.completeProfileLabel,
+    required this.onGuestBook,
+    required this.onCompleteProfile,
+  });
+
+  final Event event;
+  final UserProfile? userProfile;
+  final String clubId;
+  final bool isAuthenticated;
+  final bool isSaved;
+  final bool isHosted;
+  final bool isClubMember;
+  final EventParticipation? participation;
+  final OrganizerSupplyCapabilities organizerCapabilities;
+  final String? inviteCode;
+  final String? inviteLinkId;
+  final DateTime now;
+  final bool darkSurface;
+  final String completeProfileLabel;
+  final VoidCallback onGuestBook;
+  final VoidCallback onCompleteProfile;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!isAuthenticated) {
+      return GuestBookCta(onPressed: onGuestBook, darkSurface: darkSurface);
+    }
+
+    if (!eventDetailHasBookingReadyProfile(userProfile, now: now)) {
+      return EventBookingDock(
+        label: completeProfileLabel,
+        onPressed: onCompleteProfile,
+      );
+    }
+
+    return EventDetailCta(
+      event: event,
+      userProfile: userProfile!,
+      clubId: clubId,
+      participation: participation,
+      organizerCapabilities: organizerCapabilities,
+      isSaved: isSaved,
+      isHosted: isHosted,
+      isClubMember: isClubMember,
+      inviteCode: inviteCode,
+      inviteLinkId: inviteLinkId,
+      now: now,
+      darkSurface: darkSurface,
+    );
+  }
 }
 
 void _openEventSignIn(
