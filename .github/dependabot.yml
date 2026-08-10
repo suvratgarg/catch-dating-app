@@ -3,11 +3,11 @@ updates:
   # Security fixes stay grouped. Routine version updates are limited to one
   # compatible minor/patch PR per ecosystem; majors require an explicit slice.
   - package-ecosystem: "npm"
+    # The root npm workspace owns admin, website, and packages/web-ui. Listing
+    # those members separately makes Dependabot resolve @catch/web-ui from the
+    # public registry instead of the checked-in workspace package.
     directories:
       - "/"
-      - "/admin"
-      - "/website"
-      - "/packages/web-ui"
       - "/functions"
       - "/operations"
     schedule:
