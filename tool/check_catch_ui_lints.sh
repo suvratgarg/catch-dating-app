@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-probe_root="tool/catch_ui_lints_probe"
+probe_parent="tool/catch_ui_lints_probe"
+mkdir -p "$probe_parent"
+probe_root="$(mktemp -d "$probe_parent/run.XXXXXX")"
 probe_path="$probe_root/lib/events/presentation/widgets/event_detail_lint_probe.dart"
 probe_output=""
 probe_status=0
