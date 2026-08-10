@@ -142,7 +142,9 @@ class MembershipTrailingController extends ConsumerWidget {
     // Key by clubId so each tile observes only its own join state; an unkeyed
     // shared mutation would spin/disable every visible Join button at once.
     final mutation = ClubMembershipController.joinMutation(clubId);
-    final joinMutation = ref.watch(mutation);
+    final joinMutation = ref.watch(
+      ClubMembershipController.joinMutation(clubId),
+    );
     void joinClub() {
       unawaited(
         mutation
@@ -164,7 +166,7 @@ class MembershipTrailingController extends ConsumerWidget {
     }
 
     return CatchMutationErrorListener(
-      mutation: mutation,
+      mutation: ClubMembershipController.joinMutation(clubId),
       errorContext: AppErrorContext.club,
       child: MembershipTrailing(
         isJoined: false,

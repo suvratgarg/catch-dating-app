@@ -12,8 +12,10 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/events/presentation/location_picker_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/locations/data/places_repository.dart';
+import 'package:catch_dating_app/locations/data/places_repository.dart'
+    show PlaceAutocompleteSuggestion;
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/locations/shared/catch_google_map.dart';
 import 'package:flutter/material.dart';
@@ -267,7 +269,7 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
 
     try {
       final results = await ref
-          .read(placesRepositoryProvider)
+          .read(locationPickerControllerProvider)
           .autocomplete(
             input: query,
             sessionToken: _sessionToken,
@@ -305,7 +307,7 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
 
     try {
       final place = await ref
-          .read(placesRepositoryProvider)
+          .read(locationPickerControllerProvider)
           .details(placeId: suggestion.placeId, sessionToken: _sessionToken);
       if (!mounted) return;
       _sessionToken = _newSessionToken();

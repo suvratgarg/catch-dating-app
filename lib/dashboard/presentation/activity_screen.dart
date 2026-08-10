@@ -5,7 +5,7 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
+import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_controller.dart';
@@ -48,59 +48,63 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
       markAllReadPending: markAllReadMutation.isPending,
     );
 
-    return Scaffold(
-      backgroundColor: t.bg,
-      appBar: CatchScreenTopBar(
-        context: context,
-        title: context.l10n.dashboardActivityScreenTitleActivity,
-        actions: [
-          if (state.showMarkAllReadAction)
-            CatchTextButton(
-              label: state.markAllReadLabel(context.l10n),
-              onPressed: state.canMarkAllRead
-                  ? () => unawaited(
-                      _markAllRead(
-                        uid: state.uid!,
-                        notifications: state.unreadNotifications,
-                      ),
-                    )
-                  : null,
-            ),
-        ],
-      ),
-      body: CatchAsyncValueView<String?>(
-        value: uidAsync,
-        errorContext: AppErrorContext.auth,
-        onRetry: () => ref.invalidate(uidProvider),
-        loadingBuilder: (_) => const ActivityScreenLoading(),
-        builder: (context, uid) {
-          if (uid == null) return const ActivitySignedOutState();
-          return CatchAsyncValueView<List<ActivityNotification>>(
-            value:
-                notificationsAsync ??
-                const AsyncLoading<List<ActivityNotification>>(),
-            loadingBuilder: (_) => const ActivityScreenLoading(),
-            onRetry: () =>
-                ref.invalidate(watchActivityNotificationsProvider(uid)),
-            errorBuilder: (context, error, _) => ActivityScreenBody(
-              state: NotificationsActivityError(uid: uid, error: error),
+    return CatchMutationErrorListener(
+      mutation: ActivityController.markAllReadMutation,
+      errorContext: AppErrorContext.dashboard,
+      child: Scaffold(
+        backgroundColor: t.bg,
+        appBar: CatchScreenTopBar(
+          context: context,
+          title: context.l10n.dashboardActivityScreenTitleActivity,
+          actions: [
+            if (state.showMarkAllReadAction)
+              CatchTextButton(
+                label: state.markAllReadLabel(context.l10n),
+                onPressed: state.canMarkAllRead
+                    ? () => unawaited(
+                        _markAllRead(
+                          uid: state.uid!,
+                          notifications: state.unreadNotifications,
+                        ),
+                      )
+                    : null,
+              ),
+          ],
+        ),
+        body: CatchAsyncValueView<String?>(
+          value: uidAsync,
+          errorContext: AppErrorContext.auth,
+          onRetry: () => ref.invalidate(uidProvider),
+          loadingBuilder: (_) => const ActivityScreenLoading(),
+          builder: (context, uid) {
+            if (uid == null) return const ActivitySignedOutState();
+            return CatchAsyncValueView<List<ActivityNotification>>(
+              value:
+                  notificationsAsync ??
+                  const AsyncLoading<List<ActivityNotification>>(),
+              loadingBuilder: (_) => const ActivityScreenLoading(),
               onRetry: () =>
                   ref.invalidate(watchActivityNotificationsProvider(uid)),
-              onOpenRoute: _openNotificationRoute,
-            ),
-            builder: (context, _) => ActivityScreenBody(
-              state: state,
-              onRetry: state.uid == null
-                  ? null
-                  : () {
-                      ref.invalidate(
-                        watchActivityNotificationsProvider(state.uid!),
-                      );
-                    },
-              onOpenRoute: _openNotificationRoute,
-            ),
-          );
-        },
+              errorBuilder: (context, error, _) => ActivityScreenBody(
+                state: NotificationsActivityError(uid: uid, error: error),
+                onRetry: () =>
+                    ref.invalidate(watchActivityNotificationsProvider(uid)),
+                onOpenRoute: _openNotificationRoute,
+              ),
+              builder: (context, _) => ActivityScreenBody(
+                state: state,
+                onRetry: state.uid == null
+                    ? null
+                    : () {
+                        ref.invalidate(
+                          watchActivityNotificationsProvider(state.uid!),
+                        );
+                      },
+                onOpenRoute: _openNotificationRoute,
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -138,7 +142,6 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
               ),
             ),
           );
-      if (mounted) showCatchErrorSnackBar(context, error);
     }
   }
 

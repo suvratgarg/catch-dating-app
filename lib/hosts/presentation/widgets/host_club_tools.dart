@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/clubs/data/club_posts_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/shared/club_action_keys.dart';
-import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -16,6 +15,7 @@ import 'package:catch_dating_app/core/widgets/catch_stat_column.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/hosts/presentation/host_club_post_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_tools.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
@@ -177,16 +177,8 @@ class HostClubManagementPanel extends StatelessWidget {
                               remainingQuota: remainingQuota,
                               onSubmitPost: (text) async {
                                 await ref
-                                    .read(clubPostsRepositoryProvider)
+                                    .read(hostClubPostControllerProvider)
                                     .createPost(clubId: club.id, text: text);
-                                ref
-                                    .read(appAnalyticsProvider)
-                                    .logEvent(
-                                      AnalyticsEvents.clubPostCreated,
-                                      parameters: {
-                                        AnalyticsParameters.clubId: club.id,
-                                      },
-                                    );
                               },
                             ),
                       icon: Icon(CatchIcons.megaphone, size: CatchIcon.md),

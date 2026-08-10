@@ -21,6 +21,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
+import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -160,78 +161,85 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
             sharePending: shareMutation.isPending,
           )
         : null;
-    return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
-        showBackButton: true,
-        onBack: onBackToSuccess,
-        divider: scrolledUnder,
-        height: CatchLayout.hostEventManageTopBarHeight,
-        titleWidget: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (!screenState.collapseHeaderCopy) ...[
+    return CatchMutationErrorListener(
+      mutation: HostEventManageController.sharePrivateLinkMutation,
+      errorContext: AppErrorContext.event,
+      child: CatchRouteScaffold(
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+          showBackButton: true,
+          onBack: onBackToSuccess,
+          divider: scrolledUnder,
+          height: CatchLayout.hostEventManageTopBarHeight,
+          titleWidget: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (!screenState.collapseHeaderCopy) ...[
+                Text(
+                  club.name.toUpperCase(),
+                  style: CatchTextStyles.kicker(context, color: t.ink3),
+                ),
+                gapH2,
+              ],
               Text(
-                club.name.toUpperCase(),
-                style: CatchTextStyles.kicker(context, color: t.ink3),
+                screenState.eventTitle,
+                style: CatchTextStyles.titleL(context, color: t.ink),
+                semanticsLabel: screenState.collapsedTitleSemanticsLabel,
+                maxLines: screenState.collapseHeaderCopy ? 1 : 2,
+                overflow: TextOverflow.ellipsis,
               ),
-              gapH2,
+              if (!screenState.collapseHeaderCopy) ...[
+                gapH8,
+                HostManageMetaRow(event: event),
+              ],
             ],
-            Text(
-              screenState.eventTitle,
-              style: CatchTextStyles.titleL(context, color: t.ink),
-              semanticsLabel: screenState.collapsedTitleSemanticsLabel,
-              maxLines: screenState.collapseHeaderCopy ? 1 : 2,
-              overflow: TextOverflow.ellipsis,
+          ),
+          bottom: HostManageSectionPicker(
+            selectedSection: screenState.selectedSection,
+            onChanged: (section) {
+              setState(
+                () => _selectedSection = screenState
+                    .selectSection(section)
+                    .selectedSection,
+              );
+              widget.onSectionChanged?.call(section);
+            },
+          ),
+        ),
+        body: ListView(
+          key: Key(
+            context.l10n.hostsHostEventManageScreenBodyHostEventManageScroll,
+          ),
+          padding: CatchInsets.pageBody,
+          children: [
+            ..._selectedSectionChildren(
+              section: screenState.selectedSection,
+              club: club,
+              event: event,
+              roster: roster,
+              privateAccessAsync: accessAsync,
+              inviteLinksAsync: inviteLinksAsync,
+              shareMutation: shareMutation,
+              inviteLinksListState: HostInviteLinksListDisplayState.resolve(
+                createPending: createInviteLinkMutation.isPending,
+                copyPending: copyInviteLinkMutation.isPending,
+                disablePending: disableInviteLinkMutation.isPending,
+              ),
+              inviteLinksMutationError: _firstMutationError([
+                createInviteLinkMutation,
+                copyInviteLinkMutation,
+                disableInviteLinkMutation,
+              ]),
+              onDeleted: onBackToSuccess,
+              actionState: actionState,
+              actionError: _firstMutationError([
+                cancelMutation,
+                deleteMutation,
+              ]),
+              privateLinkActionState: privateLinkActionState,
             ),
-            if (!screenState.collapseHeaderCopy) ...[
-              gapH8,
-              HostManageMetaRow(event: event),
-            ],
           ],
         ),
-        bottom: HostManageSectionPicker(
-          selectedSection: screenState.selectedSection,
-          onChanged: (section) {
-            setState(
-              () => _selectedSection = screenState
-                  .selectSection(section)
-                  .selectedSection,
-            );
-            widget.onSectionChanged?.call(section);
-          },
-        ),
-      ),
-      body: ListView(
-        key: Key(
-          context.l10n.hostsHostEventManageScreenBodyHostEventManageScroll,
-        ),
-        padding: CatchInsets.pageBody,
-        children: [
-          ..._selectedSectionChildren(
-            section: screenState.selectedSection,
-            club: club,
-            event: event,
-            roster: roster,
-            privateAccessAsync: accessAsync,
-            inviteLinksAsync: inviteLinksAsync,
-            shareMutation: shareMutation,
-            inviteLinksListState: HostInviteLinksListDisplayState.resolve(
-              createPending: createInviteLinkMutation.isPending,
-              copyPending: copyInviteLinkMutation.isPending,
-              disablePending: disableInviteLinkMutation.isPending,
-            ),
-            inviteLinksMutationError: _firstMutationError([
-              createInviteLinkMutation,
-              copyInviteLinkMutation,
-              disableInviteLinkMutation,
-            ]),
-            onDeleted: onBackToSuccess,
-            actionState: actionState,
-            actionError: _firstMutationError([cancelMutation, deleteMutation]),
-            privateLinkActionState: privateLinkActionState,
-          ),
-        ],
       ),
     );
   }
@@ -925,13 +933,6 @@ class HostPrivateAccessBody extends StatelessWidget {
                 value: linkAction.inviteLink!,
                 showDivider: false,
               ),
-            if (shareMutation.hasError) ...[
-              gapH12,
-              CatchMutationErrorBanner(
-                mutation: shareMutation,
-                errorContext: AppErrorContext.event,
-              ),
-            ],
             gapH14,
             CatchButton(
               label:

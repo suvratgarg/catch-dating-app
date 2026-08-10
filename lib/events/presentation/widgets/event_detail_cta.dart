@@ -18,7 +18,6 @@ import 'package:catch_dating_app/events/presentation/event_detail_screen_state.d
 import 'package:catch_dating_app/events/shared/event_joined_celebration_screen.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/organizers/domain/organizer_supply_capabilities.dart';
-import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
@@ -125,9 +124,9 @@ class EventDetailCta extends ConsumerWidget {
           )
         : null;
 
-    final supportsPaid = ref
-        .watch(paymentRepositoryProvider)
-        .supportsPaidBookingsForCurrency(event.currency);
+    final supportsPaid = ref.watch(
+      eventPaidBookingSupportProvider(event.currency),
+    );
 
     final bookMutation = ref.watch(EventBookingController.bookMutation);
     final cancelMutation = ref.watch(EventBookingController.cancelMutation);
