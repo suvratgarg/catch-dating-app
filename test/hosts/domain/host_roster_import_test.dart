@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:archive/archive.dart';
 import 'package:catch_dating_app/events/domain/event_attendee.dart';
+import 'package:catch_dating_app/hosts/data/host_roster_file_parser.dart';
 import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
 import 'package:flutter_test/flutter_test.dart';
 

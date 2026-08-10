@@ -37,6 +37,9 @@ options when specific functions need higher or lower limits.
 | `requestOrganizerClaim` / `adminDecideOrganizerClaim` | `src/organizers/organizerClaims.ts` | Canonical organizer claim submission and audited admin decision |
 | `startOrganizerConversation` | `src/clubs/clubHostConversations.ts` | Start or resume a viewer conversation with an organizer |
 | `sendEventBroadcast` | `src/events/` | Host-only, event-scoped Activity and preference-gated push broadcast with idempotent delivery receipt |
+| `importEventAttendees` / `markEventAttendeeAttendance` | `src/events/eventAttendees.ts` | Import or manually add an external roster and manage operational check-in without Consumer booking |
+| `registerPublicEvent` | `src/events/eventAttendees.ts` | Phone-OTP public registration for profile-optional, free, open-admission events |
+| `getOrganizerCrmSummary` | `src/organizers/organizerCrm.ts` | Privacy-bounded, deduplicated past-attendee and channel-readiness counts for organizer managers |
 | `markEventAttendance` | `src/events/` | Host marks attendance |
 | `selfCheckInAttendance` | `src/events/` | Participant self-check-in with GPS |
 | `generateEventSuccessPods` | `src/eventSuccess/` | Generate event-success pod suggestions |
@@ -101,6 +104,7 @@ options when specific functions need higher or lower limits.
 | `onCrossPathsEventWritten` | `src/crossPaths/` | `events/{eventId}` onWrite — invalidates invitations/holds when an event becomes unavailable |
 | `onCrossPathsParticipationWritten` | `src/crossPaths/` | `eventParticipations/{id}` onWrite — invalidates invitations/holds when participation ends |
 | `onCrossPathsBlockCreated` | `src/crossPaths/` | `blocks/{id}` onCreate — invalidates invitations/holds and closes accepted event plans |
+| `onEventParticipationRosterProjected` | `src/events/eventAttendees.ts` | `eventParticipations/{id}` onWrite — projects Catch bookings into the operational Host roster |
 | `moderateChatMessage` | `src/moderation/` | `matches/{id}/messages/{id}` onCreate — banned-word filter |
 
 ### Scheduled

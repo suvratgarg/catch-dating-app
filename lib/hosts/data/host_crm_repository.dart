@@ -4,7 +4,9 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
     show GetOrganizerCrmSummaryCallableRequest;
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'host_crm_repository.g.dart';
 
 enum HostCrmChannelReadiness {
   currentEventOnly,
@@ -91,14 +93,13 @@ class HostCrmRepository {
       );
 }
 
-final hostCrmRepositoryProvider = Provider<HostCrmRepository>((ref) {
-  return HostCrmRepository(ref.watch(firebaseFunctionsProvider));
-});
+@riverpod
+HostCrmRepository hostCrmRepository(Ref ref) =>
+    HostCrmRepository(ref.watch(firebaseFunctionsProvider));
 
-final hostCrmSummaryProvider = FutureProvider.autoDispose
-    .family<HostCrmSummary, String>((ref, organizerId) {
-      return ref.read(hostCrmRepositoryProvider).getSummary(organizerId);
-    });
+@riverpod
+Future<HostCrmSummary> hostCrmSummary(Ref ref, String organizerId) =>
+    ref.read(hostCrmRepositoryProvider).getSummary(organizerId);
 
 String _requiredString(Map<Object?, Object?> map, String key) {
   final value = map[key];
