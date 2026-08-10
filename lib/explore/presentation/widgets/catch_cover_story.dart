@@ -72,89 +72,95 @@ class CatchCoverStory extends StatelessWidget {
         (location != null && location!.isNotEmpty) ||
         showSearch;
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(radius),
-      child: DecoratedBox(
-        decoration: BoxDecoration(color: d.bg),
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: RadialGradient(
-                    center: CatchLayout.coverStoryGlowCenter,
-                    radius: CatchLayout.coverStoryGlowRadius,
-                    colors: [
-                      deep.withValues(alpha: CatchOpacity.coverStoryGlow),
-                      deep.withValues(alpha: CatchOpacity.none),
-                    ],
-                    stops: CatchLayout.coverStoryGlowStops,
+    return CatchSurface(
+      backgroundColor: d.bg,
+      radius: radius,
+      padding: EdgeInsets.zero,
+      clipBehavior: Clip.antiAlias,
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: CatchSurface(
+              tone: CatchSurfaceTone.transparent,
+              radius: 0,
+              padding: EdgeInsets.zero,
+              duration: Duration.zero,
+              gradient: RadialGradient(
+                center: CatchLayout.coverStoryGlowCenter,
+                radius: CatchLayout.coverStoryGlowRadius,
+                colors: [
+                  deep.withValues(alpha: CatchOpacity.coverStoryGlow),
+                  deep.withValues(alpha: CatchOpacity.none),
+                ],
+                stops: CatchLayout.coverStoryGlowStops,
+              ),
+              child: const SizedBox.expand(),
+            ),
+          ),
+          Positioned.fill(
+            child: CatchSurface(
+              tone: CatchSurfaceTone.transparent,
+              radius: 0,
+              padding: EdgeInsets.zero,
+              duration: Duration.zero,
+              gradient: LinearGradient(
+                colors: [
+                  CatchTokens.editorialBlack.withValues(
+                    alpha: CatchOpacity.coverStoryContrastScrim,
                   ),
+                  CatchTokens.editorialBlack.withValues(
+                    alpha: CatchOpacity.coverStoryContrastScrimMid,
+                  ),
+                  CatchTokens.editorialBlack.withValues(
+                    alpha: CatchOpacity.none,
+                  ),
+                ],
+                stops: CatchLayout.coverStoryContrastStops,
+              ),
+              child: const SizedBox.expand(),
+            ),
+          ),
+          Positioned.fill(
+            child: CustomPaint(
+              painter: _DiagonalScrimPainter(
+                color: paper.withValues(alpha: CatchOpacity.coverStoryScrim),
+              ),
+            ),
+          ),
+          if (showGhostGlyph && activity != null)
+            Positioned(
+              right: -CatchLayout.coverStoryGhostRightInset,
+              bottom: -CatchLayout.coverStoryGhostBottomInset,
+              child: Icon(
+                activity.glyph,
+                size: CatchLayout.coverStoryGhostGlyphSize,
+                color: paper.withValues(
+                  alpha: CatchOpacity.coverStoryGhostGlyph,
                 ),
               ),
             ),
-            Positioned.fill(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      CatchTokens.editorialBlack.withValues(
-                        alpha: CatchOpacity.coverStoryContrastScrim,
-                      ),
-                      CatchTokens.editorialBlack.withValues(
-                        alpha: CatchOpacity.coverStoryContrastScrimMid,
-                      ),
-                      CatchTokens.editorialBlack.withValues(
-                        alpha: CatchOpacity.none,
-                      ),
-                    ],
-                    stops: CatchLayout.coverStoryContrastStops,
-                  ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (chrome != null)
+                chrome!
+              else if (hasChrome)
+                CoverStoryChrome(paper: paper, story: this),
+              Padding(
+                padding: CatchInsets.pageBody.copyWith(
+                  top: CatchSpacing.s11,
+                  bottom: CatchSpacing.s6,
+                ),
+                child: CoverStoryContent(
+                  paper: paper,
+                  accent: accent,
+                  story: this,
                 ),
               ),
-            ),
-            Positioned.fill(
-              child: CustomPaint(
-                painter: _DiagonalScrimPainter(
-                  color: paper.withValues(alpha: CatchOpacity.coverStoryScrim),
-                ),
-              ),
-            ),
-            if (showGhostGlyph && activity != null)
-              Positioned(
-                right: -CatchLayout.coverStoryGhostRightInset,
-                bottom: -CatchLayout.coverStoryGhostBottomInset,
-                child: Icon(
-                  activity.glyph,
-                  size: CatchLayout.coverStoryGhostGlyphSize,
-                  color: paper.withValues(
-                    alpha: CatchOpacity.coverStoryGhostGlyph,
-                  ),
-                ),
-              ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (chrome != null)
-                  chrome!
-                else if (hasChrome)
-                  CoverStoryChrome(paper: paper, story: this),
-                Padding(
-                  padding: CatchInsets.pageBody.copyWith(
-                    top: CatchSpacing.s11,
-                    bottom: CatchSpacing.s6,
-                  ),
-                  child: CoverStoryContent(
-                    paper: paper,
-                    accent: accent,
-                    story: this,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+            ],
+          ),
+        ],
       ),
     );
   }

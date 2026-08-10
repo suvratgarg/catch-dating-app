@@ -503,21 +503,24 @@ class VibeTile extends StatelessWidget {
             fit: StackFit.expand,
             children: [
               RecapProfilePhoto(profile: row.profile),
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      CatchTokens.editorialBlack.withValues(
-                        alpha: CatchOpacity.none,
-                      ),
-                      CatchTokens.editorialBlack.withValues(
-                        alpha: CatchOpacity.eventRecapTileScrim,
-                      ),
-                    ],
-                  ),
+              CatchSurface(
+                tone: CatchSurfaceTone.transparent,
+                radius: 0,
+                padding: EdgeInsets.zero,
+                duration: Duration.zero,
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    CatchTokens.editorialBlack.withValues(
+                      alpha: CatchOpacity.none,
+                    ),
+                    CatchTokens.editorialBlack.withValues(
+                      alpha: CatchOpacity.eventRecapTileScrim,
+                    ),
+                  ],
                 ),
+                child: const SizedBox.expand(),
               ),
               Positioned(
                 left: CatchSpacing.s2,

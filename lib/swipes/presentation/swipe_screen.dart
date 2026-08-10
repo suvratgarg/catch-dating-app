@@ -445,18 +445,21 @@ class CatchesBottomScrim extends StatelessWidget {
       bottom: 0,
       height: CatchLayout.bottomActionScrimHeight,
       child: IgnorePointer(
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                t.bg.withValues(alpha: CatchOpacity.none),
-                t.bg.withValues(alpha: CatchOpacity.bottomActionScrim),
-                t.bg,
-              ],
-            ),
+        child: CatchSurface(
+          tone: CatchSurfaceTone.transparent,
+          radius: 0,
+          padding: EdgeInsets.zero,
+          duration: Duration.zero,
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              t.bg.withValues(alpha: CatchOpacity.none),
+              t.bg.withValues(alpha: CatchOpacity.bottomActionScrim),
+              t.bg,
+            ],
           ),
+          child: const SizedBox.expand(),
         ),
       ),
     );

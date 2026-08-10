@@ -739,14 +739,14 @@ class _EventCheckInQrScannerSheetState
                       eventId: widget.eventId,
                       onResult: _handleScanResult,
                     ),
-                    DecoratedBox(
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: t.primary,
-                          width: CatchStroke.selection,
-                        ),
-                        borderRadius: BorderRadius.circular(CatchRadius.sm),
-                      ),
+                    CatchSurface(
+                      tone: CatchSurfaceTone.transparent,
+                      radius: CatchRadius.sm,
+                      borderColor: t.primary,
+                      borderWidth: CatchStroke.selection,
+                      padding: EdgeInsets.zero,
+                      duration: Duration.zero,
+                      child: const SizedBox.expand(),
                     ),
                     if (_errorText != null)
                       Align(

@@ -159,113 +159,111 @@ class AttendeeCountdown extends StatelessWidget {
         : seconds <= 7
         ? 0.72
         : 0.38;
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(CatchRadius.sm),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color.alphaBlend(
-                t.primary.withValues(alpha: CatchOpacity.revealGradientStart),
-                t.bg,
-              ),
-              Color.alphaBlend(
-                t.primary.withValues(alpha: CatchOpacity.revealSurfaceBorder),
-                t.bg,
-              ),
-              Color.lerp(t.ink, t.primary, 0.42)!,
-            ],
+    return CatchSurface(
+      tone: CatchSurfaceTone.transparent,
+      radius: CatchRadius.sm,
+      padding: EdgeInsets.zero,
+      clipBehavior: Clip.antiAlias,
+      duration: Duration.zero,
+      gradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          Color.alphaBlend(
+            t.primary.withValues(alpha: CatchOpacity.revealGradientStart),
+            t.bg,
           ),
-          border: Border.all(
-            color: t.gold.withValues(alpha: CatchOpacity.revealGoldBorder),
+          Color.alphaBlend(
+            t.primary.withValues(alpha: CatchOpacity.revealSurfaceBorder),
+            t.bg,
           ),
-          boxShadow: CatchElevation.glow(
-            t.primary.withValues(
-              alpha:
-                  CatchOpacity.revealGlowBase +
-                  urgency * CatchOpacity.revealGlowUrgency,
-            ),
-            blurRadius: 26 + urgency * 18,
-            spreadRadius: 0,
-          ),
+          Color.lerp(t.ink, t.primary, 0.42)!,
+        ],
+      ),
+      borderColor: t.gold.withValues(alpha: CatchOpacity.revealGoldBorder),
+      boxShadow: CatchElevation.glow(
+        t.primary.withValues(
+          alpha:
+              CatchOpacity.revealGlowBase +
+              urgency * CatchOpacity.revealGlowUrgency,
         ),
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: CustomPaint(
-                painter: _CountdownAtmospherePainter(
+        blurRadius: 26 + urgency * 18,
+        spreadRadius: 0,
+      ),
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: CustomPaint(
+              painter: _CountdownAtmospherePainter(
+                progress: progress,
+                intensity: urgency,
+                accent: t.gold,
+                foreground: t.ink,
+              ),
+            ),
+          ),
+          Padding(
+            padding: CatchInsets.content,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Wrap(
+                  spacing: CatchSpacing.s2,
+                  runSpacing: CatchSpacing.s2,
+                  alignment: WrapAlignment.center,
+                  children: [
+                    CatchBadge.onDarkStatus(
+                      label: context
+                          .l10n
+                          .eventSuccessEventSuccessLiveRevealWidgetsLabelRoomHold,
+                      icon: CatchIcons.lockClockRounded,
+                    ),
+                    CatchBadge.onDarkStatus(
+                      label: kind.label(context.l10n),
+                      icon: kind.icon,
+                    ),
+                  ],
+                ),
+                gapH18,
+                CountdownStageDial(
+                  seconds: seconds,
                   progress: progress,
                   intensity: urgency,
-                  accent: t.gold,
-                  foreground: t.ink,
                 ),
-              ),
-            ),
-            Padding(
-              padding: CatchInsets.content,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Wrap(
-                    spacing: CatchSpacing.s2,
-                    runSpacing: CatchSpacing.s2,
-                    alignment: WrapAlignment.center,
-                    children: [
-                      CatchBadge.onDarkStatus(
-                        label: context
-                            .l10n
-                            .eventSuccessEventSuccessLiveRevealWidgetsLabelRoomHold,
-                        icon: CatchIcons.lockClockRounded,
+                gapH16,
+                Text(
+                  _countdownStageHeadline(seconds),
+                  textAlign: TextAlign.center,
+                  style: CatchTextStyles.titleL(
+                    context,
+                    color: t.ink,
+                  ).copyWith(),
+                ),
+                gapH8,
+                Text(
+                  context.l10n
+                      .eventSuccessEventSuccessLiveRevealWidgetsTextEveryoneGetsThisAssignmentnoun(
+                        assignmentNoun: kind.assignmentNoun,
                       ),
-                      CatchBadge.onDarkStatus(
-                        label: kind.label(context.l10n),
-                        icon: kind.icon,
-                      ),
-                    ],
-                  ),
-                  gapH18,
-                  CountdownStageDial(
-                    seconds: seconds,
-                    progress: progress,
-                    intensity: urgency,
-                  ),
-                  gapH16,
-                  Text(
-                    _countdownStageHeadline(seconds),
-                    textAlign: TextAlign.center,
-                    style: CatchTextStyles.titleL(
-                      context,
-                      color: t.ink,
-                    ).copyWith(),
-                  ),
-                  gapH8,
-                  Text(
-                    context.l10n
-                        .eventSuccessEventSuccessLiveRevealWidgetsTextEveryoneGetsThisAssignmentnoun(
-                          assignmentNoun: kind.assignmentNoun,
-                        ),
-                    textAlign: TextAlign.center,
-                    style: CatchTextStyles.proseM(
-                      context,
-                      color: t.ink.withValues(
-                        alpha: CatchOpacity.revealMutedForeground,
-                      ),
+                  textAlign: TextAlign.center,
+                  style: CatchTextStyles.proseM(
+                    context,
+                    color: t.ink.withValues(
+                      alpha: CatchOpacity.revealMutedForeground,
                     ),
                   ),
-                  gapH18,
-                  CountdownBeatRail(
-                    items: beatItems,
-                    currentIndex: currentBeatIndex,
-                  ),
-                  gapH14,
-                  CountdownCueStack(clue: clue),
-                ],
-              ),
+                ),
+                gapH18,
+                CountdownBeatRail(
+                  items: beatItems,
+                  currentIndex: currentBeatIndex,
+                ),
+                gapH14,
+                CountdownCueStack(clue: clue),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

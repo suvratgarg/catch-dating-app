@@ -31,24 +31,18 @@ class ClubIndexRow extends StatelessWidget {
         padding: CatchInsets.tileContentCompact,
         child: Row(
           children: [
-            DecoratedBox(
-              decoration: BoxDecoration(
-                color: t.surface,
+            CatchSurface(
+              backgroundColor: t.surface,
+              radius: CatchLayout.organizerPosterRadius,
+              borderColor: t.line,
+              padding: CatchInsets.mediaFrameContent,
+              child: ClipRRect(
                 borderRadius: BorderRadius.circular(
-                  CatchLayout.organizerPosterRadius,
+                  CatchLayout.organizerPosterMediaRadius,
                 ),
-                border: Border.all(color: t.line),
-              ),
-              child: Padding(
-                padding: CatchInsets.mediaFrameContent,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(
-                    CatchLayout.organizerPosterMediaRadius,
-                  ),
-                  child: SizedBox.square(
-                    dimension: CatchSpacing.s16,
-                    child: ClubImage(club: club, coverOnly: true),
-                  ),
+                child: SizedBox.square(
+                  dimension: CatchSpacing.s16,
+                  child: ClubImage(club: club, coverOnly: true),
                 ),
               ),
             ),

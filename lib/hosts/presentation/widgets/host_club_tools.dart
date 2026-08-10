@@ -57,14 +57,17 @@ class HostClubManagementPanel extends StatelessWidget {
       child: Stack(
         children: [
           Positioned.fill(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: palette.gradientColors,
-                ),
+            child: CatchSurface(
+              tone: CatchSurfaceTone.transparent,
+              radius: 0,
+              padding: EdgeInsets.zero,
+              duration: Duration.zero,
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: palette.gradientColors,
               ),
+              child: const SizedBox.expand(),
             ),
           ),
           Padding(

@@ -213,20 +213,14 @@ class ClubDirectorySkeletonCard extends StatelessWidget {
       padding: CatchInsets.tileContentCompact,
       child: Row(
         children: [
-          DecoratedBox(
-            decoration: BoxDecoration(
-              color: t.surface,
-              borderRadius: BorderRadius.circular(
-                CatchLayout.organizerPosterRadius,
-              ),
-              border: Border.all(color: t.line),
-            ),
-            child: Padding(
-              padding: CatchInsets.mediaFrameContent,
-              child: CatchSkeleton.card(
-                width: CatchSpacing.s16,
-                height: CatchSpacing.s16,
-              ),
+          CatchSurface(
+            backgroundColor: t.surface,
+            radius: CatchLayout.organizerPosterRadius,
+            borderColor: t.line,
+            padding: CatchInsets.mediaFrameContent,
+            child: CatchSkeleton.card(
+              width: CatchSpacing.s16,
+              height: CatchSpacing.s16,
             ),
           ),
           gapW12,

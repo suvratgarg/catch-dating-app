@@ -318,25 +318,28 @@ class EventDetailTicketSurface extends StatelessWidget {
                       fallbackIconOpacity: 0.15,
                       fallbackPatternOpacity: 0.24,
                     ),
-                    DecoratedBox(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.transparent,
-                            CatchTokens.editorialBlack.withValues(
-                              alpha: CatchOpacity.eventHeroGradientMidScrim,
-                            ),
-                            CatchTokens.editorialBlack.withValues(
-                              alpha: isSpotlight
-                                  ? CatchOpacity.eventHeroSpotlightBottomScrim
-                                  : CatchOpacity.eventHeroGradientBottomScrim,
-                            ),
-                          ],
-                          stops: const [0, 0.52, 1],
-                        ),
+                    CatchSurface(
+                      tone: CatchSurfaceTone.transparent,
+                      radius: 0,
+                      padding: EdgeInsets.zero,
+                      duration: Duration.zero,
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.transparent,
+                          CatchTokens.editorialBlack.withValues(
+                            alpha: CatchOpacity.eventHeroGradientMidScrim,
+                          ),
+                          CatchTokens.editorialBlack.withValues(
+                            alpha: isSpotlight
+                                ? CatchOpacity.eventHeroSpotlightBottomScrim
+                                : CatchOpacity.eventHeroGradientBottomScrim,
+                          ),
+                        ],
+                        stops: const [0, 0.52, 1],
                       ),
+                      child: const SizedBox.expand(),
                     ),
                     Positioned(
                       left: CatchSpacing.s5,

@@ -202,27 +202,25 @@ class PaymentCheckoutEventBackdrop extends StatelessWidget {
       children: [
         SizedBox(
           height: CatchLayout.paymentCheckoutBackdropHeight,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [visual.accent, visual.deep],
-              ),
+          child: CatchSurface(
+            tone: CatchSurfaceTone.transparent,
+            radius: 0,
+            padding: CatchInsets.pageBody.copyWith(
+              top: CatchSpacing.s5,
+              bottom: CatchSpacing.s5,
             ),
-            child: Padding(
-              padding: CatchInsets.pageBody.copyWith(
-                top: CatchSpacing.s5,
-                bottom: CatchSpacing.s5,
-              ),
-              child: Align(
-                alignment: Alignment.bottomLeft,
-                child: Text(
-                  event.title,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.headline(context, color: t.primaryInk),
-                ),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [visual.accent, visual.deep],
+            ),
+            child: Align(
+              alignment: Alignment.bottomLeft,
+              child: Text(
+                event.title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: CatchTextStyles.headline(context, color: t.primaryInk),
               ),
             ),
           ),

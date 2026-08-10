@@ -282,12 +282,13 @@ class PaperProgressRail extends StatelessWidget {
       children: [
         for (var index = 0; index < count; index++) ...[
           Expanded(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: index < active ? t.primary : t.line2,
-                borderRadius: BorderRadius.circular(CatchRadius.pill),
-              ),
-              child: const SizedBox(height: CatchSpacing.micro3),
+            child: CatchSurface(
+              backgroundColor: index < active ? t.primary : t.line2,
+              radius: CatchRadius.pill,
+              height: CatchSpacing.micro3,
+              padding: EdgeInsets.zero,
+              duration: Duration.zero,
+              child: const SizedBox.expand(),
             ),
           ),
           if (index != count - 1) gapW4,
