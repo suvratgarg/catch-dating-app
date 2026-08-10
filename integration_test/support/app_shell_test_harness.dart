@@ -155,9 +155,7 @@ Future<void> pumpSheet(WidgetTester tester) => pumpAppShellFrames(tester);
 Future<void> openClubDetail(WidgetTester tester, Club club) async {
   if (await _tapVisibleClubCard(tester, club)) return;
 
-  final shell = find.byType(AppShell);
-  expect(shell, findsOneWidget);
-  final context = tester.element(shell);
+  final context = _routerContext(tester);
   unawaited(
     GoRouter.of(context).pushNamed(
       Routes.clubDetailScreen.name,
@@ -174,9 +172,7 @@ Future<void> openEventDetail(
   required Event event,
   bool settle = true,
 }) async {
-  final shell = find.byType(AppShell);
-  expect(shell, findsOneWidget);
-  final context = tester.element(shell);
+  final context = _routerContext(tester);
   unawaited(
     GoRouter.of(context).pushNamed(
       Routes.eventDetailScreen.name,
@@ -192,9 +188,7 @@ Future<void> openEventDetail(
 }
 
 Future<void> openSwipeDeck(WidgetTester tester, Event event) async {
-  final shell = find.byType(AppShell);
-  expect(shell, findsOneWidget);
-  final context = tester.element(shell);
+  final context = _routerContext(tester);
   unawaited(
     GoRouter.of(context).pushNamed(
       Routes.swipeEventScreen.name,
@@ -202,6 +196,21 @@ Future<void> openSwipeDeck(WidgetTester tester, Event event) async {
     ),
   );
   await pumpRoute(tester);
+}
+
+BuildContext _routerContext(WidgetTester tester) {
+  final shell = find.byType(AppShell);
+  if (shell.evaluate().isNotEmpty) {
+    return tester.element(shell);
+  }
+
+  // App-shell child routes are presented on the root navigator, so the shell
+  // itself is intentionally absent while one is visible. The navigator still
+  // inherits the same GoRouter and is the stable routing context in both
+  // states.
+  final navigator = find.byType(Navigator);
+  expect(navigator, findsWidgets);
+  return tester.element(navigator.first);
 }
 
 Future<void> openAppTab(WidgetTester tester, String label) async {
