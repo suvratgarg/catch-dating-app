@@ -5374,12 +5374,6 @@ abstract class AppLocalizations {
   /// **'no-selected-map-event'**
   String get exploreExploreMapScreenBodyNoSelectedMapEvent;
 
-  /// Product copy used by lib/explore/presentation/explore_screen.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'explore-list-scroll-view'**
-  String get exploreExploreScreenBodyExploreListScrollView;
-
   /// Product copy used by lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart (label).
   ///
   /// In en, this message translates to:
