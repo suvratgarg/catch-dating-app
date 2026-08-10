@@ -20,15 +20,12 @@ similarity on demand under `build/reports/`, keep durable decisions in
   `tool/flutter_with_env.sh`).
 - Never edit `packages/catch_ui_lints/` (local plugin recompile crashes
   `dart analyze`).
-- `lib/` analyzer baseline: **188 info-level issues, 0 warnings/errors**
-  (re-verified 2026-07-03 post-WO-014 review). Any new warning/error is
-  regression from your change; the info count may only go down.
-- Widgetbook workspace analyzer baseline: **65 issues, 0 warnings** (post
-  WO-014 review).
-- `check_widgetbook_coverage.mjs --check` fails on an INHERITED
-  catalog-or-replace decision queue (134 items at review time, owned by the
-  review session — do not work it). Record the count in each receipt; treat
-  the check as regression only if the count GROWS from your change.
+- The repository-wide analyzer gate is **zero diagnostics across eight Dart
+  and Flutter packages** as of 2026-08-10. Run
+  `node tool/ci/check_flutter_workspace_analysis.mjs`; any diagnostic is a
+  regression.
+- `check_widgetbook_coverage.mjs --check` has a zero-item decision queue.
+  Treat any new queue item as a regression owned by the change that created it.
 
 ## Hard-won gotchas (read before every order)
 
@@ -49,19 +46,16 @@ similarity on demand under `build/reports/`, keep durable decisions in
 5. When deleting a widget class, delete `class X extends … {` through the next
    `}` at column 0, then grep repo-wide (`lib/`, `widgetbook/lib`, excluding
    `*.g.dart`) for the name and assert zero references remain.
-6. Registries go stale after any widget add/delete/rename. Regenerate in this
-   order and run their checks:
+6. Registries go stale after any widget add/delete/rename. Resolve the
+   standalone fingerprint package, then use the canonical design-parity
+   orchestrator so classification, Analyzer-backed fingerprints, similarity,
+   Widgetbook coverage, and seeded probes share one checked execution path:
    ```bash
-   node tool/design/generate_widget_classification.mjs
-   node tool/design/check_widget_classification.mjs
-   dart run tool/widget_dedupe/bin/extract_fingerprints.dart
-   node tool/design/build_widget_similarity.mjs
-   node tool/design/build_widget_similarity.mjs --check
-   node tool/design/check_widgetbook_coverage.mjs --check
-   env DART=$HOME/development/flutter/bin/dart node tool/design/check_widget_dedupe_probes.mjs
+   dart pub get -C tool/widget_dedupe
+   node tool/design/check_design_parity.mjs --check
    ```
-7. Verification suite per order: `flutter analyze lib` (compare against
-   baseline above), `cd widgetbook && flutter analyze`, plus item 6.
+7. Verification suite per order: the zero-diagnostic workspace analyzer gate
+   above, plus item 6.
 8. Append a concise verification section per completed order here (commands,
    counts, spot-checks). Do not create a separate tracked receipt file.
 9. **Escalations live in THIS file's Escalations section.** A skip justified

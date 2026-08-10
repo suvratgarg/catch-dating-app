@@ -388,27 +388,13 @@ List<Map<String, Object?>> _constructorParams(
 ) {
   if (constructor == null) return const [];
   return constructor.parameters.parameters.map((parameter) {
-    final normal = parameter is DefaultFormalParameter
-        ? parameter.parameter
-        : parameter;
     return {
-      'name': normal.name?.lexeme,
-      'type': _parameterType(normal),
+      'name': parameter.name?.lexeme,
+      'type': parameter.type?.toSource(),
       'required':
-          normal.requiredKeyword != null ||
-          (parameter is DefaultFormalParameter && parameter.isRequiredNamed),
+          parameter.requiredKeyword != null || parameter.isRequiredNamed,
     };
   }).toList();
-}
-
-String? _parameterType(FormalParameter parameter) {
-  if (parameter is SimpleFormalParameter) return parameter.type?.toSource();
-  if (parameter is FieldFormalParameter) return parameter.type?.toSource();
-  if (parameter is SuperFormalParameter) return parameter.type?.toSource();
-  if (parameter is FunctionTypedFormalParameter) {
-    return parameter.returnType?.toSource();
-  }
-  return null;
 }
 
 Set<String> _shingles(List<String> tokens, int k) {
@@ -631,13 +617,13 @@ class _TokenVisitor extends RecursiveAstVisitor<void> {
     super.visitNullLiteral(node);
   }
 
-  void _emitWidgetInvocation(String rawName, NodeList<Expression> arguments) {
+  void _emitWidgetInvocation(String rawName, NodeList<Argument> arguments) {
     final widgetToken = 'W:${_normalizeConstructorName(rawName)}';
     tokens.addBoth(widgetToken);
     final coarseArgs = <String>[];
     for (final argument in arguments) {
-      if (argument is NamedExpression) {
-        final token = 'A:${argument.name.label.name}';
+      if (argument is NamedArgument) {
+        final token = 'A:${argument.name.lexeme}';
         tokens.fine.add(token);
         coarseArgs.add(token);
       } else {
