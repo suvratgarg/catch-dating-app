@@ -102,7 +102,6 @@ dev_dependencies:
   riverpod_lint: ^3.1.4
   catch_ui_lints:
     path: packages/catch_ui_lints
-  envied_generator: ^1.1.0
   freezed: ^3.0.0
   json_serializable: ^6.14.0
   riverpod: ^3.3.2

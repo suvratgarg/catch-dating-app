@@ -48,6 +48,7 @@ import {requireActiveCrossPathsPairHold} from
 
 interface CreateRazorpayOrderDeps {
   createClient: () => Razorpay;
+  clientKeyId: () => string;
   firestore: () => FirebaseFirestore.Firestore;
   now: () => number;
   serverTimestamp: () => unknown;
@@ -55,6 +56,7 @@ interface CreateRazorpayOrderDeps {
 
 const defaultDeps: CreateRazorpayOrderDeps = {
   createClient: createRazorpayClient,
+  clientKeyId: () => razorpayKeyId.value(),
   firestore: () => admin.firestore(),
   now: () => Date.now(),
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
@@ -64,7 +66,8 @@ const defaultDeps: CreateRazorpayOrderDeps = {
  * Creates a Razorpay order from trusted Firestore event data.
  * @param {CallableRequest<Partial<CreateOrderData> | null>} request Callable.
  * @param {CreateRazorpayOrderDeps} deps Injectable service dependencies.
- * @return {Promise<{orderId: string, amount: number, currency: string}>} Order.
+ * @return {Promise<{orderId: string, amount: number, currency: string,
+ *   keyId: string}>} Order and same-environment public checkout key.
  */
 export async function createRazorpayOrderHandler(
   request: CallableRequest<unknown>,
@@ -248,6 +251,7 @@ export async function createRazorpayOrderHandler(
     orderId: order.id,
     amount: Number(order.amount),
     currency: order.currency,
+    keyId: deps.clientKeyId(),
   };
 }
 

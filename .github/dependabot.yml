@@ -1,29 +1,44 @@
 version: 2
 updates:
-  # Keep the initial rollout security-only. Version-update PRs stay disabled
-  # until security-update volume is observed and shown to be reviewable.
+  # Security fixes stay grouped. Routine version updates are limited to one
+  # compatible minor/patch PR per ecosystem; majors require an explicit slice.
   - package-ecosystem: "npm"
+    # The root npm workspace owns admin, website, and packages/web-ui. Listing
+    # those members separately makes Dependabot resolve @catch/web-ui from the
+    # public registry instead of the checked-in workspace package.
     directories:
       - "/"
-      - "/admin"
-      - "/website"
-      - "/packages/web-ui"
       - "/functions"
       - "/operations"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 0
+      day: "wednesday"
+      time: "05:30"
+      timezone: "Asia/Kolkata"
+    open-pull-requests-limit: 1
     groups:
       security:
         applies-to: "security-updates"
         patterns:
           - "*"
+      compatible-version-updates:
+        applies-to: "version-updates"
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
 
   - package-ecosystem: "pub"
+    # The root Pub workspace owns apps/consumer and apps/host. Listing either
+    # member separately makes Dependabot run dependency_services below the
+    # workspace root and fail before it can propose an update.
     directories:
       - "/"
-      - "/apps/consumer"
-      - "/apps/host"
       - "/packages/catch_ui_lints"
       - "/packages/phosphor_flutter"
       - "/packages/phosphor_flutter/example"
@@ -31,20 +46,48 @@ updates:
       - "/widgetbook"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 0
+      day: "wednesday"
+      time: "05:45"
+      timezone: "Asia/Kolkata"
+    open-pull-requests-limit: 1
     groups:
       security:
         applies-to: "security-updates"
         patterns:
           - "*"
+      compatible-version-updates:
+        applies-to: "version-updates"
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 0
+      day: "wednesday"
+      time: "06:00"
+      timezone: "Asia/Kolkata"
+    open-pull-requests-limit: 1
     groups:
       security:
         applies-to: "security-updates"
         patterns:
           - "*"
+      compatible-version-updates:
+        applies-to: "version-updates"
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"

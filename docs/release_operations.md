@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 2.0.5
-updated: 2026-08-09
+version: 2.0.8
+updated: 2026-08-10
 owner: recursive_audit_loop
 status: active
 ---
@@ -207,12 +207,12 @@ The current workflows are:
 | Workflow | Purpose |
 |---|---|
 | `.github/workflows/ci.yml` | Always-running impact planner, reusable-workflow fanout, scheduled full matrix, and stable required aggregate. |
-| `.github/workflows/flutter-ci.yml` | Reusable design parity, Flutter analysis, unit/widget tests, and UI lint smoke checks. |
+| `.github/workflows/flutter-ci.yml` | Reusable design parity, exhaustive root-and-nested-package analysis, fail-closed unit/widget test selection, and UI lint smoke checks. |
 | `.github/workflows/functions-ci.yml` | Functions lint/test plus Firestore contract check on Node 24. |
 | `.github/workflows/firestore-rules-ci.yml` | Firestore contract check plus emulator-backed rules tests. |
 | `.github/workflows/contracts-ci.yml` | Validates the `contracts/` schema source of truth: source validity, generated-output freshness, schema/type boundaries, path literals, and rules semantics. |
 | `.github/workflows/operations-ci.yml` | Reusable Operations platform contracts, tests, boundaries, and CLI smoke lane, selected independently from general repository tooling. |
-| `.github/workflows/app-build-matrix.yml` | Reusable role/platform-selective dev web, Android debug APK, and iOS simulator build gates. |
+| `.github/workflows/app-build-matrix.yml` | Reusable role/platform-selective dev web, Android debug APK, and parallel per-role iOS simulator build gates. Cheap app-structure ratchets run before any expensive compile. |
 | `.github/workflows/delivery.yml` | Sole backend delivery entrypoint. Authorizes a successful same-repository `main` CI run and promotes its exact package through dev, staging, and protected production. |
 | `.github/workflows/_firebase-promote.yml` | Reusable environment adapter that verifies provenance before authentication, resumes ordered stages, and waits for deployed Firestore indexes to become ready before dependent stages continue. |
 | `.github/workflows/data-validation.yml` | Read-only Firestore data validation, nightly and manual. |
@@ -226,6 +226,35 @@ The current workflows are:
 | `.github/workflows/mobile-internal-promote.yml` | Manual exact-artifact promoter. It verifies one current successful producer attempt and its authority/package ids, digests, provenance, and target before uploading the already-signed IPA to TestFlight or AAB to Play `qa`; it never rebuilds or resigns. |
 | `.github/workflows/observability-evidence.yml` | Manual Crashlytics and Analytics evidence capture. |
 | `.github/workflows/website-production-observability.yml` | Scheduled and manual production website status, canonical-metadata, and launch-content probes. |
+
+### Dependency maintenance
+
+GitHub-native Dependabot is the sole routine dependency-update service. It
+checks npm, Pub, and GitHub Actions each Wednesday, groups compatible minor and
+patch updates into at most one open pull request per ecosystem, and keeps
+security updates grouped separately. Major versions are deliberately excluded:
+each major upgrade needs its own impact review and full selected CI evidence.
+
+The 2026-08-10 Pub baseline upgraded every release resolvable under the current
+constraints: 74 packages (33 in the Firebase family and 41 in the remaining
+Flutter/tooling family). `flutter pub outdated --json` then reported zero
+upgradeable packages, zero advisory-affected packages, zero discontinued
+packages, and 38 packages blocked by coordinated constraints or major-version
+boundaries. Do not describe the `flutter pub get` summary as 38 independent
+patches.
+
+iOS remains on CocoaPods, not Swift Package Manager. The current
+`razorpay_flutter`, `health`, and `google_maps_flutter_ios` plugin graph still
+reports missing SPM support, and the FirebaseFirestore prebuilt-pod graph has a
+separate duplicate-symbol boundary. Remove `enable-swift-package-manager:
+false` only in a dedicated migration after both conditions are resolved and
+Consumer plus Host iOS builds pass together.
+
+`tool/app_targets.json#appleNativeDependencies` binds the checked-in
+`firebase_core` and `cloud_firestore` Flutter versions to the Firebase Apple SDK
+used by all four iOS/macOS Podfiles and lockfiles. The app-target structural
+gate fails before native compilation when a compatible Pub update changes one
+side without regenerating the CocoaPods graphs.
 
 ## Git Branch Hygiene
 
@@ -1025,10 +1054,11 @@ complete for each target environment (`dev`, `staging`, and `prod`):
   Current non-prod/prod state has reused test-mode Razorpay secrets; replace
   them with the intended `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` values per
   Firebase project.
-- [ ] Before client code generation or a mobile release build, ensure the local,
-  git-ignored root `.env` contains a non-placeholder `RAZORPAY_KEY_ID`. The
-  client key is separate from the Firebase Secret Manager credentials used by
-  Functions and must never be committed.
+- [ ] Verify `createRazorpayOrder` returns the public `keyId` from the same
+  Firebase Secret Manager environment that created the order. Mobile builds do
+  not read a local Razorpay `.env` value or embed a generated key. The
+  `RAZORPAY_KEY_SECRET` remains server-only and must never enter a client
+  contract or artifact.
 - [ ] Replace the temporary `RAZORPAY_WEBHOOK_SECRET` values before enabling
   real Razorpay webhooks. As of 2026-06-26, `dev`, `staging`, and `prod` each
   have an enabled placeholder Secret Manager version so unrelated Functions

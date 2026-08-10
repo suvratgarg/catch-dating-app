@@ -23340,6 +23340,14 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Z]{3}\$',
   );
 
+  static const razorpayOrderCallableResponseKeyId = CatchContractFieldConstraints(
+    path: 'razorpayOrderCallableResponse.keyId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const razorpayOrderCallableResponseOrderId = CatchContractFieldConstraints(
     path: 'razorpayOrderCallableResponse.orderId',
     maxLength: 180,
@@ -32595,6 +32603,7 @@ abstract final class CatchContractConstraints {
     'rateLimitDocument.windowKey': rateLimitDocumentWindowKey,
     'razorpayOrderCallableResponse.amount': razorpayOrderCallableResponseAmount,
     'razorpayOrderCallableResponse.currency': razorpayOrderCallableResponseCurrency,
+    'razorpayOrderCallableResponse.keyId': razorpayOrderCallableResponseKeyId,
     'razorpayOrderCallableResponse.orderId': razorpayOrderCallableResponseOrderId,
     'razorpayPendingOrderDocument.amountInPaise': razorpayPendingOrderDocumentAmountInPaise,
     'razorpayPendingOrderDocument.createdAt._nanoseconds': razorpayPendingOrderDocumentCreatedAtNanoseconds,

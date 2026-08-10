@@ -3,6 +3,7 @@ final class RazorpayOrderCallableResponse {
     required this.orderId,
     required this.amountInPaise,
     required this.currency,
+    required this.keyId,
   });
 
   factory RazorpayOrderCallableResponse.fromCallableData(Object? data) {
@@ -10,17 +11,21 @@ final class RazorpayOrderCallableResponse {
       final orderId = map['orderId'] as String?;
       final amount = (map['amount'] as num?)?.toInt();
       final currency = map['currency'] as String?;
+      final keyId = map['keyId'] as String?;
 
       if (orderId != null &&
           orderId.isNotEmpty &&
           amount != null &&
           amount > 0 &&
           currency != null &&
-          currency.isNotEmpty) {
+          currency.isNotEmpty &&
+          keyId != null &&
+          keyId.isNotEmpty) {
         return RazorpayOrderCallableResponse(
           orderId: orderId,
           amountInPaise: amount,
           currency: currency,
+          keyId: keyId,
         );
       }
     }
@@ -31,6 +36,7 @@ final class RazorpayOrderCallableResponse {
   final String orderId;
   final int amountInPaise;
   final String currency;
+  final String keyId;
 }
 
 final class RazorpayOrderCallableResponseFormatException implements Exception {

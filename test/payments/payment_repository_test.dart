@@ -110,6 +110,7 @@ void main() {
                 'orderId': 'order_123',
                 'amount': 25000,
                 'currency': 'INR',
+                'keyId': 'rzp_test_server_environment',
               };
         functions.callables['verifyRazorpayPayment'] = TestHttpsCallable(
           'verifyRazorpayPayment',
@@ -131,6 +132,7 @@ void main() {
         expect(razorpay.openCalls.single['order_id'], 'order_123');
         expect(razorpay.openCalls.single['amount'], 25000);
         expect(razorpay.openCalls.single['currency'], 'INR');
+        expect(razorpay.openCalls.single['key'], 'rzp_test_server_environment');
 
         razorpay.emitSuccess(
           const RazorpaySuccessResponse(
@@ -376,6 +378,7 @@ void main() {
                 'orderId': 'order_123',
                 'amount': 25000,
                 'currency': 'INR',
+                'keyId': 'rzp_test_server_environment',
               };
 
         final future = repository.processPayment(
@@ -410,6 +413,7 @@ void main() {
               'orderId': 'order_123',
               'amount': 25000,
               'currency': 'INR',
+              'keyId': 'rzp_test_server_environment',
             };
 
       final future = repository.processPayment(
@@ -441,6 +445,7 @@ void main() {
                 'orderId': 'order_123',
                 'amount': 25000,
                 'currency': 'INR',
+                'keyId': 'rzp_test_server_environment',
               };
         functions.callables['verifyRazorpayPayment'] =
             TestHttpsCallable('verifyRazorpayPayment')

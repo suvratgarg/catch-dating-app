@@ -10,7 +10,6 @@ import 'package:catch_dating_app/payments/data/payment_callable_responses.dart';
 import 'package:catch_dating_app/payments/data/razorpay_checkout.dart';
 import 'package:catch_dating_app/payments/domain/payment.dart';
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
-import 'package:catch_dating_app/payments/env/env.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -148,7 +147,7 @@ class PaymentRepository {
 
     try {
       razorpay.open({
-        'key': Env.razorpayKeyId,
+        'key': order.keyId,
         'order_id': order.orderId,
         'amount': order.amountInPaise,
         'currency': order.currency,

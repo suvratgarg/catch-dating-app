@@ -24,9 +24,10 @@ jobs:
 
       - uses: ./.github/actions/setup-flutter
 
-      - run: npm ci
+      - name: Analyze every Dart and Flutter package
+        run: node tool/ci/check_flutter_workspace_analysis.mjs
 
-      - run: flutter pub get
+      - run: npm ci
 
       - name: Form and schema constraint alignment
         run: flutter test --concurrency=1 test/core/forms/contract_alignment_test.dart
@@ -66,9 +67,6 @@ jobs:
 
       - name: Frontend error boundary gate
         run: npm run audit:frontend-errors:check
-
-      - name: Static analysis
-        run: flutter analyze --no-fatal-infos
 
       - name: Riverpod lint plugin smoke check
         run: bash tool/check_riverpod_lint.sh
@@ -189,7 +187,8 @@ jobs:
           count="$(wc -l < /tmp/flutter_test_files.txt | tr -d '[:space:]')"
           echo "Running ${count} test files in shard ${SHARD_INDEX}/${SHARD_TOTAL}."
           if [[ "${count}" == "0" ]]; then
-            exit 0
+            echo "No test files were selected for shard ${SHARD_INDEX}/${SHARD_TOTAL}." >&2
+            exit 1
           fi
 
           mapfile -t files < /tmp/flutter_test_files.txt
@@ -217,6 +216,11 @@ jobs:
             -not -path 'test/goldens/*' \
             -not -path 'test/integration/*' | sort \
             > /tmp/flutter_coverage_test_files.txt
+          count="$(wc -l < /tmp/flutter_coverage_test_files.txt | tr -d '[:space:]')"
+          if [[ "${count}" == "0" ]]; then
+            echo "No test files were selected for Flutter coverage." >&2
+            exit 1
+          fi
           mapfile -t files < /tmp/flutter_coverage_test_files.txt
           flutter test --concurrency=1 --exclude-tags=golden --coverage "${files[@]}"
 
@@ -251,10 +255,6 @@ jobs:
       - name: Resolve Widgetbook dependencies
         working-directory: widgetbook
         run: flutter pub get
-
-      - name: Analyze executable previews
-        working-directory: widgetbook
-        run: flutter analyze --no-fatal-warnings --no-fatal-infos
 
       - name: Build Widgetbook web app
         working-directory: widgetbook

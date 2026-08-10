@@ -435,9 +435,9 @@ class CatchUiMutationProbe extends ConsumerWidget {
     final saveMutation = ref.watch(
       EventDetailMutationProbeController.saveMutation,
     );
-    final deleteMutation = ref.watch(
-      EventDetailMutationProbeController.deleteMutation,
-    );
+    final deleteMutationHandle =
+        EventDetailMutationProbeController.deleteMutation;
+    final deleteMutation = ref.watch(deleteMutationHandle);
     final saveFailed = saveMutation.hasError;
     return Text(deleteMutation.isPending || saveFailed ? 'Busy' : 'Ready');
   }
@@ -469,14 +469,14 @@ class CatchUiMutationProbe extends ConsumerWidget {
     final saveMutation = ref.watch(
       EventDetailMutationProbeController.saveMutation,
     );
-    final deleteMutation = ref.watch(
-      EventDetailMutationProbeController.deleteMutation,
-    );
+    final deleteMutationHandle =
+        EventDetailMutationProbeController.deleteMutation;
+    final deleteMutation = ref.watch(deleteMutationHandle);
     if (saveMutation.hasError) {
       return Text('Failed', style: CatchTextStyles.supporting(context));
     }
     return CatchMutationErrorListener(
-      mutation: EventDetailMutationProbeController.deleteMutation,
+      mutation: deleteMutationHandle,
       child: Text(
         deleteMutation.isPending ? 'Deleting' : 'Ready',
         style: CatchTextStyles.supporting(context),

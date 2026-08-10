@@ -3,7 +3,9 @@ import fs from "node:fs";
 import test from "node:test";
 import {
   androidClientFor,
+  packageVersionFromPubLock,
   parseAppleBuildConfigurations,
+  validateAppleFirebaseLockstep,
   validateAutomaticAppleSigningSettings,
   validateAndroidBuildSource,
   validateManifestShape,
@@ -50,12 +52,73 @@ function validManifest() {
   return {
     schemaVersion: 1,
     logicalName: "catch-installable-app-targets",
+    appleNativeDependencies: {},
     roles,
     environments,
     targets,
     transitionalDebt: [],
   };
 }
+
+test("Apple Firebase graph stays bound to Flutter packages and every Pod lock", () => {
+  const policy = {
+    firebaseCoreFlutterVersion: "4.13.0",
+    cloudFirestoreFlutterVersion: "6.8.0",
+    firebaseAppleSdkVersion: "12.17.0",
+  };
+  const pubLockSource = `
+packages:
+  cloud_firestore:
+    dependency: direct main
+    version: "6.8.0"
+  firebase_core:
+    dependency: direct main
+    version: "4.13.0"
+`;
+  const podfileSource =
+    "pod 'FirebaseFirestore', :git => 'https://example.invalid/firestore.git', :tag => '12.17.0'";
+  const lockfileSource = `
+  - Firebase/Firestore (12.17.0):
+  - FirebaseCore (12.17.0):
+  - FirebaseFirestore (12.17.0):
+    :tag: 12.17.0
+`;
+  const project = {
+    podfilePath: "ios/Podfile",
+    podfileSource,
+    lockfilePath: "ios/Podfile.lock",
+    lockfileSource,
+  };
+
+  assert.equal(packageVersionFromPubLock(pubLockSource, "firebase_core"), "4.13.0");
+  assert.deepEqual(
+    validateAppleFirebaseLockstep({
+      policy,
+      pubLockSource,
+      podProjects: [project],
+    }),
+    [],
+  );
+  assert.ok(
+    validateAppleFirebaseLockstep({
+      policy,
+      pubLockSource: pubLockSource.replace('version: "4.13.0"', 'version: "4.14.0"'),
+      podProjects: [project],
+    }).some((finding) => finding.includes("firebase_core is 4.14.0")),
+  );
+  assert.ok(
+    validateAppleFirebaseLockstep({
+      policy,
+      pubLockSource,
+      podProjects: [
+        {
+          ...project,
+          podfileSource: podfileSource.replace("12.17.0", "12.14.0"),
+        },
+      ],
+    }).some((finding) => finding.includes("pins FirebaseFirestore 12.14.0")),
+  );
+});
 
 test("validateManifestShape rejects a duplicate role/environment target", () => {
   const manifest = validManifest();
