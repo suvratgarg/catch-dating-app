@@ -45,6 +45,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
+import '../preview_layout_contracts.dart';
+
 const _viewerUid = 'widgetbook-explore-viewer';
 final _now = DateTime(2026, 6, 22, 9);
 
@@ -330,7 +332,7 @@ Widget exploreScreenStates(BuildContext context) {
       _StateCard(
         label: 'loading with sticky chrome',
         child: _DeviceFrame(
-          height: 620,
+          height: WidgetbookPreviewLayout.exploreRoutePreviewHeight,
           child: _ExploreScope(
             viewModel: const AsyncLoading<ExploreViewModel>(),
             feed: const AsyncLoading<ExploreFeedViewModel>(),
@@ -341,7 +343,7 @@ Widget exploreScreenStates(BuildContext context) {
       _StateCard(
         label: 'club source error',
         child: _DeviceFrame(
-          height: 620,
+          height: WidgetbookPreviewLayout.exploreRoutePreviewHeight,
           child: _ExploreScope(
             sourceClubs: AsyncError<List<Club>>(
               StateError('Widgetbook club source failed'),
@@ -358,7 +360,7 @@ Widget exploreScreenStates(BuildContext context) {
       _StateCard(
         label: 'search and filters empty',
         child: _DeviceFrame(
-          height: 620,
+          height: WidgetbookPreviewLayout.exploreRoutePreviewHeight,
           child: _ExploreScope(
             searchQuery: 'supperclub for marathoners near worli',
             seedFilters: const _FilterSeed(
@@ -384,7 +386,7 @@ Widget exploreScreenStates(BuildContext context) {
         child: _MediaOverride(
           textScaler: const TextScaler.linear(2),
           child: _DeviceFrame(
-            height: 760,
+            height: WidgetbookPreviewLayout.profilePhonePreviewHeight,
             child: _ExploreScope(child: const ExploreScreen()),
           ),
         ),
@@ -415,7 +417,7 @@ Widget exploreSkeletonListStates(BuildContext context) {
       _StateCard(
         label: 'route loading stack',
         child: const _DeviceFrame(
-          height: 360,
+          height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
           child: SingleChildScrollView(
             padding: CatchInsets.pageBody,
             child: ExploreSkeletonList(),
@@ -668,28 +670,28 @@ Widget crossPathsInvitationStates(BuildContext context) {
       _StateCard(
         label: 'incoming invitation',
         child: _DeviceFrame(
-          height: 680,
+          height: WidgetbookPreviewLayout.exploreTallPreviewHeight,
           child: _CrossPathsInvitationScope(invitation: pending),
         ),
       ),
       _StateCard(
         label: 'outgoing invitation',
         child: _DeviceFrame(
-          height: 680,
+          height: WidgetbookPreviewLayout.exploreTallPreviewHeight,
           child: _CrossPathsInvitationScope(invitation: outgoing),
         ),
       ),
       _StateCard(
         label: 'accepted event plan',
         child: _DeviceFrame(
-          height: 680,
+          height: WidgetbookPreviewLayout.exploreTallPreviewHeight,
           child: _CrossPathsInvitationScope(invitation: accepted),
         ),
       ),
       _StateCard(
         label: 'pair spot held but requester not booked',
         child: _DeviceFrame(
-          height: 680,
+          height: WidgetbookPreviewLayout.exploreTallPreviewHeight,
           child: _CrossPathsInvitationScope(
             invitation: pairHeld,
             pairHold: pairHold,
@@ -699,28 +701,28 @@ Widget crossPathsInvitationStates(BuildContext context) {
       _StateCard(
         label: 'declined terminal receipt',
         child: _DeviceFrame(
-          height: 680,
+          height: WidgetbookPreviewLayout.exploreTallPreviewHeight,
           child: _CrossPathsInvitationScope(invitation: declined),
         ),
       ),
       _StateCard(
         label: 'expired terminal receipt',
         child: _DeviceFrame(
-          height: 680,
+          height: WidgetbookPreviewLayout.exploreTallPreviewHeight,
           child: _CrossPathsInvitationScope(invitation: expired),
         ),
       ),
       _StateCard(
         label: 'event invalidated receipt',
         child: _DeviceFrame(
-          height: 680,
+          height: WidgetbookPreviewLayout.exploreTallPreviewHeight,
           child: _CrossPathsInvitationScope(invitation: invalidated),
         ),
       ),
       _StateCard(
         label: 'missing profile media',
         child: _DeviceFrame(
-          height: 680,
+          height: WidgetbookPreviewLayout.exploreTallPreviewHeight,
           child: _CrossPathsInvitationScope(
             invitation: pending,
             missingMedia: true,
@@ -730,7 +732,7 @@ Widget crossPathsInvitationStates(BuildContext context) {
       _StateCard(
         label: 'long event location copy',
         child: _DeviceFrame(
-          height: 680,
+          height: WidgetbookPreviewLayout.exploreTallPreviewHeight,
           child: _CrossPathsInvitationScope(
             invitation: pending,
             event: _feedItems[1].event.copyWith(
@@ -746,7 +748,7 @@ Widget crossPathsInvitationStates(BuildContext context) {
         child: _MediaOverride(
           textScaler: const TextScaler.linear(2),
           child: _DeviceFrame(
-            height: 820,
+            height: WidgetbookPreviewLayout.exploreExpandedPreviewHeight,
             child: _CrossPathsInvitationScope(invitation: pending),
           ),
         ),
@@ -756,7 +758,7 @@ Widget crossPathsInvitationStates(BuildContext context) {
         child: _MediaOverride(
           disableAnimations: true,
           child: _DeviceFrame(
-            height: 680,
+            height: WidgetbookPreviewLayout.exploreTallPreviewHeight,
             child: _CrossPathsInvitationScope(invitation: pending),
           ),
         ),
@@ -766,7 +768,7 @@ Widget crossPathsInvitationStates(BuildContext context) {
         child: Theme(
           data: AppTheme.dark,
           child: _DeviceFrame(
-            height: 680,
+            height: WidgetbookPreviewLayout.exploreTallPreviewHeight,
             child: _CrossPathsInvitationScope(invitation: accepted),
           ),
         ),
@@ -796,7 +798,7 @@ Widget exploreListStates(BuildContext context) {
       _StateCard(
         label: 'empty search',
         child: _SliverFrame(
-          height: 320,
+          height: WidgetbookPreviewLayout.sliverPreviewHeight,
           child: _ExploreScope(
             searchQuery: 'silent supper cycling crew',
             viewModel: const AsyncData(
@@ -823,7 +825,7 @@ Widget exploreListEmptyStateStates(BuildContext context) {
       _StateCard(
         label: 'city empty',
         child: _DeviceFrame(
-          height: 360,
+          height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
           child: _ExploreScope(
             child: const ExploreListEmptyState(
               cityLabel: 'Mumbai',
@@ -836,7 +838,7 @@ Widget exploreListEmptyStateStates(BuildContext context) {
       _StateCard(
         label: 'search empty',
         child: _DeviceFrame(
-          height: 360,
+          height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
           child: _ExploreScope(
             child: const ExploreListEmptyState(
               cityLabel: 'Mumbai',
@@ -849,7 +851,7 @@ Widget exploreListEmptyStateStates(BuildContext context) {
       _StateCard(
         label: 'search and filters empty',
         child: _DeviceFrame(
-          height: 360,
+          height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
           child: _ExploreScope(
             child: const ExploreListEmptyState(
               cityLabel: 'Mumbai',
@@ -879,7 +881,7 @@ Widget clubDirectorySkeletonListStates(BuildContext context) {
       _StateCard(
         label: 'loading stack',
         child: const _DeviceFrame(
-          height: 640,
+          height: WidgetbookPreviewLayout.celebrationViewportHeight,
           child: SingleChildScrollView(
             padding: CatchInsets.pageBody,
             child: ClubDirectorySkeletonList(),
@@ -903,7 +905,7 @@ Widget clubDirectorySkeletonCardStates(BuildContext context) {
       _StateCard(
         label: 'single card',
         child: const _DeviceFrame(
-          height: 360,
+          height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
           child: Padding(
             padding: CatchInsets.pageBody,
             child: ClubDirectorySkeletonCard(),
@@ -1054,7 +1056,7 @@ Widget exploreDiscoveryCoverHeaderStates(BuildContext context) {
       _StateCard(
         label: 'featured event',
         child: _DeviceFrame(
-          height: 360,
+          height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
           child: _ExploreScope(
             child: ExploreDiscoveryCoverHeader(
               cityPickerState: _cityPickerState(),
@@ -1066,7 +1068,7 @@ Widget exploreDiscoveryCoverHeaderStates(BuildContext context) {
       _StateCard(
         label: 'no featured event',
         child: _DeviceFrame(
-          height: 180,
+          height: WidgetbookPreviewLayout.mediaPanelHeight,
           child: _ExploreScope(
             feed: const AsyncData(ExploreFeedViewModel(items: [])),
             child: ExploreDiscoveryCoverHeader(
@@ -1422,7 +1424,7 @@ Widget exploreEventsSectionStates(BuildContext context) {
       _StateCard(
         label: 'loading',
         child: _SliverFrame(
-          height: 320,
+          height: WidgetbookPreviewLayout.sliverPreviewHeight,
           child: _ExploreScope(
             feed: const AsyncLoading<ExploreFeedViewModel>(),
             child: const _ExploreEventsSliverPreview(),
@@ -1432,7 +1434,7 @@ Widget exploreEventsSectionStates(BuildContext context) {
       _StateCard(
         label: 'feed error',
         child: _SliverFrame(
-          height: 300,
+          height: WidgetbookPreviewLayout.profileMediumPreviewHeight,
           child: _ExploreScope(
             feed: AsyncError<ExploreFeedViewModel>(
               StateError('Widgetbook Explore feed failed'),
@@ -1445,7 +1447,7 @@ Widget exploreEventsSectionStates(BuildContext context) {
       _StateCard(
         label: 'search-only empty',
         child: _SliverFrame(
-          height: 300,
+          height: WidgetbookPreviewLayout.profileMediumPreviewHeight,
           child: _ExploreScope(
             searchQuery: 'silent supper cycling crew',
             feed: const AsyncData(ExploreFeedViewModel(items: [])),
@@ -1456,7 +1458,7 @@ Widget exploreEventsSectionStates(BuildContext context) {
       _StateCard(
         label: 'filter-only empty',
         child: _SliverFrame(
-          height: 300,
+          height: WidgetbookPreviewLayout.profileMediumPreviewHeight,
           child: _ExploreScope(
             seedFilters: const _FilterSeed(
               time: ExploreTimeFilter.weekend,
@@ -1470,7 +1472,7 @@ Widget exploreEventsSectionStates(BuildContext context) {
       _StateCard(
         label: 'combined empty',
         child: _SliverFrame(
-          height: 300,
+          height: WidgetbookPreviewLayout.profileMediumPreviewHeight,
           child: _ExploreScope(
             searchQuery: 'late-night padel supper',
             seedFilters: const _FilterSeed(
@@ -1639,15 +1641,15 @@ Widget exploreClubCoverStates(BuildContext context) {
       _StateCard(
         label: 'graded image',
         child: SizedBox(
-          width: 260,
-          height: 260,
+          width: WidgetbookPreviewLayout.compactComponentWidth,
+          height: WidgetbookPreviewLayout.compactPreviewExtent,
           child: CatchClubCover(club: _clubs[0]),
         ),
       ),
       _StateCard(
         label: 'compact fallback',
         child: SizedBox.square(
-          dimension: 96,
+          dimension: WidgetbookPreviewLayout.smallPreviewExtent,
           child: CatchClubCover(
             club: _clubs[2].copyWith(imageUrl: null),
             compact: true,
@@ -1700,7 +1702,7 @@ Widget exploreEventsLoadingSliverStates(BuildContext context) {
       _StateCard(
         label: 'bounded skeleton',
         child: _SliverFrame(
-          height: 240,
+          height: WidgetbookPreviewLayout.tallNarrowPanelHeight,
           child: CustomScrollView(slivers: [ExploreEventsLoadingSliver()]),
         ),
       ),
@@ -1862,7 +1864,7 @@ Widget exploreEventsEmptySliverStates(BuildContext context) {
       _StateCard(
         label: 'clear search',
         child: _SliverFrame(
-          height: 280,
+          height: WidgetbookPreviewLayout.exploreMediaPreviewHeight,
           child: CustomScrollView(
             slivers: [
               ExploreEventsEmptySliver(
@@ -1881,7 +1883,7 @@ Widget exploreEventsEmptySliverStates(BuildContext context) {
       _StateCard(
         label: 'broaden time filter',
         child: _SliverFrame(
-          height: 280,
+          height: WidgetbookPreviewLayout.exploreMediaPreviewHeight,
           child: CustomScrollView(
             slivers: [
               ExploreEventsEmptySliver(
@@ -1933,7 +1935,7 @@ Widget exploreEventTypeBrowseGridStates(BuildContext context) {
       _StateCard(
         label: 'narrow width',
         child: SizedBox(
-          width: 280,
+          width: WidgetbookPreviewLayout.mediumComponentWidth,
           child: _ExploreScope(child: const ExploreEventTypeBrowseGrid()),
         ),
       ),
@@ -1988,7 +1990,7 @@ Widget activityTypeRowsStates(BuildContext context) {
       _StateCard(
         label: 'single column',
         child: SizedBox(
-          width: 280,
+          width: WidgetbookPreviewLayout.mediumComponentWidth,
           child: ActivityTypeRows(
             slots: _activitySlots,
             activeActivityTag: ActivityKind.socialRun.name,
@@ -2000,7 +2002,7 @@ Widget activityTypeRowsStates(BuildContext context) {
       _StateCard(
         label: 'two columns',
         child: SizedBox(
-          width: 560,
+          width: WidgetbookPreviewLayout.exploreComparisonWidth,
           child: ActivityTypeRows(
             slots: _activitySlots,
             activeActivityTag: ActivityKind.pickleball.label,
@@ -2185,7 +2187,7 @@ Widget exploreMapRouteStates(BuildContext context) {
       _StateCard(
         label: 'pins ready',
         child: _DeviceFrame(
-          height: 520,
+          height: WidgetbookPreviewLayout.defaultPhonePreviewHeight,
           child: _ExploreScope(
             child: const ExploreMapScreen(enableNetworkTiles: false),
           ),
@@ -2194,7 +2196,7 @@ Widget exploreMapRouteStates(BuildContext context) {
       _StateCard(
         label: 'selected event card',
         child: _DeviceFrame(
-          height: 520,
+          height: WidgetbookPreviewLayout.defaultPhonePreviewHeight,
           child: _ExploreScope(
             child: ExploreMapScreen(
               enableNetworkTiles: false,
@@ -2206,7 +2208,7 @@ Widget exploreMapRouteStates(BuildContext context) {
       _StateCard(
         label: 'loading',
         child: _DeviceFrame(
-          height: 420,
+          height: WidgetbookPreviewLayout.feedbackViewportHeight,
           child: _ExploreScope(
             feed: const AsyncLoading<ExploreFeedViewModel>(),
             child: const ExploreMapScreen(enableNetworkTiles: false),
@@ -2216,7 +2218,7 @@ Widget exploreMapRouteStates(BuildContext context) {
       _StateCard(
         label: 'empty',
         child: _DeviceFrame(
-          height: 420,
+          height: WidgetbookPreviewLayout.feedbackViewportHeight,
           child: _ExploreScope(
             feed: const AsyncData(ExploreFeedViewModel(items: [])),
             child: const ExploreMapScreen(enableNetworkTiles: false),
@@ -2226,7 +2228,7 @@ Widget exploreMapRouteStates(BuildContext context) {
       _StateCard(
         label: 'no exact pins',
         child: _DeviceFrame(
-          height: 420,
+          height: WidgetbookPreviewLayout.feedbackViewportHeight,
           child: _ExploreScope(
             feed: AsyncData(
               ExploreFeedViewModel(
@@ -2249,7 +2251,7 @@ Widget exploreMapRouteStates(BuildContext context) {
       _StateCard(
         label: 'error',
         child: _DeviceFrame(
-          height: 420,
+          height: WidgetbookPreviewLayout.feedbackViewportHeight,
           child: _ExploreScope(
             feed: AsyncError<ExploreFeedViewModel>(
               StateError('Widgetbook map feed failed'),
@@ -2262,7 +2264,7 @@ Widget exploreMapRouteStates(BuildContext context) {
       _StateCard(
         label: 'distance ring active',
         child: _DeviceFrame(
-          height: 520,
+          height: WidgetbookPreviewLayout.defaultPhonePreviewHeight,
           child: _ExploreScope(
             seedFilters: const _FilterSeed(
               distance: ExploreDistanceFilter.threeKm,
@@ -2620,7 +2622,7 @@ class _StateCard extends StatelessWidget {
               gapH6,
               Text(
                 description!,
-                style: CatchTextStyles.bodyS(context, color: t.ink2),
+                style: CatchTextStyles.supporting(context, color: t.ink2),
               ),
             ],
             gapH12,
@@ -2726,8 +2728,8 @@ class _MapPillFrame extends StatelessWidget {
         borderRadius: BorderRadius.circular(CatchRadius.lg),
       ),
       child: SizedBox(
-        width: 220,
-        height: 96,
+        width: WidgetbookPreviewLayout.surfaceCardWidth,
+        height: WidgetbookPreviewLayout.smallPreviewExtent,
         child: Align(
           alignment: Alignment.bottomLeft,
           child: Padding(

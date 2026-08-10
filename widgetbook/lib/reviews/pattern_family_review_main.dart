@@ -3,6 +3,7 @@ import 'package:catch_dating_app/clubs/shared/club_identity_atoms.dart'
     show ClubHostRoleBadge;
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_badge.dart';
@@ -24,6 +25,8 @@ import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart'
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:flutter/material.dart';
+
+import '../preview_layout_contracts.dart';
 
 void main() => runApp(const PatternFamilyReviewApp());
 
@@ -109,7 +112,9 @@ class PatternFamilyReviewHome extends StatelessWidget {
         : [focusedFamily];
     final familyList = <Widget>[];
     for (var index = 0; index < visibleFamilies.length; index++) {
-      if (index > 0) familyList.add(const SizedBox(height: 32));
+      if (index > 0) {
+        familyList.add(const SizedBox(height: CatchSpacing.s8));
+      }
       familyList.add(visibleFamilies[index]);
     }
     return Scaffold(
@@ -118,7 +123,12 @@ class PatternFamilyReviewHome extends StatelessWidget {
           slivers: [
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
+                padding: const EdgeInsets.fromLTRB(
+                  CatchSpacing.s6,
+                  CatchSpacing.s6,
+                  CatchSpacing.s6,
+                  CatchSpacing.s2,
+                ),
                 child: focusedFamily == null
                     ? _ReviewHeader(
                         themeMode: themeMode,
@@ -134,7 +144,12 @@ class PatternFamilyReviewHome extends StatelessWidget {
               ),
             ),
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(24, 12, 24, 64),
+              padding: const EdgeInsets.fromLTRB(
+                CatchSpacing.s6,
+                CatchSpacing.s3,
+                CatchSpacing.s6,
+                CatchSpacing.s16,
+              ),
               sliver: SliverList.list(children: familyList),
             ),
           ],
@@ -161,11 +176,7 @@ class _FocusedReviewHeader extends StatelessWidget {
     return Text(
       'FOCUSED REVIEW · ${family.toUpperCase()} · '
       '${themeMode == ThemeMode.dark ? 'DARK' : 'LIGHT'} · $textScale×',
-      style: Theme.of(context).textTheme.labelMedium?.copyWith(
-        color: t.ink3,
-        fontWeight: FontWeight.w800,
-        letterSpacing: 1,
-      ),
+      style: CatchTextStyles.kicker(context, color: t.ink3),
     );
   }
 }
@@ -189,8 +200,8 @@ class _ReviewHeader extends StatelessWidget {
     return Wrap(
       alignment: WrapAlignment.spaceBetween,
       crossAxisAlignment: WrapCrossAlignment.center,
-      spacing: 24,
-      runSpacing: 16,
+      spacing: CatchSpacing.s6,
+      runSpacing: CatchSpacing.s4,
       children: [
         ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 720),
@@ -199,13 +210,9 @@ class _ReviewHeader extends StatelessWidget {
             children: [
               Text(
                 'WIDGET PATTERN REVIEW',
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  color: t.ink3,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 1.2,
-                ),
+                style: CatchTextStyles.kicker(context, color: t.ink3),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: CatchSpacing.s2),
               Text(
                 'One wall for the remaining consolidation decisions',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
@@ -213,7 +220,7 @@ class _ReviewHeader extends StatelessWidget {
                   fontWeight: FontWeight.w800,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: CatchSpacing.s2),
               Text(
                 'These are production widgets rendered without changing their contracts. '
                 'Use the compare page question IDs to approve the strongest pattern, '
@@ -226,8 +233,8 @@ class _ReviewHeader extends StatelessWidget {
           ),
         ),
         Wrap(
-          spacing: 12,
-          runSpacing: 12,
+          spacing: CatchSpacing.s3,
+          runSpacing: CatchSpacing.s3,
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
             SegmentedButton<ThemeMode>(
@@ -272,8 +279,8 @@ class _BadgeStatusFamily extends StatelessWidget {
           title: 'CatchBadge grammar',
           note: 'Functional uppercase versus sentence-case metadata.',
           child: Wrap(
-            spacing: 10,
-            runSpacing: 10,
+            spacing: CatchSpacing.micro10,
+            runSpacing: CatchSpacing.micro10,
             children: [
               CatchBadge.functional(
                 label: 'Ready',
@@ -289,8 +296,8 @@ class _BadgeStatusFamily extends StatelessWidget {
           title: 'Semantic adapters',
           note: 'Keep domain meaning; converge the underlying chrome.',
           child: Wrap(
-            spacing: 10,
-            runSpacing: 10,
+            spacing: CatchSpacing.micro10,
+            runSpacing: CatchSpacing.micro10,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               CatchPrivacyBadge(),
@@ -307,8 +314,8 @@ class _BadgeStatusFamily extends StatelessWidget {
           title: 'Numeric overlays',
           note: 'One integer contract hides zero and clamps overflow to 99+.',
           child: Wrap(
-            spacing: 24,
-            runSpacing: 16,
+            spacing: CatchSpacing.s6,
+            runSpacing: CatchSpacing.s4,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               CatchCountBadge(
@@ -327,8 +334,8 @@ class _BadgeStatusFamily extends StatelessWidget {
           title: 'Dot ingredients',
           note: 'One rendering primitive can support feature semantics.',
           child: Wrap(
-            spacing: 24,
-            runSpacing: 16,
+            spacing: CatchSpacing.s6,
+            runSpacing: CatchSpacing.s4,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               const CatchStatusDot(),
@@ -349,8 +356,8 @@ class _BadgeStatusFamily extends StatelessWidget {
           note: 'A single shared recipe should absorb feature-owned variants.',
           onDark: true,
           child: Wrap(
-            spacing: 12,
-            runSpacing: 12,
+            spacing: CatchSpacing.s3,
+            runSpacing: CatchSpacing.s3,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               CatchBadge.onDark(label: 'Starts in 2 hours'),
@@ -384,8 +391,8 @@ class _CompactControlFamily extends StatelessWidget {
           title: 'Labelled floating action',
           note: 'CountPill stays labelled, interactive, and typed for counts.',
           child: Wrap(
-            spacing: 16,
-            runSpacing: 16,
+            spacing: CatchSpacing.s4,
+            runSpacing: CatchSpacing.s4,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               CatchCountPill.label(
@@ -408,8 +415,8 @@ class _CompactControlFamily extends StatelessWidget {
           note:
               '40px is reserved for app-bar navigation; compact actions default to 44px.',
           child: Wrap(
-            spacing: 20,
-            runSpacing: 16,
+            spacing: CatchSpacing.s5,
+            runSpacing: CatchSpacing.s4,
             crossAxisAlignment: WrapCrossAlignment.end,
             children: [
               _MeasuredControl(
@@ -442,8 +449,8 @@ class _CompactControlFamily extends StatelessWidget {
           title: 'Icon-button treatments',
           note: 'One icon-only contract; treatment varies by placement.',
           child: Wrap(
-            spacing: 20,
-            runSpacing: 16,
+            spacing: CatchSpacing.s5,
+            runSpacing: CatchSpacing.s4,
             children: [
               CatchIconButton.icon(icon: CatchIcons.tuneRounded, onTap: _noop),
               CatchIconButton.icon(
@@ -559,7 +566,7 @@ class _ProgressCueFamily extends StatelessWidget {
           title: 'Sequence · upcoming',
           note: 'Early progress keeps the first step current.',
           child: SizedBox(
-            width: 360,
+            width: WidgetbookPreviewLayout.standardContractWidth,
             child: CountdownBeatRail(items: items, currentIndex: 0),
           ),
         ),
@@ -567,7 +574,7 @@ class _ProgressCueFamily extends StatelessWidget {
           title: 'Sequence · current',
           note: 'Middle progress should distinguish complete from current.',
           child: SizedBox(
-            width: 360,
+            width: WidgetbookPreviewLayout.standardContractWidth,
             child: CountdownBeatRail(items: items, currentIndex: 1),
           ),
         ),
@@ -575,7 +582,7 @@ class _ProgressCueFamily extends StatelessWidget {
           title: 'Sequence · complete',
           note: 'Completed items use success checks; current alone stays gold.',
           child: SizedBox(
-            width: 360,
+            width: WidgetbookPreviewLayout.standardContractWidth,
             child: CountdownBeatRail(items: items, currentIndex: 2),
           ),
         ),
@@ -622,13 +629,9 @@ class _FamilySection extends StatelessWidget {
       children: [
         Text(
           id.toUpperCase(),
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color: t.primary,
-            fontWeight: FontWeight.w800,
-            letterSpacing: 1,
-          ),
+          style: CatchTextStyles.kicker(context, color: t.primary),
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: CatchSpacing.micro6),
         Text(
           title,
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
@@ -636,7 +639,7 @@ class _FamilySection extends StatelessWidget {
             fontWeight: FontWeight.w800,
           ),
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: CatchSpacing.micro6),
         ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 780),
           child: Text(
@@ -646,7 +649,7 @@ class _FamilySection extends StatelessWidget {
             ).textTheme.bodyMedium?.copyWith(color: t.ink2),
           ),
         ),
-        const SizedBox(height: 14),
+        const SizedBox(height: CatchSpacing.micro14),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
@@ -654,7 +657,8 @@ class _FamilySection extends StatelessWidget {
             children: [
               for (var index = 0; index < cards.length; index++) ...[
                 cards[index],
-                if (index < cards.length - 1) const SizedBox(width: 12),
+                if (index < cards.length - 1)
+                  const SizedBox(width: CatchSpacing.s3),
               ],
             ],
           ),
@@ -686,11 +690,13 @@ class _PreviewCard extends StatelessWidget {
         ? CatchTokens.editorialWhite.withValues(alpha: .72)
         : t.ink2;
     return Container(
-      width: 400,
-      padding: const EdgeInsets.all(18),
+      width: WidgetbookPreviewLayout.reviewCardWidth,
+      padding: const EdgeInsets.all(CatchSpacing.micro18),
       decoration: BoxDecoration(
         color: background,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(
+          WidgetbookPreviewLayout.reviewCardRadius,
+        ),
         border: Border.all(color: onDark ? CatchTokens.editorialBlack : t.line),
         boxShadow: onDark ? const [] : CatchElevation.card,
       ),
@@ -704,14 +710,14 @@ class _PreviewCard extends StatelessWidget {
               fontWeight: FontWeight.w800,
             ),
           ),
-          const SizedBox(height: 5),
+          const SizedBox(height: CatchSpacing.s1),
           Text(
             note,
             style: Theme.of(
               context,
             ).textTheme.bodySmall?.copyWith(color: supporting),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: CatchSpacing.s6),
           child,
         ],
       ),
@@ -732,7 +738,7 @@ class _MeasuredControl extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         child,
-        const SizedBox(height: 6),
+        const SizedBox(height: CatchSpacing.micro6),
         Text(
           '$label px',
           style: Theme.of(

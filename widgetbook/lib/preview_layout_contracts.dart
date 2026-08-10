@@ -19,6 +19,8 @@ abstract final class WidgetbookPreviewLayout {
   static const double narrowComponentWidth = 180;
   static const double compactControlWidth = 160;
   static const double compactItemWidth = 96;
+  static const double smallPreviewExtent = 96;
+  static const double compactPreviewExtent = 260;
   static const double phoneChromeWidth = 390;
   static const double dockFrameWidth = 430;
   static const double fieldLeadingWidth = CatchSpacing.s12;
@@ -103,6 +105,15 @@ abstract final class WidgetbookPreviewLayout {
   static const double foundationPhotoGradeTileWidth = 220;
   static const double foundationWordmarkTileWidth = 240;
   static const double foundationWordmarkStageHeight = 76;
+
+  static const double reviewCardWidth = 400;
+  static const double reviewCardRadius = CatchSpacing.micro18;
+
+  static const double exploreRoutePreviewHeight = 620;
+  static const double exploreTallPreviewHeight = 680;
+  static const double exploreExpandedPreviewHeight = 820;
+  static const double exploreComparisonWidth = 560;
+  static const double exploreMediaPreviewHeight = 280;
 
   static const double skeletonCardHeight = 84;
   static const double skeletonBoxWidth = 96;
