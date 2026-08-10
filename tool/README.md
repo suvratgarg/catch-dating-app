@@ -204,7 +204,7 @@ The old UI/design shell scanners and their compatibility wrapper names are
 retired. Matching policy lives in `packages/catch_ui_lints`; CI collects one
 repository-root `dart analyze --format machine` census and
 `tool/check_catch_ui_lint_drift.sh` projects focused reports or enforces the
-complete decrease-only baseline. In this workspace,
+complete zero-diagnostic invariant. In this workspace,
 `flutter analyze` and `dart analyze lib` do not load the Catch plugin; never
 use either command as proof that a Catch UI rule is clean.
 
@@ -217,8 +217,8 @@ count `catch_*` text from filenames, symbol names, or diagnostic messages.
 
 `bash tool/widget_cleanup_scan.sh --check` is the checked broad-cleanup ratchet.
 Only the eight remaining regex-only categories live there. Promoted categories
-are analyzer rules with seeded fixture parity, and
-`tool/audit/catch_ui_lint_drift_baseline.json` owns their decrease-only counts.
+are analyzer rules with seeded fixture parity, and every Catch analyzer
+diagnostic must remain at zero.
 
 ## Analyzer Plugin Lints
 

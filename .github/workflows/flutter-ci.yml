@@ -116,7 +116,7 @@ jobs:
       - name: Catch UI promoted scanner warning gate
         run: bash tool/check_catch_ui_lint_drift.sh --code 'catch_no_raw_network_image|catch_no_presentation_platform_import|catch_no_tokens_prop_drilling|catch_no_legacy_spacing_token|catch_screen_gutter_uses_semantic_insets|catch_no_async_flush_hack' --label promoted-scanners
 
-      - name: Catch UI info drift ratchet
+      - name: Catch UI zero-diagnostic gate
         run: bash tool/check_catch_ui_lint_drift.sh --check
 
       - name: Catch UI enforcement generation and coverage

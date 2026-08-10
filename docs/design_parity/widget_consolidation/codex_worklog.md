@@ -993,8 +993,8 @@ continuing the sweep):**
    review session reads them from the ledger).
 3. Gotchas 9 and 10 above are new (worklog-escalations mandate; member-set
    matching / unstable cluster ids) — they came from this review.
-4. Use the updated analyzer baselines from Standing environment facts (188 /
-   65); after each batch the numbers may only improve.
+4. Use the zero-diagnostic workspace analyzer gate from Standing environment
+   facts; every batch must remain at zero across all eight packages.
 5. When a merge rule authorizes execution but the FULL body reveals structure
    the target primitive does not model (the WO-006 divider case), the outcome
    is: keep, ledger with the reason, AND an Escalations line here — never

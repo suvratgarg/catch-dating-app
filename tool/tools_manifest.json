@@ -1476,15 +1476,13 @@
       "command": "bash tool/check_catch_ui_lint_drift.sh",
       "safety": "local",
       "status": "active",
-      "description": "Reports migrated Catch UI lint drift counts from dart analyze output, including optional JSON count artifacts.",
+      "description": "Projects focused Catch UI analyzer reports and rejects every Catch diagnostic at the aggregate zero gate.",
       "checks": [
         "bash -n tool/check_catch_ui_lint_drift.sh",
         "bash tool/check_catch_ui_lint_drift.sh --self-test",
-        "node --test tool/design/check_ui_lint_drift_ratchet.test.mjs",
         "bash tool/check_catch_ui_lint_drift.sh --check"
       ],
       "role": "gate",
-      "baseline": "tool/audit/catch_ui_lint_drift_baseline.json",
       "rules": [
         "UI-LINT-001",
         "DESIGN-TOKENS-001",
@@ -1493,31 +1491,6 @@
       "vacuityProof": {
         "type": "self-test",
         "command": "bash tool/check_catch_ui_lint_drift.sh --self-test"
-      }
-    },
-    {
-      "id": "lint:catch-ui-drift-ratchet-engine",
-      "category": "lint",
-      "path": "tool/design/check_ui_lint_drift_ratchet.mjs",
-      "command": "node --test tool/design/check_ui_lint_drift_ratchet.test.mjs",
-      "safety": "local",
-      "status": "active",
-      "description": "Parses Catch analyzer machine diagnostics and enforces exact, decrease-only coverage for every declared plugin code.",
-      "checks": [
-        "node --check tool/design/check_ui_lint_drift_ratchet.mjs",
-        "node --test tool/design/check_ui_lint_drift_ratchet.test.mjs"
-      ],
-      "role": "gate",
-      "baseline": "tool/audit/catch_ui_lint_drift_baseline.json",
-      "rules": [
-        "UI-LINT-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/design/check_ui_lint_drift_ratchet.test.mjs",
-        "contains": [
-          "ratchet fails increases, missing codes, and stale codes"
-        ]
       }
     },
     {
