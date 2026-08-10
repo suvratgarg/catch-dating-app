@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.0.16
+version: 2.0.17
 updated: 2026-08-11
 owner: recursive_audit_loop
 status: active
@@ -232,6 +232,9 @@ Host/runtime source, declared assets and fixtures, production Host Firebase
 configuration, the app-target resolver, and the environment wrappers. It must
 not use `tool/platform/**`; validator-only and external-store-status changes
 belong to CI and must not rebuild or deploy production Hosting.
+No production Hosting caller may list `*.test.mjs` in its push filter. Test
+changes are validated by CI; they do not alter deployable bytes and therefore
+cannot authorize an Admin, Marketing, or Host production promotion.
 
 ### Dependency maintenance
 

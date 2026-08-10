@@ -59,8 +59,6 @@ test("admin and marketing callers share one exact build and promotion path", () 
       ".github/workflows/_web-hosting-promote.yml",
       "tool/ci/delivery_core.mjs",
       "tool/ci/package_web_hosting.mjs",
-      "tool/ci/package_web_hosting.test.mjs",
-      "tool/ci/web_hosting_workflow.test.mjs",
       "tool/firebase_with_env.sh",
     ]) assert.ok(source.includes(`- "${pathInput}"`), `${surface} is missing ${pathInput}`);
   }
@@ -132,6 +130,15 @@ test("caller triggers cover the exact build dependency closure", () => {
     "Host validation helpers must not trigger a production Hosting deploy");
   assert.ok(!host.includes("tool/app_target_external_gates.json"),
     "external store status must not trigger a production Hosting deploy");
+});
+
+test("production Hosting push filters never grant test files deploy authority", () => {
+  for (const surface of ["admin", "host", "marketing"]) {
+    const source = caller(surface);
+    const pushFilter = source.slice(0, source.indexOf("  workflow_dispatch:"));
+    assert.doesNotMatch(pushFilter, /^\s+- ".*\.test\.mjs"$/mu,
+      `${surface} test changes belong to CI and must not deploy production Hosting`);
+  }
 });
 
 test("three pushes and manual interference cannot replace a pending promotion", () => {
