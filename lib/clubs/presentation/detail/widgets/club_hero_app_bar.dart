@@ -8,6 +8,7 @@ import 'package:catch_dating_app/clubs/shared/catch_organizer_poster.dart';
 import 'package:catch_dating_app/clubs/shared/club_transition_tags.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/external_share.dart';
+import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -70,118 +71,123 @@ class ClubHeroAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final width = MediaQuery.of(context).size.width;
-    final topInset = MediaQuery.paddingOf(context).top;
-    final variant = clubHeroVariantFor(club);
-    final hasCover = club.primaryClubPhotoUrl != null;
-    final mediaHeight = _heroMediaHeightFor(width, hasCover: hasCover);
-    final resolvedLocationLabel = locationLabel ?? _clubLocationLabel(club);
-    final kickerLabel = _clubHeroKicker(club);
-    final captionExtent = _heroCaptionExtentFor(
-      context,
-      width,
-      kickerLabel: kickerLabel,
-      title: club.name,
-      locationLabel: resolvedLocationLabel,
-    );
-    final moduleHeight =
-        mediaHeight + (clubInteractionMediaInset * 2) + captionExtent;
-    final heroModule = Material(
-      color: Colors.transparent,
-      child: ClubHeroModule(
-        club: club,
-        variant: variant,
-        mediaHeight: mediaHeight,
-        captionExtent: captionExtent,
-        kickerLabel: kickerLabel,
-        locationLabel: resolvedLocationLabel,
-      ),
-    );
-
-    if (presentationMode == ClubHeroPresentationMode.embeddedReadOnlyPreview) {
-      return SliverToBoxAdapter(
-        child: SizedBox(height: moduleHeight, child: heroModule),
-      );
-    }
-
-    final expandedHeight = (moduleHeight - topInset)
-        .clamp(kToolbarHeight, moduleHeight)
-        .toDouble();
-
-    return SliverAppBar(
-      expandedHeight: expandedHeight,
-      pinned: true,
-      backgroundColor: t.surface,
-      elevation: 0,
-      centerTitle: false,
-      titleSpacing: 0,
-      leadingWidth: CatchSpacing.s16,
-      title: CatchCollapsedSliverTitle(
-        title: club.name,
-        textKey: ValueKey(
-          context.l10n.clubsClubHeroAppBarTitleClubDetailCollapsedTitle,
-        ),
-        style: CatchTextStyles.clubDisplay(
+    return ResponsiveSliverBuilder(
+      builder: (context, viewport) {
+        final t = CatchTokens.of(context);
+        final width = viewport.width;
+        final topInset = MediaQuery.paddingOf(context).top;
+        final variant = clubHeroVariantFor(club);
+        final hasCover = club.primaryClubPhotoUrl != null;
+        final mediaHeight = _heroMediaHeightFor(width, hasCover: hasCover);
+        final resolvedLocationLabel = locationLabel ?? _clubLocationLabel(club);
+        final kickerLabel = _clubHeroKicker(club);
+        final captionExtent = _heroCaptionExtentFor(
           context,
-          step: CatchDisplayStep.m,
-          height: CatchLayout.clubDetailHeroCollapsedTitleLineHeight,
-          color: t.ink,
-        ),
-      ),
-      leading: Padding(
-        padding: _clubHeroLeadingPadding,
-        child: CatchIconAction(
-          icon: CatchIcons.arrowBackIosNewRounded,
-          tooltip: context.l10n.clubsClubHeroAppBarTooltipBack,
-          variant: CatchIconButtonVariant.float,
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ),
-      actions: [
-        Padding(
-          padding: _clubHeroActionPadding,
-          child: Builder(
-            builder: (buttonContext) => CatchIconAction(
-              icon: CatchIcons.platformShare(
-                platform: Theme.of(context).platform,
-              ),
-              tooltip: context.l10n.clubsClubHeroAppBarTooltipShareClub,
+          width,
+          kickerLabel: kickerLabel,
+          title: club.name,
+          locationLabel: resolvedLocationLabel,
+        );
+        final moduleHeight =
+            mediaHeight + (clubInteractionMediaInset * 2) + captionExtent;
+        final heroModule = Material(
+          color: Colors.transparent,
+          child: ClubHeroModule(
+            club: club,
+            variant: variant,
+            mediaHeight: mediaHeight,
+            captionExtent: captionExtent,
+            kickerLabel: kickerLabel,
+            locationLabel: resolvedLocationLabel,
+          ),
+        );
+
+        if (presentationMode ==
+            ClubHeroPresentationMode.embeddedReadOnlyPreview) {
+          return SliverToBoxAdapter(
+            child: SizedBox(height: moduleHeight, child: heroModule),
+          );
+        }
+
+        final expandedHeight = (moduleHeight - topInset)
+            .clamp(kToolbarHeight, moduleHeight)
+            .toDouble();
+
+        return SliverAppBar(
+          expandedHeight: expandedHeight,
+          pinned: true,
+          backgroundColor: t.surface,
+          elevation: 0,
+          centerTitle: false,
+          titleSpacing: 0,
+          leadingWidth: CatchSpacing.s16,
+          title: CatchCollapsedSliverTitle(
+            title: club.name,
+            textKey: ValueKey(
+              context.l10n.clubsClubHeroAppBarTitleClubDetailCollapsedTitle,
+            ),
+            style: CatchTextStyles.clubDisplay(
+              context,
+              step: CatchDisplayStep.m,
+              height: CatchLayout.clubDetailHeroCollapsedTitleLineHeight,
+              color: t.ink,
+            ),
+          ),
+          leading: Padding(
+            padding: _clubHeroLeadingPadding,
+            child: CatchIconAction(
+              icon: CatchIcons.arrowBackIosNewRounded,
+              tooltip: context.l10n.clubsClubHeroAppBarTooltipBack,
               variant: CatchIconButtonVariant.float,
-              onPressed: () => unawaited(
-                onShareClub != null
-                    ? onShareClub!(buttonContext, club)
-                    : shareClub(
-                        buttonContext,
-                        club,
-                        ProviderScope.containerOf(
-                          buttonContext,
-                          listen: false,
-                        ).read(externalShareControllerProvider),
-                      ),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ),
+          actions: [
+            Padding(
+              padding: _clubHeroActionPadding,
+              child: Builder(
+                builder: (buttonContext) => CatchIconAction(
+                  icon: CatchIcons.platformShare(
+                    platform: Theme.of(context).platform,
+                  ),
+                  tooltip: context.l10n.clubsClubHeroAppBarTooltipShareClub,
+                  variant: CatchIconButtonVariant.float,
+                  onPressed: () => unawaited(
+                    onShareClub != null
+                        ? onShareClub!(buttonContext, club)
+                        : shareClub(
+                            buttonContext,
+                            club,
+                            ProviderScope.containerOf(
+                              buttonContext,
+                              listen: false,
+                            ).read(externalShareControllerProvider),
+                          ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+          flexibleSpace: FlexibleSpaceBar(
+            collapseMode: CollapseMode.pin,
+            background: ClipRect(
+              child: OverflowBox(
+                alignment: Alignment.topCenter,
+                minHeight: moduleHeight,
+                maxHeight: moduleHeight,
+                child: SizedBox(
+                  height: moduleHeight,
+                  child: Hero(
+                    tag: clubInteractionHeroTag(club.id),
+                    transitionOnUserGestures: true,
+                    child: heroModule,
+                  ),
+                ),
               ),
             ),
           ),
-        ),
-      ],
-      flexibleSpace: FlexibleSpaceBar(
-        collapseMode: CollapseMode.pin,
-        background: ClipRect(
-          child: OverflowBox(
-            alignment: Alignment.topCenter,
-            minHeight: moduleHeight,
-            maxHeight: moduleHeight,
-            child: SizedBox(
-              height: moduleHeight,
-              child: Hero(
-                tag: clubInteractionHeroTag(club.id),
-                transitionOnUserGestures: true,
-                child: heroModule,
-              ),
-            ),
-          ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

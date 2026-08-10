@@ -284,107 +284,121 @@ class CountdownStageDial extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final side = (constraints.maxWidth * 0.68)
-            .clamp(168.0, 228.0)
-            .toDouble();
-        return Center(
-          child: TweenAnimationBuilder<double>(
-            tween: Tween<double>(end: progress.clamp(0, 1).toDouble()),
-            duration: CatchMotion.revealDrop,
-            curve: CatchMotion.easeOutCubicCurve,
-            builder: (context, animatedProgress, _) {
-              return SizedBox.square(
-                dimension: side,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    CustomPaint(
-                      size: Size.square(side),
-                      painter: _CountdownDialPainter(
-                        progress: animatedProgress,
-                        intensity: intensity,
-                        accent: CatchTokens.of(context).gold,
-                        foreground: t.ink,
-                      ),
+    return Center(
+      child: FractionallySizedBox(
+        widthFactor: CatchLayout.eventSuccessCountdownDialWidthFactor,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(
+            minWidth: CatchLayout.eventSuccessCountdownDialMinExtent,
+            maxWidth: CatchLayout.eventSuccessCountdownDialMaxExtent,
+          ),
+          child: AspectRatio(
+            aspectRatio: 1,
+            child: TweenAnimationBuilder<double>(
+              tween: Tween<double>(end: progress.clamp(0, 1).toDouble()),
+              duration: CatchMotion.revealDrop,
+              curve: CatchMotion.easeOutCubicCurve,
+              builder: (context, animatedProgress, _) => Stack(
+                fit: StackFit.expand,
+                alignment: Alignment.center,
+                children: [
+                  CustomPaint(
+                    painter: _CountdownDialPainter(
+                      progress: animatedProgress,
+                      intensity: intensity,
+                      accent: CatchTokens.of(context).gold,
+                      foreground: t.ink,
                     ),
-                    AnimatedScale(
-                      scale: seconds <= 3
-                          ? 1.08
-                          : seconds.isEven
-                          ? 0.96
-                          : 1.0,
-                      duration: CatchMotion.fast,
-                      curve: CatchMotion.springCurve,
-                      child: AnimatedSwitcher(
-                        duration: CatchMotion.fast,
-                        switchInCurve: CatchMotion.easeOutBackCurve,
-                        switchOutCurve: CatchMotion.easeInCubicCurve,
-                        transitionBuilder: (child, animation) {
-                          final slide = Tween<Offset>(
-                            begin: const Offset(0, -0.16),
-                            end: Offset.zero,
-                          ).animate(animation);
-                          return FadeTransition(
-                            opacity: animation,
-                            child: SlideTransition(
-                              position: slide,
-                              child: ScaleTransition(
-                                scale: Tween<double>(
-                                  begin: 0.86,
-                                  end: 1,
-                                ).animate(animation),
-                                child: child,
-                              ),
-                            ),
-                          );
-                        },
-                        child: Text(
-                          context.l10n
-                              .eventSuccessEventSuccessLiveRevealWidgetsTextSeconds(
-                                seconds: seconds,
-                              ),
-                          key: ValueKey(seconds),
-                          style: CatchTextStyles.headline(context, color: t.ink)
-                              .copyWith(
-                                fontSize: side * 0.45,
-                                height: 0.9,
-                                shadows: [
-                                  Shadow(
-                                    color: CatchTokens.of(context).gold
-                                        .withValues(
-                                          alpha:
-                                              CatchOpacity.lightOverlayBorder,
-                                        ),
-                                    blurRadius: 22 + intensity * 16,
+                  ),
+                  Center(
+                    child: FractionallySizedBox(
+                      widthFactor:
+                          CatchLayout.eventSuccessCountdownNumberWidthFactor,
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: AnimatedScale(
+                          scale: seconds <= 3
+                              ? 1.08
+                              : seconds.isEven
+                              ? 0.96
+                              : 1.0,
+                          duration: CatchMotion.fast,
+                          curve: CatchMotion.springCurve,
+                          child: AnimatedSwitcher(
+                            duration: CatchMotion.fast,
+                            switchInCurve: CatchMotion.easeOutBackCurve,
+                            switchOutCurve: CatchMotion.easeInCubicCurve,
+                            transitionBuilder: (child, animation) {
+                              final slide = Tween<Offset>(
+                                begin: const Offset(0, -0.16),
+                                end: Offset.zero,
+                              ).animate(animation);
+                              return FadeTransition(
+                                opacity: animation,
+                                child: SlideTransition(
+                                  position: slide,
+                                  child: ScaleTransition(
+                                    scale: Tween<double>(
+                                      begin: 0.86,
+                                      end: 1,
+                                    ).animate(animation),
+                                    child: child,
                                   ),
-                                ],
-                              ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      bottom: side * 0.18,
-                      child: Text(
-                        context
-                            .l10n
-                            .eventSuccessEventSuccessLiveRevealWidgetsTextSeconds3fb8f1,
-                        style: CatchTextStyles.labelS(
-                          context,
-                          color: t.ink.withValues(
-                            alpha: CatchOpacity.darkPillFill,
+                                ),
+                              );
+                            },
+                            child: Text(
+                              context.l10n
+                                  .eventSuccessEventSuccessLiveRevealWidgetsTextSeconds(
+                                    seconds: seconds,
+                                  ),
+                              key: ValueKey(seconds),
+                              style:
+                                  CatchTextStyles.headline(
+                                    context,
+                                    color: t.ink,
+                                  ).copyWith(
+                                    fontSize: CatchLayout
+                                        .eventSuccessCountdownNumberReferenceSize,
+                                    height: 0.9,
+                                    shadows: [
+                                      Shadow(
+                                        color: CatchTokens.of(context).gold
+                                            .withValues(
+                                              alpha: CatchOpacity
+                                                  .lightOverlayBorder,
+                                            ),
+                                        blurRadius: 22 + intensity * 16,
+                                      ),
+                                    ],
+                                  ),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ],
-                ),
-              );
-            },
+                  ),
+                  Align(
+                    alignment:
+                        CatchLayout.eventSuccessCountdownCaptionAlignment,
+                    child: Text(
+                      context
+                          .l10n
+                          .eventSuccessEventSuccessLiveRevealWidgetsTextSeconds3fb8f1,
+                      style: CatchTextStyles.labelS(
+                        context,
+                        color: t.ink.withValues(
+                          alpha: CatchOpacity.darkPillFill,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 }

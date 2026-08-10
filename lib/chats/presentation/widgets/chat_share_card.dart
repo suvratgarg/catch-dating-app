@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
+import 'package:catch_dating_app/core/widgets/catch_fractional_max_width.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/catch_share_card_footer.dart';
 import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
@@ -198,45 +199,40 @@ class ShareCardBubble extends StatelessWidget {
         alignment: isMe
             ? AlignmentDirectional.centerEnd
             : AlignmentDirectional.centerStart,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return ConstrainedBox(
-              constraints: BoxConstraints(
-                maxWidth: math.min(
-                  constraints.maxWidth * CatchLayout.chatBubbleMaxWidthFraction,
-                  CatchLayout.chatBubbleMaxWidth,
-                ),
+        child: CatchFractionalMaxWidth(
+          fraction: CatchLayout.chatBubbleMaxWidthFraction,
+          maxWidth: CatchLayout.chatBubbleMaxWidth,
+          alignment: isMe
+              ? AlignmentDirectional.centerEnd
+              : AlignmentDirectional.centerStart,
+          child: CatchSurface(
+            backgroundColor: isMe ? t.primary : t.surface,
+            borderColor: isMe ? null : t.line,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(
+                isMe || isFirstInGroup ? CatchRadius.lg : CatchRadius.sm,
               ),
-              child: CatchSurface(
-                backgroundColor: isMe ? t.primary : t.surface,
-                borderColor: isMe ? null : t.line,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(
-                    isMe || isFirstInGroup ? CatchRadius.lg : CatchRadius.sm,
-                  ),
-                  topRight: Radius.circular(
-                    !isMe || isFirstInGroup ? CatchRadius.lg : CatchRadius.sm,
-                  ),
-                  bottomLeft: Radius.circular(
-                    isMe || !isLastInGroup ? CatchRadius.lg : CatchRadius.sm,
-                  ),
-                  bottomRight: Radius.circular(
-                    isMe && isLastInGroup ? CatchRadius.sm : CatchRadius.lg,
-                  ),
-                ),
-                padding: CatchInsets.chatBubbleContent,
-                child: Text(
-                  text,
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.chatMessage(
-                    context,
-                    color: isMe ? t.primaryInk : t.ink,
-                  ),
-                ),
+              topRight: Radius.circular(
+                !isMe || isFirstInGroup ? CatchRadius.lg : CatchRadius.sm,
               ),
-            );
-          },
+              bottomLeft: Radius.circular(
+                isMe || !isLastInGroup ? CatchRadius.lg : CatchRadius.sm,
+              ),
+              bottomRight: Radius.circular(
+                isMe && isLastInGroup ? CatchRadius.sm : CatchRadius.lg,
+              ),
+            ),
+            padding: CatchInsets.chatBubbleContent,
+            child: Text(
+              text,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+              style: CatchTextStyles.chatMessage(
+                context,
+                color: isMe ? t.primaryInk : t.ink,
+              ),
+            ),
+          ),
         ),
       ),
     );

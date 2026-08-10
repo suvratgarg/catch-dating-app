@@ -5,6 +5,13 @@ import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
 
+typedef CatchMenuAnchorBuilder =
+    Widget Function(
+      BuildContext context,
+      MenuController controller,
+      Widget? child,
+    );
+
 class CatchMenuItem<T> {
   const CatchMenuItem({
     required this.value,
@@ -25,6 +32,49 @@ class CatchMenuItem<T> {
   final bool danger;
   final bool enabled;
   final ValueChanged<T>? onSelected;
+}
+
+/// Anchors a Catch menu and matches its panel to the local trigger lane.
+class CatchMenuAnchor<T> extends StatelessWidget {
+  const CatchMenuAnchor({
+    super.key,
+    required this.items,
+    required this.builder,
+    this.controller,
+    this.onSelected,
+    this.alignmentOffset = Offset.zero,
+  });
+
+  final List<CatchMenuItem<T>> items;
+  final CatchMenuAnchorBuilder builder;
+  final MenuController? controller;
+  final void Function(T value, CatchMenuItem<T> item)? onSelected;
+  final Offset alignmentOffset;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) => MenuAnchor(
+        controller: controller,
+        alignmentOffset: alignmentOffset,
+        style: const MenuStyle(
+          backgroundColor: WidgetStatePropertyAll(Colors.transparent),
+          elevation: WidgetStatePropertyAll(0),
+          shadowColor: WidgetStatePropertyAll(Colors.transparent),
+          surfaceTintColor: WidgetStatePropertyAll(Colors.transparent),
+          padding: WidgetStatePropertyAll(EdgeInsets.zero),
+        ),
+        menuChildren: [
+          CatchMenu<T>(
+            width: constraints.maxWidth,
+            items: items,
+            onSelected: onSelected,
+          ),
+        ],
+        builder: builder,
+      ),
+    );
+  }
 }
 
 /// Handoff `Menu`: anchored surface panel of selectable rows.

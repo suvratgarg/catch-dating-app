@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_scene_viewport.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart' as app_router;
 import 'package:flutter/material.dart';
@@ -183,61 +184,35 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
             key: WelcomePage.splashTapTargetKey,
             behavior: HitTestBehavior.opaque,
             onTap: _landed ? null : _skip,
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final media = MediaQuery.of(context);
-                final size = Size(
-                  constraints.hasBoundedWidth
-                      ? constraints.maxWidth
-                      : media.size.width,
-                  constraints.hasBoundedHeight
-                      ? constraints.maxHeight
-                      : media.size.height,
-                );
-                final sceneWidth = math.min(
-                  size.width,
-                  CatchLayout.welcomeMaxWidth,
-                );
-
-                return AnimatedBuilder(
-                  animation: _sceneListenable,
-                  builder: (context, _) {
-                    return Align(
-                      alignment: Alignment.topCenter,
-                      child: SizedBox(
-                        width: sceneWidth,
-                        height: size.height,
-                        child: WelcomeScene(
-                          viewportWidth: sceneWidth,
-                          viewportHeight: size.height,
-                          mediaPadding: media.padding,
-                          spinValue: _spinController.value,
-                          landingValue: _landingController.value,
-                          landed: _landed,
-                          onContinue: () {
-                            _logCta(
-                              context
-                                  .l10n
-                                  .onboardingWelcomePageVisiblecopyContinuePhone,
-                            );
-                            context.go(_authLocation(context));
-                          },
-                          onExplore: () {
-                            _logCta(
-                              context
-                                  .l10n
-                                  .onboardingWelcomePageVisiblecopySeeWhatsOn,
-                            );
-                            context.goNamed(
-                              app_router.Routes.exploreScreen.name,
-                            );
-                          },
-                        ),
-                      ),
-                    );
-                  },
-                );
-              },
+            child: CatchSceneViewport(
+              maxWidth: CatchLayout.welcomeMaxWidth,
+              builder: (context, viewport) => AnimatedBuilder(
+                animation: _sceneListenable,
+                builder: (context, _) {
+                  return WelcomeScene(
+                    viewportWidth: viewport.width,
+                    viewportHeight: viewport.height,
+                    mediaPadding: viewport.mediaPadding,
+                    spinValue: _spinController.value,
+                    landingValue: _landingController.value,
+                    landed: _landed,
+                    onContinue: () {
+                      _logCta(
+                        context
+                            .l10n
+                            .onboardingWelcomePageVisiblecopyContinuePhone,
+                      );
+                      context.go(_authLocation(context));
+                    },
+                    onExplore: () {
+                      _logCta(
+                        context.l10n.onboardingWelcomePageVisiblecopySeeWhatsOn,
+                      );
+                      context.goNamed(app_router.Routes.exploreScreen.name);
+                    },
+                  );
+                },
+              ),
             ),
           ),
         ),

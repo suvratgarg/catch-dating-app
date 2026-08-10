@@ -79,36 +79,22 @@ class _CompanionStageScaffold extends StatelessWidget {
               ),
             ),
             SafeArea(
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  return SingleChildScrollView(
-                    key: EventSuccessCompanionKeys.scrollView,
-                    child: Align(
-                      alignment: Alignment.topCenter,
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          minHeight: constraints.maxHeight,
-                          maxWidth: CatchLayout.maxContentWidth,
-                        ),
-                        child: Padding(
-                          padding: _companionMomentStagePadding,
-                          child: _CompanionMomentStage(
-                            event: event,
-                            plan: plan,
-                            presentation: presentation,
-                            stageTheme: stageTheme,
-                            attended: attended,
-                            showSelfCheckIn: showSelfCheckIn,
-                            eventEnded: eventEnded,
-                            momentKey: momentKey,
-                            momentKind: momentKind,
-                            content: content,
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                },
+              child: CatchFillViewportScrollView(
+                scrollViewKey: EventSuccessCompanionKeys.scrollView,
+                maxContentWidth: CatchLayout.maxContentWidth,
+                padding: _companionMomentStagePadding,
+                child: _CompanionMomentStage(
+                  event: event,
+                  plan: plan,
+                  presentation: presentation,
+                  stageTheme: stageTheme,
+                  attended: attended,
+                  showSelfCheckIn: showSelfCheckIn,
+                  eventEnded: eventEnded,
+                  momentKey: momentKey,
+                  momentKind: momentKind,
+                  content: content,
+                ),
               ),
             ),
           ],
@@ -158,46 +144,32 @@ class CompanionPaperScaffold extends StatelessWidget {
             )
           : null,
       body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return SingleChildScrollView(
-              key: EventSuccessCompanionKeys.scrollView,
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight: constraints.maxHeight,
-                    maxWidth: CatchLayout.maxContentWidth,
-                  ),
-                  child: Padding(
-                    padding: CatchInsets.pageBody.copyWith(
-                      top: CatchSpacing.s2,
-                      bottom: CatchSpacing.s8,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        PaperCompanionNav(plan: plan),
-                        gapH20,
-                        PaperCompanionTicket(event: event, plan: plan),
-                        gapH24,
-                        PaperExpectationCard(
-                          event: event,
-                          plan: plan,
-                          showSelfCheckIn: showSelfCheckIn,
-                          eventEnded: eventEnded,
-                        ),
-                        if (!showSelfCheckIn) ...[
-                          gapH16,
-                          PaperPrivacyCard(text: presentation.privacyLine),
-                        ],
-                      ],
-                    ),
-                  ),
-                ),
+        child: CatchFillViewportScrollView(
+          scrollViewKey: EventSuccessCompanionKeys.scrollView,
+          maxContentWidth: CatchLayout.maxContentWidth,
+          padding: CatchInsets.pageBody.copyWith(
+            top: CatchSpacing.s2,
+            bottom: CatchSpacing.s8,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              PaperCompanionNav(plan: plan),
+              gapH20,
+              PaperCompanionTicket(event: event, plan: plan),
+              gapH24,
+              PaperExpectationCard(
+                event: event,
+                plan: plan,
+                showSelfCheckIn: showSelfCheckIn,
+                eventEnded: eventEnded,
               ),
-            );
-          },
+              if (!showSelfCheckIn) ...[
+                gapH16,
+                PaperPrivacyCard(text: presentation.privacyLine),
+              ],
+            ],
+          ),
         ),
       ),
     );

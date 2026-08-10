@@ -90,3 +90,38 @@ int responsiveGridCount(double width) {
     ScreenSize.expanded => 4,
   };
 }
+
+/// Immutable shell geometry supplied to sliver features.
+class SliverViewportLayout {
+  const SliverViewportLayout({required this.width, required this.screenSize});
+
+  final double width;
+  final ScreenSize screenSize;
+}
+
+typedef SliverViewportWidgetBuilder =
+    Widget Function(BuildContext context, SliverViewportLayout viewport);
+
+/// Supplies cross-axis viewport geometry to a sliver without features reading
+/// global window metrics.
+class ResponsiveSliverBuilder extends StatelessWidget {
+  const ResponsiveSliverBuilder({super.key, required this.builder});
+
+  final SliverViewportWidgetBuilder builder;
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverLayoutBuilder(
+      builder: (context, constraints) {
+        final width = constraints.crossAxisExtent;
+        return builder(
+          context,
+          SliverViewportLayout(
+            width: width,
+            screenSize: ScreenSize.fromWidth(width),
+          ),
+        );
+      },
+    );
+  }
+}

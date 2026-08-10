@@ -228,12 +228,45 @@ class VibeGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return ResponsiveBuilder(
+      compact: (context) => _VibeGridLayout(
+        rows: rows,
+        onToggleVibe: onToggleVibe,
+        crossAxisCount: 2,
+      ),
+      medium: (context) => _VibeGridLayout(
+        rows: rows,
+        onToggleVibe: onToggleVibe,
+        crossAxisCount: 3,
+      ),
+      expanded: (context) => _VibeGridLayout(
+        rows: rows,
+        onToggleVibe: onToggleVibe,
+        crossAxisCount: 4,
+      ),
+    );
+  }
+}
+
+class _VibeGridLayout extends StatelessWidget {
+  const _VibeGridLayout({
+    required this.rows,
+    required this.onToggleVibe,
+    required this.crossAxisCount,
+  });
+
+  final List<EventRecapAttendeeRow> rows;
+  final ValueChanged<String> onToggleVibe;
+  final int crossAxisCount;
+
+  @override
+  Widget build(BuildContext context) {
     return GridView.builder(
       itemCount: rows.length,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: responsiveGridCount(MediaQuery.of(context).size.width),
+        crossAxisCount: crossAxisCount,
         crossAxisSpacing: CatchLayout.eventRecapGridGap,
         mainAxisSpacing: CatchLayout.eventRecapGridGap,
         childAspectRatio: CatchAspectRatio.eventRecapVibeTile,
@@ -352,8 +385,23 @@ class VibeGridSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return ResponsiveBuilder(
+      compact: (context) => const _VibeGridSkeletonLayout(crossAxisCount: 2),
+      medium: (context) => const _VibeGridSkeletonLayout(crossAxisCount: 3),
+      expanded: (context) => const _VibeGridSkeletonLayout(crossAxisCount: 4),
+    );
+  }
+}
+
+class _VibeGridSkeletonLayout extends StatelessWidget {
+  const _VibeGridSkeletonLayout({required this.crossAxisCount});
+
+  final int crossAxisCount;
+
+  @override
+  Widget build(BuildContext context) {
     return GridView.count(
-      crossAxisCount: responsiveGridCount(MediaQuery.of(context).size.width),
+      crossAxisCount: crossAxisCount,
       crossAxisSpacing: CatchLayout.eventRecapGridGap,
       mainAxisSpacing: CatchLayout.eventRecapGridGap,
       childAspectRatio: CatchAspectRatio.eventRecapVibeTile,
