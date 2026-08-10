@@ -23673,6 +23673,11 @@
           "notes": "Application provider loading with the form-shaped skeleton."
         },
         {
+          "id": "launch_access_submit_pending",
+          "status": "captured",
+          "notes": "Editable application with the submit mutation pending and the primary action disabled."
+        },
+        {
           "id": "launch_access_signed_out",
           "status": "captured",
           "notes": "Signed-out permission state requiring phone verification."
@@ -23710,7 +23715,11 @@
           "status": "captured",
           "source": "A signed-in member with no application receives the complete editable application form.",
           "captureIds": ["launch_access_application"],
-          "tests": ["test/launch_access/launch_access_application_screen_test.dart"],
+          "previewIds": ["LaunchAccessApplicationScreen/Screen states"],
+          "tests": [
+            "test/launch_access/launch_access_application_screen_test.dart",
+            "test/ui_captures/capture_runner_test.dart"
+          ],
           "nextAction": "Keep the form contract aligned with the live Firestore application schema."
         },
         {
@@ -23719,7 +23728,11 @@
           "status": "captured",
           "source": "LaunchAccessLoadingBody mirrors the form structure while the current application stream resolves.",
           "captureIds": ["launch_access_loading"],
-          "tests": ["test/launch_access/launch_access_application_screen_test.dart"],
+          "previewIds": ["LaunchAccessApplicationScreen/Screen states"],
+          "tests": [
+            "test/launch_access/launch_access_application_screen_test.dart",
+            "test/ui_captures/capture_runner_test.dart"
+          ],
           "nextAction": "Keep skeleton lanes synchronized with form-section changes."
         },
         {
@@ -23728,6 +23741,8 @@
           "status": "captured",
           "source": "A missing current uid shows the phone-verification requirement without exposing the application.",
           "captureIds": ["launch_access_signed_out"],
+          "previewIds": ["LaunchAccessApplicationScreen/Screen states"],
+          "tests": ["test/ui_captures/capture_runner_test.dart"],
           "nextAction": "Preserve the normal router authentication guard and this defensive in-screen fallback."
         },
         {
@@ -23736,6 +23751,8 @@
           "status": "captured",
           "source": "Application stream failures render through CatchAsyncValueView with an exact provider retry.",
           "captureIds": ["launch_access_error"],
+          "previewIds": ["LaunchAccessApplicationScreen/Screen states"],
+          "tests": ["test/ui_captures/capture_runner_test.dart"],
           "nextAction": "Keep provider failures on the shared branded error surface."
         },
         {
@@ -23744,6 +23761,8 @@
           "status": "captured",
           "source": "Offline application reads use the shared offline recovery state and exact retry owner.",
           "captureIds": ["launch_access_offline"],
+          "previewIds": ["LaunchAccessApplicationScreen/Screen states"],
+          "tests": ["test/ui_captures/capture_runner_test.dart"],
           "nextAction": "Keep offline classification centralized in CatchAsyncValueView."
         },
         {
@@ -23752,17 +23771,26 @@
           "status": "captured",
           "source": "Non-editable application statuses replace the form with an explicit review or approval result.",
           "captureIds": ["launch_access_approved"],
-          "tests": ["test/launch_access/launch_access_repository_test.dart"],
+          "previewIds": ["LaunchAccessApplicationScreen/Screen states"],
+          "tests": [
+            "test/launch_access/launch_access_repository_test.dart",
+            "test/ui_captures/capture_runner_test.dart"
+          ],
           "nextAction": "Keep status labels and editability derived from LaunchAccessApplicationStatus."
         },
         {
           "id": "submit_application",
           "kind": "mutation",
-          "status": "tested",
+          "status": "captured",
           "source": "LaunchAccessController.submitMutation validates the draft and delegates one current-user transaction to LaunchAccessRepository.",
+          "captureIds": ["launch_access_submit_pending"],
           "tests": [
             "test/launch_access/launch_access_controller_test.dart",
             "test/launch_access/launch_access_repository_test.dart"
+          ],
+          "previewIds": [
+            "LaunchAccessApplicationScreen/Screen states",
+            "LaunchAccessApplicationForm/Form states"
           ],
           "nextAction": "Preserve transaction-owned status locking and duplicate-submit exclusion."
         },
@@ -23775,6 +23803,11 @@
             "launch_access_text_scale_2",
             "launch_access_reduced_motion"
           ],
+          "previewIds": [
+            "LaunchAccessApplicationScreen/Screen states",
+            "LaunchAccessApplicationForm/Form states"
+          ],
+          "tests": ["test/ui_captures/capture_runner_test.dart"],
           "nextAction": "Keep long labels and choice groups overflow-free as application options evolve."
         }
       ],

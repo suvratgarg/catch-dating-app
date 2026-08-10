@@ -571,6 +571,7 @@
       "captureIds": [
         "launch_access_application",
         "launch_access_loading",
+        "launch_access_submit_pending",
         "launch_access_signed_out",
         "launch_access_error",
         "launch_access_offline",
