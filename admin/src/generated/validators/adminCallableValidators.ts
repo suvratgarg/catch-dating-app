@@ -7201,6 +7201,42 @@ const model = {
               "repeatAttendeeCount": {
                 "type": "integer",
                 "minimum": 0
+              },
+              "operationalAttendeeCount": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "operationalCheckedInCount": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "attendeeSources": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "catchBooking",
+                  "hostImport",
+                  "hostManual",
+                  "webOtp"
+                ],
+                "properties": {
+                  "catchBooking": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "hostImport": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "hostManual": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "webOtp": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                }
               }
             }
           }

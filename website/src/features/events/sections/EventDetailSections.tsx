@@ -27,6 +27,7 @@ import {activityForKind} from "../../organizers/publicDiscovery";
 import {claimHrefForListing} from "../../organizers/routing";
 import {buildListingReviewSummary} from "../../reviews/reviewModel";
 import type {EventDetailRecord} from "../eventDetailModel";
+import {PublicEventRegistration} from "../PublicEventRegistration";
 
 export function EventDetailHeroSection({
   appDownloadCtas,
@@ -36,6 +37,8 @@ export function EventDetailHeroSection({
   event: EventDetailRecord;
 }) {
   const isExternal = event.supply === "external";
+  const hasWebRegistration = event.registrationState === "webOtp";
+  const webWaitlistOnly = hasWebRegistration && event.remainingCapacity === 0;
   const listingPath = event.listing.path;
   const organizerPolicy = organizerPolicyForListing(event.listing);
   const activity = activityForKind(event.activityKind);
@@ -135,14 +138,24 @@ export function EventDetailHeroSection({
         date={event.date}
         description={isExternal
           ? eventDetailCopy.hero.externalActionBody
-          : eventDetailCopy.hero.catchActionBody}
+          : hasWebRegistration
+            ? webWaitlistOnly
+              ? eventDetailCopy.hero.webWaitlistBody
+              : eventDetailCopy.hero.webActionBody
+            : eventDetailCopy.hero.catchActionBody}
         title={isExternal
           ? interpolateContent(eventDetailCopy.hero.externalActionHeading, {
             source: event.sourceLabel,
           })
-          : eventDetailCopy.hero.catchActionHeading}
+          : hasWebRegistration
+            ? webWaitlistOnly
+              ? eventDetailCopy.hero.webWaitlistHeading
+              : eventDetailCopy.hero.webActionHeading
+            : eventDetailCopy.hero.catchActionHeading}
       >
-        {isExternal && event.sourceHref ? (
+        {hasWebRegistration ? (
+          <PublicEventRegistration eventId={event.eventId} />
+        ) : isExternal && event.sourceHref ? (
           <ActionGroup variant="flow">
             <ButtonLink
               href={event.sourceHref}
@@ -315,6 +328,13 @@ function registrationLabel(event: EventDetailRecord) {
       return eventDetailCopy.details.catchRegistrationFull;
     case "external":
       return eventDetailCopy.details.externalRegistration;
+    case "webOtp":
+      if (event.remainingCapacity === 0) {
+        return eventDetailCopy.details.webRegistrationWaitlist;
+      }
+      return interpolateContent(eventDetailCopy.details.webRegistrationOpen, {
+        count: String(event.remainingCapacity ?? 0),
+      });
     case "closed":
       return eventDetailCopy.details.registrationClosed;
   }

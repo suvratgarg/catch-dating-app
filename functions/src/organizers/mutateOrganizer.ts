@@ -244,6 +244,22 @@ function assertCanUpdateOrganizer(
     organizerSnap,
     "OrganizerDocument"
   );
+  if (fields.publicListingEnabled === true) {
+    const requiredPublicFields = [
+      organizer.name,
+      organizer.description,
+      organizer.location,
+      organizer.area,
+    ];
+    if (requiredPublicFields.some((value) =>
+      typeof value !== "string" || value.trim().length === 0
+    )) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Add an organizer name, description, city, and area before publishing."
+      );
+    }
+  }
   if (isOrganizerOwner(organizer, actorUid)) return;
   if (
     isOrganizerManager(organizer, actorUid) &&
@@ -266,6 +282,13 @@ function organizerPatch(
   serverTimestamp: FirebaseFirestore.FieldValue
 ): Record<string, unknown> {
   const patch: Record<string, unknown> = {...fields};
+  if (fields.publicListingEnabled !== undefined) {
+    delete patch.publicListingEnabled;
+    Object.assign(
+      patch,
+      organizerPublicationPatch(fields.publicListingEnabled)
+    );
+  }
   if (fields.organizerType !== undefined) {
     patch.organizerTypeUpdatedAt = serverTimestamp;
     patch.organizerTypeUpdatedByUid = actorUid;
@@ -301,6 +324,25 @@ function organizerPatch(
     patch.profileImageUrl = thumbnailOrUrl(logoPhoto);
   }
   return patch;
+}
+
+export function organizerPublicationPatch(
+  enabled: boolean
+): Record<string, unknown> {
+  if (enabled) {
+    return {
+      "appVisibility": "discoverable",
+      "publicPage.publishStatus": "published",
+      "publicPage.indexStatus": "indexReady",
+      "publicPage.robots": "index, follow",
+    };
+  }
+  return {
+    "appVisibility": "hidden",
+    "publicPage.publishStatus": "draft",
+    "publicPage.indexStatus": "noindex",
+    "publicPage.robots": "noindex, follow",
+  };
 }
 
 function legacyClubPatch(

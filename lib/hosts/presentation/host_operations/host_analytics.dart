@@ -775,11 +775,17 @@ class HostAnalyticsEventTile extends StatelessWidget {
       date: EventFormatters.shortDate(event.startTime),
       status: _analyticsEventStatusLabel(context, event.status),
     );
-    final attendance = context.l10n.hostsHostAnalyticsTextBookedAttendedMatches(
-      booked: event.bookedCount,
-      attended: event.checkedInCount,
-      matches: event.mutualMatchCount,
-    );
+    final attendance = event.operationalAttendeeCount > 0
+        ? context.l10n.hostsHostAnalyticsTextRosterAttendedExternal(
+            roster: event.operationalAttendeeCount,
+            attended: event.operationalCheckedInCount,
+            external: event.externalAttendeeCount,
+          )
+        : context.l10n.hostsHostAnalyticsTextBookedAttendedMatches(
+            booked: event.bookedCount,
+            attended: event.checkedInCount,
+            matches: event.mutualMatchCount,
+          );
     return CatchFieldLanes.single(
       child: CatchField.nav(
         key: ValueKey('host-analytics-event-${event.eventId}'),
@@ -879,12 +885,14 @@ List<HostAnalyticsMetricCard> _primaryMetricCards(HostAnalyticsReport report) {
   );
   return [
     views,
-    _metricOrMissing(cards, HostAnalyticsMetricIds.bookings),
-    _metricOrMissing(
-      cards,
-      HostAnalyticsMetricIds.attendanceRate,
-      unit: HostAnalyticsMetricUnit.percent,
-    ),
+    cards[HostAnalyticsMetricIds.rosterGuests] ??
+        _metricOrMissing(cards, HostAnalyticsMetricIds.bookings),
+    cards[HostAnalyticsMetricIds.rosterAttendanceRate] ??
+        _metricOrMissing(
+          cards,
+          HostAnalyticsMetricIds.attendanceRate,
+          unit: HostAnalyticsMetricUnit.percent,
+        ),
     _metricOrMissing(
       cards,
       HostAnalyticsMetricIds.revenue,
@@ -960,7 +968,9 @@ IconData _metricIcon(String metricId) {
     HostAnalyticsMetricIds.eventViews ||
     HostAnalyticsMetricIds.combinedViews => CatchIcons.visibilityOutlined,
     HostAnalyticsMetricIds.bookings => CatchIcons.confirmationNumberOutlined,
+    HostAnalyticsMetricIds.rosterGuests => CatchIcons.groupsOutlined,
     HostAnalyticsMetricIds.attendanceRate => CatchIcons.factCheckOutlined,
+    HostAnalyticsMetricIds.rosterAttendanceRate => CatchIcons.factCheckOutlined,
     HostAnalyticsMetricIds.revenue => CatchIcons.accountBalanceWalletOutlined,
     HostAnalyticsMetricIds.checkoutDropoff ||
     HostAnalyticsMetricIds.checkoutConversionRate =>
@@ -1004,8 +1014,12 @@ String _metricLabel(BuildContext context, HostAnalyticsMetricCard metric) {
       context.l10n.hostsHostAnalyticsLabelEventViews,
     HostAnalyticsMetricIds.bookings =>
       context.l10n.hostsHostAnalyticsLabelBookings,
+    HostAnalyticsMetricIds.rosterGuests =>
+      context.l10n.hostsHostAnalyticsLabelRosterGuests,
     HostAnalyticsMetricIds.attendanceRate =>
       context.l10n.hostsHostAnalyticsLabelAttendanceRate,
+    HostAnalyticsMetricIds.rosterAttendanceRate =>
+      context.l10n.hostsHostAnalyticsLabelRosterAttendanceRate,
     HostAnalyticsMetricIds.revenue =>
       context.l10n.hostsHostAnalyticsLabelRevenue,
     HostAnalyticsMetricIds.checkoutDropoff =>

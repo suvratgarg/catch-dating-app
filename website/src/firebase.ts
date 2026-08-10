@@ -7,6 +7,8 @@ import type {ListPublicOrganizerReviewsCallablePayload} from "../../functions/sr
 import type {ListPublicOrganizerReviewsCallableResponse} from "../../functions/src/shared/generated/listPublicOrganizerReviewsCallableResponse";
 import type {RecordOrganizerAnalyticsEventCallablePayload} from "../../functions/src/shared/generated/recordOrganizerAnalyticsEventCallablePayload";
 import type {RecordOrganizerAnalyticsEventCallableResponse} from "../../functions/src/shared/generated/recordOrganizerAnalyticsEventCallableResponse";
+import type {RegisterPublicEventCallablePayload} from "../../functions/src/shared/generated/registerPublicEventCallablePayload";
+import type {RegisterPublicEventCallableResponse} from "../../functions/src/shared/generated/registerPublicEventCallableResponse";
 import type {RequestOrganizerClaimCallablePayload} from "../../functions/src/shared/generated/requestOrganizerClaimCallablePayload";
 import type {RequestOrganizerClaimCallableResponse} from "../../functions/src/shared/generated/requestOrganizerClaimCallableResponse";
 import {
@@ -14,6 +16,7 @@ import {
   claimFirebaseConfigured,
   firebaseConfig as config,
   publicAnalyticsFirebaseConfigured,
+  publicEventRegistrationFirebaseConfigured,
   publicReviewsFirebaseConfigured,
 } from "./firebaseConfig";
 
@@ -37,6 +40,13 @@ export type RecordOrganizerAnalyticsEventPayload =
   RecordOrganizerAnalyticsEventCallablePayload;
 export type RecordOrganizerAnalyticsEventResponse =
   RecordOrganizerAnalyticsEventCallableResponse;
+export type RegisterPublicEventPayload = RegisterPublicEventCallablePayload;
+export type RegisterPublicEventResponse = RegisterPublicEventCallableResponse;
+
+export interface PublicEventPhoneVerification {
+  clear: () => void;
+  confirm: (code: string) => Promise<User>;
+}
 
 let runtimePromise: Promise<FirebaseRuntime | null> | null = null;
 
@@ -156,6 +166,51 @@ export async function recordOrganizerAnalyticsEvent(
   >(runtime.functions, "recordOrganizerAnalyticsEvent");
   const result = await callable(payload);
   return result.data;
+}
+
+export async function beginPublicEventPhoneVerification(
+  phoneNumber: string,
+  recaptchaContainerId: string
+): Promise<PublicEventPhoneVerification> {
+  const runtime = await getFirebaseRuntime();
+  if (!runtime || !publicEventRegistrationFirebaseConfigured) {
+    throw new Error("Website event registration is not configured for this build.");
+  }
+  const {RecaptchaVerifier, signInWithPhoneNumber} = await import("firebase/auth");
+  const verifier = new RecaptchaVerifier(
+    runtime.auth,
+    recaptchaContainerId,
+    {size: "invisible"}
+  );
+  try {
+    const confirmation = await signInWithPhoneNumber(
+      runtime.auth,
+      phoneNumber,
+      verifier
+    );
+    return {
+      clear: () => verifier.clear(),
+      confirm: async (code) => (await confirmation.confirm(code)).user,
+    };
+  } catch (error) {
+    verifier.clear();
+    throw error;
+  }
+}
+
+export async function registerPublicEvent(
+  payload: RegisterPublicEventPayload
+): Promise<RegisterPublicEventResponse> {
+  const runtime = await getFirebaseRuntime();
+  if (!runtime || !publicEventRegistrationFirebaseConfigured) {
+    throw new Error("Website event registration is not configured for this build.");
+  }
+  const {httpsCallable} = await import("firebase/functions");
+  const callable = httpsCallable<
+    RegisterPublicEventPayload,
+    RegisterPublicEventResponse
+  >(runtime.functions, "registerPublicEvent");
+  return (await callable(payload)).data;
 }
 
 async function getFirebaseRuntime() {

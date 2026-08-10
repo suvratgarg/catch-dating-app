@@ -77,12 +77,31 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
         status: "active",
         pushNotificationsEnabled: true,
       },
+      "organizerCommunicationPreferences/club-1_runner-1": {
+        organizerId: "club-1",
+        uid: "runner-1",
+        whatsapp: {status: "optedIn"},
+        sms: {status: "unknown"},
+      },
+      "onboarding_drafts/runner-1": {
+        firstName: "Asha",
+        phoneNumber: "9876543210",
+        countryCode: "+91",
+        step: 1,
+        draftVersion: 2,
+      },
       "eventParticipations/event-1_runner-1": {
         eventId: "event-1",
         clubId: "club-1",
         uid: "runner-1",
         status: "signedUp",
         genderAtSignup: "woman",
+      },
+      "eventAttendees/attendee-1": {
+        eventId: "event-1",
+        organizerId: "club-1",
+        linkedUid: "runner-1",
+        phoneE164: "+919876543210",
       },
       "eventCrossPathsConsents/event-1_runner-1": {
         eventId: "event-1",
@@ -265,7 +284,23 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
     )
   );
   assert.ok(
+    harness.updateWrites.some((write) =>
+      write.path === "eventAttendees/attendee-1" &&
+      write.data.linkedUid === null &&
+      write.data.linkedAt === null &&
+      write.data.updatedAt === now
+    )
+  );
+  assert.ok(
     harness.deletedPublicDocs.includes("savedEvents/runner-1_run-1")
+  );
+  assert.ok(
+    harness.deletedPublicDocs.includes("onboarding_drafts/runner-1")
+  );
+  assert.ok(
+    harness.deletedPublicDocs.includes(
+      "organizerCommunicationPreferences/club-1_runner-1"
+    )
   );
   assert.ok(
     harness.deletedPublicDocs.includes(

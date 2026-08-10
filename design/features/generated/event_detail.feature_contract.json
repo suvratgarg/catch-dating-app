@@ -2,9 +2,9 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/event_detail.feature.json",
-  "generatedFor": "2026-08-05",
-  "sourceDigest": "sha256:a29f998838dcfee56909f8906a8e8781f548a4a3f111111a4221a291efdfce43",
-  "resolvedDigest": "sha256:1dc2355420eeeef0e665b7d89e8158fe446c9eb4fdf68faf8b3915bf7c8e7abb",
+  "generatedFor": "2026-08-10",
+  "sourceDigest": "sha256:99537347f52975826c18ba813ca9c4e51de4e1d2d3980b51d41a7abab4350fa7",
+  "resolvedDigest": "sha256:107c28438de142155d2ce0fcaf92688c85cd6d83762b9c9c7baf6ea4d466d972",
   "feature": {
     "id": "feature.event_detail",
     "name": "Event Detail",
@@ -14,12 +14,12 @@
   },
   "coverage": {
     "surfaces": 3,
-    "states": 30,
-    "scenarios": 30,
-    "actionCases": 50,
-    "actions": 15,
+    "states": 31,
+    "scenarios": 31,
+    "actionCases": 52,
+    "actions": 16,
     "captures": 33,
-    "previews": 13,
+    "previews": 14,
     "testFiles": 7,
     "evidenceExceptions": 9
   },
@@ -1645,9 +1645,9 @@
         "id": "event_detail_canonical"
       },
       "actionScope": {
-        "included": "Read-only public Event Detail handoffs to the Catch app, an official external registration source, the canonical organizer page, or the organizer claim flow.",
+        "included": "Public Event Detail handoffs to the Catch app, an official external registration source, the canonical organizer page, or the organizer claim flow, plus event-scoped phone-OTP registration for explicitly published, open-admission Catch events.",
         "excluded": [
-          "The marketing projection never books, joins a waitlist, checks out, authenticates, or writes an event review.",
+          "The marketing projection never creates a Consumer profile, performs profile-dependent approval, accepts payment, starts a Consumer chat, or writes an event review. Phone OTP establishes only the minimal authenticated identity needed for the operational attendee relationship.",
           "Static path generation, canonical metadata, Event JSON-LD, sitemap inclusion, and missing-event fallback remain owned by the route and postbuild contracts."
         ]
       },
@@ -1662,10 +1662,17 @@
             "language": "typescript",
             "file": "website/src/features/events/sections/EventDetailSections.tsx",
             "symbol": "EventDetailHeroSection"
+          },
+          {
+            "id": "event_registration",
+            "language": "typescript",
+            "file": "website/src/features/events/PublicEventRegistration.tsx",
+            "symbol": "PublicEventRegistration"
           }
         ],
         "componentContracts": [
           "route_event_detail",
+          "event_detail_public_registration",
           "shared_event_detail_shells",
           "event_detail_hero_section",
           "event_detail_facts_section",
@@ -1673,12 +1680,21 @@
           "event_detail_provenance_section"
         ],
         "dataContracts": [
+          "contracts/callables/register_public_event_payload.schema.json",
+          "contracts/callable_responses/register_public_event_response.schema.json",
+          "contracts/firestore/event_attendees.schema.json",
+          "contracts/firestore/onboarding_drafts.schema.json",
+          "contracts/firestore/organizer_communication_preferences.schema.json",
           "contracts/public/website_host_listing_projection.schema.json"
         ],
         "previewEvidence": {
           "catch-native": [
             "route_event_detail/EventDetailCatch",
             "event_detail_hero_section/EventDetailHero"
+          ],
+          "web-otp-registration": [
+            "route_event_detail/EventDetailCatch",
+            "event_detail_public_registration/EventDetailHeroWebOtp"
           ],
           "external-source": [
             "route_event_detail/EventDetailCatch",
@@ -1691,6 +1707,11 @@
         },
         "testEvidence": {
           "catch-native": [
+            "website/src/features/events/eventDetailModel.test.ts",
+            "website/src/features/events/sections/EventDetailSections.test.tsx",
+            "website/scripts/postbuild.test.mjs"
+          ],
+          "web-otp-registration": [
             "website/src/features/events/eventDetailModel.test.ts",
             "website/src/features/events/sections/EventDetailSections.test.tsx",
             "website/scripts/postbuild.test.mjs"
@@ -1711,12 +1732,12 @@
         }
       },
       "coverage": {
-        "states": 4,
-        "scenarios": 4,
-        "actionCases": 8,
-        "actions": 4,
+        "states": 5,
+        "scenarios": 5,
+        "actionCases": 10,
+        "actions": 5,
         "captures": 0,
-        "previews": 5,
+        "previews": 6,
         "testFiles": 3,
         "evidenceExceptions": 1
       },
@@ -1759,6 +1780,31 @@
         }
       },
       "actions": [
+        {
+          "id": "register_event_with_phone_otp",
+          "owner": "event_registration",
+          "codeValue": "handleSubmit",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "routeInstanceId",
+            "eventId",
+            "verifiedPhoneIdentity"
+          ],
+          "outcomes": [
+            {
+              "kind": "side_effect",
+              "id": "event.web_otp_registration_completed"
+            },
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "web-otp-registration"
+              ]
+            }
+          ],
+          "description": "Verifies the guest phone number and creates or reuses the event-scoped operational attendee relationship without requiring Consumer profile onboarding.",
+          "implementationStatus": "implemented"
+        },
         {
           "id": "open_catch_registration_handoff",
           "owner": "event_detail_hero",
@@ -1898,6 +1944,7 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
+                  "register_event_with_phone_otp",
                   "open_official_registration_source",
                   "open_event_organizer_claim"
                 ]
@@ -1920,6 +1967,7 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
+                  "register_event_with_phone_otp",
                   "open_official_registration_source"
                 ]
               }
@@ -1939,9 +1987,83 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
+                  "register_event_with_phone_otp",
                   "open_catch_registration_handoff",
                   "open_official_registration_source",
                   "open_event_organizer_claim"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "web-otp-registration",
+          "stateId": "web-otp-registration",
+          "kind": "route_state",
+          "status": "previewed",
+          "dimensions": {
+            "availability": "ready",
+            "supply": "catch_native",
+            "registration": "open",
+            "reviews": "empty",
+            "claim": "hidden"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "event_detail_hero_section/EventDetailHero",
+              "event_detail_public_registration/EventDetailHeroWebOtp",
+              "route_event_detail/EventDetailCatch",
+              "shared_event_detail_shells/EventDetailShells"
+            ],
+            "tests": [
+              "website/src/features/events/eventDetailModel.test.ts",
+              "website/src/features/events/sections/EventDetailSections.test.tsx",
+              "website/scripts/postbuild.test.mjs"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "registration_open",
+              "dimensions": {
+                "availability": "ready",
+                "supply": "catch_native",
+                "registration": "open",
+                "reviews": "empty",
+                "claim": "hidden"
+              },
+              "actions": {
+                "enabled": [
+                  "register_event_with_phone_otp",
+                  "open_event_organizer"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "open_catch_registration_handoff",
+                  "open_official_registration_source",
+                  "open_event_organizer_claim"
+                ]
+              }
+            },
+            {
+              "id": "claim_available",
+              "dimensions": {
+                "availability": "ready",
+                "supply": "catch_native",
+                "registration": "open",
+                "reviews": "empty",
+                "claim": "available"
+              },
+              "actions": {
+                "enabled": [
+                  "register_event_with_phone_otp",
+                  "open_event_organizer",
+                  "open_event_organizer_claim"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "open_catch_registration_handoff",
+                  "open_official_registration_source"
                 ]
               }
             }
@@ -1990,6 +2112,7 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
+                  "register_event_with_phone_otp",
                   "open_catch_registration_handoff",
                   "open_event_organizer_claim"
                 ]
@@ -2012,6 +2135,7 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
+                  "register_event_with_phone_otp",
                   "open_catch_registration_handoff"
                 ]
               }
@@ -2031,6 +2155,7 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
+                  "register_event_with_phone_otp",
                   "open_catch_registration_handoff",
                   "open_official_registration_source",
                   "open_event_organizer_claim"
@@ -2079,6 +2204,7 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
+                  "register_event_with_phone_otp",
                   "open_official_registration_source",
                   "open_event_organizer_claim"
                 ]
@@ -2120,6 +2246,7 @@
                 "enabled": [],
                 "disabled": [],
                 "notAllowed": [
+                  "register_event_with_phone_otp",
                   "open_catch_registration_handoff",
                   "open_official_registration_source",
                   "open_event_organizer",
@@ -2148,10 +2275,28 @@
               "exportName": "EventDetailCatch",
               "states": [
                 "catch-native",
+                "web-otp-registration",
                 "external-source",
                 "event-reviews",
                 "desktop-ticket-rail",
                 "mobile-single-column"
+              ]
+            }
+          },
+          {
+            "id": "event_detail_public_registration",
+            "kind": "supporting-component",
+            "source": "website/src/features/events/PublicEventRegistration.tsx",
+            "exportName": "PublicEventRegistration",
+            "storybook": {
+              "status": "ready",
+              "story": "website/src/stories/EventDetailSections.stories.tsx",
+              "exportName": "EventDetailHeroWebOtp",
+              "states": [
+                "details",
+                "otp-code",
+                "success",
+                "error"
               ]
             }
           },
@@ -2166,6 +2311,7 @@
               "exportName": "EventDetailShells",
               "states": [
                 "catch-native",
+                "web-otp-registration",
                 "external-source",
                 "fact-grid",
                 "provenance",
@@ -2186,6 +2332,7 @@
               "exportName": "EventDetailHero",
               "states": [
                 "catch-native",
+                "web-otp-registration",
                 "external-source",
                 "desktop-ticket-rail",
                 "mobile-single-column",
@@ -2242,6 +2389,7 @@
         "previews": [
           "event_detail_hero_section/EventDetailHero",
           "event_detail_provenance_section/EventDetailProvenance",
+          "event_detail_public_registration/EventDetailHeroWebOtp",
           "event_detail_reviews_section/EventDetailReviews",
           "route_event_detail/EventDetailCatch",
           "shared_event_detail_shells/EventDetailShells"

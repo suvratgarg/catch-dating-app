@@ -1,7 +1,7 @@
 {
   "$schema": "./feature_contract.schema.json",
   "version": 2,
-  "updated": "2026-08-05",
+  "updated": "2026-08-10",
   "id": "feature.event_detail",
   "name": "Event Detail",
   "owner": "events",
@@ -496,9 +496,9 @@
         "id": "event_detail_canonical"
       },
       "actionScope": {
-        "included": "Read-only public Event Detail handoffs to the Catch app, an official external registration source, the canonical organizer page, or the organizer claim flow.",
+        "included": "Public Event Detail handoffs to the Catch app, an official external registration source, the canonical organizer page, or the organizer claim flow, plus event-scoped phone-OTP registration for explicitly published, open-admission Catch events.",
         "excluded": [
-          "The marketing projection never books, joins a waitlist, checks out, authenticates, or writes an event review.",
+          "The marketing projection never creates a Consumer profile, performs profile-dependent approval, accepts payment, starts a Consumer chat, or writes an event review. Phone OTP establishes only the minimal authenticated identity needed for the operational attendee relationship.",
           "Static path generation, canonical metadata, Event JSON-LD, sitemap inclusion, and missing-event fallback remain owned by the route and postbuild contracts."
         ]
       },
@@ -513,10 +513,17 @@
             "language": "typescript",
             "file": "website/src/features/events/sections/EventDetailSections.tsx",
             "symbol": "EventDetailHeroSection"
+          },
+          {
+            "id": "event_registration",
+            "language": "typescript",
+            "file": "website/src/features/events/PublicEventRegistration.tsx",
+            "symbol": "PublicEventRegistration"
           }
         ],
         "componentContracts": [
           "route_event_detail",
+          "event_detail_public_registration",
           "shared_event_detail_shells",
           "event_detail_hero_section",
           "event_detail_facts_section",
@@ -524,12 +531,21 @@
           "event_detail_provenance_section"
         ],
         "dataContracts": [
+          "contracts/callables/register_public_event_payload.schema.json",
+          "contracts/callable_responses/register_public_event_response.schema.json",
+          "contracts/firestore/event_attendees.schema.json",
+          "contracts/firestore/onboarding_drafts.schema.json",
+          "contracts/firestore/organizer_communication_preferences.schema.json",
           "contracts/public/website_host_listing_projection.schema.json"
         ],
         "previewEvidence": {
           "catch-native": [
             "route_event_detail/EventDetailCatch",
             "event_detail_hero_section/EventDetailHero"
+          ],
+          "web-otp-registration": [
+            "route_event_detail/EventDetailCatch",
+            "event_detail_public_registration/EventDetailHeroWebOtp"
           ],
           "external-source": [
             "route_event_detail/EventDetailCatch",
@@ -542,6 +558,11 @@
         },
         "testEvidence": {
           "catch-native": [
+            "website/src/features/events/eventDetailModel.test.ts",
+            "website/src/features/events/sections/EventDetailSections.test.tsx",
+            "website/scripts/postbuild.test.mjs"
+          ],
+          "web-otp-registration": [
             "website/src/features/events/eventDetailModel.test.ts",
             "website/src/features/events/sections/EventDetailSections.test.tsx",
             "website/scripts/postbuild.test.mjs"
@@ -584,6 +605,18 @@
         }
       },
       "actions": [
+        {
+          "id": "register_event_with_phone_otp",
+          "owner": "event_registration",
+          "codeValue": "handleSubmit",
+          "cardinality": "singleton",
+          "scopeKeys": ["routeInstanceId", "eventId", "verifiedPhoneIdentity"],
+          "outcomes": [
+            {"kind": "side_effect", "id": "event.web_otp_registration_completed"},
+            {"kind": "surface_state", "stateIds": ["web-otp-registration"]}
+          ],
+          "description": "Verifies the guest phone number and creates or reuses the event-scoped operational attendee relationship without requiring Consumer profile onboarding."
+        },
         {
           "id": "open_catch_registration_handoff",
           "owner": "event_detail_hero",
@@ -643,6 +676,7 @@
       ],
       "stateIds": [
         "catch-native",
+        "web-otp-registration",
         "external-source",
         "event-reviews",
         "missing-event"
@@ -682,6 +716,26 @@
               "id": "registration_closed",
               "dimensions": {"registration": "closed"},
               "enabledActions": ["open_event_organizer"]
+            }
+          ]
+        },
+        "web-otp-registration": {
+          "actionCases": [
+            {
+              "id": "registration_open",
+              "enabledActions": [
+                "register_event_with_phone_otp",
+                "open_event_organizer"
+              ]
+            },
+            {
+              "id": "claim_available",
+              "dimensions": {"claim": "available"},
+              "enabledActions": [
+                "register_event_with_phone_otp",
+                "open_event_organizer",
+                "open_event_organizer_claim"
+              ]
             }
           ]
         },

@@ -80,6 +80,7 @@ export async function requestAccountDeletionHandler(
   const writer = new BatchQueue(db);
   writer.delete(db.collection("publicProfiles").doc(uid));
   writer.delete(db.collection("crossPathsShowcaseEligibility").doc(uid));
+  writer.delete(db.collection("onboarding_drafts").doc(uid));
 
   await queueRelationshipCleanup({
     db,
@@ -190,6 +191,7 @@ async function queueRelationshipCleanup(params: {
   await Promise.all([
     queueClubMembershipCleanup(db, uid, now, writer),
     queueEventParticipationCleanup(db, uid, now, writer),
+    queueEventAttendeeIdentityCleanup(db, uid, now, writer),
     queueCrossPathsConsentCleanup(db, uid, writer),
     queueCrossPathsSuggestionExposureCleanup(db, uid, writer),
     queueCrossPathsInvitationCleanup(db, uid, writer),
@@ -201,10 +203,44 @@ async function queueRelationshipCleanup(params: {
     queuePaymentCleanup(db, uid, now, writer),
     queueNotificationCleanup(db, uid, writer),
     queueEventBroadcastCleanup(db, uid, writer),
+    queueOrganizerCommunicationPreferenceCleanup(db, uid, writer),
     queueHostAnalyticsSnapshotCleanup(db, uid, writer),
     queueBlockCleanup(db, uid, writer),
     queueReportCleanup(db, uid, now, writer),
   ]);
+}
+
+/**
+ * Removes the deleted Catch identity from retained organizer roster history.
+ */
+async function queueEventAttendeeIdentityCleanup(
+  db: FirebaseFirestore.Firestore,
+  uid: string,
+  now: FirebaseFirestore.FieldValue,
+  writer: BatchQueue
+) {
+  const attendees = await db
+    .collection("eventAttendees")
+    .where("linkedUid", "==", uid)
+    .get();
+  attendees.forEach((doc) => writer.update(doc.ref, {
+    linkedUid: null,
+    linkedAt: null,
+    updatedAt: now,
+  }));
+}
+
+/** Deletes organizer-scoped marketing grants owned by the account. */
+async function queueOrganizerCommunicationPreferenceCleanup(
+  db: FirebaseFirestore.Firestore,
+  uid: string,
+  writer: BatchQueue
+) {
+  const preferences = await db
+    .collection("organizerCommunicationPreferences")
+    .where("uid", "==", uid)
+    .get();
+  preferences.forEach((doc) => writer.delete(doc.ref));
 }
 
 /** Releases and deletes pair reservations that expose the deleted account. */

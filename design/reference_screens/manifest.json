@@ -856,7 +856,12 @@
         "maxMismatchRatio": 0.18,
         "maxMeanDelta": 18
       },
-      "notes": "Canonical Claude Host Organizer reference. The 2026-07-17 full-shell capture renders the production HostAppShell and its four-tab navigation; strict advisory comparison is within threshold at mismatch 12.87%, meanDelta 9.39, maxDelta 240, masked 260416."
+      "parityDebtId": "HOST-STANDALONE-ORGANIZER-WORKSPACE-001",
+      "regressionThresholds": {
+        "maxMismatchRatio": 0.21,
+        "maxMeanDelta": 27
+      },
+      "notes": "Canonical Claude Host Organizer reference. The standalone-host workspace now defaults to the Edit, Insights, and Preview shell and adds private-to-public publication coaching plus cross-event CRM readiness. The deterministic 2026-08-10 capture is mismatch 20.09%, meanDelta 25.94, maxDelta 240, masked 260416. HOST-STANDALONE-ORGANIZER-WORKSPACE-001 bounds this intentional product expansion without weakening the canonical thresholds; remove it after a reviewed standalone-host reference replaces or reconciles the older organizer composition."
     },
     {
       "id": "screen.host.event.create.basics_default",

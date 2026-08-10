@@ -9356,6 +9356,88 @@ abstract class AppLocalizations {
   /// **'Upcoming'**
   String get hostsHostOrganizerLabelUpcoming;
 
+  /// Title for the privacy-bounded organizer audience summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Past attendee CRM'**
+  String get hostsHostOrganizerCrmTitle;
+
+  /// Loading message for the organizer audience summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Counting deduplicated roster history…'**
+  String get hostsHostOrganizerCrmLoading;
+
+  /// Error message for the organizer audience summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Audience counts are temporarily unavailable.'**
+  String get hostsHostOrganizerCrmUnavailable;
+
+  /// Deduplicated organizer attendee and contact counts.
+  ///
+  /// In en, this message translates to:
+  /// **'{pastCount} past attendees · {repeatCount} repeat attendees · {contactCount} total contacts'**
+  String hostsHostOrganizerCrmSummary({
+    required Object pastCount,
+    required Object repeatCount,
+    required Object contactCount,
+  });
+
+  /// Label for the Catch in-app audience channel.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch app'**
+  String get hostsHostOrganizerCrmCatchApp;
+
+  /// Count of contacts linked to Catch identities.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} linked'**
+  String hostsHostOrganizerCrmLinked({required Object count});
+
+  /// Readiness status for the existing in-app event broadcast.
+  ///
+  /// In en, this message translates to:
+  /// **'Current-event broadcasts live'**
+  String get hostsHostOrganizerCrmCurrentEventLive;
+
+  /// Label for the organizer WhatsApp channel.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp'**
+  String get hostsHostOrganizerCrmWhatsapp;
+
+  /// Count of contacts explicitly opted into a channel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} opted in'**
+  String hostsHostOrganizerCrmOptedIn({required Object count});
+
+  /// Readiness status for WhatsApp delivery.
+  ///
+  /// In en, this message translates to:
+  /// **'Business provider + template setup required'**
+  String get hostsHostOrganizerCrmWhatsappSetup;
+
+  /// Label for the organizer SMS channel.
+  ///
+  /// In en, this message translates to:
+  /// **'Text message'**
+  String get hostsHostOrganizerCrmTextMessage;
+
+  /// Readiness status for SMS delivery in India.
+  ///
+  /// In en, this message translates to:
+  /// **'SMS provider + India DLT setup required'**
+  String get hostsHostOrganizerCrmSmsSetup;
+
+  /// Notice shown when the bounded audience summary is truncated.
+  ///
+  /// In en, this message translates to:
+  /// **'This preview is capped at 2,500 roster records.'**
+  String get hostsHostOrganizerCrmTruncated;
+
   /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (title).
   ///
   /// In en, this message translates to:
@@ -17363,6 +17445,410 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Reserved companion spots'**
   String get hostsEventPolicyStepTitleCrossPathsPairCapacity;
+
+  /// Title for the standalone Host operational roster.
+  ///
+  /// In en, this message translates to:
+  /// **'External and web guests'**
+  String get hostsOperationalRosterTitle;
+
+  /// Explanation of independent Host roster sources.
+  ///
+  /// In en, this message translates to:
+  /// **'Run this event even when Catch did not handle the booking. Imported, manually added, and web-registered guests stay in one private roster.'**
+  String get hostsOperationalRosterSubtitle;
+
+  /// CTA to import a Host roster spreadsheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Import spreadsheet'**
+  String get hostsOperationalRosterImport;
+
+  /// CTA to add one operational attendee manually.
+  ///
+  /// In en, this message translates to:
+  /// **'Add guest'**
+  String get hostsOperationalRosterAddGuest;
+
+  /// Empty operational roster title.
+  ///
+  /// In en, this message translates to:
+  /// **'Your outside roster starts here'**
+  String get hostsOperationalRosterEmptyTitle;
+
+  /// Empty operational roster guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload a CSV or XLSX from your ticketing tool, or add guests one at a time.'**
+  String get hostsOperationalRosterEmptyMessage;
+
+  /// Roster source label for Catch booking.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch booking'**
+  String get hostsOperationalRosterSourceCatchBooking;
+
+  /// Roster source label for spreadsheet imports.
+  ///
+  /// In en, this message translates to:
+  /// **'Spreadsheet'**
+  String get hostsOperationalRosterSourceHostImport;
+
+  /// Roster source label for manual guest entry.
+  ///
+  /// In en, this message translates to:
+  /// **'Added by host'**
+  String get hostsOperationalRosterSourceHostManual;
+
+  /// Roster source label for public web OTP registration.
+  ///
+  /// In en, this message translates to:
+  /// **'Web registration'**
+  String get hostsOperationalRosterSourceWebOtp;
+
+  /// Operational attendee invited status.
+  ///
+  /// In en, this message translates to:
+  /// **'Invited'**
+  String get hostsOperationalRosterStatusInvited;
+
+  /// Operational attendee registered status.
+  ///
+  /// In en, this message translates to:
+  /// **'Registered'**
+  String get hostsOperationalRosterStatusRegistered;
+
+  /// Operational attendee waitlisted status.
+  ///
+  /// In en, this message translates to:
+  /// **'Waitlisted'**
+  String get hostsOperationalRosterStatusWaitlisted;
+
+  /// Operational attendee checked-in status.
+  ///
+  /// In en, this message translates to:
+  /// **'Checked in'**
+  String get hostsOperationalRosterStatusCheckedIn;
+
+  /// CTA to check in an operational attendee.
+  ///
+  /// In en, this message translates to:
+  /// **'Check in'**
+  String get hostsOperationalRosterCheckIn;
+
+  /// CTA to undo operational attendee check-in.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get hostsOperationalRosterUndoCheckIn;
+
+  /// Label for an operational attendee linked to an authenticated identity.
+  ///
+  /// In en, this message translates to:
+  /// **'OTP linked'**
+  String get hostsOperationalRosterIdentityLinked;
+
+  /// Roster column mapping sheet title.
+  ///
+  /// In en, this message translates to:
+  /// **'Map your guest list'**
+  String get hostsOperationalRosterImportTitle;
+
+  /// Roster mapping privacy and preview explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Check the detected columns before anything is uploaded.'**
+  String get hostsOperationalRosterImportSubtitle;
+
+  /// Roster mapping field for guest name.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest name'**
+  String get hostsOperationalRosterFieldName;
+
+  /// Roster mapping field for guest phone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get hostsOperationalRosterFieldPhone;
+
+  /// Roster mapping field for guest email.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get hostsOperationalRosterFieldEmail;
+
+  /// Roster mapping field for an external booking reference.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking reference'**
+  String get hostsOperationalRosterFieldReference;
+
+  /// Roster mapping field for ticket type.
+  ///
+  /// In en, this message translates to:
+  /// **'Ticket type'**
+  String get hostsOperationalRosterFieldTicket;
+
+  /// Roster mapping field for attendee status.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration status'**
+  String get hostsOperationalRosterFieldStatus;
+
+  /// Roster mapping option that ignores an optional column.
+  ///
+  /// In en, this message translates to:
+  /// **'Do not import'**
+  String get hostsOperationalRosterDoNotImport;
+
+  /// Roster mapping preview row count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} guests ready'**
+  String hostsOperationalRosterPreviewCount({required int count});
+
+  /// Roster import confirmation CTA.
+  ///
+  /// In en, this message translates to:
+  /// **'Import {count} guests'**
+  String hostsOperationalRosterImportAction({required int count});
+
+  /// Roster callable batch limit guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'This import uses the first 250 guests. Put the remaining {count} guests in another file.'**
+  String hostsOperationalRosterLimit({required int count});
+
+  /// Unsupported roster file error.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a CSV or XLSX spreadsheet.'**
+  String get hostsOperationalRosterIssueUnsupported;
+
+  /// Missing roster rows error.
+  ///
+  /// In en, this message translates to:
+  /// **'The spreadsheet needs a header row and at least one guest.'**
+  String get hostsOperationalRosterIssueMissingRows;
+
+  /// Roster column limit error.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep only the guest fields you need and use no more than 40 columns.'**
+  String get hostsOperationalRosterIssueTooManyColumns;
+
+  /// Malformed CSV error.
+  ///
+  /// In en, this message translates to:
+  /// **'The CSV has an unfinished quoted value.'**
+  String get hostsOperationalRosterIssueMalformedCsv;
+
+  /// Unreadable XLSX error.
+  ///
+  /// In en, this message translates to:
+  /// **'The XLSX spreadsheet could not be read. Export it again and retry.'**
+  String get hostsOperationalRosterIssueUnreadableXlsx;
+
+  /// Missing guest name mapping error.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the column that contains each guest name.'**
+  String get hostsOperationalRosterIssueMissingNameColumn;
+
+  /// Missing guest name row error.
+  ///
+  /// In en, this message translates to:
+  /// **'Row {row}: guest name is empty.'**
+  String hostsOperationalRosterIssueMissingName({required int row});
+
+  /// Completed roster import summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Roster updated: {created} added, {updated} refreshed, {skipped} skipped.'**
+  String hostsOperationalRosterImportSuccess({
+    required int created,
+    required int updated,
+    required int skipped,
+  });
+
+  /// Manual roster entry sheet title.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a guest'**
+  String get hostsOperationalRosterManualTitle;
+
+  /// Manual roster entry privacy guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'A phone or email is optional for day-of check-in. Add contact details only when you are allowed to use them.'**
+  String get hostsOperationalRosterManualSubtitle;
+
+  /// Manual guest save CTA.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to roster'**
+  String get hostsOperationalRosterManualSave;
+
+  /// Manual guest name validation.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the guest\'\'s name.'**
+  String get hostsOperationalRosterManualNameRequired;
+
+  /// Host analytics label for unified operational roster size.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests on roster'**
+  String get hostsHostAnalyticsLabelRosterGuests;
+
+  /// Host analytics label for source-independent attendance rate.
+  ///
+  /// In en, this message translates to:
+  /// **'Roster attendance'**
+  String get hostsHostAnalyticsLabelRosterAttendanceRate;
+
+  /// Per-event unified roster and outside-source analytics summary.
+  ///
+  /// In en, this message translates to:
+  /// **'{roster} guests · {attended} checked in · {external} outside Catch'**
+  String hostsHostAnalyticsTextRosterAttendedExternal({
+    required int roster,
+    required int attended,
+    required int external,
+  });
+
+  /// Host event review workspace title.
+  ///
+  /// In en, this message translates to:
+  /// **'Public reviews'**
+  String get hostsHostEventReviewsTitlePublicReviews;
+
+  /// Explains where a Host review response is published.
+  ///
+  /// In en, this message translates to:
+  /// **'Reply from Catch for Hosts. Your response appears with the review on the public organizer page.'**
+  String get hostsHostEventReviewsSubtitlePublicResponse;
+
+  /// Host event review empty-state guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviews for this event will appear here, including reviews submitted on your public Catch page.'**
+  String get hostsHostEventReviewsMessageEmpty;
+
+  /// Organizer publication control title.
+  ///
+  /// In en, this message translates to:
+  /// **'Public Catch page'**
+  String get hostsHostClubPublicationTitle;
+
+  /// Private organizer publication state.
+  ///
+  /// In en, this message translates to:
+  /// **'Your operations workspace is private'**
+  String get hostsHostClubPublicationSubtitlePrivate;
+
+  /// Published organizer publication state.
+  ///
+  /// In en, this message translates to:
+  /// **'Your organizer page is live'**
+  String get hostsHostClubPublicationSubtitlePublished;
+
+  /// Private publication status badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Private'**
+  String get hostsHostClubPublicationStatusPrivate;
+
+  /// Published publication status badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Published'**
+  String get hostsHostClubPublicationStatusPublished;
+
+  /// Explains the operations-first private workspace.
+  ///
+  /// In en, this message translates to:
+  /// **'Run events, import guests, check people in, and learn from feedback without appearing in the Consumer app. Publish when you want a public page, reviews, and web registration.'**
+  String get hostsHostClubPublicationBodyPrivate;
+
+  /// Explains the published organizer state.
+  ///
+  /// In en, this message translates to:
+  /// **'People can discover this organizer in Catch and on the public website. Unpublishing keeps your Host data and event operations intact.'**
+  String get hostsHostClubPublicationBodyPublished;
+
+  /// Publish organizer CTA.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish organizer page'**
+  String get hostsHostClubPublicationActionPublish;
+
+  /// Unpublish organizer CTA.
+  ///
+  /// In en, this message translates to:
+  /// **'Return to private workspace'**
+  String get hostsHostClubPublicationActionUnpublish;
+
+  /// Host public event registration control title.
+  ///
+  /// In en, this message translates to:
+  /// **'Website registration'**
+  String get hostsHostPublicRegistrationTitle;
+
+  /// Enabled website registration state.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone OTP sign-up is enabled'**
+  String get hostsHostPublicRegistrationSubtitleEnabled;
+
+  /// Disabled website registration state.
+  ///
+  /// In en, this message translates to:
+  /// **'Consumer booking is optional'**
+  String get hostsHostPublicRegistrationSubtitleDisabled;
+
+  /// Open website registration badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get hostsHostPublicRegistrationStatusOpen;
+
+  /// Disabled website registration badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get hostsHostPublicRegistrationStatusOff;
+
+  /// Explains standalone website registration.
+  ///
+  /// In en, this message translates to:
+  /// **'People can sign up from the public event page with only a name and phone OTP. They join this operational roster without completing a Consumer profile.'**
+  String get hostsHostPublicRegistrationBodyPublished;
+
+  /// Publication prerequisite for website registration.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish the organizer page first. You can still import guests and run this event privately in the meantime.'**
+  String get hostsHostPublicRegistrationBodyNeedsPage;
+
+  /// Explains why standalone website registration cannot safely bypass payment or identity gates.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone OTP registration currently supports free events with open admission. Keep importing the external roster for paid, invite-only, approval, membership, or profile-balanced events; those flows need their own payment or identity gate.'**
+  String get hostsHostPublicRegistrationBodyUnsupported;
+
+  /// Enable website registration CTA.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable phone OTP sign-up'**
+  String get hostsHostPublicRegistrationActionEnable;
+
+  /// Disable website registration CTA.
+  ///
+  /// In en, this message translates to:
+  /// **'Disable website sign-up'**
+  String get hostsHostPublicRegistrationActionDisable;
 }
 
 class _AppLocalizationsDelegate

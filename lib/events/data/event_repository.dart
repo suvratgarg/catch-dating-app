@@ -14,7 +14,8 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
         MarkEventAttendanceCallableRequest,
         RecordEventInviteLinkOpenCallableRequest,
         SendEventBroadcastCallableRequest,
-        SelfCheckInAttendanceCallableRequest;
+        SelfCheckInAttendanceCallableRequest,
+        UpdateEventCallableRequest;
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/events/data/event_callable_adapters.dart';
 import 'package:catch_dating_app/events/data/event_callable_responses.dart';
@@ -309,6 +310,25 @@ class EventRepository {
     context: const BackendErrorContext(
       service: BackendService.functions,
       action: 'update event',
+      resource: _collectionPath,
+    ),
+  );
+
+  Future<void> setPublicRegistration({
+    required String eventId,
+    required bool enabled,
+  }) => withBackendErrorContext(
+    () => _functions
+        .httpsCallable('updateEvent')
+        .call(
+          UpdateEventCallableRequest(
+            eventId: eventId,
+            fields: {'publicRegistrationEnabled': enabled},
+          ).toJson(),
+        ),
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'update public event registration',
       resource: _collectionPath,
     ),
   );

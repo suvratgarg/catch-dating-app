@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       surface:
-        description: Exact React surface to build (admin or marketing).
+        description: Exact web surface to build (admin, host, or marketing).
         required: true
         type: string
     outputs:
@@ -156,7 +156,7 @@ jobs:
   build:
     name: Build exact ${{ inputs.surface }} Hosting artifact
     needs: marketing_snapshot
-    if: ${{ !cancelled() && (inputs.surface == 'admin' || needs.marketing_snapshot.result == 'success') }}
+    if: ${{ !cancelled() && (inputs.surface == 'admin' || inputs.surface == 'host' || needs.marketing_snapshot.result == 'success') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     environment: prod-hosting
@@ -185,7 +185,7 @@ jobs:
           SURFACE: ${{ inputs.surface }}
         run: |
           set -euo pipefail
-          [[ "$SURFACE" =~ ^(admin|marketing)$ ]]
+          [[ "$SURFACE" =~ ^(admin|host|marketing)$ ]]
           test "$GITHUB_EVENT_NAME" = "push"
           test "$GITHUB_REF" = "refs/heads/main"
           [[ "$GITHUB_SHA" =~ ^[0-9a-f]{40}$ ]]
@@ -226,6 +226,17 @@ jobs:
           cache-dependency-path: package-lock.json
 
       - run: npm ci
+
+      - uses: ./.github/actions/setup-flutter
+        if: ${{ inputs.surface == 'host' }}
+
+      - name: Resolve Host Flutter dependencies
+        if: ${{ inputs.surface == 'host' }}
+        run: flutter pub get
+
+      - name: Build the exact production Host web bytes once
+        if: ${{ inputs.surface == 'host' }}
+        run: ./tool/flutter_with_env.sh prod --role host build web --release
 
       - name: Validate production marketing environment before build
         if: ${{ inputs.surface == 'marketing' }}

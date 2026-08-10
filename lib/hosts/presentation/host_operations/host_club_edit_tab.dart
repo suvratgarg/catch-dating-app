@@ -48,6 +48,22 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
   int _mediaSourceRevision = 0;
   bool _showMediaError = false;
 
+  Future<void> _setPublicListingEnabled(bool enabled) async {
+    try {
+      await HostClubEditController.publicationMutation.run(
+        ref,
+        (tx) => tx
+            .get(hostClubEditControllerProvider)
+            .updateClub(
+              clubId: widget.club.id,
+              patch: UpdateClubPatch(publicListingEnabled: enabled),
+            ),
+      );
+    } catch (_) {
+      // The publication card owns the localized mutation error.
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -209,6 +225,9 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
   @override
   Widget build(BuildContext context) {
     final club = widget.club;
+    final updateClubMutation = ref.watch(
+      HostClubEditController.updateClubMutation,
+    );
     final mediaMutation = ref.watch(HostClubEditController.updateMediaMutation);
     final mediaPending =
         mediaMutation.isPending ||
@@ -221,6 +240,12 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
             context: AppErrorContext.club,
           )
         : null;
+    final publicationMutation = ref.watch(
+      HostClubEditController.publicationMutation,
+    );
+    final publicListingEnabled =
+        club.appVisibility == ClubAppVisibility.discoverable &&
+        club.publicPage?.allowsPublicWebRead == true;
     final cityOptions = <_HostClubCityOption>[
       for (final city in defaultCityOptions.where((city) => city.hostCreatable))
         _HostClubCityOption(value: city.effectiveMarketId, label: city.label),
@@ -242,6 +267,69 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        if (updateClubMutation.hasError) ...[
+          CatchMutationErrorBanner(
+            mutation: updateClubMutation,
+            errorContext: AppErrorContext.club,
+          ),
+          gapH12,
+        ],
+        if (widget.isOwner)
+          CatchSection.contained(
+            title: context.l10n.hostsHostClubPublicationTitle,
+            subtitle: publicListingEnabled
+                ? context.l10n.hostsHostClubPublicationSubtitlePublished
+                : context.l10n.hostsHostClubPublicationSubtitlePrivate,
+            trailing: CatchBadge.functional(
+              label: publicListingEnabled
+                  ? context.l10n.hostsHostClubPublicationStatusPublished
+                  : context.l10n.hostsHostClubPublicationStatusPrivate,
+              tone: publicListingEnabled
+                  ? CatchBadgeTone.success
+                  : CatchBadgeTone.neutral,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  publicListingEnabled
+                      ? context.l10n.hostsHostClubPublicationBodyPublished
+                      : context.l10n.hostsHostClubPublicationBodyPrivate,
+                  style: CatchTextStyles.supporting(
+                    context,
+                    color: CatchTokens.of(context).ink2,
+                  ),
+                ),
+                gapH12,
+                CatchButton(
+                  label: publicListingEnabled
+                      ? context.l10n.hostsHostClubPublicationActionUnpublish
+                      : context.l10n.hostsHostClubPublicationActionPublish,
+                  onPressed: publicationMutation.isPending
+                      ? null
+                      : () => unawaited(
+                          _setPublicListingEnabled(!publicListingEnabled),
+                        ),
+                  isLoading: publicationMutation.isPending,
+                  variant: publicListingEnabled
+                      ? CatchButtonVariant.secondary
+                      : CatchButtonVariant.primary,
+                  fullWidth: true,
+                ),
+                if (publicationMutation.hasError) ...[
+                  gapH8,
+                  CatchFieldSupportRow(
+                    text: mutationErrorMessage(
+                      publicationMutation,
+                      l10n: context.l10n,
+                    ),
+                    color: CatchTokens.of(context).danger,
+                    showErrorIcon: true,
+                  ),
+                ],
+              ],
+            ),
+          ),
         CatchSection.fieldRows(
           title: context.l10n.hostsHostClubProfileTitleMedia,
           count: context.l10n

@@ -31,6 +31,7 @@ import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_date_rail_card.dart';
 import 'package:catch_dating_app/hosts/data/host_analytics_repository.dart';
+import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_profile_repository.dart';
 import 'package:catch_dating_app/hosts/domain/host_profile.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart';
@@ -56,6 +57,8 @@ import 'package:image_picker/image_picker.dart';
 
 import '../clubs/clubs_test_helpers.dart';
 import '../test_pump_helpers.dart';
+
+part 'support/host_operations_screen_test_support.dart';
 
 const _hostUid = 'host-1';
 final _l10n = AppLocalizationsEn();
@@ -1112,14 +1115,16 @@ void main() {
           ),
         )
         .toList();
-    expect(editSections, hasLength(4));
+    expect(editSections, hasLength(5));
     expect(editSections.map((section) => section.title), [
+      'Public Catch page',
       'Media',
       'Identity',
       'Contact',
       'Organizer settings',
     ]);
     for (final title in [
+      'Public Catch page',
       'Media',
       'Identity',
       'Contact',
@@ -1334,6 +1339,11 @@ void main() {
           .selected,
       HostClubInsightsRangePreset.thirtyDays,
     );
+    await Scrollable.ensureVisible(
+      tester.element(find.text('90 days')),
+      alignment: 0.5,
+    );
+    await pumpFeatureUi(tester);
     await tester.tap(find.text('90 days'));
     await pumpFeatureUi(tester);
     expect(
@@ -2626,21 +2636,6 @@ Club _hostTeamClubWithoutProfile() => buildClub(
   hostProfiles: const [],
 );
 
-List _hostClubOverrides({
-  List<Club> owned = const [],
-  List<Club> hosted = const [],
-}) {
-  return [
-    uidProvider.overrideWith((ref) => Stream.value(_hostUid)),
-    watchClubsOwnedByProvider(
-      _hostUid,
-    ).overrideWithValue(AsyncData<List<Club>>(owned)),
-    watchClubsHostedByProvider(
-      _hostUid,
-    ).overrideWithValue(AsyncData<List<Club>>(hosted)),
-  ];
-}
-
 ClubDetailViewModel _previewViewModel(
   Club club, {
   List<Event> events = const [],
@@ -2784,157 +2779,3 @@ Uint8List _testPngBytes() => base64Decode(
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUl'
   'EQVQIHWP4////fwAJ+wP9KobjigAAAABJRU5ErkJggg==',
 );
-
-class _RecordingHostClubEditActions implements HostClubEditActions {
-  _RecordingHostClubEditActions({this.pickedPhotos = const []});
-
-  final List<HostPickedClubPhoto> pickedPhotos;
-  final List<UpdateClubPatch> profileWrites = [];
-  final List<List<HostClubMediaInput>> mediaWrites = [];
-
-  @override
-  Future<void> updateClub({
-    required String clubId,
-    required UpdateClubPatch patch,
-  }) async {
-    profileWrites.add(patch);
-  }
-
-  @override
-  Future<List<HostPickedClubPhoto>> pickClubPhotos({
-    required int limit,
-  }) async => pickedPhotos.take(limit).toList(growable: false);
-
-  @override
-  Future<HostPickedClubLogo?> pickClubLogo() async => null;
-
-  @override
-  Future<void> updateClubMedia({
-    required Club club,
-    List<HostClubMediaInput>? photoInputs,
-    HostPickedClubLogo? logo,
-  }) async {
-    if (photoInputs != null) {
-      mediaWrites.add(List<HostClubMediaInput>.of(photoInputs));
-    }
-  }
-}
-
-class _FakeHostProfileRepository implements HostProfileRepository {
-  _FakeHostProfileRepository({
-    this.profile,
-    this.throwOnEnsure = false,
-    this.throwOnSave = false,
-  });
-
-  HostProfile? profile;
-  final bool throwOnEnsure;
-  final bool throwOnSave;
-  String? ensuredUid;
-  String? savedUid;
-  String? savedDisplayName;
-  String? savedRoleTitle;
-  String? savedBio;
-
-  @override
-  Stream<HostProfile?> watchHostProfile(String uid) => Stream.value(profile);
-
-  @override
-  Future<void> ensureHostProfile({
-    required String uid,
-    required String displayName,
-  }) async {
-    if (throwOnEnsure) throw StateError('create failed');
-    ensuredUid = uid;
-  }
-
-  @override
-  Future<void> saveHostProfile({
-    required String uid,
-    required String displayName,
-    String? roleTitle,
-    String? bio,
-  }) async {
-    if (throwOnSave) throw StateError('save failed');
-    savedUid = uid;
-    savedDisplayName = displayName;
-    savedRoleTitle = roleTitle;
-    savedBio = bio;
-  }
-}
-
-class _FakeHostAuthRepository extends Fake implements AuthRepository {
-  _FakeHostAuthRepository({this.throwOnSignOut = false});
-
-  final bool throwOnSignOut;
-  int signOutCallCount = 0;
-
-  @override
-  Future<void> signOut() async {
-    signOutCallCount += 1;
-    if (throwOnSignOut) throw StateError('sign out failed');
-  }
-}
-
-final class _EmptyHostAnalyticsRepository implements HostAnalyticsRepository {
-  const _EmptyHostAnalyticsRepository({this.topEvents = const []});
-
-  final List<HostAnalyticsEventRow> topEvents;
-
-  @override
-  Future<HostAnalyticsReport> getHostAnalytics(HostAnalyticsQuery query) async {
-    return HostAnalyticsReport(
-      generatedAt: DateTime(2026, 7, 10),
-      summaryCards: const [],
-      trend: const [],
-      topEvents: topEvents,
-      reviewSummary: const HostAnalyticsReviewSummary(
-        newReviews: 0,
-        publishedReviews: 0,
-        verifiedReviews: 0,
-        publicReviews: 0,
-        ownerResponseCount: 0,
-        averageRating: 0,
-      ),
-      discoverySummary: const HostAnalyticsDiscoverySummary(
-        listingViews: 0,
-        searchAppearances: 0,
-        eventViews: 0,
-        organizerSaves: 0,
-        eventSaves: 0,
-        contactClicks: 0,
-        claimClicks: 0,
-        outboundClicks: 0,
-      ),
-      dataQuality: const [],
-    );
-  }
-}
-
-HostAnalyticsEventRow _hostAnalyticsEventRow({required String eventId}) =>
-    HostAnalyticsEventRow(
-      eventId: eventId,
-      clubId: 'exact-club',
-      title: 'Top event',
-      startTime: DateTime(2026, 7, 8, 19),
-      status: 'completed',
-      bookedCount: 20,
-      checkedInCount: 18,
-      waitlistedCount: 2,
-      fillRate: 1,
-      checkInRate: 0.9,
-      grossRevenueMinor: 0,
-      currency: 'INR',
-      checkoutStartedCount: 0,
-      checkoutDropoffCount: 0,
-      paymentCompletedCount: 0,
-      paymentFailedCount: 0,
-      paymentRefundedCount: 0,
-      reviewCount: 2,
-      averageRating: 4.5,
-      demandCount: 24,
-      inviteOpenCount: 3,
-      mutualMatchCount: 4,
-      chatStartedCount: 2,
-      repeatAttendeeCount: 5,
-    );
