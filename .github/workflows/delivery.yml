@@ -231,8 +231,7 @@ jobs:
               .head_repository.full_name == $repository and
               .head_branch == "main" and
               (.id | tostring) == $delivery_run_id and
-              .run_attempt == $delivery_run_attempt and
-              .status == "completed"
+              .run_attempt == $delivery_run_attempt
             ' <<< "$historical_delivery" > /dev/null
           cursor_source_run="$(gh api \
             "repos/$GITHUB_REPOSITORY/actions/runs/$cursor_run_id/attempts/$cursor_run_attempt")"
