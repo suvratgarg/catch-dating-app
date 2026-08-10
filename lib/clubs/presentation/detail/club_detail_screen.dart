@@ -174,7 +174,17 @@ class ClubDetailScreen extends ConsumerWidget {
                 messageHost(buttonContext, bodyState.club, host),
             onContactSelected: openClubContact,
           ),
-          bottomNavigationBar: _buildDock(bodyState.dockState),
+          bottomNavigationBar: switch (bodyState.dockState) {
+            null => null,
+            final state => ClubMembershipDock(
+              club: state.club,
+              isMember: state.isMember,
+              isAuthenticated: state.isAuthenticated,
+              isMutating: state.isMutating,
+              pushNotificationsEnabled: state.pushNotificationsEnabled,
+              isPushMutating: state.isPushMutating,
+            ),
+          },
         ),
       );
     }
@@ -201,18 +211,6 @@ class ClubDetailScreen extends ConsumerWidget {
         ),
         HostClubDetailContent() => const SizedBox.shrink(),
       },
-    );
-  }
-
-  Widget? _buildDock(ClubDetailDockState? state) {
-    if (state == null) return null;
-    return ClubMembershipDock(
-      club: state.club,
-      isMember: state.isMember,
-      isAuthenticated: state.isAuthenticated,
-      isMutating: state.isMutating,
-      pushNotificationsEnabled: state.pushNotificationsEnabled,
-      isPushMutating: state.isPushMutating,
     );
   }
 }
