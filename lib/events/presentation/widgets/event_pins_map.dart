@@ -733,16 +733,12 @@ Future<CatchMapMarkerBitmap> _buildEventMapPinBitmap({
   final iconPainter = TextPainter(
     text: TextSpan(
       text: String.fromCharCode(iconData.codePoint),
-      // Native map marker bitmaps have to serialize the icon font into a PNG;
-      // user-visible text above still comes from CatchTextStyles.
-      // typography:allow: theme-independent art serializes an icon font only.
-      style: TextStyle(
+      // Native map marker bitmaps serialize the icon font into a PNG through
+      // the design-system's raster-art seam; this is not user-visible text.
+      style: CatchTextStyles.iconRasterGlyph(
+        icon: iconData,
+        size: pinSize,
         color: activityColor,
-        fontFamily: iconData.fontFamily,
-        package: iconData.fontPackage,
-        fontFamilyFallback: iconData.fontFamilyFallback,
-        fontSize: pinSize,
-        height: 1,
         shadows: [
           Shadow(
             color: shadowColor,

@@ -272,7 +272,7 @@ class FoundationTypographyTokens extends StatelessWidget {
       title: 'Typography roles',
       contractId: 'foundation.typography',
       states: const [
-        '55 public helpers',
+        'semantic text roles',
         'Archivo brand/display',
         'platform body/UI',
         'mono data',
@@ -531,6 +531,15 @@ class FoundationTypographyTokens extends StatelessWidget {
                 'transparentInput',
                 'Invisible input carrier',
                 CatchTextStyles.transparentInput(),
+              ),
+              _TypeSpec(
+                'iconRasterGlyph',
+                String.fromCharCode(CatchIcons.running.codePoint),
+                CatchTextStyles.iconRasterGlyph(
+                  icon: CatchIcons.running,
+                  size: 28,
+                  color: CatchTokens.of(context).ink,
+                ),
               ),
             ],
           ),

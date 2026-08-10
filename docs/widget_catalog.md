@@ -1,7 +1,7 @@
 ---
 doc_id: widget_catalog
-version: 3.0.1
-updated: 2026-08-07
+version: 3.0.2
+updated: 2026-08-10
 owner: recursive_audit_loop
 status: active
 ---
@@ -71,7 +71,7 @@ Routine inventory edits do not increment this document contract version.
 | `FoundationColorTokens` | `widgetbook/lib/foundation/foundation_token_use_cases.dart:87` | Widgetbook-only foundation specimen for semantic light/dark color roles and generated activity pigments. Reads `CatchTokens` and `ActivityPalette` directly so designers can review color roles without duplicating token values. |
 | `FoundationSpacingTokens` | `widgetbook/lib/foundation/foundation_token_use_cases.dart:135` | Widgetbook-only foundation specimen for spacing scale, semantic gaps, and inset roles. Renders live `CatchSpacing`, `CatchGaps`, and `CatchInsets` values. |
 | `FoundationShapeTokens` | `widgetbook/lib/foundation/foundation_token_use_cases.dart:209` | Widgetbook-only foundation specimen for radius, elevation, and opacity roles. Renders live `CatchRadius`, `CatchElevation`, and `CatchOpacity` values. |
-| `FoundationTypographyTokens` | `widgetbook/lib/foundation/foundation_token_use_cases.dart:266` | Widgetbook-only foundation specimen for all 54 public `CatchTextStyles` helpers. Renders live samples with concrete family, size, weight, height, and tracking metadata so Archivo brand/display, platform app/body, mono data, and technical roles can be reviewed directly. |
+| `FoundationTypographyTokens` | `widgetbook/lib/foundation/foundation_token_use_cases.dart:266` | Widgetbook-only foundation specimen for the semantic `CatchTextStyles` roles plus the non-text icon-raster seam. Renders live samples with concrete family, size, weight, height, and tracking metadata so Archivo brand/display, platform app/body, mono data, and technical roles can be reviewed directly without a brittle hand-counted inventory. |
 | `FoundationIconMediaTokens` | `widgetbook/lib/foundation/foundation_token_use_cases.dart:376` | Widgetbook-only foundation specimen for icon sizing, media aspect ratios, and activity glyph mapping. Renders live `CatchIcon`, `CatchAspectRatio`, and `ActivityPalette` values. |
 | `FoundationStrokeMotionTokens` | `widgetbook/lib/foundation/foundation_token_use_cases.dart:435` | Widgetbook-only foundation specimen for stroke widths, motion durations, and shared motion curves. Renders live `CatchStroke` and `CatchMotion` values. |
 | `FoundationDataPhotoTokens` | `widgetbook/lib/foundation/foundation_token_use_cases.dart:490` | Widgetbook-only foundation specimen for data-pair layout and display-time photo grading. Renders `CatchMetricStrip`, `CatchGrade`, and `CatchPhotoGradeColors` without duplicating photo-grade constants. |
