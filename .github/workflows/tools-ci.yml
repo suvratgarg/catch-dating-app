@@ -176,10 +176,47 @@ jobs:
           MODE: ${{ inputs.mode }}
         run: node tool/run.mjs affected-tools --base "$BASE_SHA" --mode "$MODE" --check
 
-  tool-buckets:
-    name: Tool checks (${{ matrix.name }})
+  fast-gates:
+    name: Fast deterministic tool gates
     needs: preflight
     if: ${{ needs.preflight.outputs.tool_mode == 'full' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+
+    steps:
+      - name: Checkout fast deterministic gate closure
+        timeout-minutes: 2
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /.github/actions/load-toolchain/action.yml
+            /tool/ci/toolchain.env
+            /tool/lib/repo_paths.mjs
+            /tool/test/check_flutter_test_size.mjs
+            /tool/test/flutter_test_size_baseline.json
+            /test/
+            /integration_test/
+
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+
+      - name: Enforce Flutter test spec maintainability ratchet
+        run: node tool/test/check_flutter_test_size.mjs --check
+
+  tool-buckets:
+    name: Tool checks (${{ matrix.name }})
+    needs:
+      - preflight
+      - fast-gates
+    if: >-
+      needs.preflight.outputs.tool_mode == 'full' &&
+      needs.fast-gates.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
@@ -248,6 +285,7 @@ jobs:
     needs:
       - preflight
       - affected-tools
+      - fast-gates
       - tool-buckets
     if: always()
     timeout-minutes: 5
@@ -257,18 +295,20 @@ jobs:
         env:
           PREFLIGHT_RESULT: ${{ needs.preflight.result }}
           AFFECTED_RESULT: ${{ needs['affected-tools'].result }}
+          FAST_GATES_RESULT: ${{ needs['fast-gates'].result }}
           BUCKETS_RESULT: ${{ needs['tool-buckets'].result }}
         run: |
           echo "preflight: ${PREFLIGHT_RESULT}"
           echo "affected tools: ${AFFECTED_RESULT}"
+          echo "fast gates: ${FAST_GATES_RESULT}"
           echo "tool buckets: ${BUCKETS_RESULT}"
           if [[ "${PREFLIGHT_RESULT}" != "success" ]]; then
             exit 1
           fi
-          if [[ "${AFFECTED_RESULT}" == "success" && "${BUCKETS_RESULT}" == "skipped" ]]; then
+          if [[ "${AFFECTED_RESULT}" == "success" && "${FAST_GATES_RESULT}" == "skipped" && "${BUCKETS_RESULT}" == "skipped" ]]; then
             exit 0
           fi
-          if [[ "${AFFECTED_RESULT}" == "skipped" && "${BUCKETS_RESULT}" == "success" ]]; then
+          if [[ "${AFFECTED_RESULT}" == "skipped" && "${FAST_GATES_RESULT}" == "success" && "${BUCKETS_RESULT}" == "success" ]]; then
             exit 0
           fi
           echo "Exactly one affected or full tool execution path must succeed."
