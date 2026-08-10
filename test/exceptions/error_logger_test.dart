@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -96,6 +97,32 @@ void main() {
     expect(reporter.recordedFlutterErrors, hasLength(1));
     expect(reporter.recordedFlutterErrors.single.fatal, isTrue);
   });
+
+  test(
+    'provider observer resolves the logger from the emitting container',
+    () async {
+      final logger = ErrorLogger(
+        shouldReportErrors: false,
+        consoleSink: consoleLines.add,
+      );
+      final failureProvider = FutureProvider<void>((ref) {
+        throw StateError('provider failed');
+      });
+      final container = ProviderContainer(
+        overrides: [errorLoggerProvider.overrideWithValue(logger)],
+        observers: [AsyncErrorLogger()],
+      );
+      addTearDown(container.dispose);
+
+      await expectLater(
+        container.read(failureProvider.future),
+        throwsA(isA<StateError>()),
+      );
+
+    expect(consoleLines, hasLength(3));
+    expect(consoleLines.first, contains('provider failed'));
+    },
+  );
 }
 
 final class _RecordedError {

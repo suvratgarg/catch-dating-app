@@ -228,21 +228,20 @@ class ErrorLogger {
 
 // ── Provider ─────────────────────────────────────────────────────────────────
 
-/// A no-op default that must be overridden in [main] with the real instance.
 // keepalive: error logger is app infrastructure and must remain available for
-// providers even when no screen watches it.
+// providers even when no screen watches it. App bootstrap initializes this
+// container-owned instance before feature providers can emit failures.
 @Riverpod(keepAlive: true)
 ErrorLogger errorLogger(Ref ref) => ErrorLogger();
 
 // ── ProviderObserver ──────────────────────────────────────────────────────────
 
 base class AsyncErrorLogger extends ProviderObserver {
-  AsyncErrorLogger(this._logger, {this.onBackendOperationFailed});
-
-  final ErrorLogger _logger;
+  AsyncErrorLogger({this.onBackendOperationFailed});
 
   /// Called when an [AppException] has structured backend context.
-  final void Function({
+  final void Function(
+    ProviderContainer container, {
     required BackendErrorContext context,
     required String errorCode,
     required bool retryable,
@@ -251,24 +250,39 @@ base class AsyncErrorLogger extends ProviderObserver {
   onBackendOperationFailed;
 
   @override
+  void didAddProvider(ProviderObserverContext context, Object? value) {
+    _observeValue(context, value);
+  }
+
+  @override
   void didUpdateProvider(
     ProviderObserverContext context,
     Object? previousValue,
     Object? newValue,
   ) {
-    if (newValue is AsyncError) {
-      _logObservedError(newValue.error, newValue.stackTrace);
-    } else if (newValue is MutationError) {
-      _logObservedError(newValue.error, newValue.stackTrace);
+    _observeValue(context, newValue);
+  }
+
+  void _observeValue(ProviderObserverContext context, Object? value) {
+    if (value is AsyncError) {
+      _logObservedError(context.container, value.error, value.stackTrace);
+    } else if (value is MutationError) {
+      _logObservedError(context.container, value.error, value.stackTrace);
     }
   }
 
-  void _logObservedError(Object error, StackTrace stackTrace) {
+  void _logObservedError(
+    ProviderContainer container,
+    Object error,
+    StackTrace stackTrace,
+  ) {
+    final logger = container.read(errorLoggerProvider);
     if (error is AppException) {
-      _logger.logAppException(error);
+      logger.logAppException(error);
       final backendContext = error.context;
       if (backendContext != null) {
         onBackendOperationFailed?.call(
+          container,
           context: backendContext,
           errorCode: error.code,
           retryable: error.retryable,
@@ -276,7 +290,7 @@ base class AsyncErrorLogger extends ProviderObserver {
         );
       }
     } else {
-      _logger.logError(error, stackTrace);
+      logger.logError(error, stackTrace);
     }
   }
 }
