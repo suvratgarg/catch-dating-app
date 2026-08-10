@@ -377,6 +377,12 @@ void main() {
         ).amountInPaise,
         49900,
       );
+      expect(
+        RazorpayOrderCallableResponse.fromCallableData(
+          razorpayOrderResponse,
+        ).keyId,
+        'rzp_test_server_environment',
+      );
       _expectValid(
         'PlacesAutocompleteCallableResponse',
         placesAutocompleteResponse,
@@ -514,6 +520,7 @@ void main() {
           'orderId': '',
           'amount': 0,
           'currency': '',
+          'keyId': '',
         }),
         throwsA(isA<RazorpayOrderCallableResponseFormatException>()),
       );

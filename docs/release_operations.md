@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 2.0.5
-updated: 2026-08-09
+version: 2.0.6
+updated: 2026-08-10
 owner: recursive_audit_loop
 status: active
 ---
@@ -1012,10 +1012,11 @@ complete for each target environment (`dev`, `staging`, and `prod`):
   Current non-prod/prod state has reused test-mode Razorpay secrets; replace
   them with the intended `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` values per
   Firebase project.
-- [ ] Before client code generation or a mobile release build, ensure the local,
-  git-ignored root `.env` contains a non-placeholder `RAZORPAY_KEY_ID`. The
-  client key is separate from the Firebase Secret Manager credentials used by
-  Functions and must never be committed.
+- [ ] Verify `createRazorpayOrder` returns the public `keyId` from the same
+  Firebase Secret Manager environment that created the order. Mobile builds do
+  not read a local Razorpay `.env` value or embed a generated key. The
+  `RAZORPAY_KEY_SECRET` remains server-only and must never enter a client
+  contract or artifact.
 - [ ] Replace the temporary `RAZORPAY_WEBHOOK_SECRET` values before enabling
   real Razorpay webhooks. As of 2026-06-26, `dev`, `staging`, and `prod` each
   have an enabled placeholder Secret Manager version so unrelated Functions

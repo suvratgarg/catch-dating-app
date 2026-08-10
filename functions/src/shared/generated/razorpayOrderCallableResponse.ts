@@ -9,4 +9,8 @@ export interface RazorpayOrderCallableResponse {
   orderId: string;
   amount: number;
   currency: string;
+  /**
+   * Public Razorpay checkout key id from the same server environment that created the order. This is not the secret key.
+   */
+  keyId: string;
 }

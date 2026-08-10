@@ -92,6 +92,7 @@ test("createRazorpayOrderHandler uses trusted order data", async () => {
           },
         },
       }) as unknown as Razorpay,
+      clientKeyId: () => "rzp_test_server_environment",
       now: () => 123,
       serverTimestamp: () => "server-now",
     }
@@ -112,6 +113,7 @@ test("createRazorpayOrderHandler uses trusted order data", async () => {
     orderId: "order_123",
     amount: 25000,
     currency: "INR",
+    keyId: "rzp_test_server_environment",
   });
   // A pending-order tracking doc is written so reconciliation can recover the
   // booking if both the client callback and the webhook are missed.
@@ -145,6 +147,7 @@ test(
               {uid: "runner-1", status: "signedUp"},
             ]),
           createClient: failOnClientUse,
+          clientKeyId: () => "unused",
           now: () => 0,
           serverTimestamp: () => "server-now",
         }
@@ -167,6 +170,7 @@ test(
               })
             ),
           createClient: failOnClientUse,
+          clientKeyId: () => "unused",
           now: () => 0,
           serverTimestamp: () => "server-now",
         }
@@ -211,6 +215,7 @@ test("createRazorpayOrderHandler includes waitlisted demand in quoted price",
             },
           },
         }) as unknown as Razorpay,
+        clientKeyId: () => "rzp_test_server_environment",
         now: () => 456,
         serverTimestamp: () => "server-now",
       }
@@ -231,6 +236,7 @@ test("createRazorpayOrderHandler includes waitlisted demand in quoted price",
       orderId: "order_dynamic",
       amount: 55000,
       currency: "INR",
+      keyId: "rzp_test_server_environment",
     });
   }
 );
@@ -250,6 +256,7 @@ test("createRazorpayOrderHandler enforces invite-only paid access",
             {"event-1": {inviteCode: "CATCH-DELHI"}}
           ),
           createClient: failOnClientUse,
+          clientKeyId: () => "unused",
           now: () => 0,
           serverTimestamp: () => "server-now",
         }
@@ -284,6 +291,7 @@ test("createRazorpayOrderHandler enforces invite-only paid access",
             },
           },
         }) as unknown as Razorpay,
+        clientKeyId: () => "rzp_test_server_environment",
         now: () => 789,
         serverTimestamp: () => "server-now",
       }
@@ -316,6 +324,7 @@ test("createRazorpayOrderHandler honors approved request access", async () => {
           []
         ),
         createClient: failOnClientUse,
+        clientKeyId: () => "unused",
         now: () => 0,
         serverTimestamp: () => "server-now",
       }
@@ -353,6 +362,7 @@ test("createRazorpayOrderHandler honors approved request access", async () => {
           },
         },
       }) as unknown as Razorpay,
+      clientKeyId: () => "rzp_test_server_environment",
       now: () => 321,
       serverTimestamp: () => "server-now",
     }
@@ -414,6 +424,7 @@ test(
               },
             })),
           createClient: failOnClientUse,
+          clientKeyId: () => "unused",
           now: () => 0,
           serverTimestamp: () => "server-now",
         }
