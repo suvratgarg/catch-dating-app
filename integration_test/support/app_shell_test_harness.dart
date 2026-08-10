@@ -155,9 +155,9 @@ Future<void> pumpSheet(WidgetTester tester) => pumpAppShellFrames(tester);
 Future<void> openClubDetail(WidgetTester tester, Club club) async {
   if (await _tapVisibleClubCard(tester, club)) return;
 
-  final context = _routerContext(tester);
+  final router = _routerFor(tester);
   unawaited(
-    GoRouter.of(context).pushNamed(
+    router.pushNamed(
       Routes.clubDetailScreen.name,
       pathParameters: {'clubId': club.id},
       extra: club,
@@ -172,9 +172,9 @@ Future<void> openEventDetail(
   required Event event,
   bool settle = true,
 }) async {
-  final context = _routerContext(tester);
+  final router = _routerFor(tester);
   unawaited(
-    GoRouter.of(context).pushNamed(
+    router.pushNamed(
       Routes.eventDetailScreen.name,
       pathParameters: {'clubId': club.id, 'eventId': event.id},
       extra: event,
@@ -188,9 +188,9 @@ Future<void> openEventDetail(
 }
 
 Future<void> openSwipeDeck(WidgetTester tester, Event event) async {
-  final context = _routerContext(tester);
+  final router = _routerFor(tester);
   unawaited(
-    GoRouter.of(context).pushNamed(
+    router.pushNamed(
       Routes.swipeEventScreen.name,
       pathParameters: {'eventId': event.id},
     ),
@@ -198,10 +198,10 @@ Future<void> openSwipeDeck(WidgetTester tester, Event event) async {
   await pumpRoute(tester);
 }
 
-BuildContext _routerContext(WidgetTester tester) {
+GoRouter _routerFor(WidgetTester tester) {
   final shell = find.byType(AppShell);
   if (shell.evaluate().isNotEmpty) {
-    return tester.element(shell);
+    return GoRouter.of(tester.element(shell));
   }
 
   // App-shell child routes are presented on the root navigator, so the shell
@@ -210,7 +210,7 @@ BuildContext _routerContext(WidgetTester tester) {
   // states.
   final navigator = find.byType(Navigator);
   expect(navigator, findsWidgets);
-  return tester.element(navigator.first);
+  return GoRouter.of(tester.element(navigator.first));
 }
 
 Future<void> openAppTab(WidgetTester tester, String label) async {
