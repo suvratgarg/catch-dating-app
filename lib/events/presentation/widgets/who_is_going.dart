@@ -210,7 +210,7 @@ class EmptyRosterMessage extends StatelessWidget {
         children: [
           Icon(
             CatchIcons.groups2Outlined,
-            size: 20,
+            size: CatchIcon.control,
             color: surfaceStyle?.mutedColor ?? t.ink3,
           ),
           gapW12,

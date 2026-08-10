@@ -741,7 +741,10 @@ class _EventCheckInQrScannerSheetState
                     ),
                     DecoratedBox(
                       decoration: BoxDecoration(
-                        border: Border.all(color: t.primary, width: 3),
+                        border: Border.all(
+                          color: t.primary,
+                          width: CatchStroke.selection,
+                        ),
                         borderRadius: BorderRadius.circular(CatchRadius.sm),
                       ),
                     ),

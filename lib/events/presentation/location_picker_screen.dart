@@ -254,7 +254,7 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
       _searching = true;
     });
     _searchDebounce = Timer(
-      const Duration(milliseconds: 300),
+      CatchMotion.searchDebounce,
       () => _searchPlaces(query),
     );
   }
@@ -464,7 +464,9 @@ class PlaceSearchPanel extends StatelessWidget {
                 ? const Center(
                     child: SizedBox.square(
                       dimension: CatchIcon.md,
-                      child: CircularProgressIndicator(strokeWidth: 2),
+                      child: CircularProgressIndicator(
+                        strokeWidth: CatchStroke.focusRing,
+                      ),
                     ),
                   )
                 : null,
@@ -617,7 +619,7 @@ class SelectedPointPanel extends StatelessWidget {
                 hasSelection
                     ? CatchIcons.checkCircleOutlineRounded
                     : CatchIcons.touchAppRounded,
-                size: 20,
+                size: CatchIcon.control,
                 color: hasSelection ? t.success : t.ink2,
               ),
               gapW12,

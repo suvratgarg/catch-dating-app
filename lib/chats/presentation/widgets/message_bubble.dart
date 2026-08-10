@@ -248,7 +248,7 @@ class MediaMessageBody extends StatelessWidget {
                             ? progress.cumulativeBytesLoaded /
                                   progress.expectedTotalBytes!
                             : null,
-                        strokeWidth: 2,
+                        strokeWidth: CatchStroke.focusRing,
                       ),
                     );
                   },

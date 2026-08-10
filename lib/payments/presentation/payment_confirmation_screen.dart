@@ -329,7 +329,7 @@ class PaymentCheckoutSheet extends StatelessWidget {
                       ? CatchIcons.errorOutlineRounded
                       : CatchIcons.receiptLongOutlined,
                   color: medallionColor,
-                  size: 26,
+                  size: CatchIcon.statusMedallion,
                 ),
               ),
             ),

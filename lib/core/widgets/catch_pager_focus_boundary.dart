@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -16,8 +17,8 @@ class _RenderCatchPagerFocusBoundary extends RenderProxyBox {
   void showOnScreen({
     RenderObject? descendant,
     Rect? rect,
-    Duration duration = Duration.zero,
-    Curve curve = Curves.ease,
+    Duration duration = CatchMotion.none,
+    Curve curve = CatchMotion.easeCurve,
   }) {
     // Inner vertical scrollables receive showOnScreen before this boundary.
     // Do not forward the request to the enclosing horizontal pager.

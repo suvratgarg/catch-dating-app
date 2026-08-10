@@ -425,8 +425,12 @@ class PaperTicketHeader extends StatelessWidget {
           Positioned.fill(
             child: CustomPaint(
               painter: _PaperTicketHeaderPainter(
-                lineColor: swatch.accent.withValues(alpha: 0.26),
-                markColor: foreground.withValues(alpha: 0.10),
+                lineColor: swatch.accent.withValues(
+                  alpha: CatchOpacity.eventSuccessPaperLine,
+                ),
+                markColor: foreground.withValues(
+                  alpha: CatchOpacity.eventSuccessPaperMark,
+                ),
               ),
             ),
           ),
@@ -451,7 +455,9 @@ class PaperTicketHeader extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: CatchTextStyles.sectionTitle(
                     context,
-                    color: foreground.withValues(alpha: 0.82),
+                    color: foreground.withValues(
+                      alpha: CatchOpacity.eventSuccessProminent,
+                    ),
                   ),
                 ),
                 gapH6,

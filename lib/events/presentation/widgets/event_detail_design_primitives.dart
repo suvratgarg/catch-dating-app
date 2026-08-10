@@ -636,7 +636,11 @@ class TicketStubCell extends StatelessWidget {
                 Positioned(
                   right: 0,
                   top: 0,
-                  child: Icon(cell.icon, size: 15, color: t.ink3),
+                  child: Icon(
+                    cell.icon,
+                    size: CatchIcon.heroSignalChip,
+                    color: t.ink3,
+                  ),
                 ),
             ],
           ),

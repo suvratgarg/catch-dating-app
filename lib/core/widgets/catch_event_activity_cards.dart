@@ -195,7 +195,7 @@ Widget _buildOutlineStamp(BuildContext context, String label) {
     angle: -0.08,
     child: DecoratedBox(
       decoration: BoxDecoration(
-        border: Border.all(color: t.accent, width: 1.5),
+        border: Border.all(color: t.accent, width: CatchStroke.underline),
         color: t.primaryInk.withValues(alpha: CatchOpacity.subtleFill),
       ),
       child: Padding(

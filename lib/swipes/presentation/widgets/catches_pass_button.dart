@@ -33,7 +33,7 @@ class CatchesPassButton extends StatelessWidget {
         enabled: isEnabled,
         child: AnimatedOpacity(
           opacity: isEnabled || isPending ? 1 : CatchOpacity.disabledControl,
-          duration: const Duration(milliseconds: 120),
+          duration: CatchMotion.fast,
           child: CatchIconButton(
             key: SwipeKeys.passButton,
             onTap: isEnabled ? onPressed : null,
@@ -47,7 +47,7 @@ class CatchesPassButton extends StatelessWidget {
                 ? SizedBox.square(
                     dimension: CatchIcon.passButton,
                     child: CircularProgressIndicator(
-                      strokeWidth: 2.6,
+                      strokeWidth: CatchStroke.passProgress,
                       valueColor: AlwaysStoppedAnimation<Color>(passColor),
                     ),
                   )

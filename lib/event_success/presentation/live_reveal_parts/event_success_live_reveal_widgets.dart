@@ -1359,7 +1359,7 @@ class _RevealTickerState extends State<RevealTicker> {
     _timer = null;
     _now = DateTime.now();
     if (!widget.enabled) return;
-    _timer = Timer.periodic(const Duration(milliseconds: 250), (_) {
+    _timer = Timer.periodic(CatchMotion.liveRevealClockTick, (_) {
       if (mounted) setState(() => _now = DateTime.now());
     });
   }

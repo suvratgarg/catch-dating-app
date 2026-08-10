@@ -88,7 +88,7 @@ class BookingConflictSheet extends StatelessWidget {
                   child: Icon(
                     CatchIcons.warningAmberRounded,
                     color: t.warning,
-                    size: 26,
+                    size: CatchIcon.statusMedallion,
                   ),
                 ),
               ),
@@ -197,7 +197,7 @@ class BookingConflictEventRow extends StatelessWidget {
             child: Icon(
               visual?.icon ?? CatchIcons.calendarTodayOutlined,
               color: visual == null ? t.ink2 : t.primaryInk,
-              size: 18,
+              size: CatchIcon.md,
             ),
           ),
           gapW12,
