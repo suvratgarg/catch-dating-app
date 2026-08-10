@@ -60,7 +60,7 @@
       "safety": "local",
       "status": "active",
       "ciRequirements": {
-        "repositoryView": "index",
+        "repositoryView": "full",
         "setup": [
           "node"
         ]
@@ -3967,6 +3967,18 @@
       "id": "ui-capture:route-inventory",
       "category": "ui-capture",
       "path": "tool/ui_capture/check_route_inventory.mjs",
+      "impactPaths": [
+        "tool/ui_capture/check_route_inventory_test.mjs",
+        "tool/ui_capture/route_inventory.json",
+        "lib/routing/go_router.dart",
+        "lib/routing/route_contract.dart"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
       "command": "node tool/ui_capture/check_route_inventory.mjs --check",
       "safety": "local-writes-generated",
       "status": "active",
@@ -4006,6 +4018,18 @@
       "id": "ui-capture:coverage",
       "category": "ui-capture",
       "path": "tool/ui_capture/check_capture_coverage.mjs",
+      "impactPaths": [
+        "tool/ui_capture/route_inventory.json",
+        "tool/ui_capture/capture_coverage.json",
+        "test/ui_captures/catalog/screen_capture_catalog.dart",
+        "tool/marketing/capture_manifest.json"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
       "command": "node tool/ui_capture/check_capture_coverage.mjs",
       "safety": "local",
       "status": "active",
@@ -4046,6 +4070,18 @@
       "id": "design:public-surface-behavior",
       "category": "design",
       "path": "tool/design/check_public_surface_behavior.mjs",
+      "impactPaths": [
+        "tool/design/check_public_surface_behavior.test.mjs",
+        "design/public_surface_behavior.json",
+        "design/public_surface_behavior.schema.json"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "root-npm"
+        ]
+      },
       "command": "node tool/design/check_public_surface_behavior.mjs --strict",
       "safety": "local-readonly",
       "status": "active",
@@ -4329,7 +4365,7 @@
       "safety": "local-readonly",
       "status": "active",
       "ciRequirements": {
-        "repositoryView": "index",
+        "repositoryView": "full",
         "setup": [
           "node"
         ]
@@ -4354,6 +4390,19 @@
       "id": "design:parity-matrix",
       "category": "design",
       "path": "tool/design/check_design_parity_matrix.mjs",
+      "impactPaths": [
+        "docs/design_parity/state_matrix.json",
+        "tool/ui_capture/route_inventory.json",
+        "test/ui_captures/catalog/screen_capture_catalog.dart",
+        "design/components/catch.components.json",
+        "design/screens/catch.screens.json"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
       "command": "node tool/design/check_design_parity_matrix.mjs",
       "safety": "local",
       "status": "active",
@@ -4382,6 +4431,18 @@
       "id": "design:screen-coverage",
       "category": "design",
       "path": "tool/design/check_screen_coverage.mjs",
+      "impactPaths": [
+        "design/screens/screen_coverage.json",
+        "tool/ui_capture/route_inventory.json",
+        "design/screens/catch.screens.json",
+        "tool/ui_capture/capture_coverage.json"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
       "command": "node tool/design/check_screen_coverage.mjs",
       "safety": "local",
       "status": "active",
@@ -4396,6 +4457,20 @@
       "id": "design:screen-contracts",
       "category": "design",
       "path": "tool/design/check_screen_contracts.mjs",
+      "impactPaths": [
+        "design/screens/catch.screens.json",
+        "design/screens/catch.screens.schema.json",
+        "tool/ui_capture/route_inventory.json",
+        "test/ui_captures/catalog/screen_capture_catalog.dart",
+        "design/components/catch.components.json"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "root-npm"
+        ]
+      },
       "command": "node tool/design/check_screen_contracts.mjs",
       "safety": "local",
       "status": "active",
@@ -5587,7 +5662,7 @@
       "safety": "local",
       "status": "active",
       "ciRequirements": {
-        "repositoryView": "index",
+        "repositoryView": "full",
         "setup": [
           "node"
         ]

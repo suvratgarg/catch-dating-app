@@ -50,6 +50,7 @@ enum Routes {
   reviewsHistoryScreen('/you/reviews', AppRouteAudience.consumer),
   publicProfileScreen('/profiles/:uid', AppRouteAudience.consumer),
   settingsScreen('/settings', AppRouteAudience.consumer),
+  launchAccessScreen('/settings/launch-access', AppRouteAudience.consumer),
   paymentHistoryScreen('/payment-history', AppRouteAudience.consumer),
   paymentConfirmationScreen('/payment-confirmation', AppRouteAudience.consumer),
   hostHomeScreen('/host', AppRouteAudience.host),

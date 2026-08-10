@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 3.0.2
+version: 3.0.3
 updated: 2026-08-10
 owner: recursive_audit_loop
 status: active
@@ -763,7 +763,7 @@ Widgetbook callers.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `LaunchAccessApplicationScreen` | `lib/launch_access/presentation/launch_access_application_screen.dart:25` | Remote-Config-gated access application route. Shows disabled, signed-out, locked-status, or editable application states; the editable form collects city, role, event types, availability, host interest, invite/referral details, and reason copy before submitting through `LaunchAccessController.submitMutation`. uid/application loading renders `_LaunchAccessLoadingBody`, a form-shaped skeleton with header, field, choice-chip, host-toggle, text-area, and submit-button placeholders. Host-interest uses `CatchField.toggle`, while choice groups stay on `ChipField`. |
+| `LaunchAccessApplicationScreen` | `lib/launch_access/presentation/launch_access_application_screen.dart:25` | Live Settings route for applying to future city drops. Shows signed-out, locked-status, or editable application states; the editable form collects city, role, event types, availability, host interest, invite/referral details, and reason copy before submitting through `LaunchAccessController.submitMutation`. uid/application loading renders `_LaunchAccessLoadingBody`, a form-shaped skeleton with header, field, choice-chip, host-toggle, text-area, and submit-button placeholders. Host-interest uses `CatchField.toggle`, while choice groups stay on `ChipField`. |
 
 ---
 

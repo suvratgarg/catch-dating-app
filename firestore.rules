@@ -472,6 +472,115 @@ service cloud.firestore {
         && data.step >= 0;
     }
 
+    function hasValidLaunchAccessApplicationShape(data) {
+      return data.keys().hasOnly([
+          'applicationVersion', 'status', 'city', 'role', 'eventTypes',
+          'availabilityWindows', 'wantsToHost', 'inviteCode',
+          'instagramHandle', 'referralSource', 'whyCatch', 'cohortId',
+          'hostUserId', 'reviewerUid', 'reviewNote', 'submissionCount',
+          'createdAt', 'submittedAt', 'updatedAt', 'reviewedAt'
+        ])
+        && data.keys().hasAll([
+          'applicationVersion', 'status', 'city', 'role', 'eventTypes',
+          'availabilityWindows', 'wantsToHost', 'submissionCount',
+          'createdAt', 'submittedAt', 'updatedAt'
+        ])
+        && data.applicationVersion is int
+        && data.applicationVersion >= 1
+        && data.status in [
+          'pending', 'waitlisted', 'invited', 'approvedForProfile',
+          'activeMember', 'paused', 'notSelectedYet'
+        ]
+        && isValidCity(data.city)
+        && data.role in ['member', 'host', 'both']
+        && data.eventTypes is list
+        && data.eventTypes.size() >= 1
+        && data.eventTypes.size() <= 7
+        && data.eventTypes.hasOnly([
+          'runClub', 'walkingSocial', 'coffee', 'boardGames',
+          'fitnessClass', 'food', 'culture'
+        ])
+        && data.availabilityWindows is list
+        && data.availabilityWindows.size() >= 1
+        && data.availabilityWindows.size() <= 6
+        && data.availabilityWindows.hasOnly([
+          'weekdayMornings', 'weekdayEvenings', 'saturdayMornings',
+          'saturdayEvenings', 'sundayMornings', 'sundayEvenings'
+        ])
+        && data.wantsToHost is bool
+        && optionalString(data, 'inviteCode')
+        && (!hasField(data, 'inviteCode') || data.inviteCode == null || (
+          data.inviteCode.size() <= 64
+          && data.inviteCode.matches('^[A-Za-z0-9_-]*$')
+        ))
+        && optionalString(data, 'instagramHandle')
+        && (!hasField(data, 'instagramHandle')
+          || data.instagramHandle == null || (
+            data.instagramHandle.size() <= 30
+            && data.instagramHandle.matches('^[A-Za-z0-9._]*$')
+          ))
+        && optionalString(data, 'referralSource')
+        && (!hasField(data, 'referralSource')
+          || data.referralSource == null
+          || data.referralSource.size() <= 240)
+        && optionalString(data, 'whyCatch')
+        && (!hasField(data, 'whyCatch') || data.whyCatch == null || (
+          data.whyCatch.size() >= 12 && data.whyCatch.size() <= 1000
+        ))
+        && optionalString(data, 'cohortId')
+        && (!hasField(data, 'cohortId') || data.cohortId == null
+          || data.cohortId.size() <= 120)
+        && optionalString(data, 'hostUserId')
+        && optionalString(data, 'reviewerUid')
+        && optionalString(data, 'reviewNote')
+        && (!hasField(data, 'reviewNote') || data.reviewNote == null
+          || data.reviewNote.size() <= 1000)
+        && data.submissionCount is int
+        && data.submissionCount >= 1
+        && data.createdAt is timestamp
+        && data.submittedAt is timestamp
+        && data.updatedAt is timestamp
+        && optionalTimestamp(data, 'reviewedAt');
+    }
+
+    function isValidLaunchAccessApplicationCreate(uid) {
+      return isAuthed()
+        && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly([
+          'applicationVersion', 'status', 'city', 'role', 'eventTypes',
+          'availabilityWindows', 'wantsToHost', 'inviteCode',
+          'instagramHandle', 'referralSource', 'whyCatch', 'submissionCount',
+          'createdAt', 'submittedAt', 'updatedAt'
+        ])
+        && hasValidLaunchAccessApplicationShape(request.resource.data)
+        && request.resource.data.applicationVersion == 1
+        && request.resource.data.status == 'pending'
+        && request.resource.data.whyCatch is string
+        && request.resource.data.submissionCount == 1
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.submittedAt == request.time
+        && request.resource.data.updatedAt == request.time;
+    }
+
+    function isValidLaunchAccessApplicationUpdate(uid) {
+      return isAuthed()
+        && request.auth.uid == uid
+        && resource.data.status in ['pending', 'waitlisted', 'notSelectedYet']
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'applicationVersion', 'city', 'role', 'eventTypes',
+          'availabilityWindows', 'wantsToHost', 'inviteCode',
+          'instagramHandle', 'referralSource', 'whyCatch', 'submissionCount',
+          'submittedAt', 'updatedAt'
+        ])
+        && hasValidLaunchAccessApplicationShape(request.resource.data)
+        && request.resource.data.status == resource.data.status
+        && request.resource.data.whyCatch is string
+        && request.resource.data.submissionCount == resource.data.submissionCount + 1
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.submittedAt == request.time
+        && request.resource.data.updatedAt == request.time;
+    }
+
     function isValidNotificationReadUpdate(uid) {
       return isAuthed()
         && request.auth.uid == uid
@@ -540,6 +649,15 @@ service cloud.firestore {
         && request.auth.uid == uid
         && hasValidOnboardingDraftShape(request.resource.data);
       allow delete: if isAuthed() && request.auth.uid == uid;
+    }
+
+    // Owners submit and revise only their own editable application fields.
+    // Status, cohort, review, and activation fields remain Admin-SDK-owned.
+    match /accessApplications/{uid} {
+      allow read: if isAuthed() && request.auth.uid == uid;
+      allow create: if isValidLaunchAccessApplicationCreate(uid);
+      allow update: if isValidLaunchAccessApplicationUpdate(uid);
+      allow delete: if false;
     }
 
     // ── Blocks ───────────────────────────────────────────────────────────────

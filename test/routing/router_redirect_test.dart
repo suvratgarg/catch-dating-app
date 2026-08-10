@@ -81,6 +81,19 @@ void main() {
       }
     });
 
+    test('launch access is a normal Consumer Settings route', () {
+      expect(Routes.launchAccessScreen.path, '/settings/launch-access');
+      expect(Routes.launchAccessScreen.audience, AppRouteAudience.consumer);
+      expect(
+        routeAvailableForAppRole(Routes.launchAccessScreen, AppRole.consumer),
+        isTrue,
+      );
+      expect(
+        routeAvailableForAppRole(Routes.launchAccessScreen, AppRole.host),
+        isFalse,
+      );
+    });
+
     test('shared bootstrap and development routes remain role-neutral', () {
       final sharedRoutes = Routes.values.where(
         (route) => route.audience == AppRouteAudience.shared,

@@ -402,6 +402,9 @@ extension _CatchFieldEdit on _CatchFieldState {
   }
 
   Widget _buildTextEntryMotion(BuildContext context, {required Widget child}) {
+    if (MediaQuery.maybeOf(context)?.disableAnimations == true) {
+      return child;
+    }
     return AnimatedSize(
       duration: _motionDuration(context),
       curve: CatchMotion.standardCurve,

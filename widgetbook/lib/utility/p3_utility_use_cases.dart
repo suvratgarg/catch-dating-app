@@ -40,10 +40,8 @@ import 'package:catch_dating_app/cross_paths/domain/cross_paths_feature_config.d
 import 'package:catch_dating_app/image_uploads/shared/photo_slot.dart';
 import 'package:catch_dating_app/design_fixtures/profile_surface_fixtures.dart';
 import 'package:catch_dating_app/design_fixtures/utility_surface_fixtures.dart';
-import 'package:catch_dating_app/launch_access/data/launch_access_config_provider.dart';
 import 'package:catch_dating_app/launch_access/data/launch_access_repository.dart';
 import 'package:catch_dating_app/launch_access/domain/launch_access_application.dart';
-import 'package:catch_dating_app/launch_access/domain/launch_access_config.dart';
 import 'package:catch_dating_app/launch_access/presentation/launch_access_application_screen.dart';
 import 'package:catch_dating_app/notifications/data/activity_notification_repository.dart';
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
@@ -422,15 +420,6 @@ Widget launchAccessApplicationScreenStates(BuildContext context) {
     title: 'LaunchAccessApplicationScreen',
     contractId: 'screen.launch_access.application',
     children: [
-      _StateCard(
-        label: 'gate disabled',
-        child: _DeviceFrame(
-          child: _LaunchAccessScope(
-            config: LaunchAccessConfig.disabled,
-            child: const LaunchAccessApplicationScreen(),
-          ),
-        ),
-      ),
       _StateCard(
         label: 'uid loading',
         child: _DeviceFrame(
@@ -3281,13 +3270,11 @@ class _WidgetbookAuthRepository implements AuthRepository {
 class _LaunchAccessScope extends StatelessWidget {
   const _LaunchAccessScope({
     required this.child,
-    this.config = const LaunchAccessConfig(gateEnabled: true),
     this.uidStream,
     this.applicationStream,
   });
 
   final Widget child;
-  final LaunchAccessConfig config;
   final Stream<String?>? uidStream;
   final Stream<LaunchAccessApplication?>? applicationStream;
 
@@ -3296,7 +3283,6 @@ class _LaunchAccessScope extends StatelessWidget {
     final applicationStream = this.applicationStream;
     return ProviderScope(
       overrides: [
-        launchAccessConfigProvider.overrideWith((ref) => config),
         uidProvider.overrideWith(
           (ref) => uidStream ?? Stream<String?>.value(_viewerUid),
         ),

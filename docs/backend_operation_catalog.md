@@ -1,6 +1,6 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.10.0
+version: 1.10.1
 updated: 2026-08-10
 owner: recursive_audit_loop
 status: active
@@ -229,6 +229,7 @@ is `docs/migrations/clubs_to_organizers.md`.
 | `SavedEventRepository.watchSavedEvent` / `saveEvent` / `unsaveEvent` | `savedEvents/{uid_eventId}` | Render, save, or unsave one event for the current user. | Owner direct edge read/create/delete with deterministic ids. | Yes. No user-profile projection is maintained. |
 | `FcmService._saveToken` | `users/{uid}/pushInstallations/{installationId}` plus legacy consumer `users/{uid}.fcmToken` | Store app-role scoped push tokens for side-by-side host/consumer installs; consumer attempts both representations independently so one rollout-era denial cannot suppress the other write. | Owner direct create/update of bounded push installation docs; legacy owner update of only `fcmToken`. | Yes. Runtime token update. |
 | `OnboardingDraftRepository.saveDraft/deleteDraft`; first public OTP registration seed | `onboarding_drafts/{uid}` | Private draft set/delete; server creates a name/phone continuation seed only when no draft exists. | Owner-only direct access plus server callable ownership. | Yes. Private volatile draft state, never a public/Consumer profile by itself. |
+| `LaunchAccessRepository.fetchApplication/watchApplication/submitApplication` | `accessApplications/{uid}` | Read the current user's application and create or revise editable application fields. | Owner-only path, strict field/enum/length shape, server timestamps, monotonic submission count, and editable-status boundary; review/cohort/activation fields remain Admin-SDK-owned. | Yes. One narrow owner-authored source document; review decisions remain callable-owned. |
 | `SwipeRepository.recordSwipe` | `profileDecisions/{uid}/outgoing/{targetId}` | Create own outgoing profile decision. | Path/data identity, attended-event, block, and payload rules. | Yes. Match creation remains trigger-owned. |
 | `ChatRepository.sendMessage` | `matches/{matchId}/messages/{id}` | Create text message. | Match participant create only. | Yes. Match preview/unread/moderation are trigger-owned. |
 | `ChatController.sendImage` / `ChatRepository.sendImageMessage` | Storage `matches/{matchId}/images/*`, then `matches/{matchId}/messages/{id}` | Shared `ImageUploadRepository` picks/compresses/uploads the chat image; repository writes the image message. | Storage rules prove match participation from `user1Id`/`user2Id` with legacy `participantIds` fallback; message create rules prove active match participation before Firestore write. | Yes. Media picking/compression is centralized with profile/onboarding/event-club image upload policy. |

@@ -2,11 +2,11 @@
   "version": 1,
   "source": "test/ui_captures/catalog/screen_capture_catalog.dart",
   "coverage": {
-    "routes": 49,
-    "captures": 610,
+    "routes": 50,
+    "captures": 619,
     "statusCounts": {
       "excluded": 2,
-      "captured": 36,
+      "captured": 37,
       "alias": 7,
       "planned": 4
     }
@@ -9707,6 +9707,159 @@
         "dark": "dark/reviews_history_reduced_motion.png"
       },
       "whatItIs": "Reviews History Reduced Motion",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "launch_access_application",
+      "routes": [
+        "launchAccessScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/launch_access_application.png",
+        "dark": "dark/launch_access_application.png"
+      },
+      "whatItIs": "Launch Access Application",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "launch_access_loading",
+      "routes": [
+        "launchAccessScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/launch_access_loading.png",
+        "dark": "dark/launch_access_loading.png"
+      },
+      "whatItIs": "Launch Access Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "launch_access_submit_pending",
+      "routes": [
+        "launchAccessScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/launch_access_submit_pending.png",
+        "dark": "dark/launch_access_submit_pending.png"
+      },
+      "whatItIs": "Launch Access Submit Pending",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "launch_access_signed_out",
+      "routes": [
+        "launchAccessScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/launch_access_signed_out.png",
+        "dark": "dark/launch_access_signed_out.png"
+      },
+      "whatItIs": "Launch Access Signed Out",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "launch_access_error",
+      "routes": [
+        "launchAccessScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/launch_access_error.png",
+        "dark": "dark/launch_access_error.png"
+      },
+      "whatItIs": "Launch Access Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "launch_access_offline",
+      "routes": [
+        "launchAccessScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/launch_access_offline.png",
+        "dark": "dark/launch_access_offline.png"
+      },
+      "whatItIs": "Launch Access Offline",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "launch_access_approved",
+      "routes": [
+        "launchAccessScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/launch_access_approved.png",
+        "dark": "dark/launch_access_approved.png"
+      },
+      "whatItIs": "Launch Access Approved",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "launch_access_text_scale_2",
+      "routes": [
+        "launchAccessScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/launch_access_text_scale_2.png",
+        "dark": "dark/launch_access_text_scale_2.png"
+      },
+      "whatItIs": "Launch Access Text Scale 2",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "launch_access_reduced_motion",
+      "routes": [
+        "launchAccessScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/launch_access_reduced_motion.png",
+        "dark": "dark/launch_access_reduced_motion.png"
+      },
+      "whatItIs": "Launch Access Reduced Motion",
       "keepChangeNotes": ""
     },
     {

@@ -225,7 +225,7 @@ test("affected-tool GitHub output contains bounded control signals", (context) =
   assert.match(output, /^tool_mode=affected$/mu);
   assert.match(output, /^affected=true$/mu);
   assert.match(output, /^full=false$/mu);
-  assert.match(output, /^repository_view=index$/mu);
+  assert.match(output, /^repository_view=full$/mu);
   assert.match(output, /^setup_requirements=\["node"\]$/mu);
   assert.doesNotMatch(output, /docs:metadata/u);
 });
