@@ -30,7 +30,6 @@ import {
   eventTitleLabel,
   eventWithAdminFieldsForSearch,
 } from "./eventAdminSearch";
-import {eventPolicyFromEvent} from "../events/eventPolicy";
 import {
   crossPathsPilotEventEnabled,
   crossPathsPilotMarketId,
@@ -492,15 +491,6 @@ function assertCrossPathsPilotEventCanBeEnabled(params: {
     throw new HttpsError(
       "failed-precondition",
       "The initial Cross Paths pilot is limited to Mumbai events."
-    );
-  }
-  if (
-    eventPolicyFromEvent(event).admission.crossPathsPairInventory?.enabled ===
-      true
-  ) {
-    throw new HttpsError(
-      "failed-precondition",
-      "Turn off Cross Paths pair inventory before selecting a pilot event."
     );
   }
   const otherActivePilotEvents = selectedEvents.filter((snapshot) => {

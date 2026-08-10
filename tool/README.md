@@ -542,9 +542,10 @@ enrichment. Cleanup can preserve that single world with
 `--keep-seed-prefixes cross_paths_mumbai_qa` while deleting older synthetic
 data, including organizer mirrors.
 
-Use `--dart-define=ENABLE_CROSS_PATHS_PREVIEW=true` only on a non-production
-Consumer debug run. It does not change Remote Config and cannot enable the
-surface in a release or production build.
+Cross Paths no longer has a compile-time preview lab. Use the normal Consumer
+build; the selected event, synthetic scope, layered consent, showcase review,
+admission policy, and server-owned safety checks determine whether the pinned
+fixture can appear.
 
 ## Sales Demo Persona Profile Projection
 

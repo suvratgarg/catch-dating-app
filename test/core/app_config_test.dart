@@ -2,54 +2,6 @@ import 'package:catch_dating_app/core/app_config.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group('Cross Paths preview', () {
-    test(
-      'is available only when requested in a non-production debug build',
-      () {
-        expect(
-          AppConfig.isCrossPathsPreviewAvailable(
-            environment: AppEnvironment.dev,
-            debugMode: true,
-            requested: true,
-          ),
-          isTrue,
-        );
-        expect(
-          AppConfig.isCrossPathsPreviewAvailable(
-            environment: AppEnvironment.staging,
-            debugMode: true,
-            requested: true,
-          ),
-          isTrue,
-        );
-        expect(
-          AppConfig.isCrossPathsPreviewAvailable(
-            environment: AppEnvironment.prod,
-            debugMode: true,
-            requested: true,
-          ),
-          isFalse,
-        );
-        expect(
-          AppConfig.isCrossPathsPreviewAvailable(
-            environment: AppEnvironment.dev,
-            debugMode: false,
-            requested: true,
-          ),
-          isFalse,
-        );
-        expect(
-          AppConfig.isCrossPathsPreviewAvailable(
-            environment: AppEnvironment.dev,
-            debugMode: true,
-            requested: false,
-          ),
-          isFalse,
-        );
-      },
-    );
-  });
-
   tearDown(() {
     AppConfig.resetEntrypointRoleOverrideForTesting();
     AppConfig.resetEntrypointEnvironmentOverrideForTesting();

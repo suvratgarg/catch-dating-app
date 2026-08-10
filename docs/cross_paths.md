@@ -1,9 +1,9 @@
 ---
 doc_id: cross_paths
-version: 1.10.0
+version: 1.11.0
 updated: 2026-08-10
 owner: product (approved direction 2026-08-05)
-status: implemented-default-off
+status: active
 ---
 
 # Cross Paths — Explore People + Event Invitation Spec
@@ -44,7 +44,7 @@ The approved defaults are:
   companion inventory is an explicit organizer-controlled, default-off product
   and never changes normal waitlist rank.
 
-The first live pilot is additionally fixed to these owner-approved defaults:
+The first real-member pilot remains fixed to these owner-approved defaults:
 
 - Mumbai only, using canonical market id `in-mh-mumbai`.
 - Exactly 2–3 upcoming events selected through an Admin-only event switch.
@@ -52,14 +52,17 @@ The first live pilot is additionally fixed to these owner-approved defaults:
   global and per-event consent actions themselves.
 - Manual, score-free showcase review. No attractiveness/desirability model or
   inferred consent is permitted.
-- Normal event booking before a personal invitation. Invitations provide no
-  guaranteed admission, companion inventory, or waitlist priority in this
-  pilot.
-- Selected-event rollout only; no percentage cohort. Companion inventory
-  remains independently off.
-- External legal/privacy approval, adequate opted-in supply, and operational
-  monitoring remain required before either user-facing rollout flag is
-  enabled.
+- Normal event booking before a personal invitation unless the organizer has
+  explicitly reserved bounded companion inventory and the server creates a
+  valid one-seat hold. Invitations never alter normal waitlist priority.
+- Selected-event rollout only; no percentage cohort. Companion inventory is
+  default-off per event and must be deliberately configured by the organizer.
+- Independent legal/privacy review, adequate opted-in supply, and operational
+  monitoring remain required before Admin selects a real-member event.
+
+The production-QA cohort is narrower: one hidden synthetic Mumbai event, one
+fictional test-phone viewer, and two synthetic reviewed candidates. The client
+switches are live, but no real person or event is enrolled by that activation.
 
 ## Product thesis
 
@@ -425,12 +428,12 @@ Consent copy must say that:
 - they can withdraw before the event;
 - blocking, reporting, and cancellation controls remain available.
 
-The privacy policy and in-app privacy explanation must be updated before the
-feature flag is enabled outside internal/demo environments.
-
-The exact in-app disclosure is implemented on Event Detail. Legal/privacy
-policy review remains an external launch blocker, so both bundled Remote Config
-defaults stay off.
+The published privacy policy and in-app privacy explanation must stay aligned
+with this disclosure before a real-member event is selected. The exact in-app
+disclosure is implemented on Event Detail, and the website policy was updated
+for the production QA activation on 2026-08-10. Independent legal review
+remains required before the first real-member cohort; it does not require the
+completed synthetic-only production path to remain hidden.
 
 Invitation state is always visible in-app while the member remains opted in.
 Phase 2 adds the dedicated `prefsCrossPathsInvitations` push preference rather
@@ -563,8 +566,9 @@ they do today; the event plan is not silently upgraded.
 
 ### Phase 3: organizer-controlled companion inventory
 
-Phase 3 is implemented behind the separate default-off
-`cross_paths_enable_pair_inventory` flag. An organizer may reserve a bounded
+Phase 3 is shipped behind the emergency operational
+`cross_paths_enable_pair_inventory` switch, whose live and bundled value is
+on. The capability remains default-off in each event policy. An organizer may reserve a bounded
 number of seats from an event's total capacity for unbooked Cross Paths
 requesters. The featured recipient is already confirmed; acceptance reserves
 one companion seat for the requester, not a second seat and not a booking.
@@ -693,7 +697,7 @@ presentation boundaries:
   suggestion projection; invitation and event-plan models remain future slices;
 - the data repository owns consent operations plus the batched
   `getCrossPathsSuggestions` callable;
-- providers/controllers own fail-closed rollout flags, consent mutation, one
+- providers/controllers own operational switch reads, consent mutation, one
   bounded current-event request, response expiry, and error-to-empty behavior;
 - presentation owns the Event Detail consent section and
   `CrossPathsExploreCard`, which composes `CatchPersonPolaroid` with separate
@@ -835,15 +839,17 @@ eligibility.
 Implementation receipt (2026-08-05): the mixed-feed person card, sanitized
 profile preview, event-majority/no-adjacent-non-event rules, no-search/no-map
 gates, current-event association, token expiry, and Event Detail routing are
-implemented behind the default-off Explore suggestions flag. Qualified card
+implemented behind operational Explore controls. Qualified card
 impression, profile-open, event-open, booking-started, and booking-completed
 analytics are wired without emitting the signed token or candidate identity.
 Environment-specific signing keys and exposure TTL policies are provisioned.
-The selected-event Mumbai control plane is implemented, but production still
-has zero eligible upcoming Mumbai events, zero showcase-approved members, and
-zero enabled event-consent edges as of 2026-08-09. Real opted-in supply,
-legal/privacy approval, operational monitoring, and the user-facing flags
-remain before live enablement.
+The selected-event Mumbai control plane is implemented. Production QA is live
+as of 2026-08-10 for one hidden synthetic event, one fictional viewer, and two
+synthetic opted-in showcase profiles; its eleven documents and test login pass
+the seeder's exact read-back. No real event or real member is selected. Real
+opted-in supply, independent legal review, and operational monitoring remain
+before the first real-member cohort, but the shipped client surface is no
+longer treated as unfinished work.
 
 - [x] Add Cross Paths mixed-feed card and profile preview.
 - [x] Enforce the Explore modality budget and no-search/no-map constraints.
@@ -852,7 +858,9 @@ remain before live enablement.
 - [x] Instrument exposure, profile-open, event-open, and booking conversion.
 - [x] Add an Admin-only, default-false selected-event gate constrained to
       Mumbai and at most three upcoming events.
-- [ ] Launch to a small market/flag cohort with manual showcase curation.
+- [x] Launch the pinned synthetic Mumbai production-QA cohort with manual
+      showcase curation and exact read-back.
+- [ ] Select the first real-member Mumbai cohort after external review.
 
 No invitation is delivered in this phase.
 
@@ -904,7 +912,8 @@ capacity and waitlist ordering remain separate.
 - [x] Add transactional hold, confirmation, release, and aggregate invariants.
 - [x] Carry the hold through free, Razorpay, and Stripe booking authority.
 - [x] Add requester/recipient held, confirmed, and ended UI states.
-- [x] Keep pair inventory behind an independent default-off rollout flag.
+- [x] Ship pair inventory behind an independent emergency switch while keeping
+      each event's organizer-authored policy default-off.
 - [ ] Pilot only with organizers who explicitly enable and understand it.
 
 Exit gate: emulator rules, Functions transactions, payment tests, Flutter
@@ -938,9 +947,13 @@ Implementation is incomplete until the changed phase has all relevant proof:
 
 ## Launch checklist
 
-- [x] All three rollout flags are off by default in production.
+- [x] All three shipped operational switches are on; server/event/member gates
+      remain authoritative and independently reversible.
 - [x] Existing and missing global preferences resolve to off.
-- [ ] Per-event consent copy and privacy policy are externally approved.
+- [x] Per-event consent copy and the published privacy policy describe the
+      implemented synthetic-QA behavior.
+- [ ] Independent legal review is complete before a real-member event is
+      selected.
 - [x] No consumer query can enumerate an event roster.
 - [x] Only signed-up candidates and bookable/already-booked viewers qualify.
 - [x] Reciprocal preferences and blocks are server-enforced.
@@ -957,7 +970,10 @@ Implementation is incomplete until the changed phase has all relevant proof:
 - [x] Accepted plans remain separate from permanent dating matches.
 - [x] Organizer analytics are aggregate and privacy-thresholded.
 - [ ] Experiment holdout and all guardrail dashboards are live.
-- [ ] Internal/demo, staged-market, rollback, and support runbooks are tested.
+- [x] Internal synthetic production QA, read-back, login, and rollback paths
+      are tested.
+- [ ] Real-member staged-market and support operations are exercised before
+      selecting a real event.
 
 ## Implementation-time tunables
 

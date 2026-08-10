@@ -15,7 +15,7 @@
     "contactPrompt": "Questions, corrections, or privacy requests?",
     "footerBody": "Catch is operated by Torana."
   },
-  "effectiveDate": "22 July 2026",
+  "effectiveDate": "10 August 2026",
   "pages": {
     "privacy": {
       "path": "/privacy/",
@@ -37,6 +37,7 @@
           "bullets": [
             "Account and profile information, including name, contact details, age confirmation, city, photos, prompts, preferences, reviews, messages, support requests, reports, and claim requests.",
             "Event and interaction information, including registrations, waitlists, attendance, check-in, private catches, mutual matches, blocks, reports, host actions, saved organizers, and aggregate event outcomes.",
+            "Cross Paths information, including your private global and per-event visibility choices, the event connected to a suggestion or invitation, invitation responses, and safety or eligibility state needed to prevent an unsafe or ineligible introduction.",
             "Website and host-lead information, including name, email, city, role, organization, public website or social link, application answers, consent choice, and campaign attribution attached to a submission.",
             "Device and reliability information, including app version, operating system, browser, diagnostic events, crash information, security signals, and approximate location. Precise location is used only where a feature needs it and device permission allows it.",
             "Public-source listing information, such as organizer names, descriptions, public links, event dates and locations, source provenance, and freshness details. An unclaimed listing is not an endorsement or proof of a commercial relationship."
@@ -52,7 +53,8 @@
         {
           "heading": "Public and private information",
           "paragraphs": [
-            "Organizer and event pages, reviews, organizer responses, and content labelled public may be visible to anyone and indexed by search engines. Private catches are not shown to the other person unless interest becomes mutual. Hosts receive operational and aggregate information; they should not receive private dating choices unless a feature clearly says so."
+            "Organizer and event pages, reviews, organizer responses, and content labelled public may be visible to anyone and indexed by search engines. Private catches are not shown to the other person unless interest becomes mutual. Hosts receive operational and aggregate information; they should not receive private dating choices unless a feature clearly says so.",
+            "Cross Paths is not a public attendee list. If you separately enable Cross Paths for your account and for a selected event you are attending, Catch may show your public profile and your intention to attend that event to a limited number of compatible, eligible members and may let them send a limited event invitation. You can withdraw future visibility through the relevant controls; accepted plans, safety records, and earlier processing may remain where needed to operate the feature, protect members, or comply with law."
           ]
         },
         {
