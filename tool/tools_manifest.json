@@ -2749,6 +2749,7 @@
         "node tool/platform/check_app_targets.mjs --check"
       ],
       "impactPaths": [
+        "tool/app_target_external_gates.json",
         "tool/app_targets.json",
         "tool/platform/check_app_targets.test.mjs",
         "tool/platform/mobile_release_target_contract.test.mjs",
@@ -2765,6 +2766,9 @@
         "path": "tool/platform/check_app_targets.test.mjs",
         "contains": [
           "validateManifestShape rejects a duplicate role/environment target",
+          "signed app-target authority rejects operational release evidence",
+          "external gate contract rejects missing gates and tracked run evidence",
+          "resolved external gates are a clean terminal state",
           "release ownership rejects split or incomplete workflow ownership",
           "release ownership rejects a missing reusable iOS CI identity import",
           "release ownership rejects missing reusable iOS identity cleanup",

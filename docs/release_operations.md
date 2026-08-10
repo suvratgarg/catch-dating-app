@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.0.14
+version: 2.0.15
 updated: 2026-08-11
 owner: recursive_audit_loop
 status: active
@@ -1599,6 +1599,10 @@ package authority. The manual exact promoter owns upload; TestFlight group
 assignment, install, and launch remain separate remote evidence.
 `APP-TARGET-IOS-GITHUB-CUTOVER-001` remains open only until the intended groups,
 installation, and launch proof are recorded in GitHub issue `#218`.
+`tool/app_target_external_gates.json` owns that stable external gate and the
+matching Play gate without carrying run receipts. Update live evidence here and
+in the owning Issues; an evidence-only update must never authorize new signed
+mobile packages.
 
 The current analyzer-clean split release is proven for both roles from the same
 immutable producer authority. Producer run `31435724862` selected source

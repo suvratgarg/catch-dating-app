@@ -196,6 +196,24 @@ test("full mode cannot grant main or release authority", () => {
   }
 });
 
+test("operational app release gates validate without authorizing signed packages", () => {
+  const status = plan("tool/app_target_external_gates.json", "main");
+  assert.deepEqual(status.directComponents, ["repo.tooling"]);
+  assert.deepEqual(status.operations.ciTargets, ["tools"]);
+  assert.deepEqual(status.operations.releaseTargets, []);
+  assert.deepEqual(status.operations.releaseRoles, []);
+
+  const targetContract = plan("tool/app_targets.json", "main");
+  assert.deepEqual(targetContract.directComponents, ["app.build-control"]);
+  assert.deepEqual(targetContract.operations.releaseTargets, [
+    "consumer-android",
+    "consumer-ios",
+    "host-android",
+    "host-ios",
+  ]);
+  assert.deepEqual(targetContract.operations.releaseRoles, ["consumer", "host"]);
+});
+
 test("ordinary and root documentation use the single docs lane", () => {
   for (const path of ["docs/product_notes.md", "README.md", "TESTS.md"]) {
     const result = plan(path);

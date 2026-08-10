@@ -2,73 +2,7 @@
   "$schema": "catch.app-targets/v1",
   "schemaVersion": 1,
   "logicalName": "catch-installable-app-targets",
-  "currentPhase": "independent-package-roots",
   "reason": "Catch ships Consumer and Host as independent store products. Their runtime composition, native identity, Firebase registration, capabilities, links, force-update policy, and release ownership must resolve from one checked contract.",
-  "phases": [
-    {
-      "id": "identity-contract",
-      "status": "complete_local",
-      "evidence": [
-        "tool/app_targets.json",
-        "tool/platform/check_app_targets.mjs"
-      ]
-    },
-    {
-      "id": "native-product-targets",
-      "status": "complete_local",
-      "evidence": [
-        "manifest-driven Android app-target flavors",
-        "role-specific Apple entitlements",
-        "Xcode build settings and direct Android builds"
-      ]
-    },
-    {
-      "id": "composition-roots",
-      "status": "complete_local",
-      "evidence": [
-        "six role/environment entrypoints",
-        "compile-time ConsumerApp and HostApp roots",
-        "role-selected router providers",
-        "independent apps/consumer and apps/host Flutter package roots",
-        "role-specific native plugin dependency graphs",
-        "native target-to-entrypoint bindings",
-        "release archive composition markers",
-        "role-selected route graphs"
-      ]
-    },
-    {
-      "id": "package-boundaries",
-      "status": "complete_local",
-      "evidence": [
-        "tool/platform/check_app_package_graph.mjs",
-        "Firebase Flutter-to-Apple native SDK lockstep in tool/platform/check_app_targets.mjs",
-        "tool/platform/mobile_package_policy.json",
-        "role-specific Android App Bundles",
-        "role-specific iOS app products",
-        "Host excludes Health and Razorpay native SDKs"
-      ]
-    },
-    {
-      "id": "release-ownership",
-      "status": "complete_local",
-      "evidence": [
-        ".github/workflows/mobile-internal-release.yml",
-        ".github/workflows/mobile-internal-promote.yml",
-        "tool/ci/package_mobile_release.mjs",
-        "tool/ci/mobile_promotion_core.mjs",
-        "tool/platform/verify_ios_release_identity.mjs",
-        "tool/platform/verify_android_release_bundle.mjs"
-      ]
-    },
-    {
-      "id": "store-internal-distribution",
-      "status": "blocked_external",
-      "evidence": [
-        "APP-TARGET-IOS-GITHUB-CUTOVER-001",
-        "APP-TARGET-ANDROID-PLAY-001"
-      ]
-    }
-  ],
   "appleNativeDependencies": {
     "firebaseCoreFlutterVersion": "4.13.0",
     "cloudFirestoreFlutterVersion": "6.8.0",
@@ -460,11 +394,7 @@
         "automaticTestFlightOnMain": false,
         "appStoreConnectAppId": "6765646860",
         "googlePlayPackageName": "com.catchdates.app",
-        "legacyXcodeCloudWorkflow": "Default",
-        "legacyXcodeCloudState": "disabled",
-        "legacyXcodeCloudRetirementRunId": "29168662623",
-        "testFlightEvidence": "github-valid-run-30523657375-build-202607300000005101-awaiting-group-install",
-        "playInternalEvidence": "gcp-publisher-ready-play-console-blocked"
+        "legacyXcodeCloudWorkflow": "Default"
       }
     },
     {
@@ -525,56 +455,8 @@
         "automaticTestFlightOnMain": false,
         "appStoreConnectAppId": "6778927317",
         "googlePlayPackageName": "com.catchdates.host",
-        "legacyXcodeCloudWorkflow": "Default",
-        "legacyXcodeCloudState": "disabled",
-        "legacyXcodeCloudRetirementRunId": "29168662623",
-        "testFlightEvidence": "github-valid-run-29168074271-build-202607110000000301-awaiting-group-install",
-        "playInternalEvidence": "gcp-publisher-ready-play-console-blocked"
+        "legacyXcodeCloudWorkflow": "Default"
       }
-    }
-  ],
-  "transitionalDebt": [
-    {
-      "id": "APP-TARGET-IOS-GITHUB-CUTOVER-001",
-      "status": "blocked_external",
-      "reason": "GitHub Actions is the canonical iOS package and exact-promotion owner, the current analyzer-clean Consumer and Host packages processed through the split promoter, and both legacy Xcode Cloud workflows are disabled. Closure is externally blocked only on TestFlight group assignment, install, and launch proof in GitHub issue #218.",
-      "externalPrerequisites": [
-        "select and record the intended Consumer and Host internal TestFlight groups",
-        "assign the GitHub-processed Consumer and Host builds to those groups",
-        "install and launch both GitHub-owned builds with role-specific runtime smoke proof"
-      ],
-      "githubBuildNumberNamespace": "<UTC YYYYMMDD><8-digit GitHub run><2-digit attempt>",
-      "removalProof": [
-        "historical pre-split Mobile Internal Release run 29168074271: Consumer and Host build 202607110000000301 processed VALID",
-        "processing receipts bound to Mobile Internal Release run 29168074271",
-        "retirement run 29168662623: both app-scoped Default workflows disabled",
-        "final analyzer-clean producer run 31435724862 and Consumer exact promotion run 31436879851: source 9c3633095464778a1d5734d742ab3036e5f7cde7 build 202608100000030201 processed VALID with claim artifact 9081579386",
-        "final analyzer-clean producer run 31435724862 and Host exact promotion run 31436882152: source 9c3633095464778a1d5734d742ab3036e5f7cde7 build 202608100000030201 processed VALID with claim artifact 9081563645",
-        "tester-group assignments",
-        "Consumer and Host install/launch smoke proof"
-      ]
-    },
-    {
-      "id": "APP-TARGET-ANDROID-PLAY-001",
-      "status": "blocked_external",
-      "reason": "The split exact package producer/promoter, Android Publisher API, dedicated zero-project-role service account, and prod-mobile OIDC binding are ready. Final flag-free promotions failed closed before mutation because the unverified Play developer account has zero app records. GitHub issue #199 owns verification, both records, qa testers, App Signing, and app-scoped access.",
-      "externalPrerequisites": [
-        "complete Play developer-account physical-device, identity, and contact-phone verification in GitHub issue #199",
-        "create com.catchdates.app and com.catchdates.host Play records",
-        "enroll both apps in Play App Signing",
-        "grant GOOGLE_PLAY_SERVICE_ACCOUNT_EMAIL release access to both apps",
-        "configure at least one Google Group tester on each qa track so readiness is machine-verifiable",
-        "let the exact promoter run the authenticated two-app probe_google_play_access fleet gate and keep each edit uncommitted"
-      ],
-      "playTrack": "qa",
-      "removalProof": [
-        "Mobile Internal Release run 31435724862 exact Consumer Android artifact 9081178072 and Host Android artifact 9081168935 retained for 90 days under authority artifact 9081276899",
-        "promotion runs 31423759477 and 31423765422 failed closed before upload with Package not found and removed credentials",
-        "consumer signed AAB processed on Play internal testing",
-        "host signed AAB processed on Play internal testing",
-        "Play signing fingerprints registered with Firebase and App Check",
-        "both internal builds installed and launched"
-      ]
     }
   ]
 }

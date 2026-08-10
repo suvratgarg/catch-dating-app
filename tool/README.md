@@ -361,6 +361,14 @@ composition entrypoint (`main_<role>_<environment>.dart`); aggregate Android
 build tasks and caller-supplied wrapper arguments that cannot resolve exactly
 one target fail before compilation.
 
+`tool/app_target_external_gates.json` separately owns the two unresolved
+TestFlight and Play owner prerequisites. It contains only stable issue links,
+status, scope, and closure criteria—never workflow runs, artifact receipts, or
+promotion history. Harness classifies this operational status under the Tools
+lane, so updating external proof cannot authorize signed packages. Real target
+identity or release-policy changes in `tool/app_targets.json` remain high-risk
+and still authorize the exact affected mobile release targets.
+
 ```sh
 node tool/platform/resolve_app_target.mjs --role host --environment prod
 node tool/run.mjs check platform:app-targets
