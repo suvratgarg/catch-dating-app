@@ -1002,6 +1002,10 @@ final _styleRegistry = <_StyleEntry>[
 
 const _excludedStyleRegistry = <_ExcludedStyleEntry>[
   _ExcludedStyleEntry(
+    'iconRasterGlyph',
+    'Raster-only icon-font style; excluded from app text typography.',
+  ),
+  _ExcludedStyleEntry(
     'transparentInput',
     'Utility style for hidden platform input; excluded from design typography.',
   ),

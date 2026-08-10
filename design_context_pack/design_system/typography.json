@@ -27,11 +27,12 @@
     "color": "Base UI is paper and ink; chroma is reserved for activity meaning."
   },
   "registry": {
-    "publicStaticTextStyleMethods": 57,
+    "publicStaticTextStyleMethods": 58,
     "covered": 56,
-    "excluded": 1
+    "excluded": 2
   },
   "excluded": {
+    "iconRasterGlyph": "Raster-only icon-font style; excluded from app text typography.",
     "transparentInput": "Utility style for hidden platform input; excluded from design typography."
   },
   "styles": {
