@@ -40,8 +40,8 @@
     },
     {
       "path": "design_system/typography.json",
-      "sha256": "afd617a255484d2093306891b763165658af3ee61bb970157675ff8787654fbb",
-      "bytes": 27244
+      "sha256": "a55f588b51adf1d4b2c87bfad97f2bf10b3a41f8faf79c7d1309869d10985112",
+      "bytes": 27334
     },
     {
       "path": "gallery/manifest.json",
