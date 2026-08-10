@@ -9405,7 +9405,7 @@
           "id": "claude.host-clubs",
           "kind": "claude",
           "status": "available",
-          "notes": "Host Organizer reference is repo-pinned and registered. The 2026-07-10 full-shell capture renders the production HostAppShell and stays within the advisory threshold at mismatch 12.02%, meanDelta 7.79, maxDelta 240, masked 260416; analytics, payout, and editor variants remain blocked until exported references exist.",
+          "notes": "Host Organizer reference is repo-pinned and registered. The standalone-host workspace adds private-to-public publication coaching and cross-event CRM readiness. Its deterministic 2026-08-10 full-shell comparison is bounded at mismatch 20.09%, meanDelta 25.94, maxDelta 240, masked 260416 under HOST-STANDALONE-ORGANIZER-WORKSPACE-001 while the canonical threshold remains unchanged; analytics, payout, and editor variants remain blocked until exported references exist.",
           "path": "design/source_packs/host-v2/templates/hosts-organizer/Organizer.dc.html"
         },
         {
@@ -9691,11 +9691,11 @@
           "id": "organizer_overview",
           "kind": "populated",
           "status": "captured",
-          "source": "Owned clubs now default to the Organizer overview with selected-club header, payout callout, metrics, public page row, team summary, trend strip, and manage rows.",
+          "source": "Owned clubs now default to the standalone organizer workspace with selected-club header and Edit, Insights, and Preview tabs. Edit coaches private operators toward a public Catch page; Insights includes organizer metrics and cross-event CRM readiness; Preview renders the public projection.",
           "tests": [
             "test/hosts/host_operations_screen_test.dart"
           ],
-          "nextAction": "Keep the Organizer overview baseline synced with the Claude host organizer reference; Edit, Insights, and Preview remain covered by their dedicated tab states.",
+          "nextAction": "Keep the standalone organizer capture bounded by HOST-STANDALONE-ORGANIZER-WORKSPACE-001 until a reviewed standalone-host reference replaces or reconciles the older Claude organizer composition.",
           "previewIds": [
             "HostClubsScreen/Route states"
           ],
@@ -10923,8 +10923,8 @@
         },
         {
           "id": "DS-HOST-CLUBS-004",
-          "status": "closed",
-          "nextAction": "The 2026-07-10 production full-shell Organizer comparison is within the aggregate advisory threshold at 12.02% mismatch / 7.79 meanDelta with navigation chrome included. Extra cohost, empty, loading/error/offline, analytics, payout, inline editor, team mutation, text-scale, reduced-motion, and light/dark comparisons depend on future design exports."
+          "status": "open",
+          "nextAction": "HOST-STANDALONE-ORGANIZER-WORKSPACE-001 bounds the 2026-08-10 standalone workspace at 20.09% mismatch / 25.94 meanDelta while preserving the canonical threshold. Replace or reconcile the older organizer reference with a reviewed standalone-host composition before removing the ceiling; extra cohost, empty, loading/error/offline, analytics, payout, inline editor, team mutation, text-scale, reduced-motion, and light/dark comparisons still depend on future design exports."
         },
         {
           "id": "DS-HOST-CLUBS-005",
