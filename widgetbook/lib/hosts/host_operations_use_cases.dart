@@ -123,6 +123,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
+import '../preview_layout_contracts.dart';
+
 final _hostUid = HostOperationsFixtures.hostUid;
 final _club = HostOperationsFixtures.primaryClub;
 final _privateEvent = HostOperationsFixtures.privateEvent;
@@ -1060,7 +1062,10 @@ Widget hostAnalyticsMetricGridSkeletonCatalogStates(BuildContext context) {
     children: [
       _StateCard(
         label: 'two metrics',
-        child: SizedBox(width: 360, child: HostAnalyticsMetricGridSkeleton()),
+        child: SizedBox(
+          width: WidgetbookPreviewLayout.standardContractWidth,
+          child: HostAnalyticsMetricGridSkeleton(),
+        ),
       ),
     ],
   );
@@ -1240,7 +1245,7 @@ Widget _hostAnalyticsPreviewFor(String focus) {
   final report = HostOperationsFixtures.analyticsReport;
   return switch (focus) {
     'CatchAnalyticsBar' => const SizedBox(
-      height: 96,
+      height: WidgetbookPreviewLayout.smallPreviewExtent,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
@@ -7453,7 +7458,10 @@ class _DeviceFrame extends StatelessWidget {
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(CatchRadius.lg),
-            child: SizedBox(height: 720, child: child),
+            child: SizedBox(
+              height: WidgetbookPreviewLayout.paperScaffoldViewportHeight,
+              child: child,
+            ),
           ),
         ),
       ),

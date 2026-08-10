@@ -83,16 +83,6 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookComponent(
-        name: 'CatchAdaptiveTabScaffold',
-        useCases: [
-          _widgetbook.WidgetbookUseCase(
-            name: 'Adaptive placement',
-            builder: _widgetbook_workspace_shell_app_shell_use_cases
-                .catchAdaptiveTabScaffoldState,
-          ),
-        ],
-      ),
-      _widgetbook.WidgetbookComponent(
         name: 'GuestAuthCtaBar',
         useCases: [
           _widgetbook.WidgetbookUseCase(

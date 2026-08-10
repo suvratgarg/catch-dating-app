@@ -13,6 +13,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
+import '../preview_layout_contracts.dart';
+
 @widgetbook.UseCase(
   name: 'Panel states',
   type: UserAnalyticsPanel,
@@ -152,7 +154,7 @@ Widget userAnalyticsBarStates(BuildContext context) {
       _StateCard(
         label: 'range',
         child: SizedBox(
-          height: 96,
+          height: WidgetbookPreviewLayout.smallPreviewExtent,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -357,7 +359,7 @@ class _StateCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return SizedBox(
-      width: 390,
+      width: WidgetbookPreviewLayout.phoneChromeWidth,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -384,7 +386,11 @@ class _DeviceFrame extends StatelessWidget {
         border: Border.all(color: t.line),
         borderRadius: BorderRadius.circular(CatchRadius.lg),
       ),
-      child: SizedBox(width: 390, height: 720, child: child),
+      child: SizedBox(
+        width: WidgetbookPreviewLayout.phoneChromeWidth,
+        height: WidgetbookPreviewLayout.paperScaffoldViewportHeight,
+        child: child,
+      ),
     );
   }
 }

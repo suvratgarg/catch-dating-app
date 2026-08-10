@@ -44,6 +44,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
+import '../preview_layout_contracts.dart';
+
 const _viewerUid = 'widgetbook-club-viewer';
 const _clubId = 'widgetbook-sea-face-social';
 final _now = DateTime(2026, 6, 22, 9);
@@ -278,7 +280,7 @@ Widget clubDetailScreenStates(BuildContext context) {
       _StateCard(
         label: 'loading',
         child: const _DeviceFrame(
-          height: 480,
+          height: WidgetbookPreviewLayout.clubRoutePreviewHeight,
           child: _ClubScreenPreview(
             uid: _viewerUid,
             membership: null,
@@ -290,7 +292,7 @@ Widget clubDetailScreenStates(BuildContext context) {
       _StateCard(
         label: 'missing club',
         child: const _DeviceFrame(
-          height: 480,
+          height: WidgetbookPreviewLayout.clubRoutePreviewHeight,
           child: _ClubScreenPreview(
             uid: _viewerUid,
             membership: null,
@@ -302,7 +304,7 @@ Widget clubDetailScreenStates(BuildContext context) {
       _StateCard(
         label: 'fatal error',
         child: _DeviceFrame(
-          height: 480,
+          height: WidgetbookPreviewLayout.clubRoutePreviewHeight,
           child: _ClubScreenPreview(
             uid: _viewerUid,
             membership: null,
@@ -319,7 +321,7 @@ Widget clubDetailScreenStates(BuildContext context) {
         description:
             'Current generic data-load fallback until explicit offline copy is defined.',
         child: _DeviceFrame(
-          height: 480,
+          height: WidgetbookPreviewLayout.clubRoutePreviewHeight,
           child: _ClubScreenPreview(
             uid: _viewerUid,
             membership: null,
@@ -417,7 +419,10 @@ Widget clubHeroLoadingSkeletonStates(BuildContext context) {
     children: [
       _StateCard(
         label: 'default',
-        child: _DeviceFrame(height: 260, child: ClubHeroLoadingSkeleton()),
+        child: _DeviceFrame(
+          height: WidgetbookPreviewLayout.routeViewportHeight,
+          child: ClubHeroLoadingSkeleton(),
+        ),
       ),
     ],
   );
@@ -466,7 +471,7 @@ Widget clubStatsDividerSkeletonStates(BuildContext context) {
       _StateCard(
         label: 'hairline',
         child: SizedBox(
-          height: 72,
+          height: WidgetbookPreviewLayout.skeletonListItemHeight,
           child: Center(child: ClubStatsDividerSkeleton()),
         ),
       ),
@@ -759,7 +764,7 @@ Widget clubDiscoverListStates(BuildContext context) {
       _StateCard(
         label: 'directory sliver',
         child: _SliverFrame(
-          height: 760,
+          height: WidgetbookPreviewLayout.profilePhonePreviewHeight,
           slivers: [
             ClubDiscoverList(
               clubs: [_club, _minimalClub],
@@ -997,7 +1002,7 @@ Widget organizerPosterArtworkStates(BuildContext context) {
       _StateCard(
         label: 'compact',
         child: SizedBox.square(
-          dimension: 120,
+          dimension: WidgetbookPreviewLayout.clubAvatarPreviewExtent,
           child: OrganizerPosterArtwork(club: _minimalClub, compact: true),
         ),
       ),
@@ -1407,42 +1412,48 @@ Widget clubHeroAppBarStates(BuildContext context) {
       _StateCard(
         label: 'photo polaroid',
         child: _SliverFrame(
-          height: 560,
+          height: WidgetbookPreviewLayout.profileExpandedEditorHeight,
           slivers: [
             ClubHeroAppBar(
               club: _club,
               isHost: false,
               onShareClub: _ignoreShare,
             ),
-            const SliverToBoxAdapter(child: SizedBox(height: 180)),
+            const SliverToBoxAdapter(
+              child: SizedBox(height: WidgetbookPreviewLayout.mediaPanelHeight),
+            ),
           ],
         ),
       ),
       _StateCard(
         label: 'logo masthead',
         child: _SliverFrame(
-          height: 500,
+          height: WidgetbookPreviewLayout.clubExpandedPreviewHeight,
           slivers: [
             ClubHeroAppBar(
               club: _logoOnlyHeroClub,
               isHost: false,
               onShareClub: _ignoreShare,
             ),
-            const SliverToBoxAdapter(child: SizedBox(height: 180)),
+            const SliverToBoxAdapter(
+              child: SizedBox(height: WidgetbookPreviewLayout.mediaPanelHeight),
+            ),
           ],
         ),
       ),
       _StateCard(
         label: 'art polaroid',
         child: _SliverFrame(
-          height: 560,
+          height: WidgetbookPreviewLayout.profileExpandedEditorHeight,
           slivers: [
             ClubHeroAppBar(
               club: _minimalClub,
               isHost: false,
               onShareClub: _ignoreShare,
             ),
-            const SliverToBoxAdapter(child: SizedBox(height: 180)),
+            const SliverToBoxAdapter(
+              child: SizedBox(height: WidgetbookPreviewLayout.mediaPanelHeight),
+            ),
           ],
         ),
       ),
@@ -1463,7 +1474,7 @@ Widget clubHeroModuleStates(BuildContext context) {
       _StateCard(
         label: 'photo polaroid module',
         child: _DeviceFrame(
-          height: 460,
+          height: WidgetbookPreviewLayout.tallRouteViewportHeight,
           child: ClubHeroModule(
             club: _club,
             variant: ClubHeroVariant.poster,
@@ -1477,7 +1488,7 @@ Widget clubHeroModuleStates(BuildContext context) {
       _StateCard(
         label: 'logo masthead module',
         child: _DeviceFrame(
-          height: 420,
+          height: WidgetbookPreviewLayout.feedbackViewportHeight,
           child: ClubHeroModule(
             club: _logoOnlyHeroClub,
             variant: ClubHeroVariant.masthead,
@@ -1491,7 +1502,7 @@ Widget clubHeroModuleStates(BuildContext context) {
       _StateCard(
         label: 'art polaroid module',
         child: _DeviceFrame(
-          height: 420,
+          height: WidgetbookPreviewLayout.feedbackViewportHeight,
           child: ClubHeroModule(
             club: _minimalClub,
             variant: ClubHeroVariant.poster,
@@ -1505,7 +1516,7 @@ Widget clubHeroModuleStates(BuildContext context) {
       _StateCard(
         label: 'full review module',
         child: _DeviceFrame(
-          height: 460,
+          height: WidgetbookPreviewLayout.tallRouteViewportHeight,
           child: ClubHeroModule(
             club: _club,
             variant: ClubHeroVariant.full,
@@ -1605,21 +1616,21 @@ Widget clubScheduleSectionStates(BuildContext context) {
       _StateCard(
         label: 'upcoming events',
         child: _SliverFrame(
-          height: 520,
+          height: WidgetbookPreviewLayout.defaultPhonePreviewHeight,
           slivers: [ClubScheduleSection(events: _events)],
         ),
       ),
       _StateCard(
         label: 'same-day strip',
         child: _SliverFrame(
-          height: 420,
+          height: WidgetbookPreviewLayout.feedbackViewportHeight,
           slivers: [ClubScheduleSection(events: _sameDayScheduleEvents)],
         ),
       ),
       _StateCard(
         label: 'hosted events',
         child: _SliverFrame(
-          height: 420,
+          height: WidgetbookPreviewLayout.feedbackViewportHeight,
           slivers: [
             ClubScheduleSection(events: _sameDayScheduleEvents, isHost: true),
           ],
@@ -1628,14 +1639,14 @@ Widget clubScheduleSectionStates(BuildContext context) {
       _StateCard(
         label: 'empty consumer',
         child: const _SliverFrame(
-          height: 260,
+          height: WidgetbookPreviewLayout.routeViewportHeight,
           slivers: [ClubScheduleSection(events: [])],
         ),
       ),
       _StateCard(
         label: 'empty host',
         child: const _SliverFrame(
-          height: 260,
+          height: WidgetbookPreviewLayout.routeViewportHeight,
           slivers: [ClubScheduleSection(events: [], isHost: true)],
         ),
       ),

@@ -14,6 +14,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
+import '../preview_layout_contracts.dart';
+
 final _filtersProfile = ProfileSurfaceFixtures.viewer.copyWith(
   interestedInGenders: const [Gender.man],
   minAgePreference: 24,
@@ -371,7 +373,10 @@ class _DeviceFrame extends StatelessWidget {
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(CatchRadius.lg),
-            child: SizedBox(height: 720, child: child),
+            child: SizedBox(
+              height: WidgetbookPreviewLayout.paperScaffoldViewportHeight,
+              child: child,
+            ),
           ),
         ),
       ),
