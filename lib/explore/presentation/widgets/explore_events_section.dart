@@ -11,7 +11,6 @@ import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_club_cards.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_event_rows.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_events_status_slivers.dart';
-import 'package:catch_dating_app/explore/presentation/widgets/explore_synthetic_visual_fill.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'
@@ -96,10 +95,7 @@ List<Widget> buildExploreEventsSlivers(
         candidateClubs,
         joinedClubIds: joinedClubIds,
       ).isNotEmpty;
-      final canUseSyntheticVisualFill = shouldUseExploreSyntheticVisualFill;
-      return value.isEmpty &&
-              !hasDiscoverableClubCandidates &&
-              !canUseSyntheticVisualFill
+      return value.isEmpty && !hasDiscoverableClubCandidates
           ? [
               ExploreEventsEmptySliver(
                 state: ExploreEventsEmptyState.from(
@@ -232,32 +228,10 @@ class ExploreFeedContentSliver extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final effectiveCandidateClubs = withDebugSyntheticExploreClubs(
-      candidateClubs,
-      joinedClubIds: joinedClubIds,
-    );
-    final effectiveItems = withDebugSyntheticExploreItems(
-      viewModel.items,
-      seedClubs: [
-        for (final item in viewModel.items) item.club,
-        ...effectiveCandidateClubs,
-      ],
-    );
-    final layoutViewModel = identical(effectiveItems, viewModel.items)
-        ? viewModel
-        : ExploreFeedViewModel(
-            items: effectiveItems,
-            featuredEventId: viewModel.featuredEventId,
-            externalItems: viewModel.externalItems,
-            dateSupplyCounts: viewModel.dateSupplyCounts,
-            isExhaustive: viewModel.isExhaustive,
-            isLoadingMore: viewModel.isLoadingMore,
-            windowRequest: viewModel.windowRequest,
-          );
     final sectionState = ExploreFeedSectionState.from(
       l10n: l10n,
-      viewModel: layoutViewModel,
-      candidateClubs: effectiveCandidateClubs,
+      viewModel: viewModel,
+      candidateClubs: candidateClubs,
       joinedClubIds: joinedClubIds,
       showThisWeekList: showThisWeekList,
       promoteFeaturedItem: promoteFeaturedItem,

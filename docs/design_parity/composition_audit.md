@@ -1,7 +1,7 @@
 ---
 doc_id: composition_audit
-version: 0.1.9
-updated: 2026-08-07
+version: 0.1.10
+updated: 2026-08-11
 owner: design_parity_review
 status: active
 ---
@@ -431,7 +431,8 @@ lexicon.
 
 `buildExploreBodySlivers` as a function returning a flat sliver list —
 documented against nested-group pathologies — is the correct pattern; do
-not widget-ify it. The synthetic visual fill is debug-gated and harmless.
+not widget-ify it. The retired synthetic visual fill must not return: Explore
+uses its real loading, error, empty, and Firestore-backed content states.
 
 ---
 

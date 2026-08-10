@@ -11,7 +11,6 @@ import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_mono_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
-import 'package:catch_dating_app/explore/presentation/widgets/explore_synthetic_visual_fill.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/organizers/organizers.dart';
 import 'package:flutter/material.dart';
@@ -29,11 +28,8 @@ class ExploreOrganizerPosterCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final isSynthetic = isSyntheticExploreClub(club);
     final state = ExploreClubCardState.from(club, l10n: context.l10n);
-    final onTap = isSynthetic || onClubSelected == null
-        ? null
-        : () => onClubSelected!(club);
+    final onTap = onClubSelected == null ? null : () => onClubSelected!(club);
     final card = CatchOrganizerPoster(
       onTap: onTap,
       media: CatchClubCover(club: club),
@@ -75,13 +71,11 @@ class ExploreOrganizerPosterCard extends StatelessWidget {
         ],
       ),
     );
-    final content = isSynthetic
-        ? card
-        : Hero(
-            tag: clubInteractionHeroTag(club.id),
-            transitionOnUserGestures: true,
-            child: Material(color: Colors.transparent, child: card),
-          );
+    final content = Hero(
+      tag: clubInteractionHeroTag(club.id),
+      transitionOnUserGestures: true,
+      child: Material(color: Colors.transparent, child: card),
+    );
     return Semantics(
       key: ValueKey<String>('explore-organizer-${club.id}'),
       container: true,
@@ -107,11 +101,8 @@ class ExploreFeedClubRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final palette = ClubCoverVisualPalette.forClub(context, club);
-    final isSynthetic = isSyntheticExploreClub(club);
     final state = ExploreClubCardState.from(club, l10n: context.l10n);
-    final onTap = isSynthetic || onClubSelected == null
-        ? null
-        : () => onClubSelected!(club);
+    final onTap = onClubSelected == null ? null : () => onClubSelected!(club);
     final card = CatchSurface.card(
       key: ValueKey<String>('explore-club-row-${club.id}'),
       onTap: onTap,
@@ -165,13 +156,7 @@ class ExploreFeedClubRow extends StatelessWidget {
             ),
           ),
           gapW12,
-          Icon(
-            CatchIcons.forwardArrow,
-            size: CatchIcon.md,
-            color: isSynthetic
-                ? t.ink3.withValues(alpha: CatchOpacity.exploreMutedAffordance)
-                : t.ink3,
-          ),
+          Icon(CatchIcons.forwardArrow, size: CatchIcon.md, color: t.ink3),
         ],
       ),
     );
