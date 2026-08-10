@@ -55,4 +55,4 @@ final class CrossPathsFeatureConfigProvider
 }
 
 String _$crossPathsFeatureConfigHash() =>
-    r'd1751deb97ea5212dc6e8bbfd4cfb183f9230d41';
+    r'497f6c67be802edbcd43705597934b8b05b2628b';

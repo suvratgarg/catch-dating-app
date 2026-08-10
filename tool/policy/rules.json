@@ -459,7 +459,7 @@
         "lib/**/*.dart",
         "test/**/*.dart"
       ],
-      "instruction": "When editing Riverpod, Freezed, json_serializable, envied, or other build_runner-backed Dart sources, keep generated outputs from build_runner instead of manually reverting hash/output churn. Prefer running `dart run build_runner watch --delete-conflicting-outputs` during iterative cleanup loops, and stop it only when the user asks or when the session no longer needs codegen.",
+      "instruction": "When editing Riverpod, Freezed, json_serializable, or other build_runner-backed Dart sources, keep generated outputs from build_runner instead of manually reverting hash/output churn. Prefer running `dart run build_runner watch --delete-conflicting-outputs` during iterative cleanup loops, and stop it only when the user asks or when the session no longer needs codegen.",
       "sunset_when": [
         "Code generation is enforced by CI or a repository-local dev daemon"
       ],

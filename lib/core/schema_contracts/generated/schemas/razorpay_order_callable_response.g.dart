@@ -15,6 +15,7 @@ const schemaRazorpayOrderCallableResponseSchema = <String, Object?>{
     'orderId',
     'amount',
     'currency',
+    'keyId',
   ],
   'properties': <String, Object?>{
     'orderId': <String, Object?>{
@@ -30,6 +31,12 @@ const schemaRazorpayOrderCallableResponseSchema = <String, Object?>{
     'currency': <String, Object?>{
       'type': 'string',
       'pattern': '^[A-Z]{3}\$',
+    },
+    'keyId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+      'description': 'Public Razorpay checkout key id from the same server environment that created the order. This is not the secret key.',
     },
   },
 };

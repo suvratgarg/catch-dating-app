@@ -5,10 +5,16 @@
   "description": "Callable response returned by createRazorpayOrder.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["orderId", "amount", "currency"],
+  "required": ["orderId", "amount", "currency", "keyId"],
   "properties": {
     "orderId": {"type": "string", "minLength": 1, "maxLength": 180},
     "amount": {"type": "integer", "minimum": 1, "maximum": 100000000},
-    "currency": {"type": "string", "pattern": "^[A-Z]{3}$"}
+    "currency": {"type": "string", "pattern": "^[A-Z]{3}$"},
+    "keyId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Public Razorpay checkout key id from the same server environment that created the order. This is not the secret key."
+    }
   }
 }

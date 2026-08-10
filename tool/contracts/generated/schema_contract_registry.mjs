@@ -37677,7 +37677,8 @@ export const razorpayOrderCallableResponseSchema = {
   "required": [
     "orderId",
     "amount",
-    "currency"
+    "currency",
+    "keyId"
   ],
   "properties": {
     "orderId": {
@@ -37693,6 +37694,12 @@ export const razorpayOrderCallableResponseSchema = {
     "currency": {
       "type": "string",
       "pattern": "^[A-Z]{3}$"
+    },
+    "keyId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Public Razorpay checkout key id from the same server environment that created the order. This is not the secret key."
     }
   }
 };
