@@ -93,7 +93,8 @@ class HostCrmRepository {
       );
 }
 
-@riverpod
+// keepalive: One callable client repository serves all organizer CRM summaries.
+@Riverpod(keepAlive: true)
 HostCrmRepository hostCrmRepository(Ref ref) =>
     HostCrmRepository(ref.watch(firebaseFunctionsProvider));
 

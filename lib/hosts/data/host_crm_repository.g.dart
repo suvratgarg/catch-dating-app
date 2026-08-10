@@ -26,7 +26,7 @@ final class HostCrmRepositoryProvider
         argument: null,
         retry: null,
         name: r'hostCrmRepositoryProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -54,7 +54,7 @@ final class HostCrmRepositoryProvider
   }
 }
 
-String _$hostCrmRepositoryHash() => r'efe01fb1080174f3cac2274f7323f2313c8e4d08';
+String _$hostCrmRepositoryHash() => r'57853e0668b362f13b2e2578e32747ba5e46db88';
 
 @ProviderFor(hostCrmSummary)
 final hostCrmSummaryProvider = HostCrmSummaryFamily._();
