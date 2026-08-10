@@ -225,6 +225,9 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
   @override
   Widget build(BuildContext context) {
     final club = widget.club;
+    final updateClubMutation = ref.watch(
+      HostClubEditController.updateClubMutation,
+    );
     final mediaMutation = ref.watch(HostClubEditController.updateMediaMutation);
     final mediaPending =
         mediaMutation.isPending ||
@@ -264,6 +267,13 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        if (updateClubMutation.hasError) ...[
+          CatchMutationErrorBanner(
+            mutation: updateClubMutation,
+            errorContext: AppErrorContext.club,
+          ),
+          gapH12,
+        ],
         if (widget.isOwner)
           CatchSection.contained(
             title: context.l10n.hostsHostClubPublicationTitle,
