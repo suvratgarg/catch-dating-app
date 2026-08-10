@@ -9,7 +9,7 @@
     },
     {
       "path": "test/core/catch_primitives_test.dart",
-      "maxLines": 3109
+      "maxLines": 3107
     },
     {
       "path": "test/core/widgets/catch_field/control_test.dart",
@@ -21,7 +21,7 @@
     },
     {
       "path": "test/event_success/event_success_live_screens_test.dart",
-      "maxLines": 3530
+      "maxLines": 3529
     },
     {
       "path": "test/events/event_detail_widgets_test.dart",
@@ -29,11 +29,11 @@
     },
     {
       "path": "test/explore/explore_view_model_test.dart",
-      "maxLines": 2286
+      "maxLines": 2279
     },
     {
       "path": "test/explore/explore_widgets_test.dart",
-      "maxLines": 5506
+      "maxLines": 5495
     },
     {
       "path": "test/hosts/host_create_event_screen_test.dart",
@@ -41,7 +41,7 @@
     },
     {
       "path": "test/hosts/host_operations_screen_test.dart",
-      "maxLines": 2942
+      "maxLines": 2940
     },
     {
       "path": "test/onboarding/onboarding_widgets_test.dart",

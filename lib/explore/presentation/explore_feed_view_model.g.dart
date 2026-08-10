@@ -161,7 +161,7 @@ final class ExploreFeedViewModelProvider
 }
 
 String _$exploreFeedViewModelHash() =>
-    r'b2c93be8c4d638e288dc27c2e1cbdda0f75b3664';
+    r'1c3e917ff8f5af21587f953c938c1a3fbc9e0fa3';
 
 @ProviderFor(exploreRecommendations)
 final exploreRecommendationsProvider = ExploreRecommendationsProvider._();

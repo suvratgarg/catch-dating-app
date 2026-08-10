@@ -38,6 +38,7 @@ import 'package:flutter_test/flutter_test.dart';
 import '../clubs/clubs_test_helpers.dart';
 import '../events/events_test_helpers.dart' as event_test;
 import '../test_pump_helpers.dart';
+import 'explore_device_location_fakes.dart';
 
 final _l10n = AppLocalizationsEn();
 
@@ -2180,17 +2181,8 @@ void main() {
   });
 }
 
-class _FakeDeviceLocation extends DeviceLocation {
-  _FakeDeviceLocation(this.location);
-
-  final LocationCoordinate? location;
-
-  @override
-  Future<LocationCoordinate?> build() async => location;
-
-  @override
-  Future<DeviceLocationRequestResult> request() async =>
-      DeviceLocationRequestResult(location: location);
+class _FakeDeviceLocation extends FakeDeviceLocation {
+  _FakeDeviceLocation(super.location);
 }
 
 class _FakeEventDiscoveryRepository extends Fake

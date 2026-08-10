@@ -33,7 +33,7 @@ final class DeviceLocationProvider
   DeviceLocation create() => DeviceLocation();
 }
 
-String _$deviceLocationHash() => r'1b70b4a19f6bd285d44c43af9a1a125e7db6cb01';
+String _$deviceLocationHash() => r'aaa74a8a7d3ba3197e730d17e6774b1afbd9e77f';
 
 abstract class _$DeviceLocation extends $AsyncNotifier<LocationCoordinate?> {
   FutureOr<LocationCoordinate?> build();

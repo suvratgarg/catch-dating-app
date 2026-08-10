@@ -66,7 +66,7 @@ final class AttendeeProfilesProvider
   }
 }
 
-String _$attendeeProfilesHash() => r'2ac47f000fb0b2cae94e71ed047587c837277957';
+String _$attendeeProfilesHash() => r'ddfad6be352a2f7dbf0b0df7597018b4ff53f254';
 
 final class AttendeeProfilesFamily extends $Family
     with

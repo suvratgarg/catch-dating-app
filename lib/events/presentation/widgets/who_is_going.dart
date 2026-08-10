@@ -5,7 +5,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/presentation/event_attendee_lookup.dart';
+import 'package:catch_dating_app/events/presentation/event_attendee_lookup_controller.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_hype_avatar_stack.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';

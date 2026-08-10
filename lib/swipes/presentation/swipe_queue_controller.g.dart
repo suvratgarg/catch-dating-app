@@ -51,7 +51,7 @@ final class SwipeQueueLoadTimeoutProvider
 }
 
 String _$swipeQueueLoadTimeoutHash() =>
-    r'b9128e41b91528012398a137958e3c6fbae438d1';
+    r'90472c6856bd3cdca7e7e5eac89a3b5c2c8e96d5';
 
 /// **Pattern C: Async state controller**
 ///
