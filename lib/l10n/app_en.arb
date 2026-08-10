@@ -6237,13 +6237,6 @@
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_map_screen"
   },
-  "exploreExploreScreenBodyExploreListScrollView": "explore-list-scroll-view",
-  "@exploreExploreScreenBodyExploreListScrollView": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen.dart (body).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "explore.presentation.explore_screen"
-  },
   "hostsClubHostDefaultsStepLabelAdmissionFormat": "Admission format",
   "@hostsClubHostDefaultsStepLabelAdmissionFormat": {
     "description": "Product copy used by lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart (label).",

@@ -3073,10 +3073,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'no-selected-map-event';
 
   @override
-  String get exploreExploreScreenBodyExploreListScrollView =>
-      'explore-list-scroll-view';
-
-  @override
   String get hostsClubHostDefaultsStepLabelAdmissionFormat =>
       'Admission format';
 
