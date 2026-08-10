@@ -48,101 +48,91 @@ Future<void> runCatchApp({
     isWeb: kIsWeb,
     platform: defaultTargetPlatform,
   )) {
-    late _InitializedCatchServices services;
+    final container = ProviderContainer(observers: [_asyncErrorLogger()]);
+    _AppPackageInfo? appPackageInfo;
     runApp(
-      ProviderScope(
-        child: CatchConsumerBootstrap(
-          initialize: () async {
-            services = await _initializeCatchServices(
-              preloadAppPackageInfo: true,
-            );
-          },
-          initializedAppBuilder: (_) => ProviderScope(
-            overrides: [
-              appAnalyticsProvider.overrideWithValue(services.analytics),
-              errorLoggerProvider.overrideWithValue(services.errorLogger),
-              if (services.appPackageInfo != null)
-                appPackageInfoProvider.overrideWith(
-                  (ref) => services.appPackageInfo!,
-                ),
-            ],
-            observers: [
-              _asyncErrorLogger(
-                errorLogger: services.errorLogger,
-                analytics: services.analytics,
+      UncontrolledProviderScope(
+        container: container,
+        child: _CatchProviderContainerOwner(
+          container: container,
+          child: CatchConsumerBootstrap(
+            initialize: () async {
+              appPackageInfo = await _initializeCatchServices(
+                container: container,
+                preloadAppPackageInfo: true,
+              );
+            },
+            initializedAppBuilder: (_) => ProviderScope(
+              overrides: [
+                if (appPackageInfo != null)
+                  appPackageInfoProvider.overrideWith((ref) => appPackageInfo!),
+              ],
+              child: CatchStartupAnimationScope(
+                consumerWelcomeReelPlayed: true,
+                child: app,
               ),
-            ],
-            child: CatchStartupAnimationScope(
-              consumerWelcomeReelPlayed: true,
-              child: app,
             ),
+            onNativeSplashReady: CatchNativeSplash.remove,
           ),
-          onNativeSplashReady: CatchNativeSplash.remove,
         ),
       ),
     );
     return;
   }
 
-  final services = await _initializeCatchServices(preloadAppPackageInfo: false);
+  final container = ProviderContainer(observers: [_asyncErrorLogger()]);
+  await _initializeCatchServices(
+    container: container,
+    preloadAppPackageInfo: false,
+  );
   runApp(
-    ProviderScope(
-      overrides: [
-        appAnalyticsProvider.overrideWithValue(services.analytics),
-        errorLoggerProvider.overrideWithValue(services.errorLogger),
-      ],
-      observers: [
-        _asyncErrorLogger(
-          errorLogger: services.errorLogger,
-          analytics: services.analytics,
+    UncontrolledProviderScope(
+      container: container,
+      child: _CatchProviderContainerOwner(
+        container: container,
+        child: CatchStartupAnimationScope(
+          consumerWelcomeReelPlayed: false,
+          child: app,
         ),
-      ],
-      child: CatchStartupAnimationScope(
-        consumerWelcomeReelPlayed: false,
-        child: app,
       ),
     ),
   );
 }
 
-AsyncErrorLogger _asyncErrorLogger({
-  required ErrorLogger errorLogger,
-  required AppAnalytics analytics,
-}) {
+AsyncErrorLogger _asyncErrorLogger() {
   return AsyncErrorLogger(
-    errorLogger,
     onBackendOperationFailed:
-        ({
+        (
+          container, {
           required BackendErrorContext context,
           required String errorCode,
           required bool retryable,
           required AppErrorSeverity severity,
         }) {
-          analytics.logBackendOperationFailed(
-            context: context,
-            errorCode: errorCode,
-            retryable: retryable,
-            severity: severity,
-          );
+          container
+              .read(appAnalyticsProvider)
+              .logBackendOperationFailed(
+                context: context,
+                errorCode: errorCode,
+                retryable: retryable,
+                severity: severity,
+              );
         },
   );
 }
 
-typedef _InitializedCatchServices = ({
-  ErrorLogger errorLogger,
-  AppAnalytics analytics,
-  ({String version, String buildNumber})? appPackageInfo,
-});
+typedef _AppPackageInfo = ({String version, String buildNumber});
 
-Future<_InitializedCatchServices> _initializeCatchServices({
+Future<_AppPackageInfo?> _initializeCatchServices({
+  required ProviderContainer container,
   required bool preloadAppPackageInfo,
 }) async {
   await _lockDeviceOrientation();
   final remoteConfigError = await _initializeFirebaseServices();
 
-  final errorLogger = ErrorLogger();
+  final errorLogger = container.read(errorLoggerProvider);
   await errorLogger.initialize();
-  final analytics = AppAnalytics();
+  final analytics = container.read(appAnalyticsProvider);
   await analytics.initialize();
   if (remoteConfigError != null) {
     errorLogger.logError(
@@ -160,13 +150,43 @@ Future<_InitializedCatchServices> _initializeCatchServices({
   final packageInfo = preloadAppPackageInfo
       ? await PackageInfo.fromPlatform()
       : null;
-  return (
-    errorLogger: errorLogger,
-    analytics: analytics,
-    appPackageInfo: packageInfo == null
-        ? null
-        : (version: packageInfo.version, buildNumber: packageInfo.buildNumber),
-  );
+  return packageInfo == null
+      ? null
+      : (version: packageInfo.version, buildNumber: packageInfo.buildNumber);
+}
+
+class _CatchProviderContainerOwner extends StatefulWidget {
+  const _CatchProviderContainerOwner({
+    required this.container,
+    required this.child,
+  });
+
+  final ProviderContainer container;
+  final Widget child;
+
+  @override
+  State<_CatchProviderContainerOwner> createState() =>
+      _CatchProviderContainerOwnerState();
+}
+
+class _CatchProviderContainerOwnerState
+    extends State<_CatchProviderContainerOwner> {
+  @override
+  void didUpdateWidget(covariant _CatchProviderContainerOwner oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.container != widget.container) {
+      oldWidget.container.dispose();
+    }
+  }
+
+  @override
+  void dispose() {
+    widget.container.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }
 
 @visibleForTesting
