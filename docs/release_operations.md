@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.0.12
+version: 2.0.13
 updated: 2026-08-11
 owner: recursive_audit_loop
 status: active
@@ -878,10 +878,10 @@ runners had no reusable development private key, so automatic signing had
 accumulated one unusable API-created certificate per runner. Nineteen verified
 unused development certificates were revoked, the three working human
 Development/Distribution/Developer ID identities were preserved, and dedicated
-CI certificate `7P698XNLRP` was installed in `prod-mobile`. Final flag-free
-producer run `31421907027` used the repaired reusable-keychain path for both
-roles, and exact promotion runs `31423756695` and `31423762426` processed the
-Consumer and Host IPAs as `VALID`. Mobile store distribution still needs
+CI certificate `7P698XNLRP` was installed in `prod-mobile`. Current
+analyzer-clean producer run `31426313812` used the repaired reusable-keychain
+path for both roles, and exact promotion runs `31428492922` and `31428501747`
+processed the Consumer and Host IPAs as `VALID`. Mobile store distribution still needs
 external product-release evidence: current TestFlight group assignment/install
 proof for both roles and Play account verification, enrollment, processing,
 tester, signing-fingerprint, install, and launch proof.
@@ -1600,13 +1600,16 @@ assignment, install, and launch remain separate remote evidence.
 `APP-TARGET-IOS-GITHUB-CUTOVER-001` remains open only until the intended groups,
 installation, and launch proof are recorded in GitHub issue `#218`.
 
-The final flag-free split release is now proven for both roles from the same
-immutable producer authority. Producer run `31421907027` selected source
-`f139bad65070cb3e94c9e812cb812438a2b86ca4`. Consumer promotion run
-`31423756695` uploaded version `1.0.2`, build `202608100000028601`, to App Store
-Connect app `6765646860` and persisted exact claim artifact `9076655935`. Host
-promotion run `31423762426` uploaded version `1.0.1`, the same source-bound build
-number, to app `6778927317` and persisted exact claim artifact `9076730304`.
+The current analyzer-clean split release is proven for both roles from the same
+immutable producer authority. Producer run `31426313812` selected source
+`322195dbe442b9a2e0c452532c7c7de2fe8d58e5` and published authority artifact
+`9078112623`. Consumer promotion run `31428492922` uploaded version `1.0.2`,
+build `202608100000029001`, to App Store Connect app `6765646860`, remote build
+`72f8c59d-9134-4f4f-a5da-e1a21b8ff1a2`, and persisted exact claim artifact
+`9078552767`. Host promotion run `31428501747` uploaded version `1.0.1`, the same
+source-bound build number, to app `6778927317`, remote build
+`34207f68-9c79-40d2-906d-ce0b8e0cdfa5`, and persisted exact claim artifact
+`9078544175`.
 Both postconditions reached `VALID`; neither promotion rebuilt, re-exported, or
 re-signed its producer package. These claims prove upload and processing, not
 TestFlight group assignment or installed-device behavior.
@@ -1800,8 +1803,8 @@ Cutover checklist:
 1. Complete historical evidence: Consumer and Host GitHub uploads and App Store
    processing from the pre-split workflow.
 2. Complete: both legacy Xcode Cloud workflows disabled.
-3. Complete: final flag-free Consumer and Host exact promotions processed in
-   runs `31423756695` and `31423762426` with 90-day exact claims.
+3. Complete: current analyzer-clean Consumer and Host exact promotions processed
+   in runs `31428492922` and `31428501747` with 90-day exact claims.
 4. Record both TestFlight group assignments and install/launch proofs in issue
    `#218`.
 5. Complete the Play owner-verification, app-record, App Signing, tester, and

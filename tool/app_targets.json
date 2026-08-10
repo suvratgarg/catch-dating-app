@@ -537,7 +537,7 @@
     {
       "id": "APP-TARGET-IOS-GITHUB-CUTOVER-001",
       "status": "blocked_external",
-      "reason": "GitHub Actions is the canonical iOS package and exact-promotion owner, the final flag-free Consumer and Host packages processed through the split promoter, and both legacy Xcode Cloud workflows are disabled. Closure is externally blocked only on TestFlight group assignment, install, and launch proof in GitHub issue #218.",
+      "reason": "GitHub Actions is the canonical iOS package and exact-promotion owner, the current analyzer-clean Consumer and Host packages processed through the split promoter, and both legacy Xcode Cloud workflows are disabled. Closure is externally blocked only on TestFlight group assignment, install, and launch proof in GitHub issue #218.",
       "externalPrerequisites": [
         "select and record the intended Consumer and Host internal TestFlight groups",
         "assign the GitHub-processed Consumer and Host builds to those groups",
@@ -548,8 +548,8 @@
         "historical pre-split Mobile Internal Release run 29168074271: Consumer and Host build 202607110000000301 processed VALID",
         "processing receipts bound to Mobile Internal Release run 29168074271",
         "retirement run 29168662623: both app-scoped Default workflows disabled",
-        "final flag-free producer run 31421907027 and Consumer exact promotion run 31423756695: build 202608100000028601 processed VALID with claim artifact 9076655935",
-        "final flag-free producer run 31421907027 and Host exact promotion run 31423762426: build 202608100000028601 processed VALID with claim artifact 9076730304",
+        "current analyzer-clean producer run 31426313812 and Consumer exact promotion run 31428492922: build 202608100000029001 processed VALID with claim artifact 9078552767",
+        "current analyzer-clean producer run 31426313812 and Host exact promotion run 31428501747: build 202608100000029001 processed VALID with claim artifact 9078544175",
         "tester-group assignments",
         "Consumer and Host install/launch smoke proof"
       ]
@@ -568,7 +568,7 @@
       ],
       "playTrack": "qa",
       "removalProof": [
-        "Mobile Internal Release run 31421907027 exact Consumer and Host Android packages retained for 90 days",
+        "Mobile Internal Release run 31426313812 exact Consumer and Host Android packages retained for 90 days under authority artifact 9078112623",
         "promotion runs 31423759477 and 31423765422 failed closed before upload with Package not found and removed credentials",
         "consumer signed AAB processed on Play internal testing",
         "host signed AAB processed on Play internal testing",
