@@ -69,6 +69,15 @@ const affectedIndexCheckoutClosure = [
   "/tool/",
   "/.github/actions/load-toolchain/action.yml",
 ];
+const fastGateCheckoutClosure = [
+  "/.github/actions/load-toolchain/action.yml",
+  "/tool/ci/toolchain.env",
+  "/tool/lib/repo_paths.mjs",
+  "/tool/test/check_flutter_test_size.mjs",
+  "/tool/test/flutter_test_size_baseline.json",
+  "/test/",
+  "/integration_test/",
+];
 
 function namedStep(source, name) {
   const marker = `      - name: ${name}`;
@@ -340,7 +349,10 @@ test("tools fanout selects exactly one affected or full execution path", () => {
     tools,
     /needs\.preflight\.outputs\.tool_mode == 'full'/,
   );
-  assert.match(tools, /- affected-tools\s*\n\s+- tool-buckets/);
+  assert.match(
+    tools,
+    /- affected-tools\s*\n\s+- fast-gates\s*\n\s+- tool-buckets/,
+  );
   assert.match(
     tools,
     /Exactly one affected or full tool execution path must succeed/,
@@ -359,6 +371,62 @@ test("tools fanout selects exactly one affected or full execution path", () => {
   ]) {
     assert.match(tools, new RegExp(`name: ${bucket}`));
   }
+});
+
+test("fast structural ratchets block dependency-heavy full tool buckets", () => {
+  const tools = workflow("tools-ci.yml");
+  const fastJob = tools.match(
+    /  fast-gates:\n(?<body>[\s\S]*?)\n  tool-buckets:/u,
+  )?.groups?.body;
+  assert.ok(fastJob, "fast-gates job must remain present");
+  assert.match(fastJob, /needs: preflight/u);
+  assert.match(
+    fastJob,
+    /if: \$\{\{ needs\.preflight\.outputs\.tool_mode == 'full' \}\}/u,
+  );
+  assert.match(fastJob, /timeout-minutes: 3/u);
+
+  const checkout = namedStep(
+    fastJob,
+    "Checkout fast deterministic gate closure",
+  );
+  assert.deepEqual(literalSparsePaths(checkout), fastGateCheckoutClosure);
+  assert.match(checkout, /timeout-minutes: 2/u);
+  assert.match(checkout, /fetch-depth: 1/u);
+  assert.match(checkout, /sparse-checkout-cone-mode: false/u);
+  assert.match(fastJob, /uses: actions\/setup-node@v6/u);
+
+  const ratchet = namedStep(
+    fastJob,
+    "Enforce Flutter test spec maintainability ratchet",
+  );
+  assert.match(
+    ratchet,
+    /node tool\/test\/check_flutter_test_size\.mjs --check/u,
+  );
+  assert.doesNotMatch(
+    fastJob,
+    /setup-flutter|flutter pub get|npm ci|playwright|apt-get/u,
+  );
+
+  const fullBuckets = tools.match(
+    /  tool-buckets:\n(?<body>[\s\S]*?)\n  tools:/u,
+  )?.groups?.body;
+  assert.ok(fullBuckets, "tool-buckets job must remain present");
+  assert.match(fullBuckets, /- preflight\s*\n\s+- fast-gates/u);
+  assert.match(fullBuckets, /needs\.fast-gates\.result == 'success'/u);
+
+  const resultJob = tools.match(/  tools:\n(?<body>[\s\S]*)$/u)?.groups?.body;
+  assert.ok(resultJob, "tools result job must remain present");
+  assert.match(resultJob, /FAST_GATES_RESULT/u);
+  assert.match(
+    resultJob,
+    /AFFECTED_RESULT.*success.*FAST_GATES_RESULT.*skipped.*BUCKETS_RESULT.*skipped/u,
+  );
+  assert.match(
+    resultJob,
+    /AFFECTED_RESULT.*skipped.*FAST_GATES_RESULT.*success.*BUCKETS_RESULT.*success/u,
+  );
 });
 
 test("tools materialize only the closure required by each repository view", () => {
