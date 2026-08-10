@@ -153,6 +153,7 @@ import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.da
 import 'package:catch_dating_app/launch_access/data/launch_access_repository.dart';
 import 'package:catch_dating_app/launch_access/domain/launch_access_application.dart';
 import 'package:catch_dating_app/launch_access/presentation/launch_access_application_screen.dart';
+import 'package:catch_dating_app/launch_access/presentation/launch_access_controller.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
@@ -7497,6 +7498,35 @@ class _CaptureOnboardingDraftRepository implements OnboardingDraftRepository {
   }
 }
 
+class _LaunchAccessSubmitPendingCapture extends ConsumerStatefulWidget {
+  const _LaunchAccessSubmitPendingCapture({required this.child});
+
+  final Widget child;
+
+  @override
+  ConsumerState<_LaunchAccessSubmitPendingCapture> createState() =>
+      _LaunchAccessSubmitPendingCaptureState();
+}
+
+class _LaunchAccessSubmitPendingCaptureState
+    extends ConsumerState<_LaunchAccessSubmitPendingCapture> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      LaunchAccessController.submitMutation.reset(ref);
+      final completer = Completer<void>();
+      unawaited(
+        LaunchAccessController.submitMutation.run(ref, (_) => completer.future),
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
+}
+
 final screenCaptureCatalog = <ScreenCaptureEntry>[
   ScreenCaptureEntry(
     id: 'profile_self',
@@ -14226,6 +14256,20 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       ).overrideWith((ref) => _captureLoadingStream()),
     ],
     builder: (context) => const LaunchAccessApplicationScreen(),
+  ),
+  ScreenCaptureEntry(
+    id: 'launch_access_submit_pending',
+    routeIds: const <String>['launchAccessScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: [
+      uidProvider.overrideWithValue(const AsyncData(_captureViewerUid)),
+      watchLaunchAccessApplicationProvider(
+        _captureViewerUid,
+      ).overrideWith((ref) => Stream.value(null)),
+    ],
+    builder: (context) => const _LaunchAccessSubmitPendingCapture(
+      child: LaunchAccessApplicationScreen(),
+    ),
   ),
   ScreenCaptureEntry(
     id: 'launch_access_signed_out',

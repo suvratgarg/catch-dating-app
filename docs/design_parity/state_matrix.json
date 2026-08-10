@@ -10724,6 +10724,7 @@
           "captureIds": [
             "launch_access_application",
             "launch_access_loading",
+            "launch_access_submit_pending",
             "launch_access_signed_out",
             "launch_access_error",
             "launch_access_offline",
@@ -10803,7 +10804,8 @@
             {
               "id": "submit_application",
               "kind": "mutation",
-              "status": "tested",
+              "status": "captured",
+              "captureIds": ["launch_access_submit_pending"],
               "tests": [
                 "test/launch_access/launch_access_controller_test.dart",
                 "test/launch_access/launch_access_repository_test.dart"

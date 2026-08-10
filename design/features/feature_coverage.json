@@ -1,7 +1,7 @@
 {
   "$schema": "./feature_coverage.schema.json",
   "version": 1,
-  "updated": "2026-07-23",
+  "updated": "2026-08-10",
   "owner": "product_design_parity",
   "sourceOfTruth": "Exhaustive migration ledger for feature orchestration contracts across registered Flutter screens, marketing routes, and admin route components. A planned entry names its intended shared feature identity; grouped entries are secondary route projections, not independent features.",
   "authorities": [
@@ -47,6 +47,14 @@
       "priority": "P1",
       "reason": "Compiled Cross Paths invitation contract covers invitation decisions, pair-hold booking states, expiry recovery, and confirmed event plans.",
       "featureContract": "feature.cross_paths_invitation"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.launch_access.application",
+      "status": "contracted",
+      "priority": "P2",
+      "reason": "Compiled Launch Access contract covers signed-in eligibility, editable city applications, locked review states, exact provider recovery, Firestore submission, and accessibility variants.",
+      "featureContract": "feature.launch_access"
     },
     {
       "authority": "flutter_screens",
