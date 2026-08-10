@@ -1,6 +1,6 @@
 ---
 doc_id: harness_v2_decision_and_cicd_delivery_plan
-version: 1.2.3
+version: 1.2.4
 updated: 2026-08-10
 owner: agent_operating_model
 status: active
@@ -293,7 +293,7 @@ rather than becoming another repository ledger.
 | JSON Schema compatibility | Reject the evaluated packages. `json-schema-diff@1.0.0` added seven dependencies and deprecated ref parsing; `@philiprehberger/schema-diff@0.2.0` was zero-dependency but produced false positives for safe loosening and false negatives for numeric, object-closure, and referenced-schema tightening. Do not replace those failures with a homegrown checker. |
 | Fastlane | Reject for the current exact-artifact architecture. At most about 205 of 2,737 producer/promoter workflow lines are generic archive/upload mechanics (under 8%); the 40% deletion threshold cannot be met after adding Ruby, Bundler, lockfile, tests, and credential plumbing. The live no-rebuild TestFlight promotion succeeded, so there is no failed distribution boundary for Fastlane to rescue. |
 | Nx and remote task cache | Do not add a second graph or remote cache without the ten-comparable-run prerequisite. Two scheduled runs of the same SHA completed in 19m36s and 19m16s while individual long lanes moved in both directions, which is insufficient evidence for a 40% cache benefit. Native language caches remain the first future experiment. |
-| OpenTofu | Defer declarative infrastructure ownership. The two Cross Paths prerequisites are now live and consistent in all three environments: active TTL plus distinct signing secret with secret-level runtime accessor IAM. The owning Functions were promoted successfully while rollout flags remained fail-closed. This was one bounded launch cutover, not recurring cross-environment drift that justifies another infrastructure authority. |
+| OpenTofu | Defer declarative infrastructure ownership. The two Cross Paths prerequisites are now live and consistent in all three environments: active TTL plus distinct signing secret with secret-level runtime accessor IAM. The owning Functions were promoted successfully under fail-closed rollout switches; after live verification, those temporary client switches were retired and layered consent, event selection, eligibility, and capacity remain the permanent gates. This was one bounded launch cutover, not recurring cross-environment drift that justifies another infrastructure authority. |
 
 ## Measurable Acceptance Criteria
 

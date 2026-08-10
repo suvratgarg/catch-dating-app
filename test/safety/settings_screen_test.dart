@@ -12,8 +12,6 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
-import 'package:catch_dating_app/cross_paths/data/cross_paths_feature_config_provider.dart';
-import 'package:catch_dating_app/cross_paths/domain/cross_paths_feature_config.dart';
 import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
 import 'package:catch_dating_app/public_profile/data/public_profiles_lookup.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
@@ -47,7 +45,7 @@ void main() {
     expect(find.text('No blocked accounts'), findsOneWidget);
     expect(find.byKey(SettingsKeys.showOnMapSwitch), findsOneWidget);
     expect(find.byKey(SettingsKeys.weeklyDigestSwitch), findsOneWidget);
-    expect(find.byKey(SettingsKeys.showInCrossPathsSwitch), findsNothing);
+    expect(find.byKey(SettingsKeys.showInCrossPathsSwitch), findsOneWidget);
     expect(find.text('Edit profile'), findsNothing);
     expect(find.text('Privacy policy'), findsNothing);
     expect(find.text('Terms'), findsNothing);
@@ -57,17 +55,13 @@ void main() {
   });
 
   testWidgets(
-    'shows the private Cross Paths toggle only when rollout enables it',
+    'shows the private Cross Paths toggle as a shipped privacy control',
     (tester) async {
       final userRepository = _FakeSettingsUserProfileRepository();
       final container = _settingsContainer(
         user: buildUser().copyWith(prefsShowInCrossPaths: false),
         blockedUsers: const [],
         userRepository: userRepository,
-        crossPathsConfig: const CrossPathsFeatureConfig(
-          consentControlsEnabled: true,
-          exploreSuggestionsEnabled: false,
-        ),
       );
       addTearDown(container.dispose);
 
@@ -467,12 +461,10 @@ ProviderContainer _settingsContainer({
   AuthRepository? authRepository,
   ExternalUrlLauncher? externalUrlLauncher,
   Map<String, PublicProfile> publicProfiles = const {},
-  CrossPathsFeatureConfig crossPathsConfig = CrossPathsFeatureConfig.disabled,
 }) {
   final container = ProviderContainer(
     overrides: [
       uidProvider.overrideWith((ref) => Stream.value(user.uid)),
-      crossPathsFeatureConfigProvider.overrideWithValue(crossPathsConfig),
       appPackageInfoProvider.overrideWith(
         (ref) async => (version: '1.0.1', buildNumber: '3'),
       ),

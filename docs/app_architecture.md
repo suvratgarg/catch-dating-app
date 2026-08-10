@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.10.0
+version: 1.10.1
 updated: 2026-08-10
 owner: app_architecture
 status: active
@@ -2353,8 +2353,6 @@ still require a sanitized server-owned suggestion response.
 Reference files:
 
 - `lib/cross_paths/cross_paths.dart`
-- `lib/cross_paths/domain/cross_paths_feature_config.dart`
-- `lib/cross_paths/data/cross_paths_feature_config_provider.dart`
 - `lib/cross_paths/data/cross_paths_repository.dart`
 - `lib/cross_paths/domain/cross_paths_suggestion.dart`
 - `lib/explore/presentation/explore_cross_paths_provider.dart`
@@ -2388,14 +2386,12 @@ The Event Detail reference gate is intentionally fail-closed:
 
 ```dart
 final crossPathsEligible = crossPathsEventConsentEligible(
-  rolloutEnabled: crossPathsConfig.consentControlsEnabled,
   event: vm.event,
   participation: vm.participation,
   userProfile: vm.userProfile,
   now: now,
 );
-final crossPathsConsentReadable =
-    crossPathsConfig.consentControlsEnabled && vm.userProfile != null;
+final crossPathsConsentReadable = vm.userProfile != null;
 final crossPathsConsentAsync = crossPathsConsentReadable
     ? ref.watch(
         watchCrossPathsEventConsentProvider(
@@ -2415,9 +2411,9 @@ final crossPathsConsentState = crossPathsEventConsentSectionStateFrom(
 
 Preserve these boundaries in later adopters:
 
-- the shipped Remote Config defaults are true, and configuration read failures
-  return the live client state; this cannot bypass server-owned selected-event,
-  layered-consent, showcase, admission, or safety checks;
+- the client surface is shipped without a rollout flag; this cannot bypass
+  server-owned selected-event, layered-consent, showcase, admission, or safety
+  checks;
 - a missing global field, missing event edge, loading state, or read failure
   never resolves to enabled;
 - a missing/false event switch or a real event outside `in-mh-mumbai` never

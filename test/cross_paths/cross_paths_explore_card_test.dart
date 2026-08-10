@@ -1,9 +1,7 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_polaroid.dart';
-import 'package:catch_dating_app/cross_paths/data/cross_paths_feature_config_provider.dart';
 import 'package:catch_dating_app/cross_paths/data/cross_paths_repository.dart';
-import 'package:catch_dating_app/cross_paths/domain/cross_paths_feature_config.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_invitation.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_suggestion.dart';
 import 'package:catch_dating_app/cross_paths/presentation/cross_paths_explore_card.dart';
@@ -140,9 +138,6 @@ void main() {
       ProviderScope(
         overrides: [
           uidProvider.overrideWith((ref) => Stream.value('viewer-1')),
-          crossPathsFeatureConfigProvider.overrideWith(
-            (ref) => CrossPathsFeatureConfig.live,
-          ),
           watchOutgoingCrossPathsInvitationProvider(
             'viewer-1',
             fixture.suggestion.event.eventId,

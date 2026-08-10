@@ -1,5 +1,5 @@
 {
-  "version": "1.11.0",
+  "version": "1.11.1",
   "updated": "2026-08-10",
   "sourceOfTruth": "docs/app_architecture.md#reference-implementation-workflow",
   "purpose": "Defines architecture reference exhibits, adopter files, candidate status, and back-propagation obligations enforced by architecture checks.",
@@ -1776,8 +1776,6 @@
       "architectureExhibit": "docs/app_architecture.md#exhibit-arch-cross-paths-consent-001-fail-closed-layered-consent",
       "prototypeFiles": [
         "lib/cross_paths/cross_paths.dart",
-        "lib/cross_paths/domain/cross_paths_feature_config.dart",
-        "lib/cross_paths/data/cross_paths_feature_config_provider.dart",
         "lib/cross_paths/data/cross_paths_repository.dart",
         "lib/cross_paths/domain/cross_paths_suggestion.dart",
         "lib/explore/presentation/explore_cross_paths_provider.dart",
@@ -1810,12 +1808,12 @@
         },
         {
           "path": "lib/safety/presentation/settings_screen.dart and lib/safety/presentation/settings_controller.dart",
-          "role": "typed private global-consent control available behind the shipped emergency operational switch",
+          "role": "typed private global-consent control that remains available as a shipped privacy surface",
           "status": "aligned"
         },
         {
           "path": "lib/events/presentation/event_detail_screen.dart and lib/events/presentation/widgets/event_detail_body.dart",
-          "role": "route-owned rollout, caller-scoped consent read, mutation, error listener, state adaptation, and explicit Event Detail composition boundary",
+          "role": "route-owned caller-scoped consent read, mutation, error listener, state adaptation, and explicit Event Detail composition boundary",
           "status": "aligned"
         },
         {
@@ -1894,7 +1892,7 @@
       ],
       "candidateQueue": [],
       "exceptions": [],
-      "requiredBackPropagation": "When Cross Paths consent terms, global preference semantics, event-edge fields, selected-event/market policy, suggestion response/ranking versions, companion inventory/hold/payment semantics, enablement preconditions, rollout flags, revocation behavior, or funnel attribution changes, update the JSON schemas, generated Dart and TypeScript contracts, callable, Firestore rules, Admin event controls, Settings, Explore, Event Detail, Host policy and payment adopters, analytics names, disclosure copy, focused tests, docs/cross_paths.md, and this exhibit in one pass.",
+      "requiredBackPropagation": "When Cross Paths consent terms, global preference semantics, event-edge fields, selected-event/market policy, suggestion response/ranking versions, companion inventory/hold/payment semantics, enablement preconditions, revocation behavior, or funnel attribution changes, update the JSON schemas, generated Dart and TypeScript contracts, callable, Firestore rules, Admin event controls, Settings, Explore, Event Detail, Host policy and payment adopters, analytics names, disclosure copy, focused tests, docs/cross_paths.md, and this exhibit in one pass.",
       "requiredChecks": [
         "./tool/check_data_contract.sh",
         "flutter test test/analytics/app_analytics_test.dart test/cross_paths test/chats/chat_screen_test.dart test/chats/chat_inbox_screen_test.dart test/explore/explore_view_model_test.dart test/safety/settings_screen_test.dart test/events/event_detail_widgets_test.dart test/hosts/host_create_event_state_test.dart test/events/event_booking_controller_test.dart",
@@ -1902,7 +1900,7 @@
         "bash tool/check_catch_ui_lints.sh",
         "node tool/architecture/check_app_architecture_exhibits.mjs"
       ],
-      "notes": "This reference now covers permission storage, Admin-selected Mumbai events, server-owned suggestion resolution, bounded Explore consumption, participant-only invitations, organizer-controlled companion holds, canonical checkout conversion, and temporary event plans. The shipped client switches are on for the pinned synthetic production-QA world; selected events, layered consent, showcase review, admission, and safety remain server-authoritative. Independent legal review plus 20-50 real self-consented members across 2-3 selected events is required before selecting the first real-member cohort."
+      "notes": "This reference now covers permission storage, Admin-selected Mumbai events, server-owned suggestion resolution, bounded Explore consumption, participant-only invitations, organizer-controlled companion holds, canonical checkout conversion, and temporary event plans. Temporary client rollout switches were retired after production activation; selected events, layered consent, showcase review, admission, and safety remain server-authoritative. Independent legal review plus 20-50 real self-consented members across 2-3 selected events is required before selecting the first real-member cohort."
     },
     {
       "id": "ARCH-ENTITY-MATERIAL-001",

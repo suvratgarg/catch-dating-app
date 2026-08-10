@@ -1,6 +1,6 @@
 ---
 doc_id: demo_data_seeding
-version: 1.4.1
+version: 1.4.2
 updated: 2026-08-10
 owner: recursive_audit_loop
 status: active
@@ -863,8 +863,9 @@ manage Auth users but cannot read/update Identity Platform configuration, it
 falls back to the active `gcloud` account; that account must have
 `firebaseauth.configs.get` and `firebaseauth.configs.update` permission.
 
-The shipped Cross Paths client controls are on in the checked-in Remote Config
-template. To exercise a non-production fixture, run the normal Consumer build:
+Cross Paths is part of the normal Consumer client; its temporary Remote Config
+rollout switches have been retired. To exercise a non-production fixture, run
+the normal Consumer build:
 
 ```bash
 ./tool/flutter_with_env.sh dev consumer run \

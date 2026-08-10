@@ -125,24 +125,6 @@
         "value": ""
       },
       "description": "Host App Store URL used once the listing is public."
-    },
-    "cross_paths_enable_consent_controls": {
-      "defaultValue": {
-        "value": "true"
-      },
-      "description": "Keeps shipped Cross Paths privacy and event-consent controls available. Server-selected events, layered member consent, showcase review, and safety checks remain authoritative."
-    },
-    "cross_paths_enable_explore_suggestions": {
-      "defaultValue": {
-        "value": "true"
-      },
-      "description": "Keeps shipped consent-safe Cross Paths suggestions available in Explore. Only server-selected events and eligible opted-in profiles can return suggestions."
-    },
-    "cross_paths_enable_pair_inventory": {
-      "defaultValue": {
-        "value": "true"
-      },
-      "description": "Keeps shipped companion-seat inventory UI available. Organizer policy, event capacity, invitation acceptance, and server-owned hold validation still gate every reservation."
     }
   }
 }
