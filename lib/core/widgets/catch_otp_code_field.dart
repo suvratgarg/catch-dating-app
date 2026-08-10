@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/schema_contracts/catch_contract_field_poli
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_input.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -241,7 +242,7 @@ class CatchOtpCodeField extends StatelessWidget {
           Positioned.fill(
             child: Opacity(
               opacity: CatchOpacity.hiddenInput,
-              child: TextField(
+              child: CatchTextInput(
                 key: inputKey,
                 controller: controller,
                 autofocus: autofocus,

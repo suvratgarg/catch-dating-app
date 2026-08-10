@@ -1527,6 +1527,8 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
   bool _isAllowedPrimitiveRawButtonControl(String typeName) {
     return (_isCatchFieldImplementationPath &&
             (typeName == 'TextField' || typeName == 'TextFormField')) ||
+        (_isCatchTextInputImplementationPath && typeName == 'TextField') ||
+        (_isCatchRangeSliderImplementationPath && typeName == 'RangeSlider') ||
         (_isCatchTextButtonImplementationPath && typeName == 'TextButton');
   }
 
@@ -1938,6 +1940,14 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
 
   bool get _isCatchTextButtonImplementationPath {
     return path.endsWith('/lib/core/widgets/catch_text_button.dart');
+  }
+
+  bool get _isCatchTextInputImplementationPath {
+    return path.endsWith('/lib/core/widgets/catch_text_input.dart');
+  }
+
+  bool get _isCatchRangeSliderImplementationPath {
+    return path.endsWith('/lib/core/widgets/catch_range_slider.dart');
   }
 
   bool get _isCoreWidgetPrimitivePath {
