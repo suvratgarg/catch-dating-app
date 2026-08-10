@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
@@ -130,11 +131,11 @@ class _ChatComposer extends StatelessWidget {
             duration: CatchMotion.fast,
             curve: CatchMotion.standardCurve,
             alignment: Alignment.bottomCenter,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(CatchRadius.pill),
-                boxShadow: CatchElevation.raised,
-              ),
+            child: CatchSurface(
+              tone: CatchSurfaceTone.transparent,
+              radius: CatchRadius.pill,
+              boxShadow: CatchElevation.raised,
+              padding: EdgeInsets.zero,
               child: CatchControlShell(
                 key: ChatInputBar.pillKey,
                 size: CatchControlSize.floating,

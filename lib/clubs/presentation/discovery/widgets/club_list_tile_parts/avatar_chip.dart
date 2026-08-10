@@ -29,16 +29,12 @@ class AvatarChip extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
+              CatchSurface(
                 width: _avatarChipTileSize,
                 height: _avatarChipTileSize,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(CatchRadius.pill),
-                  border: Border.all(
-                    color: showLiveBadge ? t.primary : t.line2,
-                    width: showLiveBadge ? 2 : 1,
-                  ),
-                ),
+                radius: CatchRadius.pill,
+                borderColor: showLiveBadge ? t.primary : t.line2,
+                borderWidth: showLiveBadge ? 2 : 1,
                 padding: CatchInsets.iconChipContentTight,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(CatchRadius.pill),

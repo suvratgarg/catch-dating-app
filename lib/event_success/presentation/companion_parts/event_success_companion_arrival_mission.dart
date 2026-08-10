@@ -191,32 +191,32 @@ class _FirstHelloCheckInCardState extends State<FirstHelloCheckInCard>
                           ? v * 2
                           : (1 - v) * 2) *
                       CatchOpacity.arrivalCelebrationPeak;
-                  return DecoratedBox(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(CatchRadius.sm),
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          CatchEventSuccessColors.arrivalCelebrationWarm
-                              .withValues(alpha: alpha),
-                          CatchEventSuccessColors.arrivalCelebrationHot
-                              .withValues(
-                                alpha:
-                                    alpha *
-                                    CatchOpacity
-                                        .arrivalCelebrationMidMultiplier,
-                              ),
-                          CatchEventSuccessColors.arrivalCelebrationGold
-                              .withValues(
-                                alpha:
-                                    alpha *
-                                    CatchOpacity
-                                        .arrivalCelebrationLowMultiplier,
-                              ),
-                        ],
-                      ),
+                  return CatchSurface(
+                    tone: CatchSurfaceTone.transparent,
+                    radius: CatchRadius.sm,
+                    padding: EdgeInsets.zero,
+                    duration: Duration.zero,
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        CatchEventSuccessColors.arrivalCelebrationWarm
+                            .withValues(alpha: alpha),
+                        CatchEventSuccessColors.arrivalCelebrationHot
+                            .withValues(
+                              alpha:
+                                  alpha *
+                                  CatchOpacity.arrivalCelebrationMidMultiplier,
+                            ),
+                        CatchEventSuccessColors.arrivalCelebrationGold
+                            .withValues(
+                              alpha:
+                                  alpha *
+                                  CatchOpacity.arrivalCelebrationLowMultiplier,
+                            ),
+                      ],
                     ),
+                    child: const SizedBox.expand(),
                   );
                 },
               ),
