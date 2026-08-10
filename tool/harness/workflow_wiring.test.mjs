@@ -104,6 +104,31 @@ test("Flutter UI lint wiring uses one analyzer census and no legacy wrappers", (
   }
 });
 
+test("Flutter analysis covers every pubspec and empty test selections fail closed", () => {
+  const flutter = workflow("flutter-ci.yml");
+  const aggregate = namedStep(flutter, "Analyze every Dart and Flutter package");
+  assert.match(
+    aggregate,
+    /node tool\/ci\/check_flutter_workspace_analysis\.mjs/u,
+  );
+  assert.doesNotMatch(flutter, /flutter analyze/u);
+
+  const shard = namedStep(flutter, "Unit & widget tests");
+  assert.match(shard, /if \[\[ "\$\{count\}" == "0" \]\]; then/u);
+  assert.match(shard, /No test files were selected for shard/u);
+  assert.doesNotMatch(
+    shard,
+    /if \[\[ "\$\{count\}" == "0" \]\]; then\s+exit 0/u,
+  );
+
+  const coverage = namedStep(
+    flutter,
+    "Run unit and widget tests with line coverage",
+  );
+  assert.match(coverage, /No test files were selected for Flutter coverage/u);
+  assert.match(coverage, /exit 1/u);
+});
+
 test("Flutter l10n ratchet derives JSON live and uploads ephemeral evidence", () => {
   const flutter = workflow("flutter-ci.yml");
   const scan = namedStep(
@@ -450,6 +475,34 @@ test("web smoke compiles dev roles without compiling production web", () => {
     builds,
     /inputs\.build_web && contains\(fromJSON\(inputs\.app_roles\), 'host'\)/,
   );
+});
+
+test("app builds fail fast on structure and fan iOS roles out in parallel", () => {
+  const builds = workflow("app-build-matrix.yml");
+  const roleValidation = namedStep(builds, "Validate requested app roles");
+  assert.match(roleValidation, /length > 0/u);
+  assert.match(roleValidation, /\. == "consumer" or \. == "host"/u);
+
+  const structural = namedStep(builds, "Fail-fast app structural gates");
+  for (const checkId of [
+    "audit:dependency-direction",
+    "audit:mutation-error-surfaces",
+    "audit:route-string-literals",
+    "audit:widget-cleanup",
+  ]) {
+    assert.match(structural, new RegExp(checkId, "u"));
+  }
+  assert.ok(
+    builds.indexOf("Fail-fast app structural gates") <
+      builds.indexOf("  ios:"),
+  );
+
+  const ios = builds.slice(builds.indexOf("\n  ios:\n"));
+  assert.match(ios, /name: iOS \$\{\{ matrix\.role \}\} simulator build/u);
+  assert.match(ios, /role: \$\{\{ fromJSON\(inputs\.app_roles\) \}\}/u);
+  assert.match(ios, /if: \$\{\{ matrix\.role == 'consumer' \}\}/u);
+  assert.match(ios, /if: \$\{\{ matrix\.role == 'host' \}\}/u);
+  assert.doesNotMatch(ios, /contains\(fromJSON\(inputs\.app_roles\)/u);
 });
 
 test("mobile release workflow consumes the exact successful CI plan authority", () => {

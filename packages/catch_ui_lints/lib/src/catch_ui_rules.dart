@@ -2251,6 +2251,11 @@ class _MutationErrorSurfaceVisitor extends RecursiveAstVisitor<void> {
   void _addMutationExpression(Expression expression) {
     if (expression is SimpleIdentifier) {
       _addVariable(expression.name);
+      // A watched mutation state can be keyed by a local mutation handle:
+      // `final handle = Controller.mutation(key); final state = ref.watch(handle)`.
+      // The error listener receives that handle, while the state visitor stores
+      // its canonical identifier as the watched expression.
+      mutationExpressions.add(expression.name);
       return;
     }
     final watchedExpression = _watchedMutationExpression(expression);

@@ -64,7 +64,27 @@ jobs:
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
 
-      - run: node tool/run.mjs check platform:app-targets platform:app-package-graphs platform:verify-ios-release-identity
+      - name: Validate requested app roles
+        env:
+          APP_ROLES: ${{ inputs.app_roles }}
+        run: |
+          jq -e '
+            type == "array" and
+            length > 0 and
+            all(.[]; . == "consumer" or . == "host") and
+            (unique | length) == length
+          ' <<< "$APP_ROLES" > /dev/null
+
+      - name: Fail-fast app structural gates
+        run: >-
+          node tool/run.mjs check
+          audit:dependency-direction
+          audit:mutation-error-surfaces
+          audit:route-string-literals
+          audit:widget-cleanup
+
+      - name: Check app target contracts
+        run: node tool/run.mjs check platform:app-targets platform:app-package-graphs platform:verify-ios-release-identity
 
   web:
     name: Web build
@@ -164,11 +184,15 @@ jobs:
         run: ./tool/flutter_with_env.sh dev --role host build apk --debug
 
   ios:
-    name: iOS simulator build
+    name: iOS ${{ matrix.role }} simulator build
     needs: app-targets
     if: ${{ inputs.build_ios }}
     runs-on: macos-26
-    timeout-minutes: 50
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        role: ${{ fromJSON(inputs.app_roles) }}
 
     steps:
       - uses: actions/checkout@v6
@@ -185,7 +209,7 @@ jobs:
       - run: flutter pub get
 
       - name: Verify Host v2 full-shell regression baselines
-        if: ${{ contains(fromJSON(inputs.app_roles), 'host') }}
+        if: ${{ matrix.role == 'host' }}
         run: |
           node tool/ui_capture/run_captures.mjs \
             --ids host_home_dashboard,host_home_events_list,host_inbox_queries,host_clubs_management \
@@ -199,21 +223,21 @@ jobs:
             --strict
 
       - name: Write Consumer dev iOS Maps key
-        if: ${{ contains(fromJSON(inputs.app_roles), 'consumer') }}
+        if: ${{ matrix.role == 'consumer' }}
         env:
           GOOGLE_MAPS_IOS_API_KEY_DEV: ${{ secrets.GOOGLE_MAPS_IOS_API_KEY_DEV }}
         run: ./tool/write_ios_maps_key_xcconfig.sh dev apps/consumer/ios/Flutter/GoogleMapsKeys.xcconfig
 
       - name: Write Host dev iOS Maps key
-        if: ${{ contains(fromJSON(inputs.app_roles), 'host') }}
+        if: ${{ matrix.role == 'host' }}
         env:
           GOOGLE_MAPS_IOS_API_KEY_DEV: ${{ secrets.GOOGLE_MAPS_IOS_API_KEY_DEV }}
         run: ./tool/write_ios_maps_key_xcconfig.sh dev apps/host/ios/Flutter/GoogleMapsKeys.xcconfig
 
       - name: Build dev iOS simulator artifact
-        if: ${{ contains(fromJSON(inputs.app_roles), 'consumer') }}
+        if: ${{ matrix.role == 'consumer' }}
         run: ./tool/flutter_with_env.sh dev build ios --debug --simulator --no-codesign
 
       - name: Build dev host iOS simulator artifact
-        if: ${{ contains(fromJSON(inputs.app_roles), 'host') }}
+        if: ${{ matrix.role == 'host' }}
         run: ./tool/flutter_with_env.sh dev --role host build ios --debug --simulator --no-codesign
