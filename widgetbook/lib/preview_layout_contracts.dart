@@ -1,0 +1,101 @@
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+
+/// Semantic geometry used only to make Widgetbook contract states reviewable.
+///
+/// Product widgets continue to own their responsive layout. These values bound
+/// a preview canvas or deliberately exercise truncation at a named width; they
+/// must not leak into application UI as a second design-token scale.
+abstract final class WidgetbookPreviewLayout {
+  static const double compactLabelWidth = 152;
+  static const double compactBadgeWidth = 124;
+  static const double scaledStatusWidth = 220;
+  static const double fullWidthButtonWidth = 220;
+  static const double passiveChipTruncationWidth = 150;
+  static const double activityChipTruncationWidth = 160;
+  static const double standardContractWidth = 360;
+  static const double wideContractWidth = 420;
+  static const double mediumComponentWidth = 280;
+  static const double compactComponentWidth = 260;
+  static const double narrowComponentWidth = 180;
+  static const double compactControlWidth = 160;
+  static const double compactItemWidth = 96;
+  static const double phoneChromeWidth = 390;
+  static const double dockFrameWidth = 430;
+  static const double fieldLeadingWidth = CatchSpacing.s12;
+  static const double fieldContentClampWidth = 180;
+  static const double fieldActionBarWrapWidth = 190;
+  static const double fieldFocusTargetWidth = 120;
+  static const double fieldFocusTargetHeight = 44;
+  static const double controlShellWidth = 180;
+  static const double surfaceCardWidth = 220;
+  static const double metricStripLongCopyWidth = 260;
+  static const double metricStripCellWidth = 112;
+  static const double catalogCardWidth = 136;
+  static const double catalogRailWidth = 320;
+  static const double eventDetailPreviewWidth = 320;
+  static const double catalogExpandedRailWidth = 340;
+  static const double catalogSheetGrabberWidth = CatchSpacing.s16;
+  static const double catalogSheetGrabberHeight = 5;
+
+  static const double stateViewportHeight = 220;
+  static const double insetPreviewHeight = 160;
+  static const double sliverPreviewHeight = 320;
+  static const double routeViewportHeight = 260;
+  static const double startupViewportHeight = 360;
+  static const double bodyFrameExtent = 360;
+  static const double compactPanelHeight = 140;
+  static const double mediaPanelHeight = 180;
+  static const double tallNarrowPanelHeight = 240;
+  static const double thumbnailWidth = 148;
+  static const double thumbnailHeight = 104;
+  static const double mediaPanelWidth = 340;
+  static const double avatarPreviewExtent = 56;
+  static const double navigationBarHeight = 56;
+  static const double photoLikePanelHeight = 132;
+  static const double surfaceSpecWidth = 188;
+  static const double compactCardHeight = 130;
+  static const double catalogThumbnailHeight = 112;
+  static const double catalogFeaturePanelHeight = 172;
+  static const double tallRouteViewportHeight = 460;
+  static const double feedbackViewportHeight = 420;
+  static const double catalogRailHeight = 128;
+  static const double catalogSliverSpacerHeight = 120;
+  static const double celebrationViewportHeight = 640;
+  static const double paperCelebrationViewportHeight = 740;
+  static const double paperScaffoldViewportHeight = 720;
+  static const double phonePreviewCornerRadius = CatchSpacing.s7;
+  static const double defaultPhonePreviewHeight = 520;
+
+  static const double skeletonCardHeight = 84;
+  static const double skeletonBoxWidth = 96;
+  static const double skeletonTextWidth = 180;
+  static const double skeletonCircleExtent = CatchSpacing.s12;
+  static const double skeletonCustomHeight = CatchSpacing.s10;
+  static const double skeletonListItemHeight = 72;
+
+  static const double loadingIndicatorExtent = CatchSpacing.s12;
+  static const double loadingIndicatorSmallExtent = CatchSpacing.s8;
+  static const double loadingSlotHeight = 80;
+
+  static const double kickerTruncationWidth = 120;
+  static const double monoLabelTruncationWidth = 110;
+
+  static const double clubCoverWidth = 280;
+  static const double clubCoverHeight = 180;
+  static const double clubCoverCompactExtent = 72;
+
+  static const double activityArtPairWidth = 180;
+  static const double activityArtPairHeight = 96;
+  static const double activityArtCustomWidth = 280;
+  static const double activityArtCustomHeight = 88;
+
+  static const double networkIconExtent = 128;
+  static const double networkLandscapeWidth = 220;
+  static const double networkLandscapeHeight = 124;
+  static const double networkFallbackExtent = 96;
+
+  static const double distanceRingLongLabelWidth = 150;
+  static const double codeInputWidth = 320;
+  static const double codeInputShortWidth = 240;
+  static const double codeInputCellWidth = CatchSpacing.s16;
+}
