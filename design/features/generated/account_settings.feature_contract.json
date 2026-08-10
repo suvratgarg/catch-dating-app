@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/account_settings.feature.json",
   "generatedFor": "2026-08-05",
-  "sourceDigest": "sha256:4e879e7fb4b342b3693e495c026c5dc25080e48ecd4c94bdad23ae161de40db7",
+  "sourceDigest": "sha256:303b25fbc307b84eb1a012446807bda3b0939a501847f786869cea3122e97904",
   "resolvedDigest": "sha256:500bf37173807343555a5ccfd6434e7a87fcf5a5aed673ac8cc71a505111e2ca",
   "feature": {
     "id": "feature.account_settings",
@@ -34,8 +34,7 @@
       "actionScope": {
         "included": "Profile and blocked-account recovery; review/payment history and host-app navigation; bounded preference changes; unblock, delete-account, and sign-out mutations; and configured privacy, support, and terms links.",
         "excluded": [
-          "Phone, email, version, visibility-copy, blocked-count, profile formatting, and blocked-profile enrichment are display projections rather than user actions.",
-          "Developer-only policy, Event Success, and manual-QA lab routes are configuration-gated diagnostics rather than Account Settings product actions."
+          "Phone, email, version, visibility-copy, blocked-count, profile formatting, and blocked-profile enrichment are display projections rather than user actions."
         ]
       },
       "bindings": {

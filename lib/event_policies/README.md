@@ -6,6 +6,8 @@ status: active
 
 Status: live. The policy engine is wired into Host defaults, event creation and
 editing, event detail, booking, payment, cancellation, and settlement.
+The former standalone policy lab is gone; review and QA use those production
+surfaces and their focused tests.
 
 This folder is intentional app code. Do not delete `lib/event_policies/**` or
 `test/event_policies/**` as dead code during cleanup passes.

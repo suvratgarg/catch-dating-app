@@ -2165,8 +2165,7 @@ abstract final class CatchLayout {
   static const double clubMemberSealExtent = 70.0;
   static const double countryCodeSelectorWidth = 136.0;
   static const double activityLoadingIndicatorExtent = CatchIcon.md;
-  static const double eventSuccessLabStepMarkerExtent = 34.0;
-  static const double eventPolicyLabScenarioCardWidth = 220.0;
+  static const double analyticsMetricPreviewWidth = 220.0;
   static const double rosterFilterTileMinHeight = 56.0;
   // Shared roster board (design-system components/hosting/RosterBoard).
   static const double rosterRowAvatarExtent = 32.0;
