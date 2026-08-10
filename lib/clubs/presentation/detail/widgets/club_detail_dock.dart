@@ -82,7 +82,20 @@ class ClubDetailDock extends StatelessWidget {
                 DockCount(members: members!, label: membersLabel),
                 const SizedBox(width: CatchSpacing.s3),
               ],
-              ..._controls(context, activity),
+              _ClubDetailDockControls(
+                state: state,
+                activity: activity,
+                notificationsEnabled: notificationsEnabled,
+                joinKey: joinKey,
+                manageKey: manageKey,
+                isJoinLoading: isJoinLoading,
+                isBellLoading: isBellLoading,
+                onJoin: onJoin,
+                onSignIn: onSignIn,
+                onBell: onBell,
+                onManage: onManage,
+                onCreate: onCreate,
+              ),
             ],
           ),
           if (footnote != null && footnote!.isNotEmpty) ...[
@@ -100,79 +113,104 @@ class ClubDetailDock extends StatelessWidget {
       ),
     );
   }
+}
 
-  List<Widget> _controls(BuildContext context, CatchActivity activity) {
-    switch (state) {
-      case ClubDetailDockRole.guest:
-        return [
-          Expanded(
-            child: CatchButton(
-              label: context.l10n.clubsClubDetailDockLabelSignInToJoin,
-              icon: Icon(CatchIcons.lockOutlineRounded),
-              onPressed: onSignIn,
-              fullWidth: true,
+class _ClubDetailDockControls extends StatelessWidget {
+  const _ClubDetailDockControls({
+    required this.state,
+    required this.activity,
+    required this.notificationsEnabled,
+    required this.joinKey,
+    required this.manageKey,
+    required this.isJoinLoading,
+    required this.isBellLoading,
+    required this.onJoin,
+    required this.onSignIn,
+    required this.onBell,
+    required this.onManage,
+    required this.onCreate,
+  });
+
+  final ClubDetailDockRole state;
+  final CatchActivity activity;
+  final bool notificationsEnabled;
+  final Key? joinKey;
+  final Key? manageKey;
+  final bool isJoinLoading;
+  final bool isBellLoading;
+  final VoidCallback? onJoin;
+  final VoidCallback? onSignIn;
+  final VoidCallback? onBell;
+  final VoidCallback? onManage;
+  final VoidCallback? onCreate;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: switch (state) {
+        ClubDetailDockRole.guest => CatchButton(
+          label: context.l10n.clubsClubDetailDockLabelSignInToJoin,
+          icon: Icon(CatchIcons.lockOutlineRounded),
+          onPressed: onSignIn,
+          fullWidth: true,
+        ),
+        ClubDetailDockRole.visitor => CatchButton(
+          key: joinKey,
+          label: context.l10n.clubsClubDetailDockLabelJoinClub,
+          icon: Icon(CatchIcons.add),
+          accentColor: activity.accent,
+          isLoading: isJoinLoading,
+          onPressed: onJoin,
+          fullWidth: true,
+        ),
+        ClubDetailDockRole.member => Row(
+          children: [
+            DockBell(
+              active: notificationsEnabled,
+              accent: activity.accent,
+              isLoading: isBellLoading,
+              onPressed: onBell,
             ),
-          ),
-        ];
-      case ClubDetailDockRole.visitor:
-        return [
-          Expanded(
-            child: CatchButton(
-              key: joinKey,
-              label: context.l10n.clubsClubDetailDockLabelJoinClub,
-              icon: Icon(CatchIcons.add),
-              accentColor: activity.accent,
-              isLoading: isJoinLoading,
-              onPressed: onJoin,
-              fullWidth: true,
+            const SizedBox(width: CatchSpacing.s3),
+            Expanded(
+              child: CatchButton(
+                key: manageKey,
+                label: context.l10n.clubsClubDetailDockLabelJoined,
+                icon: Icon(CatchIcons.checkCircle),
+                variant: CatchButtonVariant.secondary,
+                isLoading: isJoinLoading,
+                onPressed: onManage,
+                fullWidth: true,
+              ),
             ),
-          ),
-        ];
-      case ClubDetailDockRole.member:
-        return [
-          DockBell(
-            active: notificationsEnabled,
-            accent: activity.accent,
-            isLoading: isBellLoading,
-            onPressed: onBell,
-          ),
-          const SizedBox(width: CatchSpacing.s3),
-          Expanded(
-            child: CatchButton(
-              key: manageKey,
-              label: context.l10n.clubsClubDetailDockLabelJoined,
-              icon: Icon(CatchIcons.checkCircle),
-              variant: CatchButtonVariant.secondary,
-              isLoading: isJoinLoading,
-              onPressed: onManage,
-              fullWidth: true,
+          ],
+        ),
+        ClubDetailDockRole.owner => Row(
+          children: [
+            Expanded(
+              child: CatchButton(
+                label: context.l10n.clubsClubDetailDockLabelManage,
+                icon: Icon(CatchIcons.settingsOutlined),
+                variant: CatchButtonVariant.secondary,
+                onPressed: onManage,
+                fullWidth: true,
+              ),
             ),
-          ),
-        ];
-      case ClubDetailDockRole.owner:
-        return [
-          Expanded(
-            child: CatchButton(
-              label: context.l10n.clubsClubDetailDockLabelManage,
-              icon: Icon(CatchIcons.settingsOutlined),
-              variant: CatchButtonVariant.secondary,
-              onPressed: onManage,
-              fullWidth: true,
+            const SizedBox(width: CatchSpacing.s3),
+            Expanded(
+              flex: 2,
+              child: CatchButton(
+                label: context.l10n.clubsClubDetailDockLabelNewEvent,
+                icon: Icon(CatchIcons.add),
+                accentColor: activity.accent,
+                onPressed: onCreate,
+                fullWidth: true,
+              ),
             ),
-          ),
-          const SizedBox(width: CatchSpacing.s3),
-          Expanded(
-            flex: 2,
-            child: CatchButton(
-              label: context.l10n.clubsClubDetailDockLabelNewEvent,
-              icon: Icon(CatchIcons.add),
-              accentColor: activity.accent,
-              onPressed: onCreate,
-              fullWidth: true,
-            ),
-          ),
-        ];
-    }
+          ],
+        ),
+      },
+    );
   }
 }
 

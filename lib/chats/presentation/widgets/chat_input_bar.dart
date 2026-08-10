@@ -71,17 +71,55 @@ class _ChatInputBarState extends State<ChatInputBar> {
   Widget build(BuildContext context) {
     return ValueListenableBuilder<TextEditingValue>(
       valueListenable: widget.controller,
-      builder: (context, value, _) => _buildComposer(context, value),
+      builder: (context, value, _) => _ChatComposer(
+        value: value,
+        controller: widget.controller,
+        focusNode: _focusNode,
+        sending: widget.sending,
+        sendingImage: widget.sendingImage,
+        disabledReason: widget.disabledReason,
+        showImageButton: widget.showImageButton,
+        autofocus: widget.autofocus,
+        onSend: widget.onSend,
+        onSendImage: widget.onSendImage,
+      ),
     );
   }
+}
 
-  Widget _buildComposer(BuildContext context, TextEditingValue value) {
+class _ChatComposer extends StatelessWidget {
+  const _ChatComposer({
+    required this.value,
+    required this.controller,
+    required this.focusNode,
+    required this.sending,
+    required this.sendingImage,
+    required this.disabledReason,
+    required this.showImageButton,
+    required this.autofocus,
+    required this.onSend,
+    required this.onSendImage,
+  });
+
+  final TextEditingValue value;
+  final TextEditingController controller;
+  final FocusNode focusNode;
+  final bool sending;
+  final bool sendingImage;
+  final String? disabledReason;
+  final bool showImageButton;
+  final bool autofocus;
+  final VoidCallback? onSend;
+  final VoidCallback? onSendImage;
+
+  @override
+  Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final hardDisabled = widget.disabledReason != null || widget.onSend == null;
+    final hardDisabled = disabledReason != null || onSend == null;
     final hasMessage = value.text.trim().isNotEmpty;
     final imageActionEnabled =
-        !hardDisabled && !widget.sendingImage && widget.onSendImage != null;
-    final sendActionEnabled = !hardDisabled && !widget.sending && hasMessage;
+        !hardDisabled && !sendingImage && onSendImage != null;
+    final sendActionEnabled = !hardDisabled && !sending && hasMessage;
 
     return TextFieldTapRegion(
       child: SafeArea(
@@ -102,7 +140,7 @@ class _ChatInputBarState extends State<ChatInputBar> {
                 size: CatchControlSize.floating,
                 shape: CatchControlShape.pill,
                 enabled: !hardDisabled,
-                focused: !hardDisabled && _focusNode.hasFocus,
+                focused: !hardDisabled && focusNode.hasFocus,
                 // BoxDecoration includes its border dimensions in Container
                 // padding. Subtract the stroke so the visible outer inset is
                 // exactly s2 on every edge.
@@ -112,18 +150,18 @@ class _ChatInputBarState extends State<ChatInputBar> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    if (widget.showImageButton)
+                    if (showImageButton)
                       CatchIconButton(
                         key: ChatInputBar.imageButtonKey,
                         background: t.surface,
                         borderColor: t.line2,
-                        disabled: !widget.sendingImage && !imageActionEnabled,
-                        onTap: imageActionEnabled ? widget.onSendImage : null,
-                        tooltip: widget.sendingImage
+                        disabled: !sendingImage && !imageActionEnabled,
+                        onTap: imageActionEnabled ? onSendImage : null,
+                        tooltip: sendingImage
                             ? context.l10n.chatsChatInputBarLabelUploadingImage
                             : context.l10n.chatsChatInputBarMessageSendAnImage,
-                        liveRegion: widget.sendingImage,
-                        child: widget.sendingImage
+                        liveRegion: sendingImage,
+                        child: sendingImage
                             ? SizedBox.square(
                                 dimension: CatchIcon.control,
                                 child: CatchLoadingIndicator(
@@ -137,36 +175,36 @@ class _ChatInputBarState extends State<ChatInputBar> {
                                 color: t.ink2,
                               ),
                       ),
-                    if (widget.showImageButton) gapW8,
+                    if (showImageButton) gapW8,
                     Expanded(
                       child: GestureDetector(
                         key: ChatInputBar.fieldLaneKey,
                         behavior: HitTestBehavior.opaque,
-                        onTap: hardDisabled ? null : _focusNode.requestFocus,
+                        onTap: hardDisabled ? null : focusNode.requestFocus,
                         child: CatchFieldLanes.single(
                           child: CatchField.input(
                             title: context.l10n.chatsChatInputBarTitleMessage,
                             contract: CatchContractConstraints
                                 .createChatMessageClientWriteDataText,
                             showLabel: false,
-                            controller: widget.controller,
-                            focusNode: _focusNode,
+                            controller: controller,
+                            focusNode: focusNode,
                             retainFocusOnSubmitted: true,
                             textCapitalization: TextCapitalization.sentences,
                             textInputAction: TextInputAction.send,
                             minLines: 1,
                             maxLines: 4,
                             inputHint:
-                                widget.disabledReason ??
+                                disabledReason ??
                                 context
                                     .l10n
                                     .chatsChatInputBarPlaceholderMessage,
                             size: CatchFieldSize.floating,
                             variant: CatchFieldVariant.bare,
                             enabled: !hardDisabled,
-                            autofocus: widget.autofocus,
+                            autofocus: autofocus,
                             onSubmitted: (_) {
-                              if (sendActionEnabled) widget.onSend?.call();
+                              if (sendActionEnabled) onSend?.call();
                             },
                           ),
                         ),
@@ -177,13 +215,13 @@ class _ChatInputBarState extends State<ChatInputBar> {
                       key: ChatInputBar.sendButtonKey,
                       variant: CatchIconButtonVariant.plain,
                       background: t.ink,
-                      disabled: !widget.sending && !sendActionEnabled,
-                      onTap: sendActionEnabled ? widget.onSend : null,
-                      tooltip: widget.sending
+                      disabled: !sending && !sendActionEnabled,
+                      onTap: sendActionEnabled ? onSend : null,
+                      tooltip: sending
                           ? context.l10n.chatsChatInputBarLabelSendingMessage
                           : context.l10n.chatsChatInputBarMessageSendMessage,
-                      liveRegion: widget.sending,
-                      child: widget.sending
+                      liveRegion: sending,
+                      child: sending
                           ? SizedBox.square(
                               dimension: CatchIcon.control,
                               child: CatchLoadingIndicator(

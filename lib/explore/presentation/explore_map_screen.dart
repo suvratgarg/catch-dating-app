@@ -316,7 +316,11 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
                   duration: _mapCardMotionDuration(context),
                   switchInCurve: CatchMotion.easeOutCubicCurve,
                   switchOutCurve: CatchMotion.easeInCubicCurve,
-                  transitionBuilder: _selectedCardTransition,
+                  transitionBuilder: (child, animation) =>
+                      _ExploreSelectedCardTransition(
+                        animation: animation,
+                        child: child,
+                      ),
                   child: selectedItem == null && selectedExternalItem == null
                       ? SizedBox.shrink(
                           key: ValueKey<String>(
@@ -551,17 +555,28 @@ class _ExploreMapSelectedEventCard extends StatelessWidget {
   }
 }
 
-Widget _selectedCardTransition(Widget child, Animation<double> animation) {
-  final offsetAnimation = animation.drive(
-    Tween<Offset>(
-      begin: const Offset(0, 0.08),
-      end: Offset.zero,
-    ).chain(CurveTween(curve: CatchMotion.easeOutCubicCurve)),
-  );
-  return FadeTransition(
-    opacity: animation,
-    child: SlideTransition(position: offsetAnimation, child: child),
-  );
+class _ExploreSelectedCardTransition extends StatelessWidget {
+  const _ExploreSelectedCardTransition({
+    required this.animation,
+    required this.child,
+  });
+
+  final Animation<double> animation;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final offsetAnimation = animation.drive(
+      Tween<Offset>(
+        begin: const Offset(0, 0.08),
+        end: Offset.zero,
+      ).chain(CurveTween(curve: CatchMotion.easeOutCubicCurve)),
+    );
+    return FadeTransition(
+      opacity: animation,
+      child: SlideTransition(position: offsetAnimation, child: child),
+    );
+  }
 }
 
 Duration _mapCardMotionDuration(BuildContext context) {
