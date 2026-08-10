@@ -9,9 +9,16 @@ import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'event_booking_controller.g.dart';
+
+final eventPaidBookingSupportProvider = Provider.family<bool, String>(
+  (ref, currency) => ref
+      .watch(paymentRepositoryProvider)
+      .supportsPaidBookingsForCurrency(currency),
+);
 
 /// **Pattern A: Action controller + static Mutations**
 ///

@@ -58,6 +58,18 @@ Future<void> pumpFeatureUi(WidgetTester tester) async {
   );
 }
 
+/// Pumps until a specific semantic surface appears, without requiring every
+/// animation on that surface to become idle.
+Future<void> pumpUntilFound(WidgetTester tester, Finder finder) async {
+  for (var frame = 0; frame < _maximumFeatureTestFrames; frame += 1) {
+    await tester.pump(frame == 0 ? Duration.zero : _featureTestFrame);
+    if (finder.evaluate().isNotEmpty) return;
+  }
+  throw TestFailure(
+    'Expected $finder after $_maximumFeatureTestFrames deterministic frames.',
+  );
+}
+
 /// Advances a known animation/clock interval while keeping raw duration pumps
 /// out of individual feature tests.
 Future<void> pumpFeatureUiFor(WidgetTester tester, Duration duration) async {

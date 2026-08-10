@@ -10,7 +10,6 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/payments/data/host_payment_account_repository.dart';
 import 'package:catch_dating_app/payments/domain/host_payment_account.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class HostPaymentAccountControllerCard extends ConsumerWidget {
@@ -37,6 +36,18 @@ class HostPaymentAccountControllerCard extends ConsumerWidget {
     final refreshMutation = ref.watch(
       HostPaymentAccountController.refreshStatusMutation,
     );
+    final failedMutation = onboardingMutation.hasError
+        ? onboardingMutation
+        : refreshMutation.hasError
+        ? refreshMutation
+        : null;
+    final actionErrorMessage = failedMutation == null
+        ? null
+        : mutationErrorMessage(
+            failedMutation,
+            l10n: context.l10n,
+            context: AppErrorContext.payments,
+          );
 
     Future<void> startOnboarding({
       required String country,
@@ -45,9 +56,7 @@ class HostPaymentAccountControllerCard extends ConsumerWidget {
       final failureReason = context
           .l10n
           .hostsHostPaymentAccountControllerCardVisiblecopyHostpaymentaccountcontrollercardStartonboardingFailed;
-      if (ref
-          .read(HostPaymentAccountController.startOnboardingMutation)
-          .isPending) {
+      if (onboardingMutation.isPending) {
         return;
       }
       try {
@@ -68,9 +77,7 @@ class HostPaymentAccountControllerCard extends ConsumerWidget {
       final failureReason = context
           .l10n
           .hostsHostPaymentAccountControllerCardVisiblecopyHostpaymentaccountcontrollercardRefreshFailed;
-      if (ref
-          .read(HostPaymentAccountController.refreshStatusMutation)
-          .isPending) {
+      if (refreshMutation.isPending) {
         return;
       }
       try {
@@ -100,34 +107,12 @@ class HostPaymentAccountControllerCard extends ConsumerWidget {
       builder: (context, account) => HostPaymentAccountCard(
         club: club,
         account: account,
-        actionErrorMessage: _firstActionErrorMessage(
-          onboardingMutation,
-          refreshMutation,
-          context,
-        ),
+        actionErrorMessage: actionErrorMessage,
         onboardingPending: onboardingMutation.isPending,
         refreshPending: refreshMutation.isPending,
         onStartOnboarding: startOnboarding,
         onRefresh: refresh,
       ),
-    );
-  }
-
-  String? _firstActionErrorMessage(
-    MutationState onboardingMutation,
-    MutationState refreshMutation,
-    BuildContext context,
-  ) {
-    final failedMutation = onboardingMutation.hasError
-        ? onboardingMutation
-        : refreshMutation.hasError
-        ? refreshMutation
-        : null;
-    if (failedMutation == null) return null;
-    return mutationErrorMessage(
-      failedMutation,
-      l10n: context.l10n,
-      context: AppErrorContext.payments,
     );
   }
 }

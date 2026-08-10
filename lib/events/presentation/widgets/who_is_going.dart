@@ -5,10 +5,10 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/presentation/event_attendee_lookup.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_hype_avatar_stack.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
 import 'package:flutter/material.dart';
@@ -26,8 +26,8 @@ Future<Map<String, (String name, String? photoUrl)>> attendeeProfiles(
 ) async {
   if (uids.isEmpty) return {};
   final profiles = await ref
-      .watch(publicProfileRepositoryProvider)
-      .fetchPublicProfiles(uids);
+      .watch(eventAttendeeLookupProvider)
+      .fetchProfiles(uids);
   return {
     for (final profile in profiles)
       profile.uid: (profile.name, profile.primaryPhotoThumbnailUrl),

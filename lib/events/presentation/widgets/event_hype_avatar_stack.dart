@@ -30,9 +30,9 @@ Future<List<CatchPersonAvatarItem>> eventHypeAvatars(
   Ref ref,
   EventHypeAvatarQuery query,
 ) async {
-  final profiles = await ref
-      .watch(swipeCandidateRepositoryProvider)
-      .fetchCandidates(eventId: query.eventId);
+  final profiles = await ref.watch(
+    swipeCandidatesProvider(query.eventId).future,
+  );
   return profiles
       .take(query.limit)
       .map(

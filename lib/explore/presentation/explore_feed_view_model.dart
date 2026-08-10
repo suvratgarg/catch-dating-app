@@ -497,7 +497,12 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
       discoveryWindowAsync.stackTrace ?? StackTrace.current,
     );
   }
-  final discoveryWindow = discoveryWindowAsync.requireValue;
+  final discoveryWindow = switch (discoveryWindowAsync) {
+    AsyncData(:final value) => value,
+    _ => throw StateError(
+      'Explore discovery window resolved without data, loading, or error.',
+    ),
+  };
 
   final eventsById = <String, Event>{
     for (final event in discoveryWindow.internalEvents) event.id: event,

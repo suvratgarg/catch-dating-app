@@ -226,8 +226,10 @@ void main() {
         ),
       );
 
-      await _pumpDashboardUi(tester);
-      await _pumpDashboardUi(tester);
+      await pumpUntilFound(
+        tester,
+        find.text('Something went wrong. Please try again.'),
+      );
 
       expect(
         find.text('Something went wrong. Please try again.'),
@@ -243,8 +245,8 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            watchUserProfileProvider.overrideWith(
-              (ref) => Stream<UserProfile?>.error(
+            watchUserProfileProvider.overrideWithValue(
+              AsyncError<UserProfile?>(
                 const NetworkException(
                   'offline',
                   'No internet connection. Connect to the internet and try again.',
@@ -260,8 +262,7 @@ void main() {
         ),
       );
 
-      await _pumpDashboardUi(tester);
-      await _pumpDashboardUi(tester);
+      await pumpUntilFound(tester, find.text('Connection issue'));
 
       expect(find.text('Connection issue'), findsOneWidget);
       expect(
