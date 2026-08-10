@@ -16,6 +16,7 @@ void main() {
     'tool/widget_dedupe/fixtures/probe_distinct.dart',
     'tool/widget_dedupe/fixtures/probe_alpha_status_pill.dart',
     'tool/widget_dedupe/fixtures/probe_beta_status_pill.dart',
+    'tool/widget_dedupe/fixtures/probe_parameter_shapes.dart',
   ];
 
   test('seeded structural probes produce expected fingerprints', () {
@@ -43,6 +44,11 @@ void main() {
       isNot(widgets['ProbeDistinct']!['shapeHash']),
     );
     expect(widgets['ProbeDupeA']!['tokensUsed'], contains('CatchSpacing.s4'));
+    expect(widgets['ProbeParameterShapes']!['constructorParams'], [
+      {'name': 'label', 'type': 'String', 'required': false},
+      {'name': 'onTap', 'type': 'void', 'required': true},
+      {'name': 'enabled', 'type': 'bool', 'required': false},
+    ]);
   });
 
   test('coarse stream sorts args and coarsens token members', () {
@@ -170,7 +176,9 @@ Directory _findRepoRoot(Directory start) {
     }
     final parent = current.parent;
     if (parent.path == current.path) {
-      throw StateError('Could not find the Catch repository root from ${start.path}.');
+      throw StateError(
+        'Could not find the Catch repository root from ${start.path}.',
+      );
     }
     current = parent;
   }

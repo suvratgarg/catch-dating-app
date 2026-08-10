@@ -1,7 +1,7 @@
 ---
 doc_id: widget_consolidation_pipeline_spec
-version: 0.3.1
-updated: 2026-08-07
+version: 0.3.2
+updated: 2026-08-10
 owner: widget_consolidation
 status: ready_for_execution
 ---
@@ -142,21 +142,24 @@ New standalone Dart mini-package: `tool/widget_dedupe/`
 
 ```
 tool/widget_dedupe/
-  pubspec.yaml          # name: widget_dedupe; deps: analyzer ^9.0.0, path, crypto, args
+  pubspec.yaml          # name: widget_dedupe; deps: analyzer ^14.1.0, path, crypto, args
   bin/extract_fingerprints.dart
   lib/src/...           # extraction logic, unit-testable
   test/                 # unit tests incl. seeded probe fixtures
   fixtures/             # probe dart files (§9)
 ```
 
-`analyzer ^9.0.0` matches `packages/catch_ui_lints`. This package is run with
-`dart run` only — it is **not** an analyzer plugin and must not be added to any
+The package deliberately resolves `analyzer ^14.1.0` independently of the
+Flutter app workspace. It is run with its own generated package configuration;
+it is **not** an analyzer plugin and must not be added to any
 `analysis_options.yaml`.
 
 CLI:
 
 ```
-dart run tool/widget_dedupe/bin/extract_fingerprints.dart \
+dart pub get -C tool/widget_dedupe
+dart run --packages=tool/widget_dedupe/.dart_tool/package_config.json \
+  tool/widget_dedupe/bin/extract_fingerprints.dart \
   [--files <comma-separated dart files>]   # default: all widgets in classification registry
   [--out <path>]                           # default: artifacts/widget_dedupe/fingerprints.json
 ```
