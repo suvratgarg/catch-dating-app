@@ -32,172 +32,173 @@ class EventSuccessLiveRevealAttendeeCard extends StatelessWidget {
       enabled: now == null && plan.isRevealCountdownRunning(DateTime.now()),
       builder: (context, tickNow) {
         final referenceNow = now ?? tickNow;
-        return _buildCard(context, referenceNow);
-      },
-    );
-  }
+        final t = CatchTokens.of(context);
+        final assigned = assignment;
+        final groupSlots =
+            assigned?.groupRotationSlots ??
+            const <EventSuccessGroupRotationSlot>[];
+        final roundCount = assigned == null
+            ? 0
+            : kind == EventSuccessRevealAssignmentKind.rotations
+            ? assigned.rotationSlots.length
+            : groupSlots.isNotEmpty
+            ? groupSlots.length
+            : 1;
+        final revealedThrough = plan.revealedThroughRoundIndex(referenceNow);
+        final activeRound = _safeRoundIndex(
+          plan.activeRevealRoundIndex,
+          roundCount,
+        );
+        final isCountingDown =
+            assigned != null && plan.isRevealCountdownRunning(referenceNow);
+        final visibleSlots = assigned == null
+            ? const <EventSuccessRotationSlot>[]
+            : assigned.rotationSlots
+                  .where(
+                    (slot) =>
+                        plan.isRoundRevealed(slot.roundIndex, referenceNow),
+                  )
+                  .toList(growable: false);
+        final visibleGroupSlots = groupSlots
+            .where(
+              (slot) => plan.isRoundRevealed(slot.roundIndex, referenceNow),
+            )
+            .toList(growable: false);
+        final podVisible =
+            assigned != null &&
+            kind == EventSuccessRevealAssignmentKind.microPods &&
+            groupSlots.isEmpty &&
+            plan.isRoundRevealed(0, referenceNow);
+        final showAssignment =
+            kind == EventSuccessRevealAssignmentKind.rotations
+            ? visibleSlots.isNotEmpty
+            : groupSlots.isNotEmpty
+            ? visibleGroupSlots.isNotEmpty
+            : podVisible;
+        final title = _attendeeTitle(
+          assigned: assigned,
+          showAssignment: showAssignment,
+          isCountingDown: isCountingDown,
+          remainingSeconds: _remainingSeconds(plan, referenceNow),
+        );
+        final profilesByUid = {
+          for (final profile in peerProfiles) profile.uid: profile,
+        };
 
-  Widget _buildCard(BuildContext context, DateTime referenceNow) {
-    final t = CatchTokens.of(context);
-    final assigned = assignment;
-    final groupSlots =
-        assigned?.groupRotationSlots ?? const <EventSuccessGroupRotationSlot>[];
-    final roundCount = assigned == null
-        ? 0
-        : kind == EventSuccessRevealAssignmentKind.rotations
-        ? assigned.rotationSlots.length
-        : groupSlots.isNotEmpty
-        ? groupSlots.length
-        : 1;
-    final revealedThrough = plan.revealedThroughRoundIndex(referenceNow);
-    final activeRound = _safeRoundIndex(
-      plan.activeRevealRoundIndex,
-      roundCount,
-    );
-    final isCountingDown =
-        assigned != null && plan.isRevealCountdownRunning(referenceNow);
-    final visibleSlots = assigned == null
-        ? const <EventSuccessRotationSlot>[]
-        : assigned.rotationSlots
-              .where(
-                (slot) => plan.isRoundRevealed(slot.roundIndex, referenceNow),
-              )
-              .toList(growable: false);
-    final visibleGroupSlots = groupSlots
-        .where((slot) => plan.isRoundRevealed(slot.roundIndex, referenceNow))
-        .toList(growable: false);
-    final podVisible =
-        assigned != null &&
-        kind == EventSuccessRevealAssignmentKind.microPods &&
-        groupSlots.isEmpty &&
-        plan.isRoundRevealed(0, referenceNow);
-    final showAssignment = kind == EventSuccessRevealAssignmentKind.rotations
-        ? visibleSlots.isNotEmpty
-        : groupSlots.isNotEmpty
-        ? visibleGroupSlots.isNotEmpty
-        : podVisible;
-    final title = _attendeeTitle(
-      assigned: assigned,
-      showAssignment: showAssignment,
-      isCountingDown: isCountingDown,
-      remainingSeconds: _remainingSeconds(plan, referenceNow),
-    );
-    final profilesByUid = {
-      for (final profile in peerProfiles) profile.uid: profile,
-    };
-
-    final revealColor = showAssignment ? t.success : t.primary;
-    return CatchSurface(
-      backgroundColor: t.surface.withValues(
-        alpha: CatchOpacity.revealAttendeePanelFill,
-      ),
-      radius: CatchRadius.sm,
-      borderColor: revealColor.withValues(
-        alpha: CatchOpacity.revealAttendeeBorder,
-      ),
-      padding: CatchInsets.content,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Wrap(
-            spacing: CatchSpacing.s2,
-            runSpacing: CatchSpacing.s2,
-            crossAxisAlignment: WrapCrossAlignment.center,
+        final revealColor = showAssignment ? t.success : t.primary;
+        return CatchSurface(
+          backgroundColor: t.surface.withValues(
+            alpha: CatchOpacity.revealAttendeePanelFill,
+          ),
+          radius: CatchRadius.sm,
+          borderColor: revealColor.withValues(
+            alpha: CatchOpacity.revealAttendeeBorder,
+          ),
+          padding: CatchInsets.content,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CatchBadge.live(label: kind.label(context.l10n)),
-              if (assigned != null)
-                CatchBadge(
-                  label: isCountingDown
-                      ? context
-                            .l10n
-                            .eventSuccessEventSuccessLiveRevealAttendeeLabelUnlocking
-                      : showAssignment
-                      ? context
-                            .l10n
-                            .eventSuccessEventSuccessLiveRevealAttendeeLabelRevealed
-                      : context
-                            .l10n
-                            .eventSuccessEventSuccessLiveRevealAttendeeLabelWaiting,
-                  tone: showAssignment
-                      ? CatchBadgeTone.success
-                      : isCountingDown
-                      ? CatchBadgeTone.warning
-                      : CatchBadgeTone.neutral,
-                ),
-            ],
-          ),
-          gapH12,
-          Text(title, style: CatchTextStyles.titleL(context)),
-          gapH6,
-          Text(
-            _attendeeSubtitle(
-              assigned: assigned,
-              showAssignment: showAssignment,
-              isCountingDown: isCountingDown,
-            ),
-            style: CatchTextStyles.supporting(context, color: t.ink2),
-          ),
-          if (assigned != null && !optedOut) ...[
-            gapH16,
-            if (isCountingDown)
-              AttendeeCountdown(
-                plan: plan,
-                now: referenceNow,
-                kind: kind,
-                clue: _attendeeClue(assigned, activeRound),
-              )
-            else if (!showAssignment)
-              WaitingRevealCue(kind: kind)
-            else if (kind == EventSuccessRevealAssignmentKind.rotations)
-              VisibleRotationSlots(
-                slots: visibleSlots,
-                profilesByUid: profilesByUid,
-                peersLoading: peersLoading,
-              )
-            else if (groupSlots.isNotEmpty)
-              VisibleGroupRotationSlots(
-                slots: visibleGroupSlots,
-                profilesByUid: profilesByUid,
-                peersLoading: peersLoading,
-              )
-            else
-              VisiblePodAssignment(
-                assignment: assigned,
-                peerProfiles: peerProfiles,
-                peersLoading: peersLoading,
+              Wrap(
+                spacing: CatchSpacing.s2,
+                runSpacing: CatchSpacing.s2,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  CatchBadge.live(label: kind.label(context.l10n)),
+                  if (assigned != null)
+                    CatchBadge(
+                      label: isCountingDown
+                          ? context
+                                .l10n
+                                .eventSuccessEventSuccessLiveRevealAttendeeLabelUnlocking
+                          : showAssignment
+                          ? context
+                                .l10n
+                                .eventSuccessEventSuccessLiveRevealAttendeeLabelRevealed
+                          : context
+                                .l10n
+                                .eventSuccessEventSuccessLiveRevealAttendeeLabelWaiting,
+                      tone: showAssignment
+                          ? CatchBadgeTone.success
+                          : isCountingDown
+                          ? CatchBadgeTone.warning
+                          : CatchBadgeTone.neutral,
+                    ),
+                ],
               ),
-            if (roundCount > 1) ...[
               gapH12,
-              RevealRoundRail(
-                roundCount: roundCount,
-                activeRoundIndex: activeRound,
-                revealedThrough: revealedThrough,
-                foreground: t.ink,
+              Text(title, style: CatchTextStyles.titleL(context)),
+              gapH6,
+              Text(
+                _attendeeSubtitle(
+                  assigned: assigned,
+                  showAssignment: showAssignment,
+                  isCountingDown: isCountingDown,
+                ),
+                style: CatchTextStyles.supporting(context, color: t.ink2),
+              ),
+              if (assigned != null && !optedOut) ...[
+                gapH16,
+                if (isCountingDown)
+                  AttendeeCountdown(
+                    plan: plan,
+                    now: referenceNow,
+                    kind: kind,
+                    clue: _attendeeClue(assigned, activeRound),
+                  )
+                else if (!showAssignment)
+                  WaitingRevealCue(kind: kind)
+                else if (kind == EventSuccessRevealAssignmentKind.rotations)
+                  VisibleRotationSlots(
+                    slots: visibleSlots,
+                    profilesByUid: profilesByUid,
+                    peersLoading: peersLoading,
+                  )
+                else if (groupSlots.isNotEmpty)
+                  VisibleGroupRotationSlots(
+                    slots: visibleGroupSlots,
+                    profilesByUid: profilesByUid,
+                    peersLoading: peersLoading,
+                  )
+                else
+                  VisiblePodAssignment(
+                    assignment: assigned,
+                    peerProfiles: peerProfiles,
+                    peersLoading: peersLoading,
+                  ),
+                if (roundCount > 1) ...[
+                  gapH12,
+                  RevealRoundRail(
+                    roundCount: roundCount,
+                    activeRoundIndex: activeRound,
+                    revealedThrough: revealedThrough,
+                    foreground: t.ink,
+                  ),
+                ],
+              ],
+              gapH14,
+              CatchSurface(
+                backgroundColor: t.ink.withValues(
+                  alpha: CatchOpacity.revealAttendeeActionDock,
+                ),
+                radius: CatchRadius.sm,
+                borderWidth: 0,
+                padding: CatchInsets.iconChipContent,
+                child: CatchButton(
+                  label: optedOut ? _joinLabel(kind) : _skipLabel(kind),
+                  variant: optedOut
+                      ? CatchButtonVariant.primary
+                      : CatchButtonVariant.secondary,
+                  isLoading: isSavingOptOut,
+                  onPressed: isSavingOptOut || onIncludeChanged == null
+                      ? null
+                      : () => onIncludeChanged!(optedOut),
+                  fullWidth: true,
+                ),
               ),
             ],
-          ],
-          gapH14,
-          CatchSurface(
-            backgroundColor: t.ink.withValues(
-              alpha: CatchOpacity.revealAttendeeActionDock,
-            ),
-            radius: CatchRadius.sm,
-            borderWidth: 0,
-            padding: CatchInsets.iconChipContent,
-            child: CatchButton(
-              label: optedOut ? _joinLabel(kind) : _skipLabel(kind),
-              variant: optedOut
-                  ? CatchButtonVariant.primary
-                  : CatchButtonVariant.secondary,
-              isLoading: isSavingOptOut,
-              onPressed: isSavingOptOut || onIncludeChanged == null
-                  ? null
-                  : () => onIncludeChanged!(optedOut),
-              fullWidth: true,
-            ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 

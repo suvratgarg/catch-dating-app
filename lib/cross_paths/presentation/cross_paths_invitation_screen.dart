@@ -195,11 +195,17 @@ class _InvitationDetailBody extends ConsumerWidget {
           _PairHoldPanel(hold: pairHold!, event: event, currentUid: currentUid),
           gapH16,
         ],
-        ..._actions(
-          context,
-          invitationController,
-          analytics,
-          mutation.isLoading,
+        _InvitationActions(
+          invitation: invitation,
+          isRecipient: isRecipient,
+          loading: mutation.isLoading,
+          onRespond: (accept) => _respond(
+            context,
+            invitationController,
+            analytics,
+            accept: accept,
+          ),
+          onCancel: () => _cancel(context, invitationController, analytics),
         ),
       ],
     );
@@ -216,74 +222,6 @@ class _InvitationDetailBody extends ConsumerWidget {
           : context.l10n.crossPathsInvitationScreenAcceptedBody,
     _ => context.l10n.crossPathsInvitationStatusClosed,
   };
-
-  List<Widget> _actions(
-    BuildContext context,
-    CrossPathsInvitationController invitationController,
-    AppAnalytics analytics,
-    bool loading,
-  ) {
-    if (invitation.status == CrossPathsInvitationStatus.pending &&
-        isRecipient) {
-      return [
-        CatchButton(
-          label: context.l10n.crossPathsInvitationScreenActionAccept,
-          fullWidth: true,
-          isLoading: loading,
-          onPressed: () =>
-              _respond(context, invitationController, analytics, accept: true),
-        ),
-        gapH10,
-        CatchButton(
-          label: context.l10n.crossPathsInvitationScreenActionDecline,
-          fullWidth: true,
-          variant: CatchButtonVariant.secondary,
-          onPressed: loading
-              ? null
-              : () => _respond(
-                  context,
-                  invitationController,
-                  analytics,
-                  accept: false,
-                ),
-        ),
-      ];
-    }
-    if (invitation.status == CrossPathsInvitationStatus.pending) {
-      return [
-        CatchButton(
-          label: context.l10n.crossPathsInvitationActionCancel,
-          fullWidth: true,
-          isLoading: loading,
-          variant: CatchButtonVariant.secondary,
-          onPressed: () => _cancel(context, invitationController, analytics),
-        ),
-      ];
-    }
-    if (invitation.status == CrossPathsInvitationStatus.accepted) {
-      return [
-        CatchButton(
-          label: context.l10n.crossPathsInvitationActionOpenPlan,
-          fullWidth: true,
-          onPressed: invitation.conversationId == null
-              ? null
-              : () => context.pushNamed(
-                  Routes.chatScreen.name,
-                  pathParameters: {'matchId': invitation.conversationId!},
-                ),
-        ),
-        gapH10,
-        CatchButton(
-          label: context.l10n.crossPathsInvitationScreenActionCancelPlan,
-          fullWidth: true,
-          variant: CatchButtonVariant.secondary,
-          isLoading: loading,
-          onPressed: () => _cancel(context, invitationController, analytics),
-        ),
-      ];
-    }
-    return const [];
-  }
 
   Future<void> _respond(
     BuildContext context,
@@ -339,6 +277,82 @@ class _InvitationDetailBody extends ConsumerWidget {
         );
       }
     }
+  }
+}
+
+class _InvitationActions extends StatelessWidget {
+  const _InvitationActions({
+    required this.invitation,
+    required this.isRecipient,
+    required this.loading,
+    required this.onRespond,
+    required this.onCancel,
+  });
+
+  final CrossPathsInvitation invitation;
+  final bool isRecipient;
+  final bool loading;
+  final ValueChanged<bool> onRespond;
+  final VoidCallback onCancel;
+
+  @override
+  Widget build(BuildContext context) {
+    if (invitation.status == CrossPathsInvitationStatus.pending &&
+        isRecipient) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          CatchButton(
+            label: context.l10n.crossPathsInvitationScreenActionAccept,
+            fullWidth: true,
+            isLoading: loading,
+            onPressed: () => onRespond(true),
+          ),
+          gapH10,
+          CatchButton(
+            label: context.l10n.crossPathsInvitationScreenActionDecline,
+            fullWidth: true,
+            variant: CatchButtonVariant.secondary,
+            onPressed: loading ? null : () => onRespond(false),
+          ),
+        ],
+      );
+    }
+    if (invitation.status == CrossPathsInvitationStatus.pending) {
+      return CatchButton(
+        label: context.l10n.crossPathsInvitationActionCancel,
+        fullWidth: true,
+        isLoading: loading,
+        variant: CatchButtonVariant.secondary,
+        onPressed: onCancel,
+      );
+    }
+    if (invitation.status == CrossPathsInvitationStatus.accepted) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          CatchButton(
+            label: context.l10n.crossPathsInvitationActionOpenPlan,
+            fullWidth: true,
+            onPressed: invitation.conversationId == null
+                ? null
+                : () => context.pushNamed(
+                    Routes.chatScreen.name,
+                    pathParameters: {'matchId': invitation.conversationId!},
+                  ),
+          ),
+          gapH10,
+          CatchButton(
+            label: context.l10n.crossPathsInvitationScreenActionCancelPlan,
+            fullWidth: true,
+            variant: CatchButtonVariant.secondary,
+            isLoading: loading,
+            onPressed: onCancel,
+          ),
+        ],
+      );
+    }
+    return const SizedBox.shrink();
   }
 }
 

@@ -247,7 +247,7 @@ void main() {
           overrides: [
             watchUserProfileProvider.overrideWithValue(
               const AsyncError<UserProfile?>(
-                const NetworkException(
+                NetworkException(
                   'offline',
                   'No internet connection. Connect to the internet and try again.',
                 ),
