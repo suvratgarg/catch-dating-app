@@ -590,6 +590,8 @@ class ModuleToggleRow extends StatelessWidget {
               ),
             ),
             CatchToggle(
+              contract: CatchContractConstraints
+                  .mobileFormStateEventSuccessModuleSelected,
               value: selected,
               onChanged: onChanged,
               semanticLabel: context.l10n
