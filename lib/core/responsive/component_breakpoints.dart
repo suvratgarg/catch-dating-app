@@ -1,8 +1,8 @@
 /// Component-level layout breakpoints, in logical pixels.
 ///
-/// Compared against the **local** box width from a [LayoutBuilder]
-/// (`constraints.maxWidth`) — not the window size — so an individual widget can
-/// reflow based on the space it is actually given.
+/// Compared against the component's **local** box width through
+/// `ComponentResponsiveBuilder` — not the window size — so an individual
+/// widget can reflow based on the space it is actually given.
 ///
 /// Deliberately distinct from [ScreenSize] in `breakpoints.dart`, which
 /// classifies the whole window into Material 3 size classes (compact / medium /

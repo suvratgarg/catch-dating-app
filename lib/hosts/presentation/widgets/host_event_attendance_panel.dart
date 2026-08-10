@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
+import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -1220,73 +1221,64 @@ class HostWaitlistBulkOfferAction extends StatelessWidget {
                 count: count,
                 personNoun: _personNoun(count),
               );
+    final summary = Row(
+      children: [
+        Icon(CatchIcons.groupAddOutlined, color: t.warning, size: CatchIcon.md),
+        gapW10,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                context.l10n.hostsHostEventAttendancePanelTextWaitlistMovement,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: CatchTextStyles.labelL(context, color: t.ink),
+              ),
+              Text(
+                detail,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: CatchTextStyles.supporting(context, color: t.ink2),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+    final button = CatchButton(
+      label: context.l10n.hostsHostEventAttendancePanelLabelOfferNextCount(
+        count: count,
+      ),
+      size: CatchButtonSize.sm,
+      variant: CatchButtonVariant.secondary,
+      icon: Icon(CatchIcons.sendRounded),
+      isLoading: isPending,
+      onPressed: isPending ? null : onOffer,
+    );
     return CatchSurface(
       padding: CatchInsets.compactControlContent,
       borderColor: t.warning.withValues(alpha: CatchOpacity.warningFill),
       radius: CatchRadius.md,
       backgroundColor: t.warning.withValues(alpha: CatchOpacity.warningFill),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final summary = Row(
-            children: [
-              Icon(
-                CatchIcons.groupAddOutlined,
-                color: t.warning,
-                size: CatchIcon.md,
-              ),
-              gapW10,
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      context
-                          .l10n
-                          .hostsHostEventAttendancePanelTextWaitlistMovement,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: CatchTextStyles.labelL(context, color: t.ink),
-                    ),
-                    Text(
-                      detail,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: CatchTextStyles.supporting(context, color: t.ink2),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          );
-          final button = CatchButton(
-            label: context.l10n
-                .hostsHostEventAttendancePanelLabelOfferNextCount(count: count),
-            size: CatchButtonSize.sm,
-            variant: CatchButtonVariant.secondary,
-            icon: Icon(CatchIcons.sendRounded),
-            isLoading: isPending,
-            onPressed: isPending ? null : onOffer,
-          );
-          if (constraints.maxWidth <
-              ComponentBreakpoints.hostWaitlistBulkOfferStackBreakpoint) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                summary,
-                gapH10,
-                Align(alignment: Alignment.centerLeft, child: button),
-              ],
-            );
-          }
-          return Row(
-            children: [
-              Expanded(child: summary),
-              gapW10,
-              button,
-            ],
-          );
-        },
+      child: ComponentResponsiveBuilder(
+        breakpoint: ComponentBreakpoints.hostWaitlistBulkOfferStackBreakpoint,
+        compact: (context) => Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            summary,
+            gapH10,
+            Align(alignment: Alignment.centerLeft, child: button),
+          ],
+        ),
+        expanded: (context) => Row(
+          children: [
+            Expanded(child: summary),
+            gapW10,
+            button,
+          ],
+        ),
       ),
     );
   }

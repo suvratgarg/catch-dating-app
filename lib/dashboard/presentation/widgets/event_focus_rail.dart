@@ -108,6 +108,8 @@ class _EventFocusRailState extends State<EventFocusRail> {
             length: items.length,
           );
     final selectedItem = items[_selectedIndex];
+    final canAdvance = _selectedIndex < items.length - 1;
+    final canRetreat = _selectedIndex > 0;
 
     return Column(
       key: EventFocusRail.railKey,
@@ -124,85 +126,71 @@ class _EventFocusRailState extends State<EventFocusRail> {
           ],
         ),
         gapH10,
-        LayoutBuilder(
-          builder: (context, constraints) {
-            final cardWidth = constraints.hasBoundedWidth
-                ? constraints.maxWidth
-                : MediaQuery.sizeOf(context).width;
-            final canAdvance = _selectedIndex < items.length - 1;
-            final canRetreat = _selectedIndex > 0;
-
-            return SizedBox(
-              width: cardWidth,
-              child: Semantics(
-                label:
-                    context.l10n.dashboardEventFocusRailLabelEventFocusCarousel,
-                value: context.l10n
-                    .dashboardEventFocusRailVisiblecopyEventValue1OfLength(
-                      value1: _selectedIndex + 1,
-                      length: items.length,
-                    ),
-                increasedValue: canAdvance
-                    ? context.l10n
-                          .dashboardEventFocusRailVisiblecopyEventValue1OfLength(
-                            value1: _selectedIndex + 2,
-                            length: items.length,
-                          )
-                    : null,
-                decreasedValue: canRetreat
-                    ? context.l10n
-                          .dashboardEventFocusRailVisiblecopyEventSelectedindexOfLength(
-                            selectedIndex: _selectedIndex,
-                            length: items.length,
-                          )
-                    : null,
-                onIncrease: items.length > 1 && canAdvance
-                    ? () => setState(() => _selectedIndex += 1)
-                    : null,
-                onDecrease: items.length > 1 && canRetreat
-                    ? () => setState(() => _selectedIndex -= 1)
-                    : null,
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onHorizontalDragStart: items.length > 1
-                      ? (_) => _dragDistance = 0
-                      : null,
-                  onHorizontalDragUpdate: items.length > 1
-                      ? (details) => _dragDistance += details.primaryDelta ?? 0
-                      : null,
-                  onHorizontalDragEnd: items.length > 1
-                      ? (details) => _handleHorizontalDragEnd(
-                          details: details,
-                          itemCount: items.length,
-                        )
-                      : null,
-                  onHorizontalDragCancel: items.length > 1
-                      ? () => _dragDistance = 0
-                      : null,
-                  child: AnimatedSwitcher(
-                    duration: CatchMotion.base,
-                    switchInCurve: CatchMotion.easeOutCubicCurve,
-                    switchOutCurve: CatchMotion.easeInCubicCurve,
-                    transitionBuilder: (child, animation) =>
-                        FadeTransition(opacity: animation, child: child),
-                    child: EventFocusCard(
-                      key: ValueKey(
-                        'event-focus-${selectedItem.kind.name}-'
-                        '${selectedItem.event.id}-'
-                        '${selectedItem.canSwipe}-${selectedItem.needsReview}',
-                      ),
-                      item: selectedItem,
-                      cardIndex: _selectedIndex,
-                      cardCount: items.length,
-                      checkInState: widget.checkInState,
-                      onActionPressed: (action) =>
-                          _handleAction(selectedItem, action),
-                    ),
-                  ),
-                ),
+        Semantics(
+          label: context.l10n.dashboardEventFocusRailLabelEventFocusCarousel,
+          value: context.l10n
+              .dashboardEventFocusRailVisiblecopyEventValue1OfLength(
+                value1: _selectedIndex + 1,
+                length: items.length,
               ),
-            );
-          },
+          increasedValue: canAdvance
+              ? context.l10n
+                    .dashboardEventFocusRailVisiblecopyEventValue1OfLength(
+                      value1: _selectedIndex + 2,
+                      length: items.length,
+                    )
+              : null,
+          decreasedValue: canRetreat
+              ? context.l10n
+                    .dashboardEventFocusRailVisiblecopyEventSelectedindexOfLength(
+                      selectedIndex: _selectedIndex,
+                      length: items.length,
+                    )
+              : null,
+          onIncrease: items.length > 1 && canAdvance
+              ? () => setState(() => _selectedIndex += 1)
+              : null,
+          onDecrease: items.length > 1 && canRetreat
+              ? () => setState(() => _selectedIndex -= 1)
+              : null,
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onHorizontalDragStart: items.length > 1
+                ? (_) => _dragDistance = 0
+                : null,
+            onHorizontalDragUpdate: items.length > 1
+                ? (details) => _dragDistance += details.primaryDelta ?? 0
+                : null,
+            onHorizontalDragEnd: items.length > 1
+                ? (details) => _handleHorizontalDragEnd(
+                    details: details,
+                    itemCount: items.length,
+                  )
+                : null,
+            onHorizontalDragCancel: items.length > 1
+                ? () => _dragDistance = 0
+                : null,
+            child: AnimatedSwitcher(
+              duration: CatchMotion.base,
+              switchInCurve: CatchMotion.easeOutCubicCurve,
+              switchOutCurve: CatchMotion.easeInCubicCurve,
+              transitionBuilder: (child, animation) =>
+                  FadeTransition(opacity: animation, child: child),
+              child: EventFocusCard(
+                key: ValueKey(
+                  'event-focus-${selectedItem.kind.name}-'
+                  '${selectedItem.event.id}-'
+                  '${selectedItem.canSwipe}-${selectedItem.needsReview}',
+                ),
+                item: selectedItem,
+                cardIndex: _selectedIndex,
+                cardCount: items.length,
+                checkInState: widget.checkInState,
+                onActionPressed: (action) =>
+                    _handleAction(selectedItem, action),
+              ),
+            ),
+          ),
         ),
         if (items.length > 1) ...[
           gapH10,

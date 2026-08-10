@@ -195,42 +195,34 @@ class ClubProfileImageTile extends StatelessWidget {
                 else
                   ColoredBox(
                     color: t.raised,
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        final textScale = MediaQuery.textScalerOf(
-                          context,
-                        ).scale(1);
-                        final showLabel =
-                            showEmptyLabel &&
-                            constraints.maxHeight >= 112 &&
-                            textScale < 1.6;
-                        return Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              CatchIcons.addPhotoAlternateOutlined,
-                              size: CatchIcon.hero,
-                              color: t.ink2,
-                            ),
-                            if (showLabel) ...[
-                              gapH8,
-                              Padding(
-                                padding: CatchInsets.inlineHorizontal,
-                                child: Text(
-                                  context
-                                      .l10n
-                                      .hostsCreateClubPhotosPickerTextAddImage,
-                                  style: CatchTextStyles.supporting(
-                                    context,
-                                    color: t.ink2,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          CatchIcons.addPhotoAlternateOutlined,
+                          size: CatchIcon.hero,
+                          color: t.ink2,
+                        ),
+                        if (showEmptyLabel &&
+                            size >= 112 &&
+                            MediaQuery.textScalerOf(context).scale(1) <
+                                1.6) ...[
+                          gapH8,
+                          Padding(
+                            padding: CatchInsets.inlineHorizontal,
+                            child: Text(
+                              context
+                                  .l10n
+                                  .hostsCreateClubPhotosPickerTextAddImage,
+                              style: CatchTextStyles.supporting(
+                                context,
+                                color: t.ink2,
                               ),
-                            ],
-                          ],
-                        );
-                      },
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
                   ),
                 Positioned(

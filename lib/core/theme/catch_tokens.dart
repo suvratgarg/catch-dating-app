@@ -471,6 +471,11 @@ abstract final class CatchInsets {
     horizontal: CatchSpacing.s6,
   );
 
+  /// Side breathing room for the full-bleed Catches profile on wide panes.
+  static const EdgeInsets catchesWideProfile = EdgeInsets.symmetric(
+    horizontal: CatchSpacing.s8,
+  );
+
   /// Full-screen welcome hero padding.
   static const EdgeInsets welcomeHero = EdgeInsets.fromLTRB(
     CatchSpacing.s7,

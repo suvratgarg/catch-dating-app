@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
+import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -960,47 +961,39 @@ class HostInviteLinksList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final button = CatchButton(
+      label: context.l10n.hostsHostEventManageScreenLabelNewLink,
+      onPressed: state.isMutating
+          ? null
+          : () => unawaited(_createNamedLink(context)),
+      variant: CatchButtonVariant.secondary,
+      icon: Icon(CatchIcons.addRounded),
+      isLoading: state.createPending,
+    );
+    final heading = Text(
+      context.l10n.hostsHostEventManageScreenTextNamedInviteLinks,
+      style: CatchTextStyles.labelL(context),
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        LayoutBuilder(
-          builder: (context, constraints) {
-            final button = CatchButton(
-              label: context.l10n.hostsHostEventManageScreenLabelNewLink,
-              onPressed: state.isMutating
-                  ? null
-                  : () => unawaited(_createNamedLink(context)),
-              variant: CatchButtonVariant.secondary,
-              icon: Icon(CatchIcons.addRounded),
-              isLoading: state.createPending,
-            );
-            if (constraints.maxWidth <
-                ComponentBreakpoints.hostInviteLinksHeaderStackBreakpoint) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    context.l10n.hostsHostEventManageScreenTextNamedInviteLinks,
-                    style: CatchTextStyles.labelL(context),
-                  ),
-                  gapH10,
-                  Align(alignment: Alignment.centerLeft, child: button),
-                ],
-              );
-            }
-            return Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    context.l10n.hostsHostEventManageScreenTextNamedInviteLinks,
-                    style: CatchTextStyles.labelL(context),
-                  ),
-                ),
-                button,
-              ],
-            );
-          },
+        ComponentResponsiveBuilder(
+          breakpoint: ComponentBreakpoints.hostInviteLinksHeaderStackBreakpoint,
+          compact: (context) => Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              heading,
+              gapH10,
+              Align(alignment: Alignment.centerLeft, child: button),
+            ],
+          ),
+          expanded: (context) => Row(
+            children: [
+              Expanded(child: heading),
+              button,
+            ],
+          ),
         ),
         gapH6,
         Text(
@@ -1090,107 +1083,92 @@ class HostInviteLinkRow extends StatelessWidget {
       )!,
       actionsDisabled: actionsDisabled,
     );
+    final details = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Wrap(
+          spacing: CatchSpacing.s2,
+          runSpacing: CatchSpacing.s1,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            Text(rowState.label, style: CatchTextStyles.labelL(context)),
+            if (rowState.showDisabledBadge)
+              CatchBadge(
+                label: context.l10n.hostsHostEventManageScreenLabelDisabled,
+              ),
+          ],
+        ),
+        if (rowState.source != null) ...[
+          gapH2,
+          Text(
+            rowState.source!,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: CatchTextStyles.supporting(context, color: t.ink2),
+          ),
+        ],
+        gapH8,
+        Text(
+          rowState.stats,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: CatchTextStyles.supporting(context, color: t.ink2),
+        ),
+      ],
+    );
+    final actions = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Tooltip(
+          message: context.l10n.hostsHostEventManageScreenMessageCopyLink,
+          child: CatchIconButton(
+            onTap: rowState.actionsDisabled
+                ? null
+                : () => onCopyInviteLink(link, rowState.url),
+            disabled: rowState.actionsDisabled,
+            child: Icon(CatchIcons.contentCopyRounded, size: CatchIcon.sm),
+          ),
+        ),
+        if (rowState.showDisableAction) ...[
+          gapW8,
+          Tooltip(
+            message: context.l10n.hostsHostEventManageScreenMessageDisableLink,
+            child: CatchIconButton(
+              onTap: rowState.actionsDisabled
+                  ? null
+                  : () => onDisableInviteLink(link),
+              disabled: rowState.actionsDisabled,
+              child: Icon(
+                CatchIcons.hourglassDisabledRounded,
+                size: CatchIcon.sm,
+              ),
+            ),
+          ),
+        ],
+      ],
+    );
     return Padding(
       padding: CatchInsets.sectionItemBottomGap,
       child: CatchSurface(
         padding: CatchInsets.contentDense,
         borderColor: t.line,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final details = Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Wrap(
-                  spacing: CatchSpacing.s2,
-                  runSpacing: CatchSpacing.s1,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    Text(
-                      rowState.label,
-                      style: CatchTextStyles.labelL(context),
-                    ),
-                    if (rowState.showDisabledBadge)
-                      CatchBadge(
-                        label: context
-                            .l10n
-                            .hostsHostEventManageScreenLabelDisabled,
-                      ),
-                  ],
-                ),
-                if (rowState.source != null) ...[
-                  gapH2,
-                  Text(
-                    rowState.source!,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: CatchTextStyles.supporting(context, color: t.ink2),
-                  ),
-                ],
-                gapH8,
-                Text(
-                  rowState.stats,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.supporting(context, color: t.ink2),
-                ),
-              ],
-            );
-            final actions = Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Tooltip(
-                  message:
-                      context.l10n.hostsHostEventManageScreenMessageCopyLink,
-                  child: CatchIconButton(
-                    onTap: rowState.actionsDisabled
-                        ? null
-                        : () => onCopyInviteLink(link, rowState.url),
-                    disabled: rowState.actionsDisabled,
-                    child: Icon(
-                      CatchIcons.contentCopyRounded,
-                      size: CatchIcon.sm,
-                    ),
-                  ),
-                ),
-                if (rowState.showDisableAction) ...[
-                  gapW8,
-                  Tooltip(
-                    message: context
-                        .l10n
-                        .hostsHostEventManageScreenMessageDisableLink,
-                    child: CatchIconButton(
-                      onTap: rowState.actionsDisabled
-                          ? null
-                          : () => onDisableInviteLink(link),
-                      disabled: rowState.actionsDisabled,
-                      child: Icon(
-                        CatchIcons.hourglassDisabledRounded,
-                        size: CatchIcon.sm,
-                      ),
-                    ),
-                  ),
-                ],
-              ],
-            );
-            if (constraints.maxWidth <
-                ComponentBreakpoints.hostInviteLinkRowStackBreakpoint) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  details,
-                  gapH10,
-                  Align(alignment: Alignment.centerRight, child: actions),
-                ],
-              );
-            }
-            return Row(
-              children: [
-                Expanded(child: details),
-                gapW8,
-                actions,
-              ],
-            );
-          },
+        child: ComponentResponsiveBuilder(
+          breakpoint: ComponentBreakpoints.hostInviteLinkRowStackBreakpoint,
+          compact: (context) => Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              details,
+              gapH10,
+              Align(alignment: Alignment.centerRight, child: actions),
+            ],
+          ),
+          expanded: (context) => Row(
+            children: [
+              Expanded(child: details),
+              gapW8,
+              actions,
+            ],
+          ),
         ),
       ),
     );
@@ -1634,55 +1612,58 @@ class HostEventSummaryRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final iconWidget = Icon(icon, color: t.ink2, size: CatchIcon.md);
+    final labelText = Text(
+      label,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: CatchTextStyles.supporting(context, color: t.ink2),
+    );
 
     return Column(
       children: [
-        LayoutBuilder(
-          builder: (context, constraints) {
-            final iconWidget = Icon(icon, color: t.ink2, size: CatchIcon.md);
-            final labelText = Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: CatchTextStyles.supporting(context, color: t.ink2),
-            );
-            final valueText = Text(
-              value,
-              maxLines: 1,
-              style: CatchTextStyles.labelL(context),
-              textAlign:
-                  constraints.maxWidth <
-                      ComponentBreakpoints.hostEventSummaryRowStackBreakpoint
-                  ? TextAlign.left
-                  : TextAlign.right,
-              overflow: TextOverflow.ellipsis,
-            );
-            if (constraints.maxWidth <
-                ComponentBreakpoints.hostEventSummaryRowStackBreakpoint) {
-              return Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  iconWidget,
-                  gapW10,
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [labelText, gapH2, valueText],
+        ComponentResponsiveBuilder(
+          breakpoint: ComponentBreakpoints.hostEventSummaryRowStackBreakpoint,
+          compact: (context) => Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              iconWidget,
+              gapW10,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    labelText,
+                    gapH2,
+                    Text(
+                      value,
+                      maxLines: 1,
+                      style: CatchTextStyles.labelL(context),
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                ],
-              );
-            }
-            return Row(
-              children: [
-                iconWidget,
-                gapW10,
-                Expanded(child: labelText),
-                gapW10,
-                Expanded(flex: 3, child: valueText),
-              ],
-            );
-          },
+                  ],
+                ),
+              ),
+            ],
+          ),
+          expanded: (context) => Row(
+            children: [
+              iconWidget,
+              gapW10,
+              Expanded(child: labelText),
+              gapW10,
+              Expanded(
+                flex: 3,
+                child: Text(
+                  value,
+                  maxLines: 1,
+                  style: CatchTextStyles.labelL(context),
+                  textAlign: TextAlign.right,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
         ),
         if (showDivider) ...[
           gapH12,

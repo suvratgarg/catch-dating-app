@@ -1,0 +1,31 @@
+import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  testWidgets('component responsive builder uses its local width', (
+    tester,
+  ) async {
+    Widget subject(double width) => MaterialApp(
+      home: Align(
+        alignment: Alignment.topLeft,
+        child: SizedBox(
+          width: width,
+          child: ComponentResponsiveBuilder(
+            breakpoint: 320,
+            compact: (_) => const Text('compact'),
+            expanded: (_) => const Text('expanded'),
+          ),
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(subject(319));
+    expect(find.text('compact'), findsOneWidget);
+    expect(find.text('expanded'), findsNothing);
+
+    await tester.pumpWidget(subject(320));
+    expect(find.text('expanded'), findsOneWidget);
+    expect(find.text('compact'), findsNothing);
+  });
+}

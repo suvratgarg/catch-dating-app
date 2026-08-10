@@ -118,62 +118,43 @@ class EventSuccessLiveRevealHostCard extends StatelessWidget {
                 ],
               ),
               gapH16,
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  final compact =
-                      constraints.maxWidth <
-                      ComponentBreakpoints
-                          .eventSuccessRevealHostCompactBreakpoint;
-                  final number = CountdownNumber(
-                    value: isCountingDown
-                        ? context.l10n
-                              .eventSuccessEventSuccessLiveRevealHostVisiblecopyRemainingseconds(
-                                remainingSeconds: remainingSeconds,
-                              )
-                        : allRevealed
-                        ? context
-                              .l10n
-                              .eventSuccessEventSuccessLiveRevealHostVisiblecopyOk
-                        : context.l10n
-                              .eventSuccessEventSuccessLiveRevealHostVisiblecopyValue1(
-                                value1: targetRound + 1,
-                              ),
-                    caption: isCountingDown
-                        ? context
-                              .l10n
-                              .eventSuccessEventSuccessLiveRevealHostCaptionSeconds
-                        : allRevealed
-                        ? context
-                              .l10n
-                              .eventSuccessEventSuccessLiveRevealHostCaptionRevealed
-                        : context
-                              .l10n
-                              .eventSuccessEventSuccessLiveRevealHostCaptionNextRound,
-                  );
-                  final copy = RevealHostCopy(
-                    headline: headline,
-                    body: _hostBody(
-                      kind: revealSet.kind,
-                      assignments: assignments,
-                      roundIndex: targetRound,
-                      roundCount: roundCount,
-                      allRevealed: allRevealed,
-                    ),
-                  );
-                  if (compact) {
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [number, gapH14, copy],
-                    );
-                  }
-                  return Row(
-                    children: [
-                      number,
-                      gapW16,
-                      Expanded(child: copy),
-                    ],
-                  );
-                },
+              RevealHostStatusLayout(
+                number: CountdownNumber(
+                  value: isCountingDown
+                      ? context.l10n
+                            .eventSuccessEventSuccessLiveRevealHostVisiblecopyRemainingseconds(
+                              remainingSeconds: remainingSeconds,
+                            )
+                      : allRevealed
+                      ? context
+                            .l10n
+                            .eventSuccessEventSuccessLiveRevealHostVisiblecopyOk
+                      : context.l10n
+                            .eventSuccessEventSuccessLiveRevealHostVisiblecopyValue1(
+                              value1: targetRound + 1,
+                            ),
+                  caption: isCountingDown
+                      ? context
+                            .l10n
+                            .eventSuccessEventSuccessLiveRevealHostCaptionSeconds
+                      : allRevealed
+                      ? context
+                            .l10n
+                            .eventSuccessEventSuccessLiveRevealHostCaptionRevealed
+                      : context
+                            .l10n
+                            .eventSuccessEventSuccessLiveRevealHostCaptionNextRound,
+                ),
+                copy: RevealHostCopy(
+                  headline: headline,
+                  body: _hostBody(
+                    kind: revealSet.kind,
+                    assignments: assignments,
+                    roundIndex: targetRound,
+                    roundCount: roundCount,
+                    allRevealed: allRevealed,
+                  ),
+                ),
               ),
               gapH14,
               RevealProgressBar(progress: plan.revealProgress(referenceNow)),
