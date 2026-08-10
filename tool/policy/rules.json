@@ -1011,12 +1011,7 @@
         },
         {
           "tool": "lint:catch-ui-drift",
-          "stage": "scanner-ratchet",
-          "docAnchor": "docs/app_architecture.md#ui-analyzer-lint-policy"
-        },
-        {
-          "tool": "lint:catch-ui-drift-ratchet-engine",
-          "stage": "scanner-ratchet",
+          "stage": "scanner-gate",
           "docAnchor": "docs/app_architecture.md#ui-analyzer-lint-policy"
         },
         {
@@ -1424,10 +1419,10 @@
         }
       ]
     },
-    "EVENT-POLICY-INDEV-001": {
-      "title": "Preserve event policy engine through production migration",
+    "EVENT-POLICY-LIVE-001": {
+      "title": "Keep live event policy snapshots authoritative and backward-compatible",
       "status": "active",
-      "kind": "product-marker",
+      "kind": "contract",
       "introduced_in": {
         "doc_id": "event_policies_readme",
         "version": "1.0.0"
@@ -1438,10 +1433,9 @@
         "lib/event_policies/README.md",
         "PROJECT_CONTEXT.md"
       ],
-      "instruction": "Treat lib/event_policies as an intentional in-development feature under production migration, not dead code. New event creation and booking may write/read EventPolicyBundle snapshots, but the dev lab must remain read-only and the migration must stay backward-compatible with legacy capacity, price, and EventConstraints documents until the schema migration is complete.",
+      "instruction": "Treat EventPolicyBundle snapshots and backend helpers as the authority for new admission, pricing, waitlist, cancellation, and settlement behavior while preserving read compatibility with legacy capacity, price, and EventConstraints documents.",
       "sunset_when": [
-        "The event policy engine fully replaces legacy event capacity, price, and EventConstraints fields",
-        "Or the product decision explicitly cancels the event-policy migration"
+        "Legacy event capacity, price, and EventConstraints projections are removed through an explicit schema migration"
       ],
       "sunset_signals": [
         {
@@ -1455,10 +1449,10 @@
         }
       ]
     },
-    "EVENT-SUCCESS-INDEV-001": {
-      "title": "Preserve parallel event success layer until product decision",
+    "EVENT-SUCCESS-LIVE-001": {
+      "title": "Protect live Event Success privacy and backend ownership",
       "status": "active",
-      "kind": "product-marker",
+      "kind": "contract",
       "introduced_in": {
         "doc_id": "event_success",
         "version": "1.0.0"
@@ -1469,10 +1463,9 @@
         "docs/event_success.md",
         "PROJECT_CONTEXT.md"
       ],
-      "instruction": "Treat lib/event_success as an intentional in-development production rollout, not dead code. It may be wired into live event routes through controller/repository seams, but new live modules need explicit privacy, safety, backend ownership, and Firestore read/write behavior in the same pass. Private-crush target identities stay attendee-private; host reporting may use aggregate metrics only.",
+      "instruction": "Keep live Event Success modules behind explicit controller/repository seams with privacy, safety, backend ownership, and Firestore read/write behavior defined in the same pass. Private-crush target identities stay attendee-private; host reporting may use aggregate metrics only.",
       "sunset_when": [
-        "The event success layer is fully production-owned and no longer needs an in-development preservation marker",
-        "Or the product decision explicitly cancels the live event success layer"
+        "Event Success is explicitly replaced by a newer production interaction model"
       ],
       "sunset_signals": [
         {

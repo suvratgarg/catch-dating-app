@@ -7,7 +7,7 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
-const _tilePreviewWidth = CatchLayout.eventPolicyLabScenarioCardWidth;
+const _tilePreviewWidth = CatchLayout.analyticsMetricPreviewWidth;
 const _gridPreviewWidth = CatchLayout.confirmDialogMaxWidth;
 
 final _readyAnalyticsMetric = CatchMetricCardData(

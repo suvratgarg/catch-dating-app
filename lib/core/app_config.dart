@@ -198,10 +198,6 @@ class AppConfig {
     'EMIT_OBSERVABILITY_SMOKE_EVENT',
   );
 
-  static const bool enableExploreSyntheticVisualFill = bool.fromEnvironment(
-    'ENABLE_EXPLORE_SYNTHETIC_VISUAL_FILL',
-  );
-
   static bool get shouldShowEnvironmentBanner => !environment.isProduction;
 
   static String get environmentBannerLabel {

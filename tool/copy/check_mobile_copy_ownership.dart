@@ -322,9 +322,7 @@ String? _fileAllowanceReason(String source) {
 bool _supportsFileAllowance(String file) =>
     file.startsWith('lib/design_fixtures/') ||
     file == 'lib/core/city_catalog.dart' ||
-    file == 'lib/core/country_markets.dart' ||
-    file ==
-        'lib/explore/presentation/widgets/explore_synthetic_visual_fill.dart';
+    file == 'lib/core/country_markets.dart';
 
 class _CopyVisitor extends RecursiveAstVisitor<void> {
   _CopyVisitor({required this.file, required this.source, required this.unit});

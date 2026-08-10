@@ -84,5 +84,5 @@ dart run tool/architecture/check_ui_composition_contracts.dart --check
 ```
 
 The first command rebuilds and seeds the plugin, including generated steering
-probes. The drift ratchet rejects analyzer-plugin setup errors and baseline
-increases; the resolved checker owns cross-file screen/shell conformance.
+probes. The drift gate rejects analyzer-plugin setup errors and every remaining
+Catch diagnostic; the resolved checker owns cross-file screen/shell conformance.

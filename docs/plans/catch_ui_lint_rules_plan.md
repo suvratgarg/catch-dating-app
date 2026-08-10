@@ -1,7 +1,7 @@
 ---
 doc_id: catch-ui-lint-rules-plan
-version: 0.5.1
-updated: 2026-08-06
+version: 0.5.2
+updated: 2026-08-11
 owner: ui_elevation_initiative
 dri: TBD
 status: remaining_work
@@ -63,7 +63,7 @@ unimplemented or still-weak lint/governance work.
   broad-count tracker.
 - Diagnostic-specific shell wrappers are retired. Focused inspection uses
   `check_catch_ui_lint_drift.sh --code <diagnostic>` and aggregate enforcement
-  uses its decrease-only `--check` ratchet.
+  uses its zero-diagnostic `--check` gate.
 - The shared shell scanner helper is retired because no scanner wrapper consumes it.
 
 ## Phase 0 - Token Foundation Still Open

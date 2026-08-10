@@ -40,7 +40,7 @@ generic audit trackers:
 
 | Area | Read before |
 |---|---|
-| `lib/event_policies/README.md` | Changing event policy bundles, admission, pricing, waitlist, cancellation, settlement, or the dev event-policy lab. |
+| `lib/event_policies/README.md` | Changing the live event policy bundle, admission, pricing, waitlist, cancellation, settlement, or legacy-document compatibility. |
 | `lib/safety/README.md` | Changing blocking, reporting, account deletion, safety rules, or deletion/anonymization behavior. |
 | `lib/user_profile/README.md` | Changing private profile identity fields, profile edit UI, public projection inputs, or profile schema migration. |
 
