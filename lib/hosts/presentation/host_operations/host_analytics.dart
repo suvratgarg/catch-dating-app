@@ -785,24 +785,26 @@ class HostAnalyticsEventTile extends StatelessWidget {
       attended: event.checkedInCount,
       matches: event.mutualMatchCount,
     );
-    return CatchField.nav(
-      key: ValueKey('host-analytics-event-${event.eventId}'),
-      title: event.title,
-      body: '$dateAndStatus\n$attendance',
-      icon: CatchIcons.eventOutlined,
-      divider: divider,
-      onTap: onTap,
-      showChevron: false,
-      valueText: EventFormatters.priceInPaise(
-        event.grossRevenueMinor,
-        currencyCode: event.currency,
+    return CatchFieldLanes.single(
+      child: CatchField.nav(
+        key: ValueKey('host-analytics-event-${event.eventId}'),
+        title: event.title,
+        body: '$dateAndStatus\n$attendance',
+        icon: CatchIcons.eventOutlined,
+        divider: divider,
+        onTap: onTap,
+        showChevron: false,
+        valueText: EventFormatters.priceInPaise(
+          event.grossRevenueMinor,
+          currencyCode: event.currency,
+        ),
+        action: hasPaymentIssues
+            ? CatchBadge(
+                label: context.l10n.hostsHostAnalyticsLabelPaymentIssues,
+                tone: CatchBadgeTone.warning,
+              )
+            : null,
       ),
-      action: hasPaymentIssues
-          ? CatchBadge(
-              label: context.l10n.hostsHostAnalyticsLabelPaymentIssues,
-              tone: CatchBadgeTone.warning,
-            )
-          : null,
     );
   }
 }

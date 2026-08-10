@@ -294,60 +294,63 @@ class HostTeamOwnerHostRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchField.content(
-      title: host.displayName,
-      body: host.role == ClubHostRole.owner
-          ? context.l10n.clubsClubIdentityAtomsLabelOwner
-          : context.l10n.clubsClubIdentityAtomsLabelHost,
-      leading: CatchPersonAvatar(
-        name: host.displayName,
-        imageUrl: host.avatarUrl,
-        size: 42,
+    return CatchFieldLanes.single(
+      child: CatchField.content(
+        title: host.displayName,
+        body: host.role == ClubHostRole.owner
+            ? context.l10n.clubsClubIdentityAtomsLabelOwner
+            : context.l10n.clubsClubIdentityAtomsLabelHost,
+        leading: CatchPersonAvatar(
+          name: host.displayName,
+          imageUrl: host.avatarUrl,
+          size: 42,
+        ),
+        leadingExtent: 42,
+        action: canManage
+            ? CatchActionMenu<String>(
+                key: ValueKey('host-team-actions-${host.uid}'),
+                tooltip: context
+                    .l10n
+                    .hostsHostTeamManagementSectionTooltipHostActions,
+                icon: CatchIcons.moreHorizRounded,
+                onSelected: (value) {
+                  if (value ==
+                      context
+                          .l10n
+                          .hostsHostTeamManagementSectionVisiblecopyTransfer) {
+                    onTransfer();
+                  }
+                  if (value ==
+                      context
+                          .l10n
+                          .hostsHostTeamManagementSectionVisiblecopyRemove) {
+                    onRemove();
+                  }
+                },
+                items: [
+                  CatchActionMenuItem(
+                    value: context
+                        .l10n
+                        .hostsHostTeamManagementSectionVisiblecopyTransfer,
+                    label: context
+                        .l10n
+                        .hostsHostTeamManagementSectionLabelTransferOwnership,
+                    icon: CatchIcons.adminPanelSettingsOutlined,
+                  ),
+                  CatchActionMenuItem(
+                    value: context
+                        .l10n
+                        .hostsHostTeamManagementSectionVisiblecopyRemove,
+                    label: context
+                        .l10n
+                        .hostsHostTeamManagementSectionLabelRemoveHost,
+                    icon: CatchIcons.personOffOutlined,
+                    isDestructive: true,
+                  ),
+                ],
+              )
+            : null,
       ),
-      leadingExtent: 42,
-      action: canManage
-          ? CatchActionMenu<String>(
-              key: ValueKey('host-team-actions-${host.uid}'),
-              tooltip:
-                  context.l10n.hostsHostTeamManagementSectionTooltipHostActions,
-              icon: CatchIcons.moreHorizRounded,
-              onSelected: (value) {
-                if (value ==
-                    context
-                        .l10n
-                        .hostsHostTeamManagementSectionVisiblecopyTransfer) {
-                  onTransfer();
-                }
-                if (value ==
-                    context
-                        .l10n
-                        .hostsHostTeamManagementSectionVisiblecopyRemove) {
-                  onRemove();
-                }
-              },
-              items: [
-                CatchActionMenuItem(
-                  value: context
-                      .l10n
-                      .hostsHostTeamManagementSectionVisiblecopyTransfer,
-                  label: context
-                      .l10n
-                      .hostsHostTeamManagementSectionLabelTransferOwnership,
-                  icon: CatchIcons.adminPanelSettingsOutlined,
-                ),
-                CatchActionMenuItem(
-                  value: context
-                      .l10n
-                      .hostsHostTeamManagementSectionVisiblecopyRemove,
-                  label: context
-                      .l10n
-                      .hostsHostTeamManagementSectionLabelRemoveHost,
-                  icon: CatchIcons.personOffOutlined,
-                  isDestructive: true,
-                ),
-              ],
-            )
-          : null,
     );
   }
 }
@@ -443,15 +446,18 @@ class _HostTeamAddHostSheetState extends State<HostTeamAddHostSheet> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          CatchField.input(
-            title: context.l10n.hostsHostTeamManagementSectionTitlePhoneNumber,
-            contract:
-                CatchContractConstraints.addClubHostCallablePayloadPhoneNumber,
-            controller: _controller,
-            prefixIcon: Icon(CatchIcons.phoneOutlined),
-            keyboardType: TextInputType.phone,
-            textInputAction: TextInputAction.done,
-            onSubmitted: (_) => unawaited(_submit()),
+          CatchFieldLanes.single(
+            child: CatchField.input(
+              title:
+                  context.l10n.hostsHostTeamManagementSectionTitlePhoneNumber,
+              contract: CatchContractConstraints
+                  .addClubHostCallablePayloadPhoneNumber,
+              controller: _controller,
+              prefixIcon: Icon(CatchIcons.phoneOutlined),
+              keyboardType: TextInputType.phone,
+              textInputAction: TextInputAction.done,
+              onSubmitted: (_) => unawaited(_submit()),
+            ),
           ),
           if (errorMessage != null) ...[
             gapH12,

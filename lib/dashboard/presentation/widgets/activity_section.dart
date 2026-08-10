@@ -293,20 +293,22 @@ class NotificationRow extends StatelessWidget {
               title: title,
               body: body,
             ),
-      child: CatchField.content(
-        icon: visual.icon,
-        iconColor: visual.accent,
-        title: title,
-        body: body,
-        emphasis: CatchFieldEmphasis.title,
-        showChevron: false,
-        action: timeLabel.isEmpty
-            ? null
-            : Text(
-                timeLabel,
-                style: CatchTextStyles.monoLabelS(context, color: timeColor),
-              ),
-        onTap: onTap,
+      child: CatchFieldLanes.single(
+        child: CatchField.content(
+          icon: visual.icon,
+          iconColor: visual.accent,
+          title: title,
+          body: body,
+          emphasis: CatchFieldEmphasis.title,
+          showChevron: false,
+          action: timeLabel.isEmpty
+              ? null
+              : Text(
+                  timeLabel,
+                  style: CatchTextStyles.monoLabelS(context, color: timeColor),
+                ),
+          onTap: onTap,
+        ),
       ),
     );
   }

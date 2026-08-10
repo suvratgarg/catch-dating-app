@@ -173,24 +173,26 @@ class _ProfileDirectTextEntryFieldState
                 l10n: context.l10n,
                 context: AppErrorContext.profile,
               ));
-    return CatchField.input(
-      icon: widget.icon,
-      title: widget.label,
-      contract: widget.contract,
-      emptyValueText: widget.emptyValueText,
-      inputHint: widget.inputHint,
-      leadingUnit: widget.leadingUnit,
-      showClearButton: widget.showClearButton,
-      controller: _controller,
-      keyboardType: widget.keyboardType,
-      textInputAction: TextInputAction.done,
-      textCapitalization: widget.textCapitalization,
-      autofillHints: widget.autofillHints,
-      readOnly: isSaving,
-      status: isSaving ? CatchFieldStatus.saving : _status,
-      error: errorText,
-      onFocusChanged: _handleFocusChanged,
-      onSubmitted: (_) => _submit(),
+    return CatchFieldLanes.single(
+      child: CatchField.input(
+        icon: widget.icon,
+        title: widget.label,
+        contract: widget.contract,
+        emptyValueText: widget.emptyValueText,
+        inputHint: widget.inputHint,
+        leadingUnit: widget.leadingUnit,
+        showClearButton: widget.showClearButton,
+        controller: _controller,
+        keyboardType: widget.keyboardType,
+        textInputAction: TextInputAction.done,
+        textCapitalization: widget.textCapitalization,
+        autofillHints: widget.autofillHints,
+        readOnly: isSaving,
+        status: isSaving ? CatchFieldStatus.saving : _status,
+        error: errorText,
+        onFocusChanged: _handleFocusChanged,
+        onSubmitted: (_) => _submit(),
+      ),
     );
   }
 }
@@ -271,26 +273,28 @@ class ProfileInlineTextValue extends StatelessWidget {
       if (maxLength != null) LengthLimitingTextInputFormatter(maxLength),
     ];
 
-    return CatchField.input(
-      title: label,
-      contract: contract,
-      placeholder: placeholder ?? displayValue,
-      controller: controller,
-      keyboardType: keyboardType,
-      textInputAction:
-          textInputAction ??
-          (maxLines == 1 ? TextInputAction.done : TextInputAction.newline),
-      textCapitalization: textCapitalization,
-      inputFormatters: inputFormatters.isEmpty ? null : inputFormatters,
-      autofillHints: autofillHints,
-      maxLines: maxLines,
-      minLines: minLines,
-      enabled: enabled,
-      autofocus: true,
-      showLabel: false,
-      size: CatchFieldSize.floating,
-      variant: CatchFieldVariant.underline,
-      onSubmitted: onSubmitted,
+    return CatchFieldLanes.single(
+      child: CatchField.input(
+        title: label,
+        contract: contract,
+        placeholder: placeholder ?? displayValue,
+        controller: controller,
+        keyboardType: keyboardType,
+        textInputAction:
+            textInputAction ??
+            (maxLines == 1 ? TextInputAction.done : TextInputAction.newline),
+        textCapitalization: textCapitalization,
+        inputFormatters: inputFormatters.isEmpty ? null : inputFormatters,
+        autofillHints: autofillHints,
+        maxLines: maxLines,
+        minLines: minLines,
+        enabled: enabled,
+        autofocus: true,
+        showLabel: false,
+        size: CatchFieldSize.floating,
+        variant: CatchFieldVariant.underline,
+        onSubmitted: onSubmitted,
+      ),
     );
   }
 }

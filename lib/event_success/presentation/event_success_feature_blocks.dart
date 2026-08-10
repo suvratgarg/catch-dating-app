@@ -970,10 +970,12 @@ class EventSuccessRecommendationTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchField.content(
-      title: recommendation.title,
-      body: recommendation.rationale,
-      icon: icon,
+    return CatchFieldLanes.single(
+      child: CatchField.content(
+        title: recommendation.title,
+        body: recommendation.rationale,
+        icon: icon,
+      ),
     );
   }
 }

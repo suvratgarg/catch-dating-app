@@ -375,79 +375,82 @@ class PaymentReceiptSheet extends StatelessWidget {
             top: CatchSpacing.s3,
             bottom: CatchSpacing.s0,
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  CatchBadge(
-                    label: statusPresentation.label,
-                    tone: statusPresentation.tone,
-                    size: CatchBadgeSize.md,
-                  ),
-                  const Spacer(),
-                  Text(
-                    EventFormatters.priceInPaise(
-                      payment.amount,
-                      currencyCode: payment.currency,
+          child: CatchFieldLanes.custom(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    CatchBadge(
+                      label: statusPresentation.label,
+                      tone: statusPresentation.tone,
+                      size: CatchBadgeSize.md,
                     ),
-                    style: CatchTextStyles.titleL(context),
-                  ),
-                ],
-              ),
-              gapH20,
-              const CatchDivider.section(),
-              gapH20,
-              CatchField.read(
-                title: context.l10n.paymentsPaymentHistoryScreenTitlePaymentId,
-                body: payment.paymentId,
-              ),
-              gapH12,
-              CatchField.read(
-                title: context.l10n.paymentsPaymentHistoryScreenTitleOrderId,
-                body: payment.orderId,
-              ),
-              gapH12,
-              CatchField.read(
-                title: context.l10n.paymentsPaymentHistoryScreenTitleEventId,
-                body: payment.eventId,
-              ),
-              gapH12,
-              CatchField.read(
-                title: context.l10n.paymentsPaymentHistoryScreenTitleDate,
-                body: AppTimeFormatters.dateTime(payment.createdAt),
-              ),
-              if (statusPresentation.detail case final detail?) ...[
-                gapH12,
-                CatchField.read(
-                  title: context.l10n.paymentsPaymentHistoryScreenTitleStatus,
-                  body: detail,
+                    const Spacer(),
+                    Text(
+                      EventFormatters.priceInPaise(
+                        payment.amount,
+                        currencyCode: payment.currency,
+                      ),
+                      style: CatchTextStyles.titleL(context),
+                    ),
+                  ],
                 ),
-              ],
-              if (payment.signUpFailed) ...[
                 gapH20,
                 const CatchDivider.section(),
-                gapH16,
-                SizedBox(
-                  width: double.infinity,
-                  child: CatchButton(
-                    label: context
-                        .l10n
-                        .paymentsPaymentHistoryScreenLabelGetHelpWithThis,
-                    onPressed: onHelp,
-                    icon: Icon(CatchIcons.helpOutlineRounded),
-                    variant: CatchButtonVariant.secondary,
-                    foregroundColor: t.warning,
-                    borderColor: t.warning.withValues(
-                      alpha: CatchOpacity.paymentHelpBorder,
-                    ),
-                    fullWidth: true,
-                  ),
+                gapH20,
+                CatchField.read(
+                  title:
+                      context.l10n.paymentsPaymentHistoryScreenTitlePaymentId,
+                  body: payment.paymentId,
                 ),
+                gapH12,
+                CatchField.read(
+                  title: context.l10n.paymentsPaymentHistoryScreenTitleOrderId,
+                  body: payment.orderId,
+                ),
+                gapH12,
+                CatchField.read(
+                  title: context.l10n.paymentsPaymentHistoryScreenTitleEventId,
+                  body: payment.eventId,
+                ),
+                gapH12,
+                CatchField.read(
+                  title: context.l10n.paymentsPaymentHistoryScreenTitleDate,
+                  body: AppTimeFormatters.dateTime(payment.createdAt),
+                ),
+                if (statusPresentation.detail case final detail?) ...[
+                  gapH12,
+                  CatchField.read(
+                    title: context.l10n.paymentsPaymentHistoryScreenTitleStatus,
+                    body: detail,
+                  ),
+                ],
+                if (payment.signUpFailed) ...[
+                  gapH20,
+                  const CatchDivider.section(),
+                  gapH16,
+                  SizedBox(
+                    width: double.infinity,
+                    child: CatchButton(
+                      label: context
+                          .l10n
+                          .paymentsPaymentHistoryScreenLabelGetHelpWithThis,
+                      onPressed: onHelp,
+                      icon: Icon(CatchIcons.helpOutlineRounded),
+                      variant: CatchButtonVariant.secondary,
+                      foregroundColor: t.warning,
+                      borderColor: t.warning.withValues(
+                        alpha: CatchOpacity.paymentHelpBorder,
+                      ),
+                      fullWidth: true,
+                    ),
+                  ),
+                ],
+                const CatchScrollTerminalPadding(),
               ],
-              const CatchScrollTerminalPadding(),
-            ],
+            ),
           ),
         ),
       ),

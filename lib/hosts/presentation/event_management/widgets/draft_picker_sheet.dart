@@ -216,28 +216,30 @@ class DraftCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return CatchField.nav(
-      title: draft.summary,
-      body: context.l10n.hostsDraftPickerSheetTextSavedTouppercase(
-        toUpperCase: _formatRelative(draft.savedAt).toUpperCase(),
-      ),
-      icon: CatchIcons.descriptionOutlined,
-      iconColor: t.ink3,
-      onTap: isDeleting ? null : onSelect,
-      action: Tooltip(
-        message: context.l10n.hostsDraftPickerSheetMessageDeleteDraft,
-        child: CatchIconButton(
-          key: CreateEventFormKeys.deleteDraft(draft.id),
-          onTap: isDeleting ? null : onDelete,
-          size: 36,
-          background: Colors.transparent,
-          child: isDeleting
-              ? const HostInlineSkeletonIcon()
-              : Icon(
-                  CatchIcons.deleteOutlineRounded,
-                  size: CatchIcon.control,
-                  color: t.ink2,
-                ),
+    return CatchFieldLanes.single(
+      child: CatchField.nav(
+        title: draft.summary,
+        body: context.l10n.hostsDraftPickerSheetTextSavedTouppercase(
+          toUpperCase: _formatRelative(draft.savedAt).toUpperCase(),
+        ),
+        icon: CatchIcons.descriptionOutlined,
+        iconColor: t.ink3,
+        onTap: isDeleting ? null : onSelect,
+        action: Tooltip(
+          message: context.l10n.hostsDraftPickerSheetMessageDeleteDraft,
+          child: CatchIconButton(
+            key: CreateEventFormKeys.deleteDraft(draft.id),
+            onTap: isDeleting ? null : onDelete,
+            size: 36,
+            background: Colors.transparent,
+            child: isDeleting
+                ? const HostInlineSkeletonIcon()
+                : Icon(
+                    CatchIcons.deleteOutlineRounded,
+                    size: CatchIcon.control,
+                    color: t.ink2,
+                  ),
+          ),
         ),
       ),
     );

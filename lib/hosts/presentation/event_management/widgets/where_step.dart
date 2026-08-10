@@ -45,18 +45,20 @@ class WhereStep extends StatelessWidget {
                           .l10n
                           .hostsWhereStepVisiblecopyChooseAMeetingLocation
                     : null,
-                builder: (field) => CatchField.nav(
-                  key: CreateEventFormKeys.mapPicker,
-                  title: context.l10n.hostsWhereStepLabelMeetingLocation,
-                  body: startingPoint == null
-                      ? context.l10n.eventsMapPinTileTitleChooseOnMap
-                      : _trimToNull(meetingPointController.text) ??
-                            context.l10n.eventsMapPinTileTitlePinnedLocation,
-                  icon: startingPoint == null
-                      ? CatchIcons.mapOutlined
-                      : CatchIcons.editLocationAltOutlined,
-                  error: field.errorText,
-                  onTap: onPickLocation,
+                builder: (field) => CatchFieldLanes.single(
+                  child: CatchField.nav(
+                    key: CreateEventFormKeys.mapPicker,
+                    title: context.l10n.hostsWhereStepLabelMeetingLocation,
+                    body: startingPoint == null
+                        ? context.l10n.eventsMapPinTileTitleChooseOnMap
+                        : _trimToNull(meetingPointController.text) ??
+                              context.l10n.eventsMapPinTileTitlePinnedLocation,
+                    icon: startingPoint == null
+                        ? CatchIcons.mapOutlined
+                        : CatchIcons.editLocationAltOutlined,
+                    error: field.errorText,
+                    onTap: onPickLocation,
+                  ),
                 ),
               ),
               CatchField.input(

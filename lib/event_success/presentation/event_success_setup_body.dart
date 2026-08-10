@@ -330,16 +330,18 @@ class EventSuccessModuleRows extends StatelessWidget {
             onChanged: _editable ? _onQuestionnaireModeChanged : null,
           )
         else
-          CatchField.toggle(
-            key: ValueKey('eventSuccessModule-${module.id}'),
-            title: module.title,
-            contract: CatchContractConstraints
-                .mobileFormStateEventSuccessModuleSelected,
-            body: _recommendation.reason,
-            badgeLabel: _recommendationBadgeLabel(_recommendation),
-            bodyMaxLines: 3,
-            value: _draft.isModuleSelected(module.id),
-            onChanged: _editable ? _onModuleChanged : null,
+          CatchFieldLanes.single(
+            child: CatchField.toggle(
+              key: ValueKey('eventSuccessModule-${module.id}'),
+              title: module.title,
+              contract: CatchContractConstraints
+                  .mobileFormStateEventSuccessModuleSelected,
+              body: _recommendation.reason,
+              badgeLabel: _recommendationBadgeLabel(_recommendation),
+              bodyMaxLines: 3,
+              value: _draft.isModuleSelected(module.id),
+              onChanged: _editable ? _onModuleChanged : null,
+            ),
           ),
         if (questionnaire && _draft.isModuleSelected(module.id))
           KeyedSubtree(

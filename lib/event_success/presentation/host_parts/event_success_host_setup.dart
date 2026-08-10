@@ -326,12 +326,14 @@ class ReadinessIssues extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchField.content(
-      title: context.l10n.eventSuccessEventSuccessHostSetupTitleBeforeLaunch,
-      body: issues.join('\n'),
-      bodyMaxLines: math.max(3, issues.length * 2),
-      icon: CatchIcons.errorOutlineRounded,
-      iconColor: t.warning,
+    return CatchFieldLanes.single(
+      child: CatchField.content(
+        title: context.l10n.eventSuccessEventSuccessHostSetupTitleBeforeLaunch,
+        body: issues.join('\n'),
+        bodyMaxLines: math.max(3, issues.length * 2),
+        icon: CatchIcons.errorOutlineRounded,
+        iconColor: t.warning,
+      ),
     );
   }
 }

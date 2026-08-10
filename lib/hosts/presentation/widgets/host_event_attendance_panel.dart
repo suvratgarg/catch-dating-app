@@ -889,11 +889,14 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
                 ],
               ),
               gapH12,
-              CatchField.content(
-                title:
-                    context.l10n.hostsHostEventAttendancePanelTitleEventReport,
-                body: reportSummary.summary(context.l10n),
-                icon: CatchIcons.receiptLongOutlined,
+              CatchFieldLanes.single(
+                child: CatchField.content(
+                  title: context
+                      .l10n
+                      .hostsHostEventAttendancePanelTitleEventReport,
+                  body: reportSummary.summary(context.l10n),
+                  icon: CatchIcons.receiptLongOutlined,
+                ),
               ),
               if (mutationState.reportExportError != null) ...[
                 gapH12,

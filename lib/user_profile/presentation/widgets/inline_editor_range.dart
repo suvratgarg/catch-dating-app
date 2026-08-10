@@ -142,38 +142,40 @@ class _ProfileInlineRangeEditorState
           )
         : widget.value;
     // Composite exception: a bounded two-handle slider commits one range.
-    return CatchField.control(
-      icon: widget.icon,
-      title: widget.title,
-      contract: widget.minimumContract,
-      body: body,
-      open: widget.isExpanded,
-      onOpenChanged: (expanded) {
-        if (isSaving || expanded == widget.isExpanded) return;
-        widget.onTap();
-      },
-      isLoading: isSaving,
-      status: isSaving ? CatchFieldStatus.saving : _status,
-      error: _errorMessage(),
-      control: CatchRangeSlider(
-        minimumContract: widget.minimumContract,
-        maximumContract: widget.maximumContract,
-        min: widget.sliderMin,
-        max: widget.sliderMax,
-        divisions: widget.divisions,
-        values: _range,
-        onChanged: isSaving
-            ? null
-            : (values) {
-                _savedStatusTimer?.cancel();
-                setState(() {
-                  _range = values;
-                  _status = CatchFieldStatus.idle;
-                });
-              },
+    return CatchFieldLanes.single(
+      child: CatchField.control(
+        icon: widget.icon,
+        title: widget.title,
+        contract: widget.minimumContract,
+        body: body,
+        open: widget.isExpanded,
+        onOpenChanged: (expanded) {
+          if (isSaving || expanded == widget.isExpanded) return;
+          widget.onTap();
+        },
+        isLoading: isSaving,
+        status: isSaving ? CatchFieldStatus.saving : _status,
+        error: _errorMessage(),
+        control: CatchRangeSlider(
+          minimumContract: widget.minimumContract,
+          maximumContract: widget.maximumContract,
+          min: widget.sliderMin,
+          max: widget.sliderMax,
+          divisions: widget.divisions,
+          values: _range,
+          onChanged: isSaving
+              ? null
+              : (values) {
+                  _savedStatusTimer?.cancel();
+                  setState(() {
+                    _range = values;
+                    _status = CatchFieldStatus.idle;
+                  });
+                },
+        ),
+        onCancel: _cancel,
+        onSubmit: _submit,
       ),
-      onCancel: _cancel,
-      onSubmit: _submit,
     );
   }
 

@@ -99,26 +99,30 @@ class _EventSuccessFeedbackFormState extends State<EventSuccessFeedbackForm> {
             onChanged: (value) => setState(() => _metPeople = value),
           ),
           gapH8,
-          CatchField.toggle(
-            title: context
-                .l10n
-                .eventSuccessEventSuccessCompanionFeedbackTitleIWantCatchTo,
-            contract: CatchContractConstraints
-                .eventSuccessFeedbackDocumentSafetyConcern,
-            titleMaxLines: 2,
-            value: _safetyConcern,
-            onChanged: (value) => setState(() => _safetyConcern = value),
+          CatchFieldLanes.single(
+            child: CatchField.toggle(
+              title: context
+                  .l10n
+                  .eventSuccessEventSuccessCompanionFeedbackTitleIWantCatchTo,
+              contract: CatchContractConstraints
+                  .eventSuccessFeedbackDocumentSafetyConcern,
+              titleMaxLines: 2,
+              value: _safetyConcern,
+              onChanged: (value) => setState(() => _safetyConcern = value),
+            ),
           ),
           gapH8,
           StageSoftBand(
-            child: CatchField.input(
-              title: context
-                  .l10n
-                  .eventSuccessEventSuccessCompanionFeedbackTitlePrivateNoteToCatch,
-              contract: CatchContractConstraints
-                  .eventSuccessFeedbackDocumentPrivateNote,
-              controller: _noteController,
-              maxLines: 3,
+            child: CatchFieldLanes.single(
+              child: CatchField.input(
+                title: context
+                    .l10n
+                    .eventSuccessEventSuccessCompanionFeedbackTitlePrivateNoteToCatch,
+                contract: CatchContractConstraints
+                    .eventSuccessFeedbackDocumentPrivateNote,
+                controller: _noteController,
+                maxLines: 3,
+              ),
             ),
           ),
           gapH12,
