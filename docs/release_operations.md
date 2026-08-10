@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.0.10
+version: 2.0.11
 updated: 2026-08-10
 owner: recursive_audit_loop
 status: active
@@ -494,24 +494,18 @@ secret-level runtime binding before Firebase can attempt to mutate IAM during
 deployment.
 
 Configure a Firestore TTL policy on
-`crossPathsSuggestionExposures.expiresAt` before enabling the feature in an
-environment. The callable writes a 30-day expiry, but the field does not delete
+`crossPathsSuggestionExposures.expiresAt` in every environment. The callable
+writes a 30-day expiry, but the field does not delete
 documents by itself until that environment policy exists. Account deletion
 independently deletes exposure receipts involving the member.
 
 ### Mumbai selected-event pilot
 
-Cross Paths ships with three operational Remote Config switches:
-
-- `cross_paths_enable_consent_controls`
-- `cross_paths_enable_explore_suggestions`
-- `cross_paths_enable_pair_inventory`
-
-All three switches are on in the checked-in and live environment templates as
-of the production QA activation on 2026-08-10. They are emergency operational
-kill switches, not work-in-progress gates. A client switch alone never
-authorizes discovery. Every real event must also
-have Admin-owned `crossPathsDiscoveryEnabled: true`, and the backend accepts
+Cross Paths is a shipped client capability. Its temporary Remote Config
+rollout switches were retired after the production QA activation on
+2026-08-10 so an environment fetch failure or forgotten template cannot hide
+the feature. Every real event must have Admin-owned
+`crossPathsDiscoveryEnabled: true`, and the backend accepts
 that switch only for an active event at least six hours away in canonical
 market `in-mh-mumbai`. At most three upcoming events may be selected. Pair
 inventory additionally requires an organizer-authored admission policy and
@@ -528,16 +522,16 @@ Use this rollout order:
 4. Curate the Mumbai showcase queue through the score-free human checklist.
 5. Prove eligible-supply, exposure, invitation-abuse, cancellation, safety,
    and support monitoring.
-6. Monitor the already-live client surfaces and enable real discovery only by
+6. Monitor the live client surfaces and enable real discovery only by
    selecting an eligible event after consent/supply evidence is sufficient.
 7. Enable pair inventory per event only when that organizer deliberately
    reserves capacity and the event remains eligible.
 
-Rollback is additive and fail-closed: first disable Explore suggestions, then
-disable selected event switches if necessary. Turning off an event switch
+Rollback is additive and fail-closed: disable selected event switches if
+necessary. Turning off an event switch
 invalidates pending invitations but preserves an explicitly accepted plan.
-Keep consent controls available long enough for members and support to revoke
-or inspect consent, and never use rollback to rewrite consent history.
+Consent controls remain available so members and support can revoke or inspect
+consent; never use rollback to rewrite consent history.
 
 Production QA was activated on 2026-08-10 with one hidden, synthetic Mumbai
 event, one fictional test-phone viewer, two synthetic opted-in showcase

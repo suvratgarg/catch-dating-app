@@ -1,6 +1,6 @@
 ---
 doc_id: cross_paths
-version: 1.11.0
+version: 1.12.0
 updated: 2026-08-10
 owner: product (approved direction 2026-08-05)
 status: active
@@ -371,8 +371,8 @@ Phase 0 implements the private optional preference
 - Existing users and users missing the field resolve to `false`.
 - The field remains optional-on-read and default-false; no affirmative backfill
   is permitted.
-- The setting lives under Settings → Privacy & Safety and is hidden while the
-  consent-controls rollout flag is off.
+- The setting lives under Settings → Privacy & Safety as a permanent privacy
+  control.
 - Turning it off immediately suppresses all future discovery.
 - Turning it on does not itself opt the user into any event.
 - The field must not be projected into `publicProfiles/{uid}`.
@@ -566,9 +566,8 @@ they do today; the event plan is not silently upgraded.
 
 ### Phase 3: organizer-controlled companion inventory
 
-Phase 3 is shipped behind the emergency operational
-`cross_paths_enable_pair_inventory` switch, whose live and bundled value is
-on. The capability remains default-off in each event policy. An organizer may reserve a bounded
+Phase 3 is shipped as a production capability whose availability remains
+default-off in each event policy. An organizer may reserve a bounded
 number of seats from an event's total capacity for unbooked Cross Paths
 requesters. The featured recipient is already confirmed; acceptance reserves
 one companion seat for the requester, not a second seat and not a booking.
@@ -693,12 +692,12 @@ the roster cannot be reconstructed by changing query predicates.
 The implemented `lib/cross_paths/` feature root uses normal domain, data, and
 presentation boundaries:
 
-- domain models own feature flags, consent state, and the strict sanitized
-  suggestion projection; invitation and event-plan models remain future slices;
+- domain models own consent state and the strict sanitized suggestion
+  projection; invitation and event-plan models remain future slices;
 - the data repository owns consent operations plus the batched
   `getCrossPathsSuggestions` callable;
-- providers/controllers own operational switch reads, consent mutation, one
-  bounded current-event request, response expiry, and error-to-empty behavior;
+- providers/controllers own consent mutation, one bounded current-event
+  request, response expiry, and error-to-empty behavior;
 - presentation owns the Event Detail consent section and
   `CrossPathsExploreCard`, which composes `CatchPersonPolaroid` with separate
   associated-event context and a sanitized profile preview;
@@ -805,11 +804,13 @@ avatar enrichment now resolve candidates through the server-owned
 member's own edge, organizer roster access remains intact, and the callable
 enforces the Catch window, viewer attendance, reciprocal preferences, prior
 decisions, and blocks in both directions. Global and per-event consent schemas,
-rules, Settings/Event Detail controls, the callable, and two fail-closed Remote
-Config defaults now exist. The score-free showcase evaluator, server-only
+rules, Settings/Event Detail controls, and the callable now exist. The
+score-free showcase evaluator, server-only
 eligibility document, role-gated list/decision callables, audit log, account
 deletion cleanup, rules denial, and dedicated Admin review workspace also now
-exist. The batched server suggestion contract now adds canonical event
+exist. Global client rollout flags have been retired; layered consent,
+Admin-selected events, showcase review, event admission, and safety remain the
+fail-closed authorities. The batched server suggestion contract now adds canonical event
 availability, safety/consent/readiness filtering, deterministic fatigue,
 sanitized output, and signed tokens. Phase 0 still requires external legal
 privacy-policy approval. The synthetic seed policy is now implemented through
@@ -821,7 +822,7 @@ may recover their own signed-up fixture. The operation writes only current
 synthetic consent plus fingerprint-bound showcase review state.
 
 - [x] Land/reuse the person-Polaroid and organizer-poster migration.
-- [x] Introduce feature flags with fail-closed defaults.
+- [x] Retire the temporary client rollout flags after production activation.
 - [x] Generalize showcase readiness away from running-only completeness.
 - [x] Add global and per-event consent contracts and Settings/event controls.
 - [x] Add reviewed showcase-eligibility operations for launch supply.
@@ -839,7 +840,7 @@ eligibility.
 Implementation receipt (2026-08-05): the mixed-feed person card, sanitized
 profile preview, event-majority/no-adjacent-non-event rules, no-search/no-map
 gates, current-event association, token expiry, and Event Detail routing are
-implemented behind operational Explore controls. Qualified card
+implemented as a shipped Explore enrichment. Qualified card
 impression, profile-open, event-open, booking-started, and booking-completed
 analytics are wired without emitting the signed token or candidate identity.
 Environment-specific signing keys and exposure TTL policies are provisioned.
@@ -912,13 +913,13 @@ capacity and waitlist ordering remain separate.
 - [x] Add transactional hold, confirmation, release, and aggregate invariants.
 - [x] Carry the hold through free, Razorpay, and Stripe booking authority.
 - [x] Add requester/recipient held, confirmed, and ended UI states.
-- [x] Ship pair inventory behind an independent emergency switch while keeping
-      each event's organizer-authored policy default-off.
+- [x] Keep pair inventory default-off in each event's organizer-authored
+      policy without a second global client switch.
 - [ ] Pilot only with organizers who explicitly enable and understand it.
 
 Exit gate: emulator rules, Functions transactions, payment tests, Flutter
 states, generated contracts, design registries, and repository readiness are
-green before any market flag is enabled.
+green before any real event is selected.
 
 ## Verification and evidence
 
@@ -947,8 +948,8 @@ Implementation is incomplete until the changed phase has all relevant proof:
 
 ## Launch checklist
 
-- [x] All three shipped operational switches are on; server/event/member gates
-      remain authoritative and independently reversible.
+- [x] Temporary global rollout switches are retired; server, event, and member
+      gates remain authoritative and independently reversible.
 - [x] Existing and missing global preferences resolve to off.
 - [x] Per-event consent copy and the published privacy policy describe the
       implemented synthetic-QA behavior.

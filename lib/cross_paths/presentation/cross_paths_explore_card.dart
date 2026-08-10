@@ -18,7 +18,6 @@ import 'package:catch_dating_app/core/widgets/catch_person_polaroid.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';
-import 'package:catch_dating_app/cross_paths/data/cross_paths_feature_config_provider.dart';
 import 'package:catch_dating_app/cross_paths/data/cross_paths_repository.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_invitation.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_suggestion.dart';
@@ -276,9 +275,7 @@ class CrossPathsProfilePreviewSheet extends ConsumerWidget {
       crossPathsInvitationControllerProvider.notifier,
     );
     final analytics = ref.read(appAnalyticsProvider);
-    final pairInvitationEnabled =
-        suggestion.event.pairHoldAvailable &&
-        ref.watch(crossPathsFeatureConfigProvider).pairInventoryEnabled;
+    final pairInvitationEnabled = suggestion.event.pairHoldAvailable;
     return FractionallySizedBox(
       heightFactor: 0.94,
       child: CatchSurface(

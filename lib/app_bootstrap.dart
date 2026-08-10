@@ -9,7 +9,6 @@ import 'package:catch_dating_app/core/startup/catch_native_splash.dart';
 import 'package:catch_dating_app/core/startup/catch_startup_animation_scope.dart';
 import 'package:catch_dating_app/core/theme/catch_font_licenses.dart';
 import 'package:catch_dating_app/core/widgets/catch_framework_error_view.dart';
-import 'package:catch_dating_app/cross_paths/domain/cross_paths_feature_config.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/firebase_options.dart';
@@ -322,10 +321,7 @@ Future<(Object, StackTrace)?> _initializeRemoteConfig() async {
       minimumFetchInterval: AppConfig.remoteConfigMinimumFetchInterval,
     ),
   );
-  await remoteConfig.setDefaults({
-    ...kAppVersionConfigDefaults,
-    ...kCrossPathsConfigDefaults,
-  });
+  await remoteConfig.setDefaults({...kAppVersionConfigDefaults});
   try {
     await remoteConfig.fetchAndActivate();
     return null;

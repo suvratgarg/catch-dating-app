@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/cross_paths/data/cross_paths_repository.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_event_consent.dart';
-import 'package:catch_dating_app/cross_paths/domain/cross_paths_feature_config.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_invitation.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_pair_hold.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_suggestion.dart';
@@ -8,20 +7,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('bundled controls keep the shipped feature live', () {
-    expect(kCrossPathsConfigDefaults, {
-      CrossPathsFeatureConfig.enableConsentControlsKey: true,
-      CrossPathsFeatureConfig.enableExploreSuggestionsKey: true,
-      CrossPathsFeatureConfig.enablePairInventoryKey: true,
-    });
-    expect(CrossPathsFeatureConfig.live.consentControlsEnabled, isTrue);
-    expect(CrossPathsFeatureConfig.live.exploreSuggestionsEnabled, isTrue);
-    expect(CrossPathsFeatureConfig.live.pairInventoryEnabled, isTrue);
-    expect(CrossPathsFeatureConfig.disabled.consentControlsEnabled, isFalse);
-    expect(CrossPathsFeatureConfig.disabled.exploreSuggestionsEnabled, isFalse);
-    expect(CrossPathsFeatureConfig.disabled.pairInventoryEnabled, isFalse);
-  });
-
   test('event consent ids and timestamps decode deterministically', () {
     final updatedAt = Timestamp.fromDate(DateTime.utc(2026, 8, 5));
     final consent = crossPathsEventConsentFromFirestore({

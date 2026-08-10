@@ -4,9 +4,7 @@
 /// of reaching into Cross Paths presentation internals.
 library;
 
-export 'data/cross_paths_feature_config_provider.dart'; // public-api: fail-closed rollout configuration
 export 'data/cross_paths_repository.dart'; // public-api: feature-owned callable seam
-export 'domain/cross_paths_feature_config.dart'; // public-api: rollout state consumed by Explore enrichment
 export 'domain/cross_paths_invitation.dart'; // public-api: participant-only invitation and event-plan state
 export 'domain/cross_paths_pair_hold.dart'; // public-api: server-owned companion-seat reservation state
 export 'domain/cross_paths_suggestion.dart'; // public-api: sanitized suggestion projection

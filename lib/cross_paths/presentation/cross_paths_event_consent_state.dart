@@ -28,13 +28,11 @@ final class CrossPathsEventConsentSectionState {
 }
 
 bool crossPathsEventConsentEligible({
-  required bool rolloutEnabled,
   required Event event,
   required EventParticipation? participation,
   required UserProfile? userProfile,
   required DateTime now,
 }) =>
-    rolloutEnabled &&
     event.crossPathsDiscoveryEnabled &&
     userProfile?.prefsShowInCrossPaths == true &&
     participation?.status == EventParticipationStatus.signedUp &&
