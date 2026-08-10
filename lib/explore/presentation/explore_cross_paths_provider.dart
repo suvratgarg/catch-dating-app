@@ -28,13 +28,10 @@ String crossPathsExploreSessionId(Ref ref) {
 /// Optional, failure-isolated enrichment for the default Explore list.
 ///
 /// The primary event feed never waits on this provider. Signed-out viewers,
-/// active search, disabled rollout configuration, and an unavailable event
-/// set all resolve to an empty list without invoking the callable.
+/// active search, and an unavailable event set all resolve to an empty list
+/// without invoking the callable.
 @riverpod
 Future<List<CrossPathsSuggestion>> exploreCrossPathsSuggestions(Ref ref) async {
-  final config = ref.watch(crossPathsFeatureConfigProvider);
-  if (!config.exploreSuggestionsEnabled) return const [];
-
   final uidAsync = ref.watch(uidProvider);
   final uid = uidAsync.asData?.value;
   if (uid == null) return const [];

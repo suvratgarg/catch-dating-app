@@ -7,62 +7,46 @@ import 'package:flutter_test/flutter_test.dart';
 import '../events/events_test_helpers.dart';
 
 void main() {
-  test(
-    'eligibility requires rollout, both consent gates, and a future booking',
-    () {
-      final now = DateTime(2026, 8, 5, 10);
-      final event = buildEvent(
-        startTime: now.add(const Duration(hours: 2)),
-        crossPathsDiscoveryEnabled: true,
-      );
-      final profile = buildUser().copyWith(prefsShowInCrossPaths: true);
-      final participation = buildEventParticipation(
-        event: event,
-        uid: profile.uid,
-      );
+  test('eligibility requires both consent gates and a future booking', () {
+    final now = DateTime(2026, 8, 5, 10);
+    final event = buildEvent(
+      startTime: now.add(const Duration(hours: 2)),
+      crossPathsDiscoveryEnabled: true,
+    );
+    final profile = buildUser().copyWith(prefsShowInCrossPaths: true);
+    final participation = buildEventParticipation(
+      event: event,
+      uid: profile.uid,
+    );
 
-      expect(
-        crossPathsEventConsentEligible(
-          rolloutEnabled: true,
-          event: event,
-          participation: participation,
-          userProfile: profile,
-          now: now,
-        ),
-        isTrue,
-      );
-      expect(
-        crossPathsEventConsentEligible(
-          rolloutEnabled: false,
-          event: event,
-          participation: participation,
-          userProfile: profile,
-          now: now,
-        ),
-        isFalse,
-      );
-      expect(
-        crossPathsEventConsentEligible(
-          rolloutEnabled: true,
-          event: event.copyWith(crossPathsDiscoveryEnabled: false),
-          participation: participation,
-          userProfile: profile,
-          now: now,
-        ),
-        isFalse,
-      );
-      expect(
-        crossPathsEventConsentEligible(
-          rolloutEnabled: true,
-          event: event,
-          participation: participation,
-          userProfile: profile.copyWith(prefsShowInCrossPaths: false),
-          now: now,
-        ),
-        isFalse,
-      );
-    },
-  );
+    expect(
+      crossPathsEventConsentEligible(
+        event: event,
+        participation: participation,
+        userProfile: profile,
+        now: now,
+      ),
+      isTrue,
+    );
+    expect(
+      crossPathsEventConsentEligible(
+        event: event.copyWith(crossPathsDiscoveryEnabled: false),
+        participation: participation,
+        userProfile: profile,
+        now: now,
+      ),
+      isFalse,
+    );
+    expect(
+      crossPathsEventConsentEligible(
+        event: event,
+        participation: participation,
+        userProfile: profile.copyWith(prefsShowInCrossPaths: false),
+        now: now,
+      ),
+      isFalse,
+    );
+  });
 
   test(
     'keeps only an existing enabled consent revocable after eligibility',

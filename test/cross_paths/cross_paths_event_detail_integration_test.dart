@@ -1,8 +1,6 @@
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
-import 'package:catch_dating_app/cross_paths/data/cross_paths_feature_config_provider.dart';
 import 'package:catch_dating_app/cross_paths/data/cross_paths_repository.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_event_consent.dart';
-import 'package:catch_dating_app/cross_paths/domain/cross_paths_feature_config.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
@@ -33,12 +31,6 @@ void main() {
           eventId: event.id,
         ),
         overrides: [
-          crossPathsFeatureConfigProvider.overrideWithValue(
-            const CrossPathsFeatureConfig(
-              consentControlsEnabled: true,
-              exploreSuggestionsEnabled: false,
-            ),
-          ),
           clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
           eventDetailViewModelProvider(event.id).overrideWith(
             (ref) => AsyncData(
@@ -89,12 +81,6 @@ void main() {
           eventId: event.id,
         ),
         overrides: [
-          crossPathsFeatureConfigProvider.overrideWithValue(
-            const CrossPathsFeatureConfig(
-              consentControlsEnabled: true,
-              exploreSuggestionsEnabled: false,
-            ),
-          ),
           clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
           eventDetailViewModelProvider(event.id).overrideWith(
             (ref) => AsyncData(
