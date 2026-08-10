@@ -37,6 +37,7 @@ export const EventDetailShells: Story = {
       routeIds: ["event_detail_canonical"],
       states: [
         "catch-native",
+        "web-otp-registration",
         "external-source",
         "fact-grid",
         "provenance",
@@ -62,6 +63,7 @@ export const EventDetailHero: Story = {
       routeIds: ["event_detail_canonical"],
       states: [
         "catch-native",
+        "web-otp-registration",
         "external-source",
         "desktop-ticket-rail",
         "mobile-single-column",
@@ -75,6 +77,18 @@ export const EventDetailHero: Story = {
 export const EventDetailHeroExternal: Story = {
   name: "Hero · external",
   render: () => <ExternalHeroStory />,
+};
+
+export const EventDetailHeroWebOtp: Story = {
+  name: "Hero · website OTP registration",
+  parameters: {
+    catchComponent: {
+      id: "event_detail_public_registration",
+      routeIds: ["event_detail_canonical"],
+      states: ["details", "otp-code", "success", "error"],
+    },
+  },
+  render: () => <CatchHeroStory webOtp />,
 };
 
 export const EventDetailFacts: Story = {
@@ -125,7 +139,7 @@ export const EventDetailProvenance: Story = {
   ),
 };
 
-function CatchHeroStory() {
+function CatchHeroStory({webOtp = false}: {webOtp?: boolean}) {
   useRevealAnimations("event_detail", "hero-catch");
   const appDownloadCtas = useAppDownloadCtas({
     placement: "event-detail-story-catch",
@@ -133,7 +147,10 @@ function CatchHeroStory() {
   return (
     <EventDetailHeroSection
       appDownloadCtas={appDownloadCtas}
-      event={catchEventDetailFixture}
+      event={webOtp ? {
+        ...catchEventDetailFixture,
+        registrationState: "webOtp",
+      } : catchEventDetailFixture}
     />
   );
 }

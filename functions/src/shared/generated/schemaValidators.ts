@@ -26,6 +26,7 @@ import {OrganizerDocument} from "./organizerDocument";
 import {OrganizerPostDocument} from "./organizerPostDocument";
 import {OrganizerTeamMembershipDocument} from "./organizerTeamMembershipDocument";
 import {OrganizerFollowDocument} from "./organizerFollowDocument";
+import {OrganizerCommunicationPreferenceDocument} from "./organizerCommunicationPreferenceDocument";
 import {OrganizerClaimRequestDocument} from "./organizerClaimRequestDocument";
 import {OrganizerScheduleLockDocument} from "./organizerScheduleLockDocument";
 import {ClubPostDocument} from "./clubPostDocument";
@@ -37,6 +38,8 @@ import {ExternalEventDocument} from "./externalEventDocument";
 import {EventPrivateAccessDocument} from "./eventPrivateAccessDocument";
 import {EventInviteLinkDocument} from "./eventInviteLinkDocument";
 import {EventParticipationDocument} from "./eventParticipationDocument";
+import {EventAttendeeDocument} from "./eventAttendeeDocument";
+import {EventAttendeeImportDocument} from "./eventAttendeeImportDocument";
 import {EventCrossPathsConsentDocument} from "./eventCrossPathsConsentDocument";
 import {CrossPathsShowcaseEligibilityDocument} from "./crossPathsShowcaseEligibilityDocument";
 import {CrossPathsSuggestionExposureDocument} from "./crossPathsSuggestionExposureDocument";
@@ -162,6 +165,12 @@ import {RecordEventInviteLinkOpenCallablePayload} from "./recordEventInviteLinkO
 import {RecordOrganizerAnalyticsEventCallablePayload} from "./recordOrganizerAnalyticsEventCallablePayload";
 import {RecordOrganizerAnalyticsEventCallableResponse} from "./recordOrganizerAnalyticsEventCallableResponse";
 import {MarkEventAttendanceCallablePayload} from "./markEventAttendanceCallablePayload";
+import {ImportEventAttendeesCallablePayload} from "./importEventAttendeesCallablePayload";
+import {MarkEventAttendeeAttendanceCallablePayload} from "./markEventAttendeeAttendanceCallablePayload";
+import {RegisterPublicEventCallablePayload} from "./registerPublicEventCallablePayload";
+import {RegisterPublicEventCallableResponse} from "./registerPublicEventCallableResponse";
+import {GetOrganizerCrmSummaryCallablePayload} from "./getOrganizerCrmSummaryCallablePayload";
+import {GetOrganizerCrmSummaryCallableResponse} from "./getOrganizerCrmSummaryCallableResponse";
 import {EventJoinRequestDecisionCallablePayload} from "./eventJoinRequestDecisionCallablePayload";
 import {OverrideEventSuccessRotationsCallablePayload} from "./overrideEventSuccessRotationsCallablePayload";
 import {OverrideEventSuccessGroupsCallablePayload} from "./overrideEventSuccessGroupsCallablePayload";
@@ -259,6 +268,7 @@ import {
   organizerPostDocumentSchema,
   organizerTeamMembershipDocumentSchema,
   organizerFollowDocumentSchema,
+  organizerCommunicationPreferenceDocumentSchema,
   organizerClaimRequestDocumentSchema,
   organizerScheduleLockDocumentSchema,
   clubPostDocumentSchema,
@@ -270,6 +280,8 @@ import {
   eventPrivateAccessDocumentSchema,
   eventInviteLinkDocumentSchema,
   eventParticipationDocumentSchema,
+  eventAttendeeDocumentSchema,
+  eventAttendeeImportDocumentSchema,
   eventCrossPathsConsentDocumentSchema,
   crossPathsShowcaseEligibilityDocumentSchema,
   crossPathsSuggestionExposureDocumentSchema,
@@ -395,6 +407,12 @@ import {
   recordOrganizerAnalyticsEventCallablePayloadSchema,
   recordOrganizerAnalyticsEventCallableResponseSchema,
   markEventAttendanceCallablePayloadSchema,
+  importEventAttendeesCallablePayloadSchema,
+  markEventAttendeeAttendanceCallablePayloadSchema,
+  registerPublicEventCallablePayloadSchema,
+  registerPublicEventCallableResponseSchema,
+  getOrganizerCrmSummaryCallablePayloadSchema,
+  getOrganizerCrmSummaryCallableResponseSchema,
   eventJoinRequestDecisionCallablePayloadSchema,
   overrideEventSuccessRotationsCallablePayloadSchema,
   overrideEventSuccessGroupsCallablePayloadSchema,
@@ -562,6 +580,10 @@ export const validateOrganizerFollowDocument:
   ValidateFunction<OrganizerFollowDocument> =
     ajv.compile(organizerFollowDocumentSchema) as
       ValidateFunction<OrganizerFollowDocument>;
+export const validateOrganizerCommunicationPreferenceDocument:
+  ValidateFunction<OrganizerCommunicationPreferenceDocument> =
+    ajv.compile(organizerCommunicationPreferenceDocumentSchema) as
+      ValidateFunction<OrganizerCommunicationPreferenceDocument>;
 export const validateOrganizerClaimRequestDocument:
   ValidateFunction<OrganizerClaimRequestDocument> =
     ajv.compile(organizerClaimRequestDocumentSchema) as
@@ -606,6 +628,14 @@ export const validateEventParticipationDocument:
   ValidateFunction<EventParticipationDocument> =
     ajv.compile(eventParticipationDocumentSchema) as
       ValidateFunction<EventParticipationDocument>;
+export const validateEventAttendeeDocument:
+  ValidateFunction<EventAttendeeDocument> =
+    ajv.compile(eventAttendeeDocumentSchema) as
+      ValidateFunction<EventAttendeeDocument>;
+export const validateEventAttendeeImportDocument:
+  ValidateFunction<EventAttendeeImportDocument> =
+    ajv.compile(eventAttendeeImportDocumentSchema) as
+      ValidateFunction<EventAttendeeImportDocument>;
 export const validateEventCrossPathsConsentDocument:
   ValidateFunction<EventCrossPathsConsentDocument> =
     ajv.compile(eventCrossPathsConsentDocumentSchema) as
@@ -1106,6 +1136,30 @@ export const validateMarkEventAttendanceCallablePayload:
   ValidateFunction<MarkEventAttendanceCallablePayload> =
     ajv.compile(markEventAttendanceCallablePayloadSchema) as
       ValidateFunction<MarkEventAttendanceCallablePayload>;
+export const validateImportEventAttendeesCallablePayload:
+  ValidateFunction<ImportEventAttendeesCallablePayload> =
+    ajv.compile(importEventAttendeesCallablePayloadSchema) as
+      ValidateFunction<ImportEventAttendeesCallablePayload>;
+export const validateMarkEventAttendeeAttendanceCallablePayload:
+  ValidateFunction<MarkEventAttendeeAttendanceCallablePayload> =
+    ajv.compile(markEventAttendeeAttendanceCallablePayloadSchema) as
+      ValidateFunction<MarkEventAttendeeAttendanceCallablePayload>;
+export const validateRegisterPublicEventCallablePayload:
+  ValidateFunction<RegisterPublicEventCallablePayload> =
+    ajv.compile(registerPublicEventCallablePayloadSchema) as
+      ValidateFunction<RegisterPublicEventCallablePayload>;
+export const validateRegisterPublicEventCallableResponse:
+  ValidateFunction<RegisterPublicEventCallableResponse> =
+    ajv.compile(registerPublicEventCallableResponseSchema) as
+      ValidateFunction<RegisterPublicEventCallableResponse>;
+export const validateGetOrganizerCrmSummaryCallablePayload:
+  ValidateFunction<GetOrganizerCrmSummaryCallablePayload> =
+    ajv.compile(getOrganizerCrmSummaryCallablePayloadSchema) as
+      ValidateFunction<GetOrganizerCrmSummaryCallablePayload>;
+export const validateGetOrganizerCrmSummaryCallableResponse:
+  ValidateFunction<GetOrganizerCrmSummaryCallableResponse> =
+    ajv.compile(getOrganizerCrmSummaryCallableResponseSchema) as
+      ValidateFunction<GetOrganizerCrmSummaryCallableResponse>;
 export const validateEventJoinRequestDecisionCallablePayload:
   ValidateFunction<EventJoinRequestDecisionCallablePayload> =
     ajv.compile(eventJoinRequestDecisionCallablePayloadSchema) as

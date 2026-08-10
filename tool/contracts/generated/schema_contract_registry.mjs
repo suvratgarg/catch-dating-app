@@ -11267,6 +11267,340 @@ export const organizerFollowDocumentSchema = {
   }
 };
 
+export const organizerCommunicationPreferenceDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_communication_preferences.schema.json",
+  "title": "OrganizerCommunicationPreferenceDocument",
+  "description": "Server-owned, organizer-scoped channel consent stored at organizerCommunicationPreferences/{organizerId_uid}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerCommunicationPreferences",
+  "x-firestore-path": "organizerCommunicationPreferences/{organizerId_uid}",
+  "x-document-id-field": "id",
+  "x-owner": "public registration and future self-service preference callables",
+  "required": [
+    "organizerId",
+    "uid",
+    "whatsapp",
+    "sms",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "whatsapp": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "termsVersion",
+        "source",
+        "sourceEventId",
+        "updatedAt"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "optedIn",
+            "optedOut"
+          ],
+          "x-catch-ownership": "server-only"
+        },
+        "termsVersion": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 80,
+          "x-catch-ownership": "server-only"
+        },
+        "source": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            null,
+            "publicEventRegistration",
+            "unsubscribeLink",
+            "hostApp"
+          ],
+          "x-catch-ownership": "server-only"
+        },
+        "sourceEventId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "x-catch-ownership": "server-only"
+        },
+        "updatedAt": {
+          "anyOf": [
+            {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "x-catch-ownership": "server-only"
+        }
+      }
+    },
+    "sms": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "termsVersion",
+        "source",
+        "sourceEventId",
+        "updatedAt"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "optedIn",
+            "optedOut"
+          ],
+          "x-catch-ownership": "server-only"
+        },
+        "termsVersion": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 80,
+          "x-catch-ownership": "server-only"
+        },
+        "source": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            null,
+            "publicEventRegistration",
+            "unsubscribeLink",
+            "hostApp"
+          ],
+          "x-catch-ownership": "server-only"
+        },
+        "sourceEventId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "x-catch-ownership": "server-only"
+        },
+        "updatedAt": {
+          "anyOf": [
+            {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "x-catch-ownership": "server-only"
+        }
+      }
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    }
+  },
+  "definitions": {
+    "channelPreference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "termsVersion",
+        "source",
+        "sourceEventId",
+        "updatedAt"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "optedIn",
+            "optedOut"
+          ],
+          "x-catch-ownership": "server-only"
+        },
+        "termsVersion": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 80,
+          "x-catch-ownership": "server-only"
+        },
+        "source": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            null,
+            "publicEventRegistration",
+            "unsubscribeLink",
+            "hostApp"
+          ],
+          "x-catch-ownership": "server-only"
+        },
+        "sourceEventId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "x-catch-ownership": "server-only"
+        },
+        "updatedAt": {
+          "anyOf": [
+            {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "x-catch-ownership": "server-only"
+        }
+      }
+    }
+  }
+};
+
 export const organizerClaimRequestDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_claim_requests.schema.json",
@@ -12671,6 +13005,11 @@ export const eventDocumentSchema = {
         "null"
       ],
       "maxLength": 500,
+      "x-catch-ownership": "callable-owned"
+    },
+    "publicRegistrationEnabled": {
+      "type": "boolean",
+      "description": "When true, the published marketing event route may register a phone-OTP identity into eventAttendees without creating a Consumer profile.",
       "x-catch-ownership": "callable-owned"
     },
     "constraints": {
@@ -14912,6 +15251,528 @@ export const eventParticipationDocumentSchema = {
       "minLength": 1,
       "maxLength": 80,
       "description": "Internal demo-operations command name used for cleanup and diagnostics."
+    }
+  }
+};
+
+export const eventAttendeeDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_attendees.schema.json",
+  "title": "EventAttendeeDocument",
+  "description": "Private event-scoped operational attendee stored at eventAttendees/{attendeeId}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventAttendees",
+  "x-firestore-path": "eventAttendees/{attendeeId}",
+  "x-document-id-field": "id",
+  "x-owner": "standalone Host roster, Catch-booking projection, public registration, and attendance callables",
+  "required": [
+    "eventId",
+    "clubId",
+    "organizerId",
+    "displayName",
+    "searchName",
+    "source",
+    "status",
+    "linkedUid",
+    "phoneE164",
+    "email",
+    "externalReference",
+    "ticketType",
+    "importId",
+    "sourceRowId",
+    "createdAt",
+    "updatedAt",
+    "registeredAt",
+    "waitlistedAt",
+    "checkedInAt",
+    "cancelledAt",
+    "checkedInBy",
+    "linkedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "searchName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "catchBooking",
+        "hostImport",
+        "hostManual",
+        "webOtp"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "invited",
+        "registered",
+        "waitlisted",
+        "checkedIn",
+        "cancelled"
+      ]
+    },
+    "linkedUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "phoneE164": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^\\+[1-9][0-9]{7,14}$"
+    },
+    "email": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "email",
+      "maxLength": 320
+    },
+    "externalReference": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "ticketType": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "importId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "sourceRowId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "registeredAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "waitlistedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "checkedInAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "cancelledAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "checkedInBy": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "linkedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const eventAttendeeImportDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_attendee_imports.schema.json",
+  "title": "EventAttendeeImportDocument",
+  "description": "Idempotency and audit receipt for one Host operational-roster import.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventAttendeeImports",
+  "x-firestore-path": "eventAttendeeImports/{importId}",
+  "x-document-id-field": "id",
+  "x-owner": "importEventAttendees callable",
+  "required": [
+    "eventId",
+    "clubId",
+    "organizerId",
+    "uploadedBy",
+    "importKey",
+    "fileName",
+    "format",
+    "payloadHash",
+    "status",
+    "rowCount",
+    "createdCount",
+    "updatedCount",
+    "skippedCount",
+    "errors",
+    "createdAt",
+    "updatedAt",
+    "completedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uploadedBy": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "importKey": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 120
+    },
+    "fileName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "format": {
+      "type": "string",
+      "enum": [
+        "csv",
+        "xlsx",
+        "manual"
+      ]
+    },
+    "payloadHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "completed",
+        "partial",
+        "failed"
+      ]
+    },
+    "rowCount": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 250
+    },
+    "createdCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 250
+    },
+    "updatedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 250
+    },
+    "skippedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 250
+    },
+    "errors": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "rowId",
+          "code",
+          "message"
+        ],
+        "properties": {
+          "rowId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "code": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        }
+      }
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "completedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   }
 };
@@ -21777,6 +22638,42 @@ export const hostAnalyticsSnapshotDocumentSchema = {
               "repeatAttendeeCount": {
                 "type": "integer",
                 "minimum": 0
+              },
+              "operationalAttendeeCount": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "operationalCheckedInCount": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "attendeeSources": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "catchBooking",
+                  "hostImport",
+                  "hostManual",
+                  "webOtp"
+                ],
+                "properties": {
+                  "catchBooking": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "hostImport": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "hostManual": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "webOtp": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                }
               }
             }
           }
@@ -27808,6 +28705,10 @@ export const updateOrganizerCallablePayloadSchema = {
               }
             }
           }
+        },
+        "publicListingEnabled": {
+          "type": "boolean",
+          "description": "Owner-controlled value-ladder switch. The callable maps this intent to app visibility and governed public-page publication/index fields."
         }
       }
     }
@@ -29672,6 +30573,42 @@ export const hostAnalyticsCallableResponseSchema = {
           "repeatAttendeeCount": {
             "type": "integer",
             "minimum": 0
+          },
+          "operationalAttendeeCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "operationalCheckedInCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "attendeeSources": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "catchBooking",
+              "hostImport",
+              "hostManual",
+              "webOtp"
+            ],
+            "properties": {
+              "catchBooking": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "hostImport": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "hostManual": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "webOtp": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
           }
         }
       }
@@ -35019,6 +35956,10 @@ export const updateEventCallablePayloadSchema = {
           "type": "string",
           "maxLength": 2000
         },
+        "publicRegistrationEnabled": {
+          "type": "boolean",
+          "description": "Host-controlled website OTP registration switch. The event must belong to a published organizer before the public registration callable accepts users."
+        },
         "capacityLimit": {
           "type": "integer",
           "minimum": 1,
@@ -35856,6 +36797,330 @@ export const markEventAttendanceCallablePayloadSchema = {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
+    }
+  }
+};
+
+export const importEventAttendeesCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/import_event_attendees_payload.schema.json",
+  "title": "ImportEventAttendeesCallablePayload",
+  "description": "Callable payload accepted by importEventAttendees.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "importKey",
+    "fileName",
+    "format",
+    "rows"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "importKey": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 120
+    },
+    "fileName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "format": {
+      "type": "string",
+      "enum": [
+        "csv",
+        "xlsx",
+        "manual"
+      ]
+    },
+    "rows": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 250,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "rowId",
+          "displayName",
+          "status"
+        ],
+        "properties": {
+          "rowId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "phone": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 40
+          },
+          "email": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 320
+          },
+          "externalReference": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 180
+          },
+          "ticketType": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 120
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "invited",
+              "registered",
+              "waitlisted"
+            ]
+          }
+        }
+      }
+    }
+  }
+};
+
+export const markEventAttendeeAttendanceCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/mark_event_attendee_attendance_payload.schema.json",
+  "title": "MarkEventAttendeeAttendanceCallablePayload",
+  "description": "Callable payload accepted by markEventAttendeeAttendance.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "attendeeId"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "attendeeId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const registerPublicEventCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/register_public_event_payload.schema.json",
+  "title": "RegisterPublicEventCallablePayload",
+  "description": "Phone-authenticated website registration for a published Catch event without a Consumer profile.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "displayName"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "organizerUpdates": {
+      "description": "Optional, explicit opt-in to organizer marketing updates. Absence never grants consent.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "whatsapp",
+        "sms",
+        "termsVersion"
+      ],
+      "properties": {
+        "whatsapp": {
+          "type": "boolean"
+        },
+        "sms": {
+          "type": "boolean"
+        },
+        "termsVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        }
+      }
+    }
+  }
+};
+
+export const registerPublicEventCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/register_public_event_response.schema.json",
+  "title": "RegisterPublicEventCallableResponse",
+  "description": "Registration receipt returned to the phone-authenticated website visitor.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "attendeeId",
+    "status"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "attendeeId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "registered",
+        "waitlisted",
+        "alreadyRegistered"
+      ]
+    }
+  }
+};
+
+export const getOrganizerCrmSummaryCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_organizer_crm_summary_payload.schema.json",
+  "title": "GetOrganizerCrmSummaryCallablePayload",
+  "description": "Organizer manager request for a privacy-bounded CRM audience summary.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const getOrganizerCrmSummaryCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_organizer_crm_summary_response.schema.json",
+  "title": "GetOrganizerCrmSummaryCallableResponse",
+  "description": "Deduplicated Host CRM counts. No attendee identity or contact field is returned.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "contactCount",
+    "pastAttendeeCount",
+    "repeatAttendeeCount",
+    "linkedAccountCount",
+    "importedContactCount",
+    "whatsappOptInCount",
+    "smsOptInCount",
+    "truncated",
+    "readiness"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "contactCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2500
+    },
+    "pastAttendeeCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2500
+    },
+    "repeatAttendeeCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2500
+    },
+    "linkedAccountCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2500
+    },
+    "importedContactCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2500
+    },
+    "whatsappOptInCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2500
+    },
+    "smsOptInCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2500
+    },
+    "truncated": {
+      "type": "boolean"
+    },
+    "readiness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "inApp",
+        "whatsapp",
+        "sms"
+      ],
+      "properties": {
+        "inApp": {
+          "type": "string",
+          "enum": [
+            "currentEventOnly"
+          ]
+        },
+        "whatsapp": {
+          "type": "string",
+          "enum": [
+            "providerSetupRequired"
+          ]
+        },
+        "sms": {
+          "type": "string",
+          "enum": [
+            "providerAndDltSetupRequired"
+          ]
+        }
+      }
     }
   }
 };
@@ -38431,6 +39696,9 @@ export const websiteHostListingProjectionSchema = {
             "type": "integer",
             "minimum": 0
           },
+          "publicRegistrationEnabled": {
+            "type": "boolean"
+          },
           "priceLabel": {
             "type": "string",
             "minLength": 1
@@ -39395,6 +40663,9 @@ export const websiteHostListingProjectionSchema = {
         "waitlistedCount": {
           "type": "integer",
           "minimum": 0
+        },
+        "publicRegistrationEnabled": {
+          "type": "boolean"
         },
         "priceLabel": {
           "type": "string",

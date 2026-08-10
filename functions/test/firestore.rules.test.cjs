@@ -867,6 +867,46 @@ describe("firestore.rules", () => {
       );
     });
 
+    it("keeps operational attendee contacts host-only and server-written", async () => {
+      await seed(["clubs", "club-1"], club());
+      await seed(["events", "event-1"], event());
+      await seed(["eventAttendees", "attendee-1"], {
+        eventId: "event-1",
+        clubId: "club-1",
+        displayName: "Asha Shah",
+        phoneE164: "+919876543210",
+        linkedUid: "runner-1",
+        source: "hostImport",
+        status: "registered",
+      });
+      await seed(["eventAttendeeImports", "import-1"], {
+        eventId: "event-1",
+        clubId: "club-1",
+        uploadedBy: "host-1",
+      });
+
+      await assertSucceeds(
+        getDocs(query(
+          collection(authedDb("host-1"), "eventAttendees"),
+          where("eventId", "==", "event-1"),
+        )),
+      );
+      await assertSucceeds(
+        getDoc(doc(authedDb("host-1"), "eventAttendeeImports", "import-1")),
+      );
+      await assertFails(
+        getDoc(doc(authedDb("runner-1"), "eventAttendees", "attendee-1")),
+      );
+      await assertFails(
+        getDoc(doc(authedDb("runner-1"), "eventAttendeeImports", "import-1")),
+      );
+      await assertFails(
+        setDoc(doc(authedDb("host-1"), "eventAttendees", "attendee-2"), {
+          eventId: "event-1",
+        }),
+      );
+    });
+
     it("keeps Cross Paths consent private and callable-owned", async () => {
       const consent = {
         eventId: "event-1",
@@ -1120,6 +1160,66 @@ describe("firestore.rules", () => {
         deleteDoc(
           doc(authedDb("host-1"), "eventBroadcasts", "broadcast-1"),
         ),
+      );
+    });
+
+    it("keeps organizer communication preferences server-only", async () => {
+      await seed(["organizerCommunicationPreferences", "club-1_runner-1"], {
+        organizerId: "club-1",
+        uid: "runner-1",
+        phoneE164: "+919876543210",
+        whatsapp: {status: "optedIn"},
+        sms: {status: "unknown"},
+      });
+
+      for (const uid of ["host-1", "runner-1"]) {
+        await assertFails(
+          getDoc(doc(
+            authedDb(uid),
+            "organizerCommunicationPreferences",
+            "club-1_runner-1",
+          )),
+        );
+        await assertFails(
+          getDocs(collection(
+            authedDb(uid),
+            "organizerCommunicationPreferences",
+          )),
+        );
+      }
+      await assertFails(
+        getDoc(doc(
+          testEnv.unauthenticatedContext().firestore(),
+          "organizerCommunicationPreferences",
+          "club-1_runner-1",
+        )),
+      );
+      await assertFails(
+        setDoc(
+          doc(
+            authedDb("runner-1"),
+            "organizerCommunicationPreferences",
+            "club-1_runner-1",
+          ),
+          {organizerId: "club-1", uid: "runner-1"},
+        ),
+      );
+      await assertFails(
+        updateDoc(
+          doc(
+            authedDb("host-1"),
+            "organizerCommunicationPreferences",
+            "club-1_runner-1",
+          ),
+          {sms: {status: "optedIn"}},
+        ),
+      );
+      await assertFails(
+        deleteDoc(doc(
+          authedDb("host-1"),
+          "organizerCommunicationPreferences",
+          "club-1_runner-1",
+        )),
       );
     });
 

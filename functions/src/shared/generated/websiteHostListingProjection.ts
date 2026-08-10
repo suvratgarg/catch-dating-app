@@ -73,6 +73,7 @@ export interface WebsiteHostListingProjection {
     bookedCount: number;
     checkedInCount: number;
     waitlistedCount: number;
+    publicRegistrationEnabled?: boolean;
     priceLabel: string;
     scorecard?: {
       [k: string]: unknown;

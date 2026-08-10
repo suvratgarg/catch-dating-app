@@ -1,7 +1,7 @@
 ---
 doc_id: ads_conversion_spec
-version: 0.1.4
-updated: 2026-07-12
+version: 0.1.5
+updated: 2026-08-10
 owner: marketing_website
 status: active
 ---
@@ -165,6 +165,14 @@ funnel diagnostics, not optimization goals.
   policies and consent basis are documented.
 - Do not send PII, internal profile scores, private match details, or sensitive
   dating attributes to ad platforms.
+- A name or phone captured for public event OTP, reservation service,
+  operational check-in, account-continuation prefill, or organizer WhatsApp/SMS
+  permission is not Catch advertising permission. It must not enter a customer
+  list, enhanced conversion, retargeting, or lookalike export unless a separate
+  Catch marketing permission, lawful basis, platform-category approval,
+  suppression, retention, and deletion-propagation contract is active.
+- Organizer channel permission is organizer-scoped. It cannot be pooled across
+  organizers or reused by Catch for performance marketing.
 
 ## Dedupe Contract
 

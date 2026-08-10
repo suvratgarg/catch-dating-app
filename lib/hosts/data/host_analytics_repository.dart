@@ -97,6 +97,8 @@ abstract final class HostAnalyticsMetricIds {
   static const eventViews = 'eventViews';
   static const bookings = 'bookings';
   static const attendanceRate = 'attendanceRate';
+  static const rosterGuests = 'rosterGuests';
+  static const rosterAttendanceRate = 'rosterAttendanceRate';
   static const revenue = 'revenue';
   static const checkoutDropoff = 'checkoutDropoff';
   static const checkoutConversionRate = 'checkoutConversionRate';
@@ -243,6 +245,9 @@ class HostAnalyticsEventRow {
     required this.mutualMatchCount,
     required this.chatStartedCount,
     required this.repeatAttendeeCount,
+    this.operationalAttendeeCount = 0,
+    this.operationalCheckedInCount = 0,
+    this.attendeeSources = const {},
   });
 
   factory HostAnalyticsEventRow.fromMap(Map<Object?, Object?> map) {
@@ -271,6 +276,9 @@ class HostAnalyticsEventRow {
       mutualMatchCount: _int(map['mutualMatchCount']),
       chatStartedCount: _int(map['chatStartedCount']),
       repeatAttendeeCount: _int(map['repeatAttendeeCount']),
+      operationalAttendeeCount: _int(map['operationalAttendeeCount']),
+      operationalCheckedInCount: _int(map['operationalCheckedInCount']),
+      attendeeSources: _intMap(map['attendeeSources']),
     );
   }
 
@@ -298,6 +306,14 @@ class HostAnalyticsEventRow {
   final int mutualMatchCount;
   final int chatStartedCount;
   final int repeatAttendeeCount;
+  final int operationalAttendeeCount;
+  final int operationalCheckedInCount;
+  final Map<String, int> attendeeSources;
+
+  int get externalAttendeeCount =>
+      (attendeeSources['hostImport'] ?? 0) +
+      (attendeeSources['hostManual'] ?? 0) +
+      (attendeeSources['webOtp'] ?? 0);
 }
 
 class HostAnalyticsReviewSummary {
@@ -495,6 +511,15 @@ Map<String, num> _numberMap(Object? value) {
     for (final entry in value.entries)
       if (entry.key case final String key)
         if (entry.value case final num number) key: number,
+  };
+}
+
+Map<String, int> _intMap(Object? value) {
+  if (value is! Map<Object?, Object?>) return const {};
+  return {
+    for (final entry in value.entries)
+      if (entry.key case final String key)
+        if (entry.value case final num number) key: number.round(),
   };
 }
 

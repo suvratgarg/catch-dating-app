@@ -35,6 +35,10 @@
         "distanceKm": {"type": "number", "minimum": 0, "maximum": 100},
         "pace": {"$ref": "../shared/event_common.schema.json#/definitions/paceLevel"},
         "description": {"type": "string", "maxLength": 2000},
+        "publicRegistrationEnabled": {
+          "type": "boolean",
+          "description": "Host-controlled website OTP registration switch. The event must belong to a published organizer before the public registration callable accepts users."
+        },
         "capacityLimit": {"type": "integer", "minimum": 1, "maximum": 1000},
         "priceInPaise": {"type": "integer", "minimum": 0, "maximum": 100000000},
         "constraints": {

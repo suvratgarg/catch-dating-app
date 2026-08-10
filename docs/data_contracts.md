@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.11.3
+version: 1.13.1
 updated: 2026-08-10
 owner: recursive_audit_loop
 status: active
@@ -345,6 +345,9 @@ Root-level edge/action documents are the source of truth for many-to-many state:
 | Organizer owner/manager seat | `organizerTeamMemberships/{organizerId_uid}` |
 | Organizer follow | `organizerFollows/{organizerId_uid}` |
 | Event booking, waitlist, attendance, cancellation | `eventParticipations/{eventId_uid}` |
+| Unified Host operational roster row | `eventAttendees/{attendeeId}` |
+| Roster import audit and idempotency receipt | `eventAttendeeImports/{importId}` |
+| Organizer-scoped communication permission | server-only `organizerCommunicationPreferences/{organizerId_uid}` |
 | Cross Paths event visibility | `eventCrossPathsConsents/{eventId_uid}` |
 | Cross Paths showcase eligibility | server-only `crossPathsShowcaseEligibility/{uid}` |
 | Cross Paths suggestion exposure | server-only `crossPathsSuggestionExposures/{exposureId}` |
@@ -381,6 +384,71 @@ returns only public profile projections after the server verifies the
 24-hour window, viewer attendance, reciprocal gender and age preferences,
 prior decisions, and blocks in both directions. Anonymous attendee volume is
 rendered from callable-owned event aggregates instead of roster enumeration.
+
+### Standalone Host Operational Attendees
+
+`eventAttendees` is the Host operations roster. It complements rather than
+replaces `eventParticipations`:
+
+- `eventParticipations` requires a real UID and continues to own Consumer
+  booking, waitlist, cancellation, payment linkage and profile/network
+  eligibility;
+- `eventAttendees` uses an opaque event-scoped attendee id and accepts
+  `catchBooking`, `hostImport`, `hostManual`, or `webOtp` as its source. Its
+  optional `linkedUid` is a server projection, never a synthetic account;
+- raw contact fields are private to an authorized organizer manager and
+  callable/Admin support boundaries. Public website, Consumer discovery and
+  aggregate analytics cannot enumerate them;
+- the production website snapshot uses Firestore `count()` aggregation queries
+  for registered, checked-in, and waitlisted totals. Only free,
+  open-admission events with an explicit Host publication switch qualify; paid,
+  invite, membership, approval, and profile-balanced events fail closed. The build identity never
+  downloads attendee documents or contact fields;
+- direct writes are denied. Host bulk import/manual entry, attendance changes,
+  Catch-booking projection, OTP linking and public registration are
+  server-owned operations;
+- deterministic contact/source keys make retry and re-import idempotent inside
+  one event. A phone/email match may converge rows inside that event only; it
+  does not build a cross-event identity graph;
+- `eventAttendeeImports` records actor, event, client idempotency key, format,
+  canonical payload hash, counts, bounded row errors and terminal state. It is
+  not a copy of the uploaded file.
+
+Hosts may list operational attendees and import receipts only for events they
+manage. An attendee does not gain roster-list access when their UID is linked;
+attendee-facing code receives only its own sanitized event state through a
+server-owned lookup/registration boundary.
+
+Phone-OTP public registration creates or reuses a private Firebase Auth UID; it
+does not create `users/{uid}`, `publicProfiles/{uid}`, or a Consumer
+`eventParticipations` edge. On first registration, the callable may create a
+private `onboarding_drafts/{uid}` seed using only the attendee-supplied display
+name and verified phone. That seed is a continuation convenience for a later,
+intentional Consumer onboarding flow, not a profile or advertising permission.
+The person must review/edit the draft before any public or dating-profile
+projection is created.
+
+### Organizer Communication Preferences And CRM
+
+`organizerCommunicationPreferences/{organizerId_uid}` is a server-only,
+organizer-scoped permission ledger. WhatsApp and SMS each have independent
+`unknown`, `optedIn`, or `optedOut` state, terms version, source event, source,
+and timestamp. Public registration writes only an explicit checked opt-in. An
+unchecked box does not grant permission and cannot revoke a prior grant;
+withdrawal belongs to the future self-service/STOP callable. Host imports and
+manual roster entry never create channel permission.
+
+`getOrganizerCrmSummary` returns only privacy-bounded, deduplicated counts for
+contacts, past and repeat attendees, linked accounts, imported contacts, and
+explicit WhatsApp/SMS reachability. It never returns attendee identity or
+contact fields. Hosts currently retain event-scoped roster access through the
+existing authorized roster boundary; campaign delivery is a separate future
+contract. Account deletion removes both the onboarding draft and every
+organizer communication preference owned by the UID.
+Retained organizer roster history is unlinked by setting `linkedUid` and
+`linkedAt` to null; any separately retained operational contact field remains
+subject to the organizer's stated booking/records purpose rather than Catch
+account or marketing permission.
 
 Cross Paths visibility is a two-part, private consent contract. The optional
 `users/{uid}.prefsShowInCrossPaths` master preference resolves to false when

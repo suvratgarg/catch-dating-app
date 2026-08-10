@@ -206,5 +206,9 @@ export interface UpdateOrganizerCallablePayload {
         };
       };
     };
+    /**
+     * Owner-controlled value-ladder switch. The callable maps this intent to app visibility and governed public-page publication/index fields.
+     */
+    publicListingEnabled?: boolean;
   };
 }

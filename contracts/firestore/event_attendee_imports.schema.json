@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_attendee_imports.schema.json",
+  "title": "EventAttendeeImportDocument",
+  "description": "Idempotency and audit receipt for one Host operational-roster import.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventAttendeeImports",
+  "x-firestore-path": "eventAttendeeImports/{importId}",
+  "x-document-id-field": "id",
+  "x-owner": "importEventAttendees callable",
+  "required": [
+    "eventId",
+    "clubId",
+    "organizerId",
+    "uploadedBy",
+    "importKey",
+    "fileName",
+    "format",
+    "payloadHash",
+    "status",
+    "rowCount",
+    "createdCount",
+    "updatedCount",
+    "skippedCount",
+    "errors",
+    "createdAt",
+    "updatedAt",
+    "completedAt"
+  ],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "clubId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "uploadedBy": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "importKey": {"type": "string", "minLength": 8, "maxLength": 120},
+    "fileName": {"type": "string", "minLength": 1, "maxLength": 255},
+    "format": {"type": "string", "enum": ["csv", "xlsx", "manual"]},
+    "payloadHash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "status": {"type": "string", "enum": ["completed", "partial", "failed"]},
+    "rowCount": {"type": "integer", "minimum": 1, "maximum": 250},
+    "createdCount": {"type": "integer", "minimum": 0, "maximum": 250},
+    "updatedCount": {"type": "integer", "minimum": 0, "maximum": 250},
+    "skippedCount": {"type": "integer", "minimum": 0, "maximum": 250},
+    "errors": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["rowId", "code", "message"],
+        "properties": {
+          "rowId": {"type": "string", "minLength": 1, "maxLength": 120},
+          "code": {"type": "string", "minLength": 1, "maxLength": 80},
+          "message": {"type": "string", "minLength": 1, "maxLength": 240}
+        }
+      }
+    },
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "completedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"}
+  }
+}

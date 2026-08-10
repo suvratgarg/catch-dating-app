@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.11.0
-updated: 2026-08-07
+version: 0.12.0
+updated: 2026-08-10
 owner: web_platform
 status: active
 ---
@@ -1044,25 +1044,37 @@ Deferred website decisions:
 - Replace proxy host-create step captures with exact create-event step
   screenshots once the UI capture catalog has those fixtures.
 
-## Future Host Dashboard
+## Host Web Product
 
-A future host dashboard still fits this architecture. Prefer:
+The authenticated Host web product is the browser delivery of the existing
+Host Flutter app, not a future parallel dashboard. Prefer:
 
 | Domain | Surface | Stack | Permission model |
 |---|---|---|---|
-| `hosts.catchdates.com` | Authenticated host portal for organizer/event management, scoped analytics, payout readiness, and event operations | React + TypeScript | Server-side Functions authorize organizer ownership or management per organizer/event |
+| `hosts.catchdates.com` | Authenticated standalone Host product for private workspaces, imported/manual rosters, Event Success, reviews, scoped analytics, public-event readiness, payouts, and event operations | Flutter web using the Host app root/router | Server-side Functions authorize organizer ownership or management per organizer/event |
 
 Do not put host tools under `admin.catchdates.com`. Hosts are external operators,
 not internal admins. Keep `/host/` on `catchdates.com` as the public host
 marketing/acquisition page, and use `hosts.catchdates.com` only for authenticated
-host workflows once that product exists.
+host workflows. The Host web target deploys independently from the Consumer web
+target and the React marketing/admin surfaces through the dedicated `host`
+Firebase Hosting target and `.github/workflows/host-website.yml` exact-byte
+delivery path.
 
-Host portal APIs should follow the same server-owned pattern as admin APIs:
+Host web APIs follow the same server-owned pattern as mobile Host APIs:
 
 - the browser client never receives service-account credentials;
 - Functions validate Firebase Auth and host ownership;
 - mutations write audit or activity records where operationally useful;
 - analytics responses are scoped to organizers/events the signed-in host can manage.
+
+Public event discovery and event-scoped phone-OTP registration remain on the
+React marketing website because they are crawlable acquisition surfaces. The
+website calls a narrow public-registration backend, never reads a private Host
+roster, and hands authenticated runtime work to Host web, an event-scoped
+attendee web route, or the Consumer app according to capability. A web RSVP
+creates/links the same operational attendee record consumed by Host mobile and
+web; it does not require or silently create a dating profile.
 
 ## Why Subdomains Instead Of Paths
 

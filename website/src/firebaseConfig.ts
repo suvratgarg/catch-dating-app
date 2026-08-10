@@ -30,6 +30,9 @@ export const publicReviewsFirebaseConfigured = Boolean(
 export const publicAnalyticsFirebaseConfigured = Boolean(
   firebaseConfig && appCheckSiteKey
 );
+export const publicEventRegistrationFirebaseConfigured = Boolean(
+  firebaseConfig && appCheckSiteKey
+);
 
 function resolveFirebaseConfig(): FirebaseConfig | null {
   const explicitConfig = {
