@@ -27,6 +27,7 @@ import 'package:catch_dating_app/core/widgets/catch_analytics_bar.dart';
 import 'package:catch_dating_app/core/widgets/catch_analytics_kit.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
@@ -39,7 +40,6 @@ import 'package:catch_dating_app/event_success/domain/event_success_playbooks/mo
 import 'package:catch_dating_app/event_success/domain/event_success_preference.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_runtime.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -103,7 +103,6 @@ import 'package:catch_dating_app/hosts/presentation/payments/host_payment_accoun
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/catch_roster_board.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_club_tools.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_empty_action_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_attendance_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_tools.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
@@ -359,7 +358,7 @@ HostProfile _hostProfileVariant(HostProfileStatus status) {
 )
 @widgetbook.UseCase(
   name: 'Covered by host home route states',
-  type: HostEmptyActionCard,
+  type: CatchEmptyState,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 @widgetbook.UseCase(
@@ -628,6 +627,15 @@ Widget hostClubsRouteStates(BuildContext context) {
         ),
       ),
       _StateCard(
+        label: 'payout account loading',
+        child: const _DeviceFrame(
+          child: _HostShellScope(
+            paymentAccountValue: AsyncLoading<HostPaymentAccount?>(),
+            child: HostClubsScreen(),
+          ),
+        ),
+      ),
+      _StateCard(
         label: 'co-host read-only team workspace',
         child: _DeviceFrame(
           child: _HostShellScope(
@@ -694,6 +702,15 @@ Widget hostInsightsScorecardStates(BuildContext context) {
     title: 'HostClubInsightsPane',
     contractId: 'screen.host.clubs.insights',
     children: [
+      _StateCard(
+        label: 'report loading',
+        child: const _DeviceFrame(
+          child: _HostShellScope(
+            analyticsRepository: _HostLoadingAnalyticsRepository(),
+            child: HostClubsScreen(initialTab: HostClubTab.insights),
+          ),
+        ),
+      ),
       _StateCard(
         label: 'loaded narrative scorecard',
         child: _DeviceFrame(
@@ -1416,16 +1433,15 @@ Widget _hostHomePreviewFor(BuildContext context, String focus) {
   final now = event.startTime.subtract(const Duration(hours: 2));
   final tasks = HostHomeTodayTaskData.forEvent(event, context.l10n);
   return switch (focus) {
-    'HostEmptyActionCard' => HostEmptyActionCard(
+    'CatchEmptyState' => CatchEmptyState(
       title: 'No clubs yet',
-      body: 'Create a club to start hosting events.',
-      actions: [
-        CatchButton(
-          label: 'Create club',
-          icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
-          onPressed: () {},
-        ),
-      ],
+      message: 'Create a club to start hosting events.',
+      padding: EdgeInsets.zero,
+      action: CatchButton(
+        label: 'Create club',
+        icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
+        onPressed: () {},
+      ),
     ),
     'HostTodayAvatarDot' => Builder(
       builder: (context) {
@@ -1514,69 +1530,73 @@ Widget _hostHomePreviewFor(BuildContext context, String focus) {
 
 @widgetbook.UseCase(
   name: 'Action card states',
-  type: HostEmptyActionCard,
+  type: CatchEmptyState,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
-Widget hostEmptyActionCardStates(BuildContext context) {
+Widget hostEmptyStateStates(BuildContext context) {
   return _HostCatalog(
-    title: 'HostEmptyActionCard',
+    title: 'CatchEmptyState',
     contractId: 'component.host.empty_action_card',
     children: [
       _StateCard(
         label: 'single action',
         child: _HostHomeSectionFrame(
-          child: HostEmptyActionCard(
+          child: CatchEmptyState(
             title: 'Create your first club',
-            body:
+            message:
                 'Create a club to publish events, manage attendees, and run Event Success.',
-            actions: [
-              CatchButton(
-                label: 'Create club',
-                icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
-                onPressed: () {},
-              ),
-            ],
+            padding: EdgeInsets.zero,
+            action: CatchButton(
+              label: 'Create club',
+              icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
+              onPressed: () {},
+            ),
           ),
         ),
       ),
       _StateCard(
         label: 'two actions',
         child: _HostHomeSectionFrame(
-          child: HostEmptyActionCard(
+          child: CatchEmptyState(
             title: 'No active events yet',
-            body:
+            message:
                 'Create an event for ${HostOperationsFixtures.primaryClub.name} to start filling the host dashboard.',
-            actions: [
-              CatchButton(
-                label: 'New event',
-                icon: Icon(CatchIcons.addRounded, size: CatchIcon.sm),
-                onPressed: () {},
-              ),
-              CatchButton(
-                label: 'Events',
-                variant: CatchButtonVariant.secondary,
-                size: CatchButtonSize.sm,
-                onPressed: () {},
-              ),
-            ],
+            padding: EdgeInsets.zero,
+            action: Wrap(
+              alignment: WrapAlignment.center,
+              spacing: CatchSpacing.s2,
+              runSpacing: CatchSpacing.s2,
+              children: [
+                CatchButton(
+                  label: 'New event',
+                  icon: Icon(CatchIcons.addRounded, size: CatchIcon.sm),
+                  onPressed: () {},
+                ),
+                CatchButton(
+                  label: 'Events',
+                  variant: CatchButtonVariant.secondary,
+                  size: CatchButtonSize.sm,
+                  onPressed: () {},
+                ),
+              ],
+            ),
           ),
         ),
       ),
       _StateCard(
         label: 'pending action',
         child: _HostHomeSectionFrame(
-          child: HostEmptyActionCard(
+          child: CatchEmptyState(
             title: 'No host profile yet',
-            body:
+            message:
                 'Create a professional host identity before editing profile details.',
-            actions: [
-              CatchButton(
-                label: 'Create host profile',
-                icon: Icon(CatchIcons.businessOutlined, size: CatchIcon.md),
-                isLoading: true,
-                onPressed: null,
-              ),
-            ],
+            padding: EdgeInsets.zero,
+            action: CatchButton(
+              label: 'Create host profile',
+              icon: Icon(CatchIcons.businessOutlined, size: CatchIcon.md),
+              isLoading: true,
+              onPressed: null,
+            ),
           ),
         ),
       ),
@@ -2558,6 +2578,15 @@ Widget hostCreateClubRouteAndWizardStates(BuildContext context) {
     contractId: 'screen.host.club.create',
     children: [
       _StateCard(
+        label: 'auth required',
+        child: const _DeviceFrame(
+          child: _HostCreateClubScope(
+            uid: null,
+            child: CreateClubScreen(restoreSavedDraft: false),
+          ),
+        ),
+      ),
+      _StateCard(
         label: 'route entry',
         child: const _DeviceFrame(
           child: _HostCreateClubScope(
@@ -3241,6 +3270,73 @@ Widget hostEventManageRouteAndSectionStates(BuildContext context) {
             ),
           ),
         ),
+      ),
+      _StateCard(
+        label: 'disabled invite link',
+        child: _DeviceFrame(
+          child: _HostManageRouteScope(
+            inviteLinksValue: AsyncData<List<EventInviteLink>>(
+              _hostManageDisabledInviteLinks,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'long invite labels',
+        child: _DeviceFrame(
+          child: _HostManageRouteScope(
+            inviteLinksValue: AsyncData<List<EventInviteLink>>(
+              _hostManageLongLabelInviteLinks,
+            ),
+          ),
+        ),
+      ),
+      const _StateCard(
+        label: 'guest roster loading',
+        child: _DeviceFrame(
+          child: _HostManageRouteScope(
+            initialSection: HostEventManageSection.guests,
+            attendanceValue: AsyncLoading<AttendanceSheetViewModel?>(),
+          ),
+        ),
+      ),
+      const _StateCard(
+        label: 'attendee profiles loading',
+        child: _DeviceFrame(
+          child: _HostManageRouteScope(
+            initialSection: HostEventManageSection.guests,
+            attendeeProfilesValue:
+                AsyncLoading<Map<String, (String, String?)>>(),
+          ),
+        ),
+      ),
+      const _StateCard(
+        label: 'private access unavailable',
+        child: _DeviceFrame(
+          child: _HostManageRouteScope(
+            privateAccessValue: AsyncData<EventPrivateAccess?>(null),
+          ),
+        ),
+      ),
+      const _StateCard(
+        label: 'attendance mutation pending',
+        child: _DeviceFrame(
+          child: _HostManageAttendanceMutationRoutePreview(
+            mode: _HostManageAttendanceMutationPreviewMode.pending,
+          ),
+        ),
+      ),
+      const _StateCard(
+        label: 'attendance mutation error',
+        child: _DeviceFrame(
+          child: _HostManageAttendanceMutationRoutePreview(
+            mode: _HostManageAttendanceMutationPreviewMode.error,
+          ),
+        ),
+      ),
+      const _StateCard(
+        label: 'live Event Success operations',
+        child: _DeviceFrame(child: _HostManageLiveOperationsRoutePreview()),
       ),
       const _StateCard(
         label: 'text scale 2.0',
@@ -4609,11 +4705,11 @@ Widget hostStrictHostClubsScreenCatalogStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostEmptyActionCard,
+  type: CatchEmptyState,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
-Widget hostStrictHostEmptyActionCardCatalogStates(BuildContext context) =>
-    _hostHomeExactCatalog(context, 'HostEmptyActionCard');
+Widget hostStrictCatchEmptyStateCatalogStates(BuildContext context) =>
+    _hostHomeExactCatalog(context, 'CatchEmptyState');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
@@ -6195,26 +6291,27 @@ class _HostClubDetailScope extends StatelessWidget {
 class _HostCreateClubScope extends StatelessWidget {
   const _HostCreateClubScope({
     required this.child,
-    this.uid,
-    this.clubValue,
+    this.uid = 'design-host-owner',
     this.themeMode = ThemeMode.light,
   });
 
   final Widget child;
   final String? uid;
-  final AsyncValue<Club?>? clubValue;
   final ThemeMode themeMode;
 
   @override
   Widget build(BuildContext context) {
     final effectiveUid = uid ?? _hostUid;
     final overrides = [
-      uidProvider.overrideWithValue(AsyncData<String?>(effectiveUid)),
+      uidProvider.overrideWithValue(AsyncData<String?>(uid)),
       watchUserProfileProvider.overrideWith(
-        (ref) => Stream.value(HostOperationsFixtures.owner),
+        (ref) =>
+            Stream.value(uid == null ? null : HostOperationsFixtures.owner),
       ),
-      if (clubValue != null)
-        fetchClubProvider(_club.id).overrideWithValue(clubValue!),
+      watchClubMembershipProvider(
+        _club.id,
+        effectiveUid,
+      ).overrideWith((ref) => Stream<ClubMembership?>.value(null)),
     ];
 
     return _AppRoleBoundary(
@@ -6989,6 +7086,55 @@ List<PublicProfile> _hostManageProfilesFor(List<String> uids) {
         city: 'Mumbai',
       ),
   ];
+}
+
+class _HostManageLiveOperationsRoutePreview extends StatelessWidget {
+  const _HostManageLiveOperationsRoutePreview();
+
+  @override
+  Widget build(BuildContext context) {
+    final now = HostOperationsFixtures.now;
+    final event = _hostManageLiveRevealEvent(_privateEvent);
+    final assignments = _hostManageMicroPodAssignments(event: event, now: now);
+    final rotationAssignments = _hostManageRotationAssignments(
+      event: event,
+      now: now,
+    );
+    final preferences = _hostManagePreferences(event: event, now: now);
+    final wingmanRequests = _hostManageWingmanRequests(event: event, now: now);
+    final assignmentPeerProfiles = _hostManageProfilesFor(
+      _hostManageAssignmentParticipantUids(assignments),
+    );
+    final rotationPeerProfiles = _hostManageProfilesFor(
+      _hostManageAssignmentParticipantUids(rotationAssignments),
+    );
+    final wingmanProfiles = _hostManageProfilesFor(
+      _hostManageWingmanProfileUids(wingmanRequests),
+    );
+
+    return _HostManageRouteScope(
+      club: _club,
+      event: event,
+      planValue: AsyncData<EventSuccessPlan?>(
+        _hostManageLivePlanForModule(
+          event: event,
+          now: now,
+          moduleId: EventSuccessModuleCatalog.liveReveal.id,
+        ),
+      ),
+      scorecardValue: const AsyncLoading<EventSuccessScorecard?>(),
+      assignments: assignments,
+      rotationAssignments: rotationAssignments,
+      preferences: preferences,
+      wingmanRequests: wingmanRequests,
+      assignmentPeerProfiles: assignmentPeerProfiles,
+      rotationPeerProfiles: rotationPeerProfiles,
+      wingmanProfiles: wingmanProfiles,
+      participations: HostOperationsFixtures.participations,
+      initialSection: HostEventManageSection.live,
+      initialParticipantSearchQuery: 'rhea',
+    );
+  }
 }
 
 class _HostManageRouteScope extends StatelessWidget {

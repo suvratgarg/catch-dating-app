@@ -53,7 +53,7 @@ class PrivateAfterglowRecapCard extends StatelessWidget {
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           gapH14,
-          _AfterglowBeatGrid(
+          AfterglowBeatGrid._(
             beats: [
               _AfterglowBeat(
                 icon: CatchIcons.eventAvailableOutlined,
@@ -163,24 +163,24 @@ class _AfterglowBeat {
 /// fade. Counter values animate from 0 to their final number over 600ms once
 /// the row has finished entering. Gives the afterglow recap a Spotify-Wrapped
 /// style paced reveal instead of dumping all three rows at once.
-class _AfterglowBeatGrid extends StatefulWidget {
-  const _AfterglowBeatGrid({required this.beats});
+class AfterglowBeatGrid extends StatefulWidget {
+  const AfterglowBeatGrid._({required this._beats});
 
-  final List<_AfterglowBeat> beats;
+  final List<_AfterglowBeat> _beats;
 
   @override
-  State<_AfterglowBeatGrid> createState() => _AfterglowBeatGridState();
+  State<AfterglowBeatGrid> createState() => _AfterglowBeatGridState();
 }
 
-class _AfterglowBeatGridState extends State<_AfterglowBeatGrid> {
+class _AfterglowBeatGridState extends State<AfterglowBeatGrid> {
   @override
   Widget build(BuildContext context) {
-    final beats = widget.beats;
+    final beats = widget._beats;
     return Column(
       children: [
         for (var index = 0; index < beats.length; index++) ...[
           if (index > 0) gapH8,
-          _AfterglowBeatRow(
+          AfterglowBeatRow._(
             beat: beats[index],
             // Stagger entry by 1.4s per beat. Tests skip the animation gate
             // so the rows just render in their final state.
@@ -194,17 +194,17 @@ class _AfterglowBeatGridState extends State<_AfterglowBeatGrid> {
   }
 }
 
-class _AfterglowBeatRow extends StatefulWidget {
-  const _AfterglowBeatRow({required this.beat, required this.entryDelay});
+class AfterglowBeatRow extends StatefulWidget {
+  const AfterglowBeatRow._({required this._beat, required this._entryDelay});
 
-  final _AfterglowBeat beat;
-  final Duration entryDelay;
+  final _AfterglowBeat _beat;
+  final Duration _entryDelay;
 
   @override
-  State<_AfterglowBeatRow> createState() => _AfterglowBeatRowState();
+  State<AfterglowBeatRow> createState() => _AfterglowBeatRowState();
 }
 
-class _AfterglowBeatRowState extends State<_AfterglowBeatRow>
+class _AfterglowBeatRowState extends State<AfterglowBeatRow>
     with TickerProviderStateMixin {
   late final AnimationController _entry = AnimationController(
     duration: CatchMotion.afterglowBeatEntry,
@@ -224,11 +224,11 @@ class _AfterglowBeatRowState extends State<_AfterglowBeatRow>
       return;
     }
     // Delay the entry, then once entry completes run the count-up.
-    Future<void>.delayed(widget.entryDelay).then((_) async {
+    Future<void>.delayed(widget._entryDelay).then((_) async {
       if (!mounted) return;
       await _entry.forward();
       if (!mounted) return;
-      if (widget.beat.countValue != null) {
+      if (widget._beat.countValue != null) {
         await _count.forward();
       } else {
         _count.value = 1;
@@ -246,7 +246,7 @@ class _AfterglowBeatRowState extends State<_AfterglowBeatRow>
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final beat = widget.beat;
+    final beat = widget._beat;
     return AnimatedBuilder(
       animation: Listenable.merge([_entry, _count]),
       builder: (context, _) {
