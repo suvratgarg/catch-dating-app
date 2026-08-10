@@ -1011,12 +1011,7 @@
         },
         {
           "tool": "lint:catch-ui-drift",
-          "stage": "scanner-ratchet",
-          "docAnchor": "docs/app_architecture.md#ui-analyzer-lint-policy"
-        },
-        {
-          "tool": "lint:catch-ui-drift-ratchet-engine",
-          "stage": "scanner-ratchet",
+          "stage": "scanner-gate",
           "docAnchor": "docs/app_architecture.md#ui-analyzer-lint-policy"
         },
         {

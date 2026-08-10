@@ -1,7 +1,7 @@
 ---
 doc_id: design_language
-version: 1.6.3
-updated: 2026-08-07
+version: 1.6.4
+updated: 2026-08-11
 owner: ui_elevation_initiative
 status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
 ---
@@ -17,7 +17,7 @@ multi-phase rollout + **live status** lives in
 > **Status (2026-05-31):** The "Sunset" cream+orange palette is **retired**; the direction
 > below is **locked** (see §9). Phases 0–1 are implemented (fonts bundled + optically sized,
 > B&W tokens, ActivityPalette routing, matte-duotone grade, Catch UI analyzer lints,
-> and the decrease-only Catch UI drift gate) and the **Phase 2 flagship Profile** is built — see
+> and the zero-diagnostic Catch UI gate) and the **Phase 2 flagship Profile** is built — see
 > [`ui_elevation_implementation.md`](ui_elevation_implementation.md) for the per-phase status.
 > Some choices stay **tunable** (activity pigments, photo grade, the display face). Visual
 > studies live in [`docs/visual_references/`](visual_references/) as runnable HTML.

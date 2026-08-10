@@ -3,22 +3,21 @@
 # Catch UI lint drift helper.
 #
 # Replaces retired diagnostic-specific UI/design wrappers. Enforcement lives
-# in dart analyze; this script is the focused-report and aggregate-ratchet layer.
+# in dart analyze; this script is the focused-report and aggregate zero gate.
 set -euo pipefail
 
 usage() {
   cat <<'EOF'
 Usage:
-  bash tool/check_catch_ui_lint_drift.sh [--summary|--count|--json [PATH]|--check|--baseline PATH|--code CODE|--label LABEL|--all|--self-test|--help]
+  bash tool/check_catch_ui_lint_drift.sh [--summary|--count|--json [PATH]|--check|--code CODE|--label LABEL|--all|--self-test|--help]
 
 Modes:
   default    Print summary plus matching diagnostics. Exit 1 if drift remains.
   --summary  Print summary only. Exit 1 if drift remains.
   --count    Print only the numeric drift count. Always exit 0.
   --json     Print a JSON count artifact. Optionally also write it to PATH. Always exit 0.
-  --check    Fail when any catch_* count exceeds the checked ratchet baseline.
-  --baseline Override tool/audit/catch_ui_lint_drift_baseline.json.
-  --self-test  Verify machine diagnostic parsing and completion semantics.
+  --check    Fail when any catch_* diagnostic remains.
+  --self-test  Verify parsing, completion semantics, and zero-gate anti-vacuity.
   --code     Count one Catch UI lint code.
   --label    Human-readable label for summary output.
   --all      Count all Catch UI lint codes.
@@ -34,7 +33,6 @@ LABEL="color/text/font"
 JSON_PATH=""
 SELF_TEST="false"
 dart_bin="${DART_BIN:-dart}"
-BASELINE_PATH="tool/audit/catch_ui_lint_drift_baseline.json"
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -51,14 +49,6 @@ while [ $# -gt 0 ]; do
       CODE_REGEX="catch_[a-z0-9_]+"
       LABEL="all Catch UI lints"
       shift
-      ;;
-    --baseline)
-      if [ $# -lt 2 ]; then
-        usage >&2
-        exit 2
-      fi
-      BASELINE_PATH="$2"
-      shift 2
       ;;
     --json)
       MODE="json"
@@ -129,6 +119,16 @@ analysis_is_complete() {
   fi
 }
 
+enforce_zero_diagnostics() {
+  local diagnostics="$1"
+  if [[ -n "${diagnostics//[[:space:]]/}" ]]; then
+    echo "Catch UI zero-diagnostic gate failed:" >&2
+    printf '%s\n' "$diagnostics" >&2
+    return 1
+  fi
+  echo "Catch UI zero-diagnostic gate passed (0 findings)."
+}
+
 if [[ "$SELF_TEST" == "true" ]]; then
   fixture=$'WARNING|STATIC_WARNING|CATCH_NO_RAW_COLOR|/tmp/catch_dating_app/lib/catch_widget.dart|1|1|1|Use a named role.\nINFO|LINT|UNRELATED_RULE|/tmp/catch_no_raw_text_style.dart|2|1|1|Message mentions catch_no_raw_font_drift.\nWARNING|STATIC_WARNING|CATCH_NO_RAW_TEXT_STYLE|/tmp/plain.dart|3|1|1|Use CatchTextStyles.'
   result="$(collect_diagnostics "$fixture" 'catch_[a-z0-9_]+')"
@@ -149,7 +149,15 @@ if [[ "$SELF_TEST" == "true" ]]; then
     echo "Catch UI lint drift parser marked an analyzer error complete." >&2
     exit 1
   fi
-  echo "Catch UI lint drift parser self-test passed."
+  if enforce_zero_diagnostics "$result" >/dev/null 2>&1; then
+    echo "Catch UI zero-diagnostic gate accepted seeded Catch findings." >&2
+    exit 1
+  fi
+  if ! enforce_zero_diagnostics "" >/dev/null; then
+    echo "Catch UI zero-diagnostic gate rejected an empty diagnostic set." >&2
+    exit 1
+  fi
+  echo "Catch UI lint zero-gate self-test passed."
   exit 0
 fi
 
@@ -187,13 +195,11 @@ fi
 
 if [ "$MODE" = "check" ]; then
   if [[ "$analyze_complete" != "true" ]]; then
-    echo "Catch UI lint ratchet cannot run because dart analyze was incomplete." >&2
+    echo "Catch UI zero-diagnostic gate cannot run because dart analyze was incomplete." >&2
     echo "$analyze_output" >&2
     exit 1
   fi
-  node tool/design/check_ui_lint_drift_ratchet.mjs \
-    --diagnostics "$tmp" \
-    --baseline "$BASELINE_PATH"
+  enforce_zero_diagnostics "$(cat "$tmp")"
   exit $?
 fi
 

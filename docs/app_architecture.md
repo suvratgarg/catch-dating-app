@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.10.1
-updated: 2026-08-10
+version: 1.10.2
+updated: 2026-08-11
 owner: app_architecture
 status: active
 ---
@@ -572,9 +572,9 @@ The `catch_no_raw_content_dimension` and `catch_no_local_design_constant`
 analyzer diagnostics flag fixed `height`/`width`/`dimension` arguments,
 fixed `Size(...)`, tight/expanding constraints, and local dimension wrappers
 under handwritten `lib/`, except the design-system scale and generated code.
-The canonical drift helper owns both focused reports and the decrease-only
-repository baseline. A finding is cleared by converting it or annotating the
-same line:
+The canonical drift helper owns both focused reports and the repository-wide
+zero-diagnostic gate. A legitimate fixed-art exception is expressed at the
+owning source line rather than through a count allowance:
 
 ```dart
 // sizing:allow: <reason>
@@ -773,8 +773,8 @@ and widget-returning method blocking.
 Placement rules additionally cover top-bar action ownership, shell-owned tab
 scaffolds, field/section context, explicit collection empty-state policy,
 AsyncValue loading/error coverage, raw error surfaces, and feature-local shell
-measurement. These rules begin as INFO findings behind a decrease-only drift
-ratchet. `CatchSectionList` makes the empty-state decision explicit in its API:
+measurement. Every Catch analyzer diagnostic is now a zero-tolerance CI
+failure. `CatchSectionList` makes the empty-state decision explicit in its API:
 callers provide `emptyBuilder` or name the deliberate
 `emptyStateOmitted: true` opt-out.
 
