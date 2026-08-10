@@ -123,7 +123,6 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
     final resolvedClubId = vm?.event.clubId ?? widget.clubId;
     final clubAsync = ref.watch(fetchClubProvider(resolvedClubId));
     final isHostApp = AppConfig.appRole.isHost;
-    final crossPathsConfig = ref.watch(crossPathsFeatureConfigProvider);
 
     if (vm != null) {
       if (vm.event.clubId != widget.clubId) {
@@ -154,14 +153,12 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
         CrossPathsEventConsentController.setConsentMutation,
       );
       final crossPathsEligible = crossPathsEventConsentEligible(
-        rolloutEnabled: crossPathsConfig.consentControlsEnabled,
         event: vm.event,
         participation: vm.participation,
         userProfile: vm.userProfile,
         now: now,
       );
-      final crossPathsConsentReadable =
-          crossPathsConfig.consentControlsEnabled && vm.userProfile != null;
+      final crossPathsConsentReadable = vm.userProfile != null;
       final crossPathsConsentAsync = crossPathsConsentReadable
           ? ref.watch(
               watchCrossPathsEventConsentProvider(

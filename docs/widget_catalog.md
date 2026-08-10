@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 3.0.3
+version: 3.0.4
 updated: 2026-08-10
 owner: recursive_audit_loop
 status: active
@@ -495,7 +495,7 @@ Widgetbook callers.
 | `CatchPersonPolaroid` | `lib/core/widgets/catch_person_polaroid.dart` | Canonical person material. Frames portrait media in a white instant-photo mat with activity-colored kicker, identity caption, optional meta, and an optional media overlay for contextual actions such as Catches reactions. It represents the person only; event overlap remains a separate ticket-stub composition. |
 | `CrossPathsExploreCard` | `lib/cross_paths/presentation/cross_paths_explore_card.dart` | Provider-free Explore composition for one sanitized Cross Paths suggestion. Reuses `CatchPersonPolaroid`, keeps associated event context/actions adjacent, and reports a callback-only mount impression without owning analytics or data access. |
 | `CrossPathsEventContextCard` | `lib/cross_paths/presentation/cross_paths_explore_card.dart` | Provider-free associated-event leaf used by the Explore card and profile preview. It renders truthful person-to-event context and a separate Event Detail callback without owning booking or invitation behavior. |
-| `CrossPathsProfilePreviewSheet` | `lib/cross_paths/presentation/cross_paths_explore_card.dart` | Sanitized profile-preview overlay that reuses `ProfileSurface`, watches only the current viewer's outgoing invitation, and pins the associated event action below it. It delegates callable-only invitation mutations and may offer an unbooked sender `Ask to go together` only when both the rollout flag and coarse server `pairHoldAvailable` decision are true; it never reads a roster or creates a chat directly. |
+| `CrossPathsProfilePreviewSheet` | `lib/cross_paths/presentation/cross_paths_explore_card.dart` | Sanitized profile-preview overlay that reuses `ProfileSurface`, watches only the current viewer's outgoing invitation, and pins the associated event action below it. It delegates callable-only invitation mutations and may offer an unbooked sender `Ask to go together` only when the coarse server `pairHoldAvailable` decision is true; layered consent, safety, event selection, and inventory remain server-owned, and the client never reads a roster or creates a chat directly. |
 | `ProfileHeroWidget` | `lib/swipes/shared/profile_surface/catch_profile_view.dart:127` | Profile reference adopter for `CatchPersonPolaroid`. Supplies graded/fallback profile media, activity-colored kicker, name/age, meta line, and optional Catches reaction overlay without owning profile data mapping. |
 | `ProfilePhoto` | `lib/swipes/shared/profile_surface/catch_profile_view.dart:214` | Profile media renderer. Shows a graded real photo when present, otherwise falls back to the activity artwork for the profile's kicker activity. |
 | `ProfileSectionView` | `lib/swipes/shared/profile_surface/catch_profile_view.dart:238` | Public section dispatcher for `ProfileSection` display models. Routes compatibility, prompt, running, facts, and photo sections to their named renderers, passes the resolved activity descriptor into activity-pigmented sections, and adds section reaction controls only when the parent Catches surface supplies `onReact`. |

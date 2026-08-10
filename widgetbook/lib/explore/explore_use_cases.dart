@@ -560,7 +560,6 @@ Widget crossPathsProfilePreviewStates(BuildContext context) {
         label: 'pair spot available before booking',
         child: _DeviceFrame(
           child: _ExploreScope(
-            pairInventoryEnabled: true,
             child: Align(
               alignment: Alignment.bottomCenter,
               child: CrossPathsProfilePreviewSheet(
@@ -2289,7 +2288,6 @@ class _ExploreScope extends StatelessWidget {
     this.uid = _viewerUid,
     this.deviceLocation,
     this.outgoingInvitation,
-    this.pairInventoryEnabled = false,
   });
 
   final Widget child;
@@ -2301,7 +2299,6 @@ class _ExploreScope extends StatelessWidget {
   final String? uid;
   final LocationCoordinate? deviceLocation;
   final CrossPathsInvitation? outgoingInvitation;
-  final bool pairInventoryEnabled;
 
   @override
   Widget build(BuildContext context) {
@@ -2320,13 +2317,6 @@ class _ExploreScope extends StatelessWidget {
         AsyncData(ExploreFeedViewModel(items: List.unmodifiable(_feedItems)));
     return ProviderScope(
       overrides: [
-        crossPathsFeatureConfigProvider.overrideWith(
-          (ref) => CrossPathsFeatureConfig(
-            consentControlsEnabled: true,
-            exploreSuggestionsEnabled: true,
-            pairInventoryEnabled: pairInventoryEnabled,
-          ),
-        ),
         uidProvider.overrideWith((ref) => Stream<String?>.value(uid)),
         watchUserProfileProvider.overrideWith(
           (ref) => Stream<UserProfile?>.value(uid == null ? null : _viewer),
