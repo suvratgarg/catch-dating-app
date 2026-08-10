@@ -313,6 +313,7 @@ void main() {
     expect(find.byKey(SettingsKeys.reviewHistoryRow), findsOneWidget);
     expect(find.byKey(SettingsKeys.paymentHistoryRow), findsOneWidget);
     expect(find.byKey(SettingsKeys.hostAppRow), findsOneWidget);
+    expect(find.byKey(SettingsKeys.launchAccessRow), findsOneWidget);
     expect(find.byKey(SettingsKeys.signOutRow), findsOneWidget);
 
     await tester.ensureVisible(find.byKey(SettingsKeys.signOutRow));

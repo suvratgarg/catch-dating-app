@@ -1,7 +1,7 @@
 {
   "$schema": "./screen_coverage.schema.json",
   "version": 1,
-  "updated": "2026-07-10",
+  "updated": "2026-08-10",
   "generatedAgainst": "tool/ui_capture/route_inventory.json",
   "description": "Design screen coverage policy. Every route from the generated route inventory must be contracted, aliased to a canonical design surface, planned for a future screen contract, or explicitly excluded from baseline design parity.",
   "routes": [
@@ -199,6 +199,13 @@
       "priority": "P3",
       "reason": "Covered by screen.settings.account as the consumer account, notification, privacy, safety, and sign-out settings route.",
       "screenId": "screen.settings.account"
+    },
+    {
+      "routeId": "launchAccessScreen",
+      "status": "contracted",
+      "priority": "P2",
+      "reason": "Covered by screen.launch_access.application as the live Consumer city-access application and review-status route.",
+      "screenId": "screen.launch_access.application"
     },
     {
       "routeId": "paymentHistoryScreen",

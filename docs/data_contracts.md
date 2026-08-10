@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.13.0
+version: 1.13.1
 updated: 2026-08-10
 owner: recursive_audit_loop
 status: active
@@ -367,9 +367,13 @@ keep only aggregate projections such as `followerCount`, `bookedCount`,
 and `nextEventAt`.
 
 Direct client writes are still allowed only for narrow owner-owned actions that
-rules can prove locally: onboarding drafts, saved events, outgoing profile decisions,
-match-scoped chat messages, own unread reset, own notification `readAt`, and
-own FCM token. Multi-document product writes belong in callables or triggers.
+rules can prove locally: onboarding drafts, launch access applications, saved
+events, outgoing profile decisions, match-scoped chat messages, own unread
+reset, own notification `readAt`, and own FCM token. The
+`accessApplications/{uid}` rule accepts only the authenticated owner's strict
+application shape while its status is editable, increments `submissionCount`,
+and preserves Admin-owned status, cohort, reviewer, and activation fields.
+Multi-document product writes belong in callables or triggers.
 
 Raw `eventParticipations` reads are equally narrow: a participant may read
 their own deterministic edge, and an authorized event host may read the roster

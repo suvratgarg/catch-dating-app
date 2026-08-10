@@ -4264,6 +4264,7 @@
         "chatScreen",
         "publicProfileScreen",
         "settingsScreen",
+        "launchAccessScreen",
         "paymentHistoryScreen",
         "paymentConfirmationScreen"
       ],

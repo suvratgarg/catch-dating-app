@@ -332,6 +332,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                               : null,
                           onTap: operationPending ? null : _openHostApp,
                         ),
+                        CatchField.nav(
+                          key: SettingsKeys.launchAccessRow,
+                          title: context
+                              .l10n
+                              .launchAccessLaunchAccessApplicationScreenTextJoinTheNextCity,
+                          valueText: context
+                              .l10n
+                              .launchAccessLaunchAccessApplicationScreenTextTellUsWhereYou,
+                          icon: CatchIcons.locationCityOutlined,
+                          onTap: operationPending
+                              ? null
+                              : () => context.pushNamed(
+                                  Routes.launchAccessScreen.name,
+                                ),
+                        ),
                       ],
                     ),
                     CatchSection.fieldRows(
