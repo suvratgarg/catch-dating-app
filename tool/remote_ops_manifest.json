@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated": "2026-08-10",
+  "updated": "2026-08-11",
   "description": "Consolidated inventory of remote operational surfaces. This file groups Firebase deploys, environment switching, data repair/backfill, App Check/security console work, CI gates, and App Store/TestFlight/Play release operations without changing the underlying tools.",
   "operations": [
     {
@@ -742,14 +742,14 @@
           "kind": "manual",
           "ref": "App Store Connect TestFlight group assignment and install/launch proof",
           "owner": "docs/release_operations.md",
-          "ticket": "testflight-console-evidence-required",
+          "ticket": "https://github.com/suvratgarg/catch-dating-app/issues/218",
           "guardrail": "Both GitHub uploads processed and both legacy workflows are disabled; close APP-TARGET-IOS-GITHUB-CUTOVER-001 only after intended group assignment and install/launch proof exists."
         },
         {
           "kind": "manual",
           "ref": "Google Play app records, app signing, publisher access, and internal testers",
           "owner": "docs/release_operations.md",
-          "ticket": "APP-TARGET-ANDROID-PLAY-001",
+          "ticket": "https://github.com/suvratgarg/catch-dating-app/issues/199",
           "guardrail": "Every Android promotion must live-probe both package records, qa tracks, app-scoped edit access, and at least one Google Group tester per track. Play App Signing enrollment remains an owner prerequisite."
         }
       ],
@@ -766,6 +766,8 @@
         "GitHub Actions is canonical for both roles and both mobile platforms; package production and internal-store mutation are separate workflows, and public store promotion remains separate.",
         "Mobile Internal Release consumes successful main CI authority, writes binary-bound identity/policy/provenance receipts, retains exact packages for 90 days, and publishes post-comparison build authority without touching either store.",
         "Mobile Internal Exact Promotion persists one 90-day exact-package claim only after store verification and credential removal; Apple identity without that prior exact claim fails closed and requires a new build, while Play retries require exact completed qa digest readback.",
+        "Final flag-free producer run 31421907027 and exact promotion runs 31423756695 and 31423762426 processed Consumer and Host iOS build 202608100000028601 as VALID and persisted claim artifacts 9076655935 and 9076730304; issue #218 owns group assignment and installed-device proof.",
+        "Final flag-free Android promotion runs 31423759477 and 31423765422 failed closed before upload because Play developer account 5956684998834594943 is unverified and has zero app records; issue #199 owns the required account and app-record setup.",
         "Mobile Internal Release run 29168074271 is historical pre-split evidence: it processed Consumer and Host build 202607110000000301 as VALID; retirement run 29168662623 verified those receipts and disabled both app-scoped Default workflows.",
         "Run 29388936845 exposed an ephemeral-runner Apple Development certificate leak. Nineteen verified-unused certificates were revoked on 2026-07-15, three working human identities were preserved, and dedicated reusable CI certificate 7P698XNLRP was stored in prod-mobile pending repaired main-run proof.",
         "Apple Developer App ID Catch Host/com.catchdates.host and App Store Connect app id 6778927317 were created on 2026-06-10; SKU is catch-host-ios.",

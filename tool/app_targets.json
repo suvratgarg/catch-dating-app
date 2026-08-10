@@ -537,10 +537,9 @@
     {
       "id": "APP-TARGET-IOS-GITHUB-CUTOVER-001",
       "status": "blocked_external",
-      "reason": "GitHub Actions is the canonical iOS package and exact-promotion owner, historical uploads for both roles processed, and both legacy Xcode Cloud workflows are disabled. Closure remains externally blocked on exercising the split promoter for the next intended packages plus TestFlight group assignment, install, and launch proof.",
+      "reason": "GitHub Actions is the canonical iOS package and exact-promotion owner, the final flag-free Consumer and Host packages processed through the split promoter, and both legacy Xcode Cloud workflows are disabled. Closure is externally blocked only on TestFlight group assignment, install, and launch proof in GitHub issue #218.",
       "externalPrerequisites": [
         "select and record the intended Consumer and Host internal TestFlight groups",
-        "promote the next intended Consumer and Host IPAs through Mobile Internal Exact Promotion",
         "assign the GitHub-processed Consumer and Host builds to those groups",
         "install and launch both GitHub-owned builds with role-specific runtime smoke proof"
       ],
@@ -549,6 +548,8 @@
         "historical pre-split Mobile Internal Release run 29168074271: Consumer and Host build 202607110000000301 processed VALID",
         "processing receipts bound to Mobile Internal Release run 29168074271",
         "retirement run 29168662623: both app-scoped Default workflows disabled",
+        "final flag-free producer run 31421907027 and Consumer exact promotion run 31423756695: build 202608100000028601 processed VALID with claim artifact 9076655935",
+        "final flag-free producer run 31421907027 and Host exact promotion run 31423762426: build 202608100000028601 processed VALID with claim artifact 9076730304",
         "tester-group assignments",
         "Consumer and Host install/launch smoke proof"
       ]
@@ -556,8 +557,9 @@
     {
       "id": "APP-TARGET-ANDROID-PLAY-001",
       "status": "blocked_external",
-      "reason": "The split exact package producer/promoter, Android Publisher API, dedicated zero-project-role service account, and prod-mobile OIDC binding are ready. Android promotion now probes both apps live and stays blocked until both Play records, qa tracks, Google Group testers, and app-scoped testing-track access exist.",
+      "reason": "The split exact package producer/promoter, Android Publisher API, dedicated zero-project-role service account, and prod-mobile OIDC binding are ready. Final flag-free promotions failed closed before mutation because the unverified Play developer account has zero app records. GitHub issue #199 owns verification, both records, qa testers, App Signing, and app-scoped access.",
       "externalPrerequisites": [
+        "complete Play developer-account physical-device, identity, and contact-phone verification in GitHub issue #199",
         "create com.catchdates.app and com.catchdates.host Play records",
         "enroll both apps in Play App Signing",
         "grant GOOGLE_PLAY_SERVICE_ACCOUNT_EMAIL release access to both apps",
@@ -566,6 +568,8 @@
       ],
       "playTrack": "qa",
       "removalProof": [
+        "Mobile Internal Release run 31421907027 exact Consumer and Host Android packages retained for 90 days",
+        "promotion runs 31423759477 and 31423765422 failed closed before upload with Package not found and removed credentials",
         "consumer signed AAB processed on Play internal testing",
         "host signed AAB processed on Play internal testing",
         "Play signing fingerprints registered with Firebase and App Check",

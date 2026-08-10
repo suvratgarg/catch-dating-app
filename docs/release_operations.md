@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 2.0.11
-updated: 2026-08-10
+version: 2.0.12
+updated: 2026-08-11
 owner: recursive_audit_loop
 status: active
 ---
@@ -878,12 +878,13 @@ runners had no reusable development private key, so automatic signing had
 accumulated one unusable API-created certificate per runner. Nineteen verified
 unused development certificates were revoked, the three working human
 Development/Distribution/Developer ID identities were preserved, and dedicated
-CI certificate `7P698XNLRP` was installed in `prod-mobile`. The reusable-keychain
-workflow still requires a successful main run before this incident is closed as
-end-to-end release proof. Mobile store distribution also still needs external
-product-release evidence: current TestFlight group assignment/install proof for
-both roles and Play enrollment, processing, tester, signing-fingerprint,
-install, and launch proof.
+CI certificate `7P698XNLRP` was installed in `prod-mobile`. Final flag-free
+producer run `31421907027` used the repaired reusable-keychain path for both
+roles, and exact promotion runs `31423756695` and `31423762426` processed the
+Consumer and Host IPAs as `VALID`. Mobile store distribution still needs
+external product-release evidence: current TestFlight group assignment/install
+proof for both roles and Play account verification, enrollment, processing,
+tester, signing-fingerprint, install, and launch proof.
 
 Verified setup state:
 
@@ -1596,8 +1597,19 @@ store identity, App Store Connect records, and manifest-resolved GitHub
 archive and exact-promotion paths. The producer deliberately stops at signed
 package authority. The manual exact promoter owns upload; TestFlight group
 assignment, install, and launch remain separate remote evidence.
-`APP-TARGET-IOS-GITHUB-CUTOVER-001` remains open until the Host exact promoter,
-the intended groups, installation, and launch proof are recorded.
+`APP-TARGET-IOS-GITHUB-CUTOVER-001` remains open only until the intended groups,
+installation, and launch proof are recorded in GitHub issue `#218`.
+
+The final flag-free split release is now proven for both roles from the same
+immutable producer authority. Producer run `31421907027` selected source
+`f139bad65070cb3e94c9e812cb812438a2b86ca4`. Consumer promotion run
+`31423756695` uploaded version `1.0.2`, build `202608100000028601`, to App Store
+Connect app `6765646860` and persisted exact claim artifact `9076655935`. Host
+promotion run `31423762426` uploaded version `1.0.1`, the same source-bound build
+number, to app `6778927317` and persisted exact claim artifact `9076730304`.
+Both postconditions reached `VALID`; neither promotion rebuilt, re-exported, or
+re-signed its producer package. These claims prove upload and processing, not
+TestFlight group assignment or installed-device behavior.
 
 Consumer `1.0.2` is the first live proof of the split architecture. Main CI run
 `31266032614` authorized source `c7be024a4e272d4a21759127a4fdd19e5752e30a`;
@@ -1776,22 +1788,25 @@ CI-triggered producer owns exact role/platform signed iOS/Android packages, and
 the manual promoter owns one verified TestFlight or Play `qa` mutation without
 rebuilding. Neither role uploads automatically from a `main` push.
 
-Consumer exact upload and processing plus legacy-owner retirement are complete.
-`APP-TARGET-IOS-GITHUB-CUTOVER-001` remains open for the Host exact promotion,
-both intended TestFlight groups, and install/launch proof.
-`APP-TARGET-ANDROID-PLAY-001` remains blocked on Play enrollment, publisher
-access, processing, tester, and device proof.
+Consumer and Host exact upload and processing plus legacy-owner retirement are
+complete. `APP-TARGET-IOS-GITHUB-CUTOVER-001` remains open only for both intended
+TestFlight groups and install/launch proof in issue `#218`.
+`APP-TARGET-ANDROID-PLAY-001` remains blocked in issue `#199` on Play developer
+account verification, app-record creation, App Signing, publisher access,
+processing, testers, and device proof.
 
 Cutover checklist:
 
 1. Complete historical evidence: Consumer and Host GitHub uploads and App Store
    processing from the pre-split workflow.
 2. Complete: both legacy Xcode Cloud workflows disabled.
-3. Consumer exact promotion is complete in run `31267129848`; exercise the
-   Host exact promoter, then record both TestFlight group assignments and
-   install/launch proofs.
-4. Complete Play enrollment and publisher access, then enable the Play flag.
-5. Exercise the exact promoter and record both Play internal
+3. Complete: final flag-free Consumer and Host exact promotions processed in
+   runs `31423756695` and `31423762426` with 90-day exact claims.
+4. Record both TestFlight group assignments and install/launch proofs in issue
+   `#218`.
+5. Complete the Play owner-verification, app-record, App Signing, tester, and
+   publisher-access steps in issue `#199`, then rerun the exact promoter.
+6. Record both Play internal
    processing/install/launch proofs and signing
    fingerprints.
 
