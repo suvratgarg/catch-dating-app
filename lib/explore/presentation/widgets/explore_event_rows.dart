@@ -11,7 +11,6 @@ import 'package:catch_dating_app/events/shared/event_detail_route_transition.dar
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
-import 'package:catch_dating_app/explore/presentation/widgets/explore_synthetic_visual_fill.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
@@ -36,9 +35,10 @@ class ExploreFeedEventRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final event = item.event;
     final state = ExploreEventRowState.from(item, l10n: context.l10n);
-    final heroTag = isSyntheticExploreItem(item)
+    final heroTag = eventTicketHeroTag(event.id, analyticsSource);
+    final onTap = onEventSelected == null
         ? null
-        : eventTicketHeroTag(event.id, analyticsSource);
+        : () => onEventSelected!(item, analyticsSource);
     final card = EventDateRailCard(
       event: event,
       kicker: state.kicker,
@@ -50,9 +50,7 @@ class ExploreFeedEventRow extends StatelessWidget {
       showAttendeeSignal: true,
       stripPosition: stripPosition,
       heroTag: heroTag,
-      onTap: isSyntheticExploreItem(item)
-          ? null
-          : () => onEventSelected?.call(item, analyticsSource),
+      onTap: onTap,
     );
     if (item.status != EventTileStatus.ineligible) return card;
     return Opacity(
