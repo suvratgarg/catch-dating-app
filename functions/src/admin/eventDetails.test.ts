@@ -632,6 +632,72 @@ test(
   }
 );
 
+test(
+  "admin owners can select a Mumbai event with bounded pair inventory",
+  async () => {
+    const h = harness({
+      "organizers/bandra-runners": clubDoc({
+        name: "Bandra Runners",
+        location: "in-mh-mumbai",
+        locationCityId: "in-mh-mumbai",
+        locationMarketId: "in-mh-mumbai",
+        cityName: "Mumbai",
+      }),
+      "events/bandra-run-1": eventDoc({
+        clubId: "bandra-runners",
+        organizerId: "bandra-runners",
+        discoveryCityName: "mumbai",
+        discoveryMarketId: "in-mh-mumbai",
+        eventPolicy: {
+          version: 1,
+          admission: {
+            format: "open",
+            capacityLimit: 30,
+            waitlistPolicy: {mode: "fifo", offerWindowMinutes: 20},
+            inviteRequired: false,
+            membershipRequired: false,
+            manualApprovalRequired: false,
+            privateAccessPolicy: {
+              mode: "none",
+              inviteCodeHint: null,
+              privateLinkEnabled: false,
+            },
+            cohortCapacityLimits: {},
+            balancedRatioPolicy: null,
+            crossPathsPairInventory: {
+              enabled: true,
+              reservedPairCapacity: 4,
+              holdDurationMinutes: 15,
+            },
+          },
+          pricing: {
+            basePriceInPaise: 15000,
+            cohortAdjustmentsInPaise: {},
+            demandPricingRules: [],
+          },
+          cancellation: {policyId: "standard"},
+          settlement: {hostPayoutTiming: "afterEventCompletion"},
+        },
+      }),
+    });
+
+    const result = await adminUpdateEventDetailsHandler(
+      callableRequest("admin-1", {
+        eventId: "bandra-run-1",
+        fields: {crossPathsDiscoveryEnabled: true},
+        reviewNote: "Selected with organizer-controlled pair capacity.",
+      }, {adminOwner: true}),
+      h.deps
+    );
+
+    assert.equal(result.updatedFieldCount, 1);
+    assert.equal(
+      h.firestore.get("events/bandra-run-1")?.crossPathsDiscoveryEnabled,
+      true
+    );
+  }
+);
+
 test("support cannot change the Cross Paths selected-event gate", async () => {
   const h = harness({
     "organizers/bandra-runners": clubDoc(),

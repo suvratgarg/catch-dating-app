@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.0.9
+version: 2.0.10
 updated: 2026-08-10
 owner: recursive_audit_loop
 status: active
@@ -501,31 +501,37 @@ independently deletes exposure receipts involving the member.
 
 ### Mumbai selected-event pilot
 
-The first live Cross Paths pilot uses three independent, default-false Remote
-Config controls:
+Cross Paths ships with three operational Remote Config switches:
 
 - `cross_paths_enable_consent_controls`
 - `cross_paths_enable_explore_suggestions`
 - `cross_paths_enable_pair_inventory`
 
-Code deployment does not authorize live discovery. Every real event must also
+All three switches are on in the checked-in and live environment templates as
+of the production QA activation on 2026-08-10. They are emergency operational
+kill switches, not work-in-progress gates. A client switch alone never
+authorizes discovery. Every real event must also
 have Admin-owned `crossPathsDiscoveryEnabled: true`, and the backend accepts
 that switch only for an active event at least six hours away in canonical
 market `in-mh-mumbai`. At most three upcoming events may be selected. Pair
-inventory remains false for this pilot.
+inventory additionally requires an organizer-authored admission policy and
+server-owned capacity validation.
 
 Use this rollout order:
 
-1. Obtain external approval for the privacy-policy and per-event consent copy.
+1. Keep the published privacy policy and per-event consent copy aligned with
+   the exact product behavior; obtain independent legal review before selecting
+   the first real-member event.
 2. Select 2–3 eligible upcoming Mumbai events in Admin with an audit note.
 3. Onboard 20–50 real members through the normal user-controlled global and
    per-event consent actions; never seed or backfill affirmative consent.
 4. Curate the Mumbai showcase queue through the score-free human checklist.
 5. Prove eligible-supply, exposure, invitation-abuse, cancellation, safety,
    and support monitoring.
-6. Enable consent controls for the selected pilot audience, then enable
-   Explore suggestions only after consent/supply evidence is sufficient.
-7. Keep pair inventory false until a separately reviewed later pilot.
+6. Monitor the already-live client surfaces and enable real discovery only by
+   selecting an eligible event after consent/supply evidence is sufficient.
+7. Enable pair inventory per event only when that organizer deliberately
+   reserves capacity and the event remains eligible.
 
 Rollback is additive and fail-closed: first disable Explore suggestions, then
 disable selected event switches if necessary. Turning off an event switch
@@ -533,10 +539,12 @@ invalidates pending invitations but preserves an explicitly accepted plan.
 Keep consent controls available long enough for members and support to revoke
 or inspect consent, and never use rollback to rewrite consent history.
 
-Production inventory checked on 2026-08-09 contained zero upcoming active
-Mumbai events, zero showcase-eligible members, and zero enabled event-consent
-edges. The Mumbai pilot therefore remains intentionally dormant after code
-delivery; none of the rollout flags may be enabled on that inventory.
+Production QA was activated on 2026-08-10 with one hidden, synthetic Mumbai
+event, one fictional test-phone viewer, two synthetic opted-in showcase
+profiles, and exact read-back of all eleven fixture documents. No real event
+or real member was opted in or exposed. The client surfaces are live; real
+discovery remains empty until Admin selects an eligible real Mumbai event and
+real members make both consent choices themselves.
 
 ## Required Secrets
 

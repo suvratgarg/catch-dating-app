@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.11.1
-updated: 2026-08-09
+version: 1.11.2
+updated: 2026-08-10
 owner: recursive_audit_loop
 status: active
 ---
@@ -393,8 +393,10 @@ neither consent document alone authorizes an Explore identity. The optional
 `events/{eventId}.crossPathsDiscoveryEnabled` field is a third, Admin-owned
 pilot gate that defaults to false when absent. Enabling it is restricted to an
 active upcoming Mumbai event (`discoveryMarketId: in-mh-mumbai`), a minimum
-six-hour lead, no companion inventory, and at most three selected upcoming
-events. Disabling it remains available and invalidates pending invitations
+six-hour lead, and at most three selected upcoming events. An event may use its
+canonical, bounded, organizer-controlled companion inventory policy; all hold,
+capacity, payment, and release invariants remain server-owned. Disabling the
+selected-event gate remains available and invalidates pending invitations
 without silently closing an accepted event plan.
 
 Cross Paths showcase eligibility is independently owned by the audited

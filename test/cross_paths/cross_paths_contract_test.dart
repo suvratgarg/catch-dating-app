@@ -8,12 +8,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('all bundled rollout controls fail closed', () {
+  test('bundled controls keep the shipped feature live', () {
     expect(kCrossPathsConfigDefaults, {
-      CrossPathsFeatureConfig.enableConsentControlsKey: false,
-      CrossPathsFeatureConfig.enableExploreSuggestionsKey: false,
-      CrossPathsFeatureConfig.enablePairInventoryKey: false,
+      CrossPathsFeatureConfig.enableConsentControlsKey: true,
+      CrossPathsFeatureConfig.enableExploreSuggestionsKey: true,
+      CrossPathsFeatureConfig.enablePairInventoryKey: true,
     });
+    expect(CrossPathsFeatureConfig.live.consentControlsEnabled, isTrue);
+    expect(CrossPathsFeatureConfig.live.exploreSuggestionsEnabled, isTrue);
+    expect(CrossPathsFeatureConfig.live.pairInventoryEnabled, isTrue);
     expect(CrossPathsFeatureConfig.disabled.consentControlsEnabled, isFalse);
     expect(CrossPathsFeatureConfig.disabled.exploreSuggestionsEnabled, isFalse);
     expect(CrossPathsFeatureConfig.disabled.pairInventoryEnabled, isFalse);
