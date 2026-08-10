@@ -1,12 +1,12 @@
 {
   "$schema": "./feature_contract.schema.json",
   "version": 2,
-  "updated": "2026-07-23",
+  "updated": "2026-08-10",
   "id": "feature.host_organizers",
   "name": "Host Organizers",
   "owner": "hosts",
   "status": "pilot",
-  "description": "Orchestrates the host organizer workspace across profile and media editing, defaults spokes, insights, public preview, payouts, team membership, host identity, hosted-organizer navigation, and account exit.",
+  "description": "Orchestrates the standalone host organizer workspace across private-to-public publication coaching, profile and media editing, cross-event attendee CRM readiness, defaults spokes, insights, public preview, payouts, team membership, host identity, hosted-organizer navigation, and account exit.",
   "surfaces": [
     {
       "id": "host_flutter",
@@ -16,9 +16,9 @@
         "id": "screen.host.clubs"
       },
       "actionScope": {
-        "included": "Host organizer route recovery, organizer and tab selection, organizer profile/media/default writes, settings-spoke navigation, analytics controls, payout onboarding/status, host-team membership, host identity, hosted-organizer navigation, and sign out.",
+        "included": "Host organizer route recovery, organizer and tab selection, private-to-public publication coaching, organizer profile/media/default writes, cross-event attendee CRM readiness, settings-spoke navigation, analytics controls, payout onboarding/status, host-team membership, host identity, hosted-organizer navigation, and sign out.",
         "excluded": [
-          "Organizer creation internals, public membership behavior, hosted-event creation and management, Stripe-hosted onboarding UI, analytics computation, and repository authorization retain their owning features, external services, or data-contract layers."
+          "Organizer creation internals, public membership behavior, hosted-event creation and management, campaign composition or delivery, WhatsApp and SMS provider adapters, Stripe-hosted onboarding UI, analytics computation, and repository authorization retain their owning features, external services, or data-contract layers."
         ]
       },
       "bindings": {
@@ -139,16 +139,20 @@
         ],
         "dataContracts": [
           "contracts/callables/add_organizer_manager_payload.schema.json",
+          "contracts/callables/get_organizer_crm_summary_payload.schema.json",
           "contracts/callables/host_analytics_query_payload.schema.json",
           "contracts/callables/refresh_stripe_host_payment_account_payload.schema.json",
           "contracts/callables/remove_organizer_manager_payload.schema.json",
           "contracts/callables/transfer_organizer_ownership_payload.schema.json",
           "contracts/callables/update_organizer_payload.schema.json",
+          "contracts/callable_responses/get_organizer_crm_summary_response.schema.json",
           "contracts/firestore/clubs.schema.json",
+          "contracts/firestore/event_attendees.schema.json",
           "contracts/firestore/host_analytics_snapshots.schema.json",
           "contracts/firestore/host_payment_accounts.schema.json",
           "contracts/firestore/host_profiles.schema.json",
           "contracts/firestore/organizer_team_memberships.schema.json",
+          "contracts/firestore/organizer_communication_preferences.schema.json",
           "contracts/firestore/organizers.schema.json",
           "contracts/storage/organizer_logo_images.schema.json",
           "contracts/storage/organizer_photos.schema.json"

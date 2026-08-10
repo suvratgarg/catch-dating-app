@@ -593,6 +593,11 @@ const schemaEventDocumentSchema = <String, Object?>{
       'maxLength': 500,
       'x-catch-ownership': 'callable-owned',
     },
+    'publicRegistrationEnabled': <String, Object?>{
+      'type': 'boolean',
+      'description': 'When true, the published marketing event route may register a phone-OTP identity into eventAttendees without creating a Consumer profile.',
+      'x-catch-ownership': 'callable-owned',
+    },
     'constraints': <String, Object?>{
       'type': 'object',
       'additionalProperties': false,

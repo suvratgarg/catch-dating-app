@@ -994,6 +994,10 @@ const schemaUpdateOrganizerCallablePayloadSchema = <String, Object?>{
             },
           },
         },
+        'publicListingEnabled': <String, Object?>{
+          'type': 'boolean',
+          'description': 'Owner-controlled value-ladder switch. The callable maps this intent to app visibility and governed public-page publication/index fields.',
+        },
       },
     },
   },

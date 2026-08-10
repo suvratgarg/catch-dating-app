@@ -341,6 +341,9 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
             'type': 'integer',
             'minimum': 0,
           },
+          'publicRegistrationEnabled': <String, Object?>{
+            'type': 'boolean',
+          },
           'priceLabel': <String, Object?>{
             'type': 'string',
             'minLength': 1,
@@ -1305,6 +1308,9 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
         'waitlistedCount': <String, Object?>{
           'type': 'integer',
           'minimum': 0,
+        },
+        'publicRegistrationEnabled': <String, Object?>{
+          'type': 'boolean',
         },
         'priceLabel': <String, Object?>{
           'type': 'string',

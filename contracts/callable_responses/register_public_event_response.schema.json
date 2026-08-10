@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/register_public_event_response.schema.json",
+  "title": "RegisterPublicEventCallableResponse",
+  "description": "Registration receipt returned to the phone-authenticated website visitor.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["eventId", "attendeeId", "status"],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "attendeeId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "status": {"type": "string", "enum": ["registered", "waitlisted", "alreadyRegistered"]}
+  }
+}

@@ -175,6 +175,11 @@
       "maxLength": 500,
       "x-catch-ownership": "callable-owned"
     },
+    "publicRegistrationEnabled": {
+      "type": "boolean",
+      "description": "When true, the published marketing event route may register a phone-OTP identity into eventAttendees without creating a Consumer profile.",
+      "x-catch-ownership": "callable-owned"
+    },
     "constraints": {
       "$ref": "../shared/event_common.schema.json#/definitions/eventConstraints",
       "x-catch-ownership": "callable-owned"

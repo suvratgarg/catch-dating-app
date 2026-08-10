@@ -69,6 +69,7 @@ class HostClubEditController implements HostClubEditActions {
 
   static final updateClubMutation = Mutation<void>();
   static final updateMediaMutation = Mutation<void>();
+  static final publicationMutation = Mutation<void>();
 
   final Ref _ref;
 

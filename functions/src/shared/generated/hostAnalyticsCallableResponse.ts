@@ -68,6 +68,14 @@ export interface HostAnalyticsCallableResponse {
     mutualMatchCount: number;
     chatStartedCount: number;
     repeatAttendeeCount: number;
+    operationalAttendeeCount?: number;
+    operationalCheckedInCount?: number;
+    attendeeSources?: {
+      catchBooking: number;
+      hostImport: number;
+      hostManual: number;
+      webOtp: number;
+    };
   }[];
   reviewSummary: {
     newReviews: number;

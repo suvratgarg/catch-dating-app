@@ -216,10 +216,11 @@ The current workflows are:
 | `.github/workflows/delivery.yml` | Sole backend delivery entrypoint. Authorizes a successful same-repository `main` CI run and promotes its exact package through dev, staging, and protected production. |
 | `.github/workflows/_firebase-promote.yml` | Reusable environment adapter that verifies provenance before authentication, resumes ordered stages, and waits for deployed Firestore indexes to become ready before dependent stages continue. |
 | `.github/workflows/data-validation.yml` | Read-only Firestore data validation, nightly and manual. |
-| `.github/workflows/_web-hosting-build.yml` | Builds one production Admin or Marketing Vite bundle, packages one lifecycle-hook-free Hosting target, and publishes workflow/run/source-bound bytes with an exact file inventory. |
-| `.github/workflows/_web-hosting-promote.yml` | Downloads one Hosting artifact by immutable id, installs the pinned Firebase CLI before credentials, verifies the GitHub digest and every packaged byte, then promotes without installing source dependencies, rebuilding Vite, or rematerializing organizer data. |
+| `.github/workflows/_web-hosting-build.yml` | Builds one production Admin or Marketing Vite bundle or standalone Host Flutter web bundle, packages one lifecycle-hook-free Hosting target, and publishes workflow/run/source-bound bytes with an exact file inventory. |
+| `.github/workflows/_web-hosting-promote.yml` | Downloads one Hosting artifact by immutable id, installs the pinned Firebase CLI before credentials, verifies the GitHub digest and every packaged byte, then promotes without installing source dependencies, rebuilding frontend bytes, or rematerializing organizer data. |
 | `.github/workflows/marketing-website.yml` | Validates marketing source and Storybook accessibility, calls the exact build/promote adapters on matching `main` pushes, then requires production 404 and launch-route postconditions. |
 | `.github/workflows/admin-website.yml` | Validates Admin source and live callable dependencies, then calls the exact build/promote adapters for the production `admin` target. |
+| `.github/workflows/host-website.yml` | Validates the Host target, standalone roster tests, and Host-owned Flutter surfaces, then builds and promotes the independent production `host` target. |
 | `.github/workflows/release-readiness.yml` | Manual staging/prod release gate. |
 | `.github/workflows/mobile-internal-release.yml` | Producer-only signed package matrix. It consumes a successful `main` CI authority, builds only exact role/platform targets, and publishes 90-day IPA/AAB packages plus a post-comparison build authority without mutating either store. |
 | `.github/workflows/mobile-internal-promote.yml` | Manual exact-artifact promoter. It verifies one current successful producer attempt and its authority/package ids, digests, provenance, and target before uploading the already-signed IPA to TestFlight or AAB to Play `qa`; it never rebuilds or resigns. |
@@ -703,12 +704,13 @@ store URLs to remain empty and preserves the honest coming-soon/waitlist CTA;
 The automatic workflow defaults an unset mode to `prelaunch`, so the website
 can deploy before the mobile listings exist without publishing fake links.
 
-Both Hosting workflows use the approval-free `prod-hosting` GitHub Environment
-and deploy automatically after their validation job succeeds on a matching
-`main` push. The deployable Vite output is built once: source validation skips
-its redundant production bundle, `_web-hosting-build.yml` materializes and
-packages the exact production bytes, and `_web-hosting-promote.yml` downloads
-that artifact by id and digest without rebuilding it. Keep only Hosting/OIDC
+All three Hosting workflows use the approval-free `prod-hosting` GitHub
+Environment and deploy automatically after their validation job succeeds on a
+matching `main` push. Each deployable output is built once: React source
+validation skips its redundant production bundle, while the Host workflow
+validates without building; `_web-hosting-build.yml` then produces and packages
+the exact production bytes, and `_web-hosting-promote.yml` downloads that
+artifact by id and digest without rebuilding it. Keep only Hosting/OIDC
 variables in that environment; App Store
 Connect and mobile signing secrets are owned by `prod-mobile`; backend
 production authority remains in reviewer-protected `prod`. Temporary mobile
@@ -734,8 +736,19 @@ disabled, the deployed web app's reCAPTCHA v3 key has a matching Firebase App
 Check server secret, and the live page completes App Check token exchange
 before sign-in.
 
+The standalone Host target is the Firebase Hosting site `catchdates-host`
+(`https://catchdates-host.web.app`) and is mapped as `hosting:host` in
+`.firebaserc`. Before making `hosts.catchdates.com` the advertised entrypoint,
+attach that custom domain to the site, complete the Firebase DNS verification,
+add both domains to Firebase Auth's authorized domains, and verify phone OTP and
+App Check in the deployed Host Flutter shell. Public OTP registration on
+`catchdates.com` uses the same production Firebase project but a separate
+event-scoped registration callable; verify its reCAPTCHA/App Check exchange and
+phone-provider state independently. Creating the Hosting site does not prove
+any of these console or DNS gates.
+
 Backend `Delivery` never deploys Hosting or forwards Vite variables. The
-marketing and admin workflows own their production Hosting builds and the
+marketing, Host, and admin workflows own their production Hosting builds and the
 `prod-hosting` environment described above. `VITE_GTM_ID` remains optional
 until the production GTM container exists; paid-acquisition readiness still
 requires setting it and validating consent-aware tags. For marketing Hosting,

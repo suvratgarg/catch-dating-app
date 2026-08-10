@@ -292,12 +292,18 @@ export const EventDetailCatch: Story = {
       path: catchEventDetailFixture.path,
       reviewStates: [
         "catch-native",
+        "web-otp-registration",
         "external-source",
         "event-reviews",
         "missing-event",
       ],
       stateCoverage: {
-        storybook: ["catch-native", "external-source", "event-reviews"],
+        storybook: [
+          "catch-native",
+          "web-otp-registration",
+          "external-source",
+          "event-reviews",
+        ],
         manual: ["missing-event"],
       },
     },
@@ -306,6 +312,7 @@ export const EventDetailCatch: Story = {
       routeIds: ["event_detail_canonical"],
       states: [
         "catch-native",
+        "web-otp-registration",
         "external-source",
         "event-reviews",
         "desktop-ticket-rail",
@@ -313,7 +320,10 @@ export const EventDetailCatch: Story = {
       ],
     },
   },
-  render: () => <EventDetailRouteStory event={catchEventDetailFixture} />,
+  render: () => <EventDetailRouteStory event={{
+    ...catchEventDetailFixture,
+    registrationState: "webOtp",
+  }} />,
 };
 
 export const EventDetailExternal: Story = {

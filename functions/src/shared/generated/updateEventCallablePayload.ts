@@ -35,6 +35,10 @@ export interface UpdateEventCallablePayload {
     distanceKm?: number;
     pace?: "easy" | "moderate" | "fast" | "competitive";
     description?: string;
+    /**
+     * Host-controlled website OTP registration switch. The event must belong to a published organizer before the public registration callable accepts users.
+     */
+    publicRegistrationEnabled?: boolean;
     capacityLimit?: number;
     priceInPaise?: number;
     constraints?: {

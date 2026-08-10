@@ -23,6 +23,7 @@ class HostEventBookingController extends _$HostEventBookingController {
   static final hostCancelEventMutation = Mutation<void>();
   static final deleteEventMutation = Mutation<void>();
   static final updateHostedEventMutation = Mutation<void>();
+  static final publicRegistrationMutation = Mutation<void>();
 
   Future<void>? _updateHostedEventInFlight;
 
@@ -113,6 +114,16 @@ class HostEventBookingController extends _$HostEventBookingController {
           includePolicy: includePolicy,
           inviteCode: inviteCode,
         );
+  }
+
+  Future<void> setPublicRegistration({
+    required Event event,
+    required bool enabled,
+  }) async {
+    _requireSignedIn(action: 'change website registration');
+    await ref
+        .read(eventRepositoryProvider)
+        .setPublicRegistration(eventId: event.id, enabled: enabled);
   }
 
   /// Offers one waitlisted person an expiring spot.

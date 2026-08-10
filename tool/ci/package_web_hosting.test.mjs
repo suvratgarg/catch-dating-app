@@ -55,6 +55,15 @@ function sourceFirebaseConfig() {
       },
       {target: "app", public: "build/web"},
       {
+        target: "host",
+        public: "apps/host/build/web",
+        predeploy: [
+          "./tool/flutter_with_env.sh prod --role host build web --release",
+        ],
+        headers: [{source: "**", headers: [{key: "X-Robots-Tag", value: "noindex"}]}],
+        rewrites: [{source: "**", destination: "/index.html"}],
+      },
+      {
         target: "admin",
         public: "admin/dist",
         predeploy: [
@@ -87,13 +96,15 @@ function makeSource(surface = "marketing") {
         hosting: {
           marketing: ["catch-dating-app-64e51"],
           app: ["catchdates-app"],
+          host: ["catchdates-host"],
           admin: ["catchdates-admin"],
         },
       },
     },
     etags: {ignored: true},
   });
-  const publicDir = surface === "marketing" ? "website/dist" : "admin/dist";
+  const publicDir = surface === "marketing" ? "website/dist" :
+    surface === "host" ? "apps/host/build/web" : "admin/dist";
   fs.mkdirSync(path.join(root, publicDir, "assets"), {recursive: true});
   fs.writeFileSync(path.join(root, publicDir, "index.html"), `<h1>${surface}</h1>`);
   fs.writeFileSync(path.join(root, publicDir, "assets", "app.js"), "console.log('catch');\n");
@@ -213,6 +224,30 @@ test("admin package preserves its headers and rewrite but excludes every other p
     ...binding,
     provenanceManifestPath,
   }).surface, "admin");
+});
+
+test("host package preserves the noindex SPA shell and excludes build hooks", async () => {
+  const root = makeSource("host");
+  const {stageDir, plan} = prepare(root, "host");
+  const provenanceManifestPath = await writeProvenance(root, "host");
+  const config = JSON.parse(fs.readFileSync(path.join(stageDir, "firebase.json")));
+
+  assert.equal(plan.surface, "host");
+  assert.equal(config.hosting.length, 1);
+  assert.equal(config.hosting[0].target, "host");
+  assert.equal(config.hosting[0].public, "site");
+  assert.deepEqual(config.hosting[0].rewrites, [
+    {source: "**", destination: "/index.html"},
+  ]);
+  assert.equal(config.hosting[0].headers[0].headers[0].key, "X-Robots-Tag");
+  assert.equal("predeploy" in config.hosting[0], false);
+  assert.equal(verifyWebHostingDelivery({
+    sourceRoot: root,
+    packageDir: stageDir,
+    surface: "host",
+    ...binding,
+    provenanceManifestPath,
+  }).surface, "host");
 });
 
 test("bounded config rejects a duplicate or unexpected public directory", () => {

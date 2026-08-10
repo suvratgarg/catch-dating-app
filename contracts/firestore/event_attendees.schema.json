@@ -1,0 +1,97 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_attendees.schema.json",
+  "title": "EventAttendeeDocument",
+  "description": "Private event-scoped operational attendee stored at eventAttendees/{attendeeId}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventAttendees",
+  "x-firestore-path": "eventAttendees/{attendeeId}",
+  "x-document-id-field": "id",
+  "x-owner": "standalone Host roster, Catch-booking projection, public registration, and attendance callables",
+  "required": [
+    "eventId",
+    "clubId",
+    "organizerId",
+    "displayName",
+    "searchName",
+    "source",
+    "status",
+    "linkedUid",
+    "phoneE164",
+    "email",
+    "externalReference",
+    "ticketType",
+    "importId",
+    "sourceRowId",
+    "createdAt",
+    "updatedAt",
+    "registeredAt",
+    "waitlistedAt",
+    "checkedInAt",
+    "cancelledAt",
+    "checkedInBy",
+    "linkedAt"
+  ],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "clubId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "displayName": {"type": "string", "minLength": 1, "maxLength": 120},
+    "searchName": {"type": "string", "minLength": 1, "maxLength": 120},
+    "source": {
+      "type": "string",
+      "enum": ["catchBooking", "hostImport", "hostManual", "webOtp"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["invited", "registered", "waitlisted", "checkedIn", "cancelled"]
+    },
+    "linkedUid": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "phoneE164": {
+      "type": ["string", "null"],
+      "pattern": "^\\+[1-9][0-9]{7,14}$"
+    },
+    "email": {
+      "type": ["string", "null"],
+      "format": "email",
+      "maxLength": 320
+    },
+    "externalReference": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "ticketType": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "importId": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "sourceRowId": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "registeredAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
+    "waitlistedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
+    "checkedInAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
+    "cancelledAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
+    "checkedInBy": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "linkedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"}
+  }
+}

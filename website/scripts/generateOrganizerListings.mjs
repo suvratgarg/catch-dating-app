@@ -80,8 +80,8 @@ const claimTargetReadinessReceipt = claimTargetReadinessReceiptPath ?
     path.resolve(claimTargetReadinessReceiptPath)
   ) :
   null;
-const firestoreOrganizerDocuments = args.firestoreProject ?
-  await readFirestoreOrganizerDocuments(args.firestoreProject) :
+const firestoreWebsiteDocuments = args.firestoreProject ?
+  await readFirestoreWebsiteDocuments(args.firestoreProject) :
   null;
 const liveMarketKeys = new Set(
   inMarket.cities
@@ -93,10 +93,17 @@ const approvedIntakeProjections = organizerIntakeProjectionEntries();
 const productionIntakeProjections = approvedIntakeProjections.filter(
   organizerIntakeProjectionHasLiveMarket
 );
-const firestoreListings = firestoreOrganizerDocuments ?
-  firestoreOrganizerDocuments
+const firestoreCatchEventsByHostId = firestoreWebsiteDocuments ?
+  publicCatchEventsByHostId(
+    firestoreWebsiteDocuments.events,
+    firestoreWebsiteDocuments.eventAttendeeCounts
+  ) :
+  new Map();
+const firestoreListings = firestoreWebsiteDocuments ?
+  firestoreWebsiteDocuments.organizers
     .filter(({id, data}) =>
-      data?.publicPage?.slug === id &&
+      typeof data?.publicPage?.slug === "string" &&
+      data.publicPage.slug.length > 0 &&
       (
         data.publicPage.publishStatus === "published" ||
         (args.includeDemo && data.publicPage.publishStatus === "qa")
@@ -116,6 +123,7 @@ const listings = [
   )),
   ...(args.includeDemo ? appCreatedDemoListings() : []),
 ]
+  .map(withPublicCatchEvents)
   .map(withPublicExternalEvents)
   .sort((a, b) => compareText(a.name, b.name));
 validateListingProjections(listings);
@@ -174,7 +182,7 @@ function validateExistingProjection(filePath, {includeDemo}) {
   );
 }
 
-async function readFirestoreOrganizerDocuments(projectId) {
+async function readFirestoreWebsiteDocuments(projectId) {
   const requireFromFunctions = createRequire(
     path.join(repoRoot, "functions", "package.json")
   );
@@ -192,13 +200,163 @@ async function readFirestoreOrganizerDocuments(projectId) {
     projectId,
   }, `website-organizer-listings-${process.pid}`);
   try {
-    const snapshot = await app.firestore().collection("organizers").get();
-    return snapshot.docs
+    const [organizers, events] = await Promise.all([
+      app.firestore().collection("organizers").get(),
+      app.firestore().collection("events").get(),
+    ]);
+    const documents = (snapshot) => snapshot.docs
       .map((document) => ({id: document.id, data: document.data()}))
       .sort((a, b) => compareText(a.id, b.id));
+    const eventDocuments = documents(events);
+    const publicRegistrationEventIds = eventDocuments
+      .filter(({data}) =>
+        data?.status !== "cancelled" &&
+        standalonePublicRegistrationEligible(data)
+      )
+      .map(({id}) => id);
+    return {
+      organizers: documents(organizers),
+      events: eventDocuments,
+      eventAttendeeCounts: await readOperationalAttendeeCounts(
+        app.firestore(),
+        publicRegistrationEventIds
+      ),
+    };
   } finally {
     await app.delete();
   }
+}
+
+async function readOperationalAttendeeCounts(db, eventIds) {
+  const entries = await Promise.all(eventIds.map(async (eventId) => {
+    const roster = db.collection("eventAttendees").where("eventId", "==", eventId);
+    const [registered, checkedIn, waitlisted] = await Promise.all([
+      roster.where("status", "==", "registered").count().get(),
+      roster.where("status", "==", "checkedIn").count().get(),
+      roster.where("status", "==", "waitlisted").count().get(),
+    ]);
+    const checkedInCount = checkedIn.data().count;
+    return [eventId, {
+      registered: registered.data().count + checkedInCount,
+      checkedIn: checkedInCount,
+      waitlisted: waitlisted.data().count,
+    }];
+  }));
+  return new Map(entries);
+}
+
+function publicCatchEventsByHostId(eventDocuments, attendeeCounts) {
+  const grouped = new Map();
+  for (const {id, data: event} of eventDocuments) {
+    if (
+      !event ||
+      event.status === "cancelled" ||
+      !standalonePublicRegistrationEligible(event)
+    ) continue;
+    const organizerId = event.organizerId ?? event.clubId;
+    const startTime = timestampIso(event.startTime);
+    const endTime = timestampIso(event.endTime);
+    if (!organizerId || !startTime || !endTime) continue;
+    const counts = attendeeCounts.get(id) ?? {
+      registered: event.bookedCount ?? 0,
+      checkedIn: event.checkedInCount ?? 0,
+      waitlisted: event.waitlistedCount ?? 0,
+    };
+    const projection = {
+      id,
+      role: "Hosted event",
+      title: firestoreEventTitle(event),
+      activityKind: event.eventFormat?.activityKind ?? "openActivity",
+      timeline: Date.parse(endTime) >= Date.now() ? "upcoming" : "past",
+      startTime,
+      endTime,
+      timezone: "Asia/Kolkata",
+      date: eventDateLabelForTimezone(startTime, endTime, "Asia/Kolkata"),
+      location: event.meetingLocation?.name ?? event.meetingPoint,
+      locationDetails:
+        event.meetingLocation?.notes ?? event.locationDetails ?? "",
+      summary: event.description ?? "",
+      capacityLimit: event.capacityLimit,
+      bookedCount: Math.max(event.bookedCount ?? 0, counts.registered),
+      checkedInCount: Math.max(event.checkedInCount ?? 0, counts.checkedIn),
+      waitlistedCount: Math.max(event.waitlistedCount ?? 0, counts.waitlisted),
+      publicRegistrationEnabled: event.publicRegistrationEnabled === true,
+      priceLabel: firestoreEventPriceLabel(event),
+    };
+    const events = grouped.get(organizerId) ?? [];
+    events.push(projection);
+    grouped.set(organizerId, events);
+  }
+  for (const [organizerId, events] of grouped) {
+    grouped.set(
+      organizerId,
+      events.sort((a, b) => Date.parse(a.startTime) - Date.parse(b.startTime))
+    );
+  }
+  return grouped;
+}
+
+function standalonePublicRegistrationEligible(event) {
+  if (event?.publicRegistrationEnabled !== true) return false;
+  const policy = event.eventPolicy;
+  if (policy) {
+    return Number(policy.pricing?.basePriceInPaise ?? 0) === 0 &&
+      policy.admission?.format === "open" &&
+      policy.admission?.inviteRequired !== true &&
+      policy.admission?.membershipRequired !== true &&
+      policy.admission?.manualApprovalRequired !== true;
+  }
+  return Number(event.priceInPaise ?? 0) === 0 &&
+    event.constraints?.maxMen == null &&
+    event.constraints?.maxWomen == null;
+}
+
+function withPublicCatchEvents(listing) {
+  const catchEvents = firestoreCatchEventsByHostId.get(listing.id) ?? [];
+  if (!catchEvents.length || listing.catchEvents?.length) return listing;
+  return {
+    ...listing,
+    catchEvents,
+    searchText: searchText([
+      listing.searchText,
+      ...catchEvents.flatMap((event) => [
+        event.title,
+        event.activityKind,
+        event.date,
+        event.location,
+        event.priceLabel,
+      ]),
+    ]),
+  };
+}
+
+function firestoreEventTitle(event) {
+  const custom = event.eventFormat?.customActivityLabel;
+  if (typeof custom === "string" && custom.trim()) return custom.trim();
+  const labels = {
+    socialRun: "Social run",
+    pickleball: "Pickleball social",
+    padel: "Padel social",
+    tennis: "Tennis social",
+    badminton: "Badminton social",
+    pubQuiz: "Pub quiz",
+    dinner: "Dinner social",
+    barCrawl: "Bar crawl",
+    singlesMixer: "Singles mixer",
+    openActivity: "Hosted event",
+  };
+  return labels[event.eventFormat?.activityKind] ?? "Hosted event";
+}
+
+function firestoreEventPriceLabel(event) {
+  const amount = Number(event.priceInPaise ?? 0);
+  if (!Number.isFinite(amount) || amount <= 0) return "Free";
+  const currency = typeof event.currency === "string" ? event.currency : "INR";
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency,
+    maximumFractionDigits: amount % 100 === 0 ? 0 : 2,
+  }).format(amount / 100);
 }
 
 function readAndValidateClaimTargetReadinessReceipt(filePath) {

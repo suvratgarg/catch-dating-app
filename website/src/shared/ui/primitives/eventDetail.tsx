@@ -1,10 +1,12 @@
 import type {
   AnchorHTMLAttributes,
   CSSProperties,
+  FormHTMLAttributes,
   HTMLAttributes,
   ReactNode,
 } from "react";
 import {PlainLink} from "./actions";
+import {CheckboxField} from "./forms";
 import {classNames} from "./foundation";
 import {UiLabel} from "./layout";
 
@@ -171,6 +173,37 @@ export function EventDetailActionPanel({
       <p>{description}</p>
       <div className="event-detail-action-panel__actions">{children}</div>
     </aside>
+  );
+}
+
+export function EventRegistrationForm({
+  children,
+  className,
+  ...props
+}: FormHTMLAttributes<HTMLFormElement>) {
+  return (
+    <form {...props} className={classNames("event-registration", className)}>
+      {children}
+    </form>
+  );
+}
+
+export function EventRegistrationPrivacy({children}: {children: ReactNode}) {
+  return <p className="event-registration__privacy">{children}</p>;
+}
+
+export function EventRegistrationConsents({children}: {children: ReactNode}) {
+  return <div className="event-registration__consents">{children}</div>;
+}
+
+export function EventRegistrationConsent(
+  props: Parameters<typeof CheckboxField>[0]
+) {
+  return (
+    <CheckboxField
+      {...props}
+      className={classNames("event-registration__consent", props.className)}
+    />
   );
 }
 

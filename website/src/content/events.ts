@@ -13,10 +13,47 @@ export const eventDetailCopy = {
     catchActionHeading: "Booking stays in the Catch app",
     catchActionBody:
       "This website is read-only. Open Catch on iOS or Android to check live availability, join a waitlist, or book.",
+    webActionHeading: "Register here with your phone",
+    webActionBody:
+      "No app or Consumer profile is required. Verify your number, add your name, and the organizer will see you on the event roster.",
+    webWaitlistHeading: "Join the waitlist with your phone",
+    webWaitlistBody:
+      "The confirmed roster is full. Verify your number to join the event-scoped waitlist without an app or Consumer profile.",
     externalActionHeading: "Registration stays with {source}",
     externalActionBody:
       "Catch does not sell, reserve, or waitlist places for this event. Confirm the latest details before you go.",
     officialSourceAction: "Open official source",
+    webRegistration: {
+      nameLabel: "Your name",
+      namePlaceholder: "Name for the event roster",
+      phoneLabel: "Mobile number",
+      phonePlaceholder: "+91 98765 43210",
+      codeLabel: "6-digit OTP",
+      codePlaceholder: "123456",
+      sendCodeAction: "Send OTP",
+      confirmAction: "Verify and register",
+      sendingCodeAction: "Sending OTP...",
+      registeringAction: "Registering...",
+      codeSent: "OTP sent. Enter the code from your phone.",
+      success: "You are registered. The organizer now has you on the event roster.",
+      alreadyRegistered: "You were already registered. Your roster place is confirmed.",
+      waitlisted: "The event is full, so you are now on the organizer's waitlist.",
+      privacy:
+        "Your name and verified number are used for this booking and can prefill Catch if you later continue in the app. A dating profile is not created, and this operational data is not permission for advertising.",
+      whatsappConsent:
+        "Send me future event announcements from this organizer on WhatsApp",
+      smsConsent:
+        "Send me future event announcements from this organizer by text message",
+      consentDetail:
+        "Optional and separate from registration. Only selected channels are added; imported guest lists never count as consent. You can unsubscribe from any message.",
+      missingName: "Enter the name the organizer should use.",
+      invalidPhone: "Use a mobile number with country code, such as +91.",
+      invalidCode: "Enter the 6-digit OTP.",
+      verificationExpired: "That verification expired. Send a new OTP to continue.",
+      tooManyRequests: "Too many attempts were made. Wait a little, then request a new OTP.",
+      eventUnavailable: "Registration changed while you were signing up. Refresh the event page for the latest availability.",
+      genericError: "Something went wrong. Please try again.",
+    },
     viewDetailsAction: "View event details",
     organizerAction: "View organizer profile",
     claimAction: "Claim this organizer listing",
@@ -63,6 +100,8 @@ export const eventDetailCopy = {
     freshnessTemplate: "Listing sources last reviewed {date}",
     catchRegistrationOpen: "{count} spots shown; booking is available in the Catch app.",
     catchRegistrationFull: "Shown as full; check the Catch app for waitlist updates.",
+    webRegistrationOpen: "{count} spots shown; phone OTP registration is available here.",
+    webRegistrationWaitlist: "The confirmed roster is full; phone OTP waitlist registration is available here.",
     registrationClosed: "Registration is closed because this event has ended.",
     externalRegistration: "Check current availability on the official source.",
   },

@@ -132,6 +132,13 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/organizerFollowDocument.ts",
   },
   {
+    name: "OrganizerCommunicationPreferenceDocument",
+    source: "firestore/organizer_communication_preferences.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "organizerCommunicationPreferenceDocument.ts",
+  },
+  {
     name: "OrganizerClaimRequestDocument",
     source: "firestore/organizer_claim_requests.schema.json",
     typeOutput:
@@ -189,6 +196,17 @@ const schemaSpecs = [
     name: "EventParticipationDocument",
     source: "firestore/event_participations.schema.json",
     typeOutput: "functions/src/shared/generated/eventParticipationDocument.ts",
+  },
+  {
+    name: "EventAttendeeDocument",
+    source: "firestore/event_attendees.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAttendeeDocument.ts",
+  },
+  {
+    name: "EventAttendeeImportDocument",
+    source: "firestore/event_attendee_imports.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventAttendeeImportDocument.ts",
   },
   {
     name: "EventCrossPathsConsentDocument",
@@ -960,6 +978,45 @@ const schemaSpecs = [
     source: "callables/mark_event_attendance_payload.schema.json",
     typeOutput:
       "functions/src/shared/generated/markEventAttendanceCallablePayload.ts",
+  },
+  {
+    name: "ImportEventAttendeesCallablePayload",
+    source: "callables/import_event_attendees_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/importEventAttendeesCallablePayload.ts",
+  },
+  {
+    name: "MarkEventAttendeeAttendanceCallablePayload",
+    source:
+      "callables/mark_event_attendee_attendance_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "markEventAttendeeAttendanceCallablePayload.ts",
+  },
+  {
+    name: "RegisterPublicEventCallablePayload",
+    source: "callables/register_public_event_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/registerPublicEventCallablePayload.ts",
+  },
+  {
+    name: "RegisterPublicEventCallableResponse",
+    source: "callable_responses/register_public_event_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/registerPublicEventCallableResponse.ts",
+  },
+  {
+    name: "GetOrganizerCrmSummaryCallablePayload",
+    source: "callables/get_organizer_crm_summary_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/getOrganizerCrmSummaryCallablePayload.ts",
+  },
+  {
+    name: "GetOrganizerCrmSummaryCallableResponse",
+    source:
+      "callable_responses/get_organizer_crm_summary_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/getOrganizerCrmSummaryCallableResponse.ts",
   },
   {
     name: "EventJoinRequestDecisionCallablePayload",

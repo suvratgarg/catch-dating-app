@@ -60,6 +60,7 @@ import {
 } from "./eventPayloadNormalization";
 import {
   EventPolicyBundleDocument,
+  eventPolicyFromEvent,
   normalizeInviteCode,
   normalizePolicy,
 } from "./eventPolicy";
@@ -1425,6 +1426,9 @@ function buildUpdateEventPatch(
   if (fields.distanceKm !== undefined) patch.distanceKm = fields.distanceKm;
   if (fields.pace !== undefined) patch.pace = fields.pace;
   if (fields.description !== undefined) patch.description = fields.description;
+  if (fields.publicRegistrationEnabled !== undefined) {
+    patch.publicRegistrationEnabled = fields.publicRegistrationEnabled;
+  }
   if (fields.constraints !== undefined) {
     patch.constraints = normalizeConstraints(fields.constraints);
   }
@@ -1683,6 +1687,40 @@ function assertValidMergedRunUpdate(
     event.endTime.toMillis();
   assertValidEventTimeRange(startTimeMillis, endTimeMillis);
   normalizeMeetingLocationForUpdate(event, fields);
+  assertStandalonePublicRegistrationPolicy(event, fields);
+}
+
+function assertStandalonePublicRegistrationPolicy(
+  event: EventDocument,
+  fields: EventHostUpdateFields
+): void {
+  const enabled = fields.publicRegistrationEnabled ??
+    event.publicRegistrationEnabled === true;
+  if (!enabled) return;
+  const mergedEvent: EventDocument = {
+    ...event,
+    capacityLimit: fields.capacityLimit ?? event.capacityLimit,
+    priceInPaise: fields.priceInPaise ?? event.priceInPaise,
+    constraints: fields.constraints ?
+      {...event.constraints, ...fields.constraints} : event.constraints,
+    eventPolicy: fields.eventPolicy ?? event.eventPolicy,
+  };
+  const policy = eventPolicyFromEvent(mergedEvent);
+  if (policy.pricing.basePriceInPaise > 0) {
+    throw new HttpsError(
+      "failed-precondition",
+      "Disable website OTP registration before making this a paid event."
+    );
+  }
+  if (policy.admission.format !== "open" ||
+      policy.admission.inviteRequired === true ||
+      policy.admission.membershipRequired === true ||
+      policy.admission.manualApprovalRequired === true) {
+    throw new HttpsError(
+      "failed-precondition",
+      "Website OTP registration currently supports open-admission events."
+    );
+  }
 }
 
 /**
