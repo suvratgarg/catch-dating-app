@@ -184,6 +184,22 @@ test("Delivery selects one cursor and the oldest pending authority with bounded 
   assert.match(delivery, /work_required=false/);
 });
 
+test("a final cursor is authoritative before its Delivery run reaches completed status", () => {
+  const delivery = workflow("delivery.yml");
+  const cursor = delivery.slice(
+    delivery.indexOf("      - id: cursor"),
+    delivery.indexOf("      - id: source"),
+  );
+  const originAttempt = cursor.slice(
+    cursor.indexOf("historical_delivery="),
+    cursor.indexOf("cursor_source_run="),
+  );
+
+  assert.match(originAttempt, /actions\/runs\/\$cursor_delivery_run_id\/attempts\/\$cursor_delivery_run_attempt/);
+  assert.match(originAttempt, /\.run_attempt == \$delivery_run_attempt/);
+  assert.doesNotMatch(originAttempt, /\.status ==|\.conclusion ==/);
+});
+
 test("high-cardinality queue metadata still resolves one cursor and one oldest authority", () => {
   const delivery = workflow("delivery.yml");
   const digest = `sha256:${"a".repeat(64)}`;
