@@ -39,7 +39,8 @@ void main(List<String> rawArgs) {
 
   if (args.flag('help')) {
     stdout.writeln(
-      'Usage: dart run tool/widget_dedupe/bin/extract_fingerprints.dart '
+      'Usage: dart run --packages=tool/widget_dedupe/.dart_tool/package_config.json '
+      'tool/widget_dedupe/bin/extract_fingerprints.dart '
       '[--files a.dart,b.dart] [--classification path] [--out path]',
     );
     stdout.writeln(parser.usage);
