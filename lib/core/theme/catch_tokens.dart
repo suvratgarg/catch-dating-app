@@ -2463,6 +2463,8 @@ abstract final class CatchLayout {
       welcomeReelCatchLineTopOffset;
   static const double welcomeReelObjectLeft = 116.0;
   static const double welcomeReelObjectRight = 18.0;
+  static const double welcomeFocusLockupMaxWidth =
+      welcomeReferenceWidth - welcomeReelCatchLeft - welcomeReelObjectRight;
   static const double welcomeReelMinRightInset = 12.0;
   static const double welcomeReelMaxTextScale = 1.10;
   static const double welcomeReelUnderlineGap = 2.0;
