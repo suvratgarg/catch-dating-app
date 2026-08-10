@@ -13,22 +13,18 @@ class Recommendations extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final cardWidth = (constraints.maxWidth * 0.78)
-            .clamp(280.0, 340.0)
-            .toDouble();
-        return CatchHorizontalRail(
-          title: title ?? context.l10n.exploreRecommendationsTitleForYou,
-          itemCount: recommendations.length,
-          itemBuilder: (context, i) => RecommendCard.fromRecommendation(
-            recommendation: recommendations[i],
-            width: cardWidth,
-          ),
-          height: null,
-          spacing: CatchLayout.recommendationRailGap,
-        );
-      },
+    return CatchHorizontalRail(
+      title: title ?? context.l10n.exploreRecommendationsTitleForYou,
+      itemCount: recommendations.length,
+      itemBuilder: (context, i) =>
+          RecommendCard.fromRecommendation(recommendation: recommendations[i]),
+      height: null,
+      spacing: CatchLayout.recommendationRailGap,
+      itemWidth: const CatchRailItemWidth.fractional(
+        fraction: CatchLayout.recommendationRailItemWidthFraction,
+        min: CatchLayout.recommendationRailItemMinWidth,
+        max: CatchLayout.recommendationRailItemMaxWidth,
+      ),
     );
   }
 }

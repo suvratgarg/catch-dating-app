@@ -4,6 +4,21 @@ import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
 import 'package:flutter/material.dart';
 
+class CatchRailItemWidth {
+  const CatchRailItemWidth.fractional({
+    required this.fraction,
+    required this.min,
+    required this.max,
+  });
+
+  final double fraction;
+  final double min;
+  final double max;
+
+  double resolve(double availableWidth) =>
+      (availableWidth * fraction).clamp(min, max).toDouble();
+}
+
 /// A section with a header and a horizontally-scrolling rail of items.
 ///
 /// Uses [ListView.separated] with [shrinkWrap] for embedding inside a
@@ -21,6 +36,7 @@ class CatchHorizontalRail extends StatelessWidget {
     bool? showDivider,
     this.height = CatchLayout.horizontalRailHeight,
     this.spacing = CatchSpacing.s3,
+    this.itemWidth,
     EdgeInsets? headerPadding,
     EdgeInsetsGeometry? listPadding,
   }) : showDivider = showDivider ?? fullBleed,
@@ -39,6 +55,7 @@ class CatchHorizontalRail extends StatelessWidget {
   final bool showDivider;
   final double? height;
   final double spacing;
+  final CatchRailItemWidth? itemWidth;
   final EdgeInsets headerPadding;
   final EdgeInsetsGeometry listPadding;
 
@@ -53,7 +70,15 @@ class CatchHorizontalRail extends StatelessWidget {
           titleStyle: CatchTextStyles.titleL(context),
           padding: headerPadding,
         ),
-        _buildRail(context),
+        if (itemWidth case final widthPolicy?)
+          LayoutBuilder(
+            builder: (context, constraints) => _buildRail(
+              context,
+              resolvedItemWidth: widthPolicy.resolve(constraints.maxWidth),
+            ),
+          )
+        else
+          _buildRail(context),
         if (showDivider)
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: CatchSpacing.screenPx),
@@ -63,7 +88,7 @@ class CatchHorizontalRail extends StatelessWidget {
     );
   }
 
-  Widget _buildRail(BuildContext context) {
+  Widget _buildRail(BuildContext context, {double? resolvedItemWidth}) {
     final count = itemCount + (trailing != null ? 1 : 0);
     if (height == null) {
       return SingleChildScrollView(
@@ -74,7 +99,7 @@ class CatchHorizontalRail extends StatelessWidget {
           children: [
             for (var index = 0; index < count; index += 1) ...[
               if (index > 0) SizedBox(width: spacing),
-              _itemAt(context, index),
+              _itemAt(context, index, resolvedItemWidth: resolvedItemWidth),
             ],
           ],
         ),
@@ -88,13 +113,16 @@ class CatchHorizontalRail extends StatelessWidget {
         padding: listPadding,
         itemCount: count,
         separatorBuilder: (_, _) => SizedBox(width: spacing),
-        itemBuilder: _itemAt,
+        itemBuilder: (context, index) =>
+            _itemAt(context, index, resolvedItemWidth: resolvedItemWidth),
       ),
     );
   }
 
-  Widget _itemAt(BuildContext context, int index) {
-    if (index < itemCount) return itemBuilder(context, index);
-    return trailing!;
+  Widget _itemAt(BuildContext context, int index, {double? resolvedItemWidth}) {
+    final item = index < itemCount ? itemBuilder(context, index) : trailing!;
+    return resolvedItemWidth == null
+        ? item
+        : SizedBox(width: resolvedItemWidth, child: item);
   }
 }

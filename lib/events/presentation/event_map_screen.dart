@@ -201,40 +201,36 @@ class EventMapLoadingBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return Stack(
-          children: [
-            Positioned.fill(
-              child: CatchSkeleton.box(
-                width: constraints.maxWidth,
-                height: constraints.maxHeight,
-                borderRadius: BorderRadius.zero,
-              ),
-            ),
-            Center(
-              child: CatchSkeleton.circle(
-                size: CatchLayout.eventMapLoadingPinExtent,
-              ),
-            ),
-            Positioned(
-              left: CatchSpacing.s5,
-              top: CatchSpacing.s5,
-              child: CatchSkeleton.box(
-                width: CatchLayout.eventMapLoadingLabelWidth,
-                height: CatchSpacing.s9,
-                radius: CatchRadius.pill,
-                borderColor: t.line,
-              ),
-            ),
-            Positioned(
-              right: CatchSpacing.s5,
-              bottom: CatchSpacing.s5,
-              child: CatchSkeleton.circle(),
-            ),
-          ],
-        );
-      },
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: CatchSkeleton.box(
+            width: double.infinity,
+            height: double.infinity,
+            borderRadius: BorderRadius.zero,
+          ),
+        ),
+        Center(
+          child: CatchSkeleton.circle(
+            size: CatchLayout.eventMapLoadingPinExtent,
+          ),
+        ),
+        Positioned(
+          left: CatchSpacing.s5,
+          top: CatchSpacing.s5,
+          child: CatchSkeleton.box(
+            width: CatchLayout.eventMapLoadingLabelWidth,
+            height: CatchSpacing.s9,
+            radius: CatchRadius.pill,
+            borderColor: t.line,
+          ),
+        ),
+        Positioned(
+          right: CatchSpacing.s5,
+          bottom: CatchSpacing.s5,
+          child: CatchSkeleton.circle(),
+        ),
+      ],
     );
   }
 }

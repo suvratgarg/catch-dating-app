@@ -296,58 +296,43 @@ class _HostInboxScopeSelectorState extends State<HostInboxScopeSelector> {
     return SliverToBoxAdapter(
       child: Padding(
         padding: CatchInsets.pageHorizontal,
-        child: LayoutBuilder(
-          builder: (context, constraints) => MenuAnchor(
-            controller: _menuController,
-            alignmentOffset: const Offset(0, CatchSpacing.s1),
-            style: const MenuStyle(
-              backgroundColor: WidgetStatePropertyAll(Colors.transparent),
-              elevation: WidgetStatePropertyAll(0),
-              shadowColor: WidgetStatePropertyAll(Colors.transparent),
-              surfaceTintColor: WidgetStatePropertyAll(Colors.transparent),
-              padding: WidgetStatePropertyAll(EdgeInsets.zero),
-            ),
-            menuChildren: [
-              CatchMenu<HostInboxScope>(
-                width: constraints.maxWidth,
-                items: [
-                  for (final scope in widget.workspace.scopeOptions)
-                    CatchMenuItem<HostInboxScope>(
-                      value: scope,
-                      label: _scopeMenuLabel(scope, eventsById),
-                      selected: scope == selectedScope,
-                    ),
-                ],
-                onSelected: (scope, _) {
-                  widget.onChanged(scope);
-                  _menuController.close();
-                },
+        child: CatchMenuAnchor<HostInboxScope>(
+          controller: _menuController,
+          alignmentOffset: const Offset(0, CatchSpacing.s1),
+          items: [
+            for (final scope in widget.workspace.scopeOptions)
+              CatchMenuItem<HostInboxScope>(
+                value: scope,
+                label: _scopeMenuLabel(scope, eventsById),
+                selected: scope == selectedScope,
               ),
-            ],
-            builder: (context, controller, child) => Semantics(
-              button: true,
-              label: context.l10n.hostsHostInboxScreenLabelInboxScope,
-              value: selectedLabel,
-              hint: context.l10n.hostsHostInboxScreenVisiblecopySelectAnEventOr,
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: () => controller.isOpen
-                      ? controller.close()
-                      : controller.open(),
-                  child: SizedBox(
-                    height: CatchLayout.hostInboxScopeSelectorHeight,
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        selectedLabel.toUpperCase(),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: CatchTextStyles.monoLabel(
-                          context,
-                          color: labelColor,
-                        ).copyWith(fontWeight: FontWeight.w700),
-                      ),
+          ],
+          onSelected: (scope, _) {
+            widget.onChanged(scope);
+            _menuController.close();
+          },
+          builder: (context, controller, child) => Semantics(
+            button: true,
+            label: context.l10n.hostsHostInboxScreenLabelInboxScope,
+            value: selectedLabel,
+            hint: context.l10n.hostsHostInboxScreenVisiblecopySelectAnEventOr,
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () =>
+                    controller.isOpen ? controller.close() : controller.open(),
+                child: SizedBox(
+                  height: CatchLayout.hostInboxScopeSelectorHeight,
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      selectedLabel.toUpperCase(),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: CatchTextStyles.monoLabel(
+                        context,
+                        color: labelColor,
+                      ).copyWith(fontWeight: FontWeight.w700),
                     ),
                   ),
                 ),

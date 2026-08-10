@@ -2070,6 +2070,8 @@ abstract final class CatchLayout {
   static const double activityMapPinRestingSize = 26.0;
   static const double activityMapPinSelectedSize = 38.0;
   static const double activityMapPinFlagMaxWidth = 180.0;
+  static const BoxConstraints activityMapPinSlotConstraints =
+      BoxConstraints.tightFor(width: activityMapPinFlagMaxWidth);
   static const double activityMapPinNativeCanvasPadding = 4.0;
   static const double activityMapPinShadowBlur = 3.0;
   static const double activityMapPinShadowDy = 2.0;
@@ -2247,6 +2249,15 @@ abstract final class CatchLayout {
   static const double eventSuccessStageGlyphExtent = 88.0;
   static const double eventSuccessStageGlyphIconSize = CatchSpacing.s10;
   static const double eventSuccessArrivalRingExtent = 140.0;
+  static const double eventSuccessCountdownDialWidthFactor = 0.68;
+  static const double eventSuccessCountdownDialMinExtent = 168.0;
+  static const double eventSuccessCountdownDialMaxExtent = 228.0;
+  static const double eventSuccessCountdownNumberWidthFactor = 0.55;
+  static const double eventSuccessCountdownNumberReferenceSize = 100.0;
+  static const Alignment eventSuccessCountdownCaptionAlignment = Alignment(
+    0,
+    0.62,
+  );
   static const double eventSuccessArrivalRingInnerPadding = CatchSpacing.micro6;
   static const double eventSuccessBouncyGlowBlur = 22.0;
   static const double eventSuccessPaperBarcodeWidth = 92.0;
@@ -2414,6 +2425,9 @@ abstract final class CatchLayout {
   static const double clubDirectorySkeletonActionWidth = 70.0;
   static const double clubEditorPhotoSkeletonHeight = 132.0;
   static const double recommendationRailGap = 10.0;
+  static const double recommendationRailItemWidthFraction = 0.78;
+  static const double recommendationRailItemMinWidth = 280.0;
+  static const double recommendationRailItemMaxWidth = 340.0;
   static const double heroSignalChipHorizontalPadding = 11.0;
   static const double heroSignalChipVerticalPadding = 7.0;
   static const double compactDarkPillHorizontalPadding = 11.0;

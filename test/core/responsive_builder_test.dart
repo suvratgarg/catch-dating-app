@@ -28,4 +28,31 @@ void main() {
     expect(find.text('expanded'), findsOneWidget);
     expect(find.text('compact'), findsNothing);
   });
+
+  testWidgets('responsive sliver builder reports local cross-axis width', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Align(
+          alignment: Alignment.topLeft,
+          child: SizedBox(
+            width: 420,
+            height: 300,
+            child: CustomScrollView(
+              slivers: [
+                ResponsiveSliverBuilder(
+                  builder: (context, viewport) => SliverToBoxAdapter(
+                    child: Text('${viewport.width.toInt()}'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('420'), findsOneWidget);
+  });
 }

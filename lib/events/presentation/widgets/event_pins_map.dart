@@ -16,6 +16,7 @@ import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/locations/shared/catch_google_map.dart';
+import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/material.dart';
 
 const double _placeholderPinSlotWidth = CatchLayout.activityMapPinFlagMaxWidth;
@@ -946,110 +947,132 @@ class EventPinsMapPlaceholder extends StatelessWidget {
         userLocation != null && ringRadiusKm != null && ringRadiusKm > 0;
     return DecoratedBox(
       decoration: BoxDecoration(color: t.primarySoft),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final markerTop = constraints.maxHeight * 0.32;
-          final markerWidth = constraints.maxWidth / (items.length + 1);
-
-          final fallbackRingSize = eventMapFixtureRingSize(
-            radiusKm: ringRadiusKm,
-            viewport: constraints.biggest,
-          );
-          return Semantics(
-            container: true,
-            explicitChildNodes: true,
-            label: context.l10n.eventsEventPinsMapLabelEventMapPreview,
-            button: onMapTapped != null,
-            onTap: onMapTapped,
-            child: Stack(
-              children: [
-                Positioned.fill(
-                  child: Listener(
-                    behavior: HitTestBehavior.opaque,
-                    onPointerUp: onMapTapped == null
-                        ? null
-                        : (_) => onMapTapped!(),
-                    child: const SizedBox.expand(),
+      child: Semantics(
+        container: true,
+        explicitChildNodes: true,
+        label: context.l10n.eventsEventPinsMapLabelEventMapPreview,
+        button: onMapTapped != null,
+        onTap: onMapTapped,
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: Listener(
+                behavior: HitTestBehavior.opaque,
+                onPointerUp: onMapTapped == null ? null : (_) => onMapTapped!(),
+                child: const SizedBox.expand(),
+              ),
+            ),
+            if (showDistanceRing)
+              Positioned.fill(
+                child: Center(
+                  child: CatchDistanceRing(
+                    size: _eventMapFixtureRequestedRingSize(ringRadiusKm),
+                    fitAvailable: true,
+                    label: distanceRingLabel,
+                    semanticHint: distanceRingSemanticHint,
+                    onTap: onDistanceRingTapped,
                   ),
                 ),
-                if (showDistanceRing)
-                  Center(
-                    child: CatchDistanceRing(
-                      size: fallbackRingSize,
-                      label: distanceRingLabel,
-                      semanticHint: distanceRingSemanticHint,
-                      onTap: onDistanceRingTapped,
-                    ),
-                  ),
-                for (final indexed in items.indexed)
-                  Positioned(
-                    left:
-                        (markerWidth * (indexed.$1 + 1)) -
-                        _placeholderPinSlotWidth / 2,
-                    top:
-                        markerTop +
-                        (indexed.$1.isEven ? 0 : CatchSpacing.s6) -
-                        _placeholderPinAnchorOffset(
-                          selectedEventId == indexed.$2.mapId,
+              ),
+            Positioned.fill(
+              child: CustomMultiChildLayout(
+                delegate: _EventFixturePinLayoutDelegate(
+                  selected: [
+                    for (final item in items) selectedEventId == item.mapId,
+                  ],
+                ),
+                children: [
+                  for (final indexed in items.indexed)
+                    LayoutId(
+                      id: indexed.$1,
+                      child: Semantics(
+                        button: _canSelectMapItem(
+                          indexed.$2,
+                          onEventSelected: onEventSelected,
+                          onExternalEventSelected: onExternalEventSelected,
                         ),
-                    width: _placeholderPinSlotWidth,
-                    child: Semantics(
-                      button: _canSelectMapItem(
-                        indexed.$2,
-                        onEventSelected: onEventSelected,
-                        onExternalEventSelected: onExternalEventSelected,
-                      ),
-                      selected: selectedEventId == indexed.$2.mapId,
-                      label:
-                          !_canSelectMapItem(
-                            indexed.$2,
-                            onEventSelected: onEventSelected,
-                            onExternalEventSelected: onExternalEventSelected,
-                          )
-                          ? context.l10n
-                                .eventsEventPinsMapLabelLocationnameLocation(
-                                  locationName: indexed.$2.locationName,
-                                )
-                          : context.l10n
-                                .eventsEventPinsMapLabelSelectLocationname(
-                                  locationName: indexed.$2.locationName,
-                                ),
-                      child: GestureDetector(
-                        onTap:
+                        selected: selectedEventId == indexed.$2.mapId,
+                        label:
                             !_canSelectMapItem(
                               indexed.$2,
                               onEventSelected: onEventSelected,
                               onExternalEventSelected: onExternalEventSelected,
                             )
-                            ? null
-                            : () => _selectMapItem(
+                            ? context.l10n
+                                  .eventsEventPinsMapLabelLocationnameLocation(
+                                    locationName: indexed.$2.locationName,
+                                  )
+                            : context.l10n
+                                  .eventsEventPinsMapLabelSelectLocationname(
+                                    locationName: indexed.$2.locationName,
+                                  ),
+                        child: GestureDetector(
+                          onTap:
+                              !_canSelectMapItem(
                                 indexed.$2,
                                 onEventSelected: onEventSelected,
                                 onExternalEventSelected:
                                     onExternalEventSelected,
-                              ),
-                        child: Center(
-                          child: CatchActivityMapPin(
-                            activityKind: indexed.$2.activityKind,
-                            selected: selectedEventId == indexed.$2.mapId,
-                            label: selectedEventId == indexed.$2.mapId
-                                ? eventMapPinFlagLabel(indexed.$2)
-                                : null,
-                            size: selectedEventId == indexed.$2.mapId
-                                ? CatchLayout.activityMapPinSelectedSize
-                                : CatchLayout.activityMapPinRestingSize,
+                              )
+                              ? null
+                              : () => _selectMapItem(
+                                  indexed.$2,
+                                  onEventSelected: onEventSelected,
+                                  onExternalEventSelected:
+                                      onExternalEventSelected,
+                                ),
+                          child: Center(
+                            child: CatchActivityMapPin(
+                              activityKind: indexed.$2.activityKind,
+                              selected: selectedEventId == indexed.$2.mapId,
+                              label: selectedEventId == indexed.$2.mapId
+                                  ? eventMapPinFlagLabel(indexed.$2)
+                                  : null,
+                              size: selectedEventId == indexed.$2.mapId
+                                  ? CatchLayout.activityMapPinSelectedSize
+                                  : CatchLayout.activityMapPinRestingSize,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-              ],
+                ],
+              ),
             ),
-          );
-        },
+          ],
+        ),
       ),
     );
   }
+}
+
+class _EventFixturePinLayoutDelegate extends MultiChildLayoutDelegate {
+  _EventFixturePinLayoutDelegate({required this.selected});
+
+  final List<bool> selected;
+
+  @override
+  void performLayout(Size size) {
+    final markerTop = size.height * 0.32;
+    final markerLaneWidth = size.width / (selected.length + 1);
+    for (var index = 0; index < selected.length; index += 1) {
+      if (!hasChild(index)) continue;
+      layoutChild(index, CatchLayout.activityMapPinSlotConstraints);
+      positionChild(
+        index,
+        Offset(
+          (markerLaneWidth * (index + 1)) - _placeholderPinSlotWidth / 2,
+          markerTop +
+              (index.isEven ? 0 : CatchSpacing.s6) -
+              _placeholderPinAnchorOffset(selected[index]),
+        ),
+      );
+    }
+  }
+
+  @override
+  bool shouldRelayout(covariant _EventFixturePinLayoutDelegate oldDelegate) =>
+      !listEquals(selected, oldDelegate.selected);
 }
 
 @visibleForTesting
@@ -1057,15 +1080,19 @@ double eventMapFixtureRingSize({
   required double? radiusKm,
   required Size viewport,
 }) {
-  final requested = switch (radiusKm) {
+  final requested = _eventMapFixtureRequestedRingSize(radiusKm);
+  final available = CatchLayout.distanceRingAvailableDiameterFor(viewport);
+  return math.min(requested, available);
+}
+
+double _eventMapFixtureRequestedRingSize(double? radiusKm) {
+  return switch (radiusKm) {
     null => CatchLayout.distanceRingDefaultSize,
     <= 1 => 150.0,
     <= 3 => 290.0,
     <= 5 => 460.0,
     _ => 640.0,
   };
-  final available = CatchLayout.distanceRingAvailableDiameterFor(viewport);
-  return math.min(requested, available);
 }
 
 double _placeholderPinAnchorOffset(bool selected) =>
