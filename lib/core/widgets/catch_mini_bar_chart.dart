@@ -61,13 +61,10 @@ class CatchMiniBarChart extends StatelessWidget {
                             minFilledHeightFactor: minFilledHeightFactor,
                             emptyHeightFactor: emptyHeightFactor,
                           ),
-                          child: CatchSurface(
-                            radius: CatchRadius.xs,
-                            borderWidth: 0,
-                            backgroundColor: value <= 0
+                          child: ColoredBox(
+                            color: value <= 0
                                 ? emptyColor ?? t.line2
                                 : filledColor ?? t.ink,
-                            child: const SizedBox.expand(),
                           ),
                         ),
                       ),

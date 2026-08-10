@@ -442,9 +442,7 @@ class PlaceSearchPanel extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        CatchSection.contained(
-          hasError: errorText != null && errorText!.trim().isNotEmpty,
-          padding: CatchInsets.inlineHorizontalRelaxed,
+        CatchFieldLanes.single(
           child: CatchField.input(
             title:
                 context.l10n.eventsLocationPickerScreenTitleSearchForAMeeting,

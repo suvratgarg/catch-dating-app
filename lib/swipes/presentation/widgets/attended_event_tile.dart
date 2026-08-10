@@ -34,13 +34,13 @@ class AttendedEventTile extends StatelessWidget {
         onTap: onOpenCatch,
         child: Row(
           children: [
-            CatchSurface(
+            SizedBox(
               width: CatchLayout.attendedEventTileArtExtent,
               height: CatchLayout.attendedEventTileArtExtent,
-              radius: CatchRadius.attendedEventTile,
-              gradient: t.heroGrad,
-              borderWidth: 0,
-              child: Icon(CatchIcons.favoriteRounded, color: t.primaryInk),
+              child: ColoredBox(
+                color: t.primarySoft,
+                child: Icon(CatchIcons.favoriteRounded, color: t.primary),
+              ),
             ),
             gapW14,
             Expanded(

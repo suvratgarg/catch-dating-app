@@ -71,16 +71,16 @@ class EventLocationMapScreen extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      CatchSurface(
+                      SizedBox(
                         width: CatchLayout.eventInfoTileExtent,
                         height: CatchLayout.eventInfoTileExtent,
-                        backgroundColor: t.primarySoft,
-                        radius: CatchRadius.interactiveTile,
-                        borderWidth: 0,
-                        child: Icon(
-                          CatchIcons.locationOnOutlined,
-                          color: t.primary,
-                          size: CatchIcon.row,
+                        child: ColoredBox(
+                          color: t.primarySoft,
+                          child: Icon(
+                            CatchIcons.locationOnOutlined,
+                            color: t.primary,
+                            size: CatchIcon.row,
+                          ),
                         ),
                       ),
                       const SizedBox(width: CatchSpacing.s3),

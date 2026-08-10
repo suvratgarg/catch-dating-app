@@ -419,62 +419,56 @@ class _HostAnalyticsReportViewState extends State<HostAnalyticsReportView> {
           granularity: _granularityFor(widget.rangePreset),
         ),
         if (coachRecommendations.isNotEmpty)
-          CatchSection.divided(
+          CatchSection.fieldRows(
             title: context.l10n.hostsHostAnalyticsTitleCoach,
-            child: CatchSection.contained(
-              children: [
-                for (final recommendation in coachRecommendations.indexed)
-                  switch (recommendation.$2.kind) {
-                    HostAnalyticsCoachRecommendationKind.attendance =>
-                      CatchField.nav(
-                        key: const ValueKey('host-analytics-coach-attendance'),
-                        title: context.l10n.hostsHostAnalyticsCoachAttendance,
-                        titleMaxLines: 3,
-                        divider: recommendation.$1 > 0,
-                        onTap: () => widget.onOpenEventReport(
-                          recommendation.$2.eventId!,
-                        ),
+            children: [
+              for (final recommendation in coachRecommendations.indexed)
+                switch (recommendation.$2.kind) {
+                  HostAnalyticsCoachRecommendationKind.attendance =>
+                    CatchField.nav(
+                      key: const ValueKey('host-analytics-coach-attendance'),
+                      title: context.l10n.hostsHostAnalyticsCoachAttendance,
+                      titleMaxLines: 3,
+                      divider: recommendation.$1 > 0,
+                      onTap: () =>
+                          widget.onOpenEventReport(recommendation.$2.eventId!),
+                    ),
+                  HostAnalyticsCoachRecommendationKind.checkoutDropoff =>
+                    CatchField.nav(
+                      key: const ValueKey(
+                        'host-analytics-coach-checkout-dropoff',
                       ),
-                    HostAnalyticsCoachRecommendationKind.checkoutDropoff =>
-                      CatchField.nav(
-                        key: const ValueKey(
-                          'host-analytics-coach-checkout-dropoff',
-                        ),
-                        title:
-                            context.l10n.hostsHostAnalyticsCoachCheckoutDropoff,
-                        titleMaxLines: 3,
-                        divider: recommendation.$1 > 0,
-                        onTap: widget.onOpenEventDefaults,
+                      title:
+                          context.l10n.hostsHostAnalyticsCoachCheckoutDropoff,
+                      titleMaxLines: 3,
+                      divider: recommendation.$1 > 0,
+                      onTap: widget.onOpenEventDefaults,
+                    ),
+                  HostAnalyticsCoachRecommendationKind.demandCapacity =>
+                    CatchField.nav(
+                      key: const ValueKey(
+                        'host-analytics-coach-demand-capacity',
                       ),
-                    HostAnalyticsCoachRecommendationKind.demandCapacity =>
-                      CatchField.nav(
-                        key: const ValueKey(
-                          'host-analytics-coach-demand-capacity',
-                        ),
-                        title: context.l10n
-                            .hostsHostAnalyticsCoachDemandCapacity(
-                              event: recommendation.$2.eventTitle!,
-                            ),
-                        titleMaxLines: 3,
-                        divider: recommendation.$1 > 0,
-                        onTap: () => widget.onOpenEventReport(
-                          recommendation.$2.eventId!,
-                        ),
+                      title: context.l10n.hostsHostAnalyticsCoachDemandCapacity(
+                        event: recommendation.$2.eventTitle!,
                       ),
-                    HostAnalyticsCoachRecommendationKind.noRepeatAttendees =>
-                      CatchField.read(
-                        key: const ValueKey(
-                          'host-analytics-coach-no-repeat-attendees',
-                        ),
-                        title: context
-                            .l10n
-                            .hostsHostAnalyticsCoachNoRepeatAttendees,
-                        titleMaxLines: 3,
-                        divider: recommendation.$1 > 0,
+                      titleMaxLines: 3,
+                      divider: recommendation.$1 > 0,
+                      onTap: () =>
+                          widget.onOpenEventReport(recommendation.$2.eventId!),
+                    ),
+                  HostAnalyticsCoachRecommendationKind.noRepeatAttendees =>
+                    CatchField.read(
+                      key: const ValueKey(
+                        'host-analytics-coach-no-repeat-attendees',
                       ),
-                  },
-              ],
-            ),
+                      title:
+                          context.l10n.hostsHostAnalyticsCoachNoRepeatAttendees,
+                      titleMaxLines: 3,
+                      divider: recommendation.$1 > 0,
+                    ),
+                },
+            ],
           ),
         HostAnalyticsEventList(
           events: widget.report.topEvents,
@@ -729,36 +723,34 @@ class HostAnalyticsEventList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSection.divided(
+    return CatchSection.fieldRows(
       title: context.l10n.hostsHostAnalyticsLabelRecentEvents,
-      child: CatchSection.contained(
-        children: [
-          if (events.isEmpty)
-            Padding(
-              padding: CatchInsets.content,
-              child: Text(
-                context.l10n.hostsHostAnalyticsTextNoEventsInThis,
-                style: CatchTextStyles.supporting(
-                  context,
-                  color: CatchTokens.of(context).ink2,
-                ),
+      children: [
+        if (events.isEmpty)
+          Padding(
+            padding: CatchInsets.content,
+            child: Text(
+              context.l10n.hostsHostAnalyticsTextNoEventsInThis,
+              style: CatchTextStyles.supporting(
+                context,
+                color: CatchTokens.of(context).ink2,
               ),
-            )
-          else
-            for (final indexed in events.take(5).indexed)
-              HostAnalyticsEventTile(
-                event: indexed.$2,
-                divider: indexed.$1 > 0,
-                onTap: () => onOpenEventReport(indexed.$2.eventId),
-              ),
-          CatchField.nav(
-            title: context.l10n.hostsHostAnalyticsLabelAllEvents,
-            icon: CatchIcons.calendarMonthOutlined,
-            divider: events.isNotEmpty,
-            onTap: onOpenAllEvents,
-          ),
-        ],
-      ),
+            ),
+          )
+        else
+          for (final indexed in events.take(5).indexed)
+            HostAnalyticsEventTile(
+              event: indexed.$2,
+              divider: indexed.$1 > 0,
+              onTap: () => onOpenEventReport(indexed.$2.eventId),
+            ),
+        CatchField.nav(
+          title: context.l10n.hostsHostAnalyticsLabelAllEvents,
+          icon: CatchIcons.calendarMonthOutlined,
+          divider: events.isNotEmpty,
+          onTap: onOpenAllEvents,
+        ),
+      ],
     );
   }
 }

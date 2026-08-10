@@ -497,9 +497,7 @@ class GroupOverrideUnitEditor extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchSurface(
-      borderColor: t.line,
-      radius: CatchRadius.sm,
+    return Padding(
       padding: CatchInsets.contentDense,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

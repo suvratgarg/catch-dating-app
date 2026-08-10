@@ -18,9 +18,7 @@ class ChatBlastComposerSheet extends StatelessWidget {
       top: false,
       child: Padding(
         padding: CatchInsets.contentDense,
-        child: CatchSurface(
-          backgroundColor: t.surface,
-          borderColor: t.line,
+        child: Padding(
           padding: CatchInsets.pageBody.copyWith(
             top: CatchSpacing.s4,
             bottom: CatchSpacing.s5,

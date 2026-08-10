@@ -5,7 +5,6 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
@@ -28,31 +27,22 @@ class ClubContactSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return CatchSection.contained(
+    return CatchSection.fieldRows(
       title: showTitle
           ? context.l10n.clubsClubContactSectionTitleContact
           : null,
-      borderColor: t.line,
-      elevation: CatchSurfaceElevation.none,
-      padding: CatchInsets.tileContentCompact,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          for (final action in actions)
-            Padding(
-              padding: CatchInsets.detailInlineRowBottomGap,
-              child: CatchField.action(
-                icon: _contactActionIcon(action.kind),
-                iconColor: t.ink,
-                title: action.label,
-                onTap: onContactSelected != null
-                    ? () => unawaited(onContactSelected!(action))
-                    : null,
-                action: Icon(CatchIcons.arrowUpRight, size: CatchIcon.sm),
-              ),
-            ),
-        ],
-      ),
+      children: [
+        for (final action in actions)
+          CatchField.action(
+            icon: _contactActionIcon(action.kind),
+            iconColor: t.ink,
+            title: action.label,
+            onTap: onContactSelected != null
+                ? () => unawaited(onContactSelected!(action))
+                : null,
+            action: Icon(CatchIcons.arrowUpRight, size: CatchIcon.sm),
+          ),
+      ],
     );
   }
 }

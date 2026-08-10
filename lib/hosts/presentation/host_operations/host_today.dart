@@ -715,13 +715,13 @@ class HostTodayTaskCard extends StatelessWidget {
       onTap: onPrimary,
       child: Row(
         children: [
-          CatchSurface(
+          SizedBox(
             width: CatchSpacing.s9,
             height: CatchSpacing.s9,
-            backgroundColor: t.primarySoft,
-            radius: CatchRadius.sm,
-            padding: EdgeInsets.zero,
-            child: Icon(task.icon, color: t.ink2, size: CatchIcon.md),
+            child: ColoredBox(
+              color: t.primarySoft,
+              child: Icon(task.icon, color: t.ink2, size: CatchIcon.md),
+            ),
           ),
           gapW14,
           Expanded(
