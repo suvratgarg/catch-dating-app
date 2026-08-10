@@ -5100,7 +5100,7 @@
               "id": "host-clubs-reference",
               "kind": "external",
               "status": "available",
-              "notes": "The repo-pinned Host Organizer reference is registered. The 2026-07-10 production full-shell comparison includes navigation chrome and is within the aggregate advisory threshold at mismatch 12.02%, meanDelta 7.79, maxDelta 240, masked 260416.",
+              "notes": "The repo-pinned Host Organizer reference is registered. The standalone-host workspace now adds private-to-public publication coaching and cross-event CRM readiness. Its deterministic 2026-08-10 full-shell comparison is bounded at mismatch 20.09%, meanDelta 25.94, maxDelta 240, masked 260416 under HOST-STANDALONE-ORGANIZER-WORKSPACE-001 while the canonical threshold remains unchanged.",
               "path": "design/reference_screens/screen.host.clubs/organizer.png"
             },
             {
@@ -5168,7 +5168,7 @@
               "tests": [
                 "test/hosts/host_operations_screen_test.dart"
               ],
-              "notes": "Owned clubs now default to the Organizer overview with the selected-club header, payout callout, metrics, public page row, team summary, trend strip, and manage rows. Edit, Insights, and Preview remain separately captured through dedicated tab states.",
+              "notes": "Owned clubs now default to the standalone organizer workspace with the selected-club header and Edit, Insights, and Preview tabs. Edit coaches private operators toward a public Catch page; Insights includes organizer metrics and cross-event CRM readiness; Preview renders the public projection.",
               "previewIds": [
                 "HostClubsScreen/Route states"
               ],
@@ -5783,8 +5783,8 @@
             },
             {
               "id": "DS-HOST-CLUBS-004",
-              "status": "closed",
-              "nextAction": "The 2026-07-10 production full-shell Organizer comparison is within the aggregate advisory threshold at 12.02% mismatch / 7.79 meanDelta with navigation chrome included. Extra cohost, empty, loading/error/offline, analytics, payout, inline editor, team mutation, text-scale, reduced-motion, and light/dark comparisons depend on future design exports."
+              "status": "open",
+              "nextAction": "HOST-STANDALONE-ORGANIZER-WORKSPACE-001 bounds the 2026-08-10 standalone workspace at 20.09% mismatch / 25.94 meanDelta while preserving the canonical threshold. Replace or reconcile the older organizer reference with a reviewed standalone-host composition before removing the ceiling; extra cohost, empty, loading/error/offline, analytics, payout, inline editor, team mutation, text-scale, reduced-motion, and light/dark comparisons still depend on future design exports."
             },
             {
               "id": "DS-HOST-CLUBS-005",

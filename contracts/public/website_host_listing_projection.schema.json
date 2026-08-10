@@ -238,6 +238,7 @@
         "bookedCount": {"type": "integer", "minimum": 0},
         "checkedInCount": {"type": "integer", "minimum": 0},
         "waitlistedCount": {"type": "integer", "minimum": 0},
+        "publicRegistrationEnabled": {"type": "boolean"},
         "priceLabel": {"$ref": "#/definitions/nonEmptyString"},
         "scorecard": {
           "anyOf": [

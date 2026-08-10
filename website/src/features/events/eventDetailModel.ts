@@ -12,7 +12,8 @@ export type EventRegistrationState =
   | "catchApp"
   | "closed"
   | "external"
-  | "full";
+  | "full"
+  | "webOtp";
 
 export interface EventDetailRecord {
   accessibility: string;
@@ -102,9 +103,11 @@ function catchEventRecord(
   const remainingCapacity = Math.max(0, event.capacityLimit - event.bookedCount);
   const registrationState: EventRegistrationState = !isUpcoming
     ? "closed"
-    : remainingCapacity === 0
-      ? "full"
-      : "catchApp";
+    : event.publicRegistrationEnabled
+      ? "webOtp"
+      : remainingCapacity === 0
+        ? "full"
+        : "catchApp";
   return {
     accessibility: event.accessibility ?? "",
     activityKind: event.activityKind,

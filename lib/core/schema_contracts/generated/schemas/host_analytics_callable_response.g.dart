@@ -354,6 +354,42 @@ const schemaHostAnalyticsCallableResponseSchema = <String, Object?>{
             'type': 'integer',
             'minimum': 0,
           },
+          'operationalAttendeeCount': <String, Object?>{
+            'type': 'integer',
+            'minimum': 0,
+          },
+          'operationalCheckedInCount': <String, Object?>{
+            'type': 'integer',
+            'minimum': 0,
+          },
+          'attendeeSources': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'catchBooking',
+              'hostImport',
+              'hostManual',
+              'webOtp',
+            ],
+            'properties': <String, Object?>{
+              'catchBooking': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+              },
+              'hostImport': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+              },
+              'hostManual': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+              },
+              'webOtp': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+              },
+            },
+          },
         },
       },
     },

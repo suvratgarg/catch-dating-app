@@ -73,6 +73,29 @@ test("admin and marketing callers share one exact build and promotion path", () 
   ]) assert.ok(admin.includes(`- "${adminDependency}"`), `admin is missing ${adminDependency}`);
 });
 
+test("standalone Host web uses the same immutable build and promotion authority", () => {
+  const source = caller("host");
+  assert.match(source, /name: Host Website/u);
+  assert.match(source, /uses: \.\/\.github\/workflows\/_web-hosting-build\.yml/u);
+  assert.match(source, /uses: \.\/\.github\/workflows\/_web-hosting-promote\.yml/u);
+  assert.match(source, /surface: host/u);
+  assert.match(source, /flutter analyze --no-fatal-infos apps\/host lib\/hosts lib\/events/u);
+  assert.match(source, /flutter test --concurrency=1 test\/hosts/u);
+  assert.match(source,
+    /artifact_digest: \$\{\{ needs\.package\.outputs\.artifact_digest \}\}/u);
+  assert.match(source,
+    /source_sha: \$\{\{ needs\.package\.outputs\.source_sha \}\}/u);
+  assert.doesNotMatch(source.slice(source.indexOf("  package:")),
+    /flutter build|flutter_with_env\.sh/u);
+
+  const build = workflow("_web-hosting-build.yml");
+  assert.match(build,
+    /Build the exact production Host web bytes once[\s\S]*flutter_with_env\.sh prod --role host build web --release/u);
+  const promote = workflow("_web-hosting-promote.yml");
+  assert.match(promote, /expected_name="Host Website"/u);
+  assert.match(promote, /https:\/\/catchdates-host\.web\.app\//u);
+});
+
 test("caller triggers cover the exact build dependency closure", () => {
   const admin = caller("admin");
   assert.ok(admin.includes('- "packages/web-config/**"'));

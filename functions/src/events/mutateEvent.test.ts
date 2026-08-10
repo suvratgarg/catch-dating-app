@@ -961,6 +961,50 @@ test("updateEventHandler updates only host-editable event fields", async () => {
   assert.equal(updated?.capacityLimit, 12);
 });
 
+test(
+  "updateEventHandler limits web registration to free open events",
+  async () => {
+    const eligible = harness({
+      "clubs/club-1": club(),
+      "events/event-1": event(),
+    });
+    await updateEventHandler(request("host-1", {
+      eventId: "event-1",
+      fields: {publicRegistrationEnabled: true},
+    }), eligible.deps);
+    assert.equal(
+      eligible.firestore.get("events/event-1")?.publicRegistrationEnabled,
+      true
+    );
+
+    const paid = harness({
+      "clubs/club-1": club(),
+      "events/event-1": event({priceInPaise: 50000}),
+    });
+    await assert.rejects(
+      () => updateEventHandler(request("host-1", {
+        eventId: "event-1",
+        fields: {publicRegistrationEnabled: true},
+      }), paid.deps),
+      (error) => assertHttpsCode(error, "failed-precondition")
+    );
+
+    const cohortGated = harness({
+      "clubs/club-1": club(),
+      "events/event-1": event({
+        constraints: {minAge: 0, maxAge: 99, maxMen: 10, maxWomen: 10},
+      }),
+    });
+    await assert.rejects(
+      () => updateEventHandler(request("host-1", {
+        eventId: "event-1",
+        fields: {publicRegistrationEnabled: true},
+      }), cohortGated.deps),
+      (error) => assertHttpsCode(error, "failed-precondition")
+    );
+  }
+);
+
 test("updateEventHandler notifies participants for location changes",
   async () => {
     const h = harness({

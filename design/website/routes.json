@@ -261,14 +261,14 @@
       "staticOutput": "generated-postbuild",
       "indexing": "event-controlled",
       "sitemap": "event-controlled",
-      "notes": "Generated read-only Event Detail routes derived from publicly readable organizer projections. Catch-native events hand off booking to the Catch app and external events hand off registration to the official source; the marketing website never adds booking, checkout, or sign-in controls. Static output includes semantic Event JSON-LD, organizer provenance, source freshness, and only event-scoped reviews whose eventId matches the route.",
+      "notes": "Generated Event Detail routes derived from explicitly published organizer and event projections. Catch-native events may use event-scoped phone OTP registration without Consumer onboarding; profile-dependent events hand off to Catch, and external events hand off to the official source. Static output includes semantic Event JSON-LD, organizer provenance, source freshness, aggregate capacity only, and event-scoped reviews whose eventId matches the route.",
       "review": {
         "priority": "p0",
         "status": "ready",
         "viewports": ["desktop", "mobile"],
-        "states": ["catch-native", "external-source", "event-reviews", "missing-event"],
+        "states": ["catch-native", "web-otp-registration", "external-source", "event-reviews", "missing-event"],
         "stateCoverage": {
-          "storybook": ["catch-native", "external-source", "event-reviews"],
+          "storybook": ["catch-native", "web-otp-registration", "external-source", "event-reviews"],
           "manual": ["missing-event"]
         }
       }

@@ -25,6 +25,13 @@ const SURFACES = Object.freeze({
     stage: "hosting-admin",
     target: "admin",
   }),
+  host: Object.freeze({
+    artifactName: "web-hosting-host.tar.gz",
+    publicDir: "apps/host/build/web",
+    site: "catchdates-host",
+    stage: "hosting-host",
+    target: "host",
+  }),
   marketing: Object.freeze({
     artifactName: "web-hosting-marketing.tar.gz",
     publicDir: "website/dist",
@@ -53,7 +60,7 @@ function assertExactKeys(value, keys, label) {
 
 function selectedSurface(value) {
   const config = SURFACES[value];
-  assert(config, "surface must be exactly 'admin' or 'marketing'.");
+  assert(config, "surface must be exactly 'admin', 'host', or 'marketing'.");
   return {name: value, ...config};
 }
 

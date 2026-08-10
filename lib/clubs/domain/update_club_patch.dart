@@ -28,6 +28,7 @@ final class UpdateClubPatch {
     Object? phoneNumber = unsetSentinel,
     Object? email = unsetSentinel,
     ClubHostDefaults? hostDefaults,
+    bool? publicListingEnabled,
   }) : _fields = {
          if (name != null) 'name': name,
          if (description != null) 'description': description,
@@ -54,6 +55,8 @@ final class UpdateClubPatch {
          if (!identical(phoneNumber, unsetSentinel)) 'phoneNumber': phoneNumber,
          if (!identical(email, unsetSentinel)) 'email': email,
          if (hostDefaults != null) 'hostDefaults': hostDefaults.toJson(),
+         if (publicListingEnabled != null)
+           'publicListingEnabled': publicListingEnabled,
        };
 
   /// Escape hatch for callers that compute the field key dynamically.

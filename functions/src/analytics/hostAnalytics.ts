@@ -10,6 +10,7 @@ import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {
   ClubDocument,
+  EventAttendeeDocument,
   EventDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {
@@ -67,6 +68,12 @@ interface AnalyticsRecords {
   clubs: ClubRecord[];
   events: EventRecord[];
   martRows: HostAnalyticsMartRow[];
+  operationalAttendees?: EventAttendeeRecord[];
+}
+
+interface EventAttendeeRecord {
+  id: string;
+  data: EventAttendeeDocument;
 }
 
 interface EventMetricAccumulator {
@@ -98,6 +105,9 @@ interface EventMetricAccumulator {
   chatStartedCount: number;
   repeatAttendeeCount: number;
   eventSaveCount: number;
+  operationalAttendeeCount: number;
+  operationalCheckedInCount: number;
+  attendeeSources: Record<EventAttendeeDocument["source"], number>;
 }
 
 const maxHostClubs = 25;
@@ -269,6 +279,11 @@ export function buildHostAnalyticsFromRecords(
     records.events,
     range.timezone
   );
+  applyOperationalAttendees(
+    eventMetrics,
+    records.events,
+    records.operationalAttendees ?? []
+  );
   const topEvents = [...eventMetrics]
     .sort((a, b) => b.startTime.getTime() - a.startTime.getTime())
     .slice(0, 25);
@@ -294,6 +309,8 @@ export function buildHostAnalyticsFromRecords(
       previousCurrencies.length === 0 ||
       currencies[0] === previousCurrencies[0]);
   const sourceStatus = rows.length === 0 ? "missing" : "ready";
+  const operationsSourceStatus = records.events.length === 0 ?
+    "missing" : "ready";
   const response: HostAnalyticsCallableResponse = {
     generatedAt: now.toISOString(),
     timezone: range.timezone,
@@ -312,6 +329,25 @@ export function buildHostAnalyticsFromRecords(
       eventTitle: resolveEventTitle(records, eventMetrics),
     },
     summaryCards: [
+      metricCard(
+        "rosterGuests",
+        "Guests on roster",
+        totals.operationalAttendees,
+        "count",
+        operationsSourceStatus,
+        "Includes Catch, spreadsheet, manual, and web registrations."
+      ),
+      metricCard(
+        "rosterAttendanceRate",
+        "Roster attendance",
+        percentage(
+          totals.operationalCheckedIn,
+          totals.operationalAttendees
+        ),
+        "percent",
+        operationsSourceStatus,
+        "Uses the unified operational roster, independent of ticketing source."
+      ),
       metricCard(
         "listingViews",
         "Listing views",
@@ -439,10 +475,17 @@ export function buildHostAnalyticsFromRecords(
       mutualMatchCount: event.mutualMatchCount,
       chatStartedCount: event.chatStartedCount,
       repeatAttendeeCount: event.repeatAttendeeCount,
+      operationalAttendeeCount: event.operationalAttendeeCount,
+      operationalCheckedInCount: event.operationalCheckedInCount,
+      attendeeSources: event.attendeeSources,
     })),
     reviewSummary,
     discoverySummary,
-    dataQuality: dataQualityRows(rows),
+    dataQuality: dataQualityRows(
+      rows,
+      records.events,
+      records.operationalAttendees ?? []
+    ),
   };
   assertValidResponse(response);
   return response;
@@ -465,21 +508,24 @@ async function loadHostAnalytics(
     if (cached !== null) return cached;
   }
   const events = await resolveEvents(db, payload, clubs, range, scope);
-  const martRows = await deps.bigQuerySource.loadRows(
-    {
-      startDate: zonedDateKey(previousRange.start, range.timezone),
-      endDate: zonedDateKey(
-        addUtcMilliseconds(range.endExclusive, -1),
-        range.timezone
-      ),
-    },
-    {
-      clubIds: clubs.map((club) => club.id),
-      eventId: payload.eventId ?? null,
-    },
-  );
+  const [martRows, operationalAttendees] = await Promise.all([
+    deps.bigQuerySource.loadRows(
+      {
+        startDate: zonedDateKey(previousRange.start, range.timezone),
+        endDate: zonedDateKey(
+          addUtcMilliseconds(range.endExclusive, -1),
+          range.timezone
+        ),
+      },
+      {
+        clubIds: clubs.map((club) => club.id),
+        eventId: payload.eventId ?? null,
+      },
+    ),
+    loadOperationalAttendees(db, events),
+  ]);
   const response = buildHostAnalyticsFromRecords(
-    {clubs, events, martRows},
+    {clubs, events, martRows, operationalAttendees},
     range,
     now
   );
@@ -719,6 +765,24 @@ async function resolveEvents(
   });
 }
 
+async function loadOperationalAttendees(
+  db: FirebaseFirestore.Firestore,
+  events: EventRecord[]
+): Promise<EventAttendeeRecord[]> {
+  const eventIds = uniqueStrings(events.map((event) => event.id));
+  if (eventIds.length === 0) return [];
+  const snapshots = await Promise.all(
+    chunkStrings(eventIds, 30).map((chunk) => db
+      .collection("eventAttendees")
+      .where("eventId", "in", chunk)
+      .get())
+  );
+  return snapshots.flatMap((snapshot) => snapshot.docs.map((doc) => ({
+    id: doc.id,
+    data: doc.data() as EventAttendeeDocument,
+  })));
+}
+
 async function getClubRecord(
   db: FirebaseFirestore.Firestore,
   clubId: string
@@ -803,6 +867,9 @@ function eventMetricsFromRows(
         chatStartedCount: Math.max(0, Math.trunc(row.chatStartedCount)),
         repeatAttendeeCount: Math.max(0, Math.trunc(row.repeatAttendeeCount)),
         eventSaveCount: Math.max(0, Math.trunc(row.eventSaves)),
+        operationalAttendeeCount: 0,
+        operationalCheckedInCount: 0,
+        attendeeSources: emptyAttendeeSources(),
       });
       continue;
     }
@@ -864,6 +931,73 @@ function eventMetricsFromRows(
   return [...byEvent.values()];
 }
 
+function applyOperationalAttendees(
+  metrics: EventMetricAccumulator[],
+  events: EventRecord[],
+  attendees: EventAttendeeRecord[]
+): void {
+  const byEvent = new Map(metrics.map((metric) => [metric.eventId, metric]));
+  const eventMap = new Map(events.map((event) => [event.id, event]));
+  for (const attendee of attendees) {
+    if (attendee.data.status === "cancelled") continue;
+    let metric = byEvent.get(attendee.data.eventId);
+    if (!metric) {
+      const event = eventMap.get(attendee.data.eventId);
+      if (!event) continue;
+      metric = eventMetricFromEvent(event);
+      metrics.push(metric);
+      byEvent.set(metric.eventId, metric);
+    }
+    metric.operationalAttendeeCount += 1;
+    if (attendee.data.status === "checkedIn") {
+      metric.operationalCheckedInCount += 1;
+    }
+    metric.attendeeSources[attendee.data.source] += 1;
+  }
+}
+
+function eventMetricFromEvent(event: EventRecord): EventMetricAccumulator {
+  return {
+    eventId: event.id,
+    clubId: event.data.clubId,
+    organizerId: event.data.organizerId ?? event.data.clubId,
+    title: fallbackEventTitle(event),
+    startTime: timestampToDate(event.data.startTime) ?? new Date(0),
+    status: event.data.status,
+    capacityLimit: Math.max(0, event.data.capacityLimit),
+    bookedCount: Math.max(0, event.data.bookedCount ?? 0),
+    checkedInCount: Math.max(0, event.data.checkedInCount ?? 0),
+    waitlistedCount: Math.max(0, event.data.waitlistedCount ?? 0),
+    grossRevenueMinor: 0,
+    currency: event.data.currency ?? "INR",
+    checkoutStartedCount: 0,
+    checkoutDropoffCount: 0,
+    paymentCompletedCount: 0,
+    paymentFailedCount: 0,
+    paymentRefundedCount: 0,
+    reviewCount: 0,
+    ratingTotal: 0,
+    verifiedReviewCount: 0,
+    publicReviewCount: 0,
+    ownerResponseCount: 0,
+    demandCount: 0,
+    inviteOpenCount: 0,
+    mutualMatchCount: 0,
+    chatStartedCount: 0,
+    repeatAttendeeCount: 0,
+    eventSaveCount: 0,
+    operationalAttendeeCount: 0,
+    operationalCheckedInCount: 0,
+    attendeeSources: emptyAttendeeSources(),
+  };
+}
+
+function emptyAttendeeSources(): Record<
+  EventAttendeeDocument["source"], number
+  > {
+  return {catchBooking: 0, hostImport: 0, hostManual: 0, webOtp: 0};
+}
+
 function summarizeEventMetrics(events: EventMetricAccumulator[]) {
   return events.reduce((sum, event) => ({
     booked: sum.booked + event.bookedCount,
@@ -874,6 +1008,10 @@ function summarizeEventMetrics(events: EventMetricAccumulator[]) {
     paymentCompleted: sum.paymentCompleted + event.paymentCompletedCount,
     matches: sum.matches + event.mutualMatchCount,
     chats: sum.chats + event.chatStartedCount,
+    operationalAttendees:
+      sum.operationalAttendees + event.operationalAttendeeCount,
+    operationalCheckedIn:
+      sum.operationalCheckedIn + event.operationalCheckedInCount,
   }), {
     booked: 0,
     checkedIn: 0,
@@ -883,6 +1021,8 @@ function summarizeEventMetrics(events: EventMetricAccumulator[]) {
     paymentCompleted: 0,
     matches: 0,
     chats: 0,
+    operationalAttendees: 0,
+    operationalCheckedIn: 0,
   });
 }
 
@@ -972,7 +1112,9 @@ function buildTrend(
 }
 
 function dataQualityRows(
-  rows: HostAnalyticsMartRow[]
+  rows: HostAnalyticsMartRow[],
+  events: EventRecord[],
+  operationalAttendees: EventAttendeeRecord[]
 ): HostAnalyticsCallableResponse["dataQuality"] {
   const discoveryRows = rows.filter((row) =>
     row.listingViews > 0 ||
@@ -989,6 +1131,18 @@ function dataQualityRows(
     row.reviewCount > 0
   ).length;
   return [
+    {
+      id: "operational-attendee-roster",
+      state: events.length === 0 ? "missing" : "ok",
+      detail: operationalAttendees.length === 0 ?
+        "The event scope has no operational attendee rows yet." :
+        "Roster and attendance counts include every operational source.",
+      owner: "Host platform",
+      runbook: "docs/data_contracts.md",
+      nextAction: operationalAttendees.length === 0 ?
+        "Import guests or enable Catch/web registration for this event." :
+        "No action; operational roster facts are available.",
+    },
     {
       id: "bigquery-host-mart",
       state: rows.length === 0 ? "missing" : "ok",
@@ -1030,9 +1184,9 @@ function dataQualityRows(
       id: "firestore-cache",
       state: "ok",
       detail:
-        "Firestore is used only for host authorization and optional " +
-        "snapshots; " +
-        "it is not the analytics source of truth.",
+        "Firestore owns authorization, operational roster facts, and " +
+        "optional " +
+        "snapshots; BigQuery remains the source for historical funnels.",
       owner: "Admin platform",
       runbook: "functions/src/analytics/hostAnalytics.ts",
       nextAction:
@@ -1440,6 +1594,14 @@ function nullableTrimmedString(value: unknown): string | null | undefined {
 
 function uniqueStrings(values: string[]): string[] {
   return [...new Set(values.filter((value) => value.length > 0))];
+}
+
+function chunkStrings(values: string[], size: number): string[][] {
+  const chunks: string[][] = [];
+  for (let index = 0; index < values.length; index += size) {
+    chunks.push(values.slice(index, index + size));
+  }
+  return chunks;
 }
 
 function adminAnalyticsTargetPath(

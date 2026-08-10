@@ -53,6 +53,7 @@ import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/widgets/who_is_going.dart';
 import 'package:catch_dating_app/events/shared/attendance_sheet_view_model.dart';
 import 'package:catch_dating_app/hosts/data/host_analytics_repository.dart';
+import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_profile_repository.dart';
 import 'package:catch_dating_app/hosts/domain/host_attendance_window.dart';
 import 'package:catch_dating_app/hosts/domain/host_profile.dart';
@@ -5920,7 +5921,7 @@ class _HostShellScope extends StatelessWidget {
           ),
         );
       }
-      overrides.add(
+      overrides.addAll([
         watchEventsForClubProvider(clubId).overrideWith(
           (ref) =>
               clubEventStreams[clubId] ??
@@ -5928,7 +5929,25 @@ class _HostShellScope extends StatelessWidget {
                 HostOperationsFixtures.eventsByClub[clubId] ?? const [],
               ),
         ),
-      );
+        hostCrmSummaryProvider(clubId).overrideWithValue(
+          AsyncData(
+            HostCrmSummary(
+              organizerId: clubId,
+              contactCount: 214,
+              pastAttendeeCount: 148,
+              repeatAttendeeCount: 37,
+              linkedAccountCount: 92,
+              importedContactCount: 61,
+              whatsappOptInCount: 74,
+              smsOptInCount: 29,
+              truncated: false,
+              inAppReadiness: HostCrmChannelReadiness.currentEventOnly,
+              whatsappReadiness: HostCrmChannelReadiness.providerSetupRequired,
+              smsReadiness: HostCrmChannelReadiness.providerAndDltSetupRequired,
+            ),
+          ),
+        ),
+      ]);
     }
 
     return _AppRoleBoundary(

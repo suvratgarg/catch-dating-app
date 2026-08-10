@@ -124,4 +124,8 @@ test("app creation keeps opaque identity separate from the public route",
     assert.equal(routes[0].clubId, organizerId);
     assert.equal(routes[0].canonicalPath, `/organizers/${publicSlug}/`);
     assert.equal(routes[0].source, "createOrganizer");
+    assert.equal(
+      firestore.get(`organizers/${organizerId}`)?.appVisibility,
+      "hidden"
+    );
   });

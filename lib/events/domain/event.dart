@@ -101,6 +101,7 @@ abstract class Event with _$Event {
     @Default(EventLifecycleStatus.active) EventLifecycleStatus status,
     @NullableTimestampConverter() DateTime? cancelledAt,
     String? cancellationReason,
+    @Default(false) bool publicRegistrationEnabled,
     @Default(EventConstraints()) EventConstraints constraints,
     @JsonKey(includeIfNull: false) EventPolicyBundle? eventPolicy,
     // Denormalized gender counts maintained atomically by Cloud Functions.

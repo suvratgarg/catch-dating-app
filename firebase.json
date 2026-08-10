@@ -137,6 +137,35 @@
       ]
     },
     {
+      "target": "host",
+      "public": "apps/host/build/web",
+      "ignore": [
+        "firebase.json",
+        "**/.git/**",
+        "**/.DS_Store"
+      ],
+      "predeploy": [
+        "./tool/flutter_with_env.sh prod --role host build web --release"
+      ],
+      "headers": [
+        {
+          "source": "**",
+          "headers": [
+            {
+              "key": "X-Robots-Tag",
+              "value": "noindex, nofollow"
+            }
+          ]
+        }
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    },
+    {
       "target": "admin",
       "public": "admin/dist",
       "ignore": [

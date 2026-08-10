@@ -120,6 +120,10 @@ export interface EventDocument {
     _nanoseconds: number;
   } | null;
   cancellationReason: string | null;
+  /**
+   * When true, the published marketing event route may register a phone-OTP identity into eventAttendees without creating a Consumer profile.
+   */
+  publicRegistrationEnabled?: boolean;
   constraints: {
     minAge: number;
     maxAge: number;

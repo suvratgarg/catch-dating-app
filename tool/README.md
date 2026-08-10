@@ -469,15 +469,15 @@ the same workflow id and requires the selected plan base SHA to equal the
 cursor SHA. Missing/expired authorities and workflow-generation changes fail
 closed instead of skipping queue work.
 
-Admin and Marketing Hosting use the same exact-byte principle without joining
+Admin, standalone Host, and Marketing Hosting use the same exact-byte principle without joining
 the backend mutation queue. `_web-hosting-build.yml` produces one environment-
-bound Vite bundle and `tool/ci/package_web_hosting.mjs` projects it into a
+bound React or Host Flutter web bundle and `tool/ci/package_web_hosting.mjs` projects it into a
 single-target, lifecycle-hook-free Firebase package with a strict file inventory.
 `_web-hosting-promote.yml` downloads only the recorded artifact id, verifies the
 GitHub ZIP digest plus source/workflow/run binding, verifies every package byte
 before credentials and again immediately before mutation. It installs only the
 pinned Firebase CLI before credentials; it never installs source dependencies,
-rebuilds Vite, or rematerializes organizer data. Recovery is terminal-source-
+rebuilds frontend bytes, or rematerializes organizer data. Recovery is terminal-source-
 bound, current-main-only, and rejects older attempts at the same SHA.
 
 `tool/firebase/plan_firebase_deploy_targets.mjs` is the pure planner behind
