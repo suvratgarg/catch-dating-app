@@ -432,11 +432,12 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
       };
     }
 
-    final coreGate = _buildCompanionRouteGate(
-      routeState,
-      onRetry: companionRouteRetryCallback(routeState),
-    );
-    if (coreGate != null) return coreGate;
+    if (routeState.status != EventSuccessCompanionRouteStatus.ready) {
+      return _CompanionRouteGate(
+        state: routeState,
+        onRetry: companionRouteRetryCallback(routeState),
+      );
+    }
 
     final event = routeState.event!;
     final uid = routeState.uid!;
@@ -458,11 +459,12 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
     routeState = routeState.withArrivalMission(
       _catchAsyncState(arrivalMissionAsync),
     );
-    final arrivalGate = _buildCompanionRouteGate(
-      routeState,
-      onRetry: companionRouteRetryCallback(routeState),
-    );
-    if (arrivalGate != null) return arrivalGate;
+    if (routeState.status != EventSuccessCompanionRouteStatus.ready) {
+      return _CompanionRouteGate(
+        state: routeState,
+        onRetry: companionRouteRetryCallback(routeState),
+      );
+    }
 
     final AsyncValue<EventSuccessCompatibilityResponse?> compatibilityAsync =
         !routeState.firstHelloAvailable &&
@@ -482,11 +484,12 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
     routeState = routeState.withCompatibilityResponse(
       _catchAsyncState(compatibilityAsync),
     );
-    final compatibilityGate = _buildCompanionRouteGate(
-      routeState,
-      onRetry: companionRouteRetryCallback(routeState),
-    );
-    if (compatibilityGate != null) return compatibilityGate;
+    if (routeState.status != EventSuccessCompanionRouteStatus.ready) {
+      return _CompanionRouteGate(
+        state: routeState,
+        onRetry: companionRouteRetryCallback(routeState),
+      );
+    }
 
     final attendeeMoment = routeState.attendeeMoment!;
     final AsyncValue<EventSuccessPreference?> preferenceAsync =
@@ -554,11 +557,12 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
       assignmentState: _catchAsyncState(assignmentAsync),
       rotationState: _catchAsyncState(rotationAsync),
     );
-    final momentGate = _buildCompanionRouteGate(
-      routeState,
-      onRetry: companionRouteRetryCallback(routeState),
-    );
-    if (momentGate != null) return momentGate;
+    if (routeState.status != EventSuccessCompanionRouteStatus.ready) {
+      return _CompanionRouteGate(
+        state: routeState,
+        onRetry: companionRouteRetryCallback(routeState),
+      );
+    }
 
     final assignment = routeState.assignment;
     final rotationAssignment = routeState.rotationAssignment;
@@ -747,11 +751,14 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
   }
 }
 
-Widget? _buildCompanionRouteGate(
-  EventSuccessCompanionRouteState state, {
-  required VoidCallback onRetry,
-}) {
-  return switch (state.status) {
+class _CompanionRouteGate extends StatelessWidget {
+  const _CompanionRouteGate({required this.state, required this.onRetry});
+
+  final EventSuccessCompanionRouteState state;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) => switch (state.status) {
     EventSuccessCompanionRouteStatus.loading => const CompanionLoading(),
     EventSuccessCompanionRouteStatus.message => CompanionMessage(
       title: state.message!.title,
@@ -762,6 +769,6 @@ Widget? _buildCompanionRouteGate(
       errorContext: state.errorContext!,
       onRetry: onRetry,
     ),
-    EventSuccessCompanionRouteStatus.ready => null,
+    EventSuccessCompanionRouteStatus.ready => const SizedBox.shrink(),
   };
 }

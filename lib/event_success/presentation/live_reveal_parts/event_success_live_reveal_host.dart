@@ -38,194 +38,198 @@ class EventSuccessLiveRevealHostCard extends StatelessWidget {
       enabled: now == null && plan.isRevealCountdownRunning(DateTime.now()),
       builder: (context, tickNow) {
         final referenceNow = now ?? tickNow;
-        return _buildCard(context, referenceNow);
-      },
-    );
-  }
-
-  Widget _buildCard(BuildContext context, DateTime referenceNow) {
-    final t = CatchTokens.of(context);
-    final revealSet = _hostRevealSet();
-    final assignments = revealSet.assignments;
-    final roundCount = revealSet.roundCount;
-    final nextRound = plan.nextRevealRoundIndex(
-      roundCount: roundCount,
-      now: referenceNow,
-    );
-    final activeRound = _safeRoundIndex(
-      plan.activeRevealRoundIndex,
-      roundCount,
-    );
-    final targetRound = plan.isRevealCountdownRunning(referenceNow)
-        ? activeRound
-        : nextRound ?? activeRound;
-    final countdownSeconds = plan.structureConfig.revealCountdownSeconds;
-    final allRevealed = plan.allRevealRoundsShown(
-      roundCount: roundCount,
-      now: referenceNow,
-    );
-    final isCountingDown = plan.isRevealCountdownRunning(referenceNow);
-    final remainingSeconds = _remainingSeconds(plan, referenceNow);
-    final headline = _hostHeadline(
-      kind: revealSet.kind,
-      isCountingDown: isCountingDown,
-      allRevealed: allRevealed,
-      targetRound: targetRound,
-      roundCount: roundCount,
-      remainingSeconds: remainingSeconds,
-    );
-    return CatchSurface(
-      clipBehavior: Clip.antiAlias,
-      borderWidth: 0,
-      gradient: LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [
-          t.ink,
-          Color.lerp(t.ink, t.accent, 0.55)!,
-          Color.lerp(t.primary, t.gold, 0.18)!,
-        ],
-      ),
-      boxShadow: CatchElevation.raised,
-      padding: CatchInsets.content,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Wrap(
-            spacing: CatchSpacing.s2,
-            runSpacing: CatchSpacing.s2,
+        final t = CatchTokens.of(context);
+        final revealSet = _hostRevealSet();
+        final assignments = revealSet.assignments;
+        final roundCount = revealSet.roundCount;
+        final nextRound = plan.nextRevealRoundIndex(
+          roundCount: roundCount,
+          now: referenceNow,
+        );
+        final activeRound = _safeRoundIndex(
+          plan.activeRevealRoundIndex,
+          roundCount,
+        );
+        final targetRound = plan.isRevealCountdownRunning(referenceNow)
+            ? activeRound
+            : nextRound ?? activeRound;
+        final countdownSeconds = plan.structureConfig.revealCountdownSeconds;
+        final allRevealed = plan.allRevealRoundsShown(
+          roundCount: roundCount,
+          now: referenceNow,
+        );
+        final isCountingDown = plan.isRevealCountdownRunning(referenceNow);
+        final remainingSeconds = _remainingSeconds(plan, referenceNow);
+        final headline = _hostHeadline(
+          kind: revealSet.kind,
+          isCountingDown: isCountingDown,
+          allRevealed: allRevealed,
+          targetRound: targetRound,
+          roundCount: roundCount,
+          remainingSeconds: remainingSeconds,
+        );
+        return CatchSurface(
+          clipBehavior: Clip.antiAlias,
+          borderWidth: 0,
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              t.ink,
+              Color.lerp(t.ink, t.accent, 0.55)!,
+              Color.lerp(t.primary, t.gold, 0.18)!,
+            ],
+          ),
+          boxShadow: CatchElevation.raised,
+          padding: CatchInsets.content,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CatchBadge.onDarkStatus(
-                label: context
-                    .l10n
-                    .eventSuccessEventSuccessLiveRevealHostLabelSynchronizedPartnerReveal,
-                icon: CatchIcons.boltRounded,
+              Wrap(
+                spacing: CatchSpacing.s2,
+                runSpacing: CatchSpacing.s2,
+                children: [
+                  CatchBadge.onDarkStatus(
+                    label: context
+                        .l10n
+                        .eventSuccessEventSuccessLiveRevealHostLabelSynchronizedPartnerReveal,
+                    icon: CatchIcons.boltRounded,
+                  ),
+                  gapW8,
+                  CatchBadge.onDarkStatus(
+                    label: revealSet.kind.label(context.l10n),
+                    icon: revealSet.kind.icon,
+                  ),
+                  CatchBadge.onDark(
+                    label: roundCount == 0
+                        ? context
+                              .l10n
+                              .eventSuccessEventSuccessLiveRevealHostLabelNoAssignments
+                        : context.l10n
+                              .eventSuccessEventSuccessLiveRevealHostLabelValue1RoundcountShown(
+                                value1:
+                                    plan.revealedThroughRoundIndex(
+                                      referenceNow,
+                                    ) +
+                                    1,
+                                roundCount: roundCount,
+                              ),
+                  ),
+                ],
               ),
-              gapW8,
-              CatchBadge.onDarkStatus(
-                label: revealSet.kind.label(context.l10n),
-                icon: revealSet.kind.icon,
+              gapH16,
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final compact =
+                      constraints.maxWidth <
+                      ComponentBreakpoints
+                          .eventSuccessRevealHostCompactBreakpoint;
+                  final number = CountdownNumber(
+                    value: isCountingDown
+                        ? context.l10n
+                              .eventSuccessEventSuccessLiveRevealHostVisiblecopyRemainingseconds(
+                                remainingSeconds: remainingSeconds,
+                              )
+                        : allRevealed
+                        ? context
+                              .l10n
+                              .eventSuccessEventSuccessLiveRevealHostVisiblecopyOk
+                        : context.l10n
+                              .eventSuccessEventSuccessLiveRevealHostVisiblecopyValue1(
+                                value1: targetRound + 1,
+                              ),
+                    caption: isCountingDown
+                        ? context
+                              .l10n
+                              .eventSuccessEventSuccessLiveRevealHostCaptionSeconds
+                        : allRevealed
+                        ? context
+                              .l10n
+                              .eventSuccessEventSuccessLiveRevealHostCaptionRevealed
+                        : context
+                              .l10n
+                              .eventSuccessEventSuccessLiveRevealHostCaptionNextRound,
+                  );
+                  final copy = RevealHostCopy(
+                    headline: headline,
+                    body: _hostBody(
+                      kind: revealSet.kind,
+                      assignments: assignments,
+                      roundIndex: targetRound,
+                      roundCount: roundCount,
+                      allRevealed: allRevealed,
+                    ),
+                  );
+                  if (compact) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [number, gapH14, copy],
+                    );
+                  }
+                  return Row(
+                    children: [
+                      number,
+                      gapW16,
+                      Expanded(child: copy),
+                    ],
+                  );
+                },
               ),
-              CatchBadge.onDark(
-                label: roundCount == 0
-                    ? context
-                          .l10n
-                          .eventSuccessEventSuccessLiveRevealHostLabelNoAssignments
-                    : context.l10n
-                          .eventSuccessEventSuccessLiveRevealHostLabelValue1RoundcountShown(
-                            value1:
-                                plan.revealedThroughRoundIndex(referenceNow) +
-                                1,
-                            roundCount: roundCount,
-                          ),
+              gapH14,
+              RevealProgressBar(progress: plan.revealProgress(referenceNow)),
+              if (roundCount > 0) ...[
+                gapH14,
+                if (revealSet.kind ==
+                    EventSuccessRevealAssignmentKind.rotations)
+                  RevealRoundList(
+                    config: _rotationConfigLine(plan.structureConfig),
+                    roundCount: roundCount,
+                    revealedThrough: plan.revealedThroughRoundIndex(
+                      referenceNow,
+                    ),
+                    assignments: assignments,
+                    profilesByUid: {
+                      for (final profile in participantProfiles)
+                        profile.uid: profile,
+                    },
+                  )
+                else
+                  RevealRoundRail(
+                    roundCount: roundCount,
+                    activeRoundIndex: targetRound,
+                    revealedThrough: plan.revealedThroughRoundIndex(
+                      referenceNow,
+                    ),
+                  ),
+              ],
+              if (actionState.error != null) ...[
+                gapH10,
+                Text(
+                  appErrorMessage(
+                    actionState.error!,
+                    l10n: context.l10n,
+                    context: AppErrorContext.event,
+                  ),
+                  style: CatchTextStyles.supporting(context, color: t.surface),
+                ),
+              ],
+              gapH16,
+              HostRevealActions(
+                roundCount: roundCount,
+                nextRound: nextRound,
+                activeRound: activeRound,
+                countdownSeconds: countdownSeconds,
+                isCountingDown: isCountingDown,
+                allRevealed: allRevealed,
+                isLoading: actionState.isLoading,
+                onStartCountdown: onStartCountdown,
+                onRevealRound: onRevealRound,
+                onResetReveal: onResetReveal,
               ),
             ],
           ),
-          gapH16,
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final compact =
-                  constraints.maxWidth <
-                  ComponentBreakpoints.eventSuccessRevealHostCompactBreakpoint;
-              final number = CountdownNumber(
-                value: isCountingDown
-                    ? context.l10n
-                          .eventSuccessEventSuccessLiveRevealHostVisiblecopyRemainingseconds(
-                            remainingSeconds: remainingSeconds,
-                          )
-                    : allRevealed
-                    ? context
-                          .l10n
-                          .eventSuccessEventSuccessLiveRevealHostVisiblecopyOk
-                    : context.l10n
-                          .eventSuccessEventSuccessLiveRevealHostVisiblecopyValue1(
-                            value1: targetRound + 1,
-                          ),
-                caption: isCountingDown
-                    ? context
-                          .l10n
-                          .eventSuccessEventSuccessLiveRevealHostCaptionSeconds
-                    : allRevealed
-                    ? context
-                          .l10n
-                          .eventSuccessEventSuccessLiveRevealHostCaptionRevealed
-                    : context
-                          .l10n
-                          .eventSuccessEventSuccessLiveRevealHostCaptionNextRound,
-              );
-              final copy = RevealHostCopy(
-                headline: headline,
-                body: _hostBody(
-                  kind: revealSet.kind,
-                  assignments: assignments,
-                  roundIndex: targetRound,
-                  roundCount: roundCount,
-                  allRevealed: allRevealed,
-                ),
-              );
-              if (compact) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [number, gapH14, copy],
-                );
-              }
-              return Row(
-                children: [
-                  number,
-                  gapW16,
-                  Expanded(child: copy),
-                ],
-              );
-            },
-          ),
-          gapH14,
-          RevealProgressBar(progress: plan.revealProgress(referenceNow)),
-          if (roundCount > 0) ...[
-            gapH14,
-            if (revealSet.kind == EventSuccessRevealAssignmentKind.rotations)
-              RevealRoundList(
-                config: _rotationConfigLine(plan.structureConfig),
-                roundCount: roundCount,
-                revealedThrough: plan.revealedThroughRoundIndex(referenceNow),
-                assignments: assignments,
-                profilesByUid: {
-                  for (final profile in participantProfiles)
-                    profile.uid: profile,
-                },
-              )
-            else
-              RevealRoundRail(
-                roundCount: roundCount,
-                activeRoundIndex: targetRound,
-                revealedThrough: plan.revealedThroughRoundIndex(referenceNow),
-              ),
-          ],
-          if (actionState.error != null) ...[
-            gapH10,
-            Text(
-              appErrorMessage(
-                actionState.error!,
-                l10n: context.l10n,
-                context: AppErrorContext.event,
-              ),
-              style: CatchTextStyles.supporting(context, color: t.surface),
-            ),
-          ],
-          gapH16,
-          HostRevealActions(
-            roundCount: roundCount,
-            nextRound: nextRound,
-            activeRound: activeRound,
-            countdownSeconds: countdownSeconds,
-            isCountingDown: isCountingDown,
-            allRevealed: allRevealed,
-            isLoading: actionState.isLoading,
-            onStartCountdown: onStartCountdown,
-            onRevealRound: onRevealRound,
-            onResetReveal: onResetReveal,
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 

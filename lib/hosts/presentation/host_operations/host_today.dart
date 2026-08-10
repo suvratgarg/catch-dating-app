@@ -140,15 +140,43 @@ class HostTodayDashboardSection extends StatelessWidget {
           ),
           HostHomeTodayStatus.content => SliverPadding(
             padding: CatchInsets.pageHorizontal,
-            sliver: SliverToBoxAdapter(child: _buildContent(context)),
+            sliver: SliverToBoxAdapter(
+              child: _HostTodayContent(
+                state: state,
+                club: club,
+                now: now,
+                onManageEvent: onManageEvent,
+                onOpenTask: onOpenTask,
+                onViewEvents: onViewEvents,
+              ),
+            ),
           ),
         },
         const CatchSliverTerminalPadding(),
       ],
     );
   }
+}
 
-  Widget _buildContent(BuildContext context) {
+class _HostTodayContent extends StatelessWidget {
+  const _HostTodayContent({
+    required this.state,
+    required this.club,
+    required this.now,
+    required this.onManageEvent,
+    required this.onOpenTask,
+    required this.onViewEvents,
+  });
+
+  final HostHomeTodayDashboardState state;
+  final Club club;
+  final DateTime now;
+  final void Function(Club club, Event event) onManageEvent;
+  final HostHomeOpenTaskCallback onOpenTask;
+  final VoidCallback onViewEvents;
+
+  @override
+  Widget build(BuildContext context) {
     final event = state.event!;
     final tasks = state.tasks;
     final heroTaskCount = tasks
