@@ -1,8 +1,7 @@
 import 'package:catch_dating_app/core/schema_contracts/catch_contract_field_policy.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_input.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -14,7 +13,7 @@ export 'package:catch_dating_app/core/schema_contracts/generated/field_constrain
 ///
 /// Use this for mock-friendly or externally managed OTP/code rows. For real
 /// platform text entry, use [CatchOtpCodeField], which composes this visual
-/// primitive over one hidden [TextField].
+/// primitive over one hidden [CatchTextInput].
 class CatchCodeInput extends StatelessWidget {
   const CatchCodeInput({
     super.key,
