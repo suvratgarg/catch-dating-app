@@ -13,32 +13,31 @@ part of '../event_success_companion_screen.dart';
 /// The overlay paints above the motif background but below the content
 /// scroll so the hero copy stays legible through the cinematic. It is
 /// pointer-transparent the entire time.
-class _RevealCinematicOverlay extends StatefulWidget {
-  const _RevealCinematicOverlay({
+class RevealCinematicOverlay extends StatefulWidget {
+  const RevealCinematicOverlay._({
     required this.plan,
     required this.referenceNow,
     required this.momentKind,
-    required this.stageTheme,
+    required this._stageTheme,
     required this.checkedInCount,
   });
 
   final EventSuccessPlan plan;
   final DateTime referenceNow;
   final EventSuccessAttendeeMomentKind momentKind;
-  final _CompanionStageTheme stageTheme;
+  final _CompanionStageTheme _stageTheme;
 
   /// Drives the shared anonymous-dot ring during anticipation. Reinforces
   /// that everyone in the room is watching the same countdown.
   final int checkedInCount;
 
   @override
-  State<_RevealCinematicOverlay> createState() =>
-      _RevealCinematicOverlayState();
+  State<RevealCinematicOverlay> createState() => _RevealCinematicOverlayState();
 }
 
 enum _RevealCinematicPhase { idle, anticipation, climax, settle }
 
-class _RevealCinematicOverlayState extends State<_RevealCinematicOverlay>
+class _RevealCinematicOverlayState extends State<RevealCinematicOverlay>
     with TickerProviderStateMixin {
   // Eager initialization (not `late final`) so the Tickers are created
   // while the State is still mounted. `late final` would defer construction
@@ -78,7 +77,7 @@ class _RevealCinematicOverlayState extends State<_RevealCinematicOverlay>
   }
 
   @override
-  void didUpdateWidget(covariant _RevealCinematicOverlay oldWidget) {
+  void didUpdateWidget(covariant RevealCinematicOverlay oldWidget) {
     super.didUpdateWidget(oldWidget);
     final nowCounting = _isAnticipationActive();
     final status = widget.plan.revealStatus;
@@ -176,8 +175,8 @@ class _RevealCinematicOverlayState extends State<_RevealCinematicOverlay>
                 climaxProgress: climax.value,
                 settleProgress: settle.value,
                 tickPhase: tick.value,
-                accent: widget.stageTheme.accent,
-                foreground: widget.stageTheme.foreground,
+                accent: widget._stageTheme.accent,
+                foreground: widget._stageTheme.foreground,
                 particles: _particles,
                 checkedInCount: widget.checkedInCount,
               ),

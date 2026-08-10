@@ -20,12 +20,12 @@ final bool _kStageAnimationsEnabled = !Platform.environment.containsKey(
   'FLUTTER_TEST',
 );
 
-class _CompanionStageScaffold extends StatelessWidget {
-  const _CompanionStageScaffold({
+class CompanionStageScaffold extends StatelessWidget {
+  const CompanionStageScaffold._({
     required this.event,
     required this.plan,
     required this.presentation,
-    required this.stageTheme,
+    required this._stageTheme,
     required this.attended,
     required this.showSelfCheckIn,
     required this.eventEnded,
@@ -38,7 +38,7 @@ class _CompanionStageScaffold extends StatelessWidget {
   final Event event;
   final EventSuccessPlan plan;
   final EventSuccessMomentPresentation presentation;
-  final _CompanionStageTheme stageTheme;
+  final _CompanionStageTheme _stageTheme;
   final bool attended;
   final bool showSelfCheckIn;
   final bool eventEnded;
@@ -49,6 +49,7 @@ class _CompanionStageScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final stageTheme = _stageTheme;
     return Scaffold(
       key: const ValueKey('eventSuccessCompanionStage'),
       backgroundColor: stageTheme.background,
@@ -60,7 +61,7 @@ class _CompanionStageScaffold extends StatelessWidget {
           children: [
             Positioned.fill(
               child: IgnorePointer(
-                child: _AnimatedStageMotifBackground(
+                child: AnimatedStageMotifBackground._(
                   accent: stageTheme.accent,
                   foreground: stageTheme.foreground,
                   motif: stageTheme.motif,
@@ -70,7 +71,7 @@ class _CompanionStageScaffold extends StatelessWidget {
             // Sits between motif background and content. Renders nothing
             // when not in the reveal moment, so other beats are untouched.
             Positioned.fill(
-              child: _RevealCinematicOverlay(
+              child: RevealCinematicOverlay._(
                 plan: plan,
                 referenceNow: referenceNow,
                 momentKind: momentKind,
@@ -83,7 +84,7 @@ class _CompanionStageScaffold extends StatelessWidget {
                 scrollViewKey: EventSuccessCompanionKeys.scrollView,
                 maxContentWidth: CatchLayout.maxContentWidth,
                 padding: _companionMomentStagePadding,
-                child: _CompanionMomentStage(
+                child: CompanionMomentStage._(
                   event: event,
                   plan: plan,
                   presentation: presentation,
@@ -651,7 +652,7 @@ class PaperExpectationCard extends StatelessWidget {
           ),
           gapH12,
           for (final item in items) ...[
-            _PaperExpectationRow(item: item),
+            PaperExpectationRow._(item: item),
             if (item != items.last) gapH12,
           ],
         ],
@@ -660,14 +661,15 @@ class PaperExpectationCard extends StatelessWidget {
   }
 }
 
-class _PaperExpectationRow extends StatelessWidget {
-  const _PaperExpectationRow({required this.item});
+class PaperExpectationRow extends StatelessWidget {
+  const PaperExpectationRow._({required this._item});
 
-  final _PaperExpectationItem item;
+  final _PaperExpectationItem _item;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final item = _item;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -826,12 +828,12 @@ String _paperTicketCode(Event event) {
   return 'CTH-${compactId.substring(0, 4)}-${compactId.substring(4, 7)}';
 }
 
-class _CompanionMomentStage extends StatelessWidget {
-  const _CompanionMomentStage({
+class CompanionMomentStage extends StatelessWidget {
+  const CompanionMomentStage._({
     required this.event,
     required this.plan,
     required this.presentation,
-    required this.stageTheme,
+    required this._stageTheme,
     required this.attended,
     required this.showSelfCheckIn,
     required this.eventEnded,
@@ -843,7 +845,7 @@ class _CompanionMomentStage extends StatelessWidget {
   final Event event;
   final EventSuccessPlan plan;
   final EventSuccessMomentPresentation presentation;
-  final _CompanionStageTheme stageTheme;
+  final _CompanionStageTheme _stageTheme;
   final bool attended;
   final bool showSelfCheckIn;
   final bool eventEnded;
@@ -863,12 +865,13 @@ class _CompanionMomentStage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final stageTheme = _stageTheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         StageNav(foreground: stageTheme.foreground),
         gapH16,
-        _CompanionHero(
+        CompanionHero._(
           event: event,
           plan: plan,
           presentation: presentation,
@@ -880,14 +883,14 @@ class _CompanionMomentStage extends StatelessWidget {
         gapH32,
         if (_showArrivalRing) ...[
           Center(
-            child: _LiveArrivalRing(
+            child: LiveArrivalRing._(
               checkedInCount: event.checkedInCount ?? 0,
               stageTheme: stageTheme,
             ),
           ),
           gapH18,
         ] else ...[
-          _StageGlyph(stageTheme: stageTheme, icon: presentation.icon),
+          StageGlyph._(stageTheme: stageTheme, icon: presentation.icon),
           gapH18,
         ],
         AnimatedSwitcher(
@@ -936,7 +939,7 @@ class _CompanionMomentStage extends StatelessWidget {
                   ),
                 ),
                 gapH16,
-                _StagePrivacyLine(
+                StagePrivacyLine._(
                   text: presentation.privacyLine,
                   stageTheme: stageTheme,
                 ),
@@ -1007,12 +1010,12 @@ class StageNav extends StatelessWidget {
   }
 }
 
-class _CompanionHero extends StatelessWidget {
-  const _CompanionHero({
+class CompanionHero extends StatelessWidget {
+  const CompanionHero._({
     required this.event,
     required this.plan,
     required this.presentation,
-    required this.stageTheme,
+    required this._stageTheme,
     required this.attended,
     required this.showSelfCheckIn,
     required this.eventEnded,
@@ -1021,14 +1024,14 @@ class _CompanionHero extends StatelessWidget {
   final Event event;
   final EventSuccessPlan plan;
   final EventSuccessMomentPresentation presentation;
-  final _CompanionStageTheme stageTheme;
+  final _CompanionStageTheme _stageTheme;
   final bool attended;
   final bool showSelfCheckIn;
   final bool eventEnded;
 
   @override
   Widget build(BuildContext context) {
-    final fg = stageTheme.foreground;
+    final fg = _stageTheme.foreground;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1085,18 +1088,17 @@ class _CompanionHero extends StatelessWidget {
 
 /// Animates a one-shot entry on first build, then breathes the glyph
 /// continuously so the hero element never reads as static between moments.
-class _StageGlyph extends StatefulWidget {
-  const _StageGlyph({required this.stageTheme, required this.icon});
+class StageGlyph extends StatefulWidget {
+  const StageGlyph._({required this._stageTheme, required this.icon});
 
-  final _CompanionStageTheme stageTheme;
+  final _CompanionStageTheme _stageTheme;
   final IconData icon;
 
   @override
-  State<_StageGlyph> createState() => _StageGlyphState();
+  State<StageGlyph> createState() => _StageGlyphState();
 }
 
-class _StageGlyphState extends State<_StageGlyph>
-    with TickerProviderStateMixin {
+class _StageGlyphState extends State<StageGlyph> with TickerProviderStateMixin {
   late final AnimationController _entryController = AnimationController(
     duration: CatchMotion.slow,
     vsync: this,
@@ -1146,20 +1148,20 @@ class _StageGlyphState extends State<_StageGlyph>
             width: CatchLayout.eventSuccessStageGlyphExtent,
             height: CatchLayout.eventSuccessStageGlyphExtent,
             borderRadius: BorderRadius.circular(CatchRadius.pill),
-            backgroundColor: widget.stageTheme.foreground.withValues(
+            backgroundColor: widget._stageTheme.foreground.withValues(
               alpha: CatchOpacity.subtleFill,
             ),
-            borderColor: widget.stageTheme.foreground.withValues(
+            borderColor: widget._stageTheme.foreground.withValues(
               alpha: CatchOpacity.eventSuccessSubtleBorder,
             ),
             boxShadow: CatchElevation.glow(
-              widget.stageTheme.accent.withValues(alpha: glowAlpha),
+              widget._stageTheme.accent.withValues(alpha: glowAlpha),
               blurRadius: glow,
             ),
             child: Icon(
               widget.icon,
               size: CatchLayout.eventSuccessStageGlyphIconSize,
-              color: widget.stageTheme.foreground,
+              color: widget._stageTheme.foreground,
             ),
           ),
         );
@@ -1168,14 +1170,15 @@ class _StageGlyphState extends State<_StageGlyph>
   }
 }
 
-class _StagePrivacyLine extends StatelessWidget {
-  const _StagePrivacyLine({required this.text, required this.stageTheme});
+class StagePrivacyLine extends StatelessWidget {
+  const StagePrivacyLine._({required this.text, required this._stageTheme});
 
   final String text;
-  final _CompanionStageTheme stageTheme;
+  final _CompanionStageTheme _stageTheme;
 
   @override
   Widget build(BuildContext context) {
+    final stageTheme = _stageTheme;
     return CatchSurface(
       padding: CatchInsets.contentDense,
       radius: CatchRadius.sm,
@@ -1454,24 +1457,24 @@ enum _StageMotif { path, gate, spark, rhythm, orbit, reveal, signal, afterglow }
 /// stage background is perpetually alive — orbits rotate, sparks drift, rhythm
 /// waves breathe, paths scroll. Loop period is intentionally long (16s) so
 /// motion reads as ambient, not busy.
-class _AnimatedStageMotifBackground extends StatefulWidget {
-  const _AnimatedStageMotifBackground({
+class AnimatedStageMotifBackground extends StatefulWidget {
+  const AnimatedStageMotifBackground._({
     required this.accent,
     required this.foreground,
-    required this.motif,
+    required this._motif,
   });
 
   final Color accent;
   final Color foreground;
-  final _StageMotif motif;
+  final _StageMotif _motif;
 
   @override
-  State<_AnimatedStageMotifBackground> createState() =>
+  State<AnimatedStageMotifBackground> createState() =>
       _AnimatedStageMotifBackgroundState();
 }
 
 class _AnimatedStageMotifBackgroundState
-    extends State<_AnimatedStageMotifBackground>
+    extends State<AnimatedStageMotifBackground>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller = AnimationController(
     duration: CatchMotion.ambientLoop,
@@ -1500,7 +1503,7 @@ class _AnimatedStageMotifBackgroundState
             painter: _StageMotifPainter(
               accent: widget.accent,
               foreground: widget.foreground,
-              motif: widget.motif,
+              motif: widget._motif,
               phase: _controller.value,
             ),
           );
@@ -1883,20 +1886,20 @@ class StageBouncyChip extends StatelessWidget {
 /// it updates in real time via the existing event listener — no separate
 /// Firestore reads). Renders anonymous dots around a center count, with a
 /// brief scale-pulse when the count climbs.
-class _LiveArrivalRing extends StatefulWidget {
-  const _LiveArrivalRing({
+class LiveArrivalRing extends StatefulWidget {
+  const LiveArrivalRing._({
     required this.checkedInCount,
-    required this.stageTheme,
+    required this._stageTheme,
   });
 
   final int checkedInCount;
-  final _CompanionStageTheme stageTheme;
+  final _CompanionStageTheme _stageTheme;
 
   @override
-  State<_LiveArrivalRing> createState() => _LiveArrivalRingState();
+  State<LiveArrivalRing> createState() => _LiveArrivalRingState();
 }
 
-class _LiveArrivalRingState extends State<_LiveArrivalRing>
+class _LiveArrivalRingState extends State<LiveArrivalRing>
     with SingleTickerProviderStateMixin {
   late final AnimationController _pulse = AnimationController(
     duration: CatchMotion.pulse,
@@ -1912,7 +1915,7 @@ class _LiveArrivalRingState extends State<_LiveArrivalRing>
   }
 
   @override
-  void didUpdateWidget(covariant _LiveArrivalRing oldWidget) {
+  void didUpdateWidget(covariant LiveArrivalRing oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.checkedInCount > _lastCount && _kStageAnimationsEnabled) {
       _pulse.forward(from: 0);
@@ -1928,7 +1931,7 @@ class _LiveArrivalRingState extends State<_LiveArrivalRing>
 
   @override
   Widget build(BuildContext context) {
-    final theme = widget.stageTheme;
+    final theme = widget._stageTheme;
     return AnimatedBuilder(
       animation: _pulse,
       builder: (context, child) {
@@ -1938,7 +1941,7 @@ class _LiveArrivalRingState extends State<_LiveArrivalRing>
         final scale = 1.0 + pulse * 0.08;
         return Transform.scale(scale: scale, child: child);
       },
-      child: _ArrivalRingCard(
+      child: ArrivalRingCard._(
         checkedInCount: widget.checkedInCount,
         stageTheme: theme,
       ),
@@ -1946,18 +1949,18 @@ class _LiveArrivalRingState extends State<_LiveArrivalRing>
   }
 }
 
-class _ArrivalRingCard extends StatelessWidget {
-  const _ArrivalRingCard({
+class ArrivalRingCard extends StatelessWidget {
+  const ArrivalRingCard._({
     required this.checkedInCount,
-    required this.stageTheme,
+    required this._stageTheme,
   });
 
   final int checkedInCount;
-  final _CompanionStageTheme stageTheme;
+  final _CompanionStageTheme _stageTheme;
 
   @override
   Widget build(BuildContext context) {
-    final fg = stageTheme.foreground;
+    final fg = _stageTheme.foreground;
     final hasArrivals = checkedInCount > 0;
     final caption = hasArrivals
         ? (checkedInCount == 1
@@ -1976,7 +1979,7 @@ class _ArrivalRingCard extends StatelessWidget {
       child: CustomPaint(
         painter: _ArrivalRingPainter(
           dotCount: math.min(checkedInCount, 24),
-          activeAccent: stageTheme.accent,
+          activeAccent: _stageTheme.accent,
           dimForeground: fg.withValues(
             alpha: CatchOpacity.eventSuccessSubtleBorder,
           ),

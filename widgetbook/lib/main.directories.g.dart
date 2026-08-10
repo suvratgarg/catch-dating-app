@@ -7563,6 +7563,17 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Composed sections',
             children: [
               _widgetbook.WidgetbookComponent(
+                name: 'CatchEmptyState',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Action card states',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostEmptyStateStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostClubsScaffold',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -7570,17 +7581,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_operations_use_cases
                             .hostTeamManagementSectionStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostEmptyActionCard',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Action card states',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostEmptyActionCardStates,
                   ),
                 ],
               ),
@@ -7770,6 +7770,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'Exact catalog',
                     builder: _widgetbook_workspace_hosts_host_operations_use_cases
                         .hostStrictCatchAnalyticsDataQualityListCatalogStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CatchEmptyState',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Exact catalog',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostStrictCatchEmptyStateCatalogStates,
                   ),
                 ],
               ),
@@ -7967,17 +7978,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_operations_use_cases
                             .hostStrictHostClubsScreenCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostEmptyActionCard',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostEmptyActionCardCatalogStates,
                   ),
                 ],
               ),
