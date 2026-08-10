@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_input.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
@@ -299,123 +300,120 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
       alignment: Alignment.centerRight,
       widthFactor: 1,
       heightFactor: 1,
-      child: SizedBox(
+      child: CatchSurface(
         width: width,
         height: widget.collapsedExtent,
+        borderRadius: radius,
+        borderColor: widget.borderColor ?? t.line2,
+        backgroundColor: widget.backgroundColor ?? t.surface,
+        padding: EdgeInsets.zero,
+        clipBehavior: Clip.antiAlias,
+        duration: Duration.zero,
         child: Material(
           color: Colors.transparent,
-          borderRadius: radius,
-          clipBehavior: Clip.antiAlias,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: widget.backgroundColor ?? t.surface,
-              borderRadius: radius,
-              border: Border.all(color: widget.borderColor ?? t.line2),
-            ),
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                if (clampedProgress > 0)
-                  IgnorePointer(
-                    ignoring: !fieldInteractive,
-                    child: ExcludeSemantics(
-                      excluding: !fieldInteractive,
-                      child: Opacity(
-                        opacity: fieldOpacity,
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                            left: CatchSpacing.s3,
-                            right: CatchSpacing.s1,
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                CatchIcons.search,
-                                size: CatchLayout.searchFieldIconSize,
-                                color: mutedForeground,
-                              ),
-                              const SizedBox(
-                                width: CatchLayout.searchFieldIconGap,
-                              ),
-                              Expanded(
-                                child: CatchTextInput(
-                                  controller: _controller,
-                                  focusNode: _focusNode,
-                                  autofocus: widget.autofocus,
-                                  enabled: widget.enabled,
-                                  textInputAction: widget.textInputAction,
-                                  inputFormatters:
-                                      CatchContractFieldPolicy.effectiveInputFormatters(
-                                        widget.contract,
-                                        null,
-                                      ),
-                                  onChanged: widget.onChanged,
-                                  onSubmitted: _handleSubmitted,
-                                  onTapOutside: (_) => _focusNode.unfocus(),
-                                  style: CatchTextStyles.bodyM(
-                                    context,
-                                    color: widget.enabled
-                                        ? foreground
-                                        : mutedForeground,
-                                  ),
-                                  cursorColor: t.primary,
-                                  decoration: InputDecoration(
-                                    isDense: true,
-                                    filled: false,
-                                    fillColor: Colors.transparent,
-                                    border: InputBorder.none,
-                                    enabledBorder: InputBorder.none,
-                                    focusedBorder: InputBorder.none,
-                                    disabledBorder: InputBorder.none,
-                                    contentPadding: EdgeInsets.zero,
-                                    hintText: placeholder,
-                                    hintStyle: CatchTextStyles.bodyM(
-                                      context,
-                                      color: mutedForeground,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              if (clampedProgress > 0)
+                IgnorePointer(
+                  ignoring: !fieldInteractive,
+                  child: ExcludeSemantics(
+                    excluding: !fieldInteractive,
+                    child: Opacity(
+                      opacity: fieldOpacity,
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                          left: CatchSpacing.s3,
+                          right: CatchSpacing.s1,
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              CatchIcons.search,
+                              size: CatchLayout.searchFieldIconSize,
+                              color: mutedForeground,
+                            ),
+                            const SizedBox(
+                              width: CatchLayout.searchFieldIconGap,
+                            ),
+                            Expanded(
+                              child: CatchTextInput(
+                                controller: _controller,
+                                focusNode: _focusNode,
+                                autofocus: widget.autofocus,
+                                enabled: widget.enabled,
+                                textInputAction: widget.textInputAction,
+                                inputFormatters:
+                                    CatchContractFieldPolicy.effectiveInputFormatters(
+                                      widget.contract,
+                                      null,
                                     ),
+                                onChanged: widget.onChanged,
+                                onSubmitted: _handleSubmitted,
+                                onTapOutside: (_) => _focusNode.unfocus(),
+                                style: CatchTextStyles.bodyM(
+                                  context,
+                                  color: widget.enabled
+                                      ? foreground
+                                      : mutedForeground,
+                                ),
+                                cursorColor: t.primary,
+                                decoration: InputDecoration(
+                                  isDense: true,
+                                  filled: false,
+                                  fillColor: Colors.transparent,
+                                  border: InputBorder.none,
+                                  enabledBorder: InputBorder.none,
+                                  focusedBorder: InputBorder.none,
+                                  disabledBorder: InputBorder.none,
+                                  contentPadding: EdgeInsets.zero,
+                                  hintText: placeholder,
+                                  hintStyle: CatchTextStyles.bodyM(
+                                    context,
+                                    color: mutedForeground,
                                   ),
                                 ),
                               ),
-                              _ExpandingSearchTrailing(
-                                controller: _controller,
-                                enabled: widget.enabled,
-                                placeholder: placeholder,
-                                emptyTrailingTooltip: context
-                                    .l10n
-                                    .coreCatchSearchFieldVisiblecopyCloseSearch,
-                                foregroundColor: mutedForeground,
-                                onClear: _clear,
-                                onEmptyPressed:
-                                    widget.onCloseSearch ??
-                                    widget.onEmptyTrailingPressed,
-                              ),
-                            ],
-                          ),
+                            ),
+                            _ExpandingSearchTrailing(
+                              controller: _controller,
+                              enabled: widget.enabled,
+                              placeholder: placeholder,
+                              emptyTrailingTooltip: context
+                                  .l10n
+                                  .coreCatchSearchFieldVisiblecopyCloseSearch,
+                              foregroundColor: mutedForeground,
+                              onClear: _clear,
+                              onEmptyPressed:
+                                  widget.onCloseSearch ??
+                                  widget.onEmptyTrailingPressed,
+                            ),
+                          ],
                         ),
                       ),
                     ),
                   ),
-                IgnorePointer(
-                  ignoring: !collapsedInteractive,
-                  child: ExcludeSemantics(
-                    excluding: !collapsedInteractive,
-                    child: Opacity(
-                      opacity: iconOpacity,
-                      child: InkWell(
-                        onTap: widget.enabled ? widget.onOpenSearch : null,
-                        child: Tooltip(
-                          message: tooltip,
-                          excludeFromSemantics: true,
-                          child: Semantics(
-                            button: true,
-                            enabled: widget.enabled,
-                            label: widget.semanticLabel ?? tooltip,
-                            child: Center(
-                              child: Icon(
-                                CatchIcons.search,
-                                size: CatchIcon.md,
-                                color: foreground,
-                              ),
+                ),
+              IgnorePointer(
+                ignoring: !collapsedInteractive,
+                child: ExcludeSemantics(
+                  excluding: !collapsedInteractive,
+                  child: Opacity(
+                    opacity: iconOpacity,
+                    child: InkWell(
+                      onTap: widget.enabled ? widget.onOpenSearch : null,
+                      child: Tooltip(
+                        message: tooltip,
+                        excludeFromSemantics: true,
+                        child: Semantics(
+                          button: true,
+                          enabled: widget.enabled,
+                          label: widget.semanticLabel ?? tooltip,
+                          child: Center(
+                            child: Icon(
+                              CatchIcons.search,
+                              size: CatchIcon.md,
+                              color: foreground,
                             ),
                           ),
                         ),
@@ -423,8 +421,8 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

@@ -176,23 +176,23 @@ class EventSuccessLiveRevealAttendeeCard extends StatelessWidget {
                 ],
               ],
               gapH14,
-              CatchSurface(
-                backgroundColor: t.ink.withValues(
+              ColoredBox(
+                color: t.ink.withValues(
                   alpha: CatchOpacity.revealAttendeeActionDock,
                 ),
-                radius: CatchRadius.sm,
-                borderWidth: 0,
-                padding: CatchInsets.iconChipContent,
-                child: CatchButton(
-                  label: optedOut ? _joinLabel(kind) : _skipLabel(kind),
-                  variant: optedOut
-                      ? CatchButtonVariant.primary
-                      : CatchButtonVariant.secondary,
-                  isLoading: isSavingOptOut,
-                  onPressed: isSavingOptOut || onIncludeChanged == null
-                      ? null
-                      : () => onIncludeChanged!(optedOut),
-                  fullWidth: true,
+                child: Padding(
+                  padding: CatchInsets.iconChipContent,
+                  child: CatchButton(
+                    label: optedOut ? _joinLabel(kind) : _skipLabel(kind),
+                    variant: optedOut
+                        ? CatchButtonVariant.primary
+                        : CatchButtonVariant.secondary,
+                    isLoading: isSavingOptOut,
+                    onPressed: isSavingOptOut || onIncludeChanged == null
+                        ? null
+                        : () => onIncludeChanged!(optedOut),
+                    fullWidth: true,
+                  ),
                 ),
               ),
             ],

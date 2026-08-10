@@ -360,8 +360,8 @@ void main() {
     final floatFinder = find.byKey(const ValueKey('float-icon-button'));
     final plainFinder = find.byKey(const ValueKey('plain-icon-button'));
     final tokens = CatchTokens.of(tester.element(borderedFinder));
-    final borderedBox = tester.widget<DecoratedBox>(
-      find.descendant(of: borderedFinder, matching: find.byType(DecoratedBox)),
+    final borderedSurface = tester.widget<CatchSurface>(
+      find.descendant(of: borderedFinder, matching: find.byType(CatchSurface)),
     );
     final activeIconTheme = tester.widget<IconTheme>(
       find
@@ -371,28 +371,24 @@ void main() {
           )
           .first,
     );
-    final floatBox = tester.widget<DecoratedBox>(
-      find.descendant(of: floatFinder, matching: find.byType(DecoratedBox)),
+    final floatSurface = tester.widget<CatchSurface>(
+      find.descendant(of: floatFinder, matching: find.byType(CatchSurface)),
     );
-    final plainBox = tester.widget<DecoratedBox>(
-      find.descendant(of: plainFinder, matching: find.byType(DecoratedBox)),
+    final plainSurface = tester.widget<CatchSurface>(
+      find.descendant(of: plainFinder, matching: find.byType(CatchSurface)),
     );
-
-    final borderedDecoration = borderedBox.decoration as BoxDecoration;
-    final floatDecoration = floatBox.decoration as BoxDecoration;
-    final plainDecoration = plainBox.decoration as BoxDecoration;
 
     expect(
       tester.getSize(borderedFinder),
       const Size.square(CatchLayout.iconButtonSize),
     );
-    expect(borderedDecoration.color, tokens.surface);
-    expect((borderedDecoration.border! as Border).top.color, tokens.line2);
+    expect(borderedSurface.backgroundColor, tokens.surface);
+    expect(borderedSurface.borderColor, tokens.line2);
     expect(activeIconTheme.data.color, CatchTokens.editorialLight.danger);
-    expect(floatDecoration.color, isNot(tokens.surface));
-    expect(floatDecoration.boxShadow, CatchElevation.iconButtonFloat);
-    expect(plainDecoration.color, Colors.transparent);
-    expect((plainDecoration.border! as Border).top.color, tokens.line2);
+    expect(floatSurface.backgroundColor, isNot(tokens.surface));
+    expect(floatSurface.boxShadow, CatchElevation.iconButtonFloat);
+    expect(plainSurface.backgroundColor, Colors.transparent);
+    expect(plainSurface.borderColor, tokens.line2);
     expect(find.byTooltip('Search events'), findsOneWidget);
 
     await tester.tap(find.byIcon(CatchIcons.search));

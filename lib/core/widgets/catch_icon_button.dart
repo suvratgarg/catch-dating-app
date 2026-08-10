@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
 
 enum CatchIconButtonVariant { bordered, float, plain }
@@ -185,28 +186,17 @@ class CatchIconButton extends StatelessWidget {
 
     final button = Opacity(
       opacity: disabled ? CatchOpacity.disabledControl : 1,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: palette.background,
-          borderRadius: BorderRadius.circular(radius),
-          border: palette.borderColor == null
-              ? null
-              : Border.all(color: palette.borderColor!),
-          boxShadow: palette.shadow,
-        ),
-        child: Material(
-          color: Colors.transparent,
-          borderRadius: BorderRadius.circular(radius),
-          clipBehavior: Clip.antiAlias,
-          child: InkWell(
-            onTap: enabled ? onTap : null,
-            child: SizedBox.square(
-              dimension: size,
-              child: Center(
-                child: IconTheme.merge(data: iconTheme, child: child),
-              ),
-            ),
-          ),
+      child: CatchSurface(
+        width: size,
+        height: size,
+        backgroundColor: palette.background,
+        radius: radius,
+        borderColor: palette.borderColor,
+        boxShadow: palette.shadow,
+        padding: EdgeInsets.zero,
+        onTap: enabled ? onTap : null,
+        child: Center(
+          child: IconTheme.merge(data: iconTheme, child: child),
         ),
       ),
     );

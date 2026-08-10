@@ -316,18 +316,18 @@ class PaymentCheckoutSheet extends StatelessWidget {
             gapH16,
             Align(
               alignment: Alignment.centerLeft,
-              child: CatchSurface(
+              child: SizedBox(
                 width: CatchLayout.paymentCheckoutMedallionExtent,
                 height: CatchLayout.paymentCheckoutMedallionExtent,
-                radius: CatchRadius.pill,
-                backgroundColor: medallionFill,
-                borderWidth: 0,
-                child: Icon(
-                  failed
-                      ? CatchIcons.errorOutlineRounded
-                      : CatchIcons.receiptLongOutlined,
-                  color: medallionColor,
-                  size: CatchIcon.statusMedallion,
+                child: ColoredBox(
+                  color: medallionFill,
+                  child: Icon(
+                    failed
+                        ? CatchIcons.errorOutlineRounded
+                        : CatchIcons.receiptLongOutlined,
+                    color: medallionColor,
+                    size: CatchIcon.statusMedallion,
+                  ),
                 ),
               ),
             ),
@@ -342,10 +342,7 @@ class PaymentCheckoutSheet extends StatelessWidget {
               style: CatchTextStyles.proseM(context, color: t.ink2),
             ),
             gapH18,
-            CatchSurface(
-              backgroundColor: t.bg,
-              borderColor: t.line,
-              radius: CatchRadius.md,
+            Padding(
               padding: CatchInsets.content,
               child: Row(
                 children: [

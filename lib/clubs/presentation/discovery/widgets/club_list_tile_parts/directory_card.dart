@@ -31,10 +31,7 @@ class ClubIndexRow extends StatelessWidget {
         padding: CatchInsets.tileContentCompact,
         child: Row(
           children: [
-            CatchSurface(
-              backgroundColor: t.surface,
-              radius: CatchLayout.organizerPosterRadius,
-              borderColor: t.line,
+            Padding(
               padding: CatchInsets.mediaFrameContent,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(

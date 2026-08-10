@@ -215,35 +215,35 @@ class EventSuccessLiveHostMode extends StatelessWidget {
                 ),
           ),
           const SizedBox(height: CatchSpacing.s4),
-          CatchSurface(
-            tone: CatchSurfaceTone.raised,
-            radius: CatchRadius.sm,
-            borderColor: t.line,
-            padding: CatchInsets.content,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CatchBadge.live(label: resolvedPlan.activeStep.stage.label),
-                const SizedBox(height: CatchSpacing.s3),
-                Text(
-                  resolvedPlan.activeStep.title,
-                  style: CatchTextStyles.titleL(context),
-                ),
-                const SizedBox(height: CatchSpacing.s2),
-                Text(
-                  resolvedPlan.activeStep.hostInstruction,
-                  style: CatchTextStyles.proseM(context),
-                ),
-                const SizedBox(height: CatchSpacing.s3),
-                Text(
-                  context.l10n
-                      .eventSuccessEventSuccessFeatureBlocksTextAttendeeExperienceAttendeeexperience(
-                        attendeeExperience:
-                            resolvedPlan.activeStep.attendeeExperience,
-                      ),
-                  style: CatchTextStyles.supporting(context),
-                ),
-              ],
+          ColoredBox(
+            color: t.raised,
+            child: Padding(
+              padding: CatchInsets.content,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CatchBadge.live(label: resolvedPlan.activeStep.stage.label),
+                  const SizedBox(height: CatchSpacing.s3),
+                  Text(
+                    resolvedPlan.activeStep.title,
+                    style: CatchTextStyles.titleL(context),
+                  ),
+                  const SizedBox(height: CatchSpacing.s2),
+                  Text(
+                    resolvedPlan.activeStep.hostInstruction,
+                    style: CatchTextStyles.proseM(context),
+                  ),
+                  const SizedBox(height: CatchSpacing.s3),
+                  Text(
+                    context.l10n
+                        .eventSuccessEventSuccessFeatureBlocksTextAttendeeExperienceAttendeeexperience(
+                          attendeeExperience:
+                              resolvedPlan.activeStep.attendeeExperience,
+                        ),
+                    style: CatchTextStyles.supporting(context),
+                  ),
+                ],
+              ),
             ),
           ),
           if (showStepList) ...[
@@ -295,37 +295,38 @@ class EventSuccessAttendeeCompanionPreview extends StatelessWidget {
             ),
           ),
           const SizedBox(height: CatchSpacing.s4),
-          CatchSurface(
-            tone: CatchSurfaceTone.primarySoft,
-            borderColor: t.surface.withValues(alpha: CatchOpacity.none),
-            padding: CatchInsets.content,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CatchBadge(
-                  label: resolvedState.checkedIn
-                      ? context
-                            .l10n
-                            .eventSuccessEventSuccessFeatureBlocksLabelCheckedIn
-                      : context
-                            .l10n
-                            .eventSuccessEventSuccessFeatureBlocksLabelCheckIn,
-                  tone: resolvedState.checkedIn
-                      ? CatchBadgeTone.success
-                      : CatchBadgeTone.warning,
-                  icon: CatchIcons.qrCode2Rounded,
-                ),
-                const SizedBox(height: CatchSpacing.s3),
-                Text(
-                  resolvedState.eventTitle,
-                  style: CatchTextStyles.titleL(context),
-                ),
-                const SizedBox(height: CatchSpacing.s2),
-                Text(
-                  resolvedState.podLabel,
-                  style: CatchTextStyles.proseM(context),
-                ),
-              ],
+          ColoredBox(
+            color: t.primarySoft,
+            child: Padding(
+              padding: CatchInsets.content,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CatchBadge(
+                    label: resolvedState.checkedIn
+                        ? context
+                              .l10n
+                              .eventSuccessEventSuccessFeatureBlocksLabelCheckedIn
+                        : context
+                              .l10n
+                              .eventSuccessEventSuccessFeatureBlocksLabelCheckIn,
+                    tone: resolvedState.checkedIn
+                        ? CatchBadgeTone.success
+                        : CatchBadgeTone.warning,
+                    icon: CatchIcons.qrCode2Rounded,
+                  ),
+                  const SizedBox(height: CatchSpacing.s3),
+                  Text(
+                    resolvedState.eventTitle,
+                    style: CatchTextStyles.titleL(context),
+                  ),
+                  const SizedBox(height: CatchSpacing.s2),
+                  Text(
+                    resolvedState.podLabel,
+                    style: CatchTextStyles.proseM(context),
+                  ),
+                ],
+              ),
             ),
           ),
           const SizedBox(height: CatchSpacing.s4),

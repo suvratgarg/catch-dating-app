@@ -1078,17 +1078,16 @@ void main() {
       );
       expect(cityMaterial.color, Colors.transparent);
 
-      final searchShell = tester.widget<DecoratedBox>(
+      final searchShell = tester.widget<CatchSurface>(
         find
             .descendant(
               of: find.byType(CatchSearchField),
-              matching: find.byType(DecoratedBox),
+              matching: find.byType(CatchSurface),
             )
             .first,
       );
-      final searchDecoration = searchShell.decoration as BoxDecoration;
-      expect(searchDecoration.color, Colors.transparent);
-      expect(searchDecoration.border?.top.color, Colors.transparent);
+      expect(searchShell.backgroundColor, Colors.transparent);
+      expect(searchShell.borderColor, Colors.transparent);
       expect(tester.widget<Icon>(searchIcon).color, CatchTokens.dark.ink);
 
       for (final icon in [

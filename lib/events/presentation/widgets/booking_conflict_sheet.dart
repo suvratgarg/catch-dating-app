@@ -77,18 +77,18 @@ class BookingConflictSheet extends StatelessWidget {
               gapH16,
               Align(
                 alignment: Alignment.centerLeft,
-                child: CatchSurface(
+                child: SizedBox(
                   width: CatchLayout.eventDetailConflictMedallionExtent,
                   height: CatchLayout.eventDetailConflictMedallionExtent,
-                  radius: CatchRadius.pill,
-                  backgroundColor: t.warning.withValues(
-                    alpha: CatchOpacity.warningFill,
-                  ),
-                  borderWidth: 0,
-                  child: Icon(
-                    CatchIcons.warningAmberRounded,
-                    color: t.warning,
-                    size: CatchIcon.statusMedallion,
+                  child: ColoredBox(
+                    color: t.warning.withValues(
+                      alpha: CatchOpacity.warningFill,
+                    ),
+                    child: Icon(
+                      CatchIcons.warningAmberRounded,
+                      color: t.warning,
+                      size: CatchIcon.statusMedallion,
+                    ),
                   ),
                 ),
               ),
@@ -171,30 +171,20 @@ class BookingConflictEventRow extends StatelessWidget {
         ? null
         : eventActivityVisual(event.activityKind!, context: context);
 
-    return CatchSurface(
-      backgroundColor: t.bg,
-      borderColor: t.line,
-      radius: CatchRadius.md,
+    return Padding(
       padding: CatchInsets.bookingConflictContent,
       child: Row(
         children: [
-          CatchSurface(
+          SizedBox(
             width: CatchLayout.eventDetailConflictEventGlyphExtent,
             height: CatchLayout.eventDetailConflictEventGlyphExtent,
-            radius: CatchRadius.sm,
-            borderWidth: 0,
-            gradient: visual == null
-                ? null
-                : LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [visual.accent, visual.deep],
-                  ),
-            backgroundColor: visual == null ? t.primarySoft : null,
-            child: Icon(
-              visual?.icon ?? CatchIcons.calendarTodayOutlined,
-              color: visual == null ? t.ink2 : t.primaryInk,
-              size: CatchIcon.md,
+            child: ColoredBox(
+              color: visual?.accent ?? t.primarySoft,
+              child: Icon(
+                visual?.icon ?? CatchIcons.calendarTodayOutlined,
+                color: visual == null ? t.ink2 : t.primaryInk,
+                size: CatchIcon.md,
+              ),
             ),
           ),
           gapW12,

@@ -14,7 +14,6 @@ import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/payments/domain/host_payment_account.dart';
 import 'package:flutter/material.dart';
@@ -114,32 +113,22 @@ class HostPaymentAccountCard extends StatelessWidget {
                 ),
               ),
               gapH16,
-              CatchSurface(
-                tone: CatchSurfaceTone.raised,
-                borderColor: sheetTokens.line2,
-                padding: CatchInsets.inlineHorizontalRelaxed,
-                child: CatchFieldLanes.custom(
-                  flush: true,
-                  child: Column(
-                    children: [
-                      CatchField.read(
-                        title: context
-                            .l10n
-                            .hostsHostPaymentAccountCardTitleCountry,
-                        valueText: _countryLabel(country),
-                        icon: CatchIcons.locationOnOutlined,
-                      ),
-                      CatchField.read(
-                        title: context
-                            .l10n
-                            .hostsHostPaymentAccountCardTitleDefaultCurrency,
-                        valueText: currency.toUpperCase(),
-                        icon: CatchIcons.paymentsOutlined,
-                        divider: true,
-                      ),
-                    ],
+              CatchSection.fieldRows(
+                children: [
+                  CatchField.read(
+                    title: context.l10n.hostsHostPaymentAccountCardTitleCountry,
+                    valueText: _countryLabel(country),
+                    icon: CatchIcons.locationOnOutlined,
                   ),
-                ),
+                  CatchField.read(
+                    title: context
+                        .l10n
+                        .hostsHostPaymentAccountCardTitleDefaultCurrency,
+                    valueText: currency.toUpperCase(),
+                    icon: CatchIcons.paymentsOutlined,
+                    divider: true,
+                  ),
+                ],
               ),
               gapH12,
               Text(
