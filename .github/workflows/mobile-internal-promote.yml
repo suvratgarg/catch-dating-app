@@ -1026,16 +1026,6 @@ jobs:
             test ! -e "$ASC_KEY_PATH"
           fi
 
-      - name: Require the guarded Play internal publisher
-        if: ${{ endsWith(inputs.release_target, '-android') }}
-        env:
-          GOOGLE_PLAY_UPLOAD_ENABLED: ${{ vars.GOOGLE_PLAY_UPLOAD_ENABLED }}
-        run: |
-          if [[ "$GOOGLE_PLAY_UPLOAD_ENABLED" != "true" ]]; then
-            echo "Play internal upload remains disabled; refusing the store mutation."
-            exit 64
-          fi
-
       - id: play-auth
         name: Authenticate the Play publisher after final verification
         if: ${{ endsWith(inputs.release_target, '-android') }}
@@ -1047,6 +1037,37 @@ jobs:
           workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ vars.GOOGLE_PLAY_SERVICE_ACCOUNT_EMAIL }}
           access_token_scopes: https://www.googleapis.com/auth/androidpublisher
+
+      - name: Prove both Catch Play apps are ready without committing an edit
+        if: ${{ endsWith(inputs.release_target, '-android') }}
+        env:
+          GOOGLE_PLAY_ACCESS_TOKEN: ${{ steps.play-auth.outputs.access_token }}
+        run: |
+          set -euo pipefail
+          readiness="$(node tool/platform/probe_google_play_access.mjs \
+            --package-name com.catchdates.app \
+            --package-name com.catchdates.host \
+            --track qa \
+            --require-google-group-testers \
+            --apply \
+            --allow-prod)"
+          jq -e '
+            .ready == true and
+            .track == "qa" and
+            ([.packages[].packageName] == ["com.catchdates.app", "com.catchdates.host"]) and
+            all(.packages[];
+              .appRecordVerified == true and
+              .editAccessVerified == true and
+              .trackAccessVerified == true and
+              .testerAccessVerified == true and
+              .googleGroupTesterCount > 0 and
+              .committed == false)
+          ' <<< "$readiness" > /dev/null
+          {
+            echo "## Google Play readiness"
+            echo "- Consumer and Host app records, qa tracks, app-scoped edit access, and Google Group testers verified."
+            echo "- Both temporary edits were deleted without upload or commit."
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - id: play-store
         name: Upload the exact AAB only to the Play qa track
