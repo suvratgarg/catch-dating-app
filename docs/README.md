@@ -1,7 +1,7 @@
 ---
 doc_id: docs_index
-version: 5.3.2
-updated: 2026-08-10
+version: 5.3.3
+updated: 2026-08-11
 owner: agent_operating_model
 status: active
 ---
@@ -82,7 +82,7 @@ folder. Treat these as source-of-truth documents too:
 | Area | Document | Purpose |
 |---|---|---|
 | App feature map | `../lib/README.md` | Feature folder structure, feature-level README map, and cross-cutting code docs. |
-| Event policies | `../lib/event_policies/README.md` | Event policy bundle migration, lab preservation rule, admission/pricing/waitlist/cancellation/settlement rules. |
+| Event policies | `../lib/event_policies/README.md` | Live event policy bundle, legacy-document compatibility, and admission/pricing/waitlist/cancellation/settlement rules. |
 | Safety | `../lib/safety/README.md` | Blocking, reporting, account deletion, safety retention, and open moderation decisions. |
 | User profile | `../lib/user_profile/README.md` | Private profile contract, identity-field edit policy, public projection inputs, and verified remaining profile issues. |
 | Contracts | `../contracts/README.md` | JSON schema and generated contract workflow. |

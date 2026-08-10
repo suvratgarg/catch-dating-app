@@ -24,15 +24,6 @@ abstract final class ComponentBreakpoints {
   /// Explore event-type grid switches 1 → 2 columns at this rail width.
   static const double eventTypeGridTwoColumnBreakpoint = 360.0;
 
-  /// Event-success lab promise row goes 1 → 3 columns at this width.
-  static const double eventSuccessLabPromiseBreakpoint = 640.0;
-
-  /// Event-success lab module grid expands at this width.
-  static const double eventSuccessLabModuleBreakpoint = 720.0;
-
-  /// Event-policy lab metric tiles stack compactly below this width.
-  static const double eventPolicyLabMetricsBreakpoint = 560.0;
-
   /// Live-reveal host countdown uses its compact layout below this width.
   static const double eventSuccessRevealHostCompactBreakpoint = 520.0;
 

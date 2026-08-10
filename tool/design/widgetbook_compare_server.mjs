@@ -1514,7 +1514,6 @@ function buildCandidates() {
         "LiveSectionHeader",
         "BlockHeader",
         "LayerHeader",
-        "EventPolicyLabHeader",
       ],
     },
     {
@@ -1531,7 +1530,6 @@ function buildCandidates() {
         "HostSectionLabel",
         "StageSectionLabel",
         "SetupSectionTitle",
-        "EventPolicyLabSectionTitle",
         "ControlLabel",
       ],
     },
@@ -1780,7 +1778,6 @@ function buildCandidates() {
         "CatchFormFieldLabel",
         "ControlLabel",
         "SetupSectionTitle",
-        "EventPolicyLabSectionTitle",
       ],
     },
     {

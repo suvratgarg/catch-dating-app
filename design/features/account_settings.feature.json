@@ -15,8 +15,7 @@
       "actionScope": {
         "included": "Profile and blocked-account recovery; review/payment history and host-app navigation; bounded preference changes; unblock, delete-account, and sign-out mutations; and configured privacy, support, and terms links.",
         "excluded": [
-          "Phone, email, version, visibility-copy, blocked-count, profile formatting, and blocked-profile enrichment are display projections rather than user actions.",
-          "Developer-only policy, Event Success, and manual-QA lab routes are configuration-gated diagnostics rather than Account Settings product actions."
+          "Phone, email, version, visibility-copy, blocked-count, profile formatting, and blocked-profile enrichment are display projections rather than user actions."
         ]
       },
       "bindings": {

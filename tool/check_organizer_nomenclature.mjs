@@ -51,8 +51,6 @@ const forbiddenSourceMarkers = [
   ["lib/clubs/presentation/detail/club_membership_controller.dart", "join a club"],
   ["lib/clubs/presentation/detail/club_membership_controller.dart", "leave a club"],
   ["lib/clubs/presentation/detail/club_membership_controller.dart", "update club notifications"],
-  ["lib/event_policies/domain/event_policy_preview/catalog.dart", "Members-only club event"],
-  ["lib/event_policies/domain/event_policy_preview/catalog.dart", "Club member"],
 ];
 
 const forbiddenClientAuthorityPatterns = [
