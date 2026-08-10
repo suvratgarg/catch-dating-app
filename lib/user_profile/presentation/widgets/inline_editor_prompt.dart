@@ -340,14 +340,17 @@ class _ProfileInlinePromptEntryEditorState
   @override
   Widget build(BuildContext context) {
     if (widget.isAddAffordance && !_draftingNewPrompt) {
-      return CatchField.add(
-        key: ValueKey('profile-prompt-add-${widget.promptIndex}'),
-        icon: CatchIcons.addCircleOutlineRounded,
-        title: context.l10n.userProfileInlineEditorPromptLabelAddAnotherPrompt,
-        onTap: () {
-          setState(() => _draftingNewPrompt = true);
-          widget.onTap();
-        },
+      return CatchFieldLanes.single(
+        child: CatchField.add(
+          key: ValueKey('profile-prompt-add-${widget.promptIndex}'),
+          icon: CatchIcons.addCircleOutlineRounded,
+          title:
+              context.l10n.userProfileInlineEditorPromptLabelAddAnotherPrompt,
+          onTap: () {
+            setState(() => _draftingNewPrompt = true);
+            widget.onTap();
+          },
+        ),
       );
     }
 

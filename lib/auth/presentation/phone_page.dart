@@ -95,48 +95,54 @@ class _PhonePageState extends ConsumerState<PhonePage> {
           gapH28,
           CatchFormFieldLabel(label: l10n.authPhoneFieldLabel),
           const SizedBox(height: CatchSpacing.s2),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CountryCodeSelector(
-                countryCode: viewState.countryCode,
-                enabled: viewState.requestControlsEnabled,
-                onChanged: (code) {
-                  ref
-                      .read(authControllerProvider.notifier)
-                      .setCountryCode(code);
-                },
-              ),
-              gapW8,
-              Expanded(
-                child: CatchField.input(
-                  key: AuthFormKeys.phoneField,
-                  title: l10n.authPhoneFieldLabel,
-                  contract: CatchContractConstraints
-                      .onboardingDraftDocumentPhoneNumber,
-                  showLabel: false,
-                  controller: _phoneController,
-                  autofocus: viewState.shouldAutofocus,
+          CatchFieldLanes.custom(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CountryCodeSelector(
+                  countryCode: viewState.countryCode,
                   enabled: viewState.requestControlsEnabled,
-                  keyboardType: TextInputType.phone,
-                  textInputAction: TextInputAction.done,
-                  autofillHints: const [AutofillHints.telephoneNumberNational],
-                  onSubmitted: (_) => _submit(),
-                  onChanged: (_) => ref
-                      .read(authControllerProvider.notifier)
-                      .clearSendOtpErrorIfIdle(),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    LengthLimitingTextInputFormatter(AuthInput.maxPhoneDigits),
-                  ],
-                  placeholder: '98765 43210',
-                  validator: (value) =>
-                      AuthInput.phoneNumberIssue(value) == null
-                      ? null
-                      : l10n.authInvalidPhoneNumber,
+                  onChanged: (code) {
+                    ref
+                        .read(authControllerProvider.notifier)
+                        .setCountryCode(code);
+                  },
                 ),
-              ),
-            ],
+                gapW8,
+                Expanded(
+                  child: CatchField.input(
+                    key: AuthFormKeys.phoneField,
+                    title: l10n.authPhoneFieldLabel,
+                    contract: CatchContractConstraints
+                        .onboardingDraftDocumentPhoneNumber,
+                    showLabel: false,
+                    controller: _phoneController,
+                    autofocus: viewState.shouldAutofocus,
+                    enabled: viewState.requestControlsEnabled,
+                    keyboardType: TextInputType.phone,
+                    textInputAction: TextInputAction.done,
+                    autofillHints: const [
+                      AutofillHints.telephoneNumberNational,
+                    ],
+                    onSubmitted: (_) => _submit(),
+                    onChanged: (_) => ref
+                        .read(authControllerProvider.notifier)
+                        .clearSendOtpErrorIfIdle(),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(
+                        AuthInput.maxPhoneDigits,
+                      ),
+                    ],
+                    placeholder: '98765 43210',
+                    validator: (value) =>
+                        AuthInput.phoneNumberIssue(value) == null
+                        ? null
+                        : l10n.authInvalidPhoneNumber,
+                  ),
+                ),
+              ],
+            ),
           ),
           if (mutation.hasError) ...[
             gapH16,

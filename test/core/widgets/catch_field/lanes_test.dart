@@ -95,6 +95,63 @@ void main() {
     expect(valueRight, fieldRect.right);
   });
 
+  testWidgets('CatchFieldLanes.single preserves standalone field geometry', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        SizedBox(
+          width: 360,
+          child: CatchFieldLanes.single(
+            child: CatchField.read(
+              key: const ValueKey('notifications-field'),
+              title: 'Notifications',
+              valueText: 'On',
+              icon: CatchIcons.helpOutline,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final fieldRect = tester.getRect(
+      find.byKey(const ValueKey('notifications-field')),
+    );
+    final iconRect = tester.getRect(find.byIcon(CatchIcons.helpOutline));
+
+    expect(iconRect.left - fieldRect.left, CatchSpacing.s4);
+    expect(find.byType(CatchFieldLanes), findsOneWidget);
+  });
+
+  testWidgets('CatchFieldLanes.divided owns row gutters and separators', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        SizedBox(
+          width: 360,
+          child: CatchFieldLanes.divided(
+            children: const [
+              CatchField.read(
+                key: ValueKey('country-field'),
+                title: 'Country',
+                valueText: 'India',
+              ),
+              CatchField.read(title: 'Currency', valueText: 'INR'),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    final firstField = find.byKey(const ValueKey('country-field'));
+    final fieldRect = tester.getRect(firstField);
+    final titleLeft = tester.getTopLeft(find.text('Country')).dx;
+
+    expect(titleLeft, fieldRect.left);
+    expect(find.byType(CatchDivider), findsOneWidget);
+  });
+
   testWidgets('CatchField keeps open active chrome while saving', (
     tester,
   ) async {

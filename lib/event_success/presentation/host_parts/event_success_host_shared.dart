@@ -84,20 +84,22 @@ class PlanSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ready = draft.status == EventSuccessSetupStatus.readyForLaunch;
-    return CatchField.content(
-      title: draft.playbook.title,
-      body: context.l10n.eventSuccessEventSuccessHostSharedLabelLengthTools(
-        length: draft.selectedModules.length,
+    return CatchFieldLanes.single(
+      child: CatchField.content(
+        title: draft.playbook.title,
+        body: context.l10n.eventSuccessEventSuccessHostSharedLabelLengthTools(
+          length: draft.selectedModules.length,
+        ),
+        action: CatchBadge(
+          label: planIsPersisted
+              ? draft.status.label
+              : context.l10n.eventSuccessEventSuccessHostSharedLabelNotSaved,
+          tone: planIsPersisted
+              ? (ready ? CatchBadgeTone.success : CatchBadgeTone.warning)
+              : CatchBadgeTone.warning,
+        ),
+        icon: CatchIcons.ruleFolderOutlined,
       ),
-      action: CatchBadge(
-        label: planIsPersisted
-            ? draft.status.label
-            : context.l10n.eventSuccessEventSuccessHostSharedLabelNotSaved,
-        tone: planIsPersisted
-            ? (ready ? CatchBadgeTone.success : CatchBadgeTone.warning)
-            : CatchBadgeTone.warning,
-      ),
-      icon: CatchIcons.ruleFolderOutlined,
     );
   }
 }
@@ -114,16 +116,18 @@ class HostActivitySummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchField.content(
-      title: profile.formatLabel,
-      body: profile.summary,
-      valueText: profile.interactionModel.label,
-      icon: CatchIcons.autoAwesomeOutlined,
-      action: CatchBadge(
-        label: context.l10n
-            .eventSuccessEventSuccessHostSharedLabelLengthSelected(
-              length: draft.selectedModules.length,
-            ),
+    return CatchFieldLanes.single(
+      child: CatchField.content(
+        title: profile.formatLabel,
+        body: profile.summary,
+        valueText: profile.interactionModel.label,
+        icon: CatchIcons.autoAwesomeOutlined,
+        action: CatchBadge(
+          label: context.l10n
+              .eventSuccessEventSuccessHostSharedLabelLengthSelected(
+                length: draft.selectedModules.length,
+              ),
+        ),
       ),
     );
   }

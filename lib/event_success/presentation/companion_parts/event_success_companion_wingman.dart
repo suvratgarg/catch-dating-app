@@ -120,14 +120,16 @@ class _WingmanRequestSectionState extends State<WingmanRequestSection> {
           ],
           gapH12,
           StageSoftBand(
-            child: CatchField.input(
-              title: context
-                  .l10n
-                  .eventSuccessEventSuccessCompanionWingmanTitlePrivateNoteToHost,
-              contract: CatchContractConstraints
-                  .eventSuccessWingmanRequestDocumentNote,
-              controller: _noteController,
-              maxLines: 2,
+            child: CatchFieldLanes.single(
+              child: CatchField.input(
+                title: context
+                    .l10n
+                    .eventSuccessEventSuccessCompanionWingmanTitlePrivateNoteToHost,
+                contract: CatchContractConstraints
+                    .eventSuccessWingmanRequestDocumentNote,
+                controller: _noteController,
+                maxLines: 2,
+              ),
             ),
           ),
           gapH12,

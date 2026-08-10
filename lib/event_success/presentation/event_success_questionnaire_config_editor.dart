@@ -54,60 +54,66 @@ class _EventSuccessQuestionnaireConfigEditorState
         ? widget.value.pack
         : previewConfig.pack;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        CatchField.optionCards<String>(
-          title: context
-              .l10n
-              .eventSuccessEventSuccessQuestionnaireConfigEditorTextQuestionSet,
-          contract: CatchContractConstraints
-              .eventSuccessPlanDocumentQuestionnaireConfigTemplateId,
-          contractValue: (value) => value,
-          helperText: context.l10n
-              .eventSuccessEventSuccessQuestionnaireConfigEditorLabelLengthQuestions(
-                length: previewPack.questions.length,
-              ),
-          values: questionSetIds,
-          itemTitle: (id) => id == _customQuestionSetId
-              ? context
-                    .l10n
-                    .eventSuccessEventSuccessQuestionnaireConfigEditorLabelCustom
-              : templates.firstWhere((template) => template.id == id).title,
-          itemDescription: (id) => id == _customQuestionSetId
-              ? EventSuccessQuestionnairePackLibrary.resolve(
-                  const EventSuccessQuestionnaireConfig.customTemplate(),
-                ).subtitle
-              : templates.firstWhere((template) => template.id == id).subtitle,
-          selected: previewId,
-          open: _questionSetOpen,
-          onOpenChanged: _setQuestionSetOpen,
-          onCancel: _cancelQuestionSet,
-          onSubmit: _submitQuestionSet,
-          enabled: widget.enabled,
-          onChanged: widget.enabled
-              ? (id) => setState(() => _draftQuestionSetId = id)
-              : null,
-        ),
-        if (previewConfig.usesCustom &&
-            widget.value.usesCustom &&
-            !_questionSetOpen)
-          CustomQuestionnaireFields(
-            value: widget.value,
+    return CatchFieldLanes.custom(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          CatchField.optionCards<String>(
+            title: context
+                .l10n
+                .eventSuccessEventSuccessQuestionnaireConfigEditorTextQuestionSet,
+            contract: CatchContractConstraints
+                .eventSuccessPlanDocumentQuestionnaireConfigTemplateId,
+            contractValue: (value) => value,
+            helperText: context.l10n
+                .eventSuccessEventSuccessQuestionnaireConfigEditorLabelLengthQuestions(
+                  length: previewPack.questions.length,
+                ),
+            values: questionSetIds,
+            itemTitle: (id) => id == _customQuestionSetId
+                ? context
+                      .l10n
+                      .eventSuccessEventSuccessQuestionnaireConfigEditorLabelCustom
+                : templates.firstWhere((template) => template.id == id).title,
+            itemDescription: (id) => id == _customQuestionSetId
+                ? EventSuccessQuestionnairePackLibrary.resolve(
+                    const EventSuccessQuestionnaireConfig.customTemplate(),
+                  ).subtitle
+                : templates
+                      .firstWhere((template) => template.id == id)
+                      .subtitle,
+            selected: previewId,
+            open: _questionSetOpen,
+            onOpenChanged: _setQuestionSetOpen,
+            onCancel: _cancelQuestionSet,
+            onSubmit: _submitQuestionSet,
             enabled: widget.enabled,
-            onChanged: widget.onChanged,
+            onChanged: widget.enabled
+                ? (id) => setState(() => _draftQuestionSetId = id)
+                : null,
           ),
-        if (!previewConfig.usesCustom || _questionSetOpen)
-          for (final question in previewPack.questions)
-            CatchField.content(
-              key: ValueKey('questionnaire-pack-preview-${question.id}'),
-              title: question.prompt,
-              body: question.options.map((option) => option.label).join(' · '),
-              titleMaxLines: 3,
-              bodyMaxLines: 4,
-              icon: CatchIcons.helpOutlineRounded,
+          if (previewConfig.usesCustom &&
+              widget.value.usesCustom &&
+              !_questionSetOpen)
+            CustomQuestionnaireFields(
+              value: widget.value,
+              enabled: widget.enabled,
+              onChanged: widget.onChanged,
             ),
-      ],
+          if (!previewConfig.usesCustom || _questionSetOpen)
+            for (final question in previewPack.questions)
+              CatchField.content(
+                key: ValueKey('questionnaire-pack-preview-${question.id}'),
+                title: question.prompt,
+                body: question.options
+                    .map((option) => option.label)
+                    .join(' · '),
+                titleMaxLines: 3,
+                bodyMaxLines: 4,
+                icon: CatchIcons.helpOutlineRounded,
+              ),
+        ],
+      ),
     );
   }
 
@@ -199,61 +205,63 @@ class _CustomQuestionnaireFieldsState extends State<CustomQuestionnaireFields> {
   @override
   Widget build(BuildContext context) {
     final questions = widget.value.customQuestions;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        _inputField(
-          key: _titleKey,
-          title: context
-              .l10n
-              .eventSuccessEventSuccessQuestionnaireConfigEditorTitleCustomQuestionSetName,
-          contract: CatchContractConstraints
-              .eventSuccessPlanDocumentQuestionnaireConfigCustomTitle,
-          onCommit: (title) =>
-              widget.onChanged(widget.value.copyWith(customTitle: title)),
-        ),
-        for (
-          var questionIndex = 0;
-          questionIndex < questions.length;
-          questionIndex++
-        )
-          ..._questionFields(
-            context,
-            questions[questionIndex],
-            questionIndex,
-            questions,
+    return CatchFieldLanes.custom(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _inputField(
+            key: _titleKey,
+            title: context
+                .l10n
+                .eventSuccessEventSuccessQuestionnaireConfigEditorTitleCustomQuestionSetName,
+            contract: CatchContractConstraints
+                .eventSuccessPlanDocumentQuestionnaireConfigCustomTitle,
+            onCommit: (title) =>
+                widget.onChanged(widget.value.copyWith(customTitle: title)),
           ),
-        CatchField.add(
-          title: context
-              .l10n
-              .eventSuccessEventSuccessQuestionnaireConfigEditorLabelAddQuestion,
-          icon: CatchIcons.addRounded,
-          onTap: widget.enabled && questions.length < 8
-              ? () => widget.onChanged(
-                  widget.value.copyWith(
-                    customQuestions: [
-                      ...questions,
-                      _blankQuestion(questions, context.l10n),
-                    ],
-                  ),
-                )
-              : null,
-        ),
-        CatchField.action(
-          title: context
-              .l10n
-              .eventSuccessEventSuccessQuestionnaireConfigEditorLabelReset,
-          icon: CatchIcons.refreshRounded,
-          onTap: widget.enabled
-              ? () {
-                  _accordion.collapse();
-                  widget.onChanged(
-                    const EventSuccessQuestionnaireConfig.customTemplate(),
-                  );
-                }
-              : null,
-        ),
-      ],
+          for (
+            var questionIndex = 0;
+            questionIndex < questions.length;
+            questionIndex++
+          )
+            ..._questionFields(
+              context,
+              questions[questionIndex],
+              questionIndex,
+              questions,
+            ),
+          CatchField.add(
+            title: context
+                .l10n
+                .eventSuccessEventSuccessQuestionnaireConfigEditorLabelAddQuestion,
+            icon: CatchIcons.addRounded,
+            onTap: widget.enabled && questions.length < 8
+                ? () => widget.onChanged(
+                    widget.value.copyWith(
+                      customQuestions: [
+                        ...questions,
+                        _blankQuestion(questions, context.l10n),
+                      ],
+                    ),
+                  )
+                : null,
+          ),
+          CatchField.action(
+            title: context
+                .l10n
+                .eventSuccessEventSuccessQuestionnaireConfigEditorLabelReset,
+            icon: CatchIcons.refreshRounded,
+            onTap: widget.enabled
+                ? () {
+                    _accordion.collapse();
+                    widget.onChanged(
+                      const EventSuccessQuestionnaireConfig.customTemplate(),
+                    );
+                  }
+                : null,
+          ),
+        ],
+      ),
     );
   }
 
@@ -305,29 +313,32 @@ class _CustomQuestionnaireFieldsState extends State<CustomQuestionnaireFields> {
     }
     if (questions.length > 1) {
       fields.add(
-        CatchField.action(
-          key: ValueKey('custom-question-remove-${question.id}'),
-          title: context
-              .l10n
-              .eventSuccessEventSuccessQuestionnaireConfigEditorMessageRemoveQuestion,
-          icon: CatchIcons.deleteOutlineRounded,
-          tone: CatchFieldTone.danger,
-          onTap: widget.enabled
-              ? () {
-                  _accordion.collapse();
-                  final nextQuestions = [...questions]..removeAt(questionIndex);
-                  widget.onChanged(
-                    widget.value.copyWith(customQuestions: nextQuestions),
-                  );
-                }
-              : null,
+        CatchFieldLanes.single(
+          child: CatchField.action(
+            key: ValueKey('custom-question-remove-${question.id}'),
+            title: context
+                .l10n
+                .eventSuccessEventSuccessQuestionnaireConfigEditorMessageRemoveQuestion,
+            icon: CatchIcons.deleteOutlineRounded,
+            tone: CatchFieldTone.danger,
+            onTap: widget.enabled
+                ? () {
+                    _accordion.collapse();
+                    final nextQuestions = [...questions]
+                      ..removeAt(questionIndex);
+                    widget.onChanged(
+                      widget.value.copyWith(customQuestions: nextQuestions),
+                    );
+                  }
+                : null,
+          ),
         ),
       );
     }
     return fields;
   }
 
-  CatchField _inputField({
+  CatchFieldLanes _inputField({
     required String key,
     required String title,
     required CatchContractFieldConstraints contract,
@@ -336,27 +347,29 @@ class _CustomQuestionnaireFieldsState extends State<CustomQuestionnaireFields> {
     int maxLines = 1,
   }) {
     final controller = _controllers[key]!;
-    return CatchField.inputActions(
-      key: ValueKey('custom-questionnaire-$key'),
-      title: title,
-      contract: contract,
-      controller: controller,
-      open: _accordion.isExpanded(key),
-      onOpenChanged: (open) => _setOpen(key, open),
-      onCancel: () {
-        controller.text = _sourceValues[key] ?? '';
-        _accordion.collapse();
-      },
-      onSubmit: () {
-        onCommit(controller.text);
-        _accordion.collapse();
-      },
-      enabled: widget.enabled,
-      inputFormatters: inputFormatters,
-      maxLines: maxLines,
-      textInputAction: maxLines == 1
-          ? TextInputAction.done
-          : TextInputAction.newline,
+    return CatchFieldLanes.single(
+      child: CatchField.inputActions(
+        key: ValueKey('custom-questionnaire-$key'),
+        title: title,
+        contract: contract,
+        controller: controller,
+        open: _accordion.isExpanded(key),
+        onOpenChanged: (open) => _setOpen(key, open),
+        onCancel: () {
+          controller.text = _sourceValues[key] ?? '';
+          _accordion.collapse();
+        },
+        onSubmit: () {
+          onCommit(controller.text);
+          _accordion.collapse();
+        },
+        enabled: widget.enabled,
+        inputFormatters: inputFormatters,
+        maxLines: maxLines,
+        textInputAction: maxLines == 1
+            ? TextInputAction.done
+            : TextInputAction.newline,
+      ),
     );
   }
 

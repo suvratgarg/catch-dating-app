@@ -61,7 +61,7 @@ class EventSuccessDefaultsPanel extends StatelessWidget {
     return CatchSectionList(
       emptyStateOmitted: true,
       children: [
-        CatchFieldInsetScope(
+        CatchFieldLanes.single(
           flush: true,
           child: CatchField.toggle(
             title: title,

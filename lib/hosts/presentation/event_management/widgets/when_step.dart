@@ -50,30 +50,34 @@ class WhenStep extends StatelessWidget {
                 validator: (_) => dateController.text.isEmpty
                     ? context.l10n.hostsWhenStepVisiblecopyPleaseSelectADate
                     : null,
-                builder: (field) => CatchField.nav(
-                  key: CreateEventFormKeys.datePicker,
-                  title: context.l10n.hostsWhenStepLabelDate,
-                  body: dateController.text.isEmpty
-                      ? context.l10n.hostsWhenStepPlaceholderSelectADate
-                      : dateController.text,
-                  icon: CatchIcons.calendarTodayOutlined,
-                  error: field.errorText,
-                  onTap: onPickDate,
+                builder: (field) => CatchFieldLanes.single(
+                  child: CatchField.nav(
+                    key: CreateEventFormKeys.datePicker,
+                    title: context.l10n.hostsWhenStepLabelDate,
+                    body: dateController.text.isEmpty
+                        ? context.l10n.hostsWhenStepPlaceholderSelectADate
+                        : dateController.text,
+                    icon: CatchIcons.calendarTodayOutlined,
+                    error: field.errorText,
+                    onTap: onPickDate,
+                  ),
                 ),
               ),
               FormField<String>(
                 validator: (_) => startTimeController.text.isEmpty
                     ? context.l10n.hostsWhenStepVisiblecopyRequired
                     : null,
-                builder: (field) => CatchField.nav(
-                  key: CreateEventFormKeys.timePicker,
-                  title: context.l10n.hostsWhenStepLabelStartTime,
-                  body: startTimeController.text.isEmpty
-                      ? context.l10n.hostsWhenStepPlaceholderSelectStartTime
-                      : startTimeController.text,
-                  icon: CatchIcons.scheduleOutlined,
-                  error: field.errorText ?? scheduleErrorText,
-                  onTap: onPickTime,
+                builder: (field) => CatchFieldLanes.single(
+                  child: CatchField.nav(
+                    key: CreateEventFormKeys.timePicker,
+                    title: context.l10n.hostsWhenStepLabelStartTime,
+                    body: startTimeController.text.isEmpty
+                        ? context.l10n.hostsWhenStepPlaceholderSelectStartTime
+                        : startTimeController.text,
+                    icon: CatchIcons.scheduleOutlined,
+                    error: field.errorText ?? scheduleErrorText,
+                    onTap: onPickTime,
+                  ),
                 ),
               ),
               CatchField.stepper(

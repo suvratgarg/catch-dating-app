@@ -118,23 +118,27 @@ class HostPaymentAccountCard extends StatelessWidget {
                 tone: CatchSurfaceTone.raised,
                 borderColor: sheetTokens.line2,
                 padding: CatchInsets.inlineHorizontalRelaxed,
-                child: Column(
-                  children: [
-                    CatchField.read(
-                      title:
-                          context.l10n.hostsHostPaymentAccountCardTitleCountry,
-                      valueText: _countryLabel(country),
-                      icon: CatchIcons.locationOnOutlined,
-                    ),
-                    CatchField.read(
-                      title: context
-                          .l10n
-                          .hostsHostPaymentAccountCardTitleDefaultCurrency,
-                      valueText: currency.toUpperCase(),
-                      icon: CatchIcons.paymentsOutlined,
-                      divider: true,
-                    ),
-                  ],
+                child: CatchFieldLanes.custom(
+                  flush: true,
+                  child: Column(
+                    children: [
+                      CatchField.read(
+                        title: context
+                            .l10n
+                            .hostsHostPaymentAccountCardTitleCountry,
+                        valueText: _countryLabel(country),
+                        icon: CatchIcons.locationOnOutlined,
+                      ),
+                      CatchField.read(
+                        title: context
+                            .l10n
+                            .hostsHostPaymentAccountCardTitleDefaultCurrency,
+                        valueText: currency.toUpperCase(),
+                        icon: CatchIcons.paymentsOutlined,
+                        divider: true,
+                      ),
+                    ],
+                  ),
                 ),
               ),
               gapH12,

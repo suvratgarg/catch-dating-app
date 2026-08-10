@@ -1,5 +1,63 @@
 part of 'catch_field.dart';
 
+/// Explicit composition boundary for reusable Field rows that do not own a
+/// titled or surfaced [CatchSection].
+///
+/// Use [CatchFieldLanes.single] when a small reusable widget returns one Field
+/// row for a parent section. Use [CatchFieldLanes.divided] when this boundary
+/// owns a compact group and therefore also owns the separators between rows.
+/// This keeps field gutter and divider ownership visible in the widget tree
+/// without introducing another surface.
+class CatchFieldLanes extends StatelessWidget {
+  const CatchFieldLanes.single({super.key, required this.child, this.flush})
+    : children = const [],
+      dividerIndent = CatchLayout.fieldRowTextLaneInset;
+
+  /// Declares field-lane ownership around a specialized layout whose spacing
+  /// is intentionally not a simple divided row list (for example, a phone
+  /// field paired with a country-code control).
+  const CatchFieldLanes.custom({super.key, required this.child, this.flush})
+    : children = const [],
+      dividerIndent = CatchLayout.fieldRowTextLaneInset;
+
+  const CatchFieldLanes.divided({
+    super.key,
+    required this.children,
+    this.flush = true,
+    this.dividerIndent = CatchLayout.fieldRowTextLaneInset,
+  }) : assert(children.length > 1),
+       child = null;
+
+  final List<Widget> children;
+  final Widget? child;
+
+  /// Overrides ambient field gutter ownership when non-null. Single/custom
+  /// boundaries preserve the surrounding section by default; divided lanes
+  /// own their gutter by default.
+  final bool? flush;
+  final double dividerIndent;
+
+  @override
+  Widget build(BuildContext context) {
+    final rowChildren = children;
+    final content = rowChildren.isEmpty
+        ? child!
+        : Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (var index = 0; index < rowChildren.length; index++) ...[
+                if (index > 0) CatchDivider.fieldRow(indent: dividerIndent),
+                rowChildren[index],
+              ],
+            ],
+          );
+    final flushOverride = flush;
+    if (flushOverride == null) return content;
+    return CatchFieldInsetScope(flush: flushOverride, child: content);
+  }
+}
+
 /// Exact natural-height title and supporting-copy lane used by
 /// [CatchField.content].
 class CatchFieldContentRow extends StatelessWidget {

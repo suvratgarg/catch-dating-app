@@ -1258,33 +1258,35 @@ Future<HostInviteLinkDraft?> _showInviteLinkDialog(BuildContext context) async {
                       ),
               ),
             ],
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CatchField.input(
-                  title: context.l10n.hostsHostEventManageScreenTitleLabel,
-                  contract: CatchContractConstraints
-                      .createEventInviteLinkCallablePayloadLabel,
-                  controller: labelController,
-                  placeholder: context
-                      .l10n
-                      .hostsHostEventManageScreenPlaceholderInstagramBio,
-                  textCapitalization: TextCapitalization.words,
-                  onChanged: (_) => setState(() {}),
-                ),
-                gapH12,
-                CatchField.input(
-                  title: context.l10n.hostsHostEventManageScreenTitleSource,
-                  contract: CatchContractConstraints
-                      .createEventInviteLinkCallablePayloadSource,
-                  isOptional: true,
-                  controller: sourceController,
-                  placeholder: context
-                      .l10n
-                      .hostsHostEventManageScreenPlaceholderInstagram,
-                  onChanged: (_) => setState(() {}),
-                ),
-              ],
+            child: CatchFieldLanes.custom(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CatchField.input(
+                    title: context.l10n.hostsHostEventManageScreenTitleLabel,
+                    contract: CatchContractConstraints
+                        .createEventInviteLinkCallablePayloadLabel,
+                    controller: labelController,
+                    placeholder: context
+                        .l10n
+                        .hostsHostEventManageScreenPlaceholderInstagramBio,
+                    textCapitalization: TextCapitalization.words,
+                    onChanged: (_) => setState(() {}),
+                  ),
+                  gapH12,
+                  CatchField.input(
+                    title: context.l10n.hostsHostEventManageScreenTitleSource,
+                    contract: CatchContractConstraints
+                        .createEventInviteLinkCallablePayloadSource,
+                    isOptional: true,
+                    controller: sourceController,
+                    placeholder: context
+                        .l10n
+                        .hostsHostEventManageScreenPlaceholderInstagram,
+                    onChanged: (_) => setState(() {}),
+                  ),
+                ],
+              ),
             ),
           );
         },
@@ -1588,12 +1590,14 @@ class HostActionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchField.action(
-      title: label,
-      body: detail,
-      titleMaxLines: 2,
-      tone: destructive ? CatchFieldTone.danger : CatchFieldTone.normal,
-      onTap: onTap,
+    return CatchFieldLanes.single(
+      child: CatchField.action(
+        title: label,
+        body: detail,
+        titleMaxLines: 2,
+        tone: destructive ? CatchFieldTone.danger : CatchFieldTone.normal,
+        onTap: onTap,
+      ),
     );
   }
 }

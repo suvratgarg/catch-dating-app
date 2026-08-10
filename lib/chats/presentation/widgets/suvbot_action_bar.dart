@@ -465,14 +465,16 @@ class _MatchTesterSheetState extends State<MatchTesterSheet> {
             style: CatchTextStyles.supporting(context),
           ),
           const SizedBox(height: CatchSpacing.s3),
-          CatchField.input(
-            title: context.l10n.chatsSuvbotActionBarTitlePhoneNumber,
-            contract:
-                CatchContractConstraints.mobileFormStateSuvbotTesterPhoneNumber,
-            controller: _controller,
-            keyboardType: TextInputType.phone,
-            autofocus: true,
-            placeholder: '+919999999999',
+          CatchFieldLanes.single(
+            child: CatchField.input(
+              title: context.l10n.chatsSuvbotActionBarTitlePhoneNumber,
+              contract: CatchContractConstraints
+                  .mobileFormStateSuvbotTesterPhoneNumber,
+              controller: _controller,
+              keyboardType: TextInputType.phone,
+              autofocus: true,
+              placeholder: '+919999999999',
+            ),
           ),
           const SizedBox(height: CatchSpacing.s3),
           CatchButton(

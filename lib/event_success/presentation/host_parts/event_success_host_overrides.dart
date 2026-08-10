@@ -508,18 +508,20 @@ class GroupOverrideUnitEditor extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
-                child: CatchField.input(
-                  title: context
-                      .l10n
-                      .eventSuccessEventSuccessHostOverridesTitleGroupLabel,
-                  contract: CatchContractConstraints
-                      .overrideEventSuccessGroupsCallablePayloadRoundsItemsGroupsItemsLabel,
-                  initialValue: group.label,
-                  textCapitalization: TextCapitalization.words,
-                  onChanged: (value) {
-                    group.label = value;
-                    onChanged();
-                  },
+                child: CatchFieldLanes.single(
+                  child: CatchField.input(
+                    title: context
+                        .l10n
+                        .eventSuccessEventSuccessHostOverridesTitleGroupLabel,
+                    contract: CatchContractConstraints
+                        .overrideEventSuccessGroupsCallablePayloadRoundsItemsGroupsItemsLabel,
+                    initialValue: group.label,
+                    textCapitalization: TextCapitalization.words,
+                    onChanged: (value) {
+                      group.label = value;
+                      onChanged();
+                    },
+                  ),
                 ),
               ),
               gapW8,

@@ -640,11 +640,13 @@ class HostTeamHostedClubsSection extends StatelessWidget {
       ],
       HostTeamHostedClubsContent(:final clubs) => <Widget>[
         for (final club in clubs)
-          CatchField.nav(
-            title: actions.clubNavigationFor(club).roleLabel,
-            valueText: club.name,
-            icon: CatchIcons.groupOutlined,
-            onTap: () => onOpenClub(actions.clubNavigationFor(club)),
+          CatchFieldLanes.single(
+            child: CatchField.nav(
+              title: actions.clubNavigationFor(club).roleLabel,
+              valueText: club.name,
+              icon: CatchIcons.groupOutlined,
+              onTap: () => onOpenClub(actions.clubNavigationFor(club)),
+            ),
           ),
       ],
     };

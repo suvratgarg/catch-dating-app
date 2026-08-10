@@ -154,30 +154,32 @@ class _EventAgeRangeFieldState extends State<EventAgeRangeField> {
     final maxLabel = _values.end.round() == EventAgeRangeField.maximumAge
         ? '${EventAgeRangeField.maximumAge}+'
         : _values.end.round().toString();
-    return CatchField.control(
-      title: context.l10n.hostsHostClubProfileTitleAgeRange,
-      contract: widget.minimumContract,
-      body: context.l10n.hostsHostClubProfileVisiblecopyMinageMaxage(
-        minAge: minLabel,
-        maxAge: maxLabel,
-      ),
-      initiallyOpen: widget.initiallyOpen,
-      enabled: widget.enabled,
-      icon: CatchIcons.cakeOutlined,
-      control: CatchRangeSlider(
-        key: const ValueKey('event-age-range-slider'),
-        minimumContract: widget.minimumContract,
-        maximumContract: widget.maximumContract,
-        values: _values,
-        min: EventAgeRangeField.minimumAge.toDouble(),
-        max: EventAgeRangeField.maximumAge.toDouble(),
-        divisions:
-            EventAgeRangeField.maximumAge - EventAgeRangeField.minimumAge,
-        minLabel: EventAgeRangeField.minimumAge.toString(),
-        maxLabel: '${EventAgeRangeField.maximumAge}+',
-        semanticFormatterCallback: (value) => value.round().toString(),
-        onChanged: widget.enabled ? _handleChanged : null,
-        onChangeEnd: widget.enabled ? _handleChangeEnd : null,
+    return CatchFieldLanes.single(
+      child: CatchField.control(
+        title: context.l10n.hostsHostClubProfileTitleAgeRange,
+        contract: widget.minimumContract,
+        body: context.l10n.hostsHostClubProfileVisiblecopyMinageMaxage(
+          minAge: minLabel,
+          maxAge: maxLabel,
+        ),
+        initiallyOpen: widget.initiallyOpen,
+        enabled: widget.enabled,
+        icon: CatchIcons.cakeOutlined,
+        control: CatchRangeSlider(
+          key: const ValueKey('event-age-range-slider'),
+          minimumContract: widget.minimumContract,
+          maximumContract: widget.maximumContract,
+          values: _values,
+          min: EventAgeRangeField.minimumAge.toDouble(),
+          max: EventAgeRangeField.maximumAge.toDouble(),
+          divisions:
+              EventAgeRangeField.maximumAge - EventAgeRangeField.minimumAge,
+          minLabel: EventAgeRangeField.minimumAge.toString(),
+          maxLabel: '${EventAgeRangeField.maximumAge}+',
+          semanticFormatterCallback: (value) => value.round().toString(),
+          onChanged: widget.enabled ? _handleChanged : null,
+          onChangeEnd: widget.enabled ? _handleChangeEnd : null,
+        ),
       ),
     );
   }

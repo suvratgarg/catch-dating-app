@@ -272,222 +272,228 @@ class _LaunchAccessApplicationFormState
       padding: CatchInsets.launchAccessBodyTop,
       child: Form(
         key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              context
-                  .l10n
-                  .launchAccessLaunchAccessApplicationScreenTextJoinTheNextCity,
-              style: CatchTextStyles.headlineS(context, color: t.ink),
-            ),
-            gapH8,
-            Text(
-              context
-                  .l10n
-                  .launchAccessLaunchAccessApplicationScreenTextTellUsWhereYou,
-              style: CatchTextStyles.bodyLead(context, color: t.ink2),
-            ),
-            gapH24,
-            CatchField.select<CityOption>(
-              title: context
-                  .l10n
-                  .launchAccessLaunchAccessApplicationScreenTitleCity,
-              contract: CatchContractConstraints.accessApplicationDocumentCity,
-              contractValue: (city) => city.effectiveMarketId,
-              values: selectableCities,
-              value: selectedCity,
-              itemLabel: (city) => city.label,
-              hintText: context
-                  .l10n
-                  .launchAccessLaunchAccessApplicationScreenHinttextSelectCity,
-              prefixIcon: Icon(CatchIcons.locationCityOutlined),
-              validator: (_) => draft.city.trim().isEmpty
-                  ? context.l10n.launchAccessValidationChooseCity
-                  : null,
-              onChanged: (city) {
-                final next = city?.effectiveMarketId ?? '';
-                LaunchAccessController.submitMutation.reset(ref);
-                ref.read(launchAccessControllerProvider.notifier).setCity(next);
-              },
-            ),
-            gapH24,
-            CatchChipField<LaunchAccessRole>(
-              label: context
-                  .l10n
-                  .launchAccessLaunchAccessApplicationScreenLabelJoiningAs,
-              contract: CatchContractConstraints.accessApplicationDocumentRole,
-              contractValue: (value) => value.name,
-              values: LaunchAccessRole.values,
-              selected: {draft.role},
-              multiSelect: false,
-              onChanged: (next) {
-                LaunchAccessController.submitMutation.reset(ref);
-                ref
-                    .read(launchAccessControllerProvider.notifier)
-                    .setRole(next.firstOrNull ?? LaunchAccessRole.member);
-              },
-            ),
-            gapH24,
-            CatchChipField<LaunchAccessEventType>(
-              label: context
-                  .l10n
-                  .launchAccessLaunchAccessApplicationScreenLabelEventsYouWouldShow,
-              contract:
-                  CatchContractConstraints.accessApplicationDocumentEventTypes,
-              contractValue: (value) => value.name,
-              values: LaunchAccessEventType.values,
-              selected: draft.eventTypes,
-              multiSelect: true,
-              validator: (_) => draft.eventTypes.isEmpty
-                  ? context.l10n.launchAccessValidationChooseEventType
-                  : null,
-              onChanged: (next) {
-                LaunchAccessController.submitMutation.reset(ref);
-                ref
-                    .read(launchAccessControllerProvider.notifier)
-                    .setEventTypes(next);
-              },
-            ),
-            gapH24,
-            CatchChipField<LaunchAccessAvailabilityWindow>(
-              label: context
-                  .l10n
-                  .launchAccessLaunchAccessApplicationScreenLabelBestTimes,
-              contract: CatchContractConstraints
-                  .accessApplicationDocumentAvailabilityWindows,
-              contractValue: (value) => value.name,
-              values: LaunchAccessAvailabilityWindow.values,
-              selected: draft.availabilityWindows,
-              multiSelect: true,
-              validator: (_) => draft.availabilityWindows.isEmpty
-                  ? context.l10n.launchAccessValidationChooseTime
-                  : null,
-              onChanged: (next) {
-                LaunchAccessController.submitMutation.reset(ref);
-                ref
-                    .read(launchAccessControllerProvider.notifier)
-                    .setAvailabilityWindows(next);
-              },
-            ),
-            gapH24,
-            CatchField.toggle(
-              title: context
-                  .l10n
-                  .launchAccessLaunchAccessApplicationScreenTitleIMightHost,
-              contract:
-                  CatchContractConstraints.accessApplicationDocumentWantsToHost,
-              body: context
-                  .l10n
-                  .launchAccessLaunchAccessApplicationScreenBodyUsefulIfYouAlready,
-              value: draft.wantsToHost,
-              onChanged: (value) {
-                LaunchAccessController.submitMutation.reset(ref);
-                ref
-                    .read(launchAccessControllerProvider.notifier)
-                    .setWantsToHost(value);
-              },
-            ),
-            gapH24,
-            CatchField.input(
-              title: context
-                  .l10n
-                  .launchAccessLaunchAccessApplicationScreenTitleInviteCode,
-              contract:
-                  CatchContractConstraints.accessApplicationDocumentInviteCode,
-              isOptional: true,
-              controller: _inviteCodeController,
-              textCapitalization: TextCapitalization.characters,
-              prefixIcon: Icon(CatchIcons.confirmationNumberOutlined),
-              onChanged: (value) {
-                LaunchAccessController.submitMutation.reset(ref);
-                ref
-                    .read(launchAccessControllerProvider.notifier)
-                    .setInviteCode(value);
-              },
-            ),
-            gapH16,
-            CatchField.input(
-              title: context
-                  .l10n
-                  .launchAccessLaunchAccessApplicationScreenTitleInstagram,
-              contract: CatchContractConstraints
-                  .accessApplicationDocumentInstagramHandle,
-              isOptional: true,
-              controller: _instagramController,
-              prefixText: '@',
-              textInputAction: TextInputAction.next,
-              onChanged: (value) {
-                LaunchAccessController.submitMutation.reset(ref);
-                ref
-                    .read(launchAccessControllerProvider.notifier)
-                    .setInstagramHandle(value);
-              },
-            ),
-            gapH16,
-            CatchField.input(
-              title: context
-                  .l10n
-                  .launchAccessLaunchAccessApplicationScreenTitleWhoReferredYou,
-              contract: CatchContractConstraints
-                  .accessApplicationDocumentReferralSource,
-              isOptional: true,
-              controller: _referralController,
-              textCapitalization: TextCapitalization.words,
-              onChanged: (value) {
-                LaunchAccessController.submitMutation.reset(ref);
-                ref
-                    .read(launchAccessControllerProvider.notifier)
-                    .setReferralSource(value);
-              },
-            ),
-            gapH16,
-            CatchField.input(
-              title: context
-                  .l10n
-                  .launchAccessLaunchAccessApplicationScreenTitleWhyDoYouWant,
-              contract:
-                  CatchContractConstraints.accessApplicationDocumentWhyCatch,
-              controller: _whyController,
-              maxLines: 4,
-              minLines: 3,
-              textCapitalization: TextCapitalization.sentences,
-              validator: (value) {
-                final trimmed = value?.trim() ?? '';
-                if (trimmed.length < 12) {
-                  return context.l10n.launchAccessValidationTellUsMore;
-                }
-                return null;
-              },
-              onChanged: (value) {
-                LaunchAccessController.submitMutation.reset(ref);
-                ref
-                    .read(launchAccessControllerProvider.notifier)
-                    .setWhyCatch(value);
-              },
-            ),
-            if (mutation.hasError) ...[
-              gapH16,
-              CatchErrorBanner(
-                message: mutationErrorMessage(mutation, l10n: context.l10n),
+        child: CatchFieldLanes.custom(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                context
+                    .l10n
+                    .launchAccessLaunchAccessApplicationScreenTextJoinTheNextCity,
+                style: CatchTextStyles.headlineS(context, color: t.ink),
               ),
+              gapH8,
+              Text(
+                context
+                    .l10n
+                    .launchAccessLaunchAccessApplicationScreenTextTellUsWhereYou,
+                style: CatchTextStyles.bodyLead(context, color: t.ink2),
+              ),
+              gapH24,
+              CatchField.select<CityOption>(
+                title: context
+                    .l10n
+                    .launchAccessLaunchAccessApplicationScreenTitleCity,
+                contract:
+                    CatchContractConstraints.accessApplicationDocumentCity,
+                contractValue: (city) => city.effectiveMarketId,
+                values: selectableCities,
+                value: selectedCity,
+                itemLabel: (city) => city.label,
+                hintText: context
+                    .l10n
+                    .launchAccessLaunchAccessApplicationScreenHinttextSelectCity,
+                prefixIcon: Icon(CatchIcons.locationCityOutlined),
+                validator: (_) => draft.city.trim().isEmpty
+                    ? context.l10n.launchAccessValidationChooseCity
+                    : null,
+                onChanged: (city) {
+                  final next = city?.effectiveMarketId ?? '';
+                  LaunchAccessController.submitMutation.reset(ref);
+                  ref
+                      .read(launchAccessControllerProvider.notifier)
+                      .setCity(next);
+                },
+              ),
+              gapH24,
+              CatchChipField<LaunchAccessRole>(
+                label: context
+                    .l10n
+                    .launchAccessLaunchAccessApplicationScreenLabelJoiningAs,
+                contract:
+                    CatchContractConstraints.accessApplicationDocumentRole,
+                contractValue: (value) => value.name,
+                values: LaunchAccessRole.values,
+                selected: {draft.role},
+                multiSelect: false,
+                onChanged: (next) {
+                  LaunchAccessController.submitMutation.reset(ref);
+                  ref
+                      .read(launchAccessControllerProvider.notifier)
+                      .setRole(next.firstOrNull ?? LaunchAccessRole.member);
+                },
+              ),
+              gapH24,
+              CatchChipField<LaunchAccessEventType>(
+                label: context
+                    .l10n
+                    .launchAccessLaunchAccessApplicationScreenLabelEventsYouWouldShow,
+                contract: CatchContractConstraints
+                    .accessApplicationDocumentEventTypes,
+                contractValue: (value) => value.name,
+                values: LaunchAccessEventType.values,
+                selected: draft.eventTypes,
+                multiSelect: true,
+                validator: (_) => draft.eventTypes.isEmpty
+                    ? context.l10n.launchAccessValidationChooseEventType
+                    : null,
+                onChanged: (next) {
+                  LaunchAccessController.submitMutation.reset(ref);
+                  ref
+                      .read(launchAccessControllerProvider.notifier)
+                      .setEventTypes(next);
+                },
+              ),
+              gapH24,
+              CatchChipField<LaunchAccessAvailabilityWindow>(
+                label: context
+                    .l10n
+                    .launchAccessLaunchAccessApplicationScreenLabelBestTimes,
+                contract: CatchContractConstraints
+                    .accessApplicationDocumentAvailabilityWindows,
+                contractValue: (value) => value.name,
+                values: LaunchAccessAvailabilityWindow.values,
+                selected: draft.availabilityWindows,
+                multiSelect: true,
+                validator: (_) => draft.availabilityWindows.isEmpty
+                    ? context.l10n.launchAccessValidationChooseTime
+                    : null,
+                onChanged: (next) {
+                  LaunchAccessController.submitMutation.reset(ref);
+                  ref
+                      .read(launchAccessControllerProvider.notifier)
+                      .setAvailabilityWindows(next);
+                },
+              ),
+              gapH24,
+              CatchField.toggle(
+                title: context
+                    .l10n
+                    .launchAccessLaunchAccessApplicationScreenTitleIMightHost,
+                contract: CatchContractConstraints
+                    .accessApplicationDocumentWantsToHost,
+                body: context
+                    .l10n
+                    .launchAccessLaunchAccessApplicationScreenBodyUsefulIfYouAlready,
+                value: draft.wantsToHost,
+                onChanged: (value) {
+                  LaunchAccessController.submitMutation.reset(ref);
+                  ref
+                      .read(launchAccessControllerProvider.notifier)
+                      .setWantsToHost(value);
+                },
+              ),
+              gapH24,
+              CatchField.input(
+                title: context
+                    .l10n
+                    .launchAccessLaunchAccessApplicationScreenTitleInviteCode,
+                contract: CatchContractConstraints
+                    .accessApplicationDocumentInviteCode,
+                isOptional: true,
+                controller: _inviteCodeController,
+                textCapitalization: TextCapitalization.characters,
+                prefixIcon: Icon(CatchIcons.confirmationNumberOutlined),
+                onChanged: (value) {
+                  LaunchAccessController.submitMutation.reset(ref);
+                  ref
+                      .read(launchAccessControllerProvider.notifier)
+                      .setInviteCode(value);
+                },
+              ),
+              gapH16,
+              CatchField.input(
+                title: context
+                    .l10n
+                    .launchAccessLaunchAccessApplicationScreenTitleInstagram,
+                contract: CatchContractConstraints
+                    .accessApplicationDocumentInstagramHandle,
+                isOptional: true,
+                controller: _instagramController,
+                prefixText: '@',
+                textInputAction: TextInputAction.next,
+                onChanged: (value) {
+                  LaunchAccessController.submitMutation.reset(ref);
+                  ref
+                      .read(launchAccessControllerProvider.notifier)
+                      .setInstagramHandle(value);
+                },
+              ),
+              gapH16,
+              CatchField.input(
+                title: context
+                    .l10n
+                    .launchAccessLaunchAccessApplicationScreenTitleWhoReferredYou,
+                contract: CatchContractConstraints
+                    .accessApplicationDocumentReferralSource,
+                isOptional: true,
+                controller: _referralController,
+                textCapitalization: TextCapitalization.words,
+                onChanged: (value) {
+                  LaunchAccessController.submitMutation.reset(ref);
+                  ref
+                      .read(launchAccessControllerProvider.notifier)
+                      .setReferralSource(value);
+                },
+              ),
+              gapH16,
+              CatchField.input(
+                title: context
+                    .l10n
+                    .launchAccessLaunchAccessApplicationScreenTitleWhyDoYouWant,
+                contract:
+                    CatchContractConstraints.accessApplicationDocumentWhyCatch,
+                controller: _whyController,
+                maxLines: 4,
+                minLines: 3,
+                textCapitalization: TextCapitalization.sentences,
+                validator: (value) {
+                  final trimmed = value?.trim() ?? '';
+                  if (trimmed.length < 12) {
+                    return context.l10n.launchAccessValidationTellUsMore;
+                  }
+                  return null;
+                },
+                onChanged: (value) {
+                  LaunchAccessController.submitMutation.reset(ref);
+                  ref
+                      .read(launchAccessControllerProvider.notifier)
+                      .setWhyCatch(value);
+                },
+              ),
+              if (mutation.hasError) ...[
+                gapH16,
+                CatchErrorBanner(
+                  message: mutationErrorMessage(mutation, l10n: context.l10n),
+                ),
+              ],
+              gapH32,
+              CatchButton(
+                label: widget.application == null
+                    ? context
+                          .l10n
+                          .launchAccessLaunchAccessApplicationScreenLabelSubmitApplication
+                    : context
+                          .l10n
+                          .launchAccessLaunchAccessApplicationScreenLabelUpdateApplication,
+                onPressed: mutation.isPending ? null : _submit,
+                isLoading: mutation.isPending,
+                fullWidth: true,
+                size: CatchButtonSize.lg,
+              ),
+              gapH32,
             ],
-            gapH32,
-            CatchButton(
-              label: widget.application == null
-                  ? context
-                        .l10n
-                        .launchAccessLaunchAccessApplicationScreenLabelSubmitApplication
-                  : context
-                        .l10n
-                        .launchAccessLaunchAccessApplicationScreenLabelUpdateApplication,
-              onPressed: mutation.isPending ? null : _submit,
-              isLoading: mutation.isPending,
-              fullWidth: true,
-              size: CatchButtonSize.lg,
-            ),
-            gapH32,
-          ],
+          ),
         ),
       ),
     );

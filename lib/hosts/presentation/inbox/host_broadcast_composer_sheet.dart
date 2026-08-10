@@ -202,19 +202,22 @@ class _HostBroadcastComposerSheetState
                 if (template != HostBroadcastTemplate.values.last) gapH8,
               ],
               gapH20,
-              CatchField.input(
-                title: context.l10n.hostsHostBroadcastComposerSheetTitleMessage,
-                contract: CatchContractConstraints
-                    .sendEventBroadcastCallablePayloadBody,
-                controller: _bodyController,
-                placeholder: context
-                    .l10n
-                    .hostsHostBroadcastComposerSheetPlaceholderWriteAClearUpdate,
-                minLines: 3,
-                maxLines: 5,
-                enabled: !mutation.isPending,
-                textCapitalization: TextCapitalization.sentences,
-                onChanged: (_) => _handleContentChanged(),
+              CatchFieldLanes.single(
+                child: CatchField.input(
+                  title:
+                      context.l10n.hostsHostBroadcastComposerSheetTitleMessage,
+                  contract: CatchContractConstraints
+                      .sendEventBroadcastCallablePayloadBody,
+                  controller: _bodyController,
+                  placeholder: context
+                      .l10n
+                      .hostsHostBroadcastComposerSheetPlaceholderWriteAClearUpdate,
+                  minLines: 3,
+                  maxLines: 5,
+                  enabled: !mutation.isPending,
+                  textCapitalization: TextCapitalization.sentences,
+                  onChanged: (_) => _handleContentChanged(),
+                ),
               ),
               if (!_sendingEnabled) ...[
                 gapH12,

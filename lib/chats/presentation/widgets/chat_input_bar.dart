@@ -143,28 +143,32 @@ class _ChatInputBarState extends State<ChatInputBar> {
                         key: ChatInputBar.fieldLaneKey,
                         behavior: HitTestBehavior.opaque,
                         onTap: hardDisabled ? null : _focusNode.requestFocus,
-                        child: CatchField.input(
-                          title: context.l10n.chatsChatInputBarTitleMessage,
-                          contract: CatchContractConstraints
-                              .createChatMessageClientWriteDataText,
-                          showLabel: false,
-                          controller: widget.controller,
-                          focusNode: _focusNode,
-                          retainFocusOnSubmitted: true,
-                          textCapitalization: TextCapitalization.sentences,
-                          textInputAction: TextInputAction.send,
-                          minLines: 1,
-                          maxLines: 4,
-                          inputHint:
-                              widget.disabledReason ??
-                              context.l10n.chatsChatInputBarPlaceholderMessage,
-                          size: CatchFieldSize.floating,
-                          variant: CatchFieldVariant.bare,
-                          enabled: !hardDisabled,
-                          autofocus: widget.autofocus,
-                          onSubmitted: (_) {
-                            if (sendActionEnabled) widget.onSend?.call();
-                          },
+                        child: CatchFieldLanes.single(
+                          child: CatchField.input(
+                            title: context.l10n.chatsChatInputBarTitleMessage,
+                            contract: CatchContractConstraints
+                                .createChatMessageClientWriteDataText,
+                            showLabel: false,
+                            controller: widget.controller,
+                            focusNode: _focusNode,
+                            retainFocusOnSubmitted: true,
+                            textCapitalization: TextCapitalization.sentences,
+                            textInputAction: TextInputAction.send,
+                            minLines: 1,
+                            maxLines: 4,
+                            inputHint:
+                                widget.disabledReason ??
+                                context
+                                    .l10n
+                                    .chatsChatInputBarPlaceholderMessage,
+                            size: CatchFieldSize.floating,
+                            variant: CatchFieldVariant.bare,
+                            enabled: !hardDisabled,
+                            autofocus: widget.autofocus,
+                            onSubmitted: (_) {
+                              if (sendActionEnabled) widget.onSend?.call();
+                            },
+                          ),
                         ),
                       ),
                     ),

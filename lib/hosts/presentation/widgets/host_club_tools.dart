@@ -275,24 +275,26 @@ Future<void> _showClubPostComposer({
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CatchField.input(
-                    title: context.l10n.hostsHostClubToolsTitleUpdate,
-                    contract: CatchContractConstraints
-                        .createClubPostCallablePayloadText,
-                    controller: controller,
-                    placeholder: context
-                        .l10n
-                        .hostsHostClubToolsPlaceholderShareARouteNote,
-                    keyboardType: TextInputType.multiline,
-                    textInputAction: TextInputAction.newline,
-                    textCapitalization: TextCapitalization.sentences,
-                    maxLines: 5,
-                    minLines: 3,
-                    helperText: context.l10n
-                        .hostsHostClubToolsHelpertextValue1CharactersLeft(
-                          value1: 500 - controller.text.length,
-                        ),
-                    onChanged: (_) => setSheetState(() {}),
+                  CatchFieldLanes.single(
+                    child: CatchField.input(
+                      title: context.l10n.hostsHostClubToolsTitleUpdate,
+                      contract: CatchContractConstraints
+                          .createClubPostCallablePayloadText,
+                      controller: controller,
+                      placeholder: context
+                          .l10n
+                          .hostsHostClubToolsPlaceholderShareARouteNote,
+                      keyboardType: TextInputType.multiline,
+                      textInputAction: TextInputAction.newline,
+                      textCapitalization: TextCapitalization.sentences,
+                      maxLines: 5,
+                      minLines: 3,
+                      helperText: context.l10n
+                          .hostsHostClubToolsHelpertextValue1CharactersLeft(
+                            value1: 500 - controller.text.length,
+                          ),
+                      onChanged: (_) => setSheetState(() {}),
+                    ),
                   ),
                   if (error != null) ...[
                     gapH10,
