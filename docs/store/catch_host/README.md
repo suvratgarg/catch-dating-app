@@ -53,16 +53,19 @@ As of June 22, 2026, Apple's App Store Connect docs say:
 
 - Accept any updated Apple Developer Program License Agreement if App Store
   Connect blocks release work.
-- Prove the GitHub `Mobile Internal Release` Host package for bundle
-  `com.catchdates.host`, then use `Mobile Internal Exact Promotion` to record
-  TestFlight processing, group assignment, install, and launch. The legacy
-  `Runner | Default` Xcode Cloud workflow is already disabled.
+- Host exact promotion run `31436882152` processed the final analyzer-clean
+  version `1.0.1`, build `202608100000030201`, as `VALID` and persisted exact
+  claim artifact `9081563645`; the legacy `Runner | Default` Xcode Cloud
+  workflow is disabled.
+  Assign that build to the intended TestFlight group and record install/launch
+  proof in GitHub issue `#218`.
 - Smoke test the Host TestFlight build with App Check/App Attest, Maps, phone
   auth, push, host club/event entrypoints, check-in, and Event Success tools.
 - Create the Host Play record, enroll Play App Signing, grant the existing
   `github-actions-play-publisher` OIDC identity app-scoped testing-track access,
   configure internal testers, and record AAB processing/install proof before
-  enabling the guarded manual Play `qa` promoter.
+  rerunning the guarded manual Play `qa` promoter. Owner verification and both
+  app records are tracked in GitHub issue `#199`.
 - Replace review-note placeholders with reviewer credentials and seeded data.
 - Have legal/product confirm privacy labels, age rating, copyright owner, and
   category choices before submission.
