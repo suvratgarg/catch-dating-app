@@ -222,7 +222,22 @@ test("promotion uses one exact Play authority and never rebuilds, archives, or s
       String.raw`[\s\S]*--track qa[\s\S]*--apply[\s\S]*--allow-prod`,
     "u",
   ));
-  assert.match(workflow, /GOOGLE_PLAY_UPLOAD_ENABLED[\s\S]*!= "true"/u);
+  assert.doesNotMatch(workflow, /GOOGLE_PLAY_UPLOAD_ENABLED/u);
+  const readiness = workflow.indexOf(
+    "Prove both Catch Play apps are ready without committing an edit",
+  );
+  const playUpload = workflow.indexOf("Upload the exact AAB only to the Play qa track");
+  assert.ok(readiness >= 0 && readiness < playUpload,
+    "both-app readiness must pass before the selected AAB can upload");
+  const readinessSlice = workflow.slice(readiness, playUpload);
+  for (const marker of [
+    "probe_google_play_access.mjs",
+    "--package-name com.catchdates.app",
+    "--package-name com.catchdates.host",
+    "--require-google-group-testers",
+    ".googleGroupTesterCount > 0",
+    ".committed == false",
+  ]) assert.ok(readinessSlice.includes(marker), `missing Play readiness binding: ${marker}`);
   assert.doesNotMatch(core, /androidpublisher\.googleapis\.com|promoteGooglePlay|preflightGooglePlay/u);
   assert.doesNotMatch(workflow, new RegExp(
     String.raw`^\s*(?:\.\/tool\/flutter_with_env\.sh|flutter|gradle|` +

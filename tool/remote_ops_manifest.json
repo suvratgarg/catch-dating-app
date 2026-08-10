@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated": "2026-08-07",
+  "updated": "2026-08-10",
   "description": "Consolidated inventory of remote operational surfaces. This file groups Firebase deploys, environment switching, data repair/backfill, App Check/security console work, CI gates, and App Store/TestFlight/Play release operations without changing the underlying tools.",
   "operations": [
     {
@@ -750,7 +750,7 @@
           "ref": "Google Play app records, app signing, publisher access, and internal testers",
           "owner": "docs/release_operations.md",
           "ticket": "APP-TARGET-ANDROID-PLAY-001",
-          "guardrail": "Keep GOOGLE_PLAY_UPLOAD_ENABLED=false until both package records, qa tester lists, Play signing fingerprints, and least-privilege publisher access are verified."
+          "guardrail": "Every Android promotion must live-probe both package records, qa tracks, app-scoped edit access, and at least one Google Group tester per track. Play App Signing enrollment remains an owner prerequisite."
         }
       ],
       "requiredChecks": [
@@ -759,7 +759,7 @@
         "Each ephemeral iOS runner must import the same dedicated prod-mobile Apple Development PKCS#12, verify its team, fingerprint, and validity floor, and remove the decoded identity and temporary keychain after the job while leaving automatic signing enabled.",
         "Verify iOS archive/export identity and Android AAB signature/certificate/compiled role/Firebase/Maps/version identity before package authority; verify the current producer attempt, exact artifact id/digest, packaged bytes, and store response before claiming internal delivery.",
         "Play publishing is limited to the qa track and forbidden for production.",
-        "Before enabling upload, a manual probe creates an edit, reads qa, and deletes the edit for both app records without uploading or committing.",
+        "Before any AAB upload, the promotion workflow creates an edit, reads qa and Google Group testers, and deletes the edit for both app records without uploading or committing.",
         "Consumer requires HealthKit/Health Connect and public links; Host must not inherit them."
       ],
       "notes": [

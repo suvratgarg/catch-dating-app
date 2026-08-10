@@ -419,10 +419,11 @@ exact promotion run rather than package production.
 explicit `--apply --allow-prod`. `platform:xcode-cloud-workflow-state` is a
 guarded cutover operation, not a routine release command.
 
-Before flipping `GOOGLE_PLAY_UPLOAD_ENABLED`, run the separately authenticated,
-apply-guarded `platform:probe-google-play-access` gate for both package names.
-It creates and deletes an uncommitted edit for each `qa` track; it never uploads
-a bundle or commits a release.
+Every Android exact promotion runs the separately authenticated, apply-guarded
+`platform:probe-google-play-access` fleet gate before the selected AAB uploader.
+It requires both Catch app records, both `qa` tracks, effective app-scoped edit
+access, and at least one Google Group tester per track; it creates and deletes
+an uncommitted edit for each app and never uploads or commits a release.
 
 Do not add a bundle id, Firebase app id, native flavor, or store product only to
 a workflow or platform file. Add it to the target contract and make the
