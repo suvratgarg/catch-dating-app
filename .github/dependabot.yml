@@ -34,10 +34,11 @@ updates:
           - "version-update:semver-major"
 
   - package-ecosystem: "pub"
+    # The root Pub workspace owns apps/consumer and apps/host. Listing either
+    # member separately makes Dependabot run dependency_services below the
+    # workspace root and fail before it can propose an update.
     directories:
       - "/"
-      - "/apps/consumer"
-      - "/apps/host"
       - "/packages/catch_ui_lints"
       - "/packages/phosphor_flutter"
       - "/packages/phosphor_flutter/example"
