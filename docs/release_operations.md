@@ -249,6 +249,12 @@ separate duplicate-symbol boundary. Remove `enable-swift-package-manager:
 false` only in a dedicated migration after both conditions are resolved and
 Consumer plus Host iOS builds pass together.
 
+`tool/app_targets.json#appleNativeDependencies` binds the checked-in
+`firebase_core` and `cloud_firestore` Flutter versions to the Firebase Apple SDK
+used by all four iOS/macOS Podfiles and lockfiles. The app-target structural
+gate fails before native compilation when a compatible Pub update changes one
+side without regenerating the CocoaPods graphs.
+
 ## Git Branch Hygiene
 
 Treat PR branches as single-use. After a PR branch is merged into `main`, do
