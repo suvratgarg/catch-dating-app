@@ -54,10 +54,7 @@ class ChatEventContextHeader extends StatelessWidget {
         radius: CatchRadius.md,
         backgroundColor: visual?.soft ?? t.primarySoft,
         borderColor: accent.withValues(alpha: CatchOpacity.subtleBorder),
-        padding: const EdgeInsets.symmetric(
-          horizontal: CatchSpacing.s3,
-          vertical: CatchSpacing.micro10,
-        ),
+        padding: CatchInsets.chatEventContextContent,
         child: Row(
           children: [
             CatchIconTile(

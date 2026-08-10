@@ -17,7 +17,7 @@ class ChatBlastComposerSheet extends StatelessWidget {
     return SafeArea(
       top: false,
       child: Padding(
-        padding: const EdgeInsets.all(CatchSpacing.s3),
+        padding: CatchInsets.contentDense,
         child: CatchSurface(
           backgroundColor: t.surface,
           borderColor: t.line,
@@ -54,7 +54,7 @@ class ChatBlastComposerSheet extends StatelessWidget {
                 tone: CatchSurfaceTone.raised,
                 borderColor: t.line,
                 radius: CatchRadius.md,
-                padding: const EdgeInsets.all(CatchSpacing.s3),
+                padding: CatchInsets.contentDense,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -75,7 +75,7 @@ class ChatBlastComposerSheet extends StatelessWidget {
                 tone: CatchSurfaceTone.raised,
                 borderColor: t.line,
                 radius: CatchRadius.md,
-                padding: const EdgeInsets.all(CatchSpacing.s3),
+                padding: CatchInsets.contentDense,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

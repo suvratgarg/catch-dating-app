@@ -587,6 +587,30 @@ abstract final class CatchInsets {
     CatchSpacing.micro18,
   );
 
+  /// Bottom action skeleton inset used while the Host club editor is loading.
+  static const EdgeInsets hostClubEditorLoadingAction = EdgeInsets.fromLTRB(
+    CatchSpacing.s3,
+    CatchSpacing.s2,
+    CatchSpacing.s3,
+    CatchSpacing.s3,
+  );
+
+  /// Loading body rhythm for the Host create-event route.
+  static const EdgeInsets hostCreateEventLoadingBody = EdgeInsets.fromLTRB(
+    CatchSpacing.s4,
+    CatchSpacing.s4,
+    CatchSpacing.s4,
+    CatchSpacing.s6,
+  );
+
+  /// Loading footer content above the Host create-event safe-area terminal.
+  static const EdgeInsets hostCreateEventLoadingFooter = EdgeInsets.fromLTRB(
+    CatchSpacing.s4,
+    CatchSpacing.s3,
+    CatchSpacing.s4,
+    CatchSpacing.s0,
+  );
+
   /// Default content padding inside cards and bordered panels.
   static const EdgeInsets content = EdgeInsets.all(CatchSpacing.s4);
 
@@ -764,6 +788,191 @@ abstract final class CatchInsets {
     CatchSpacing.s4,
     CatchSpacing.s4,
   );
+
+  /// Chat event context content inside its compact tinted header.
+  static const EdgeInsets chatEventContextContent = EdgeInsets.symmetric(
+    horizontal: CatchSpacing.s3,
+    vertical: CatchSpacing.micro10,
+  );
+
+  /// Page-gutter dock inset for the conversation composer.
+  static const EdgeInsets chatComposerDock = EdgeInsets.fromLTRB(
+    CatchSpacing.screenPx,
+    CatchSpacing.s0,
+    CatchSpacing.screenPx,
+    CatchSpacing.s3,
+  );
+
+  /// Date marker spacing between message groups.
+  static const EdgeInsets chatDateMarker = EdgeInsets.only(
+    top: CatchSpacing.s1,
+    bottom: CatchSpacing.s4,
+  );
+
+  /// Suvbot action-row hit area inside the transparent action surface.
+  static const EdgeInsets suvbotActionRow = EdgeInsets.symmetric(
+    horizontal: CatchSpacing.s1,
+    vertical: CatchSpacing.s3,
+  );
+
+  /// Optical top adjustment for icons aligned with multiline supporting copy.
+  static const EdgeInsets inlineIconTopTight = EdgeInsets.only(
+    top: CatchSpacing.micro2,
+  );
+
+  /// Bottom action dock content for Club Detail.
+  static const EdgeInsets clubDetailDock = EdgeInsets.fromLTRB(
+    CatchSpacing.micro18,
+    CatchSpacing.micro14,
+    CatchSpacing.micro18,
+    CatchSpacing.micro18,
+  );
+
+  /// Hairline frame inset around compact poster and avatar media.
+  static const EdgeInsets mediaFrameContent = EdgeInsets.all(
+    CatchSpacing.micro3,
+  );
+
+  /// Editorial header content inside the Event Success paper ticket.
+  static const EdgeInsets paperTicketHeader = EdgeInsets.fromLTRB(
+    CatchSpacing.s4,
+    CatchSpacing.s9,
+    CatchSpacing.s4,
+    CatchSpacing.s4,
+  );
+
+  /// Booking-conflict row content around its event glyph and metadata.
+  static const EdgeInsets bookingConflictContent = EdgeInsets.symmetric(
+    horizontal: CatchSpacing.micro14,
+    vertical: CatchSpacing.s3,
+  );
+
+  /// Safe-area inset for the floating map overview control.
+  static const EdgeInsets eventMapOverviewControl = EdgeInsets.only(
+    top: CatchSpacing.s16,
+    right: CatchSpacing.s5,
+  );
+
+  /// Applied-filter chip rail below the Explore filter controls.
+  static const EdgeInsets exploreAppliedFilters = EdgeInsets.symmetric(
+    horizontal: CatchSpacing.s5,
+    vertical: CatchSpacing.s2,
+  );
+
+  /// Repeated section/list item separation owned by the outer item wrapper.
+  static const EdgeInsets sectionItemBottomGap = EdgeInsets.only(
+    bottom: CatchSpacing.s3,
+  );
+
+  /// Host lifecycle section label above a group of event rows.
+  static const EdgeInsets hostEventSectionLabel = EdgeInsets.only(
+    top: CatchSpacing.s1,
+    bottom: CatchSpacing.micro10,
+  );
+
+  /// Date rail content within a Host event lifecycle row.
+  static const EdgeInsets hostEventLifecycleDate = EdgeInsets.fromLTRB(
+    CatchSpacing.s3,
+    CatchSpacing.s3,
+    CatchSpacing.micro14,
+    CatchSpacing.s3,
+  );
+
+  /// Compact selected-club trigger around the avatar, name, and chevron.
+  static const EdgeInsets hostTodayClubSwitcher = EdgeInsets.fromLTRB(
+    CatchSpacing.micro6,
+    CatchSpacing.micro6,
+    CatchSpacing.s3,
+    CatchSpacing.micro6,
+  );
+
+  /// Popup menu item content in Host Today's club switcher.
+  static const EdgeInsets hostTodayClubMenuItem = EdgeInsets.symmetric(
+    horizontal: CatchSpacing.micro14,
+    vertical: CatchLayout.menuRowVerticalPadding,
+  );
+
+  /// Standard row content for the Host roster board.
+  static const EdgeInsets rosterRowContent = EdgeInsets.symmetric(
+    horizontal: CatchSpacing.micro14,
+    vertical: CatchSpacing.micro10,
+  );
+
+  /// Column-label header inside the Host roster board.
+  static const EdgeInsets rosterHeaderContent = EdgeInsets.fromLTRB(
+    CatchSpacing.micro14,
+    CatchSpacing.s3,
+    CatchSpacing.micro14,
+    CatchSpacing.micro10,
+  );
+
+  /// Empty-row content inside the Host roster board.
+  static const EdgeInsets rosterEmptyContent = EdgeInsets.fromLTRB(
+    CatchSpacing.micro14,
+    CatchSpacing.s4,
+    CatchSpacing.micro14,
+    CatchSpacing.s5,
+  );
+
+  /// Top rhythm for Launch Access loading and application bodies.
+  static const EdgeInsets launchAccessBodyTop = EdgeInsets.only(
+    top: CatchSpacing.s4,
+  );
+
+  /// Inner content of one payment history list row.
+  static const EdgeInsets paymentHistoryTileContent = EdgeInsets.symmetric(
+    horizontal: CatchSpacing.s1,
+    vertical: CatchSpacing.s2,
+  );
+
+  /// Compact translucent metric panel on the Catches hub hero.
+  static const EdgeInsets catchesHubMetricContent = EdgeInsets.symmetric(
+    horizontal: CatchSpacing.s3,
+    vertical: CatchSpacing.micro10,
+  );
+
+  /// Floating top chrome shared by loaded and loading Catches swipe screens.
+  static const EdgeInsets swipeTopChrome = EdgeInsets.fromLTRB(
+    CatchSpacing.s4,
+    CatchSpacing.s3,
+    CatchSpacing.s4,
+    CatchSpacing.s0,
+  );
+
+  /// Remaining-count pill in the Catches swipe top chrome.
+  static const EdgeInsets swipeRemainingCount = EdgeInsets.symmetric(
+    horizontal: CatchSpacing.s4,
+    vertical: CatchSpacing.s2,
+  );
+
+  /// Top alignment between the Profile tab shell and its bounded content.
+  static const EdgeInsets profilePreviewBodyTop = EdgeInsets.only(
+    top: CatchSpacing.s2,
+  );
+
+  /// Vertical rhythm for one Profile information skeleton row.
+  static const EdgeInsets profileInfoSkeletonRow = EdgeInsets.symmetric(
+    vertical: CatchSpacing.micro14,
+  );
+
+  static EdgeInsets eventDetailFactRow({
+    required bool isFirst,
+    required bool isLast,
+  }) => EdgeInsets.only(
+    top: isFirst ? CatchSpacing.s0 : CatchSpacing.s3,
+    bottom: isLast ? CatchSpacing.s0 : CatchSpacing.s3,
+  );
+
+  static EdgeInsets eventTicketStubCell({required bool divided}) =>
+      EdgeInsets.fromLTRB(
+        divided ? CatchSpacing.s3 : CatchSpacing.s5,
+        CatchSpacing.s2,
+        CatchSpacing.s3,
+        CatchSpacing.s2,
+      );
+
+  static EdgeInsets eventItineraryStep({required bool isLast}) =>
+      EdgeInsets.only(bottom: isLast ? CatchSpacing.s0 : CatchSpacing.s3);
 
   /// Shared content padding for chat and share-card message bubbles.
   static const EdgeInsets chatBubbleContent = EdgeInsets.symmetric(

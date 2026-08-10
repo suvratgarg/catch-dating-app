@@ -124,7 +124,7 @@ class CatchesHubContent extends StatelessWidget {
                     title:
                         context.l10n.swipesSwipeHubScreenTitleOpenCatchWindows,
                     heavy: true,
-                    padding: const EdgeInsets.only(bottom: CatchSpacing.s3),
+                    padding: CatchInsets.sectionItemBottomGap,
                     trailing: Text(
                       context.l10n.swipesSwipeHubScreenTextLength(
                         length: state.rows.length,
@@ -288,10 +288,7 @@ class PillStat extends StatelessWidget {
     final t = CatchTokens.of(context);
     return Expanded(
       child: CatchSurface(
-        padding: const EdgeInsets.symmetric(
-          horizontal: CatchSpacing.s3,
-          vertical: CatchSpacing.micro10,
-        ),
+        padding: CatchInsets.catchesHubMetricContent,
         radius: CatchRadius.md,
         backgroundColor: t.ink.withValues(alpha: CatchOpacity.photoScrimMedium),
         borderColor: t.ink.withValues(

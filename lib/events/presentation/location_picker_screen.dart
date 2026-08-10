@@ -442,7 +442,7 @@ class PlaceSearchPanel extends StatelessWidget {
       children: [
         CatchSection.contained(
           hasError: errorText != null && errorText!.trim().isNotEmpty,
-          padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s3),
+          padding: CatchInsets.inlineHorizontalRelaxed,
           child: CatchField.input(
             title:
                 context.l10n.eventsLocationPickerScreenTitleSearchForAMeeting,
@@ -526,17 +526,14 @@ class PlaceSuggestionRow extends StatelessWidget {
       radius: 0,
       borderWidth: 0,
       onTap: onTap,
-      padding: const EdgeInsets.symmetric(
-        horizontal: CatchSpacing.s4,
-        vertical: CatchSpacing.s3,
-      ),
+      padding: CatchInsets.listBody,
       child: Row(
         crossAxisAlignment: subtitle.isEmpty
             ? CrossAxisAlignment.center
             : CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(top: CatchSpacing.micro2),
+            padding: CatchInsets.inlineIconTopTight,
             child: Icon(
               CatchIcons.placeOutlined,
               color: t.ink2,

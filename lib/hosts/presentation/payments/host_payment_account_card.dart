@@ -117,9 +117,7 @@ class HostPaymentAccountCard extends StatelessWidget {
               CatchSurface(
                 tone: CatchSurfaceTone.raised,
                 borderColor: sheetTokens.line2,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: CatchSpacing.s3,
-                ),
+                padding: CatchInsets.inlineHorizontalRelaxed,
                 child: Column(
                   children: [
                     CatchField.read(

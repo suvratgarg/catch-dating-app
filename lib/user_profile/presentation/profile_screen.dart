@@ -331,7 +331,7 @@ class PreviewTabSkeletonSliverBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return SliverFillRemaining(
       child: Padding(
-        padding: const EdgeInsets.only(top: CatchSpacing.s2),
+        padding: CatchInsets.profilePreviewBodyTop,
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(
@@ -370,7 +370,7 @@ class PreviewTabSliverBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return SliverFillRemaining(
       child: Padding(
-        padding: const EdgeInsets.only(top: CatchSpacing.s2),
+        padding: CatchInsets.profilePreviewBodyTop,
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(

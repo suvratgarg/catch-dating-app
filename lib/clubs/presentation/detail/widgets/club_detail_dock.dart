@@ -72,12 +72,7 @@ class ClubDetailDock extends StatelessWidget {
     final showCount = members != null && state != ClubDetailDockRole.owner;
 
     return CatchBottomDock(
-      padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.micro18,
-        CatchSpacing.micro14,
-        CatchSpacing.micro18,
-        CatchSpacing.micro18,
-      ),
+      padding: CatchInsets.clubDetailDock,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

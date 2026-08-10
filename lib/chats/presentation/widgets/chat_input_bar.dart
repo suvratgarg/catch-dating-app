@@ -87,12 +87,7 @@ class _ChatInputBarState extends State<ChatInputBar> {
       child: SafeArea(
         top: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            CatchSpacing.screenPx,
-            0,
-            CatchSpacing.screenPx,
-            CatchSpacing.s3,
-          ),
+          padding: CatchInsets.chatComposerDock,
           child: AnimatedSize(
             duration: CatchMotion.fast,
             curve: CatchMotion.standardCurve,

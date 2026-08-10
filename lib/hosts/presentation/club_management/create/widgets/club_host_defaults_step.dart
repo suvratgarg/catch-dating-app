@@ -246,7 +246,7 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
       first: true,
       title: context.l10n.hostsClubHostDefaultsStepTextDefaultEventPolicy,
       footer: Padding(
-        padding: const EdgeInsets.only(top: CatchSpacing.s3),
+        padding: CatchInsets.fieldSectionChildTop,
         child: Text(
           context.l10n.hostsClubHostDefaultsStepTextTheseDefaultsPrefillNew,
           style: CatchTextStyles.supporting(context),

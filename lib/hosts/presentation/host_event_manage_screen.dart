@@ -1123,7 +1123,7 @@ class HostInviteLinkRow extends StatelessWidget {
       actionsDisabled: actionsDisabled,
     );
     return Padding(
-      padding: const EdgeInsets.only(bottom: CatchSpacing.s3),
+      padding: CatchInsets.sectionItemBottomGap,
       child: CatchSurface(
         padding: CatchInsets.contentDense,
         borderColor: t.line,
@@ -1387,10 +1387,7 @@ class HostFullCapacityBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return CatchSurface(
-      padding: const EdgeInsets.symmetric(
-        horizontal: CatchSpacing.s4,
-        vertical: CatchSpacing.s3,
-      ),
+      padding: CatchInsets.listBody,
       backgroundColor: t.ink,
       radius: CatchRadius.md,
       borderWidth: 0,
@@ -1433,7 +1430,7 @@ class HostCapacityTile extends StatelessWidget {
     final t = CatchTokens.of(context);
 
     return CatchSurface(
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+      padding: CatchInsets.content,
       borderColor: t.line,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

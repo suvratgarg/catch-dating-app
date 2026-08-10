@@ -379,12 +379,7 @@ class PaperCompanionTicket extends StatelessWidget {
                 ),
                 const PaperTicketPerforation(),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    CatchSpacing.s4,
-                    CatchSpacing.s3,
-                    CatchSpacing.s4,
-                    CatchSpacing.s4,
-                  ),
+                  padding: CatchInsets.contentBlock,
                   child: Row(
                     children: [
                       Expanded(child: PaperTicketSerial(event: event)),
@@ -435,12 +430,7 @@ class PaperTicketHeader extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(
-              CatchSpacing.s4,
-              CatchSpacing.s9,
-              CatchSpacing.s4,
-              CatchSpacing.s4,
-            ),
+            padding: CatchInsets.paperTicketHeader,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -707,7 +697,7 @@ class _PaperExpectationRow extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(top: CatchSpacing.micro2),
+          padding: CatchInsets.inlineIconTopTight,
           child: Icon(item.icon, size: CatchIcon.sm, color: t.ink3),
         ),
         gapW12,

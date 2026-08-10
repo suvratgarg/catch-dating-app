@@ -46,12 +46,7 @@ class CreateEventLoadingBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.s4,
-        CatchSpacing.s4,
-        CatchSpacing.s4,
-        CatchSpacing.s6,
-      ),
+      padding: CatchInsets.hostCreateEventLoadingBody,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -110,12 +105,7 @@ class CreateEventLoadingFooter extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(
-              CatchSpacing.s4,
-              CatchSpacing.s3,
-              CatchSpacing.s4,
-              CatchSpacing.s0,
-            ),
+            padding: CatchInsets.hostCreateEventLoadingFooter,
             child: Row(
               children: [
                 CatchSkeleton.box(

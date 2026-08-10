@@ -214,10 +214,7 @@ class _EventPinsMapState extends State<EventPinsMap> {
             right: 0,
             child: SafeArea(
               child: Padding(
-                padding: const EdgeInsets.only(
-                  top: CatchSpacing.s16,
-                  right: CatchSpacing.s5,
-                ),
+                padding: CatchInsets.eventMapOverviewControl,
                 child: CatchIconButton(
                   variant: CatchIconButtonVariant.float,
                   tooltip: context

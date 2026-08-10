@@ -117,7 +117,7 @@ class LaunchAccessLoadingBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.only(top: CatchSpacing.s4),
+      padding: CatchInsets.launchAccessBodyTop,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -269,7 +269,7 @@ class _LaunchAccessApplicationFormState
         .firstOrNull;
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.only(top: CatchSpacing.s4),
+      padding: CatchInsets.launchAccessBodyTop,
       child: Form(
         key: _formKey,
         child: Column(

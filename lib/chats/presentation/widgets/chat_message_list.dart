@@ -56,10 +56,7 @@ class ChatMessageList extends StatelessWidget {
           padding: CatchInsets.listBodyDense,
           children: [
             Padding(
-              padding: const EdgeInsets.only(
-                top: CatchSpacing.s1,
-                bottom: CatchSpacing.s4,
-              ),
+              padding: CatchInsets.chatDateMarker,
               child: Center(
                 child: CatchSkeleton.text(
                   width: CatchLayout.skeletonTextShortWidth,
@@ -139,10 +136,7 @@ class ChatMessageList extends StatelessWidget {
             if (date != null) {
               final t = CatchTokens.of(context);
               return Padding(
-                padding: const EdgeInsets.only(
-                  top: CatchSpacing.s1,
-                  bottom: CatchSpacing.s4,
-                ),
+                padding: CatchInsets.chatDateMarker,
                 child: Center(
                   child: Text(
                     AppTimeFormatters.weekdayDayMonth(date),

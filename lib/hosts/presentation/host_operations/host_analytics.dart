@@ -644,7 +644,7 @@ class HostAnalyticsDualBar extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(CatchRadius.sm),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s1),
+          padding: CatchInsets.inlineHorizontalTight,
           child: Column(
             children: [
               SizedBox(

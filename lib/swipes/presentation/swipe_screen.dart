@@ -309,12 +309,7 @@ class CatchesTopOverlaySkeleton extends StatelessWidget {
       child: SafeArea(
         bottom: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            CatchSpacing.s4,
-            CatchSpacing.s3,
-            CatchSpacing.s4,
-            0,
-          ),
+          padding: CatchInsets.swipeTopChrome,
           child: Row(
             children: [
               const OverlayIconSkeleton(),
@@ -382,12 +377,7 @@ class CatchesTopOverlay extends StatelessWidget {
       child: SafeArea(
         bottom: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            CatchSpacing.s4,
-            CatchSpacing.s3,
-            CatchSpacing.s4,
-            0,
-          ),
+          padding: CatchInsets.swipeTopChrome,
           child: Row(
             children: [
               CatchIconAction(
@@ -411,10 +401,7 @@ class CatchesTopOverlay extends StatelessWidget {
                       alpha: CatchOpacity.floatingChromeBorder,
                     ),
                     boxShadow: CatchElevation.card,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: CatchSpacing.s4,
-                      vertical: CatchSpacing.s2,
-                    ),
+                    padding: CatchInsets.swipeRemainingCount,
                     child: Text(
                       context.l10n
                           .swipesSwipeScreenTextCatchesRemainingcountLeft(
