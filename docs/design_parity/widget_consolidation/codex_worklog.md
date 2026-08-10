@@ -44,8 +44,7 @@ similarity on demand under `build/reports/`, keep durable decisions in
    (skip string literals), check it contains `type: <X>,`, then delete
    annotation + function. Assert expected deletion counts.
 3. After adding/removing/repointing any `@widgetbook.UseCase`, regenerate:
-   `cd widgetbook && flutter pub get && dart run build_runner build
-   --delete-conflicting-outputs` (~30s).
+   `cd widgetbook && flutter pub get && dart run build_runner build` (~30s).
 4. `dart format` every touched file (mechanical injections leave bad wrapping).
 5. When deleting a widget class, delete `class X extends … {` through the next
    `}` at column 0, then grep repo-wide (`lib/`, `widgetbook/lib`, excluding
