@@ -1924,6 +1924,8 @@ abstract final class CatchLayout {
   /// Content max-width clamp for large phones / foldables.
   /// Wrap full-bleed page bodies in [ConstrainedBox] with this maxWidth, centered.
   static const double maxContentWidth = 600;
+  static const double maxContentWithDockHeight =
+      maxContentWidth + CatchSpacing.s16;
   static const double pageBodyHorizontalGutters = CatchSpacing.screenPx * 2;
   static const double tabbedPageMaxExtent =
       maxContentWidth + pageBodyHorizontalGutters;

@@ -76,6 +76,8 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
+import '../preview_layout_contracts.dart';
+
 const _viewerUid = UtilitySurfaceFixtures.viewerUid;
 final _viewer = UtilitySurfaceFixtures.viewer;
 final _event = UtilitySurfaceFixtures.event;
@@ -606,8 +608,8 @@ Widget orderedPhotoTileStates(BuildContext context) {
         label: 'cover removable',
         child: Center(
           child: SizedBox(
-            width: 260,
-            height: 146,
+            width: WidgetbookPreviewLayout.compactComponentWidth,
+            height: WidgetbookPreviewLayout.utilityMediaPreviewHeight,
             child: OrderedPhotoTile(
               photo: _orderedPhotoPreviews.first,
               index: 0,
@@ -623,8 +625,8 @@ Widget orderedPhotoTileStates(BuildContext context) {
         label: 'read only',
         child: Center(
           child: SizedBox(
-            width: 260,
-            height: 146,
+            width: WidgetbookPreviewLayout.compactComponentWidth,
+            height: WidgetbookPreviewLayout.utilityMediaPreviewHeight,
             child: OrderedPhotoTile(
               photo: _orderedPhotoPreviews.last,
               index: 1,
@@ -653,8 +655,8 @@ Widget orderedPhotoAddTileStates(BuildContext context) {
         label: 'active',
         child: Center(
           child: SizedBox(
-            width: 260,
-            height: 146,
+            width: WidgetbookPreviewLayout.compactComponentWidth,
+            height: WidgetbookPreviewLayout.utilityMediaPreviewHeight,
             child: OrderedPhotoAddTile(label: 'Add event photos', onTap: _noop),
           ),
         ),
@@ -663,8 +665,8 @@ Widget orderedPhotoAddTileStates(BuildContext context) {
         label: 'disabled compact',
         child: Center(
           child: SizedBox(
-            width: 160,
-            height: 82,
+            width: WidgetbookPreviewLayout.compactControlWidth,
+            height: WidgetbookPreviewLayout.utilityCompactPreviewHeight,
             child: OrderedPhotoAddTile(label: 'Add more'),
           ),
         ),
@@ -789,8 +791,8 @@ Widget profilePhotoEditorPreviewStates(BuildContext context) {
         label: 'existing image',
         child: Center(
           child: SizedBox(
-            width: 260,
-            height: 347,
+            width: WidgetbookPreviewLayout.compactComponentWidth,
+            height: WidgetbookPreviewLayout.utilityTallPreviewHeight,
             child: ProfilePhotoEditorPreview(
               cropKey: GlobalKey(),
               loading: false,
@@ -803,8 +805,8 @@ Widget profilePhotoEditorPreviewStates(BuildContext context) {
         label: 'loading',
         child: Center(
           child: SizedBox(
-            width: 260,
-            height: 347,
+            width: WidgetbookPreviewLayout.compactComponentWidth,
+            height: WidgetbookPreviewLayout.utilityTallPreviewHeight,
             child: ProfilePhotoEditorPreview(
               cropKey: GlobalKey(),
               loading: true,
@@ -816,8 +818,8 @@ Widget profilePhotoEditorPreviewStates(BuildContext context) {
         label: 'empty',
         child: Center(
           child: SizedBox(
-            width: 260,
-            height: 347,
+            width: WidgetbookPreviewLayout.compactComponentWidth,
+            height: WidgetbookPreviewLayout.utilityTallPreviewHeight,
             child: ProfilePhotoEditorPreview(
               cropKey: GlobalKey(),
               loading: false,
@@ -1713,7 +1715,7 @@ Widget reviewsHistoryBodyStates(BuildContext context) {
       _StateCard(
         label: 'content',
         child: SizedBox(
-          height: 420,
+          height: WidgetbookPreviewLayout.feedbackViewportHeight,
           child: ReviewsHistoryBody(
             state: ReviewsHistoryContent(user: _viewer, rows: rows),
             onRetryProfile: _noop,
@@ -1725,7 +1727,7 @@ Widget reviewsHistoryBodyStates(BuildContext context) {
       _StateCard(
         label: 'empty',
         child: SizedBox(
-          height: 320,
+          height: WidgetbookPreviewLayout.sliverPreviewHeight,
           child: ReviewsHistoryBody(
             state: const ReviewsHistoryEmpty(
               title: 'No reviews yet',
@@ -1740,7 +1742,7 @@ Widget reviewsHistoryBodyStates(BuildContext context) {
       _StateCard(
         label: 'error',
         child: SizedBox(
-          height: 320,
+          height: WidgetbookPreviewLayout.sliverPreviewHeight,
           child: ReviewsHistoryBody(
             state: const ReviewsHistoryError(
               title: 'Reviews unavailable',
@@ -1770,7 +1772,7 @@ Widget reviewsHistoryListStates(BuildContext context) {
       _StateCard(
         label: 'rows',
         child: SizedBox(
-          height: 360,
+          height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
           child: ReviewsHistoryList(
             rows: _reviewHistoryRows(),
             onEditReview: _noopReviewHistoryEdit,
@@ -1793,7 +1795,10 @@ Widget reviewsHistorySkeletonStates(BuildContext context) {
     children: [
       _StateCard(
         label: 'loading list',
-        child: SizedBox(height: 360, child: ReviewsHistorySkeleton()),
+        child: SizedBox(
+          height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
+          child: ReviewsHistorySkeleton(),
+        ),
       ),
     ],
   );

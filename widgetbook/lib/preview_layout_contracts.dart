@@ -122,6 +122,16 @@ abstract final class WidgetbookPreviewLayout {
       CatchLayout.welcomeFocusLockupMaxWidth;
   static const double onboardingReelRowPreviewHeight = 92;
 
+  static const double utilityMediaPreviewHeight = 146;
+  static const double utilityCompactPreviewHeight = 82;
+  static const double utilityTallPreviewHeight = 347;
+
+  static const double catchesCompactPreviewHeight = 230;
+  static const double catchesSkeletonPreviewHeight = 440;
+  static const double catchesSectionPreviewHeight = 210;
+  static const double catchesSummaryPreviewHeight = 108;
+  static const double catchesCardPreviewHeight = 168;
+
   static const double skeletonCardHeight = 84;
   static const double skeletonBoxWidth = 96;
   static const double skeletonTextWidth = 180;

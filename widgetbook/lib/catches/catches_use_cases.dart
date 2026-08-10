@@ -46,6 +46,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
+import '../preview_layout_contracts.dart';
+
 @widgetbook.UseCase(
   name: 'Hub route states',
   type: SwipeHubScreen,
@@ -669,7 +671,7 @@ Widget filtersSectionStates(BuildContext context) {
       _StateCard(
         label: 'value section',
         child: _SectionFrame(
-          height: 140,
+          height: WidgetbookPreviewLayout.compactPanelHeight,
           child: Padding(
             padding: CatchInsets.content,
             child: FiltersSection(
@@ -696,7 +698,7 @@ Widget filtersValueStates(BuildContext context) {
       _StateCard(
         label: 'default',
         child: _SectionFrame(
-          height: 96,
+          height: WidgetbookPreviewLayout.smallPreviewExtent,
           child: Padding(
             padding: CatchInsets.content,
             child: FiltersValue(value: '24 - 36'),
@@ -750,14 +752,14 @@ Widget profileHeroWidgetStates(BuildContext context) {
       _StateCard(
         label: 'read only',
         child: _SectionFrame(
-          height: CatchLayout.maxContentWidth + CatchSpacing.s16,
+          height: CatchLayout.maxContentWithDockHeight,
           child: ProfileHeroWidget(data: data),
         ),
       ),
       _StateCard(
         label: 'reactable',
         child: _SectionFrame(
-          height: CatchLayout.maxContentWidth + CatchSpacing.s16,
+          height: CatchLayout.maxContentWithDockHeight,
           child: ProfileHeroWidget(data: data, onReact: _noopReaction),
         ),
       ),
@@ -803,14 +805,14 @@ Widget profilePhotoStates(BuildContext context) {
       _StateCard(
         label: 'graded photo',
         child: _SectionFrame(
-          height: 520,
+          height: WidgetbookPreviewLayout.defaultPhonePreviewHeight,
           child: ProfilePhoto(image: data.heroPhoto),
         ),
       ),
       _StateCard(
         label: 'activity fallback',
         child: _SectionFrame(
-          height: 520,
+          height: WidgetbookPreviewLayout.defaultPhonePreviewHeight,
           child: ProfilePhoto(image: null, activity: data.kickerActivity),
         ),
       ),
@@ -832,14 +834,14 @@ Widget profilePhotoBlockStates(BuildContext context) {
       _StateCard(
         label: 'caption',
         child: _SectionFrame(
-          height: 520,
+          height: WidgetbookPreviewLayout.defaultPhonePreviewHeight,
           child: ProfilePhotoBlock(section: section),
         ),
       ),
       _StateCard(
         label: 'reactable',
         child: _SectionFrame(
-          height: 520,
+          height: WidgetbookPreviewLayout.defaultPhonePreviewHeight,
           child: ProfilePhotoBlock(section: section, onReact: _noopReaction),
         ),
       ),
@@ -887,7 +889,7 @@ Widget profileSectionViewStates(BuildContext context) {
       _StateCard(
         label: 'passive section',
         child: _SectionFrame(
-          height: 220,
+          height: WidgetbookPreviewLayout.stateViewportHeight,
           child: Padding(
             padding: CatchInsets.content,
             child: ProfileSectionView(section: section),
@@ -897,7 +899,7 @@ Widget profileSectionViewStates(BuildContext context) {
       _StateCard(
         label: 'reactable section',
         child: _SectionFrame(
-          height: 260,
+          height: WidgetbookPreviewLayout.routeViewportHeight,
           child: Padding(
             padding: CatchInsets.content,
             child: ProfileSectionView(section: section, onReact: _noopReaction),
@@ -939,7 +941,7 @@ Widget profileCompatibilityStates(BuildContext context) {
       _StateCard(
         label: 'reasons and signals',
         child: _SectionFrame(
-          height: 260,
+          height: WidgetbookPreviewLayout.routeViewportHeight,
           child: Padding(
             padding: CatchInsets.content,
             child: ProfileCompatibility(
@@ -985,7 +987,7 @@ Widget profileRunningStates(BuildContext context) {
       _StateCard(
         label: 'running rhythm',
         child: _SectionFrame(
-          height: 230,
+          height: WidgetbookPreviewLayout.catchesCompactPreviewHeight,
           child: Padding(
             padding: CatchInsets.content,
             child: ProfileRunning(
@@ -1029,7 +1031,7 @@ Widget profileFactsStates(BuildContext context) {
       _StateCard(
         label: 'details',
         child: _SectionFrame(
-          height: 260,
+          height: WidgetbookPreviewLayout.routeViewportHeight,
           child: Padding(
             padding: CatchInsets.content,
             child: ProfileFacts(
@@ -1091,7 +1093,10 @@ Widget profileSurfaceHeroSkeletonStates(BuildContext context) {
     children: [
       _StateCard(
         label: 'portrait hero',
-        child: _SectionFrame(height: 440, child: ProfileSurfaceHeroSkeleton()),
+        child: _SectionFrame(
+          height: WidgetbookPreviewLayout.catchesSkeletonPreviewHeight,
+          child: ProfileSurfaceHeroSkeleton(),
+        ),
       ),
     ],
   );
@@ -1110,14 +1115,14 @@ Widget profileSurfaceSectionSkeletonStates(BuildContext context) {
       _StateCard(
         label: 'prompt block',
         child: _SectionFrame(
-          height: 210,
+          height: WidgetbookPreviewLayout.catchesSectionPreviewHeight,
           child: ProfileSurfaceSectionSkeleton(lines: 3),
         ),
       ),
       _StateCard(
         label: 'compact block',
         child: _SectionFrame(
-          height: 180,
+          height: WidgetbookPreviewLayout.mediaPanelHeight,
           child: ProfileSurfaceSectionSkeleton(lines: 1),
         ),
       ),
@@ -1138,7 +1143,7 @@ Widget profileSurfaceRunningSkeletonStates(BuildContext context) {
       _StateCard(
         label: 'running rhythm',
         child: _SectionFrame(
-          height: 220,
+          height: WidgetbookPreviewLayout.stateViewportHeight,
           child: ProfileSurfaceRunningSkeleton(),
         ),
       ),
@@ -1158,7 +1163,10 @@ Widget profileSurfacePhotoSkeletonStates(BuildContext context) {
     children: [
       _StateCard(
         label: 'portrait photo block',
-        child: _SectionFrame(height: 460, child: ProfileSurfacePhotoSkeleton()),
+        child: _SectionFrame(
+          height: WidgetbookPreviewLayout.tallRouteViewportHeight,
+          child: ProfileSurfacePhotoSkeleton(),
+        ),
       ),
     ],
   );
@@ -1176,7 +1184,10 @@ Widget profileSurfaceFactsSkeletonStates(BuildContext context) {
     children: [
       _StateCard(
         label: 'fact rows',
-        child: _SectionFrame(height: 260, child: ProfileSurfaceFactsSkeleton()),
+        child: _SectionFrame(
+          height: WidgetbookPreviewLayout.routeViewportHeight,
+          child: ProfileSurfaceFactsSkeleton(),
+        ),
       ),
     ],
   );
@@ -1194,7 +1205,10 @@ Widget profileSurfaceRuleStates(BuildContext context) {
     children: [
       _StateCard(
         label: 'section divider',
-        child: _SectionFrame(height: 72, child: ProfileSurfaceRule()),
+        child: _SectionFrame(
+          height: WidgetbookPreviewLayout.skeletonListItemHeight,
+          child: ProfileSurfaceRule(),
+        ),
       ),
     ],
   );
@@ -1270,7 +1284,7 @@ Widget catchesHubHeaderStates(BuildContext context) {
       _StateCard(
         label: 'default',
         child: _SectionFrame(
-          height: 108,
+          height: WidgetbookPreviewLayout.catchesSummaryPreviewHeight,
           child: Padding(
             padding: CatchInsets.content,
             child: CatchesHubHeader(),
@@ -1296,7 +1310,7 @@ Widget catchesIntroCardStates(BuildContext context) {
       _StateCard(
         label: 'window open',
         child: _SectionFrame(
-          height: 360,
+          height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
           child: Padding(
             padding: CatchInsets.content,
             child: CatchesIntroCard(row: rows.first, onTap: _noopTap),
@@ -1306,7 +1320,7 @@ Widget catchesIntroCardStates(BuildContext context) {
       _StateCard(
         label: 'closing soon',
         child: _SectionFrame(
-          height: 360,
+          height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
           child: Padding(
             padding: CatchInsets.content,
             child: CatchesIntroCard(row: rows.last, onTap: _noopTap),
@@ -1332,7 +1346,7 @@ Widget attendedEventTileStates(BuildContext context) {
       _StateCard(
         label: 'open and closing soon',
         child: _SectionFrame(
-          height: 260,
+          height: WidgetbookPreviewLayout.routeViewportHeight,
           child: Padding(
             padding: CatchInsets.content,
             child: Column(
@@ -1477,7 +1491,7 @@ Widget catchesTopOverlayStates(BuildContext context) {
       _StateCard(
         label: 'default',
         child: _DeckChromeFrame(
-          height: 168,
+          height: WidgetbookPreviewLayout.catchesCardPreviewHeight,
           child: CatchesTopOverlay(
             remainingCount: 7,
             onBack: _noopTap,
@@ -1501,7 +1515,10 @@ Widget catchesBottomScrimStates(BuildContext context) {
     children: [
       _StateCard(
         label: 'default',
-        child: _DeckChromeFrame(height: 220, child: CatchesBottomScrim()),
+        child: _DeckChromeFrame(
+          height: WidgetbookPreviewLayout.stateViewportHeight,
+          child: CatchesBottomScrim(),
+        ),
       ),
     ],
   );
@@ -1520,14 +1537,14 @@ Widget catchesPassButtonStates(BuildContext context) {
       _StateCard(
         label: 'default',
         child: _SectionFrame(
-          height: 140,
+          height: WidgetbookPreviewLayout.compactPanelHeight,
           child: Center(child: CatchesPassButton(onPressed: _noopTap)),
         ),
       ),
       _StateCard(
         label: 'pending',
         child: _SectionFrame(
-          height: 140,
+          height: WidgetbookPreviewLayout.compactPanelHeight,
           child: Center(
             child: CatchesPassButton(onPressed: _noopTap, isPending: true),
           ),
@@ -1536,7 +1553,7 @@ Widget catchesPassButtonStates(BuildContext context) {
       _StateCard(
         label: 'disabled',
         child: _SectionFrame(
-          height: 140,
+          height: WidgetbookPreviewLayout.compactPanelHeight,
           child: Center(child: CatchesPassButton(onPressed: null)),
         ),
       ),
@@ -1557,7 +1574,7 @@ Widget catchesReactionControlStates(BuildContext context) {
       _StateCard(
         label: 'surface and overlay',
         child: _SectionFrame(
-          height: 180,
+          height: WidgetbookPreviewLayout.mediaPanelHeight,
           child: Center(
             child: Wrap(
               spacing: CatchSpacing.s5,
@@ -1610,7 +1627,7 @@ Widget reactionControlButtonStates(BuildContext context) {
       _StateCard(
         label: 'surface',
         child: _SectionFrame(
-          height: 140,
+          height: WidgetbookPreviewLayout.compactPanelHeight,
           child: Center(
             child: ReactionControlButton(
               tooltip: 'Like prompt',
@@ -1624,7 +1641,7 @@ Widget reactionControlButtonStates(BuildContext context) {
       _StateCard(
         label: 'overlay pending disabled',
         child: _SectionFrame(
-          height: 140,
+          height: WidgetbookPreviewLayout.compactPanelHeight,
           child: Center(
             child: Wrap(
               spacing: CatchSpacing.s3,
@@ -1664,14 +1681,14 @@ Widget profileReactionCommentSheetStates(BuildContext context) {
       _StateCard(
         label: 'empty draft',
         child: _SectionFrame(
-          height: 440,
+          height: WidgetbookPreviewLayout.catchesSkeletonPreviewHeight,
           child: ProfileReactionCommentSheet(target: _reactionTarget),
         ),
       ),
       _StateCard(
         label: 'filled draft',
         child: _SectionFrame(
-          height: 440,
+          height: WidgetbookPreviewLayout.catchesSkeletonPreviewHeight,
           child: ProfileReactionCommentSheet(
             target: _reactionTarget,
             initialComment: 'Your sunrise loop sounds like my kind of Sunday.',
@@ -1695,7 +1712,7 @@ Widget profileInfoChipStates(BuildContext context) {
       _StateCard(
         label: 'short and long labels',
         child: _SectionFrame(
-          height: 160,
+          height: WidgetbookPreviewLayout.insetPreviewHeight,
           child: Padding(
             padding: CatchInsets.content,
             child: Wrap(
@@ -2210,7 +2227,10 @@ class _DeviceFrame extends StatelessWidget {
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(CatchRadius.lg),
-            child: SizedBox(height: 720, child: child),
+            child: SizedBox(
+              height: WidgetbookPreviewLayout.paperScaffoldViewportHeight,
+              child: child,
+            ),
           ),
         ),
       ),
