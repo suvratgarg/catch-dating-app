@@ -1103,10 +1103,13 @@ void main() {
           ),
         ),
       );
-      await tester.tap(
-        find.byKey(const ValueKey('catch-field-choice-Run')),
-        warnIfMissed: false,
+      final lockedChoice = tester.widget<CatchFieldChoiceChip>(
+        find.ancestor(
+          of: find.byKey(const ValueKey('catch-field-choice-Run')),
+          matching: find.byType(CatchFieldChoiceChip),
+        ),
       );
+      expect(lockedChoice.enabled, isFalse);
       expect(reports, 1);
     },
   );

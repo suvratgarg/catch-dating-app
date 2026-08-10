@@ -20,6 +20,7 @@ class ClubIndexRow extends StatelessWidget {
     ).forKind(club.hostDefaults.primaryActivityKind);
 
     return Semantics(
+      key: ValueKey<String>('club-directory-${club.id}'),
       button: onTap != null,
       label: context.l10n.clubsDirectoryCardLabelOpenNameClub(name: club.name),
       child: CatchSurface(

@@ -44,6 +44,7 @@ class EventSuccessHostTabBody extends StatelessWidget {
       );
     }
     return SingleChildScrollView(
+      key: EventSuccessHostKeys.scrollView,
       physics: const AlwaysScrollableScrollPhysics(),
       padding: CatchInsets.contentRelaxed,
       child: CatchSectionList(

@@ -80,6 +80,9 @@ const testShellCity = CityData(
   longitude: 72.8777,
 );
 
+const _appShellTestFrame = Duration(milliseconds: 100);
+const _mutationPresentationInterval = Duration(milliseconds: 350);
+
 Future<void> pumpCatchAppShell(
   WidgetTester tester, {
   String initialRoute = '/',
@@ -112,7 +115,7 @@ Future<void> pumpRoute(WidgetTester tester) => pumpAppShellFrames(tester);
 
 Future<void> pumpAppShellFrames(WidgetTester tester, {int frames = 8}) async {
   for (var i = 0; i < frames; i += 1) {
-    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pump(_appShellTestFrame);
   }
 }
 
@@ -123,7 +126,7 @@ Future<void> flushAppShellCallbacks(
   int frames = 4,
 }) async {
   for (var i = 0; i < frames; i += 1) {
-    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pump(_appShellTestFrame);
   }
 }
 
@@ -134,13 +137,16 @@ Future<void> pumpUntilFound(
 }) async {
   for (var i = 0; i < frames; i += 1) {
     if (finder.evaluate().isNotEmpty) return;
-    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pump(_appShellTestFrame);
   }
+  throw TestFailure(
+    'Expected $finder to appear within $frames app-shell frames.',
+  );
 }
 
 Future<void> pumpMutationUi(WidgetTester tester) async {
   await tester.pump();
-  await tester.pump(const Duration(milliseconds: 350));
+  await tester.pump(_mutationPresentationInterval);
   await tester.pump();
 }
 
@@ -150,9 +156,8 @@ Future<void> openClubDetail(WidgetTester tester, Club club) async {
   if (await _tapVisibleClubCard(tester, club)) return;
 
   final shell = find.byType(AppShell);
-  final context = tester.element(
-    shell.evaluate().isNotEmpty ? shell.first : find.byType(Navigator).first,
-  );
+  expect(shell, findsOneWidget);
+  final context = tester.element(shell);
   unawaited(
     GoRouter.of(context).pushNamed(
       Routes.clubDetailScreen.name,
@@ -170,9 +175,8 @@ Future<void> openEventDetail(
   bool settle = true,
 }) async {
   final shell = find.byType(AppShell);
-  final context = tester.element(
-    shell.evaluate().isNotEmpty ? shell.first : find.byType(Navigator).first,
-  );
+  expect(shell, findsOneWidget);
+  final context = tester.element(shell);
   unawaited(
     GoRouter.of(context).pushNamed(
       Routes.eventDetailScreen.name,
@@ -189,9 +193,8 @@ Future<void> openEventDetail(
 
 Future<void> openSwipeDeck(WidgetTester tester, Event event) async {
   final shell = find.byType(AppShell);
-  final context = tester.element(
-    shell.evaluate().isNotEmpty ? shell.first : find.byType(Navigator).first,
-  );
+  expect(shell, findsOneWidget);
+  final context = tester.element(shell);
   unawaited(
     GoRouter.of(context).pushNamed(
       Routes.swipeEventScreen.name,
@@ -533,16 +536,16 @@ List<Object> appShellTestOverrides({
 }
 
 Future<bool> _tapVisibleClubCard(WidgetTester tester, Club club) async {
-  final semanticCard = find.bySemanticsLabel('Open ${club.name} club');
-  if (semanticCard.evaluate().isNotEmpty) {
-    await tester.tap(semanticCard.first);
-    return true;
-  }
-
-  final clubName = find.text(club.name);
-  if (clubName.evaluate().isNotEmpty) {
-    await tester.ensureVisible(clubName.first);
-    await tester.tap(clubName.first);
+  final candidates = [
+    find.byKey(ValueKey<String>('explore-organizer-${club.id}')),
+    find.byKey(ValueKey<String>('explore-club-row-${club.id}')),
+    find.byKey(ValueKey<String>('club-directory-${club.id}')),
+  ];
+  for (final candidate in candidates) {
+    final visibleCandidate = candidate.hitTestable();
+    if (visibleCandidate.evaluate().isEmpty) continue;
+    expect(visibleCandidate, findsOneWidget);
+    await tester.tap(visibleCandidate);
     return true;
   }
 

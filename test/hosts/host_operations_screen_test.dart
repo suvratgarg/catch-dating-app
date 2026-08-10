@@ -2186,7 +2186,14 @@ void main() {
     await pumpFeatureUi(tester);
     await tester.tap(find.text('City'));
     await pumpFeatureUi(tester);
-    final citySheetScroll = findLastByType<Scrollable>();
+    final citySheetScroll = findVerticalScrollable(
+      within: find.byKey(
+        const PageStorageKey<String>(
+          'host-club-canonical-city-club-edit-scroll',
+        ),
+      ),
+    );
+    expect(citySheetScroll, findsOneWidget);
     await tester.scrollUntilVisible(
       find.text('Mumbai'),
       180,

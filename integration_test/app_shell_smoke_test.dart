@@ -2,7 +2,6 @@ import 'package:catch_dating_app/auth/presentation/auth_form_keys.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_keys.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
-import 'package:flutter/material.dart' show TextField;
 import 'package:flutter_test/flutter_test.dart';
 
 import '../test/clubs/clubs_test_helpers.dart' as club_helpers;
@@ -69,7 +68,7 @@ void main() {
     expect(authRepository.verifiedPhoneNumber, '+19876543210');
     expect(find.text('Enter the code'), findsOneWidget);
 
-    await tester.enterText(find.byType(TextField).last, '123456');
+    await tester.enterText(find.byKey(AuthFormKeys.otpField), '123456');
     await flushAppShellCallbacks(tester);
     await pumpAppShellFrames(tester);
 

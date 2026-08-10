@@ -2933,7 +2933,9 @@ void main() {
 
       expect(find.byTooltip('Message host'), findsNWidgets(2));
 
-      await tester.tap(findLastByTooltip('Message host'));
+      await tester.tap(
+        find.byKey(const ValueKey<String>('club-host-message-host-2')),
+      );
       await _pumpClubUi(tester);
 
       expect(fakeRepository.startedConversationClubId, club.id);
@@ -3138,7 +3140,9 @@ void main() {
       await tester.drag(find.byType(CustomScrollView), const Offset(0, -900));
       await _pumpClubUi(tester);
 
-      await tester.tap(find.text('START').last);
+      await tester.tap(
+        find.byKey(const ValueKey<String>('club-schedule-event-event-42')),
+      );
       await _pumpClubUi(tester);
 
       expect(find.text('Event event-42'), findsOneWidget);
@@ -3345,7 +3349,7 @@ void main() {
       await tester.pump();
       setShellState(() => activeIndex = appShellClubsTabIndex);
       await tester.pump();
-      await tester.pump(const Duration(milliseconds: 60));
+      await pumpFeatureUi(tester);
 
       expect(feedBuilds, greaterThan(initialBuilds));
     });

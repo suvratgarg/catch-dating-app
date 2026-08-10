@@ -890,7 +890,9 @@ Future<void> _driveExploreToCrossPaths(WidgetTester tester) async {
   await tester.scrollUntilVisible(
     find.byKey(const ValueKey('cross-paths-card-capture-cross-paths-rhea')),
     420,
-    scrollable: findPrimaryScrollable(),
+    scrollable: findVerticalScrollable(
+      within: find.byKey(ExploreScreenKeys.scrollView),
+    ),
   );
   await pumpFeatureUi(tester);
 }

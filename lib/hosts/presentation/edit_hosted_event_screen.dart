@@ -55,6 +55,7 @@ part 'edit_hosted_event_route_screen.dart';
 
 abstract final class EditHostedEventKeys {
   static const saveButton = ValueKey('edit-hosted-event-save-button');
+  static const scrollView = ValueKey('edit-hosted-event-scroll-view');
 }
 
 @immutable
@@ -404,6 +405,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
               key: _formKey,
               autovalidateMode: widget.formAutovalidateMode,
               child: ListView(
+                key: EditHostedEventKeys.scrollView,
                 padding: CatchInsets.pageBody,
                 children: [
                   CatchSectionList(

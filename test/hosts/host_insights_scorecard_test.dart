@@ -111,7 +111,10 @@ void main() {
       onOpenAllEvents: () {},
     );
 
-    final firstBar = findFirstByType<HostAnalyticsDualBar>();
+    final firstBar = find.byKey(
+      const ValueKey<String>('host-analytics-trend-2026-06-02T00:00:00.000Z'),
+    );
+    expect(firstBar, findsOneWidget);
     await tester.ensureVisible(firstBar);
     tester.widget<HostAnalyticsDualBar>(firstBar).onTap();
     await pumpFeatureUi(tester);

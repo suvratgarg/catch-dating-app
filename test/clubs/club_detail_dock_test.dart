@@ -55,7 +55,10 @@ void main() {
       expect(toggleSemantics().properties.enabled, isFalse);
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
 
-      await tester.tap(find.byType(CatchIconButton), warnIfMissed: false);
+      expect(
+        tester.widget<CatchIconButton>(find.byType(CatchIconButton)).onTap,
+        isNull,
+      );
       await tester.pump();
       expect(taps, 1);
 

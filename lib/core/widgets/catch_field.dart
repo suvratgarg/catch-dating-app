@@ -349,7 +349,7 @@ abstract class CatchField extends StatefulWidget {
         multi: multi,
         allowEmptySelection: allowEmptySelection,
         autoClose: !multi && onSubmit == null,
-        enabled: !isLoading,
+        enabled: enabled && !isLoading,
         itemAccent: itemAccent,
         onSelectionChanged: onSelectionChanged,
       ),

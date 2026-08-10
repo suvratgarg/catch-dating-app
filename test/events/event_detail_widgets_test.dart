@@ -326,7 +326,11 @@ void main() {
       await tester.scrollUntilVisible(
         find.text('GOOD TO KNOW'),
         400,
-        scrollable: findPrimaryScrollable(),
+        scrollable: findVerticalScrollable(
+          within: find.byKey(
+            const ValueKey<String>('event_detail.scroll_view'),
+          ),
+        ),
       );
       expect(find.textContaining('Attendance matters'), findsOneWidget);
       expect(find.text('What to expect'), findsNothing);
@@ -2020,10 +2024,15 @@ void main() {
       );
 
       await tester.pump();
-      final locationLabel = findLastText('Race Course Road main gate');
-      await tester.ensureVisible(locationLabel);
+      final mapCard = find.byKey(
+        const ValueKey<String>('event-detail-map-event-1'),
+      );
+      expect(mapCard, findsOneWidget);
+      await tester.ensureVisible(mapCard);
       await tester.pump();
-      await tester.tap(locationLabel);
+      await tester.tap(
+        find.descendant(of: mapCard, matching: find.byType(InkWell)),
+      );
       await pumpFeatureUi(tester);
 
       expect(find.text('Event location'), findsNothing);
