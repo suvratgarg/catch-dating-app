@@ -2179,21 +2179,12 @@ void main() {
     expect(find.text('Delhi NCR'), findsOneWidget);
     expect(find.textContaining('IN-DL-DELHI-NCR'), findsNothing);
 
-    await Scrollable.ensureVisible(
-      tester.element(find.text('City')),
-      alignment: 0.5,
-    );
+    await ensureCentered(tester, find.text('City'));
     await pumpFeatureUi(tester);
     await tester.tap(find.text('City'));
     await pumpFeatureUi(tester);
-    final citySheetScroll = findVerticalScrollable(
-      within: find.byKey(
-        const PageStorageKey<String>(
-          'host-club-canonical-city-club-edit-scroll',
-        ),
-      ),
-    );
-    expect(citySheetScroll, findsOneWidget);
+    final key = PageStorageKey('host-club-${ownedClub.id}-edit-scroll');
+    final citySheetScroll = verticalScroll(key);
     await tester.scrollUntilVisible(
       find.text('Mumbai'),
       180,

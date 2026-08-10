@@ -41,6 +41,21 @@ Finder findVerticalScrollable({required Finder within}) {
   }, description: 'vertical Scrollable directly owned by $within');
 }
 
+Finder verticalScroll(Key key) =>
+    findVerticalScrollable(within: find.byKey(key));
+
+Finder findTooltipIn<T extends Widget>(String text, String tooltip) =>
+    find.descendant(
+      of: find.ancestor(
+        of: find.textContaining(text),
+        matching: find.byType(T),
+      ),
+      matching: find.byTooltip(tooltip),
+    );
+
+Future<void> ensureCentered(WidgetTester tester, Finder finder) =>
+    Scrollable.ensureVisible(tester.element(finder), alignment: 0.5);
+
 /// Advances widget tests through route, sheet, dialog, and provider-delivery
 /// frames used by existing feature harnesses.
 ///

@@ -8,6 +8,86 @@ part of 'event_booking_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+
+@ProviderFor(eventPaidBookingSupport)
+final eventPaidBookingSupportProvider = EventPaidBookingSupportFamily._();
+
+final class EventPaidBookingSupportProvider
+    extends $FunctionalProvider<bool, bool, bool>
+    with $Provider<bool> {
+  EventPaidBookingSupportProvider._({
+    required EventPaidBookingSupportFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'eventPaidBookingSupportProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$eventPaidBookingSupportHash();
+
+  @override
+  String toString() {
+    return r'eventPaidBookingSupportProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $ProviderElement<bool> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  bool create(Ref ref) {
+    final argument = this.argument as String;
+    return eventPaidBookingSupport(ref, argument);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(bool value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<bool>(value),
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is EventPaidBookingSupportProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$eventPaidBookingSupportHash() =>
+    r'1aab0d3cf0d35a0225cf98f9ce1f2282c396eae5';
+
+final class EventPaidBookingSupportFamily extends $Family
+    with $FunctionalFamilyOverride<bool, String> {
+  EventPaidBookingSupportFamily._()
+    : super(
+        retry: null,
+        name: r'eventPaidBookingSupportProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  EventPaidBookingSupportProvider call(String currency) =>
+      EventPaidBookingSupportProvider._(argument: currency, from: this);
+
+  @override
+  String toString() => r'eventPaidBookingSupportProvider';
+}
+
 /// **Pattern A: Action controller + static Mutations**
 ///
 /// This is the most common mutation pattern in the app (6 controllers use it):

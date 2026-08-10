@@ -74,7 +74,6 @@ import 'package:catch_dating_app/hosts/presentation/club_management/create/creat
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_screen.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
-import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -92,6 +91,7 @@ import '../clubs/clubs_test_helpers.dart';
 import '../events/events_test_helpers.dart' as event_test;
 import '../support/profile_readiness_fixtures.dart';
 import '../test_pump_helpers.dart';
+import 'explore_device_location_fakes.dart';
 
 final _l10n = AppLocalizationsEn();
 
@@ -127,28 +127,9 @@ ExploreCityPickerState _testCityPickerState({
   );
 }
 
-class _NoDeviceLocation extends DeviceLocation {
-  @override
-  Future<LocationCoordinate?> build() async => null;
+class _NoDeviceLocation extends NoDeviceLocation {}
 
-  @override
-  Future<DeviceLocationRequestResult> request() async =>
-      const DeviceLocationRequestResult(
-        failure: DeviceLocationFailure.unavailable,
-      );
-}
-
-class _FixedDeviceLocation extends DeviceLocation {
-  @override
-  Future<LocationCoordinate?> build() async =>
-      const LocationCoordinate(19.0608, 72.8365);
-
-  @override
-  Future<DeviceLocationRequestResult> request() async =>
-      const DeviceLocationRequestResult(
-        location: LocationCoordinate(19.0608, 72.8365),
-      );
-}
+class _FixedDeviceLocation extends FixedDeviceLocation {}
 
 Future<void> _pumpClubsSlivers(
   WidgetTester tester,

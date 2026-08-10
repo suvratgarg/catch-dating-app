@@ -1,10 +1,12 @@
 import 'package:catch_dating_app/locations/data/places_repository.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-final locationPickerControllerProvider = Provider<LocationPickerController>(
-  (ref) => LocationPickerController(ref.watch(placesRepositoryProvider)),
-);
+part 'location_picker_controller.g.dart';
+
+@riverpod
+LocationPickerController locationPickerController(Ref ref) =>
+    LocationPickerController(ref.watch(placesRepositoryProvider));
 
 /// Owns remote place lookup operations for the location picker presentation.
 class LocationPickerController {

@@ -326,11 +326,7 @@ void main() {
       await tester.scrollUntilVisible(
         find.text('GOOD TO KNOW'),
         400,
-        scrollable: findVerticalScrollable(
-          within: find.byKey(
-            const ValueKey<String>('event_detail.scroll_view'),
-          ),
-        ),
+        scrollable: verticalScroll(const ValueKey('event_detail.scroll_view')),
       );
       expect(find.textContaining('Attendance matters'), findsOneWidget);
       expect(find.text('What to expect'), findsNothing);
@@ -2024,15 +2020,10 @@ void main() {
       );
 
       await tester.pump();
-      final mapCard = find.byKey(
-        const ValueKey<String>('event-detail-map-event-1'),
-      );
-      expect(mapCard, findsOneWidget);
+      final mapCard = find.byKey(const ValueKey('event-detail-map-event-1'));
       await tester.ensureVisible(mapCard);
       await tester.pump();
-      await tester.tap(
-        find.descendant(of: mapCard, matching: find.byType(InkWell)),
-      );
+      await tester.tap(mapCard);
       await pumpFeatureUi(tester);
 
       expect(find.text('Event location'), findsNothing);

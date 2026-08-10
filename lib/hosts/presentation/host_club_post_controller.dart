@@ -1,13 +1,15 @@
 import 'package:catch_dating_app/clubs/data/club_posts_repository.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-final hostClubPostControllerProvider = Provider<HostClubPostController>(
-  (ref) => HostClubPostController(
-    ref.watch(clubPostsRepositoryProvider),
-    ref.watch(appAnalyticsProvider),
-  ),
-);
+part 'host_club_post_controller.g.dart';
+
+@riverpod
+HostClubPostController hostClubPostController(Ref ref) =>
+    HostClubPostController(
+      ref.watch(clubPostsRepositoryProvider),
+      ref.watch(appAnalyticsProvider),
+    );
 
 /// Owns the create-post operation and its analytics side effect.
 class HostClubPostController {

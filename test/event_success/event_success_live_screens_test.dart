@@ -1325,9 +1325,7 @@ void main() {
     await tester.scrollUntilVisible(
       find.text('SYNCHRONIZED PARTNER REVEAL'),
       700,
-      scrollable: findVerticalScrollable(
-        within: find.byKey(EventSuccessHostKeys.scrollView),
-      ),
+      scrollable: verticalScroll(EventSuccessHostKeys.scrollView),
     );
     expect(find.text('SYNCHRONIZED PARTNER REVEAL'), findsOneWidget);
     expect(find.text('ROTATION REVEAL'), findsOneWidget);
@@ -1751,9 +1749,7 @@ void main() {
       await tester.scrollUntilVisible(
         find.text('Ask the host for an intro'),
         400,
-        scrollable: findVerticalScrollable(
-          within: find.byKey(EventSuccessCompanionKeys.scrollView),
-        ),
+        scrollable: verticalScroll(EventSuccessCompanionKeys.scrollView),
       );
       expect(find.text('HOST CAN SEE'), findsOneWidget);
       expect(find.text('Rhea'), findsOneWidget);
@@ -1761,9 +1757,7 @@ void main() {
       await tester.scrollUntilVisible(
         find.text('Ask host'),
         200,
-        scrollable: findVerticalScrollable(
-          within: find.byKey(EventSuccessCompanionKeys.scrollView),
-        ),
+        scrollable: verticalScroll(EventSuccessCompanionKeys.scrollView),
       );
       await tester.tap(find.text('Ask host'));
       await pumpFeatureUi(tester);
@@ -1830,9 +1824,7 @@ void main() {
       await tester.scrollUntilVisible(
         find.text('Ask the host for an intro'),
         400,
-        scrollable: findVerticalScrollable(
-          within: find.byKey(EventSuccessCompanionKeys.scrollView),
-        ),
+        scrollable: verticalScroll(EventSuccessCompanionKeys.scrollView),
       );
 
       expect(find.text('Arjun'), findsOneWidget);
@@ -2465,40 +2457,29 @@ void main() {
         ),
       );
       await tester.pump();
+      final scroll = verticalScroll(EventSuccessCompanionKeys.scrollView);
 
       expect(find.text('Event companion'), findsOneWidget);
       expect(find.text('Social prompt'), findsNothing);
       expect(find.text('Private afterglow'), findsOneWidget);
       expect(find.textContaining('not a public share card'), findsOneWidget);
       expect(find.text('Suggested first-message openers'), findsOneWidget);
-      expect(find.textContaining('compare routes'), findsOneWidget);
-      final openerLine = find.ancestor(
-        of: find.textContaining('compare routes'),
-        matching: find.byType(StageCueLine),
-      );
-      expect(openerLine, findsOneWidget);
-      final copyOpener = find.descendant(
-        of: openerLine,
-        matching: find.byTooltip('Copy opener'),
+      final copyOpener = findTooltipIn<StageCueLine>(
+        'compare routes',
+        'Copy opener',
       );
       await tester.ensureVisible(copyOpener);
       await tester.pump();
-      expect(copyOpener, findsOneWidget);
-
       await tester.scrollUntilVisible(
         find.text('How did it feel?'),
         400,
-        scrollable: findVerticalScrollable(
-          within: find.byKey(EventSuccessCompanionKeys.scrollView),
-        ),
+        scrollable: scroll,
       );
       expect(find.text('Submit feedback'), findsOneWidget);
       await tester.scrollUntilVisible(
         find.text('Submit feedback'),
         400,
-        scrollable: findVerticalScrollable(
-          within: find.byKey(EventSuccessCompanionKeys.scrollView),
-        ),
+        scrollable: scroll,
       );
       final safetyConcernToggle = _toggle(
         'I want Catch to review a safety or comfort concern',
@@ -2507,10 +2488,7 @@ void main() {
       await tester.pump();
       await tester.tap(safetyConcernToggle);
       await tester.pump();
-      await tester.drag(
-        find.byKey(EventSuccessCompanionKeys.scrollView),
-        const Offset(0, -180),
-      );
+      await tester.drag(scroll, const Offset(0, -180));
       await tester.pump();
       await tester.tap(find.text('Submit feedback'));
       await pumpFeatureUi(tester);
