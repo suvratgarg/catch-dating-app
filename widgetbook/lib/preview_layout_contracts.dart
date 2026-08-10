@@ -66,6 +66,44 @@ abstract final class WidgetbookPreviewLayout {
   static const double phonePreviewCornerRadius = CatchSpacing.s7;
   static const double defaultPhonePreviewHeight = 520;
 
+  static const double profileDensePreviewHeight = 96;
+  static const double profileCompactPreviewHeight = 120;
+  static const double profileInlinePreviewHeight = 180;
+  static const double profilePolaroidPreviewHeight = 176;
+  static const double profileStandardPreviewHeight = 260;
+  static const double profileMediaPreviewHeight = 280;
+  static const double profileMediumPreviewHeight = 300;
+  static const double profileSectionPreviewHeight = 360;
+  static const double profileWidePreviewExtent = 430;
+  static const double profileSheetPreviewHeight = 520;
+  static const double profileExpandedEditorHeight = 560;
+  static const double profilePhonePreviewHeight = 760;
+  static const double profileEditorPreviewHeight = 820;
+  static const double profileExpandedPreviewHeight = 880;
+
+  static const double foundationTileWidth = 132;
+  static const double foundationSwatchHeight = 56;
+  static const double foundationActivityTileWidth = 170;
+  static const double foundationMetricLabelWidth = 160;
+  static const double foundationMetricBarHeight = CatchSpacing.s3;
+  static const double foundationMetricValueWidth = 72;
+  static const double foundationInsetTileWidth = 220;
+  static const double foundationInsetSampleHeight = 84;
+  static const double foundationRadiusTileWidth = 136;
+  static const double foundationRadiusSampleWidth = 112;
+  static const double foundationRadiusSampleHeight = 72;
+  static const double foundationElevationSampleWidth = 96;
+  static const double foundationElevationSampleHeight = CatchSpacing.s16;
+  static const double foundationTypeLabelWidth = 184;
+  static const double foundationIconCellWidth = 96;
+  static const double foundationAspectRatioTileWidth = 148;
+  static const double foundationMotionTrackHeight = CatchSpacing.s8;
+  static const double foundationMotionBarWidth = 220;
+  static const double foundationCurveTileWidth = 180;
+  static const double foundationPhotoGradeTileWidth = 220;
+  static const double foundationWordmarkTileWidth = 240;
+  static const double foundationWordmarkStageHeight = 76;
+
   static const double skeletonCardHeight = 84;
   static const double skeletonBoxWidth = 96;
   static const double skeletonTextWidth = 180;

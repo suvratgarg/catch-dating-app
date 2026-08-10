@@ -12,6 +12,8 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
+import '../preview_layout_contracts.dart';
+
 @widgetbook.UseCase(
   name: 'Color roles',
   type: FoundationColorTokens,
@@ -365,7 +367,6 @@ class FoundationTypographyTokens extends StatelessWidget {
                 'Profile',
                 CatchTextStyles.sectionTitle(context),
               ),
-              _TypeSpec('titleS', 'About you', CatchTextStyles.titleS(context)),
               _TypeSpec(
                 'fieldRowTitle',
                 'Event name',
@@ -380,16 +381,6 @@ class FoundationTypographyTokens extends StatelessWidget {
                 'bodyL',
                 'Public event details should read clearly.',
                 CatchTextStyles.bodyL(context),
-              ),
-              _TypeSpec(
-                'bodyM',
-                'Clubs, profile rows, settings, and controls use this register.',
-                CatchTextStyles.bodyM(context),
-              ),
-              _TypeSpec(
-                'bodyS',
-                'Secondary row copy and compact descriptions.',
-                CatchTextStyles.bodyS(context),
               ),
               _TypeSpec(
                 'appBarSubtitle',
@@ -895,7 +886,7 @@ class _ColorTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return SizedBox(
-      width: 132,
+      width: WidgetbookPreviewLayout.foundationTileWidth,
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: t.surface,
@@ -908,7 +899,7 @@ class _ColorTile extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                height: 56,
+                height: WidgetbookPreviewLayout.foundationSwatchHeight,
                 decoration: BoxDecoration(
                   color: spec.color,
                   border: Border.all(color: t.line2),
@@ -959,7 +950,7 @@ class _ActivityColorTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return SizedBox(
-      width: 170,
+      width: WidgetbookPreviewLayout.foundationActivityTileWidth,
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: activity.soft,
@@ -1029,7 +1020,7 @@ class _MetricRow extends StatelessWidget {
     return Row(
       children: [
         SizedBox(
-          width: 160,
+          width: WidgetbookPreviewLayout.foundationMetricLabelWidth,
           child: Text(row.name, style: CatchTextStyles.monoLabel(context)),
         ),
         Expanded(
@@ -1037,7 +1028,7 @@ class _MetricRow extends StatelessWidget {
             alignment: Alignment.centerLeft,
             child: Container(
               width: barWidth,
-              height: 12,
+              height: WidgetbookPreviewLayout.foundationMetricBarHeight,
               decoration: BoxDecoration(
                 color: t.primary,
                 borderRadius: BorderRadius.circular(CatchRadius.pill),
@@ -1046,7 +1037,7 @@ class _MetricRow extends StatelessWidget {
           ),
         ),
         SizedBox(
-          width: 72,
+          width: WidgetbookPreviewLayout.foundationMetricValueWidth,
           child: Text(
             _number(row.value),
             textAlign: TextAlign.end,
@@ -1082,7 +1073,7 @@ class _InsetTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return SizedBox(
-      width: 220,
+      width: WidgetbookPreviewLayout.foundationInsetTileWidth,
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: t.raised,
@@ -1097,7 +1088,7 @@ class _InsetTile extends StatelessWidget {
               Text(row.name, style: CatchTextStyles.labelM(context)),
               gapH10,
               Container(
-                height: 84,
+                height: WidgetbookPreviewLayout.foundationInsetSampleHeight,
                 padding: row.insets,
                 decoration: BoxDecoration(
                   color: t.surface,
@@ -1150,13 +1141,13 @@ class _RadiusTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return SizedBox(
-      width: 136,
+      width: WidgetbookPreviewLayout.foundationRadiusTileWidth,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 112,
-            height: 72,
+            width: WidgetbookPreviewLayout.foundationRadiusSampleWidth,
+            height: WidgetbookPreviewLayout.foundationRadiusSampleHeight,
             decoration: BoxDecoration(
               color: t.primarySoft,
               border: Border.all(color: t.line2),
@@ -1208,13 +1199,13 @@ class _ElevationTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return SizedBox(
-      width: 132,
+      width: WidgetbookPreviewLayout.foundationTileWidth,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 96,
-            height: 64,
+            width: WidgetbookPreviewLayout.foundationIconCellWidth,
+            height: WidgetbookPreviewLayout.foundationElevationSampleHeight,
             decoration: BoxDecoration(
               color: t.surface,
               border: Border.all(color: t.line),
@@ -1257,7 +1248,7 @@ class _TypeStack extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(
-                      width: 184,
+                      width: WidgetbookPreviewLayout.foundationTypeLabelWidth,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -1302,7 +1293,7 @@ class _IconSizeGrid extends StatelessWidget {
       children: [
         for (final row in rows)
           SizedBox(
-            width: 96,
+            width: WidgetbookPreviewLayout.foundationIconCellWidth,
             child: Column(
               children: [
                 Icon(CatchIcons.sparkle, size: row.value),
@@ -1334,7 +1325,7 @@ class _AspectRatioGrid extends StatelessWidget {
       children: [
         for (final row in rows)
           SizedBox(
-            width: 148,
+            width: WidgetbookPreviewLayout.foundationAspectRatioTileWidth,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -1389,7 +1380,7 @@ class _ActivityGlyphTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 132,
+      width: WidgetbookPreviewLayout.foundationTileWidth,
       child: Column(
         children: [
           DecoratedBox(
@@ -1448,27 +1439,30 @@ class _StrokeRow extends StatelessWidget {
     return Row(
       children: [
         SizedBox(
-          width: 160,
+          width: WidgetbookPreviewLayout.foundationMetricLabelWidth,
           child: Text(row.name, style: CatchTextStyles.monoLabel(context)),
         ),
         Expanded(
           child: Align(
             alignment: Alignment.centerLeft,
             child: Container(
-              height: 32,
+              height: WidgetbookPreviewLayout.foundationMotionTrackHeight,
               alignment: Alignment.centerLeft,
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   color: t.primary,
                   borderRadius: BorderRadius.circular(CatchRadius.pill),
                 ),
-                child: SizedBox(width: 220, height: row.value),
+                child: SizedBox(
+                  width: WidgetbookPreviewLayout.foundationMotionBarWidth,
+                  height: row.value,
+                ),
               ),
             ),
           ),
         ),
         SizedBox(
-          width: 72,
+          width: WidgetbookPreviewLayout.foundationMetricValueWidth,
           child: Text(
             '${_number(row.value)} px',
             textAlign: TextAlign.end,
@@ -1515,7 +1509,7 @@ class _DurationRow extends StatelessWidget {
     return Row(
       children: [
         SizedBox(
-          width: 160,
+          width: WidgetbookPreviewLayout.foundationMetricLabelWidth,
           child: Text(row.name, style: CatchTextStyles.monoLabel(context)),
         ),
         Expanded(
@@ -1523,7 +1517,7 @@ class _DurationRow extends StatelessWidget {
             alignment: Alignment.centerLeft,
             child: Container(
               width: width.toDouble(),
-              height: 12,
+              height: WidgetbookPreviewLayout.foundationMetricBarHeight,
               decoration: BoxDecoration(
                 color: t.primary,
                 borderRadius: BorderRadius.circular(CatchRadius.pill),
@@ -1532,7 +1526,7 @@ class _DurationRow extends StatelessWidget {
           ),
         ),
         SizedBox(
-          width: 72,
+          width: WidgetbookPreviewLayout.foundationMetricValueWidth,
           child: Text(
             '${row.duration.inMilliseconds} ms',
             textAlign: TextAlign.end,
@@ -1568,7 +1562,7 @@ class _CurveTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return SizedBox(
-      width: 180,
+      width: WidgetbookPreviewLayout.foundationCurveTileWidth,
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: t.raised,
@@ -1581,7 +1575,7 @@ class _CurveTile extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
-                height: 84,
+                height: WidgetbookPreviewLayout.foundationInsetSampleHeight,
                 child: CustomPaint(
                   painter: _CurvePainter(curve: row.curve, tokens: t),
                   child: const SizedBox.expand(),
@@ -1718,7 +1712,7 @@ class _PhotoGradeTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return SizedBox(
-      width: 220,
+      width: WidgetbookPreviewLayout.foundationPhotoGradeTileWidth,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1749,37 +1743,52 @@ class _PhotoGradeSample extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final activity = ActivityPalette.of(
+      context,
+    ).getActivity(ActivityKind.dinner);
     return DecoratedBox(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF7BC6A4),
-            Color(0xFFFFD166),
-            Color(0xFFE76F51),
-            Color(0xFF213547),
-          ],
+          colors: [activity.soft, activity.accent, activity.deep, t.ink],
           stops: [0, 0.38, 0.68, 1],
         ),
       ),
-      child: CustomPaint(painter: const _PhotoGradeSamplePainter()),
+      child: CustomPaint(
+        painter: _PhotoGradeSamplePainter(
+          glow: t.surface.withValues(alpha: CatchOpacity.coverStoryGlow),
+          shadow: t.ink.withValues(alpha: CatchOpacity.disabledControl),
+          glint: t.surface.withValues(
+            alpha: CatchOpacity.ticketPerforationLine,
+          ),
+        ),
+      ),
     );
   }
 }
 
 class _PhotoGradeSamplePainter extends CustomPainter {
-  const _PhotoGradeSamplePainter();
+  const _PhotoGradeSamplePainter({
+    required this.glow,
+    required this.shadow,
+    required this.glint,
+  });
+
+  final Color glow;
+  final Color shadow;
+  final Color glint;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = const Color(0x99FFF7ED);
+    final paint = Paint()..color = glow;
     canvas.drawCircle(
       Offset(size.width * 0.70, size.height * 0.22),
       size.shortestSide * 0.18,
       paint,
     );
-    paint.color = const Color(0x661A140F);
+    paint.color = shadow;
     canvas.drawRRect(
       RRect.fromRectAndRadius(
         Rect.fromLTWH(
@@ -1792,7 +1801,7 @@ class _PhotoGradeSamplePainter extends CustomPainter {
       ),
       paint,
     );
-    paint.color = const Color(0x55FFFFFF);
+    paint.color = glint;
     for (var i = 0; i < 5; i++) {
       final x = size.width * (0.18 + i * 0.15);
       canvas.drawCircle(Offset(x, size.height * 0.42), 3, paint);
@@ -1840,7 +1849,7 @@ class _WordmarkTile extends StatelessWidget {
         builder: (context) {
           final t = CatchTokens.of(context);
           return SizedBox(
-            width: 240,
+            width: WidgetbookPreviewLayout.foundationWordmarkTileWidth,
             child: DecoratedBox(
               decoration: BoxDecoration(
                 color: dark ? t.bg : t.surface,
@@ -1852,7 +1861,11 @@ class _WordmarkTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 76, child: Align(child: child)),
+                    SizedBox(
+                      height:
+                          WidgetbookPreviewLayout.foundationWordmarkStageHeight,
+                      child: Align(child: child),
+                    ),
                     gapH10,
                     Text(label, style: CatchTextStyles.labelM(context)),
                   ],
