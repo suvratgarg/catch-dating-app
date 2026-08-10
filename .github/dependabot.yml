@@ -1,7 +1,7 @@
 version: 2
 updates:
-  # Keep the initial rollout security-only. Version-update PRs stay disabled
-  # until security-update volume is observed and shown to be reviewable.
+  # Security fixes stay grouped. Routine version updates are limited to one
+  # compatible minor/patch PR per ecosystem; majors require an explicit slice.
   - package-ecosystem: "npm"
     directories:
       - "/"
@@ -12,12 +12,26 @@ updates:
       - "/operations"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 0
+      day: "wednesday"
+      time: "05:30"
+      timezone: "Asia/Kolkata"
+    open-pull-requests-limit: 1
     groups:
       security:
         applies-to: "security-updates"
         patterns:
           - "*"
+      compatible-version-updates:
+        applies-to: "version-updates"
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
 
   - package-ecosystem: "pub"
     directories:
@@ -31,20 +45,48 @@ updates:
       - "/widgetbook"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 0
+      day: "wednesday"
+      time: "05:45"
+      timezone: "Asia/Kolkata"
+    open-pull-requests-limit: 1
     groups:
       security:
         applies-to: "security-updates"
         patterns:
           - "*"
+      compatible-version-updates:
+        applies-to: "version-updates"
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 0
+      day: "wednesday"
+      time: "06:00"
+      timezone: "Asia/Kolkata"
+    open-pull-requests-limit: 1
     groups:
       security:
         applies-to: "security-updates"
         patterns:
           - "*"
+      compatible-version-updates:
+        applies-to: "version-updates"
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"

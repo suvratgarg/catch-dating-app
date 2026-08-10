@@ -1,7 +1,7 @@
 ---
 doc_id: harness_v2_decision_and_cicd_delivery_plan
-version: 1.2.2
-updated: 2026-08-09
+version: 1.2.3
+updated: 2026-08-10
 owner: agent_operating_model
 status: active
 ---
@@ -237,7 +237,7 @@ database violates this decision even if it is generated automatically.
 
 ## Current Implementation Status
 
-| Capability | Status on 2026-08-08 | Remaining work |
+| Capability | Status on 2026-08-10 | Remaining work |
 |---|---|---|
 | Read-only component planner | Implemented and covered by component, CLI, and workflow-wiring tests | Keep path ownership and selection fixtures current when product surfaces change |
 | Optional context guidance | Implemented as source-derived stdout/JSON output | Keep project-skill paths and active tool ids valid |
@@ -245,7 +245,7 @@ database violates this decision even if it is generated automatically.
 | Thin worktree guard | Implemented with focused Git-repository tests and used only for concurrent local claims | Keep it local and disposable; Git branches remain durable |
 | Exact-artifact delivery core | Provenance verification, ordered checkpoint/resume, the Firebase backend adapter, the Admin/Marketing Hosting build/promote adapters, the signed mobile package producer, and the separate no-rebuild internal-store promoter are implemented with adversarial and workflow-wiring tests | Keep adapter-specific postconditions and live environment prerequisites current |
 | Exact mobile release routing | The Harness plan carries role-and-platform-specific signed release targets and the mobile producer consumes the CI-authorized target list without widening web or desktop changes | Keep the compatibility role output only until downstream non-release consumers no longer read it |
-| Owner settings | GitHub secret scanning, push protection, dependency alerts, and Dependabot security updates are enabled; routine version-update PRs remain disabled | The initial 38-alert npm backlog is zero. Alerts 1–9 were reviewed and resolved as generated Firebase public client configuration. Keep environment approvals, token rotation, and any organization migration separate |
+| Owner settings | GitHub secret scanning, push protection, dependency alerts, and Dependabot security updates are enabled. Routine updates are limited to one grouped minor/patch PR per npm, Pub, and GitHub Actions ecosystem; majors remain manual | The initial 38-alert npm backlog is zero. Alerts 1–9 were reviewed and resolved as generated Firebase public client configuration. Observe grouped PR quality and keep environment approvals, token rotation, and any organization migration separate |
 
 Workflow adoption must be reported honestly. A reusable delivery primitive is
 not proof that every website, backend, or mobile path already consumes it.
@@ -271,6 +271,7 @@ not proof that every website, backend, or mobile path already consumes it.
 | Live exact mobile proof | Consumer `1.0.2` selected only `consumer-ios` and `consumer-android`. Producer run `31266556052` completed in 13m18s, with iOS/Android package jobs taking 12m28s/10m20s. Promotion run `31267129848` reused iOS package artifact `9024464806`, ran no build or signing command, and uploaded TestFlight build `202608080000018401` in 13m20s including Apple processing. | Claim artifact `9024637372` has GitHub digest `956e893c…52e99` and binds source SHA `c7be024a…e30a`, CI run `31266032614`, producer run/authority/package identities, signed-IPA SHA-256, App Store app `6765646860`, version/build, and remote build id. This closes the implementation proof; TestFlight group assignment and installed-device proof remain release-operations work. |
 | Combined web/mobile focused contracts | 221/221 tests in 3.67 seconds after final Play rollback, Apple ambiguity, signature, rerun, and exact-claim hardening | Exact package, workflow, graph, target-routing, store-reconciliation, and app-ownership contracts remain cheap enough to run on every relevant change. |
 | First full Harness v2 PR run | 30 jobs passed, 2 intentionally skipped, 22m10s wall time; planner 13s and `Required CI` 4s | The control plane is no longer the long pole. Current optimization targets are Admin validation at 21m44s, iOS builds at 16m28s, coverage at 13m43s, and visual integration at 11m42s. |
+| Pub compatible-upgrade baseline | 74 upgradeable packages → 0 after two bounded lockfile families; the remaining constraint-blocked set is 38, with 0 advisory-affected and 0 discontinued | Routine maintenance begins from a clean compatible baseline. Dependabot may propose one grouped minor/patch PR per ecosystem, while coordinated analyzer/Riverpod and true major upgrades remain explicit review slices. |
 
 These are implementation measurements, not the final developer-velocity SLO.
 Ten comparable pull requests remain the decision point for later graph or
@@ -288,7 +289,7 @@ rather than becoming another repository ledger.
 | Path matching | Keep the dependency-free bootstrap matcher and Picomatch 4.0.4 as its executable development oracle. The oracle covers 1,436,094 active pattern/path evaluations with zero differences; importing Picomatch at runtime had already broken sparse bootstrap lanes. |
 | Secret scanning | Keep GitHub secret scanning and push protection. Gitleaks 8.30.1 scanned 615 commits and 273.36 MB in 62.9 seconds but produced 175 noisy repeats and no additional actionable secret class, so a second CI authority was rejected. |
 | CLI parsing | Adopt the existing `node:util.parseArgs`-backed helper for nine additional data and Organizer Intake commands. Standalone parser definitions fell from 94 to 85; the slice removed 287 net lines and increased shared consumers from 5 to 14 without adding a dependency. |
-| Dependency updates | Keep security-only Dependabot. The initial 38-alert npm backlog across three lockfiles was patched through maintained parent dependencies; all three production audits and the live GitHub alert count are zero. |
+| Dependency updates | Keep GitHub-native Dependabot and expand it from security-only to one grouped minor/patch PR per npm, Pub, and GitHub Actions ecosystem. The initial 38-alert npm backlog and all 74 currently compatible Pub updates are cleared; major versions remain explicit review slices rather than bot-driven backlog. |
 | JSON Schema compatibility | Reject the evaluated packages. `json-schema-diff@1.0.0` added seven dependencies and deprecated ref parsing; `@philiprehberger/schema-diff@0.2.0` was zero-dependency but produced false positives for safe loosening and false negatives for numeric, object-closure, and referenced-schema tightening. Do not replace those failures with a homegrown checker. |
 | Fastlane | Reject for the current exact-artifact architecture. At most about 205 of 2,737 producer/promoter workflow lines are generic archive/upload mechanics (under 8%); the 40% deletion threshold cannot be met after adding Ruby, Bundler, lockfile, tests, and credential plumbing. The live no-rebuild TestFlight promotion succeeded, so there is no failed distribution boundary for Fastlane to rescue. |
 | Nx and remote task cache | Do not add a second graph or remote cache without the ten-comparable-run prerequisite. Two scheduled runs of the same SHA completed in 19m36s and 19m16s while individual long lanes moved in both directions, which is insufficient evidence for a 40% cache benefit. Native language caches remain the first future experiment. |

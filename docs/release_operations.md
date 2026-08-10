@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.0.7
+version: 2.0.8
 updated: 2026-08-10
 owner: recursive_audit_loop
 status: active
@@ -225,6 +225,29 @@ The current workflows are:
 | `.github/workflows/mobile-internal-promote.yml` | Manual exact-artifact promoter. It verifies one current successful producer attempt and its authority/package ids, digests, provenance, and target before uploading the already-signed IPA to TestFlight or AAB to Play `qa`; it never rebuilds or resigns. |
 | `.github/workflows/observability-evidence.yml` | Manual Crashlytics and Analytics evidence capture. |
 | `.github/workflows/website-production-observability.yml` | Scheduled and manual production website status, canonical-metadata, and launch-content probes. |
+
+### Dependency maintenance
+
+GitHub-native Dependabot is the sole routine dependency-update service. It
+checks npm, Pub, and GitHub Actions each Wednesday, groups compatible minor and
+patch updates into at most one open pull request per ecosystem, and keeps
+security updates grouped separately. Major versions are deliberately excluded:
+each major upgrade needs its own impact review and full selected CI evidence.
+
+The 2026-08-10 Pub baseline upgraded every release resolvable under the current
+constraints: 74 packages (33 in the Firebase family and 41 in the remaining
+Flutter/tooling family). `flutter pub outdated --json` then reported zero
+upgradeable packages, zero advisory-affected packages, zero discontinued
+packages, and 38 packages blocked by coordinated constraints or major-version
+boundaries. Do not describe the `flutter pub get` summary as 38 independent
+patches.
+
+iOS remains on CocoaPods, not Swift Package Manager. The current
+`razorpay_flutter`, `health`, and `google_maps_flutter_ios` plugin graph still
+reports missing SPM support, and the FirebaseFirestore prebuilt-pod graph has a
+separate duplicate-symbol boundary. Remove `enable-swift-package-manager:
+false` only in a dedicated migration after both conditions are resolved and
+Consumer plus Host iOS builds pass together.
 
 ## Git Branch Hygiene
 
