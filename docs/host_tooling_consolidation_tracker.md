@@ -143,7 +143,7 @@ Implementation status for the 2026-08-10 standalone foundation:
 
 | Slice | Status | Current boundary |
 | --- | --- | --- |
-| Unified operational roster contract | Implemented; sole Host UI adoption incomplete | CSV/XLSX/manual/Catch/web-OTP sources, private Host read and server writes exist; current Host composition still exposes operational attendees and Consumer participation separately |
+| Unified operational roster contract | Implemented; Live adoption complete, broader sole-UI adoption incomplete | Direction 3 Live counts now derive from `eventAttendees`, including external-only imports with zero Consumer participation; Guests still carries both operational and legacy participation surfaces pending full consolidation |
 | Independent Host analytics | Implemented | Operational roster/source/attendance metrics are separate from the Catch booking funnel |
 | Public organizer/event registration | Implemented for the safe first policy | Explicitly published, free, open-admission events only; capacity joins an operational waitlist |
 | Cross-event CRM audience summary | Implemented foundation | Privacy-bounded deduplicated counts for past/repeat/imported/linked contacts and explicit WhatsApp/SMS reachability; no attendee PII returned |
@@ -151,6 +151,7 @@ Implementation status for the 2026-08-10 standalone foundation:
 | Review responses | Implemented for existing public reviews | Host Report can respond through the canonical review callable and the website renders the response |
 | Host web delivery | Implemented through build/package/workflow | Dedicated Firebase Hosting target; custom domain, Auth domains and App Check remain release gates |
 | Low-risk external-attendee survey and signed capabilities | Planned after core runtime | Requires purpose-scoped authorization and aggregate privacy; current private Event Success documents remain UID-keyed |
+| Direction 3 Control Room | Selected; bounded online reference implemented | Quiet Command Console now owns the canonical Live first viewport with operational counts, Guests/recovery destinations, pinned primary action, honest acknowledged/pending/failed state and double-tap protection; offline queue, pause, conflict, lock and true undo remain promotion gates |
 | General attendee-ID companion migration and grouping | Deferred expansion | Requires versioned private-document/rules migration plus preference, opt-out, keep-apart and safety contracts |
 | Paid checkout, organizer claim completion and Admin support tooling | Planned later | Reuse the same event/attendee boundary after payment, verification and support policy gates |
 

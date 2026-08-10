@@ -906,11 +906,45 @@ plane split must not turn supporting rows into a second dashboard. It is the
 adversarial review's strongest direction, subject to explicit sync/pending,
 pause/undo, non-grouping content, and measured contrast.
 
-Owner selection among these directions is required before a production screen
-contract or Widgetbook reference is frozen. The selected direction should be
-adapted, not copied, using `CatchRouteScaffold`, `CatchBottomAction`, shared
-section/status primitives, `CatchTokens`, semantic text roles, and the existing
-Event Success controller boundary.
+**Selected on 2026-08-11:** Quiet Command Console is the approved Direction 3.
+It is adapted, not copied, inside the canonical Host Event Manage Live section.
+The production reference keeps the existing route and Event Success controller
+boundary; uses `CatchRouteScaffold`, a pinned `CatchBottomAction`,
+`CatchTokens`, activity pigment, semantic text roles, and canonical icons; and
+makes the operational `eventAttendees` projection authoritative for checked-in
+and expected counts. The full roster moves behind `Guests` and recovery guidance
+moves behind `Help & fallback`.
+
+The selected reference deliberately removes the generated study's numbered
+progress rail, duplicate readiness dashboard, decorative icon boxes, and all
+team-assignment language. That vertical space is reserved for the current beat,
+one short Host instruction, the next beat, and a reachable action at 390x812.
+`Previous` remains Previous until a revisioned undo receipt exists. Production
+shows acknowledged, pending, or failed persistence only; offline-pending,
+conflict, lock, pause, and bounded undo remain fixture-only or deferred until
+their authority and recovery contracts exist.
+
+This direction decision authorizes the bounded online, single-operator
+reference and its deterministic evidence. It does not promote the Control Room
+to standalone-MVP-complete: absolute offline attendance, revisioned run-sheet
+operations, process-death recovery, and single-writer fencing remain promotion
+gates.
+
+#### Implemented Flutter reference
+
+![Direction 3 Flutter Control Room](../design_parity/host_standalone/control_room_direction_3_flutter.png)
+
+The deterministic Host Manage capture uses 24 imported operational attendees,
+18 checked in, zero Consumer participations, and no participant profiles. It
+proves the canonical route shell, roster-agnostic run sheet, Guests and recovery
+destinations, acknowledged persistence, Previous, and pinned activity-pigment
+action at the production phone viewport.
+
+![Direction 3 Flutter Control Room at text scale 2](../design_parity/host_standalone/control_room_direction_3_flutter_text_scale_2.png)
+
+At text scale 2.0 the stage and supporting plane scroll while the primary action
+stays reachable. Event identity, status, current beat, instruction, next beat
+and action remain legible without clipping the action dock.
 
 After selection, the implementation design package must add deterministic
 snapshots for first-run intent, private quick start, import preview with
@@ -1379,7 +1413,8 @@ The owner must resolve these before their dependent implementation slice:
 14. External booking integrations to prioritize after file import.
 15. Experiment design for Event Success impact.
 16. Exact notice when phone OTP creates or reuses a persistent Firebase identity.
-17. Visual direction selection for the Control Room.
+17. Promotion evidence for Direction 3: venue readability, target-Host
+    comprehension, offline recovery, and single-writer fencing.
 
 ## Do Not Ship If
 

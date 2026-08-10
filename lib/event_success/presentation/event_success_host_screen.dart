@@ -1,16 +1,17 @@
 import 'dart:async';
 import 'dart:math' as math;
 
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_analytics_kit.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
@@ -25,7 +26,6 @@ import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
-import 'package:catch_dating_app/core/widgets/catch_step_progress.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -87,6 +87,8 @@ class EventSuccessHostSection extends ConsumerStatefulWidget {
     this.initialTab = EventSuccessHostTab.setup,
     this.showTabs = true,
     this.compactLiveControls = false,
+    this.operationalRosterSummary,
+    this.onOpenGuests,
     this.fixtureActions,
   });
 
@@ -94,6 +96,8 @@ class EventSuccessHostSection extends ConsumerStatefulWidget {
   final EventSuccessHostTab initialTab;
   final bool showTabs;
   final bool compactLiveControls;
+  final EventSuccessOperationalRosterSummary? operationalRosterSummary;
+  final VoidCallback? onOpenGuests;
   final EventSuccessHostFixtureActions? fixtureActions;
 
   @override
@@ -109,6 +113,8 @@ class _EventSuccessHostSectionState
     final initialTab = widget.initialTab;
     final showTabs = widget.showTabs;
     final compactLiveControls = widget.compactLiveControls;
+    final operationalRosterSummary = widget.operationalRosterSummary;
+    final onOpenGuests = widget.onOpenGuests;
     final fixtureActions = widget.fixtureActions;
     final planAsync = ref.watch(watchEventSuccessPlanProvider(event.id));
     final ensureMutation = ref.watch(EventSuccessController.ensurePlanMutation);
@@ -247,23 +253,31 @@ class _EventSuccessHostSectionState
       wingmanProfilesState: _catchAsyncState(wingmanProfilesAsync),
     );
 
+    Widget frameCompactLiveState(Widget child) => compactLiveControls
+        ? SingleChildScrollView(padding: CatchInsets.pageBody, child: child)
+        : child;
+
     switch (state.status) {
       case EventSuccessHostSectionStatus.loading:
-        return EventSuccessHostSectionSkeleton(
-          initialTab: initialTab,
-          showTabs: showTabs,
+        return frameCompactLiveState(
+          EventSuccessHostSectionSkeleton(
+            initialTab: initialTab,
+            showTabs: showTabs,
+          ),
         );
       case EventSuccessHostSectionStatus.error:
         final retryIntent = state.retryIntent!;
-        return CatchInlineErrorState.fromError(
-          state.error!,
-          context: _eventSuccessHostRetryContext(retryIntent),
-          onRetry: () => _retryEventSuccessHostSection(
-            eventId: event.id,
-            retryIntent: retryIntent,
-            assignmentParticipantUidsKey: assignmentParticipantUidsKey,
-            rotationParticipantUidsKey: rotationParticipantUidsKey,
-            wingmanProfilesKey: wingmanProfilesKey,
+        return frameCompactLiveState(
+          CatchInlineErrorState.fromError(
+            state.error!,
+            context: _eventSuccessHostRetryContext(retryIntent),
+            onRetry: () => _retryEventSuccessHostSection(
+              eventId: event.id,
+              retryIntent: retryIntent,
+              assignmentParticipantUidsKey: assignmentParticipantUidsKey,
+              rotationParticipantUidsKey: rotationParticipantUidsKey,
+              wingmanProfilesKey: wingmanProfilesKey,
+            ),
           ),
         );
       case EventSuccessHostSectionStatus.ready:
@@ -287,6 +301,8 @@ class _EventSuccessHostSectionState
       showTabs: showTabs,
       embedded: true,
       compactLiveControls: compactLiveControls,
+      operationalRosterSummary: operationalRosterSummary,
+      onOpenGuests: onOpenGuests,
       setupActionState: EventSuccessSetupActionState.resolve(
         ensurePending: ensureMutation.isPending,
         savePending: saveSetupMutation.isPending,
@@ -737,6 +753,8 @@ class EventSuccessHostPanel extends StatefulWidget {
     this.showTabs = true,
     this.embedded = false,
     this.compactLiveControls = false,
+    this.operationalRosterSummary,
+    this.onOpenGuests,
     this.setupActionState = const EventSuccessSetupActionState(),
     this.onSaveSetup,
     this.liveActionState = const EventSuccessLiveActionState(),
@@ -774,6 +792,8 @@ class EventSuccessHostPanel extends StatefulWidget {
   final bool showTabs;
   final bool embedded;
   final bool compactLiveControls;
+  final EventSuccessOperationalRosterSummary? operationalRosterSummary;
+  final VoidCallback? onOpenGuests;
   final EventSuccessSetupActionState setupActionState;
   final Future<void> Function(EventSuccessSetupSaveRequest request)?
   onSaveSetup;
@@ -802,7 +822,12 @@ class EventSuccessHostPanel extends StatefulWidget {
 }
 
 class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
+  static const _liveActionDebounce = CatchMotion.eventSuccessActionDebounce;
+
   late EventSuccessHostTab _selectedTab = widget.initialTab;
+  var _liveActionPending = false;
+  String? _lastLiveActionKey;
+  DateTime? _lastLiveActionAt;
 
   @override
   void didUpdateWidget(covariant EventSuccessHostPanel oldWidget) {
@@ -836,7 +861,16 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
         wingmanRequests: widget.wingmanRequests,
         wingmanProfiles: widget.wingmanProfiles,
         compactLiveControls: widget.compactLiveControls,
-        actionState: widget.liveActionState,
+        operationalRosterSummary: widget.operationalRosterSummary,
+        onOpenGuests: widget.onOpenGuests,
+        actionState: EventSuccessLiveActionState(
+          isChangingStep:
+              widget.liveActionState.isChangingStep || _liveActionPending,
+          isCompleting:
+              widget.liveActionState.isCompleting || _liveActionPending,
+          stepError: widget.liveActionState.stepError,
+          completeError: widget.liveActionState.completeError,
+        ),
         onPreviousStep: _liveStepCallback(
           widget.fixtureActions?.onPreviousStep,
         ),
@@ -909,27 +943,62 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
     VoidCallback? fixtureAction,
   ) {
     if (fixtureAction != null) {
-      return (_) async {
-        await widget.onPlayLiveEffect?.call(
-          EventSuccessLiveEffectKind.stepChange,
-        );
-        fixtureAction();
-      };
+      return (stepIndex) => _runLiveAction(
+        key: 'step:$stepIndex',
+        action: () async {
+          await widget.onPlayLiveEffect?.call(
+            EventSuccessLiveEffectKind.stepChange,
+          );
+          fixtureAction();
+        },
+      );
     }
-    return widget.onSetLiveStep;
+    final productionAction = widget.onSetLiveStep;
+    if (productionAction == null) return null;
+    return (stepIndex) => _runLiveAction(
+      key: 'step:$stepIndex',
+      action: () => productionAction(stepIndex),
+    );
   }
 
   Future<void> Function()? _liveCompleteCallback() {
     final fixtureAction = widget.fixtureActions?.onCompletePlan;
     if (fixtureAction != null) {
-      return () async {
-        await widget.onPlayLiveEffect?.call(
-          EventSuccessLiveEffectKind.guideComplete,
-        );
-        fixtureAction();
-      };
+      return () => _runLiveAction(
+        key: 'complete',
+        action: () async {
+          await widget.onPlayLiveEffect?.call(
+            EventSuccessLiveEffectKind.guideComplete,
+          );
+          fixtureAction();
+        },
+      );
     }
-    return widget.onCompleteLiveGuide;
+    final productionAction = widget.onCompleteLiveGuide;
+    if (productionAction == null) return null;
+    return () => _runLiveAction(key: 'complete', action: productionAction);
+  }
+
+  Future<void> _runLiveAction({
+    required String key,
+    required Future<void> Function() action,
+  }) async {
+    final now = DateTime.now();
+    final lastAt = _lastLiveActionAt;
+    if (_lastLiveActionKey == key &&
+        lastAt != null &&
+        now.difference(lastAt) < _liveActionDebounce) {
+      return;
+    }
+    if (_liveActionPending) return;
+    _lastLiveActionKey = key;
+    _lastLiveActionAt = now;
+    setState(() => _liveActionPending = true);
+    try {
+      await action();
+    } finally {
+      if (mounted) setState(() => _liveActionPending = false);
+    }
   }
 
   Future<void> Function()? _voidFixtureCallback(

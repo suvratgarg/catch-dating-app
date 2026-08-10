@@ -13243,6 +13243,27 @@
           "notes": "Host Event Manage live workspace 390x812 Claude reference exported, masked, manifest-registered, and compared against host_live_console after the compact-actions fixture pass: within advisory threshold; mismatch 10.05%, meanDelta 4.69, maxDelta 240."
         },
         {
+          "id": "generated.host-event-manage-live-direction-3-study",
+          "kind": "generated",
+          "status": "available",
+          "path": "docs/design_parity/host_standalone/control_room_quiet_command_console.png",
+          "notes": "Selected 2026-08-11 as the Direction 3 hierarchy study. Production adapts its dark current-beat stage and paper action plane while preserving canonical Host Manage chrome, removing grouping assumptions and duplicate readiness/progress furniture, and pinning the real primary action."
+        },
+        {
+          "id": "capture.host-event-manage-live-direction-3-flutter",
+          "kind": "generated",
+          "status": "available",
+          "path": "docs/design_parity/host_standalone/control_room_direction_3_flutter.png",
+          "notes": "Deterministic production Flutter capture for the selected Direction 3 baseline at the catalog phone viewport."
+        },
+        {
+          "id": "capture.host-event-manage-live-direction-3-flutter-text-scale-2",
+          "kind": "generated",
+          "status": "available",
+          "path": "docs/design_parity/host_standalone/control_room_direction_3_flutter_text_scale_2.png",
+          "notes": "Deterministic production Flutter capture for the selected Direction 3 baseline at text scale 2.0."
+        },
+        {
           "id": "generated.host-event-manage-report-reference",
           "kind": "generated",
           "status": "available",
@@ -13261,7 +13282,7 @@
         {
           "id": "host_live_console",
           "status": "captured",
-          "notes": "Deterministic live-console capture renders Host Manage with compact Event Success Live now, club-name header metadata, team-rotation round copy, previous/next controls, and check-in summary strip. The editable roster remains covered by dedicated attendance states instead of being embedded in the first live viewport."
+          "notes": "Deterministic Direction 3 capture renders canonical Host Manage chrome plus a dark, roster-agnostic current-beat stage, acknowledged persistence, next beat, external operational-attendee count, flat Guests and Help & fallback rows, Previous, and one pinned primary action. The fixture has 24 imported eventAttendees, 18 checked in, zero Consumer participations, and no profile dependency."
         },
         {
           "id": "host_post_event_report",
@@ -13613,11 +13634,11 @@
           "captureIds": [
             "host_live_console"
           ],
-          "source": "Live mode renders EventSuccessHostSection with initialTab live. Host Manage uses the compact live workspace composition: the editable roster is covered by attendance states instead of embedded in Live now, while the first viewport leads with the Event Success live console, previous/next controls, and a check-in summary strip.",
+          "source": "Live mode renders EventSuccessHostSection with initialTab live inside the canonical Host Event Manage route. Direction 3 fills the bounded route body with the Quiet Command Console, moves the roster behind Guests, derives counts from eventAttendees, and keeps the primary action pinned while Previous remains an explicit prior-step action rather than claiming revisioned undo.",
           "tests": [
             "test/hosts/host_create_event_screen_test.dart"
           ],
-          "nextAction": "Host Event Manage live workspace now has a manifest-registered design reference and deterministic compact live capture within advisory threshold: mismatch 10.05%, meanDelta 4.69, maxDelta 240. Remaining work is reveal/QR/cue/host-override Event Success substates and reference-specific variants.",
+          "nextAction": "Direction 3 bounded online reference is implemented and captured. Promotion remains gated by authoritative offline queue/replay, revisioned undo, single-writer fencing, venue readability, and target-Host comprehension evidence.",
           "previewIds": [
             "HostEventManageRouteScreen/Route and section states"
           ]
@@ -13703,7 +13724,7 @@
           "id": "live_event_success_ready",
           "kind": "populated",
           "status": "captured",
-          "source": "Saved live plans load roster, assignments, preferences, rotation assignments, wingman requests, reveal, and override states through EventSuccessHostSection; Host Manage can request compact Live controls for the first-viewport workspace.",
+          "source": "Saved live plans load Event Success state through EventSuccessHostSection. Compact Host Manage renders the selected Direction 3 Control Room and consumes an EventSuccessOperationalRosterSummary derived from eventAttendees; non-compact preview states retain assignment, cue, reveal, and override cards below the Control Room.",
           "tests": [
             "test/event_success/event_success_live_screens_test.dart"
           ],
@@ -13721,7 +13742,7 @@
             "host_manage_live_reveal_round_revealed",
             "host_manage_live_host_override_edited"
           ],
-          "notes": "Saved live Event Success plan state now has deterministic route capture coverage through the Host Manage live console plus rich-control captures for active wingman requests, assigned micro-pods, guided rotations, check-in QR, conversation cues, revealed partner round, and host-edited micro-pod overrides. The compact host workspace aligns the top kicker, metadata row, team-rotation live copy, navigation controls, and check-in summary strip with the Claude reference, while leaving step-count/playbook semantics as the next product-model gap.",
+          "notes": "Saved live Event Success plan state has deterministic route capture coverage through the Direction 3 Host Manage Control Room plus rich-control captures for optional profile-dependent modules. The compact baseline is intentionally roster-agnostic and external-attendee capable; grouping, offline conflict/lock, pause, and true undo remain gated instead of being implied by the UI.",
           "widgetbook": [
             "HostEventManageRouteScreen/Route and section states"
           ]

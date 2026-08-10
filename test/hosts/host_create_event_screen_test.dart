@@ -18,10 +18,12 @@ import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
+import 'package:catch_dating_app/events/data/event_attendee_repository.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
@@ -925,6 +927,33 @@ void main() {
           event,
           now: event.startTime,
         ).copyWith(status: EventSuccessPlanStatus.live);
+        final operationalAttendees = [
+          EventAttendee(
+            id: 'external-1',
+            eventId: event.id,
+            clubId: event.clubId,
+            organizerId: 'host-1',
+            displayName: 'External guest 1',
+            searchName: 'external guest 1',
+            source: EventAttendeeSource.hostImport,
+            status: EventAttendeeStatus.checkedIn,
+            createdAt: now,
+            updatedAt: now,
+            checkedInAt: now,
+          ),
+          EventAttendee(
+            id: 'external-2',
+            eventId: event.id,
+            clubId: event.clubId,
+            organizerId: 'host-1',
+            displayName: 'External guest 2',
+            searchName: 'external guest 2',
+            source: EventAttendeeSource.hostImport,
+            status: EventAttendeeStatus.registered,
+            createdAt: now,
+            updatedAt: now,
+          ),
+        ];
 
         await pumpEventsTestApp(
           tester,
@@ -941,6 +970,9 @@ void main() {
             eventParticipationRepositoryProvider.overrideWith(
               (ref) => participationRepository,
             ),
+            watchEventAttendeesProvider(
+              event.id,
+            ).overrideWith((ref) => Stream.value(operationalAttendees)),
             publicProfileRepositoryProvider.overrideWith(
               (ref) => publicProfiles,
             ),
@@ -965,7 +997,8 @@ void main() {
         await _pumpHostActionFrame(tester);
         await _pumpTestAnimation(tester);
 
-        expect(find.text('LIVE NOW'), findsOneWidget);
+        expect(find.textContaining('LIVE NOW'), findsOneWidget);
+        expect(find.text('1 checked in · 2 expected'), findsOneWidget);
         expect(find.text('Check guests in'), findsNothing);
         expect(find.text('1 of 2 arrived'), findsNothing);
         expect(find.text('Editable roster'), findsNothing);
@@ -984,7 +1017,7 @@ void main() {
         );
         expect(find.text('Arrival check-in'), findsNothing);
 
-        await tester.tap(find.text('GUESTS'));
+        await tester.tap(find.text('Guests'));
         await _pumpTestAnimation(tester);
 
         expect(publicProfiles.fetchPublicProfilesCalls, hasLength(1));

@@ -36,10 +36,13 @@ import 'package:catch_dating_app/event_success/event_success.dart'
     show
         EventSuccessHostFixtureActions,
         EventSuccessHostSection,
-        EventSuccessHostTab;
+        EventSuccessHostTab,
+        EventSuccessOperationalRosterSummary;
+import 'package:catch_dating_app/events/data/event_attendee_repository.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/domain/event_invite_link.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
@@ -65,6 +68,26 @@ export 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_sta
     show HostEventManageSection;
 
 part 'host_event_manage_route_screen.dart';
+
+EventSuccessOperationalRosterSummary _operationalRosterSummary(
+  List<EventAttendee>? attendees,
+) {
+  if (attendees == null) {
+    return const EventSuccessOperationalRosterSummary(
+      checkedInCount: 0,
+      expectedCount: null,
+    );
+  }
+  final expected = attendees.where(
+    (attendee) =>
+        attendee.status == EventAttendeeStatus.registered ||
+        attendee.status == EventAttendeeStatus.checkedIn,
+  );
+  return EventSuccessOperationalRosterSummary(
+    checkedInCount: expected.where((attendee) => attendee.isCheckedIn).length,
+    expectedCount: expected.length,
+  );
+}
 
 class HostEventManageScreen extends ConsumerStatefulWidget {
   const HostEventManageScreen({
@@ -112,6 +135,12 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
       watchEventParticipationRosterProvider(event.id),
     );
     final roster = rosterAsync.asData?.value;
+    final operationalAttendees = _selectedSection == HostEventManageSection.live
+        ? ref.watch(watchEventAttendeesProvider(event.id)).asData?.value
+        : null;
+    final operationalRosterSummary = _operationalRosterSummary(
+      operationalAttendees,
+    );
     final cancelMutation = ref.watch(
       HostEventBookingController.hostCancelEventMutation,
     );
@@ -280,13 +309,13 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
         ),
       ],
       HostEventManageSection.live => <Widget>[
-        HostOperationalRosterPanel(eventId: event.id),
-        gapH20,
         EventSuccessHostSection(
           event: event,
           initialTab: EventSuccessHostTab.live,
           showTabs: false,
           compactLiveControls: true,
+          operationalRosterSummary: operationalRosterSummary,
+          onOpenGuests: () => _selectSection(HostEventManageSection.guests),
           fixtureActions: widget.eventSuccessFixtureActions,
         ),
       ],
@@ -347,25 +376,27 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
           ),
           bottom: HostManageSectionPicker(
             selectedSection: screenState.selectedSection,
-            onChanged: (section) {
-              setState(
-                () => _selectedSection = screenState
-                    .selectSection(section)
-                    .selectedSection,
-              );
-              widget.onSectionChanged?.call(section);
-            },
+            onChanged: _selectSection,
           ),
         ),
-        body: ListView(
-          key: Key(
-            context.l10n.hostsHostEventManageScreenBodyHostEventManageScroll,
-          ),
-          padding: CatchInsets.pageBody,
-          children: selectedSectionChildren,
-        ),
+        body: screenState.selectedSection == HostEventManageSection.live
+            ? selectedSectionChildren.single
+            : ListView(
+                key: Key(
+                  context
+                      .l10n
+                      .hostsHostEventManageScreenBodyHostEventManageScroll,
+                ),
+                padding: CatchInsets.pageBody,
+                children: selectedSectionChildren,
+              ),
       ),
     );
+  }
+
+  void _selectSection(HostEventManageSection section) {
+    setState(() => _selectedSection = section);
+    widget.onSectionChanged?.call(section);
   }
 
   Future<void> _handleHostEventActionIntent(

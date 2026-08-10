@@ -636,6 +636,14 @@ abstract final class CatchInsets {
     vertical: CatchSpacing.s4,
   );
 
+  /// Full-bleed Host Control Room stage content padding.
+  static const EdgeInsets eventSuccessControlRoomStage = EdgeInsets.fromLTRB(
+    CatchSpacing.screenPx,
+    CatchSpacing.s6,
+    CatchSpacing.screenPx,
+    CatchSpacing.s7,
+  );
+
   /// Relaxed content padding for empty states, large cards, and share panels.
   static const EdgeInsets contentRelaxed = EdgeInsets.all(CatchSpacing.s5);
 
@@ -1748,6 +1756,9 @@ abstract final class CatchMotion {
   static const Duration calendarScroll = Duration(milliseconds: 320);
   static const Duration mediaReorderDebounce = Duration(milliseconds: 400);
   static const Duration searchDebounce = Duration(milliseconds: 300);
+  static const Duration eventSuccessActionDebounce = Duration(
+    milliseconds: 500,
+  );
   static const Duration slow = Duration(milliseconds: 420);
   static const Duration afterglowBeatEntry = Duration(milliseconds: 480);
   static const Duration afterglowCountUp = Duration(milliseconds: 600);

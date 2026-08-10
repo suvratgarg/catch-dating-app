@@ -91,6 +91,17 @@ class EventSuccessLiveActionState {
   final Object? completeError;
 }
 
+class EventSuccessOperationalRosterSummary {
+  const EventSuccessOperationalRosterSummary({
+    required this.checkedInCount,
+    required this.expectedCount,
+  }) : assert(checkedInCount >= 0),
+       assert(expectedCount == null || expectedCount >= 0);
+
+  final int checkedInCount;
+  final int? expectedCount;
+}
+
 class EventSuccessAssignmentGenerationActionState {
   const EventSuccessAssignmentGenerationActionState({
     this.isGenerating = false,

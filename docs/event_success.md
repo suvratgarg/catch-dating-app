@@ -68,6 +68,22 @@ Catch-booked participants. New generators must resolve the operational attendee
 first and write an explicit identity-version field before imported/web-OTP
 attendees can enter attendee-private modules.
 
+The 2026-08-11 Direction 3 bounded reference closes the first Host-only slice
+of this boundary. Canonical Host Manage Live derives checked-in and expected
+counts from `eventAttendees`, accepts an external-only roster with zero
+`eventParticipations` or profiles, and moves attendance work behind Guests.
+The roster is still passed separately from the UID-keyed assignment and private
+companion data required by optional advanced cards; this does not claim the
+general attendee-id assignment migration is complete.
+
+Direction 3's Quiet Command Console is the selected live hierarchy: one dark
+current-beat stage, one next beat, flat Guests and recovery destinations,
+honest acknowledged/pending/failed persistence, Previous, and one pinned
+primary action. The primary action is locally pending/debounce guarded. Offline
+queueing, revisioned undo, pause, conflict/lock authority and process-death
+recovery remain explicit promotion gates rather than inactive production
+controls.
+
 ## Format Mapping And Wiring
 
 Event-success setup is driven by the saved `EventFormatSnapshot`, not by raw
