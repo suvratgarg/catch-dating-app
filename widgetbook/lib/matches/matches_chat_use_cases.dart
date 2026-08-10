@@ -50,6 +50,8 @@ import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:go_router/go_router.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
+import '../preview_layout_contracts.dart';
+
 final _consumerMatches = MatchesChatSurfaceFixtures.populatedMatches;
 final _hostMatches = MatchesChatSurfaceFixtures.hostInquiryMatches;
 final _hostNewInquiryMatches = [
@@ -159,7 +161,7 @@ Widget matchesListConsumerRouteStates(BuildContext context) {
         _StateCard(
           label: 'thread tile variants',
           child: _DeviceFrame(
-            height: 420,
+            height: WidgetbookPreviewLayout.feedbackViewportHeight,
             child: _MatchesListRouteScope(
               viewModel: AsyncData<ChatsListViewModel>(_consumerViewModel()),
               matches: _consumerMatches,
@@ -439,7 +441,7 @@ Widget chatsListSliverStates(BuildContext context) {
         _StateCard(
           label: 'loaded sliver',
           child: _DeviceFrame(
-            height: 420,
+            height: WidgetbookPreviewLayout.feedbackViewportHeight,
             child: _MatchesListRouteScope(
               viewModel: AsyncData<ChatsListViewModel>(_consumerViewModel()),
               matches: _consumerMatches,
@@ -463,7 +465,7 @@ Widget chatsListSliverStates(BuildContext context) {
         _StateCard(
           label: 'loading skeleton',
           child: _DeviceFrame(
-            height: 360,
+            height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
             child: _MatchesListRouteScope(
               viewModel: const AsyncLoading<ChatsListViewModel>(),
               matches: _consumerMatches,
@@ -547,7 +549,7 @@ Widget chatsBrowseHeaderStates(BuildContext context) {
         _StateCard(
           label: 'host inbox filters',
           child: _DeviceFrame(
-            height: 180,
+            height: WidgetbookPreviewLayout.mediaPanelHeight,
             child: _MatchesListRouteScope(
               viewModel: AsyncData<ChatsListViewModel>(_hostInboxViewModel()),
               matches: _hostMatches,
@@ -620,7 +622,7 @@ Widget chatConversationsListStates(BuildContext context) {
         _StateCard(
           label: 'contiguous rows',
           child: _ChatSliverFrame(
-            height: 360,
+            height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
             slivers: [
               ChatConversationsList(
                 matches: [...viewModel.newMatches, ...viewModel.conversations],
@@ -648,19 +650,22 @@ Widget chatsEmptyStateVariants(BuildContext context) {
       children: const [
         _StateCard(
           label: 'no catches',
-          child: _PrimitiveReviewFrame(height: 360, child: ChatsEmptyState()),
+          child: _PrimitiveReviewFrame(
+            height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
+            child: ChatsEmptyState(),
+          ),
         ),
         _StateCard(
           label: 'host inbox empty',
           child: _PrimitiveReviewFrame(
-            height: 360,
+            height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
             child: ChatsEmptyState.hostInbox(),
           ),
         ),
         _StateCard(
           label: 'search empty',
           child: _PrimitiveReviewFrame(
-            height: 360,
+            height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
             child: ChatsEmptyState.noSearchResults(),
           ),
         ),
@@ -684,7 +689,7 @@ Widget hostInboxBroadcastCardStates(BuildContext context) {
         _StateCard(
           label: 'attendee blast affordance',
           child: _PrimitiveReviewFrame(
-            height: 132,
+            height: WidgetbookPreviewLayout.photoLikePanelHeight,
             child: Padding(
               padding: CatchInsets.content,
               child: HostInboxBroadcastCard(
@@ -754,7 +759,7 @@ Widget chatShareCardSheetStates(BuildContext context) {
         _StateCard(
           label: 'export preview',
           child: _DeviceFrame(
-            height: 640,
+            height: WidgetbookPreviewLayout.celebrationViewportHeight,
             child: _ShareCardPreview(
               messages: MatchesChatSurfaceFixtures.conversationMessages,
               event: _event,
@@ -781,7 +786,7 @@ Widget chatShareCardStates(BuildContext context) {
         _StateCard(
           label: 'event conversation card',
           child: _PrimitiveReviewFrame(
-            height: 440,
+            height: WidgetbookPreviewLayout.catchesSkeletonPreviewHeight,
             child: Padding(
               padding: CatchInsets.content,
               child: ChatShareCard(
@@ -999,7 +1004,7 @@ Widget matchChatRouteStates(BuildContext context) {
         _StateCard(
           label: 'share card sheet',
           child: _DeviceFrame(
-            height: 640,
+            height: WidgetbookPreviewLayout.celebrationViewportHeight,
             child: _ShareCardPreview(
               messages: MatchesChatSurfaceFixtures.conversationMessages,
               event: _event,
@@ -1009,7 +1014,7 @@ Widget matchChatRouteStates(BuildContext context) {
         _StateCard(
           label: 'composer states',
           child: _DeviceFrame(
-            height: 420,
+            height: WidgetbookPreviewLayout.feedbackViewportHeight,
             child: const _ComposerStatesPreview(),
           ),
         ),
@@ -1193,7 +1198,7 @@ Widget hostChatRouteStates(BuildContext context) {
         _StateCard(
           label: 'composer states',
           child: _DeviceFrame(
-            height: 420,
+            height: WidgetbookPreviewLayout.feedbackViewportHeight,
             child: const _ComposerStatesPreview(),
           ),
         ),
@@ -1257,21 +1262,21 @@ Widget chatEventContextHeaderPrimitiveStates(BuildContext context) {
         _StateCard(
           label: 'social run context',
           child: _PrimitiveReviewFrame(
-            height: 132,
+            height: WidgetbookPreviewLayout.photoLikePanelHeight,
             child: ChatEventContextHeader(event: _event),
           ),
         ),
         _StateCard(
           label: 'fallback without event',
           child: const _PrimitiveReviewFrame(
-            height: 132,
+            height: WidgetbookPreviewLayout.photoLikePanelHeight,
             child: ChatEventContextHeader(event: null),
           ),
         ),
         _StateCard(
           label: 'dinner context',
           child: _PrimitiveReviewFrame(
-            height: 132,
+            height: WidgetbookPreviewLayout.photoLikePanelHeight,
             child: ChatEventContextHeader(
               event: _event.copyWith(
                 eventFormat: EventFormatSnapshot.fromActivityKind(
@@ -1297,7 +1302,7 @@ Widget chatEventContextHeaderPrimitiveStates(BuildContext context) {
         _StateCard(
           label: 'long custom event title',
           child: _PrimitiveReviewFrame(
-            height: 132,
+            height: WidgetbookPreviewLayout.photoLikePanelHeight,
             child: ChatEventContextHeader(
               event: _event.copyWith(
                 eventFormat: EventFormatSnapshot.custom(
@@ -1349,7 +1354,7 @@ Widget messageBubblePrimitiveStates(BuildContext context) {
         _StateCard(
           label: 'long copy wraps with timestamp',
           child: _MessageBubblePrimitiveFrame(
-            height: 280,
+            height: WidgetbookPreviewLayout.exploreMediaPreviewHeight,
             children: [
               MessageBubble(
                 text: _longIncomingMessageCopy,
@@ -1392,7 +1397,7 @@ Widget messageBubblePrimitiveStates(BuildContext context) {
         _StateCard(
           label: 'image attachment',
           child: _MessageBubblePrimitiveFrame(
-            height: 320,
+            height: WidgetbookPreviewLayout.sliverPreviewHeight,
             children: [
               MessageBubble(
                 text: 'Route card from tonight.',
@@ -1691,7 +1696,7 @@ class _ChatMessageListFrameState extends State<_ChatMessageListFrame> {
   @override
   Widget build(BuildContext context) {
     return _DeviceFrame(
-      height: 420,
+      height: WidgetbookPreviewLayout.feedbackViewportHeight,
       child: Builder(
         builder: (context) {
           final t = CatchTokens.of(context);
@@ -1970,15 +1975,12 @@ class _ChatRouter extends StatelessWidget {
 final _publicProfileRoute = GoRoute(
   path: Routes.publicProfileScreen.path,
   name: Routes.publicProfileScreen.name,
-  builder: (_, state) {
+  builder: (context, state) {
     final uid = state.pathParameters['uid']!;
     final profile = MatchesChatSurfaceFixtures.profileFor(uid);
     return Scaffold(
       body: Center(
-        child: Text(
-          profile.name,
-          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
-        ),
+        child: Text(profile.name, style: CatchTextStyles.titleL(context)),
       ),
     );
   },
@@ -2097,7 +2099,7 @@ class _ChatBlastComposerFrame extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _DeviceFrame(
-      height: 420,
+      height: WidgetbookPreviewLayout.feedbackViewportHeight,
       child: Builder(
         builder: (context) {
           final t = CatchTokens.of(context);
@@ -2291,7 +2293,7 @@ class _SuvbotActionBarPrimitiveFrame extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _DeviceFrame(
-      height: 340,
+      height: WidgetbookPreviewLayout.matchesTallPreviewHeight,
       child: Builder(
         builder: (context) {
           final t = CatchTokens.of(context);
@@ -2330,7 +2332,7 @@ class _SuvbotResetActionRowsFrame extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _DeviceFrame(
-      height: 280,
+      height: WidgetbookPreviewLayout.exploreMediaPreviewHeight,
       child: Builder(
         builder: (context) {
           final t = CatchTokens.of(context);
@@ -2378,7 +2380,7 @@ class _MatchTesterSheetFrame extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _DeviceFrame(
-      height: 340,
+      height: WidgetbookPreviewLayout.matchesTallPreviewHeight,
       child: Builder(
         builder: (context) {
           final t = CatchTokens.of(context);
@@ -2409,7 +2411,7 @@ class _CatchPersonRowChatPreviewFrame extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _DeviceFrame(
-      height: 132,
+      height: WidgetbookPreviewLayout.photoLikePanelHeight,
       child: Builder(
         builder: (context) {
           final t = CatchTokens.of(context);

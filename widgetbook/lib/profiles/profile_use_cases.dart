@@ -45,6 +45,8 @@ import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
+import '../preview_layout_contracts.dart';
+
 final _viewer = ProfileSurfaceFixtures.viewer;
 final _incompleteViewer = ProfileSurfaceFixtures.incompleteViewer;
 final _longContentViewer = ProfileSurfaceFixtures.longContentViewer;
@@ -151,7 +153,7 @@ Widget profileScreenSelfTabBodyStates(BuildContext context) {
       _StateCard(
         label: 'loading tab shell',
         child: _SectionFrame(
-          height: 760,
+          height: WidgetbookPreviewLayout.profilePhonePreviewHeight,
           child: _SelfProfileTabBodyPreview(
             state: SelfProfileScreenState(
               status: SelfProfileRouteStatus.loading,
@@ -164,7 +166,7 @@ Widget profileScreenSelfTabBodyStates(BuildContext context) {
       _StateCard(
         label: 'load error',
         child: _SectionFrame(
-          height: 520,
+          height: WidgetbookPreviewLayout.profileSheetPreviewHeight,
           child: _SelfProfileTabBodyPreview(
             state: SelfProfileScreenState(
               status: SelfProfileRouteStatus.error,
@@ -179,7 +181,7 @@ Widget profileScreenSelfTabBodyStates(BuildContext context) {
       _StateCard(
         label: 'profile unavailable',
         child: _SectionFrame(
-          height: 520,
+          height: WidgetbookPreviewLayout.profileSheetPreviewHeight,
           child: _SelfProfileTabBodyPreview(
             state: SelfProfileScreenState(
               status: SelfProfileRouteStatus.unavailable,
@@ -192,7 +194,7 @@ Widget profileScreenSelfTabBodyStates(BuildContext context) {
       _StateCard(
         label: 'ready edit tab',
         child: _SectionFrame(
-          height: 760,
+          height: WidgetbookPreviewLayout.profilePhonePreviewHeight,
           child: _SelfProfileTabBodyPreview(
             state: SelfProfileScreenState.fromAsync(
               profileState: CatchAsyncState.data(_viewer),
@@ -221,7 +223,7 @@ Widget profileInsightsTabSliverBodyStates(BuildContext context) {
       _StateCard(
         label: 'analytics body',
         child: _SectionFrame(
-          height: 760,
+          height: WidgetbookPreviewLayout.profilePhonePreviewHeight,
           child: CustomScrollView(slivers: [ProfileInsightsTabSliverBody()]),
         ),
       ),
@@ -242,7 +244,7 @@ Widget profileScreenSelfSectionStates(BuildContext context) {
       _StateCard(
         label: 'header edit / preview selected',
         child: _SectionFrame(
-          height: 360,
+          height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
           child: Column(
             children: const [
               Expanded(child: _ProfileHeaderPreview(initialIndex: 0)),
@@ -255,7 +257,7 @@ Widget profileScreenSelfSectionStates(BuildContext context) {
       _StateCard(
         label: 'edit tab complete profile',
         child: _SectionFrame(
-          height: 880,
+          height: WidgetbookPreviewLayout.profileExpandedPreviewHeight,
           child: ProfileTab(
             user: _viewer,
             uploadState: (loadingIndices: <int>{}, uploadError: null),
@@ -265,7 +267,7 @@ Widget profileScreenSelfSectionStates(BuildContext context) {
       _StateCard(
         label: 'edit tab incomplete profile',
         child: _SectionFrame(
-          height: 760,
+          height: WidgetbookPreviewLayout.profilePhonePreviewHeight,
           child: ProfileTab(
             user: _incompleteViewer,
             uploadState: (loadingIndices: <int>{}, uploadError: null),
@@ -275,7 +277,7 @@ Widget profileScreenSelfSectionStates(BuildContext context) {
       _StateCard(
         label: 'photo grid loading and delete disabled',
         child: _SectionFrame(
-          height: 360,
+          height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
           child: Padding(
             padding: CatchInsets.content,
             child: PhotoGrid(
@@ -289,19 +291,22 @@ Widget profileScreenSelfSectionStates(BuildContext context) {
       ),
       _StateCard(
         label: 'inline editor variants',
-        child: const _SectionFrame(height: 760, child: _InlineEditorVariants()),
+        child: const _SectionFrame(
+          height: WidgetbookPreviewLayout.profilePhonePreviewHeight,
+          child: _InlineEditorVariants(),
+        ),
       ),
       _StateCard(
         label: 'preview tab default',
         child: _SectionFrame(
-          height: 760,
+          height: WidgetbookPreviewLayout.profilePhonePreviewHeight,
           child: PreviewTab(profile: _ownProfile),
         ),
       ),
       _StateCard(
         label: 'long content and text scale',
         child: _SectionFrame(
-          height: 820,
+          height: WidgetbookPreviewLayout.profileEditorPreviewHeight,
           child: _MediaOverride(
             textScaler: const TextScaler.linear(1.45),
             child: ProfileTab(
@@ -328,7 +333,7 @@ Widget profileTitleStates(BuildContext context) {
       _StateCard(
         label: 'title row',
         child: const _SectionFrame(
-          height: 120,
+          height: WidgetbookPreviewLayout.profileCompactPreviewHeight,
           child: _ProfileHeaderRouterFrame(
             child: CatchScreenHeaderTitle.block(
               title: 'Your profile',
@@ -354,21 +359,21 @@ Widget profileTabBarStates(BuildContext context) {
       _StateCard(
         label: 'edit selected',
         child: const _SectionFrame(
-          height: 96,
+          height: WidgetbookPreviewLayout.profileDensePreviewHeight,
           child: _ProfileTabBarPreview(initialIndex: 0),
         ),
       ),
       _StateCard(
         label: 'preview selected',
         child: const _SectionFrame(
-          height: 96,
+          height: WidgetbookPreviewLayout.profileDensePreviewHeight,
           child: _ProfileTabBarPreview(initialIndex: 1),
         ),
       ),
       _StateCard(
         label: 'insights selected',
         child: const _SectionFrame(
-          height: 96,
+          height: WidgetbookPreviewLayout.profileDensePreviewHeight,
           child: _ProfileTabBarPreview(initialIndex: 2),
         ),
       ),
@@ -389,7 +394,7 @@ Widget profileSettingsButtonStates(BuildContext context) {
       _StateCard(
         label: 'settings action',
         child: const _SectionFrame(
-          height: 96,
+          height: WidgetbookPreviewLayout.profileDensePreviewHeight,
           child: _ProfileHeaderRouterFrame(
             child: Center(child: ProfileSettingsButton()),
           ),
@@ -412,7 +417,7 @@ Widget previewTabStates(BuildContext context) {
       _StateCard(
         label: 'public profile preview',
         child: _SectionFrame(
-          height: 760,
+          height: WidgetbookPreviewLayout.profilePhonePreviewHeight,
           child: PreviewTab(profile: _ownProfile),
         ),
       ),
@@ -433,7 +438,7 @@ Widget profileTabStates(BuildContext context) {
       _StateCard(
         label: 'complete profile',
         child: _SectionFrame(
-          height: 880,
+          height: WidgetbookPreviewLayout.profileExpandedPreviewHeight,
           child: ProfileTab(
             user: _viewer,
             uploadState: (loadingIndices: <int>{}, uploadError: null),
@@ -457,7 +462,7 @@ Widget profileTabContentStates(BuildContext context) {
       _StateCard(
         label: 'list body builder',
         child: _SectionFrame(
-          height: 880,
+          height: WidgetbookPreviewLayout.profileExpandedPreviewHeight,
           child: ProfileTabContent(
             user: _viewer,
             uploadState: (loadingIndices: <int>{}, uploadError: null),
@@ -494,7 +499,7 @@ Widget profilePhotosSectionStates(BuildContext context) {
       _StateCard(
         label: 'complete grid',
         child: _SectionFrame(
-          height: 360,
+          height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
           child: Padding(
             padding: CatchInsets.content,
             child: ProfilePhotosSection(
@@ -510,7 +515,7 @@ Widget profilePhotosSectionStates(BuildContext context) {
       _StateCard(
         label: 'upload pending',
         child: _SectionFrame(
-          height: 360,
+          height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
           child: Padding(
             padding: CatchInsets.content,
             child: ProfilePhotosSection(
@@ -572,7 +577,7 @@ Widget profileFieldRowSectionStates(BuildContext context) {
       _StateCard(
         label: 'running section',
         child: _SectionFrame(
-          height: 280,
+          height: WidgetbookPreviewLayout.profileMediaPreviewHeight,
           child: ListView(
             padding: EdgeInsets.zero,
             children: [
@@ -608,7 +613,7 @@ Widget profileFieldRowSectionStates(BuildContext context) {
       _StateCard(
         label: 'count and first section',
         child: _SectionFrame(
-          height: 260,
+          height: WidgetbookPreviewLayout.profileStandardPreviewHeight,
           child: ListView(
             padding: EdgeInsets.zero,
             children: [
@@ -636,7 +641,7 @@ Widget profileFieldRowSectionStates(BuildContext context) {
       _StateCard(
         label: 'footer slot',
         child: _SectionFrame(
-          height: 260,
+          height: WidgetbookPreviewLayout.profileStandardPreviewHeight,
           child: ListView(
             padding: EdgeInsets.zero,
             children: [
@@ -699,7 +704,7 @@ Widget profileSingleEnumEntryStates(BuildContext context) {
       _StateCard(
         label: 'empty expanded',
         child: _SectionFrame(
-          height: 300,
+          height: WidgetbookPreviewLayout.profileMediumPreviewHeight,
           child: ProfileSingleEnumEntry<EducationLevel>(
             icon: CatchIcons.schoolOutlined,
             label: 'Education',
@@ -754,7 +759,7 @@ Widget profileMultiEnumEntryStates(BuildContext context) {
       _StateCard(
         label: 'empty expanded',
         child: _SectionFrame(
-          height: 300,
+          height: WidgetbookPreviewLayout.profileMediumPreviewHeight,
           child: ProfileMultiEnumEntry<Language>(
             icon: CatchIcons.languageOutlined,
             label: 'Languages',
@@ -839,7 +844,7 @@ Widget profileTabSliverBodyStates(BuildContext context) {
       _StateCard(
         label: 'complete profile',
         child: _SectionFrame(
-          height: 880,
+          height: WidgetbookPreviewLayout.profileExpandedPreviewHeight,
           child: CustomScrollView(
             slivers: [
               ProfileTabSliverBody(
@@ -867,7 +872,7 @@ Widget profileTabSkeletonSliverBodyStates(BuildContext context) {
       _StateCard(
         label: 'loading',
         child: _SectionFrame(
-          height: 760,
+          height: WidgetbookPreviewLayout.profilePhonePreviewHeight,
           child: CustomScrollView(slivers: [ProfileTabSkeletonSliverBody()]),
         ),
       ),
@@ -888,7 +893,7 @@ Widget profilePhotosSkeletonSectionStates(BuildContext context) {
       _StateCard(
         label: 'loading photo grid',
         child: _SectionFrame(
-          height: 360,
+          height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
           child: Padding(
             padding: CatchInsets.content,
             child: ProfilePhotosSkeletonSection(),
@@ -912,7 +917,7 @@ Widget profileInfoSkeletonSectionStates(BuildContext context) {
       _StateCard(
         label: 'single row',
         child: _SectionFrame(
-          height: 176,
+          height: WidgetbookPreviewLayout.profilePolaroidPreviewHeight,
           child: Padding(
             padding: CatchInsets.content,
             child: ProfileInfoSkeletonSection(title: 'About you', rows: 1),
@@ -922,7 +927,7 @@ Widget profileInfoSkeletonSectionStates(BuildContext context) {
       _StateCard(
         label: 'divided rows',
         child: _SectionFrame(
-          height: 320,
+          height: WidgetbookPreviewLayout.sliverPreviewHeight,
           child: Padding(
             padding: CatchInsets.content,
             child: ProfileInfoSkeletonSection(title: 'Lifestyle', rows: 4),
@@ -946,7 +951,7 @@ Widget profileInfoSkeletonTileStates(BuildContext context) {
       _StateCard(
         label: 'row placeholder',
         child: _SectionFrame(
-          height: 120,
+          height: WidgetbookPreviewLayout.profileCompactPreviewHeight,
           child: Padding(
             padding: CatchInsets.content,
             child: ProfileInfoSkeletonTile(),
@@ -970,7 +975,7 @@ Widget profileDirectTextEntryFieldStates(BuildContext context) {
       _StateCard(
         label: 'editable and legal identity rows',
         child: _SectionFrame(
-          height: 300,
+          height: WidgetbookPreviewLayout.profileMediumPreviewHeight,
           child: Column(
             children: [
               ProfileDirectTextEntryField(
@@ -1035,11 +1040,17 @@ Widget profileInlinePromptEntryEditorStates(BuildContext context) {
     children: [
       _StateCard(
         label: 'collapsed question + separate answer',
-        child: _SectionFrame(height: 180, child: promptEditor(expanded: false)),
+        child: _SectionFrame(
+          height: WidgetbookPreviewLayout.profileInlinePreviewHeight,
+          child: promptEditor(expanded: false),
+        ),
       ),
       _StateCard(
         label: 'expanded inline question choices + separate answer',
-        child: _SectionFrame(height: 560, child: promptEditor(expanded: true)),
+        child: _SectionFrame(
+          height: WidgetbookPreviewLayout.profileExpandedEditorHeight,
+          child: promptEditor(expanded: true),
+        ),
       ),
     ],
   );
@@ -1058,7 +1069,7 @@ Widget profileInlineHeightEditorStates(BuildContext context) {
       _StateCard(
         label: 'expanded stepper',
         child: _SectionFrame(
-          height: 180,
+          height: WidgetbookPreviewLayout.profileInlinePreviewHeight,
           child: ProfileInlineHeightEditor(
             icon: CatchIcons.heightOutlined,
             label: 'Height',
@@ -1089,7 +1100,7 @@ Widget profileHeightStepperControlsStates(BuildContext context) {
       _StateCard(
         label: 'enabled',
         child: _SectionFrame(
-          height: 120,
+          height: WidgetbookPreviewLayout.profileCompactPreviewHeight,
           child: Center(
             child: CatchFieldStepper(
               value: 172,
@@ -1107,7 +1118,7 @@ Widget profileHeightStepperControlsStates(BuildContext context) {
       _StateCard(
         label: 'disabled',
         child: _SectionFrame(
-          height: 120,
+          height: WidgetbookPreviewLayout.profileCompactPreviewHeight,
           child: Center(
             child: CatchFieldStepper(
               value: 172,
@@ -1139,7 +1150,7 @@ Widget profileHeightStepButtonStates(BuildContext context) {
       _StateCard(
         label: 'minimum and maximum endpoints',
         child: _SectionFrame(
-          height: 180,
+          height: WidgetbookPreviewLayout.profileInlinePreviewHeight,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -1183,7 +1194,7 @@ Widget profileInlineSingleChoiceEntryEditorStates(BuildContext context) {
       _StateCard(
         label: 'expanded choice set',
         child: _SectionFrame(
-          height: 260,
+          height: WidgetbookPreviewLayout.profileStandardPreviewHeight,
           child: const ProfileInlineRelationshipGoalChoiceEntryEditor(),
         ),
       ),
@@ -1204,7 +1215,7 @@ Widget profileInlineMultiChoiceEntryEditorStates(BuildContext context) {
       _StateCard(
         label: 'expanded choice set',
         child: _SectionFrame(
-          height: 260,
+          height: WidgetbookPreviewLayout.profileStandardPreviewHeight,
           child: const ProfileInlineLanguageMultiChoiceEntryEditor(),
         ),
       ),
@@ -1225,7 +1236,7 @@ Widget profileSingleChipValueStates(BuildContext context) {
       _StateCard(
         label: 'selected',
         child: _SectionFrame(
-          height: 120,
+          height: WidgetbookPreviewLayout.profileCompactPreviewHeight,
           child: Center(
             child: CatchFieldChoiceChip(
               label: RelationshipGoal.relationship.label,
@@ -1240,7 +1251,7 @@ Widget profileSingleChipValueStates(BuildContext context) {
       _StateCard(
         label: 'unselected',
         child: _SectionFrame(
-          height: 120,
+          height: WidgetbookPreviewLayout.profileCompactPreviewHeight,
           child: Center(
             child: CatchFieldChoiceChip(
               label: RelationshipGoal.friendship.label,
@@ -1255,7 +1266,7 @@ Widget profileSingleChipValueStates(BuildContext context) {
       _StateCard(
         label: 'selected disabled',
         child: _SectionFrame(
-          height: 120,
+          height: WidgetbookPreviewLayout.profileCompactPreviewHeight,
           child: Center(
             child: CatchFieldChoiceChip(
               label: RelationshipGoal.relationship.label,
@@ -1284,7 +1295,7 @@ Widget profileMultiChipValueStates(BuildContext context) {
       _StateCard(
         label: 'selected and unselected wrap',
         child: _SectionFrame(
-          height: 180,
+          height: WidgetbookPreviewLayout.profileInlinePreviewHeight,
           child: Padding(
             padding: CatchInsets.content,
             child: CatchFieldChoiceControl<Language>(
@@ -1307,7 +1318,7 @@ Widget profileMultiChipValueStates(BuildContext context) {
       _StateCard(
         label: 'disabled wrap',
         child: _SectionFrame(
-          height: 180,
+          height: WidgetbookPreviewLayout.profileInlinePreviewHeight,
           child: Padding(
             padding: CatchInsets.content,
             child: CatchFieldChoiceControl<Language>(
@@ -1344,7 +1355,7 @@ Widget profileChipPlaceholderStates(BuildContext context) {
       _StateCard(
         label: 'empty and selected values',
         child: _SectionFrame(
-          height: 180,
+          height: WidgetbookPreviewLayout.profileInlinePreviewHeight,
           child: Column(
             children: [
               CatchField.choices<Language>(
@@ -1384,7 +1395,7 @@ Widget profileChipOptionsStates(BuildContext context) {
       _StateCard(
         label: 'enabled selected',
         child: _SectionFrame(
-          height: 140,
+          height: WidgetbookPreviewLayout.compactPanelHeight,
           child: Padding(
             padding: CatchInsets.content,
             child: CatchFieldChoiceControl<Language>(
@@ -1405,7 +1416,7 @@ Widget profileChipOptionsStates(BuildContext context) {
       _StateCard(
         label: 'disabled',
         child: _SectionFrame(
-          height: 140,
+          height: WidgetbookPreviewLayout.compactPanelHeight,
           child: Padding(
             padding: CatchInsets.content,
             child: CatchFieldChoiceControl<Language>(
@@ -1440,7 +1451,7 @@ Widget profileInlineRangeEditorStates(BuildContext context) {
       _StateCard(
         label: 'expanded range',
         child: _SectionFrame(
-          height: 220,
+          height: WidgetbookPreviewLayout.stateViewportHeight,
           child: ProfileInlineRangeEditor(
             icon: CatchIcons.directionsRunOutlined,
             title: 'Pace',
@@ -1528,7 +1539,7 @@ Widget _catchFormDescriptorPreview() {
       _StateCard(
         label: 'read, text, choice, multi-choice, and range rows',
         child: _SectionFrame(
-          height: 520,
+          height: WidgetbookPreviewLayout.profileSheetPreviewHeight,
           child: CatchFormRowList<_WidgetbookFormPatch>(
             title: 'About you',
             rows: [
@@ -1718,7 +1729,7 @@ Widget publicProfileSafetyActionStates(BuildContext context) {
       _StateCard(
         label: 'report sheet',
         child: _SectionFrame(
-          height: 430,
+          height: WidgetbookPreviewLayout.profileWidePreviewExtent,
           child: Align(
             alignment: Alignment.bottomCenter,
             child: PublicProfileReportSheet(
@@ -1731,7 +1742,7 @@ Widget publicProfileSafetyActionStates(BuildContext context) {
       _StateCard(
         label: 'block confirmation dialog',
         child: _SectionFrame(
-          height: 430,
+          height: WidgetbookPreviewLayout.profileWidePreviewExtent,
           child: _BlockDialogPreview(profile: _targetProfile),
         ),
       ),
@@ -1768,7 +1779,7 @@ Widget publicProfileScreenBodyStates(BuildContext context) {
       _StateCard(
         label: 'cold loading',
         child: _SectionFrame(
-          height: 760,
+          height: WidgetbookPreviewLayout.profilePhonePreviewHeight,
           child: PublicProfileScreenBody(
             state: PublicProfileScreenState(
               uid: _targetProfile.uid,
@@ -1782,7 +1793,7 @@ Widget publicProfileScreenBodyStates(BuildContext context) {
       _StateCard(
         label: 'load error',
         child: _SectionFrame(
-          height: 520,
+          height: WidgetbookPreviewLayout.profileSheetPreviewHeight,
           child: PublicProfileScreenBody(
             state: PublicProfileScreenState(
               uid: _targetProfile.uid,
@@ -1799,7 +1810,7 @@ Widget publicProfileScreenBodyStates(BuildContext context) {
       _StateCard(
         label: 'profile unavailable',
         child: _SectionFrame(
-          height: 520,
+          height: WidgetbookPreviewLayout.profileSheetPreviewHeight,
           child: PublicProfileScreenBody(
             state: PublicProfileScreenState(
               uid: _targetProfile.uid,
@@ -1813,7 +1824,7 @@ Widget publicProfileScreenBodyStates(BuildContext context) {
       _StateCard(
         label: 'loaded with viewer context',
         child: _SectionFrame(
-          height: 760,
+          height: WidgetbookPreviewLayout.profilePhonePreviewHeight,
           child: PublicProfileScreenBody(
             state: PublicProfileScreenState(
               uid: _targetProfile.uid,
@@ -1878,7 +1889,7 @@ Widget publicProfileReportSheetStates(BuildContext context) {
       _StateCard(
         label: 'reason picker',
         child: _SectionFrame(
-          height: 430,
+          height: WidgetbookPreviewLayout.profileWidePreviewExtent,
           child: Align(
             alignment: Alignment.bottomCenter,
             child: PublicProfileReportSheet(
@@ -2550,7 +2561,7 @@ class _StateCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return SizedBox(
-      width: 430,
+      width: WidgetbookPreviewLayout.profileWidePreviewExtent,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -2580,7 +2591,11 @@ class _DeviceFrame extends StatelessWidget {
         padding: const EdgeInsets.all(CatchSpacing.micro6),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(CatchRadius.md),
-          child: SizedBox(width: 390, height: 760, child: child),
+          child: SizedBox(
+            width: WidgetbookPreviewLayout.phoneChromeWidth,
+            height: WidgetbookPreviewLayout.profilePhonePreviewHeight,
+            child: child,
+          ),
         ),
       ),
     );
@@ -2613,7 +2628,11 @@ class _SectionFrame extends StatelessWidget {
         darkTheme: AppTheme.dark,
         home: Scaffold(
           body: SafeArea(
-            child: SizedBox(width: 390, height: height, child: child),
+            child: SizedBox(
+              width: WidgetbookPreviewLayout.phoneChromeWidth,
+              height: height,
+              child: child,
+            ),
           ),
         ),
       ),

@@ -25,6 +25,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
+import '../preview_layout_contracts.dart';
+
 @widgetbook.UseCase(
   name: 'Route states',
   type: EventSuccessCompanionRouteScreen,
@@ -918,7 +920,10 @@ class _DeviceFrame extends StatelessWidget {
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(CatchRadius.lg),
-            child: SizedBox(height: 760, child: child),
+            child: SizedBox(
+              height: WidgetbookPreviewLayout.profilePhonePreviewHeight,
+              child: child,
+            ),
           ),
         ),
       ),

@@ -1924,6 +1924,8 @@ abstract final class CatchLayout {
   /// Content max-width clamp for large phones / foldables.
   /// Wrap full-bleed page bodies in [ConstrainedBox] with this maxWidth, centered.
   static const double maxContentWidth = 600;
+  static const double maxContentWithDockHeight =
+      maxContentWidth + CatchSpacing.s16;
   static const double pageBodyHorizontalGutters = CatchSpacing.screenPx * 2;
   static const double tabbedPageMaxExtent =
       maxContentWidth + pageBodyHorizontalGutters;
@@ -2463,6 +2465,8 @@ abstract final class CatchLayout {
       welcomeReelCatchLineTopOffset;
   static const double welcomeReelObjectLeft = 116.0;
   static const double welcomeReelObjectRight = 18.0;
+  static const double welcomeFocusLockupMaxWidth =
+      welcomeReferenceWidth - welcomeReelCatchLeft - welcomeReelObjectRight;
   static const double welcomeReelMinRightInset = 12.0;
   static const double welcomeReelMaxTextScale = 1.10;
   static const double welcomeReelUnderlineGap = 2.0;

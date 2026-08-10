@@ -4,6 +4,7 @@ import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/consumer_bootstrap.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -33,6 +34,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
+
+import '../preview_layout_contracts.dart';
 
 final _profileNoPhotos = ProfileSurfaceFixtures.viewer.copyWith(
   profileComplete: false,
@@ -240,7 +243,7 @@ Widget onboardingStepLayoutStates(BuildContext context) {
           child: OnboardingStepLayout(
             children: [
               Text('Tell us enough to make your first plan feel natural.'),
-              SizedBox(height: 16),
+              SizedBox(height: CatchSpacing.s4),
               Text('Use the shared onboarding body rhythm and max width.'),
             ],
           ),
@@ -253,13 +256,13 @@ Widget onboardingStepLayoutStates(BuildContext context) {
             footer: Row(
               children: [
                 Expanded(child: Text('2 / 3 prompts answered')),
-                SizedBox(width: 12),
+                SizedBox(width: CatchSpacing.s3),
                 CatchButton(label: 'Continue', onPressed: null),
               ],
             ),
             children: [
               Text('Complete the visible fields before continuing.'),
-              SizedBox(height: 16),
+              SizedBox(height: CatchSpacing.s4),
               Text('The bottom dock stays outside the scroll owner.'),
             ],
           ),
@@ -361,7 +364,10 @@ Widget welcomeSceneStates(BuildContext context) {
           child: WelcomeScene(
             viewportWidth: 320,
             viewportHeight: 760,
-            mediaPadding: EdgeInsets.only(top: 44, bottom: 34),
+            mediaPadding: EdgeInsets.only(
+              top: WidgetbookPreviewLayout.onboardingWelcomeMediaTop,
+              bottom: WidgetbookPreviewLayout.onboardingWelcomeMediaBottom,
+            ),
             spinValue: 0.42,
             landingValue: 0,
             landed: false,
@@ -376,7 +382,10 @@ Widget welcomeSceneStates(BuildContext context) {
           child: WelcomeScene(
             viewportWidth: 320,
             viewportHeight: 760,
-            mediaPadding: EdgeInsets.only(top: 44, bottom: 34),
+            mediaPadding: EdgeInsets.only(
+              top: WidgetbookPreviewLayout.onboardingWelcomeMediaTop,
+              bottom: WidgetbookPreviewLayout.onboardingWelcomeMediaBottom,
+            ),
             spinValue: 1,
             landingValue: 1,
             landed: true,
@@ -398,10 +407,7 @@ Widget welcomeFocusLockupStates(BuildContext context) {
   final socialRun =
       ActivityPalette.pigments[ActivityKind.socialRun] ??
       ActivityPalette.pigments[ActivityKind.openActivity]!;
-  final maxWidth =
-      CatchLayout.welcomeReferenceWidth -
-      CatchLayout.welcomeReelCatchLeft -
-      CatchLayout.welcomeReelObjectRight;
+  const maxWidth = WidgetbookPreviewLayout.onboardingWelcomeFocusWidth;
 
   return _OnboardingCatalog(
     title: 'WelcomeFocusLockup',
@@ -454,7 +460,7 @@ Widget welcomeReelBandStates(BuildContext context) {
         child: ColoredBox(
           color: CatchTokens.editorialDark.bg,
           child: const SizedBox(
-            height: 360,
+            height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
             child: ReelBand(
               viewportWidth: 320,
               spinValue: 0.5,
@@ -469,7 +475,7 @@ Widget welcomeReelBandStates(BuildContext context) {
         child: ColoredBox(
           color: CatchTokens.editorialDark.bg,
           child: const SizedBox(
-            height: 360,
+            height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
             child: ReelBand(
               viewportWidth: 320,
               spinValue: 1,
@@ -497,7 +503,7 @@ Widget welcomeReelRowStates(BuildContext context) {
         child: ColoredBox(
           color: CatchTokens.editorialDark.bg,
           child: const SizedBox(
-            height: 92,
+            height: WidgetbookPreviewLayout.onboardingReelRowPreviewHeight,
             child: ReelRow(
               viewportWidth: 320,
               phrase: WelcomePhrase('the long table', ActivityKind.dinner),
@@ -515,7 +521,7 @@ Widget welcomeReelRowStates(BuildContext context) {
         child: ColoredBox(
           color: CatchTokens.editorialDark.bg,
           child: const SizedBox(
-            height: 92,
+            height: WidgetbookPreviewLayout.onboardingReelRowPreviewHeight,
             child: ReelRow(
               viewportWidth: 320,
               phrase: WelcomePhrase('the sunset 5K', ActivityKind.socialRun),
@@ -545,14 +551,17 @@ Widget welcomeRevealEntranceStates(BuildContext context) {
         label: 'settling',
         child: ColoredBox(
           color: CatchTokens.editorialDark.bg,
-          child: const Padding(
-            padding: EdgeInsets.all(24),
+          child: Padding(
+            padding: const EdgeInsets.all(CatchSpacing.s6),
             child: RevealEntrance(
               landingValue: 0.62,
               order: 0,
               child: Text(
                 'Show up to something you would do anyway.',
-                style: TextStyle(color: Colors.white),
+                style: CatchTextStyles.proseM(
+                  context,
+                  color: CatchTokens.editorialWhite,
+                ),
               ),
             ),
           ),
@@ -562,14 +571,17 @@ Widget welcomeRevealEntranceStates(BuildContext context) {
         label: 'visible',
         child: ColoredBox(
           color: CatchTokens.editorialDark.bg,
-          child: const Padding(
-            padding: EdgeInsets.all(24),
+          child: Padding(
+            padding: const EdgeInsets.all(CatchSpacing.s6),
             child: RevealEntrance(
               landingValue: 1,
               order: 1,
               child: Text(
                 'Continue with phone',
-                style: TextStyle(color: Colors.white),
+                style: CatchTextStyles.labelL(
+                  context,
+                  color: CatchTokens.editorialWhite,
+                ),
               ),
             ),
           ),
@@ -1177,11 +1189,15 @@ class _OnboardingCatalog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(CatchSpacing.s6),
       children: [
         Text(title, style: Theme.of(context).textTheme.headlineSmall),
-        const SizedBox(height: 16),
-        Wrap(spacing: 16, runSpacing: 16, children: children),
+        const SizedBox(height: CatchSpacing.s4),
+        Wrap(
+          spacing: CatchSpacing.s4,
+          runSpacing: CatchSpacing.s4,
+          children: children,
+        ),
       ],
     );
   }
@@ -1196,12 +1212,12 @@ class _StateCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 390,
+      width: WidgetbookPreviewLayout.phoneChromeWidth,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(label, style: Theme.of(context).textTheme.labelLarge),
-          const SizedBox(height: 8),
+          const SizedBox(height: CatchSpacing.s2),
           child,
         ],
       ),
@@ -1217,10 +1233,12 @@ class _DeviceFrame extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 390,
-      height: 760,
+      width: WidgetbookPreviewLayout.phoneChromeWidth,
+      height: WidgetbookPreviewLayout.profilePhonePreviewHeight,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(28),
+        borderRadius: BorderRadius.circular(
+          WidgetbookPreviewLayout.phonePreviewCornerRadius,
+        ),
         child: Material(
           color: Theme.of(context).colorScheme.surface,
           child: child,

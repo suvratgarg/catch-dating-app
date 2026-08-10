@@ -83,6 +83,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
+import '../preview_layout_contracts.dart';
+
 const _viewerUid = 'widgetbook-event-viewer';
 const _clubId = 'widgetbook-event-club';
 final _now = DateTime(2026, 6, 22, 9);
@@ -393,7 +395,7 @@ Widget eventDetailPhotoHeroSurfaceStates(BuildContext context) {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(CatchRadius.lg),
           child: SizedBox(
-            height: 280,
+            height: WidgetbookPreviewLayout.exploreMediaPreviewHeight,
             child: EventPhotoHeroSurface(event: _event),
           ),
         ),
@@ -417,7 +419,7 @@ Widget eventDetailTicketHeroSurfaceStates(BuildContext context) {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(CatchRadius.lg),
           child: SizedBox(
-            height: 360,
+            height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
             child: EventDetailTicketHeroSurface(
               event: _event,
               presentationMode: EventDetailPresentationMode.ticket,
@@ -430,7 +432,7 @@ Widget eventDetailTicketHeroSurfaceStates(BuildContext context) {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(CatchRadius.lg),
           child: SizedBox(
-            height: 360,
+            height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
             child: EventDetailTicketHeroSurface(
               event: _event,
               presentationMode: EventDetailPresentationMode.spotlightDark,
@@ -461,8 +463,8 @@ Widget eventDetailTicketSurfaceStates(BuildContext context) {
             ClipRRect(
               borderRadius: BorderRadius.circular(CatchRadius.lg),
               child: SizedBox(
-                width: 320,
-                height: 360,
+                width: WidgetbookPreviewLayout.eventDetailPreviewWidth,
+                height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
                 child: EventDetailTicketSurface(
                   event: _event,
                   presentationMode: EventDetailPresentationMode.ticket,
@@ -472,8 +474,8 @@ Widget eventDetailTicketSurfaceStates(BuildContext context) {
             ClipRRect(
               borderRadius: BorderRadius.circular(CatchRadius.lg),
               child: SizedBox(
-                width: 320,
-                height: 360,
+                width: WidgetbookPreviewLayout.eventDetailPreviewWidth,
+                height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
                 child: EventDetailTicketSurface(
                   event: _event,
                   presentationMode: EventDetailPresentationMode.spotlightDark,
@@ -890,7 +892,7 @@ Widget eventDetailPhotoStripTileStates(BuildContext context) {
       _StateCard(
         label: 'uploaded photo',
         child: SizedBox(
-          width: 116,
+          width: WidgetbookPreviewLayout.eventCompactAvatarWidth,
           child: EventDetailPhotoStripTile(
             index: 0,
             photo: photo,
@@ -903,7 +905,7 @@ Widget eventDetailPhotoStripTileStates(BuildContext context) {
       _StateCard(
         label: 'placeholder',
         child: SizedBox(
-          width: 116,
+          width: WidgetbookPreviewLayout.eventCompactAvatarWidth,
           child: EventDetailPhotoStripTile(
             index: 1,
             photo: null,
@@ -2229,7 +2231,7 @@ Widget savedEventsScreenStates(BuildContext context) {
 Widget savedEventsAgendaSliverStates(BuildContext context) {
   final events = _agendaEvents();
   return SizedBox(
-    height: 620,
+    height: WidgetbookPreviewLayout.exploreRoutePreviewHeight,
     child: CustomScrollView(
       slivers: [
         SavedEventsAgendaSliver(
@@ -2249,7 +2251,7 @@ Widget savedEventsAgendaSliverStates(BuildContext context) {
 )
 Widget savedEventsErrorState(BuildContext context) {
   return SizedBox(
-    height: 360,
+    height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
     child: SavedEventsError(
       error: StateError('Saved events failed'),
       onRetry: _noop,
@@ -2264,7 +2266,7 @@ Widget savedEventsErrorState(BuildContext context) {
 )
 Widget savedEventsClubNamesErrorSliverState(BuildContext context) {
   return SizedBox(
-    height: 360,
+    height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
     child: CustomScrollView(
       slivers: [
         SavedEventsClubNamesErrorSliver(
@@ -2352,7 +2354,7 @@ Widget eventMapViewStates(BuildContext context) {
       _StateCard(
         label: 'loading',
         child: SizedBox(
-          height: 360,
+          height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
           child: ProviderScope(
             overrides: [
               deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
@@ -2366,7 +2368,7 @@ Widget eventMapViewStates(BuildContext context) {
       _StateCard(
         label: 'pinned events',
         child: SizedBox(
-          height: 360,
+          height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
           child: ProviderScope(
             overrides: [
               deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
@@ -2388,7 +2390,7 @@ Widget eventMapViewStates(BuildContext context) {
       _StateCard(
         label: 'empty',
         child: SizedBox(
-          height: 360,
+          height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
           child: ProviderScope(
             overrides: [
               deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
@@ -2411,7 +2413,10 @@ Widget eventMapViewStates(BuildContext context) {
   path: '[Events]/Map',
 )
 Widget eventLocationMapLoadingBodyState(BuildContext context) {
-  return const SizedBox(height: 360, child: EventLocationMapLoadingBody());
+  return const SizedBox(
+    height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
+    child: EventLocationMapLoadingBody(),
+  );
 }
 
 @widgetbook.UseCase(
@@ -2420,7 +2425,10 @@ Widget eventLocationMapLoadingBodyState(BuildContext context) {
   path: '[Events]/Map',
 )
 Widget eventMapLoadingBodyState(BuildContext context) {
-  return const SizedBox(height: 360, child: EventMapLoadingBody());
+  return const SizedBox(
+    height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
+    child: EventMapLoadingBody(),
+  );
 }
 
 @widgetbook.UseCase(
@@ -2441,7 +2449,7 @@ Widget chromelessMapScaffoldState(BuildContext context) {
 )
 Widget eventPinsMapState(BuildContext context) {
   return SizedBox(
-    height: 360,
+    height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
     child: EventPinsMap(
       items: _eventMapItems(),
       initialCenter: _mapCenter,
@@ -2462,7 +2470,7 @@ Widget eventPinsMapState(BuildContext context) {
 )
 Widget eventPinsMapPlaceholderState(BuildContext context) {
   return SizedBox(
-    height: 360,
+    height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
     child: EventPinsMapPlaceholder(
       items: _eventMapItems(),
       selectedEventId: _event.id,
@@ -2480,7 +2488,7 @@ Widget eventPinsMapPlaceholderState(BuildContext context) {
 )
 Widget mapOverlayControlsState(BuildContext context) {
   return SizedBox(
-    height: 180,
+    height: WidgetbookPreviewLayout.mediaPanelHeight,
     child: Stack(
       children: [
         Positioned.fill(
@@ -2537,7 +2545,7 @@ Widget mapPinTileStates(BuildContext context) {
 )
 Widget eventAgendaListState(BuildContext context) {
   return SizedBox(
-    height: 620,
+    height: WidgetbookPreviewLayout.exploreRoutePreviewHeight,
     child: EventAgendaList(
       events: _agendaEvents(),
       today: DateUtils.dateOnly(_now),
@@ -2557,7 +2565,7 @@ Widget eventAgendaListState(BuildContext context) {
 )
 Widget eventAgendaSliverListState(BuildContext context) {
   return SizedBox(
-    height: 620,
+    height: WidgetbookPreviewLayout.exploreRoutePreviewHeight,
     child: CustomScrollView(
       slivers: [
         EventAgendaSliverList(
@@ -2619,7 +2627,7 @@ Widget eventAgendaDayGroupState(BuildContext context) {
 )
 Widget eventAgendaSliverSkeletonState(BuildContext context) {
   return const SizedBox(
-    height: 520,
+    height: WidgetbookPreviewLayout.defaultPhonePreviewHeight,
     child: CustomScrollView(slivers: [EventAgendaSliverSkeleton()]),
   );
 }
@@ -2792,7 +2800,7 @@ Widget eventDateRailState(BuildContext context) {
 )
 Widget eventPerforationLineState(BuildContext context) {
   return SizedBox(
-    height: 120,
+    height: WidgetbookPreviewLayout.profileCompactPreviewHeight,
     child: PerforationLine(
       color: CatchTokens.of(context).ticketPerforationLine,
     ),
@@ -2932,7 +2940,10 @@ Widget eventStatusPillState(BuildContext context) {
   path: '[Event Detail]/Sections',
 )
 Widget eventPhotoHeaderState(BuildContext context) {
-  return SizedBox(height: 240, child: EventPhotoHeader(event: _event));
+  return SizedBox(
+    height: WidgetbookPreviewLayout.tallNarrowPanelHeight,
+    child: EventPhotoHeader(event: _event),
+  );
 }
 
 @widgetbook.UseCase(
@@ -3516,7 +3527,10 @@ class _DeviceFrame extends StatelessWidget {
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(CatchRadius.lg),
-            child: SizedBox(height: 720, child: child),
+            child: SizedBox(
+              height: WidgetbookPreviewLayout.paperScaffoldViewportHeight,
+              child: child,
+            ),
           ),
         ),
       ),
@@ -3569,7 +3583,7 @@ class _SheetFrame extends StatelessWidget {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(CatchRadius.lg),
             child: SizedBox(
-              height: 560,
+              height: WidgetbookPreviewLayout.profileExpandedEditorHeight,
               child: Align(alignment: Alignment.bottomCenter, child: child),
             ),
           ),

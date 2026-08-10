@@ -86,6 +86,8 @@ import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
+import '../preview_layout_contracts.dart';
+
 const _choices = <_Choice>[
   _Choice('Social run'),
   _Choice('Dinner'),
@@ -234,7 +236,7 @@ Widget catchMenuCatalogStates(BuildContext context) {
       _StateCard(
         label: 'rows',
         child: CatchMenu<String>(
-          width: 280,
+          width: WidgetbookPreviewLayout.mediumComponentWidth,
           onSelected: (value, _) => _ignoreString(value),
           items: [
             CatchMenuItem(
@@ -354,7 +356,7 @@ Widget catchMonoLabelCatalogStates(BuildContext context) {
             CatchMonoLabel('6 going', color: t.ink2),
             CatchMonoLabel('2.4 km away', color: t.primary),
             SizedBox(
-              width: 110,
+              width: WidgetbookPreviewLayout.monoLabelTruncationWidth,
               child: CatchMonoLabel(
                 'A very long metadata label',
                 color: t.ink3,
@@ -380,19 +382,19 @@ Widget catchSectionLabelCatalogStates(BuildContext context) {
     children: [
       _StateCard(
         label: 'plain / icon / truncated',
-        child: Column(
+        child: CatchSectionList(
+          emptyStateOmitted: true,
+          gap: CatchSpacing.s3,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const CatchSectionLabel(label: 'How it works'),
-            gapH12,
             CatchSectionLabel(
               label: 'Social run format',
               icon: CatchIcons.directionsRunRounded,
               accentColor: t.primary,
             ),
-            gapH12,
             SizedBox(
-              width: 160,
+              width: WidgetbookPreviewLayout.compactControlWidth,
               child: CatchSectionLabel(
                 label: 'A very long activity section label',
                 icon: CatchIcons.sparkle,
@@ -513,7 +515,7 @@ Widget catchControlShellCatalogStates(BuildContext context) {
     bool focused = false,
   }) {
     return SizedBox(
-      width: 180,
+      width: WidgetbookPreviewLayout.controlShellWidth,
       child: CatchControlShell(
         size: size,
         shape: shape,
@@ -521,7 +523,10 @@ Widget catchControlShellCatalogStates(BuildContext context) {
         enabled: enabled,
         hasError: hasError,
         focused: focused,
-        child: Text(label, style: CatchTextStyles.bodyM(context, color: t.ink)),
+        child: Text(
+          label,
+          style: CatchTextStyles.fieldLabel(context, color: t.ink),
+        ),
       ),
     );
   }
@@ -564,7 +569,7 @@ Widget catchPageBodyCatalogStates(BuildContext context) {
       _StateCard(
         label: 'standard body insets',
         child: SizedBox(
-          height: 160,
+          height: WidgetbookPreviewLayout.insetPreviewHeight,
           child: ColoredBox(
             color: CatchTokens.of(context).raised,
             child: CatchPageBody(child: _textData('Page content')),
@@ -588,7 +593,7 @@ Widget catchFormStepBodyCatalogStates(BuildContext context) {
       _StateCard(
         label: 'form-step insets',
         child: SizedBox(
-          height: 160,
+          height: WidgetbookPreviewLayout.insetPreviewHeight,
           child: ColoredBox(
             color: CatchTokens.of(context).raised,
             child: CatchFormStepBody(child: _textData('Form step content')),
@@ -612,7 +617,7 @@ Widget catchSliverPageBodyCatalogStates(BuildContext context) {
       _StateCard(
         label: 'sliver-native insets',
         child: SizedBox(
-          height: 220,
+          height: WidgetbookPreviewLayout.stateViewportHeight,
           child: ColoredBox(
             color: CatchTokens.of(context).raised,
             child: CustomScrollView(
@@ -672,7 +677,7 @@ Widget catchScrollTerminalPaddingCatalogStates(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(label, style: CatchTextStyles.titleS(context)),
+        Text(label, style: CatchTextStyles.fieldRowTitle(context)),
         gapH4,
         Text(description, style: CatchTextStyles.supporting(context)),
         gapH8,
@@ -773,7 +778,7 @@ Widget catchTicketHeroCatalogStates(BuildContext context) {
           child: CatchSurface.card(
             child: Text(
               'Ticket surface keeps the shared Hero tag and flight behavior.',
-              style: CatchTextStyles.bodyM(context),
+              style: CatchTextStyles.proseM(context),
             ),
           ),
         ),
@@ -802,7 +807,7 @@ Widget catchMapRevealTransitionCatalogStates(BuildContext context) {
               child: Center(
                 child: Text(
                   'Native map remains stationary below the veil.',
-                  style: CatchTextStyles.bodyM(context),
+                  style: CatchTextStyles.proseM(context),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -1131,7 +1136,7 @@ Widget catchSliverHeaderCatalogStates(BuildContext context) {
       _StateCard(
         label: 'scroll-away title / pinned bottom',
         child: SizedBox(
-          height: 320,
+          height: WidgetbookPreviewLayout.sliverPreviewHeight,
           child: CustomScrollView(
             slivers: [
               ...header.buildSlivers(context),
@@ -1249,7 +1254,13 @@ Widget catchSkeletonListCatalogStates(BuildContext context) {
     title: 'CatchSkeletonList',
     catalogId: 'core.widgets.catch_skeleton_list',
     children: [
-      _StateCard(label: 'list', child: CatchSkeletonList(count: 3, height: 72)),
+      _StateCard(
+        label: 'list',
+        child: CatchSkeletonList(
+          count: 3,
+          height: WidgetbookPreviewLayout.skeletonListItemHeight,
+        ),
+      ),
     ],
   );
 }
@@ -1270,15 +1281,15 @@ Widget catchLoadingIndicatorCatalogStates(BuildContext context) {
         child: _InlineWrap(
           children: [
             const SizedBox.square(
-              dimension: 48,
+              dimension: WidgetbookPreviewLayout.loadingIndicatorExtent,
               child: CatchLoadingIndicator(),
             ),
             const SizedBox.square(
-              dimension: 32,
+              dimension: WidgetbookPreviewLayout.loadingIndicatorSmallExtent,
               child: CatchLoadingIndicator(strokeWidth: 2),
             ),
             SizedBox.square(
-              dimension: 48,
+              dimension: WidgetbookPreviewLayout.loadingIndicatorExtent,
               child: CatchLoadingIndicator(color: t.primary),
             ),
           ],
@@ -1300,7 +1311,10 @@ Widget catchStartupLoadingScreenCatalogStates(BuildContext context) {
     children: const [
       _StateCard(
         label: 'boot surface before delayed spinner',
-        child: _PhoneFrame(height: 360, child: CatchStartupLoadingScreen()),
+        child: _PhoneFrame(
+          height: WidgetbookPreviewLayout.startupViewportHeight,
+          child: CatchStartupLoadingScreen(),
+        ),
       ),
     ],
   );
@@ -1327,7 +1341,7 @@ Widget catchAsyncValueViewCatalogStates(BuildContext context) {
             ),
             gapH12,
             SizedBox(
-              height: 80,
+              height: WidgetbookPreviewLayout.loadingSlotHeight,
               child: CatchAsyncValueView<String>(
                 value: AsyncValue.loading(),
                 builder: (context, value) => _textData(value),
@@ -1335,7 +1349,7 @@ Widget catchAsyncValueViewCatalogStates(BuildContext context) {
             ),
             gapH12,
             SizedBox(
-              height: 220,
+              height: WidgetbookPreviewLayout.stateViewportHeight,
               child: CatchAsyncValueView<String>(
                 value: AsyncValue.error(
                   Exception('Could not load events'),
@@ -1365,7 +1379,7 @@ Widget catchAsyncValueSliverCatalogStates(BuildContext context) {
       _StateCard(
         label: 'sliver data / loading / error',
         child: SizedBox(
-          height: 360,
+          height: WidgetbookPreviewLayout.startupViewportHeight,
           child: CustomScrollView(
             slivers: [
               CatchAsyncValueSliver<String>(
@@ -1411,7 +1425,7 @@ Widget catchAsyncScreenLoadingCatalogStates(BuildContext context) {
       _StateCard(
         label: 'screen skeleton',
         child: _PhoneFrame(
-          height: 360,
+          height: WidgetbookPreviewLayout.startupViewportHeight,
           child: CatchAsyncScreenLoading(
             count: 4,
             itemHeight: CatchLayout.skeletonCardCompactHeight,
@@ -1435,7 +1449,7 @@ Widget catchAsyncSliverLoadingCatalogStates(BuildContext context) {
       _StateCard(
         label: 'sliver skeleton',
         child: SizedBox(
-          height: 360,
+          height: WidgetbookPreviewLayout.startupViewportHeight,
           child: CustomScrollView(
             slivers: [
               CatchAsyncSliverLoading(
@@ -1463,7 +1477,7 @@ Widget catchErrorScaffoldCatalogStates(BuildContext context) {
       _StateCard(
         label: 'root-level failure',
         child: SizedBox(
-          height: 360,
+          height: WidgetbookPreviewLayout.startupViewportHeight,
           child: CatchErrorScaffold(
             title: 'Profile unavailable',
             message: 'We could not load this profile right now.',
@@ -1488,7 +1502,7 @@ Widget catchSliverErrorStateCatalogStates(BuildContext context) {
       _StateCard(
         label: 'fill remaining / inline sliver',
         child: SizedBox(
-          height: 420,
+          height: WidgetbookPreviewLayout.feedbackViewportHeight,
           child: CustomScrollView(
             slivers: [
               CatchSliverErrorState(
@@ -1525,7 +1539,7 @@ Widget catchStateViewportCatalogStates(BuildContext context) {
       _StateCard(
         label: 'box body / floating-shell optical center',
         child: SizedBox(
-          height: 420,
+          height: WidgetbookPreviewLayout.feedbackViewportHeight,
           child: AppShellActiveTab(
             index: appShellHomeTabIndex,
             bottomOverlayInset: 88,
@@ -1557,7 +1571,7 @@ Widget catchSliverStateViewportCatalogStates(BuildContext context) {
       _StateCard(
         label: 'floating-shell optical center',
         child: SizedBox(
-          height: 420,
+          height: WidgetbookPreviewLayout.feedbackViewportHeight,
           child: AppShellActiveTab(
             index: appShellHomeTabIndex,
             bottomOverlayInset: 88,
@@ -1593,7 +1607,7 @@ Widget catchSliverEmptyStateCatalogStates(BuildContext context) {
       _StateCard(
         label: 'cardless terminal empty state',
         child: SizedBox(
-          height: 420,
+          height: WidgetbookPreviewLayout.feedbackViewportHeight,
           child: CustomScrollView(
             slivers: [
               CatchSliverEmptyState(
@@ -1833,7 +1847,7 @@ Widget catchFrameworkErrorViewCatalogStates(BuildContext context) {
       _StateCard(
         label: 'user-safe / debug details',
         child: SizedBox(
-          height: 360,
+          height: WidgetbookPreviewLayout.startupViewportHeight,
           child: CatchFrameworkErrorView(
             details: FlutterErrorDetails(
               exception: StateError('Widgetbook sample framework failure'),
@@ -1886,15 +1900,15 @@ Widget catchNoticeHostCatalogStates(BuildContext context) {
       _StateCard(
         label: 'overlay host',
         child: SizedBox(
-          height: 220,
+          height: WidgetbookPreviewLayout.stateViewportHeight,
           child: CatchNoticeHost(
             persistentNotices: [CatchNoticeData.offline(context.l10n)],
             child: CatchSurface.card(
-              height: 180,
+              height: WidgetbookPreviewLayout.mediaPanelHeight,
               child: Center(
                 child: Text(
                   'App content under ambient notices',
-                  style: CatchTextStyles.bodyM(context),
+                  style: CatchTextStyles.proseM(context),
                 ),
               ),
             ),
@@ -1995,16 +2009,16 @@ Widget catchDetailHeroBackdropCatalogStates(BuildContext context) {
           crossAxisAlignment: WrapCrossAlignment.start,
           children: [
             SizedBox(
-              width: 220,
-              height: 130,
+              width: WidgetbookPreviewLayout.surfaceCardWidth,
+              height: WidgetbookPreviewLayout.compactCardHeight,
               child: ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(CatchRadius.md)),
                 child: CatchDetailHeroBackdrop(),
               ),
             ),
             SizedBox(
-              width: 220,
-              height: 130,
+              width: WidgetbookPreviewLayout.surfaceCardWidth,
+              height: WidgetbookPreviewLayout.compactCardHeight,
               child: ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(CatchRadius.md)),
                 child: CatchDetailHeroBackdrop(showScrim: false),
@@ -2105,8 +2119,8 @@ Widget eventActivityBackdropCatalogStates(BuildContext context) {
               ClipRRect(
                 borderRadius: BorderRadius.circular(CatchRadius.md),
                 child: SizedBox(
-                  width: 180,
-                  height: 112,
+                  width: WidgetbookPreviewLayout.narrowComponentWidth,
+                  height: WidgetbookPreviewLayout.catalogThumbnailHeight,
                   child: EventActivityBackdrop(
                     visual: eventActivityVisual(kind, context: context),
                     dense: kind != ActivityKind.socialRun,
@@ -2139,7 +2153,7 @@ Widget catchEventCardCatalogStates(BuildContext context) {
           crossAxisAlignment: WrapCrossAlignment.start,
           children: [
             CatchEventCard.ticket(
-              width: 260,
+              width: WidgetbookPreviewLayout.compactComponentWidth,
               title: 'Bandra easy 5K',
               subtitle: 'Hosted by Catch Run Club',
               timeLabel: '7:30 PM',
@@ -2151,7 +2165,7 @@ Widget catchEventCardCatalogStates(BuildContext context) {
               onTap: _noop,
             ),
             CatchEventCard.ticket(
-              width: 260,
+              width: WidgetbookPreviewLayout.compactComponentWidth,
               title: 'Pickleball doubles mixer',
               subtitle: 'Courtside social rotations',
               timeLabel: '6 PM',
@@ -2195,7 +2209,7 @@ Widget eventTicketSurfaceCatalogStates(BuildContext context) {
               color: t.surface,
               elevation: CatchElevation.physicalTicket,
               child: SizedBox(
-                height: 172,
+                height: WidgetbookPreviewLayout.catalogFeaturePanelHeight,
                 child: Column(
                   children: [
                     Expanded(
@@ -2237,7 +2251,7 @@ Widget eventDetailHeroCatalogStates(BuildContext context) {
       _StateCard(
         label: 'standard / saved / calendar action',
         child: _PhoneFrame(
-          height: 460,
+          height: WidgetbookPreviewLayout.tallRouteViewportHeight,
           child: CustomScrollView(
             slivers: [
               EventDetailHeroAppBar(
@@ -2250,7 +2264,11 @@ Widget eventDetailHeroCatalogStates(BuildContext context) {
                 onToggleSaved: _noop,
                 onAddToCalendar: (_) {},
               ),
-              const SliverToBoxAdapter(child: SizedBox(height: 120)),
+              const SliverToBoxAdapter(
+                child: SizedBox(
+                  height: WidgetbookPreviewLayout.catalogSliverSpacerHeight,
+                ),
+              ),
             ],
           ),
         ),
@@ -2261,7 +2279,7 @@ Widget eventDetailHeroCatalogStates(BuildContext context) {
           crossAxisAlignment: WrapCrossAlignment.start,
           children: [
             _PhoneFrame(
-              height: 360,
+              height: WidgetbookPreviewLayout.startupViewportHeight,
               child: CustomScrollView(
                 slivers: [
                   EventDetailHeroAppBar(
@@ -2275,12 +2293,16 @@ Widget eventDetailHeroCatalogStates(BuildContext context) {
                     onToggleSaved: _noop,
                     onAddToCalendar: (_) {},
                   ),
-                  const SliverToBoxAdapter(child: SizedBox(height: 80)),
+                  const SliverToBoxAdapter(
+                    child: SizedBox(
+                      height: WidgetbookPreviewLayout.loadingSlotHeight,
+                    ),
+                  ),
                 ],
               ),
             ),
             _PhoneFrame(
-              height: 360,
+              height: WidgetbookPreviewLayout.startupViewportHeight,
               child: CustomScrollView(
                 slivers: [
                   EventDetailHeroAppBar(
@@ -2294,7 +2316,11 @@ Widget eventDetailHeroCatalogStates(BuildContext context) {
                     onToggleSaved: _noop,
                     onAddToCalendar: (_) {},
                   ),
-                  const SliverToBoxAdapter(child: SizedBox(height: 80)),
+                  const SliverToBoxAdapter(
+                    child: SizedBox(
+                      height: WidgetbookPreviewLayout.loadingSlotHeight,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -2359,11 +2385,11 @@ Widget eventDetailHintListCatalogStates(BuildContext context) {
           crossAxisAlignment: WrapCrossAlignment.start,
           children: [
             SizedBox(
-              width: 320,
+              width: WidgetbookPreviewLayout.eventDetailPreviewWidth,
               child: EventDetailHintList(event: _eventDetailEvent()),
             ),
             SizedBox(
-              width: 320,
+              width: WidgetbookPreviewLayout.eventDetailPreviewWidth,
               child: EventDetailHintList(
                 event: _eventDetailEvent(
                   id: 'approval-event',
@@ -2398,11 +2424,11 @@ Widget eventDetailItineraryCatalogStates(BuildContext context) {
           crossAxisAlignment: WrapCrossAlignment.start,
           children: [
             SizedBox(
-              width: 320,
+              width: WidgetbookPreviewLayout.eventDetailPreviewWidth,
               child: EventDetailItinerary(event: _eventDetailEvent()),
             ),
             SizedBox(
-              width: 320,
+              width: WidgetbookPreviewLayout.eventDetailPreviewWidth,
               child: EventDetailItinerary(
                 event: _eventDetailEvent(
                   id: 'dinner-itinerary',
@@ -2469,14 +2495,14 @@ Widget eventDetailMapCardCatalogStates(BuildContext context) {
           crossAxisAlignment: WrapCrossAlignment.start,
           children: [
             SizedBox(
-              width: 320,
+              width: WidgetbookPreviewLayout.eventDetailPreviewWidth,
               child: EventDetailMapCard(
                 event: _eventDetailEvent(),
                 onTap: _noop,
               ),
             ),
             SizedBox(
-              width: 320,
+              width: WidgetbookPreviewLayout.eventDetailPreviewWidth,
               child: EventDetailMapCard(
                 event: _eventDetailEvent(
                   id: 'map-morning-of',
@@ -2517,9 +2543,12 @@ Widget eventDetailMechanismListCatalogStates(BuildContext context) {
         child: _InlineWrap(
           crossAxisAlignment: WrapCrossAlignment.start,
           children: [
-            SizedBox(width: 320, child: mechanismList(_eventDetailEvent())),
             SizedBox(
-              width: 320,
+              width: WidgetbookPreviewLayout.eventDetailPreviewWidth,
+              child: mechanismList(_eventDetailEvent()),
+            ),
+            SizedBox(
+              width: WidgetbookPreviewLayout.eventDetailPreviewWidth,
               child: mechanismList(
                 _eventDetailEvent(
                   id: 'approval-mechanism',
@@ -2531,7 +2560,7 @@ Widget eventDetailMechanismListCatalogStates(BuildContext context) {
               ),
             ),
             SizedBox(
-              width: 320,
+              width: WidgetbookPreviewLayout.eventDetailPreviewWidth,
               child: mechanismList(
                 _eventDetailEvent(
                   id: 'balanced-mechanism',
@@ -2568,7 +2597,7 @@ Widget eventDetailHostCardCatalogStates(BuildContext context) {
           crossAxisAlignment: WrapCrossAlignment.start,
           children: [
             SizedBox(
-              width: 340,
+              width: WidgetbookPreviewLayout.mediaPanelWidth,
               child: CatchHostRow(
                 activityKind: ActivityKind.socialRun,
                 name: 'Sunday sea-face crew',
@@ -2579,7 +2608,7 @@ Widget eventDetailHostCardCatalogStates(BuildContext context) {
               ),
             ),
             const SizedBox(
-              width: 340,
+              width: WidgetbookPreviewLayout.mediaPanelWidth,
               child: CatchHostRow(
                 activityKind: ActivityKind.dinner,
                 name: 'Catch supper club',
@@ -2588,7 +2617,7 @@ Widget eventDetailHostCardCatalogStates(BuildContext context) {
               ),
             ),
             SizedBox(
-              width: 340,
+              width: WidgetbookPreviewLayout.mediaPanelWidth,
               child: CatchHostRow(
                 activityKind: ActivityKind.pickleball,
                 name: 'Courtside social',
@@ -2752,7 +2781,7 @@ Widget catchMetaDotRowCatalogStates(BuildContext context) {
       _StateCard(
         label: 'entries / trailing / truncation',
         child: SizedBox(
-          width: 360,
+          width: WidgetbookPreviewLayout.standardContractWidth,
           child: CatchMetaDotRow(
             entries: [
               CatchMetaEntry(label: 'Tonight', icon: CatchIcons.calendarAdd),
@@ -2783,7 +2812,7 @@ Widget catchMetaEntryFlowCatalogStates(BuildContext context) {
       _StateCard(
         label: 'entries / truncation',
         child: SizedBox(
-          width: 260,
+          width: WidgetbookPreviewLayout.compactComponentWidth,
           child: CatchMetaEntryFlow(
             entries: [
               CatchMetaEntry(label: 'Tonight', icon: CatchIcons.calendarAdd),
@@ -2999,7 +3028,10 @@ Widget catchBottomSheetGrabberCatalogStates(BuildContext context) {
           children: [
             CatchBottomSheetGrabber(),
             SizedBox(height: CatchSpacing.s4),
-            CatchBottomSheetGrabber(width: 64, height: 5),
+            CatchBottomSheetGrabber(
+              width: WidgetbookPreviewLayout.catalogSheetGrabberWidth,
+              height: WidgetbookPreviewLayout.catalogSheetGrabberHeight,
+            ),
           ],
         ),
       ),
@@ -3020,7 +3052,7 @@ Widget catchDraggableSheetShellCatalogStates(BuildContext context) {
       _StateCard(
         label: 'persistent shell',
         child: SizedBox(
-          height: 260,
+          height: WidgetbookPreviewLayout.routeViewportHeight,
           child: CatchDraggableSheetShell(
             child: ListView(
               padding: const EdgeInsets.all(CatchSpacing.s4),
@@ -3057,7 +3089,7 @@ Widget catchShareCardSheetCatalogStates(BuildContext context) {
           buttonLabel: 'Share card',
           footnote: 'Preview rendered through RepaintBoundary.',
           card: CatchSurface.card(
-            width: 260,
+            width: WidgetbookPreviewLayout.compactComponentWidth,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -3067,7 +3099,7 @@ Widget catchShareCardSheetCatalogStates(BuildContext context) {
                 gapH6,
                 Text(
                   'A social run with coffee after.',
-                  style: CatchTextStyles.bodyS(context),
+                  style: CatchTextStyles.supporting(context),
                 ),
               ],
             ),
@@ -3117,9 +3149,11 @@ Widget catchHorizontalRailCatalogStates(BuildContext context) {
         child: CatchHorizontalRail(
           title: 'Recommended',
           itemCount: 4,
-          height: 128,
-          itemBuilder: (context, index) =>
-              CatchSurface.card(width: 136, child: Text('Card ${index + 1}')),
+          height: WidgetbookPreviewLayout.catalogRailHeight,
+          itemBuilder: (context, index) => CatchSurface.card(
+            width: WidgetbookPreviewLayout.catalogCardWidth,
+            child: Text('Card ${index + 1}'),
+          ),
           trailing: CatchButton(label: 'More', onPressed: _noop),
         ),
       ),
@@ -3129,9 +3163,11 @@ Widget catchHorizontalRailCatalogStates(BuildContext context) {
           title: 'Recommended',
           itemCount: 4,
           fullBleed: true,
-          height: 128,
-          itemBuilder: (context, index) =>
-              CatchSurface.card(width: 136, child: Text('Card ${index + 1}')),
+          height: WidgetbookPreviewLayout.catalogRailHeight,
+          itemBuilder: (context, index) => CatchSurface.card(
+            width: WidgetbookPreviewLayout.catalogCardWidth,
+            child: Text('Card ${index + 1}'),
+          ),
           trailing: CatchButton(label: 'More', onPressed: _noop),
         ),
       ),
@@ -3213,7 +3249,7 @@ Widget catchDaySectionHeaderCatalogStates(BuildContext context) {
           children: [
             const CatchDaySectionHeader(label: 'Today - Wed 27 May', count: 3),
             SizedBox(
-              height: 180,
+              height: WidgetbookPreviewLayout.mediaPanelHeight,
               child: CustomScrollView(
                 slivers: [
                   const SliverPersistentHeader(
@@ -3408,7 +3444,7 @@ Widget catchCelebrationScreenCatalogStates(BuildContext context) {
       _StateCard(
         label: 'full-screen moment',
         child: _PhoneFrame(
-          height: 640,
+          height: WidgetbookPreviewLayout.celebrationViewportHeight,
           child: CatchCelebrationScreen(
             kind: CelebrationMomentKind.eventJoined,
             playEffects: false,
@@ -3445,7 +3481,7 @@ Widget catchCelebrationScreenCatalogStates(BuildContext context) {
       _StateCard(
         label: 'paper confirmation',
         child: _PhoneFrame(
-          height: 740,
+          height: WidgetbookPreviewLayout.paperCelebrationViewportHeight,
           child: CatchCelebrationScreen(
             kind: CelebrationMomentKind.eventCreated,
             playEffects: false,
@@ -3508,7 +3544,7 @@ Widget paperCelebrationScaffoldCatalogStates(BuildContext context) {
       _StateCard(
         label: 'confirmation shell',
         child: _PhoneFrame(
-          height: 720,
+          height: WidgetbookPreviewLayout.paperScaffoldViewportHeight,
           child: PaperCelebrationScaffold(
             screen: CatchCelebrationScreen(
               kind: CelebrationMomentKind.eventCreated,
@@ -3698,7 +3734,7 @@ Widget responsiveBuilderCatalogStates(BuildContext context) {
       _StateCard(
         label: 'compact / medium / expanded',
         child: SizedBox(
-          height: 120,
+          height: WidgetbookPreviewLayout.catalogSliverSpacerHeight,
           child: ResponsiveBuilder(
             compact: (_) =>
                 const CatchSurface.card(child: Text('Compact layout')),
@@ -3808,7 +3844,10 @@ class _InlineWrap extends StatelessWidget {
 }
 
 class _PhoneFrame extends StatelessWidget {
-  const _PhoneFrame({required this.child, this.height = 520});
+  const _PhoneFrame({
+    required this.child,
+    this.height = WidgetbookPreviewLayout.defaultPhonePreviewHeight,
+  });
 
   final Widget child;
   final double height;
@@ -3818,13 +3857,19 @@ class _PhoneFrame extends StatelessWidget {
     final t = CatchTokens.of(context);
     return Center(
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(28),
+        borderRadius: BorderRadius.circular(
+          WidgetbookPreviewLayout.phonePreviewCornerRadius,
+        ),
         child: DecoratedBox(
           decoration: BoxDecoration(
             color: t.bg,
             border: Border.all(color: t.line2),
           ),
-          child: SizedBox(width: 390, height: height, child: child),
+          child: SizedBox(
+            width: WidgetbookPreviewLayout.phoneChromeWidth,
+            height: height,
+            child: child,
+          ),
         ),
       ),
     );
@@ -3858,7 +3903,11 @@ class _ThumbnailBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(CatchRadius.md),
-      child: SizedBox(width: 180, height: 112, child: child),
+      child: SizedBox(
+        width: WidgetbookPreviewLayout.narrowComponentWidth,
+        height: WidgetbookPreviewLayout.catalogThumbnailHeight,
+        child: child,
+      ),
     );
   }
 }
@@ -3876,7 +3925,7 @@ class _GradeSample extends StatelessWidget {
       children: [
         CatchActivityArt(
           activityKind: ActivityKind.dinner,
-          height: 140,
+          height: WidgetbookPreviewLayout.compactPanelHeight,
           radius: 0,
         ),
         Align(
@@ -3892,8 +3941,8 @@ class _GradeSample extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(CatchRadius.md),
       child: SizedBox(
-        width: 180,
-        height: 120,
+        width: WidgetbookPreviewLayout.narrowComponentWidth,
+        height: WidgetbookPreviewLayout.catalogSliverSpacerHeight,
         child: CatchGradedImage(enabled: graded, child: child),
       ),
     );
@@ -3954,7 +4003,7 @@ class _SearchFieldExpansionDemoState extends State<_SearchFieldExpansionDemo> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 56,
+      height: WidgetbookPreviewLayout.navigationBarHeight,
       child: CatchSearchField(
         mode: CatchSearchFieldMode.expanding,
         progress: _open ? 1 : 0,
