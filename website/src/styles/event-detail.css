@@ -351,6 +351,33 @@
   width: 100%;
 }
 
+.event-registration__consents {
+  display: grid;
+  gap: var(--catch-space-s2);
+  padding: var(--catch-space-s3);
+  border: 1px solid var(--website-line);
+  background: var(--website-card-wash);
+}
+
+.event-registration__consent {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--catch-space-s2);
+  font-family: var(--catch-font-sans), sans-serif !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0 !important;
+  line-height: 1.45;
+  text-transform: none !important;
+}
+
+.event-registration__consent input {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  margin-top: 1px;
+}
+
 .event-registration__privacy {
   margin: 0;
   color: var(--website-copy-muted);

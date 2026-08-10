@@ -15390,6 +15390,105 @@ abstract final class CatchContractConstraints {
     format: 'date-time',
   );
 
+  static const getOrganizerCrmSummaryCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'getOrganizerCrmSummaryCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerCrmSummaryCallableResponseContactCount = CatchContractFieldConstraints(
+    path: 'getOrganizerCrmSummaryCallableResponse.contactCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2500,
+  );
+
+  static const getOrganizerCrmSummaryCallableResponseImportedContactCount = CatchContractFieldConstraints(
+    path: 'getOrganizerCrmSummaryCallableResponse.importedContactCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2500,
+  );
+
+  static const getOrganizerCrmSummaryCallableResponseLinkedAccountCount = CatchContractFieldConstraints(
+    path: 'getOrganizerCrmSummaryCallableResponse.linkedAccountCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2500,
+  );
+
+  static const getOrganizerCrmSummaryCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'getOrganizerCrmSummaryCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerCrmSummaryCallableResponsePastAttendeeCount = CatchContractFieldConstraints(
+    path: 'getOrganizerCrmSummaryCallableResponse.pastAttendeeCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2500,
+  );
+
+  static const getOrganizerCrmSummaryCallableResponseReadinessInApp = CatchContractFieldConstraints(
+    path: 'getOrganizerCrmSummaryCallableResponse.readiness.inApp',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['currentEventOnly'],
+  );
+
+  static const getOrganizerCrmSummaryCallableResponseReadinessSms = CatchContractFieldConstraints(
+    path: 'getOrganizerCrmSummaryCallableResponse.readiness.sms',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['providerAndDltSetupRequired'],
+  );
+
+  static const getOrganizerCrmSummaryCallableResponseReadinessWhatsapp = CatchContractFieldConstraints(
+    path: 'getOrganizerCrmSummaryCallableResponse.readiness.whatsapp',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['providerSetupRequired'],
+  );
+
+  static const getOrganizerCrmSummaryCallableResponseRepeatAttendeeCount = CatchContractFieldConstraints(
+    path: 'getOrganizerCrmSummaryCallableResponse.repeatAttendeeCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2500,
+  );
+
+  static const getOrganizerCrmSummaryCallableResponseSmsOptInCount = CatchContractFieldConstraints(
+    path: 'getOrganizerCrmSummaryCallableResponse.smsOptInCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2500,
+  );
+
+  static const getOrganizerCrmSummaryCallableResponseTruncated = CatchContractFieldConstraints(
+    path: 'getOrganizerCrmSummaryCallableResponse.truncated',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const getOrganizerCrmSummaryCallableResponseWhatsappOptInCount = CatchContractFieldConstraints(
+    path: 'getOrganizerCrmSummaryCallableResponse.whatsappOptInCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2500,
+  );
+
   static const hostAnalyticsCallableResponseDataQuality = CatchContractFieldConstraints(
     path: 'hostAnalyticsCallableResponse.dataQuality',
     required: true,
@@ -19005,6 +19104,132 @@ abstract final class CatchContractConstraints {
 
   static const organizerClaimRequestDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
     path: 'organizerClaimRequestDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerCommunicationPreferenceDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPreferenceDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerCommunicationPreferenceDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPreferenceDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerCommunicationPreferenceDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPreferenceDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCommunicationPreferenceDocumentSmsSource = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPreferenceDocument.sms.source',
+    valueTypes: <String>['string'],
+    enumValues: <String>['publicEventRegistration', 'unsubscribeLink', 'hostApp'],
+  );
+
+  static const organizerCommunicationPreferenceDocumentSmsSourceEventId = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPreferenceDocument.sms.sourceEventId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCommunicationPreferenceDocumentSmsStatus = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPreferenceDocument.sms.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['unknown', 'optedIn', 'optedOut'],
+  );
+
+  static const organizerCommunicationPreferenceDocumentSmsTermsVersion = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPreferenceDocument.sms.termsVersion',
+    maxLength: 80,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCommunicationPreferenceDocumentSmsUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPreferenceDocument.sms.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerCommunicationPreferenceDocumentSmsUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPreferenceDocument.sms.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerCommunicationPreferenceDocumentUid = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPreferenceDocument.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCommunicationPreferenceDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPreferenceDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerCommunicationPreferenceDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPreferenceDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerCommunicationPreferenceDocumentWhatsappSource = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPreferenceDocument.whatsapp.source',
+    valueTypes: <String>['string'],
+    enumValues: <String>['publicEventRegistration', 'unsubscribeLink', 'hostApp'],
+  );
+
+  static const organizerCommunicationPreferenceDocumentWhatsappSourceEventId = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPreferenceDocument.whatsapp.sourceEventId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCommunicationPreferenceDocumentWhatsappStatus = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPreferenceDocument.whatsapp.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['unknown', 'optedIn', 'optedOut'],
+  );
+
+  static const organizerCommunicationPreferenceDocumentWhatsappTermsVersion = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPreferenceDocument.whatsapp.termsVersion',
+    maxLength: 80,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCommunicationPreferenceDocumentWhatsappUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPreferenceDocument.whatsapp.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerCommunicationPreferenceDocumentWhatsappUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPreferenceDocument.whatsapp.updatedAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
   );
@@ -23530,6 +23755,26 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const registerPublicEventCallablePayloadOrganizerUpdatesSms = CatchContractFieldConstraints(
+    path: 'registerPublicEventCallablePayload.organizerUpdates.sms',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const registerPublicEventCallablePayloadOrganizerUpdatesTermsVersion = CatchContractFieldConstraints(
+    path: 'registerPublicEventCallablePayload.organizerUpdates.termsVersion',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const registerPublicEventCallablePayloadOrganizerUpdatesWhatsapp = CatchContractFieldConstraints(
+    path: 'registerPublicEventCallablePayload.organizerUpdates.whatsapp',
+    required: true,
+    valueTypes: <String>['boolean'],
   );
 
   static const registerPublicEventCallableResponseAttendeeId = CatchContractFieldConstraints(
@@ -31486,6 +31731,19 @@ abstract final class CatchContractConstraints {
     'getCrossPathsSuggestionsCallableResponse.suggestions.items.reasonCodes.items': getCrossPathsSuggestionsCallableResponseSuggestionsItemsReasonCodesItems,
     'getCrossPathsSuggestionsCallableResponse.suggestions.items.suggestionToken': getCrossPathsSuggestionsCallableResponseSuggestionsItemsSuggestionToken,
     'getCrossPathsSuggestionsCallableResponse.suggestions.items.tokenExpiresAt': getCrossPathsSuggestionsCallableResponseSuggestionsItemsTokenExpiresAt,
+    'getOrganizerCrmSummaryCallablePayload.organizerId': getOrganizerCrmSummaryCallablePayloadOrganizerId,
+    'getOrganizerCrmSummaryCallableResponse.contactCount': getOrganizerCrmSummaryCallableResponseContactCount,
+    'getOrganizerCrmSummaryCallableResponse.importedContactCount': getOrganizerCrmSummaryCallableResponseImportedContactCount,
+    'getOrganizerCrmSummaryCallableResponse.linkedAccountCount': getOrganizerCrmSummaryCallableResponseLinkedAccountCount,
+    'getOrganizerCrmSummaryCallableResponse.organizerId': getOrganizerCrmSummaryCallableResponseOrganizerId,
+    'getOrganizerCrmSummaryCallableResponse.pastAttendeeCount': getOrganizerCrmSummaryCallableResponsePastAttendeeCount,
+    'getOrganizerCrmSummaryCallableResponse.readiness.inApp': getOrganizerCrmSummaryCallableResponseReadinessInApp,
+    'getOrganizerCrmSummaryCallableResponse.readiness.sms': getOrganizerCrmSummaryCallableResponseReadinessSms,
+    'getOrganizerCrmSummaryCallableResponse.readiness.whatsapp': getOrganizerCrmSummaryCallableResponseReadinessWhatsapp,
+    'getOrganizerCrmSummaryCallableResponse.repeatAttendeeCount': getOrganizerCrmSummaryCallableResponseRepeatAttendeeCount,
+    'getOrganizerCrmSummaryCallableResponse.smsOptInCount': getOrganizerCrmSummaryCallableResponseSmsOptInCount,
+    'getOrganizerCrmSummaryCallableResponse.truncated': getOrganizerCrmSummaryCallableResponseTruncated,
+    'getOrganizerCrmSummaryCallableResponse.whatsappOptInCount': getOrganizerCrmSummaryCallableResponseWhatsappOptInCount,
     'hostAnalyticsCallableResponse.dataQuality': hostAnalyticsCallableResponseDataQuality,
     'hostAnalyticsCallableResponse.dataQuality.items.detail': hostAnalyticsCallableResponseDataQualityItemsDetail,
     'hostAnalyticsCallableResponse.dataQuality.items.id': hostAnalyticsCallableResponseDataQualityItemsId,
@@ -32002,6 +32260,24 @@ abstract final class CatchContractConstraints {
     'organizerClaimRequestDocument.status': organizerClaimRequestDocumentStatus,
     'organizerClaimRequestDocument.updatedAt._nanoseconds': organizerClaimRequestDocumentUpdatedAtNanoseconds,
     'organizerClaimRequestDocument.updatedAt._seconds': organizerClaimRequestDocumentUpdatedAtSeconds,
+    'organizerCommunicationPreferenceDocument.createdAt._nanoseconds': organizerCommunicationPreferenceDocumentCreatedAtNanoseconds,
+    'organizerCommunicationPreferenceDocument.createdAt._seconds': organizerCommunicationPreferenceDocumentCreatedAtSeconds,
+    'organizerCommunicationPreferenceDocument.organizerId': organizerCommunicationPreferenceDocumentOrganizerId,
+    'organizerCommunicationPreferenceDocument.sms.source': organizerCommunicationPreferenceDocumentSmsSource,
+    'organizerCommunicationPreferenceDocument.sms.sourceEventId': organizerCommunicationPreferenceDocumentSmsSourceEventId,
+    'organizerCommunicationPreferenceDocument.sms.status': organizerCommunicationPreferenceDocumentSmsStatus,
+    'organizerCommunicationPreferenceDocument.sms.termsVersion': organizerCommunicationPreferenceDocumentSmsTermsVersion,
+    'organizerCommunicationPreferenceDocument.sms.updatedAt._nanoseconds': organizerCommunicationPreferenceDocumentSmsUpdatedAtNanoseconds,
+    'organizerCommunicationPreferenceDocument.sms.updatedAt._seconds': organizerCommunicationPreferenceDocumentSmsUpdatedAtSeconds,
+    'organizerCommunicationPreferenceDocument.uid': organizerCommunicationPreferenceDocumentUid,
+    'organizerCommunicationPreferenceDocument.updatedAt._nanoseconds': organizerCommunicationPreferenceDocumentUpdatedAtNanoseconds,
+    'organizerCommunicationPreferenceDocument.updatedAt._seconds': organizerCommunicationPreferenceDocumentUpdatedAtSeconds,
+    'organizerCommunicationPreferenceDocument.whatsapp.source': organizerCommunicationPreferenceDocumentWhatsappSource,
+    'organizerCommunicationPreferenceDocument.whatsapp.sourceEventId': organizerCommunicationPreferenceDocumentWhatsappSourceEventId,
+    'organizerCommunicationPreferenceDocument.whatsapp.status': organizerCommunicationPreferenceDocumentWhatsappStatus,
+    'organizerCommunicationPreferenceDocument.whatsapp.termsVersion': organizerCommunicationPreferenceDocumentWhatsappTermsVersion,
+    'organizerCommunicationPreferenceDocument.whatsapp.updatedAt._nanoseconds': organizerCommunicationPreferenceDocumentWhatsappUpdatedAtNanoseconds,
+    'organizerCommunicationPreferenceDocument.whatsapp.updatedAt._seconds': organizerCommunicationPreferenceDocumentWhatsappUpdatedAtSeconds,
     'organizerDocument.adminSearch.sortKey': organizerDocumentAdminSearchSortKey,
     'organizerDocument.adminSearch.tokens': organizerDocumentAdminSearchTokens,
     'organizerDocument.adminSearch.tokens.items': organizerDocumentAdminSearchTokensItems,
@@ -32629,6 +32905,9 @@ abstract final class CatchContractConstraints {
     'recordOrganizerAnalyticsEventCallableResponse.accepted': recordOrganizerAnalyticsEventCallableResponseAccepted,
     'registerPublicEventCallablePayload.displayName': registerPublicEventCallablePayloadDisplayName,
     'registerPublicEventCallablePayload.eventId': registerPublicEventCallablePayloadEventId,
+    'registerPublicEventCallablePayload.organizerUpdates.sms': registerPublicEventCallablePayloadOrganizerUpdatesSms,
+    'registerPublicEventCallablePayload.organizerUpdates.termsVersion': registerPublicEventCallablePayloadOrganizerUpdatesTermsVersion,
+    'registerPublicEventCallablePayload.organizerUpdates.whatsapp': registerPublicEventCallablePayloadOrganizerUpdatesWhatsapp,
     'registerPublicEventCallableResponse.attendeeId': registerPublicEventCallableResponseAttendeeId,
     'registerPublicEventCallableResponse.eventId': registerPublicEventCallableResponseEventId,
     'registerPublicEventCallableResponse.status': registerPublicEventCallableResponseStatus,

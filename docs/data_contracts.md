@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.12.0
+version: 1.13.0
 updated: 2026-08-10
 owner: recursive_audit_loop
 status: active
@@ -347,6 +347,7 @@ Root-level edge/action documents are the source of truth for many-to-many state:
 | Event booking, waitlist, attendance, cancellation | `eventParticipations/{eventId_uid}` |
 | Unified Host operational roster row | `eventAttendees/{attendeeId}` |
 | Roster import audit and idempotency receipt | `eventAttendeeImports/{importId}` |
+| Organizer-scoped communication permission | server-only `organizerCommunicationPreferences/{organizerId_uid}` |
 | Cross Paths event visibility | `eventCrossPathsConsents/{eventId_uid}` |
 | Cross Paths showcase eligibility | server-only `crossPathsShowcaseEligibility/{uid}` |
 | Cross Paths suggestion exposure | server-only `crossPathsSuggestionExposures/{exposureId}` |
@@ -413,6 +414,37 @@ Hosts may list operational attendees and import receipts only for events they
 manage. An attendee does not gain roster-list access when their UID is linked;
 attendee-facing code receives only its own sanitized event state through a
 server-owned lookup/registration boundary.
+
+Phone-OTP public registration creates or reuses a private Firebase Auth UID; it
+does not create `users/{uid}`, `publicProfiles/{uid}`, or a Consumer
+`eventParticipations` edge. On first registration, the callable may create a
+private `onboarding_drafts/{uid}` seed using only the attendee-supplied display
+name and verified phone. That seed is a continuation convenience for a later,
+intentional Consumer onboarding flow, not a profile or advertising permission.
+The person must review/edit the draft before any public or dating-profile
+projection is created.
+
+### Organizer Communication Preferences And CRM
+
+`organizerCommunicationPreferences/{organizerId_uid}` is a server-only,
+organizer-scoped permission ledger. WhatsApp and SMS each have independent
+`unknown`, `optedIn`, or `optedOut` state, terms version, source event, source,
+and timestamp. Public registration writes only an explicit checked opt-in. An
+unchecked box does not grant permission and cannot revoke a prior grant;
+withdrawal belongs to the future self-service/STOP callable. Host imports and
+manual roster entry never create channel permission.
+
+`getOrganizerCrmSummary` returns only privacy-bounded, deduplicated counts for
+contacts, past and repeat attendees, linked accounts, imported contacts, and
+explicit WhatsApp/SMS reachability. It never returns attendee identity or
+contact fields. Hosts currently retain event-scoped roster access through the
+existing authorized roster boundary; campaign delivery is a separate future
+contract. Account deletion removes both the onboarding draft and every
+organizer communication preference owned by the UID.
+Retained organizer roster history is unlinked by setting `linkedUid` and
+`linkedAt` to null; any separately retained operational contact field remains
+subject to the organizer's stated booking/records purpose rather than Catch
+account or marketing permission.
 
 Cross Paths visibility is a two-part, private consent contract. The optional
 `users/{uid}.prefsShowInCrossPaths` master preference resolves to false when

@@ -1,6 +1,6 @@
 ---
 doc_id: host_tooling_consolidation_tracker
-version: 1.1.0
+version: 1.2.0
 updated: 2026-08-10
 owner: host_tooling
 status: active
@@ -62,14 +62,19 @@ public event pages as SEO surfaces. Do not build a parallel React host dashboard
 
 ### Progressive Value Ladder
 
+The detailed capability, consent, CRM, booking, and delivery plan is
+`docs/plans/standalone_host_product_and_crm_delivery_plan.md`.
+
 | Level | Host outcome | Required identity/data | Capability unlocked |
 | --- | --- | --- | --- |
 | 0. Run an existing event | Replace paper/spreadsheets on event day | Host phone OTP, private workspace/event, imported or manual attendee rows | Roster, manual/QR check-in, run of show, host prompts, attendance export, basic turnout analytics |
 | 1. Close the feedback loop | Learn and improve after each event | Level 0 plus attendee contact permission or event-scoped OTP | Feedback requests, review invitations, owner response inbox, aggregate Event Success coaching |
-| 2. Publish and register | Let Catch acquire demand without requiring the Consumer app | Public organizer/event projection, free open admission, publication eligibility, attendee phone OTP | Public event page, OTP RSVP/waitlist, confirmations, unified roster and source-aware funnel |
-| 3. Transact | Sell through Catch | Payment onboarding, policies, payout readiness and supported market | Checkout, refunds, payout/reporting and paid conversion analytics |
-| 4. Establish public identity | Convert an existing listing into an owned channel | Canonical organizer claim and verification | Claimed page, profile editing, verified responses and repeat audience tools |
-| 5. Use the Catch network | Add identity-rich participation | Minimal preferences or full Consumer profile, depending on module | Cohort balancing, profile review/approval, compatibility rotations, swiping, catches, chat and cross-event discovery |
+| 2. Retain a permissioned audience | Understand repeat behavior and reconnect over an explicitly allowed channel | Attendance history plus separate In-app, WhatsApp or SMS eligibility | Cross-event CRM counts and segments; channel campaigns only after provider, template and regulatory gates |
+| 3. Publish and register | Let Catch acquire demand without requiring the Consumer app | Public organizer/event projection, free open admission, publication eligibility, attendee phone OTP | Public event page, OTP RSVP/waitlist, confirmations, unified roster and source-aware funnel |
+| 4. Transact | Sell through Catch | Payment onboarding, policies, payout readiness and supported market | Checkout, refunds, payout/reporting and paid conversion analytics |
+| 5. Establish public identity | Convert an existing listing into an owned channel | Canonical organizer claim and verification | Claimed page, profile editing, verified responses and repeat audience tools |
+| 6. Use the Catch network | Add identity-rich participation | Minimal preferences or full Consumer profile, depending on module | Cohort balancing, profile review/approval, compatibility rotations, swiping, catches, chat and cross-event discovery |
+| 7. Activate Catch growth | Use lawful first-party acquisition audiences | Separate Catch marketing consent plus legal/platform approval | Hashed customer-list or conversion activation with deletion and suppression controls |
 
 The app should always present the next useful unlock with its concrete benefit
 and requirement. It must not turn the ladder into a blocking onboarding wizard.
@@ -102,7 +107,11 @@ Every attendee and metric therefore retains a source.
 Imported contact data is private operations data. Raw phone/email values are
 never copied into public listings, analytics facts, Event Success assignments,
 or dating profiles. OTP verification links an attendee record to a UID through
-a server-owned operation; it does not silently create a dating profile.
+a server-owned operation; it does not silently create a dating profile. The
+public registration callable may seed a private onboarding draft with the
+attendee-supplied name and verified phone so a later, intentional Consumer
+onboarding can continue without retyping. That draft is deleted with the
+account and is not advertising permission.
 
 ### Unified Operational Attendee Boundary
 
@@ -126,6 +135,8 @@ Implementation status for the 2026-08-10 standalone foundation:
 | Unified operational roster | Implemented | CSV/XLSX/manual/Catch/web-OTP sources, private Host read, server writes and Host check-in |
 | Independent Host analytics | Implemented | Operational roster/source/attendance metrics are separate from the Catch booking funnel |
 | Public organizer/event registration | Implemented for the safe first policy | Explicitly published, free, open-admission events only; capacity joins an operational waitlist |
+| Cross-event CRM audience summary | Implemented foundation | Privacy-bounded deduplicated counts for past/repeat/imported/linked contacts and explicit WhatsApp/SMS reachability; no attendee PII returned |
+| WhatsApp/SMS campaigns | Provider-gated next tranche | Permission ledger exists; delivery needs provider ownership, approved templates, webhook/STOP handling and India SMS DLT setup |
 | Review responses | Implemented for existing public reviews | Host Report can respond through the canonical review callable and the website renders the response |
 | Host web delivery | Implemented through build/package/workflow | Dedicated Firebase Hosting target; custom domain, Auth domains and App Check remain release gates |
 | External-attendee private companion, feedback invites and assignments | Planned next | Requires the attendee-id identity migration in phase 4; current private Event Success documents remain UID-keyed |
@@ -145,8 +156,8 @@ Implementation status for the 2026-08-10 standalone foundation:
 4. **Event Success identity migration.** Address profile-independent
    assignments by attendee id, link UIDs when available, preserve private
    answers/consents, and keep compatibility/profile modules explicitly gated.
-5. **Commercial and network depth.** Layer payment onboarding, claimed public
-   identity, repeat-audience tools and Consumer-only features onto the same
+5. **CRM, commercial and network depth.** Layer consent-safe repeat-audience
+   campaigns, payment onboarding, claimed public identity, and Consumer-only features onto the same
    event/attendee records. Do not fork a second event model for paid or
    Catch-network events.
 6. **Admin and reliability.** Add import failure receipts, privacy/link dispute

@@ -1,7 +1,7 @@
 {
   "$schema": "./website.components.schema.json",
-  "version": 91,
-  "updated": "2026-07-24",
+  "version": 92,
+  "updated": "2026-08-10",
   "owner": "marketing_website",
   "sourceOfTruth": {
     "architecture": "docs/marketing_website_architecture.md",
@@ -1068,7 +1068,7 @@
           "error"
         ]
       },
-      "notes": "Event-scoped phone verification and registration form. It creates or links only an operational attendee row and never requires or synthesizes a Consumer profile."
+      "notes": "Event-scoped phone verification and registration form. It creates or links only an operational attendee row, privately seeds name and verified phone for optional later onboarding, never requires or synthesizes a Consumer profile, and collects independent unchecked organizer WhatsApp/SMS permissions without granting Catch advertising permission."
     },
     {
       "id": "shared_event_detail_shells",
@@ -1098,7 +1098,7 @@
           "review-preview"
         ]
       },
-      "notes": "Shared event-detail ticket, media, organizer rail, action panel, compact review preview, section, fact-grid, review-section, and provenance shells. Event state and organizer policy stay feature-owned."
+      "notes": "Shared event-detail ticket, media, organizer rail, action panel, registration form/consent rail, compact review preview, section, fact-grid, review-section, and provenance shells. Event state and organizer policy stay feature-owned."
     },
     {
       "id": "event_detail_hero_section",

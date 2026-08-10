@@ -10941,6 +10941,104 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_organizer"
   },
+  "hostsHostOrganizerCrmTitle": "Past attendee CRM",
+  "@hostsHostOrganizerCrmTitle": {
+    "description": "Title for the privacy-bounded organizer audience summary.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.host_operations.host_organizer"
+  },
+  "hostsHostOrganizerCrmLoading": "Counting deduplicated roster history…",
+  "@hostsHostOrganizerCrmLoading": {
+    "description": "Loading message for the organizer audience summary.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.host_operations.host_organizer"
+  },
+  "hostsHostOrganizerCrmUnavailable": "Audience counts are temporarily unavailable.",
+  "@hostsHostOrganizerCrmUnavailable": {
+    "description": "Error message for the organizer audience summary.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.host_operations.host_organizer"
+  },
+  "hostsHostOrganizerCrmSummary": "{pastCount} past attendees · {repeatCount} repeat attendees · {contactCount} total contacts",
+  "@hostsHostOrganizerCrmSummary": {
+    "description": "Deduplicated organizer attendee and contact counts.",
+    "placeholders": {
+      "pastCount": {},
+      "repeatCount": {},
+      "contactCount": {}
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.host_operations.host_organizer"
+  },
+  "hostsHostOrganizerCrmCatchApp": "Catch app",
+  "@hostsHostOrganizerCrmCatchApp": {
+    "description": "Label for the Catch in-app audience channel.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.host_operations.host_organizer"
+  },
+  "hostsHostOrganizerCrmLinked": "{count} linked",
+  "@hostsHostOrganizerCrmLinked": {
+    "description": "Count of contacts linked to Catch identities.",
+    "placeholders": {"count": {}},
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.host_operations.host_organizer"
+  },
+  "hostsHostOrganizerCrmCurrentEventLive": "Current-event broadcasts live",
+  "@hostsHostOrganizerCrmCurrentEventLive": {
+    "description": "Readiness status for the existing in-app event broadcast.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.host_operations.host_organizer"
+  },
+  "hostsHostOrganizerCrmWhatsapp": "WhatsApp",
+  "@hostsHostOrganizerCrmWhatsapp": {
+    "description": "Label for the organizer WhatsApp channel.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.host_operations.host_organizer"
+  },
+  "hostsHostOrganizerCrmOptedIn": "{count} opted in",
+  "@hostsHostOrganizerCrmOptedIn": {
+    "description": "Count of contacts explicitly opted into a channel.",
+    "placeholders": {"count": {}},
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.host_operations.host_organizer"
+  },
+  "hostsHostOrganizerCrmWhatsappSetup": "Business provider + template setup required",
+  "@hostsHostOrganizerCrmWhatsappSetup": {
+    "description": "Readiness status for WhatsApp delivery.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.host_operations.host_organizer"
+  },
+  "hostsHostOrganizerCrmTextMessage": "Text message",
+  "@hostsHostOrganizerCrmTextMessage": {
+    "description": "Label for the organizer SMS channel.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.host_operations.host_organizer"
+  },
+  "hostsHostOrganizerCrmSmsSetup": "SMS provider + India DLT setup required",
+  "@hostsHostOrganizerCrmSmsSetup": {
+    "description": "Readiness status for SMS delivery in India.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.host_operations.host_organizer"
+  },
+  "hostsHostOrganizerCrmTruncated": "This preview is capped at 2,500 roster records.",
+  "@hostsHostOrganizerCrmTruncated": {
+    "description": "Notice shown when the bounded audience summary is truncated.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.host_operations.host_organizer"
+  },
   "hostsHostTodayTitleNoActiveEventsYet": "No active events yet",
   "@hostsHostTodayTitleNoActiveEventsYet": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (title).",

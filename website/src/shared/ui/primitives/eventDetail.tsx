@@ -6,6 +6,7 @@ import type {
   ReactNode,
 } from "react";
 import {PlainLink} from "./actions";
+import {CheckboxField} from "./forms";
 import {classNames} from "./foundation";
 import {UiLabel} from "./layout";
 
@@ -189,6 +190,21 @@ export function EventRegistrationForm({
 
 export function EventRegistrationPrivacy({children}: {children: ReactNode}) {
   return <p className="event-registration__privacy">{children}</p>;
+}
+
+export function EventRegistrationConsents({children}: {children: ReactNode}) {
+  return <div className="event-registration__consents">{children}</div>;
+}
+
+export function EventRegistrationConsent(
+  props: Parameters<typeof CheckboxField>[0]
+) {
+  return (
+    <CheckboxField
+      {...props}
+      className={classNames("event-registration__consent", props.className)}
+    />
+  );
 }
 
 export function EventDetailSection({

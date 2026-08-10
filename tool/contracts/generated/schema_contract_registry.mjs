@@ -11267,6 +11267,340 @@ export const organizerFollowDocumentSchema = {
   }
 };
 
+export const organizerCommunicationPreferenceDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_communication_preferences.schema.json",
+  "title": "OrganizerCommunicationPreferenceDocument",
+  "description": "Server-owned, organizer-scoped channel consent stored at organizerCommunicationPreferences/{organizerId_uid}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerCommunicationPreferences",
+  "x-firestore-path": "organizerCommunicationPreferences/{organizerId_uid}",
+  "x-document-id-field": "id",
+  "x-owner": "public registration and future self-service preference callables",
+  "required": [
+    "organizerId",
+    "uid",
+    "whatsapp",
+    "sms",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "whatsapp": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "termsVersion",
+        "source",
+        "sourceEventId",
+        "updatedAt"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "optedIn",
+            "optedOut"
+          ],
+          "x-catch-ownership": "server-only"
+        },
+        "termsVersion": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 80,
+          "x-catch-ownership": "server-only"
+        },
+        "source": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            null,
+            "publicEventRegistration",
+            "unsubscribeLink",
+            "hostApp"
+          ],
+          "x-catch-ownership": "server-only"
+        },
+        "sourceEventId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "x-catch-ownership": "server-only"
+        },
+        "updatedAt": {
+          "anyOf": [
+            {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "x-catch-ownership": "server-only"
+        }
+      }
+    },
+    "sms": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "termsVersion",
+        "source",
+        "sourceEventId",
+        "updatedAt"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "optedIn",
+            "optedOut"
+          ],
+          "x-catch-ownership": "server-only"
+        },
+        "termsVersion": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 80,
+          "x-catch-ownership": "server-only"
+        },
+        "source": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            null,
+            "publicEventRegistration",
+            "unsubscribeLink",
+            "hostApp"
+          ],
+          "x-catch-ownership": "server-only"
+        },
+        "sourceEventId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "x-catch-ownership": "server-only"
+        },
+        "updatedAt": {
+          "anyOf": [
+            {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "x-catch-ownership": "server-only"
+        }
+      }
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    }
+  },
+  "definitions": {
+    "channelPreference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "termsVersion",
+        "source",
+        "sourceEventId",
+        "updatedAt"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "optedIn",
+            "optedOut"
+          ],
+          "x-catch-ownership": "server-only"
+        },
+        "termsVersion": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 80,
+          "x-catch-ownership": "server-only"
+        },
+        "source": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            null,
+            "publicEventRegistration",
+            "unsubscribeLink",
+            "hostApp"
+          ],
+          "x-catch-ownership": "server-only"
+        },
+        "sourceEventId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "x-catch-ownership": "server-only"
+        },
+        "updatedAt": {
+          "anyOf": [
+            {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "x-catch-ownership": "server-only"
+        }
+      }
+    }
+  }
+};
+
 export const organizerClaimRequestDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_claim_requests.schema.json",
@@ -36616,6 +36950,29 @@ export const registerPublicEventCallablePayloadSchema = {
       "type": "string",
       "minLength": 1,
       "maxLength": 120
+    },
+    "organizerUpdates": {
+      "description": "Optional, explicit opt-in to organizer marketing updates. Absence never grants consent.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "whatsapp",
+        "sms",
+        "termsVersion"
+      ],
+      "properties": {
+        "whatsapp": {
+          "type": "boolean"
+        },
+        "sms": {
+          "type": "boolean"
+        },
+        "termsVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        }
+      }
     }
   }
 };
@@ -36650,6 +37007,120 @@ export const registerPublicEventCallableResponseSchema = {
         "waitlisted",
         "alreadyRegistered"
       ]
+    }
+  }
+};
+
+export const getOrganizerCrmSummaryCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_organizer_crm_summary_payload.schema.json",
+  "title": "GetOrganizerCrmSummaryCallablePayload",
+  "description": "Organizer manager request for a privacy-bounded CRM audience summary.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const getOrganizerCrmSummaryCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_organizer_crm_summary_response.schema.json",
+  "title": "GetOrganizerCrmSummaryCallableResponse",
+  "description": "Deduplicated Host CRM counts. No attendee identity or contact field is returned.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "contactCount",
+    "pastAttendeeCount",
+    "repeatAttendeeCount",
+    "linkedAccountCount",
+    "importedContactCount",
+    "whatsappOptInCount",
+    "smsOptInCount",
+    "truncated",
+    "readiness"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "contactCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2500
+    },
+    "pastAttendeeCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2500
+    },
+    "repeatAttendeeCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2500
+    },
+    "linkedAccountCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2500
+    },
+    "importedContactCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2500
+    },
+    "whatsappOptInCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2500
+    },
+    "smsOptInCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2500
+    },
+    "truncated": {
+      "type": "boolean"
+    },
+    "readiness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "inApp",
+        "whatsapp",
+        "sms"
+      ],
+      "properties": {
+        "inApp": {
+          "type": "string",
+          "enum": [
+            "currentEventOnly"
+          ]
+        },
+        "whatsapp": {
+          "type": "string",
+          "enum": [
+            "providerSetupRequired"
+          ]
+        },
+        "sms": {
+          "type": "string",
+          "enum": [
+            "providerAndDltSetupRequired"
+          ]
+        }
+      }
     }
   }
 };

@@ -6,6 +6,8 @@ import {
   EventAttendeeDocument,
   EventAttendeeImportDocument,
   EventDocument,
+  OnboardingDraftDocument,
+  OrganizerCommunicationPreferenceDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {ImportEventAttendeesCallablePayload} from
   "../shared/generated/importEventAttendeesCallablePayload";
@@ -311,6 +313,7 @@ export async function registerPublicEventHandler(
   const eventRef = db.collection("events").doc(payload.eventId);
   const attendeeId = eventAttendeeId(payload.eventId, `phone:${phone}`);
   const attendeeRef = db.collection("eventAttendees").doc(attendeeId);
+  const onboardingDraftRef = db.collection("onboarding_drafts").doc(uid);
 
   return db.runTransaction(async (tx) => {
     const eventSnap = await tx.get(eventRef);
@@ -318,11 +321,23 @@ export async function registerPublicEventHandler(
       throw new HttpsError("not-found", "Event not found.");
     }
     const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
-    const [organizerSnap, attendeeSnap, rosterSnap] = await Promise.all([
+    const organizerId = event.organizerId ?? event.clubId;
+    const communicationPreferenceRef = db
+      .collection("organizerCommunicationPreferences")
+      .doc(organizerCommunicationPreferenceId(organizerId, uid));
+    const [
+      organizerSnap,
+      attendeeSnap,
+      rosterSnap,
+      onboardingDraftSnap,
+      communicationPreferenceSnap,
+    ] = await Promise.all([
       tx.get(eventOrganizerRef(db, event)),
       tx.get(attendeeRef),
       tx.get(db.collection("eventAttendees")
         .where("eventId", "==", payload.eventId)),
+      tx.get(onboardingDraftRef),
+      tx.get(communicationPreferenceRef),
     ]);
     const organizer = requireEventOrganizer(organizerSnap, event);
     const policy = eventPolicyFromEvent(event);
@@ -363,7 +378,7 @@ export async function registerPublicEventHandler(
     const document: EventAttendeeDocument = {
       eventId: payload.eventId,
       clubId: event.clubId,
-      organizerId: event.organizerId ?? event.clubId,
+      organizerId,
       displayName,
       searchName: displayName.toLocaleLowerCase("en"),
       source: existing?.source ?? "webOtp",
@@ -387,6 +402,25 @@ export async function registerPublicEventHandler(
       linkedAt: existing?.linkedAt ?? now,
     };
     tx.set(attendeeRef, document);
+    if (!onboardingDraftSnap.exists) {
+      tx.create(onboardingDraftRef, onboardingDraftSeed({
+        displayName,
+        phoneE164: phone,
+      }));
+    }
+    const communicationPreference = mergeOrganizerCommunicationPreference({
+      existing: communicationPreferenceSnap.exists ?
+        communicationPreferenceSnap.data() as
+          OrganizerCommunicationPreferenceDocument : undefined,
+      organizerId,
+      uid,
+      eventId: payload.eventId,
+      organizerUpdates: payload.organizerUpdates,
+      now,
+    });
+    if (communicationPreference) {
+      tx.set(communicationPreferenceRef, communicationPreference);
+    }
     return {
       eventId: payload.eventId,
       attendeeId,
@@ -394,6 +428,86 @@ export async function registerPublicEventHandler(
         status === "waitlisted" ? "waitlisted" : "registered",
     };
   });
+}
+
+/** Builds the private Consumer onboarding seed for an OTP-only attendee. */
+export function onboardingDraftSeed(params: {
+  displayName: string;
+  phoneE164: string;
+}): OnboardingDraftDocument {
+  const phone = splitSupportedPhone(params.phoneE164);
+  return {
+    step: 1,
+    draftVersion: 2,
+    firstName: params.displayName.trim().slice(0, 80),
+    lastName: "",
+    phoneNumber: phone.nationalNumber,
+    countryCode: phone.countryCode,
+  };
+}
+
+/**
+ * Applies only explicit opt-ins from registration. An unchecked box never
+ * revokes a prior grant; withdrawal belongs to the self-service/STOP path.
+ */
+export function mergeOrganizerCommunicationPreference(params: {
+  existing?: OrganizerCommunicationPreferenceDocument;
+  organizerId: string;
+  uid: string;
+  eventId: string;
+  organizerUpdates?: RegisterPublicEventCallablePayload["organizerUpdates"];
+  now: FirebaseFirestore.Timestamp;
+}): OrganizerCommunicationPreferenceDocument | null {
+  const grantsWhatsapp = params.organizerUpdates?.whatsapp === true;
+  const grantsSms = params.organizerUpdates?.sms === true;
+  if (!params.existing && !grantsWhatsapp && !grantsSms) return null;
+  if (params.existing && !grantsWhatsapp && !grantsSms) return null;
+
+  const unknownChannel = {
+    status: "unknown" as const,
+    termsVersion: null,
+    source: null,
+    sourceEventId: null,
+    updatedAt: null,
+  };
+  const optedInChannel = {
+    status: "optedIn" as const,
+    termsVersion: params.organizerUpdates!.termsVersion,
+    source: "publicEventRegistration" as const,
+    sourceEventId: params.eventId,
+    updatedAt: params.now,
+  };
+  return {
+    organizerId: params.organizerId,
+    uid: params.uid,
+    whatsapp: grantsWhatsapp ? optedInChannel :
+      params.existing?.whatsapp ?? unknownChannel,
+    sms: grantsSms ? optedInChannel : params.existing?.sms ?? unknownChannel,
+    createdAt: params.existing?.createdAt ?? params.now,
+    updatedAt: params.now,
+  };
+}
+
+export function organizerCommunicationPreferenceId(
+  organizerId: string,
+  uid: string
+): string {
+  return `orgpref_${sha256(`${organizerId}|${uid}`).slice(0, 48)}`;
+}
+
+function splitSupportedPhone(phoneE164: string): {
+  countryCode: string;
+  nationalNumber: string;
+} {
+  for (const countryCode of ["+977", "+91", "+61", "+1"]) {
+    if (phoneE164.startsWith(countryCode)) {
+      return {
+        countryCode,
+        nationalNumber: phoneE164.slice(countryCode.length),
+      };
+    }
+  }
+  return {countryCode: "", nationalNumber: phoneE164};
 }
 
 export function assertPublicRegistrationEligibility(params: {
@@ -623,6 +737,17 @@ function normalizePublicRegistrationPayload(data: unknown): unknown {
     if (typeof normalized[field] === "string") {
       normalized[field] = normalized[field].trim().replace(/\s+/g, " ");
     }
+  }
+  if (typeof normalized.organizerUpdates === "object" &&
+      normalized.organizerUpdates !== null &&
+      !Array.isArray(normalized.organizerUpdates)) {
+    const organizerUpdates = {
+      ...normalized.organizerUpdates,
+    } as Record<string, unknown>;
+    if (typeof organizerUpdates.termsVersion === "string") {
+      organizerUpdates.termsVersion = organizerUpdates.termsVersion.trim();
+    }
+    normalized.organizerUpdates = organizerUpdates;
   }
   return normalized;
 }

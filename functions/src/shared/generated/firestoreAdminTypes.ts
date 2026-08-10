@@ -1558,6 +1558,30 @@ export interface OrganizerFollowDocument {
 }
 
 /**
+ * Server-owned, organizer-scoped channel consent stored at organizerCommunicationPreferences/{organizerId_uid}.
+ */
+export interface OrganizerCommunicationPreferenceDocument {
+  organizerId: string;
+  uid: string;
+  whatsapp: {
+    status: "unknown" | "optedIn" | "optedOut";
+    termsVersion: string | null;
+    source: null | "publicEventRegistration" | "unsubscribeLink" | "hostApp";
+    sourceEventId: string | null;
+    updatedAt: FirebaseFirestore.Timestamp | null;
+  };
+  sms: {
+    status: "unknown" | "optedIn" | "optedOut";
+    termsVersion: string | null;
+    source: null | "publicEventRegistration" | "unsubscribeLink" | "hostApp";
+    sourceEventId: string | null;
+    updatedAt: FirebaseFirestore.Timestamp | null;
+  };
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
  * Server-owned organizer listing claim request stored at organizerClaimRequests/{requestId}.
  */
 export interface OrganizerClaimRequestDocument {

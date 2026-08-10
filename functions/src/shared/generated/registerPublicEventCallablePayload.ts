@@ -8,4 +8,12 @@
 export interface RegisterPublicEventCallablePayload {
   eventId: string;
   displayName: string;
+  /**
+   * Optional, explicit opt-in to organizer marketing updates. Absence never grants consent.
+   */
+  organizerUpdates?: {
+    whatsapp: boolean;
+    sms: boolean;
+    termsVersion: string;
+  };
 }

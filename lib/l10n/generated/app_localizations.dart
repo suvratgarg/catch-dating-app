@@ -9356,6 +9356,88 @@ abstract class AppLocalizations {
   /// **'Upcoming'**
   String get hostsHostOrganizerLabelUpcoming;
 
+  /// Title for the privacy-bounded organizer audience summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Past attendee CRM'**
+  String get hostsHostOrganizerCrmTitle;
+
+  /// Loading message for the organizer audience summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Counting deduplicated roster history…'**
+  String get hostsHostOrganizerCrmLoading;
+
+  /// Error message for the organizer audience summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Audience counts are temporarily unavailable.'**
+  String get hostsHostOrganizerCrmUnavailable;
+
+  /// Deduplicated organizer attendee and contact counts.
+  ///
+  /// In en, this message translates to:
+  /// **'{pastCount} past attendees · {repeatCount} repeat attendees · {contactCount} total contacts'**
+  String hostsHostOrganizerCrmSummary({
+    required Object pastCount,
+    required Object repeatCount,
+    required Object contactCount,
+  });
+
+  /// Label for the Catch in-app audience channel.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch app'**
+  String get hostsHostOrganizerCrmCatchApp;
+
+  /// Count of contacts linked to Catch identities.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} linked'**
+  String hostsHostOrganizerCrmLinked({required Object count});
+
+  /// Readiness status for the existing in-app event broadcast.
+  ///
+  /// In en, this message translates to:
+  /// **'Current-event broadcasts live'**
+  String get hostsHostOrganizerCrmCurrentEventLive;
+
+  /// Label for the organizer WhatsApp channel.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp'**
+  String get hostsHostOrganizerCrmWhatsapp;
+
+  /// Count of contacts explicitly opted into a channel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} opted in'**
+  String hostsHostOrganizerCrmOptedIn({required Object count});
+
+  /// Readiness status for WhatsApp delivery.
+  ///
+  /// In en, this message translates to:
+  /// **'Business provider + template setup required'**
+  String get hostsHostOrganizerCrmWhatsappSetup;
+
+  /// Label for the organizer SMS channel.
+  ///
+  /// In en, this message translates to:
+  /// **'Text message'**
+  String get hostsHostOrganizerCrmTextMessage;
+
+  /// Readiness status for SMS delivery in India.
+  ///
+  /// In en, this message translates to:
+  /// **'SMS provider + India DLT setup required'**
+  String get hostsHostOrganizerCrmSmsSetup;
+
+  /// Notice shown when the bounded audience summary is truncated.
+  ///
+  /// In en, this message translates to:
+  /// **'This preview is capped at 2,500 roster records.'**
+  String get hostsHostOrganizerCrmTruncated;
+
   /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (title).
   ///
   /// In en, this message translates to:

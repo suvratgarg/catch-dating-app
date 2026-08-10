@@ -8,14 +8,154 @@ class HostClubOrganizerOverviewController extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final eventsAsync = ref.watch(watchEventsForClubProvider(club.id));
+    final crmAsync = ref.watch(hostCrmSummaryProvider(club.id));
     final events = eventsAsync.asData?.value ?? const <Event>[];
     final activeEventCount = events.where((event) => !event.isCancelled).length;
 
-    return HostClubOrganizerOverview(
-      club: club,
-      eventsLoaded: eventsAsync.hasValue,
-      eventCount: events.length,
-      activeEventCount: activeEventCount,
+    return Column(
+      children: [
+        HostClubOrganizerOverview(
+          club: club,
+          eventsLoaded: eventsAsync.hasValue,
+          eventCount: events.length,
+          activeEventCount: activeEventCount,
+        ),
+        gapH12,
+        _HostCrmAudienceCard(
+          summary: crmAsync.asData?.value,
+          loading: crmAsync.isLoading,
+          hasError: crmAsync.hasError,
+          onRetry: () => ref.invalidate(hostCrmSummaryProvider(club.id)),
+        ),
+      ],
+    );
+  }
+}
+
+class _HostCrmAudienceCard extends StatelessWidget {
+  const _HostCrmAudienceCard({
+    required this.summary,
+    required this.loading,
+    required this.hasError,
+    required this.onRetry,
+  });
+
+  final HostCrmSummary? summary;
+  final bool loading;
+  final bool hasError;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return CatchSurface(
+      borderColor: t.line,
+      child: Padding(
+        padding: CatchInsets.content,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              context.l10n.hostsHostOrganizerCrmTitle,
+              style: CatchTextStyles.sectionTitle(context, color: t.ink),
+            ),
+            gapH8,
+            if (loading)
+              Text(
+                context.l10n.hostsHostOrganizerCrmLoading,
+                style: CatchTextStyles.supporting(context, color: t.ink2),
+              )
+            else if (hasError || summary == null) ...[
+              Text(
+                context.l10n.hostsHostOrganizerCrmUnavailable,
+                style: CatchTextStyles.supporting(context, color: t.ink2),
+              ),
+              gapH8,
+              CatchButton(
+                label: context.l10n.sharedActionTryAgain,
+                onPressed: onRetry,
+                variant: CatchButtonVariant.secondary,
+              ),
+            ] else ...[
+              Text(
+                context.l10n.hostsHostOrganizerCrmSummary(
+                  pastCount: summary!.pastAttendeeCount,
+                  repeatCount: summary!.repeatAttendeeCount,
+                  contactCount: summary!.contactCount,
+                ),
+                style: CatchTextStyles.supporting(context, color: t.ink2),
+              ),
+              gapH12,
+              _HostCrmChannelRow(
+                label: context.l10n.hostsHostOrganizerCrmCatchApp,
+                value: context.l10n.hostsHostOrganizerCrmLinked(
+                  count: summary!.linkedAccountCount,
+                ),
+                status: context.l10n.hostsHostOrganizerCrmCurrentEventLive,
+              ),
+              gapH8,
+              _HostCrmChannelRow(
+                label: context.l10n.hostsHostOrganizerCrmWhatsapp,
+                value: context.l10n.hostsHostOrganizerCrmOptedIn(
+                  count: summary!.whatsappOptInCount,
+                ),
+                status: context.l10n.hostsHostOrganizerCrmWhatsappSetup,
+              ),
+              gapH8,
+              _HostCrmChannelRow(
+                label: context.l10n.hostsHostOrganizerCrmTextMessage,
+                value: context.l10n.hostsHostOrganizerCrmOptedIn(
+                  count: summary!.smsOptInCount,
+                ),
+                status: context.l10n.hostsHostOrganizerCrmSmsSetup,
+              ),
+              if (summary!.truncated) ...[
+                gapH8,
+                Text(
+                  context.l10n.hostsHostOrganizerCrmTruncated,
+                  style: CatchTextStyles.supporting(context, color: t.ink2),
+                ),
+              ],
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _HostCrmChannelRow extends StatelessWidget {
+  const _HostCrmChannelRow({
+    required this.label,
+    required this.value,
+    required this.status,
+  });
+
+  final String label;
+  final String value;
+  final String status;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Text(
+            '$label · $value',
+            style: CatchTextStyles.bodyM(context, color: t.ink),
+          ),
+        ),
+        gapW12,
+        Flexible(
+          child: Text(
+            status,
+            textAlign: TextAlign.end,
+            style: CatchTextStyles.supporting(context, color: t.ink2),
+          ),
+        ),
+      ],
     );
   }
 }

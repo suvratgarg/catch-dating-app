@@ -535,6 +535,26 @@
       ]
     },
     {
+      "id": "organizerCommunicationPreferences",
+      "path": "organizerCommunicationPreferences/{preferenceId}",
+      "rulesMatch": "/organizerCommunicationPreferences/{preferenceId}",
+      "typescriptInterface": "OrganizerCommunicationPreferenceDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "public registration and account-deletion callables",
+      "read": "server only; Hosts receive aggregate CRM counts",
+      "write": "server only",
+      "exportedFunctions": [
+        "registerPublicEvent",
+        "getOrganizerCrmSummary",
+        "requestAccountDeletion"
+      ],
+      "migrationNotes": [
+        "A roster phone number never grants marketing permission. Only an explicit per-channel organizer opt-in creates or advances this record.",
+        "Catch platform marketing consent remains a separate purpose and is not represented here."
+      ]
+    },
+    {
       "id": "eventAttendeeImports",
       "path": "eventAttendeeImports/{importId}",
       "rulesMatch": "/eventAttendeeImports/{importId}",

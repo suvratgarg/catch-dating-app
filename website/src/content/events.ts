@@ -39,7 +39,13 @@ export const eventDetailCopy = {
       alreadyRegistered: "You were already registered. Your roster place is confirmed.",
       waitlisted: "The event is full, so you are now on the organizer's waitlist.",
       privacy:
-        "Your number is used for event identity and roster operations. A full Catch profile is not created.",
+        "Your name and verified number are used for this booking and can prefill Catch if you later continue in the app. A dating profile is not created, and this operational data is not permission for advertising.",
+      whatsappConsent:
+        "Send me future event announcements from this organizer on WhatsApp",
+      smsConsent:
+        "Send me future event announcements from this organizer by text message",
+      consentDetail:
+        "Optional and separate from registration. Only selected channels are added; imported guest lists never count as consent. You can unsubscribe from any message.",
       missingName: "Enter the name the organizer should use.",
       invalidPhone: "Use a mobile number with country code, such as +91.",
       invalidCode: "Enter the 6-digit OTP.",

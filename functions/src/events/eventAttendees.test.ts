@@ -1,9 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import * as admin from "firebase-admin";
 import {
   assertPublicRegistrationEligibility,
   eventAttendeeId,
+  mergeOrganizerCommunicationPreference,
   normalizeRosterPhone,
+  onboardingDraftSeed,
   prepareImportRows,
   publicRegistrationStatus,
 } from "./eventAttendees";
@@ -125,4 +128,57 @@ test("eventAttendeeId is stable and event-isolated", () => {
     eventAttendeeId("event-2", "email:asha@example.com")
   );
   assert.match(stable, /^att_[a-f0-9]{48}$/);
+});
+
+test("OTP registration seeds a private account draft without a profile", () => {
+  assert.deepEqual(onboardingDraftSeed({
+    displayName: "Asha Shah",
+    phoneE164: "+919876543210",
+  }), {
+    step: 1,
+    draftVersion: 2,
+    firstName: "Asha Shah",
+    lastName: "",
+    phoneNumber: "9876543210",
+    countryCode: "+91",
+  });
+});
+
+test("registration consent only adds explicit channel grants", () => {
+  const now = admin.firestore.Timestamp.fromMillis(10);
+  assert.equal(mergeOrganizerCommunicationPreference({
+    organizerId: "organizer-1",
+    uid: "user-1",
+    eventId: "event-1",
+    now,
+  }), null);
+
+  const preference = mergeOrganizerCommunicationPreference({
+    organizerId: "organizer-1",
+    uid: "user-1",
+    eventId: "event-1",
+    organizerUpdates: {
+      whatsapp: true,
+      sms: false,
+      termsVersion: "organizer-updates-v1",
+    },
+    now,
+  });
+  assert.equal(preference?.whatsapp.status, "optedIn");
+  assert.equal(preference?.sms.status, "unknown");
+
+  const replay = mergeOrganizerCommunicationPreference({
+    existing: preference!,
+    organizerId: "organizer-1",
+    uid: "user-1",
+    eventId: "event-2",
+    organizerUpdates: {
+      whatsapp: false,
+      sms: false,
+      termsVersion: "organizer-updates-v1",
+    },
+    now: admin.firestore.Timestamp.fromMillis(20),
+  });
+  assert.equal(replay, null);
+  assert.equal(preference?.whatsapp.status, "optedIn");
 });

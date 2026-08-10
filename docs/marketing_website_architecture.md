@@ -1,6 +1,6 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.6.0
+version: 0.6.1
 updated: 2026-08-10
 owner: marketing_website
 status: active
@@ -98,7 +98,13 @@ The website is already split out of the old monolithic shell:
   for Consumer dating-profile setup. The mutation is server-owned, links or
   creates an `eventAttendees` record with `webOtp` source, and returns only the
   attendee's event-scoped state. The website never reads a private roster or
-  writes `eventParticipations` directly. Catch ticketing and profile-dependent
+  writes `eventParticipations` directly. A first registration may seed a private
+  onboarding draft with the attendee-supplied name and verified phone for an
+  intentional later Consumer onboarding continuation; this does not create a
+  profile. Optional organizer WhatsApp and SMS permissions are independent,
+  unchecked by default, and organizer-scoped. Event registration, imported
+  contact data, and account prefill do not grant either channel or Catch
+  advertising permission. Catch ticketing and profile-dependent
   Consumer features remain separately gated capabilities. The read-only
   production materializer publishes only explicitly OTP-enabled events and
   obtains capacity totals through Firestore `count()` aggregation; it never

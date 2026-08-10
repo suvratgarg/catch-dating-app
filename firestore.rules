@@ -757,6 +757,13 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Organizer-scoped WhatsApp/SMS grants are server-owned. Hosts receive
+    // only aggregate reachability counts; attendee self-service will use a
+    // callable rather than exposing this cross-organizer consent ledger.
+    match /organizerCommunicationPreferences/{preferenceId} {
+      allow read, write: if false;
+    }
+
     match /organizerClaimRequests/{requestId} {
       allow read, write: if false;
     }

@@ -7,6 +7,8 @@ import {
 } from "../../firebase";
 import {
   Button,
+  EventRegistrationConsent,
+  EventRegistrationConsents,
   EventRegistrationForm,
   EventRegistrationPrivacy,
   FormStatus,
@@ -21,6 +23,8 @@ export function PublicEventRegistration({eventId}: {eventId: string}) {
   const [displayName, setDisplayName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [code, setCode] = useState("");
+  const [whatsappUpdates, setWhatsappUpdates] = useState(false);
+  const [smsUpdates, setSmsUpdates] = useState(false);
   const [stage, setStage] = useState<"details" | "code" | "success">("details");
   const [pending, setPending] = useState(false);
   const [status, setStatus] = useState<FormStatusModel>({message: "", tone: ""});
@@ -65,7 +69,15 @@ export function PublicEventRegistration({eventId}: {eventId: string}) {
         throw new Error(copy.verificationExpired);
       }
       await verification.confirm(code.trim());
-      const response = await registerPublicEvent({eventId, displayName: name});
+      const response = await registerPublicEvent({
+        eventId,
+        displayName: name,
+        organizerUpdates: {
+          whatsapp: whatsappUpdates,
+          sms: smsUpdates,
+          termsVersion: "organizer-updates-v1",
+        },
+      });
       verificationRef.current?.clear();
       verificationRef.current = null;
       setStage("success");
@@ -109,6 +121,23 @@ export function PublicEventRegistration({eventId}: {eventId: string}) {
         placeholder={copy.phonePlaceholder}
         value={phoneNumber}
       />
+      <EventRegistrationConsents>
+        <EventRegistrationConsent
+          checked={whatsappUpdates}
+          disabled={pending || stage !== "details"}
+          onChange={(event) => setWhatsappUpdates(event.target.checked)}
+        >
+          {copy.whatsappConsent}
+        </EventRegistrationConsent>
+        <EventRegistrationConsent
+          checked={smsUpdates}
+          disabled={pending || stage !== "details"}
+          onChange={(event) => setSmsUpdates(event.target.checked)}
+        >
+          {copy.smsConsent}
+        </EventRegistrationConsent>
+        <EventRegistrationPrivacy>{copy.consentDetail}</EventRegistrationPrivacy>
+      </EventRegistrationConsents>
       {stage === "code" ? (
         <TextField
           autoComplete="one-time-code"

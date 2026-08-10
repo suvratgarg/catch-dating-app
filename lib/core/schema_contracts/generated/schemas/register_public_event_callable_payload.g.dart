@@ -26,5 +26,28 @@ const schemaRegisterPublicEventCallablePayloadSchema = <String, Object?>{
       'minLength': 1,
       'maxLength': 120,
     },
+    'organizerUpdates': <String, Object?>{
+      'description': 'Optional, explicit opt-in to organizer marketing updates. Absence never grants consent.',
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'whatsapp',
+        'sms',
+        'termsVersion',
+      ],
+      'properties': <String, Object?>{
+        'whatsapp': <String, Object?>{
+          'type': 'boolean',
+        },
+        'sms': <String, Object?>{
+          'type': 'boolean',
+        },
+        'termsVersion': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 80,
+        },
+      },
+    },
   },
 };

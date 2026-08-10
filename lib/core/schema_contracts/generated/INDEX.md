@@ -34,6 +34,7 @@ Do not edit it by hand.
 | OrganizerPostDocument | `firestore/organizer_posts.schema.json` | `functions/src/shared/generated/organizerPostDocument.ts` |
 | OrganizerTeamMembershipDocument | `firestore/organizer_team_memberships.schema.json` | `functions/src/shared/generated/organizerTeamMembershipDocument.ts` |
 | OrganizerFollowDocument | `firestore/organizer_follows.schema.json` | `functions/src/shared/generated/organizerFollowDocument.ts` |
+| OrganizerCommunicationPreferenceDocument | `firestore/organizer_communication_preferences.schema.json` | `functions/src/shared/generated/organizerCommunicationPreferenceDocument.ts` |
 | OrganizerClaimRequestDocument | `firestore/organizer_claim_requests.schema.json` | `functions/src/shared/generated/organizerClaimRequestDocument.ts` |
 | OrganizerScheduleLockDocument | `firestore/organizer_schedule_locks.schema.json` | `functions/src/shared/generated/organizerScheduleLockDocument.ts` |
 | ClubPostDocument | `firestore/club_posts.schema.json` | `functions/src/shared/generated/clubPostDocument.ts` |
@@ -176,6 +177,8 @@ Do not edit it by hand.
 | MarkEventAttendeeAttendanceCallablePayload | `callables/mark_event_attendee_attendance_payload.schema.json` | `functions/src/shared/generated/markEventAttendeeAttendanceCallablePayload.ts` |
 | RegisterPublicEventCallablePayload | `callables/register_public_event_payload.schema.json` | `functions/src/shared/generated/registerPublicEventCallablePayload.ts` |
 | RegisterPublicEventCallableResponse | `callable_responses/register_public_event_response.schema.json` | `functions/src/shared/generated/registerPublicEventCallableResponse.ts` |
+| GetOrganizerCrmSummaryCallablePayload | `callables/get_organizer_crm_summary_payload.schema.json` | `functions/src/shared/generated/getOrganizerCrmSummaryCallablePayload.ts` |
+| GetOrganizerCrmSummaryCallableResponse | `callable_responses/get_organizer_crm_summary_response.schema.json` | `functions/src/shared/generated/getOrganizerCrmSummaryCallableResponse.ts` |
 | EventJoinRequestDecisionCallablePayload | `callables/event_join_request_decision_payload.schema.json` | `functions/src/shared/generated/eventJoinRequestDecisionCallablePayload.ts` |
 | OverrideEventSuccessRotationsCallablePayload | `callables/override_event_success_rotations_payload.schema.json` | `functions/src/shared/generated/overrideEventSuccessRotationsCallablePayload.ts` |
 | OverrideEventSuccessGroupsCallablePayload | `callables/override_event_success_groups_payload.schema.json` | `functions/src/shared/generated/overrideEventSuccessGroupsCallablePayload.ts` |
@@ -277,6 +280,7 @@ Do not edit it by hand.
 | `schemaOrganizerPostDocumentSchema` | OrganizerPostDocument | `firestore/organizer_posts.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_post_document.g.dart` |
 | `schemaOrganizerTeamMembershipDocumentSchema` | OrganizerTeamMembershipDocument | `firestore/organizer_team_memberships.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_team_membership_document.g.dart` |
 | `schemaOrganizerFollowDocumentSchema` | OrganizerFollowDocument | `firestore/organizer_follows.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_follow_document.g.dart` |
+| `schemaOrganizerCommunicationPreferenceDocumentSchema` | OrganizerCommunicationPreferenceDocument | `firestore/organizer_communication_preferences.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_communication_preference_document.g.dart` |
 | `schemaOrganizerClaimRequestDocumentSchema` | OrganizerClaimRequestDocument | `firestore/organizer_claim_requests.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_claim_request_document.g.dart` |
 | `schemaOrganizerScheduleLockDocumentSchema` | OrganizerScheduleLockDocument | `firestore/organizer_schedule_locks.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_schedule_lock_document.g.dart` |
 | `schemaClubPostDocumentSchema` | ClubPostDocument | `firestore/club_posts.schema.json` | `lib/core/schema_contracts/generated/schemas/club_post_document.g.dart` |
@@ -419,6 +423,8 @@ Do not edit it by hand.
 | `schemaMarkEventAttendeeAttendanceCallablePayloadSchema` | MarkEventAttendeeAttendanceCallablePayload | `callables/mark_event_attendee_attendance_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/mark_event_attendee_attendance_callable_payload.g.dart` |
 | `schemaRegisterPublicEventCallablePayloadSchema` | RegisterPublicEventCallablePayload | `callables/register_public_event_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/register_public_event_callable_payload.g.dart` |
 | `schemaRegisterPublicEventCallableResponseSchema` | RegisterPublicEventCallableResponse | `callable_responses/register_public_event_response.schema.json` | `lib/core/schema_contracts/generated/schemas/register_public_event_callable_response.g.dart` |
+| `schemaGetOrganizerCrmSummaryCallablePayloadSchema` | GetOrganizerCrmSummaryCallablePayload | `callables/get_organizer_crm_summary_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_organizer_crm_summary_callable_payload.g.dart` |
+| `schemaGetOrganizerCrmSummaryCallableResponseSchema` | GetOrganizerCrmSummaryCallableResponse | `callable_responses/get_organizer_crm_summary_response.schema.json` | `lib/core/schema_contracts/generated/schemas/get_organizer_crm_summary_callable_response.g.dart` |
 | `schemaEventJoinRequestDecisionCallablePayloadSchema` | EventJoinRequestDecisionCallablePayload | `callables/event_join_request_decision_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/event_join_request_decision_callable_payload.g.dart` |
 | `schemaOverrideEventSuccessRotationsCallablePayloadSchema` | OverrideEventSuccessRotationsCallablePayload | `callables/override_event_success_rotations_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/override_event_success_rotations_callable_payload.g.dart` |
 | `schemaOverrideEventSuccessGroupsCallablePayloadSchema` | OverrideEventSuccessGroupsCallablePayload | `callables/override_event_success_groups_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/override_event_success_groups_callable_payload.g.dart` |
@@ -567,6 +573,7 @@ Do not edit it by hand.
 | ImportEventAttendeesCallableRequest | ImportEventAttendeesCallablePayload | `callables/import_event_attendees_payload.schema.json` | `lib/core/schema_contracts/generated/callables/import_event_attendees_callable_request.g.dart` |
 | MarkEventAttendeeAttendanceCallableRequest | MarkEventAttendeeAttendanceCallablePayload | `callables/mark_event_attendee_attendance_payload.schema.json` | `lib/core/schema_contracts/generated/callables/mark_event_attendee_attendance_callable_request.g.dart` |
 | RegisterPublicEventCallableRequest | RegisterPublicEventCallablePayload | `callables/register_public_event_payload.schema.json` | `lib/core/schema_contracts/generated/callables/register_public_event_callable_request.g.dart` |
+| GetOrganizerCrmSummaryCallableRequest | GetOrganizerCrmSummaryCallablePayload | `callables/get_organizer_crm_summary_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_organizer_crm_summary_callable_request.g.dart` |
 | EventJoinRequestDecisionCallableRequest | EventJoinRequestDecisionCallablePayload | `callables/event_join_request_decision_payload.schema.json` | `lib/core/schema_contracts/generated/callables/event_join_request_decision_callable_request.g.dart` |
 | OverrideEventSuccessRotationsCallableRequest | OverrideEventSuccessRotationsCallablePayload | `callables/override_event_success_rotations_payload.schema.json` | `lib/core/schema_contracts/generated/callables/override_event_success_rotations_callable_request.g.dart` |
 | OverrideEventSuccessGroupsCallableRequest | OverrideEventSuccessGroupsCallablePayload | `callables/override_event_success_groups_payload.schema.json` | `lib/core/schema_contracts/generated/callables/override_event_success_groups_callable_request.g.dart` |

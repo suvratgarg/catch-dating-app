@@ -105,6 +105,7 @@ export {
   transferOrganizerOwnership,
 } from "./organizers/manageOrganizerTeam";
 export {createOrganizerPost} from "./organizers/organizerPosts";
+export {getOrganizerCrmSummary} from "./organizers/organizerCrm";
 export {
   adminDecideOrganizerClaim,
   requestOrganizerClaim,

@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.0.8
+version: 2.0.10
 updated: 2026-08-10
 owner: recursive_audit_loop
 status: active
@@ -601,11 +601,14 @@ Android release jobs require these `prod-mobile` environment secrets:
 - `GOOGLE_MAPS_ANDROID_API_KEY_PROD`
 
 Play publishing in `Mobile Internal Exact Promotion` uses the existing GitHub
-OIDC provider plus the environment variables `GCP_WORKLOAD_IDENTITY_PROVIDER`,
-`GOOGLE_PLAY_SERVICE_ACCOUNT_EMAIL`, and `GOOGLE_PLAY_UPLOAD_ENABLED`. Keep
-`GOOGLE_PLAY_UPLOAD_ENABLED=false` until both Play app records, Play App
-Signing, internal tester lists, and app-scoped publisher permissions are
-verified. Do not add a long-lived Google Play JSON key.
+OIDC provider plus the environment variables `GCP_WORKLOAD_IDENTITY_PROVIDER`
+and `GOOGLE_PLAY_SERVICE_ACCOUNT_EMAIL`. There is no rollout Boolean to drift:
+every Android promotion must live-probe both Catch Play records, both `qa`
+tracks, app-scoped edit access, and at least one Google Group tester per track
+before the selected AAB can upload. Play App Signing enrollment remains an
+owner-controlled Play Console prerequisite because the Publisher API cannot
+prove it before the first bundle exists. Do not add a long-lived Google Play
+JSON key.
 
 As of 2026-07-11, `androidpublisher.googleapis.com` is enabled and
 `github-actions-play-publisher@catch-dating-app-64e51.iam.gserviceaccount.com`
@@ -615,12 +618,13 @@ exists with zero project roles. Its only IAM binding is
 still invite that identity separately, scoped to the two app records and only
 read-app plus testing-track release permissions.
 
-After those grants exist, use a separately authenticated, apply-guarded
-`tool/platform/probe_google_play_access.mjs` run for each package name. The
-probe creates an edit, reads `qa`, and deletes the edit without uploading or
-committing. It is not part of the package producer and must not be replaced by
-a trial upload. Set `GOOGLE_PLAY_UPLOAD_ENABLED=true` only after both probes
-pass; the exact promoter still refuses every track except `qa`.
+After those grants exist, configure at least one Google Group tester on each
+`qa` track. The exact promoter invokes the separately authenticated,
+apply-guarded `tool/platform/probe_google_play_access.mjs` for both package
+names on every Android promotion. The fleet probe creates an edit, reads the
+track and its Google Group testers, and deletes the edit without uploading or
+committing. It is not part of package production and must not be replaced by a
+trial upload. The promoter still refuses every track except `qa`.
 
 ## CD Policy
 
@@ -669,8 +673,8 @@ id, verifies the GitHub digest and every packaged byte, then deletes and freshly
 re-extracts it for a final verification before store credentials are created.
 It uploads the already-signed IPA to TestFlight or the already-signed AAB to the
 Play `qa` track without Flutter, Gradle, Xcode archive/export, or signing work.
-Play additionally requires `GOOGLE_PLAY_UPLOAD_ENABLED=true`; public store
-promotion remains outside this workflow.
+Play additionally requires the two-app live readiness gate to pass in the same
+promotion attempt; public store promotion remains outside this workflow.
 
 The mobile package receipt intentionally reports two repository-controlled
 measurements: compressed bytes in the signed IPA/AAB and the sum of raw archive

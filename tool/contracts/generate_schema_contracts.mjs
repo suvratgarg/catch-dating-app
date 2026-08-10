@@ -132,6 +132,13 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/organizerFollowDocument.ts",
   },
   {
+    name: "OrganizerCommunicationPreferenceDocument",
+    source: "firestore/organizer_communication_preferences.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "organizerCommunicationPreferenceDocument.ts",
+  },
+  {
     name: "OrganizerClaimRequestDocument",
     source: "firestore/organizer_claim_requests.schema.json",
     typeOutput:
@@ -997,6 +1004,19 @@ const schemaSpecs = [
     source: "callable_responses/register_public_event_response.schema.json",
     typeOutput:
       "functions/src/shared/generated/registerPublicEventCallableResponse.ts",
+  },
+  {
+    name: "GetOrganizerCrmSummaryCallablePayload",
+    source: "callables/get_organizer_crm_summary_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/getOrganizerCrmSummaryCallablePayload.ts",
+  },
+  {
+    name: "GetOrganizerCrmSummaryCallableResponse",
+    source:
+      "callable_responses/get_organizer_crm_summary_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/getOrganizerCrmSummaryCallableResponse.ts",
   },
   {
     name: "EventJoinRequestDecisionCallablePayload",

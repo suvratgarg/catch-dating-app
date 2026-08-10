@@ -31,6 +31,7 @@ import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_date_rail_card.dart';
 import 'package:catch_dating_app/hosts/data/host_analytics_repository.dart';
+import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_profile_repository.dart';
 import 'package:catch_dating_app/hosts/domain/host_profile.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart';
@@ -1112,14 +1113,16 @@ void main() {
           ),
         )
         .toList();
-    expect(editSections, hasLength(4));
+    expect(editSections, hasLength(5));
     expect(editSections.map((section) => section.title), [
+      'Public Catch page',
       'Media',
       'Identity',
       'Contact',
       'Organizer settings',
     ]);
     for (final title in [
+      'Public Catch page',
       'Media',
       'Identity',
       'Contact',
@@ -1334,6 +1337,11 @@ void main() {
           .selected,
       HostClubInsightsRangePreset.thirtyDays,
     );
+    await Scrollable.ensureVisible(
+      tester.element(find.text('90 days')),
+      alignment: 0.5,
+    );
+    await pumpFeatureUi(tester);
     await tester.tap(find.text('90 days'));
     await pumpFeatureUi(tester);
     expect(
@@ -2630,6 +2638,10 @@ List _hostClubOverrides({
   List<Club> owned = const [],
   List<Club> hosted = const [],
 }) {
+  final organizerIds = {
+    ...owned.map((club) => club.id),
+    ...hosted.map((club) => club.id),
+  };
   return [
     uidProvider.overrideWith((ref) => Stream.value(_hostUid)),
     watchClubsOwnedByProvider(
@@ -2638,8 +2650,27 @@ List _hostClubOverrides({
     watchClubsHostedByProvider(
       _hostUid,
     ).overrideWithValue(AsyncData<List<Club>>(hosted)),
+    for (final organizerId in organizerIds)
+      hostCrmSummaryProvider(
+        organizerId,
+      ).overrideWithValue(AsyncData(_emptyCrmSummary(organizerId))),
   ];
 }
+
+HostCrmSummary _emptyCrmSummary(String organizerId) => HostCrmSummary(
+  organizerId: organizerId,
+  contactCount: 0,
+  pastAttendeeCount: 0,
+  repeatAttendeeCount: 0,
+  linkedAccountCount: 0,
+  importedContactCount: 0,
+  whatsappOptInCount: 0,
+  smsOptInCount: 0,
+  truncated: false,
+  inAppReadiness: HostCrmChannelReadiness.currentEventOnly,
+  whatsappReadiness: HostCrmChannelReadiness.providerSetupRequired,
+  smsReadiness: HostCrmChannelReadiness.providerAndDltSetupRequired,
+);
 
 ClubDetailViewModel _previewViewModel(
   Club club, {

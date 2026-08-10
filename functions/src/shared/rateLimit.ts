@@ -101,6 +101,7 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
     windowMs: 60 * 1000,
   },
   createOrganizerPost: {maxRequests: 10, windowMs: 60 * 1000},
+  getOrganizerCrmSummary: {maxRequests: 30, windowMs: 60 * 1000},
   startOrganizerConversation: {maxRequests: 5, windowMs: 60 * 1000},
   addOrganizerManager: {maxRequests: 20, windowMs: 60 * 1000},
   removeOrganizerManager: {maxRequests: 20, windowMs: 60 * 1000},

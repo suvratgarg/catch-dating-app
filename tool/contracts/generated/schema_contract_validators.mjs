@@ -25,6 +25,7 @@ import {
   organizerPostDocumentSchema,
   organizerTeamMembershipDocumentSchema,
   organizerFollowDocumentSchema,
+  organizerCommunicationPreferenceDocumentSchema,
   organizerClaimRequestDocumentSchema,
   organizerScheduleLockDocumentSchema,
   clubPostDocumentSchema,
@@ -167,6 +168,8 @@ import {
   markEventAttendeeAttendanceCallablePayloadSchema,
   registerPublicEventCallablePayloadSchema,
   registerPublicEventCallableResponseSchema,
+  getOrganizerCrmSummaryCallablePayloadSchema,
+  getOrganizerCrmSummaryCallableResponseSchema,
   eventJoinRequestDecisionCallablePayloadSchema,
   overrideEventSuccessRotationsCallablePayloadSchema,
   overrideEventSuccessGroupsCallablePayloadSchema,
@@ -287,6 +290,7 @@ export const validateOrganizerDocument = ajv.compile(organizerDocumentSchema);
 export const validateOrganizerPostDocument = ajv.compile(organizerPostDocumentSchema);
 export const validateOrganizerTeamMembershipDocument = ajv.compile(organizerTeamMembershipDocumentSchema);
 export const validateOrganizerFollowDocument = ajv.compile(organizerFollowDocumentSchema);
+export const validateOrganizerCommunicationPreferenceDocument = ajv.compile(organizerCommunicationPreferenceDocumentSchema);
 export const validateOrganizerClaimRequestDocument = ajv.compile(organizerClaimRequestDocumentSchema);
 export const validateOrganizerScheduleLockDocument = ajv.compile(organizerScheduleLockDocumentSchema);
 export const validateClubPostDocument = ajv.compile(clubPostDocumentSchema);
@@ -429,6 +433,8 @@ export const validateImportEventAttendeesCallablePayload = ajv.compile(importEve
 export const validateMarkEventAttendeeAttendanceCallablePayload = ajv.compile(markEventAttendeeAttendanceCallablePayloadSchema);
 export const validateRegisterPublicEventCallablePayload = ajv.compile(registerPublicEventCallablePayloadSchema);
 export const validateRegisterPublicEventCallableResponse = ajv.compile(registerPublicEventCallableResponseSchema);
+export const validateGetOrganizerCrmSummaryCallablePayload = ajv.compile(getOrganizerCrmSummaryCallablePayloadSchema);
+export const validateGetOrganizerCrmSummaryCallableResponse = ajv.compile(getOrganizerCrmSummaryCallableResponseSchema);
 export const validateEventJoinRequestDecisionCallablePayload = ajv.compile(eventJoinRequestDecisionCallablePayloadSchema);
 export const validateOverrideEventSuccessRotationsCallablePayload = ajv.compile(overrideEventSuccessRotationsCallablePayloadSchema);
 export const validateOverrideEventSuccessGroupsCallablePayload = ajv.compile(overrideEventSuccessGroupsCallablePayloadSchema);

@@ -1141,6 +1141,66 @@ describe("firestore.rules", () => {
       );
     });
 
+    it("keeps organizer communication preferences server-only", async () => {
+      await seed(["organizerCommunicationPreferences", "club-1_runner-1"], {
+        organizerId: "club-1",
+        uid: "runner-1",
+        phoneE164: "+919876543210",
+        whatsapp: {status: "optedIn"},
+        sms: {status: "unknown"},
+      });
+
+      for (const uid of ["host-1", "runner-1"]) {
+        await assertFails(
+          getDoc(doc(
+            authedDb(uid),
+            "organizerCommunicationPreferences",
+            "club-1_runner-1",
+          )),
+        );
+        await assertFails(
+          getDocs(collection(
+            authedDb(uid),
+            "organizerCommunicationPreferences",
+          )),
+        );
+      }
+      await assertFails(
+        getDoc(doc(
+          testEnv.unauthenticatedContext().firestore(),
+          "organizerCommunicationPreferences",
+          "club-1_runner-1",
+        )),
+      );
+      await assertFails(
+        setDoc(
+          doc(
+            authedDb("runner-1"),
+            "organizerCommunicationPreferences",
+            "club-1_runner-1",
+          ),
+          {organizerId: "club-1", uid: "runner-1"},
+        ),
+      );
+      await assertFails(
+        updateDoc(
+          doc(
+            authedDb("host-1"),
+            "organizerCommunicationPreferences",
+            "club-1_runner-1",
+          ),
+          {sms: {status: "optedIn"}},
+        ),
+      );
+      await assertFails(
+        deleteDoc(doc(
+          authedDb("host-1"),
+          "organizerCommunicationPreferences",
+          "club-1_runner-1",
+        )),
+      );
+    });
+
     it("keeps host analytics snapshots server-only", async () => {
       const snapshotId = `host-1_${"a".repeat(64)}`;
       await seed(["hostAnalyticsSnapshots", snapshotId], {

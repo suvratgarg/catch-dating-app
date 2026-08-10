@@ -5905,6 +5905,61 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostOrganizerLabelUpcoming => 'Upcoming';
 
   @override
+  String get hostsHostOrganizerCrmTitle => 'Past attendee CRM';
+
+  @override
+  String get hostsHostOrganizerCrmLoading =>
+      'Counting deduplicated roster history…';
+
+  @override
+  String get hostsHostOrganizerCrmUnavailable =>
+      'Audience counts are temporarily unavailable.';
+
+  @override
+  String hostsHostOrganizerCrmSummary({
+    required Object pastCount,
+    required Object repeatCount,
+    required Object contactCount,
+  }) {
+    return '$pastCount past attendees · $repeatCount repeat attendees · $contactCount total contacts';
+  }
+
+  @override
+  String get hostsHostOrganizerCrmCatchApp => 'Catch app';
+
+  @override
+  String hostsHostOrganizerCrmLinked({required Object count}) {
+    return '$count linked';
+  }
+
+  @override
+  String get hostsHostOrganizerCrmCurrentEventLive =>
+      'Current-event broadcasts live';
+
+  @override
+  String get hostsHostOrganizerCrmWhatsapp => 'WhatsApp';
+
+  @override
+  String hostsHostOrganizerCrmOptedIn({required Object count}) {
+    return '$count opted in';
+  }
+
+  @override
+  String get hostsHostOrganizerCrmWhatsappSetup =>
+      'Business provider + template setup required';
+
+  @override
+  String get hostsHostOrganizerCrmTextMessage => 'Text message';
+
+  @override
+  String get hostsHostOrganizerCrmSmsSetup =>
+      'SMS provider + India DLT setup required';
+
+  @override
+  String get hostsHostOrganizerCrmTruncated =>
+      'This preview is capped at 2,500 roster records.';
+
+  @override
   String get hostsHostTodayTitleNoActiveEventsYet => 'No active events yet';
 
   @override
