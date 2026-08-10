@@ -1,0 +1,4 @@
+analyzer:
+  exclude:
+    # These deliberately malformed Flutter snippets are parser test data.
+    - fixtures/**

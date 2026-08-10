@@ -8,8 +8,15 @@ plugins:
 analyzer:
   exclude:
     - build/**
+    # Each nested package is analyzed from its own package root by the
+    # repository-wide analysis gate. Keeping those boundaries explicit avoids
+    # resolving fixture/example code through the root package configuration.
+    - apps/consumer/**
+    - apps/host/**
+    - packages/catch_ui_lints/**
+    - packages/phosphor_flutter/**
+    - tool/widget_dedupe/**
     - packages/**/build/**
-    - packages/phosphor_flutter/example/**
     - widgetbook/**
     # Scanner fixtures are deliberately non-compliant seed files, not app code.
     - tool/design/fixtures/**

@@ -175,6 +175,8 @@ at or below 1,200 lines. The exact reviewed legacy debt lives in
 fail so every improvement is ratcheted. Git owns the current test filenames;
 focused test runners and coverage output derive their input from source when
 needed instead of maintaining a tracked cross-surface inventory.
+The CI shard and coverage selectors fail when they resolve zero test files;
+an empty selection is never reported as a green test run.
 
 ```sh
 node --test tool/test/flutter_coverage_report.test.mjs
@@ -183,6 +185,20 @@ node tool/test/check_flutter_test_size.mjs --check
 ```
 
 ## Analyzer-Backed UI Gate
+
+`node tool/ci/check_flutter_workspace_analysis.mjs` is the one fail-closed
+repository analyzer command. It discovers every non-ignored `pubspec.yaml`,
+resolves the root Dart workspace once plus each standalone nested package, then
+analyzes root, Consumer, Host, Widgetbook, lint/plugin, icon-package, example,
+and tooling packages sequentially with info diagnostics fatal. Root analysis
+uses the deterministic `dart analyze --format machine` Catch-plugin path.
+
+This intentionally uses the Node standard library rather than adopting Melos.
+Melos was evaluated, but Catch needs exhaustive package discovery and one
+sequential command—not another package task graph—and the product application
+still lives primarily in the root package. The small repository-specific
+orchestrator therefore has less configuration and no additional bootstrap
+dependency while its plan and nonzero-stop behavior remain unit tested.
 
 The old UI/design shell scanners and their compatibility wrapper names are
 retired. Matching policy lives in `packages/catch_ui_lints`; CI collects one
