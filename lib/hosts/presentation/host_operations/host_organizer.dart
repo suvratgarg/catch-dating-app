@@ -144,7 +144,7 @@ class _HostCrmChannelRow extends StatelessWidget {
         Expanded(
           child: Text(
             '$label · $value',
-            style: CatchTextStyles.bodyM(context, color: t.ink),
+            style: CatchTextStyles.labelL(context, color: t.ink),
           ),
         ),
         gapW12,
