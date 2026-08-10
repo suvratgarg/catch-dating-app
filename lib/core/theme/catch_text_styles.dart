@@ -559,6 +559,26 @@ abstract final class CatchTextStyles {
         color: color ?? CatchTokens.of(context).ink2,
       );
 
+  /// Icon-font style for raster-only art such as native map marker PNGs.
+  ///
+  /// This is deliberately not an app-text role. It preserves the font metadata
+  /// carried by [icon] while keeping icon rasterization inside the design-system
+  /// boundary instead of allowing feature-owned raw [TextStyle] construction.
+  static TextStyle iconRasterGlyph({
+    required IconData icon,
+    required double size,
+    required Color color,
+    List<Shadow> shadows = const <Shadow>[],
+  }) => TextStyle(
+    color: color,
+    fontFamily: icon.fontFamily,
+    package: icon.fontPackage,
+    fontFamilyFallback: icon.fontFamilyFallback,
+    fontSize: size,
+    height: 1,
+    shadows: shadows,
+  );
+
   /// Material fallback slots for unstyled framework widgets.
   ///
   /// These remain in the platform function family and live beside the semantic

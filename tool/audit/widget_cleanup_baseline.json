@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-07-19",
+  "updated": "2026-08-10",
   "description": "Remaining regex-only widget cleanup candidate maxima after analyzer-backed categories were retired. Counts may shrink; increases and unbaselined categories fail the ratchet.",
   "maxCounts": {
     "raw_material_button_candidates": 0,
@@ -10,6 +10,6 @@
     "raw_number_stepper_candidates": 0,
     "feature_tappable_candidates": 0,
     "literal_sized_box_spacing_candidates": 0,
-    "raw_text_style_candidates": 1
+    "raw_text_style_candidates": 0
   }
 }
