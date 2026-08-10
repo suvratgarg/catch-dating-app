@@ -1,3 +1,6 @@
+import fs from "node:fs";
+import path from "node:path";
+import {fileURLToPath} from "node:url";
 import {afterEach, describe, expect, it, vi} from "vitest";
 import {dataMode, resolveDataMode} from "./dataMode";
 
@@ -18,5 +21,12 @@ describe("admin data mode", () => {
     expect(resolveDataMode("sample", true)).toBe("sample");
     expect(resolveDataMode("sample", false)).toBe("live");
     expect(resolveDataMode(undefined, true)).toBe("live");
+  });
+
+  it("keeps every Admin API branch behind the canonical data-mode resolver", () => {
+    const here = path.dirname(fileURLToPath(import.meta.url));
+    const source = fs.readFileSync(path.join(here, "adminApi.ts"), "utf8");
+
+    expect(source).not.toContain("import.meta.env.VITE_ADMIN_DATA_MODE");
   });
 });

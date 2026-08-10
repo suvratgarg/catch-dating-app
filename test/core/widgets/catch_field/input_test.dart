@@ -103,6 +103,27 @@ void main() {
     expect(controller.text, 'first\nsecond');
   });
 
+  testWidgets('CatchField input omits AnimatedSize under reduced motion', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const MediaQuery(
+          data: MediaQueryData(disableAnimations: true),
+          child: CatchField.input(title: 'Why Catch?', maxLines: 5),
+        ),
+      ),
+    );
+
+    expect(
+      find.descendant(
+        of: find.byType(CatchField),
+        matching: find.byType(AnimatedSize),
+      ),
+      findsNothing,
+    );
+  });
+
   testWidgets('CatchField choices wrap and report caller-owned selection', (
     tester,
   ) async {

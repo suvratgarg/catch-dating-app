@@ -150,6 +150,9 @@ import 'package:catch_dating_app/hosts/presentation/payments/host_payment_accoun
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
+import 'package:catch_dating_app/launch_access/data/launch_access_repository.dart';
+import 'package:catch_dating_app/launch_access/domain/launch_access_application.dart';
+import 'package:catch_dating_app/launch_access/presentation/launch_access_application_screen.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
@@ -14199,6 +14202,110 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     disableAnimations: true,
     providerOverrides: _reviewsHistoryProviderOverrides(),
     builder: (context) => const ReviewsHistoryScreen(),
+  ),
+  ScreenCaptureEntry(
+    id: 'launch_access_application',
+    routeIds: const <String>['launchAccessScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: [
+      uidProvider.overrideWithValue(const AsyncData(_captureViewerUid)),
+      watchLaunchAccessApplicationProvider(
+        _captureViewerUid,
+      ).overrideWith((ref) => Stream.value(null)),
+    ],
+    builder: (context) => const LaunchAccessApplicationScreen(),
+  ),
+  ScreenCaptureEntry(
+    id: 'launch_access_loading',
+    routeIds: const <String>['launchAccessScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: [
+      uidProvider.overrideWithValue(const AsyncData(_captureViewerUid)),
+      watchLaunchAccessApplicationProvider(
+        _captureViewerUid,
+      ).overrideWith((ref) => _captureLoadingStream()),
+    ],
+    builder: (context) => const LaunchAccessApplicationScreen(),
+  ),
+  ScreenCaptureEntry(
+    id: 'launch_access_signed_out',
+    routeIds: const <String>['launchAccessScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: [uidProvider.overrideWithValue(const AsyncData(null))],
+    builder: (context) => const LaunchAccessApplicationScreen(),
+  ),
+  ScreenCaptureEntry(
+    id: 'launch_access_error',
+    routeIds: const <String>['launchAccessScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: [
+      uidProvider.overrideWithValue(const AsyncData(_captureViewerUid)),
+      watchLaunchAccessApplicationProvider(_captureViewerUid).overrideWith(
+        (ref) => _captureErrorStream<LaunchAccessApplication?>(
+          'Capture launch access application failed',
+        ),
+      ),
+    ],
+    builder: (context) => const LaunchAccessApplicationScreen(),
+  ),
+  ScreenCaptureEntry(
+    id: 'launch_access_offline',
+    routeIds: const <String>['launchAccessScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: [
+      uidProvider.overrideWithValue(const AsyncData(_captureViewerUid)),
+      watchLaunchAccessApplicationProvider(_captureViewerUid).overrideWith(
+        (ref) => Stream<LaunchAccessApplication?>.error(
+          obviousOfflineException(),
+          StackTrace.empty,
+        ),
+      ),
+    ],
+    builder: (context) => const LaunchAccessApplicationScreen(),
+  ),
+  ScreenCaptureEntry(
+    id: 'launch_access_approved',
+    routeIds: const <String>['launchAccessScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: [
+      uidProvider.overrideWithValue(const AsyncData(_captureViewerUid)),
+      watchLaunchAccessApplicationProvider(_captureViewerUid).overrideWith(
+        (ref) => Stream.value(
+          const LaunchAccessApplication(
+            uid: _captureViewerUid,
+            status: LaunchAccessApplicationStatus.approvedForProfile,
+            city: 'in-mh-mumbai',
+          ),
+        ),
+      ),
+    ],
+    builder: (context) => const LaunchAccessApplicationScreen(),
+  ),
+  ScreenCaptureEntry(
+    id: 'launch_access_text_scale_2',
+    routeIds: const <String>['launchAccessScreen'],
+    device: CaptureDevice.reviewTall,
+    textScale: 2,
+    providerOverrides: [
+      uidProvider.overrideWithValue(const AsyncData(_captureViewerUid)),
+      watchLaunchAccessApplicationProvider(
+        _captureViewerUid,
+      ).overrideWith((ref) => Stream.value(null)),
+    ],
+    builder: (context) => const LaunchAccessApplicationScreen(),
+  ),
+  ScreenCaptureEntry(
+    id: 'launch_access_reduced_motion',
+    routeIds: const <String>['launchAccessScreen'],
+    device: CaptureDevice.reviewTall,
+    disableAnimations: true,
+    providerOverrides: [
+      uidProvider.overrideWithValue(const AsyncData(_captureViewerUid)),
+      watchLaunchAccessApplicationProvider(
+        _captureViewerUid,
+      ).overrideWith((ref) => Stream.value(null)),
+    ],
+    builder: (context) => const LaunchAccessApplicationScreen(),
   ),
   ScreenCaptureEntry(
     id: 'settings_account',

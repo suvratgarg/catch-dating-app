@@ -79,7 +79,7 @@ test("widget variants stay narrow while their comparison consumer closes safely"
     componentGraph: componentGraph(),
   });
   assert.equal(widgetbookPlan.mode, "affected");
-  assert.equal(widgetbookPlan.repositoryView, "index");
+  assert.equal(widgetbookPlan.repositoryView, "full");
   assert.deepEqual(widgetbookPlan.setupRequirements, ["node"]);
   assert.ok(widgetbookPlan.toolIds.includes("design:widget-variant-inventory"));
 
@@ -93,6 +93,51 @@ test("widget variants stay narrow while their comparison consumer closes safely"
   assert.deepEqual(finderPlan.setupRequirements, ["node"]);
   assert.ok(finderPlan.toolIds.includes("design:widget-variant-inventory"));
   assert.ok(finderPlan.toolIds.includes("design:widgetbook-compare-server"));
+});
+
+test("design authority ledgers select their exact consuming checks", () => {
+  const expectations = new Map([
+    ["design/public_surface_behavior.json", ["design:public-surface-behavior"]],
+    [
+      "design/screens/catch.screens.json",
+      ["design:parity-matrix", "design:screen-contracts", "design:screen-coverage"],
+    ],
+    ["design/screens/screen_coverage.json", ["design:screen-coverage"]],
+    [
+      "tool/ui_capture/route_inventory.json",
+      [
+        "design:parity-matrix",
+        "design:screen-contracts",
+        "design:screen-coverage",
+        "ui-capture:coverage",
+        "ui-capture:route-inventory",
+      ],
+    ],
+    [
+      "tool/ui_capture/capture_coverage.json",
+      ["design:screen-coverage", "ui-capture:coverage"],
+    ],
+  ]);
+
+  for (const [changedPath, expectedIds] of expectations) {
+    const plan = planAffectedToolChecks({
+      changedPaths: [changedPath],
+      manifest: productionManifest,
+      componentGraph: componentGraph(),
+    });
+    assert.equal(plan.mode, "affected", changedPath);
+    assert.equal(plan.repositoryView, "full", changedPath);
+    for (const expectedId of expectedIds) {
+      assert.ok(plan.toolIds.includes(expectedId), `${changedPath} must select ${expectedId}`);
+    }
+  }
+
+  const combined = planAffectedToolChecks({
+    changedPaths: [...expectations.keys(), "widgetbook/lib/example.dart"],
+    manifest: productionManifest,
+    componentGraph: componentGraph(),
+  });
+  assert.deepEqual(combined.setupRequirements, ["node", "root-npm"]);
 });
 
 test("l10n usage changes keep the full source view with Node-only setup", () => {
