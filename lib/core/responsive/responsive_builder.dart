@@ -52,6 +52,34 @@ class ResponsiveBuilder extends StatelessWidget {
   }
 }
 
+/// Switches a component between two named layouts at a local-width boundary.
+///
+/// Unlike [ResponsiveBuilder], this contract is for a component whose own
+/// composition changes at a domain-specific breakpoint. Keeping the local
+/// measurement here gives feature widgets a declarative compact/expanded API
+/// and one consistent boundary rule.
+class ComponentResponsiveBuilder extends StatelessWidget {
+  const ComponentResponsiveBuilder({
+    super.key,
+    required this.breakpoint,
+    required this.compact,
+    required this.expanded,
+  });
+
+  final double breakpoint;
+  final WidgetBuilder compact;
+  final WidgetBuilder expanded;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) => constraints.maxWidth < breakpoint
+          ? compact(context)
+          : expanded(context),
+    );
+  }
+}
+
 /// Returns the appropriate grid column count for [width].
 ///
 /// Defaults: 2 for compact, 3 for medium, 4 for expanded.

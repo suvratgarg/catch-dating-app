@@ -1317,6 +1317,35 @@ class RevealRoundRail extends StatelessWidget {
   }
 }
 
+class RevealHostStatusLayout extends StatelessWidget {
+  const RevealHostStatusLayout({
+    super.key,
+    required this.number,
+    required this.copy,
+  });
+
+  final CountdownNumber number;
+  final RevealHostCopy copy;
+
+  @override
+  Widget build(BuildContext context) {
+    return ComponentResponsiveBuilder(
+      breakpoint: ComponentBreakpoints.eventSuccessRevealHostCompactBreakpoint,
+      compact: (context) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [number, gapH14, copy],
+      ),
+      expanded: (context) => Row(
+        children: [
+          number,
+          gapW16,
+          Expanded(child: copy),
+        ],
+      ),
+    );
+  }
+}
+
 class RevealTicker extends StatefulWidget {
   const RevealTicker({super.key, required this.enabled, required this.builder});
 

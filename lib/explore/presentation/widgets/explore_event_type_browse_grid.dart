@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/formatters/catch_count_copy.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
+import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -116,27 +117,21 @@ class ActivityTypeRows extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final columns =
-            constraints.maxWidth >=
-                ComponentBreakpoints.eventTypeGridTwoColumnBreakpoint
-            ? 2
-            : 1;
-        if (columns == 1) {
-          return Column(
-            children: [
-              for (final slot in slots)
-                ActivitySlotView(
-                  slot: slot,
-                  activeActivityTag: activeActivityTag,
-                  onCategoryTap: onCategoryTap,
-                  onExpand: onExpand,
-                ),
-            ],
-          );
-        }
-
+    return ComponentResponsiveBuilder(
+      breakpoint: ComponentBreakpoints.eventTypeGridTwoColumnBreakpoint,
+      compact: (context) => Column(
+        children: [
+          for (final slot in slots)
+            ActivitySlotView(
+              slot: slot,
+              activeActivityTag: activeActivityTag,
+              onCategoryTap: onCategoryTap,
+              onExpand: onExpand,
+            ),
+        ],
+      ),
+      expanded: (context) {
+        const columns = 2;
         final rowCount = (slots.length / columns).ceil();
         return Column(
           children: [

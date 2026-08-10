@@ -67,86 +67,72 @@ class _HostEventToolsCarouselState extends State<HostEventToolsCarousel> {
     }
 
     final selectedTool = widget.tools[_selectedIndex];
+    final canAdvance = _selectedIndex < widget.tools.length - 1;
+    final canRetreat = _selectedIndex > 0;
     return SizedBox(
       key: HostEventToolsCarousel.railKey,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final cardWidth = constraints.hasBoundedWidth
-              ? constraints.maxWidth
-              : MediaQuery.sizeOf(context).width;
-          final canAdvance = _selectedIndex < widget.tools.length - 1;
-          final canRetreat = _selectedIndex > 0;
-
-          return SizedBox(
-            width: cardWidth,
-            child: Semantics(
-              label:
-                  context.l10n.hostsHostEventToolsLabelHostEventToolsCarousel,
-              value: context.l10n
-                  .hostsHostEventToolsVisiblecopyHostedEventValue1Of(
-                    value1: _selectedIndex + 1,
+      child: Semantics(
+        label: context.l10n.hostsHostEventToolsLabelHostEventToolsCarousel,
+        value: context.l10n.hostsHostEventToolsVisiblecopyHostedEventValue1Of(
+          value1: _selectedIndex + 1,
+          length: widget.tools.length,
+        ),
+        increasedValue: canAdvance
+            ? context.l10n.hostsHostEventToolsVisiblecopyHostedEventValue1Of(
+                value1: _selectedIndex + 2,
+                length: widget.tools.length,
+              )
+            : null,
+        decreasedValue: canRetreat
+            ? context.l10n
+                  .hostsHostEventToolsVisiblecopyHostedEventSelectedindexOf(
+                    selectedIndex: _selectedIndex,
                     length: widget.tools.length,
-                  ),
-              increasedValue: canAdvance
-                  ? context.l10n
-                        .hostsHostEventToolsVisiblecopyHostedEventValue1Of(
-                          value1: _selectedIndex + 2,
-                          length: widget.tools.length,
-                        )
-                  : null,
-              decreasedValue: canRetreat
-                  ? context.l10n
-                        .hostsHostEventToolsVisiblecopyHostedEventSelectedindexOf(
-                          selectedIndex: _selectedIndex,
-                          length: widget.tools.length,
-                        )
-                  : null,
-              onIncrease: widget.tools.length > 1 && canAdvance
-                  ? () => setState(() => _selectedIndex += 1)
-                  : null,
-              onDecrease: widget.tools.length > 1 && canRetreat
-                  ? () => setState(() => _selectedIndex -= 1)
-                  : null,
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onHorizontalDragStart: widget.tools.length > 1
-                    ? (_) => _dragDistance = 0
-                    : null,
-                onHorizontalDragUpdate: widget.tools.length > 1
-                    ? (details) => _dragDistance += details.primaryDelta ?? 0
-                    : null,
-                onHorizontalDragEnd: widget.tools.length > 1
-                    ? (details) => _handleHorizontalDragEnd(
-                        details: details,
-                        itemCount: widget.tools.length,
-                      )
-                    : null,
-                onHorizontalDragCancel: widget.tools.length > 1
-                    ? () => _dragDistance = 0
-                    : null,
-                child: AnimatedSwitcher(
-                  duration: CatchMotion.base,
-                  switchInCurve: CatchMotion.easeOutCubicCurve,
-                  switchOutCurve: CatchMotion.easeInCubicCurve,
-                  transitionBuilder: (child, animation) =>
-                      FadeTransition(opacity: animation, child: child),
-                  child: HostEventToolCard(
-                    key: ValueKey(
-                      'host-event-tool-${selectedTool.event.id}-'
-                      '${selectedTool.attendanceState.name}',
-                    ),
-                    item: selectedTool,
-                    cardIndex: _selectedIndex,
-                    cardCount: widget.tools.length,
-                    onManageEvent: widget.onManageEvent,
-                    onTakeAttendance: widget.onTakeAttendance,
-                    onViewReport: widget.onViewReport,
-                  ),
-                ),
+                  )
+            : null,
+        onIncrease: widget.tools.length > 1 && canAdvance
+            ? () => setState(() => _selectedIndex += 1)
+            : null,
+        onDecrease: widget.tools.length > 1 && canRetreat
+            ? () => setState(() => _selectedIndex -= 1)
+            : null,
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onHorizontalDragStart: widget.tools.length > 1
+              ? (_) => _dragDistance = 0
+              : null,
+          onHorizontalDragUpdate: widget.tools.length > 1
+              ? (details) => _dragDistance += details.primaryDelta ?? 0
+              : null,
+          onHorizontalDragEnd: widget.tools.length > 1
+              ? (details) => _handleHorizontalDragEnd(
+                  details: details,
+                  itemCount: widget.tools.length,
+                )
+              : null,
+          onHorizontalDragCancel: widget.tools.length > 1
+              ? () => _dragDistance = 0
+              : null,
+          child: AnimatedSwitcher(
+            duration: CatchMotion.base,
+            switchInCurve: CatchMotion.easeOutCubicCurve,
+            switchOutCurve: CatchMotion.easeInCubicCurve,
+            transitionBuilder: (child, animation) =>
+                FadeTransition(opacity: animation, child: child),
+            child: HostEventToolCard(
+              key: ValueKey(
+                'host-event-tool-${selectedTool.event.id}-'
+                '${selectedTool.attendanceState.name}',
               ),
+              item: selectedTool,
+              cardIndex: _selectedIndex,
+              cardCount: widget.tools.length,
+              onManageEvent: widget.onManageEvent,
+              onTakeAttendance: widget.onTakeAttendance,
+              onViewReport: widget.onViewReport,
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }

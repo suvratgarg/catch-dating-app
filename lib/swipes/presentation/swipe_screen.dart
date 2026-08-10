@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
+import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -251,29 +252,33 @@ class CatchesProfileReview extends StatelessWidget {
     return Stack(
       children: [
         Positioned.fill(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final horizontalPadding =
-                  constraints.maxWidth >
-                      ComponentBreakpoints.catchesWidePaddingBreakpoint
-                  ? CatchSpacing.s8
-                  : 0.0;
-
-              return Padding(
-                padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-                child: ProfileSurface(
-                  key: ValueKey(profile.uid),
-                  profile: profile,
-                  mode: ProfileSurfaceMode.catches,
-                  viewerProfile: viewerProfile,
-                  sharedRunTitle: sharedRunTitle,
-                  bottomPadding: CatchLayout.catchesProfileBottomPadding,
-                  onReact: onReact,
-                  reactionsEnabled: actionsEnabled,
-                  reactionsPending: actionState.isReactionPending,
-                ),
-              );
-            },
+          child: ComponentResponsiveBuilder(
+            breakpoint: ComponentBreakpoints.catchesWidePaddingBreakpoint,
+            compact: (context) => ProfileSurface(
+              key: ValueKey(profile.uid),
+              profile: profile,
+              mode: ProfileSurfaceMode.catches,
+              viewerProfile: viewerProfile,
+              sharedRunTitle: sharedRunTitle,
+              bottomPadding: CatchLayout.catchesProfileBottomPadding,
+              onReact: onReact,
+              reactionsEnabled: actionsEnabled,
+              reactionsPending: actionState.isReactionPending,
+            ),
+            expanded: (context) => Padding(
+              padding: CatchInsets.catchesWideProfile,
+              child: ProfileSurface(
+                key: ValueKey(profile.uid),
+                profile: profile,
+                mode: ProfileSurfaceMode.catches,
+                viewerProfile: viewerProfile,
+                sharedRunTitle: sharedRunTitle,
+                bottomPadding: CatchLayout.catchesProfileBottomPadding,
+                onReact: onReact,
+                reactionsEnabled: actionsEnabled,
+                reactionsPending: actionState.isReactionPending,
+              ),
+            ),
           ),
         ),
         CatchesTopOverlay(
