@@ -1208,7 +1208,7 @@ class _RevealRoundRow extends StatelessWidget {
       ),
     };
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s2),
+      padding: CatchInsets.contentVerticalCompact,
       decoration: showDivider
           ? BoxDecoration(
               border: Border(

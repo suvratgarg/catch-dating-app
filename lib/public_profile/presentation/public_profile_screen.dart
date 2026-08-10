@@ -281,12 +281,7 @@ class PublicProfileReportSheet extends StatelessWidget {
           .publicProfilePublicProfileScreenTitleReportProfilename(
             profileName: profileName,
           ),
-      padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.s4,
-        CatchSpacing.s3,
-        CatchSpacing.s4,
-        CatchSpacing.s4,
-      ),
+      padding: CatchInsets.contentBlock,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

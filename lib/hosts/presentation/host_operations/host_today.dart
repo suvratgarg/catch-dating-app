@@ -329,12 +329,7 @@ class HostTodayClubPill extends StatelessWidget {
       borderColor: t.line2,
       backgroundColor: t.surface,
       borderRadius: BorderRadius.circular(CatchRadius.pill),
-      padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.micro6,
-        CatchSpacing.micro6,
-        CatchSpacing.s3,
-        CatchSpacing.micro6,
-      ),
+      padding: CatchInsets.hostTodayClubSwitcher,
       onTap: onTap,
       child: triggerContent,
     );
@@ -354,10 +349,7 @@ class HostTodayClubPill extends StatelessWidget {
               onPressed: () => onSwitchClubIndex(index),
               style: const ButtonStyle(
                 padding: WidgetStatePropertyAll(
-                  EdgeInsets.symmetric(
-                    horizontal: CatchSpacing.micro14,
-                    vertical: CatchLayout.menuRowVerticalPadding,
-                  ),
+                  CatchInsets.hostTodayClubMenuItem,
                 ),
               ),
               trailingIcon: index == selectedClubIndex

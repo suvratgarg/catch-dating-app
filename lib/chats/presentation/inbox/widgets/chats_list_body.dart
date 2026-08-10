@@ -92,10 +92,7 @@ class HostInboxBroadcastCard extends StatelessWidget {
       radius: CatchRadius.md,
       backgroundColor: t.ink,
       borderColor: Colors.transparent,
-      padding: const EdgeInsets.symmetric(
-        horizontal: CatchSpacing.s4,
-        vertical: CatchSpacing.s3,
-      ),
+      padding: CatchInsets.listBody,
       onTap: onTap,
       child: Row(
         children: [

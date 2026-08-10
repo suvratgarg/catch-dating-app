@@ -93,12 +93,7 @@ class ExploreFilterRail extends StatelessWidget {
           SingleChildScrollView(
             key: const ValueKey('explore-applied-filter-row'),
             scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.fromLTRB(
-              CatchSpacing.s5,
-              CatchSpacing.s2,
-              CatchSpacing.s5,
-              CatchSpacing.s2,
-            ),
+            padding: CatchInsets.exploreAppliedFilters,
             child: Row(spacing: CatchSpacing.s2, children: appliedFilters),
           ),
       ],

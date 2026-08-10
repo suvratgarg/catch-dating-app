@@ -175,10 +175,7 @@ class BookingConflictEventRow extends StatelessWidget {
       backgroundColor: t.bg,
       borderColor: t.line,
       radius: CatchRadius.md,
-      padding: const EdgeInsets.symmetric(
-        horizontal: CatchSpacing.micro14,
-        vertical: CatchSpacing.s3,
-      ),
+      padding: CatchInsets.bookingConflictContent,
       child: Row(
         children: [
           CatchSurface(

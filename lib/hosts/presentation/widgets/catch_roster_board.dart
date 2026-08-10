@@ -225,10 +225,7 @@ class CatchRosterRow extends StatelessWidget {
         border: Border(top: BorderSide(color: t.line)),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: CatchSpacing.micro14,
-          vertical: CatchSpacing.micro10,
-        ),
+        padding: CatchInsets.rosterRowContent,
         child: Row(
           children: [
             Expanded(
@@ -483,12 +480,7 @@ class CatchRosterTable extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  CatchSpacing.micro14,
-                  CatchSpacing.s3,
-                  CatchSpacing.micro14,
-                  CatchSpacing.micro10,
-                ),
+                padding: CatchInsets.rosterHeaderContent,
                 child: Row(
                   children: [
                     Expanded(
@@ -535,12 +527,7 @@ class CatchRosterTable extends StatelessWidget {
                     border: Border(top: BorderSide(color: t.line)),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                      CatchSpacing.micro14,
-                      CatchSpacing.s4,
-                      CatchSpacing.micro14,
-                      CatchSpacing.s5,
-                    ),
+                    padding: CatchInsets.rosterEmptyContent,
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

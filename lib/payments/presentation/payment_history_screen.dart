@@ -200,10 +200,7 @@ class PaymentHistoryTileSkeleton extends StatelessWidget {
     return Padding(
       padding: CatchInsets.contentVertical,
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: CatchSpacing.s1,
-          vertical: CatchSpacing.s2,
-        ),
+        padding: CatchInsets.paymentHistoryTileContent,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -267,10 +264,7 @@ class PaymentHistoryTile extends StatelessWidget {
           borderRadius: BorderRadius.circular(CatchRadius.md),
           onTap: () => _showDetailSheet(context, eventTitle),
           child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: CatchSpacing.s1,
-              vertical: CatchSpacing.s2,
-            ),
+            padding: CatchInsets.paymentHistoryTileContent,
             child: Row(
               children: [
                 Expanded(

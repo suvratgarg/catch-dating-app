@@ -222,7 +222,7 @@ class ClubDirectorySkeletonCard extends StatelessWidget {
               border: Border.all(color: t.line),
             ),
             child: Padding(
-              padding: const EdgeInsets.all(CatchSpacing.micro3),
+              padding: CatchInsets.mediaFrameContent,
               child: CatchSkeleton.card(
                 width: CatchSpacing.s16,
                 height: CatchSpacing.s16,

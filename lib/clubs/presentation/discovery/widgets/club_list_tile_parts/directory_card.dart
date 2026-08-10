@@ -39,7 +39,7 @@ class ClubIndexRow extends StatelessWidget {
                 border: Border.all(color: t.line),
               ),
               child: Padding(
-                padding: const EdgeInsets.all(CatchSpacing.micro3),
+                padding: CatchInsets.mediaFrameContent,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(
                     CatchLayout.organizerPosterMediaRadius,

@@ -353,15 +353,12 @@ class SuvbotResetActionRow extends StatelessWidget {
         radius: 0,
         borderWidth: 0,
         onTap: pending ? null : onTap,
-        padding: const EdgeInsets.symmetric(
-          horizontal: CatchSpacing.s1,
-          vertical: CatchSpacing.s3,
-        ),
+        padding: CatchInsets.suvbotActionRow,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.only(top: CatchSpacing.micro2),
+              padding: CatchInsets.inlineIconTopTight,
               child: Icon(
                 _iconFor(action.icon),
                 color: tone,

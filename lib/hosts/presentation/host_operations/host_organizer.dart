@@ -119,9 +119,7 @@ class HostOrganizerMetricRow extends StatelessWidget {
           children: [
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: CatchSpacing.s3,
-                ),
+                padding: CatchInsets.inlineHorizontalRelaxed,
                 child: CatchStatColumn(
                   value: items[0].value,
                   label: items[0].label,
@@ -134,9 +132,7 @@ class HostOrganizerMetricRow extends StatelessWidget {
             ),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: CatchSpacing.s3,
-                ),
+                padding: CatchInsets.inlineHorizontalRelaxed,
                 child: CatchStatColumn(
                   value: items[1].value,
                   label: items[1].label,

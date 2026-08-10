@@ -50,12 +50,7 @@ class HostClubEditorLoadingScreen extends StatelessWidget {
               ),
             ),
             const Padding(
-              padding: EdgeInsets.fromLTRB(
-                CatchSpacing.s3,
-                CatchSpacing.s2,
-                CatchSpacing.s3,
-                CatchSpacing.s3,
-              ),
+              padding: CatchInsets.hostClubEditorLoadingAction,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [

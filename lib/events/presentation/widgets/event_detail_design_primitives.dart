@@ -218,10 +218,7 @@ class EventDetailMapCard extends StatelessWidget {
                   ),
                   CatchDivider.fieldRow(indent: 0, color: borderColor),
                   Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: CatchSpacing.s3,
-                      vertical: CatchSpacing.s2,
-                    ),
+                    padding: CatchInsets.compactControlContent,
                     child: Row(
                       children: [
                         Expanded(
@@ -370,9 +367,9 @@ class EventDetailFactList extends StatelessWidget {
         final iconColor = _useActivityColor ? activity.deep : resolvedBodyColor;
 
         return Padding(
-          padding: EdgeInsets.only(
-            top: index == 0 ? 0 : CatchSpacing.s3,
-            bottom: index == rows.length - 1 ? 0 : CatchSpacing.s3,
+          padding: CatchInsets.eventDetailFactRow(
+            isFirst: index == 0,
+            isLast: index == rows.length - 1,
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -592,12 +589,7 @@ class TicketStubCell extends StatelessWidget {
             child: CustomPaint(painter: _VerticalDashedPainter(color: t.line2)),
           ),
         Padding(
-          padding: EdgeInsets.fromLTRB(
-            showDivider ? CatchSpacing.s3 : CatchSpacing.s5,
-            CatchSpacing.s2,
-            CatchSpacing.s3,
-            CatchSpacing.s2,
-          ),
+          padding: CatchInsets.eventTicketStubCell(divided: showDivider),
           child: Stack(
             children: [
               Column(
@@ -761,7 +753,7 @@ class ItineraryRow extends StatelessWidget {
           gapW8,
           Expanded(
             child: Padding(
-              padding: EdgeInsets.only(bottom: isLast ? 0 : CatchSpacing.s3),
+              padding: CatchInsets.eventItineraryStep(isLast: isLast),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

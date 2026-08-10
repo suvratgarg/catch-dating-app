@@ -157,7 +157,7 @@ class ClubStatsDividerSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s3),
+      padding: CatchInsets.inlineHorizontalRelaxed,
       child: SizedBox(
         width: CatchStroke.hairline,
         height: CatchSpacing.s11,

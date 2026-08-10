@@ -220,10 +220,7 @@ class HostEventsClubSection extends StatelessWidget {
                     )
                   else ...[
                     Padding(
-                      padding: const EdgeInsets.only(
-                        top: CatchSpacing.s1,
-                        bottom: CatchSpacing.micro10,
-                      ),
+                      padding: CatchInsets.hostEventSectionLabel,
                       child: Text(
                         state.sections[sectionIndex].label.toUpperCase(),
                         style: CatchTextStyles.monoLabel(
@@ -280,12 +277,7 @@ class HostEventLifecycleRow extends StatelessWidget {
                 child: ColoredBox(color: activity.accent),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  CatchSpacing.s3,
-                  CatchSpacing.s3,
-                  CatchSpacing.micro14,
-                  CatchSpacing.s3,
-                ),
+                padding: CatchInsets.hostEventLifecycleDate,
                 child: HostEventLifecycleDateBlock(
                   data: data,
                   accent: activity.accent,
@@ -293,9 +285,7 @@ class HostEventLifecycleRow extends StatelessWidget {
               ),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: CatchSpacing.s3,
-                  ),
+                  padding: CatchInsets.contentVertical,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -341,9 +331,7 @@ class HostEventLifecycleRow extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: CatchSpacing.s3,
-                ),
+                padding: CatchInsets.inlineHorizontalRelaxed,
                 child: Icon(
                   CatchIcons.chevronRightRounded,
                   color: t.ink3,

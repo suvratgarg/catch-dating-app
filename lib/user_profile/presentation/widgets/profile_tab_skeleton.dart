@@ -130,7 +130,7 @@ class ProfileInfoSkeletonTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: CatchSpacing.micro14),
+      padding: CatchInsets.profileInfoSkeletonRow,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
