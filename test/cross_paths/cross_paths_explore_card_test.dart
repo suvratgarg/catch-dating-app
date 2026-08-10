@@ -141,11 +141,7 @@ void main() {
         overrides: [
           uidProvider.overrideWith((ref) => Stream.value('viewer-1')),
           crossPathsFeatureConfigProvider.overrideWith(
-            (ref) => const CrossPathsFeatureConfig(
-              consentControlsEnabled: true,
-              exploreSuggestionsEnabled: true,
-              pairInventoryEnabled: true,
-            ),
+            (ref) => CrossPathsFeatureConfig.live,
           ),
           watchOutgoingCrossPathsInvitationProvider(
             'viewer-1',

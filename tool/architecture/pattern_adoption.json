@@ -1,6 +1,6 @@
 {
-  "version": "1.10.0",
-  "updated": "2026-08-09",
+  "version": "1.11.0",
+  "updated": "2026-08-10",
   "sourceOfTruth": "docs/app_architecture.md#reference-implementation-workflow",
   "purpose": "Defines architecture reference exhibits, adopter files, candidate status, and back-propagation obligations enforced by architecture checks.",
   "patterns": [
@@ -1810,7 +1810,7 @@
         },
         {
           "path": "lib/safety/presentation/settings_screen.dart and lib/safety/presentation/settings_controller.dart",
-          "role": "typed private global-consent control hidden behind the fail-closed consent-controls rollout flag",
+          "role": "typed private global-consent control available behind the shipped emergency operational switch",
           "status": "aligned"
         },
         {
@@ -1831,7 +1831,7 @@
         },
         {
           "path": "functions/src/admin/eventDetails.ts and admin/src/features/events",
-          "role": "Admin-only audited selection for two or three upcoming Mumbai events with six-hour lead, no companion inventory, and a hard maximum of three",
+          "role": "Admin-only audited selection for two or three upcoming Mumbai events with six-hour lead, optional bounded organizer-controlled companion inventory, and a hard maximum of three",
           "status": "aligned"
         },
         {
@@ -1847,12 +1847,12 @@
         },
         {
           "path": "lib/explore/presentation/explore_cross_paths_provider.dart and lib/explore/presentation/explore_screen_state.dart",
-          "role": "fail-closed optional enrichment, current-event request bounding, token expiry, and provider-free event-majority mixed-feed planning",
+          "role": "server-gated optional enrichment, current-event request bounding, token expiry, and provider-free event-majority mixed-feed planning",
           "status": "aligned"
         },
         {
           "path": "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-          "role": "canonical person-polaroid composition with a sanitized profile preview; its consumer boundary resolves participant-scoped invitation state and default-off pair availability before delegating mutations",
+          "role": "canonical person-polaroid composition with a sanitized profile preview; its consumer boundary resolves participant-scoped invitation state and event-policy-bounded pair availability before delegating mutations",
           "providerFree": false,
           "status": "aligned"
         },
@@ -1888,7 +1888,7 @@
         },
         {
           "path": "test/cross_paths and functions/src/crossPaths/setCrossPathsEventConsent.test.ts and functions/test/firestore.rules.test.cjs",
-          "role": "default-off, visibility-gate, callable precondition, revocation, and read/write authorization proof",
+          "role": "live-client, visibility-gate, callable precondition, revocation, and read/write authorization proof",
           "status": "aligned"
         }
       ],
@@ -1902,7 +1902,7 @@
         "bash tool/check_catch_ui_lints.sh",
         "node tool/architecture/check_app_architecture_exhibits.mjs"
       ],
-      "notes": "This reference now covers permission storage, Admin-selected Mumbai events, server-owned suggestion resolution, fail-closed Explore consumption, participant-only invitations, organizer-controlled companion holds, canonical checkout conversion, and temporary event plans. All three rollout flags remain off by default, and external privacy-policy approval plus 20-50 real self-consented members across 2-3 selected events is required before enabling identifiable discovery beyond internal review."
+      "notes": "This reference now covers permission storage, Admin-selected Mumbai events, server-owned suggestion resolution, bounded Explore consumption, participant-only invitations, organizer-controlled companion holds, canonical checkout conversion, and temporary event plans. The shipped client switches are on for the pinned synthetic production-QA world; selected events, layered consent, showcase review, admission, and safety remain server-authoritative. Independent legal review plus 20-50 real self-consented members across 2-3 selected events is required before selecting the first real-member cohort."
     },
     {
       "id": "ARCH-ENTITY-MATERIAL-001",

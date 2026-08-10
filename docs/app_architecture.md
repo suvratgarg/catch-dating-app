@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.9.1
-updated: 2026-08-09
+version: 1.9.2
+updated: 2026-08-10
 owner: app_architecture
 status: active
 ---
@@ -2408,8 +2408,9 @@ final crossPathsConsentState = crossPathsEventConsentSectionStateFrom(
 
 Preserve these boundaries in later adopters:
 
-- both Remote Config defaults are false, and configuration read failures return
-  the disabled state;
+- the shipped Remote Config defaults are true, and configuration read failures
+  return the live client state; this cannot bypass server-owned selected-event,
+  layered-consent, showcase, admission, or safety checks;
 - a missing global field, missing event edge, loading state, or read failure
   never resolves to enabled;
 - a missing/false event switch or a real event outside `in-mh-mumbai` never

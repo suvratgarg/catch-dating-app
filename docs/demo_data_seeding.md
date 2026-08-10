@@ -1,6 +1,6 @@
 ---
 doc_id: demo_data_seeding
-version: 1.4.0
+version: 1.4.1
 updated: 2026-08-10
 owner: recursive_audit_loop
 status: active
@@ -863,19 +863,17 @@ manage Auth users but cannot read/update Identity Platform configuration, it
 falls back to the active `gcloud` account; that account must have
 `firebaseauth.configs.get` and `firebaseauth.configs.update` permission.
 
-Remote Config rollout flags remain off. To exercise the fixture without
-changing shared rollout state, run a non-production Consumer debug build with
-the compile-time preview switch:
+The shipped Cross Paths client controls are on in the checked-in Remote Config
+template. To exercise a non-production fixture, run the normal Consumer build:
 
 ```bash
 ./tool/flutter_with_env.sh dev consumer run \
-  -d "<device-id>" \
-  --dart-define=ENABLE_CROSS_PATHS_PREVIEW=true
+  -d "<device-id>"
 ```
 
-The preview switch is ignored in profile/release builds and in production. It
-enables consent controls and Explore suggestions only; companion inventory
-continues to use its independent Remote Config flag.
+There is no longer a compile-time preview lab. Eligibility remains bounded by
+the synthetic seed prefix, selected event, layered consent, showcase review,
+admission policy, and server-owned safety checks in every environment.
 
 ## Anchor Real TestFlight Users
 

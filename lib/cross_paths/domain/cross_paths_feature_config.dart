@@ -1,12 +1,12 @@
-/// Remote Config defaults for the consent-safe Cross Paths rollout.
+/// Bundled defaults for the shipped consent-safe Cross Paths feature.
 ///
-/// Both controls fail closed. The consent UI can be reviewed independently,
-/// while Explore identities remain disabled until a server-owned suggestion
-/// response exists.
+/// These keep the client surface available during a Remote Config outage.
+/// Server-owned selected-event, layered-consent, showcase, admission, and
+/// safety checks still decide whether any suggestion or invitation is legal.
 const kCrossPathsConfigDefaults = <String, dynamic>{
-  CrossPathsFeatureConfig.enableConsentControlsKey: false,
-  CrossPathsFeatureConfig.enableExploreSuggestionsKey: false,
-  CrossPathsFeatureConfig.enablePairInventoryKey: false,
+  CrossPathsFeatureConfig.enableConsentControlsKey: true,
+  CrossPathsFeatureConfig.enableExploreSuggestionsKey: true,
+  CrossPathsFeatureConfig.enablePairInventoryKey: true,
 };
 
 class CrossPathsFeatureConfig {
@@ -28,5 +28,11 @@ class CrossPathsFeatureConfig {
   static const disabled = CrossPathsFeatureConfig(
     consentControlsEnabled: false,
     exploreSuggestionsEnabled: false,
+  );
+
+  static const live = CrossPathsFeatureConfig(
+    consentControlsEnabled: true,
+    exploreSuggestionsEnabled: true,
+    pairInventoryEnabled: true,
   );
 }

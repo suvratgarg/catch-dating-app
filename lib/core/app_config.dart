@@ -93,15 +93,6 @@ class AppConfig {
     _entrypointEnvironmentOverride = null;
   }
 
-  @visibleForTesting
-  static bool isCrossPathsPreviewAvailable({
-    required AppEnvironment environment,
-    required bool debugMode,
-    required bool requested,
-  }) {
-    return requested && debugMode && !environment.isProduction;
-  }
-
   static String get environmentName => environment.value;
 
   static String get appTitle {
@@ -209,18 +200,6 @@ class AppConfig {
 
   static const bool enableExploreSyntheticVisualFill = bool.fromEnvironment(
     'ENABLE_EXPLORE_SYNTHETIC_VISUAL_FILL',
-  );
-
-  static const bool _crossPathsPreviewRequested = bool.fromEnvironment(
-    'ENABLE_CROSS_PATHS_PREVIEW',
-  );
-
-  /// Enables consent controls and Explore suggestions only in non-production
-  /// debug builds. Remote Config remains the sole release rollout authority.
-  static bool get enableCrossPathsPreview => isCrossPathsPreviewAvailable(
-    environment: environment,
-    debugMode: kDebugMode,
-    requested: _crossPathsPreviewRequested,
   );
 
   static bool get shouldShowEnvironmentBanner => !environment.isProduction;
