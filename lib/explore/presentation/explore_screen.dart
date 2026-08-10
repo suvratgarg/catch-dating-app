@@ -46,6 +46,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+abstract final class ExploreScreenKeys {
+  static const scrollView = ValueKey<String>('explore.scroll_view');
+}
+
 /// Explore — the supply-side feed (design-system Explore).
 ///
 /// A single scrolling feed: the browse header (city + search) and filter rail
@@ -542,9 +546,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
             child: RefreshIndicator.adaptive(
               onRefresh: _refreshExploreData,
               child: CustomScrollView(
-                key: ValueKey(
-                  context.l10n.exploreExploreScreenBodyExploreListScrollView,
-                ),
+                key: ExploreScreenKeys.scrollView,
                 physics: const AlwaysScrollableScrollPhysics(),
                 slivers: [
                   SliverToBoxAdapter(

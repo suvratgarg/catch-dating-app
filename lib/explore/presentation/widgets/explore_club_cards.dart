@@ -83,6 +83,7 @@ class ExploreOrganizerPosterCard extends StatelessWidget {
             child: Material(color: Colors.transparent, child: card),
           );
     return Semantics(
+      key: ValueKey<String>('explore-organizer-${club.id}'),
       container: true,
       button: onTap != null,
       label: state.semanticLabel,
@@ -112,6 +113,7 @@ class ExploreFeedClubRow extends StatelessWidget {
         ? null
         : () => onClubSelected!(club);
     final card = CatchSurface.card(
+      key: ValueKey<String>('explore-club-row-${club.id}'),
       onTap: onTap,
       borderColor: t.line2,
       padding: CatchInsets.content,

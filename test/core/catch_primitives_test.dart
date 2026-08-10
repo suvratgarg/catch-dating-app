@@ -1727,9 +1727,7 @@ void main() {
     );
 
     await tester.tap(find.bySemanticsLabel('Explore'));
-    await tester.pump(const Duration(milliseconds: 100));
-    expect(tester.takeException(), isNull);
-    await tester.pump(const Duration(milliseconds: 300));
+    await pumpFeatureUi(tester);
     expect(tester.takeException(), isNull);
     expect(find.text('Explore'), findsOneWidget);
   });
@@ -2547,12 +2545,13 @@ void main() {
   testWidgets('CatchAsyncValueView replaces an expired skeleton with retry', (
     tester,
   ) async {
+    const initialLoadTimeout = Duration(milliseconds: 10);
     var retryCount = 0;
     await tester.pumpWidget(
       _wrap(
         CatchAsyncValueView<int>(
           value: const AsyncLoading<int>(),
-          initialLoadTimeout: const Duration(milliseconds: 10),
+          initialLoadTimeout: initialLoadTimeout,
           onRetry: () => retryCount += 1,
           builder: (context, value) => Text('$value'),
           loadingBuilder: (_) => const Text('Loading custom state'),
@@ -2561,7 +2560,10 @@ void main() {
     );
 
     expect(find.text('Loading custom state'), findsOneWidget);
-    await tester.pump(const Duration(milliseconds: 11));
+    await pumpFeatureUiFor(
+      tester,
+      initialLoadTimeout + const Duration(milliseconds: 1),
+    );
     expect(
       find.text('The request timed out. Please try again.'),
       findsOneWidget,

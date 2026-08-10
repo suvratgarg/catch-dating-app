@@ -82,6 +82,7 @@ class _CompanionStageScaffold extends StatelessWidget {
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   return SingleChildScrollView(
+                    key: EventSuccessCompanionKeys.scrollView,
                     child: Align(
                       alignment: Alignment.topCenter,
                       child: ConstrainedBox(
@@ -160,6 +161,7 @@ class CompanionPaperScaffold extends StatelessWidget {
         child: LayoutBuilder(
           builder: (context, constraints) {
             return SingleChildScrollView(
+              key: EventSuccessCompanionKeys.scrollView,
               child: Align(
                 alignment: Alignment.topCenter,
                 child: ConstrainedBox(

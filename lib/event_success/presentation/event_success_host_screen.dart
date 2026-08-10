@@ -64,6 +64,10 @@ part 'host_parts/event_success_host_report.dart';
 part 'host_parts/event_success_host_setup.dart';
 part 'host_parts/event_success_host_shared.dart';
 
+abstract final class EventSuccessHostKeys {
+  static const scrollView = ValueKey<String>('event_success.host.scroll_view');
+}
+
 const EdgeInsets _hostLaunchIssueGap = EdgeInsets.only(bottom: CatchSpacing.s1);
 final EdgeInsets _hostWingmanRequestNotePadding = CatchInsets.pageHorizontal
     .copyWith(bottom: CatchSpacing.s2);

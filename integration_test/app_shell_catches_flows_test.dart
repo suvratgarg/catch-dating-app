@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/catch_profile_view.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
-import 'package:flutter/widgets.dart' show Scrollable;
 import 'package:flutter_test/flutter_test.dart';
 
 import '../test/clubs/clubs_test_helpers.dart' as club_helpers;
@@ -91,7 +91,10 @@ void main() {
     );
     await tester.ensureVisible(promptLikeButton);
     await tester.pump();
-    await tester.drag(find.byType(Scrollable).first, const Offset(0, -180));
+    await tester.drag(
+      find.byKey(CatchProfileView.scrollViewKey),
+      const Offset(0, -180),
+    );
     await tester.pump();
     await tester.tap(promptLikeButton);
     await flushAppShellCallbacks(tester);

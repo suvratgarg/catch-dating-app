@@ -127,6 +127,9 @@ class ClubScheduleSection extends StatelessWidget {
                               status: row.status,
                             );
                             return EventDateRailCard(
+                              key: ValueKey<String>(
+                                'club-schedule-event-${row.event.id}',
+                              ),
                               event: row.event,
                               kicker: eventTileKickerLabel(
                                 data,

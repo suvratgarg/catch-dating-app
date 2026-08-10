@@ -1150,10 +1150,10 @@ void main() {
         saving = true;
       });
       await tester.pump();
-      await tester.tap(
+      final doneButton = tester.widget<CatchFieldCommitButton>(
         find.byKey(const ValueKey('catch-field-done')),
-        warnIfMissed: false,
       );
+      expect(doneButton.onPressed, isNull);
       expect(submits, 1);
     },
   );

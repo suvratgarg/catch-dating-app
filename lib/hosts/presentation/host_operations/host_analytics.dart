@@ -566,6 +566,9 @@ class _HostAnalyticsTrendPanelState extends State<HostAnalyticsTrendPanel> {
                   for (final indexed in widget.points.indexed) ...[
                     if (indexed.$1 > 0) gapW12,
                     HostAnalyticsDualBar(
+                      key: ValueKey<String>(
+                        'host-analytics-trend-${indexed.$2.periodStart.toIso8601String()}',
+                      ),
                       point: indexed.$2,
                       maxValue: maxValue,
                       label: _trendBucketLabel(

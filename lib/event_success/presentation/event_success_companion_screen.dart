@@ -71,6 +71,12 @@ part 'companion_parts/event_success_companion_shared.dart';
 part 'companion_parts/event_success_companion_wingman.dart';
 part 'event_success_companion_body_screen.dart';
 
+abstract final class EventSuccessCompanionKeys {
+  static const scrollView = ValueKey<String>(
+    'event_success.companion.scroll_view',
+  );
+}
+
 bool _companionCanPop(BuildContext context) =>
     Navigator.maybeOf(context)?.canPop() ?? false;
 

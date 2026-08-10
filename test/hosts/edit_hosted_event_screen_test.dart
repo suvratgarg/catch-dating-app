@@ -520,7 +520,7 @@ void main() {
     );
     await _scrollToFinder(tester, paceField);
     await tester.tap(paceField);
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     final fastPace = find.byWidgetPredicate(
       (widget) =>
           widget is CatchFieldChoiceChip &&
@@ -535,7 +535,7 @@ void main() {
     );
     await _scrollToFinder(tester, durationField);
     await tester.tap(durationField);
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     final durationStepper = tester.widget<CatchFieldStepper>(
       find.byType(CatchFieldStepper),
     );
@@ -798,7 +798,9 @@ Future<void> _scrollToFinder(WidgetTester tester, Finder finder) async {
   await tester.scrollUntilVisible(
     finder,
     240,
-    scrollable: findPrimaryScrollable(),
+    scrollable: findVerticalScrollable(
+      within: find.byKey(EditHostedEventKeys.scrollView),
+    ),
   );
   await tester.pump();
 }

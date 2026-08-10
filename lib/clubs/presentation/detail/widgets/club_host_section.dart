@@ -165,6 +165,7 @@ class ClubHostRow extends StatelessWidget {
           Tooltip(
             message: context.l10n.clubsClubHostSectionMessageMessageHost,
             child: CatchIconButton(
+              key: ValueKey<String>('club-host-message-${host.uid}'),
               onTap: onMessage,
               child: Icon(
                 CatchIcons.chatBubbleOutlineRounded,

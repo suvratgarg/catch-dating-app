@@ -97,6 +97,7 @@ class EventDetailOverviewSection extends StatelessWidget {
           dividerColor: style?.dividerColor,
           titleColor: style?.headingColor,
           child: EventDetailMapCard(
+            key: ValueKey<String>('event-detail-map-${event.id}'),
             event: event,
             onTap: onLocationTap,
             borderColor: style?.borderColor,
