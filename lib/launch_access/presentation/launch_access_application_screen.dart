@@ -11,6 +11,7 @@ import 'package:catch_dating_app/core/widgets/catch_chip_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
@@ -28,11 +29,12 @@ class LaunchAccessApplicationScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final uidAsync = ref.watch(uidProvider);
 
-    return Scaffold(
-      appBar: CatchTopBar(
+    return CatchRouteScaffold(
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title: context
             .l10n
             .launchAccessLaunchAccessApplicationScreenTitleApplyForAccess,
+        divider: scrolledUnder,
       ),
       body: SafeArea(
         top: false,

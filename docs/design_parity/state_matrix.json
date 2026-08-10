@@ -1,7 +1,7 @@
 {
   "$schema": "./state_matrix.schema.json",
   "version": 1,
-  "updated": "2026-08-05",
+  "updated": "2026-08-10",
   "requiredStateKinds": [
     "loading",
     "populated",
@@ -10705,6 +10705,123 @@
               "nextAction": "Canonical Reviews History reference export is blocked until design provides a standalone reviews-history screen source; current Claude sources only provide ReviewRow and review sections inside other surfaces."
             }
           ]
+        },
+        {
+          "id": "launch_access.application",
+          "routeId": "launchAccessScreen",
+          "implementationPaths": [
+            "lib/launch_access/presentation/launch_access_application_screen.dart",
+            "lib/launch_access/presentation/launch_access_controller.dart",
+            "lib/launch_access/data/launch_access_repository.dart",
+            "lib/launch_access/domain/launch_access_application.dart"
+          ],
+          "componentIds": [
+            "catch.button",
+            "catch.field",
+            "catch.option_group",
+            "catch.top_bar"
+          ],
+          "captureIds": [
+            "launch_access_application",
+            "launch_access_loading",
+            "launch_access_signed_out",
+            "launch_access_error",
+            "launch_access_offline",
+            "launch_access_approved",
+            "launch_access_text_scale_2",
+            "launch_access_reduced_motion"
+          ],
+          "designRefs": [
+            {
+              "id": "repo.launch-access-screen-tests",
+              "kind": "repo",
+              "status": "available",
+              "path": "test/launch_access/launch_access_application_screen_test.dart",
+              "notes": "Focused widget tests prove the form-shaped loading state and canonical field composition."
+            },
+            {
+              "id": "repo.launch-access-controller-tests",
+              "kind": "repo",
+              "status": "available",
+              "path": "test/launch_access/launch_access_controller_test.dart",
+              "notes": "Controller tests prove draft editing, submission, and route-lifecycle reset."
+            },
+            {
+              "id": "repo.launch-access-repository-tests",
+              "kind": "repo",
+              "status": "available",
+              "path": "test/launch_access/launch_access_repository_test.dart",
+              "notes": "Repository tests prove live Firestore creation, editable updates, and locked-status rejection."
+            }
+          ],
+          "states": [
+            {
+              "id": "editable_application",
+              "kind": "empty",
+              "status": "captured",
+              "captureIds": ["launch_access_application"],
+              "tests": ["test/launch_access/launch_access_application_screen_test.dart"],
+              "notes": "The normal signed-in state renders the complete editable city-access form."
+            },
+            {
+              "id": "application_loading",
+              "kind": "loading",
+              "status": "captured",
+              "captureIds": ["launch_access_loading"],
+              "tests": ["test/launch_access/launch_access_application_screen_test.dart"],
+              "notes": "Application-stream loading preserves the form-shaped skeleton."
+            },
+            {
+              "id": "signed_out",
+              "kind": "permission",
+              "status": "captured",
+              "captureIds": ["launch_access_signed_out"],
+              "notes": "A missing uid shows the phone-verification requirement."
+            },
+            {
+              "id": "provider_error",
+              "kind": "error",
+              "status": "captured",
+              "captureIds": ["launch_access_error"],
+              "notes": "Application read failures retain an exact retry owner on the shared error surface."
+            },
+            {
+              "id": "provider_offline",
+              "kind": "offline",
+              "status": "captured",
+              "captureIds": ["launch_access_offline"],
+              "notes": "Offline reads use the shared offline recovery presentation."
+            },
+            {
+              "id": "locked_status",
+              "kind": "populated",
+              "status": "captured",
+              "captureIds": ["launch_access_approved"],
+              "tests": ["test/launch_access/launch_access_repository_test.dart"],
+              "notes": "Approved and other locked statuses replace the form with an explicit result."
+            },
+            {
+              "id": "submit_application",
+              "kind": "mutation",
+              "status": "tested",
+              "tests": [
+                "test/launch_access/launch_access_controller_test.dart",
+                "test/launch_access/launch_access_repository_test.dart"
+              ],
+              "notes": "The typed controller mutation delegates one current-user Firestore transaction and preserves status locking."
+            },
+            {
+              "id": "accessibility",
+              "kind": "accessibility",
+              "status": "captured",
+              "captureIds": [
+                "launch_access_text_scale_2",
+                "launch_access_reduced_motion"
+              ],
+              "notes": "Text-scale and reduced-motion captures cover long labels, choice groups, and the submit lane."
+            }
+          ],
+          "gaps": []
         },
         {
           "id": "settings.account",
