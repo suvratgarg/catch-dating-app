@@ -53,9 +53,9 @@ As of June 22, 2026, Apple's App Store Connect docs say:
 
 - Accept any updated Apple Developer Program License Agreement if App Store
   Connect blocks release work.
-- Host exact promotion run `31428501747` processed the current analyzer-clean
-  version `1.0.1`, build `202608100000029001`, as `VALID` and persisted exact
-  claim artifact `9078544175`; the legacy `Runner | Default` Xcode Cloud
+- Host exact promotion run `31436882152` processed the final analyzer-clean
+  version `1.0.1`, build `202608100000030201`, as `VALID` and persisted exact
+  claim artifact `9081563645`; the legacy `Runner | Default` Xcode Cloud
   workflow is disabled.
   Assign that build to the intended TestFlight group and record install/launch
   proof in GitHub issue `#218`.

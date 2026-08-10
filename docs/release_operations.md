@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.0.13
+version: 2.0.14
 updated: 2026-08-11
 owner: recursive_audit_loop
 status: active
@@ -879,8 +879,8 @@ accumulated one unusable API-created certificate per runner. Nineteen verified
 unused development certificates were revoked, the three working human
 Development/Distribution/Developer ID identities were preserved, and dedicated
 CI certificate `7P698XNLRP` was installed in `prod-mobile`. Current
-analyzer-clean producer run `31426313812` used the repaired reusable-keychain
-path for both roles, and exact promotion runs `31428492922` and `31428501747`
+final analyzer-clean producer run `31435724862` used the repaired reusable-keychain
+path for both roles, and exact promotion runs `31436879851` and `31436882152`
 processed the Consumer and Host IPAs as `VALID`. Mobile store distribution still needs
 external product-release evidence: current TestFlight group assignment/install
 proof for both roles and Play account verification, enrollment, processing,
@@ -1601,15 +1601,16 @@ assignment, install, and launch remain separate remote evidence.
 installation, and launch proof are recorded in GitHub issue `#218`.
 
 The current analyzer-clean split release is proven for both roles from the same
-immutable producer authority. Producer run `31426313812` selected source
-`322195dbe442b9a2e0c452532c7c7de2fe8d58e5` and published authority artifact
-`9078112623`. Consumer promotion run `31428492922` uploaded version `1.0.2`,
-build `202608100000029001`, to App Store Connect app `6765646860`, remote build
-`72f8c59d-9134-4f4f-a5da-e1a21b8ff1a2`, and persisted exact claim artifact
-`9078552767`. Host promotion run `31428501747` uploaded version `1.0.1`, the same
-source-bound build number, to app `6778927317`, remote build
-`34207f68-9c79-40d2-906d-ce0b8e0cdfa5`, and persisted exact claim artifact
-`9078544175`.
+immutable producer authority. Producer run `31435724862` selected source
+`9c3633095464778a1d5734d742ab3036e5f7cde7` and published authority artifact
+`9081276899`. Consumer promotion run `31436879851` reused exact iOS package
+artifact `9081248527`, uploaded version `1.0.2`, build
+`202608100000030201`, to App Store Connect app `6765646860`, remote build
+`13f755b5-508c-4acc-9a85-cea069e3425d`, and persisted exact claim artifact
+`9081579386`. Host promotion run `31436882152` reused exact iOS package artifact
+`9081211960`, uploaded version `1.0.1`, the same source-bound build number, to
+app `6778927317`, remote build `0e37ff07-3f88-40fc-be88-fd23e36de60a`, and
+persisted exact claim artifact `9081563645`.
 Both postconditions reached `VALID`; neither promotion rebuilt, re-exported, or
 re-signed its producer package. These claims prove upload and processing, not
 TestFlight group assignment or installed-device behavior.
@@ -1688,9 +1689,16 @@ Historical pre-split cutover status (completed on 2026-07-12):
    phone auth, push, and role-specific entrypoint proof.
 
 Items 1-3 describe the earlier combined workflow and remain historical evidence
-only. The new exact package producer and separate manual promoter have not yet
-been exercised against either store; a live promotion receipt plus processing,
-group/tester, install, and launch proof is still required.
+only. The current split producer and manual promoter are now exercised for both
+iOS roles: producer run `31435724862` created the exact packages, Consumer
+promotion `31436879851` and Host promotion `31436882152` uploaded those packages
+without rebuilding, both App Store Connect builds reached `VALID`, and exact
+claim artifacts `9081579386` and `9081563645` bind the remote results. Only the
+owner-controlled TestFlight group assignment, installation, and device smoke
+proof remain open in issue `#218`. Google Play remains externally blocked by
+developer-account verification and missing app records in issue `#199`; the
+exact Consumer and Host Android packages are retained for promotion after that
+account gate clears.
 
 Current host icon status: host builds use generated `AppIcon-host-dev`,
 `AppIcon-host-staging`, and `AppIcon-host-prod` catalogs on iOS/macOS, plus
@@ -1804,7 +1812,7 @@ Cutover checklist:
    processing from the pre-split workflow.
 2. Complete: both legacy Xcode Cloud workflows disabled.
 3. Complete: current analyzer-clean Consumer and Host exact promotions processed
-   in runs `31428492922` and `31428501747` with 90-day exact claims.
+   in runs `31436879851` and `31436882152` with 90-day exact claims.
 4. Record both TestFlight group assignments and install/launch proofs in issue
    `#218`.
 5. Complete the Play owner-verification, app-record, App Signing, tester, and
