@@ -9131,7 +9131,7 @@
             "migration": "Keep no-clubs and no-events copy/action construction in route call sites while sharing HostEmptyActionCard for the visual shell.",
             "previewIds": [
               "hostHomeRouteStates",
-              "HostEmptyActionCard/Action card states"
+              "CatchEmptyState/Action card states"
             ]
           },
           {
@@ -10731,7 +10731,7 @@
             "migration": "Keep no-clubs copy/action availability in the route call site while sharing HostEmptyActionCard for the visual shell.",
             "previewIds": [
               "HostClubsScreen/Route states",
-              "HostEmptyActionCard/Action card states"
+              "CatchEmptyState/Action card states"
             ]
           },
           {
