@@ -556,14 +556,13 @@
     {
       "id": "APP-TARGET-ANDROID-PLAY-001",
       "status": "blocked_external",
-      "reason": "The split exact package producer/promoter, Android Publisher API, dedicated zero-project-role service account, and prod-mobile OIDC binding are ready, but Play internal upload stays disabled until both Play app records grant app-scoped testing-track access.",
+      "reason": "The split exact package producer/promoter, Android Publisher API, dedicated zero-project-role service account, and prod-mobile OIDC binding are ready. Android promotion now probes both apps live and stays blocked until both Play records, qa tracks, Google Group testers, and app-scoped testing-track access exist.",
       "externalPrerequisites": [
         "create com.catchdates.app and com.catchdates.host Play records",
         "enroll both apps in Play App Signing",
         "grant GOOGLE_PLAY_SERVICE_ACCOUNT_EMAIL release access to both apps",
-        "configure both internal tester lists",
-        "run the separately authenticated probe_google_play_access tool for both qa tracks and keep each edit uncommitted",
-        "set GOOGLE_PLAY_UPLOAD_ENABLED=true only after both authenticated access probes pass"
+        "configure at least one Google Group tester on each qa track so readiness is machine-verifiable",
+        "let the exact promoter run the authenticated two-app probe_google_play_access fleet gate and keep each edit uncommitted"
       ],
       "playTrack": "qa",
       "removalProof": [

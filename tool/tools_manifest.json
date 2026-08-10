@@ -545,6 +545,7 @@
         "tool/ci/mobile_promotion_workflow.test.mjs",
         "tool/ci/mobile_promotion_core.mjs",
         "tool/ci/package_mobile_release.mjs",
+        "tool/platform/probe_google_play_access.mjs",
         "tool/platform/upload_google_play_bundle.mjs",
         "tool/app_targets.json"
       ],
@@ -2912,7 +2913,7 @@
       "command": "node tool/platform/probe_google_play_access.mjs --help",
       "safety": "remote-write-ephemeral-apply-guarded",
       "status": "active",
-      "description": "Authenticates to one Play app, creates an uncommitted edit, reads the qa track, and deletes the edit without uploading or committing a release.",
+      "description": "Authenticates to the Catch Play apps, creates uncommitted edits, verifies qa tracks and machine-verifiable Google Group testers, and deletes every edit without uploading or committing a release.",
       "checks": [
         "node --check tool/platform/probe_google_play_access.mjs",
         "node --test tool/platform/probe_google_play_access.test.mjs"
@@ -2922,7 +2923,10 @@
         "type": "test",
         "path": "tool/platform/probe_google_play_access.test.mjs",
         "contains": [
-          "Play probe deletes its edit when qa access is denied"
+          "Play probe deletes its edit when qa access is denied",
+          "Play probe fails closed without machine-verifiable qa testers and deletes its edit",
+          "fleet readiness requires both unique Catch apps and leaves no committed edit",
+          "fleet readiness deletes both edits when the second app is not ready"
         ]
       }
     },
