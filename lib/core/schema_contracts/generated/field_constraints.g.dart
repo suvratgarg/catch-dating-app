@@ -9699,6 +9699,388 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventAttendeeDocumentCancelledAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.cancelledAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventAttendeeDocumentCancelledAtSeconds = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.cancelledAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAttendeeDocumentCheckedInAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.checkedInAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventAttendeeDocumentCheckedInAtSeconds = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.checkedInAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAttendeeDocumentCheckedInBy = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.checkedInBy',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAttendeeDocumentClubId = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.clubId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAttendeeDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventAttendeeDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAttendeeDocumentDisplayName = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.displayName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAttendeeDocumentEmail = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.email',
+    maxLength: 320,
+    valueTypes: <String>['string'],
+    format: 'email',
+  );
+
+  static const eventAttendeeDocumentEventId = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAttendeeDocumentExternalReference = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.externalReference',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAttendeeDocumentImportId = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.importId',
+    maxLength: 240,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAttendeeDocumentLinkedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.linkedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventAttendeeDocumentLinkedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.linkedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAttendeeDocumentLinkedUid = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.linkedUid',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAttendeeDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAttendeeDocumentPhoneE164 = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.phoneE164',
+    valueTypes: <String>['string'],
+    pattern: '^\\+[1-9][0-9]{7,14}\$',
+  );
+
+  static const eventAttendeeDocumentRegisteredAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.registeredAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventAttendeeDocumentRegisteredAtSeconds = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.registeredAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAttendeeDocumentSearchName = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.searchName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAttendeeDocumentSource = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp'],
+  );
+
+  static const eventAttendeeDocumentSourceRowId = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.sourceRowId',
+    maxLength: 120,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAttendeeDocumentStatus = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['invited', 'registered', 'waitlisted', 'checkedIn', 'cancelled'],
+  );
+
+  static const eventAttendeeDocumentTicketType = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.ticketType',
+    maxLength: 120,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAttendeeDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventAttendeeDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAttendeeDocumentWaitlistedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.waitlistedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventAttendeeDocumentWaitlistedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.waitlistedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAttendeeImportDocumentClubId = CatchContractFieldConstraints(
+    path: 'eventAttendeeImportDocument.clubId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAttendeeImportDocumentCompletedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventAttendeeImportDocument.completedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventAttendeeImportDocumentCompletedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventAttendeeImportDocument.completedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAttendeeImportDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventAttendeeImportDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventAttendeeImportDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventAttendeeImportDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAttendeeImportDocumentCreatedCount = CatchContractFieldConstraints(
+    path: 'eventAttendeeImportDocument.createdCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 250,
+  );
+
+  static const eventAttendeeImportDocumentErrors = CatchContractFieldConstraints(
+    path: 'eventAttendeeImportDocument.errors',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 100,
+  );
+
+  static const eventAttendeeImportDocumentErrorsItemsCode = CatchContractFieldConstraints(
+    path: 'eventAttendeeImportDocument.errors.items.code',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAttendeeImportDocumentErrorsItemsMessage = CatchContractFieldConstraints(
+    path: 'eventAttendeeImportDocument.errors.items.message',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAttendeeImportDocumentErrorsItemsRowId = CatchContractFieldConstraints(
+    path: 'eventAttendeeImportDocument.errors.items.rowId',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAttendeeImportDocumentEventId = CatchContractFieldConstraints(
+    path: 'eventAttendeeImportDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAttendeeImportDocumentFileName = CatchContractFieldConstraints(
+    path: 'eventAttendeeImportDocument.fileName',
+    maxLength: 255,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAttendeeImportDocumentFormat = CatchContractFieldConstraints(
+    path: 'eventAttendeeImportDocument.format',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['csv', 'xlsx', 'manual'],
+  );
+
+  static const eventAttendeeImportDocumentImportKey = CatchContractFieldConstraints(
+    path: 'eventAttendeeImportDocument.importKey',
+    maxLength: 120,
+    minLength: 8,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAttendeeImportDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAttendeeImportDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAttendeeImportDocumentPayloadHash = CatchContractFieldConstraints(
+    path: 'eventAttendeeImportDocument.payloadHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAttendeeImportDocumentRowCount = CatchContractFieldConstraints(
+    path: 'eventAttendeeImportDocument.rowCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 250,
+  );
+
+  static const eventAttendeeImportDocumentSkippedCount = CatchContractFieldConstraints(
+    path: 'eventAttendeeImportDocument.skippedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 250,
+  );
+
+  static const eventAttendeeImportDocumentStatus = CatchContractFieldConstraints(
+    path: 'eventAttendeeImportDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['completed', 'partial', 'failed'],
+  );
+
+  static const eventAttendeeImportDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventAttendeeImportDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventAttendeeImportDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventAttendeeImportDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAttendeeImportDocumentUpdatedCount = CatchContractFieldConstraints(
+    path: 'eventAttendeeImportDocument.updatedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 250,
+  );
+
+  static const eventAttendeeImportDocumentUploadedBy = CatchContractFieldConstraints(
+    path: 'eventAttendeeImportDocument.uploadedBy',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const eventBookingCallablePayloadCrossPathsPairHoldId = CatchContractFieldConstraints(
     path: 'eventBookingCallablePayload.crossPathsPairHoldId',
     maxLength: 180,
@@ -10875,6 +11257,11 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 0,
     maximum: 100000000,
+  );
+
+  static const eventDocumentPublicRegistrationEnabled = CatchContractFieldConstraints(
+    path: 'eventDocument.publicRegistrationEnabled',
+    valueTypes: <String>['boolean'],
   );
 
   static const eventDocumentScenario = CatchContractFieldConstraints(
@@ -15323,6 +15710,34 @@ abstract final class CatchContractConstraints {
     maxItems: 25,
   );
 
+  static const hostAnalyticsCallableResponseTopEventsItemsAttendeeSourcesCatchBooking = CatchContractFieldConstraints(
+    path: 'hostAnalyticsCallableResponse.topEvents.items.attendeeSources.catchBooking',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const hostAnalyticsCallableResponseTopEventsItemsAttendeeSourcesHostImport = CatchContractFieldConstraints(
+    path: 'hostAnalyticsCallableResponse.topEvents.items.attendeeSources.hostImport',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const hostAnalyticsCallableResponseTopEventsItemsAttendeeSourcesHostManual = CatchContractFieldConstraints(
+    path: 'hostAnalyticsCallableResponse.topEvents.items.attendeeSources.hostManual',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const hostAnalyticsCallableResponseTopEventsItemsAttendeeSourcesWebOtp = CatchContractFieldConstraints(
+    path: 'hostAnalyticsCallableResponse.topEvents.items.attendeeSources.webOtp',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
   static const hostAnalyticsCallableResponseTopEventsItemsAverageRating = CatchContractFieldConstraints(
     path: 'hostAnalyticsCallableResponse.topEvents.items.averageRating',
     required: true,
@@ -15435,6 +15850,18 @@ abstract final class CatchContractConstraints {
   static const hostAnalyticsCallableResponseTopEventsItemsMutualMatchCount = CatchContractFieldConstraints(
     path: 'hostAnalyticsCallableResponse.topEvents.items.mutualMatchCount',
     required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const hostAnalyticsCallableResponseTopEventsItemsOperationalAttendeeCount = CatchContractFieldConstraints(
+    path: 'hostAnalyticsCallableResponse.topEvents.items.operationalAttendeeCount',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const hostAnalyticsCallableResponseTopEventsItemsOperationalCheckedInCount = CatchContractFieldConstraints(
+    path: 'hostAnalyticsCallableResponse.topEvents.items.operationalCheckedInCount',
     valueTypes: <String>['integer'],
     minimum: 0,
   );
@@ -16016,6 +16443,34 @@ abstract final class CatchContractConstraints {
     maxItems: 25,
   );
 
+  static const hostAnalyticsSnapshotDocumentResponseTopEventsItemsAttendeeSourcesCatchBooking = CatchContractFieldConstraints(
+    path: 'hostAnalyticsSnapshotDocument.response.topEvents.items.attendeeSources.catchBooking',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const hostAnalyticsSnapshotDocumentResponseTopEventsItemsAttendeeSourcesHostImport = CatchContractFieldConstraints(
+    path: 'hostAnalyticsSnapshotDocument.response.topEvents.items.attendeeSources.hostImport',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const hostAnalyticsSnapshotDocumentResponseTopEventsItemsAttendeeSourcesHostManual = CatchContractFieldConstraints(
+    path: 'hostAnalyticsSnapshotDocument.response.topEvents.items.attendeeSources.hostManual',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const hostAnalyticsSnapshotDocumentResponseTopEventsItemsAttendeeSourcesWebOtp = CatchContractFieldConstraints(
+    path: 'hostAnalyticsSnapshotDocument.response.topEvents.items.attendeeSources.webOtp',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
   static const hostAnalyticsSnapshotDocumentResponseTopEventsItemsAverageRating = CatchContractFieldConstraints(
     path: 'hostAnalyticsSnapshotDocument.response.topEvents.items.averageRating',
     required: true,
@@ -16128,6 +16583,18 @@ abstract final class CatchContractConstraints {
   static const hostAnalyticsSnapshotDocumentResponseTopEventsItemsMutualMatchCount = CatchContractFieldConstraints(
     path: 'hostAnalyticsSnapshotDocument.response.topEvents.items.mutualMatchCount',
     required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const hostAnalyticsSnapshotDocumentResponseTopEventsItemsOperationalAttendeeCount = CatchContractFieldConstraints(
+    path: 'hostAnalyticsSnapshotDocument.response.topEvents.items.operationalAttendeeCount',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const hostAnalyticsSnapshotDocumentResponseTopEventsItemsOperationalCheckedInCount = CatchContractFieldConstraints(
+    path: 'hostAnalyticsSnapshotDocument.response.topEvents.items.operationalCheckedInCount',
     valueTypes: <String>['integer'],
     minimum: 0,
   );
@@ -16479,6 +16946,93 @@ abstract final class CatchContractConstraints {
   static const hostProfileDocumentVerified = CatchContractFieldConstraints(
     path: 'hostProfileDocument.verified',
     valueTypes: <String>['boolean'],
+  );
+
+  static const importEventAttendeesCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'importEventAttendeesCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const importEventAttendeesCallablePayloadFileName = CatchContractFieldConstraints(
+    path: 'importEventAttendeesCallablePayload.fileName',
+    maxLength: 255,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const importEventAttendeesCallablePayloadFormat = CatchContractFieldConstraints(
+    path: 'importEventAttendeesCallablePayload.format',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['csv', 'xlsx', 'manual'],
+  );
+
+  static const importEventAttendeesCallablePayloadImportKey = CatchContractFieldConstraints(
+    path: 'importEventAttendeesCallablePayload.importKey',
+    maxLength: 120,
+    minLength: 8,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const importEventAttendeesCallablePayloadRows = CatchContractFieldConstraints(
+    path: 'importEventAttendeesCallablePayload.rows',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 250,
+  );
+
+  static const importEventAttendeesCallablePayloadRowsItemsDisplayName = CatchContractFieldConstraints(
+    path: 'importEventAttendeesCallablePayload.rows.items.displayName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const importEventAttendeesCallablePayloadRowsItemsEmail = CatchContractFieldConstraints(
+    path: 'importEventAttendeesCallablePayload.rows.items.email',
+    maxLength: 320,
+    valueTypes: <String>['string'],
+  );
+
+  static const importEventAttendeesCallablePayloadRowsItemsExternalReference = CatchContractFieldConstraints(
+    path: 'importEventAttendeesCallablePayload.rows.items.externalReference',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const importEventAttendeesCallablePayloadRowsItemsPhone = CatchContractFieldConstraints(
+    path: 'importEventAttendeesCallablePayload.rows.items.phone',
+    maxLength: 40,
+    valueTypes: <String>['string'],
+  );
+
+  static const importEventAttendeesCallablePayloadRowsItemsRowId = CatchContractFieldConstraints(
+    path: 'importEventAttendeesCallablePayload.rows.items.rowId',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const importEventAttendeesCallablePayloadRowsItemsStatus = CatchContractFieldConstraints(
+    path: 'importEventAttendeesCallablePayload.rows.items.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['invited', 'registered', 'waitlisted'],
+  );
+
+  static const importEventAttendeesCallablePayloadRowsItemsTicketType = CatchContractFieldConstraints(
+    path: 'importEventAttendeesCallablePayload.rows.items.ticketType',
+    maxLength: 120,
+    valueTypes: <String>['string'],
   );
 
   static const joinWaitlistHTTPRequestAnalyticsConsentAnalytics = CatchContractFieldConstraints(
@@ -17194,6 +17748,22 @@ abstract final class CatchContractConstraints {
     path: 'markEventAttendanceCallableResponse.attended',
     required: true,
     valueTypes: <String>['boolean'],
+  );
+
+  static const markEventAttendeeAttendanceCallablePayloadAttendeeId = CatchContractFieldConstraints(
+    path: 'markEventAttendeeAttendanceCallablePayload.attendeeId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const markEventAttendeeAttendanceCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'markEventAttendeeAttendanceCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const markNotificationReadClientWriteDataReadAtNanoseconds = CatchContractFieldConstraints(
@@ -22938,6 +23508,45 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['boolean'],
   );
 
+  static const registerPublicEventCallablePayloadDisplayName = CatchContractFieldConstraints(
+    path: 'registerPublicEventCallablePayload.displayName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const registerPublicEventCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'registerPublicEventCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const registerPublicEventCallableResponseAttendeeId = CatchContractFieldConstraints(
+    path: 'registerPublicEventCallableResponse.attendeeId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const registerPublicEventCallableResponseEventId = CatchContractFieldConstraints(
+    path: 'registerPublicEventCallableResponse.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const registerPublicEventCallableResponseStatus = CatchContractFieldConstraints(
+    path: 'registerPublicEventCallableResponse.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['registered', 'waitlisted', 'alreadyRegistered'],
+  );
+
   static const removeClubHostCallablePayloadClubId = CatchContractFieldConstraints(
     path: 'removeClubHostCallablePayload.clubId',
     maxLength: 180,
@@ -25380,6 +25989,11 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9_-]+\$',
   );
 
+  static const updateEventCallablePayloadFieldsPublicRegistrationEnabled = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.publicRegistrationEnabled',
+    valueTypes: <String>['boolean'],
+  );
+
   static const updateEventCallablePayloadFieldsStartingPointLat = CatchContractFieldConstraints(
     path: 'updateEventCallablePayload.fields.startingPointLat',
     valueTypes: <String>['number'],
@@ -26013,6 +26627,11 @@ abstract final class CatchContractConstraints {
     path: 'updateOrganizerCallablePayload.fields.profileImageUrl',
     maxLength: 320,
     valueTypes: <String>['string'],
+  );
+
+  static const updateOrganizerCallablePayloadFieldsPublicListingEnabled = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.publicListingEnabled',
+    valueTypes: <String>['boolean'],
   );
 
   static const updateOrganizerCallablePayloadFieldsTags = CatchContractFieldConstraints(
@@ -27982,6 +28601,11 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const websiteHostListingProjectionCatchEventsItemsPublicRegistrationEnabled = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.catchEvents.items.publicRegistrationEnabled',
+    valueTypes: <String>['boolean'],
   );
 
   static const websiteHostListingProjectionCatchEventsItemsRequirements = CatchContractFieldConstraints(
@@ -30070,6 +30694,58 @@ abstract final class CatchContractConstraints {
     'deleteSavedEventClientWrite.path.savedEventId': deleteSavedEventClientWritePathSavedEventId,
     'disableEventInviteLinkCallablePayload.eventId': disableEventInviteLinkCallablePayloadEventId,
     'disableEventInviteLinkCallablePayload.inviteLinkId': disableEventInviteLinkCallablePayloadInviteLinkId,
+    'eventAttendeeDocument.cancelledAt._nanoseconds': eventAttendeeDocumentCancelledAtNanoseconds,
+    'eventAttendeeDocument.cancelledAt._seconds': eventAttendeeDocumentCancelledAtSeconds,
+    'eventAttendeeDocument.checkedInAt._nanoseconds': eventAttendeeDocumentCheckedInAtNanoseconds,
+    'eventAttendeeDocument.checkedInAt._seconds': eventAttendeeDocumentCheckedInAtSeconds,
+    'eventAttendeeDocument.checkedInBy': eventAttendeeDocumentCheckedInBy,
+    'eventAttendeeDocument.clubId': eventAttendeeDocumentClubId,
+    'eventAttendeeDocument.createdAt._nanoseconds': eventAttendeeDocumentCreatedAtNanoseconds,
+    'eventAttendeeDocument.createdAt._seconds': eventAttendeeDocumentCreatedAtSeconds,
+    'eventAttendeeDocument.displayName': eventAttendeeDocumentDisplayName,
+    'eventAttendeeDocument.email': eventAttendeeDocumentEmail,
+    'eventAttendeeDocument.eventId': eventAttendeeDocumentEventId,
+    'eventAttendeeDocument.externalReference': eventAttendeeDocumentExternalReference,
+    'eventAttendeeDocument.importId': eventAttendeeDocumentImportId,
+    'eventAttendeeDocument.linkedAt._nanoseconds': eventAttendeeDocumentLinkedAtNanoseconds,
+    'eventAttendeeDocument.linkedAt._seconds': eventAttendeeDocumentLinkedAtSeconds,
+    'eventAttendeeDocument.linkedUid': eventAttendeeDocumentLinkedUid,
+    'eventAttendeeDocument.organizerId': eventAttendeeDocumentOrganizerId,
+    'eventAttendeeDocument.phoneE164': eventAttendeeDocumentPhoneE164,
+    'eventAttendeeDocument.registeredAt._nanoseconds': eventAttendeeDocumentRegisteredAtNanoseconds,
+    'eventAttendeeDocument.registeredAt._seconds': eventAttendeeDocumentRegisteredAtSeconds,
+    'eventAttendeeDocument.searchName': eventAttendeeDocumentSearchName,
+    'eventAttendeeDocument.source': eventAttendeeDocumentSource,
+    'eventAttendeeDocument.sourceRowId': eventAttendeeDocumentSourceRowId,
+    'eventAttendeeDocument.status': eventAttendeeDocumentStatus,
+    'eventAttendeeDocument.ticketType': eventAttendeeDocumentTicketType,
+    'eventAttendeeDocument.updatedAt._nanoseconds': eventAttendeeDocumentUpdatedAtNanoseconds,
+    'eventAttendeeDocument.updatedAt._seconds': eventAttendeeDocumentUpdatedAtSeconds,
+    'eventAttendeeDocument.waitlistedAt._nanoseconds': eventAttendeeDocumentWaitlistedAtNanoseconds,
+    'eventAttendeeDocument.waitlistedAt._seconds': eventAttendeeDocumentWaitlistedAtSeconds,
+    'eventAttendeeImportDocument.clubId': eventAttendeeImportDocumentClubId,
+    'eventAttendeeImportDocument.completedAt._nanoseconds': eventAttendeeImportDocumentCompletedAtNanoseconds,
+    'eventAttendeeImportDocument.completedAt._seconds': eventAttendeeImportDocumentCompletedAtSeconds,
+    'eventAttendeeImportDocument.createdAt._nanoseconds': eventAttendeeImportDocumentCreatedAtNanoseconds,
+    'eventAttendeeImportDocument.createdAt._seconds': eventAttendeeImportDocumentCreatedAtSeconds,
+    'eventAttendeeImportDocument.createdCount': eventAttendeeImportDocumentCreatedCount,
+    'eventAttendeeImportDocument.errors': eventAttendeeImportDocumentErrors,
+    'eventAttendeeImportDocument.errors.items.code': eventAttendeeImportDocumentErrorsItemsCode,
+    'eventAttendeeImportDocument.errors.items.message': eventAttendeeImportDocumentErrorsItemsMessage,
+    'eventAttendeeImportDocument.errors.items.rowId': eventAttendeeImportDocumentErrorsItemsRowId,
+    'eventAttendeeImportDocument.eventId': eventAttendeeImportDocumentEventId,
+    'eventAttendeeImportDocument.fileName': eventAttendeeImportDocumentFileName,
+    'eventAttendeeImportDocument.format': eventAttendeeImportDocumentFormat,
+    'eventAttendeeImportDocument.importKey': eventAttendeeImportDocumentImportKey,
+    'eventAttendeeImportDocument.organizerId': eventAttendeeImportDocumentOrganizerId,
+    'eventAttendeeImportDocument.payloadHash': eventAttendeeImportDocumentPayloadHash,
+    'eventAttendeeImportDocument.rowCount': eventAttendeeImportDocumentRowCount,
+    'eventAttendeeImportDocument.skippedCount': eventAttendeeImportDocumentSkippedCount,
+    'eventAttendeeImportDocument.status': eventAttendeeImportDocumentStatus,
+    'eventAttendeeImportDocument.updatedAt._nanoseconds': eventAttendeeImportDocumentUpdatedAtNanoseconds,
+    'eventAttendeeImportDocument.updatedAt._seconds': eventAttendeeImportDocumentUpdatedAtSeconds,
+    'eventAttendeeImportDocument.updatedCount': eventAttendeeImportDocumentUpdatedCount,
+    'eventAttendeeImportDocument.uploadedBy': eventAttendeeImportDocumentUploadedBy,
     'eventBookingCallablePayload.crossPathsPairHoldId': eventBookingCallablePayloadCrossPathsPairHoldId,
     'eventBookingCallablePayload.eventId': eventBookingCallablePayloadEventId,
     'eventBookingCallablePayload.inviteCode': eventBookingCallablePayloadInviteCode,
@@ -30232,6 +30908,7 @@ abstract final class CatchContractConstraints {
     'eventDocument.pace': eventDocumentPace,
     'eventDocument.photoUrl': eventDocumentPhotoUrl,
     'eventDocument.priceInPaise': eventDocumentPriceInPaise,
+    'eventDocument.publicRegistrationEnabled': eventDocumentPublicRegistrationEnabled,
     'eventDocument.scenario': eventDocumentScenario,
     'eventDocument.seedPrefix': eventDocumentSeedPrefix,
     'eventDocument.startingPointLat': eventDocumentStartingPointLat,
@@ -30846,6 +31523,10 @@ abstract final class CatchContractConstraints {
     'hostAnalyticsCallableResponse.summaryCards.items.value': hostAnalyticsCallableResponseSummaryCardsItemsValue,
     'hostAnalyticsCallableResponse.timezone': hostAnalyticsCallableResponseTimezone,
     'hostAnalyticsCallableResponse.topEvents': hostAnalyticsCallableResponseTopEvents,
+    'hostAnalyticsCallableResponse.topEvents.items.attendeeSources.catchBooking': hostAnalyticsCallableResponseTopEventsItemsAttendeeSourcesCatchBooking,
+    'hostAnalyticsCallableResponse.topEvents.items.attendeeSources.hostImport': hostAnalyticsCallableResponseTopEventsItemsAttendeeSourcesHostImport,
+    'hostAnalyticsCallableResponse.topEvents.items.attendeeSources.hostManual': hostAnalyticsCallableResponseTopEventsItemsAttendeeSourcesHostManual,
+    'hostAnalyticsCallableResponse.topEvents.items.attendeeSources.webOtp': hostAnalyticsCallableResponseTopEventsItemsAttendeeSourcesWebOtp,
     'hostAnalyticsCallableResponse.topEvents.items.averageRating': hostAnalyticsCallableResponseTopEventsItemsAverageRating,
     'hostAnalyticsCallableResponse.topEvents.items.bookedCount': hostAnalyticsCallableResponseTopEventsItemsBookedCount,
     'hostAnalyticsCallableResponse.topEvents.items.capacityLimit': hostAnalyticsCallableResponseTopEventsItemsCapacityLimit,
@@ -30862,6 +31543,8 @@ abstract final class CatchContractConstraints {
     'hostAnalyticsCallableResponse.topEvents.items.grossRevenueMinor': hostAnalyticsCallableResponseTopEventsItemsGrossRevenueMinor,
     'hostAnalyticsCallableResponse.topEvents.items.inviteOpenCount': hostAnalyticsCallableResponseTopEventsItemsInviteOpenCount,
     'hostAnalyticsCallableResponse.topEvents.items.mutualMatchCount': hostAnalyticsCallableResponseTopEventsItemsMutualMatchCount,
+    'hostAnalyticsCallableResponse.topEvents.items.operationalAttendeeCount': hostAnalyticsCallableResponseTopEventsItemsOperationalAttendeeCount,
+    'hostAnalyticsCallableResponse.topEvents.items.operationalCheckedInCount': hostAnalyticsCallableResponseTopEventsItemsOperationalCheckedInCount,
     'hostAnalyticsCallableResponse.topEvents.items.organizerId': hostAnalyticsCallableResponseTopEventsItemsOrganizerId,
     'hostAnalyticsCallableResponse.topEvents.items.paymentCompletedCount': hostAnalyticsCallableResponseTopEventsItemsPaymentCompletedCount,
     'hostAnalyticsCallableResponse.topEvents.items.paymentFailedCount': hostAnalyticsCallableResponseTopEventsItemsPaymentFailedCount,
@@ -30944,6 +31627,10 @@ abstract final class CatchContractConstraints {
     'hostAnalyticsSnapshotDocument.response.summaryCards.items.value': hostAnalyticsSnapshotDocumentResponseSummaryCardsItemsValue,
     'hostAnalyticsSnapshotDocument.response.timezone': hostAnalyticsSnapshotDocumentResponseTimezone,
     'hostAnalyticsSnapshotDocument.response.topEvents': hostAnalyticsSnapshotDocumentResponseTopEvents,
+    'hostAnalyticsSnapshotDocument.response.topEvents.items.attendeeSources.catchBooking': hostAnalyticsSnapshotDocumentResponseTopEventsItemsAttendeeSourcesCatchBooking,
+    'hostAnalyticsSnapshotDocument.response.topEvents.items.attendeeSources.hostImport': hostAnalyticsSnapshotDocumentResponseTopEventsItemsAttendeeSourcesHostImport,
+    'hostAnalyticsSnapshotDocument.response.topEvents.items.attendeeSources.hostManual': hostAnalyticsSnapshotDocumentResponseTopEventsItemsAttendeeSourcesHostManual,
+    'hostAnalyticsSnapshotDocument.response.topEvents.items.attendeeSources.webOtp': hostAnalyticsSnapshotDocumentResponseTopEventsItemsAttendeeSourcesWebOtp,
     'hostAnalyticsSnapshotDocument.response.topEvents.items.averageRating': hostAnalyticsSnapshotDocumentResponseTopEventsItemsAverageRating,
     'hostAnalyticsSnapshotDocument.response.topEvents.items.bookedCount': hostAnalyticsSnapshotDocumentResponseTopEventsItemsBookedCount,
     'hostAnalyticsSnapshotDocument.response.topEvents.items.capacityLimit': hostAnalyticsSnapshotDocumentResponseTopEventsItemsCapacityLimit,
@@ -30960,6 +31647,8 @@ abstract final class CatchContractConstraints {
     'hostAnalyticsSnapshotDocument.response.topEvents.items.grossRevenueMinor': hostAnalyticsSnapshotDocumentResponseTopEventsItemsGrossRevenueMinor,
     'hostAnalyticsSnapshotDocument.response.topEvents.items.inviteOpenCount': hostAnalyticsSnapshotDocumentResponseTopEventsItemsInviteOpenCount,
     'hostAnalyticsSnapshotDocument.response.topEvents.items.mutualMatchCount': hostAnalyticsSnapshotDocumentResponseTopEventsItemsMutualMatchCount,
+    'hostAnalyticsSnapshotDocument.response.topEvents.items.operationalAttendeeCount': hostAnalyticsSnapshotDocumentResponseTopEventsItemsOperationalAttendeeCount,
+    'hostAnalyticsSnapshotDocument.response.topEvents.items.operationalCheckedInCount': hostAnalyticsSnapshotDocumentResponseTopEventsItemsOperationalCheckedInCount,
     'hostAnalyticsSnapshotDocument.response.topEvents.items.organizerId': hostAnalyticsSnapshotDocumentResponseTopEventsItemsOrganizerId,
     'hostAnalyticsSnapshotDocument.response.topEvents.items.paymentCompletedCount': hostAnalyticsSnapshotDocumentResponseTopEventsItemsPaymentCompletedCount,
     'hostAnalyticsSnapshotDocument.response.topEvents.items.paymentFailedCount': hostAnalyticsSnapshotDocumentResponseTopEventsItemsPaymentFailedCount,
@@ -31009,6 +31698,18 @@ abstract final class CatchContractConstraints {
     'hostProfileDocument.updatedAt._nanoseconds': hostProfileDocumentUpdatedAtNanoseconds,
     'hostProfileDocument.updatedAt._seconds': hostProfileDocumentUpdatedAtSeconds,
     'hostProfileDocument.verified': hostProfileDocumentVerified,
+    'importEventAttendeesCallablePayload.eventId': importEventAttendeesCallablePayloadEventId,
+    'importEventAttendeesCallablePayload.fileName': importEventAttendeesCallablePayloadFileName,
+    'importEventAttendeesCallablePayload.format': importEventAttendeesCallablePayloadFormat,
+    'importEventAttendeesCallablePayload.importKey': importEventAttendeesCallablePayloadImportKey,
+    'importEventAttendeesCallablePayload.rows': importEventAttendeesCallablePayloadRows,
+    'importEventAttendeesCallablePayload.rows.items.displayName': importEventAttendeesCallablePayloadRowsItemsDisplayName,
+    'importEventAttendeesCallablePayload.rows.items.email': importEventAttendeesCallablePayloadRowsItemsEmail,
+    'importEventAttendeesCallablePayload.rows.items.externalReference': importEventAttendeesCallablePayloadRowsItemsExternalReference,
+    'importEventAttendeesCallablePayload.rows.items.phone': importEventAttendeesCallablePayloadRowsItemsPhone,
+    'importEventAttendeesCallablePayload.rows.items.rowId': importEventAttendeesCallablePayloadRowsItemsRowId,
+    'importEventAttendeesCallablePayload.rows.items.status': importEventAttendeesCallablePayloadRowsItemsStatus,
+    'importEventAttendeesCallablePayload.rows.items.ticketType': importEventAttendeesCallablePayloadRowsItemsTicketType,
     'joinWaitlistHTTPRequest.analytics.consent.analytics': joinWaitlistHTTPRequestAnalyticsConsentAnalytics,
     'joinWaitlistHTTPRequest.analytics.consent.choice': joinWaitlistHTTPRequestAnalyticsConsentChoice,
     'joinWaitlistHTTPRequest.analytics.consent.marketing': joinWaitlistHTTPRequestAnalyticsConsentMarketing,
@@ -31117,6 +31818,8 @@ abstract final class CatchContractConstraints {
     'markEventAttendanceCallablePayload.eventId': markEventAttendanceCallablePayloadEventId,
     'markEventAttendanceCallablePayload.userId': markEventAttendanceCallablePayloadUserId,
     'markEventAttendanceCallableResponse.attended': markEventAttendanceCallableResponseAttended,
+    'markEventAttendeeAttendanceCallablePayload.attendeeId': markEventAttendeeAttendanceCallablePayloadAttendeeId,
+    'markEventAttendeeAttendanceCallablePayload.eventId': markEventAttendeeAttendanceCallablePayloadEventId,
     'markNotificationReadClientWrite.data.readAt._nanoseconds': markNotificationReadClientWriteDataReadAtNanoseconds,
     'markNotificationReadClientWrite.data.readAt._seconds': markNotificationReadClientWriteDataReadAtSeconds,
     'markNotificationReadClientWrite.path.notificationId': markNotificationReadClientWritePathNotificationId,
@@ -31915,6 +32618,11 @@ abstract final class CatchContractConstraints {
     'recordOrganizerAnalyticsEventCallablePayload.sessionId': recordOrganizerAnalyticsEventCallablePayloadSessionId,
     'recordOrganizerAnalyticsEventCallablePayload.source': recordOrganizerAnalyticsEventCallablePayloadSource,
     'recordOrganizerAnalyticsEventCallableResponse.accepted': recordOrganizerAnalyticsEventCallableResponseAccepted,
+    'registerPublicEventCallablePayload.displayName': registerPublicEventCallablePayloadDisplayName,
+    'registerPublicEventCallablePayload.eventId': registerPublicEventCallablePayloadEventId,
+    'registerPublicEventCallableResponse.attendeeId': registerPublicEventCallableResponseAttendeeId,
+    'registerPublicEventCallableResponse.eventId': registerPublicEventCallableResponseEventId,
+    'registerPublicEventCallableResponse.status': registerPublicEventCallableResponseStatus,
     'removeClubHostCallablePayload.clubId': removeClubHostCallablePayloadClubId,
     'removeClubHostCallablePayload.uid': removeClubHostCallablePayloadUid,
     'removeOrganizerManagerCallablePayload.organizerId': removeOrganizerManagerCallablePayloadOrganizerId,
@@ -32254,6 +32962,7 @@ abstract final class CatchContractConstraints {
     'updateEventCallablePayload.fields.photoUrl': updateEventCallablePayloadFieldsPhotoUrl,
     'updateEventCallablePayload.fields.priceInPaise': updateEventCallablePayloadFieldsPriceInPaise,
     'updateEventCallablePayload.fields.privateAccess.inviteCode': updateEventCallablePayloadFieldsPrivateAccessInviteCode,
+    'updateEventCallablePayload.fields.publicRegistrationEnabled': updateEventCallablePayloadFieldsPublicRegistrationEnabled,
     'updateEventCallablePayload.fields.startingPointLat': updateEventCallablePayloadFieldsStartingPointLat,
     'updateEventCallablePayload.fields.startingPointLng': updateEventCallablePayloadFieldsStartingPointLng,
     'updateEventCallablePayload.fields.startTimeMillis': updateEventCallablePayloadFieldsStartTimeMillis,
@@ -32344,6 +33053,7 @@ abstract final class CatchContractConstraints {
     'updateOrganizerCallablePayload.fields.organizerType': updateOrganizerCallablePayloadFieldsOrganizerType,
     'updateOrganizerCallablePayload.fields.phoneNumber': updateOrganizerCallablePayloadFieldsPhoneNumber,
     'updateOrganizerCallablePayload.fields.profileImageUrl': updateOrganizerCallablePayloadFieldsProfileImageUrl,
+    'updateOrganizerCallablePayload.fields.publicListingEnabled': updateOrganizerCallablePayloadFieldsPublicListingEnabled,
     'updateOrganizerCallablePayload.fields.tags': updateOrganizerCallablePayloadFieldsTags,
     'updateOrganizerCallablePayload.fields.tags.items': updateOrganizerCallablePayloadFieldsTagsItems,
     'updateOrganizerCallablePayload.organizerId': updateOrganizerCallablePayloadOrganizerId,
@@ -32623,6 +33333,7 @@ abstract final class CatchContractConstraints {
     'websiteHostListingProjection.catchEvents.items.location': websiteHostListingProjectionCatchEventsItemsLocation,
     'websiteHostListingProjection.catchEvents.items.locationDetails': websiteHostListingProjectionCatchEventsItemsLocationDetails,
     'websiteHostListingProjection.catchEvents.items.priceLabel': websiteHostListingProjectionCatchEventsItemsPriceLabel,
+    'websiteHostListingProjection.catchEvents.items.publicRegistrationEnabled': websiteHostListingProjectionCatchEventsItemsPublicRegistrationEnabled,
     'websiteHostListingProjection.catchEvents.items.requirements': websiteHostListingProjectionCatchEventsItemsRequirements,
     'websiteHostListingProjection.catchEvents.items.role': websiteHostListingProjectionCatchEventsItemsRole,
     'websiteHostListingProjection.catchEvents.items.scorecard': websiteHostListingProjectionCatchEventsItemsScorecard,

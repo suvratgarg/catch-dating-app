@@ -1699,6 +1699,10 @@ export interface EventDocument {
   status: "active" | "cancelled";
   cancelledAt?: FirebaseFirestore.Timestamp | null;
   cancellationReason?: string | null;
+  /**
+   * When true, the published marketing event route may register a phone-OTP identity into eventAttendees without creating a Consumer profile.
+   */
+  publicRegistrationEnabled?: boolean;
   constraints: EventConstraints;
   eventPolicy?: EventPolicyBundleDocument | null;
   genderCounts: {
@@ -1982,6 +1986,64 @@ export interface EventParticipationDocument {
    * Server time when invite attribution was first attached to the roster edge.
    */
   inviteCapturedAt?: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Private event-scoped operational attendee stored at eventAttendees/{attendeeId}.
+ */
+export interface EventAttendeeDocument {
+  eventId: string;
+  clubId: string;
+  organizerId: string;
+  displayName: string;
+  searchName: string;
+  source: "catchBooking" | "hostImport" | "hostManual" | "webOtp";
+  status: "invited" | "registered" | "waitlisted" | "checkedIn" | "cancelled";
+  linkedUid: string | null;
+  phoneE164: string | null;
+  email: string | null;
+  externalReference: string | null;
+  ticketType: string | null;
+  importId: string | null;
+  sourceRowId: string | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  registeredAt: FirebaseFirestore.Timestamp | null;
+  waitlistedAt: FirebaseFirestore.Timestamp | null;
+  checkedInAt: FirebaseFirestore.Timestamp | null;
+  cancelledAt: FirebaseFirestore.Timestamp | null;
+  checkedInBy: string | null;
+  linkedAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Idempotency and audit receipt for one Host operational-roster import.
+ */
+export interface EventAttendeeImportDocument {
+  eventId: string;
+  clubId: string;
+  organizerId: string;
+  uploadedBy: string;
+  importKey: string;
+  fileName: string;
+  format: "csv" | "xlsx" | "manual";
+  payloadHash: string;
+  status: "completed" | "partial" | "failed";
+  rowCount: number;
+  createdCount: number;
+  updatedCount: number;
+  skippedCount: number;
+  /**
+   * @maxItems 100
+   */
+  errors: {
+    rowId: string;
+    code: string;
+    message: string;
+  }[];
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  completedAt: FirebaseFirestore.Timestamp | null;
 }
 
 /**

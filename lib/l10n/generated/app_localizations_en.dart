@@ -11174,4 +11174,248 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostsEventPolicyStepTitleCrossPathsPairCapacity =>
       'Reserved companion spots';
+
+  @override
+  String get hostsOperationalRosterTitle => 'External and web guests';
+
+  @override
+  String get hostsOperationalRosterSubtitle =>
+      'Run this event even when Catch did not handle the booking. Imported, manually added, and web-registered guests stay in one private roster.';
+
+  @override
+  String get hostsOperationalRosterImport => 'Import spreadsheet';
+
+  @override
+  String get hostsOperationalRosterAddGuest => 'Add guest';
+
+  @override
+  String get hostsOperationalRosterEmptyTitle =>
+      'Your outside roster starts here';
+
+  @override
+  String get hostsOperationalRosterEmptyMessage =>
+      'Upload a CSV or XLSX from your ticketing tool, or add guests one at a time.';
+
+  @override
+  String get hostsOperationalRosterSourceCatchBooking => 'Catch booking';
+
+  @override
+  String get hostsOperationalRosterSourceHostImport => 'Spreadsheet';
+
+  @override
+  String get hostsOperationalRosterSourceHostManual => 'Added by host';
+
+  @override
+  String get hostsOperationalRosterSourceWebOtp => 'Web registration';
+
+  @override
+  String get hostsOperationalRosterStatusInvited => 'Invited';
+
+  @override
+  String get hostsOperationalRosterStatusRegistered => 'Registered';
+
+  @override
+  String get hostsOperationalRosterStatusWaitlisted => 'Waitlisted';
+
+  @override
+  String get hostsOperationalRosterStatusCheckedIn => 'Checked in';
+
+  @override
+  String get hostsOperationalRosterCheckIn => 'Check in';
+
+  @override
+  String get hostsOperationalRosterUndoCheckIn => 'Undo';
+
+  @override
+  String get hostsOperationalRosterIdentityLinked => 'OTP linked';
+
+  @override
+  String get hostsOperationalRosterImportTitle => 'Map your guest list';
+
+  @override
+  String get hostsOperationalRosterImportSubtitle =>
+      'Check the detected columns before anything is uploaded.';
+
+  @override
+  String get hostsOperationalRosterFieldName => 'Guest name';
+
+  @override
+  String get hostsOperationalRosterFieldPhone => 'Phone';
+
+  @override
+  String get hostsOperationalRosterFieldEmail => 'Email';
+
+  @override
+  String get hostsOperationalRosterFieldReference => 'Booking reference';
+
+  @override
+  String get hostsOperationalRosterFieldTicket => 'Ticket type';
+
+  @override
+  String get hostsOperationalRosterFieldStatus => 'Registration status';
+
+  @override
+  String get hostsOperationalRosterDoNotImport => 'Do not import';
+
+  @override
+  String hostsOperationalRosterPreviewCount({required int count}) {
+    return '$count guests ready';
+  }
+
+  @override
+  String hostsOperationalRosterImportAction({required int count}) {
+    return 'Import $count guests';
+  }
+
+  @override
+  String hostsOperationalRosterLimit({required int count}) {
+    return 'This import uses the first 250 guests. Put the remaining $count guests in another file.';
+  }
+
+  @override
+  String get hostsOperationalRosterIssueUnsupported =>
+      'Choose a CSV or XLSX spreadsheet.';
+
+  @override
+  String get hostsOperationalRosterIssueMissingRows =>
+      'The spreadsheet needs a header row and at least one guest.';
+
+  @override
+  String get hostsOperationalRosterIssueTooManyColumns =>
+      'Keep only the guest fields you need and use no more than 40 columns.';
+
+  @override
+  String get hostsOperationalRosterIssueMalformedCsv =>
+      'The CSV has an unfinished quoted value.';
+
+  @override
+  String get hostsOperationalRosterIssueUnreadableXlsx =>
+      'The XLSX spreadsheet could not be read. Export it again and retry.';
+
+  @override
+  String get hostsOperationalRosterIssueMissingNameColumn =>
+      'Choose the column that contains each guest name.';
+
+  @override
+  String hostsOperationalRosterIssueMissingName({required int row}) {
+    return 'Row $row: guest name is empty.';
+  }
+
+  @override
+  String hostsOperationalRosterImportSuccess({
+    required int created,
+    required int updated,
+    required int skipped,
+  }) {
+    return 'Roster updated: $created added, $updated refreshed, $skipped skipped.';
+  }
+
+  @override
+  String get hostsOperationalRosterManualTitle => 'Add a guest';
+
+  @override
+  String get hostsOperationalRosterManualSubtitle =>
+      'A phone or email is optional for day-of check-in. Add contact details only when you are allowed to use them.';
+
+  @override
+  String get hostsOperationalRosterManualSave => 'Add to roster';
+
+  @override
+  String get hostsOperationalRosterManualNameRequired =>
+      'Enter the guest\'s name.';
+
+  @override
+  String get hostsHostAnalyticsLabelRosterGuests => 'Guests on roster';
+
+  @override
+  String get hostsHostAnalyticsLabelRosterAttendanceRate => 'Roster attendance';
+
+  @override
+  String hostsHostAnalyticsTextRosterAttendedExternal({
+    required int roster,
+    required int attended,
+    required int external,
+  }) {
+    return '$roster guests · $attended checked in · $external outside Catch';
+  }
+
+  @override
+  String get hostsHostEventReviewsTitlePublicReviews => 'Public reviews';
+
+  @override
+  String get hostsHostEventReviewsSubtitlePublicResponse =>
+      'Reply from Catch for Hosts. Your response appears with the review on the public organizer page.';
+
+  @override
+  String get hostsHostEventReviewsMessageEmpty =>
+      'Reviews for this event will appear here, including reviews submitted on your public Catch page.';
+
+  @override
+  String get hostsHostClubPublicationTitle => 'Public Catch page';
+
+  @override
+  String get hostsHostClubPublicationSubtitlePrivate =>
+      'Your operations workspace is private';
+
+  @override
+  String get hostsHostClubPublicationSubtitlePublished =>
+      'Your organizer page is live';
+
+  @override
+  String get hostsHostClubPublicationStatusPrivate => 'Private';
+
+  @override
+  String get hostsHostClubPublicationStatusPublished => 'Published';
+
+  @override
+  String get hostsHostClubPublicationBodyPrivate =>
+      'Run events, import guests, check people in, and learn from feedback without appearing in the Consumer app. Publish when you want a public page, reviews, and web registration.';
+
+  @override
+  String get hostsHostClubPublicationBodyPublished =>
+      'People can discover this organizer in Catch and on the public website. Unpublishing keeps your Host data and event operations intact.';
+
+  @override
+  String get hostsHostClubPublicationActionPublish => 'Publish organizer page';
+
+  @override
+  String get hostsHostClubPublicationActionUnpublish =>
+      'Return to private workspace';
+
+  @override
+  String get hostsHostPublicRegistrationTitle => 'Website registration';
+
+  @override
+  String get hostsHostPublicRegistrationSubtitleEnabled =>
+      'Phone OTP sign-up is enabled';
+
+  @override
+  String get hostsHostPublicRegistrationSubtitleDisabled =>
+      'Consumer booking is optional';
+
+  @override
+  String get hostsHostPublicRegistrationStatusOpen => 'Open';
+
+  @override
+  String get hostsHostPublicRegistrationStatusOff => 'Off';
+
+  @override
+  String get hostsHostPublicRegistrationBodyPublished =>
+      'People can sign up from the public event page with only a name and phone OTP. They join this operational roster without completing a Consumer profile.';
+
+  @override
+  String get hostsHostPublicRegistrationBodyNeedsPage =>
+      'Publish the organizer page first. You can still import guests and run this event privately in the meantime.';
+
+  @override
+  String get hostsHostPublicRegistrationBodyUnsupported =>
+      'Phone OTP registration currently supports free events with open admission. Keep importing the external roster for paid, invite-only, approval, membership, or profile-balanced events; those flows need their own payment or identity gate.';
+
+  @override
+  String get hostsHostPublicRegistrationActionEnable =>
+      'Enable phone OTP sign-up';
+
+  @override
+  String get hostsHostPublicRegistrationActionDisable =>
+      'Disable website sign-up';
 }

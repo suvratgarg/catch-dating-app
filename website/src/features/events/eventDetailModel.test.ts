@@ -27,7 +27,7 @@ describe("event detail records", () => {
       {
         eventId: "catch-future",
         path: "/events/catch-future/",
-        registrationState: "catchApp",
+        registrationState: "webOtp",
         supply: "catchNative",
       },
       {
@@ -50,6 +50,20 @@ describe("event detail records", () => {
     expect(catchEvent?.eventReviews[0]).toMatchObject({
       eventId: "catch-future",
       reviewerName: "Scoped reviewer",
+    });
+  });
+
+  it("keeps phone OTP registration available as a waitlist when full", () => {
+    const listing = eventReadyListing();
+    const event = listing.catchEvents![0];
+    const records = buildPublicEventDetailRecords([{
+      ...listing,
+      catchEvents: [{...event, bookedCount: event.capacityLimit}],
+    }], now);
+
+    expect(records[0]).toMatchObject({
+      registrationState: "webOtp",
+      remainingCapacity: 0,
     });
   });
 
@@ -152,6 +166,7 @@ function catchEvent(): HostListingCatchEvent {
     checkedInCount: 0,
     waitlistedCount: 0,
     priceLabel: "₹1,500",
+    publicRegistrationEnabled: true,
     scorecard: null,
   };
 }

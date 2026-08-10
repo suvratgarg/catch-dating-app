@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.11.1
-updated: 2026-08-09
+version: 1.12.0
+updated: 2026-08-10
 owner: recursive_audit_loop
 status: active
 ---
@@ -345,6 +345,8 @@ Root-level edge/action documents are the source of truth for many-to-many state:
 | Organizer owner/manager seat | `organizerTeamMemberships/{organizerId_uid}` |
 | Organizer follow | `organizerFollows/{organizerId_uid}` |
 | Event booking, waitlist, attendance, cancellation | `eventParticipations/{eventId_uid}` |
+| Unified Host operational roster row | `eventAttendees/{attendeeId}` |
+| Roster import audit and idempotency receipt | `eventAttendeeImports/{importId}` |
 | Cross Paths event visibility | `eventCrossPathsConsents/{eventId_uid}` |
 | Cross Paths showcase eligibility | server-only `crossPathsShowcaseEligibility/{uid}` |
 | Cross Paths suggestion exposure | server-only `crossPathsSuggestionExposures/{exposureId}` |
@@ -377,6 +379,40 @@ returns only public profile projections after the server verifies the
 24-hour window, viewer attendance, reciprocal gender and age preferences,
 prior decisions, and blocks in both directions. Anonymous attendee volume is
 rendered from callable-owned event aggregates instead of roster enumeration.
+
+### Standalone Host Operational Attendees
+
+`eventAttendees` is the Host operations roster. It complements rather than
+replaces `eventParticipations`:
+
+- `eventParticipations` requires a real UID and continues to own Consumer
+  booking, waitlist, cancellation, payment linkage and profile/network
+  eligibility;
+- `eventAttendees` uses an opaque event-scoped attendee id and accepts
+  `catchBooking`, `hostImport`, `hostManual`, or `webOtp` as its source. Its
+  optional `linkedUid` is a server projection, never a synthetic account;
+- raw contact fields are private to an authorized organizer manager and
+  callable/Admin support boundaries. Public website, Consumer discovery and
+  aggregate analytics cannot enumerate them;
+- the production website snapshot uses Firestore `count()` aggregation queries
+  for registered, checked-in, and waitlisted totals. Only free,
+  open-admission events with an explicit Host publication switch qualify; paid,
+  invite, membership, approval, and profile-balanced events fail closed. The build identity never
+  downloads attendee documents or contact fields;
+- direct writes are denied. Host bulk import/manual entry, attendance changes,
+  Catch-booking projection, OTP linking and public registration are
+  server-owned operations;
+- deterministic contact/source keys make retry and re-import idempotent inside
+  one event. A phone/email match may converge rows inside that event only; it
+  does not build a cross-event identity graph;
+- `eventAttendeeImports` records actor, event, client idempotency key, format,
+  canonical payload hash, counts, bounded row errors and terminal state. It is
+  not a copy of the uploaded file.
+
+Hosts may list operational attendees and import receipts only for events they
+manage. An attendee does not gain roster-list access when their UID is linked;
+attendee-facing code receives only its own sanitized event state through a
+server-owned lookup/registration boundary.
 
 Cross Paths visibility is a two-part, private consent contract. The optional
 `users/{uid}.prefsShowInCrossPaths` master preference resolves to false when

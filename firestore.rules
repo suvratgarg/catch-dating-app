@@ -839,6 +839,23 @@ service cloud.firestore {
     }
 
     // ── Events ──────────────────────────────────────────────────────────────────
+    // Operational attendee rows may contain imported contact data. Only an
+    // authorized organizer manager may enumerate them; attendee-facing lookup
+    // and every write remain server-owned.
+    match /eventAttendees/{attendeeId} {
+      allow read: if isAuthed()
+        && resource.data.eventId is string
+        && isClubHostForEvent(resource.data.eventId);
+      allow write: if false;
+    }
+
+    match /eventAttendeeImports/{importId} {
+      allow read: if isAuthed()
+        && resource.data.eventId is string
+        && isClubHostForEvent(resource.data.eventId);
+      allow write: if false;
+    }
+
     match /eventParticipations/{participationId} {
       allow read: if isAuthed()
         && (

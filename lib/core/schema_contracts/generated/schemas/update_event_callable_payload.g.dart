@@ -304,6 +304,10 @@ const schemaUpdateEventCallablePayloadSchema = <String, Object?>{
           'type': 'string',
           'maxLength': 2000,
         },
+        'publicRegistrationEnabled': <String, Object?>{
+          'type': 'boolean',
+          'description': 'Host-controlled website OTP registration switch. The event must belong to a published organizer before the public registration callable accepts users.',
+        },
         'capacityLimit': <String, Object?>{
           'type': 'integer',
           'minimum': 1,

@@ -191,6 +191,17 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/eventParticipationDocument.ts",
   },
   {
+    name: "EventAttendeeDocument",
+    source: "firestore/event_attendees.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAttendeeDocument.ts",
+  },
+  {
+    name: "EventAttendeeImportDocument",
+    source: "firestore/event_attendee_imports.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventAttendeeImportDocument.ts",
+  },
+  {
     name: "EventCrossPathsConsentDocument",
     source: "firestore/event_cross_paths_consents.schema.json",
     typeOutput:
@@ -960,6 +971,32 @@ const schemaSpecs = [
     source: "callables/mark_event_attendance_payload.schema.json",
     typeOutput:
       "functions/src/shared/generated/markEventAttendanceCallablePayload.ts",
+  },
+  {
+    name: "ImportEventAttendeesCallablePayload",
+    source: "callables/import_event_attendees_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/importEventAttendeesCallablePayload.ts",
+  },
+  {
+    name: "MarkEventAttendeeAttendanceCallablePayload",
+    source:
+      "callables/mark_event_attendee_attendance_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "markEventAttendeeAttendanceCallablePayload.ts",
+  },
+  {
+    name: "RegisterPublicEventCallablePayload",
+    source: "callables/register_public_event_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/registerPublicEventCallablePayload.ts",
+  },
+  {
+    name: "RegisterPublicEventCallableResponse",
+    source: "callable_responses/register_public_event_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/registerPublicEventCallableResponse.ts",
   },
   {
     name: "EventJoinRequestDecisionCallablePayload",

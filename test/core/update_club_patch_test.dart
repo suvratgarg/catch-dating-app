@@ -30,6 +30,7 @@ void main() {
         phoneNumber: '+10000000000',
         email: 'x@example.test',
         hostDefaults: const ClubHostDefaults(),
+        publicListingEnabled: true,
       );
 
       final schema = schema_contracts

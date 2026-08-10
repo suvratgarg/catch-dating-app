@@ -177,7 +177,10 @@ export async function createOrganizerHandler(
       regionName: market.regionName,
       countryCode: market.countryIsoCode,
       countryName: market.countryName,
-      appVisibility: "discoverable",
+      // A Host workspace starts private. The owner can publish it later from
+      // Catch for Hosts after proving the operations workflow is useful; the
+      // Consumer app is never a prerequisite for creating or running events.
+      appVisibility: "hidden",
       supplyCapabilities: organizerSupplyCapabilitiesFor({
         ownershipState: "userCreated",
         claimState: "claimed",

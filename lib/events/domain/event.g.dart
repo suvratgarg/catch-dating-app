@@ -58,6 +58,8 @@ _Event _$EventFromJson(Map<String, dynamic> json) => _Event(
       EventLifecycleStatus.active,
   cancelledAt: const NullableTimestampConverter().fromJson(json['cancelledAt']),
   cancellationReason: json['cancellationReason'] as String?,
+  publicRegistrationEnabled:
+      json['publicRegistrationEnabled'] as bool? ?? false,
   constraints: json['constraints'] == null
       ? const EventConstraints()
       : EventConstraints.fromJson(json['constraints'] as Map<String, dynamic>),
@@ -111,6 +113,7 @@ Map<String, dynamic> _$EventToJson(_Event instance) => <String, dynamic>{
     instance.cancelledAt,
   ),
   'cancellationReason': instance.cancellationReason,
+  'publicRegistrationEnabled': instance.publicRegistrationEnabled,
   'constraints': instance.constraints.toJson(),
   'eventPolicy': ?instance.eventPolicy?.toJson(),
   'genderCounts': instance.genderCounts,

@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/register_public_event_payload.schema.json",
+  "title": "RegisterPublicEventCallablePayload",
+  "description": "Phone-authenticated website registration for a published Catch event without a Consumer profile.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["eventId", "displayName"],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "displayName": {"type": "string", "minLength": 1, "maxLength": 120}
+  }
+}

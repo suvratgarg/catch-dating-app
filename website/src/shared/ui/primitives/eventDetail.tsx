@@ -1,6 +1,7 @@
 import type {
   AnchorHTMLAttributes,
   CSSProperties,
+  FormHTMLAttributes,
   HTMLAttributes,
   ReactNode,
 } from "react";
@@ -172,6 +173,22 @@ export function EventDetailActionPanel({
       <div className="event-detail-action-panel__actions">{children}</div>
     </aside>
   );
+}
+
+export function EventRegistrationForm({
+  children,
+  className,
+  ...props
+}: FormHTMLAttributes<HTMLFormElement>) {
+  return (
+    <form {...props} className={classNames("event-registration", className)}>
+      {children}
+    </form>
+  );
+}
+
+export function EventRegistrationPrivacy({children}: {children: ReactNode}) {
+  return <p className="event-registration__privacy">{children}</p>;
 }
 
 export function EventDetailSection({

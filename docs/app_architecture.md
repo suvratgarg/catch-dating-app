@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.9.1
-updated: 2026-08-09
+version: 1.10.0
+updated: 2026-08-10
 owner: app_architecture
 status: active
 ---
@@ -1812,7 +1812,7 @@ Current roles:
 | Role | Owns | Must not own |
 |---|---|---|
 | `consumer` | dating profile, discovery, booking, attendance, post-event reactions, matching, consumer chats, settings | host event creation/editing/manage tools, host-only club operations, professional host account setup |
-| `host` | host shell, club/event creation and management, Event Success host tooling, host inbox, professional host identity, event-flow operations | dating browse/match surfaces, dating-profile editing as a prerequisite for host work, consumer-only social readiness gates |
+| `host` | phone-OTP host shell on mobile and web, private organizer/event quick start, external roster import/manual entry, unified event operations, Event Success host tooling, reviews, analytics, publishing/payment readiness, host inbox and professional host identity | dating browse/match surfaces, dating-profile editing as a prerequisite for host work, consumer-only social readiness gates, a dependency on Catch owning event registration |
 
 Rules:
 
@@ -1844,6 +1844,13 @@ Rules:
   `publicProfiles/{uid}` must not be the source of truth for host display.
 - The same auth user may have both a consumer dating profile and a host profile,
   but host onboarding cannot require a completed dating profile.
+- Host onboarding also cannot require a public/claimed organizer or a
+  Catch-booked participant. A private hidden organizer workspace and
+  operations-only event are legitimate first states; publication, payment and
+  Consumer-network capabilities are later grants.
+- Host web installs the same Host Flutter product root and router as mobile.
+  The public marketing site may initiate auth/registration handoffs but must not
+  grow a parallel React implementation of authenticated host operations.
 - Message-host conversations are professional support/operations threads.
   Headers, avatars, and CTAs must not deep-link to dating profiles or show
   match-style context by default.

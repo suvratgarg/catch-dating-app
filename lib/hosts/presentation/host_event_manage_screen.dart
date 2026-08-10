@@ -30,6 +30,8 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/event_policies/domain/event_policy.dart'
+    show EventAdmissionFormat;
 import 'package:catch_dating_app/event_success/event_success.dart'
     show
         EventSuccessHostFixtureActions,
@@ -48,7 +50,9 @@ import 'package:catch_dating_app/hosts/presentation/host_event_booking_controlle
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_attendance_panel.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_event_reviews_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_operational_roster_panel.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -113,6 +117,9 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
     );
     final deleteMutation = ref.watch(
       HostEventBookingController.deleteEventMutation,
+    );
+    final publicRegistrationMutation = ref.watch(
+      HostEventBookingController.publicRegistrationMutation,
     );
     final isInviteOnly = event.effectiveEventPolicy.usesInviteOnly;
     final accessAsync = isInviteOnly
@@ -212,6 +219,14 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
             inviteLink: inviteLink,
           ),
         ),
+        gapH20,
+        HostPublicRegistrationCard(
+          club: club,
+          event: event,
+          mutation: publicRegistrationMutation,
+          onChanged: (enabled) =>
+              _setPublicRegistration(event: event, enabled: enabled),
+        ),
         if (event.effectiveEventPolicy.usesInviteOnly) ...[
           gapH20,
           HostPrivateAccessCard(
@@ -252,6 +267,8 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
         ),
       ],
       HostEventManageSection.guests => <Widget>[
+        HostOperationalRosterPanel(eventId: event.id),
+        gapH20,
         HostEventParticipantsPanel(
           eventId: event.id,
           mode:
@@ -263,6 +280,8 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
         ),
       ],
       HostEventManageSection.live => <Widget>[
+        HostOperationalRosterPanel(eventId: event.id),
+        gapH20,
         EventSuccessHostSection(
           event: event,
           initialTab: EventSuccessHostTab.live,
@@ -272,6 +291,13 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
         ),
       ],
       HostEventManageSection.report => <Widget>[
+        HostOperationalRosterPanel(
+          eventId: event.id,
+          allowRosterChanges: false,
+        ),
+        gapH20,
+        HostEventReviewsPanel(eventId: event.id),
+        gapH20,
         HostEventParticipantsPanel(
           eventId: event.id,
           mode: HostEventParticipantsMode.report,
@@ -359,6 +385,22 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
         return _confirmCancelEvent(effect.event);
       case HostEventManageActionDestination.deleteConfirmation:
         return _confirmDeleteEvent(effect.event, onDeleted);
+    }
+  }
+
+  Future<void> _setPublicRegistration({
+    required Event event,
+    required bool enabled,
+  }) async {
+    try {
+      await HostEventBookingController.publicRegistrationMutation.run(
+        ref,
+        (tx) => tx
+            .get(hostEventBookingControllerProvider.notifier)
+            .setPublicRegistration(event: event, enabled: enabled),
+      );
+    } catch (_) {
+      // HostPublicRegistrationCard owns the localized mutation error.
     }
   }
 
@@ -1543,6 +1585,88 @@ class HostActionRow extends StatelessWidget {
         titleMaxLines: 2,
         tone: destructive ? CatchFieldTone.danger : CatchFieldTone.normal,
         onTap: onTap,
+      ),
+    );
+  }
+}
+
+class HostPublicRegistrationCard extends StatelessWidget {
+  const HostPublicRegistrationCard({
+    super.key,
+    required this.club,
+    required this.event,
+    required this.mutation,
+    required this.onChanged,
+  });
+
+  final Club club;
+  final Event event;
+  final MutationState<dynamic> mutation;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final organizerPublished =
+        club.appVisibility == ClubAppVisibility.discoverable &&
+        club.publicPage?.allowsPublicWebRead == true;
+    final policy = event.effectiveEventPolicy;
+    final supportsStandaloneRegistration =
+        policy.basePriceInPaise == 0 &&
+        policy.admissionPolicy.format == EventAdmissionFormat.open &&
+        !policy.admissionPolicy.inviteRequired &&
+        !policy.admissionPolicy.membershipRequired &&
+        !policy.admissionPolicy.manualApprovalRequired;
+    final enabled = event.publicRegistrationEnabled;
+    return CatchSection.contained(
+      title: context.l10n.hostsHostPublicRegistrationTitle,
+      subtitle: enabled
+          ? context.l10n.hostsHostPublicRegistrationSubtitleEnabled
+          : context.l10n.hostsHostPublicRegistrationSubtitleDisabled,
+      trailing: CatchBadge.functional(
+        label: enabled
+            ? context.l10n.hostsHostPublicRegistrationStatusOpen
+            : context.l10n.hostsHostPublicRegistrationStatusOff,
+        tone: enabled ? CatchBadgeTone.success : CatchBadgeTone.neutral,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            !supportsStandaloneRegistration
+                ? context.l10n.hostsHostPublicRegistrationBodyUnsupported
+                : organizerPublished
+                ? context.l10n.hostsHostPublicRegistrationBodyPublished
+                : context.l10n.hostsHostPublicRegistrationBodyNeedsPage,
+            style: CatchTextStyles.supporting(
+              context,
+              color: CatchTokens.of(context).ink2,
+            ),
+          ),
+          gapH12,
+          CatchButton(
+            label: enabled
+                ? context.l10n.hostsHostPublicRegistrationActionDisable
+                : context.l10n.hostsHostPublicRegistrationActionEnable,
+            onPressed:
+                mutation.isPending ||
+                    ((!organizerPublished || !supportsStandaloneRegistration) &&
+                        !enabled)
+                ? null
+                : () => onChanged(!enabled),
+            isLoading: mutation.isPending,
+            variant: enabled
+                ? CatchButtonVariant.secondary
+                : CatchButtonVariant.primary,
+            fullWidth: true,
+          ),
+          if (mutation.hasError) ...[
+            gapH8,
+            CatchErrorBanner.fromError(
+              (mutation as MutationError).error,
+              context: AppErrorContext.event,
+            ),
+          ],
+        ],
       ),
     );
   }

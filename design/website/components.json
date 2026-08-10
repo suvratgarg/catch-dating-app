@@ -1035,13 +1035,40 @@
         "exportName": "EventDetailCatch",
         "states": [
           "catch-native",
+          "web-otp-registration",
           "external-source",
           "event-reviews",
           "desktop-ticket-rail",
           "mobile-single-column"
         ]
       },
-      "notes": "Generated read-only event route with a responsive ticket and organizer/action rail that becomes an app-aligned single-column stack on mobile. Catch events hand booking to the app; external events hand registration to the official source. The route never renders web booking, checkout, or sign-in controls."
+      "notes": "Generated event route with a responsive ticket and organizer/action rail that becomes an app-aligned single-column stack on mobile. Explicitly published Catch events can register an event-scoped phone-OTP identity without Consumer onboarding; profile-dependent Catch events hand off to the app and external events hand off to the official source."
+    },
+    {
+      "id": "event_detail_public_registration",
+      "kind": "supporting-component",
+      "routeIds": [
+        "event_detail_canonical"
+      ],
+      "owner": "features/events",
+      "source": "website/src/features/events/PublicEventRegistration.tsx",
+      "exportName": "PublicEventRegistration",
+      "css": [
+        "website/src/styles/event-detail.css",
+        "website/src/styles/responsive.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/EventDetailSections.stories.tsx",
+        "exportName": "EventDetailHeroWebOtp",
+        "states": [
+          "details",
+          "otp-code",
+          "success",
+          "error"
+        ]
+      },
+      "notes": "Event-scoped phone verification and registration form. It creates or links only an operational attendee row and never requires or synthesizes a Consumer profile."
     },
     {
       "id": "shared_event_detail_shells",
@@ -1062,6 +1089,7 @@
         "exportName": "EventDetailShells",
         "states": [
           "catch-native",
+          "web-otp-registration",
           "external-source",
           "fact-grid",
           "provenance",
@@ -1091,13 +1119,14 @@
         "exportName": "EventDetailHero",
         "states": [
           "catch-native",
+          "web-otp-registration",
           "external-source",
           "desktop-ticket-rail",
           "mobile-single-column",
           "review-preview"
         ]
       },
-      "notes": "Responsive event identity ticket, organizer provenance rail, app-aligned compact facts, capability-aware event-review preview, and source-aware primary action."
+      "notes": "Responsive event identity ticket, organizer provenance rail, app-aligned compact facts, capability-aware event-review preview, and source-aware primary action including phone-OTP registration for explicitly published Catch events."
     },
     {
       "id": "event_detail_facts_section",

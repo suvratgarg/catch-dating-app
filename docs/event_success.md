@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.3.5
+version: 1.4.0
 updated: 2026-08-10
 owner: recursive_audit_loop
 status: active
@@ -23,18 +23,50 @@ Event success is intentional live product code, not dead code. It is wired to
 live event routes, host setup/manage surfaces, attendee companion surfaces,
 Firestore rules, generated contracts, demo data, and Functions.
 
-The current production loop remains:
+The current production loop supports two entry paths:
 
-1. User joins a club and books an event.
-2. Host marks or attendee performs attendance/check-in.
-3. Event-success setup can guide the live event through structure, prompts,
-   assignments, reveal, host help, feedback, and coaching.
-4. Post-event swiping/matching/chat/reviews remain in their existing product
-   pipelines.
+1. A Consumer member joins/books through Catch, or a Host creates an
+   operations-only event and imports/adds its operational attendees.
+2. The Host marks attendance; a linked event-scoped or Consumer attendee may
+   self-check in when the event policy permits it.
+3. Profile-independent Event Success setup can guide the live event through
+   structure, run-of-show prompts, attendance and Host controls. The existing
+   assignment/reveal generators still require a linked Consumer participation
+   until the attendee-id migration below is implemented.
+4. Linked Consumer attendees can use the existing private companion, feedback
+   and review flows. Event-scoped OTP delivery for imported attendees is the
+   next identity migration; swiping, matching, cross-event discovery and chat
+   remain Consumer/profile pipelines.
 
 Event success does not own a duplicate post-event interest surface. Private
 target identities remain attendee-private unless the attendee explicitly asks
 the host for help through the wingman request flow.
+
+### Standalone Host Runtime Boundary
+
+Event Success must no longer infer that every human at an event has an
+`eventParticipations/{eventId_uid}` document. The Host runtime consumes the
+unified operational roster described in
+`docs/host_tooling_consolidation_tracker.md`.
+
+- Host-only facilitation, run-of-show, prompts, manual attendance and aggregate
+  reporting can address an `eventAttendee` without a linked UID. Existing
+  participant QR, feedback and private companion actions remain UID-backed.
+- Attendee-private runtime moments require a server-linked event-scoped OTP UID
+  or Consumer UID. The target assignment contract will use attendee ids as the
+  event identity and keep the optional linked UID only as an authorization
+  projection; current assignment documents are still UID-keyed.
+- Preference-driven modules may use only explicit event answers and consents.
+- Public/dating profile inspection, compatibility derived from a dating
+  profile, swiping, catches and chat require the Consumer profile tier.
+- A missing identity tier produces a visible capability unlock; it must never
+  silently drop the attendee, synthesize profile attributes, or widen roster
+  visibility.
+
+During migration, existing UID-keyed Event Success documents remain valid for
+Catch-booked participants. New generators must resolve the operational attendee
+first and write an explicit identity-version field before imported/web-OTP
+attendees can enter attendee-private modules.
 
 ## Format Mapping And Wiring
 

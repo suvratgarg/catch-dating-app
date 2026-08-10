@@ -45,6 +45,8 @@ Do not edit it by hand.
 | EventPrivateAccessDocument | `firestore/event_private_access.schema.json` | `functions/src/shared/generated/eventPrivateAccessDocument.ts` |
 | EventInviteLinkDocument | `firestore/event_invite_links.schema.json` | `functions/src/shared/generated/eventInviteLinkDocument.ts` |
 | EventParticipationDocument | `firestore/event_participations.schema.json` | `functions/src/shared/generated/eventParticipationDocument.ts` |
+| EventAttendeeDocument | `firestore/event_attendees.schema.json` | `functions/src/shared/generated/eventAttendeeDocument.ts` |
+| EventAttendeeImportDocument | `firestore/event_attendee_imports.schema.json` | `functions/src/shared/generated/eventAttendeeImportDocument.ts` |
 | EventCrossPathsConsentDocument | `firestore/event_cross_paths_consents.schema.json` | `functions/src/shared/generated/eventCrossPathsConsentDocument.ts` |
 | CrossPathsShowcaseEligibilityDocument | `firestore/cross_paths_showcase_eligibility.schema.json` | `functions/src/shared/generated/crossPathsShowcaseEligibilityDocument.ts` |
 | CrossPathsSuggestionExposureDocument | `firestore/cross_paths_suggestion_exposures.schema.json` | `functions/src/shared/generated/crossPathsSuggestionExposureDocument.ts` |
@@ -170,6 +172,10 @@ Do not edit it by hand.
 | RecordOrganizerAnalyticsEventCallablePayload | `callables/record_organizer_analytics_event_payload.schema.json` | `functions/src/shared/generated/recordOrganizerAnalyticsEventCallablePayload.ts` |
 | RecordOrganizerAnalyticsEventCallableResponse | `callable_responses/record_organizer_analytics_event_response.schema.json` | `functions/src/shared/generated/recordOrganizerAnalyticsEventCallableResponse.ts` |
 | MarkEventAttendanceCallablePayload | `callables/mark_event_attendance_payload.schema.json` | `functions/src/shared/generated/markEventAttendanceCallablePayload.ts` |
+| ImportEventAttendeesCallablePayload | `callables/import_event_attendees_payload.schema.json` | `functions/src/shared/generated/importEventAttendeesCallablePayload.ts` |
+| MarkEventAttendeeAttendanceCallablePayload | `callables/mark_event_attendee_attendance_payload.schema.json` | `functions/src/shared/generated/markEventAttendeeAttendanceCallablePayload.ts` |
+| RegisterPublicEventCallablePayload | `callables/register_public_event_payload.schema.json` | `functions/src/shared/generated/registerPublicEventCallablePayload.ts` |
+| RegisterPublicEventCallableResponse | `callable_responses/register_public_event_response.schema.json` | `functions/src/shared/generated/registerPublicEventCallableResponse.ts` |
 | EventJoinRequestDecisionCallablePayload | `callables/event_join_request_decision_payload.schema.json` | `functions/src/shared/generated/eventJoinRequestDecisionCallablePayload.ts` |
 | OverrideEventSuccessRotationsCallablePayload | `callables/override_event_success_rotations_payload.schema.json` | `functions/src/shared/generated/overrideEventSuccessRotationsCallablePayload.ts` |
 | OverrideEventSuccessGroupsCallablePayload | `callables/override_event_success_groups_payload.schema.json` | `functions/src/shared/generated/overrideEventSuccessGroupsCallablePayload.ts` |
@@ -282,6 +288,8 @@ Do not edit it by hand.
 | `schemaEventPrivateAccessDocumentSchema` | EventPrivateAccessDocument | `firestore/event_private_access.schema.json` | `lib/core/schema_contracts/generated/schemas/event_private_access_document.g.dart` |
 | `schemaEventInviteLinkDocumentSchema` | EventInviteLinkDocument | `firestore/event_invite_links.schema.json` | `lib/core/schema_contracts/generated/schemas/event_invite_link_document.g.dart` |
 | `schemaEventParticipationDocumentSchema` | EventParticipationDocument | `firestore/event_participations.schema.json` | `lib/core/schema_contracts/generated/schemas/event_participation_document.g.dart` |
+| `schemaEventAttendeeDocumentSchema` | EventAttendeeDocument | `firestore/event_attendees.schema.json` | `lib/core/schema_contracts/generated/schemas/event_attendee_document.g.dart` |
+| `schemaEventAttendeeImportDocumentSchema` | EventAttendeeImportDocument | `firestore/event_attendee_imports.schema.json` | `lib/core/schema_contracts/generated/schemas/event_attendee_import_document.g.dart` |
 | `schemaEventCrossPathsConsentDocumentSchema` | EventCrossPathsConsentDocument | `firestore/event_cross_paths_consents.schema.json` | `lib/core/schema_contracts/generated/schemas/event_cross_paths_consent_document.g.dart` |
 | `schemaCrossPathsShowcaseEligibilityDocumentSchema` | CrossPathsShowcaseEligibilityDocument | `firestore/cross_paths_showcase_eligibility.schema.json` | `lib/core/schema_contracts/generated/schemas/cross_paths_showcase_eligibility_document.g.dart` |
 | `schemaCrossPathsSuggestionExposureDocumentSchema` | CrossPathsSuggestionExposureDocument | `firestore/cross_paths_suggestion_exposures.schema.json` | `lib/core/schema_contracts/generated/schemas/cross_paths_suggestion_exposure_document.g.dart` |
@@ -407,6 +415,10 @@ Do not edit it by hand.
 | `schemaRecordOrganizerAnalyticsEventCallablePayloadSchema` | RecordOrganizerAnalyticsEventCallablePayload | `callables/record_organizer_analytics_event_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/record_organizer_analytics_event_callable_payload.g.dart` |
 | `schemaRecordOrganizerAnalyticsEventCallableResponseSchema` | RecordOrganizerAnalyticsEventCallableResponse | `callable_responses/record_organizer_analytics_event_response.schema.json` | `lib/core/schema_contracts/generated/schemas/record_organizer_analytics_event_callable_response.g.dart` |
 | `schemaMarkEventAttendanceCallablePayloadSchema` | MarkEventAttendanceCallablePayload | `callables/mark_event_attendance_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/mark_event_attendance_callable_payload.g.dart` |
+| `schemaImportEventAttendeesCallablePayloadSchema` | ImportEventAttendeesCallablePayload | `callables/import_event_attendees_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/import_event_attendees_callable_payload.g.dart` |
+| `schemaMarkEventAttendeeAttendanceCallablePayloadSchema` | MarkEventAttendeeAttendanceCallablePayload | `callables/mark_event_attendee_attendance_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/mark_event_attendee_attendance_callable_payload.g.dart` |
+| `schemaRegisterPublicEventCallablePayloadSchema` | RegisterPublicEventCallablePayload | `callables/register_public_event_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/register_public_event_callable_payload.g.dart` |
+| `schemaRegisterPublicEventCallableResponseSchema` | RegisterPublicEventCallableResponse | `callable_responses/register_public_event_response.schema.json` | `lib/core/schema_contracts/generated/schemas/register_public_event_callable_response.g.dart` |
 | `schemaEventJoinRequestDecisionCallablePayloadSchema` | EventJoinRequestDecisionCallablePayload | `callables/event_join_request_decision_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/event_join_request_decision_callable_payload.g.dart` |
 | `schemaOverrideEventSuccessRotationsCallablePayloadSchema` | OverrideEventSuccessRotationsCallablePayload | `callables/override_event_success_rotations_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/override_event_success_rotations_callable_payload.g.dart` |
 | `schemaOverrideEventSuccessGroupsCallablePayloadSchema` | OverrideEventSuccessGroupsCallablePayload | `callables/override_event_success_groups_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/override_event_success_groups_callable_payload.g.dart` |
@@ -552,6 +564,9 @@ Do not edit it by hand.
 | RecordEventInviteLinkOpenCallableRequest | RecordEventInviteLinkOpenCallablePayload | `callables/record_event_invite_link_open_payload.schema.json` | `lib/core/schema_contracts/generated/callables/record_event_invite_link_open_callable_request.g.dart` |
 | RecordOrganizerAnalyticsEventCallableRequest | RecordOrganizerAnalyticsEventCallablePayload | `callables/record_organizer_analytics_event_payload.schema.json` | `lib/core/schema_contracts/generated/callables/record_organizer_analytics_event_callable_request.g.dart` |
 | MarkEventAttendanceCallableRequest | MarkEventAttendanceCallablePayload | `callables/mark_event_attendance_payload.schema.json` | `lib/core/schema_contracts/generated/callables/mark_event_attendance_callable_request.g.dart` |
+| ImportEventAttendeesCallableRequest | ImportEventAttendeesCallablePayload | `callables/import_event_attendees_payload.schema.json` | `lib/core/schema_contracts/generated/callables/import_event_attendees_callable_request.g.dart` |
+| MarkEventAttendeeAttendanceCallableRequest | MarkEventAttendeeAttendanceCallablePayload | `callables/mark_event_attendee_attendance_payload.schema.json` | `lib/core/schema_contracts/generated/callables/mark_event_attendee_attendance_callable_request.g.dart` |
+| RegisterPublicEventCallableRequest | RegisterPublicEventCallablePayload | `callables/register_public_event_payload.schema.json` | `lib/core/schema_contracts/generated/callables/register_public_event_callable_request.g.dart` |
 | EventJoinRequestDecisionCallableRequest | EventJoinRequestDecisionCallablePayload | `callables/event_join_request_decision_payload.schema.json` | `lib/core/schema_contracts/generated/callables/event_join_request_decision_callable_request.g.dart` |
 | OverrideEventSuccessRotationsCallableRequest | OverrideEventSuccessRotationsCallablePayload | `callables/override_event_success_rotations_payload.schema.json` | `lib/core/schema_contracts/generated/callables/override_event_success_rotations_callable_request.g.dart` |
 | OverrideEventSuccessGroupsCallableRequest | OverrideEventSuccessGroupsCallablePayload | `callables/override_event_success_groups_payload.schema.json` | `lib/core/schema_contracts/generated/callables/override_event_success_groups_callable_request.g.dart` |

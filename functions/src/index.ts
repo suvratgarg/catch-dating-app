@@ -37,6 +37,14 @@ export {
 } from "./events/inviteLinks";
 export {decideEventJoinRequest} from "./events/decideEventJoinRequest";
 export {markEventAttendance} from "./events/markEventAttendance";
+export {
+  importEventAttendees,
+  markEventAttendeeAttendance,
+  registerPublicEvent,
+} from "./events/eventAttendees";
+export {
+  onEventParticipationRosterProjected,
+} from "./events/eventAttendeeProjection";
 export {selfCheckInAttendance} from "./events/selfCheckInAttendance";
 export {
   createEvent,

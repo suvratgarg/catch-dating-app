@@ -1,7 +1,7 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.8.1
-updated: 2026-08-09
+version: 1.9.0
+updated: 2026-08-10
 owner: recursive_audit_loop
 status: active
 ---
@@ -186,6 +186,9 @@ is `docs/migrations/clubs_to_organizers.md`.
 | `joinEventWaitlist` | Callable | `EventRepository.joinWaitlistViaFunction` | `eventParticipations/{eventId_uid}`, `events/{eventId}.waitlistedCount` | Rate-limited before transaction work; server checks block boundary without exposing block state in rules. |
 | `leaveEventWaitlist` | Callable | `EventRepository.leaveWaitlist` | `eventParticipations/{eventId_uid}`, `events/{eventId}.waitlistedCount` | Rate-limited before transaction work; marks the caller's waitlist edge cancelled. |
 | `markEventAttendance` | Callable | `EventRepository.markAttendance` | `eventParticipations/{eventId_uid}`, `events/{eventId}.checkedInCount` | Host-only attendance toggle. |
+| `importEventAttendees` | Callable | `EventAttendeeRepository.importAttendees` from Host Guests | `eventAttendees/{attendeeId}`, `eventAttendeeImports/{importId}` | App-Check-protected and rate-limited. Organizer-manager-only bounded import (250 rows/request); normalizes contact data, deduplicates event-scoped identity, preserves checked-in/Catch-linked state, and uses the client import key plus canonical payload hash for safe retry. |
+| `markEventAttendeeAttendance` | Callable | `EventAttendeeRepository.markAttendance` from Host Guests | `eventAttendees/{attendeeId}` | App-Check-protected and rate-limited organizer-manager check-in toggle for imported/manual/web-OTP operational attendees. It does not synthesize a Consumer participation or profile. |
+| `registerPublicEvent` | Callable | Published marketing event phone-OTP form | `eventAttendees/{attendeeId}` | Requires a Firebase phone-auth identity, a published organizer and explicitly OTP-enabled future event. Links a matching imported phone row in place, enforces capacity transactionally, returns event-scoped state only, and never creates a Consumer profile or `eventParticipations` edge. |
 | `selfCheckInAttendance` | Callable | `EventRepository.selfCheckInAttendance` | `eventParticipations/{eventId_uid}`, `events/{eventId}.checkedInCount` | Participant self-check only; verifies sign-up and the time window, then requires exact structured or legacy coordinates and enforces proximity. Missing event coordinates fail closed. |
 | `fetchSwipeCandidates` | Callable | `SwipeCandidateRepository`, Event Recap, post-event attendee avatars | `events/{eventId}`, `eventParticipations`, `users`, `publicProfiles`, `profileDecisions`, `blocks` (read only) | App-Check-protected, rate-limited post-event resolver. Fails closed outside the 24-hour Catch window or without attended viewer state, and returns only public projections that pass reciprocal gender/age preferences, prior-decision exclusion, and blocks in both directions. Raw roster identities are never returned. |
 | `setCrossPathsEventConsent` | Callable | `CrossPathsRepository.setEventConsent` from Event Detail | `eventCrossPathsConsents/{eventId_uid}`; reads `users/{uid}`, `events/{eventId}`, and `eventParticipations/{eventId_uid}` | App-Check-protected and rate-limited. Acts only for the caller. Enabling requires an explicit private global opt-in, current terms, an Admin-selected active upcoming Mumbai event, and the caller's confirmed `signedUp` participation. Disabling remains available after eligibility disappears. The response contains only event id, enabled state, and terms version. |

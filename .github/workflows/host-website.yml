@@ -1,0 +1,135 @@
+name: Host Website
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/actions/**"
+      - ".github/workflows/_web-hosting-build.yml"
+      - ".github/workflows/_web-hosting-promote.yml"
+      - ".github/workflows/host-website.yml"
+      - ".firebaserc"
+      - "apps/host/**"
+      - "assets/**"
+      - "contracts/**"
+      - "firebase.json"
+      - "lib/**"
+      - "pubspec.lock"
+      - "pubspec.yaml"
+      - "tool/ci/delivery_core.mjs"
+      - "tool/ci/package_web_hosting.mjs"
+      - "tool/ci/package_web_hosting.test.mjs"
+      - "tool/ci/toolchain.env"
+      - "tool/ci/web_hosting_workflow.test.mjs"
+      - "tool/env/dart_defines/**"
+      - "tool/firebase_with_env.sh"
+      - "tool/flutter_with_env.sh"
+      - "tool/platform/**"
+  workflow_dispatch:
+    inputs:
+      recovery_artifact_digest:
+        description: Exact sha256 digest from a failed source run's Web Hosting artifact
+        required: false
+        type: string
+      recovery_artifact_id:
+        description: Exact artifact id from a failed source run (leave empty for validation-only dispatch)
+        required: false
+        type: string
+      recovery_reason:
+        description: Operator reason required for exact-artifact recovery
+        required: false
+        type: string
+      recovery_source_run_attempt:
+        description: Producing failed workflow run attempt
+        required: false
+        type: string
+      recovery_source_run_id:
+        description: Producing failed workflow run id
+        required: false
+        type: string
+      recovery_source_sha:
+        description: Exact 40-character source SHA from the failed run
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate standalone Host web
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.recovery_artifact_id == '' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+
+      - uses: ./.github/actions/setup-flutter
+
+      - run: flutter pub get
+
+      - name: Validate Host target contracts
+        run: node tool/run.mjs check platform:app-targets platform:app-package-graphs
+
+      - name: Analyze Host-owned Flutter surfaces
+        run: flutter analyze --no-fatal-infos apps/host lib/hosts lib/events
+
+      - name: Test standalone Host roster behavior
+        run: flutter test --concurrency=1 test/hosts
+
+  package:
+    name: Package exact Host Hosting bytes
+    needs: validate
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/_web-hosting-build.yml
+    with:
+      surface: host
+    secrets: inherit
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+
+  promote:
+    name: Promote exact Host Hosting bytes
+    needs: package
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.package.result == 'success' }}
+    uses: ./.github/workflows/_web-hosting-promote.yml
+    with:
+      artifact_digest: ${{ needs.package.outputs.artifact_digest }}
+      artifact_id: ${{ needs.package.outputs.artifact_id }}
+      source_ci_run_attempt: ${{ needs.package.outputs.source_ci_run_attempt }}
+      source_ci_run_id: ${{ needs.package.outputs.source_ci_run_id }}
+      source_sha: ${{ needs.package.outputs.source_sha }}
+      surface: host
+    secrets: inherit
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+
+  recover:
+    name: Recover exact Host Hosting bytes
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.recovery_artifact_id != '' }}
+    uses: ./.github/workflows/_web-hosting-promote.yml
+    with:
+      artifact_digest: ${{ inputs.recovery_artifact_digest }}
+      artifact_id: ${{ inputs.recovery_artifact_id }}
+      recovery: true
+      recovery_reason: ${{ inputs.recovery_reason }}
+      source_ci_run_attempt: ${{ inputs.recovery_source_run_attempt }}
+      source_ci_run_id: ${{ inputs.recovery_source_run_id }}
+      source_sha: ${{ inputs.recovery_source_sha }}
+      surface: host
+    secrets: inherit
+    permissions:
+      actions: read
+      contents: read
+      id-token: write

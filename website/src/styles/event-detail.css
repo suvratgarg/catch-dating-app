@@ -328,6 +328,36 @@
   margin: 0;
 }
 
+.event-registration {
+  display: grid;
+  gap: var(--catch-space-s3);
+}
+
+.event-registration .field-block {
+  display: grid;
+  gap: var(--catch-space-s2);
+}
+
+.event-registration label {
+  color: var(--website-copy-label);
+  font-family: var(--catch-font-mono), ui-monospace, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.event-registration input {
+  width: 100%;
+}
+
+.event-registration__privacy {
+  margin: 0;
+  color: var(--website-copy-muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
 .event-detail-section {
   padding: clamp(var(--catch-space-s12), 7vw, 88px) var(--website-gutter);
   border-bottom: 1px solid var(--website-line);

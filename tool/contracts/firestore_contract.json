@@ -515,6 +515,40 @@
       ]
     },
     {
+      "id": "eventAttendees",
+      "path": "eventAttendees/{attendeeId}",
+      "rulesMatch": "/eventAttendees/{attendeeId}",
+      "typescriptInterface": "EventAttendeeDocument",
+      "dartModel": "lib/events/domain/event_attendee.dart",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "standalone Host roster, Catch-booking projection, public registration, and attendance callables",
+      "read": "authorized event host only; attendee-facing state is callable-owned",
+      "write": "server only",
+      "exportedFunctions": [
+        "importEventAttendees",
+        "markEventAttendeeAttendance",
+        "registerPublicEvent",
+        "onEventParticipationRosterProjected"
+      ],
+      "migrationNotes": [
+        "Private event-scoped operational roster across Catch bookings, Host imports/manual rows, and web OTP registration; linkedUid is optional and never synthetic."
+      ]
+    },
+    {
+      "id": "eventAttendeeImports",
+      "path": "eventAttendeeImports/{importId}",
+      "rulesMatch": "/eventAttendeeImports/{importId}",
+      "typescriptInterface": "EventAttendeeImportDocument",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "importEventAttendees callable",
+      "read": "authorized event host only",
+      "write": "server only",
+      "exportedFunctions": ["importEventAttendees"],
+      "migrationNotes": [
+        "Stores bounded idempotency and audit metadata, never the uploaded file."
+      ]
+    },
+    {
       "id": "eventParticipations",
       "path": "eventParticipations/{participationId}",
       "rulesMatch": "/eventParticipations/{participationId}",
