@@ -968,6 +968,8 @@ abstract final class CatchOpacity {
   static const double visible = 1.0;
   static const double none = 0.0;
   static const double onFillMuted = 0.76;
+  static const double avatarFallbackGlyph = 0.75;
+  static const double editorialGridLine = 0.08;
   static const double ticketPerforationLine = 0.22;
   static const double eventDateRailGlyph = 0.14;
 
@@ -1242,6 +1244,8 @@ abstract final class CatchOpacity {
 
   /// Prominent foreground/content on Event Success stage surfaces.
   static const double eventSuccessProminent = 0.82;
+  static const double eventSuccessPaperLine = 0.26;
+  static const double eventSuccessPaperMark = 0.10;
 
   /// Companion stage nav/chrome foreground.
   static const double eventSuccessChrome = 0.84;
@@ -1511,6 +1515,7 @@ abstract final class CatchStroke {
   static const double underline = 1.5;
   static const double focusRing = 2.0;
   static const double selection = 3.0;
+  static const double passProgress = 2.6;
   static const double clubMemberSeal = 2.0;
 }
 
@@ -1519,6 +1524,7 @@ abstract final class CatchStroke {
 /// Shared motion tokens for hover/tap feedback, standard transitions, and
 /// celebratory success moments.
 abstract final class CatchMotion {
+  static const Duration none = Duration.zero;
   static const Duration fast = Duration(milliseconds: 120);
   static const Duration micro = Duration(milliseconds: 180);
   static const Duration chatScroll = Duration(milliseconds: 200);
@@ -1527,6 +1533,7 @@ abstract final class CatchMotion {
   static const Duration pageStep = Duration(milliseconds: 280);
   static const Duration calendarScroll = Duration(milliseconds: 320);
   static const Duration mediaReorderDebounce = Duration(milliseconds: 400);
+  static const Duration searchDebounce = Duration(milliseconds: 300);
   static const Duration slow = Duration(milliseconds: 420);
   static const Duration afterglowBeatEntry = Duration(milliseconds: 480);
   static const Duration afterglowCountUp = Duration(milliseconds: 600);
@@ -1541,6 +1548,8 @@ abstract final class CatchMotion {
   static const Duration revealCinematicSettle = Duration(milliseconds: 700);
   static const Duration cinematicShort = Duration(seconds: 4);
   static const Duration cinematicMedium = Duration(seconds: 6);
+  static const Duration noticeAutoDismiss = Duration(seconds: 6);
+  static const Duration liveRevealClockTick = Duration(milliseconds: 250);
   static const Duration ambientLoop = Duration(seconds: 16);
   static const Duration pulse = Duration(milliseconds: 700);
   static const Duration skeletonShimmer = Duration(milliseconds: 1200);
@@ -1557,6 +1566,8 @@ abstract final class CatchMotion {
   static const Curve welcomeRevealCurve = Curves.easeOutCubic;
 
   static const Curve standardCurve = Cubic(0.2, 0.0, 0.0, 1.0);
+  static const Curve linearCurve = Curves.linear;
+  static const Curve easeCurve = Curves.ease;
   static const Curve easeInCubicCurve = Curves.easeInCubic;
   static const Curve easeInOutCurve = Curves.easeInOut;
   static const Curve easeInOutCubicCurve = Curves.easeInOutCubic;
@@ -1565,6 +1576,9 @@ abstract final class CatchMotion {
   static const Curve easeOutCurve = Curves.easeOut;
   static const Curve elasticOutCurve = Curves.elasticOut;
   static const Curve springCurve = Cubic(0.34, 1.4, 0.64, 1.0);
+
+  static Duration afterglowBeatDelay(int index) =>
+      Duration(milliseconds: index * 1400);
 }
 
 // ── Layout ───────────────────────────────────────────────────────────────────
@@ -2365,6 +2379,7 @@ abstract final class CatchIcon {
   static const double md = 18.0;
   static const double control = CatchSpacing.s5;
   static const double row = 22.0;
+  static const double statusMedallion = 26.0;
   static const double tile = CatchSpacing.s7;
   static const double hero = CatchSpacing.s9;
   static const double emptyState = 34.0;

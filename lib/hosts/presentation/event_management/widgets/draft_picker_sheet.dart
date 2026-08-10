@@ -233,7 +233,11 @@ class DraftCard extends StatelessWidget {
           background: Colors.transparent,
           child: isDeleting
               ? const HostInlineSkeletonIcon()
-              : Icon(CatchIcons.deleteOutlineRounded, size: 20, color: t.ink2),
+              : Icon(
+                  CatchIcons.deleteOutlineRounded,
+                  size: CatchIcon.control,
+                  color: t.ink2,
+                ),
         ),
       ),
     );

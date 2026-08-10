@@ -185,8 +185,8 @@ class _AfterglowBeatGridState extends State<_AfterglowBeatGrid> {
             // Stagger entry by 1.4s per beat. Tests skip the animation gate
             // so the rows just render in their final state.
             entryDelay: _kStageAnimationsEnabled
-                ? Duration(milliseconds: index * 1400)
-                : Duration.zero,
+                ? CatchMotion.afterglowBeatDelay(index)
+                : CatchMotion.none,
           ),
         ],
       ],

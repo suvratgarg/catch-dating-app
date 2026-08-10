@@ -61,7 +61,7 @@ class ClubIndexRow extends StatelessWidget {
                     club.name,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: CatchTextStyles.titleS(context, color: t.ink),
+                    style: CatchTextStyles.fieldRowTitle(context, color: t.ink),
                   ),
                   gapH8,
                   Wrap(

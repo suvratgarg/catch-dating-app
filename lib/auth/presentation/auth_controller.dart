@@ -5,6 +5,7 @@ import 'package:catch_dating_app/auth/presentation/auth_input.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
@@ -197,7 +198,7 @@ class AuthController extends _$AuthController {
     );
 
     return completer.future.timeout(
-      const Duration(seconds: 60),
+      CatchMotion.authOtpResendCooldown,
       onTimeout: () => throw const NetworkException(
         'timeout',
         'The verification request timed out. Please check your connection and try again.',

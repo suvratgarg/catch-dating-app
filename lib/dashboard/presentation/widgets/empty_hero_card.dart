@@ -125,8 +125,10 @@ class _HeroLineWash extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final linePaint = Paint()
-      ..color = CatchTokens.editorialWhite.withValues(alpha: 0.08)
-      ..strokeWidth = 1;
+      ..color = CatchTokens.editorialWhite.withValues(
+        alpha: CatchOpacity.editorialGridLine,
+      )
+      ..strokeWidth = CatchStroke.hairline;
     for (var x = -size.height; x < size.width + size.height; x += 22) {
       canvas.drawLine(
         Offset(x, size.height),

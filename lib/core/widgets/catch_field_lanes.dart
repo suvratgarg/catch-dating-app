@@ -74,8 +74,8 @@ class CatchFieldRow extends StatelessWidget {
     this.padding = _defaultPadding,
     this.crossAxisAlignment = CrossAxisAlignment.start,
     this.leadingTopPadding = 0,
-    this.paddingDuration = Duration.zero,
-    this.paddingCurve = Curves.linear,
+    this.paddingDuration = CatchMotion.none,
+    this.paddingCurve = CatchMotion.linearCurve,
   }) : leadingGap = leadingSlotGap,
        trailingGap = CatchFieldTokens.trailingGap;
 
@@ -92,8 +92,8 @@ class CatchFieldRow extends StatelessWidget {
        ),
        crossAxisAlignment = CrossAxisAlignment.start,
        leadingTopPadding = 0,
-       paddingDuration = Duration.zero,
-       paddingCurve = Curves.linear,
+       paddingDuration = CatchMotion.none,
+       paddingCurve = CatchMotion.linearCurve,
        leadingGap = leadingSlotGap,
        trailingGap = CatchFieldTokens.trailingGap;
 

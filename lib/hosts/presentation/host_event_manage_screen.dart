@@ -6,6 +6,7 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -1006,7 +1007,8 @@ class HostInviteLinksList extends StatelessWidget {
               icon: Icon(CatchIcons.addRounded),
               isLoading: state.createPending,
             );
-            if (constraints.maxWidth < 360) {
+            if (constraints.maxWidth <
+                ComponentBreakpoints.hostInviteLinksHeaderStackBreakpoint) {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -1202,7 +1204,8 @@ class HostInviteLinkRow extends StatelessWidget {
                 ],
               ],
             );
-            if (constraints.maxWidth < 340) {
+            if (constraints.maxWidth <
+                ComponentBreakpoints.hostInviteLinkRowStackBreakpoint) {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -1678,12 +1681,15 @@ class HostEventSummaryRow extends StatelessWidget {
               value,
               maxLines: 1,
               style: CatchTextStyles.labelL(context),
-              textAlign: constraints.maxWidth < 340
+              textAlign:
+                  constraints.maxWidth <
+                      ComponentBreakpoints.hostEventSummaryRowStackBreakpoint
                   ? TextAlign.left
                   : TextAlign.right,
               overflow: TextOverflow.ellipsis,
             );
-            if (constraints.maxWidth < 340) {
+            if (constraints.maxWidth <
+                ComponentBreakpoints.hostEventSummaryRowStackBreakpoint) {
               return Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

@@ -25,7 +25,7 @@ class CatchNoticeData {
     this.tone = CatchNoticeTone.status,
     this.actionLabel,
     this.onAction,
-    this.duration = const Duration(seconds: 6),
+    this.duration = CatchMotion.noticeAutoDismiss,
     this.dedupeKey,
     this.priority = 0,
     this.dismissible = true,
@@ -303,7 +303,7 @@ class CatchNotice extends StatelessWidget {
                 icon: Icon(
                   CatchIcons.closeRounded,
                   color: palette.secondary,
-                  size: 18,
+                  size: CatchIcon.md,
                 ),
               ),
             ],

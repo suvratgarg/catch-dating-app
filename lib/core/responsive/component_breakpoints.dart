@@ -9,6 +9,15 @@
 /// expanded). Use [ScreenSize] for app-shell decisions (bottom bar vs nav
 /// rail); use these for in-widget reflow. Migrated verbatim from `CatchLayout`.
 abstract final class ComponentBreakpoints {
+  /// Host invite-link heading stacks its creation action below this width.
+  static const double hostInviteLinksHeaderStackBreakpoint = 360.0;
+
+  /// Host invite-link rows stack their action controls below this width.
+  static const double hostInviteLinkRowStackBreakpoint = 340.0;
+
+  /// Host event summary rows move values under labels below this width.
+  static const double hostEventSummaryRowStackBreakpoint = 340.0;
+
   /// Catches hub gains horizontal padding once its column is this wide.
   static const double catchesWidePaddingBreakpoint = 700;
 

@@ -318,7 +318,7 @@ class PaperCelebrationScaffold extends StatelessWidget {
                         child: Text(
                           screen.message,
                           textAlign: TextAlign.center,
-                          style: CatchTextStyles.bodyM(context, color: t.ink2),
+                          style: CatchTextStyles.proseM(context, color: t.ink2),
                         ),
                       ),
                     ),
@@ -456,7 +456,7 @@ class PaperCelebrationDetailRow extends StatelessWidget {
             child: Text(
               detail.value,
               textAlign: TextAlign.right,
-              style: CatchTextStyles.titleS(context, color: t.ink),
+              style: CatchTextStyles.labelL(context, color: t.ink),
             ),
           ),
         ],

@@ -391,7 +391,9 @@ class CatchVeiledPersonAvatar extends StatelessWidget {
             child: Icon(
               CatchIcons.personOutlined,
               size: innerSize * 0.38,
-              color: activity.deep.withValues(alpha: 0.75),
+              color: activity.deep.withValues(
+                alpha: CatchOpacity.avatarFallbackGlyph,
+              ),
             ),
           ),
         ),

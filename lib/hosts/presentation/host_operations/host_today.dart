@@ -172,7 +172,7 @@ class HostTodayDashboardSection extends StatelessWidget {
           child: tasks.isEmpty
               ? Text(
                   context.l10n.hostsHostTodayTextNothingNeedsYouRight,
-                  style: CatchTextStyles.bodyM(context),
+                  style: CatchTextStyles.supporting(context),
                 )
               : Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -784,7 +784,7 @@ String _eventStartLeadLabel(Event event, DateTime now) {
   }
 
   final lead = event.startTime.difference(now);
-  if (!lead.isNegative && lead < const Duration(hours: 1)) {
+  if (!lead.isNegative && lead < hostTodayImminentEventLeadTime) {
     final minutes = lead.inMinutes.clamp(1, 59);
     return 'STARTS IN $minutes MIN';
   }
