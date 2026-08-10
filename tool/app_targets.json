@@ -41,6 +41,7 @@
       "status": "complete_local",
       "evidence": [
         "tool/platform/check_app_package_graph.mjs",
+        "Firebase Flutter-to-Apple native SDK lockstep in tool/platform/check_app_targets.mjs",
         "tool/platform/mobile_package_policy.json",
         "role-specific Android App Bundles",
         "role-specific iOS app products",
@@ -68,6 +69,29 @@
       ]
     }
   ],
+  "appleNativeDependencies": {
+    "firebaseCoreFlutterVersion": "4.13.0",
+    "cloudFirestoreFlutterVersion": "6.8.0",
+    "firebaseAppleSdkVersion": "12.17.0",
+    "podProjects": [
+      {
+        "podfile": "ios/Podfile",
+        "lockfile": "ios/Podfile.lock"
+      },
+      {
+        "podfile": "apps/consumer/ios/Podfile",
+        "lockfile": "apps/consumer/ios/Podfile.lock"
+      },
+      {
+        "podfile": "apps/host/ios/Podfile",
+        "lockfile": "apps/host/ios/Podfile.lock"
+      },
+      {
+        "podfile": "macos/Podfile",
+        "lockfile": "macos/Podfile.lock"
+      }
+    ]
+  },
   "releasePolicy": {
     "owner": "github-actions",
     "workflow": ".github/workflows/mobile-internal-release.yml",

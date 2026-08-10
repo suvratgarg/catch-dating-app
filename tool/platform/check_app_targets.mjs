@@ -11,11 +11,86 @@ import {
 const expectedRoles = ["consumer", "host"];
 const expectedEnvironments = ["dev", "staging", "prod"];
 
+export function packageVersionFromPubLock(source, packageName) {
+  const lines = source.split(/\r?\n/u);
+  const packageHeader = `  ${packageName}:`;
+  let inPackage = false;
+  for (const line of lines) {
+    if (line === packageHeader) {
+      inPackage = true;
+      continue;
+    }
+    if (inPackage && /^  \S/u.test(line)) return null;
+    if (!inPackage) continue;
+    const match = line.match(/^    version: "([^"]+)"$/u);
+    if (match) return match[1];
+  }
+  return null;
+}
+
+export function validateAppleFirebaseLockstep({
+  policy,
+  pubLockSource,
+  podProjects,
+}) {
+  const findings = [];
+  const expectedCore = policy?.firebaseCoreFlutterVersion;
+  const expectedFirestore = policy?.cloudFirestoreFlutterVersion;
+  const expectedApple = policy?.firebaseAppleSdkVersion;
+  if (!expectedCore || !expectedFirestore || !expectedApple) {
+    return [
+      "appleNativeDependencies must bind firebase_core, cloud_firestore, and the Firebase Apple SDK",
+    ];
+  }
+
+  for (const [packageName, expected] of [
+    ["firebase_core", expectedCore],
+    ["cloud_firestore", expectedFirestore],
+  ]) {
+    const actual = packageVersionFromPubLock(pubLockSource, packageName);
+    if (actual !== expected) {
+      findings.push(
+        `${packageName} is ${actual ?? "missing"} in pubspec.lock; ` +
+          `tool/app_targets.json expects ${expected}`,
+      );
+    }
+  }
+
+  if (podProjects.length === 0) {
+    findings.push("appleNativeDependencies must own at least one Pod project");
+  }
+  for (const project of podProjects) {
+    const tag = project.podfileSource.match(
+      /pod 'FirebaseFirestore',[^\n]*:tag => '([^']+)'/u,
+    )?.[1];
+    if (tag !== expectedApple) {
+      findings.push(
+        `${project.podfilePath} pins FirebaseFirestore ${tag ?? "missing"}; ` +
+          `expected ${expectedApple}`,
+      );
+    }
+    for (const marker of [
+      `  - Firebase/Firestore (${expectedApple}):`,
+      `  - FirebaseCore (${expectedApple}):`,
+      `  - FirebaseFirestore (${expectedApple}):`,
+      `    :tag: ${expectedApple}`,
+    ]) {
+      if (!project.lockfileSource.includes(marker)) {
+        findings.push(`${project.lockfilePath} is missing '${marker.trim()}'`);
+      }
+    }
+  }
+  return findings;
+}
+
 export function validateManifestShape(manifest) {
   const findings = [];
   if (manifest?.schemaVersion !== 1) findings.push("schemaVersion must be 1");
   if (manifest?.logicalName !== "catch-installable-app-targets") {
     findings.push("logicalName must be catch-installable-app-targets");
+  }
+  if (!manifest?.appleNativeDependencies) {
+    findings.push("appleNativeDependencies is required");
   }
   for (const role of expectedRoles) {
     const roleConfig = manifest?.roles?.[role];
@@ -368,6 +443,42 @@ export function scanAppTargets({root = defaultRepoRoot} = {}) {
   const warnings = [];
   const read = (relativePath) =>
     fs.readFileSync(resolveRepoPath(root, relativePath, findings), "utf8");
+
+  const nativePolicy = manifest.appleNativeDependencies;
+  if (nativePolicy) {
+    const podProjects = [];
+    for (const project of nativePolicy.podProjects ?? []) {
+      const podfilePath = resolveRepoPath(root, project.podfile, findings);
+      const lockfilePath = resolveRepoPath(root, project.lockfile, findings);
+      for (const [label, filePath] of [
+        [project.podfile, podfilePath],
+        [project.lockfile, lockfilePath],
+      ]) {
+        if (!fs.existsSync(filePath)) findings.push(`missing ${label}`);
+      }
+      podProjects.push({
+        podfilePath: project.podfile,
+        podfileSource: fs.existsSync(podfilePath)
+          ? fs.readFileSync(podfilePath, "utf8")
+          : "",
+        lockfilePath: project.lockfile,
+        lockfileSource: fs.existsSync(lockfilePath)
+          ? fs.readFileSync(lockfilePath, "utf8")
+          : "",
+      });
+    }
+    const pubLockPath = path.join(root, "pubspec.lock");
+    if (!fs.existsSync(pubLockPath)) findings.push("missing pubspec.lock");
+    findings.push(
+      ...validateAppleFirebaseLockstep({
+        policy: nativePolicy,
+        pubLockSource: fs.existsSync(pubLockPath)
+          ? fs.readFileSync(pubLockPath, "utf8")
+          : "",
+        podProjects,
+      }),
+    );
+  }
 
   for (const role of expectedRoles) {
     const roleConfig = manifest.roles?.[role];
