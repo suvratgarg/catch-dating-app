@@ -106,6 +106,9 @@ class _HostOperationalRosterPanelState
           ],
           CatchAsyncValueView<List<EventRuntimeClaimRequest>>(
             value: claimsAsync,
+            onRetry: () => ref.invalidate(
+              watchPendingEventRuntimeClaimsProvider(widget.eventId),
+            ),
             loadingBuilder: (_) => const SizedBox.shrink(),
             errorBuilder: (_, error, _) => CatchErrorBanner.fromError(
               error,
