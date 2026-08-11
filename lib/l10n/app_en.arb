@@ -3458,6 +3458,76 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
   },
+  "hostsEventDetailsStepExternalProviderCatch": "Catch",
+  "@hostsEventDetailsStepExternalProviderCatch": {
+    "description": "Catch booking-platform option in external companion event creation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
+  },
+  "hostsEventDetailsStepExternalProviderOther": "Another booking platform",
+  "@hostsEventDetailsStepExternalProviderOther": {
+    "description": "Generic booking-platform option in external companion event creation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
+  },
+  "hostsEventDetailsStepExternalProviderLuma": "Luma",
+  "@hostsEventDetailsStepExternalProviderLuma": {
+    "description": "Luma booking-platform option in external companion event creation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
+  },
+  "hostsEventDetailsStepExternalProviderEventbrite": "Eventbrite",
+  "@hostsEventDetailsStepExternalProviderEventbrite": {
+    "description": "Eventbrite booking-platform option in external companion event creation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
+  },
+  "hostsEventDetailsStepExternalProviderPartiful": "Partiful",
+  "@hostsEventDetailsStepExternalProviderPartiful": {
+    "description": "Partiful booking-platform option in external companion event creation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
+  },
+  "hostsEventDetailsStepExternalProviderPosh": "POSH",
+  "@hostsEventDetailsStepExternalProviderPosh": {
+    "description": "POSH booking-platform option in external companion event creation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
+  },
+  "hostsEventDetailsStepExternalProviderBookMyShow": "BookMyShow",
+  "@hostsEventDetailsStepExternalProviderBookMyShow": {
+    "description": "BookMyShow booking-platform option in external companion event creation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
+  },
+  "hostsEventDetailsStepExternalProviderDistrict": "District",
+  "@hostsEventDetailsStepExternalProviderDistrict": {
+    "description": "District booking-platform option in external companion event creation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
+  },
+  "hostsEventDetailsStepExternalProviderSortMyScene": "SortMyScene",
+  "@hostsEventDetailsStepExternalProviderSortMyScene": {
+    "description": "SortMyScene booking-platform option in external companion event creation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
+  },
+  "hostsEventDetailsStepExternalProviderAirbnbExperiences": "Airbnb Experiences",
+  "@hostsEventDetailsStepExternalProviderAirbnbExperiences": {
+    "description": "Airbnb Experiences booking-platform option in external companion event creation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
+  },
   "hostsEventDetailsStepExternalEventUrlTitle": "Booking page",
   "@hostsEventDetailsStepExternalEventUrlTitle": {
     "description": "Optional external booking page URL field title.",

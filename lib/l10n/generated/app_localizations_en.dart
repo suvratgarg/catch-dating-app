@@ -1720,6 +1720,38 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsEventDetailsStepExternalProviderTitle => 'Booking platform';
 
   @override
+  String get hostsEventDetailsStepExternalProviderCatch => 'Catch';
+
+  @override
+  String get hostsEventDetailsStepExternalProviderOther =>
+      'Another booking platform';
+
+  @override
+  String get hostsEventDetailsStepExternalProviderLuma => 'Luma';
+
+  @override
+  String get hostsEventDetailsStepExternalProviderEventbrite => 'Eventbrite';
+
+  @override
+  String get hostsEventDetailsStepExternalProviderPartiful => 'Partiful';
+
+  @override
+  String get hostsEventDetailsStepExternalProviderPosh => 'POSH';
+
+  @override
+  String get hostsEventDetailsStepExternalProviderBookMyShow => 'BookMyShow';
+
+  @override
+  String get hostsEventDetailsStepExternalProviderDistrict => 'District';
+
+  @override
+  String get hostsEventDetailsStepExternalProviderSortMyScene => 'SortMyScene';
+
+  @override
+  String get hostsEventDetailsStepExternalProviderAirbnbExperiences =>
+      'Airbnb Experiences';
+
+  @override
   String get hostsEventDetailsStepExternalEventUrlTitle => 'Booking page';
 
   @override

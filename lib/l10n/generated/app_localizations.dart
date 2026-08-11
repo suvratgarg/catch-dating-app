@@ -3003,6 +3003,66 @@ abstract class AppLocalizations {
   /// **'Booking platform'**
   String get hostsEventDetailsStepExternalProviderTitle;
 
+  /// Catch booking-platform option in external companion event creation.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch'**
+  String get hostsEventDetailsStepExternalProviderCatch;
+
+  /// Generic booking-platform option in external companion event creation.
+  ///
+  /// In en, this message translates to:
+  /// **'Another booking platform'**
+  String get hostsEventDetailsStepExternalProviderOther;
+
+  /// Luma booking-platform option in external companion event creation.
+  ///
+  /// In en, this message translates to:
+  /// **'Luma'**
+  String get hostsEventDetailsStepExternalProviderLuma;
+
+  /// Eventbrite booking-platform option in external companion event creation.
+  ///
+  /// In en, this message translates to:
+  /// **'Eventbrite'**
+  String get hostsEventDetailsStepExternalProviderEventbrite;
+
+  /// Partiful booking-platform option in external companion event creation.
+  ///
+  /// In en, this message translates to:
+  /// **'Partiful'**
+  String get hostsEventDetailsStepExternalProviderPartiful;
+
+  /// POSH booking-platform option in external companion event creation.
+  ///
+  /// In en, this message translates to:
+  /// **'POSH'**
+  String get hostsEventDetailsStepExternalProviderPosh;
+
+  /// BookMyShow booking-platform option in external companion event creation.
+  ///
+  /// In en, this message translates to:
+  /// **'BookMyShow'**
+  String get hostsEventDetailsStepExternalProviderBookMyShow;
+
+  /// District booking-platform option in external companion event creation.
+  ///
+  /// In en, this message translates to:
+  /// **'District'**
+  String get hostsEventDetailsStepExternalProviderDistrict;
+
+  /// SortMyScene booking-platform option in external companion event creation.
+  ///
+  /// In en, this message translates to:
+  /// **'SortMyScene'**
+  String get hostsEventDetailsStepExternalProviderSortMyScene;
+
+  /// Airbnb Experiences booking-platform option in external companion event creation.
+  ///
+  /// In en, this message translates to:
+  /// **'Airbnb Experiences'**
+  String get hostsEventDetailsStepExternalProviderAirbnbExperiences;
+
   /// Optional external booking page URL field title.
   ///
   /// In en, this message translates to:

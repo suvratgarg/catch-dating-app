@@ -56,19 +56,6 @@ enum ExternalBookingProvider {
 }
 
 extension ExternalBookingProviderX on ExternalBookingProvider {
-  String get label => switch (this) {
-    ExternalBookingProvider.catchPlatform => 'Catch',
-    ExternalBookingProvider.generic => 'Another booking platform',
-    ExternalBookingProvider.luma => 'Luma',
-    ExternalBookingProvider.eventbrite => 'Eventbrite',
-    ExternalBookingProvider.partiful => 'Partiful',
-    ExternalBookingProvider.posh => 'POSH',
-    ExternalBookingProvider.bookmyshow => 'BookMyShow',
-    ExternalBookingProvider.district => 'District',
-    ExternalBookingProvider.sortmyscene => 'SortMyScene',
-    ExternalBookingProvider.airbnb => 'Airbnb Experiences',
-  };
-
   String get rosterAdapterVersion => switch (this) {
     ExternalBookingProvider.luma => 'luma-v1',
     ExternalBookingProvider.eventbrite => 'eventbrite-v1',

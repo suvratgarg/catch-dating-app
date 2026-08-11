@@ -73,6 +73,7 @@ class EventDetailsStep extends StatefulWidget {
 }
 
 class _EventDetailsStepState extends State<EventDetailsStep> {
+  static const _secureUrlScheme = 'https';
   static const _activityField = 'activity';
   static const _interactionField = 'interaction';
   static const _paceField = 'pace';
@@ -117,6 +118,30 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
           context.l10n.hostsEventDetailsStepExternalWalkInAutomatic,
       };
 
+  String _externalBookingProviderLabel(ExternalBookingProvider provider) =>
+      switch (provider) {
+        ExternalBookingProvider.catchPlatform =>
+          context.l10n.hostsEventDetailsStepExternalProviderCatch,
+        ExternalBookingProvider.generic =>
+          context.l10n.hostsEventDetailsStepExternalProviderOther,
+        ExternalBookingProvider.luma =>
+          context.l10n.hostsEventDetailsStepExternalProviderLuma,
+        ExternalBookingProvider.eventbrite =>
+          context.l10n.hostsEventDetailsStepExternalProviderEventbrite,
+        ExternalBookingProvider.partiful =>
+          context.l10n.hostsEventDetailsStepExternalProviderPartiful,
+        ExternalBookingProvider.posh =>
+          context.l10n.hostsEventDetailsStepExternalProviderPosh,
+        ExternalBookingProvider.bookmyshow =>
+          context.l10n.hostsEventDetailsStepExternalProviderBookMyShow,
+        ExternalBookingProvider.district =>
+          context.l10n.hostsEventDetailsStepExternalProviderDistrict,
+        ExternalBookingProvider.sortmyscene =>
+          context.l10n.hostsEventDetailsStepExternalProviderSortMyScene,
+        ExternalBookingProvider.airbnb =>
+          context.l10n.hostsEventDetailsStepExternalProviderAirbnbExperiences,
+      };
+
   @override
   Widget build(BuildContext context) {
     final activity = ActivityPalette.resolve(
@@ -153,9 +178,11 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                       contract: CatchContractConstraints
                           .createEventCallablePayloadExternalOriginProvider,
                       contractValue: (provider) => provider.name,
-                      body: widget.externalBookingProvider.label,
+                      body: _externalBookingProviderLabel(
+                        widget.externalBookingProvider,
+                      ),
                       values: ExternalBookingProviderX.externalValues,
-                      itemLabel: (provider) => provider.label,
+                      itemLabel: _externalBookingProviderLabel,
                       selected: <ExternalBookingProvider>{
                         widget.externalBookingProvider,
                       },
@@ -187,7 +214,7 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                         if (normalized.isEmpty) return null;
                         final uri = Uri.tryParse(normalized);
                         if (uri == null ||
-                            uri.scheme != 'https' ||
+                            uri.scheme != _secureUrlScheme ||
                             uri.host.isEmpty) {
                           return context
                               .l10n
