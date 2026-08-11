@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:archive/archive.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
 import 'package:crypto/crypto.dart';
@@ -36,6 +37,7 @@ String hostRosterImportKey({
 HostRosterTable parseHostRosterFile({
   required String fileName,
   required Uint8List bytes,
+  ExternalBookingProvider? providerHint,
 }) {
   final extension = fileName.split('.').last.toLowerCase();
   final format = switch (extension) {
@@ -55,18 +57,149 @@ HostRosterTable parseHostRosterFile({
   if (nonEmptyRows.length < 2) {
     throw const HostRosterImportException(HostRosterImportIssue.missingRows);
   }
-  final headers = uniqueHostRosterHeaders(nonEmptyRows.first);
+  var headers = uniqueHostRosterHeaders(nonEmptyRows.first);
   if (headers.length > 40) {
     throw const HostRosterImportException(HostRosterImportIssue.tooManyColumns);
+  }
+  var rows = nonEmptyRows.skip(1).toList(growable: false);
+  final adapter = detectHostRosterAdapter(headers, providerHint: providerHint);
+  if (adapter.adapterId == HostRosterAdapterId.eventbriteV1) {
+    final normalized = _addCompositeGuestName(headers: headers, rows: rows);
+    headers = normalized.headers;
+    rows = normalized.rows;
   }
   return HostRosterTable(
     fileName: fileName,
     format: format,
     headers: headers,
-    rows: nonEmptyRows.skip(1).toList(growable: false),
+    rows: rows,
     suggestedMapping: suggestHostRosterMapping(headers),
+    adapter: adapter,
   );
 }
+
+HostRosterAdapterDetection detectHostRosterAdapter(
+  List<String> headers, {
+  ExternalBookingProvider? providerHint,
+}) {
+  final hinted = _adapterForProvider(providerHint);
+  if (hinted != null) return hinted;
+  final normalized = headers.map(_normalizedHeader).toSet();
+
+  double score(Set<String> signatures) =>
+      signatures.where(normalized.contains).length / signatures.length;
+
+  final eventbriteScore = score({
+    'firstname',
+    'lastname',
+    'orderid',
+    'tickettype',
+    'attendeestatus',
+  });
+  final lumaScore = score({
+    'name',
+    'approvalstatus',
+    'registrationdate',
+    'tickettype',
+    'guestkey',
+  });
+  final partifulScore = score({'name', 'rsvpstatus', 'phonenumber', 'email'});
+  final poshScore = score({'name', 'orderid', 'tickettype', 'phonenumber'});
+  final candidates = <(HostRosterAdapterId, double)>[
+    (HostRosterAdapterId.eventbriteV1, eventbriteScore),
+    (HostRosterAdapterId.lumaV1, lumaScore),
+    (HostRosterAdapterId.partifulV1, partifulScore),
+    (HostRosterAdapterId.poshV1, poshScore),
+  ]..sort((left, right) => right.$2.compareTo(left.$2));
+  final best = candidates.first;
+  if (best.$2 >= 0.6) {
+    return HostRosterAdapterDetection(
+      adapterId: best.$1,
+      support: HostRosterAdapterSupport.verified,
+      confidence: best.$2,
+    );
+  }
+  return const HostRosterAdapterDetection(
+    adapterId: HostRosterAdapterId.genericV1,
+    support: HostRosterAdapterSupport.generic,
+    confidence: 0,
+  );
+}
+
+HostRosterAdapterDetection? _adapterForProvider(
+  ExternalBookingProvider? provider,
+) => switch (provider) {
+  null || ExternalBookingProvider.catchPlatform => null,
+  ExternalBookingProvider.generic => const HostRosterAdapterDetection(
+    adapterId: HostRosterAdapterId.genericV1,
+    support: HostRosterAdapterSupport.generic,
+    confidence: 1,
+  ),
+  ExternalBookingProvider.luma => const HostRosterAdapterDetection(
+    adapterId: HostRosterAdapterId.lumaV1,
+    support: HostRosterAdapterSupport.verified,
+    confidence: 1,
+  ),
+  ExternalBookingProvider.eventbrite => const HostRosterAdapterDetection(
+    adapterId: HostRosterAdapterId.eventbriteV1,
+    support: HostRosterAdapterSupport.verified,
+    confidence: 1,
+  ),
+  ExternalBookingProvider.partiful => const HostRosterAdapterDetection(
+    adapterId: HostRosterAdapterId.partifulV1,
+    support: HostRosterAdapterSupport.verified,
+    confidence: 1,
+  ),
+  ExternalBookingProvider.posh => const HostRosterAdapterDetection(
+    adapterId: HostRosterAdapterId.poshV1,
+    support: HostRosterAdapterSupport.verified,
+    confidence: 1,
+  ),
+  ExternalBookingProvider.bookmyshow ||
+  ExternalBookingProvider.district ||
+  ExternalBookingProvider.sortmyscene ||
+  ExternalBookingProvider.airbnb => const HostRosterAdapterDetection(
+    adapterId: HostRosterAdapterId.sampleRequired,
+    support: HostRosterAdapterSupport.sampleRequired,
+    confidence: 1,
+  ),
+};
+
+({List<String> headers, List<List<String>> rows}) _addCompositeGuestName({
+  required List<String> headers,
+  required List<List<String>> rows,
+}) {
+  if (suggestHostRosterMapping(headers)[HostRosterField.displayName] != null) {
+    return (headers: headers, rows: rows);
+  }
+  final firstNameIndex = headers.indexWhere(
+    (header) => _normalizedHeader(header) == 'firstname',
+  );
+  final lastNameIndex = headers.indexWhere(
+    (header) => _normalizedHeader(header) == 'lastname',
+  );
+  if (firstNameIndex < 0 && lastNameIndex < 0) {
+    return (headers: headers, rows: rows);
+  }
+  String valueAt(List<String> row, int index) =>
+      index >= 0 && index < row.length ? row[index].trim() : '';
+  return (
+    headers: [...headers, 'Guest name'],
+    rows: [
+      for (final row in rows)
+        [
+          ...row,
+          [
+            valueAt(row, firstNameIndex),
+            valueAt(row, lastNameIndex),
+          ].where((value) => value.isNotEmpty).join(' '),
+        ],
+    ],
+  );
+}
+
+String _normalizedHeader(String value) =>
+    value.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');
 
 List<List<String>> _parseCsv(String source) {
   final text = source.startsWith('\ufeff') ? source.substring(1) : source;

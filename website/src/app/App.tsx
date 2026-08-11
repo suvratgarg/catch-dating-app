@@ -39,6 +39,9 @@ const HomePage = lazy(async () => ({
 const EventDetailPage = lazy(async () => ({
   default: (await import("../features/events/EventDetailPage")).EventDetailPage,
 }));
+const EventRuntimePage = lazy(async () => ({
+  default: (await import("../features/eventRuntime/EventRuntimePage")).EventRuntimePage,
+}));
 const HostListingPage = lazy(async () => ({
   default: (await import("../features/organizers/HostListingPage")).HostListingPage,
 }));
@@ -131,6 +134,10 @@ function MarketingRouteShell() {
             )}
           />
           <Route
+            path={marketingRoutePaths.event_runtime}
+            element={<EventRuntimePage />}
+          />
+          <Route
             path={marketingRoutePaths.claim}
             element={<ClaimRoute />}
           />
@@ -171,7 +178,7 @@ function MarketingRouteShell() {
           />
         </Routes>
       </Suspense>
-      <MarketingConsentBanner />
+      {page === "event_runtime" ? null : <MarketingConsentBanner />}
     </PageShell>
   );
 }

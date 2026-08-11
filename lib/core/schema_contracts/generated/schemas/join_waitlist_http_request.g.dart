@@ -99,6 +99,14 @@ const schemaJoinWaitlistHTTPRequestSchema = <String, Object?>{
           'type': 'string',
           'maxLength': 40,
         },
+        'bookingPlatform': <String, Object?>{
+          'type': 'string',
+          'maxLength': 120,
+        },
+        'guestListFormat': <String, Object?>{
+          'type': 'string',
+          'maxLength': 120,
+        },
         'priceRange': <String, Object?>{
           'type': 'string',
           'maxLength': 80,
@@ -467,6 +475,14 @@ const schemaJoinWaitlistHTTPRequestSchema = <String, Object?>{
         'expectedCapacity': <String, Object?>{
           'type': 'string',
           'maxLength': 40,
+        },
+        'bookingPlatform': <String, Object?>{
+          'type': 'string',
+          'maxLength': 120,
+        },
+        'guestListFormat': <String, Object?>{
+          'type': 'string',
+          'maxLength': 120,
         },
         'priceRange': <String, Object?>{
           'type': 'string',

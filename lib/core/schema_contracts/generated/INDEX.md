@@ -19,6 +19,8 @@ Do not edit it by hand.
 | PhotoPromptAnswer | `embedded/photo_prompt_answer.schema.json` | `functions/src/shared/generated/photoPromptAnswer.ts` |
 | ProfilePhoto | `embedded/profile_photo.schema.json` | `functions/src/shared/generated/profilePhoto.ts` |
 | UploadedPhoto | `embedded/uploaded_photo.schema.json` | `functions/src/shared/generated/uploadedPhoto.ts` |
+| EventOrigin | `embedded/event_origin.schema.json` | `functions/src/shared/generated/eventOrigin.ts` |
+| EventRuntimeAccess | `embedded/event_runtime_access.schema.json` | `functions/src/shared/generated/eventRuntimeAccess.ts` |
 | ActivityPreferences | `embedded/activity_preferences.schema.json` | `functions/src/shared/generated/activityPreferences.ts` |
 | OrganizerSupplyCapabilities | `embedded/organizer_supply_capabilities.schema.json` | `functions/src/shared/generated/organizerSupplyCapabilities.ts` |
 | ExternalEventBlockerResolution | `embedded/external_event_blocker_resolution.schema.json` | `functions/src/shared/generated/externalEventBlockerResolution.ts` |
@@ -48,6 +50,9 @@ Do not edit it by hand.
 | EventParticipationDocument | `firestore/event_participations.schema.json` | `functions/src/shared/generated/eventParticipationDocument.ts` |
 | EventAttendeeDocument | `firestore/event_attendees.schema.json` | `functions/src/shared/generated/eventAttendeeDocument.ts` |
 | EventAttendeeImportDocument | `firestore/event_attendee_imports.schema.json` | `functions/src/shared/generated/eventAttendeeImportDocument.ts` |
+| EventRosterHandoffDocument | `firestore/event_roster_handoffs.schema.json` | `functions/src/shared/generated/eventRosterHandoffDocument.ts` |
+| EventRuntimeParticipantDocument | `firestore/event_runtime_participants.schema.json` | `functions/src/shared/generated/eventRuntimeParticipantDocument.ts` |
+| EventRuntimeClaimRequestDocument | `firestore/event_runtime_claim_requests.schema.json` | `functions/src/shared/generated/eventRuntimeClaimRequestDocument.ts` |
 | EventCrossPathsConsentDocument | `firestore/event_cross_paths_consents.schema.json` | `functions/src/shared/generated/eventCrossPathsConsentDocument.ts` |
 | CrossPathsShowcaseEligibilityDocument | `firestore/cross_paths_showcase_eligibility.schema.json` | `functions/src/shared/generated/crossPathsShowcaseEligibilityDocument.ts` |
 | CrossPathsSuggestionExposureDocument | `firestore/cross_paths_suggestion_exposures.schema.json` | `functions/src/shared/generated/crossPathsSuggestionExposureDocument.ts` |
@@ -177,6 +182,18 @@ Do not edit it by hand.
 | MarkEventAttendeeAttendanceCallablePayload | `callables/mark_event_attendee_attendance_payload.schema.json` | `functions/src/shared/generated/markEventAttendeeAttendanceCallablePayload.ts` |
 | RegisterPublicEventCallablePayload | `callables/register_public_event_payload.schema.json` | `functions/src/shared/generated/registerPublicEventCallablePayload.ts` |
 | RegisterPublicEventCallableResponse | `callable_responses/register_public_event_response.schema.json` | `functions/src/shared/generated/registerPublicEventCallableResponse.ts` |
+| GetEventRuntimeBootstrapCallablePayload | `callables/get_event_runtime_bootstrap_payload.schema.json` | `functions/src/shared/generated/getEventRuntimeBootstrapCallablePayload.ts` |
+| GetEventRuntimeBootstrapCallableResponse | `callable_responses/get_event_runtime_bootstrap_response.schema.json` | `functions/src/shared/generated/getEventRuntimeBootstrapCallableResponse.ts` |
+| ClaimEventRuntimeAccessCallablePayload | `callables/claim_event_runtime_access_payload.schema.json` | `functions/src/shared/generated/claimEventRuntimeAccessCallablePayload.ts` |
+| ClaimEventRuntimeAccessCallableResponse | `callable_responses/claim_event_runtime_access_response.schema.json` | `functions/src/shared/generated/claimEventRuntimeAccessCallableResponse.ts` |
+| SubmitEventRuntimeProfileCallablePayload | `callables/submit_event_runtime_profile_payload.schema.json` | `functions/src/shared/generated/submitEventRuntimeProfileCallablePayload.ts` |
+| SubmitEventRuntimeProfileCallableResponse | `callable_responses/submit_event_runtime_profile_response.schema.json` | `functions/src/shared/generated/submitEventRuntimeProfileCallableResponse.ts` |
+| CheckInEventRuntimeCallablePayload | `callables/check_in_event_runtime_payload.schema.json` | `functions/src/shared/generated/checkInEventRuntimeCallablePayload.ts` |
+| CheckInEventRuntimeCallableResponse | `callable_responses/check_in_event_runtime_response.schema.json` | `functions/src/shared/generated/checkInEventRuntimeCallableResponse.ts` |
+| ApproveEventRuntimeClaimCallablePayload | `callables/approve_event_runtime_claim_payload.schema.json` | `functions/src/shared/generated/approveEventRuntimeClaimCallablePayload.ts` |
+| ApproveEventRuntimeClaimCallableResponse | `callable_responses/approve_event_runtime_claim_response.schema.json` | `functions/src/shared/generated/approveEventRuntimeClaimCallableResponse.ts` |
+| CreateEventRosterHandoffCallablePayload | `callables/create_event_roster_handoff_payload.schema.json` | `functions/src/shared/generated/createEventRosterHandoffCallablePayload.ts` |
+| CreateEventRosterHandoffCallableResponse | `callable_responses/create_event_roster_handoff_response.schema.json` | `functions/src/shared/generated/createEventRosterHandoffCallableResponse.ts` |
 | GetOrganizerCrmSummaryCallablePayload | `callables/get_organizer_crm_summary_payload.schema.json` | `functions/src/shared/generated/getOrganizerCrmSummaryCallablePayload.ts` |
 | GetOrganizerCrmSummaryCallableResponse | `callable_responses/get_organizer_crm_summary_response.schema.json` | `functions/src/shared/generated/getOrganizerCrmSummaryCallableResponse.ts` |
 | EventJoinRequestDecisionCallablePayload | `callables/event_join_request_decision_payload.schema.json` | `functions/src/shared/generated/eventJoinRequestDecisionCallablePayload.ts` |
@@ -265,6 +282,8 @@ Do not edit it by hand.
 | `schemaPhotoPromptAnswerSchema` | PhotoPromptAnswer | `embedded/photo_prompt_answer.schema.json` | `lib/core/schema_contracts/generated/schemas/photo_prompt_answer.g.dart` |
 | `schemaProfilePhotoSchema` | ProfilePhoto | `embedded/profile_photo.schema.json` | `lib/core/schema_contracts/generated/schemas/profile_photo.g.dart` |
 | `schemaUploadedPhotoSchema` | UploadedPhoto | `embedded/uploaded_photo.schema.json` | `lib/core/schema_contracts/generated/schemas/uploaded_photo.g.dart` |
+| `schemaEventOriginSchema` | EventOrigin | `embedded/event_origin.schema.json` | `lib/core/schema_contracts/generated/schemas/event_origin.g.dart` |
+| `schemaEventRuntimeAccessSchema` | EventRuntimeAccess | `embedded/event_runtime_access.schema.json` | `lib/core/schema_contracts/generated/schemas/event_runtime_access.g.dart` |
 | `schemaActivityPreferencesSchema` | ActivityPreferences | `embedded/activity_preferences.schema.json` | `lib/core/schema_contracts/generated/schemas/activity_preferences.g.dart` |
 | `schemaOrganizerSupplyCapabilitiesSchema` | OrganizerSupplyCapabilities | `embedded/organizer_supply_capabilities.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_supply_capabilities.g.dart` |
 | `schemaExternalEventBlockerResolutionSchema` | ExternalEventBlockerResolution | `embedded/external_event_blocker_resolution.schema.json` | `lib/core/schema_contracts/generated/schemas/external_event_blocker_resolution.g.dart` |
@@ -294,6 +313,9 @@ Do not edit it by hand.
 | `schemaEventParticipationDocumentSchema` | EventParticipationDocument | `firestore/event_participations.schema.json` | `lib/core/schema_contracts/generated/schemas/event_participation_document.g.dart` |
 | `schemaEventAttendeeDocumentSchema` | EventAttendeeDocument | `firestore/event_attendees.schema.json` | `lib/core/schema_contracts/generated/schemas/event_attendee_document.g.dart` |
 | `schemaEventAttendeeImportDocumentSchema` | EventAttendeeImportDocument | `firestore/event_attendee_imports.schema.json` | `lib/core/schema_contracts/generated/schemas/event_attendee_import_document.g.dart` |
+| `schemaEventRosterHandoffDocumentSchema` | EventRosterHandoffDocument | `firestore/event_roster_handoffs.schema.json` | `lib/core/schema_contracts/generated/schemas/event_roster_handoff_document.g.dart` |
+| `schemaEventRuntimeParticipantDocumentSchema` | EventRuntimeParticipantDocument | `firestore/event_runtime_participants.schema.json` | `lib/core/schema_contracts/generated/schemas/event_runtime_participant_document.g.dart` |
+| `schemaEventRuntimeClaimRequestDocumentSchema` | EventRuntimeClaimRequestDocument | `firestore/event_runtime_claim_requests.schema.json` | `lib/core/schema_contracts/generated/schemas/event_runtime_claim_request_document.g.dart` |
 | `schemaEventCrossPathsConsentDocumentSchema` | EventCrossPathsConsentDocument | `firestore/event_cross_paths_consents.schema.json` | `lib/core/schema_contracts/generated/schemas/event_cross_paths_consent_document.g.dart` |
 | `schemaCrossPathsShowcaseEligibilityDocumentSchema` | CrossPathsShowcaseEligibilityDocument | `firestore/cross_paths_showcase_eligibility.schema.json` | `lib/core/schema_contracts/generated/schemas/cross_paths_showcase_eligibility_document.g.dart` |
 | `schemaCrossPathsSuggestionExposureDocumentSchema` | CrossPathsSuggestionExposureDocument | `firestore/cross_paths_suggestion_exposures.schema.json` | `lib/core/schema_contracts/generated/schemas/cross_paths_suggestion_exposure_document.g.dart` |
@@ -423,6 +445,18 @@ Do not edit it by hand.
 | `schemaMarkEventAttendeeAttendanceCallablePayloadSchema` | MarkEventAttendeeAttendanceCallablePayload | `callables/mark_event_attendee_attendance_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/mark_event_attendee_attendance_callable_payload.g.dart` |
 | `schemaRegisterPublicEventCallablePayloadSchema` | RegisterPublicEventCallablePayload | `callables/register_public_event_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/register_public_event_callable_payload.g.dart` |
 | `schemaRegisterPublicEventCallableResponseSchema` | RegisterPublicEventCallableResponse | `callable_responses/register_public_event_response.schema.json` | `lib/core/schema_contracts/generated/schemas/register_public_event_callable_response.g.dart` |
+| `schemaGetEventRuntimeBootstrapCallablePayloadSchema` | GetEventRuntimeBootstrapCallablePayload | `callables/get_event_runtime_bootstrap_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_runtime_bootstrap_callable_payload.g.dart` |
+| `schemaGetEventRuntimeBootstrapCallableResponseSchema` | GetEventRuntimeBootstrapCallableResponse | `callable_responses/get_event_runtime_bootstrap_response.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_runtime_bootstrap_callable_response.g.dart` |
+| `schemaClaimEventRuntimeAccessCallablePayloadSchema` | ClaimEventRuntimeAccessCallablePayload | `callables/claim_event_runtime_access_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/claim_event_runtime_access_callable_payload.g.dart` |
+| `schemaClaimEventRuntimeAccessCallableResponseSchema` | ClaimEventRuntimeAccessCallableResponse | `callable_responses/claim_event_runtime_access_response.schema.json` | `lib/core/schema_contracts/generated/schemas/claim_event_runtime_access_callable_response.g.dart` |
+| `schemaSubmitEventRuntimeProfileCallablePayloadSchema` | SubmitEventRuntimeProfileCallablePayload | `callables/submit_event_runtime_profile_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/submit_event_runtime_profile_callable_payload.g.dart` |
+| `schemaSubmitEventRuntimeProfileCallableResponseSchema` | SubmitEventRuntimeProfileCallableResponse | `callable_responses/submit_event_runtime_profile_response.schema.json` | `lib/core/schema_contracts/generated/schemas/submit_event_runtime_profile_callable_response.g.dart` |
+| `schemaCheckInEventRuntimeCallablePayloadSchema` | CheckInEventRuntimeCallablePayload | `callables/check_in_event_runtime_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/check_in_event_runtime_callable_payload.g.dart` |
+| `schemaCheckInEventRuntimeCallableResponseSchema` | CheckInEventRuntimeCallableResponse | `callable_responses/check_in_event_runtime_response.schema.json` | `lib/core/schema_contracts/generated/schemas/check_in_event_runtime_callable_response.g.dart` |
+| `schemaApproveEventRuntimeClaimCallablePayloadSchema` | ApproveEventRuntimeClaimCallablePayload | `callables/approve_event_runtime_claim_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/approve_event_runtime_claim_callable_payload.g.dart` |
+| `schemaApproveEventRuntimeClaimCallableResponseSchema` | ApproveEventRuntimeClaimCallableResponse | `callable_responses/approve_event_runtime_claim_response.schema.json` | `lib/core/schema_contracts/generated/schemas/approve_event_runtime_claim_callable_response.g.dart` |
+| `schemaCreateEventRosterHandoffCallablePayloadSchema` | CreateEventRosterHandoffCallablePayload | `callables/create_event_roster_handoff_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/create_event_roster_handoff_callable_payload.g.dart` |
+| `schemaCreateEventRosterHandoffCallableResponseSchema` | CreateEventRosterHandoffCallableResponse | `callable_responses/create_event_roster_handoff_response.schema.json` | `lib/core/schema_contracts/generated/schemas/create_event_roster_handoff_callable_response.g.dart` |
 | `schemaGetOrganizerCrmSummaryCallablePayloadSchema` | GetOrganizerCrmSummaryCallablePayload | `callables/get_organizer_crm_summary_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_organizer_crm_summary_callable_payload.g.dart` |
 | `schemaGetOrganizerCrmSummaryCallableResponseSchema` | GetOrganizerCrmSummaryCallableResponse | `callable_responses/get_organizer_crm_summary_response.schema.json` | `lib/core/schema_contracts/generated/schemas/get_organizer_crm_summary_callable_response.g.dart` |
 | `schemaEventJoinRequestDecisionCallablePayloadSchema` | EventJoinRequestDecisionCallablePayload | `callables/event_join_request_decision_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/event_join_request_decision_callable_payload.g.dart` |
@@ -573,6 +607,12 @@ Do not edit it by hand.
 | ImportEventAttendeesCallableRequest | ImportEventAttendeesCallablePayload | `callables/import_event_attendees_payload.schema.json` | `lib/core/schema_contracts/generated/callables/import_event_attendees_callable_request.g.dart` |
 | MarkEventAttendeeAttendanceCallableRequest | MarkEventAttendeeAttendanceCallablePayload | `callables/mark_event_attendee_attendance_payload.schema.json` | `lib/core/schema_contracts/generated/callables/mark_event_attendee_attendance_callable_request.g.dart` |
 | RegisterPublicEventCallableRequest | RegisterPublicEventCallablePayload | `callables/register_public_event_payload.schema.json` | `lib/core/schema_contracts/generated/callables/register_public_event_callable_request.g.dart` |
+| GetEventRuntimeBootstrapCallableRequest | GetEventRuntimeBootstrapCallablePayload | `callables/get_event_runtime_bootstrap_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_runtime_bootstrap_callable_request.g.dart` |
+| ClaimEventRuntimeAccessCallableRequest | ClaimEventRuntimeAccessCallablePayload | `callables/claim_event_runtime_access_payload.schema.json` | `lib/core/schema_contracts/generated/callables/claim_event_runtime_access_callable_request.g.dart` |
+| SubmitEventRuntimeProfileCallableRequest | SubmitEventRuntimeProfileCallablePayload | `callables/submit_event_runtime_profile_payload.schema.json` | `lib/core/schema_contracts/generated/callables/submit_event_runtime_profile_callable_request.g.dart` |
+| CheckInEventRuntimeCallableRequest | CheckInEventRuntimeCallablePayload | `callables/check_in_event_runtime_payload.schema.json` | `lib/core/schema_contracts/generated/callables/check_in_event_runtime_callable_request.g.dart` |
+| ApproveEventRuntimeClaimCallableRequest | ApproveEventRuntimeClaimCallablePayload | `callables/approve_event_runtime_claim_payload.schema.json` | `lib/core/schema_contracts/generated/callables/approve_event_runtime_claim_callable_request.g.dart` |
+| CreateEventRosterHandoffCallableRequest | CreateEventRosterHandoffCallablePayload | `callables/create_event_roster_handoff_payload.schema.json` | `lib/core/schema_contracts/generated/callables/create_event_roster_handoff_callable_request.g.dart` |
 | GetOrganizerCrmSummaryCallableRequest | GetOrganizerCrmSummaryCallablePayload | `callables/get_organizer_crm_summary_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_organizer_crm_summary_callable_request.g.dart` |
 | EventJoinRequestDecisionCallableRequest | EventJoinRequestDecisionCallablePayload | `callables/event_join_request_decision_payload.schema.json` | `lib/core/schema_contracts/generated/callables/event_join_request_decision_callable_request.g.dart` |
 | OverrideEventSuccessRotationsCallableRequest | OverrideEventSuccessRotationsCallablePayload | `callables/override_event_success_rotations_payload.schema.json` | `lib/core/schema_contracts/generated/callables/override_event_success_rotations_callable_request.g.dart` |

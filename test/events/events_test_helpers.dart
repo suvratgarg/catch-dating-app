@@ -391,6 +391,8 @@ class FakeEventRepository extends Fake implements EventRepository {
   String? selfCheckedInEventId;
   Event? fetchedEvent;
   EventSuccessDefaults? createdEventSuccessDefaults;
+  ExternalEventOriginInput? createdExternalOrigin;
+  EventRuntimeWalkInPolicy? createdRuntimeWalkInPolicy;
   final Map<String, Event?> watchedEvents = {};
   final Map<String, List<Event>> clubEvents = {};
   final Map<String, List<Event>> attendedEvents = {};
@@ -408,6 +410,8 @@ class FakeEventRepository extends Fake implements EventRepository {
     required Event event,
     String? inviteCode,
     EventSuccessDefaults? eventSuccessDefaults,
+    ExternalEventOriginInput? externalOrigin,
+    EventRuntimeWalkInPolicy? runtimeWalkInPolicy,
   }) async {
     if (createError != null) {
       throw createError!;
@@ -415,6 +419,8 @@ class FakeEventRepository extends Fake implements EventRepository {
     createdEvent = event;
     createdEventInviteCode = inviteCode;
     createdEventSuccessDefaults = eventSuccessDefaults;
+    createdExternalOrigin = externalOrigin;
+    createdRuntimeWalkInPolicy = runtimeWalkInPolicy;
   }
 
   @override

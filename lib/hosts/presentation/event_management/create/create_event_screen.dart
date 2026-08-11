@@ -101,6 +101,7 @@ class CreateEventScreen extends ConsumerStatefulWidget {
     this.initialStep = 0,
     this.formAutovalidateMode = AutovalidateMode.disabled,
     this.initialPickedEventPhotos = const <PickedEventPhoto>[],
+    this.externalBookingMode = false,
   }) : assert(
          initialDraft == null || initialPrefill == null,
          'A create flow cannot restore a draft and apply a repeat prefill.',
@@ -112,6 +113,7 @@ class CreateEventScreen extends ConsumerStatefulWidget {
   final int initialStep;
   final AutovalidateMode formAutovalidateMode;
   final List<PickedEventPhoto> initialPickedEventPhotos;
+  final bool externalBookingMode;
 
   /// Tests can disable network tiles while still exercising map callbacks.
   final bool loadMapTiles;
@@ -165,6 +167,12 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   final _priceController = TextEditingController();
   final _customActivityLabelController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _externalEventUrlController = TextEditingController();
+  final _externalEventIdController = TextEditingController();
+  ExternalBookingProvider _externalBookingProvider =
+      ExternalBookingProvider.generic;
+  EventRuntimeWalkInPolicy _runtimeWalkInPolicy =
+      EventRuntimeWalkInPolicy.hostApproval;
   ActivityKind _selectedActivityKind = ActivityKind.socialRun;
   EventInteractionModel _selectedInteractionModel =
       ActivityKind.socialRun.defaultInteractionModel;
@@ -258,6 +266,12 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     _currentStep = widget.initialStep.clamp(0, _stepSpecs.length - 1).toInt();
     _pageController = PageController(initialPage: _currentStep);
     _applyClubDefaults(widget.club.hostDefaults);
+    if (widget.externalBookingMode && !_eventSuccessDefaults.enabled) {
+      _eventSuccessDefaults = EventSuccessDefaults.recommendedForFormat(
+        _selectedEventFormat,
+        targetAttendeeCount: _eventSuccessTargetAttendeeCount,
+      );
+    }
     final initialDraft = widget.initialDraft;
     if (initialDraft != null) {
       _activeDraftId = initialDraft.id;
@@ -294,6 +308,8 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     _priceController.dispose();
     _customActivityLabelController.dispose();
     _descriptionController.dispose();
+    _externalEventUrlController.dispose();
+    _externalEventIdController.dispose();
     _minAgeController.dispose();
     _maxAgeController.dispose();
     _maxMenController.dispose();
@@ -472,6 +488,25 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     final meetingLocation = _currentMeetingLocation;
     if (meetingLocation == null) return;
 
+    final externalOrigin = widget.externalBookingMode
+        ? ExternalEventOriginInput(
+            provider: _externalBookingProvider,
+            externalEventId: _trimmedTextOrNull(_externalEventIdController),
+            externalEventUrl: _trimmedTextOrNull(_externalEventUrlController),
+            sourceExternalEventId: _trimmedTextOrNull(
+              _externalEventIdController,
+            ),
+            adapterVersion: _externalBookingProvider.rosterAdapterVersion,
+          )
+        : null;
+    final effectiveEventSuccessDefaults =
+        widget.externalBookingMode && !_eventSuccessDefaults.enabled
+        ? EventSuccessDefaults.recommendedForFormat(
+            _selectedEventFormat,
+            targetAttendeeCount: _eventSuccessTargetAttendeeCount,
+          )
+        : _eventSuccessDefaults;
+
     CreateEventController.submitMutation.run(ref, (tx) async {
       final createdEvent = await tx
           .get(createEventControllerProvider.notifier)
@@ -491,7 +526,11 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
             photoImages: _eventPhotos.pickedPhotos
                 .map((photo) => photo.image)
                 .toList(),
-            eventSuccessDefaults: _eventSuccessDefaults,
+            eventSuccessDefaults: effectiveEventSuccessDefaults,
+            externalOrigin: externalOrigin,
+            runtimeWalkInPolicy: widget.externalBookingMode
+                ? _runtimeWalkInPolicy
+                : null,
           );
       if (mounted) {
         setState(() => _createdEvent = createdEvent);
@@ -887,6 +926,15 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                     }),
                     selectedPace: _selectedPace,
                     onPaceChanged: (p) => setState(() => _selectedPace = p),
+                    externalBookingMode: widget.externalBookingMode,
+                    externalBookingProvider: _externalBookingProvider,
+                    externalEventUrlController: _externalEventUrlController,
+                    externalEventIdController: _externalEventIdController,
+                    runtimeWalkInPolicy: _runtimeWalkInPolicy,
+                    onExternalBookingProviderChanged: (provider) =>
+                        setState(() => _externalBookingProvider = provider),
+                    onRuntimeWalkInPolicyChanged: (policy) =>
+                        setState(() => _runtimeWalkInPolicy = policy),
                   ),
                   WhereStep(
                     formKey: _whereFormKey,

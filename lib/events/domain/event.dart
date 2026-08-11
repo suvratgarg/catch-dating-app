@@ -36,6 +36,142 @@ enum PaceLevel implements Labelled {
 
 enum EventLifecycleStatus { active, cancelled }
 
+enum EventOriginMode { catchNative, externalCompanion }
+
+enum EventBookingAuthority { catchPlatform, external }
+
+enum EventRosterAuthority { catchProjection, hostImport, providerSync }
+
+enum ExternalBookingProvider {
+  catchPlatform,
+  generic,
+  luma,
+  eventbrite,
+  partiful,
+  posh,
+  bookmyshow,
+  district,
+  sortmyscene,
+  airbnb,
+}
+
+extension ExternalBookingProviderX on ExternalBookingProvider {
+  String get rosterAdapterVersion => switch (this) {
+    ExternalBookingProvider.luma => 'luma-v1',
+    ExternalBookingProvider.eventbrite => 'eventbrite-v1',
+    ExternalBookingProvider.partiful => 'partiful-v1',
+    ExternalBookingProvider.posh => 'posh-v1',
+    ExternalBookingProvider.generic => 'generic-v1',
+    ExternalBookingProvider.bookmyshow => 'bookmyshow-sample-required',
+    ExternalBookingProvider.district => 'district-sample-required',
+    ExternalBookingProvider.sortmyscene => 'sortmyscene-sample-required',
+    ExternalBookingProvider.airbnb => 'airbnb-sample-required',
+    ExternalBookingProvider.catchPlatform => 'catch-native',
+  };
+
+  static const externalValues = <ExternalBookingProvider>[
+    ExternalBookingProvider.luma,
+    ExternalBookingProvider.eventbrite,
+    ExternalBookingProvider.partiful,
+    ExternalBookingProvider.posh,
+    ExternalBookingProvider.bookmyshow,
+    ExternalBookingProvider.district,
+    ExternalBookingProvider.sortmyscene,
+    ExternalBookingProvider.airbnb,
+    ExternalBookingProvider.generic,
+  ];
+}
+
+enum EventRuntimeWalkInPolicy { deny, hostApproval, autoCreate }
+
+String _eventBookingAuthorityToJson(EventBookingAuthority value) =>
+    value == EventBookingAuthority.catchPlatform ? 'catch' : value.name;
+
+EventBookingAuthority _eventBookingAuthorityFromJson(String value) =>
+    value == 'catch'
+    ? EventBookingAuthority.catchPlatform
+    : EventBookingAuthority.values.byName(value);
+
+String _externalBookingProviderToJson(ExternalBookingProvider value) =>
+    value == ExternalBookingProvider.catchPlatform ? 'catch' : value.name;
+
+ExternalBookingProvider _externalBookingProviderFromJson(String value) =>
+    value == 'catch'
+    ? ExternalBookingProvider.catchPlatform
+    : ExternalBookingProvider.values.byName(value);
+
+@freezed
+abstract class EventOrigin with _$EventOrigin {
+  const EventOrigin._();
+
+  const factory EventOrigin({
+    required EventOriginMode mode,
+    @JsonKey(
+      fromJson: _eventBookingAuthorityFromJson,
+      toJson: _eventBookingAuthorityToJson,
+    )
+    required EventBookingAuthority bookingAuthority,
+    required EventRosterAuthority rosterAuthority,
+    @JsonKey(
+      fromJson: _externalBookingProviderFromJson,
+      toJson: _externalBookingProviderToJson,
+    )
+    required ExternalBookingProvider provider,
+    String? externalEventId,
+    String? externalEventUrl,
+    String? sourceExternalEventId,
+    String? adapterVersion,
+    @NullableTimestampConverter() DateTime? connectedAt,
+    String? connectedBy,
+  }) = _EventOrigin;
+
+  factory EventOrigin.fromJson(Map<String, dynamic> json) =>
+      _$EventOriginFromJson(json);
+
+  bool get isExternal => mode == EventOriginMode.externalCompanion;
+}
+
+@freezed
+abstract class EventRuntimeAccess with _$EventRuntimeAccess {
+  const EventRuntimeAccess._();
+
+  const factory EventRuntimeAccess({
+    required bool enabled,
+    String? publicRuntimeId,
+    required EventRuntimeWalkInPolicy walkInPolicy,
+    required String termsVersion,
+  }) = _EventRuntimeAccess;
+
+  factory EventRuntimeAccess.fromJson(Map<String, dynamic> json) =>
+      _$EventRuntimeAccessFromJson(json);
+
+  bool get isJoinable => enabled && publicRuntimeId != null;
+}
+
+class ExternalEventOriginInput {
+  const ExternalEventOriginInput({
+    required this.provider,
+    this.externalEventId,
+    this.externalEventUrl,
+    this.sourceExternalEventId,
+    this.adapterVersion,
+  });
+
+  final ExternalBookingProvider provider;
+  final String? externalEventId;
+  final String? externalEventUrl;
+  final String? sourceExternalEventId;
+  final String? adapterVersion;
+
+  Map<String, Object?> toJson() => {
+    'provider': _externalBookingProviderToJson(provider),
+    'externalEventId': externalEventId,
+    'externalEventUrl': externalEventUrl,
+    'sourceExternalEventId': sourceExternalEventId,
+    'adapterVersion': adapterVersion,
+  };
+}
+
 /// The current booking status of a specific event from one user's perspective.
 enum EventSignUpStatus {
   /// Event is upcoming, not full, and the user hasn't signed up.
@@ -104,6 +240,8 @@ abstract class Event with _$Event {
     @Default(false) bool publicRegistrationEnabled,
     @Default(EventConstraints()) EventConstraints constraints,
     @JsonKey(includeIfNull: false) EventPolicyBundle? eventPolicy,
+    @JsonKey(includeIfNull: false) EventOrigin? eventOrigin,
+    @JsonKey(includeIfNull: false) EventRuntimeAccess? runtimeAccess,
     // Denormalized gender counts maintained atomically by Cloud Functions.
     // Keys are Gender enum names: 'man', 'woman', 'nonBinary', 'other'.
     @Default({}) Map<String, int> genderCounts,
@@ -128,6 +266,16 @@ abstract class Event with _$Event {
   bool get isFull => signedUpCount >= capacityLimit;
   bool get isFree => priceInPaise == 0;
   bool get isCancelled => status == EventLifecycleStatus.cancelled;
+  bool get isExternalCompanion => eventOrigin?.isExternal ?? false;
+  bool get hasWebRuntime => runtimeAccess?.isJoinable ?? false;
+  Uri? runtimeJoinUri({String baseUrl = 'https://catchdates.com'}) {
+    final runtimeId = runtimeAccess?.publicRuntimeId;
+    if (runtimeId == null || runtimeId.isEmpty) return null;
+    return Uri.parse(
+      baseUrl,
+    ).resolve('/join/${Uri.encodeComponent(runtimeId)}');
+  }
+
   bool isUpcomingAt(DateTime now) => !isCancelled && startTime.isAfter(now);
   bool get hasRequirements => constraints.hasRequirements;
   bool get hasExactStartingPoint =>

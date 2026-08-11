@@ -16,6 +16,8 @@ void main() {
     int? waitlistedCount,
     EventLifecycleStatus status = EventLifecycleStatus.active,
     EventFormatSnapshot eventFormat = const EventFormatSnapshot.socialRun(),
+    EventOrigin? eventOrigin,
+    EventRuntimeAccess? runtimeAccess,
   }) {
     final start = startTime ?? DateTime.now().add(const Duration(hours: 1));
     return Event(
@@ -41,6 +43,8 @@ void main() {
       checkedInCount: checkedInCount,
       waitlistedCount: waitlistedCount,
       status: status,
+      eventOrigin: eventOrigin,
+      runtimeAccess: runtimeAccess,
     );
   }
 
@@ -206,6 +210,49 @@ void main() {
 
       expect(decoded.meetingLocation, isNull);
       expect(decoded.hasExactStartingPoint, isFalse);
+    });
+  });
+
+  group('External companion runtime', () {
+    test('round-trips provenance and builds a public join URL', () {
+      final source = buildEvent(
+        eventOrigin: const EventOrigin(
+          mode: EventOriginMode.externalCompanion,
+          bookingAuthority: EventBookingAuthority.external,
+          rosterAuthority: EventRosterAuthority.hostImport,
+          provider: ExternalBookingProvider.luma,
+          externalEventId: 'luma-event-1',
+          adapterVersion: 'luma-v1',
+        ),
+        runtimeAccess: const EventRuntimeAccess(
+          enabled: true,
+          publicRuntimeId: 'runtime_abcdefghijklmnopqrstu',
+          walkInPolicy: EventRuntimeWalkInPolicy.hostApproval,
+          termsVersion: 'event-runtime-v1',
+        ),
+      );
+
+      final decoded = Event.fromJson({...source.toJson(), 'id': source.id});
+
+      expect(decoded.isExternalCompanion, isTrue);
+      expect(decoded.eventOrigin?.provider, ExternalBookingProvider.luma);
+      expect(decoded.hasWebRuntime, isTrue);
+      expect(
+        decoded.runtimeJoinUri()?.toString(),
+        'https://catchdates.com/join/runtime_abcdefghijklmnopqrstu',
+      );
+    });
+
+    test('maps Catch booking authority to the contract wire value', () {
+      const origin = EventOrigin(
+        mode: EventOriginMode.catchNative,
+        bookingAuthority: EventBookingAuthority.catchPlatform,
+        rosterAuthority: EventRosterAuthority.catchProjection,
+        provider: ExternalBookingProvider.catchPlatform,
+      );
+
+      expect(origin.toJson()['bookingAuthority'], 'catch');
+      expect(origin.toJson()['provider'], 'catch');
     });
   });
 }

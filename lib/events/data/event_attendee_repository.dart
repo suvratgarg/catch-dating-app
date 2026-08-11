@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show
+        CreateEventRosterHandoffCallableRequest,
         ImportEventAttendeesCallableRequest,
         MarkEventAttendeeAttendanceCallableRequest;
 import 'package:catch_dating_app/events/domain/event_attendee.dart';
@@ -106,6 +107,24 @@ class EventAttendeeRepository {
     context: const BackendErrorContext(
       service: BackendService.functions,
       action: 'mark operational attendee attendance',
+      resource: _collectionPath,
+    ),
+  );
+
+  Future<EventRosterHandoffInstructions> createRosterHandoff({
+    required String eventId,
+  }) => withBackendErrorContext(
+    () async {
+      final result = await _functions
+          .httpsCallable('createEventRosterHandoff')
+          .call<Object?>(
+            CreateEventRosterHandoffCallableRequest(eventId: eventId).toJson(),
+          );
+      return EventRosterHandoffInstructions.fromCallableData(result.data);
+    },
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'create event roster forwarding instructions',
       resource: _collectionPath,
     ),
   );

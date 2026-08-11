@@ -51,6 +51,16 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/uploadedPhoto.ts",
   },
   {
+    name: "EventOrigin",
+    source: "embedded/event_origin.schema.json",
+    typeOutput: "functions/src/shared/generated/eventOrigin.ts",
+  },
+  {
+    name: "EventRuntimeAccess",
+    source: "embedded/event_runtime_access.schema.json",
+    typeOutput: "functions/src/shared/generated/eventRuntimeAccess.ts",
+  },
+  {
     name: "ActivityPreferences",
     source: "embedded/activity_preferences.schema.json",
     typeOutput: "functions/src/shared/generated/activityPreferences.ts",
@@ -207,6 +217,24 @@ const schemaSpecs = [
     source: "firestore/event_attendee_imports.schema.json",
     typeOutput:
       "functions/src/shared/generated/eventAttendeeImportDocument.ts",
+  },
+  {
+    name: "EventRosterHandoffDocument",
+    source: "firestore/event_roster_handoffs.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventRosterHandoffDocument.ts",
+  },
+  {
+    name: "EventRuntimeParticipantDocument",
+    source: "firestore/event_runtime_participants.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventRuntimeParticipantDocument.ts",
+  },
+  {
+    name: "EventRuntimeClaimRequestDocument",
+    source: "firestore/event_runtime_claim_requests.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventRuntimeClaimRequestDocument.ts",
   },
   {
     name: "EventCrossPathsConsentDocument",
@@ -1004,6 +1032,84 @@ const schemaSpecs = [
     source: "callable_responses/register_public_event_response.schema.json",
     typeOutput:
       "functions/src/shared/generated/registerPublicEventCallableResponse.ts",
+  },
+  {
+    name: "GetEventRuntimeBootstrapCallablePayload",
+    source: "callables/get_event_runtime_bootstrap_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/getEventRuntimeBootstrapCallablePayload.ts",
+  },
+  {
+    name: "GetEventRuntimeBootstrapCallableResponse",
+    source:
+      "callable_responses/get_event_runtime_bootstrap_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/getEventRuntimeBootstrapCallableResponse.ts",
+  },
+  {
+    name: "ClaimEventRuntimeAccessCallablePayload",
+    source: "callables/claim_event_runtime_access_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/claimEventRuntimeAccessCallablePayload.ts",
+  },
+  {
+    name: "ClaimEventRuntimeAccessCallableResponse",
+    source:
+      "callable_responses/claim_event_runtime_access_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/claimEventRuntimeAccessCallableResponse.ts",
+  },
+  {
+    name: "SubmitEventRuntimeProfileCallablePayload",
+    source: "callables/submit_event_runtime_profile_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/submitEventRuntimeProfileCallablePayload.ts",
+  },
+  {
+    name: "SubmitEventRuntimeProfileCallableResponse",
+    source:
+      "callable_responses/submit_event_runtime_profile_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/submitEventRuntimeProfileCallableResponse.ts",
+  },
+  {
+    name: "CheckInEventRuntimeCallablePayload",
+    source: "callables/check_in_event_runtime_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/checkInEventRuntimeCallablePayload.ts",
+  },
+  {
+    name: "CheckInEventRuntimeCallableResponse",
+    source:
+      "callable_responses/check_in_event_runtime_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/checkInEventRuntimeCallableResponse.ts",
+  },
+  {
+    name: "ApproveEventRuntimeClaimCallablePayload",
+    source: "callables/approve_event_runtime_claim_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/approveEventRuntimeClaimCallablePayload.ts",
+  },
+  {
+    name: "ApproveEventRuntimeClaimCallableResponse",
+    source:
+      "callable_responses/approve_event_runtime_claim_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/approveEventRuntimeClaimCallableResponse.ts",
+  },
+  {
+    name: "CreateEventRosterHandoffCallablePayload",
+    source: "callables/create_event_roster_handoff_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/createEventRosterHandoffCallablePayload.ts",
+  },
+  {
+    name: "CreateEventRosterHandoffCallableResponse",
+    source:
+      "callable_responses/create_event_roster_handoff_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/createEventRosterHandoffCallableResponse.ts",
   },
   {
     name: "GetOrganizerCrmSummaryCallablePayload",

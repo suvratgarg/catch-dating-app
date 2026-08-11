@@ -251,6 +251,55 @@ test("fetch wingman candidates filters eligibility and blocks", async () => {
   assert.equal(result.profiles[0]?.name, "Rhea");
 });
 
+test(
+  "fetch wingman candidates includes external runtime attendees",
+  async () => {
+    const {deps} = harness({
+      "eventParticipations/event-1_runner-1": undefined,
+      "eventParticipations/event-1_runner-2": undefined,
+      "users/runner-1": undefined,
+      "publicProfiles/runner-2": undefined,
+      "eventRuntimeParticipants/event-1_runner-1": runtimeParticipant({
+        uid: "runner-1",
+        attendeeId: "attendee-1",
+        displayName: "Dev",
+        gender: "man",
+        interestedInGenders: ["woman"],
+      }),
+      "eventRuntimeParticipants/event-1_runner-2": runtimeParticipant({
+        uid: "runner-2",
+        attendeeId: "attendee-2",
+        displayName: "Rhea",
+        gender: "woman",
+        interestedInGenders: ["man"],
+      }),
+      "eventAttendees/attendee-1": {
+        eventId: "event-1",
+        linkedUid: "runner-1",
+        status: "checkedIn",
+      },
+      "eventAttendees/attendee-2": {
+        eventId: "event-1",
+        linkedUid: "runner-2",
+        status: "checkedIn",
+      },
+    });
+
+    const result = await fetchEventSuccessWingmanCandidatesHandler(
+      request("runner-1", {eventId: "event-1"}),
+      deps
+    );
+
+    assert.deepEqual(result.profiles, []);
+    assert.deepEqual(result.candidates, [{
+      uid: "runner-2",
+      displayName: "Rhea",
+      gender: "woman",
+      source: "externalRuntime",
+    }]);
+  }
+);
+
 test("submit wingman request writes server-owned request", async () => {
   const {firestore, deps, rateLimitCalls} = harness();
 
@@ -340,4 +389,26 @@ function request(
 
 function ts(iso: string): FirebaseFirestore.Timestamp {
   return admin.firestore.Timestamp.fromDate(new Date(iso));
+}
+
+function runtimeParticipant(params: {
+  uid: string;
+  attendeeId: string;
+  displayName: string;
+  gender: "man" | "woman";
+  interestedInGenders: Array<"man" | "woman">;
+}): FakeData {
+  return {
+    eventId: "event-1",
+    uid: params.uid,
+    eventAttendeeId: params.attendeeId,
+    accessStatus: "ready",
+    runtimeProfile: {
+      displayName: params.displayName,
+      gender: params.gender,
+      interestedInGenders: params.interestedInGenders,
+      relationshipGoal: null,
+      dateOfBirth: null,
+    },
+  };
 }

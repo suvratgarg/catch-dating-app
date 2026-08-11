@@ -1,12 +1,12 @@
 {
   "$schema": "./feature_contract.schema.json",
   "version": 2,
-  "updated": "2026-07-23",
+  "updated": "2026-08-11",
   "id": "feature.event_success",
   "name": "Event Success",
   "owner": "event_success",
   "status": "pilot",
-  "description": "Orchestrates the attendee Event Success Companion from route gating and arrival through live guidance, assignments, reveal, host-help requests, private feedback, opt-outs, and transition-triggered auto-launch.",
+  "description": "Orchestrates Event Success across the consumer companion and the no-download public web runtime, from route gating and verified arrival through live guidance, assignments, host-help requests, private feedback, opt-outs, and transition-triggered auto-launch.",
   "surfaces": [
     {
       "id": "consumer_flutter",
@@ -821,6 +821,258 @@
           ],
           "debtId": "FEATURE-CONTRACT-MIGRATION-001",
           "reason": "Auto-launch is transition policy verified by the companion-launcher test rather than a stable standalone render state, so no deterministic capture or Widgetbook preview is registered."
+        }
+      ]
+    },
+    {
+      "id": "marketing_web_runtime",
+      "runtime": "react_marketing",
+      "authority": {
+        "registry": "marketing_routes",
+        "id": "event_runtime"
+      },
+      "actionScope": {
+        "included": "Opaque-link bootstrap, phone OTP, imported-roster claim or Host approval, event-scoped profile intake, verified check-in, compatibility answers, First Hello, assignments, host-help requests, and private feedback in a mobile browser.",
+        "excluded": [
+          "The web runtime does not create a public Catch dating profile, expose private questionnaire answers to the Host, sell tickets, run waitlists, create mutual matches, or open member chats.",
+          "Host claim approval, live-plan control, assignment generation, overrides, and reveal control remain in the authenticated Host product and backend operation owners."
+        ]
+      },
+      "bindings": {
+        "previewSources": [
+          "website/src/stories/MarketingRoutes.stories.tsx"
+        ],
+        "actionOwners": [
+          {
+            "id": "event_runtime_controller",
+            "language": "typescript",
+            "file": "website/src/features/eventRuntime/useEventRuntimeController.ts",
+            "symbol": "useEventRuntimeController"
+          }
+        ],
+        "componentContracts": [
+          "route_event_runtime",
+          "shared_event_runtime_shells"
+        ],
+        "dataContracts": [
+          "contracts/callables/check_in_event_runtime_payload.schema.json",
+          "contracts/callable_responses/check_in_event_runtime_response.schema.json",
+          "contracts/callables/claim_event_runtime_access_payload.schema.json",
+          "contracts/callable_responses/claim_event_runtime_access_response.schema.json",
+          "contracts/callables/get_event_runtime_bootstrap_payload.schema.json",
+          "contracts/callable_responses/get_event_runtime_bootstrap_response.schema.json",
+          "contracts/callables/submit_event_runtime_profile_payload.schema.json",
+          "contracts/callable_responses/submit_event_runtime_profile_response.schema.json",
+          "contracts/callables/complete_event_success_first_hello_mission_payload.schema.json",
+          "contracts/callables/start_event_success_first_hello_mission_payload.schema.json",
+          "contracts/callables/submit_event_success_wingman_request_payload.schema.json",
+          "contracts/callable_responses/fetch_event_success_wingman_candidates_response.schema.json",
+          "contracts/firestore/event_runtime_participants.schema.json",
+          "contracts/firestore/event_success_arrival_missions.schema.json",
+          "contracts/firestore/event_success_assignments.schema.json",
+          "contracts/firestore/event_success_compatibility_responses.schema.json",
+          "contracts/firestore/event_success_feedback.schema.json",
+          "contracts/firestore/event_success_plans.schema.json",
+          "contracts/firestore/event_success_wingman_requests.schema.json"
+        ],
+        "previewEvidence": {
+          "phone-entry": [
+            "route_event_runtime/EventRuntime"
+          ]
+        },
+        "testEvidence": {
+          "phone-entry": [
+            "website/src/features/eventRuntime/eventRuntimeModel.test.ts",
+            "website/src/features/eventRuntime/useEventRuntimeController.test.tsx"
+          ],
+          "otp": [
+            "website/src/features/eventRuntime/useEventRuntimeController.test.tsx"
+          ],
+          "event-intake": [
+            "website/src/features/eventRuntime/eventRuntimeModel.test.ts",
+            "website/src/features/eventRuntime/useEventRuntimeController.test.tsx"
+          ],
+          "pending-approval": [
+            "website/src/features/eventRuntime/eventRuntimeModel.test.ts"
+          ],
+          "live-runtime": [
+            "website/src/features/eventRuntime/useEventRuntimeController.test.tsx"
+          ],
+          "unavailable": [
+            "website/src/features/eventRuntime/eventRuntimeModel.test.ts"
+          ]
+        }
+      },
+      "dimensions": {
+        "stage": {
+          "default": "phone_entry",
+          "values": [
+            "phone_entry",
+            "otp",
+            "event_intake",
+            "pending_approval",
+            "live_runtime",
+            "unavailable"
+          ]
+        },
+        "mutation": {
+          "default": "idle",
+          "values": [
+            "idle",
+            "pending",
+            "failed",
+            "success"
+          ]
+        },
+        "identity": {
+          "default": "event_only",
+          "values": [
+            "event_only",
+            "catch_prefill_consented"
+          ]
+        }
+      },
+      "actions": [
+        {
+          "id": "begin_phone_verification",
+          "owner": "event_runtime_controller",
+          "codeValue": "handlePhoneSubmit",
+          "cardinality": "singleton",
+          "scopeKeys": ["routeInstanceId", "publicRuntimeId", "phoneNumber"],
+          "outcomes": [{"kind": "surface_state", "stateIds": ["otp"]}],
+          "description": "Requests one Firebase phone-verification session for the entered event-runtime identity."
+        },
+        {
+          "id": "confirm_phone_code",
+          "owner": "event_runtime_controller",
+          "codeValue": "handleCodeSubmit",
+          "cardinality": "singleton",
+          "scopeKeys": ["routeInstanceId", "publicRuntimeId", "verificationSession"],
+          "outcomes": [{"kind": "surface_state", "stateIds": ["event-intake", "pending-approval", "live-runtime"]}],
+          "description": "Confirms the six-digit OTP and resolves the verified attendee's roster or approval state."
+        },
+        {
+          "id": "submit_runtime_profile",
+          "owner": "event_runtime_controller",
+          "codeValue": "handleProfileSubmit",
+          "cardinality": "singleton",
+          "scopeKeys": ["routeInstanceId", "publicRuntimeId", "verifiedUid", "profileVersion"],
+          "outcomes": [{"kind": "surface_state", "stateIds": ["pending-approval", "live-runtime"]}],
+          "description": "Claims or requests access and stores only the event-scoped fields required by enabled live modules."
+        },
+        {
+          "id": "refresh_runtime_access",
+          "owner": "event_runtime_controller",
+          "codeValue": "handleRefresh",
+          "cardinality": "unbounded",
+          "scopeKeys": ["routeInstanceId", "publicRuntimeId", "verifiedUid"],
+          "outcomes": [{"kind": "surface_state", "stateIds": ["pending-approval", "live-runtime", "unavailable"]}],
+          "description": "Refreshes a pending Host approval without creating a second claim request."
+        },
+        {
+          "id": "save_compatibility_answers",
+          "owner": "event_runtime_controller",
+          "codeValue": "saveCompatibilityAnswers",
+          "cardinality": "singleton",
+          "scopeKeys": ["eventId", "verifiedUid", "questionnaireVersion"],
+          "outcomes": [{"kind": "surface_state", "stateIds": ["live-runtime"]}],
+          "description": "Stores the attendee's private event-scoped compatibility answer identifiers."
+        },
+        {
+          "id": "start_first_hello",
+          "owner": "event_runtime_controller",
+          "codeValue": "startFirstHello",
+          "cardinality": "singleton",
+          "scopeKeys": ["eventId", "verifiedUid", "missionVersion"],
+          "outcomes": [{"kind": "surface_state", "stateIds": ["live-runtime"]}],
+          "description": "Starts the attendee's current First Hello mission, optionally using coarse browser position evidence."
+        },
+        {
+          "id": "complete_first_hello",
+          "owner": "event_runtime_controller",
+          "codeValue": "completeFirstHello",
+          "cardinality": "singleton",
+          "scopeKeys": ["eventId", "verifiedUid", "missionVersion"],
+          "outcomes": [{"kind": "surface_state", "stateIds": ["live-runtime"]}],
+          "description": "Completes the active First Hello mission with one bounded answer."
+        },
+        {
+          "id": "submit_wingman_request",
+          "owner": "event_runtime_controller",
+          "codeValue": "submitWingmanRequest",
+          "cardinality": "singleton",
+          "scopeKeys": ["eventId", "verifiedUid", "targetUid"],
+          "outcomes": [{"kind": "surface_state", "stateIds": ["live-runtime"]}],
+          "description": "Privately requests a Host-facilitated introduction to one eligible checked-in attendee."
+        },
+        {
+          "id": "withdraw_wingman_request",
+          "owner": "event_runtime_controller",
+          "codeValue": "withdrawWingmanRequest",
+          "cardinality": "singleton",
+          "scopeKeys": ["eventId", "verifiedUid"],
+          "outcomes": [{"kind": "surface_state", "stateIds": ["live-runtime"]}],
+          "description": "Withdraws the attendee's current private introduction request."
+        },
+        {
+          "id": "submit_private_feedback",
+          "owner": "event_runtime_controller",
+          "codeValue": "submitFeedback",
+          "cardinality": "singleton",
+          "scopeKeys": ["eventId", "verifiedUid", "feedbackVersion"],
+          "outcomes": [{"kind": "surface_state", "stateIds": ["live-runtime"]}],
+          "description": "Stores bounded event feedback and an optional private note under the attendee's verified event identity."
+        }
+      ],
+      "scenarios": [
+        {
+          "id": "phone_entry",
+          "stateId": "phone-entry",
+          "dimensions": {},
+          "actionCases": [{"id": "ready", "enabledActions": ["begin_phone_verification"]}]
+        },
+        {
+          "id": "otp",
+          "stateId": "otp",
+          "dimensions": {"stage": "otp"},
+          "actionCases": [{"id": "ready", "enabledActions": ["confirm_phone_code"]}]
+        },
+        {
+          "id": "event_intake",
+          "stateId": "event-intake",
+          "dimensions": {"stage": "event_intake"},
+          "actionCases": [{"id": "event_only", "enabledActions": ["submit_runtime_profile"]}, {"id": "prefill_opt_in", "dimensions": {"identity": "catch_prefill_consented"}, "enabledActions": ["submit_runtime_profile"]}]
+        },
+        {
+          "id": "pending_approval",
+          "stateId": "pending-approval",
+          "dimensions": {"stage": "pending_approval"},
+          "actionCases": [{"id": "refresh", "enabledActions": ["refresh_runtime_access"]}]
+        },
+        {
+          "id": "live_runtime",
+          "stateId": "live-runtime",
+          "dimensions": {"stage": "live_runtime"},
+          "actionCases": [{"id": "available_modules", "enabledActions": ["save_compatibility_answers", "start_first_hello", "complete_first_hello", "submit_wingman_request", "withdraw_wingman_request", "submit_private_feedback"]}]
+        },
+        {
+          "id": "unavailable",
+          "stateId": "unavailable",
+          "dimensions": {"stage": "unavailable"},
+          "actionCases": [{"id": "blocked"}]
+        }
+      ],
+      "requiredEvidence": {
+        "captures": false,
+        "previews": true,
+        "tests": true
+      },
+      "evidenceExceptions": [
+        {
+          "stateIds": ["otp", "event-intake", "pending-approval", "live-runtime", "unavailable"],
+          "evidence": ["previews"],
+          "debtId": "FEATURE-CONTRACT-MIGRATION-001",
+          "reason": "The route contract currently classifies these no-download runtime states as manual review states; the phone-entry and shared live-module shells retain the deterministic Storybook proof until controller injection supports fixed route stories."
         }
       ]
     }

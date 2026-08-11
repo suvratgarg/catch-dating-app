@@ -62,8 +62,10 @@ The website is already split out of the old monolithic shell:
   an Organizer Search state.
 - All stateful marketing route authorities are now compiled. Marketing Home
   owns public discovery handoffs, store availability, Host routing, and member
-  waitlist conversion. Host Acquisition owns the interactive operating
-  previews and the five-stage Host application. Organizer Claim binds both the
+  waitlist conversion. Host Acquisition owns the standalone-tooling narrative,
+  external-booking setup walkthrough, live-module catalog, explicit
+  current-versus-coming-later boundary, and the five-stage beta application.
+  Organizer Claim binds both the
   canonical workspace and dynamic lookup route so known, not-found, pending,
   already-claimed, and unavailable authority states remain exact. Privacy,
   Terms, Help, and 404 stay explicitly excluded as static/fallback surfaces;
@@ -162,7 +164,10 @@ The website is already split out of the old monolithic shell:
   to `/host/`. Host sections live under `website/src/features/host/sections/**`;
   `HostPageSections.tsx` owns the core sequence, `HostSupportingSections.tsx`
   owns offer/trust/FAQ, and `PlaybookShowcase.tsx` owns the stage rail and
-  deep-linkable module catalog.
+  deep-linkable module catalog. The public route starts with an external guest
+  list and a no-download attendee runtime; Catch-native booking, member
+  profiles, chats, and network effects stay below the explicit coming-later
+  boundary.
   Host application form state lives under `website/src/features/host/application/**`.
 - The remaining legacy-named `HostPreview*` Storybook and offer/trust/FAQ
   primitives are internal implementation details in the host primitive family;

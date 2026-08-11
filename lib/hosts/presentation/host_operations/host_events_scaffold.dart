@@ -182,6 +182,7 @@ class _HostEventsScaffoldState extends State<HostEventsScaffold> {
                 onFilterChanged: (filter) =>
                     setState(() => _eventFilter = filter),
                 onCreateEvent: _openCreateEvent,
+                onConnectExternalEvent: _openExternalEvent,
                 onRepeatEvent: _openRepeatEvent,
                 onManageEvent: _openManageEvent,
                 now: _clockNow,
@@ -195,6 +196,17 @@ class _HostEventsScaffoldState extends State<HostEventsScaffold> {
       Routes.hostCreateEventScreen.name,
       pathParameters: {'clubId': club.id},
       extra: club,
+    );
+  }
+
+  void _openExternalEvent(Club club) {
+    context.pushNamed(
+      Routes.hostCreateEventScreen.name,
+      pathParameters: {'clubId': club.id},
+      extra: HostCreateEventRouteArguments(
+        initialClub: club,
+        externalBookingMode: true,
+      ),
     );
   }
 

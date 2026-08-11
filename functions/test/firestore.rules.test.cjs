@@ -197,6 +197,60 @@ function eventParticipation(overrides = {}) {
   };
 }
 
+function eventRuntimeParticipant(overrides = {}) {
+  const now = Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z"));
+  return {
+    eventId: "event-1",
+    clubId: "club-1",
+    organizerId: "club-1",
+    uid: "runner-1",
+    eventAttendeeId: "attendee-1",
+    identityVersion: 1,
+    claimMethod: "verifiedPhone",
+    accessStatus: "ready",
+    requiredFieldIds: ["displayName"],
+    completedFieldIds: ["displayName"],
+    runtimeProfile: {
+      displayName: "Runner One",
+      gender: null,
+      interestedInGenders: [],
+      relationshipGoal: null,
+      dateOfBirth: null,
+    },
+    consents: {
+      runtimeTermsVersion: "event-runtime-v1",
+      sensitiveDataTermsVersion: null,
+      saveAsCatchPrefill: false,
+    },
+    claimedAt: now,
+    readyAt: now,
+    revokedAt: null,
+    createdAt: now,
+    updatedAt: now,
+    ...overrides,
+  };
+}
+
+function eventRuntimeClaimRequest(overrides = {}) {
+  const now = Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z"));
+  return {
+    eventId: "event-1",
+    clubId: "club-1",
+    organizerId: "club-1",
+    uid: "runner-1",
+    displayName: "Runner One",
+    phoneLastFour: "9999",
+    candidateAttendeeIds: ["attendee-1"],
+    status: "pending",
+    reviewedBy: null,
+    reviewReason: null,
+    createdAt: now,
+    updatedAt: now,
+    reviewedAt: null,
+    ...overrides,
+  };
+}
+
 function userProfile(overrides = {}) {
   return {
     name: "Runner One",
@@ -905,6 +959,64 @@ describe("firestore.rules", () => {
           eventId: "event-1",
         }),
       );
+    });
+
+    it("keeps runtime identity owner-private and claim review host-only", async () => {
+      await seed(["clubs", "club-1"], club());
+      await seed(["events", "event-1"], event());
+      await seed(
+        ["eventRuntimeParticipants", "event-1_runner-1"],
+        eventRuntimeParticipant(),
+      );
+      await seed(
+        ["eventRuntimeClaimRequests", "event-1_runner-1"],
+        eventRuntimeClaimRequest(),
+      );
+
+      await assertSucceeds(getDoc(doc(
+        authedDb("runner-1"),
+        "eventRuntimeParticipants",
+        "event-1_runner-1",
+      )));
+      await assertFails(getDoc(doc(
+        authedDb("runner-2"),
+        "eventRuntimeParticipants",
+        "event-1_runner-1",
+      )));
+      await assertFails(getDoc(doc(
+        authedDb("host-1"),
+        "eventRuntimeParticipants",
+        "event-1_runner-1",
+      )));
+      await assertFails(getDocs(query(
+        collection(authedDb("runner-1"), "eventRuntimeParticipants"),
+        where("eventId", "==", "event-1"),
+      )));
+      await assertFails(setDoc(doc(
+        authedDb("runner-1"),
+        "eventRuntimeParticipants",
+        "event-1_runner-1",
+      ), eventRuntimeParticipant()));
+
+      await assertSucceeds(getDoc(doc(
+        authedDb("host-1"),
+        "eventRuntimeClaimRequests",
+        "event-1_runner-1",
+      )));
+      await assertSucceeds(getDocs(query(
+        collection(authedDb("host-1"), "eventRuntimeClaimRequests"),
+        where("eventId", "==", "event-1"),
+      )));
+      await assertFails(getDoc(doc(
+        authedDb("runner-1"),
+        "eventRuntimeClaimRequests",
+        "event-1_runner-1",
+      )));
+      await assertFails(updateDoc(doc(
+        authedDb("host-1"),
+        "eventRuntimeClaimRequests",
+        "event-1_runner-1",
+      ), {status: "approved"}));
     });
 
     it("keeps Cross Paths consent private and callable-owned", async () => {
@@ -2496,6 +2608,50 @@ describe("firestore.rules", () => {
       await assertFails(
         getDoc(doc(authedDb("runner-3"), "eventSuccessPlans", "event-1")),
       );
+    });
+
+    it("grants Event Success to a ready external runtime identity", async () => {
+      await seed(["clubs", "club-1"], club());
+      await seed(["events", "event-1"], event());
+      await seed(["eventSuccessPlans", "event-1"], eventSuccessPlan());
+      await seed(
+        ["eventRuntimeParticipants", "event-1_runner-1"],
+        eventRuntimeParticipant(),
+      );
+      await seed(
+        ["eventRuntimeParticipants", "event-1_runner-2"],
+        eventRuntimeParticipant({
+          uid: "runner-2",
+          accessStatus: "needsInput",
+          readyAt: null,
+        }),
+      );
+
+      await assertSucceeds(getDoc(doc(
+        authedDb("runner-1"),
+        "eventSuccessPlans",
+        "event-1",
+      )));
+      await assertSucceeds(setDoc(doc(
+        authedDb("runner-1"),
+        "eventSuccessPreferences",
+        "event-1_runner-1",
+      ), eventSuccessPreference()));
+      await assertSucceeds(setDoc(doc(
+        authedDb("runner-1"),
+        "eventSuccessCompatibilityResponses",
+        "event-1_runner-1",
+      ), eventSuccessCompatibilityResponse()));
+      await assertFails(getDoc(doc(
+        authedDb("runner-2"),
+        "eventSuccessPlans",
+        "event-1",
+      )));
+      await assertFails(setDoc(doc(
+        authedDb("runner-2"),
+        "eventSuccessPreferences",
+        "event-1_runner-2",
+      ), eventSuccessPreference({uid: "runner-2"})));
     });
 
     it("allows attended users to submit feedback only after the event has ended", async () => {

@@ -4,10 +4,10 @@ import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {
   EventDocument,
+  EventAttendeeDocument,
   EventParticipationDocument,
+  EventRuntimeParticipantDocument,
   Gender,
-  PublicProfileDocument,
-  UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {requireAuth} from "../shared/auth";
 import {StartEventSuccessFirstHelloMissionCallablePayload} from
@@ -22,7 +22,7 @@ import {validateCallableWithAjv, requireDoc} from "../shared/validation";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {normalizeEventIdPayload} from "../events/eventPayloadNormalization";
-import {cohortIdForUser, cohortIds} from "../events/eventPolicy";
+import {cohortIds} from "../events/eventPolicy";
 import {blockDocId} from "../safety/blocking";
 import {
   eventParticipationId,
@@ -38,6 +38,12 @@ import {
   ParticipantSignalFactInput,
   recordParticipantSignalFactsBestEffort,
 } from "../marketplace/participantSignals";
+import {
+  EventSuccessRosterParticipant,
+  loadEventSuccessRoster,
+  loadEventSuccessRosterParticipant,
+} from "./eventSuccessRoster";
+import {eventRuntimeParticipantId} from "./eventRuntime";
 
 const FIRST_HELLO_MODULE_ID = "first_hello_check_in";
 const EARTH_RADIUS_M = 6_371_000;
@@ -85,10 +91,7 @@ interface FirstHelloMissionDocument {
   completedAt?: unknown;
 }
 
-type FirstHelloCandidate = EventParticipationDocument & {
-  uid: string;
-  profile: PublicProfileDocument;
-};
+type FirstHelloCandidate = EventSuccessRosterParticipant;
 
 const defaultDeps: FirstHelloDeps = {
   firestore: () => admin.firestore(),
@@ -133,10 +136,6 @@ export async function startEventSuccessFirstHelloMissionHandler(
 
   const eventRef = db.collection("events").doc(data.eventId);
   const planRef = db.collection("eventSuccessPlans").doc(data.eventId);
-  const participationRef = db
-    .collection("eventParticipations")
-    .doc(eventParticipationId(data.eventId, observerUid));
-  const viewerRef = db.collection("users").doc(observerUid);
   const missionRef = db
     .collection("eventSuccessArrivalMissions")
     .doc(firstHelloMissionId(data.eventId, observerUid));
@@ -144,39 +143,31 @@ export async function startEventSuccessFirstHelloMissionHandler(
   const [
     eventSnap,
     planSnap,
-    participationSnap,
-    viewerSnap,
     existingMissionSnap,
   ] = await Promise.all([
     eventRef.get(),
     planRef.get(),
-    participationRef.get(),
-    viewerRef.get(),
     missionRef.get(),
   ]);
 
   const event = requireFirstHelloEvent(eventSnap);
   requireFirstHelloPlan(planSnap, data.eventId, event.clubId);
-  const participation = requireSignedUpParticipant(
-    participationSnap,
+  const viewer = await loadEventSuccessRosterParticipant(
+    db,
+    data.eventId,
     observerUid
   );
-  if (participation.status === "attended") {
+  if (!viewer || !viewer.gender || viewer.interestedInGenders.length === 0) {
+    throw new HttpsError(
+      "failed-precondition",
+      "Join this event and finish its minimum profile before First Hello."
+    );
+  }
+  if (viewer.status === "attended") {
     return {missionId: missionRef.id, attended: true};
   }
   requireCheckInWindow(event, deps.nowMillis());
   requireVenueProximity(event, data.latitude, data.longitude);
-
-  if (!viewerSnap.exists) {
-    throw new HttpsError(
-      "failed-precondition",
-      "Complete your profile before starting First Hello."
-    );
-  }
-  const viewer = requireDoc<UserProfileDocument>(
-    viewerSnap,
-    "UserProfileDocument"
-  );
 
   if (existingMissionSnap.exists) {
     const existing = requireDoc<FirstHelloMissionDocument>(
@@ -250,6 +241,9 @@ export async function completeEventSuccessFirstHelloMissionHandler(
   const participationRef = db
     .collection("eventParticipations")
     .doc(eventParticipationId(data.eventId, observerUid));
+  const runtimeParticipantRef = db
+    .collection("eventRuntimeParticipants")
+    .doc(eventRuntimeParticipantId(data.eventId, observerUid));
   const missionRef = db
     .collection("eventSuccessArrivalMissions")
     .doc(firstHelloMissionId(data.eventId, observerUid));
@@ -262,23 +256,41 @@ export async function completeEventSuccessFirstHelloMissionHandler(
       eventSnap,
       planSnap,
       participationSnap,
+      runtimeParticipantSnap,
       missionSnap,
     ] = await Promise.all([
       tx.get(eventRef),
       tx.get(planRef),
       tx.get(participationRef),
+      tx.get(runtimeParticipantRef),
       tx.get(missionRef),
     ]);
 
     const event = requireFirstHelloEvent(eventSnap);
     requireFirstHelloPlan(planSnap, data.eventId, event.clubId);
-    const participation = requireSignedUpParticipant(
-      participationSnap,
-      observerUid
-    );
+    const participation = participationSnap.exists ?
+      requireSignedUpParticipant(participationSnap, observerUid) : null;
+    const runtimeParticipant = participation ? null :
+      requireReadyRuntimeParticipant(
+        runtimeParticipantSnap,
+        data.eventId,
+        observerUid
+      );
+    const runtimeAttendeeRef = runtimeParticipant ? db
+      .collection("eventAttendees")
+      .doc(runtimeParticipant.eventAttendeeId!) : null;
+    const runtimeAttendeeSnap = runtimeAttendeeRef ?
+      await tx.get(runtimeAttendeeRef) : null;
+    const runtimeAttendee = runtimeAttendeeSnap ? requireRuntimeAttendee(
+      runtimeAttendeeSnap,
+      data.eventId,
+      observerUid,
+      ["registered", "checkedIn"]
+    ) : null;
     signalClubId = event.clubId;
 
-    if (participation.status === "attended") {
+    if (participation?.status === "attended" ||
+        runtimeAttendee?.status === "checkedIn") {
       wasMarkedAttended = false;
       return;
     }
@@ -306,6 +318,9 @@ export async function completeEventSuccessFirstHelloMissionHandler(
     const targetParticipationRef = db
       .collection("eventParticipations")
       .doc(eventParticipationId(data.eventId, mission.targetUid));
+    const targetRuntimeParticipantRef = db
+      .collection("eventRuntimeParticipants")
+      .doc(eventRuntimeParticipantId(data.eventId, mission.targetUid));
     const observerBlocksTargetRef = db
       .collection("blocks")
       .doc(blockDocId(observerUid, mission.targetUid));
@@ -315,15 +330,34 @@ export async function completeEventSuccessFirstHelloMissionHandler(
 
     const [
       targetParticipationSnap,
+      targetRuntimeParticipantSnap,
       observerBlocksTargetSnap,
       targetBlocksObserverSnap,
     ] = await Promise.all([
       tx.get(targetParticipationRef),
+      tx.get(targetRuntimeParticipantRef),
       tx.get(observerBlocksTargetRef),
       tx.get(targetBlocksObserverRef),
     ]);
 
-    requireAttendedTarget(targetParticipationSnap, mission.targetUid);
+    if (targetParticipationSnap.exists) {
+      requireAttendedTarget(targetParticipationSnap, mission.targetUid);
+    } else {
+      const targetRuntime = requireReadyRuntimeParticipant(
+        targetRuntimeParticipantSnap,
+        data.eventId,
+        mission.targetUid
+      );
+      const targetAttendeeSnap = await tx.get(db
+        .collection("eventAttendees")
+        .doc(targetRuntime.eventAttendeeId!));
+      requireRuntimeAttendee(
+        targetAttendeeSnap,
+        data.eventId,
+        mission.targetUid,
+        ["checkedIn"]
+      );
+    }
     if (observerBlocksTargetSnap.exists || targetBlocksObserverSnap.exists) {
       throw new HttpsError(
         "failed-precondition",
@@ -335,18 +369,26 @@ export async function completeEventSuccessFirstHelloMissionHandler(
     tx.update(eventRef, {
       checkedInCount: admin.firestore.FieldValue.increment(1),
     });
-    tx.set(participationRef, eventParticipationPatch({
-      exists: participationSnap.exists,
-      eventId: data.eventId,
-      clubId: event.clubId,
-
-      organizerId: event.organizerId ?? event.clubId,
-      uid: observerUid,
-      status: "attended",
-      genderAtSignup: participation.genderAtSignup ?? undefined,
-      cohortAtSignup: participation.cohortAtSignup ?? undefined,
-      paymentId: participation.paymentId ?? undefined,
-    }), {merge: true});
+    if (participation) {
+      tx.set(participationRef, eventParticipationPatch({
+        exists: participationSnap.exists,
+        eventId: data.eventId,
+        clubId: event.clubId,
+        organizerId: event.organizerId ?? event.clubId,
+        uid: observerUid,
+        status: "attended",
+        genderAtSignup: participation.genderAtSignup ?? undefined,
+        cohortAtSignup: participation.cohortAtSignup ?? undefined,
+        paymentId: participation.paymentId ?? undefined,
+      }), {merge: true});
+    } else {
+      tx.update(runtimeAttendeeRef!, {
+        status: "checkedIn",
+        checkedInAt: now,
+        checkedInBy: observerUid,
+        updatedAt: now,
+      });
+    }
     tx.set(missionRef, {
       ...mission,
       status: "completed",
@@ -393,28 +435,20 @@ export const completeEventSuccessFirstHelloMission = onCall(
  * @param {FirebaseFirestore.Firestore} params.db Firestore instance.
  * @param {string} params.eventId Event id.
  * @param {string} params.observerUid Caller user id.
- * @param {UserProfileDocument} params.viewer Caller profile.
+ * @param {EventSuccessRosterParticipant} params.viewer Caller profile.
  * @return {Promise<FirstHelloCandidate>} Selected target.
  */
 async function chooseFirstHelloTarget(params: {
   db: FirebaseFirestore.Firestore;
   eventId: string;
   observerUid: string;
-  viewer: UserProfileDocument;
+  viewer: EventSuccessRosterParticipant;
 }): Promise<FirstHelloCandidate> {
   const {db, eventId, observerUid, viewer} = params;
-  const participationSnap = await db
-    .collection("eventParticipations")
-    .where("eventId", "==", eventId)
-    .where("status", "==", "attended")
-    .get();
-  const viewerCohortId = cohortIdForUser(viewer);
+  const roster = await loadEventSuccessRoster(db, eventId);
+  const viewerCohortId = viewer.cohortAtSignup;
   const blockedUids = await fetchUidsBlockedWithViewer(db, observerUid);
-  const candidateParticipations = participationSnap.docs
-    .map((doc) => requireDoc<EventParticipationDocument>(
-      doc,
-      "EventParticipationDocument"
-    ))
+  const candidates = roster
     .filter((candidate) => isEligibleFirstHelloCandidate({
       viewer,
       observerUid,
@@ -432,20 +466,7 @@ async function chooseFirstHelloTarget(params: {
       targetUid: b.uid,
     }));
 
-  const profileSnaps = await Promise.all(
-    candidateParticipations.map((candidate) =>
-      db.collection("publicProfiles").doc(candidate.uid).get()
-    )
-  );
-  for (let i = 0; i < candidateParticipations.length; i++) {
-    const profileSnap = profileSnaps[i];
-    if (!profileSnap.exists) continue;
-    const profile = requireDoc<PublicProfileDocument>(
-      profileSnap,
-      "PublicProfileDocument"
-    );
-    return {...candidateParticipations[i], profile};
-  }
+  if (candidates.length > 0) return candidates[0];
 
   throw new HttpsError(
     "failed-precondition",
@@ -482,22 +503,22 @@ async function fetchUidsBlockedWithViewer(
 /**
  * Checks whether a checked-in participant can be assigned.
  * @param {object} params Eligibility inputs.
- * @param {UserProfileDocument} params.viewer Caller profile.
+ * @param {EventSuccessRosterParticipant} params.viewer Caller profile.
  * @param {string} params.observerUid Caller user id.
  * @param {string} params.viewerCohortId Caller event cohort id.
- * @param {EventParticipationDocument} params.candidate Candidate participation.
+ * @param {EventSuccessRosterParticipant} params.candidate Candidate edge.
  * @param {Set<string>} params.blockedUids Blocked user ids.
  * @return {boolean} True when assignable.
  */
 function isEligibleFirstHelloCandidate(params: {
-  viewer: UserProfileDocument;
+  viewer: EventSuccessRosterParticipant;
   observerUid: string;
   viewerCohortId: string;
-  candidate: EventParticipationDocument;
+  candidate: EventSuccessRosterParticipant;
   blockedUids: Set<string>;
 }): boolean {
   const candidate = params.candidate;
-  const candidateGender = candidate.genderAtSignup;
+  const candidateGender = candidate.gender;
   if (
     candidate.uid === params.observerUid ||
     candidate.status !== "attended" ||
@@ -532,7 +553,7 @@ function isEligibleFirstHelloCandidate(params: {
  */
 function candidateCohortCanIncludeViewer(
   candidateCohortId: string | null | undefined,
-  viewerGender: Gender
+  viewerGender: Gender | undefined
 ): boolean {
   switch (candidateCohortId) {
   case cohortIds.menInterestedInWomen:
@@ -571,7 +592,7 @@ function buildFirstHelloMission(params: {
     organizerId: params.organizerId ?? params.clubId,
     observerUid: params.observerUid,
     targetUid: params.target.uid,
-    targetDisplayName: params.target.profile.name,
+    targetDisplayName: params.target.displayName,
     targetContext: "They are checked in and ready for the same room.",
     question: "Ask them: what made this event sound fun?",
     answerOptions: firstHelloAnswerOptions,
@@ -665,6 +686,64 @@ function requireSignedUpParticipant(
     );
   }
   return participation;
+}
+
+function requireReadyRuntimeParticipant(
+  snap: FirebaseFirestore.DocumentSnapshot,
+  eventId: string,
+  uid: string
+): EventRuntimeParticipantDocument {
+  if (!snap.exists) {
+    throw new HttpsError(
+      "failed-precondition",
+      "Join this event and finish its minimum profile before First Hello."
+    );
+  }
+  const participant = requireDoc<EventRuntimeParticipantDocument>(
+    snap,
+    "EventRuntimeParticipantDocument"
+  );
+  if (
+    participant.eventId !== eventId ||
+    participant.uid !== uid ||
+    participant.accessStatus !== "ready" ||
+    !participant.eventAttendeeId
+  ) {
+    throw new HttpsError(
+      "failed-precondition",
+      "Join this event and finish its minimum profile before First Hello."
+    );
+  }
+  return participant;
+}
+
+function requireRuntimeAttendee(
+  snap: FirebaseFirestore.DocumentSnapshot,
+  eventId: string,
+  uid: string,
+  statuses: EventAttendeeDocument["status"][]
+): EventAttendeeDocument {
+  if (!snap.exists) {
+    throw new HttpsError(
+      "failed-precondition",
+      "This event runtime attendee is no longer active."
+    );
+  }
+  const attendee = requireDoc<EventAttendeeDocument>(
+    snap,
+    "EventAttendeeDocument"
+  );
+  if (
+    attendee.eventId !== eventId ||
+    attendee.linkedUid !== uid ||
+    !statuses.includes(attendee.status)
+  ) {
+    throw new HttpsError(
+      "failed-precondition",
+      "This event runtime attendee is no longer active."
+    );
+  }
+  return attendee;
 }
 
 /**

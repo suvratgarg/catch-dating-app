@@ -6,6 +6,77 @@ part of 'event.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+_EventOrigin _$EventOriginFromJson(Map<String, dynamic> json) => _EventOrigin(
+  mode: $enumDecode(_$EventOriginModeEnumMap, json['mode']),
+  bookingAuthority: _eventBookingAuthorityFromJson(
+    json['bookingAuthority'] as String,
+  ),
+  rosterAuthority: $enumDecode(
+    _$EventRosterAuthorityEnumMap,
+    json['rosterAuthority'],
+  ),
+  provider: _externalBookingProviderFromJson(json['provider'] as String),
+  externalEventId: json['externalEventId'] as String?,
+  externalEventUrl: json['externalEventUrl'] as String?,
+  sourceExternalEventId: json['sourceExternalEventId'] as String?,
+  adapterVersion: json['adapterVersion'] as String?,
+  connectedAt: const NullableTimestampConverter().fromJson(json['connectedAt']),
+  connectedBy: json['connectedBy'] as String?,
+);
+
+Map<String, dynamic> _$EventOriginToJson(
+  _EventOrigin instance,
+) => <String, dynamic>{
+  'mode': _$EventOriginModeEnumMap[instance.mode]!,
+  'bookingAuthority': _eventBookingAuthorityToJson(instance.bookingAuthority),
+  'rosterAuthority': _$EventRosterAuthorityEnumMap[instance.rosterAuthority]!,
+  'provider': _externalBookingProviderToJson(instance.provider),
+  'externalEventId': instance.externalEventId,
+  'externalEventUrl': instance.externalEventUrl,
+  'sourceExternalEventId': instance.sourceExternalEventId,
+  'adapterVersion': instance.adapterVersion,
+  'connectedAt': const NullableTimestampConverter().toJson(
+    instance.connectedAt,
+  ),
+  'connectedBy': instance.connectedBy,
+};
+
+const _$EventOriginModeEnumMap = {
+  EventOriginMode.catchNative: 'catchNative',
+  EventOriginMode.externalCompanion: 'externalCompanion',
+};
+
+const _$EventRosterAuthorityEnumMap = {
+  EventRosterAuthority.catchProjection: 'catchProjection',
+  EventRosterAuthority.hostImport: 'hostImport',
+  EventRosterAuthority.providerSync: 'providerSync',
+};
+
+_EventRuntimeAccess _$EventRuntimeAccessFromJson(Map<String, dynamic> json) =>
+    _EventRuntimeAccess(
+      enabled: json['enabled'] as bool,
+      publicRuntimeId: json['publicRuntimeId'] as String?,
+      walkInPolicy: $enumDecode(
+        _$EventRuntimeWalkInPolicyEnumMap,
+        json['walkInPolicy'],
+      ),
+      termsVersion: json['termsVersion'] as String,
+    );
+
+Map<String, dynamic> _$EventRuntimeAccessToJson(_EventRuntimeAccess instance) =>
+    <String, dynamic>{
+      'enabled': instance.enabled,
+      'publicRuntimeId': instance.publicRuntimeId,
+      'walkInPolicy': _$EventRuntimeWalkInPolicyEnumMap[instance.walkInPolicy]!,
+      'termsVersion': instance.termsVersion,
+    };
+
+const _$EventRuntimeWalkInPolicyEnumMap = {
+  EventRuntimeWalkInPolicy.deny: 'deny',
+  EventRuntimeWalkInPolicy.hostApproval: 'hostApproval',
+  EventRuntimeWalkInPolicy.autoCreate: 'autoCreate',
+};
+
 _Event _$EventFromJson(Map<String, dynamic> json) => _Event(
   id: json['id'] as String,
   synthetic: json['synthetic'] as bool? ?? false,
@@ -66,6 +137,14 @@ _Event _$EventFromJson(Map<String, dynamic> json) => _Event(
   eventPolicy: json['eventPolicy'] == null
       ? null
       : EventPolicyBundle.fromJson(json['eventPolicy'] as Map<String, dynamic>),
+  eventOrigin: json['eventOrigin'] == null
+      ? null
+      : EventOrigin.fromJson(json['eventOrigin'] as Map<String, dynamic>),
+  runtimeAccess: json['runtimeAccess'] == null
+      ? null
+      : EventRuntimeAccess.fromJson(
+          json['runtimeAccess'] as Map<String, dynamic>,
+        ),
   genderCounts:
       (json['genderCounts'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, (e as num).toInt()),
@@ -116,6 +195,8 @@ Map<String, dynamic> _$EventToJson(_Event instance) => <String, dynamic>{
   'publicRegistrationEnabled': instance.publicRegistrationEnabled,
   'constraints': instance.constraints.toJson(),
   'eventPolicy': ?instance.eventPolicy?.toJson(),
+  'eventOrigin': ?instance.eventOrigin?.toJson(),
+  'runtimeAccess': ?instance.runtimeAccess?.toJson(),
   'genderCounts': instance.genderCounts,
   'cohortCounts': instance.cohortCounts,
   'waitlistedCohortCounts': instance.waitlistedCohortCounts,

@@ -12,6 +12,18 @@ abstract final class CreateEventFormKeys {
   static const capacity = ValueKey('create-event-capacity-field');
   static const price = ValueKey('create-event-price-field');
   static const description = ValueKey('create-event-description-field');
+  static const externalBookingProvider = ValueKey(
+    'create-event-external-booking-provider',
+  );
+  static const externalEventUrl = ValueKey(
+    'create-event-external-event-url-field',
+  );
+  static const externalEventId = ValueKey(
+    'create-event-external-event-id-field',
+  );
+  static const runtimeWalkInPolicy = ValueKey(
+    'create-event-runtime-walk-in-policy',
+  );
   static const meetingPoint = ValueKey('create-event-meeting-point-field');
   static const locationDetails = ValueKey(
     'create-event-location-details-field',

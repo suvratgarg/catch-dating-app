@@ -1,7 +1,7 @@
 {
   "$schema": "./feature_coverage.schema.json",
   "version": 1,
-  "updated": "2026-08-10",
+  "updated": "2026-08-11",
   "owner": "product_design_parity",
   "sourceOfTruth": "Exhaustive migration ledger for feature orchestration contracts across registered Flutter screens, marketing routes, and admin route components. A planned entry names its intended shared feature identity; grouped entries are secondary route projections, not independent features.",
   "authorities": [
@@ -327,6 +327,14 @@
       "priority": "P1",
       "reason": "Compiled Host Acquisition contract covers the interactive product narrative, operating previews, founding-host application, and post-submission handoffs.",
       "featureContract": "feature.host_acquisition"
+    },
+    {
+      "authority": "marketing_routes",
+      "authorityId": "event_runtime",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "The no-download attendee runtime is a public-web projection of Event Success with phone OTP, roster claim or approval, event-scoped intake, verified check-in, live modules, and private feedback.",
+      "featureContract": "feature.event_success"
     },
     {
       "authority": "marketing_routes",

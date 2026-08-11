@@ -1713,6 +1713,77 @@ class AppLocalizationsEn extends AppLocalizations {
       'What should attendees expect? Any tips for the route or venue?';
 
   @override
+  String get hostsEventDetailsStepExternalIntro =>
+      'Keep taking bookings wherever you already do. Catch adds the guest-list, check-in, and Event Success layer without replacing your booking platform.';
+
+  @override
+  String get hostsEventDetailsStepExternalProviderTitle => 'Booking platform';
+
+  @override
+  String get hostsEventDetailsStepExternalProviderCatch => 'Catch';
+
+  @override
+  String get hostsEventDetailsStepExternalProviderOther =>
+      'Another booking platform';
+
+  @override
+  String get hostsEventDetailsStepExternalProviderLuma => 'Luma';
+
+  @override
+  String get hostsEventDetailsStepExternalProviderEventbrite => 'Eventbrite';
+
+  @override
+  String get hostsEventDetailsStepExternalProviderPartiful => 'Partiful';
+
+  @override
+  String get hostsEventDetailsStepExternalProviderPosh => 'POSH';
+
+  @override
+  String get hostsEventDetailsStepExternalProviderBookMyShow => 'BookMyShow';
+
+  @override
+  String get hostsEventDetailsStepExternalProviderDistrict => 'District';
+
+  @override
+  String get hostsEventDetailsStepExternalProviderSortMyScene => 'SortMyScene';
+
+  @override
+  String get hostsEventDetailsStepExternalProviderAirbnbExperiences =>
+      'Airbnb Experiences';
+
+  @override
+  String get hostsEventDetailsStepExternalEventUrlTitle => 'Booking page';
+
+  @override
+  String get hostsEventDetailsStepExternalEventUrlPlaceholder =>
+      'https://your-booking-platform.com/event';
+
+  @override
+  String get hostsEventDetailsStepExternalEventUrlInvalid =>
+      'Enter a secure https URL';
+
+  @override
+  String get hostsEventDetailsStepExternalEventIdTitle => 'Booking reference';
+
+  @override
+  String get hostsEventDetailsStepExternalEventIdPlaceholder =>
+      'Event ID or internal reference';
+
+  @override
+  String get hostsEventDetailsStepExternalWalkInTitle => 'Unlisted guests';
+
+  @override
+  String get hostsEventDetailsStepExternalWalkInDeny => 'Roster only';
+
+  @override
+  String get hostsEventDetailsStepExternalWalkInApproval =>
+      'Ask me to approve them';
+
+  @override
+  String get hostsEventDetailsStepExternalWalkInAutomatic =>
+      'Allow them automatically';
+
+  @override
   String get hostsEventPolicyStepTextConfigureWhoCanBook =>
       'Configure who can book, how waitlists open, what attendees pay, and what happens if plans change.';
 
@@ -2116,6 +2187,25 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostsHostEventAttendancePanelBodyCheckInQr =>
       'Show this code to attendees as they arrive.';
+
+  @override
+  String get hostsHostEventAttendancePanelRuntimeShareLabel =>
+      'Share attendee link';
+
+  @override
+  String get hostsHostEventAttendancePanelRuntimeShareSubject =>
+      'Your event companion link';
+
+  @override
+  String hostsHostEventAttendancePanelRuntimeShareText({
+    required String runtimeUrl,
+  }) {
+    return 'Open this link when you arrive to check in and join the Event Success experience: $runtimeUrl';
+  }
+
+  @override
+  String get hostsHostEventAttendancePanelRuntimeShareReady =>
+      'Attendee link ready to share';
 
   @override
   String get hostsHostEventAttendancePanelLabelSearchRoster => 'Search roster';
@@ -5926,6 +6016,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostEventsListLabelNewEvent => 'New event';
+
+  @override
+  String get hostsHostEventsListLabelUseGuestList => 'Use guest list';
 
   @override
   String get hostsHostEventsListTextLive => 'LIVE';
@@ -11367,6 +11460,44 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsOperationalRosterAddGuest => 'Add guest';
 
   @override
+  String get hostsOperationalRosterForwardCsv => 'Forward CSV';
+
+  @override
+  String get hostsOperationalRosterForwardTitle => 'Forward this guest list';
+
+  @override
+  String get hostsOperationalRosterForwardSubtitle =>
+      'Forward one CSV from the email address or phone number on your Catch Host account. The private address and code expire after 30 days.';
+
+  @override
+  String get hostsOperationalRosterForwardEmail => 'Forward by email';
+
+  @override
+  String get hostsOperationalRosterForwardWhatsapp => 'Forward on WhatsApp';
+
+  @override
+  String hostsOperationalRosterForwardWhatsappBody({
+    required String whatsappNumber,
+    required String whatsappMessage,
+  }) {
+    return 'Send the CSV to $whatsappNumber with the message: $whatsappMessage';
+  }
+
+  @override
+  String get hostsOperationalRosterForwardNotAvailable =>
+      'Provider setup required';
+
+  @override
+  String get hostsOperationalRosterForwardProviderSetup =>
+      'Forwarding is implemented but this environment still needs an inbound email or WhatsApp provider. Use Import spreadsheet until an administrator finishes provider setup.';
+
+  @override
+  String get hostsOperationalRosterForwardCopy => 'Copy';
+
+  @override
+  String get hostsOperationalRosterForwardDone => 'Done';
+
+  @override
   String get hostsOperationalRosterEmptyTitle =>
       'Your outside roster starts here';
 
@@ -11408,11 +11539,45 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsOperationalRosterIdentityLinked => 'OTP linked';
 
   @override
+  String hostsOperationalRosterClaimsPending({required int count}) {
+    return '$count runtime approvals';
+  }
+
+  @override
+  String hostsOperationalRosterClaimPhone({required String phoneLastFour}) {
+    return 'Phone ending $phoneLastFour';
+  }
+
+  @override
+  String get hostsOperationalRosterClaimContext =>
+      'Opened the attendee link and needs access';
+
+  @override
+  String get hostsOperationalRosterClaimApprove => 'Approve';
+
+  @override
+  String get hostsOperationalRosterClaimChooseGuest => 'Choose guest';
+
+  @override
+  String get hostsOperationalRosterClaimReject => 'Reject';
+
+  @override
+  String get hostsOperationalRosterClaimApproved =>
+      'Guest approved for this event';
+
+  @override
+  String get hostsOperationalRosterClaimRejected => 'Access request rejected';
+
+  @override
   String get hostsOperationalRosterImportTitle => 'Map your guest list';
 
   @override
   String get hostsOperationalRosterImportSubtitle =>
       'Check the detected columns before anything is uploaded.';
+
+  @override
+  String get hostsOperationalRosterAdapterSampleRequired =>
+      'We do not have a verified export sample for this platform yet. Review every detected column before importing; Catch will save the mapping for a future adapter.';
 
   @override
   String get hostsOperationalRosterFieldName => 'Guest name';

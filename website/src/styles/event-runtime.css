@@ -1,0 +1,331 @@
+.event-runtime-page {
+  background: #f8f5ef;
+  color: #191919;
+  min-height: 100vh;
+}
+
+.event-runtime-page .site-shell {
+  min-height: 100vh;
+}
+
+.event-runtime {
+  --runtime-coral: #ff5a45;
+  --runtime-ink: #191919;
+  --runtime-paper: #fffdf8;
+  min-height: 100vh;
+  padding: 0 24px 72px;
+}
+
+.event-runtime__brand {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin: 0 auto;
+  max-width: 960px;
+  min-height: 72px;
+}
+
+.event-runtime__brand > a {
+  color: var(--runtime-ink);
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: -.06em;
+  text-decoration: none;
+}
+
+.event-runtime__brand > a span {
+  color: var(--runtime-coral);
+}
+
+.event-runtime__brand > span {
+  color: #6c675f;
+  font-size: .78rem;
+  font-weight: 700;
+  max-width: 50%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-runtime__panel {
+  background: var(--runtime-paper);
+  border: 1px solid #ded9d0;
+  border-radius: 28px;
+  box-shadow: 0 20px 60px rgb(35 28 20 / 9%);
+  margin: clamp(20px, 8vh, 90px) auto 0;
+  max-width: 560px;
+  overflow: hidden;
+  padding: clamp(28px, 7vw, 52px);
+  position: relative;
+}
+
+.event-runtime__panel::before {
+  background: var(--runtime-coral);
+  content: "";
+  height: 5px;
+  inset: 0 0 auto;
+  position: absolute;
+}
+
+.event-runtime__intro {
+  margin-bottom: 32px;
+}
+
+.event-runtime__kicker {
+  color: #a23a2d;
+  font-size: .72rem;
+  font-weight: 850;
+  letter-spacing: .13em;
+  margin: 0 0 12px;
+  text-transform: uppercase;
+}
+
+.event-runtime__intro h1,
+.event-runtime__live-header h1 {
+  font-size: clamp(2rem, 7vw, 3.35rem);
+  letter-spacing: -.065em;
+  line-height: .98;
+  margin: 0 0 18px;
+}
+
+.event-runtime__intro > p:last-child,
+.event-runtime__live-header > div > p:last-child,
+.event-runtime__module > p {
+  color: #6c675f;
+  line-height: 1.55;
+}
+
+.event-runtime__form {
+  display: grid;
+  gap: 18px;
+}
+
+.event-runtime__form .field-block {
+  display: grid;
+  gap: 8px;
+}
+
+.event-runtime__form label,
+.event-runtime__fieldset legend {
+  font-size: .83rem;
+  font-weight: 760;
+}
+
+.event-runtime__form input,
+.event-runtime__form select,
+.event-runtime__live select {
+  background: #fff;
+  border: 1px solid #cfc8bd;
+  border-radius: 13px;
+  box-sizing: border-box;
+  font: inherit;
+  min-height: 52px;
+  padding: 0 14px;
+  width: 100%;
+}
+
+.event-runtime .button {
+  border-radius: 999px;
+  min-height: 52px;
+}
+
+.event-runtime__profile-questions,
+.event-runtime__questionnaire {
+  display: grid;
+  gap: 24px;
+}
+
+.event-runtime__fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.event-runtime__fieldset legend {
+  margin-bottom: 10px;
+}
+
+.event-runtime .choice-chip-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.event-runtime .choice-chip {
+  background: #fff;
+  border: 1px solid #cfc8bd;
+  border-radius: 999px;
+  color: var(--runtime-ink);
+  min-height: 40px;
+  padding: 8px 13px;
+}
+
+.event-runtime .choice-chip.is-selected {
+  background: var(--runtime-ink);
+  border-color: var(--runtime-ink);
+  color: #fff;
+}
+
+.event-runtime__consent {
+  align-items: flex-start;
+  color: #5f5a52;
+  display: grid;
+  font-size: .78rem;
+  gap: 10px;
+  grid-template-columns: 18px 1fr;
+  line-height: 1.45;
+}
+
+.event-runtime__consent--required {
+  background: #fff0ec;
+  border-radius: 12px;
+  color: #6f2a22;
+  padding: 12px;
+}
+
+.event-runtime__live {
+  display: grid;
+  gap: 16px;
+  margin: 24px auto 0;
+  max-width: 720px;
+}
+
+.event-runtime__live-header {
+  align-items: flex-start;
+  background: var(--runtime-ink);
+  border-radius: 26px;
+  color: #fff;
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+  padding: clamp(24px, 7vw, 42px);
+}
+
+.event-runtime__live-header .event-runtime__kicker {
+  color: #ff9889;
+}
+
+.event-runtime__live-header > div > p:last-child {
+  color: #d6d1ca;
+  margin-bottom: 0;
+}
+
+.event-runtime__checked-in {
+  background: #eaffd0;
+  border-radius: 999px;
+  color: #34520d;
+  flex: 0 0 auto;
+  font-size: .7rem;
+  font-weight: 850;
+  padding: 8px 11px;
+  text-transform: uppercase;
+}
+
+.event-runtime__module {
+  background: var(--runtime-paper);
+  border: 1px solid #ded9d0;
+  border-radius: 22px;
+  display: grid;
+  gap: 16px;
+  padding: clamp(22px, 6vw, 34px);
+}
+
+.event-runtime__module--coral {
+  background: var(--runtime-coral);
+  border-color: var(--runtime-coral);
+  color: #22110e;
+}
+
+.event-runtime__module h2,
+.event-runtime__module h3,
+.event-runtime__module p {
+  margin: 0;
+}
+
+.event-runtime__module h2 {
+  font-size: 1.4rem;
+  letter-spacing: -.035em;
+}
+
+.event-runtime__module--coral > p {
+  color: #3f1c17;
+}
+
+.event-runtime__assignments,
+.event-runtime__mission {
+  display: grid;
+  gap: 12px;
+}
+
+.event-runtime__assignments article {
+  background: rgb(255 255 255 / 40%);
+  border-radius: 16px;
+  padding: 18px;
+}
+
+.event-runtime__assignments span,
+.event-runtime__mission > span {
+  font-size: .7rem;
+  font-weight: 850;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.event-runtime__privacy {
+  color: #787269;
+  font-size: .75rem;
+  line-height: 1.55;
+  padding: 14px 10px;
+  text-align: center;
+}
+
+.event-runtime__loading {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  justify-content: center;
+  min-height: 60vh;
+}
+
+.event-runtime__pulse {
+  animation: runtime-pulse 1.2s ease-in-out infinite;
+  background: var(--runtime-coral);
+  border-radius: 50%;
+  height: 18px;
+  width: 18px;
+}
+
+@keyframes runtime-pulse {
+  50% { transform: scale(1.6); }
+}
+
+@media (max-width: 560px) {
+  .event-runtime {
+    padding: 0 14px 48px;
+  }
+
+  .event-runtime__brand {
+    min-height: 60px;
+  }
+
+  .event-runtime__panel {
+    border-radius: 22px;
+    margin-top: 12px;
+    padding: 28px 22px;
+  }
+
+  .event-runtime__live {
+    margin-top: 8px;
+  }
+
+  .event-runtime__live-header {
+    display: grid;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .event-runtime__pulse {
+    animation: none;
+  }
+}

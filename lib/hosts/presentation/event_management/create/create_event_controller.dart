@@ -83,6 +83,8 @@ class CreateEventController extends _$CreateEventController {
     XFile? photoImage,
     List<XFile> photoImages = const [],
     EventSuccessDefaults eventSuccessDefaults = const EventSuccessDefaults(),
+    ExternalEventOriginInput? externalOrigin,
+    EventRuntimeWalkInPolicy? runtimeWalkInPolicy,
   }) async {
     final normalizedClubId = _requireNonBlank(
       clubId,
@@ -157,6 +159,18 @@ class CreateEventController extends _$CreateEventController {
       currency: currency,
       constraints: constraints,
       eventPolicy: eventPolicy,
+      eventOrigin: externalOrigin == null
+          ? null
+          : EventOrigin(
+              mode: EventOriginMode.externalCompanion,
+              bookingAuthority: EventBookingAuthority.external,
+              rosterAuthority: EventRosterAuthority.hostImport,
+              provider: externalOrigin.provider,
+              externalEventId: externalOrigin.externalEventId,
+              externalEventUrl: externalOrigin.externalEventUrl,
+              sourceExternalEventId: externalOrigin.sourceExternalEventId,
+              adapterVersion: externalOrigin.adapterVersion,
+            ),
     );
     await eventRepo.createEvent(
       event: event,
@@ -167,6 +181,8 @@ class CreateEventController extends _$CreateEventController {
               targetAttendeeCount: event.capacityLimit,
             )
           : null,
+      externalOrigin: externalOrigin,
+      runtimeWalkInPolicy: runtimeWalkInPolicy,
     );
     final selectedPhotoImages = photoImages.isNotEmpty
         ? photoImages

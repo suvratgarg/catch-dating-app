@@ -640,6 +640,11 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
                       arguments.initialPrefill,
                     _ => null,
                   },
+                  externalBookingMode: switch (extra) {
+                    final HostCreateEventRouteArguments arguments =>
+                      arguments.externalBookingMode,
+                    _ => false,
+                  },
                 );
               },
             ),

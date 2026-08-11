@@ -224,6 +224,26 @@ export interface CreateEventCallablePayload {
     };
     attendeePrompt?: string | null;
   };
+  /**
+   * External booking provenance for a companion-only operational event. Omit for a Catch-booked event.
+   */
+  externalOrigin?: {
+    provider:
+      | "generic"
+      | "luma"
+      | "eventbrite"
+      | "partiful"
+      | "posh"
+      | "bookmyshow"
+      | "district"
+      | "sortmyscene"
+      | "airbnb";
+    externalEventId?: string | null;
+    externalEventUrl?: string | null;
+    sourceExternalEventId?: string | null;
+    adapterVersion?: string | null;
+  };
+  runtimeWalkInPolicy?: "deny" | "hostApproval" | "autoCreate";
   constraints?: {
     minAge?: number;
     maxAge?: number;

@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/approve_event_runtime_claim_payload.schema.json",
+  "title": "ApproveEventRuntimeClaimCallablePayload",
+  "description": "Host decision for one pending Event Success runtime claim.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["eventId", "uid", "decision"],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "uid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "decision": {"type": "string", "enum": ["approve", "reject"]},
+    "attendeeId": {"type": ["string", "null"], "minLength": 1, "maxLength": 180},
+    "reason": {"type": ["string", "null"], "maxLength": 240}
+  }
+}

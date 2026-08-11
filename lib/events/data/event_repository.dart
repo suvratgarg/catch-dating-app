@@ -276,6 +276,8 @@ class EventRepository {
     required Event event,
     String? inviteCode,
     EventSuccessDefaults? eventSuccessDefaults,
+    ExternalEventOriginInput? externalOrigin,
+    EventRuntimeWalkInPolicy? runtimeWalkInPolicy,
   }) => withBackendErrorContext(
     () => _functions
         .httpsCallable('createEvent')
@@ -284,6 +286,8 @@ class EventRepository {
             event,
             inviteCode: inviteCode,
             eventSuccessDefaults: eventSuccessDefaults,
+            externalOrigin: externalOrigin,
+            runtimeWalkInPolicy: runtimeWalkInPolicy,
           ).toJson(),
         ),
     context: const BackendErrorContext(

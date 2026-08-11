@@ -231,6 +231,7 @@ function harness(initialDocs: Record<string, FakeData | undefined>) {
         firestore as unknown as FirebaseFirestore.Firestore,
       timestampFromMillis: (millis: number) =>
         admin.firestore.Timestamp.fromMillis(millis),
+      nowTimestamp: () => ts("2026-05-01T00:00:00.000Z"),
       checkRateLimit: async (
         _db: FirebaseFirestore.Firestore,
         uid: string,
@@ -242,6 +243,7 @@ function harness(initialDocs: Record<string, FakeData | undefined>) {
         notifications.push(notification);
       },
       serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
+      runtimePublicId: () => "runtime_123456789012345678901234",
     },
   };
 }
@@ -352,6 +354,24 @@ test("createEventHandler creates a server-owned event for the club host",
     assert.deepEqual(h.firestore.get("events/event-1"), {
       clubId: "club-1",
       organizerId: "club-1",
+      eventOrigin: {
+        mode: "catchNative",
+        bookingAuthority: "catch",
+        rosterAuthority: "catchProjection",
+        provider: "catch",
+        externalEventId: null,
+        externalEventUrl: null,
+        sourceExternalEventId: null,
+        adapterVersion: null,
+        connectedAt: null,
+        connectedBy: null,
+      },
+      runtimeAccess: {
+        enabled: false,
+        publicRuntimeId: null,
+        walkInPolicy: "deny",
+        termsVersion: "event-runtime-v1",
+      },
       startTime: ts("2026-05-02T01:30:00.000Z"),
       endTime: ts("2026-05-02T02:30:00.000Z"),
       meetingPoint: "Carter Road",
@@ -536,6 +556,12 @@ test("createEventHandler creates event success plans atomically", async () => {
   const eventDoc = h.firestore.get("events/event-1");
   const plan = h.firestore.get("eventSuccessPlans/event-1");
   assert.equal(eventDoc?.clubId, "club-1");
+  assert.deepEqual(eventDoc?.runtimeAccess, {
+    enabled: true,
+    publicRuntimeId: "runtime_123456789012345678901234",
+    walkInPolicy: "deny",
+    termsVersion: "event-runtime-v1",
+  });
   assert.equal(plan?.eventId, "event-1");
   assert.equal(plan?.clubId, "club-1");
   assert.equal(plan?.playbookId, "social_run_light");
@@ -555,6 +581,52 @@ test("createEventHandler creates event success plans atomically", async () => {
   assert.equal(plan?.status, "setup");
   assert.equal(plan?.createdAt, plan?.updatedAt);
 });
+
+test("createEventHandler creates companion-only external events", async () => {
+  const h = harness({"clubs/club-1": club()});
+
+  await createEventHandler(request("host-1", payload({
+    externalOrigin: {
+      provider: "luma",
+      externalEventId: "evt_luma_123",
+      externalEventUrl: "https://lu.ma/example",
+      sourceExternalEventId: "evt_luma_123",
+      adapterVersion: "luma-csv-v1",
+    },
+    runtimeWalkInPolicy: "hostApproval",
+    eventSuccessDefaults: {enabled: true},
+  })), h.deps);
+
+  const created = h.firestore.get("events/event-1");
+  assert.deepEqual(created?.eventOrigin, {
+    mode: "externalCompanion",
+    bookingAuthority: "external",
+    rosterAuthority: "hostImport",
+    provider: "luma",
+    externalEventId: "evt_luma_123",
+    externalEventUrl: "https://lu.ma/example",
+    sourceExternalEventId: "evt_luma_123",
+    adapterVersion: "luma-csv-v1",
+    connectedAt: ts("2026-05-01T00:00:00.000Z"),
+    connectedBy: "host-1",
+  });
+  assert.equal((created?.runtimeAccess as FakeData).enabled, true);
+  assert.equal(
+    (created?.runtimeAccess as FakeData).walkInPolicy,
+    "hostApproval"
+  );
+});
+
+test("createEventHandler rejects external events without runtime tooling",
+  async () => {
+    const h = harness({"clubs/club-1": club()});
+    await assert.rejects(
+      () => createEventHandler(request("host-1", payload({
+        externalOrigin: {provider: "generic"},
+      })), h.deps),
+      (error) => assertHttpsCode(error, "failed-precondition")
+    );
+  });
 
 test(
   "createEventHandler derives event success booleans from modules",

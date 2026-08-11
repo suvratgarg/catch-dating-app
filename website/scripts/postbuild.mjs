@@ -37,6 +37,7 @@ const sitemapEntries = [];
 writeRoute("/", staticRouteMeta(websiteMeta, "home", baseUrl));
 
 writeRoute("/host/", staticRouteMeta(websiteMeta, "host", baseUrl));
+writeRoute("/join/", staticRouteMeta(websiteMeta, "event_runtime", baseUrl));
 writeRoute("/organizers/", staticRouteMeta(websiteMeta, "organizers", baseUrl));
 writeRoute("/claim/", staticRouteMeta(websiteMeta, "claim", baseUrl));
 writeRoute("/privacy/", {

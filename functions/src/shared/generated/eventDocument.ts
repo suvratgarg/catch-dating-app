@@ -3,6 +3,8 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 import {UploadedPhoto} from "./uploadedPhoto";
+import {EventOrigin} from "./eventOrigin";
+import {EventRuntimeAccess} from "./eventRuntimeAccess";
 
 /**
  * Canonical event document stored at events/{eventId}. The event id is the document id and is not stored in document data.
@@ -10,6 +12,8 @@ import {UploadedPhoto} from "./uploadedPhoto";
 export interface EventDocument {
   clubId: string;
   organizerId?: string;
+  eventOrigin?: EventOrigin;
+  runtimeAccess?: EventRuntimeAccess;
   /**
    * Serialized Firestore Timestamp fixture shape.
    */

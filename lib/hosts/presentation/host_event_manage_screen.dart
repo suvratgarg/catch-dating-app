@@ -296,17 +296,42 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
         ),
       ],
       HostEventManageSection.guests => <Widget>[
-        HostOperationalRosterPanel(eventId: event.id),
-        gapH20,
-        HostEventParticipantsPanel(
+        if (event.isExternalCompanion && event.hasWebRuntime) ...[
+          CatchSection.fieldRows(
+            first: true,
+            children: [
+              CatchField.control(
+                title: context.l10n.hostsHostEventAttendancePanelTitleCheckInQr,
+                contractExemption:
+                    'Disclosure-only public runtime URL and QR; no editable '
+                    'value is submitted or persisted.',
+                body: context.l10n.hostsHostEventAttendancePanelBodyCheckInQr,
+                icon: CatchIcons.qrCode2Rounded,
+                control: HostEventCheckInQrPanel(event: event),
+              ),
+            ],
+          ),
+          gapH20,
+        ],
+        HostOperationalRosterPanel(
           eventId: event.id,
-          mode:
-              hostEventAttendanceStateFor(event: event, now: DateTime.now()) ==
-                  HostEventAttendanceState.open
-              ? HostEventParticipantsMode.live
-              : HostEventParticipantsMode.setup,
-          initialSearchQuery: widget.initialParticipantSearchQuery,
+          bookingProvider: event.eventOrigin?.provider,
         ),
+        if (!event.isExternalCompanion) ...[
+          gapH20,
+          HostEventParticipantsPanel(
+            eventId: event.id,
+            mode:
+                hostEventAttendanceStateFor(
+                      event: event,
+                      now: DateTime.now(),
+                    ) ==
+                    HostEventAttendanceState.open
+                ? HostEventParticipantsMode.live
+                : HostEventParticipantsMode.setup,
+            initialSearchQuery: widget.initialParticipantSearchQuery,
+          ),
+        ],
       ],
       HostEventManageSection.live => <Widget>[
         EventSuccessHostSection(
@@ -323,15 +348,18 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
         HostOperationalRosterPanel(
           eventId: event.id,
           allowRosterChanges: false,
+          bookingProvider: event.eventOrigin?.provider,
         ),
         gapH20,
         HostEventReviewsPanel(eventId: event.id),
-        gapH20,
-        HostEventParticipantsPanel(
-          eventId: event.id,
-          mode: HostEventParticipantsMode.report,
-          initialSearchQuery: widget.initialParticipantSearchQuery,
-        ),
+        if (!event.isExternalCompanion) ...[
+          gapH20,
+          HostEventParticipantsPanel(
+            eventId: event.id,
+            mode: HostEventParticipantsMode.report,
+            initialSearchQuery: widget.initialParticipantSearchQuery,
+          ),
+        ],
         gapH20,
         EventSuccessHostSection(
           event: event,

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/clipboard.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
@@ -15,7 +16,10 @@ import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/events/data/event_attendee_repository.dart';
+import 'package:catch_dating_app/events/data/event_runtime_claim_repository.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_attendee.dart';
+import 'package:catch_dating_app/events/domain/event_runtime_claim_request.dart';
 import 'package:catch_dating_app/hosts/data/host_roster_file_parser.dart';
 import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operational_roster_controller.dart';
@@ -29,10 +33,12 @@ class HostOperationalRosterPanel extends ConsumerStatefulWidget {
     super.key,
     required this.eventId,
     this.allowRosterChanges = true,
+    this.bookingProvider,
   });
 
   final String eventId;
   final bool allowRosterChanges;
+  final ExternalBookingProvider? bookingProvider;
 
   @override
   ConsumerState<HostOperationalRosterPanel> createState() =>
@@ -42,13 +48,18 @@ class HostOperationalRosterPanel extends ConsumerStatefulWidget {
 class _HostOperationalRosterPanelState
     extends ConsumerState<HostOperationalRosterPanel> {
   var _importing = false;
+  var _creatingHandoff = false;
   String? _pendingAttendanceId;
+  String? _pendingClaimUid;
   Object? _mutationError;
 
   @override
   Widget build(BuildContext context) {
     final attendeesAsync = ref.watch(
       watchEventAttendeesProvider(widget.eventId),
+    );
+    final claimsAsync = ref.watch(
+      watchPendingEventRuntimeClaimsProvider(widget.eventId),
     );
     return CatchSection.contained(
       title: context.l10n.hostsOperationalRosterTitle,
@@ -76,6 +87,15 @@ class _HostOperationalRosterPanelState
                   variant: CatchButtonVariant.ghost,
                   icon: Icon(CatchIcons.personAddAlt1Outlined),
                 ),
+                CatchButton(
+                  label: context.l10n.hostsOperationalRosterForwardCsv,
+                  onPressed: _importing || _creatingHandoff
+                      ? null
+                      : () => unawaited(_showRosterHandoff()),
+                  isLoading: _creatingHandoff,
+                  variant: CatchButtonVariant.ghost,
+                  icon: Icon(CatchIcons.alternateEmailOutlined),
+                ),
               ],
             ),
             gapH12,
@@ -84,6 +104,41 @@ class _HostOperationalRosterPanelState
             CatchErrorBanner.fromError(error, context: AppErrorContext.event),
             gapH12,
           ],
+          CatchAsyncValueView<List<EventRuntimeClaimRequest>>(
+            value: claimsAsync,
+            onRetry: () => ref.invalidate(
+              watchPendingEventRuntimeClaimsProvider(widget.eventId),
+            ),
+            loadingBuilder: (_) => const SizedBox.shrink(),
+            errorBuilder: (_, error, _) => CatchErrorBanner.fromError(
+              error,
+              context: AppErrorContext.event,
+              onRetry: () => ref.invalidate(
+                watchPendingEventRuntimeClaimsProvider(widget.eventId),
+              ),
+            ),
+            builder: (context, claims) {
+              if (claims.isEmpty) return const SizedBox.shrink();
+              return Padding(
+                padding: CatchInsets.sectionItemBottomGap,
+                child: _HostRuntimeClaimQueue(
+                  claims: claims,
+                  attendees: attendeesAsync.asData?.value ?? const [],
+                  pendingUid: _pendingClaimUid,
+                  onApprove: (claim, attendeeId) => unawaited(
+                    _reviewClaim(
+                      claim,
+                      EventRuntimeClaimDecision.approve,
+                      attendeeId: attendeeId,
+                    ),
+                  ),
+                  onReject: (claim) => unawaited(
+                    _reviewClaim(claim, EventRuntimeClaimDecision.reject),
+                  ),
+                ),
+              );
+            },
+          ),
           CatchAsyncValueView<List<EventAttendee>>(
             value: attendeesAsync,
             errorContext: AppErrorContext.event,
@@ -149,7 +204,11 @@ class _HostOperationalRosterPanelState
           HostRosterImportIssue.unreadableXlsx,
         );
       }
-      final table = parseHostRosterFile(fileName: file.name, bytes: bytes);
+      final table = parseHostRosterFile(
+        fileName: file.name,
+        bytes: bytes,
+        providerHint: widget.bookingProvider,
+      );
       final selection = await _showRosterMapping(context, table);
       if (selection == null || !mounted) return;
       await _importRows(
@@ -188,6 +247,64 @@ class _HostOperationalRosterPanelState
       if (mounted) showCatchErrorSnackBar(context, error);
     } finally {
       if (mounted) setState(() => _importing = false);
+    }
+  }
+
+  Future<void> _showRosterHandoff() async {
+    setState(() {
+      _creatingHandoff = true;
+      _mutationError = null;
+    });
+    try {
+      final instructions = await ref
+          .read(hostOperationalRosterControllerProvider)
+          .createRosterHandoff(eventId: widget.eventId);
+      if (!mounted) return;
+      await showCatchBottomSheet<void>(
+        context: context,
+        builder: (context) => _HostRosterHandoffSheet(
+          instructions: instructions,
+          onCopy: (value) =>
+              ref.read(clipboardControllerProvider).copyText(value),
+        ),
+      );
+    } catch (error) {
+      if (mounted) showCatchErrorSnackBar(context, error);
+    } finally {
+      if (mounted) setState(() => _creatingHandoff = false);
+    }
+  }
+
+  Future<void> _reviewClaim(
+    EventRuntimeClaimRequest claim,
+    EventRuntimeClaimDecision decision, {
+    String? attendeeId,
+  }) async {
+    if (_pendingClaimUid != null) return;
+    setState(() {
+      _pendingClaimUid = claim.uid;
+      _mutationError = null;
+    });
+    try {
+      await ref
+          .read(hostOperationalRosterControllerProvider)
+          .reviewRuntimeClaim(
+            eventId: widget.eventId,
+            uid: claim.uid,
+            decision: decision,
+            attendeeId: attendeeId,
+          );
+      if (!mounted) return;
+      showCatchSnackBar(
+        context,
+        decision == EventRuntimeClaimDecision.approve
+            ? context.l10n.hostsOperationalRosterClaimApproved
+            : context.l10n.hostsOperationalRosterClaimRejected,
+      );
+    } catch (error) {
+      if (mounted) setState(() => _mutationError = error);
+    } finally {
+      if (mounted) setState(() => _pendingClaimUid = null);
     }
   }
 
@@ -241,6 +358,205 @@ class _HostOperationalRosterPanelState
     } finally {
       if (mounted) setState(() => _pendingAttendanceId = null);
     }
+  }
+}
+
+class _HostRosterHandoffSheet extends StatelessWidget {
+  const _HostRosterHandoffSheet({
+    required this.instructions,
+    required this.onCopy,
+  });
+
+  final EventRosterHandoffInstructions instructions;
+  final Future<void> Function(String value) onCopy;
+
+  @override
+  Widget build(BuildContext context) {
+    final emailAlias = instructions.emailAlias;
+    final whatsappNumber = instructions.whatsappNumber;
+    final whatsappMessage = instructions.whatsappMessage;
+    return CatchBottomSheetScaffold(
+      title: context.l10n.hostsOperationalRosterForwardTitle,
+      subtitle: context.l10n.hostsOperationalRosterForwardSubtitle,
+      glyph: CatchIcons.alternateEmailOutlined,
+      action: CatchButton(
+        label: context.l10n.hostsOperationalRosterForwardDone,
+        onPressed: () => Navigator.of(context).pop(),
+        fullWidth: true,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (!instructions.hasAvailableChannel) ...[
+            CatchErrorBanner(
+              message: context.l10n.hostsOperationalRosterForwardProviderSetup,
+            ),
+            gapH12,
+          ],
+          CatchSection.fieldRows(
+            children: [
+              CatchField.read(
+                title: context.l10n.hostsOperationalRosterForwardEmail,
+                body:
+                    emailAlias ??
+                    context.l10n.hostsOperationalRosterForwardNotAvailable,
+                icon: CatchIcons.emailOutlined,
+                action: emailAlias == null
+                    ? null
+                    : CatchButton(
+                        label: context.l10n.hostsOperationalRosterForwardCopy,
+                        onPressed: () => unawaited(onCopy(emailAlias)),
+                        size: CatchButtonSize.sm,
+                        variant: CatchButtonVariant.ghost,
+                      ),
+              ),
+              CatchField.read(
+                title: context.l10n.hostsOperationalRosterForwardWhatsapp,
+                body: whatsappNumber == null || whatsappMessage == null
+                    ? context.l10n.hostsOperationalRosterForwardNotAvailable
+                    : context.l10n.hostsOperationalRosterForwardWhatsappBody(
+                        whatsappNumber: whatsappNumber,
+                        whatsappMessage: whatsappMessage,
+                      ),
+                icon: CatchIcons.sendRounded,
+                action: whatsappNumber == null || whatsappMessage == null
+                    ? null
+                    : CatchButton(
+                        label: context.l10n.hostsOperationalRosterForwardCopy,
+                        onPressed: () => unawaited(
+                          onCopy('$whatsappNumber\n$whatsappMessage'),
+                        ),
+                        size: CatchButtonSize.sm,
+                        variant: CatchButtonVariant.ghost,
+                      ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HostRuntimeClaimQueue extends StatelessWidget {
+  const _HostRuntimeClaimQueue({
+    required this.claims,
+    required this.attendees,
+    required this.pendingUid,
+    required this.onApprove,
+    required this.onReject,
+  });
+
+  final List<EventRuntimeClaimRequest> claims;
+  final List<EventAttendee> attendees;
+  final String? pendingUid;
+  final void Function(EventRuntimeClaimRequest claim, String attendeeId)
+  onApprove;
+  final ValueChanged<EventRuntimeClaimRequest> onReject;
+
+  @override
+  Widget build(BuildContext context) {
+    final attendeesById = <String, EventAttendee>{
+      for (final attendee in attendees) attendee.id: attendee,
+    };
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CatchBadge.functional(
+          label: context.l10n.hostsOperationalRosterClaimsPending(
+            count: claims.length,
+          ),
+          tone: CatchBadgeTone.warning,
+        ),
+        gapH8,
+        for (final indexed in claims.indexed)
+          CatchPersonRow(
+            key: ValueKey('runtime-claim-${indexed.$2.uid}'),
+            data: CatchPersonRowData(
+              name: indexed.$2.displayName,
+              seed: indexed.$2.uid,
+              metaLine: context.l10n.hostsOperationalRosterClaimPhone(
+                phoneLastFour: indexed.$2.phoneLastFour,
+              ),
+              contextLine: context.l10n.hostsOperationalRosterClaimContext,
+            ),
+            divider: indexed.$1 > 0,
+            trailing: _HostRuntimeClaimActions(
+              claim: indexed.$2,
+              attendeesById: attendeesById,
+              pending: pendingUid == indexed.$2.uid,
+              enabled: pendingUid == null,
+              onApprove: (attendeeId) => onApprove(indexed.$2, attendeeId),
+              onReject: () => onReject(indexed.$2),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _HostRuntimeClaimActions extends StatelessWidget {
+  const _HostRuntimeClaimActions({
+    required this.claim,
+    required this.attendeesById,
+    required this.pending,
+    required this.enabled,
+    required this.onApprove,
+    required this.onReject,
+  });
+
+  final EventRuntimeClaimRequest claim;
+  final Map<String, EventAttendee> attendeesById;
+  final bool pending;
+  final bool enabled;
+  final ValueChanged<String> onApprove;
+  final VoidCallback onReject;
+
+  @override
+  Widget build(BuildContext context) {
+    final candidateIds = claim.candidateAttendeeIds;
+    final approve = candidateIds.length == 1
+        ? CatchButton(
+            label: context.l10n.hostsOperationalRosterClaimApprove,
+            onPressed: enabled ? () => onApprove(candidateIds.single) : null,
+            isLoading: pending,
+            variant: CatchButtonVariant.secondary,
+            size: CatchButtonSize.sm,
+          )
+        : CatchMenuAnchor<String>(
+            items: [
+              for (final attendeeId in candidateIds)
+                CatchMenuItem<String>(
+                  value: attendeeId,
+                  label: attendeesById[attendeeId]?.displayName ?? attendeeId,
+                  sublabel: attendeesById[attendeeId]?.phoneE164,
+                ),
+            ],
+            onSelected: (attendeeId, _) => onApprove(attendeeId),
+            builder: (context, controller, child) => CatchButton(
+              label: context.l10n.hostsOperationalRosterClaimChooseGuest,
+              onPressed: enabled && candidateIds.isNotEmpty
+                  ? controller.open
+                  : null,
+              isLoading: pending,
+              variant: CatchButtonVariant.secondary,
+              size: CatchButtonSize.sm,
+            ),
+          );
+    return Wrap(
+      alignment: WrapAlignment.end,
+      spacing: CatchSpacing.s1,
+      runSpacing: CatchSpacing.s1,
+      children: [
+        approve,
+        CatchButton(
+          label: context.l10n.hostsOperationalRosterClaimReject,
+          onPressed: enabled ? onReject : null,
+          variant: CatchButtonVariant.ghost,
+          size: CatchButtonSize.sm,
+        ),
+      ],
+    );
   }
 }
 
@@ -343,6 +659,23 @@ class _HostRosterImportSheetState extends State<_HostRosterImportSheet> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              CatchBadge.functional(
+                label: widget.table.adapter.adapterId.label,
+                tone:
+                    widget.table.adapter.support ==
+                        HostRosterAdapterSupport.sampleRequired
+                    ? CatchBadgeTone.warning
+                    : CatchBadgeTone.brand,
+              ),
+              if (widget.table.adapter.support ==
+                  HostRosterAdapterSupport.sampleRequired) ...[
+                gapH8,
+                CatchErrorBanner(
+                  message:
+                      context.l10n.hostsOperationalRosterAdapterSampleRequired,
+                ),
+              ],
+              gapH12,
               CatchFieldLanes.divided(
                 children: [
                   for (final field in HostRosterField.values)

@@ -118,6 +118,10 @@
         {
           "source": "/claim/**",
           "destination": "/claim/index.html"
+        },
+        {
+          "source": "/join/**",
+          "destination": "/join/index.html"
         }
       ]
     },

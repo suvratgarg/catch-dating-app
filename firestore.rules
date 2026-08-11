@@ -93,6 +93,10 @@ service cloud.firestore {
       return eventId + '_' + uid;
     }
 
+    function eventRuntimeParticipantDocId(eventId, uid) {
+      return eventId + '_' + uid;
+    }
+
     function savedEventDocId(uid, eventId) {
       return uid + '_' + eventId;
     }
@@ -199,6 +203,42 @@ service cloud.firestore {
         .data.status == 'attended';
     }
 
+    function hasReadyEventRuntimeParticipant(eventId, uid) {
+      let runtimeId = eventRuntimeParticipantDocId(eventId, uid);
+      return exists(/databases/$(database)/documents/eventRuntimeParticipants/$(runtimeId))
+        && get(/databases/$(database)/documents/eventRuntimeParticipants/$(runtimeId)).data.eventId == eventId
+        && get(/databases/$(database)/documents/eventRuntimeParticipants/$(runtimeId)).data.uid == uid
+        && get(/databases/$(database)/documents/eventRuntimeParticipants/$(runtimeId)).data.accessStatus == 'ready';
+    }
+
+    function hasEventSuccessParticipantAccess(eventId, uid) {
+      return hasEventParticipationStatus(eventId, uid, [
+          'signedUp', 'attended'
+        ])
+        || hasReadyEventRuntimeParticipant(eventId, uid);
+    }
+
+    function hasCheckedInEventSuccessAccess(eventId, uid) {
+      let runtimeId = eventRuntimeParticipantDocId(eventId, uid);
+      return hasAttendedEvent(eventId, uid)
+        || (
+          hasReadyEventRuntimeParticipant(eventId, uid)
+          && get(/databases/$(database)/documents/eventRuntimeParticipants/$(runtimeId)).data.eventAttendeeId is string
+          && exists(/databases/$(database)/documents/eventAttendees/$(
+            get(/databases/$(database)/documents/eventRuntimeParticipants/$(runtimeId)).data.eventAttendeeId
+          ))
+          && get(/databases/$(database)/documents/eventAttendees/$(
+            get(/databases/$(database)/documents/eventRuntimeParticipants/$(runtimeId)).data.eventAttendeeId
+          )).data.eventId == eventId
+          && get(/databases/$(database)/documents/eventAttendees/$(
+            get(/databases/$(database)/documents/eventRuntimeParticipants/$(runtimeId)).data.eventAttendeeId
+          )).data.linkedUid == uid
+          && get(/databases/$(database)/documents/eventAttendees/$(
+            get(/databases/$(database)/documents/eventRuntimeParticipants/$(runtimeId)).data.eventAttendeeId
+          )).data.status == 'checkedIn'
+        );
+    }
+
     function canReadEventSuccess(eventId) {
       return isAuthed()
         && (
@@ -206,6 +246,7 @@ service cloud.firestore {
           || hasEventParticipationStatus(eventId, request.auth.uid, [
             'signedUp', 'waitlisted', 'attended'
           ])
+          || hasReadyEventRuntimeParticipant(eventId, request.auth.uid)
         );
     }
 
@@ -981,6 +1022,29 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // The no-download identity edge is private to the authenticated owner.
+    // It is not a roster-list surface and every mutation is callable-owned.
+    match /eventRuntimeParticipants/{participantId} {
+      allow get: if isAuthed()
+        && resource.data.eventId is string
+        && resource.data.uid == request.auth.uid
+        && participantId == eventRuntimeParticipantDocId(
+          resource.data.eventId,
+          request.auth.uid
+        );
+      allow list: if false;
+      allow write: if false;
+    }
+
+    // Hosts review only the claim queue for events they manage. Claimants get
+    // their sanitized state through the bootstrap callable, not roster clues.
+    match /eventRuntimeClaimRequests/{requestId} {
+      allow read: if isAuthed()
+        && resource.data.eventId is string
+        && isClubHostForEvent(resource.data.eventId);
+      allow write: if false;
+    }
+
     match /eventParticipations/{participationId} {
       allow read: if isAuthed()
         && (
@@ -1340,7 +1404,7 @@ service cloud.firestore {
         && data.uid == request.auth.uid
         && data.clubId == get(/databases/$(database)/documents/events/$(data.eventId)).data.clubId
         && get(/databases/$(database)/documents/events/$(data.eventId)).data.endTime <= request.time
-        && hasAttendedEvent(data.eventId, data.uid)
+        && hasCheckedInEventSuccessAccess(data.eventId, data.uid)
         && data.welcomeRating is number
         && data.welcomeRating >= 1
         && data.welcomeRating <= 5
@@ -1372,9 +1436,7 @@ service cloud.firestore {
         && preferenceId == eventSuccessPreferenceDocId(data.eventId, data.uid)
         && data.uid == request.auth.uid
         && data.clubId == get(/databases/$(database)/documents/events/$(data.eventId)).data.clubId
-        && hasEventParticipationStatus(data.eventId, data.uid, [
-          'signedUp', 'attended'
-        ])
+        && hasEventSuccessParticipantAccess(data.eventId, data.uid)
         && data.microPodsOptedOut is bool
         && data.guidedRotationsOptedOut is bool
         && data.createdAt is timestamp
@@ -1395,9 +1457,7 @@ service cloud.firestore {
         )
         && data.uid == request.auth.uid
         && data.clubId == get(/databases/$(database)/documents/events/$(data.eventId)).data.clubId
-        && hasEventParticipationStatus(data.eventId, data.uid, [
-          'signedUp', 'attended'
-        ])
+        && hasEventSuccessParticipantAccess(data.eventId, data.uid)
         && data.answerIds is list
         && data.answerIds.size() >= 1
         && data.answerIds.size() <= 8
@@ -1423,8 +1483,8 @@ service cloud.firestore {
         && data.targetUid is string
         && data.targetUid != data.requesterUid
         && data.clubId == get(/databases/$(database)/documents/events/$(data.eventId)).data.clubId
-        && hasAttendedEvent(data.eventId, data.requesterUid)
-        && hasAttendedEvent(data.eventId, data.targetUid)
+        && hasCheckedInEventSuccessAccess(data.eventId, data.requesterUid)
+        && hasCheckedInEventSuccessAccess(data.eventId, data.targetUid)
         && !hasBlockBetween(data.requesterUid, data.targetUid)
         && data.status in ['active', 'withdrawn']
         && data.hostVisibleConsent == true
@@ -1477,9 +1537,10 @@ service cloud.firestore {
           resource.data.eventId,
           request.auth.uid
         )
-        && hasEventParticipationStatus(resource.data.eventId, request.auth.uid, [
-          'signedUp', 'attended'
-        ]);
+        && hasEventSuccessParticipantAccess(
+          resource.data.eventId,
+          request.auth.uid
+        );
       allow list: if false;
       allow create, update: if isAuthed()
         && isValidEventSuccessCompatibilityResponse(
@@ -1524,9 +1585,10 @@ service cloud.firestore {
           resource.data.eventId,
           request.auth.uid
         )
-        && hasEventParticipationStatus(resource.data.eventId, request.auth.uid, [
-          'signedUp', 'attended'
-        ]);
+        && hasEventSuccessParticipantAccess(
+          resource.data.eventId,
+          request.auth.uid
+        );
       allow list: if false;
       allow create, update, delete: if false;
     }
@@ -1545,9 +1607,10 @@ service cloud.firestore {
           isClubHostForEvent(resource.data.eventId)
           || (
             resource.data.uid == request.auth.uid
-            && hasEventParticipationStatus(resource.data.eventId, request.auth.uid, [
-              'signedUp', 'attended'
-            ])
+            && hasEventSuccessParticipantAccess(
+              resource.data.eventId,
+              request.auth.uid
+            )
           )
         );
       allow list: if isAuthed()

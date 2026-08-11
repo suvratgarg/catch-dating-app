@@ -68,6 +68,8 @@ describe("useHostApplicationController", () => {
       hostApplication: {
         organizationName: "Sunday Club",
         nextEventName: "Sunday Dinner",
+        bookingPlatform: "Luma",
+        guestListFormat: "CSV",
       },
     });
   });

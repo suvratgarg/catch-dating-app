@@ -1027,9 +1027,12 @@ Implemented website behavior:
   CTAs/deep links, and share behavior.
 - Claim surfaces show pending, already-claimed, not-found, and "while you wait"
   states.
-- `/host/` uses reusable host product blocks for paid checkout, waitlist
-  offers, balanced cohorts, active-step create-event walkthrough, and
-  Event Success copy aligned with product/privacy constraints.
+- `/host/` presents Catch as additive live-event tooling for hosts who keep
+  their existing booking or RSVP platform. It explains companion-event setup,
+  CSV-based roster import, verified attendance, the no-download guest runtime,
+  optional live modules, and selective free beta access. Catch-native booking,
+  full profiles, chats, and social-network effects are labelled as later and
+  are not prerequisites in the current flow.
 
 Deferred website decisions:
 

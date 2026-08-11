@@ -2,6 +2,7 @@ import type {HTMLAttributes, ReactNode} from "react";
 import type {StatStripItem} from "./foundation";
 import type {MarketingInfoCardItem} from "./media";
 import {classNames} from "./foundation";
+import {PrivacyGuardrail} from "./feedback";
 import {SuccessGrid, hostFeatureGridClassNames, hostFeatureRailClassNames, hostFeatureSectionClassNames, hostPageSectionClassNames} from "./layout";
 import {NumberedRail} from "./layout2";
 import {MarketingInfoCard} from "./media";
@@ -70,6 +71,116 @@ export function HostHeroCopy({
     <div {...props} className={classNames("host-hero__copy", className)}>
       {children}
     </div>
+  );
+}
+
+export interface HostBridgeDemoGuest {
+  name: ReactNode;
+  status: ReactNode;
+  time: ReactNode;
+}
+
+export function HostBridgeDemo({
+  checkedInLabel,
+  eventName,
+  guestLabel,
+  guestListLabel,
+  guests,
+  hostLabel,
+  runtimeBody,
+  runtimeItems,
+  runtimeLabel,
+  runtimeTitle,
+  shareLabel,
+  statusLabel,
+  timeLabel,
+}: {
+  checkedInLabel: ReactNode;
+  eventName: ReactNode;
+  guestLabel: ReactNode;
+  guestListLabel: ReactNode;
+  guests: readonly HostBridgeDemoGuest[];
+  hostLabel: ReactNode;
+  runtimeBody: ReactNode;
+  runtimeItems: readonly ReactNode[];
+  runtimeLabel: ReactNode;
+  runtimeTitle: ReactNode;
+  shareLabel: ReactNode;
+  statusLabel: ReactNode;
+  timeLabel: ReactNode;
+}) {
+  const checkedInCount = guests.filter((guest) => guest.time !== "—").length;
+  return (
+    <div className="host-bridge-demo" data-reveal="scale">
+      <div className="host-bridge-demo__console">
+        <header>
+          <div>
+            <span>{hostLabel}</span>
+            <strong>{eventName}</strong>
+          </div>
+          <span className="host-bridge-demo__share">{shareLabel}</span>
+        </header>
+        <div className="host-bridge-demo__summary">
+          <span>{guestListLabel}</span>
+          <strong>{checkedInCount}/{guests.length} {checkedInLabel}</strong>
+        </div>
+        <div className="host-bridge-demo__table" role="table">
+          <div role="row">
+            <span role="columnheader">{guestLabel}</span>
+            <span role="columnheader">{statusLabel}</span>
+            <span role="columnheader">{timeLabel}</span>
+          </div>
+          {guests.map((guest, index) => (
+            <div key={index} role="row">
+              <strong role="cell">{guest.name}</strong>
+              <span role="cell">{guest.status}</span>
+              <span role="cell">{guest.time}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="host-bridge-demo__join" aria-hidden="true">
+        {Array.from({length: 16}, (_, index) => <span key={index} />)}
+      </div>
+      <div className="host-bridge-demo__runtime">
+        <span>{runtimeLabel}</span>
+        <strong>{eventName}</strong>
+        <div className="host-bridge-demo__runtime-title">{runtimeTitle}</div>
+        <p>{runtimeBody}</p>
+        <ul>
+          {runtimeItems.map((item, index) => <li key={index}>{item}</li>)}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+export function HostCompatibilityLine({
+  children,
+  className,
+  ...props
+}: HTMLAttributes<HTMLParagraphElement> & {children: ReactNode}) {
+  return (
+    <p {...props} className={classNames("host-compatibility-line", className)}>
+      {children}
+    </p>
+  );
+}
+
+export function HostComparisonCallout({
+  children,
+  limits,
+}: {
+  children: ReactNode;
+  limits: ReactNode;
+}) {
+  return (
+    <>
+      <PrivacyGuardrail className="host-comparison__callout">
+        {children}
+      </PrivacyGuardrail>
+      <p className="host-comparison__limits">{limits}</p>
+    </>
   );
 }
 

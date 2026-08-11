@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:archive/archive.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/hosts/data/host_roster_file_parser.dart';
 import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
@@ -22,11 +23,67 @@ void main() {
 
     expect(table.suggestedMapping[HostRosterField.displayName], 0);
     expect(table.suggestedMapping[HostRosterField.phone], 1);
+    expect(table.adapter.adapterId, HostRosterAdapterId.genericV1);
     final mapped = table.mapRows(table.suggestedMapping);
     expect(mapped.issues, isEmpty);
     expect(mapped.rows, hasLength(2));
     expect(mapped.rows.first.displayName, 'Shah, Asha');
     expect(mapped.rows.last.status, EventAttendeeStatus.waitlisted);
+  });
+
+  test('Luma export is detected and maps provider-specific fields', () {
+    final table = parseHostRosterFile(
+      fileName: 'luma-guests.csv',
+      bytes: Uint8List.fromList(
+        utf8.encode(
+          'Name,Email,Phone Number,Approval Status,Ticket Type,Guest Key,Registration Date\n'
+          'Asha Shah,asha@example.com,+919876543210,Approved,General,guest_1,2026-08-11',
+        ),
+      ),
+    );
+
+    expect(table.adapter.adapterId, HostRosterAdapterId.lumaV1);
+    expect(table.suggestedMapping[HostRosterField.externalReference], 5);
+    expect(
+      table.mapRows(table.suggestedMapping).rows.single.displayName,
+      'Asha Shah',
+    );
+  });
+
+  test('Eventbrite adapter combines first and last name columns', () {
+    final table = parseHostRosterFile(
+      fileName: 'eventbrite-attendees.csv',
+      bytes: Uint8List.fromList(
+        utf8.encode(
+          'First Name,Last Name,Email,Order ID,Ticket Type,Attendee Status\n'
+          'Asha,Shah,asha@example.com,12345,General,Attending',
+        ),
+      ),
+    );
+
+    expect(table.adapter.adapterId, HostRosterAdapterId.eventbriteV1);
+    expect(table.headers.last, 'Guest name');
+    expect(
+      table.mapRows(table.suggestedMapping).rows.single.displayName,
+      'Asha Shah',
+    );
+  });
+
+  test('unverified provider hint keeps manual mapping available', () {
+    final table = parseHostRosterFile(
+      fileName: 'bookmyshow.csv',
+      providerHint: ExternalBookingProvider.bookmyshow,
+      bytes: Uint8List.fromList(
+        utf8.encode('Customer Name,Mobile Number\nAsha Shah,9876543210'),
+      ),
+    );
+
+    expect(table.adapter.adapterId, HostRosterAdapterId.sampleRequired);
+    expect(table.adapter.support, HostRosterAdapterSupport.sampleRequired);
+    expect(
+      table.mapRows(table.suggestedMapping).rows.single.displayName,
+      'Asha Shah',
+    );
   });
 
   test('mapping requires an explicit guest-name column', () {

@@ -98,7 +98,7 @@ export interface EventMetaCopy {
 export interface WebsiteMetaCopy {
   readonly routes: Readonly<
     Record<
-      "home" | "host" | "organizers" | "claim" | "privacy" | "terms" | "help" | "not_found",
+      "home" | "host" | "event_runtime" | "organizers" | "claim" | "privacy" | "terms" | "help" | "not_found",
       StaticPageMetaCopy
     >
   >;

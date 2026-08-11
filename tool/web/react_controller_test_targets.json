@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "version": 8,
-  "updated": "2026-08-05",
+  "version": 9,
+  "updated": "2026-08-11",
   "owner": "web_surface_architecture",
   "statuses": {
     "required": "A behavior test must exist and import the target hook.",
@@ -107,6 +107,11 @@
     {
       "source": "website/src/features/claims/useListingClaimController.ts",
       "test": "website/src/features/claims/useClaimRequestMutation.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "website/src/features/eventRuntime/useEventRuntimeController.ts",
+      "test": "website/src/features/eventRuntime/useEventRuntimeController.test.tsx",
       "status": "required"
     },
     {

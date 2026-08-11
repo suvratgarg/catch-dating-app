@@ -31,6 +31,7 @@ import {validateCallableWithAjv, requireDoc} from "../shared/validation";
 import {eventParticipationId} from "../shared/relationshipDocuments";
 import {assertNoUserEventScheduleConflict} from "../events/scheduleConflicts";
 import {normalizeEventIdPayload} from "../events/eventPayloadNormalization";
+import {requireCatchBookingAuthority} from "../events/eventOrigin";
 import {
   assertPolicyAllowsSignup,
   cohortIdForUser,
@@ -109,6 +110,7 @@ export async function createRazorpayOrderHandler(
     "EventDocument"
 
   );
+  requireCatchBookingAuthority(event);
   const user = requireDoc<UserProfileDocument>(
     userSnap,
     "UserProfileDocument"

@@ -65,6 +65,16 @@
       "$ref": "../shared/event_common.schema.json#/definitions/documentId",
       "x-catch-ownership": "callable-owned"
     },
+    "eventOrigin": {
+      "$ref": "../embedded/event_origin.schema.json",
+      "description": "Immutable operational booking/roster provenance. Missing legacy values read as Catch-native.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "runtimeAccess": {
+      "$ref": "../embedded/event_runtime_access.schema.json",
+      "description": "Server-owned no-download Event Success runtime access configuration.",
+      "x-catch-ownership": "callable-owned"
+    },
     "startTime": {
       "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
       "x-catch-ownership": "callable-owned"

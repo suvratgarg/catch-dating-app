@@ -21,6 +21,14 @@ import {
   externalEventDetailFixture,
 } from "./fixtures/eventDetails";
 import type {EventDetailRecord} from "../features/events/eventDetailModel";
+import {eventRuntimeCopy} from "../content/eventRuntime";
+import {
+  Button,
+  EventRuntimeForm,
+  EventRuntimeFrame,
+  EventRuntimePanel,
+  TextField,
+} from "../shared/ui/primitives";
 
 const generatedOrganizerListing = requireListing("afterfly");
 
@@ -71,13 +79,13 @@ export const Host: Story = {
       path: "/host/",
       reviewStates: [
         "default",
-        "founding-host-offer",
+        "beta-offer",
         "host-application",
         "capture-placeholders",
       ],
       stateCoverage: {
         storybook: ["default"],
-        manual: ["founding-host-offer", "host-application", "capture-placeholders"],
+        manual: ["beta-offer", "host-application", "capture-placeholders"],
       },
     },
     catchComponent: {
@@ -85,13 +93,78 @@ export const Host: Story = {
       routeIds: ["host"],
       states: [
         "default",
-        "founding-host-offer",
+        "beta-offer",
         "host-application",
         "capture-placeholders",
       ],
     },
   },
   render: () => <HostPage captures={captures} />,
+};
+
+export const EventRuntime: Story = {
+  name: "/join/:publicRuntimeId/",
+  parameters: {
+    a11y: {test: "error"},
+    catchRoute: {
+      id: "event_runtime",
+      pathPattern: "/join/:publicRuntimeId/",
+      reviewStates: [
+        "phone-entry",
+        "otp",
+        "event-intake",
+        "pending-approval",
+        "live-runtime",
+        "unavailable",
+      ],
+      stateCoverage: {
+        storybook: ["phone-entry"],
+        manual: ["otp", "event-intake", "pending-approval", "live-runtime", "unavailable"],
+      },
+    },
+    catchComponent: {
+      id: "route_event_runtime",
+      routeIds: ["event_runtime"],
+      states: ["phone-entry"],
+    },
+  },
+  render: () => (
+    <PageShell pageClassName="event-runtime-page">
+      <EventRuntimeFrame
+        brandLabel={eventRuntimeCopy.brand}
+        brandWord={eventRuntimeCopy.brandWord}
+        eventTitle={eventRuntimeCopy.demoEventTitle}
+      >
+        <EventRuntimePanel
+          body={eventRuntimeCopy.phoneBody}
+          kicker={eventRuntimeCopy.phoneKicker}
+          title={eventRuntimeCopy.phoneTitle}
+        >
+          <EventRuntimeForm onSubmit={(event) => event.preventDefault()}>
+            <TextField
+              id="storybook-event-runtime-phone"
+              label={eventRuntimeCopy.phoneLabel}
+              placeholder={eventRuntimeCopy.phonePlaceholder}
+            />
+            <Button type="submit">{eventRuntimeCopy.sendCode}</Button>
+          </EventRuntimeForm>
+        </EventRuntimePanel>
+      </EventRuntimeFrame>
+    </PageShell>
+  ),
+};
+
+export const EventRuntimeShells: Story = {
+  name: "Event runtime shells",
+  parameters: {
+    a11y: {test: "error"},
+    catchComponent: {
+      id: "shared_event_runtime_shells",
+      routeIds: ["event_runtime"],
+      states: ["phone-entry", "live-module-shell"],
+    },
+  },
+  render: EventRuntime.render,
 };
 
 export const Claim: Story = {

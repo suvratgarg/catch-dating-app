@@ -10,4 +10,15 @@ export interface FetchEventSuccessWingmanCandidatesCallableResponse {
     uid: string;
     [k: string]: unknown;
   }[];
+  /**
+   * Runtime-safe candidate cards for no-download attendees. Existing app clients may continue using profiles.
+   *
+   * @maxItems 1000
+   */
+  candidates?: {
+    uid: string;
+    displayName: string;
+    gender: "man" | "woman" | "nonBinary" | "other";
+    source: "catchParticipation" | "externalRuntime";
+  }[];
 }

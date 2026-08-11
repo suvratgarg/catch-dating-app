@@ -1,7 +1,7 @@
 {
   "$schema": "./website.components.schema.json",
-  "version": 92,
-  "updated": "2026-08-10",
+  "version": 93,
+  "updated": "2026-08-11",
   "owner": "marketing_website",
   "sourceOfTruth": {
     "architecture": "docs/marketing_website_architecture.md",
@@ -14,6 +14,7 @@
     "currentFocus": [
       "home",
       "host",
+      "event_runtime",
       "claim",
       "claim_lookup",
       "privacy",
@@ -38,6 +39,7 @@
       "routeIds": [
         "home",
         "host",
+        "event_runtime",
         "claim",
         "claim_lookup",
         "privacy",
@@ -760,12 +762,12 @@
         "exportName": "Host",
         "states": [
           "default",
-          "founding-host-offer",
+          "beta-offer",
           "host-application",
           "capture-placeholders"
         ]
       },
-      "notes": "Reference route-first host page composition."
+      "notes": "Canonical public host beta route for standalone live-event tooling alongside external booking platforms; current tools precede an explicit coming-later boundary."
     },
     {
       "id": "host_hero_section",
@@ -790,7 +792,7 @@
           "capture-stage"
         ]
       },
-      "notes": "Host route hero section; route-level composition imports this section instead of owning hero/product markup. Hero stage shows a real app capture."
+      "notes": "Host route hero section; route-level composition imports this section instead of owning hero/product markup. A code-native bridge demo connects imported attendance, the event QR, and the no-download guest runtime without advertising Catch-native booking."
     },
     {
       "id": "host_workflow_section",
@@ -1248,7 +1250,7 @@
           "capture-fallback"
         ]
       },
-      "notes": "Interactive host create-flow section shared by /host/ and /host/preview/; configures shared scanner-enforced Host feature section and phone-capture shell primitives instead of rendering raw section shells."
+      "notes": "Interactive companion-event setup walkthrough for /host/: create the companion event, import or securely forward a guest list, then share the event QR. The retired preview route is not a separate owner."
     },
     {
       "id": "host_playbook_showcase",
@@ -1302,7 +1304,7 @@
           "expanded-interaction"
         ]
       },
-      "notes": "Interactive comparison table section shared by both host routes; configures shared scanner-enforced Host feature section and comparison table shells instead of rendering raw section shells."
+      "notes": "Two-column responsibility ledger showing what the existing booking platform continues to own and what Catch adds alongside it."
     },
     {
       "id": "host_application_flow",
@@ -2965,7 +2967,7 @@
         "story": "website/src/stories/HostSections.stories.tsx",
         "exportName": "HostFoundingOfferSectionStory",
         "states": [
-          "founding-host-offer"
+          "beta-offer"
         ]
       },
       "notes": "Canonical host supporting section migrated from the retired preview route."
@@ -3017,6 +3019,51 @@
         ]
       },
       "notes": "Canonical host supporting section migrated from the retired preview route."
+    },
+    {
+      "id": "route_event_runtime",
+      "kind": "route",
+      "routeIds": [
+        "event_runtime"
+      ],
+      "owner": "features/eventRuntime",
+      "source": "website/src/features/eventRuntime/EventRuntimePage.tsx",
+      "exportName": "EventRuntimePage",
+      "css": [
+        "website/src/styles/event-runtime.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/MarketingRoutes.stories.tsx",
+        "exportName": "EventRuntime",
+        "states": [
+          "phone-entry"
+        ]
+      },
+      "notes": "Opaque-link, no-download attendee route with OTP, roster claim, event-scoped intake, check-in, and live Event Success modules."
+    },
+    {
+      "id": "shared_event_runtime_shells",
+      "kind": "supporting-component",
+      "routeIds": [
+        "event_runtime"
+      ],
+      "owner": "shared/ui/primitives",
+      "source": "website/src/shared/ui/primitives/eventRuntime.tsx",
+      "exportName": "EventRuntimeFrame",
+      "css": [
+        "website/src/styles/event-runtime.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/MarketingRoutes.stories.tsx",
+        "exportName": "EventRuntimeShells",
+        "states": [
+          "phone-entry",
+          "live-module-shell"
+        ]
+      },
+      "notes": "Governed visual ownership for attendee runtime frame, panels, forms, consents, live header, and module cards."
     }
   ]
 }

@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/create_event_roster_handoff_response.schema.json",
+  "title": "CreateEventRosterHandoffCallableResponse",
+  "description": "Provider-aware forwarding instructions for one event roster.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "expiresAtMillis",
+    "emailStatus",
+    "emailAlias",
+    "whatsappStatus",
+    "whatsappNumber",
+    "whatsappMessage"
+  ],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "expiresAtMillis": {"type": "integer", "minimum": 0},
+    "emailStatus": {"type": "string", "enum": ["available", "providerSetupRequired"]},
+    "emailAlias": {
+      "anyOf": [
+        {"type": "string", "format": "email", "maxLength": 320},
+        {"type": "null"}
+      ]
+    },
+    "whatsappStatus": {"type": "string", "enum": ["available", "providerSetupRequired"]},
+    "whatsappNumber": {"type": ["string", "null"], "pattern": "^\\+[1-9][0-9]{6,14}$"},
+    "whatsappMessage": {"type": ["string", "null"], "minLength": 20, "maxLength": 160}
+  }
+}

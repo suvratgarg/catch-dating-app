@@ -266,6 +266,8 @@ export function normalizeHostApplication(
       raw.expectedCapacity,
       40
     ),
+    bookingPlatform: normalizeOptionalMarketingText(raw.bookingPlatform, 120),
+    guestListFormat: normalizeOptionalMarketingText(raw.guestListFormat, 120),
     priceRange: normalizeOptionalMarketingText(raw.priceRange, 80),
     admissionModel: normalizeOptionalMarketingText(raw.admissionModel, 80),
     waitlistPlan: normalizeOptionalMarketingText(raw.waitlistPlan, 80),

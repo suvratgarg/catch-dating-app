@@ -1,0 +1,138 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_runtime_participants.schema.json",
+  "title": "EventRuntimeParticipantDocument",
+  "description": "Participant-private runtime identity stored at eventRuntimeParticipants/{eventId_uid}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventRuntimeParticipants",
+  "x-firestore-path": "eventRuntimeParticipants/{participantId}",
+  "x-document-id-field": "id",
+  "x-owner": "runtime claim/profile callables; owner get only; no client writes or list access",
+  "required": [
+    "eventId",
+    "clubId",
+    "organizerId",
+    "uid",
+    "eventAttendeeId",
+    "identityVersion",
+    "claimMethod",
+    "accessStatus",
+    "requiredFieldIds",
+    "completedFieldIds",
+    "runtimeProfile",
+    "consents",
+    "claimedAt",
+    "readyAt",
+    "revokedAt",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "clubId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "uid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "eventAttendeeId": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "identityVersion": {"type": "integer", "const": 1},
+    "claimMethod": {
+      "type": "string",
+      "enum": [
+        "verifiedPhone",
+        "signedAttendeeToken",
+        "verifiedEmail",
+        "hostApproval",
+        "catchParticipation"
+      ]
+    },
+    "accessStatus": {
+      "type": "string",
+      "enum": ["pendingApproval", "needsInput", "ready", "optedOut", "revoked"]
+    },
+    "requiredFieldIds": {
+      "type": "array",
+      "uniqueItems": true,
+      "maxItems": 5,
+      "items": {
+        "type": "string",
+        "enum": [
+          "displayName",
+          "gender",
+          "interestedInGenders",
+          "relationshipGoal",
+          "dateOfBirth"
+        ]
+      }
+    },
+    "completedFieldIds": {
+      "type": "array",
+      "uniqueItems": true,
+      "maxItems": 5,
+      "items": {
+        "type": "string",
+        "enum": [
+          "displayName",
+          "gender",
+          "interestedInGenders",
+          "relationshipGoal",
+          "dateOfBirth"
+        ]
+      }
+    },
+    "runtimeProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "displayName",
+        "gender",
+        "interestedInGenders",
+        "relationshipGoal",
+        "dateOfBirth"
+      ],
+      "properties": {
+        "displayName": {"type": "string", "minLength": 1, "maxLength": 120},
+        "gender": {
+          "anyOf": [
+            {"$ref": "../shared/profile_common.schema.json#/definitions/gender"},
+            {"type": "null"}
+          ]
+        },
+        "interestedInGenders": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 4,
+          "items": {"$ref": "../shared/profile_common.schema.json#/definitions/gender"}
+        },
+        "relationshipGoal": {
+          "$ref": "../shared/profile_common.schema.json#/definitions/relationshipGoal"
+        },
+        "dateOfBirth": {
+          "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+        }
+      }
+    },
+    "consents": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "runtimeTermsVersion",
+        "sensitiveDataTermsVersion",
+        "saveAsCatchPrefill"
+      ],
+      "properties": {
+        "runtimeTermsVersion": {"type": "string", "minLength": 1, "maxLength": 80},
+        "sensitiveDataTermsVersion": {"type": ["string", "null"], "maxLength": 80},
+        "saveAsCatchPrefill": {"type": "boolean"}
+      }
+    },
+    "claimedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "readyAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
+    "revokedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}
+  }
+}

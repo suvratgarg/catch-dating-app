@@ -1,7 +1,7 @@
 {
   "$schema": "./website.routes.schema.json",
-  "version": 11,
-  "updated": "2026-07-24",
+  "version": 12,
+  "updated": "2026-08-11",
   "owner": "marketing_website",
   "sourceOfTruth": {
     "architecture": "docs/web_surface_architecture.md",
@@ -49,15 +49,37 @@
       "staticOutput": "postbuild",
       "indexing": "index",
       "sitemap": "included",
-      "notes": "Canonical public host acquisition page. Legacy /host/preview and nested paths redirect permanently to /host/.",
+      "notes": "Canonical public Host beta page for standalone live-event tooling that begins with an external booking-platform guest-list export. Legacy /host/preview and nested paths redirect permanently to /host/.",
       "review": {
         "priority": "p0",
         "status": "ready",
         "viewports": ["desktop", "mobile"],
-        "states": ["default", "founding-host-offer", "host-application", "capture-placeholders"],
+        "states": ["default", "beta-offer", "host-application", "capture-placeholders"],
         "stateCoverage": {
           "storybook": ["default"],
-          "manual": ["founding-host-offer", "host-application", "capture-placeholders"]
+          "manual": ["beta-offer", "host-application", "capture-placeholders"]
+        }
+      }
+    },
+    {
+      "id": "event_runtime",
+      "kind": "clientDynamic",
+      "pathPattern": "/join/:publicRuntimeId/",
+      "pageKey": "event_runtime",
+      "source": "website/src/features/eventRuntime/EventRuntimePage.tsx",
+      "metaKey": "event_runtime",
+      "staticOutput": "spa-rewrite",
+      "indexing": "noindex-follow",
+      "sitemap": "excluded",
+      "notes": "No-download Event Success runtime. The opaque public id resolves only bounded event metadata; Firebase phone OTP binds the attendee to an imported roster row or a Host approval request before event-scoped profile and live tools unlock.",
+      "review": {
+        "priority": "p0",
+        "status": "ready",
+        "viewports": ["desktop", "mobile"],
+        "states": ["phone-entry", "otp", "event-intake", "pending-approval", "live-runtime", "unavailable"],
+        "stateCoverage": {
+          "storybook": ["phone-entry"],
+          "manual": ["otp", "event-intake", "pending-approval", "live-runtime", "unavailable"]
         }
       }
     },

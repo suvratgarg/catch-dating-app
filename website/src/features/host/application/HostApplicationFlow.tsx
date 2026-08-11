@@ -1,4 +1,5 @@
 import {websiteCopy} from "@content/generated";
+import {hostApplicationCopy} from "@content/host";
 import {websiteTemplates} from "@content/templates";
 import {activeHostApplicationCityOptions} from "@content/markets";
 import {
@@ -201,57 +202,37 @@ export function HostApplicationFlow() {
           </HostApplicationStage>
         ) : null}
 
-        {!submitted && step === "policy" ? (
+        {!submitted && step === "setup" ? (
           <HostApplicationStage>
             <FieldGrid>
               <TextField
                 id="host-capacity"
-                label={websiteCopy["hostapplicationflow_0225"]}
+                label={hostApplicationCopy.setup.guestCountLabel}
                 value={draft.expectedCapacity}
                 inputMode="numeric"
                 onChange={(event) => updateDraft("expectedCapacity", event.currentTarget.value)}
                 required
               />
-              <TextField
-                id="host-price-range"
-                label={websiteCopy["hostapplicationflow_0250"]}
-                value={draft.priceRange}
-                onChange={(event) => updateDraft("priceRange", event.currentTarget.value)}
-              />
               <SelectField
-                id="host-admission"
-                label={websiteCopy["hostapplicationflow_0205"]}
-                value={draft.admissionModel}
-                onChange={(event) => updateDraft("admissionModel", event.currentTarget.value)}
-              >
-                <option>{websiteCopy["hostapplicationflow_0244"]}</option>
-                <option>{websiteCopy["hostapplicationflow_0254"]}</option>
-                <option>{websiteCopy["hostapplicationflow_0236"]}</option>
-                <option>{websiteCopy["hostapplicationflow_0210"]}</option>
-                <option>{websiteCopy["hostapplicationflow_0239"]}</option>
-              </SelectField>
-              <SelectField
-                id="host-waitlist-plan"
-                label={websiteCopy["hostapplicationflow_0261"]}
-                value={draft.waitlistPlan}
-                onChange={(event) => updateDraft("waitlistPlan", event.currentTarget.value)}
-              >
-                <option>{websiteCopy["hostapplicationflow_0253"]}</option>
-                <option>{websiteCopy["hostapplicationflow_0238"]}</option>
-                <option>{websiteCopy["hostapplicationflow_0213"]}</option>
-                <option>{websiteCopy["hostapplicationflow_0242"]}</option>
-              </SelectField>
-              <SelectField
-                id="host-payment"
-                label={websiteCopy["hostapplicationflow_0249"]}
-                value={draft.paymentReadiness}
-                onChange={(event) => updateDraft("paymentReadiness", event.currentTarget.value)}
+                id="host-booking-platform"
+                label={hostApplicationCopy.setup.bookingPlatformLabel}
+                value={draft.bookingPlatform}
+                onChange={(event) => updateDraft("bookingPlatform", event.currentTarget.value)}
                 span
               >
-                <option>{websiteCopy["hostapplicationflow_0241"]}</option>
-                <option>{websiteCopy["hostapplicationflow_0206"]}</option>
-                <option>{websiteCopy["hostapplicationflow_0229"]}</option>
-                <option>{websiteCopy["hostapplicationflow_0256"]}</option>
+                {hostApplicationCopy.setup.bookingPlatforms.map((platform) => (
+                  <option key={platform}>{platform}</option>
+                ))}
+              </SelectField>
+              <SelectField
+                id="host-guest-list-format"
+                label={hostApplicationCopy.setup.guestListFormatLabel}
+                value={draft.guestListFormat}
+                onChange={(event) => updateDraft("guestListFormat", event.currentTarget.value)}
+              >
+                {hostApplicationCopy.setup.guestListFormats.map((format) => (
+                  <option key={format}>{format}</option>
+                ))}
               </SelectField>
             </FieldGrid>
           </HostApplicationStage>
@@ -311,11 +292,10 @@ export function HostApplicationFlow() {
                 ["Location", draft.eventLocation],
                 ["Cadence", draft.eventCadence],
               ]} />
-              <HostApplicationReviewCard title={websiteCopy["hostapplicationflow_0247"]} rows={[
-                ["Capacity", draft.expectedCapacity],
-                ["Admission", draft.admissionModel],
-                ["Waitlist", draft.waitlistPlan],
-                ["Payment", draft.paymentReadiness],
+              <HostApplicationReviewCard title={hostApplicationCopy.review.setupTitle} rows={[
+                [hostApplicationCopy.review.platformLabel, draft.bookingPlatform],
+                [hostApplicationCopy.review.formatLabel, draft.guestListFormat],
+                [hostApplicationCopy.review.guestsLabel, draft.expectedCapacity],
               ]} />
               <HostApplicationReviewCard title={websiteCopy["hostapplicationflow_0223"]} rows={[
                 ["Modules", draft.eventSuccessModules.join(", ")],
@@ -323,8 +303,8 @@ export function HostApplicationFlow() {
               ]} />
             </HostApplicationReviewGrid>
             <OperationalNote
-              title={websiteCopy["hostapplicationflow_0264"]}
-              body={websiteCopy["hostapplicationflow_0258"]}
+              title={hostApplicationCopy.review.noteTitle}
+              body={hostApplicationCopy.review.noteBody}
             />
           </HostApplicationStage>
         ) : null}

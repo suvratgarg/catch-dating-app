@@ -1,7 +1,7 @@
 import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {EventDocument, BlockDocument, UserProfileDocument} from
+import {EventDocument, BlockDocument} from
   "../shared/generated/firestoreAdminTypes";
 import {requireAuth} from "../shared/auth";
 import {EventIdCallablePayload} from
@@ -51,12 +51,13 @@ import {
   AssignmentPrimitiveStructureConfig,
   rotationPolicyForStructureConfig,
 } from "./assignmentPrimitiveControls";
+import {loadEventSuccessRoster} from "./eventSuccessRoster";
 
 const GUIDED_ROTATIONS_MODULE_ID = "guided_rotations";
 const COMPATIBILITY_QUESTIONNAIRE_MODULE_ID = "compatibility_questionnaire";
 const ROUND_LENGTH_MINUTES = 15;
 const MAX_IN_FILTER_VALUES = 30;
-const ACTIVE_STATUSES = ["attended", "signedUp"] as const;
+type ActiveStatus = "attended" | "signedUp";
 
 interface EventSuccessRotationsDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -81,11 +82,6 @@ interface EventSuccessPlanDocument {
   } & AssignmentPrimitiveStructureConfig;
 }
 
-interface EventParticipationDocument {
-  uid?: string;
-  status?: string;
-}
-
 interface EventSuccessPreferenceDocument {
   uid?: string;
   guidedRotationsOptedOut?: boolean;
@@ -99,7 +95,7 @@ interface EventSuccessCompatibilityResponseDocument {
 
 interface RotationParticipant extends AssignmentParticipant {
   uid: string;
-  status: typeof ACTIVE_STATUSES[number];
+  status: ActiveStatus;
   gender: string;
   interestedInGenders: string[];
   compatibilityAnswerIds: string[];
@@ -419,24 +415,23 @@ async function loadEligibleRotationParticipants(
   participants: RotationParticipant[];
   blockedPairs: Set<string>;
 }> {
-  const [participationsSnap, optedOutUids] = await Promise.all([
-    db
-      .collection("eventParticipations")
-      .where("eventId", "==", eventId)
-      .where("status", "in", [...ACTIVE_STATUSES])
-      .get(),
+  const [roster, optedOutUids] = await Promise.all([
+    loadEventSuccessRoster(db, eventId),
     fetchGuidedRotationOptOutUids(db, eventId),
   ]);
-  const activeEdges = participationsSnap.docs
-    .map((doc) => doc.data() as EventParticipationDocument)
-    .map(toActiveParticipant)
-    .filter((participant): participant is {
-      uid: string;
-      status: typeof ACTIVE_STATUSES[number];
-    } => participant !== null)
-    .filter((participant) => !optedOutUids.has(participant.uid));
+  const activeEdges = roster
+    .filter((participant) =>
+      !optedOutUids.has(participant.uid) && participant.gender !== undefined
+    );
   const eligibleEdges = preferCheckedInParticipants(activeEdges);
-  let participants = await hydrateParticipants(db, eligibleEdges);
+  let participants = eligibleEdges.map((participant): RotationParticipant => ({
+    uid: participant.uid,
+    status: participant.status,
+    gender: participant.gender!,
+    interestedInGenders: participant.interestedInGenders,
+    compatibilityAnswerIds: [],
+    activityAttributes: activityAttributesForProfile(participant.profile),
+  }));
   if (compatibilityAffectsRanking) {
     const answerIdsByUid = await fetchCompatibilityAnswerIdsByUid(db, eventId);
     participants = participants.map((participant) => ({
@@ -460,26 +455,13 @@ function moduleSelected(selectedModuleIds: unknown, moduleId: string): boolean {
 }
 
 /**
- * Converts a participation edge into an active rotation candidate.
- * @param {EventParticipationDocument} data Participation document data.
- * @return {?object} Active candidate or null.
- */
-function toActiveParticipant(
-  data: EventParticipationDocument
-): {uid: string; status: typeof ACTIVE_STATUSES[number]} | null {
-  if (typeof data.uid !== "string" || data.uid.length === 0) return null;
-  if (data.status !== "attended" && data.status !== "signedUp") return null;
-  return {uid: data.uid, status: data.status};
-}
-
-/**
  * Uses checked-in attendees when at least two are present.
  * @param {Array<object>} edges Active participation edges.
  * @return {Array<object>} Rotation input.
  */
-function preferCheckedInParticipants(
-  edges: Array<{uid: string; status: typeof ACTIVE_STATUSES[number]}>
-): Array<{uid: string; status: typeof ACTIVE_STATUSES[number]}> {
+function preferCheckedInParticipants<
+  T extends {uid: string; status: ActiveStatus}
+>(edges: T[]): T[] {
   const attended = edges.filter((edge) => edge.status === "attended");
   return attended.length >= 2 ? attended : edges;
 }
@@ -510,44 +492,6 @@ async function fetchGuidedRotationOptOutUids(
     }
   }
   return optedOut;
-}
-
-/**
- * Loads user profile preference data for active participants.
- * @param {FirebaseFirestore.Firestore} db Firestore instance.
- * @param {Array<object>} edges Participation edges.
- * @return {Promise<Array<object>>} Hydrated participants.
- */
-async function hydrateParticipants(
-  db: FirebaseFirestore.Firestore,
-  edges: Array<{uid: string; status: typeof ACTIVE_STATUSES[number]}>
-): Promise<RotationParticipant[]> {
-  const participants: RotationParticipant[] = [];
-  const sortedEdges = [...edges].sort((a, b) => a.uid.localeCompare(b.uid));
-  const snaps = await Promise.all(
-    sortedEdges.map((edge) => db.collection("users").doc(edge.uid).get())
-  );
-  snaps.forEach((snap, index) => {
-    if (!snap.exists) return;
-    const profile = snap.data() as Partial<UserProfileDocument>;
-    if (
-      typeof profile.gender !== "string" ||
-      !Array.isArray(profile.interestedInGenders)
-    ) {
-      return;
-    }
-    participants.push({
-      uid: sortedEdges[index].uid,
-      status: sortedEdges[index].status,
-      gender: profile.gender,
-      interestedInGenders: profile.interestedInGenders.filter(
-        (gender) => typeof gender === "string"
-      ),
-      compatibilityAnswerIds: [],
-      activityAttributes: activityAttributesForProfile(profile),
-    });
-  });
-  return participants;
 }
 
 /**

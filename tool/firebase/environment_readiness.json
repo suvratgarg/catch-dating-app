@@ -243,6 +243,28 @@
       ]
     },
     {
+      "id": "functions.secret.roster-ingestion-webhook-secret",
+      "kind": "secret-version",
+      "name": "ROSTER_INGESTION_WEBHOOK_SECRET",
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
+      "requiredWhen": {
+        "anyDeployTarget": [
+          "functions:ingestEventRosterWebhook"
+        ]
+      },
+      "acceptedStates": [
+        "ENABLED"
+      ],
+      "owner": "event-success",
+      "sourcePaths": [
+        "functions/src/events/eventRosterHandoffs.ts"
+      ]
+    },
+    {
       "id": "functions.secret.cross-paths-suggestion-signing-key",
       "kind": "secret-version",
       "name": "CROSS_PATHS_SUGGESTION_SIGNING_KEY",

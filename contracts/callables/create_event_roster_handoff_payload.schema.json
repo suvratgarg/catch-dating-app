@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/create_event_roster_handoff_payload.schema.json",
+  "title": "CreateEventRosterHandoffCallablePayload",
+  "description": "Creates or refreshes secure email and WhatsApp roster-forwarding instructions for a Host event.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["eventId"],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}
+  }
+}

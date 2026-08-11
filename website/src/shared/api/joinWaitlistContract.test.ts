@@ -20,6 +20,8 @@ describe("joinWaitlistContract", () => {
       hostApplication: {
         organizationName: "Sunday Table",
         formats: ["Dinner"],
+        bookingPlatform: "Luma",
+        guestListFormat: "CSV export",
       },
     })).toBe(true);
     expect(isJoinWaitlistHttpRequest({

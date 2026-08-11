@@ -1,7 +1,7 @@
 ---
 doc_id: event_success
-version: 1.4.0
-updated: 2026-08-10
+version: 1.5.0
+updated: 2026-08-11
 owner: recursive_audit_loop
 status: active
 ---
@@ -30,13 +30,14 @@ The current production loop supports two entry paths:
 2. The Host marks attendance; a linked event-scoped or Consumer attendee may
    self-check in when the event policy permits it.
 3. Profile-independent Event Success setup can guide the live event through
-   structure, run-of-show prompts, attendance and Host controls. The existing
-   assignment/reveal generators still require a linked Consumer participation
-   until the attendee-id migration below is implemented.
-4. Linked Consumer attendees can use the existing private companion, feedback
-   and review flows. Event-scoped OTP delivery for imported attendees is the
-   next identity migration; swiping, matching, cross-event discovery and chat
-   remain Consumer/profile pipelines.
+   structure, run-of-show prompts, attendance and Host controls. Assignment,
+   First Hello, compatibility and wingman code is migrating from Consumer
+   participation/profile eligibility to the event-runtime identity contract
+   below.
+4. A phone-verified imported attendee enters the dedicated web runtime without
+   installing the Consumer app. Swiping, mutual Catch, cross-event discovery
+   and chat remain Consumer/profile pipelines; First Hello, event-scoped
+   compatibility, groups, rotations, wingman and feedback do not.
 
 Event success does not own a duplicate post-event interest surface. Private
 target identities remain attendee-private unless the attendee explicitly asks
@@ -64,9 +65,11 @@ unified operational roster described in
   visibility.
 
 During migration, existing UID-keyed Event Success documents remain valid for
-Catch-booked participants. New generators must resolve the operational attendee
-first and write an explicit identity-version field before imported/web-OTP
-attendees can enter attendee-private modules.
+Catch-booked participants. UID remains the private authorization key because
+phone OTP creates a real Firebase Auth identity, while the new runtime edge
+links that UID to the operational attendee and declares its identity version.
+Generators resolve the event-runtime participant first instead of treating a
+Consumer participation or public profile as the event identity.
 
 The 2026-08-11 Direction 3 bounded reference closes the first Host-only slice
 of this boundary. Canonical Host Manage Live derives checked-in and expected
@@ -199,6 +202,278 @@ runtime falls back to the normal questionnaire/self-check-in/pre-arrival flow.
 Activity recommendations live in
 `lib/event_success/domain/event_success_activity_profile.dart`. Do not add
 activity-specific toggles directly in screens.
+
+## External Booking Overlay Runtime Implementation Contract
+
+This section is the implementation and handoff contract for Event Success on
+events booked through another platform. A lower-context implementation agent
+must be able to take one numbered tranche below, inspect only the named owner
+files, and prove it with the named tests without re-deciding product scope.
+
+### Durable product boundary
+
+Event Success requires an authenticated event participant, not a Catch
+Consumer profile. First Hello, event-specific compatibility, micro-pods,
+guided rotations, specific-person wingman requests, synchronized reveals,
+ordinary QR/manual attendance, private feedback and Host-safe reporting are
+available to an imported attendee after phone verification, roster claim,
+required-field completion, disclosure and opt-out. Full public/dating profiles,
+mutual Catch, persistent chat, Cross Paths, cross-event discovery and
+longitudinal recommendations remain Consumer-network capabilities.
+
+Ordinary check-in is a platform primitive. A Host can check in any operational
+attendee. Static join links and QR codes grant no attendance by themselves.
+First Hello is an optional arrival ritual and cannot be the only check-in path.
+
+### Event provenance and capability projection
+
+`events/{eventId}` remains the operational aggregate for both Catch-native and
+externally booked events. `externalEvents/{eventId}` remains read-only public
+supply and is never promoted into an operational authority in place.
+
+Each operational event stores one immutable `eventOrigin`:
+
+```json
+{
+  "mode": "catchNative | externalCompanion",
+  "bookingAuthority": "catch | external",
+  "rosterAuthority": "catchProjection | hostImport | providerSync",
+  "provider": "catch | generic | luma | eventbrite | partiful | posh | bookmyshow | district | sortmyscene | airbnb",
+  "externalEventId": null,
+  "externalEventUrl": null,
+  "sourceExternalEventId": null,
+  "adapterVersion": null,
+  "connectedAt": null,
+  "connectedBy": null
+}
+```
+
+Existing events without `eventOrigin` read as `catchNative`. Creation persists
+the field for every new event. Origin never changes after creation. Publication,
+registration, payments and network access remain independent server-derived
+capabilities; do not add a Host-writable `hybrid` mode or infer capability from
+price/count fields.
+
+`externalCompanion` invariants: external checkout remains booking authority;
+Catch booking/payment/waitlist writes fail closed; roster import/manual entry,
+phone-OTP claim and Event Success remain enabled; imported rows do not increment
+Consumer booking counters; operational aggregates derive from
+`eventAttendees`; conversion to Catch booking is a migration for a future
+occurrence, not an in-place flag flip against shared inventory.
+
+### Identity graph
+
+| Collection | Identity and authority |
+|---|---|
+| `eventAttendees/{attendeeId}` | Host-visible event-scoped operational person, imported contact/source, attendance and optional `linkedUid`. |
+| `eventParticipations/{eventId_uid}` | Catch booking, payment, waitlist and Consumer-network lifecycle. It is optional for Event Success. |
+| `eventRuntimeParticipants/{eventId_uid}` | Participant-private access, roster claim, disclosures, minimal runtime profile and readiness. |
+
+The deterministic runtime-participant id is `${eventId}_${uid}`. Its required
+shape is:
+
+```json
+{
+  "eventId": "event-id",
+  "clubId": "organizer-compatibility-id",
+  "organizerId": "organizer-id",
+  "uid": "firebase-auth-uid",
+  "eventAttendeeId": "opaque-roster-id",
+  "identityVersion": 1,
+  "claimMethod": "verifiedPhone | signedAttendeeToken | verifiedEmail | hostApproval | catchParticipation",
+  "accessStatus": "needsInput | ready | optedOut | revoked",
+  "requiredFieldIds": [],
+  "completedFieldIds": [],
+  "runtimeProfile": {
+    "displayName": "Attendee supplied name",
+    "gender": null,
+    "interestedInGenders": [],
+    "relationshipGoal": null,
+    "dateOfBirth": null
+  },
+  "consents": {
+    "runtimeTermsVersion": "event-runtime-v1",
+    "sensitiveDataTermsVersion": null,
+    "saveAsCatchPrefill": false
+  },
+  "claimedAt": "timestamp",
+  "readyAt": null,
+  "revokedAt": null,
+  "createdAt": "timestamp",
+  "updatedAt": "timestamp"
+}
+```
+
+The participant can get only their deterministic document. List access is
+denied. Hosts do not read this collection. Host UI receives non-sensitive
+runtime readiness from a server projection or callable and never receives
+gender-interest, relationship-goal or compatibility answers.
+
+### Runtime-profile requirements
+
+`eventSuccessPlans/{eventId}` owns a server-compiled participant-requirements
+projection: questionnaire version; required and sensitive field ids from
+`displayName`, `gender`, `interestedInGenders`, `relationshipGoal`, and
+`dateOfBirth`; whether module opt-out is allowed; and module disclosure
+versions. Clients cannot widen or narrow requirements. Do not collect a
+sensitive value unless an enabled algorithm consumes it.
+
+Existing private Consumer values may prefill the event form but must be
+confirmed. Event answers never overwrite `users/{uid}`. When the participant
+explicitly selects `saveAsCatchPrefill`, the server fills only missing
+`onboarding_drafts/{uid}` fields, records field provenance, and never creates
+`users`, `publicProfiles`, marketing consent or an `eventParticipation`.
+
+### Runtime access state machine
+
+```text
+anonymous -> phoneVerified -> rosterClaimed | hostApprovalPending
+  -> needsInput | ready -> checkedIn -> active -> completed
+
+Any linked state -> revoked
+needsInput -> optedOut (for optional private modules only)
+```
+
+Phone verification is Firebase Auth, not proof of one roster row. Claim
+resolution uses: one unique normalized-phone row; one valid attendee-specific
+signed token plus OTP; one verified email row plus OTP; explicit Host approval;
+or Host-enabled walk-in creation followed by link. Names are never credentials.
+Ambiguous matches do not merge automatically. One buyer phone may own multiple
+provider tickets, so multiple active matches enter approval unless a single-use
+attendee token disambiguates them.
+
+### Public runtime operations
+
+All writes are App-Check-protected authenticated callables that validate event
+window, capability, hidden safety state and deterministic ids.
+
+| Operation | Required behavior |
+|---|---|
+| `getEventRuntimeBootstrap` | Accept opaque public runtime id; return sanitized event, required fields, auth/claim/readiness state and current moment. Never return roster or raw contacts. |
+| `claimEventRuntimeAccess` | Link/reuse exactly one attendee row, create/update runtime participant, and return `ready`, `needsInput` or `hostApprovalPending`. |
+| `submitEventRuntimeProfile` | Accept only required fields, validate consent/version, recompute completeness and optionally fill missing onboarding draft fields. |
+| `setEventRuntimeModuleOptOut` | Purpose-scoped opt-out that does not cancel attendance or identity. |
+| `checkInEventRuntimeParticipant` | Apply absolute desired attendance after Host approval, valid venue session or allowed self-check-in; never a blind toggle. |
+| `approveEventRuntimeClaim` | Host approves one pending UID-to-attendee claim or rejects it with a bounded reason. |
+
+Static join URLs use opaque `publicRuntimeId`, never event id plus phone. An
+attendee token is random, single-purpose, revocable and hashed at rest. A venue
+check-in QR uses a short-lived signed session; a printable join QR cannot prove
+physical attendance.
+
+### Unified Event Success participant resolver
+
+Functions under `functions/src/eventSuccess/` consume one shared module:
+
+```ts
+resolveEventRuntimeParticipant(db, eventId, uid)
+listEligibleEventRuntimeParticipants(db, eventId, requirements)
+resolveEventRuntimeCandidateProjection(db, eventId, viewerUid)
+```
+
+For Catch-native participants the resolver may project from Consumer edges and
+profiles. For imported participants it uses the linked attendee and runtime
+profile. All generators filter revoked, opted-out, unready and inappropriate
+attendance states here. Candidate projections contain only event-scoped safe
+fields. `publicProfiles` is not required. Consumer blocks still apply; separate
+event-scoped keep-apart/hide/report edges protect OTP-only participants.
+
+### Dedicated web runtime
+
+The guest surface is a separate React + TypeScript workspace at `runtime/` and
+Firebase Hosting target `runtime`, intended for `live.catchdates.com`. It shares
+generated callable types, Firebase Auth project, App Check, design tokens and
+`@catch/web-ui`; it does not share the Consumer Flutter router.
+
+```text
+/e/:publicRuntimeId -> bootstrap -> phone -> OTP -> claim/approval
+  -> minimum required fields -> event moment -> completed/feedback
+```
+
+The shell is mobile-first, noindex, accessible, refresh-safe and low-bandwidth.
+It caches only its shell and sanitized latest moment. OTP, claim and sensitive
+writes require connectivity. Retryable actions are idempotent.
+
+### Roster adapters and ingestion
+
+The authoritative adapter engine is backend-owned so Flutter upload, email,
+WhatsApp and later APIs cannot drift. Adapters declare provider/version, header
+signatures, confidence, status mapping, default-country requirements,
+buyer/guest/ticket behavior, warnings and normalized output.
+
+Launch ids are `generic-v1`, `luma-v1`, `eventbrite-v1`, `partiful-v1`, and
+`posh-v1`. BookMyShow, District, SortMyScene and Airbnb stay `sample_required`
+until reviewed exports and policy evidence exist. Each adapter needs synthetic
+golden fixtures for free, paid, group-ticket, custom-question and missing-phone
+cases. A bare ten-digit number is never globally assumed to be Indian.
+
+Large imports use `eventRosterIngestionJobs/{jobId}`, temporary encrypted
+Storage, type/size validation, chunked idempotent writes, bounded errors,
+progress and a terminal receipt. The 250-row callable remains compatibility
+only. Email uses an event-specific revocable address/token, preview and Host
+confirmation. WhatsApp Business document ingestion reuses the job pipeline and
+is transport, not marketing consent. Credentials, DNS and webhook registration
+are release configuration, not source-code acceptance.
+
+The first practical forwarding slice is now implemented without claiming that
+an inbound vendor is live:
+
+- `createEventRosterHandoff` verifies organizer management and creates a
+  random, SHA-256-addressed, 30-day `eventRosterHandoffs` capability;
+- the Host roster sheet shows email and WhatsApp instructions only when
+  `ROSTER_INBOUND_EMAIL_DOMAIN` or `ROSTER_INBOUND_WHATSAPP_NUMBER` is set;
+- `ingestEventRosterWebhook` accepts a provider-normalized JSON envelope,
+  verifies an exact-body HMAC from `ROSTER_INGESTION_WEBHOOK_SECRET`, requires
+  provider-confirmed sender identity, and matches that identity to the Host's
+  Firebase Auth email or phone;
+- the endpoint accepts one CSV up to 4 MiB, maps at most 250 attendees through
+  the backend adapter engine, and reuses `importEventAttendeesForHost`; the
+  provider message id becomes the retry-safe import key; and
+- raw attachment bytes are processed in memory and not retained. XLSX
+  forwarding, files above 250 rows, temporary Storage, progress UI and
+  conflict-aware undo still belong to the asynchronous job tranche.
+
+An email-routing or WhatsApp Business provider must transform its proprietary
+webhook into the normalized envelope and sign it. Deploying the endpoint alone
+does not make the displayed mailbox or phone number operational.
+
+### Security and abuse invariants
+
+- Uniform public errors prevent event/phone/roster enumeration.
+- Rate limits cover bootstrap, claim, profile submission, check-in and approval.
+- URLs/tokens contain no phone, name, roster id or provider reference.
+- Imported contacts grant no future communication permission.
+- Sensitive fields are event-scoped and absent from Host reads/logs/analytics.
+- Phone recycling, duplicates, plus-ones, minors, cancellation and revocation
+  have negative tests.
+- Public runtime operations never scan an unbounded roster in a transaction.
+
+### Reviewable implementation tranches
+
+1. Contracts/origin, generated outputs and compatibility fixtures.
+2. Bootstrap, claim, profile, approval, attendance, rules and backend tests.
+3. Shared resolver plus pods, rotations, First Hello, compatibility and wingman.
+4. React runtime, Firebase/App Check, route state machine and build/a11y tests.
+5. Host external-companion create/edit, source, adapter preview, QR and approval.
+6. Async ingestion, email/WhatsApp endpoints and replay/security tests.
+7. Organizer-page capability story, adapter availability and beta application.
+
+Each tranche updates its owner docs and checks in the same commit. Generated
+files come from contract sources. No tranche claims a vendor or domain is live
+without external verification.
+
+### End-to-end acceptance
+
+- External companion events cannot enable Catch booking/payment/waitlist.
+- Re-importing a mixed/provider roster does not duplicate attendees.
+- A phone guest claims exactly one attendee or enters Host approval.
+- Sensitive fields are minimal, private, versioned and skippable when optional.
+- First Hello, compatibility, pods, rotations and wingman work for OTP-only
+  participants without `eventParticipations`, `users` or `publicProfiles`.
+- Manual and venue-QR check-in work independently of First Hello.
+- Runtime refresh resumes the participant's safe moment.
+- Later Consumer login sees only explicitly saved, reviewable draft prefill.
+- Host views expose readiness and aggregates but no private answers.
 
 ## Theatrical Experience Workstream
 

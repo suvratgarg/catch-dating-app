@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_field_accordion.dart';
@@ -33,6 +34,13 @@ class EventDetailsStep extends StatefulWidget {
     required this.onInteractionModelChanged,
     required this.selectedPace,
     required this.onPaceChanged,
+    this.externalBookingMode = false,
+    this.externalBookingProvider = ExternalBookingProvider.generic,
+    this.externalEventUrlController,
+    this.externalEventIdController,
+    this.runtimeWalkInPolicy = EventRuntimeWalkInPolicy.hostApproval,
+    this.onExternalBookingProviderChanged,
+    this.onRuntimeWalkInPolicyChanged,
   });
 
   final GlobalKey<FormState> formKey;
@@ -52,15 +60,25 @@ class EventDetailsStep extends StatefulWidget {
   final ValueChanged<EventInteractionModel> onInteractionModelChanged;
   final PaceLevel? selectedPace;
   final ValueChanged<PaceLevel?> onPaceChanged;
+  final bool externalBookingMode;
+  final ExternalBookingProvider externalBookingProvider;
+  final TextEditingController? externalEventUrlController;
+  final TextEditingController? externalEventIdController;
+  final EventRuntimeWalkInPolicy runtimeWalkInPolicy;
+  final ValueChanged<ExternalBookingProvider>? onExternalBookingProviderChanged;
+  final ValueChanged<EventRuntimeWalkInPolicy>? onRuntimeWalkInPolicyChanged;
 
   @override
   State<EventDetailsStep> createState() => _EventDetailsStepState();
 }
 
 class _EventDetailsStepState extends State<EventDetailsStep> {
+  static const _secureUrlScheme = 'https';
   static const _activityField = 'activity';
   static const _interactionField = 'interaction';
   static const _paceField = 'pace';
+  static const _externalProviderField = 'external-provider';
+  static const _walkInPolicyField = 'walk-in-policy';
 
   final CatchFieldAccordion _accordion = CatchFieldAccordion();
 
@@ -90,6 +108,40 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
     }
   }
 
+  String _walkInPolicyLabel(EventRuntimeWalkInPolicy policy) =>
+      switch (policy) {
+        EventRuntimeWalkInPolicy.deny =>
+          context.l10n.hostsEventDetailsStepExternalWalkInDeny,
+        EventRuntimeWalkInPolicy.hostApproval =>
+          context.l10n.hostsEventDetailsStepExternalWalkInApproval,
+        EventRuntimeWalkInPolicy.autoCreate =>
+          context.l10n.hostsEventDetailsStepExternalWalkInAutomatic,
+      };
+
+  String _externalBookingProviderLabel(ExternalBookingProvider provider) =>
+      switch (provider) {
+        ExternalBookingProvider.catchPlatform =>
+          context.l10n.hostsEventDetailsStepExternalProviderCatch,
+        ExternalBookingProvider.generic =>
+          context.l10n.hostsEventDetailsStepExternalProviderOther,
+        ExternalBookingProvider.luma =>
+          context.l10n.hostsEventDetailsStepExternalProviderLuma,
+        ExternalBookingProvider.eventbrite =>
+          context.l10n.hostsEventDetailsStepExternalProviderEventbrite,
+        ExternalBookingProvider.partiful =>
+          context.l10n.hostsEventDetailsStepExternalProviderPartiful,
+        ExternalBookingProvider.posh =>
+          context.l10n.hostsEventDetailsStepExternalProviderPosh,
+        ExternalBookingProvider.bookmyshow =>
+          context.l10n.hostsEventDetailsStepExternalProviderBookMyShow,
+        ExternalBookingProvider.district =>
+          context.l10n.hostsEventDetailsStepExternalProviderDistrict,
+        ExternalBookingProvider.sortmyscene =>
+          context.l10n.hostsEventDetailsStepExternalProviderSortMyScene,
+        ExternalBookingProvider.airbnb =>
+          context.l10n.hostsEventDetailsStepExternalProviderAirbnbExperiences,
+      };
+
   @override
   Widget build(BuildContext context) {
     final activity = ActivityPalette.resolve(
@@ -106,6 +158,110 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
             emptyStateOmitted: true,
             gap: 0,
             children: [
+              if (widget.externalBookingMode) ...[
+                CatchSection.plain(
+                  child: Text(
+                    context.l10n.hostsEventDetailsStepExternalIntro,
+                    style: CatchTextStyles.supporting(
+                      context,
+                      color: CatchTokens.of(context).primary,
+                    ),
+                  ),
+                ),
+                CatchSection.fieldRows(
+                  children: [
+                    CatchField.choices<ExternalBookingProvider>(
+                      key: CreateEventFormKeys.externalBookingProvider,
+                      title: context
+                          .l10n
+                          .hostsEventDetailsStepExternalProviderTitle,
+                      contract: CatchContractConstraints
+                          .createEventCallablePayloadExternalOriginProvider,
+                      contractValue: (provider) => provider.name,
+                      body: _externalBookingProviderLabel(
+                        widget.externalBookingProvider,
+                      ),
+                      values: ExternalBookingProviderX.externalValues,
+                      itemLabel: _externalBookingProviderLabel,
+                      selected: <ExternalBookingProvider>{
+                        widget.externalBookingProvider,
+                      },
+                      onSelectionChanged: (selection) => widget
+                          .onExternalBookingProviderChanged
+                          ?.call(selection.single),
+                      open: _accordion.isExpanded(_externalProviderField),
+                      onOpenChanged: (open) =>
+                          _setOpen(_externalProviderField, open),
+                      icon: CatchIcons.linkOutlined,
+                    ),
+                    CatchField.input(
+                      key: CreateEventFormKeys.externalEventUrl,
+                      title: context
+                          .l10n
+                          .hostsEventDetailsStepExternalEventUrlTitle,
+                      contract: CatchContractConstraints
+                          .createEventCallablePayloadExternalOriginExternalEventUrl,
+                      controller: widget.externalEventUrlController!,
+                      isOptional: true,
+                      inputHint: context
+                          .l10n
+                          .hostsEventDetailsStepExternalEventUrlPlaceholder,
+                      icon: CatchIcons.linkRounded,
+                      keyboardType: TextInputType.url,
+                      textInputAction: TextInputAction.next,
+                      validator: (value) {
+                        final normalized = value?.trim() ?? '';
+                        if (normalized.isEmpty) return null;
+                        final uri = Uri.tryParse(normalized);
+                        if (uri == null ||
+                            uri.scheme != _secureUrlScheme ||
+                            uri.host.isEmpty) {
+                          return context
+                              .l10n
+                              .hostsEventDetailsStepExternalEventUrlInvalid;
+                        }
+                        return null;
+                      },
+                    ),
+                    CatchField.input(
+                      key: CreateEventFormKeys.externalEventId,
+                      title: context
+                          .l10n
+                          .hostsEventDetailsStepExternalEventIdTitle,
+                      contract: CatchContractConstraints
+                          .createEventCallablePayloadExternalOriginExternalEventId,
+                      controller: widget.externalEventIdController!,
+                      isOptional: true,
+                      inputHint: context
+                          .l10n
+                          .hostsEventDetailsStepExternalEventIdPlaceholder,
+                      icon: CatchIcons.confirmationNumberOutlined,
+                      textInputAction: TextInputAction.next,
+                    ),
+                    CatchField.choices<EventRuntimeWalkInPolicy>(
+                      key: CreateEventFormKeys.runtimeWalkInPolicy,
+                      title:
+                          context.l10n.hostsEventDetailsStepExternalWalkInTitle,
+                      contract: CatchContractConstraints
+                          .createEventCallablePayloadRuntimeWalkInPolicy,
+                      contractValue: (policy) => policy.name,
+                      body: _walkInPolicyLabel(widget.runtimeWalkInPolicy),
+                      values: EventRuntimeWalkInPolicy.values,
+                      itemLabel: _walkInPolicyLabel,
+                      selected: <EventRuntimeWalkInPolicy>{
+                        widget.runtimeWalkInPolicy,
+                      },
+                      onSelectionChanged: (selection) => widget
+                          .onRuntimeWalkInPolicyChanged
+                          ?.call(selection.single),
+                      open: _accordion.isExpanded(_walkInPolicyField),
+                      onOpenChanged: (open) =>
+                          _setOpen(_walkInPolicyField, open),
+                      icon: CatchIcons.peopleOutline,
+                    ),
+                  ],
+                ),
+              ],
               CreateEventPhotoPicker(
                 photos: widget.photoPreviews,
                 onAddPhotos: widget.onPickPhotos,
