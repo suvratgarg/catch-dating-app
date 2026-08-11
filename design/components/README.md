@@ -1,7 +1,7 @@
 ---
 doc_id: component_contract_registry
-version: 1.4.0
-updated: 2026-07-19
+version: 1.5.0
+updated: 2026-08-11
 owner: ui_elevation_initiative
 status: active
 ---
@@ -70,6 +70,12 @@ join key. A library-publish snapshot supplies the file key and node id, and the
 sync manifest generates the node URL; live mappings do not require hand-edited
 URLs. The old `status` and `componentUrl` fields remain accepted as declared
 fallback metadata and are treated as stale when no captured node proves them.
+`design.figma.propertyProjection` is the explicit tool-facing API when a usable
+Figma component should not mirror every code prop or review state one-to-one.
+Its properties must cite the owning code props, while `reviewStates: evidence`
+keeps large governed state sets in review galleries instead of multiplying the
+public variant matrix. Optional code slots may intentionally project as both a
+Boolean visibility control and an instance-swap control.
 Code Connect templates should live beside their owning Flutter primitive or in
 a dedicated Figma mapping folder, and the registry should point at that
 template. The executable sync contract, snapshot importer, and current
