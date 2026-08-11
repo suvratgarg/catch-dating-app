@@ -1,7 +1,7 @@
 {
   "$schema": "./state_matrix.schema.json",
   "version": 1,
-  "updated": "2026-08-10",
+  "updated": "2026-08-11",
   "requiredStateKinds": [
     "loading",
     "populated",
@@ -6172,6 +6172,7 @@
             "host_create_basics_validation",
             "host_create_custom_activity",
             "host_create_event_photos",
+            "host_media_gallery_manager",
             "host_create_location_selected",
             "host_create_draft_picker",
             "host_create_draft_restored",
@@ -6330,12 +6331,13 @@
               "id": "event_photos",
               "kind": "populated",
               "status": "captured",
-              "notes": "CreateEventScreen supports up to six ordered event photos through CreateEventController.pickEventPhotos and OrderedPhotoPicker previews. Captures now cover seeded picked-photo previews without platform picker calls; remaining variants are six-photo, reorder/remove, picker cancel, and picker failure.",
+              "notes": "CreateEventScreen supports an ordered Host cover-and-gallery collection with no product-level photo cap through CreateEventController.pickEventPhotos and the scalable OrderedPhotoPicker manager. The organizer logo remains separate and inherited. Captures cover seeded picked-photo previews without platform picker calls; Widgetbook covers a 24-photo gallery, while remaining route variants are reorder/remove, picker cancel, and picker failure.",
               "previewIds": [
                 "HostCreateEventRouteScreen/Route and wizard states"
               ],
               "captureIds": [
-                "host_create_event_photos"
+                "host_create_event_photos",
+                "host_media_gallery_manager"
               ]
             },
             {
@@ -8750,6 +8752,7 @@
             "create_club_basics",
             "create_club_basics_validation",
             "create_club_picked_media",
+            "host_media_gallery_manager",
             "create_club_draft_restored",
             "create_club_details",
             "create_club_host_defaults",
@@ -8822,9 +8825,10 @@
                 "test/explore/explore_widgets_test.dart"
               ],
               "captureIds": [
-                "create_club_picked_media"
+                "create_club_picked_media",
+                "host_media_gallery_manager"
               ],
-              "notes": "Picked cover/profile media now seeds through deterministic initial media hooks for Widgetbook and route captures."
+              "notes": "The organizer logo and ordered cover/gallery media seed independently through deterministic initial-media hooks. Route captures cover both the wizard composition and the shared 24-photo scalable gallery manager."
             },
             {
               "id": "details_step",

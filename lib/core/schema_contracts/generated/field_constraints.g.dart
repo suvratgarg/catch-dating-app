@@ -4344,7 +4344,6 @@ abstract final class CatchContractConstraints {
     path: 'clubDocument.clubPhotos',
     valueTypes: <String>['array'],
     itemValueTypes: <String>['object'],
-    maxItems: 12,
   );
 
   static const clubDocumentClubPhotosItemsCreatedAtNanoseconds = CatchContractFieldConstraints(
@@ -4402,7 +4401,6 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
-    maximum: 19,
   );
 
   static const clubDocumentClubPhotosItemsStoragePath = CatchContractFieldConstraints(
@@ -5004,7 +5002,6 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
-    maximum: 19,
   );
 
   static const clubDocumentLogoPhotoStoragePath = CatchContractFieldConstraints(
@@ -6468,7 +6465,6 @@ abstract final class CatchContractConstraints {
     path: 'createClubCallablePayload.clubPhotos',
     valueTypes: <String>['array'],
     itemValueTypes: <String>['object'],
-    maxItems: 12,
   );
 
   static const createClubCallablePayloadClubPhotosItemsCreatedAtNanoseconds = CatchContractFieldConstraints(
@@ -6526,7 +6522,6 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
-    maximum: 19,
   );
 
   static const createClubCallablePayloadClubPhotosItemsStoragePath = CatchContractFieldConstraints(
@@ -6960,7 +6955,6 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
-    maximum: 19,
   );
 
   static const createClubCallablePayloadLogoPhotoStoragePath = CatchContractFieldConstraints(
@@ -7253,7 +7247,6 @@ abstract final class CatchContractConstraints {
     path: 'createEventCallablePayload.eventPhotos',
     valueTypes: <String>['array'],
     itemValueTypes: <String>['object'],
-    maxItems: 12,
   );
 
   static const createEventCallablePayloadEventPhotosItemsCreatedAtNanoseconds = CatchContractFieldConstraints(
@@ -7311,7 +7304,6 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
-    maximum: 19,
   );
 
   static const createEventCallablePayloadEventPhotosItemsStoragePath = CatchContractFieldConstraints(
@@ -8491,7 +8483,6 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
-    maximum: 19,
   );
 
   static const createOrganizerCallablePayloadLogoPhotoStoragePath = CatchContractFieldConstraints(
@@ -8558,7 +8549,6 @@ abstract final class CatchContractConstraints {
     path: 'createOrganizerCallablePayload.organizerPhotos',
     valueTypes: <String>['array'],
     itemValueTypes: <String>['object'],
-    maxItems: 12,
   );
 
   static const createOrganizerCallablePayloadOrganizerPhotosItemsCreatedAtNanoseconds = CatchContractFieldConstraints(
@@ -8616,7 +8606,6 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
-    maximum: 19,
   );
 
   static const createOrganizerCallablePayloadOrganizerPhotosItemsStoragePath = CatchContractFieldConstraints(
@@ -11141,7 +11130,6 @@ abstract final class CatchContractConstraints {
     path: 'eventDocument.eventPhotos',
     valueTypes: <String>['array'],
     itemValueTypes: <String>['object'],
-    maxItems: 12,
   );
 
   static const eventDocumentEventPhotosItemsCreatedAtNanoseconds = CatchContractFieldConstraints(
@@ -11199,7 +11187,6 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
-    maximum: 19,
   );
 
   static const eventDocumentEventPhotosItemsStoragePath = CatchContractFieldConstraints(
@@ -20526,7 +20513,6 @@ abstract final class CatchContractConstraints {
     path: 'organizerDocument.clubPhotos',
     valueTypes: <String>['array'],
     itemValueTypes: <String>['object'],
-    maxItems: 12,
   );
 
   static const organizerDocumentClubPhotosItemsCreatedAtNanoseconds = CatchContractFieldConstraints(
@@ -20584,7 +20570,6 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
-    maximum: 19,
   );
 
   static const organizerDocumentClubPhotosItemsStoragePath = CatchContractFieldConstraints(
@@ -21299,7 +21284,6 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
-    maximum: 19,
   );
 
   static const organizerDocumentLogoPhotoStoragePath = CatchContractFieldConstraints(
@@ -21387,7 +21371,6 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['object'],
-    maxItems: 12,
   );
 
   static const organizerDocumentOrganizerPhotosItemsCreatedAtNanoseconds = CatchContractFieldConstraints(
@@ -21445,7 +21428,6 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
-    maximum: 19,
   );
 
   static const organizerDocumentOrganizerPhotosItemsStoragePath = CatchContractFieldConstraints(
@@ -26444,7 +26426,6 @@ abstract final class CatchContractConstraints {
     path: 'updateClubPatch.clubPhotos',
     valueTypes: <String>['array'],
     itemValueTypes: <String>['object'],
-    maxItems: 12,
   );
 
   static const updateClubPatchClubPhotosItemsCreatedAtNanoseconds = CatchContractFieldConstraints(
@@ -26502,7 +26483,6 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
-    maximum: 19,
   );
 
   static const updateClubPatchClubPhotosItemsStoragePath = CatchContractFieldConstraints(
@@ -26950,7 +26930,6 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
-    maximum: 19,
   );
 
   static const updateClubPatchLogoPhotoStoragePath = CatchContractFieldConstraints(
@@ -27104,7 +27083,6 @@ abstract final class CatchContractConstraints {
     path: 'updateEventCallablePayload.fields.eventPhotos',
     valueTypes: <String>['array'],
     itemValueTypes: <String>['object'],
-    maxItems: 12,
   );
 
   static const updateEventCallablePayloadFieldsEventPhotosItemsCreatedAtNanoseconds = CatchContractFieldConstraints(
@@ -27162,7 +27140,6 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
-    maximum: 19,
   );
 
   static const updateEventCallablePayloadFieldsEventPhotosItemsStoragePath = CatchContractFieldConstraints(
@@ -27974,7 +27951,6 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
-    maximum: 19,
   );
 
   static const updateOrganizerCallablePayloadFieldsLogoPhotoStoragePath = CatchContractFieldConstraints(
@@ -28035,7 +28011,6 @@ abstract final class CatchContractConstraints {
     path: 'updateOrganizerCallablePayload.fields.organizerPhotos',
     valueTypes: <String>['array'],
     itemValueTypes: <String>['object'],
-    maxItems: 12,
   );
 
   static const updateOrganizerCallablePayloadFieldsOrganizerPhotosItemsCreatedAtNanoseconds = CatchContractFieldConstraints(
@@ -28093,7 +28068,6 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
-    maximum: 19,
   );
 
   static const updateOrganizerCallablePayloadFieldsOrganizerPhotosItemsStoragePath = CatchContractFieldConstraints(
@@ -28705,7 +28679,6 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
-    maximum: 19,
   );
 
   static const uploadedPhotoStoragePath = CatchContractFieldConstraints(

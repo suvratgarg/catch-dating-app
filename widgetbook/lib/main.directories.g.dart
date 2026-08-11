@@ -7182,6 +7182,16 @@ final directories = <_widgetbook.WidgetbookNode>[
               ),
             ],
           ),
+          _widgetbook.WidgetbookComponent(
+            name: 'OrderedPhotoManagerScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Scalable gallery manager',
+                builder: _widgetbook_workspace_hosts_host_operations_use_cases
+                    .orderedPhotoManagerCatalogState,
+              ),
+            ],
+          ),
         ],
       ),
       _widgetbook.WidgetbookFolder(

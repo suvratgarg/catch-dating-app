@@ -998,6 +998,84 @@ void main() {
       expect(fields['imageUrl'], 'https://example.com/new.jpg');
     });
 
+    test('club logo removal clears both logo projections', () async {
+      final club = buildClub(
+        ownerUserId: 'host-1',
+        hostUserIds: const ['host-1'],
+        profileImageUrl: 'https://example.com/old-logo.jpg',
+      );
+      final fakeRepository = FakeClubsRepository();
+      final container = ProviderContainer(
+        overrides: [
+          clubsRepositoryProvider.overrideWith((ref) => fakeRepository),
+          uidProvider.overrideWith((ref) => Stream.value('host-1')),
+        ],
+      );
+      addTearDown(container.dispose);
+      final uidSubscription = container.listen(
+        uidProvider,
+        (_, _) {},
+        fireImmediately: true,
+      );
+      addTearDown(uidSubscription.close);
+      await container.pump();
+
+      await container
+          .read(hostClubEditControllerProvider)
+          .updateClubMedia(club: club, removeLogo: true);
+
+      expect(fakeRepository.lastUpdatedClubId, club.id);
+      expect(
+        fakeRepository.lastUpdatedFields,
+        equals({'profileImageUrl': null, 'logoPhoto': null}),
+      );
+    });
+
+    test('failed club media writes clean up newly uploaded files', () async {
+      final club = buildClub(
+        ownerUserId: 'host-1',
+        hostUserIds: const ['host-1'],
+      );
+      final fakeRepository = FakeClubsRepository()
+        ..updateError = StateError('write failed');
+      final fakeImageUploadRepository = FakeImageUploadRepository(
+        pickedImage: XFile('/tmp/club-photo.jpg'),
+      );
+      final container = ProviderContainer(
+        overrides: [
+          clubsRepositoryProvider.overrideWith((ref) => fakeRepository),
+          imageUploadRepositoryProvider.overrideWith(
+            (ref) => fakeImageUploadRepository,
+          ),
+          uidProvider.overrideWith((ref) => Stream.value('host-1')),
+        ],
+      );
+      addTearDown(container.dispose);
+      final uidSubscription = container.listen(
+        uidProvider,
+        (_, _) {},
+        fireImmediately: true,
+      );
+      addTearDown(uidSubscription.close);
+      await container.pump();
+
+      await expectLater(
+        container
+            .read(hostClubEditControllerProvider)
+            .updateClubMedia(
+              club: club,
+              photoInputs: [
+                HostNewClubPhotoInput(fakeImageUploadRepository.pickedImage!),
+              ],
+            ),
+        throwsStateError,
+      );
+
+      expect(fakeImageUploadRepository.deletedStoragePaths, [
+        'clubs/${club.id}/photos/0_test.jpg',
+      ]);
+    });
+
     test('club media edits reject non-host users', () async {
       final container = ProviderContainer(
         overrides: [

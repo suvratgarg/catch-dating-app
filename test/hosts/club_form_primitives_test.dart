@@ -146,6 +146,7 @@ void main() {
                 onRemoveClubPhoto: null,
                 onReorderClubPhoto: null,
                 onPickProfileImage: null,
+                onRemoveProfileImage: null,
               ),
             );
           },

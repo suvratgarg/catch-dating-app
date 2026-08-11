@@ -990,6 +990,120 @@
     "x-owner": "product",
     "x-surface": "core.widgets.ordered_photo_picker"
   },
+  "coreOrderedPhotoPickerActionManageAll": "{count, plural, =1{Manage 1 photo} other{Manage all {count} photos}}",
+  "@coreOrderedPhotoPickerActionManageAll": {
+    "description": "Opens the scalable ordered gallery manager.",
+    "placeholders": {"count": {"type": "int"}},
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "core.widgets.ordered_photo_picker"
+  },
+  "coreOrderedPhotoPickerTitlePhotoManager": "Photos",
+  "@coreOrderedPhotoPickerTitlePhotoManager": {
+    "description": "Title for the full-screen ordered gallery manager.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "core.widgets.ordered_photo_picker"
+  },
+  "coreOrderedPhotoPickerSubtitlePhotoCount": "{count, plural, =1{1 photo} other{{count} photos}}",
+  "@coreOrderedPhotoPickerSubtitlePhotoCount": {
+    "description": "Photo count shown in the gallery manager header.",
+    "placeholders": {"count": {"type": "int"}},
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "core.widgets.ordered_photo_picker"
+  },
+  "coreOrderedPhotoPickerActionDone": "Done",
+  "@coreOrderedPhotoPickerActionDone": {
+    "description": "Closes the full-screen gallery manager.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "core.widgets.ordered_photo_picker"
+  },
+  "coreOrderedPhotoPickerTitleCoverPhoto": "Cover photo",
+  "@coreOrderedPhotoPickerTitleCoverPhoto": {
+    "description": "Title for the selected cover photo.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "core.widgets.ordered_photo_picker"
+  },
+  "coreOrderedPhotoPickerBodyCoverPhoto": "This is the first image guests see. Choose any gallery photo as the cover.",
+  "@coreOrderedPhotoPickerBodyCoverPhoto": {
+    "description": "Explains cover-photo semantics in the gallery manager.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "core.widgets.ordered_photo_picker"
+  },
+  "coreOrderedPhotoPickerTitleGallery": "Gallery",
+  "@coreOrderedPhotoPickerTitleGallery": {
+    "description": "Title for the ordered gallery grid.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "core.widgets.ordered_photo_picker"
+  },
+  "coreOrderedPhotoPickerActionAddPhotos": "Add photos",
+  "@coreOrderedPhotoPickerActionAddPhotos": {
+    "description": "Adds more images to an unbounded Host gallery.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "core.widgets.ordered_photo_picker"
+  },
+  "coreOrderedPhotoPickerActionPhotoOptions": "Photo options",
+  "@coreOrderedPhotoPickerActionPhotoOptions": {
+    "description": "Tooltip for the per-photo action menu.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "core.widgets.ordered_photo_picker"
+  },
+  "coreOrderedPhotoPickerActionSetAsCover": "Set as cover",
+  "@coreOrderedPhotoPickerActionSetAsCover": {
+    "description": "Moves a gallery image to the cover position.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "core.widgets.ordered_photo_picker"
+  },
+  "coreOrderedPhotoPickerActionMoveEarlier": "Move earlier",
+  "@coreOrderedPhotoPickerActionMoveEarlier": {
+    "description": "Moves a gallery image one position earlier.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "core.widgets.ordered_photo_picker"
+  },
+  "coreOrderedPhotoPickerActionMoveLater": "Move later",
+  "@coreOrderedPhotoPickerActionMoveLater": {
+    "description": "Moves a gallery image one position later.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "core.widgets.ordered_photo_picker"
+  },
+  "coreOrderedPhotoPickerActionRemove": "Remove photo",
+  "@coreOrderedPhotoPickerActionRemove": {
+    "description": "Removes an image from a Host gallery.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "core.widgets.ordered_photo_picker"
+  },
+  "coreOrderedPhotoPickerStatusUploading": "Uploading…",
+  "@coreOrderedPhotoPickerStatusUploading": {
+    "description": "Status shown on a Host gallery image while it uploads.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "core.widgets.ordered_photo_picker"
+  },
+  "coreOrderedPhotoPickerStatusUploadFailed": "Upload failed",
+  "@coreOrderedPhotoPickerStatusUploadFailed": {
+    "description": "Status shown on a Host gallery image after an upload failure.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "core.widgets.ordered_photo_picker"
+  },
+  "coreOrderedPhotoPickerActionRetry": "Retry",
+  "@coreOrderedPhotoPickerActionRetry": {
+    "description": "Retries a failed Host gallery upload.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "core.widgets.ordered_photo_picker"
+  },
   "dashboardActivityScreenTitleActivity": "Activity",
   "@dashboardActivityScreenTitleActivity": {
     "description": "Product copy used by lib/dashboard/presentation/activity_screen.dart (title).",
@@ -2798,28 +2912,28 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.club_management.create.widgets.create_club_contact_fields"
   },
-  "hostsCreateClubPhotosPickerTextDragToReorderThe": "Drag to reorder - the first photo is your cover. Add as many as you like.",
+  "hostsCreateClubPhotosPickerTextDragToReorderThe": "Add as many as you need. The first photo is the cover.",
   "@hostsCreateClubPhotosPickerTextDragToReorderThe": {
     "description": "Product copy used by lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.club_management.create.widgets.create_club_photos_picker"
   },
-  "hostsCreateClubPhotosPickerTextASquareLogoShown": "A square logo, shown on your organizer profile and every event.",
+  "hostsCreateClubPhotosPickerTextASquareLogoShown": "A square logo shown on your organizer profile and events. It stays separate from your gallery.",
   "@hostsCreateClubPhotosPickerTextASquareLogoShown": {
     "description": "Product copy used by lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.club_management.create.widgets.create_club_photos_picker"
   },
-  "hostsCreateClubPhotosPickerLabelChangeClubProfileImage": "Change organizer profile image",
+  "hostsCreateClubPhotosPickerLabelChangeClubProfileImage": "Change organizer logo",
   "@hostsCreateClubPhotosPickerLabelChangeClubProfileImage": {
     "description": "Product copy used by lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.club_management.create.widgets.create_club_photos_picker"
   },
-  "hostsCreateClubPhotosPickerLabelAddClubProfileImage": "Add organizer profile image",
+  "hostsCreateClubPhotosPickerLabelAddClubProfileImage": "Add organizer logo",
   "@hostsCreateClubPhotosPickerLabelAddClubProfileImage": {
     "description": "Product copy used by lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart (label).",
     "x-audience": "host",
@@ -2829,6 +2943,27 @@
   "hostsCreateClubPhotosPickerTextAddImage": "Add image",
   "@hostsCreateClubPhotosPickerTextAddImage": {
     "description": "Product copy used by lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart (Text).",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.club_management.create.widgets.create_club_photos_picker"
+  },
+  "hostsCreateClubPhotosPickerActionAddLogo": "Add logo",
+  "@hostsCreateClubPhotosPickerActionAddLogo": {
+    "description": "Adds the organizer logo, separate from gallery media.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.club_management.create.widgets.create_club_photos_picker"
+  },
+  "hostsCreateClubPhotosPickerActionReplaceLogo": "Replace",
+  "@hostsCreateClubPhotosPickerActionReplaceLogo": {
+    "description": "Replaces the organizer logo.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.club_management.create.widgets.create_club_photos_picker"
+  },
+  "hostsCreateClubPhotosPickerActionRemoveLogo": "Remove",
+  "@hostsCreateClubPhotosPickerActionRemoveLogo": {
+    "description": "Removes the organizer logo without affecting gallery photos.",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.club_management.create.widgets.create_club_photos_picker"
@@ -6352,14 +6487,14 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.club_management.create.widgets.create_club_contact_fields"
   },
-  "hostsCreateClubPhotosPickerLabelClubPhotos": "Organizer photos",
+  "hostsCreateClubPhotosPickerLabelClubPhotos": "Gallery & cover",
   "@hostsCreateClubPhotosPickerLabelClubPhotos": {
     "description": "Product copy used by lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.club_management.create.widgets.create_club_photos_picker"
   },
-  "hostsCreateClubPhotosPickerLabelClubProfileImage": "Organizer profile image",
+  "hostsCreateClubPhotosPickerLabelClubProfileImage": "Organizer logo",
   "@hostsCreateClubPhotosPickerLabelClubProfileImage": {
     "description": "Product copy used by lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart (label).",
     "x-audience": "host",
@@ -6485,9 +6620,23 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.event_management.host_create_event_screen"
   },
-  "hostsCreateEventPhotoPickerLabelEventPhotos": "Event photos",
-  "@hostsCreateEventPhotoPickerLabelEventPhotos": {
-    "description": "Product copy used by lib/hosts/presentation/event_management/widgets/create_event_photo_picker.dart (label).",
+  "hostsCreateEventPhotoPickerTitleCoverAndGallery": "Event cover & gallery",
+  "@hostsCreateEventPhotoPickerTitleCoverAndGallery": {
+    "description": "Title for event-specific cover and gallery media.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.create_event_photo_picker"
+  },
+  "hostsCreateEventPhotoPickerBodyInheritedLogo": "Organizer logo · inherited",
+  "@hostsCreateEventPhotoPickerBodyInheritedLogo": {
+    "description": "Explains that the event uses its organizer logo separately from event media.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.create_event_photo_picker"
+  },
+  "hostsCreateEventPhotoPickerBodyUnlimitedGallery": "Add as many event photos as you need. The first photo is the cover.",
+  "@hostsCreateEventPhotoPickerBodyUnlimitedGallery": {
+    "description": "Explains the unbounded ordered event gallery.",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.event_management.widgets.create_event_photo_picker"
@@ -10687,17 +10836,6 @@
   "hostsHostClubProfileTitleMedia": "Media",
   "@hostsHostClubProfileTitleMedia": {
     "description": "Section title for club logo and photo editing in the organizer workspace.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_club_profile"
-  },
-  "hostsHostClubProfileVisiblecopyCompletedcountOfMaximumclubphotocountAdded": "{completedCount} of {maximumClubPhotoCount} added",
-  "@hostsHostClubProfileVisiblecopyCompletedcountOfMaximumclubphotocountAdded": {
-    "description": "Club photo count shown in the organizer Media section header.",
-    "placeholders": {
-      "completedCount": {},
-      "maximumClubPhotoCount": {}
-    },
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_club_profile"

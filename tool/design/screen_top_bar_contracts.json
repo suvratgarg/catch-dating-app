@@ -68,6 +68,12 @@
   ],
   "contracts": [
     {
+      "path": "lib/core/widgets/ordered_photo_picker.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar"
+    },
+    {
       "path": "lib/chats/presentation/chat_screen.dart",
       "role": "identity",
       "expression": "CatchTopBar.identity",

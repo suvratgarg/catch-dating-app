@@ -67,7 +67,6 @@ const schemaUploadedPhotoSchema = <String, Object?>{
     'position': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
-      'maximum': 19,
     },
     'moderation': <String, Object?>{
       'type': <Object?>[

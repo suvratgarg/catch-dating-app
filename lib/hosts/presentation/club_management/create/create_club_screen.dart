@@ -29,8 +29,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 export 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_screen_state.dart';
 
-const _maxClubPhotos = 6;
-
 class CreateClubScreen extends ConsumerStatefulWidget {
   const CreateClubScreen({
     super.key,
@@ -64,6 +62,11 @@ final class HostClubCreateBackIntent extends HostClubCreateRouteIntent {
 final class HostClubCreatePickProfileImageIntent
     extends HostClubCreateRouteIntent {
   const HostClubCreatePickProfileImageIntent();
+}
+
+final class HostClubCreateRemoveProfileImageIntent
+    extends HostClubCreateRouteIntent {
+  const HostClubCreateRemoveProfileImageIntent();
 }
 
 final class HostClubCreatePickClubPhotosIntent
@@ -257,21 +260,17 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
   }
 
   Future<void> _pickClubPhotos() async {
-    final remainingSlots = _maxClubPhotos - _clubPhotos.length;
-    if (remainingSlots <= 0) return;
     final photos = await ref
         .read(createClubControllerProvider.notifier)
-        .pickClubPhotos(limit: remainingSlots);
+        .pickClubPhotos();
     if (!mounted || photos.isEmpty) {
       return;
     }
     setState(() {
       _clubPhotos.addAll(
-        photos
-            .take(remainingSlots)
-            .map(
-              (photo) => _PickedClubPhotoDraft(_nextPickedClubPhotoId++, photo),
-            ),
+        photos.map(
+          (photo) => _PickedClubPhotoDraft(_nextPickedClubPhotoId++, photo),
+        ),
       );
       _clubPhotosTouched = true;
     });
@@ -310,6 +309,10 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
     setState(() {
       _profileImage = image;
     });
+  }
+
+  void _removeProfileImage() {
+    setState(() => _profileImage = null);
   }
 
   void _back() {
@@ -382,6 +385,8 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
         _back();
       case HostClubCreatePickProfileImageIntent():
         unawaited(_pickProfileImage());
+      case HostClubCreateRemoveProfileImageIntent():
+        _removeProfileImage();
       case HostClubCreatePickClubPhotosIntent():
         unawaited(_pickClubPhotos());
       case HostClubCreateRemoveClubPhotoIntent(:final index):
@@ -610,6 +615,11 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                         onPickProfileImage: screenState.media.enabled
                             ? () => _handleRouteIntent(
                                 const HostClubCreatePickProfileImageIntent(),
+                              )
+                            : null,
+                        onRemoveProfileImage: screenState.media.enabled
+                            ? () => _handleRouteIntent(
+                                const HostClubCreateRemoveProfileImageIntent(),
                               )
                             : null,
                       ),

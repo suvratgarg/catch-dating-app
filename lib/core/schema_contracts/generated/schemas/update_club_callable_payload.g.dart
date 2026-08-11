@@ -88,7 +88,6 @@ const schemaUpdateClubCallablePayloadSchema = <String, Object?>{
         },
         'clubPhotos': <String, Object?>{
           'type': 'array',
-          'maxItems': 12,
           'items': <String, Object?>{
             'title': 'UploadedPhoto',
             'description': 'Canonical uploaded image object for ordered media galleries, logos, and event photos.',
@@ -150,7 +149,6 @@ const schemaUpdateClubCallablePayloadSchema = <String, Object?>{
               'position': <String, Object?>{
                 'type': 'integer',
                 'minimum': 0,
-                'maximum': 19,
               },
               'moderation': <String, Object?>{
                 'type': <Object?>[
@@ -320,7 +318,6 @@ const schemaUpdateClubCallablePayloadSchema = <String, Object?>{
                 'position': <String, Object?>{
                   'type': 'integer',
                   'minimum': 0,
-                  'maximum': 19,
                 },
                 'moderation': <String, Object?>{
                   'type': <Object?>[

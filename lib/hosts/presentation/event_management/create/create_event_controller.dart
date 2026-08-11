@@ -52,7 +52,7 @@ class CreateEventController extends _$CreateEventController {
 
   Future<List<PickedEventPhoto>> pickEventPhotos({
     int imageQuality = 82,
-    int limit = 6,
+    int? limit,
   }) async {
     final images = await ref
         .read(imageUploadRepositoryProvider)

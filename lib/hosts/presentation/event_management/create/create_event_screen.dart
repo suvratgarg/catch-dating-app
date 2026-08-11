@@ -395,11 +395,9 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   }
 
   Future<void> _pickEventPhotos() async {
-    final remainingSlots = _eventPhotos.remainingSlots;
-    if (remainingSlots <= 0) return;
     final picked = await ref
         .read(createEventControllerProvider.notifier)
-        .pickEventPhotos(limit: remainingSlots);
+        .pickEventPhotos();
     if (!mounted || picked.isEmpty) return;
     setState(() => _eventPhotos = _eventPhotos.addPicked(picked));
   }
@@ -895,6 +893,8 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                     onPickPhotos: _pickEventPhotos,
                     onRemovePhoto: _removeEventPhoto,
                     onReorderPhoto: _reorderEventPhoto,
+                    organizerName: widget.club.name,
+                    organizerLogoUrl: widget.club.profileImageUrl,
                     distanceController: _distanceController,
                     customActivityLabelController:
                         _customActivityLabelController,

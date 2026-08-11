@@ -44,9 +44,6 @@ export interface EventDocument {
   startingPointLng: number;
   locationDetails: string | null;
   photoUrl?: string | null;
-  /**
-   * @maxItems 12
-   */
   eventPhotos?: UploadedPhoto[];
   distanceKm: number;
   eventFormat: {

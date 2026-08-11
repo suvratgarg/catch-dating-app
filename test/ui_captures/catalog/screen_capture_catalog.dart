@@ -57,6 +57,7 @@ import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_suggestion.dart';
 import 'package:catch_dating_app/cross_paths/presentation/cross_paths_explore_card.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_controller.dart';
@@ -269,6 +270,14 @@ const _clubHeroPortraitAssetPath = 'assets/fixtures/club_hero_portrait.jpg';
 const _clubHeroPortraitAssetImage = AssetImage(_clubHeroPortraitAssetPath);
 const _profilePortraitAssetPath = 'assets/fixtures/profile_portrait.jpg';
 const _profilePortraitAssetImage = AssetImage(_profilePortraitAssetPath);
+final _clubHeroPortraitBytes = File(
+  _clubHeroPortraitAssetPath,
+).readAsBytesSync();
+final _profilePortraitBytes = File(_profilePortraitAssetPath).readAsBytesSync();
+final _hostMediaCaptureImages = <ImageProvider<Object>>[
+  MemoryImage(_clubHeroPortraitBytes),
+  MemoryImage(_profilePortraitBytes),
+];
 final _captureFixtures = salesDemoSyntheticFixtures;
 final _captureAnalyticsOverride = appAnalyticsProvider.overrideWithValue(
   AppAnalytics(reporter: _NoOpAnalyticsReporter(), shouldCollect: false),
@@ -3034,9 +3043,8 @@ final class _CaptureNoopHostClubEditActions implements HostClubEditActions {
   }) async {}
 
   @override
-  Future<List<HostPickedClubPhoto>> pickClubPhotos({
-    required int limit,
-  }) async => const [];
+  Future<List<HostPickedClubPhoto>> pickClubPhotos({int? limit}) async =>
+      const [];
 
   @override
   Future<HostPickedClubLogo?> pickClubLogo() async => null;
@@ -3046,6 +3054,7 @@ final class _CaptureNoopHostClubEditActions implements HostClubEditActions {
     required Club club,
     List<HostClubMediaInput>? photoInputs,
     HostPickedClubLogo? logo,
+    bool removeLogo = false,
   }) async {}
 }
 
@@ -3122,20 +3131,22 @@ List<PickedClubPhoto> _createClubPickedPhotos() {
 }
 
 PickedClubPhoto _createClubPickedPhoto(String name) {
-  final bytes = _createClubPngBytes();
+  final bytes = name.endsWith('2')
+      ? _profilePortraitBytes
+      : _clubHeroPortraitBytes;
   return PickedClubPhoto(
-    image: XFile.fromData(bytes, name: '$name.png', mimeType: 'image/png'),
+    image: XFile.fromData(bytes, name: '$name.jpg', mimeType: 'image/jpeg'),
     bytes: bytes,
   );
 }
 
 PickedClubProfileImage _createClubProfileImage() {
-  final bytes = _createClubPngBytes();
+  final bytes = _profilePortraitBytes;
   return PickedClubProfileImage(
     image: XFile.fromData(
       bytes,
-      name: 'club-profile.png',
-      mimeType: 'image/png',
+      name: 'club-profile.jpg',
+      mimeType: 'image/jpeg',
     ),
     bytes: bytes,
   );
@@ -3148,10 +3159,25 @@ List<PickedEventPhoto> _createEventPickedPhotos() {
   ];
 }
 
+List<OrderedPhotoPreview> _createHostMediaManagerPhotos() {
+  return [
+    for (var index = 0; index < 24; index++)
+      OrderedPhotoPreview(
+        id: 'host-media-manager-$index',
+        bytes: index.isEven ? _clubHeroPortraitBytes : _profilePortraitBytes,
+        status: index == 3
+            ? OrderedPhotoStatus.failed
+            : OrderedPhotoStatus.ready,
+      ),
+  ];
+}
+
 PickedEventPhoto _createEventPickedPhoto(String name) {
-  final bytes = _createClubPngBytes();
+  final bytes = name.endsWith('2')
+      ? _profilePortraitBytes
+      : _clubHeroPortraitBytes;
   return PickedEventPhoto(
-    image: XFile.fromData(bytes, name: '$name.png', mimeType: 'image/png'),
+    image: XFile.fromData(bytes, name: '$name.jpg', mimeType: 'image/jpeg'),
     bytes: bytes,
   );
 }
@@ -10488,9 +10514,24 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'create_club_picked_media',
     routeIds: const <String>['hostCreateClubScreen'],
     device: CaptureDevice.iphone17Pro,
+    precache: _hostMediaCaptureImages,
     providerOverrides: _hostCreateClubProviderOverrides(),
     builder: (context) =>
         _createClubCapture(useDraft: true, usePickedMedia: true),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_media_gallery_manager',
+    routeIds: const <String>['hostCreateClubScreen', 'hostCreateEventScreen'],
+    device: CaptureDevice.iphone17Pro,
+    precache: _hostMediaCaptureImages,
+    builder: (context) => OrderedPhotoManagerScreen(
+      photos: _createHostMediaManagerPhotos(),
+      onAddPhotos: () {},
+      onRemovePhoto: (_) {},
+      onReorderPhoto: (_, _) {},
+      onRetryPhoto: (_) {},
+      canAdd: true,
+    ),
   ),
   ScreenCaptureEntry(
     id: 'create_club_draft_restored',
@@ -10683,6 +10724,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_create_event_photos',
     routeIds: const <String>['hostCreateEventScreen'],
     device: CaptureDevice.iphone17Pro,
+    precache: _hostMediaCaptureImages,
     providerOverrides: _hostCreateEventProviderOverrides(),
     builder: (context) => _createEventCapture(usePickedMedia: true),
   ),
