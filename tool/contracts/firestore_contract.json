@@ -555,6 +555,43 @@
       ]
     },
     {
+      "id": "eventRuntimeParticipants",
+      "path": "eventRuntimeParticipants/{participantId}",
+      "rulesMatch": "/eventRuntimeParticipants/{participantId}",
+      "typescriptInterface": "EventRuntimeParticipantDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "Event Success runtime claim and minimum-profile callables",
+      "read": "authenticated owner get by deterministic eventId_uid only; no list",
+      "write": "server only",
+      "exportedFunctions": [
+        "claimEventRuntimeAccess",
+        "submitEventRuntimeProfile",
+        "approveEventRuntimeClaim"
+      ],
+      "migrationNotes": [
+        "Event-scoped runtime identity only; it does not imply a Consumer profile, event participation, dating match, or marketing grant."
+      ]
+    },
+    {
+      "id": "eventRuntimeClaimRequests",
+      "path": "eventRuntimeClaimRequests/{requestId}",
+      "rulesMatch": "/eventRuntimeClaimRequests/{requestId}",
+      "typescriptInterface": "EventRuntimeClaimRequestDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "Event Success runtime claim and Host approval callables",
+      "read": "authorized event host only",
+      "write": "server only",
+      "exportedFunctions": [
+        "claimEventRuntimeAccess",
+        "approveEventRuntimeClaim"
+      ],
+      "migrationNotes": [
+        "Contains only bounded candidate attendee ids and the verified phone's last four digits; claimants receive sanitized status via callable."
+      ]
+    },
+    {
       "id": "eventAttendeeImports",
       "path": "eventAttendeeImports/{importId}",
       "rulesMatch": "/eventAttendeeImports/{importId}",

@@ -35,5 +35,48 @@ const schemaFetchEventSuccessWingmanCandidatesCallableResponseSchema = <String, 
         },
       },
     },
+    'candidates': <String, Object?>{
+      'description': 'Runtime-safe candidate cards for no-download attendees. Existing app clients may continue using profiles.',
+      'type': 'array',
+      'maxItems': 1000,
+      'items': <String, Object?>{
+        'type': 'object',
+        'additionalProperties': false,
+        'required': <Object?>[
+          'uid',
+          'displayName',
+          'gender',
+          'source',
+        ],
+        'properties': <String, Object?>{
+          'uid': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+          'displayName': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 120,
+          },
+          'gender': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'man',
+              'woman',
+              'nonBinary',
+              'other',
+            ],
+          },
+          'source': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'catchParticipation',
+              'externalRuntime',
+            ],
+          },
+        },
+      },
+    },
   },
 };

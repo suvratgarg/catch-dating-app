@@ -81,6 +81,10 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   importEventAttendees: {maxRequests: 5, windowMs: 60 * 60 * 1000},
   markEventAttendeeAttendance: {maxRequests: 120, windowMs: 60 * 1000},
   registerPublicEvent: {maxRequests: 10, windowMs: 60 * 60 * 1000},
+  getEventRuntimeBootstrap: {maxRequests: 60, windowMs: 60 * 1000},
+  claimEventRuntimeAccess: {maxRequests: 10, windowMs: 60 * 60 * 1000},
+  submitEventRuntimeProfile: {maxRequests: 30, windowMs: 60 * 60 * 1000},
+  approveEventRuntimeClaim: {maxRequests: 60, windowMs: 60 * 1000},
   // Broadcasts can fan out to hundreds of people, so cap them per host rather
   // than inheriting the loose default callable limit.
   sendEventBroadcast: {maxRequests: 3, windowMs: 60 * 60 * 1000},

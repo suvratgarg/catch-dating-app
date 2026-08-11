@@ -7770,6 +7770,40 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['boolean'],
   );
 
+  static const createEventCallablePayloadExternalOriginAdapterVersion = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.externalOrigin.adapterVersion',
+    maxLength: 80,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventCallablePayloadExternalOriginExternalEventId = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.externalOrigin.externalEventId',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventCallablePayloadExternalOriginExternalEventUrl = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.externalOrigin.externalEventUrl',
+    maxLength: 2048,
+    valueTypes: <String>['string'],
+    format: 'uri',
+  );
+
+  static const createEventCallablePayloadExternalOriginProvider = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.externalOrigin.provider',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['generic', 'luma', 'eventbrite', 'partiful', 'posh', 'bookmyshow', 'district', 'sortmyscene', 'airbnb'],
+  );
+
+  static const createEventCallablePayloadExternalOriginSourceExternalEventId = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.externalOrigin.sourceExternalEventId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
   static const createEventCallablePayloadLocationDetails = CatchContractFieldConstraints(
     path: 'createEventCallablePayload.locationDetails',
     maxLength: 1000,
@@ -7864,6 +7898,12 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const createEventCallablePayloadRuntimeWalkInPolicy = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.runtimeWalkInPolicy',
+    valueTypes: <String>['string'],
+    enumValues: <String>['deny', 'hostApproval', 'autoCreate'],
   );
 
   static const createEventCallablePayloadStartingPointLat = CatchContractFieldConstraints(
@@ -15760,6 +15800,43 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^externalEvents/[A-Za-z0-9_-]{1,180}\$',
+  );
+
+  static const fetchEventSuccessWingmanCandidatesCallableResponseCandidates = CatchContractFieldConstraints(
+    path: 'fetchEventSuccessWingmanCandidatesCallableResponse.candidates',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 1000,
+  );
+
+  static const fetchEventSuccessWingmanCandidatesCallableResponseCandidatesItemsDisplayName = CatchContractFieldConstraints(
+    path: 'fetchEventSuccessWingmanCandidatesCallableResponse.candidates.items.displayName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const fetchEventSuccessWingmanCandidatesCallableResponseCandidatesItemsGender = CatchContractFieldConstraints(
+    path: 'fetchEventSuccessWingmanCandidatesCallableResponse.candidates.items.gender',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['man', 'woman', 'nonBinary', 'other'],
+  );
+
+  static const fetchEventSuccessWingmanCandidatesCallableResponseCandidatesItemsSource = CatchContractFieldConstraints(
+    path: 'fetchEventSuccessWingmanCandidatesCallableResponse.candidates.items.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchParticipation', 'externalRuntime'],
+  );
+
+  static const fetchEventSuccessWingmanCandidatesCallableResponseCandidatesItemsUid = CatchContractFieldConstraints(
+    path: 'fetchEventSuccessWingmanCandidatesCallableResponse.candidates.items.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const fetchEventSuccessWingmanCandidatesCallableResponseProfiles = CatchContractFieldConstraints(
@@ -31589,6 +31666,11 @@ abstract final class CatchContractConstraints {
     'createEventCallablePayload.eventSuccessDefaults.structureConfig.unitKind': createEventCallablePayloadEventSuccessDefaultsStructureConfigUnitKind,
     'createEventCallablePayload.eventSuccessDefaults.structureConfig.unitSize': createEventCallablePayloadEventSuccessDefaultsStructureConfigUnitSize,
     'createEventCallablePayload.eventSuccessDefaults.wingmanRequestsEnabled': createEventCallablePayloadEventSuccessDefaultsWingmanRequestsEnabled,
+    'createEventCallablePayload.externalOrigin.adapterVersion': createEventCallablePayloadExternalOriginAdapterVersion,
+    'createEventCallablePayload.externalOrigin.externalEventId': createEventCallablePayloadExternalOriginExternalEventId,
+    'createEventCallablePayload.externalOrigin.externalEventUrl': createEventCallablePayloadExternalOriginExternalEventUrl,
+    'createEventCallablePayload.externalOrigin.provider': createEventCallablePayloadExternalOriginProvider,
+    'createEventCallablePayload.externalOrigin.sourceExternalEventId': createEventCallablePayloadExternalOriginSourceExternalEventId,
     'createEventCallablePayload.locationDetails': createEventCallablePayloadLocationDetails,
     'createEventCallablePayload.meetingLocation.address': createEventCallablePayloadMeetingLocationAddress,
     'createEventCallablePayload.meetingLocation.latitude': createEventCallablePayloadMeetingLocationLatitude,
@@ -31602,6 +31684,7 @@ abstract final class CatchContractConstraints {
     'createEventCallablePayload.photoUrl': createEventCallablePayloadPhotoUrl,
     'createEventCallablePayload.priceInPaise': createEventCallablePayloadPriceInPaise,
     'createEventCallablePayload.privateAccess.inviteCode': createEventCallablePayloadPrivateAccessInviteCode,
+    'createEventCallablePayload.runtimeWalkInPolicy': createEventCallablePayloadRuntimeWalkInPolicy,
     'createEventCallablePayload.startingPointLat': createEventCallablePayloadStartingPointLat,
     'createEventCallablePayload.startingPointLng': createEventCallablePayloadStartingPointLng,
     'createEventCallablePayload.startTimeMillis': createEventCallablePayloadStartTimeMillis,
@@ -32694,6 +32777,11 @@ abstract final class CatchContractConstraints {
     'externalEventPublicationReceiptDocument.schemaVersion': externalEventPublicationReceiptDocumentSchemaVersion,
     'externalEventPublicationReceiptDocument.sourceActionId': externalEventPublicationReceiptDocumentSourceActionId,
     'externalEventPublicationReceiptDocument.targetPath': externalEventPublicationReceiptDocumentTargetPath,
+    'fetchEventSuccessWingmanCandidatesCallableResponse.candidates': fetchEventSuccessWingmanCandidatesCallableResponseCandidates,
+    'fetchEventSuccessWingmanCandidatesCallableResponse.candidates.items.displayName': fetchEventSuccessWingmanCandidatesCallableResponseCandidatesItemsDisplayName,
+    'fetchEventSuccessWingmanCandidatesCallableResponse.candidates.items.gender': fetchEventSuccessWingmanCandidatesCallableResponseCandidatesItemsGender,
+    'fetchEventSuccessWingmanCandidatesCallableResponse.candidates.items.source': fetchEventSuccessWingmanCandidatesCallableResponseCandidatesItemsSource,
+    'fetchEventSuccessWingmanCandidatesCallableResponse.candidates.items.uid': fetchEventSuccessWingmanCandidatesCallableResponseCandidatesItemsUid,
     'fetchEventSuccessWingmanCandidatesCallableResponse.profiles': fetchEventSuccessWingmanCandidatesCallableResponseProfiles,
     'fetchEventSuccessWingmanCandidatesCallableResponse.profiles.items.uid': fetchEventSuccessWingmanCandidatesCallableResponseProfilesItemsUid,
     'fetchSwipeCandidatesCallableResponse.profiles': fetchSwipeCandidatesCallableResponseProfiles,

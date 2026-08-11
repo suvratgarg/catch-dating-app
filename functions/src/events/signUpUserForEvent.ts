@@ -34,6 +34,7 @@ import {
   rosterWithReservedWaitlistOffersInTransaction,
 } from "./eventPolicy";
 import {eventDiscoveryProjection} from "./eventDiscoveryProjection";
+import {requireCatchBookingAuthority} from "./eventOrigin";
 import {
   incrementInviteLinkCounterInTransaction,
   inviteAttributionWriteFields,
@@ -133,6 +134,7 @@ export async function signUpUserForEvent(
         "This event has been cancelled."
       );
     }
+    requireCatchBookingAuthority(event);
     const user = requireDoc<UserProfileDocument>(
       userSnap,
       "UserProfileDocument"

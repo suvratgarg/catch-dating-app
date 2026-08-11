@@ -70,6 +70,49 @@
     "eventSuccessDefaults": {
       "$ref": "../shared/event_common.schema.json#/definitions/eventSuccessDefaults"
     },
+    "externalOrigin": {
+      "description": "External booking provenance for a companion-only operational event. Omit for a Catch-booked event.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider"],
+      "properties": {
+        "provider": {
+          "type": "string",
+          "enum": [
+            "generic",
+            "luma",
+            "eventbrite",
+            "partiful",
+            "posh",
+            "bookmyshow",
+            "district",
+            "sortmyscene",
+            "airbnb"
+          ]
+        },
+        "externalEventId": {"type": ["string", "null"], "maxLength": 240},
+        "externalEventUrl": {
+          "anyOf": [
+            {"type": "string", "format": "uri", "maxLength": 2048},
+            {"type": "null"}
+          ]
+        },
+        "sourceExternalEventId": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "adapterVersion": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 80
+        }
+      }
+    },
+    "runtimeWalkInPolicy": {
+      "type": "string",
+      "enum": ["deny", "hostApproval", "autoCreate"]
+    },
     "constraints": {
       "type": "object",
       "additionalProperties": false,

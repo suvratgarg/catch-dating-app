@@ -4,7 +4,6 @@ import * as admin from "firebase-admin";
 import {
   BlockDocument,
   EventDocument,
-  UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {requireAuth} from "../shared/auth";
 import {EventIdCallablePayload} from
@@ -54,11 +53,12 @@ import {
   AssignmentPrimitiveStructureConfig,
   rotationPolicyForStructureConfig,
 } from "./assignmentPrimitiveControls";
+import {loadEventSuccessRoster} from "./eventSuccessRoster";
 
 const MICRO_PODS_MODULE_ID = "micro_pods";
 const DEFAULT_TARGET_UNIT_SIZE = 5;
 const MAX_IN_FILTER_VALUES = 30;
-const ACTIVE_STATUSES = ["attended", "signedUp"] as const;
+type ActiveStatus = "attended" | "signedUp";
 
 interface EventSuccessPodsDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -82,11 +82,6 @@ interface EventSuccessPlanDocument {
   } & AssignmentPrimitiveStructureConfig;
 }
 
-interface EventParticipationDocument {
-  uid?: string;
-  status?: string;
-}
-
 interface EventSuccessPreferenceDocument {
   uid?: string;
   microPodsOptedOut?: boolean;
@@ -94,7 +89,7 @@ interface EventSuccessPreferenceDocument {
 
 interface ActiveParticipant extends AssignmentParticipant {
   uid: string;
-  status: typeof ACTIVE_STATUSES[number];
+  status: ActiveStatus;
   gender?: string;
   interestedInGenders: string[];
 }
@@ -263,24 +258,19 @@ export async function generateEventSuccessPodsHandler(
       "Micro-pods are not enabled for this event.");
   }
 
-  const participationsSnap = await db
-    .collection("eventParticipations")
-    .where("eventId", "==", eventId)
-    .where("status", "in", [...ACTIVE_STATUSES])
-    .get();
+  const roster = await loadEventSuccessRoster(db, eventId);
   const optedOutUids = await fetchMicroPodsOptOutUids(db, eventId);
-  const participants = participationsSnap.docs
-    .map((doc) => doc.data() as EventParticipationDocument)
-    .map(toActiveParticipant)
-    .filter((participant): participant is ActiveParticipant =>
-      participant !== null
-    )
+  const participants = roster
+    .map((participant): ActiveParticipant => ({
+      uid: participant.uid,
+      status: participant.status,
+      gender: participant.gender,
+      interestedInGenders: participant.interestedInGenders,
+      activityAttributes: activityAttributesForProfile(participant.profile),
+    }))
     .filter((participant) => !optedOutUids.has(participant.uid))
     .sort(compareParticipants);
-  const eligibleParticipants = await hydrateParticipants(
-    db,
-    preferCheckedInParticipants(participants)
-  );
+  const eligibleParticipants = preferCheckedInParticipants(participants);
 
   const blockedPairs = await fetchBlockedPairs(db, eligibleParticipants);
   const primitives = eventSuccessPrimitivesFor(event.eventFormat);
@@ -360,24 +350,19 @@ export async function overrideEventSuccessGroupsHandler(
   await deps.checkRateLimit?.(db, uid, "overrideEventSuccessGroups");
 
   const {event, plan} = await loadGroupEventContext(db, payload.eventId, uid);
-  const participationsSnap = await db
-    .collection("eventParticipations")
-    .where("eventId", "==", payload.eventId)
-    .where("status", "in", [...ACTIVE_STATUSES])
-    .get();
+  const roster = await loadEventSuccessRoster(db, payload.eventId);
   const optedOutUids = await fetchMicroPodsOptOutUids(db, payload.eventId);
-  const participants = participationsSnap.docs
-    .map((doc) => doc.data() as EventParticipationDocument)
-    .map(toActiveParticipant)
-    .filter((participant): participant is ActiveParticipant =>
-      participant !== null
-    )
+  const participants = roster
+    .map((participant): ActiveParticipant => ({
+      uid: participant.uid,
+      status: participant.status,
+      gender: participant.gender,
+      interestedInGenders: participant.interestedInGenders,
+      activityAttributes: activityAttributesForProfile(participant.profile),
+    }))
     .filter((participant) => !optedOutUids.has(participant.uid))
     .sort(compareParticipants);
-  const eligibleParticipants = await hydrateParticipants(
-    db,
-    preferCheckedInParticipants(participants)
-  );
+  const eligibleParticipants = preferCheckedInParticipants(participants);
   const blockedPairs = await fetchBlockedPairs(db, eligibleParticipants);
   const topology = resolveAssignmentTopology(
     plan,
@@ -500,19 +485,6 @@ async function loadGroupEventContext(
 }
 
 /**
- * Converts a participation edge into an active pod candidate.
- * @param {EventParticipationDocument} data Participation document data.
- * @return {ActiveParticipant | null} Active participant or null.
- */
-function toActiveParticipant(
-  data: EventParticipationDocument
-): ActiveParticipant | null {
-  if (typeof data.uid !== "string" || data.uid.length === 0) return null;
-  if (data.status !== "attended" && data.status !== "signedUp") return null;
-  return {uid: data.uid, status: data.status, interestedInGenders: []};
-}
-
-/**
  * Loads attendee micro-pod opt-outs for the event.
  * @param {FirebaseFirestore.Firestore} db Firestore instance.
  * @param {string} eventId Event id.
@@ -577,41 +549,6 @@ function preferCheckedInParticipants(
     participant.status === "attended"
   );
   return attended.length >= 2 ? attended : participants;
-}
-
-/**
- * Adds optional profile cohort data without dropping active participants.
- * @param {FirebaseFirestore.Firestore} db Firestore instance.
- * @param {ActiveParticipant[]} participants Active participants.
- * @return {Promise<ActiveParticipant[]>} Hydrated participants.
- */
-async function hydrateParticipants(
-  db: FirebaseFirestore.Firestore,
-  participants: ActiveParticipant[]
-): Promise<ActiveParticipant[]> {
-  const snaps = await Promise.all(
-    participants.map((participant) =>
-      db.collection("users").doc(participant.uid).get()
-    )
-  );
-  return participants.map((participant, index) => {
-    const profile = snaps[index].data() as
-      | Partial<UserProfileDocument>
-      | undefined;
-    if (profile === undefined) return participant;
-    return {
-      ...participant,
-      gender: typeof profile.gender === "string" ?
-        profile.gender :
-        undefined,
-      interestedInGenders: Array.isArray(profile.interestedInGenders) ?
-        profile.interestedInGenders.filter((gender) =>
-          typeof gender === "string"
-        ) :
-        [],
-      activityAttributes: activityAttributesForProfile(profile),
-    };
-  });
 }
 
 /**

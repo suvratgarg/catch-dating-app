@@ -956,6 +956,73 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
         },
       },
     },
+    'externalOrigin': <String, Object?>{
+      'description': 'External booking provenance for a companion-only operational event. Omit for a Catch-booked event.',
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'provider',
+      ],
+      'properties': <String, Object?>{
+        'provider': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'generic',
+            'luma',
+            'eventbrite',
+            'partiful',
+            'posh',
+            'bookmyshow',
+            'district',
+            'sortmyscene',
+            'airbnb',
+          ],
+        },
+        'externalEventId': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'maxLength': 240,
+        },
+        'externalEventUrl': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'string',
+              'format': 'uri',
+              'maxLength': 2048,
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
+        'sourceExternalEventId': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'adapterVersion': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'minLength': 1,
+          'maxLength': 80,
+        },
+      },
+    },
+    'runtimeWalkInPolicy': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'deny',
+        'hostApproval',
+        'autoCreate',
+      ],
+    },
     'constraints': <String, Object?>{
       'type': 'object',
       'additionalProperties': false,

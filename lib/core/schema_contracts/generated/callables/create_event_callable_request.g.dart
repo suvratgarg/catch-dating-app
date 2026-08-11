@@ -47,6 +47,8 @@ final class CreateEventCallableRequest {
     this.privateAccess,
     this.eventFormat,
     this.eventSuccessDefaults,
+    this.externalOrigin,
+    this.runtimeWalkInPolicy,
     this.constraints,
   });
 
@@ -72,6 +74,8 @@ final class CreateEventCallableRequest {
   final CreateEventPrivateAccess? privateAccess;
   final EventFormatSnapshot? eventFormat;
   final EventSuccessDefaults? eventSuccessDefaults;
+  final Map<String, Object?>? externalOrigin;
+  final String? runtimeWalkInPolicy;
   final EventConstraints? constraints;
 
   Map<String, Object?> toJson() => {
@@ -97,6 +101,8 @@ final class CreateEventCallableRequest {
     'privateAccess': ?privateAccess?.toJson(),
     'eventFormat': ?eventFormat?.toJson(),
     'eventSuccessDefaults': ?eventSuccessDefaults?.toJson(),
+    'externalOrigin': ?externalOrigin,
+    'runtimeWalkInPolicy': ?runtimeWalkInPolicy,
     'constraints': ?constraints?.toJson(),
   };
 }

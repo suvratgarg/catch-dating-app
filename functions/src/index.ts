@@ -43,6 +43,12 @@ export {
   registerPublicEvent,
 } from "./events/eventAttendees";
 export {
+  approveEventRuntimeClaim,
+  claimEventRuntimeAccess,
+  getEventRuntimeBootstrap,
+  submitEventRuntimeProfile,
+} from "./eventSuccess/eventRuntime";
+export {
   onEventParticipationRosterProjected,
 } from "./events/eventAttendeeProjection";
 export {selfCheckInAttendance} from "./events/selfCheckInAttendance";

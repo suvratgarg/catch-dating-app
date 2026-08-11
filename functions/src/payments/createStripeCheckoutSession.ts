@@ -14,6 +14,7 @@ import {
 import {hasBlockingRelationship} from "../safety/blocking";
 import {assertNoUserEventScheduleConflict} from "../events/scheduleConflicts";
 import {normalizePayloadStrings} from "../shared/callablePayloadNormalization";
+import {requireCatchBookingAuthority} from "../events/eventOrigin";
 import {requireAuth} from "../shared/auth";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {eventParticipationId} from "../shared/relationshipDocuments";
@@ -111,6 +112,7 @@ export async function createStripeCheckoutSessionHandler(
     eventSnap,
     "EventDocument"
   );
+  requireCatchBookingAuthority(event);
   const user = requireDoc<UserProfileDocument>(
     userSnap,
     "UserProfileDocument"

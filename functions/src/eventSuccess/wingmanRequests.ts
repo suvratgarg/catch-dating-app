@@ -2,10 +2,11 @@ import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {
+  EventAttendeeDocument,
   EventDocument,
   EventParticipationDocument,
+  EventRuntimeParticipantDocument,
   Gender,
-  UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {requireAuth} from "../shared/auth";
 import {EventIdCallablePayload} from
@@ -20,13 +21,19 @@ import {validateCallableWithAjv, requireDoc} from "../shared/validation";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {normalizeEventIdPayload} from "../events/eventPayloadNormalization";
-import {cohortIdForUser, cohortIds} from "../events/eventPolicy";
+import {cohortIds} from "../events/eventPolicy";
 import {blockDocId} from "../safety/blocking";
 import {
   CandidatePublicProfile,
   fetchCandidatePublicProfiles,
   fetchUidsBlockedWithViewer,
 } from "../shared/candidateVisibility";
+import {
+  EventSuccessRosterParticipant,
+  loadEventSuccessRoster,
+  loadEventSuccessRosterParticipant,
+} from "./eventSuccessRoster";
+import {eventRuntimeParticipantId} from "./eventRuntime";
 
 const WINGMAN_REQUESTS_MODULE_ID = "wingman_requests";
 
@@ -73,7 +80,15 @@ const defaultDeps: WingmanRequestDeps = {
 export async function fetchEventSuccessWingmanCandidatesHandler(
   request: CallableRequest<unknown>,
   deps: WingmanRequestDeps = defaultDeps
-): Promise<{profiles: CandidatePublicProfile[]}> {
+): Promise<{
+  profiles: CandidatePublicProfile[];
+  candidates: Array<{
+    uid: string;
+    displayName: string;
+    gender: EventSuccessRosterParticipant["gender"];
+    source: EventSuccessRosterParticipant["source"];
+  }>;
+}> {
   const viewerUid = requireAuth(request);
   const data = validateCallableWithAjv<EventIdCallablePayload>(
     request,
@@ -91,58 +106,53 @@ export async function fetchEventSuccessWingmanCandidatesHandler(
   const [
     eventSnap,
     planSnap,
-    viewerParticipationSnap,
-    viewerSnap,
   ] = await Promise.all([
     db.collection("events").doc(data.eventId).get(),
     db.collection("eventSuccessPlans").doc(data.eventId).get(),
-    db
-      .collection("eventParticipations")
-      .doc(eventParticipationId(data.eventId, viewerUid))
-      .get(),
-    db.collection("users").doc(viewerUid).get(),
   ]);
 
   const event = requireActiveWingmanEvent(eventSnap, deps.nowMillis());
   requireWingmanPlan(planSnap, data.eventId, event.clubId);
-  requireAttendedParticipant(viewerParticipationSnap, viewerUid);
-  if (!viewerSnap.exists) {
+  const viewer = await loadEventSuccessRosterParticipant(
+    db,
+    data.eventId,
+    viewerUid
+  );
+  if (
+    !viewer ||
+    viewer.status !== "attended" ||
+    !viewer.gender ||
+    viewer.interestedInGenders.length === 0
+  ) {
     throw new HttpsError(
       "failed-precondition",
-      "Complete your profile before asking the host for help."
+      "Host help is only available to checked-in attendees."
     );
   }
-  const viewer = requireDoc<UserProfileDocument>(
-    viewerSnap,
-    "UserProfileDocument"
-  );
-  const viewerCohortId = cohortIdForUser(viewer);
-
-  const participationSnap = await db
-    .collection("eventParticipations")
-    .where("eventId", "==", data.eventId)
-    .where("status", "==", "attended")
-    .get();
-  const candidateIds = participationSnap.docs
-    .map((doc) => requireDoc<EventParticipationDocument>(
-      doc,
-      "EventParticipationDocument"
-    ))
+  const roster = await loadEventSuccessRoster(db, data.eventId);
+  const candidateRoster = roster
     .filter((candidate) => isEligibleWingmanRequestCandidate({
       viewer,
       viewerUid,
-      viewerCohortId,
       candidate,
     }))
-    .map((candidate) => candidate.uid)
-    .filter((uid, index, all) => all.indexOf(uid) === index)
-    .sort();
+    .sort((a, b) => a.uid.localeCompare(b.uid));
 
   const blockedUids = await fetchUidsBlockedWithViewer(db, viewerUid);
-  const visibleIds = candidateIds.filter((uid) => !blockedUids.has(uid));
+  const visibleRoster = candidateRoster.filter((candidate) =>
+    !blockedUids.has(candidate.uid));
+  const visibleIds = visibleRoster.map((candidate) => candidate.uid);
   const profiles = await fetchCandidatePublicProfiles(db, visibleIds);
 
-  return {profiles};
+  return {
+    profiles,
+    candidates: visibleRoster.map((candidate) => ({
+      uid: candidate.uid,
+      displayName: candidate.displayName,
+      gender: candidate.gender!,
+      source: candidate.source,
+    })),
+  };
 }
 
 /**
@@ -181,12 +191,6 @@ export async function submitEventSuccessWingmanRequestHandler(
     .doc(wingmanRequestId(data.eventId, requesterUid));
   const eventRef = db.collection("events").doc(data.eventId);
   const planRef = db.collection("eventSuccessPlans").doc(data.eventId);
-  const requesterParticipationRef = db
-    .collection("eventParticipations")
-    .doc(eventParticipationId(data.eventId, requesterUid));
-  const targetParticipationRef = db
-    .collection("eventParticipations")
-    .doc(eventParticipationId(data.eventId, data.targetUid));
   const requesterBlocksTargetRef = db
     .collection("blocks")
     .doc(blockDocId(requesterUid, data.targetUid));
@@ -198,16 +202,12 @@ export async function submitEventSuccessWingmanRequestHandler(
     const [
       eventSnap,
       planSnap,
-      requesterParticipationSnap,
-      targetParticipationSnap,
       requesterBlocksTargetSnap,
       targetBlocksRequesterSnap,
       existingRequestSnap,
     ] = await Promise.all([
       tx.get(eventRef),
       tx.get(planRef),
-      tx.get(requesterParticipationRef),
-      tx.get(targetParticipationRef),
       tx.get(requesterBlocksTargetRef),
       tx.get(targetBlocksRequesterRef),
       tx.get(requestRef),
@@ -218,8 +218,18 @@ export async function submitEventSuccessWingmanRequestHandler(
       deps.nowMillis()
     );
     requireWingmanPlan(planSnap, data.eventId, event.clubId);
-    requireAttendedParticipant(requesterParticipationSnap, requesterUid);
-    requireAttendedParticipant(targetParticipationSnap, data.targetUid);
+    await requireCheckedInEventSuccessParticipant(
+      tx,
+      db,
+      data.eventId,
+      requesterUid
+    );
+    await requireCheckedInEventSuccessParticipant(
+      tx,
+      db,
+      data.eventId,
+      data.targetUid
+    );
     if (requesterBlocksTargetSnap.exists || targetBlocksRequesterSnap.exists) {
       throw new HttpsError(
         "failed-precondition",
@@ -406,49 +416,88 @@ function requireWingmanPlan(
 }
 
 /**
- * Requires an attended event participation for a user.
- * @param {FirebaseFirestore.DocumentSnapshot} snap Participation snapshot.
- * @param {string} uid Expected uid.
+ * Requires a checked-in Consumer participation or ready event-scoped runtime
+ * participant without synthesizing a Consumer eventParticipation document.
  */
-function requireAttendedParticipant(
-  snap: FirebaseFirestore.DocumentSnapshot,
+async function requireCheckedInEventSuccessParticipant(
+  tx: FirebaseFirestore.Transaction,
+  db: FirebaseFirestore.Firestore,
+  eventId: string,
   uid: string
-) {
-  if (!snap.exists) {
-    throw new HttpsError(
-      "failed-precondition",
-      "Host help is only available to checked-in attendees."
+): Promise<void> {
+  const participationRef = db.collection("eventParticipations")
+    .doc(eventParticipationId(eventId, uid));
+  const runtimeRef = db.collection("eventRuntimeParticipants")
+    .doc(eventRuntimeParticipantId(eventId, uid));
+  const [participationSnap, runtimeSnap] = await Promise.all([
+    tx.get(participationRef),
+    tx.get(runtimeRef),
+  ]);
+  if (participationSnap.exists) {
+    const participation = requireDoc<EventParticipationDocument>(
+      participationSnap,
+      "EventParticipationDocument"
     );
+    if (
+      participation.eventId === eventId &&
+      participation.uid === uid &&
+      participation.status === "attended"
+    ) return;
   }
-  const participation = requireDoc<EventParticipationDocument>(
-    snap,
-    "EventParticipationDocument"
+  if (!runtimeSnap.exists) {
+    throw checkedInRequiredError();
+  }
+  const runtime = requireDoc<EventRuntimeParticipantDocument>(
+    runtimeSnap,
+    "EventRuntimeParticipantDocument"
   );
-  if (participation.uid !== uid || participation.status !== "attended") {
-    throw new HttpsError(
-      "failed-precondition",
-      "Host help is only available to checked-in attendees."
-    );
+  if (
+    runtime.eventId !== eventId ||
+    runtime.uid !== uid ||
+    runtime.accessStatus !== "ready" ||
+    !runtime.eventAttendeeId
+  ) {
+    throw checkedInRequiredError();
   }
+  const attendeeSnap = await tx.get(
+    db.collection("eventAttendees").doc(runtime.eventAttendeeId)
+  );
+  if (!attendeeSnap.exists) throw checkedInRequiredError();
+  const attendee = requireDoc<EventAttendeeDocument>(
+    attendeeSnap,
+    "EventAttendeeDocument"
+  );
+  if (
+    attendee.eventId !== eventId ||
+    attendee.linkedUid !== uid ||
+    attendee.status !== "checkedIn"
+  ) {
+    throw checkedInRequiredError();
+  }
+}
+
+function checkedInRequiredError(): HttpsError {
+  return new HttpsError(
+    "failed-precondition",
+    "Host help is only available to checked-in attendees."
+  );
 }
 
 /**
  * Checks whether a checked-in participant can be shown as a host-help target.
  * @param {Object} params Eligibility inputs.
- * @param {UserProfileDocument} params.viewer Caller profile.
+ * @param {EventSuccessRosterParticipant} params.viewer Caller profile.
  * @param {string} params.viewerUid Caller user id.
- * @param {string} params.viewerCohortId Caller event cohort id.
- * @param {EventParticipationDocument} params.candidate Candidate participation.
+ * @param {EventSuccessRosterParticipant} params.candidate Candidate edge.
  * @return {boolean} True when eligible.
  */
 function isEligibleWingmanRequestCandidate(params: {
-  viewer: UserProfileDocument;
+  viewer: EventSuccessRosterParticipant;
   viewerUid: string;
-  viewerCohortId: string;
-  candidate: EventParticipationDocument;
+  candidate: EventSuccessRosterParticipant;
 }): boolean {
   const candidate = params.candidate;
-  const candidateGender = candidate.genderAtSignup;
+  const candidateGender = candidate.gender;
   if (
     candidate.uid === params.viewerUid ||
     candidate.status !== "attended" ||
@@ -459,30 +508,22 @@ function isEligibleWingmanRequestCandidate(params: {
   if (!params.viewer.interestedInGenders.includes(candidateGender)) {
     return false;
   }
-
-  const candidateCohortId = candidate.cohortAtSignup;
-  switch (params.viewerCohortId) {
+  switch (params.viewer.cohortAtSignup) {
   case cohortIds.womenInterestedInMen:
-    return candidateCohortId === cohortIds.menInterestedInWomen;
+    return candidate.cohortAtSignup === cohortIds.menInterestedInWomen;
   case cohortIds.menInterestedInWomen:
-    return candidateCohortId === cohortIds.womenInterestedInMen;
+    return candidate.cohortAtSignup === cohortIds.womenInterestedInMen;
   default:
     return candidateCohortCanIncludeViewer(
-      candidateCohortId,
+      candidate.cohortAtSignup,
       params.viewer.gender
     );
   }
 }
 
-/**
- * Checks whether the candidate cohort can include the viewer's gender.
- * @param {string|null|undefined} candidateCohortId Candidate cohort id.
- * @param {Gender} viewerGender Viewer gender.
- * @return {boolean} True when compatible.
- */
 function candidateCohortCanIncludeViewer(
-  candidateCohortId: string | null | undefined,
-  viewerGender: Gender
+  candidateCohortId: string,
+  viewerGender: Gender | undefined
 ): boolean {
   switch (candidateCohortId) {
   case cohortIds.menInterestedInWomen:

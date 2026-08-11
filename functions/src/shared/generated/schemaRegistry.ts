@@ -36465,6 +36465,73 @@ export const createEventCallablePayloadSchema: Record<string, unknown> = {
         }
       }
     },
+    "externalOrigin": {
+      "description": "External booking provenance for a companion-only operational event. Omit for a Catch-booked event.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider"
+      ],
+      "properties": {
+        "provider": {
+          "type": "string",
+          "enum": [
+            "generic",
+            "luma",
+            "eventbrite",
+            "partiful",
+            "posh",
+            "bookmyshow",
+            "district",
+            "sortmyscene",
+            "airbnb"
+          ]
+        },
+        "externalEventId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 240
+        },
+        "externalEventUrl": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uri",
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sourceExternalEventId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "adapterVersion": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 80
+        }
+      }
+    },
+    "runtimeWalkInPolicy": {
+      "type": "string",
+      "enum": [
+        "deny",
+        "hostApproval",
+        "autoCreate"
+      ]
+    },
     "constraints": {
       "type": "object",
       "additionalProperties": false,
@@ -42822,6 +42889,49 @@ export const fetchEventSuccessWingmanCandidatesCallableResponseSchema: Record<st
             "type": "string",
             "minLength": 1,
             "maxLength": 180
+          }
+        }
+      }
+    },
+    "candidates": {
+      "description": "Runtime-safe candidate cards for no-download attendees. Existing app clients may continue using profiles.",
+      "type": "array",
+      "maxItems": 1000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "uid",
+          "displayName",
+          "gender",
+          "source"
+        ],
+        "properties": {
+          "uid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "man",
+              "woman",
+              "nonBinary",
+              "other"
+            ]
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "catchParticipation",
+              "externalRuntime"
+            ]
           }
         }
       }

@@ -26,6 +26,7 @@ import {
   releaseUserEventScheduleInTransaction,
 } from "./scheduleConflicts";
 import {normalizeEventIdPayload} from "./eventPayloadNormalization";
+import {requireCatchBookingAuthority} from "./eventOrigin";
 import {
   cohortIdForUser,
   eventPolicyFromEvent,
@@ -98,6 +99,7 @@ export const joinEventWaitlist = onCall(appCheckCallableOptions, async (
         "This event has been cancelled."
       );
     }
+    requireCatchBookingAuthority(event);
     const existingParticipation = participationSnap.exists ?
       participationSnap.data() as {status?: string} :
       null;

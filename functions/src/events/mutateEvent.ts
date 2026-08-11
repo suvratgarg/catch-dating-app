@@ -1,5 +1,6 @@
 import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
+import {randomBytes} from "crypto";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {
@@ -88,6 +89,7 @@ import {
 interface EventMutationDeps {
   firestore: () => FirebaseFirestore.Firestore;
   timestampFromMillis: (millis: number) => FirebaseFirestore.Timestamp;
+  nowTimestamp?: () => FirebaseFirestore.Timestamp;
   serverTimestamp?: () => FirebaseFirestore.FieldValue;
   sendNotification?: typeof sendFcmNotification;
   checkRateLimit?: (
@@ -103,6 +105,7 @@ interface EventMutationDeps {
     }
   ) => Promise<void>;
   refundPayment?: (paymentId: string, amount: number) => Promise<void>;
+  runtimePublicId?: () => string;
 }
 
 type ParsedEventConstraints = NonNullable<
@@ -162,6 +165,7 @@ const defaultDeps: EventMutationDeps = {
   firestore: () => admin.firestore(),
   timestampFromMillis: (millis) =>
     admin.firestore.Timestamp.fromMillis(millis),
+  nowTimestamp: () => admin.firestore.Timestamp.now(),
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
   sendNotification: sendFcmNotification,
   checkRateLimit: defaultCheckRateLimit,
@@ -169,6 +173,7 @@ const defaultDeps: EventMutationDeps = {
   refundPayment: async (paymentId, amount) => {
     await createRazorpayClient().payments.refund(paymentId, {amount});
   },
+  runtimePublicId: () => randomBytes(24).toString("base64url"),
 };
 
 /**
@@ -189,6 +194,12 @@ export async function createEventHandler(
   );
   assertValidEventTimeRange(data.startTimeMillis, data.endTimeMillis);
   assertValidEventConstraints(data.constraints);
+  if (data.externalOrigin && data.eventSuccessDefaults?.enabled !== true) {
+    throw new HttpsError(
+      "failed-precondition",
+      "External companion events must enable Event Success."
+    );
+  }
 
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, hostUserId, "createEvent");
@@ -237,7 +248,7 @@ export async function createEventHandler(
     );
     organizerName = organizer.name;
     const eventBase: EventDocumentBeforeDiscovery = {
-      ...buildCreateEventDoc(data, deps),
+      ...buildCreateEventDoc(data, deps, hostUserId),
       clubId: organizerId,
       organizerId,
       bookedCount: 0,
@@ -764,7 +775,8 @@ export async function deleteEventHandler(
  */
 function buildCreateEventDoc(
   data: CreateEventCallablePayload,
-  deps: EventMutationDeps
+  deps: EventMutationDeps,
+  hostUserId: string
 ): Omit<EventDocument, "clubId" | "genderCounts" |
   "status" | "cancelledAt" | "cancellationReason" | EventDiscoveryField> {
   const eventPhotos = normalizeUploadedPhotosForFirestore(data.eventPhotos);
@@ -800,6 +812,44 @@ function buildCreateEventDoc(
     }
   );
   return {
+    eventOrigin: data.externalOrigin ? {
+      mode: "externalCompanion",
+      bookingAuthority: "external",
+      rosterAuthority: "hostImport",
+      provider: data.externalOrigin.provider,
+      externalEventId: data.externalOrigin.externalEventId ?? null,
+      externalEventUrl: data.externalOrigin.externalEventUrl ?? null,
+      sourceExternalEventId:
+        data.externalOrigin.sourceExternalEventId ?? null,
+      adapterVersion: data.externalOrigin.adapterVersion ?? null,
+      connectedAt: (deps.nowTimestamp?.() ??
+        admin.firestore.Timestamp.now()) as unknown as NonNullable<
+          EventDocument["eventOrigin"]
+        >["connectedAt"],
+      connectedBy: hostUserId,
+    } : {
+      mode: "catchNative",
+      bookingAuthority: "catch",
+      rosterAuthority: "catchProjection",
+      provider: "catch",
+      externalEventId: null,
+      externalEventUrl: null,
+      sourceExternalEventId: null,
+      adapterVersion: null,
+      connectedAt: null,
+      connectedBy: null,
+    },
+    runtimeAccess: {
+      enabled: data.eventSuccessDefaults?.enabled === true ||
+        data.externalOrigin !== undefined,
+      publicRuntimeId: data.eventSuccessDefaults?.enabled === true ||
+        data.externalOrigin !== undefined ?
+        (deps.runtimePublicId?.() ?? randomBytes(24).toString("base64url")) :
+        null,
+      walkInPolicy: data.runtimeWalkInPolicy ??
+        (data.externalOrigin ? "hostApproval" : "deny"),
+      termsVersion: "event-runtime-v1",
+    },
     startTime: deps.timestampFromMillis(data.startTimeMillis),
     endTime: deps.timestampFromMillis(data.endTimeMillis),
     meetingPoint: meetingLocation.name,
