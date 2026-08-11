@@ -117,7 +117,7 @@ class _HostOperationalRosterPanelState
             builder: (context, claims) {
               if (claims.isEmpty) return const SizedBox.shrink();
               return Padding(
-                padding: const EdgeInsets.only(bottom: CatchSpacing.s3),
+                padding: CatchInsets.sectionItemBottomGap,
                 child: _HostRuntimeClaimQueue(
                   claims: claims,
                   attendees: attendeesAsync.asData?.value ?? const [],
