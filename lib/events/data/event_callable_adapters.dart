@@ -10,6 +10,8 @@ CreateEventCallableRequest createEventCallableRequestFromEvent(
   Event event, {
   String? inviteCode,
   EventSuccessDefaults? eventSuccessDefaults,
+  ExternalEventOriginInput? externalOrigin,
+  EventRuntimeWalkInPolicy? runtimeWalkInPolicy,
 }) {
   final effectiveMeetingLocation = event.effectiveMeetingLocation;
   if (effectiveMeetingLocation == null) {
@@ -40,6 +42,8 @@ CreateEventCallableRequest createEventCallableRequestFromEvent(
     eventPolicy: event.eventPolicy,
     eventFormat: event.eventFormat,
     eventSuccessDefaults: eventSuccessDefaults,
+    externalOrigin: externalOrigin?.toJson(),
+    runtimeWalkInPolicy: runtimeWalkInPolicy?.name,
     privateAccess: _privateAccessJson(inviteCode),
   );
 }

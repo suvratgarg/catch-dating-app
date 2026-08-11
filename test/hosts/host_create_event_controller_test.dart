@@ -301,6 +301,56 @@ void main() {
       expect(defaults['selectedModuleIds'], contains('qr_check_in'));
     });
 
+    test('creates an external companion with runtime provenance', () async {
+      final fakeEventRepository = FakeEventRepository();
+      final container = ProviderContainer(
+        overrides: [
+          eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await container
+          .read(createEventControllerProvider.notifier)
+          .submit(
+            clubId: 'club-1',
+            startTime: DateTime(2026, 8, 20, 18),
+            endTime: DateTime(2026, 8, 20, 20),
+            meetingLocation: _meetingLocation(name: 'Outside venue'),
+            eventFormat: EventFormatSnapshot.fromActivityKind(
+              ActivityKind.dinner,
+            ),
+            distanceKm: 0,
+            pace: PaceLevel.easy,
+            description: 'Externally booked dinner',
+            currency: defaultCurrencyCode,
+            constraints: const EventConstraints(),
+            eventPolicy: _eventPolicy(),
+            eventSuccessDefaults: EventSuccessDefaults.recommendedForActivity(
+              ActivityKind.dinner,
+              enabled: true,
+              targetAttendeeCount: 12,
+            ),
+            externalOrigin: const ExternalEventOriginInput(
+              provider: ExternalBookingProvider.luma,
+              externalEventId: 'luma-123',
+              externalEventUrl: 'https://lu.ma/luma-123',
+              adapterVersion: 'luma-v1',
+            ),
+            runtimeWalkInPolicy: EventRuntimeWalkInPolicy.hostApproval,
+          );
+
+      expect(fakeEventRepository.createdEvent?.isExternalCompanion, isTrue);
+      expect(
+        fakeEventRepository.createdExternalOrigin?.provider,
+        ExternalBookingProvider.luma,
+      );
+      expect(
+        fakeEventRepository.createdRuntimeWalkInPolicy,
+        EventRuntimeWalkInPolicy.hostApproval,
+      );
+    });
+
     test(
       'uses event capacity when normalizing pub quiz team defaults',
       () async {

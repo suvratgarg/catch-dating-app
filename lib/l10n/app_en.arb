@@ -3309,6 +3309,83 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
   },
+  "hostsEventDetailsStepExternalIntro": "Keep taking bookings wherever you already do. Catch adds the guest-list, check-in, and Event Success layer without replacing your booking platform.",
+  "@hostsEventDetailsStepExternalIntro": {
+    "description": "Explains the external booking companion flow during event creation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
+  },
+  "hostsEventDetailsStepExternalProviderTitle": "Booking platform",
+  "@hostsEventDetailsStepExternalProviderTitle": {
+    "description": "Field title for the event's external booking provider.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
+  },
+  "hostsEventDetailsStepExternalEventUrlTitle": "Booking page",
+  "@hostsEventDetailsStepExternalEventUrlTitle": {
+    "description": "Optional external booking page URL field title.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
+  },
+  "hostsEventDetailsStepExternalEventUrlPlaceholder": "https://your-booking-platform.com/event",
+  "@hostsEventDetailsStepExternalEventUrlPlaceholder": {
+    "description": "Placeholder for an external booking page URL.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
+  },
+  "hostsEventDetailsStepExternalEventUrlInvalid": "Enter a secure https URL",
+  "@hostsEventDetailsStepExternalEventUrlInvalid": {
+    "description": "Validation error for an invalid external booking URL.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
+  },
+  "hostsEventDetailsStepExternalEventIdTitle": "Booking reference",
+  "@hostsEventDetailsStepExternalEventIdTitle": {
+    "description": "Optional external event identifier field title.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
+  },
+  "hostsEventDetailsStepExternalEventIdPlaceholder": "Event ID or internal reference",
+  "@hostsEventDetailsStepExternalEventIdPlaceholder": {
+    "description": "Placeholder for an external event identifier.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
+  },
+  "hostsEventDetailsStepExternalWalkInTitle": "Unlisted guests",
+  "@hostsEventDetailsStepExternalWalkInTitle": {
+    "description": "Field title for how runtime visitors missing from the roster are handled.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
+  },
+  "hostsEventDetailsStepExternalWalkInDeny": "Roster only",
+  "@hostsEventDetailsStepExternalWalkInDeny": {
+    "description": "Walk-in policy label that denies guests not present on the roster.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
+  },
+  "hostsEventDetailsStepExternalWalkInApproval": "Ask me to approve them",
+  "@hostsEventDetailsStepExternalWalkInApproval": {
+    "description": "Walk-in policy label that creates a host approval request.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
+  },
+  "hostsEventDetailsStepExternalWalkInAutomatic": "Allow them automatically",
+  "@hostsEventDetailsStepExternalWalkInAutomatic": {
+    "description": "Walk-in policy label that automatically creates an attendee record.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
+  },
   "hostsEventPolicyStepTextConfigureWhoCanBook": "Configure who can book, how waitlists open, what attendees pay, and what happens if plans change.",
   "@hostsEventPolicyStepTextConfigureWhoCanBook": {
     "description": "Product copy used by lib/hosts/presentation/event_management/widgets/event_policy_step.dart (Text).",
@@ -4131,6 +4208,37 @@
   "hostsHostEventAttendancePanelBodyCheckInQr": "Show this code to attendees as they arrive.",
   "@hostsHostEventAttendancePanelBodyCheckInQr": {
     "description": "Supporting copy for the host attendee check-in QR disclosure.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.widgets.host_event_attendance_panel"
+  },
+  "hostsHostEventAttendancePanelRuntimeShareLabel": "Share attendee link",
+  "@hostsHostEventAttendancePanelRuntimeShareLabel": {
+    "description": "Button label for sharing the no-download attendee runtime link.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.widgets.host_event_attendance_panel"
+  },
+  "hostsHostEventAttendancePanelRuntimeShareSubject": "Your event companion link",
+  "@hostsHostEventAttendancePanelRuntimeShareSubject": {
+    "description": "Subject used when a host shares the no-download attendee runtime link.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.widgets.host_event_attendance_panel"
+  },
+  "hostsHostEventAttendancePanelRuntimeShareText": "Open this link when you arrive to check in and join the Event Success experience: {runtimeUrl}",
+  "@hostsHostEventAttendancePanelRuntimeShareText": {
+    "description": "Message used when a host shares the no-download attendee runtime link.",
+    "placeholders": {
+      "runtimeUrl": {"type": "String"}
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.widgets.host_event_attendance_panel"
+  },
+  "hostsHostEventAttendancePanelRuntimeShareReady": "Attendee link ready to share",
+  "@hostsHostEventAttendancePanelRuntimeShareReady": {
+    "description": "Confirmation after the native share sheet is opened for the attendee runtime link.",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.widgets.host_event_attendance_panel"
@@ -10836,6 +10944,13 @@
   "hostsHostEventsListLabelNewEvent": "New event",
   "@hostsHostEventsListLabelNewEvent": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_events_list.dart (label).",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.host_operations.host_events_list"
+  },
+  "hostsHostEventsListLabelUseGuestList": "Use guest list",
+  "@hostsHostEventsListLabelUseGuestList": {
+    "description": "CTA to create an external companion event from an existing booking-platform guest list.",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_events_list"
@@ -20018,10 +20133,28 @@
   "@hostsOperationalRosterUndoCheckIn": {"description": "CTA to undo operational attendee check-in.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.widgets.host_operational_roster_panel"},
   "hostsOperationalRosterIdentityLinked": "OTP linked",
   "@hostsOperationalRosterIdentityLinked": {"description": "Label for an operational attendee linked to an authenticated identity.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.widgets.host_operational_roster_panel"},
+  "hostsOperationalRosterClaimsPending": "{count} runtime approvals",
+  "@hostsOperationalRosterClaimsPending": {"description": "Count of attendee runtime identity claims awaiting host review.", "placeholders": {"count": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.widgets.host_operational_roster_panel"},
+  "hostsOperationalRosterClaimPhone": "Phone ending {phoneLastFour}",
+  "@hostsOperationalRosterClaimPhone": {"description": "Privacy-preserving phone hint for a runtime claim.", "placeholders": {"phoneLastFour": {"type": "String"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.widgets.host_operational_roster_panel"},
+  "hostsOperationalRosterClaimContext": "Opened the attendee link and needs access",
+  "@hostsOperationalRosterClaimContext": {"description": "Context for a pending no-download runtime identity claim.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.widgets.host_operational_roster_panel"},
+  "hostsOperationalRosterClaimApprove": "Approve",
+  "@hostsOperationalRosterClaimApprove": {"description": "CTA to approve a runtime identity claim against its only roster candidate.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.widgets.host_operational_roster_panel"},
+  "hostsOperationalRosterClaimChooseGuest": "Choose guest",
+  "@hostsOperationalRosterClaimChooseGuest": {"description": "CTA to select the correct roster candidate for an ambiguous runtime claim.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.widgets.host_operational_roster_panel"},
+  "hostsOperationalRosterClaimReject": "Reject",
+  "@hostsOperationalRosterClaimReject": {"description": "CTA to reject a runtime identity claim.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.widgets.host_operational_roster_panel"},
+  "hostsOperationalRosterClaimApproved": "Guest approved for this event",
+  "@hostsOperationalRosterClaimApproved": {"description": "Confirmation after approving a runtime identity claim.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.widgets.host_operational_roster_panel"},
+  "hostsOperationalRosterClaimRejected": "Access request rejected",
+  "@hostsOperationalRosterClaimRejected": {"description": "Confirmation after rejecting a runtime identity claim.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.widgets.host_operational_roster_panel"},
   "hostsOperationalRosterImportTitle": "Map your guest list",
   "@hostsOperationalRosterImportTitle": {"description": "Roster column mapping sheet title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.widgets.host_roster_import_sheet"},
   "hostsOperationalRosterImportSubtitle": "Check the detected columns before anything is uploaded.",
   "@hostsOperationalRosterImportSubtitle": {"description": "Roster mapping privacy and preview explanation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.widgets.host_roster_import_sheet"},
+  "hostsOperationalRosterAdapterSampleRequired": "We do not have a verified export sample for this platform yet. Review every detected column before importing; Catch will save the mapping for a future adapter.",
+  "@hostsOperationalRosterAdapterSampleRequired": {"description": "Warning shown when a provider-specific roster export has not yet been verified.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.widgets.host_roster_import_sheet"},
   "hostsOperationalRosterFieldName": "Guest name",
   "@hostsOperationalRosterFieldName": {"description": "Roster mapping field for guest name.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.widgets.host_roster_import_sheet"},
   "hostsOperationalRosterFieldPhone": "Phone",

@@ -1,5 +1,33 @@
 import 'package:catch_dating_app/events/domain/event_attendee.dart';
 
+enum HostRosterAdapterId {
+  genericV1('generic-v1', 'Flexible spreadsheet'),
+  lumaV1('luma-v1', 'Luma export'),
+  eventbriteV1('eventbrite-v1', 'Eventbrite export'),
+  partifulV1('partiful-v1', 'Partiful export'),
+  poshV1('posh-v1', 'POSH export'),
+  sampleRequired('sample-required', 'Format review needed');
+
+  const HostRosterAdapterId(this.wireName, this.label);
+
+  final String wireName;
+  final String label;
+}
+
+enum HostRosterAdapterSupport { verified, generic, sampleRequired }
+
+class HostRosterAdapterDetection {
+  const HostRosterAdapterDetection({
+    required this.adapterId,
+    required this.support,
+    required this.confidence,
+  });
+
+  final HostRosterAdapterId adapterId;
+  final HostRosterAdapterSupport support;
+  final double confidence;
+}
+
 enum HostRosterField {
   displayName,
   phone,
@@ -44,6 +72,7 @@ class HostRosterTable {
     required this.headers,
     required this.rows,
     required this.suggestedMapping,
+    required this.adapter,
   });
 
   final String fileName;
@@ -51,6 +80,7 @@ class HostRosterTable {
   final List<String> headers;
   final List<List<String>> rows;
   final Map<HostRosterField, int?> suggestedMapping;
+  final HostRosterAdapterDetection adapter;
 
   HostRosterMappedRows mapRows(Map<HostRosterField, int?> mapping) {
     final nameColumn = mapping[HostRosterField.displayName];
@@ -150,6 +180,10 @@ Map<HostRosterField, int?> suggestHostRosterMapping(List<String> headers) {
       'guestname',
       'attendeename',
       'participantname',
+      'ticketbuyer',
+      'ticketbuyername',
+      'buyername',
+      'customername',
     }),
     HostRosterField.phone: firstAlias({
       'phone',
@@ -158,26 +192,42 @@ Map<HostRosterField, int?> suggestHostRosterMapping(List<String> headers) {
       'mobilenumber',
       'contactnumber',
       'whatsapp',
+      'phonee164',
+      'guestphone',
     }),
-    HostRosterField.email: firstAlias({'email', 'emailaddress'}),
+    HostRosterField.email: firstAlias({
+      'email',
+      'emailaddress',
+      'guestemail',
+      'attendeeemail',
+    }),
     HostRosterField.externalReference: firstAlias({
       'id',
       'reference',
       'bookingid',
       'orderid',
       'ticketid',
+      'guestkey',
+      'ticketkey',
+      'attendeeid',
+      'order',
+      'ordernumber',
     }),
     HostRosterField.ticketType: firstAlias({
       'ticket',
       'tickettype',
       'category',
       'pass',
+      'ticketname',
     }),
     HostRosterField.status: firstAlias({
       'status',
       'registrationstatus',
       'bookingstatus',
       'rsvpstatus',
+      'approvalstatus',
+      'attendeestatus',
+      'checkinstatus',
     }),
   };
 }

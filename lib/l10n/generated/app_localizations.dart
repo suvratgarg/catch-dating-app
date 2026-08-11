@@ -2877,6 +2877,72 @@ abstract class AppLocalizations {
   /// **'What should attendees expect? Any tips for the route or venue?'**
   String get hostsEventDetailsStepPlaceholderWhatShouldAttendeesExpect;
 
+  /// Explains the external booking companion flow during event creation.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep taking bookings wherever you already do. Catch adds the guest-list, check-in, and Event Success layer without replacing your booking platform.'**
+  String get hostsEventDetailsStepExternalIntro;
+
+  /// Field title for the event's external booking provider.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking platform'**
+  String get hostsEventDetailsStepExternalProviderTitle;
+
+  /// Optional external booking page URL field title.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking page'**
+  String get hostsEventDetailsStepExternalEventUrlTitle;
+
+  /// Placeholder for an external booking page URL.
+  ///
+  /// In en, this message translates to:
+  /// **'https://your-booking-platform.com/event'**
+  String get hostsEventDetailsStepExternalEventUrlPlaceholder;
+
+  /// Validation error for an invalid external booking URL.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a secure https URL'**
+  String get hostsEventDetailsStepExternalEventUrlInvalid;
+
+  /// Optional external event identifier field title.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking reference'**
+  String get hostsEventDetailsStepExternalEventIdTitle;
+
+  /// Placeholder for an external event identifier.
+  ///
+  /// In en, this message translates to:
+  /// **'Event ID or internal reference'**
+  String get hostsEventDetailsStepExternalEventIdPlaceholder;
+
+  /// Field title for how runtime visitors missing from the roster are handled.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlisted guests'**
+  String get hostsEventDetailsStepExternalWalkInTitle;
+
+  /// Walk-in policy label that denies guests not present on the roster.
+  ///
+  /// In en, this message translates to:
+  /// **'Roster only'**
+  String get hostsEventDetailsStepExternalWalkInDeny;
+
+  /// Walk-in policy label that creates a host approval request.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask me to approve them'**
+  String get hostsEventDetailsStepExternalWalkInApproval;
+
+  /// Walk-in policy label that automatically creates an attendee record.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow them automatically'**
+  String get hostsEventDetailsStepExternalWalkInAutomatic;
+
   /// Product copy used by lib/hosts/presentation/event_management/widgets/event_policy_step.dart (Text).
   ///
   /// In en, this message translates to:
@@ -3584,6 +3650,32 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Show this code to attendees as they arrive.'**
   String get hostsHostEventAttendancePanelBodyCheckInQr;
+
+  /// Button label for sharing the no-download attendee runtime link.
+  ///
+  /// In en, this message translates to:
+  /// **'Share attendee link'**
+  String get hostsHostEventAttendancePanelRuntimeShareLabel;
+
+  /// Subject used when a host shares the no-download attendee runtime link.
+  ///
+  /// In en, this message translates to:
+  /// **'Your event companion link'**
+  String get hostsHostEventAttendancePanelRuntimeShareSubject;
+
+  /// Message used when a host shares the no-download attendee runtime link.
+  ///
+  /// In en, this message translates to:
+  /// **'Open this link when you arrive to check in and join the Event Success experience: {runtimeUrl}'**
+  String hostsHostEventAttendancePanelRuntimeShareText({
+    required String runtimeUrl,
+  });
+
+  /// Confirmation after the native share sheet is opened for the attendee runtime link.
+  ///
+  /// In en, this message translates to:
+  /// **'Attendee link ready to share'**
+  String get hostsHostEventAttendancePanelRuntimeShareReady;
 
   /// Product copy used by lib/hosts/presentation/widgets/host_event_attendance_panel.dart (label).
   ///
@@ -9269,6 +9361,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New event'**
   String get hostsHostEventsListLabelNewEvent;
+
+  /// CTA to create an external companion event from an existing booking-platform guest list.
+  ///
+  /// In en, this message translates to:
+  /// **'Use guest list'**
+  String get hostsHostEventsListLabelUseGuestList;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_events_list.dart (Text).
   ///
@@ -17632,6 +17730,54 @@ abstract class AppLocalizations {
   /// **'OTP linked'**
   String get hostsOperationalRosterIdentityLinked;
 
+  /// Count of attendee runtime identity claims awaiting host review.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} runtime approvals'**
+  String hostsOperationalRosterClaimsPending({required int count});
+
+  /// Privacy-preserving phone hint for a runtime claim.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone ending {phoneLastFour}'**
+  String hostsOperationalRosterClaimPhone({required String phoneLastFour});
+
+  /// Context for a pending no-download runtime identity claim.
+  ///
+  /// In en, this message translates to:
+  /// **'Opened the attendee link and needs access'**
+  String get hostsOperationalRosterClaimContext;
+
+  /// CTA to approve a runtime identity claim against its only roster candidate.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve'**
+  String get hostsOperationalRosterClaimApprove;
+
+  /// CTA to select the correct roster candidate for an ambiguous runtime claim.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose guest'**
+  String get hostsOperationalRosterClaimChooseGuest;
+
+  /// CTA to reject a runtime identity claim.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get hostsOperationalRosterClaimReject;
+
+  /// Confirmation after approving a runtime identity claim.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest approved for this event'**
+  String get hostsOperationalRosterClaimApproved;
+
+  /// Confirmation after rejecting a runtime identity claim.
+  ///
+  /// In en, this message translates to:
+  /// **'Access request rejected'**
+  String get hostsOperationalRosterClaimRejected;
+
   /// Roster column mapping sheet title.
   ///
   /// In en, this message translates to:
@@ -17643,6 +17789,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Check the detected columns before anything is uploaded.'**
   String get hostsOperationalRosterImportSubtitle;
+
+  /// Warning shown when a provider-specific roster export has not yet been verified.
+  ///
+  /// In en, this message translates to:
+  /// **'We do not have a verified export sample for this platform yet. Review every detected column before importing; Catch will save the mapping for a future adapter.'**
+  String get hostsOperationalRosterAdapterSampleRequired;
 
   /// Roster mapping field for guest name.
   ///

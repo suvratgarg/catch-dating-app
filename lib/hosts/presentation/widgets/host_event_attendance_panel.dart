@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
@@ -1079,27 +1080,82 @@ Object? _mutationError(MutationState<dynamic> mutation) {
   return (mutation as MutationError).error;
 }
 
-class HostEventCheckInQrPanel extends StatelessWidget {
+class HostEventCheckInQrPanel extends ConsumerStatefulWidget {
   const HostEventCheckInQrPanel({super.key, required this.event});
 
   final Event event;
 
   @override
+  ConsumerState<HostEventCheckInQrPanel> createState() =>
+      _HostEventCheckInQrPanelState();
+}
+
+class _HostEventCheckInQrPanelState
+    extends ConsumerState<HostEventCheckInQrPanel> {
+  bool _sharing = false;
+
+  Future<void> _shareRuntimeLink(Uri runtimeLink) async {
+    if (_sharing) return;
+    setState(() => _sharing = true);
+    try {
+      await ref
+          .read(externalShareControllerProvider)
+          .shareText(
+            subject:
+                context.l10n.hostsHostEventAttendancePanelRuntimeShareSubject,
+            text: context.l10n.hostsHostEventAttendancePanelRuntimeShareText(
+              runtimeUrl: runtimeLink.toString(),
+            ),
+          );
+      if (mounted) {
+        showCatchSnackBar(
+          context,
+          context.l10n.hostsHostEventAttendancePanelRuntimeShareReady,
+        );
+      }
+    } catch (error) {
+      if (mounted) showCatchErrorSnackBar(context, error);
+    } finally {
+      if (mounted) setState(() => _sharing = false);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final payload = EventCheckInQrPayload(eventId: event.id).encode();
+    final runtimeLink = widget.event.runtimeJoinUri();
+    final payload =
+        runtimeLink?.toString() ??
+        EventCheckInQrPayload(eventId: widget.event.id).encode();
     return Align(
       alignment: Alignment.centerLeft,
-      child: CatchSurface(
-        radius: CatchRadius.sm,
-        backgroundColor: CatchTokens.editorialWhite,
-        borderWidth: 0,
-        padding: CatchInsets.iconChipContent,
-        child: QrImageView(
-          data: payload,
-          size: 168,
-          padding: EdgeInsets.zero,
-          backgroundColor: CatchTokens.editorialWhite,
-        ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CatchSurface(
+            radius: CatchRadius.sm,
+            backgroundColor: CatchTokens.editorialWhite,
+            borderWidth: 0,
+            padding: CatchInsets.iconChipContent,
+            child: QrImageView(
+              data: payload,
+              size: 168,
+              padding: EdgeInsets.zero,
+              backgroundColor: CatchTokens.editorialWhite,
+            ),
+          ),
+          if (runtimeLink != null) ...[
+            gapH10,
+            CatchButton(
+              label:
+                  context.l10n.hostsHostEventAttendancePanelRuntimeShareLabel,
+              icon: Icon(CatchIcons.share),
+              size: CatchButtonSize.sm,
+              variant: CatchButtonVariant.secondary,
+              isLoading: _sharing,
+              onPressed: _sharing ? null : () => _shareRuntimeLink(runtimeLink),
+            ),
+          ],
+        ],
       ),
     );
   }

@@ -11,6 +11,7 @@ class HostEventsClubCard extends ConsumerWidget {
     required this.onSwitchClubIndex,
     required this.onFilterChanged,
     required this.onCreateEvent,
+    required this.onConnectExternalEvent,
     required this.onRepeatEvent,
     required this.onManageEvent,
     required this.now,
@@ -24,6 +25,7 @@ class HostEventsClubCard extends ConsumerWidget {
   final ValueChanged<int> onSwitchClubIndex;
   final ValueChanged<HostEventsLifecycleFilter> onFilterChanged;
   final HostHomeCreateEventCallback onCreateEvent;
+  final HostHomeCreateEventCallback onConnectExternalEvent;
   final HostHomeRepeatEventCallback onRepeatEvent;
   final HostHomeManageEventCallback onManageEvent;
   final DateTime now;
@@ -47,6 +49,7 @@ class HostEventsClubCard extends ConsumerWidget {
       onFilterChanged: onFilterChanged,
       onRetryEvents: () => ref.invalidate(watchEventsForClubProvider(club.id)),
       onCreateEvent: onCreateEvent,
+      onConnectExternalEvent: onConnectExternalEvent,
       onRepeatEvent: onRepeatEvent,
       onManageEvent: onManageEvent,
     );
@@ -64,6 +67,7 @@ class HostEventsClubSection extends StatelessWidget {
     required this.onSwitchClubIndex,
     required this.onFilterChanged,
     required this.onCreateEvent,
+    required this.onConnectExternalEvent,
     required this.onRepeatEvent,
     required this.onManageEvent,
     this.onRetryEvents,
@@ -78,6 +82,7 @@ class HostEventsClubSection extends StatelessWidget {
   final ValueChanged<HostEventsLifecycleFilter> onFilterChanged;
   final VoidCallback? onRetryEvents;
   final HostHomeCreateEventCallback onCreateEvent;
+  final HostHomeCreateEventCallback onConnectExternalEvent;
   final HostHomeRepeatEventCallback onRepeatEvent;
   final HostHomeManageEventCallback onManageEvent;
 
@@ -121,16 +126,27 @@ class HostEventsClubSection extends StatelessWidget {
                     gapW10,
                     Expanded(
                       child: CatchButton(
-                        label: state.repeatLabel(context.l10n),
+                        label:
+                            context.l10n.hostsHostEventsListLabelUseGuestList,
                         variant: CatchButtonVariant.secondary,
-                        icon: Icon(CatchIcons.refresh, size: CatchIcon.sm),
-                        onPressed: repeatSource == null
-                            ? null
-                            : () => onRepeatEvent(club, repeatSource),
+                        icon: Icon(
+                          CatchIcons.cloudUploadOutlined,
+                          size: CatchIcon.sm,
+                        ),
+                        onPressed: () => onConnectExternalEvent(club),
                       ),
                     ),
                   ],
                 ),
+                if (repeatSource != null) ...[
+                  gapH10,
+                  CatchButton(
+                    label: state.repeatLabel(context.l10n),
+                    variant: CatchButtonVariant.ghost,
+                    icon: Icon(CatchIcons.refresh, size: CatchIcon.sm),
+                    onPressed: () => onRepeatEvent(club, repeatSource),
+                  ),
+                ],
                 gapH16,
                 CatchOptionGroup<HostEventsLifecycleFilter>(
                   contract: CatchContractConstraints

@@ -20,10 +20,12 @@ class HostCreateEventRouteArguments {
   const HostCreateEventRouteArguments({
     required this.initialClub,
     this.initialPrefill,
+    this.externalBookingMode = false,
   });
 
   final Club initialClub;
   final CreateEventPrefill? initialPrefill;
+  final bool externalBookingMode;
 }
 
 class HostCreateEventRouteScreen extends ConsumerWidget {
@@ -32,11 +34,13 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
     required this.clubId,
     this.initialClub,
     this.initialPrefill,
+    this.externalBookingMode = false,
   });
 
   final String clubId;
   final Club? initialClub;
   final CreateEventPrefill? initialPrefill;
+  final bool externalBookingMode;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -70,6 +74,7 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
       clubId: clubId,
       state: routeState,
       initialPrefill: initialPrefill,
+      externalBookingMode: externalBookingMode,
     );
   }
 }
@@ -80,11 +85,13 @@ class HostCreateEventRouteStateView extends ConsumerWidget {
     required this.clubId,
     required this.state,
     this.initialPrefill,
+    this.externalBookingMode = false,
   });
 
   final String clubId;
   final HostCreateEventRouteState state;
   final CreateEventPrefill? initialPrefill;
+  final bool externalBookingMode;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -116,6 +123,7 @@ class HostCreateEventRouteStateView extends ConsumerWidget {
       HostCreateEventRouteStatus.ready => CreateEventScreen(
         club: state.club!,
         initialPrefill: initialPrefill,
+        externalBookingMode: externalBookingMode,
         initialStep: initialPrefill == null
             ? CreateEventWizardStep.eventDetails.index
             : CreateEventWizardStep.schedule.index,
