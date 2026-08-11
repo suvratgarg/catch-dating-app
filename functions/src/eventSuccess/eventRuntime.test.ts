@@ -5,6 +5,7 @@ import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import {eventAttendeeId} from "../events/eventAttendees";
 import {
   approveEventRuntimeClaimHandler,
+  checkInEventRuntimeHandler,
   claimEventRuntimeAccessHandler,
   completedRuntimeFieldIds,
   eventRuntimeParticipantId,
@@ -335,8 +336,14 @@ test("bootstrap returns bounded event and own state", async () => {
     startTimeMillis: Date.parse("2026-08-11T12:00:00.000Z"),
     endTimeMillis: Date.parse("2026-08-11T15:00:00.000Z"),
     locationName: "The Courtyard",
+    runtimeTermsVersion: "event-runtime-v1",
+    moduleIds: [],
+    questionnaireConfig: null,
   });
   assert.equal(result.participant?.attendanceStatus, "checkedIn");
+  assert.equal(result.participant?.eventId, "event-1");
+  assert.equal(result.participant?.clubId, "organizer-1");
+  assert.equal(result.participant?.organizerId, "organizer-1");
   assert.equal((result.event as FakeData).organizerId, undefined);
 });
 
@@ -444,6 +451,35 @@ test("profile submission requires sensitive consent and seeds only a draft",
     assert.equal(draft?.phoneNumber, "9876543210");
     assert.equal(draft?.gender, "woman");
     assert.equal(h.firestore.get("users/runner-1"), undefined);
+  });
+
+test("ready runtime attendance checks in without a Consumer booking edge",
+  async () => {
+    const h = harness({
+      "events/event-1": event({checkedInCount: 2}),
+      "eventRuntimeParticipants/event-1_runner-1": participant(),
+      "eventAttendees/attendee-1": attendee({
+        linkedUid: "runner-1",
+        status: "registered",
+      }),
+    });
+
+    const result = await checkInEventRuntimeHandler(request("runner-1", {
+      publicRuntimeId: "runtime_123456789012345678901234",
+    }), h.deps);
+
+    assert.deepEqual(result, {
+      status: "checkedIn",
+      alreadyCheckedIn: false,
+    });
+    assert.equal(
+      h.firestore.get("eventAttendees/attendee-1")?.status,
+      "checkedIn"
+    );
+    assert.equal(
+      h.firestore.get("eventParticipations/event-1_runner-1"),
+      undefined
+    );
   });
 
 test("Host approval binds only a candidate from the same event", async () => {

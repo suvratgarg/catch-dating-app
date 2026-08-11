@@ -44,6 +44,7 @@ export {
 } from "./events/eventAttendees";
 export {
   approveEventRuntimeClaim,
+  checkInEventRuntime,
   claimEventRuntimeAccess,
   getEventRuntimeBootstrap,
   submitEventRuntimeProfile,

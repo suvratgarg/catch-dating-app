@@ -25,6 +25,9 @@ const schemaGetEventRuntimeBootstrapCallableResponseSchema = <String, Object?>{
         'startTimeMillis',
         'endTimeMillis',
         'locationName',
+        'runtimeTermsVersion',
+        'moduleIds',
+        'questionnaireConfig',
       ],
       'properties': <String, Object?>{
         'publicRuntimeId': <String, Object?>{
@@ -47,6 +50,99 @@ const schemaGetEventRuntimeBootstrapCallableResponseSchema = <String, Object?>{
           'minLength': 1,
           'maxLength': 240,
         },
+        'runtimeTermsVersion': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 80,
+        },
+        'moduleIds': <String, Object?>{
+          'type': 'array',
+          'uniqueItems': true,
+          'maxItems': 24,
+          'items': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 120,
+          },
+        },
+        'questionnaireConfig': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'null',
+            },
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'templateId',
+              ],
+              'properties': <String, Object?>{
+                'templateId': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 120,
+                },
+                'customTitle': <String, Object?>{
+                  'type': <Object?>[
+                    'string',
+                    'null',
+                  ],
+                  'maxLength': 80,
+                },
+                'customQuestions': <String, Object?>{
+                  'type': 'array',
+                  'maxItems': 8,
+                  'items': <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'required': <Object?>[
+                      'id',
+                      'prompt',
+                      'options',
+                    ],
+                    'properties': <String, Object?>{
+                      'id': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 120,
+                      },
+                      'prompt': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 140,
+                      },
+                      'options': <String, Object?>{
+                        'type': 'array',
+                        'minItems': 2,
+                        'maxItems': 5,
+                        'items': <String, Object?>{
+                          'type': 'object',
+                          'additionalProperties': false,
+                          'required': <Object?>[
+                            'id',
+                            'label',
+                          ],
+                          'properties': <String, Object?>{
+                            'id': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 120,
+                            },
+                            'label': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 80,
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          ],
+        },
       },
     },
     'participant': <String, Object?>{
@@ -60,6 +156,9 @@ const schemaGetEventRuntimeBootstrapCallableResponseSchema = <String, Object?>{
           'required': <Object?>[
             'accessStatus',
             'attendanceStatus',
+            'eventId',
+            'clubId',
+            'organizerId',
             'requiredFieldIds',
             'completedFieldIds',
             'runtimeProfile',
@@ -89,6 +188,21 @@ const schemaGetEventRuntimeBootstrapCallableResponseSchema = <String, Object?>{
                 'cancelled',
                 null,
               ],
+            },
+            'eventId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            'clubId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            'organizerId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
             },
             'requiredFieldIds': <String, Object?>{
               'type': 'array',

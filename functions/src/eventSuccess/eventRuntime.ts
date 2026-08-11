@@ -20,6 +20,10 @@ import {ClaimEventRuntimeAccessCallablePayload} from
   "../shared/generated/claimEventRuntimeAccessCallablePayload";
 import {ClaimEventRuntimeAccessCallableResponse} from
   "../shared/generated/claimEventRuntimeAccessCallableResponse";
+import {CheckInEventRuntimeCallablePayload} from
+  "../shared/generated/checkInEventRuntimeCallablePayload";
+import {CheckInEventRuntimeCallableResponse} from
+  "../shared/generated/checkInEventRuntimeCallableResponse";
 import {GetEventRuntimeBootstrapCallablePayload} from
   "../shared/generated/getEventRuntimeBootstrapCallablePayload";
 import {GetEventRuntimeBootstrapCallableResponse} from
@@ -31,6 +35,7 @@ import {SubmitEventRuntimeProfileCallableResponse} from
 import {
   validateApproveEventRuntimeClaimCallablePayload,
   validateClaimEventRuntimeAccessCallablePayload,
+  validateCheckInEventRuntimeCallablePayload,
   validateGetEventRuntimeBootstrapCallablePayload,
   validateSubmitEventRuntimeProfileCallablePayload,
 } from "../shared/generated/schemaValidators";
@@ -97,7 +102,14 @@ export async function getEventRuntimeBootstrapHandler(
   const participantRef = request.auth ? db
     .collection("eventRuntimeParticipants")
     .doc(eventRuntimeParticipantId(resolved.eventId, request.auth.uid)) : null;
-  const participantSnap = participantRef ? await participantRef.get() : null;
+  const [participantSnap, planSnap] = await Promise.all([
+    participantRef ? participantRef.get() : Promise.resolve(null),
+    db.collection("eventSuccessPlans").doc(resolved.eventId).get(),
+  ]);
+  const plan = planSnap.exists ? requireDoc<EventSuccessPlanDocument>(
+    planSnap,
+    "EventSuccessPlanDocument"
+  ) : null;
   const participant = participantSnap?.exists ?
     requireRuntimeParticipant(
       participantSnap,
@@ -123,11 +135,15 @@ export async function getEventRuntimeBootstrapHandler(
   return {
     event: publicRuntimeEventProjection(
       resolved.event,
-      payload.publicRuntimeId
+      payload.publicRuntimeId,
+      plan
     ),
     participant: participant ? {
       accessStatus: participant.accessStatus,
       attendanceStatus: attendeeStatus,
+      eventId: resolved.eventId,
+      clubId: participant.clubId,
+      organizerId: participant.organizerId ?? participant.clubId,
       requiredFieldIds: participant.requiredFieldIds,
       completedFieldIds: participant.completedFieldIds,
       runtimeProfile: runtimeProfileResponse(participant.runtimeProfile),
@@ -382,6 +398,75 @@ export async function submitEventRuntimeProfileHandler(
   });
 }
 
+/** Checks a ready runtime identity into its linked operational attendee. */
+export async function checkInEventRuntimeHandler(
+  request: CallableRequest<unknown>,
+  deps: EventRuntimeDeps = defaultDeps
+): Promise<CheckInEventRuntimeCallableResponse> {
+  const uid = requireAuth(request);
+  const payload = validateCallableWithAjv<CheckInEventRuntimeCallablePayload>(
+    request,
+    validateCheckInEventRuntimeCallablePayload,
+    normalizeRuntimeIdPayload
+  );
+  const db = deps.firestore();
+  await deps.checkRateLimit(db, uid, "checkInEventRuntime");
+  const resolved = await resolveRuntimeEvent(db, payload.publicRuntimeId);
+  const participantRef = db.collection("eventRuntimeParticipants")
+    .doc(eventRuntimeParticipantId(resolved.eventId, uid));
+  const eventRef = db.collection("events").doc(resolved.eventId);
+
+  return db.runTransaction(async (tx) => {
+    const participantSnap = await tx.get(participantRef);
+    const participant = requireRuntimeParticipant(
+      participantSnap,
+      resolved.eventId,
+      uid
+    );
+    if (participant.accessStatus !== "ready" || !participant.eventAttendeeId) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Finish the event profile before checking in."
+      );
+    }
+    const attendeeRef = db.collection("eventAttendees")
+      .doc(participant.eventAttendeeId);
+    const attendeeSnap = await tx.get(attendeeRef);
+    if (!attendeeSnap.exists) {
+      throw new HttpsError("not-found", "Guest-list entry not found.");
+    }
+    const attendee = requireDoc<EventAttendeeDocument>(
+      attendeeSnap,
+      "EventAttendeeDocument"
+    );
+    if (
+      attendee.eventId !== resolved.eventId ||
+      attendee.linkedUid !== uid ||
+      attendee.status === "cancelled"
+    ) {
+      throw new HttpsError(
+        "failed-precondition",
+        "This guest-list entry cannot be checked in."
+      );
+    }
+    if (attendee.status === "checkedIn") {
+      return {status: "checkedIn", alreadyCheckedIn: true};
+    }
+    const now = deps.timestamp();
+    tx.update(attendeeRef, {
+      status: "checkedIn",
+      checkedInAt: now,
+      checkedInBy: uid,
+      updatedAt: now,
+    });
+    tx.update(eventRef, {
+      checkedInCount: admin.firestore.FieldValue.increment(1),
+      updatedAt: now,
+    });
+    return {status: "checkedIn", alreadyCheckedIn: false};
+  });
+}
+
 /** Lets an organizer manager approve or reject a pending claim. */
 export async function approveEventRuntimeClaimHandler(
   request: CallableRequest<unknown>,
@@ -623,7 +708,8 @@ function requireRuntimeParticipant(
 
 function publicRuntimeEventProjection(
   event: EventDocument,
-  publicRuntimeId: string
+  publicRuntimeId: string,
+  plan: EventSuccessPlanDocument | null
 ): GetEventRuntimeBootstrapCallableResponse["event"] {
   const customLabel = event.eventFormat.customActivityLabel?.trim();
   return {
@@ -632,6 +718,9 @@ function publicRuntimeEventProjection(
     startTimeMillis: event.startTime.toMillis(),
     endTimeMillis: event.endTime.toMillis(),
     locationName: event.meetingLocation.name || event.meetingPoint,
+    runtimeTermsVersion: event.runtimeAccess!.termsVersion,
+    moduleIds: plan?.selectedModuleIds ?? [],
+    questionnaireConfig: plan?.questionnaireConfig ?? null,
   };
 }
 
@@ -875,6 +964,11 @@ export const claimEventRuntimeAccess = onCall(
 export const submitEventRuntimeProfile = onCall(
   appCheckCallableOptions,
   (request) => submitEventRuntimeProfileHandler(request)
+);
+
+export const checkInEventRuntime = onCall(
+  appCheckCallableOptions,
+  (request) => checkInEventRuntimeHandler(request)
 );
 
 export const approveEventRuntimeClaim = onCall(

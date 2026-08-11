@@ -91,6 +91,12 @@ test("postbuild writes route metadata, robots, and an indexable-only sitemap", (
     /<link rel="canonical" href="https:\/\/example\.test\/claim\/" \/>/
   );
   assert.match(claimHtml, /<meta name="robots" content="noindex, follow" \/>/);
+  const runtimeHtml = fs.readFileSync(
+    path.join(distRoot, "join", "index.html"),
+    "utf8"
+  );
+  assert.match(runtimeHtml, /<title>Event mode \| Catch<\/title>/);
+  assert.match(runtimeHtml, /<meta name="robots" content="noindex, follow" \/>/);
 
   for (const [route, title] of [
     ["privacy", "Privacy policy"],

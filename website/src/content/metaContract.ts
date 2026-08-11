@@ -3,6 +3,7 @@ import type {WebsiteMetaCopy} from "./types";
 export const staticMetaKeys = [
   "home",
   "host",
+  "event_runtime",
   "organizers",
   "claim",
   "privacy",

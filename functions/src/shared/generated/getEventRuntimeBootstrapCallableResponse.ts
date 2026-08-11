@@ -12,6 +12,30 @@ export interface GetEventRuntimeBootstrapCallableResponse {
     startTimeMillis: number;
     endTimeMillis: number;
     locationName: string;
+    runtimeTermsVersion: string;
+    /**
+     * @maxItems 24
+     */
+    moduleIds: string[];
+    questionnaireConfig: null | {
+      templateId: string;
+      customTitle?: string | null;
+      /**
+       * @maxItems 8
+       */
+      customQuestions?: {
+        id: string;
+        prompt: string;
+        /**
+         * @minItems 2
+         * @maxItems 5
+         */
+        options: {
+          id: string;
+          label: string;
+        }[];
+      }[];
+    };
   };
   participant: null | {
     accessStatus:
@@ -28,6 +52,9 @@ export interface GetEventRuntimeBootstrapCallableResponse {
       | "checkedIn"
       | "cancelled"
       | null;
+    eventId: string;
+    clubId: string;
+    organizerId: string;
     /**
      * @maxItems 5
      */

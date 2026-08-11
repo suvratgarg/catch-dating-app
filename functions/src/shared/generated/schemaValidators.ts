@@ -179,6 +179,8 @@ import {ClaimEventRuntimeAccessCallablePayload} from "./claimEventRuntimeAccessC
 import {ClaimEventRuntimeAccessCallableResponse} from "./claimEventRuntimeAccessCallableResponse";
 import {SubmitEventRuntimeProfileCallablePayload} from "./submitEventRuntimeProfileCallablePayload";
 import {SubmitEventRuntimeProfileCallableResponse} from "./submitEventRuntimeProfileCallableResponse";
+import {CheckInEventRuntimeCallablePayload} from "./checkInEventRuntimeCallablePayload";
+import {CheckInEventRuntimeCallableResponse} from "./checkInEventRuntimeCallableResponse";
 import {ApproveEventRuntimeClaimCallablePayload} from "./approveEventRuntimeClaimCallablePayload";
 import {ApproveEventRuntimeClaimCallableResponse} from "./approveEventRuntimeClaimCallableResponse";
 import {GetOrganizerCrmSummaryCallablePayload} from "./getOrganizerCrmSummaryCallablePayload";
@@ -433,6 +435,8 @@ import {
   claimEventRuntimeAccessCallableResponseSchema,
   submitEventRuntimeProfileCallablePayloadSchema,
   submitEventRuntimeProfileCallableResponseSchema,
+  checkInEventRuntimeCallablePayloadSchema,
+  checkInEventRuntimeCallableResponseSchema,
   approveEventRuntimeClaimCallablePayloadSchema,
   approveEventRuntimeClaimCallableResponseSchema,
   getOrganizerCrmSummaryCallablePayloadSchema,
@@ -1216,6 +1220,14 @@ export const validateSubmitEventRuntimeProfileCallableResponse:
   ValidateFunction<SubmitEventRuntimeProfileCallableResponse> =
     ajv.compile(submitEventRuntimeProfileCallableResponseSchema) as
       ValidateFunction<SubmitEventRuntimeProfileCallableResponse>;
+export const validateCheckInEventRuntimeCallablePayload:
+  ValidateFunction<CheckInEventRuntimeCallablePayload> =
+    ajv.compile(checkInEventRuntimeCallablePayloadSchema) as
+      ValidateFunction<CheckInEventRuntimeCallablePayload>;
+export const validateCheckInEventRuntimeCallableResponse:
+  ValidateFunction<CheckInEventRuntimeCallableResponse> =
+    ajv.compile(checkInEventRuntimeCallableResponseSchema) as
+      ValidateFunction<CheckInEventRuntimeCallableResponse>;
 export const validateApproveEventRuntimeClaimCallablePayload:
   ValidateFunction<ApproveEventRuntimeClaimCallablePayload> =
     ajv.compile(approveEventRuntimeClaimCallablePayloadSchema) as

@@ -10,13 +10,35 @@
     "event": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["publicRuntimeId", "title", "startTimeMillis", "endTimeMillis", "locationName"],
+      "required": [
+        "publicRuntimeId",
+        "title",
+        "startTimeMillis",
+        "endTimeMillis",
+        "locationName",
+        "runtimeTermsVersion",
+        "moduleIds",
+        "questionnaireConfig"
+      ],
       "properties": {
         "publicRuntimeId": {"type": "string", "pattern": "^[A-Za-z0-9_-]{20,80}$"},
         "title": {"type": "string", "minLength": 1, "maxLength": 240},
         "startTimeMillis": {"type": "integer"},
         "endTimeMillis": {"type": "integer"},
-        "locationName": {"type": "string", "minLength": 1, "maxLength": 240}
+        "locationName": {"type": "string", "minLength": 1, "maxLength": 240},
+        "runtimeTermsVersion": {"type": "string", "minLength": 1, "maxLength": 80},
+        "moduleIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 24,
+          "items": {"type": "string", "minLength": 1, "maxLength": 120}
+        },
+        "questionnaireConfig": {
+          "anyOf": [
+            {"type": "null"},
+            {"$ref": "../shared/event_common.schema.json#/definitions/eventSuccessQuestionnaireConfig"}
+          ]
+        }
       }
     },
     "participant": {
@@ -28,6 +50,9 @@
           "required": [
             "accessStatus",
             "attendanceStatus",
+            "eventId",
+            "clubId",
+            "organizerId",
             "requiredFieldIds",
             "completedFieldIds",
             "runtimeProfile"
@@ -41,6 +66,9 @@
               "type": ["string", "null"],
               "enum": ["invited", "registered", "waitlisted", "checkedIn", "cancelled", null]
             },
+            "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+            "clubId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+            "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
             "requiredFieldIds": {
               "type": "array",
               "items": {"type": "string"},

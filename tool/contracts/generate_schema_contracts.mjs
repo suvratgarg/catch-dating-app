@@ -1067,6 +1067,19 @@ const schemaSpecs = [
       "functions/src/shared/generated/submitEventRuntimeProfileCallableResponse.ts",
   },
   {
+    name: "CheckInEventRuntimeCallablePayload",
+    source: "callables/check_in_event_runtime_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/checkInEventRuntimeCallablePayload.ts",
+  },
+  {
+    name: "CheckInEventRuntimeCallableResponse",
+    source:
+      "callable_responses/check_in_event_runtime_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/checkInEventRuntimeCallableResponse.ts",
+  },
+  {
     name: "ApproveEventRuntimeClaimCallablePayload",
     source: "callables/approve_event_runtime_claim_payload.schema.json",
     typeOutput:

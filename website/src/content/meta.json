@@ -13,6 +13,13 @@
       "canonicalPath": "/host/",
       "twitterDescription": "Event setup, admission, waitlists, live facilitation, check-in, and aggregate post-event reporting for hosts."
     },
+    "event_runtime": {
+      "title": "Event mode | Catch",
+      "description": "Verify your guest-list number to open live check-in, introductions, group guidance, and host-help tools for this event.",
+      "canonicalPath": "/join/",
+      "twitterDescription": "No-download live event tools for a Catch-powered room.",
+      "robots": "noindex, follow"
+    },
     "organizers": {
       "title": "Organizer directory | Catch",
       "description": "Find singles-event organizers across India — clubs, venues, and independent hosts — with verified guest reviews and upcoming events.",

@@ -147,6 +147,7 @@ function validateRoutes(routes, storyDeclarations) {
   const requiredRouteIds = new Set([
     "home",
     "host",
+    "event_runtime",
     "organizer_search",
     "claim",
     "privacy",
@@ -276,6 +277,7 @@ function validatePageKey(route) {
     "organizers",
     "listing",
     "event_detail",
+    "event_runtime",
     "claim",
     "privacy",
     "terms",
@@ -309,6 +311,7 @@ function validatePageKey(route) {
     terms: "pathname.startsWith(\"/terms\")",
     help: "pathname.startsWith(\"/help\")",
     host: "pathname.startsWith(\"/host\")",
+    event_runtime: "pathname.startsWith(\"/join/\")",
     organizers: "pathname.startsWith(\"/organizers\")",
   };
   const expected = expectedChecks[route.pageKey];
@@ -859,6 +862,7 @@ export const OrganizerSearch = {
       [
         "home",
         "host",
+        "event_runtime",
         "organizers",
         "claim",
         "privacy",

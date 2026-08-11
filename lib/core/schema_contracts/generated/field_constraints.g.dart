@@ -3994,6 +3994,24 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const checkInEventRuntimeCallablePayloadPublicRuntimeId = CatchContractFieldConstraints(
+    path: 'checkInEventRuntimeCallablePayload.publicRuntimeId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{20,80}\$',
+  );
+
+  static const checkInEventRuntimeCallableResponseAlreadyCheckedIn = CatchContractFieldConstraints(
+    path: 'checkInEventRuntimeCallableResponse.alreadyCheckedIn',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const checkInEventRuntimeCallableResponseStatus = CatchContractFieldConstraints(
+    path: 'checkInEventRuntimeCallableResponse.status',
+    required: true,
+  );
+
   static const claimEventRuntimeAccessCallablePayloadAttendeeToken = CatchContractFieldConstraints(
     path: 'claimEventRuntimeAccessCallablePayload.attendeeToken',
     maxLength: 240,
@@ -16169,11 +16187,98 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const getEventRuntimeBootstrapCallableResponseEventModuleIds = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.moduleIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 24,
+    uniqueItems: true,
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventModuleIdsItems = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.moduleIds.items',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const getEventRuntimeBootstrapCallableResponseEventPublicRuntimeId = CatchContractFieldConstraints(
     path: 'getEventRuntimeBootstrapCallableResponse.event.publicRuntimeId',
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[A-Za-z0-9_-]{20,80}\$',
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventQuestionnaireConfigCustomQuestions = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.questionnaireConfig.customQuestions',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 8,
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventQuestionnaireConfigCustomQuestionsItemsId = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.questionnaireConfig.customQuestions.items.id',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventQuestionnaireConfigCustomQuestionsItemsOptions = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.questionnaireConfig.customQuestions.items.options',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 2,
+    maxItems: 5,
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventQuestionnaireConfigCustomQuestionsItemsOptionsItemsId = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.questionnaireConfig.customQuestions.items.options.items.id',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventQuestionnaireConfigCustomQuestionsItemsOptionsItemsLabel = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.questionnaireConfig.customQuestions.items.options.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventQuestionnaireConfigCustomQuestionsItemsPrompt = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.questionnaireConfig.customQuestions.items.prompt',
+    maxLength: 140,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventQuestionnaireConfigCustomTitle = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.questionnaireConfig.customTitle',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventQuestionnaireConfigTemplateId = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.questionnaireConfig.templateId',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventRuntimeTermsVersion = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.runtimeTermsVersion',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const getEventRuntimeBootstrapCallableResponseEventStartTimeMillis = CatchContractFieldConstraints(
@@ -16203,6 +16308,14 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['invited', 'registered', 'waitlisted', 'checkedIn', 'cancelled'],
   );
 
+  static const getEventRuntimeBootstrapCallableResponseParticipantClubId = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.participant.clubId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const getEventRuntimeBootstrapCallableResponseParticipantCompletedFieldIds = CatchContractFieldConstraints(
     path: 'getEventRuntimeBootstrapCallableResponse.participant.completedFieldIds',
     required: true,
@@ -16213,6 +16326,22 @@ abstract final class CatchContractConstraints {
 
   static const getEventRuntimeBootstrapCallableResponseParticipantCompletedFieldIdsItems = CatchContractFieldConstraints(
     path: 'getEventRuntimeBootstrapCallableResponse.participant.completedFieldIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseParticipantEventId = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.participant.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseParticipantOrganizerId = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.participant.organizerId',
+    maxLength: 180,
+    minLength: 1,
     required: true,
     valueTypes: <String>['string'],
   );
@@ -31141,6 +31270,9 @@ abstract final class CatchContractConstraints {
     'chatMessageDocument.sentAt._seconds': chatMessageDocumentSentAtSeconds,
     'chatMessageDocument.synthetic': chatMessageDocumentSynthetic,
     'chatMessageDocument.text': chatMessageDocumentText,
+    'checkInEventRuntimeCallablePayload.publicRuntimeId': checkInEventRuntimeCallablePayloadPublicRuntimeId,
+    'checkInEventRuntimeCallableResponse.alreadyCheckedIn': checkInEventRuntimeCallableResponseAlreadyCheckedIn,
+    'checkInEventRuntimeCallableResponse.status': checkInEventRuntimeCallableResponseStatus,
     'claimEventRuntimeAccessCallablePayload.attendeeToken': claimEventRuntimeAccessCallablePayloadAttendeeToken,
     'claimEventRuntimeAccessCallablePayload.displayName': claimEventRuntimeAccessCallablePayloadDisplayName,
     'claimEventRuntimeAccessCallablePayload.publicRuntimeId': claimEventRuntimeAccessCallablePayloadPublicRuntimeId,
@@ -32825,13 +32957,27 @@ abstract final class CatchContractConstraints {
     'getEventRuntimeBootstrapCallablePayload.publicRuntimeId': getEventRuntimeBootstrapCallablePayloadPublicRuntimeId,
     'getEventRuntimeBootstrapCallableResponse.event.endTimeMillis': getEventRuntimeBootstrapCallableResponseEventEndTimeMillis,
     'getEventRuntimeBootstrapCallableResponse.event.locationName': getEventRuntimeBootstrapCallableResponseEventLocationName,
+    'getEventRuntimeBootstrapCallableResponse.event.moduleIds': getEventRuntimeBootstrapCallableResponseEventModuleIds,
+    'getEventRuntimeBootstrapCallableResponse.event.moduleIds.items': getEventRuntimeBootstrapCallableResponseEventModuleIdsItems,
     'getEventRuntimeBootstrapCallableResponse.event.publicRuntimeId': getEventRuntimeBootstrapCallableResponseEventPublicRuntimeId,
+    'getEventRuntimeBootstrapCallableResponse.event.questionnaireConfig.customQuestions': getEventRuntimeBootstrapCallableResponseEventQuestionnaireConfigCustomQuestions,
+    'getEventRuntimeBootstrapCallableResponse.event.questionnaireConfig.customQuestions.items.id': getEventRuntimeBootstrapCallableResponseEventQuestionnaireConfigCustomQuestionsItemsId,
+    'getEventRuntimeBootstrapCallableResponse.event.questionnaireConfig.customQuestions.items.options': getEventRuntimeBootstrapCallableResponseEventQuestionnaireConfigCustomQuestionsItemsOptions,
+    'getEventRuntimeBootstrapCallableResponse.event.questionnaireConfig.customQuestions.items.options.items.id': getEventRuntimeBootstrapCallableResponseEventQuestionnaireConfigCustomQuestionsItemsOptionsItemsId,
+    'getEventRuntimeBootstrapCallableResponse.event.questionnaireConfig.customQuestions.items.options.items.label': getEventRuntimeBootstrapCallableResponseEventQuestionnaireConfigCustomQuestionsItemsOptionsItemsLabel,
+    'getEventRuntimeBootstrapCallableResponse.event.questionnaireConfig.customQuestions.items.prompt': getEventRuntimeBootstrapCallableResponseEventQuestionnaireConfigCustomQuestionsItemsPrompt,
+    'getEventRuntimeBootstrapCallableResponse.event.questionnaireConfig.customTitle': getEventRuntimeBootstrapCallableResponseEventQuestionnaireConfigCustomTitle,
+    'getEventRuntimeBootstrapCallableResponse.event.questionnaireConfig.templateId': getEventRuntimeBootstrapCallableResponseEventQuestionnaireConfigTemplateId,
+    'getEventRuntimeBootstrapCallableResponse.event.runtimeTermsVersion': getEventRuntimeBootstrapCallableResponseEventRuntimeTermsVersion,
     'getEventRuntimeBootstrapCallableResponse.event.startTimeMillis': getEventRuntimeBootstrapCallableResponseEventStartTimeMillis,
     'getEventRuntimeBootstrapCallableResponse.event.title': getEventRuntimeBootstrapCallableResponseEventTitle,
     'getEventRuntimeBootstrapCallableResponse.participant.accessStatus': getEventRuntimeBootstrapCallableResponseParticipantAccessStatus,
     'getEventRuntimeBootstrapCallableResponse.participant.attendanceStatus': getEventRuntimeBootstrapCallableResponseParticipantAttendanceStatus,
+    'getEventRuntimeBootstrapCallableResponse.participant.clubId': getEventRuntimeBootstrapCallableResponseParticipantClubId,
     'getEventRuntimeBootstrapCallableResponse.participant.completedFieldIds': getEventRuntimeBootstrapCallableResponseParticipantCompletedFieldIds,
     'getEventRuntimeBootstrapCallableResponse.participant.completedFieldIds.items': getEventRuntimeBootstrapCallableResponseParticipantCompletedFieldIdsItems,
+    'getEventRuntimeBootstrapCallableResponse.participant.eventId': getEventRuntimeBootstrapCallableResponseParticipantEventId,
+    'getEventRuntimeBootstrapCallableResponse.participant.organizerId': getEventRuntimeBootstrapCallableResponseParticipantOrganizerId,
     'getEventRuntimeBootstrapCallableResponse.participant.requiredFieldIds': getEventRuntimeBootstrapCallableResponseParticipantRequiredFieldIds,
     'getEventRuntimeBootstrapCallableResponse.participant.requiredFieldIds.items': getEventRuntimeBootstrapCallableResponseParticipantRequiredFieldIdsItems,
     'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.dateOfBirthMillis': getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileDateOfBirthMillis,

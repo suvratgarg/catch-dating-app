@@ -37957,7 +37957,10 @@ export const getEventRuntimeBootstrapCallableResponseSchema = {
         "title",
         "startTimeMillis",
         "endTimeMillis",
-        "locationName"
+        "locationName",
+        "runtimeTermsVersion",
+        "moduleIds",
+        "questionnaireConfig"
       ],
       "properties": {
         "publicRuntimeId": {
@@ -37979,6 +37982,99 @@ export const getEventRuntimeBootstrapCallableResponseSchema = {
           "type": "string",
           "minLength": 1,
           "maxLength": 240
+        },
+        "runtimeTermsVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "moduleIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 24,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          }
+        },
+        "questionnaireConfig": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "templateId"
+              ],
+              "properties": {
+                "templateId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "customTitle": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 80
+                },
+                "customQuestions": {
+                  "type": "array",
+                  "maxItems": 8,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "prompt",
+                      "options"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "prompt": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 140
+                      },
+                      "options": {
+                        "type": "array",
+                        "minItems": 2,
+                        "maxItems": 5,
+                        "items": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "id",
+                            "label"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 120
+                            },
+                            "label": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 80
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
         }
       }
     },
@@ -37993,6 +38089,9 @@ export const getEventRuntimeBootstrapCallableResponseSchema = {
           "required": [
             "accessStatus",
             "attendanceStatus",
+            "eventId",
+            "clubId",
+            "organizerId",
             "requiredFieldIds",
             "completedFieldIds",
             "runtimeProfile"
@@ -38022,6 +38121,21 @@ export const getEventRuntimeBootstrapCallableResponseSchema = {
                 "cancelled",
                 null
               ]
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "clubId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
             },
             "requiredFieldIds": {
               "type": "array",
@@ -38320,6 +38434,45 @@ export const submitEventRuntimeProfileCallableResponseSchema = {
         "type": "string"
       },
       "maxItems": 5
+    }
+  }
+};
+
+export const checkInEventRuntimeCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/check_in_event_runtime_payload.schema.json",
+  "title": "CheckInEventRuntimeCallablePayload",
+  "description": "Checks a ready no-download participant into the linked operational attendee row.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "publicRuntimeId"
+  ],
+  "properties": {
+    "publicRuntimeId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{20,80}$"
+    }
+  }
+};
+
+export const checkInEventRuntimeCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/check_in_event_runtime_response.schema.json",
+  "title": "CheckInEventRuntimeCallableResponse",
+  "description": "Idempotent operational attendance result for the no-download runtime.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "status",
+    "alreadyCheckedIn"
+  ],
+  "properties": {
+    "status": {
+      "const": "checkedIn"
+    },
+    "alreadyCheckedIn": {
+      "type": "boolean"
     }
   }
 };

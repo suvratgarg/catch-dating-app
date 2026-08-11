@@ -178,6 +178,8 @@ import {
   claimEventRuntimeAccessCallableResponseSchema,
   submitEventRuntimeProfileCallablePayloadSchema,
   submitEventRuntimeProfileCallableResponseSchema,
+  checkInEventRuntimeCallablePayloadSchema,
+  checkInEventRuntimeCallableResponseSchema,
   approveEventRuntimeClaimCallablePayloadSchema,
   approveEventRuntimeClaimCallableResponseSchema,
   getOrganizerCrmSummaryCallablePayloadSchema,
@@ -455,6 +457,8 @@ export const validateClaimEventRuntimeAccessCallablePayload = ajv.compile(claimE
 export const validateClaimEventRuntimeAccessCallableResponse = ajv.compile(claimEventRuntimeAccessCallableResponseSchema);
 export const validateSubmitEventRuntimeProfileCallablePayload = ajv.compile(submitEventRuntimeProfileCallablePayloadSchema);
 export const validateSubmitEventRuntimeProfileCallableResponse = ajv.compile(submitEventRuntimeProfileCallableResponseSchema);
+export const validateCheckInEventRuntimeCallablePayload = ajv.compile(checkInEventRuntimeCallablePayloadSchema);
+export const validateCheckInEventRuntimeCallableResponse = ajv.compile(checkInEventRuntimeCallableResponseSchema);
 export const validateApproveEventRuntimeClaimCallablePayload = ajv.compile(approveEventRuntimeClaimCallablePayloadSchema);
 export const validateApproveEventRuntimeClaimCallableResponse = ajv.compile(approveEventRuntimeClaimCallableResponseSchema);
 export const validateGetOrganizerCrmSummaryCallablePayload = ajv.compile(getOrganizerCrmSummaryCallablePayloadSchema);
