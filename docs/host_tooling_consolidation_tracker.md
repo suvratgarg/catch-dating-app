@@ -1,7 +1,7 @@
 ---
 doc_id: host_tooling_consolidation_tracker
-version: 1.2.0
-updated: 2026-08-10
+version: 1.3.0
+updated: 2026-08-11
 owner: host_tooling
 status: active
 ---
@@ -43,9 +43,11 @@ adopted incrementally inside an organizer's existing workflow.
    profile-independent parts of Event Success, collect feedback/review requests,
    and see operational analytics without a Consumer profile or Catch booking;
 2. an attendee can be represented as an event-scoped operational record before
-   they have a Catch account. Attendee access to private actions still requires
-   an event-scoped OTP identity. Standalone never means an anonymous public
-   roster or a shared unprotected runtime link.
+   they have a Catch account. Low-risk, event-scoped actions may use an
+   expiring, revocable, purpose-scoped signed capability; reservation,
+   sensitive feedback, safety, identity, or cross-event actions require phone
+   OTP or stronger identity. Standalone never means an anonymous public roster
+   or a shared unprotected runtime link.
 
 The canonical products remain separate surfaces on one backend:
 
@@ -67,33 +69,42 @@ The detailed capability, consent, CRM, booking, and delivery plan is
 
 | Level | Host outcome | Required identity/data | Capability unlocked |
 | --- | --- | --- | --- |
-| 0. Run an existing event | Replace paper/spreadsheets on event day | Host phone OTP, private workspace/event, imported or manual attendee rows | Roster, manual/QR check-in, run of show, host prompts, attendance export, basic turnout analytics |
-| 1. Close the feedback loop | Learn and improve after each event | Level 0 plus attendee contact permission or event-scoped OTP | Feedback requests, review invitations, owner response inbox, aggregate Event Success coaching |
+| 0. Run an existing event | Replace paper/spreadsheets on event day | Host phone OTP, private workspace/event, imported or manual attendee rows | Roster, absolute Host-set check-in state, reviewed run of show, Host prompts, attendance export, basic turnout analytics; QR is a later signed-capability option |
+| 1. Close the feedback loop | Learn and improve after each event | Level 0 plus event-service delivery authority or OTP authentication for the action; organizer marketing always needs a separate channel grant | Feedback requests, review invitations, owner response inbox, aggregate Event Success coaching |
 | 2. Retain a permissioned audience | Understand repeat behavior and reconnect over an explicitly allowed channel | Attendance history plus separate In-app, WhatsApp or SMS eligibility | Cross-event CRM counts and segments; channel campaigns only after provider, template and regulatory gates |
 | 3. Publish and register | Let Catch acquire demand without requiring the Consumer app | Public organizer/event projection, free open admission, publication eligibility, attendee phone OTP | Public event page, OTP RSVP/waitlist, confirmations, unified roster and source-aware funnel |
-| 4. Transact | Sell through Catch | Payment onboarding, policies, payout readiness and supported market | Checkout, refunds, payout/reporting and paid conversion analytics |
-| 5. Establish public identity | Convert an existing listing into an owned channel | Canonical organizer claim and verification | Claimed page, profile editing, verified responses and repeat audience tools |
+| 4. Establish public authority | Convert an existing listing into an owned channel | Canonical organizer claim and action-appropriate verification | Claimed page, profile editing and verified responses |
+| 5. Transact | Sell through Catch | Payment onboarding, policies, payout readiness, action-appropriate organizer authority and supported market | Checkout, refunds, payout/reporting and paid conversion analytics |
 | 6. Use the Catch network | Add identity-rich participation | Minimal preferences or full Consumer profile, depending on module | Cohort balancing, profile review/approval, compatibility rotations, swiping, catches, chat and cross-event discovery |
 | 7. Activate Catch growth | Use lawful first-party acquisition audiences | Separate Catch marketing consent plus legal/platform approval | Hashed customer-list or conversion activation with deletion and suppression controls |
 
-The app should always present the next useful unlock with its concrete benefit
-and requirement. It must not turn the ladder into a blocking onboarding wizard.
-A Host may remain at Level 0 indefinitely.
+The levels are a Host-facing adoption story, not a prerequisite order. The app
+should present the next useful branch with its concrete benefit and smallest
+unmet gate. A Host may remain at Level 0 indefinitely; publishing, retention,
+public authority and commerce can be adopted in the lawful order available to
+that Host.
 
-### Event Integration Modes
+### Event Provenance And Capability State
 
-Each event records its current integration mode and capability grants rather
-than inferring product depth from whether `eventParticipations` happens to be
-non-empty:
+Each event records stable provenance plus independent server-owned publication,
+registration, payment, and profile-network capability state. Do not infer
+product depth from whether `eventParticipations` happens to be non-empty, and do
+not collapse the branches into one `integrationMode` enum.
 
-- `operationsOnly`: private Host event; external/manual roster is authoritative;
-- `publicRegistration`: a published Catch page accepts event-scoped OTP RSVP;
-- `catchTicketing`: Catch owns registration/payment lifecycle;
-- `catchNetwork`: profile-dependent Consumer features are enabled.
+An operations-only event starts private with every public/commercial/network
+capability disabled. Explicit setup may later enable one branch without
+rewriting the event or losing its external origin. One event may contain
+imported, manual, web-OTP, and Catch-booked attendees; every attendee and metric
+therefore retains a source.
 
-Modes are progressive capability states, not mutually exclusive source labels.
-One event may contain imported, manual, web-OTP and Catch-booked attendees.
-Every attendee and metric therefore retains a source.
+Quick start requires a new fail-closed private-workspace lifecycle and
+`operations_only` organizer capability state. It must not reuse current
+`userCreated` authority, which derives `claimed_managed` booking, payments,
+waitlist and Host-contact powers. Its public review policy is `none`. The
+current public `createOrganizer` and
+`createEvent` paths remain explicit public-product paths; private quick start
+uses dedicated server operations and never fabricates capacity, price,
+distance, pace or discovery values.
 
 ### Participant Identity Tiers
 
@@ -132,56 +143,81 @@ Implementation status for the 2026-08-10 standalone foundation:
 
 | Slice | Status | Current boundary |
 | --- | --- | --- |
-| Unified operational roster | Implemented | CSV/XLSX/manual/Catch/web-OTP sources, private Host read, server writes and Host check-in |
+| Unified operational roster contract | Implemented; Live adoption complete, broader sole-UI adoption incomplete | Direction 3 Live counts now derive from `eventAttendees`, including external-only imports with zero Consumer participation; Guests still carries both operational and legacy participation surfaces pending full consolidation |
 | Independent Host analytics | Implemented | Operational roster/source/attendance metrics are separate from the Catch booking funnel |
 | Public organizer/event registration | Implemented for the safe first policy | Explicitly published, free, open-admission events only; capacity joins an operational waitlist |
 | Cross-event CRM audience summary | Implemented foundation | Privacy-bounded deduplicated counts for past/repeat/imported/linked contacts and explicit WhatsApp/SMS reachability; no attendee PII returned |
 | WhatsApp/SMS campaigns | Provider-gated next tranche | Permission ledger exists; delivery needs provider ownership, approved templates, webhook/STOP handling and India SMS DLT setup |
 | Review responses | Implemented for existing public reviews | Host Report can respond through the canonical review callable and the website renders the response |
 | Host web delivery | Implemented through build/package/workflow | Dedicated Firebase Hosting target; custom domain, Auth domains and App Check remain release gates |
-| External-attendee private companion, feedback invites and assignments | Planned next | Requires the attendee-id identity migration in phase 4; current private Event Success documents remain UID-keyed |
+| Low-risk external-attendee survey and signed capabilities | Planned after core runtime | Requires purpose-scoped authorization and aggregate privacy; current private Event Success documents remain UID-keyed |
+| Direction 3 Control Room | Selected; bounded online reference implemented | Quiet Command Console now owns the canonical Live first viewport with operational counts, Guests/recovery destinations, pinned primary action, honest acknowledged/pending/failed state and double-tap protection; offline queue, pause, conflict, lock and true undo remain promotion gates |
+| General attendee-ID companion migration and grouping | Deferred expansion | Requires versioned private-document/rules migration plus preference, opt-out, keep-apart and safety contracts |
 | Paid checkout, organizer claim completion and Admin support tooling | Planned later | Reuse the same event/attendee boundary after payment, verification and support policy gates |
 
-1. **Foundation and operations.** Add schemas, server-owned import/manual
-   mutation, idempotent import receipts, Catch-booking projection, private rules,
-   phone-only Host identity, an operations-only quick start, CSV/XLSX ingestion,
-   unified Host roster/check-in and source-aware turnout reporting.
-2. **Feedback and reputation.** Add a dedicated Host review inbox using the
-   existing owner-response callable, feedback/review invitations for eligible
-   attendees, published response state, and response-rate analytics.
-3. **Public registration.** Add capability-gated free, open-admission event
+1. **Private authority and event contracts.** Add a fail-closed private
+   workspace lifecycle, dedicated private-event variant, immutable origin,
+   capability transitions, title/timezone migration and no-public-side-effect
+   tests.
+2. **First-run and safe roster adoption.** Add phone-only Host quick start,
+   server preview/version tokens, correction, conditional undo, one Host roster
+   UI and source-aware turnout reporting.
+3. **Reliable runtime.** Replace attendance toggle with absolute revisioned
+   operations, add encrypted cache/recovery and ship the roster-agnostic
+   Control Room/rehearsal for a single operator.
+4. **Scoped follow-up.** Separate low-risk aggregate surveys, authenticated
+   safety reporting, and provenance-labeled public review invitations.
+5. **Public registration.** Add capability-gated free, open-admission event
    publication and a marketing-site phone-OTP RSVP/waitlist controller. Link or create the
    operational attendee server-side and hand the signed-in attendee to the web
    runtime or Consumer app without forcing dating-profile setup.
-4. **Event Success identity migration.** Address profile-independent
-   assignments by attendee id, link UIDs when available, preserve private
-   answers/consents, and keep compatibility/profile modules explicitly gated.
-5. **CRM, commercial and network depth.** Layer consent-safe repeat-audience
+6. **Staff and multi-device operation.** Add event-scoped expiring staff grants
+   plus leader leases/fencing after the single-operator pilot.
+7. **CRM, commercial and network depth.** Layer consent-safe repeat-audience
    campaigns, payment onboarding, claimed public identity, and Consumer-only features onto the same
    event/attendee records. Do not fork a second event model for paid or
    Catch-network events.
-6. **Admin and reliability.** Add import failure receipts, privacy/link dispute
+8. **General Event Success identity migration.** Address only selected
+   profile-independent companion contracts by attendee id through versioned
+   schemas, dual reads, rules and rollback; keep grouping/profile modules gated.
+9. **Admin and reliability.** Add import failure receipts, privacy/link dispute
    support, publication/moderation state and operational overrides to Admin;
    add retention/deletion rules, audit events, abuse limits and funnel alerts.
 
-### Acceptance Criteria
+### Core MVP Acceptance Criteria
 
-The direction is not complete until all of the following are proven:
+The standalone operating wedge is not complete until all of the following are
+proven:
 
 - a phone-authenticated Host with no Consumer profile can create a private
-  workspace and operations-only event;
+  workspace and operations-only event without current `claimed_managed` or
+  public side effects;
 - a valid CSV/XLSX roster can be previewed, mapped, deduplicated, imported and
-  re-imported idempotently, with row-level errors and a durable receipt;
+  re-imported idempotently, with row-level errors, a durable receipt and
+  conditional conflict-aware undo;
 - imported, manual, web-OTP and Catch-booked people appear in one Host roster
-  without synthetic Firebase users, and can be checked in with permissioned
-  audit history;
-- the basic Host runtime, feedback collection, review response inbox and
-  analytics work when every attendee source is external;
+  without synthetic Firebase users, and can receive absolute revisioned
+  attendance state with permissioned audit history;
+- the roster-agnostic Host runtime, rehearsal and operational analytics work
+  when every attendee source is external and survive offline/restart replay;
+- the first pilot works for one owner-operator without implying that staff,
+  QR, grouping, survey or review invitations have shipped; and
+- profile-dependent features show an honest unlock state and never consume
+  missing or Host-entered data as if it were a Consumer dating profile.
+
+### Full Direction Acceptance Criteria
+
+The larger direction additionally requires:
+
+- separately authorized aggregate experience surveys, safety reporting and
+  public review invitations plus the existing owner-response inbox;
 - a capability-eligible event can be published and registered for on the web
   with phone OTP, full capacity becomes an operational waitlist, and that
   registration reaches the same roster without bypassing payment or approval;
-- profile-dependent features show an honest unlock state and never consume
-  missing or host-entered data as if it were a Consumer dating profile;
+- event-scoped staff and multi-device leadership without organizer-wide
+  manager or cross-event PII authority;
+- grouping only after preference, opt-out, keep-apart and sensitive-data
+  contracts are implemented; and
 - the Host web build deploys independently while sharing the Host Flutter code,
   and marketing/admin retain their separate authority boundaries.
 

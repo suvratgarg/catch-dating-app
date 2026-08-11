@@ -1,5 +1,13 @@
 part of '../event_success_host_screen.dart';
 
+enum EventSuccessControlRoomSyncState {
+  synced,
+  syncing,
+  failed,
+  offline,
+  conflict,
+}
+
 class LiveTab extends StatelessWidget {
   const LiveTab({
     super.key,
@@ -15,6 +23,8 @@ class LiveTab extends StatelessWidget {
     required this.wingmanRequests,
     required this.wingmanProfiles,
     required this.compactLiveControls,
+    required this.operationalRosterSummary,
+    required this.onOpenGuests,
     required this.actionState,
     required this.onPreviousStep,
     required this.onNextStep,
@@ -45,6 +55,8 @@ class LiveTab extends StatelessWidget {
   final List<EventSuccessWingmanRequest> wingmanRequests;
   final List<PublicProfile> wingmanProfiles;
   final bool compactLiveControls;
+  final EventSuccessOperationalRosterSummary? operationalRosterSummary;
+  final VoidCallback? onOpenGuests;
   final EventSuccessLiveActionState actionState;
   final Future<void> Function(int stepIndex)? onPreviousStep;
   final Future<void> Function(int stepIndex)? onNextStep;
@@ -69,7 +81,7 @@ class LiveTab extends StatelessWidget {
   Widget build(BuildContext context) {
     if (!planIsPersisted) {
       final isPreEvent = event.startTime.isAfter(DateTime.now());
-      return EventSuccessHostTabBody(
+      final body = EventSuccessHostTabBody(
         embedded: embedded,
         children: [
           CatchSurface.message(
@@ -93,6 +105,9 @@ class LiveTab extends StatelessWidget {
           ),
         ],
       );
+      return compactLiveControls
+          ? SingleChildScrollView(padding: CatchInsets.pageBody, child: body)
+          : body;
     }
 
     final runtime = EventSuccessRuntime(
@@ -109,7 +124,7 @@ class LiveTab extends StatelessWidget {
           : roster.checkedInCount,
     );
     if (livePlan == null) {
-      return EventSuccessHostTabBody(
+      final body = EventSuccessHostTabBody(
         embedded: embedded,
         children: [
           CatchSurface.message(
@@ -123,6 +138,9 @@ class LiveTab extends StatelessWidget {
           ),
         ],
       );
+      return compactLiveControls
+          ? SingleChildScrollView(padding: CatchInsets.pageBody, child: body)
+          : body;
     }
     final activeStepIndex = livePlan.activeStepIndex;
     final previousIndex = (activeStepIndex - 1)
@@ -243,41 +261,78 @@ class LiveTab extends StatelessWidget {
               liveRevealCard(),
           ];
 
+    final actionFailed =
+        actionState.stepError != null || actionState.completeError != null;
+    final console = LiveNowConsole(
+      plan: livePlan,
+      event: event,
+      compactCopy: compactLiveControls,
+      currentStepControls: currentStepCards,
+      operationalRosterSummary: operationalRosterSummary,
+      syncState: actionFailed
+          ? EventSuccessControlRoomSyncState.failed
+          : actionState.isChangingStep || actionState.isCompleting
+          ? EventSuccessControlRoomSyncState.syncing
+          : EventSuccessControlRoomSyncState.synced,
+      isPrimaryLoading: actionState.isChangingStep || actionState.isCompleting,
+      onOpenGuests: onOpenGuests,
+      onPrevious:
+          actionState.isChangingStep ||
+              activeStepIndex == 0 ||
+              onPreviousStep == null
+          ? null
+          : () => unawaited(onPreviousStep!(previousIndex)),
+      onNext:
+          actionState.isChangingStep ||
+              activeStepIndex >= livePlan.steps.length - 1 ||
+              onNextStep == null
+          ? null
+          : () => unawaited(onNextStep!(nextIndex)),
+      onComplete:
+          compactLiveControls &&
+              !actionState.isCompleting &&
+              onCompleteGuide != null
+          ? () => unawaited(onCompleteGuide!())
+          : null,
+    );
+    final errorBanners = <Widget>[
+      if (actionState.stepError != null)
+        CatchErrorBanner.fromError(
+          actionState.stepError!,
+          context: AppErrorContext.event,
+        ),
+      if (actionState.completeError != null)
+        CatchErrorBanner.fromError(
+          actionState.completeError!,
+          context: AppErrorContext.event,
+        ),
+    ];
+    if (compactLiveControls) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (errorBanners.isNotEmpty)
+            Padding(
+              padding: CatchInsets.pageHorizontal.copyWith(
+                top: CatchSpacing.s3,
+                bottom: CatchSpacing.s2,
+              ),
+              child: CatchSectionList(
+                emptyStateOmitted: true,
+                gap: CatchSpacing.s2,
+                children: errorBanners,
+              ),
+            ),
+          Expanded(child: console),
+        ],
+      );
+    }
+
     return EventSuccessHostTabBody(
       embedded: embedded,
       children: [
-        if (actionState.stepError != null) ...[
-          CatchErrorBanner.fromError(
-            actionState.stepError!,
-            context: AppErrorContext.event,
-          ),
-          gapH16,
-        ],
-        if (actionState.completeError != null) ...[
-          CatchErrorBanner.fromError(
-            actionState.completeError!,
-            context: AppErrorContext.event,
-          ),
-          gapH16,
-        ],
-        LiveNowConsole(
-          plan: livePlan,
-          event: event,
-          compactCopy: compactLiveControls,
-          currentStepControls: currentStepCards,
-          onPrevious:
-              actionState.isChangingStep ||
-                  activeStepIndex == 0 ||
-                  onPreviousStep == null
-              ? null
-              : () => unawaited(onPreviousStep!(previousIndex)),
-          onNext:
-              actionState.isChangingStep ||
-                  activeStepIndex >= livePlan.steps.length - 1 ||
-                  onNextStep == null
-              ? null
-              : () => unawaited(onNextStep!(nextIndex)),
-        ),
+        ...errorBanners.expand((banner) => [banner, gapH16]),
+        console,
         if (supportingCards.isNotEmpty) ...[
           gapH20,
           CatchSectionHeader(
@@ -324,6 +379,11 @@ class LiveNowConsole extends StatelessWidget {
     required this.currentStepControls,
     required this.onPrevious,
     required this.onNext,
+    this.onComplete,
+    this.onOpenGuests,
+    this.operationalRosterSummary,
+    this.syncState = EventSuccessControlRoomSyncState.synced,
+    this.isPrimaryLoading = false,
   });
 
   final EventSuccessLivePlan plan;
@@ -332,97 +392,152 @@ class LiveNowConsole extends StatelessWidget {
   final List<Widget> currentStepControls;
   final VoidCallback? onPrevious;
   final VoidCallback? onNext;
+  final VoidCallback? onComplete;
+  final VoidCallback? onOpenGuests;
+  final EventSuccessOperationalRosterSummary? operationalRosterSummary;
+  final EventSuccessControlRoomSyncState syncState;
+  final bool isPrimaryLoading;
 
   @override
   Widget build(BuildContext context) {
     final total = plan.steps.length;
-    final compactPresenter = compactCopy
-        ? _CompactLiveConsolePresenter.forEvent(event, plan, context.l10n)
-        : null;
-    final activeStepTitle = compactPresenter?.title ?? plan.activeStep.title;
-    final activeStepInstruction =
-        compactPresenter?.instruction ?? plan.activeStep.hostInstruction;
-    final attendeeExperience =
-        compactPresenter?.attendeeExperience ??
-        context.l10n
-            .eventSuccessEventSuccessHostLiveVisiblecopyAttendeesAtLocationnameSee(
-              locationName: event.locationName,
-              attendeeExperience: plan.activeStep.attendeeExperience,
-            );
-    final stepLine =
-        compactPresenter?.stepLine ??
-        (total > 0
-            ? context.l10n
-                  .eventSuccessEventSuccessHostLiveVisiblecopyStepValue1TotalLabel(
-                    value1: plan.activeStepIndex + 1,
-                    total: total,
-                    label: plan.activeStep.stage.label,
-                  )
-            : plan.activeStep.stage.label);
-    return Column(
+    final t = CatchTokens.of(context);
+    final accent = ActivityPalette.resolve(context, event.activityKind).accent;
+    final isFinalStep = plan.activeStepIndex >= total - 1;
+    final nextStepTitle = isFinalStep
+        ? context.l10n.eventSuccessEventSuccessHostLiveVisiblecopyFinalStep
+        : plan.steps[plan.activeStepIndex + 1].title;
+    final primaryLabel = isFinalStep
+        ? context
+              .l10n
+              .eventSuccessEventSuccessHostLiveLabelMarkLiveGuideComplete
+        : context.l10n.eventSuccessControlRoomContinueTo(title: nextStepTitle);
+    final primaryAction = isFinalStep ? onComplete : onNext;
+    final checkedInCount =
+        operationalRosterSummary?.checkedInCount ?? plan.checkedInCount;
+    final expectedCount = operationalRosterSummary == null
+        ? plan.bookedCount
+        : operationalRosterSummary!.expectedCount;
+    final attendeeExperience = context.l10n
+        .eventSuccessEventSuccessHostLiveVisiblecopyAttendeesAtLocationnameSee(
+          locationName: event.locationName,
+          attendeeExperience: plan.activeStep.attendeeExperience,
+        );
+
+    final guestSummary = expectedCount == null
+        ? context.l10n.eventSuccessControlRoomGuestsCheckedInOnly(
+            checkedIn: checkedInCount,
+          )
+        : context.l10n.eventSuccessControlRoomGuestsSummary(
+            checkedIn: checkedInCount,
+            expected: expectedCount,
+          );
+    Widget controlRoomBody({required bool showVenue}) => Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CatchSection.contained(
-          title: activeStepTitle,
-          subtitle: activeStepInstruction,
-          trailing: CatchBadge.live(
-            label: context.l10n.eventSuccessEventSuccessHostLiveTextLiveNow,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+        _ControlRoomStage(
+          event: event,
+          plan: plan,
+          syncState: syncState,
+          nextStepTitle: nextStepTitle,
+          attendeeExperience: compactCopy ? null : attendeeExperience,
+          showVenue: showVenue,
+        ),
+        DecoratedBox(
+          decoration: BoxDecoration(color: t.surface),
+          child: CatchSection.fieldRows(
             children: [
-              CatchStepProgress(
-                currentStep: plan.activeStepIndex,
-                totalSteps: total,
-                label: stepLine,
-                showCounter: false,
+              CatchField.nav(
+                icon: CatchIcons.groupsOutlined,
+                title: context.l10n.eventSuccessControlRoomGuests,
+                body: guestSummary,
+                onTap: onOpenGuests,
               ),
-              gapH16,
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(
-                    CatchIcons.phoneIphoneRounded,
-                    size: CatchIcon.md,
-                    color: CatchTokens.of(context).ink2,
-                  ),
-                  gapW8,
-                  Expanded(
-                    child: Text(
-                      attendeeExperience,
-                      style: CatchTextStyles.supporting(
-                        context,
-                        color: CatchTokens.of(context).ink2,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              gapH16,
-              LiveStepNavigation(
-                plan: plan,
-                onPrevious: onPrevious,
-                onNext: onNext,
+              CatchField.nav(
+                icon: CatchIcons.helpOutlineRounded,
+                title: context.l10n.eventSuccessControlRoomHelpFallback,
+                body: context.l10n.eventSuccessControlRoomHelpFallbackSubtitle,
+                onTap: () => unawaited(_showControlRoomFallback(context)),
               ),
             ],
           ),
         ),
+      ],
+    );
+
+    final previousAction = CatchIconButton.icon(
+      key: ValueKey(
+        context
+            .l10n
+            .eventSuccessEventSuccessHostLiveCatchbuttonEventsuccesspreviousstepbutton,
+      ),
+      icon: CatchIcons.arrowBackRounded,
+      onTap: onPrevious,
+      tooltip: context.l10n.eventSuccessEventSuccessHostLiveLabelPrevious,
+    );
+
+    if (compactCopy) {
+      return ColoredBox(
+        color: t.surface,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: controlRoomBody(showVenue: true),
+              ),
+            ),
+            CatchBottomAction(
+              label: primaryLabel,
+              onPressed: primaryAction,
+              isLoading: isPrimaryLoading,
+              buttonAccentColor: accent,
+              buttonKey: ValueKey(
+                context
+                    .l10n
+                    .eventSuccessEventSuccessHostLiveCatchbuttonEventsuccessnextstepbutton,
+              ),
+              leadingContent: previousAction,
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        controlRoomBody(showVenue: true),
+        LiveStepNavigation(
+          plan: plan,
+          onPrevious: onPrevious,
+          onNext: primaryAction,
+          primaryLabel: primaryLabel,
+          accentColor: accent,
+          isLoading: isPrimaryLoading,
+        ),
         if (currentStepControls.isNotEmpty) ...[
           gapH14,
-          CatchSectionHeader(
-            padding: EdgeInsets.zero,
-            title: context
-                .l10n
-                .eventSuccessEventSuccessHostLiveTitleControlsForThisStep,
-            subtitle: context
-                .l10n
-                .eventSuccessEventSuccessHostLiveSubtitleHandleTheseBeforeMoving,
+          Padding(
+            padding: CatchInsets.pageHorizontal,
+            child: CatchSectionHeader(
+              padding: EdgeInsets.zero,
+              title: context
+                  .l10n
+                  .eventSuccessEventSuccessHostLiveTitleControlsForThisStep,
+              subtitle: context
+                  .l10n
+                  .eventSuccessEventSuccessHostLiveSubtitleHandleTheseBeforeMoving,
+            ),
           ),
           gapH10,
-          CatchSectionList(
-            emptyStateOmitted: true,
-            gap: CatchSpacing.s4,
-            children: currentStepControls,
+          Padding(
+            padding: CatchInsets.pageHorizontal,
+            child: CatchSectionList(
+              emptyStateOmitted: true,
+              gap: CatchSpacing.s4,
+              children: currentStepControls,
+            ),
           ),
         ],
       ],
@@ -430,45 +545,165 @@ class LiveNowConsole extends StatelessWidget {
   }
 }
 
-class _CompactLiveConsolePresenter {
-  const _CompactLiveConsolePresenter({
-    required this.stepLine,
-    required this.title,
-    required this.instruction,
+class _ControlRoomStage extends StatelessWidget {
+  const _ControlRoomStage({
+    required this.event,
+    required this.plan,
+    required this.syncState,
+    required this.nextStepTitle,
     required this.attendeeExperience,
+    required this.showVenue,
   });
 
-  final String stepLine;
-  final String title;
-  final String instruction;
-  final String attendeeExperience;
+  final Event event;
+  final EventSuccessLivePlan plan;
+  final EventSuccessControlRoomSyncState syncState;
+  final String nextStepTitle;
+  final String? attendeeExperience;
+  final bool showVenue;
 
-  static _CompactLiveConsolePresenter? forEvent(
-    Event event,
-    EventSuccessLivePlan plan,
-    AppLocalizations l10n,
-  ) {
-    final stage = plan.activeStep.stage;
-    final isRoundLike =
-        event.eventFormat.interactionModel ==
-            EventInteractionModel.teamRotations &&
-        (stage == EventSuccessStage.activity ||
-            stage == EventSuccessStage.mixing);
-    if (!isRoundLike) return null;
-    final total = plan.steps.length;
-    final stepLine = total > 0
-        ? l10n.eventSuccessEventSuccessHostLiveVisiblecopyStepValue1TotalRound(
-            value1: plan.activeStepIndex + 1,
-            total: total,
-          )
-        : l10n.eventSuccessEventSuccessHostLiveVisiblecopyRound;
-    return _CompactLiveConsolePresenter(
-      stepLine: stepLine,
-      title: l10n.eventSuccessEventSuccessHostLiveTitleRoundInPlay,
-      instruction:
-          l10n.eventSuccessEventSuccessHostLiveVisiblecopyKeepRoundsTightReveal,
-      attendeeExperience:
-          l10n.eventSuccessEventSuccessHostLiveVisiblecopyAttendeesSeeGuestsSee,
+  @override
+  Widget build(BuildContext context) {
+    final dark = CatchTokens.editorialDark;
+    final textScale = MediaQuery.textScalerOf(context).scale(1);
+    final eventIdentity = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          event.title,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: CatchTextStyles.consoleTitle(context, color: dark.ink),
+        ),
+        if (showVenue) ...[
+          gapH4,
+          Text(
+            event.locationName,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: CatchTextStyles.monoLabel(context, color: dark.ink2),
+          ),
+        ],
+      ],
+    );
+    final syncPill = _ControlRoomSyncPill(state: syncState);
+    return ColoredBox(
+      color: CatchTokens.editorialBlack,
+      child: SafeArea(
+        top: false,
+        bottom: false,
+        child: Padding(
+          padding: CatchInsets.eventSuccessControlRoomStage,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              eventIdentity,
+              gapH12,
+              Align(alignment: Alignment.centerLeft, child: syncPill),
+              gapH24,
+              Text(
+                context.l10n.eventSuccessControlRoomStepProgress(
+                  current: plan.activeStepIndex + 1,
+                  total: plan.steps.length,
+                  stage: plan.activeStep.stage.label,
+                ),
+                style: CatchTextStyles.monoLabel(context, color: dark.ink2),
+              ),
+              gapH12,
+              Text(
+                plan.activeStep.title,
+                maxLines: textScale >= 1.4 ? null : 2,
+                overflow: textScale >= 1.4 ? null : TextOverflow.ellipsis,
+                style: textScale >= 1.4
+                    ? CatchTextStyles.headlineS(context, color: dark.ink)
+                    : CatchTextStyles.display(context, color: dark.ink),
+              ),
+              gapH14,
+              Text(
+                plan.activeStep.hostInstruction,
+                style: CatchTextStyles.bodyL(context, color: dark.ink2),
+              ),
+              if (attendeeExperience case final copy?) ...[
+                gapH12,
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      CatchIcons.phoneIphoneRounded,
+                      size: CatchIcon.md,
+                      color: dark.ink2,
+                    ),
+                    gapW8,
+                    Expanded(
+                      child: Text(
+                        copy,
+                        style: CatchTextStyles.supporting(
+                          context,
+                          color: dark.ink2,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+              gapH24,
+              Text(
+                context.l10n.eventSuccessControlRoomUpNext,
+                style: CatchTextStyles.monoLabel(context, color: dark.ink2),
+              ),
+              gapH6,
+              Text(
+                nextStepTitle,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: CatchTextStyles.fieldRowTitle(context, color: dark.ink),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ControlRoomSyncPill extends StatelessWidget {
+  const _ControlRoomSyncPill({required this.state});
+
+  final EventSuccessControlRoomSyncState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final (icon, label) = switch (state) {
+      EventSuccessControlRoomSyncState.synced => (
+        CatchIcons.checkCircleOutlineRounded,
+        context.l10n.eventSuccessControlRoomSynced,
+      ),
+      EventSuccessControlRoomSyncState.syncing => (
+        CatchIcons.syncRounded,
+        context.l10n.eventSuccessControlRoomSyncing,
+      ),
+      EventSuccessControlRoomSyncState.failed => (
+        CatchIcons.errorOutlineRounded,
+        context.l10n.eventSuccessControlRoomSaveFailed,
+      ),
+      EventSuccessControlRoomSyncState.offline => (
+        CatchIcons.wifiOffRounded,
+        context.l10n.eventSuccessControlRoomOffline,
+      ),
+      EventSuccessControlRoomSyncState.conflict => (
+        CatchIcons.errorOutlineRounded,
+        context.l10n.eventSuccessControlRoomNeedsReview,
+      ),
+    };
+    return Semantics(
+      liveRegion: true,
+      label: label,
+      child: CatchBadge.onDarkStatus(
+        label: context.l10n.eventSuccessControlRoomLiveSyncStatus(
+          syncStatus: label,
+        ),
+        icon: icon,
+      ),
     );
   }
 }
@@ -479,47 +714,82 @@ class LiveStepNavigation extends StatelessWidget {
     required this.plan,
     required this.onPrevious,
     required this.onNext,
+    this.primaryLabel,
+    this.accentColor,
+    this.isLoading = false,
   });
 
   final EventSuccessLivePlan plan;
   final VoidCallback? onPrevious;
   final VoidCallback? onNext;
+  final String? primaryLabel;
+  final Color? accentColor;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
-    final nextLabel = plan.activeStepIndex >= plan.steps.length - 1
-        ? context.l10n.eventSuccessEventSuccessHostLiveVisiblecopyFinalStep
-        : context.l10n.eventSuccessEventSuccessHostLiveVisiblecopyNextTitle(
-            title: plan.steps[plan.activeStepIndex + 1].title,
-          );
-    return Row(
-      children: [
-        CatchButton(
-          key: ValueKey(
-            context
-                .l10n
-                .eventSuccessEventSuccessHostLiveCatchbuttonEventsuccesspreviousstepbutton,
-          ),
-          label: context.l10n.eventSuccessEventSuccessHostLiveLabelPrevious,
-          icon: Icon(CatchIcons.arrowBackRounded),
-          variant: CatchButtonVariant.ghost,
-          onPressed: onPrevious,
+    final nextLabel =
+        primaryLabel ??
+        (plan.activeStepIndex >= plan.steps.length - 1
+            ? context.l10n.eventSuccessEventSuccessHostLiveVisiblecopyFinalStep
+            : context.l10n.eventSuccessEventSuccessHostLiveVisiblecopyNextTitle(
+                title: plan.steps[plan.activeStepIndex + 1].title,
+              ));
+    return CatchBottomActionContent(
+      label: nextLabel,
+      onPressed: onNext,
+      isLoading: isLoading,
+      buttonAccentColor: accentColor,
+      buttonKey: ValueKey(
+        context
+            .l10n
+            .eventSuccessEventSuccessHostLiveCatchbuttonEventsuccessnextstepbutton,
+      ),
+      leadingContent: CatchIconButton.icon(
+        key: ValueKey(
+          context
+              .l10n
+              .eventSuccessEventSuccessHostLiveCatchbuttonEventsuccesspreviousstepbutton,
         ),
-        gapW10,
-        Expanded(
-          child: CatchButton(
-            key: ValueKey(
-              context
-                  .l10n
-                  .eventSuccessEventSuccessHostLiveCatchbuttonEventsuccessnextstepbutton,
-            ),
-            label: nextLabel,
-            icon: Icon(CatchIcons.arrowForwardRounded),
-            onPressed: onNext,
-            fullWidth: true,
-          ),
-        ),
-      ],
+        icon: CatchIcons.arrowBackRounded,
+        onTap: onPrevious,
+        tooltip: context.l10n.eventSuccessEventSuccessHostLiveLabelPrevious,
+      ),
     );
   }
+}
+
+Future<void> _showControlRoomFallback(BuildContext context) {
+  return showCatchBottomSheet<void>(
+    context: context,
+    builder: (sheetContext) => CatchBottomSheetScaffold(
+      title: context.l10n.eventSuccessControlRoomFallbackTitle,
+      subtitle: context.l10n.eventSuccessControlRoomFallbackSubtitle,
+      glyph: CatchIcons.helpOutlineRounded,
+      action: CatchButton(
+        label: context.l10n.eventSuccessControlRoomFallbackDone,
+        onPressed: () => Navigator.of(sheetContext).pop(),
+        fullWidth: true,
+      ),
+      child: CatchSection.fieldRows(
+        children: [
+          CatchField.content(
+            title: context.l10n.eventSuccessControlRoomFallbackStayTitle,
+            body: context.l10n.eventSuccessControlRoomFallbackStayBody,
+            icon: CatchIcons.checklistRounded,
+          ),
+          CatchField.content(
+            title: context.l10n.eventSuccessControlRoomFallbackGuestsTitle,
+            body: context.l10n.eventSuccessControlRoomFallbackGuestsBody,
+            icon: CatchIcons.groupsOutlined,
+          ),
+          CatchField.content(
+            title: context.l10n.eventSuccessControlRoomFallbackContinueTitle,
+            body: context.l10n.eventSuccessControlRoomFallbackContinueBody,
+            icon: CatchIcons.arrowForwardRounded,
+          ),
+        ],
+      ),
+    ),
+  );
 }

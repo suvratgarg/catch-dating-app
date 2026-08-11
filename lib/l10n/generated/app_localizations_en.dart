@@ -4733,9 +4733,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Handle these before moving the room forward.';
 
   @override
-  String get eventSuccessEventSuccessHostLiveTextLiveNow => 'Live now';
-
-  @override
   String
   get eventSuccessEventSuccessHostLiveCatchbuttonEventsuccesspreviousstepbutton =>
       'eventSuccessPreviousStepButton';
@@ -8477,15 +8474,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String eventSuccessEventSuccessHostLiveVisiblecopyStepValue1TotalLabel({
-    required Object value1,
-    required Object total,
-    required Object label,
-  }) {
-    return 'Step $value1/$total · $label';
-  }
-
-  @override
   String get eventSuccessEventSuccessHostLiveVisiblecopyFinalStep =>
       'Final step';
 
@@ -10038,27 +10026,97 @@ class AppLocalizationsEn extends AppLocalizations {
       'Rotation reveal';
 
   @override
-  String eventSuccessEventSuccessHostLiveVisiblecopyStepValue1TotalRound({
-    required Object value1,
-    required Object total,
-  }) {
-    return 'Step $value1/$total · Round';
+  String get eventSuccessControlRoomSynced => 'Synced';
+
+  @override
+  String eventSuccessControlRoomLiveSyncStatus({required String syncStatus}) {
+    return 'Live now · $syncStatus';
   }
 
   @override
-  String get eventSuccessEventSuccessHostLiveVisiblecopyRound => 'Round';
+  String get eventSuccessControlRoomSyncing => 'Saving';
 
   @override
-  String get eventSuccessEventSuccessHostLiveTitleRoundInPlay =>
-      'Round in play';
+  String get eventSuccessControlRoomSaveFailed => 'Save failed';
 
   @override
-  String get eventSuccessEventSuccessHostLiveVisiblecopyKeepRoundsTightReveal =>
-      'Keep rounds tight; reveal scores between each. Swap anyone sitting out into a team.';
+  String get eventSuccessControlRoomOffline => 'Offline';
 
   @override
-  String get eventSuccessEventSuccessHostLiveVisiblecopyAttendeesSeeGuestsSee =>
-      'Attendees see: Guests see the current round and the live scoreboard.';
+  String get eventSuccessControlRoomNeedsReview => 'Needs review';
+
+  @override
+  String eventSuccessControlRoomStepProgress({
+    required int current,
+    required int total,
+    required String stage,
+  }) {
+    return 'Step $current of $total · $stage';
+  }
+
+  @override
+  String get eventSuccessControlRoomUpNext => 'Up next';
+
+  @override
+  String get eventSuccessControlRoomGuests => 'Guests';
+
+  @override
+  String eventSuccessControlRoomGuestsSummary({
+    required int checkedIn,
+    required int expected,
+  }) {
+    return '$checkedIn checked in · $expected expected';
+  }
+
+  @override
+  String eventSuccessControlRoomGuestsCheckedInOnly({required int checkedIn}) {
+    return '$checkedIn checked in';
+  }
+
+  @override
+  String get eventSuccessControlRoomHelpFallback => 'Help & fallback';
+
+  @override
+  String get eventSuccessControlRoomHelpFallbackSubtitle =>
+      'Recovery steps for the room';
+
+  @override
+  String eventSuccessControlRoomContinueTo({required String title}) {
+    return 'Continue to $title';
+  }
+
+  @override
+  String get eventSuccessControlRoomFallbackTitle => 'Keep the room moving';
+
+  @override
+  String get eventSuccessControlRoomFallbackSubtitle =>
+      'A simple reset when the plan or connection gets in the way.';
+
+  @override
+  String get eventSuccessControlRoomFallbackStayTitle => 'Stay on this step';
+
+  @override
+  String get eventSuccessControlRoomFallbackStayBody =>
+      'Keep using the instruction on screen while you settle the room.';
+
+  @override
+  String get eventSuccessControlRoomFallbackGuestsTitle =>
+      'Take attendance manually';
+
+  @override
+  String get eventSuccessControlRoomFallbackGuestsBody =>
+      'Open Guests to check people in or add anyone who was not booked through Catch.';
+
+  @override
+  String get eventSuccessControlRoomFallbackContinueTitle =>
+      'Continue when ready';
+
+  @override
+  String get eventSuccessControlRoomFallbackContinueBody =>
+      'The guide only moves when you tap the primary action, so the room stays in your control.';
+
+  @override
+  String get eventSuccessControlRoomFallbackDone => 'Back to Control Room';
 
   @override
   String get eventSuccessEventSuccessHostSharedLabelSetup => 'Setup';

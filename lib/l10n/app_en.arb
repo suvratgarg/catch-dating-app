@@ -8936,13 +8936,6 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_live"
   },
-  "eventSuccessEventSuccessHostLiveTextLiveNow": "Live now",
-  "@eventSuccessEventSuccessHostLiveTextLiveNow": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (Text).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
   "eventSuccessEventSuccessHostLiveCatchbuttonEventsuccesspreviousstepbutton": "eventSuccessPreviousStepButton",
   "@eventSuccessEventSuccessHostLiveCatchbuttonEventsuccesspreviousstepbutton": {
     "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (CatchButton).",
@@ -15503,18 +15496,6 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_live"
   },
-  "eventSuccessEventSuccessHostLiveVisiblecopyStepValue1TotalLabel": "Step {value1}/{total} · {label}",
-  "@eventSuccessEventSuccessHostLiveVisiblecopyStepValue1TotalLabel": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (visibleCopy).",
-    "placeholders": {
-      "value1": {},
-      "total": {},
-      "label": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
   "eventSuccessEventSuccessHostLiveVisiblecopyFinalStep": "Final step",
   "@eventSuccessEventSuccessHostLiveVisiblecopyFinalStep": {
     "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (visibleCopy).",
@@ -18273,41 +18254,181 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_live_reveal_card"
   },
-  "eventSuccessEventSuccessHostLiveVisiblecopyStepValue1TotalRound": "Step {value1}/{total} · Round",
-  "@eventSuccessEventSuccessHostLiveVisiblecopyStepValue1TotalRound": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (visibleCopy).",
+  "eventSuccessControlRoomSynced": "Synced",
+  "@eventSuccessControlRoomSynced": {
+    "description": "Control Room sync status after the current live-guide state is stored.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessControlRoomLiveSyncStatus": "Live now · {syncStatus}",
+  "@eventSuccessControlRoomLiveSyncStatus": {
+    "description": "Compact Control Room badge combining live state with persistence status.",
     "placeholders": {
-      "value1": {},
-      "total": {}
+      "syncStatus": {"type": "String"}
     },
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_live"
   },
-  "eventSuccessEventSuccessHostLiveVisiblecopyRound": "Round",
-  "@eventSuccessEventSuccessHostLiveVisiblecopyRound": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (visibleCopy).",
+  "eventSuccessControlRoomSyncing": "Saving",
+  "@eventSuccessControlRoomSyncing": {
+    "description": "Control Room sync status while a live-guide mutation is pending.",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_live"
   },
-  "eventSuccessEventSuccessHostLiveTitleRoundInPlay": "Round in play",
-  "@eventSuccessEventSuccessHostLiveTitleRoundInPlay": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (title).",
+  "eventSuccessControlRoomSaveFailed": "Save failed",
+  "@eventSuccessControlRoomSaveFailed": {
+    "description": "Control Room persistence status after a live-guide mutation fails.",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_live"
   },
-  "eventSuccessEventSuccessHostLiveVisiblecopyKeepRoundsTightReveal": "Keep rounds tight; reveal scores between each. Swap anyone sitting out into a team.",
-  "@eventSuccessEventSuccessHostLiveVisiblecopyKeepRoundsTightReveal": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (visibleCopy).",
+  "eventSuccessControlRoomOffline": "Offline",
+  "@eventSuccessControlRoomOffline": {
+    "description": "Presentation state for a Control Room that has lost connectivity.",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_live"
   },
-  "eventSuccessEventSuccessHostLiveVisiblecopyAttendeesSeeGuestsSee": "Attendees see: Guests see the current round and the live scoreboard.",
-  "@eventSuccessEventSuccessHostLiveVisiblecopyAttendeesSeeGuestsSee": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (visibleCopy).",
+  "eventSuccessControlRoomNeedsReview": "Needs review",
+  "@eventSuccessControlRoomNeedsReview": {
+    "description": "Presentation state for a Control Room state conflict that needs host review.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessControlRoomStepProgress": "Step {current} of {total} · {stage}",
+  "@eventSuccessControlRoomStepProgress": {
+    "description": "Current Control Room run-of-show step and total step count.",
+    "placeholders": {
+      "current": {"type": "int"},
+      "total": {"type": "int"},
+      "stage": {"type": "String"}
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessControlRoomUpNext": "Up next",
+  "@eventSuccessControlRoomUpNext": {
+    "description": "Kicker above the next live-guide step in Control Room.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessControlRoomGuests": "Guests",
+  "@eventSuccessControlRoomGuests": {
+    "description": "Control Room destination for the operational guest roster.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessControlRoomGuestsSummary": "{checkedIn} checked in · {expected} expected",
+  "@eventSuccessControlRoomGuestsSummary": {
+    "description": "Control Room guest destination summary using roster counts rather than event capacity.",
+    "placeholders": {
+      "checkedIn": {"type": "int"},
+      "expected": {"type": "int"}
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessControlRoomGuestsCheckedInOnly": "{checkedIn} checked in",
+  "@eventSuccessControlRoomGuestsCheckedInOnly": {
+    "description": "Control Room guest summary when no authoritative expected count is available.",
+    "placeholders": {
+      "checkedIn": {"type": "int"}
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessControlRoomHelpFallback": "Help & fallback",
+  "@eventSuccessControlRoomHelpFallback": {
+    "description": "Control Room destination for lightweight recovery guidance.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessControlRoomHelpFallbackSubtitle": "Recovery steps for the room",
+  "@eventSuccessControlRoomHelpFallbackSubtitle": {
+    "description": "Summary under the Control Room fallback destination.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessControlRoomContinueTo": "Continue to {title}",
+  "@eventSuccessControlRoomContinueTo": {
+    "description": "Primary Control Room action that advances to the named next step.",
+    "placeholders": {
+      "title": {"type": "String"}
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessControlRoomFallbackTitle": "Keep the room moving",
+  "@eventSuccessControlRoomFallbackTitle": {
+    "description": "Title for the Control Room fallback guidance sheet.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessControlRoomFallbackSubtitle": "A simple reset when the plan or connection gets in the way.",
+  "@eventSuccessControlRoomFallbackSubtitle": {
+    "description": "Subtitle for the Control Room fallback guidance sheet.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessControlRoomFallbackStayTitle": "Stay on this step",
+  "@eventSuccessControlRoomFallbackStayTitle": {
+    "description": "First fallback instruction title.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessControlRoomFallbackStayBody": "Keep using the instruction on screen while you settle the room.",
+  "@eventSuccessControlRoomFallbackStayBody": {
+    "description": "First fallback instruction body.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessControlRoomFallbackGuestsTitle": "Take attendance manually",
+  "@eventSuccessControlRoomFallbackGuestsTitle": {
+    "description": "Second fallback instruction title.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessControlRoomFallbackGuestsBody": "Open Guests to check people in or add anyone who was not booked through Catch.",
+  "@eventSuccessControlRoomFallbackGuestsBody": {
+    "description": "Second fallback instruction body.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessControlRoomFallbackContinueTitle": "Continue when ready",
+  "@eventSuccessControlRoomFallbackContinueTitle": {
+    "description": "Third fallback instruction title.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessControlRoomFallbackContinueBody": "The guide only moves when you tap the primary action, so the room stays in your control.",
+  "@eventSuccessControlRoomFallbackContinueBody": {
+    "description": "Third fallback instruction body.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessControlRoomFallbackDone": "Back to Control Room",
+  "@eventSuccessControlRoomFallbackDone": {
+    "description": "Dismisses the Control Room fallback guidance sheet.",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_live"

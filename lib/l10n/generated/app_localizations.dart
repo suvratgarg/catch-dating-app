@@ -7587,12 +7587,6 @@ abstract class AppLocalizations {
   /// **'Handle these before moving the room forward.'**
   String get eventSuccessEventSuccessHostLiveSubtitleHandleTheseBeforeMoving;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Live now'**
-  String get eventSuccessEventSuccessHostLiveTextLiveNow;
-
   /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (CatchButton).
   ///
   /// In en, this message translates to:
@@ -13283,16 +13277,6 @@ abstract class AppLocalizations {
   /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'Step {value1}/{total} · {label}'**
-  String eventSuccessEventSuccessHostLiveVisiblecopyStepValue1TotalLabel({
-    required Object value1,
-    required Object total,
-    required Object label,
-  });
-
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
   /// **'Final step'**
   String get eventSuccessEventSuccessHostLiveVisiblecopyFinalStep;
 
@@ -15632,38 +15616,150 @@ abstract class AppLocalizations {
   /// **'Rotation reveal'**
   String get eventSuccessEventSuccessLiveRevealCardLabelRotationReveal;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (visibleCopy).
+  /// Control Room sync status after the current live-guide state is stored.
   ///
   /// In en, this message translates to:
-  /// **'Step {value1}/{total} · Round'**
-  String eventSuccessEventSuccessHostLiveVisiblecopyStepValue1TotalRound({
-    required Object value1,
-    required Object total,
+  /// **'Synced'**
+  String get eventSuccessControlRoomSynced;
+
+  /// Compact Control Room badge combining live state with persistence status.
+  ///
+  /// In en, this message translates to:
+  /// **'Live now · {syncStatus}'**
+  String eventSuccessControlRoomLiveSyncStatus({required String syncStatus});
+
+  /// Control Room sync status while a live-guide mutation is pending.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving'**
+  String get eventSuccessControlRoomSyncing;
+
+  /// Control Room persistence status after a live-guide mutation fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Save failed'**
+  String get eventSuccessControlRoomSaveFailed;
+
+  /// Presentation state for a Control Room that has lost connectivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline'**
+  String get eventSuccessControlRoomOffline;
+
+  /// Presentation state for a Control Room state conflict that needs host review.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs review'**
+  String get eventSuccessControlRoomNeedsReview;
+
+  /// Current Control Room run-of-show step and total step count.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {current} of {total} · {stage}'**
+  String eventSuccessControlRoomStepProgress({
+    required int current,
+    required int total,
+    required String stage,
   });
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (visibleCopy).
+  /// Kicker above the next live-guide step in Control Room.
   ///
   /// In en, this message translates to:
-  /// **'Round'**
-  String get eventSuccessEventSuccessHostLiveVisiblecopyRound;
+  /// **'Up next'**
+  String get eventSuccessControlRoomUpNext;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (title).
+  /// Control Room destination for the operational guest roster.
   ///
   /// In en, this message translates to:
-  /// **'Round in play'**
-  String get eventSuccessEventSuccessHostLiveTitleRoundInPlay;
+  /// **'Guests'**
+  String get eventSuccessControlRoomGuests;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (visibleCopy).
+  /// Control Room guest destination summary using roster counts rather than event capacity.
   ///
   /// In en, this message translates to:
-  /// **'Keep rounds tight; reveal scores between each. Swap anyone sitting out into a team.'**
-  String get eventSuccessEventSuccessHostLiveVisiblecopyKeepRoundsTightReveal;
+  /// **'{checkedIn} checked in · {expected} expected'**
+  String eventSuccessControlRoomGuestsSummary({
+    required int checkedIn,
+    required int expected,
+  });
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (visibleCopy).
+  /// Control Room guest summary when no authoritative expected count is available.
   ///
   /// In en, this message translates to:
-  /// **'Attendees see: Guests see the current round and the live scoreboard.'**
-  String get eventSuccessEventSuccessHostLiveVisiblecopyAttendeesSeeGuestsSee;
+  /// **'{checkedIn} checked in'**
+  String eventSuccessControlRoomGuestsCheckedInOnly({required int checkedIn});
+
+  /// Control Room destination for lightweight recovery guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Help & fallback'**
+  String get eventSuccessControlRoomHelpFallback;
+
+  /// Summary under the Control Room fallback destination.
+  ///
+  /// In en, this message translates to:
+  /// **'Recovery steps for the room'**
+  String get eventSuccessControlRoomHelpFallbackSubtitle;
+
+  /// Primary Control Room action that advances to the named next step.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue to {title}'**
+  String eventSuccessControlRoomContinueTo({required String title});
+
+  /// Title for the Control Room fallback guidance sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep the room moving'**
+  String get eventSuccessControlRoomFallbackTitle;
+
+  /// Subtitle for the Control Room fallback guidance sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'A simple reset when the plan or connection gets in the way.'**
+  String get eventSuccessControlRoomFallbackSubtitle;
+
+  /// First fallback instruction title.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay on this step'**
+  String get eventSuccessControlRoomFallbackStayTitle;
+
+  /// First fallback instruction body.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep using the instruction on screen while you settle the room.'**
+  String get eventSuccessControlRoomFallbackStayBody;
+
+  /// Second fallback instruction title.
+  ///
+  /// In en, this message translates to:
+  /// **'Take attendance manually'**
+  String get eventSuccessControlRoomFallbackGuestsTitle;
+
+  /// Second fallback instruction body.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Guests to check people in or add anyone who was not booked through Catch.'**
+  String get eventSuccessControlRoomFallbackGuestsBody;
+
+  /// Third fallback instruction title.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue when ready'**
+  String get eventSuccessControlRoomFallbackContinueTitle;
+
+  /// Third fallback instruction body.
+  ///
+  /// In en, this message translates to:
+  /// **'The guide only moves when you tap the primary action, so the room stays in your control.'**
+  String get eventSuccessControlRoomFallbackContinueBody;
+
+  /// Dismisses the Control Room fallback guidance sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Control Room'**
+  String get eventSuccessControlRoomFallbackDone;
 
   /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_shared.dart (label).
   ///

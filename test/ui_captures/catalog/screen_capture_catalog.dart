@@ -87,12 +87,14 @@ import 'package:catch_dating_app/event_success/presentation/event_success_compan
 import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
+import 'package:catch_dating_app/events/data/event_attendee_repository.dart';
 import 'package:catch_dating_app/events/data/event_callable_responses.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/events/domain/event_invite_link.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
@@ -5950,9 +5952,11 @@ final _hostLiveReferenceEvent = _hostEvent.copyWith(
   startingPointLat: 19.0607,
   startingPointLng: 72.8362,
   locationDetails: 'The Daily Bar',
-  eventFormat: EventFormatSnapshot.custom(
-    label: 'trivia night',
-    interactionModel: EventInteractionModel.teamRotations,
+  eventFormat: const EventFormatSnapshot(
+    activityKind: ActivityKind.pubQuiz,
+    interactionModel: EventInteractionModel.hostLedProgram,
+    customActivityLabel: 'trivia night',
+    defaultPlaybookId: 'host_led_social',
   ),
   distanceKm: 0,
   bookedCount: 24,
@@ -5961,17 +5965,27 @@ final _hostLiveReferenceEvent = _hostEvent.copyWith(
   capacityLimit: 30,
 );
 final _hostLiveReferenceProfiles = _captureFixtures.rosterProfiles(count: 24);
-final _hostLiveReferenceParticipations = _captureFixtures
-    .participationsForProfiles(
-      event: _hostLiveReferenceEvent,
-      profiles: _hostLiveReferenceProfiles,
-      attendedCount: 18,
-      createdAt: DateTime(2026, 6, 9, 18),
-    );
+final _hostLiveReferenceOperationalAttendees = List<EventAttendee>.generate(
+  24,
+  (index) => EventAttendee(
+    id: 'host-live-attendee-$index',
+    eventId: _hostLiveReferenceEvent.id,
+    clubId: _hostLiveReferenceEvent.clubId,
+    organizerId: _captureViewerUid,
+    displayName: 'Guest ${index + 1}',
+    searchName: 'guest ${index + 1}',
+    source: EventAttendeeSource.hostImport,
+    status: index < 18
+        ? EventAttendeeStatus.checkedIn
+        : EventAttendeeStatus.registered,
+    createdAt: DateTime(2026, 6, 9, 18),
+    updatedAt: DateTime(2026, 6, 9, 19),
+    checkedInAt: index < 18 ? DateTime(2026, 6, 9, 19) : null,
+  ),
+);
 final _hostLiveReferenceParticipationRepository =
     FakeEventParticipationRepository()
-      ..eventParticipations[_hostLiveReferenceEvent.id] =
-          _hostLiveReferenceParticipations;
+      ..eventParticipations[_hostLiveReferenceEvent.id] = const [];
 final _hostLiveReferencePublicProfileRepository = FakePublicProfileRepository()
   ..profiles = _hostLiveReferenceProfiles;
 final _hostLiveReferencePlan =
@@ -11940,6 +11954,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       ).overrideWith((ref) => Stream.value(_hostLiveReferenceEvent)),
       eventParticipationRepositoryProvider.overrideWithValue(
         _hostLiveReferenceParticipationRepository,
+      ),
+      watchEventAttendeesProvider(_hostLiveReferenceEvent.id).overrideWith(
+        (ref) => Stream.value(_hostLiveReferenceOperationalAttendees),
       ),
       publicProfileRepositoryProvider.overrideWithValue(
         _hostLiveReferencePublicProfileRepository,
