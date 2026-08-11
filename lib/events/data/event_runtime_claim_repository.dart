@@ -86,6 +86,8 @@ class EventRuntimeClaimRepository {
   );
 }
 
+// keepalive: Host roster claim review is an event-management repository shared
+// across the live roster, approval queue, and manual check-in surfaces.
 @Riverpod(keepAlive: true)
 EventRuntimeClaimRepository eventRuntimeClaimRepository(Ref ref) =>
     EventRuntimeClaimRepository(
