@@ -23,7 +23,6 @@ import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
@@ -50,6 +49,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../events/events_test_helpers.dart';
 import '../test_pump_helpers.dart';
+import 'host_control_room_test_helpers.dart';
 
 void main() {
   group('CreateEventScreen', () {
@@ -235,7 +235,7 @@ void main() {
         await _pumpTestAnimation(tester);
 
         await _pickFutureDate(tester);
-        await _acceptInitialTime(tester);
+        await acceptInitialTime(tester);
         await _openCatchField(tester, 'Duration');
         await tester.tap(find.byTooltip('Increase duration'));
         await tester.tap(find.byTooltip('Decrease duration'));
@@ -360,7 +360,7 @@ void main() {
       await _pumpTestAnimation(tester);
 
       await _pickFutureDate(tester);
-      await _acceptInitialTime(tester);
+      await acceptInitialTime(tester);
       await _tapPrimaryButton(tester, 'Next');
       await _pumpTestAnimation(tester);
 
@@ -455,7 +455,7 @@ void main() {
       await _pumpTestAnimation(tester);
 
       await _pickFutureDate(tester);
-      await _acceptInitialTime(tester);
+      await acceptInitialTime(tester);
       await _tapPrimaryButton(tester, 'Next');
       await _pumpTestAnimation(tester);
 
@@ -598,7 +598,7 @@ void main() {
         expect(find.text('Select start time'), findsOneWidget);
 
         await _pickFutureDate(tester);
-        await _acceptInitialTime(tester);
+        await acceptInitialTime(tester);
 
         expect(find.text('Choose a start time later than now'), findsNothing);
 
@@ -844,7 +844,7 @@ void main() {
       await tester.scrollUntilVisible(
         find.text('Taylor'),
         300,
-        scrollable: _hostManageScrollable(),
+        scrollable: hostManageScrollable(),
       );
       await _pumpTestAnimation(tester);
 
@@ -927,33 +927,10 @@ void main() {
           event,
           now: event.startTime,
         ).copyWith(status: EventSuccessPlanStatus.live);
-        final operationalAttendees = [
-          EventAttendee(
-            id: 'external-1',
-            eventId: event.id,
-            clubId: event.clubId,
-            organizerId: 'host-1',
-            displayName: 'External guest 1',
-            searchName: 'external guest 1',
-            source: EventAttendeeSource.hostImport,
-            status: EventAttendeeStatus.checkedIn,
-            createdAt: now,
-            updatedAt: now,
-            checkedInAt: now,
-          ),
-          EventAttendee(
-            id: 'external-2',
-            eventId: event.id,
-            clubId: event.clubId,
-            organizerId: 'host-1',
-            displayName: 'External guest 2',
-            searchName: 'external guest 2',
-            source: EventAttendeeSource.hostImport,
-            status: EventAttendeeStatus.registered,
-            createdAt: now,
-            updatedAt: now,
-          ),
-        ];
+        final operationalAttendees = buildOperationalAttendees(
+          event: event,
+          now: now,
+        );
 
         await pumpEventsTestApp(
           tester,
@@ -1485,7 +1462,7 @@ Future<void> _submitValidEvent(WidgetTester tester) async {
   await _pumpTestAnimation(tester);
 
   await _pickFutureDate(tester);
-  await _acceptInitialTime(tester);
+  await acceptInitialTime(tester);
   await _tapPrimaryButton(tester, 'Next');
   await _pumpTestAnimation(tester);
 
@@ -1658,13 +1635,6 @@ Future<void> _pickTimeInInputMode(
   await _pumpTestAnimation(tester);
 }
 
-Future<void> _acceptInitialTime(WidgetTester tester) async {
-  await tester.tap(find.byKey(CreateEventFormKeys.timePicker));
-  await _pumpTestAnimation(tester);
-  await tester.tap(find.text('OK'));
-  await _pumpTestAnimation(tester);
-}
-
 Future<void> _pumpTestAnimation(WidgetTester tester) async {
   await pumpFeatureUi(tester);
 }
@@ -1673,13 +1643,6 @@ Future<void> _pumpHostActionFrame(WidgetTester tester) async {
   await tester.pump();
   await pumpFeatureUiFor(tester, const Duration(milliseconds: 300));
 }
-
-Finder _hostManageScrollable() => find
-    .descendant(
-      of: find.byKey(const Key('host_event_manage_scroll_view')),
-      matching: find.byType(Scrollable),
-    )
-    .first;
 
 Finder _dialogAction(String label) {
   return find.descendant(

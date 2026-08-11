@@ -687,7 +687,7 @@
       "command": "bash tool/flutter_with_env.test.sh",
       "safety": "local-readonly",
       "status": "active",
-      "description": "Regression-checks that the Flutter environment wrapper rejects caller-supplied flavors and entrypoints that disagree with the canonical app target.",
+      "description": "Regression-checks canonical Flutter app-target arguments and the narrowly bounded CI-only CocoaPods Git TLS retry contract.",
       "checks": [
         "bash -n tool/flutter_with_env.sh",
         "bash -n tool/flutter_with_env.test.sh",
@@ -702,7 +702,11 @@
         "path": "tool/flutter_with_env.test.sh",
         "contains": [
           "resolves flavor 'host-prod'; caller supplied 'prod'",
-          "resolves entrypoint 'lib/main_prod.dart'; caller supplied 'lib/main_consumer_prod.dart'"
+          "resolves entrypoint 'lib/main_prod.dart'; caller supplied 'lib/main_consumer_prod.dart'",
+          "Expected exact CocoaPods Git TLS failure to succeed on bounded retry.",
+          "Expected non-TLS compile failures to fail immediately without retry.",
+          "Expected CocoaPods Git TLS retries to stop after exactly three attempts.",
+          "Expected local Flutter builds to retain single-attempt behavior."
         ]
       }
     },
@@ -2495,9 +2499,10 @@
       "command": "./tool/flutter_with_env.sh",
       "safety": "local-build-run",
       "status": "active",
-      "description": "Runs Flutter with active Firebase environment and dart defines.",
+      "description": "Runs Flutter with active Firebase environment and dart defines, with a bounded CI-only retry for the exact CocoaPods GitHub self-signed-certificate failure.",
       "checks": [
-        "bash -n tool/flutter_with_env.sh"
+        "bash -n tool/flutter_with_env.sh",
+        "bash tool/flutter_with_env.test.sh"
       ],
       "role": "generator"
     },
