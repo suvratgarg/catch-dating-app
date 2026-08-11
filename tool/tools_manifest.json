@@ -401,6 +401,7 @@
         "contains": [
           "standalone Host web uses the same immutable build and promotion authority",
           "caller triggers cover the exact build dependency closure",
+          "production Hosting push filters never grant test files deploy authority",
           "main builds the deployable Vite output once while validation-only dispatch remains a no-op",
           "promotion downloads only the immutable artifact id and verifies bytes before credentials",
           "stale recovery and an older partial-rerun artifact fail before mutation"
