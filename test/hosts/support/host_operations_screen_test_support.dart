@@ -205,3 +205,44 @@ HostCrmSummary _emptyCrmSummary(String organizerId) => HostCrmSummary(
   whatsappReadiness: HostCrmChannelReadiness.providerSetupRequired,
   smsReadiness: HostCrmChannelReadiness.providerAndDltSetupRequired,
 );
+
+Club _hostTeamClubWithoutProfile() => buildClub(
+  id: 'owned-club',
+  name: 'Saket Run Club',
+  hostUserId: 'other-host',
+  ownerUserId: 'other-host',
+  hostProfiles: const [],
+);
+
+Future<void> _pumpHostClubEditTab(
+  WidgetTester tester, {
+  required Club club,
+  required HostClubEditActions actions,
+}) {
+  return _pumpHostScreen(
+    tester,
+    Scaffold(
+      body: SingleChildScrollView(
+        child: HostClubEditTab(club: club, currentUid: _hostUid, isOwner: true),
+      ),
+    ),
+    overrides: [hostClubEditControllerProvider.overrideWithValue(actions)],
+  );
+}
+
+UploadedPhoto _uploadedClubPhoto(String id, {required int position}) {
+  final timestamp = DateTime(2026);
+  return UploadedPhoto(
+    id: id,
+    url: 'https://example.test/$id.jpg',
+    storagePath: 'clubs/test/$id.jpg',
+    position: position,
+    createdAt: timestamp,
+    updatedAt: timestamp,
+  );
+}
+
+Uint8List _testPngBytes() => base64Decode(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUl'
+  'EQVQIHWP4////fwAJ+wP9KobjigAAAABJRU5ErkJggg==',
+);
