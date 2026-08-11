@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_roster_handoffs.schema.json",
+  "title": "EventRosterHandoffDocument",
+  "description": "Server-only, expiring capability that routes a verified forwarded roster to one event and Host identity.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventRosterHandoffs",
+  "x-firestore-path": "eventRosterHandoffs/{tokenHash}",
+  "x-document-id-field": "id",
+  "x-owner": "createEventRosterHandoff and ingestEventRosterWebhook",
+  "required": [
+    "eventId",
+    "clubId",
+    "organizerId",
+    "hostUid",
+    "tokenHash",
+    "provider",
+    "status",
+    "createdAt",
+    "updatedAt",
+    "expiresAt"
+  ],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "clubId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "hostUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "tokenHash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "provider": {
+      "type": "string",
+      "enum": ["generic", "luma", "eventbrite", "partiful", "posh", "bookmyshow", "district", "sortmyscene", "airbnb"]
+    },
+    "status": {"type": "string", "enum": ["active", "expired", "revoked"]},
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "expiresAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}
+  }
+}

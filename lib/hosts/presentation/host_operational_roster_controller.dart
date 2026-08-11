@@ -56,4 +56,10 @@ class HostOperationalRosterController {
     _ref.invalidate(watchEventAttendeesProvider(eventId));
     return status;
   }
+
+  Future<EventRosterHandoffInstructions> createRosterHandoff({
+    required String eventId,
+  }) => _ref
+      .read(eventAttendeeRepositoryProvider)
+      .createRosterHandoff(eventId: eventId);
 }

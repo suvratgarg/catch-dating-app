@@ -16113,6 +16113,139 @@ export const eventAttendeeImportDocumentSchema = {
   }
 };
 
+export const eventRosterHandoffDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_roster_handoffs.schema.json",
+  "title": "EventRosterHandoffDocument",
+  "description": "Server-only, expiring capability that routes a verified forwarded roster to one event and Host identity.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventRosterHandoffs",
+  "x-firestore-path": "eventRosterHandoffs/{tokenHash}",
+  "x-document-id-field": "id",
+  "x-owner": "createEventRosterHandoff and ingestEventRosterWebhook",
+  "required": [
+    "eventId",
+    "clubId",
+    "organizerId",
+    "hostUid",
+    "tokenHash",
+    "provider",
+    "status",
+    "createdAt",
+    "updatedAt",
+    "expiresAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "hostUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "tokenHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "provider": {
+      "type": "string",
+      "enum": [
+        "generic",
+        "luma",
+        "eventbrite",
+        "partiful",
+        "posh",
+        "bookmyshow",
+        "district",
+        "sortmyscene",
+        "airbnb"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "expired",
+        "revoked"
+      ]
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  }
+};
+
 export const eventRuntimeParticipantDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/event_runtime_participants.schema.json",
@@ -38542,6 +38675,95 @@ export const approveEventRuntimeClaimCallableResponseSchema = {
         "approved",
         "rejected"
       ]
+    }
+  }
+};
+
+export const createEventRosterHandoffCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/create_event_roster_handoff_payload.schema.json",
+  "title": "CreateEventRosterHandoffCallablePayload",
+  "description": "Creates or refreshes secure email and WhatsApp roster-forwarding instructions for a Host event.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const createEventRosterHandoffCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/create_event_roster_handoff_response.schema.json",
+  "title": "CreateEventRosterHandoffCallableResponse",
+  "description": "Provider-aware forwarding instructions for one event roster.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "expiresAtMillis",
+    "emailStatus",
+    "emailAlias",
+    "whatsappStatus",
+    "whatsappNumber",
+    "whatsappMessage"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expiresAtMillis": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "emailStatus": {
+      "type": "string",
+      "enum": [
+        "available",
+        "providerSetupRequired"
+      ]
+    },
+    "emailAlias": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "email",
+          "maxLength": 320
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "whatsappStatus": {
+      "type": "string",
+      "enum": [
+        "available",
+        "providerSetupRequired"
+      ]
+    },
+    "whatsappNumber": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^\\+[1-9][0-9]{6,14}$"
+    },
+    "whatsappMessage": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 20,
+      "maxLength": 160
     }
   }
 };

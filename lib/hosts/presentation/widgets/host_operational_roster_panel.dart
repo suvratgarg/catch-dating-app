@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/clipboard.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
@@ -47,6 +48,7 @@ class HostOperationalRosterPanel extends ConsumerStatefulWidget {
 class _HostOperationalRosterPanelState
     extends ConsumerState<HostOperationalRosterPanel> {
   var _importing = false;
+  var _creatingHandoff = false;
   String? _pendingAttendanceId;
   String? _pendingClaimUid;
   Object? _mutationError;
@@ -84,6 +86,15 @@ class _HostOperationalRosterPanelState
                       : () => unawaited(_showManualGuest()),
                   variant: CatchButtonVariant.ghost,
                   icon: Icon(CatchIcons.personAddAlt1Outlined),
+                ),
+                CatchButton(
+                  label: context.l10n.hostsOperationalRosterForwardCsv,
+                  onPressed: _importing || _creatingHandoff
+                      ? null
+                      : () => unawaited(_showRosterHandoff()),
+                  isLoading: _creatingHandoff,
+                  variant: CatchButtonVariant.ghost,
+                  icon: Icon(CatchIcons.alternateEmailOutlined),
                 ),
               ],
             ),
@@ -236,6 +247,31 @@ class _HostOperationalRosterPanelState
     }
   }
 
+  Future<void> _showRosterHandoff() async {
+    setState(() {
+      _creatingHandoff = true;
+      _mutationError = null;
+    });
+    try {
+      final instructions = await ref
+          .read(hostOperationalRosterControllerProvider)
+          .createRosterHandoff(eventId: widget.eventId);
+      if (!mounted) return;
+      await showCatchBottomSheet<void>(
+        context: context,
+        builder: (context) => _HostRosterHandoffSheet(
+          instructions: instructions,
+          onCopy: (value) =>
+              ref.read(clipboardControllerProvider).copyText(value),
+        ),
+      );
+    } catch (error) {
+      if (mounted) showCatchErrorSnackBar(context, error);
+    } finally {
+      if (mounted) setState(() => _creatingHandoff = false);
+    }
+  }
+
   Future<void> _reviewClaim(
     EventRuntimeClaimRequest claim,
     EventRuntimeClaimDecision decision, {
@@ -319,6 +355,83 @@ class _HostOperationalRosterPanelState
     } finally {
       if (mounted) setState(() => _pendingAttendanceId = null);
     }
+  }
+}
+
+class _HostRosterHandoffSheet extends StatelessWidget {
+  const _HostRosterHandoffSheet({
+    required this.instructions,
+    required this.onCopy,
+  });
+
+  final EventRosterHandoffInstructions instructions;
+  final Future<void> Function(String value) onCopy;
+
+  @override
+  Widget build(BuildContext context) {
+    final emailAlias = instructions.emailAlias;
+    final whatsappNumber = instructions.whatsappNumber;
+    final whatsappMessage = instructions.whatsappMessage;
+    return CatchBottomSheetScaffold(
+      title: context.l10n.hostsOperationalRosterForwardTitle,
+      subtitle: context.l10n.hostsOperationalRosterForwardSubtitle,
+      glyph: CatchIcons.alternateEmailOutlined,
+      action: CatchButton(
+        label: context.l10n.hostsOperationalRosterForwardDone,
+        onPressed: () => Navigator.of(context).pop(),
+        fullWidth: true,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (!instructions.hasAvailableChannel) ...[
+            CatchErrorBanner(
+              message: context.l10n.hostsOperationalRosterForwardProviderSetup,
+            ),
+            gapH12,
+          ],
+          CatchSection.fieldRows(
+            children: [
+              CatchField.read(
+                title: context.l10n.hostsOperationalRosterForwardEmail,
+                body:
+                    emailAlias ??
+                    context.l10n.hostsOperationalRosterForwardNotAvailable,
+                icon: CatchIcons.emailOutlined,
+                action: emailAlias == null
+                    ? null
+                    : CatchButton(
+                        label: context.l10n.hostsOperationalRosterForwardCopy,
+                        onPressed: () => unawaited(onCopy(emailAlias)),
+                        size: CatchButtonSize.sm,
+                        variant: CatchButtonVariant.ghost,
+                      ),
+              ),
+              CatchField.read(
+                title: context.l10n.hostsOperationalRosterForwardWhatsapp,
+                body: whatsappNumber == null || whatsappMessage == null
+                    ? context.l10n.hostsOperationalRosterForwardNotAvailable
+                    : context.l10n.hostsOperationalRosterForwardWhatsappBody(
+                        whatsappNumber: whatsappNumber,
+                        whatsappMessage: whatsappMessage,
+                      ),
+                icon: CatchIcons.sendRounded,
+                action: whatsappNumber == null || whatsappMessage == null
+                    ? null
+                    : CatchButton(
+                        label: context.l10n.hostsOperationalRosterForwardCopy,
+                        onPressed: () => unawaited(
+                          onCopy('$whatsappNumber\n$whatsappMessage'),
+                        ),
+                        size: CatchButtonSize.sm,
+                        variant: CatchButtonVariant.ghost,
+                      ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }
 

@@ -144,3 +144,50 @@ class EventAttendeeImportResult {
   final List<EventAttendeeImportError> errors;
   final bool replayed;
 }
+
+enum EventRosterHandoffChannelStatus { available, providerSetupRequired }
+
+class EventRosterHandoffInstructions {
+  const EventRosterHandoffInstructions({
+    required this.eventId,
+    required this.expiresAt,
+    required this.emailStatus,
+    required this.emailAlias,
+    required this.whatsappStatus,
+    required this.whatsappNumber,
+    required this.whatsappMessage,
+  });
+
+  factory EventRosterHandoffInstructions.fromCallableData(Object? value) {
+    if (value case final Map<Object?, Object?> data) {
+      return EventRosterHandoffInstructions(
+        eventId: data['eventId'] as String,
+        expiresAt: DateTime.fromMillisecondsSinceEpoch(
+          (data['expiresAtMillis'] as num).toInt(),
+        ),
+        emailStatus: EventRosterHandoffChannelStatus.values.byName(
+          data['emailStatus'] as String,
+        ),
+        emailAlias: data['emailAlias'] as String?,
+        whatsappStatus: EventRosterHandoffChannelStatus.values.byName(
+          data['whatsappStatus'] as String,
+        ),
+        whatsappNumber: data['whatsappNumber'] as String?,
+        whatsappMessage: data['whatsappMessage'] as String?,
+      );
+    }
+    throw const FormatException('Invalid event roster handoff response.');
+  }
+
+  final String eventId;
+  final DateTime expiresAt;
+  final EventRosterHandoffChannelStatus emailStatus;
+  final String? emailAlias;
+  final EventRosterHandoffChannelStatus whatsappStatus;
+  final String? whatsappNumber;
+  final String? whatsappMessage;
+
+  bool get hasAvailableChannel =>
+      emailStatus == EventRosterHandoffChannelStatus.available ||
+      whatsappStatus == EventRosterHandoffChannelStatus.available;
+}

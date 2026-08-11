@@ -2075,6 +2075,31 @@ export interface EventAttendeeImportDocument {
 }
 
 /**
+ * Server-only, expiring capability that routes a verified forwarded roster to one event and Host identity.
+ */
+export interface EventRosterHandoffDocument {
+  eventId: string;
+  clubId: string;
+  organizerId: string;
+  hostUid: string;
+  tokenHash: string;
+  provider:
+    | "generic"
+    | "luma"
+    | "eventbrite"
+    | "partiful"
+    | "posh"
+    | "bookmyshow"
+    | "district"
+    | "sortmyscene"
+    | "airbnb";
+  status: "active" | "expired" | "revoked";
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+}
+
+/**
  * Participant-private runtime identity stored at eventRuntimeParticipants/{eventId_uid}.
  */
 export interface EventRuntimeParticipantDocument {

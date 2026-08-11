@@ -43,6 +43,10 @@ export {
   registerPublicEvent,
 } from "./events/eventAttendees";
 export {
+  createEventRosterHandoff,
+  ingestEventRosterWebhook,
+} from "./events/eventRosterHandoffs";
+export {
   approveEventRuntimeClaim,
   checkInEventRuntime,
   claimEventRuntimeAccess,

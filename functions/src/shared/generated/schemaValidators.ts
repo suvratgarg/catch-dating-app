@@ -42,6 +42,7 @@ import {EventInviteLinkDocument} from "./eventInviteLinkDocument";
 import {EventParticipationDocument} from "./eventParticipationDocument";
 import {EventAttendeeDocument} from "./eventAttendeeDocument";
 import {EventAttendeeImportDocument} from "./eventAttendeeImportDocument";
+import {EventRosterHandoffDocument} from "./eventRosterHandoffDocument";
 import {EventRuntimeParticipantDocument} from "./eventRuntimeParticipantDocument";
 import {EventRuntimeClaimRequestDocument} from "./eventRuntimeClaimRequestDocument";
 import {EventCrossPathsConsentDocument} from "./eventCrossPathsConsentDocument";
@@ -183,6 +184,8 @@ import {CheckInEventRuntimeCallablePayload} from "./checkInEventRuntimeCallableP
 import {CheckInEventRuntimeCallableResponse} from "./checkInEventRuntimeCallableResponse";
 import {ApproveEventRuntimeClaimCallablePayload} from "./approveEventRuntimeClaimCallablePayload";
 import {ApproveEventRuntimeClaimCallableResponse} from "./approveEventRuntimeClaimCallableResponse";
+import {CreateEventRosterHandoffCallablePayload} from "./createEventRosterHandoffCallablePayload";
+import {CreateEventRosterHandoffCallableResponse} from "./createEventRosterHandoffCallableResponse";
 import {GetOrganizerCrmSummaryCallablePayload} from "./getOrganizerCrmSummaryCallablePayload";
 import {GetOrganizerCrmSummaryCallableResponse} from "./getOrganizerCrmSummaryCallableResponse";
 import {EventJoinRequestDecisionCallablePayload} from "./eventJoinRequestDecisionCallablePayload";
@@ -298,6 +301,7 @@ import {
   eventParticipationDocumentSchema,
   eventAttendeeDocumentSchema,
   eventAttendeeImportDocumentSchema,
+  eventRosterHandoffDocumentSchema,
   eventRuntimeParticipantDocumentSchema,
   eventRuntimeClaimRequestDocumentSchema,
   eventCrossPathsConsentDocumentSchema,
@@ -439,6 +443,8 @@ import {
   checkInEventRuntimeCallableResponseSchema,
   approveEventRuntimeClaimCallablePayloadSchema,
   approveEventRuntimeClaimCallableResponseSchema,
+  createEventRosterHandoffCallablePayloadSchema,
+  createEventRosterHandoffCallableResponseSchema,
   getOrganizerCrmSummaryCallablePayloadSchema,
   getOrganizerCrmSummaryCallableResponseSchema,
   eventJoinRequestDecisionCallablePayloadSchema,
@@ -672,6 +678,10 @@ export const validateEventAttendeeImportDocument:
   ValidateFunction<EventAttendeeImportDocument> =
     ajv.compile(eventAttendeeImportDocumentSchema) as
       ValidateFunction<EventAttendeeImportDocument>;
+export const validateEventRosterHandoffDocument:
+  ValidateFunction<EventRosterHandoffDocument> =
+    ajv.compile(eventRosterHandoffDocumentSchema) as
+      ValidateFunction<EventRosterHandoffDocument>;
 export const validateEventRuntimeParticipantDocument:
   ValidateFunction<EventRuntimeParticipantDocument> =
     ajv.compile(eventRuntimeParticipantDocumentSchema) as
@@ -1236,6 +1246,14 @@ export const validateApproveEventRuntimeClaimCallableResponse:
   ValidateFunction<ApproveEventRuntimeClaimCallableResponse> =
     ajv.compile(approveEventRuntimeClaimCallableResponseSchema) as
       ValidateFunction<ApproveEventRuntimeClaimCallableResponse>;
+export const validateCreateEventRosterHandoffCallablePayload:
+  ValidateFunction<CreateEventRosterHandoffCallablePayload> =
+    ajv.compile(createEventRosterHandoffCallablePayloadSchema) as
+      ValidateFunction<CreateEventRosterHandoffCallablePayload>;
+export const validateCreateEventRosterHandoffCallableResponse:
+  ValidateFunction<CreateEventRosterHandoffCallableResponse> =
+    ajv.compile(createEventRosterHandoffCallableResponseSchema) as
+      ValidateFunction<CreateEventRosterHandoffCallableResponse>;
 export const validateGetOrganizerCrmSummaryCallablePayload:
   ValidateFunction<GetOrganizerCrmSummaryCallablePayload> =
     ajv.compile(getOrganizerCrmSummaryCallablePayloadSchema) as

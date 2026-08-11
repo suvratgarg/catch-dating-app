@@ -4,6 +4,7 @@ import test from "node:test";
 import {
   detectRosterAdapter,
   normalizeRosterMatrix,
+  prepareCsvRosterImport,
 } from "./rosterAdapters";
 
 test("detects a Luma guest export", () => {
@@ -40,5 +41,23 @@ test("flags providers without reviewed export samples", () => {
     adapterId: "sample-required",
     support: "sampleRequired",
     confidence: 1,
+  });
+});
+
+test("prepares bounded normalized rows for the shared importer", () => {
+  const prepared = prepareCsvRosterImport(
+    "First Name,Last Name,Email,Order ID,Ticket Type,Attendee Status\n" +
+      "Asha,Shah,asha@example.com,order-1,General,Attending",
+    "eventbrite"
+  );
+  assert.equal(prepared.adapter.adapterId, "eventbrite-v1");
+  assert.deepEqual(prepared.rows[0], {
+    rowId: "2",
+    displayName: "Asha Shah",
+    phone: null,
+    email: "asha@example.com",
+    externalReference: "order-1",
+    ticketType: "General",
+    status: "registered",
   });
 });

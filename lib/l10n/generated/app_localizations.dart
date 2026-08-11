@@ -17652,6 +17652,69 @@ abstract class AppLocalizations {
   /// **'Add guest'**
   String get hostsOperationalRosterAddGuest;
 
+  /// CTA to create secure per-event email or WhatsApp roster-forwarding instructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Forward CSV'**
+  String get hostsOperationalRosterForwardCsv;
+
+  /// Roster forwarding instruction sheet title.
+  ///
+  /// In en, this message translates to:
+  /// **'Forward this guest list'**
+  String get hostsOperationalRosterForwardTitle;
+
+  /// Security and usage guidance for roster forwarding.
+  ///
+  /// In en, this message translates to:
+  /// **'Forward one CSV from the email address or phone number on your Catch Host account. The private address and code expire after 30 days.'**
+  String get hostsOperationalRosterForwardSubtitle;
+
+  /// Email roster forwarding row title.
+  ///
+  /// In en, this message translates to:
+  /// **'Forward by email'**
+  String get hostsOperationalRosterForwardEmail;
+
+  /// WhatsApp roster forwarding row title.
+  ///
+  /// In en, this message translates to:
+  /// **'Forward on WhatsApp'**
+  String get hostsOperationalRosterForwardWhatsapp;
+
+  /// WhatsApp number and expiring event capability instruction.
+  ///
+  /// In en, this message translates to:
+  /// **'Send the CSV to {whatsappNumber} with the message: {whatsappMessage}'**
+  String hostsOperationalRosterForwardWhatsappBody({
+    required String whatsappNumber,
+    required String whatsappMessage,
+  });
+
+  /// Status shown when the forwarding provider for a channel is not configured.
+  ///
+  /// In en, this message translates to:
+  /// **'Provider setup required'**
+  String get hostsOperationalRosterForwardNotAvailable;
+
+  /// Honest setup boundary when no inbound transport provider is configured.
+  ///
+  /// In en, this message translates to:
+  /// **'Forwarding is implemented but this environment still needs an inbound email or WhatsApp provider. Use Import spreadsheet until an administrator finishes provider setup.'**
+  String get hostsOperationalRosterForwardProviderSetup;
+
+  /// Copies one roster forwarding address or instruction.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get hostsOperationalRosterForwardCopy;
+
+  /// Closes the roster forwarding instruction sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get hostsOperationalRosterForwardDone;
+
   /// Empty operational roster title.
   ///
   /// In en, this message translates to:

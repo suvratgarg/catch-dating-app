@@ -11354,6 +11354,44 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsOperationalRosterAddGuest => 'Add guest';
 
   @override
+  String get hostsOperationalRosterForwardCsv => 'Forward CSV';
+
+  @override
+  String get hostsOperationalRosterForwardTitle => 'Forward this guest list';
+
+  @override
+  String get hostsOperationalRosterForwardSubtitle =>
+      'Forward one CSV from the email address or phone number on your Catch Host account. The private address and code expire after 30 days.';
+
+  @override
+  String get hostsOperationalRosterForwardEmail => 'Forward by email';
+
+  @override
+  String get hostsOperationalRosterForwardWhatsapp => 'Forward on WhatsApp';
+
+  @override
+  String hostsOperationalRosterForwardWhatsappBody({
+    required String whatsappNumber,
+    required String whatsappMessage,
+  }) {
+    return 'Send the CSV to $whatsappNumber with the message: $whatsappMessage';
+  }
+
+  @override
+  String get hostsOperationalRosterForwardNotAvailable =>
+      'Provider setup required';
+
+  @override
+  String get hostsOperationalRosterForwardProviderSetup =>
+      'Forwarding is implemented but this environment still needs an inbound email or WhatsApp provider. Use Import spreadsheet until an administrator finishes provider setup.';
+
+  @override
+  String get hostsOperationalRosterForwardCopy => 'Copy';
+
+  @override
+  String get hostsOperationalRosterForwardDone => 'Done';
+
+  @override
   String get hostsOperationalRosterEmptyTitle =>
       'Your outside roster starts here';
 

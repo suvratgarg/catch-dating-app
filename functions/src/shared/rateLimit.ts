@@ -79,6 +79,7 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   declineEventWaitlistOffer: {maxRequests: 10, windowMs: 60 * 1000},
   decideEventJoinRequest: {maxRequests: 30, windowMs: 60 * 1000},
   importEventAttendees: {maxRequests: 5, windowMs: 60 * 60 * 1000},
+  createEventRosterHandoff: {maxRequests: 10, windowMs: 60 * 60 * 1000},
   markEventAttendeeAttendance: {maxRequests: 120, windowMs: 60 * 1000},
   registerPublicEvent: {maxRequests: 10, windowMs: 60 * 60 * 1000},
   getEventRuntimeBootstrap: {maxRequests: 60, windowMs: 60 * 1000},

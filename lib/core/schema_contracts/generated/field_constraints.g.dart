@@ -8008,6 +8008,63 @@ abstract final class CatchContractConstraints {
     maximum: 5,
   );
 
+  static const createEventRosterHandoffCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'createEventRosterHandoffCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventRosterHandoffCallableResponseEmailAlias = CatchContractFieldConstraints(
+    path: 'createEventRosterHandoffCallableResponse.emailAlias',
+    maxLength: 320,
+    valueTypes: <String>['string'],
+    format: 'email',
+  );
+
+  static const createEventRosterHandoffCallableResponseEmailStatus = CatchContractFieldConstraints(
+    path: 'createEventRosterHandoffCallableResponse.emailStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['available', 'providerSetupRequired'],
+  );
+
+  static const createEventRosterHandoffCallableResponseEventId = CatchContractFieldConstraints(
+    path: 'createEventRosterHandoffCallableResponse.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventRosterHandoffCallableResponseExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'createEventRosterHandoffCallableResponse.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const createEventRosterHandoffCallableResponseWhatsappMessage = CatchContractFieldConstraints(
+    path: 'createEventRosterHandoffCallableResponse.whatsappMessage',
+    maxLength: 160,
+    minLength: 20,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventRosterHandoffCallableResponseWhatsappNumber = CatchContractFieldConstraints(
+    path: 'createEventRosterHandoffCallableResponse.whatsappNumber',
+    valueTypes: <String>['string'],
+    pattern: '^\\+[1-9][0-9]{6,14}\$',
+  );
+
+  static const createEventRosterHandoffCallableResponseWhatsappStatus = CatchContractFieldConstraints(
+    path: 'createEventRosterHandoffCallableResponse.whatsappStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['available', 'providerSetupRequired'],
+  );
+
   static const createEventWaitlistOffersCallablePayloadEventId = CatchContractFieldConstraints(
     path: 'createEventWaitlistOffersCallablePayload.eventId',
     maxLength: 180,
@@ -12383,6 +12440,101 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const eventRosterHandoffDocumentClubId = CatchContractFieldConstraints(
+    path: 'eventRosterHandoffDocument.clubId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRosterHandoffDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventRosterHandoffDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventRosterHandoffDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventRosterHandoffDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventRosterHandoffDocumentEventId = CatchContractFieldConstraints(
+    path: 'eventRosterHandoffDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRosterHandoffDocumentExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventRosterHandoffDocument.expiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventRosterHandoffDocumentExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'eventRosterHandoffDocument.expiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventRosterHandoffDocumentHostUid = CatchContractFieldConstraints(
+    path: 'eventRosterHandoffDocument.hostUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRosterHandoffDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventRosterHandoffDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRosterHandoffDocumentProvider = CatchContractFieldConstraints(
+    path: 'eventRosterHandoffDocument.provider',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['generic', 'luma', 'eventbrite', 'partiful', 'posh', 'bookmyshow', 'district', 'sortmyscene', 'airbnb'],
+  );
+
+  static const eventRosterHandoffDocumentStatus = CatchContractFieldConstraints(
+    path: 'eventRosterHandoffDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['active', 'expired', 'revoked'],
+  );
+
+  static const eventRosterHandoffDocumentTokenHash = CatchContractFieldConstraints(
+    path: 'eventRosterHandoffDocument.tokenHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRosterHandoffDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventRosterHandoffDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventRosterHandoffDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventRosterHandoffDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
   );
 
   static const eventRuntimeAccessEnabled = CatchContractFieldConstraints(
@@ -31828,6 +31980,14 @@ abstract final class CatchContractConstraints {
     'createEventReviewCallablePayload.eventId': createEventReviewCallablePayloadEventId,
     'createEventReviewCallablePayload.organizerId': createEventReviewCallablePayloadOrganizerId,
     'createEventReviewCallablePayload.rating': createEventReviewCallablePayloadRating,
+    'createEventRosterHandoffCallablePayload.eventId': createEventRosterHandoffCallablePayloadEventId,
+    'createEventRosterHandoffCallableResponse.emailAlias': createEventRosterHandoffCallableResponseEmailAlias,
+    'createEventRosterHandoffCallableResponse.emailStatus': createEventRosterHandoffCallableResponseEmailStatus,
+    'createEventRosterHandoffCallableResponse.eventId': createEventRosterHandoffCallableResponseEventId,
+    'createEventRosterHandoffCallableResponse.expiresAtMillis': createEventRosterHandoffCallableResponseExpiresAtMillis,
+    'createEventRosterHandoffCallableResponse.whatsappMessage': createEventRosterHandoffCallableResponseWhatsappMessage,
+    'createEventRosterHandoffCallableResponse.whatsappNumber': createEventRosterHandoffCallableResponseWhatsappNumber,
+    'createEventRosterHandoffCallableResponse.whatsappStatus': createEventRosterHandoffCallableResponseWhatsappStatus,
     'createEventWaitlistOffersCallablePayload.eventId': createEventWaitlistOffersCallablePayloadEventId,
     'createEventWaitlistOffersCallablePayload.expiresInMinutes': createEventWaitlistOffersCallablePayloadExpiresInMinutes,
     'createEventWaitlistOffersCallablePayload.userIds': createEventWaitlistOffersCallablePayloadUserIds,
@@ -32435,6 +32595,19 @@ abstract final class CatchContractConstraints {
     'eventPrivateAccessDocument.eventId': eventPrivateAccessDocumentEventId,
     'eventPrivateAccessDocument.inviteCode': eventPrivateAccessDocumentInviteCode,
     'eventPrivateAccessDocument.organizerId': eventPrivateAccessDocumentOrganizerId,
+    'eventRosterHandoffDocument.clubId': eventRosterHandoffDocumentClubId,
+    'eventRosterHandoffDocument.createdAt._nanoseconds': eventRosterHandoffDocumentCreatedAtNanoseconds,
+    'eventRosterHandoffDocument.createdAt._seconds': eventRosterHandoffDocumentCreatedAtSeconds,
+    'eventRosterHandoffDocument.eventId': eventRosterHandoffDocumentEventId,
+    'eventRosterHandoffDocument.expiresAt._nanoseconds': eventRosterHandoffDocumentExpiresAtNanoseconds,
+    'eventRosterHandoffDocument.expiresAt._seconds': eventRosterHandoffDocumentExpiresAtSeconds,
+    'eventRosterHandoffDocument.hostUid': eventRosterHandoffDocumentHostUid,
+    'eventRosterHandoffDocument.organizerId': eventRosterHandoffDocumentOrganizerId,
+    'eventRosterHandoffDocument.provider': eventRosterHandoffDocumentProvider,
+    'eventRosterHandoffDocument.status': eventRosterHandoffDocumentStatus,
+    'eventRosterHandoffDocument.tokenHash': eventRosterHandoffDocumentTokenHash,
+    'eventRosterHandoffDocument.updatedAt._nanoseconds': eventRosterHandoffDocumentUpdatedAtNanoseconds,
+    'eventRosterHandoffDocument.updatedAt._seconds': eventRosterHandoffDocumentUpdatedAtSeconds,
     'eventRuntimeAccess.enabled': eventRuntimeAccessEnabled,
     'eventRuntimeAccess.publicRuntimeId': eventRuntimeAccessPublicRuntimeId,
     'eventRuntimeAccess.termsVersion': eventRuntimeAccessTermsVersion,

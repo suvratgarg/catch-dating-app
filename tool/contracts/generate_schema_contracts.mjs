@@ -219,6 +219,12 @@ const schemaSpecs = [
       "functions/src/shared/generated/eventAttendeeImportDocument.ts",
   },
   {
+    name: "EventRosterHandoffDocument",
+    source: "firestore/event_roster_handoffs.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventRosterHandoffDocument.ts",
+  },
+  {
     name: "EventRuntimeParticipantDocument",
     source: "firestore/event_runtime_participants.schema.json",
     typeOutput:
@@ -1091,6 +1097,19 @@ const schemaSpecs = [
       "callable_responses/approve_event_runtime_claim_response.schema.json",
     typeOutput:
       "functions/src/shared/generated/approveEventRuntimeClaimCallableResponse.ts",
+  },
+  {
+    name: "CreateEventRosterHandoffCallablePayload",
+    source: "callables/create_event_roster_handoff_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/createEventRosterHandoffCallablePayload.ts",
+  },
+  {
+    name: "CreateEventRosterHandoffCallableResponse",
+    source:
+      "callable_responses/create_event_roster_handoff_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/createEventRosterHandoffCallableResponse.ts",
   },
   {
     name: "GetOrganizerCrmSummaryCallablePayload",

@@ -415,6 +415,28 @@ confirmation. WhatsApp Business document ingestion reuses the job pipeline and
 is transport, not marketing consent. Credentials, DNS and webhook registration
 are release configuration, not source-code acceptance.
 
+The first practical forwarding slice is now implemented without claiming that
+an inbound vendor is live:
+
+- `createEventRosterHandoff` verifies organizer management and creates a
+  random, SHA-256-addressed, 30-day `eventRosterHandoffs` capability;
+- the Host roster sheet shows email and WhatsApp instructions only when
+  `ROSTER_INBOUND_EMAIL_DOMAIN` or `ROSTER_INBOUND_WHATSAPP_NUMBER` is set;
+- `ingestEventRosterWebhook` accepts a provider-normalized JSON envelope,
+  verifies an exact-body HMAC from `ROSTER_INGESTION_WEBHOOK_SECRET`, requires
+  provider-confirmed sender identity, and matches that identity to the Host's
+  Firebase Auth email or phone;
+- the endpoint accepts one CSV up to 4 MiB, maps at most 250 attendees through
+  the backend adapter engine, and reuses `importEventAttendeesForHost`; the
+  provider message id becomes the retry-safe import key; and
+- raw attachment bytes are processed in memory and not retained. XLSX
+  forwarding, files above 250 rows, temporary Storage, progress UI and
+  conflict-aware undo still belong to the asynchronous job tranche.
+
+An email-routing or WhatsApp Business provider must transform its proprietary
+webhook into the normalized envelope and sign it. Deploying the endpoint alone
+does not make the displayed mailbox or phone number operational.
+
 ### Security and abuse invariants
 
 - Uniform public errors prevent event/phone/roster enumeration.

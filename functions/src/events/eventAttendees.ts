@@ -86,6 +86,18 @@ export async function importEventAttendeesHandler(
     validateImportEventAttendeesCallablePayload,
     normalizeImportPayload
   );
+  return importEventAttendeesForHost({hostUid, payload}, deps);
+}
+
+/** Shared importer for authenticated callable and signed inbound transports. */
+export async function importEventAttendeesForHost(
+  params: {
+    hostUid: string;
+    payload: ImportEventAttendeesCallablePayload;
+  },
+  deps: EventAttendeeDeps = defaultDeps
+): Promise<EventAttendeeImportResult> {
+  const {hostUid, payload} = params;
   const db = deps.firestore();
   await deps.checkRateLimit(db, hostUid, "importEventAttendees");
 

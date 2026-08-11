@@ -41,6 +41,7 @@ import {
   eventParticipationDocumentSchema,
   eventAttendeeDocumentSchema,
   eventAttendeeImportDocumentSchema,
+  eventRosterHandoffDocumentSchema,
   eventRuntimeParticipantDocumentSchema,
   eventRuntimeClaimRequestDocumentSchema,
   eventCrossPathsConsentDocumentSchema,
@@ -182,6 +183,8 @@ import {
   checkInEventRuntimeCallableResponseSchema,
   approveEventRuntimeClaimCallablePayloadSchema,
   approveEventRuntimeClaimCallableResponseSchema,
+  createEventRosterHandoffCallablePayloadSchema,
+  createEventRosterHandoffCallableResponseSchema,
   getOrganizerCrmSummaryCallablePayloadSchema,
   getOrganizerCrmSummaryCallableResponseSchema,
   eventJoinRequestDecisionCallablePayloadSchema,
@@ -320,6 +323,7 @@ export const validateEventInviteLinkDocument = ajv.compile(eventInviteLinkDocume
 export const validateEventParticipationDocument = ajv.compile(eventParticipationDocumentSchema);
 export const validateEventAttendeeDocument = ajv.compile(eventAttendeeDocumentSchema);
 export const validateEventAttendeeImportDocument = ajv.compile(eventAttendeeImportDocumentSchema);
+export const validateEventRosterHandoffDocument = ajv.compile(eventRosterHandoffDocumentSchema);
 export const validateEventRuntimeParticipantDocument = ajv.compile(eventRuntimeParticipantDocumentSchema);
 export const validateEventRuntimeClaimRequestDocument = ajv.compile(eventRuntimeClaimRequestDocumentSchema);
 export const validateEventCrossPathsConsentDocument = ajv.compile(eventCrossPathsConsentDocumentSchema);
@@ -461,6 +465,8 @@ export const validateCheckInEventRuntimeCallablePayload = ajv.compile(checkInEve
 export const validateCheckInEventRuntimeCallableResponse = ajv.compile(checkInEventRuntimeCallableResponseSchema);
 export const validateApproveEventRuntimeClaimCallablePayload = ajv.compile(approveEventRuntimeClaimCallablePayloadSchema);
 export const validateApproveEventRuntimeClaimCallableResponse = ajv.compile(approveEventRuntimeClaimCallableResponseSchema);
+export const validateCreateEventRosterHandoffCallablePayload = ajv.compile(createEventRosterHandoffCallablePayloadSchema);
+export const validateCreateEventRosterHandoffCallableResponse = ajv.compile(createEventRosterHandoffCallableResponseSchema);
 export const validateGetOrganizerCrmSummaryCallablePayload = ajv.compile(getOrganizerCrmSummaryCallablePayloadSchema);
 export const validateGetOrganizerCrmSummaryCallableResponse = ajv.compile(getOrganizerCrmSummaryCallableResponseSchema);
 export const validateEventJoinRequestDecisionCallablePayload = ajv.compile(eventJoinRequestDecisionCallablePayloadSchema);
