@@ -10,7 +10,7 @@ Global concurrency ceiling is 50 (`maxInstances` in `src/index.ts`).
 Per-function overrides can be added to individual `onCall` / `onDocumentCreated`
 options when specific functions need higher or lower limits.
 
-## Function inventory (August 2026)
+## Function inventory (July 2026)
 
 ### Callable (client-invoked)
 
