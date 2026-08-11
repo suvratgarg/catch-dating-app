@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.components.schema.json",
   "version": 4,
-  "updated": "2026-08-05",
+  "updated": "2026-08-11",
   "sourceOfTruth": {
     "behavior": "Flutter implementations in lib/core/widgets/catch_*.dart own runtime behavior, accessibility, layout, and state.",
     "tokens": "design/tokens/catch.tokens.json owns primitive token values; generated Dart/CSS and Figma variables mirror it.",
@@ -117,7 +117,67 @@
         "figma": {
           "status": "unmapped",
           "componentName": "Catch/Badge",
-          "componentUrl": null
+          "componentUrl": null,
+          "propertyProjection": {
+            "mode": "explicit",
+            "reviewStates": "evidence",
+            "properties": [
+              {
+                "name": "Label",
+                "type": "TEXT",
+                "defaultValue": "Badge",
+                "sourceProps": [
+                  "label"
+                ]
+              },
+              {
+                "name": "Show Icon",
+                "type": "BOOLEAN",
+                "defaultValue": false,
+                "sourceProps": [
+                  "icon"
+                ],
+                "notes": "Optional code slots use a separate Figma visibility control and instance-swap control."
+              },
+              {
+                "name": "Icon",
+                "type": "INSTANCE_SWAP",
+                "defaultValue": null,
+                "sourceProps": [
+                  "icon"
+                ]
+              },
+              {
+                "name": "Tone",
+                "type": "VARIANT",
+                "defaultValue": "Neutral",
+                "variantOptions": [
+                  "Neutral",
+                  "Brand",
+                  "Success",
+                  "Warning",
+                  "Danger",
+                  "Gold"
+                ],
+                "sourceProps": [
+                  "tone"
+                ]
+              },
+              {
+                "name": "Size",
+                "type": "VARIANT",
+                "defaultValue": "Sm",
+                "variantOptions": [
+                  "Sm",
+                  "Md",
+                  "Action"
+                ],
+                "sourceProps": [
+                  "size"
+                ]
+              }
+            ]
+          }
         },
         "codeConnect": {
           "status": "planned",
@@ -1753,7 +1813,126 @@
         "figma": {
           "status": "unmapped",
           "componentName": "Catch/Field",
-          "componentUrl": null
+          "componentUrl": null,
+          "propertyProjection": {
+            "mode": "explicit",
+            "reviewStates": "evidence",
+            "properties": [
+              {
+                "name": "Type",
+                "type": "VARIANT",
+                "defaultValue": "Read",
+                "variantOptions": [
+                  "Read",
+                  "Content",
+                  "Nav",
+                  "Action",
+                  "Toggle",
+                  "Input",
+                  "Input Actions",
+                  "Control",
+                  "Choices",
+                  "Option Cards",
+                  "Stepper",
+                  "Add",
+                  "Select"
+                ],
+                "sourceProps": [],
+                "notes": "Maps one-to-one to the 13 named CatchField constructors."
+              },
+              {
+                "name": "Title",
+                "type": "TEXT",
+                "defaultValue": "Event name",
+                "sourceProps": [
+                  "title"
+                ]
+              },
+              {
+                "name": "Value",
+                "type": "TEXT",
+                "defaultValue": "Sunday Social",
+                "sourceProps": [
+                  "body",
+                  "valueText",
+                  "placeholder",
+                  "emptyValueText",
+                  "inputHint"
+                ]
+              },
+              {
+                "name": "Show Icon",
+                "type": "BOOLEAN",
+                "defaultValue": false,
+                "sourceProps": [
+                  "icon",
+                  "leading"
+                ]
+              },
+              {
+                "name": "Leading Icon",
+                "type": "INSTANCE_SWAP",
+                "defaultValue": null,
+                "sourceProps": [
+                  "icon",
+                  "leading"
+                ]
+              },
+              {
+                "name": "Show Optional",
+                "type": "BOOLEAN",
+                "defaultValue": false,
+                "sourceProps": [
+                  "isOptional"
+                ]
+              },
+              {
+                "name": "Optional Label",
+                "type": "TEXT",
+                "defaultValue": " · Optional",
+                "sourceProps": [
+                  "isOptional"
+                ]
+              },
+              {
+                "name": "Show Supporting",
+                "type": "BOOLEAN",
+                "defaultValue": false,
+                "sourceProps": [
+                  "supporting",
+                  "helperText",
+                  "error",
+                  "errorText"
+                ]
+              },
+              {
+                "name": "Supporting Text",
+                "type": "TEXT",
+                "defaultValue": "Supporting text",
+                "sourceProps": [
+                  "helperText",
+                  "error",
+                  "errorText"
+                ]
+              },
+              {
+                "name": "Show Counter",
+                "type": "BOOLEAN",
+                "defaultValue": false,
+                "sourceProps": [
+                  "maxLength"
+                ]
+              },
+              {
+                "name": "Counter",
+                "type": "TEXT",
+                "defaultValue": "0 / 100",
+                "sourceProps": [
+                  "maxLength"
+                ]
+              }
+            ]
+          }
         },
         "codeConnect": {
           "status": "planned",
