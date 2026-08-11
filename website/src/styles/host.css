@@ -199,10 +199,11 @@
   font-size: 13px;
 }
 
-.host-bridge-demo__runtime h3 {
+.host-bridge-demo__runtime-title {
   margin-top: 28px;
   color: var(--website-text);
   font-size: 22px;
+  font-weight: 700;
   line-height: 0.98;
 }
 

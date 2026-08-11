@@ -145,7 +145,7 @@ export function HostBridgeDemo({
       <div className="host-bridge-demo__runtime">
         <span>{runtimeLabel}</span>
         <strong>{eventName}</strong>
-        <h3>{runtimeTitle}</h3>
+        <div className="host-bridge-demo__runtime-title">{runtimeTitle}</div>
         <p>{runtimeBody}</p>
         <ul>
           {runtimeItems.map((item, index) => <li key={index}>{item}</li>)}
