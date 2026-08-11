@@ -2,6 +2,8 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+import {EventOrigin} from "./eventOrigin";
+import {EventRuntimeAccess} from "./eventRuntimeAccess";
 import {ExternalEventBlockerResolution} from "./externalEventBlockerResolution";
 import {HostAnalyticsCallableResponse} from "./hostAnalyticsCallableResponse";
 
@@ -1698,6 +1700,8 @@ export interface ClubClaimRequestDocument {
 export interface EventDocument {
   clubId: string;
   organizerId?: string;
+  eventOrigin?: EventOrigin;
+  runtimeAccess?: EventRuntimeAccess;
   startTime: FirebaseFirestore.Timestamp;
   endTime: FirebaseFirestore.Timestamp;
   meetingPoint: string;
@@ -2068,6 +2072,98 @@ export interface EventAttendeeImportDocument {
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
   completedAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Participant-private runtime identity stored at eventRuntimeParticipants/{eventId_uid}.
+ */
+export interface EventRuntimeParticipantDocument {
+  eventId: string;
+  clubId: string;
+  organizerId: string;
+  uid: string;
+  eventAttendeeId: string | null;
+  identityVersion: 1;
+  claimMethod:
+    | "verifiedPhone"
+    | "signedAttendeeToken"
+    | "verifiedEmail"
+    | "hostApproval"
+    | "catchParticipation";
+  accessStatus:
+    | "pendingApproval"
+    | "needsInput"
+    | "ready"
+    | "optedOut"
+    | "revoked";
+  /**
+   * @maxItems 5
+   */
+  requiredFieldIds: (
+    | "displayName"
+    | "gender"
+    | "interestedInGenders"
+    | "relationshipGoal"
+    | "dateOfBirth"
+  )[];
+  /**
+   * @maxItems 5
+   */
+  completedFieldIds: (
+    | "displayName"
+    | "gender"
+    | "interestedInGenders"
+    | "relationshipGoal"
+    | "dateOfBirth"
+  )[];
+  runtimeProfile: {
+    displayName: string;
+    gender: ("man" | "woman" | "nonBinary" | "other") | null;
+    /**
+     * @maxItems 4
+     */
+    interestedInGenders: ("man" | "woman" | "nonBinary" | "other")[];
+    relationshipGoal:
+      | "relationship"
+      | "casual"
+      | "marriage"
+      | "friendship"
+      | "unsure"
+      | null;
+    dateOfBirth: FirebaseFirestore.Timestamp | null;
+  };
+  consents: {
+    runtimeTermsVersion: string;
+    sensitiveDataTermsVersion: string | null;
+    saveAsCatchPrefill: boolean;
+  };
+  claimedAt: FirebaseFirestore.Timestamp;
+  readyAt: FirebaseFirestore.Timestamp | null;
+  revokedAt: FirebaseFirestore.Timestamp | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Host-reviewable pending runtime identity claim stored at eventRuntimeClaimRequests/{eventId_uid}.
+ */
+export interface EventRuntimeClaimRequestDocument {
+  eventId: string;
+  clubId: string;
+  organizerId: string;
+  uid: string;
+  displayName: string;
+  phoneLastFour: string;
+  /**
+   * @maxItems 20
+   */
+  candidateAttendeeIds: string[];
+  status: "pending" | "approved" | "rejected" | "cancelled";
+  reviewedBy: string | null;
+  reviewReason: string | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  reviewedAt: FirebaseFirestore.Timestamp | null;
 }
 
 /**

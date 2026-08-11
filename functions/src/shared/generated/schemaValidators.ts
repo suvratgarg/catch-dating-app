@@ -11,6 +11,8 @@ import {ProfilePromptAnswer} from "./profilePromptAnswer";
 import {PhotoPromptAnswer} from "./photoPromptAnswer";
 import {ProfilePhoto} from "./profilePhoto";
 import {UploadedPhoto} from "./uploadedPhoto";
+import {EventOrigin} from "./eventOrigin";
+import {EventRuntimeAccess} from "./eventRuntimeAccess";
 import {ActivityPreferences} from "./activityPreferences";
 import {OrganizerSupplyCapabilities} from "./organizerSupplyCapabilities";
 import {ExternalEventBlockerResolution} from "./externalEventBlockerResolution";
@@ -40,6 +42,8 @@ import {EventInviteLinkDocument} from "./eventInviteLinkDocument";
 import {EventParticipationDocument} from "./eventParticipationDocument";
 import {EventAttendeeDocument} from "./eventAttendeeDocument";
 import {EventAttendeeImportDocument} from "./eventAttendeeImportDocument";
+import {EventRuntimeParticipantDocument} from "./eventRuntimeParticipantDocument";
+import {EventRuntimeClaimRequestDocument} from "./eventRuntimeClaimRequestDocument";
 import {EventCrossPathsConsentDocument} from "./eventCrossPathsConsentDocument";
 import {CrossPathsShowcaseEligibilityDocument} from "./crossPathsShowcaseEligibilityDocument";
 import {CrossPathsSuggestionExposureDocument} from "./crossPathsSuggestionExposureDocument";
@@ -169,6 +173,14 @@ import {ImportEventAttendeesCallablePayload} from "./importEventAttendeesCallabl
 import {MarkEventAttendeeAttendanceCallablePayload} from "./markEventAttendeeAttendanceCallablePayload";
 import {RegisterPublicEventCallablePayload} from "./registerPublicEventCallablePayload";
 import {RegisterPublicEventCallableResponse} from "./registerPublicEventCallableResponse";
+import {GetEventRuntimeBootstrapCallablePayload} from "./getEventRuntimeBootstrapCallablePayload";
+import {GetEventRuntimeBootstrapCallableResponse} from "./getEventRuntimeBootstrapCallableResponse";
+import {ClaimEventRuntimeAccessCallablePayload} from "./claimEventRuntimeAccessCallablePayload";
+import {ClaimEventRuntimeAccessCallableResponse} from "./claimEventRuntimeAccessCallableResponse";
+import {SubmitEventRuntimeProfileCallablePayload} from "./submitEventRuntimeProfileCallablePayload";
+import {SubmitEventRuntimeProfileCallableResponse} from "./submitEventRuntimeProfileCallableResponse";
+import {ApproveEventRuntimeClaimCallablePayload} from "./approveEventRuntimeClaimCallablePayload";
+import {ApproveEventRuntimeClaimCallableResponse} from "./approveEventRuntimeClaimCallableResponse";
 import {GetOrganizerCrmSummaryCallablePayload} from "./getOrganizerCrmSummaryCallablePayload";
 import {GetOrganizerCrmSummaryCallableResponse} from "./getOrganizerCrmSummaryCallableResponse";
 import {EventJoinRequestDecisionCallablePayload} from "./eventJoinRequestDecisionCallablePayload";
@@ -253,6 +265,8 @@ import {
   photoPromptAnswerSchema,
   profilePhotoSchema,
   uploadedPhotoSchema,
+  eventOriginSchema,
+  eventRuntimeAccessSchema,
   activityPreferencesSchema,
   organizerSupplyCapabilitiesSchema,
   externalEventBlockerResolutionSchema,
@@ -282,6 +296,8 @@ import {
   eventParticipationDocumentSchema,
   eventAttendeeDocumentSchema,
   eventAttendeeImportDocumentSchema,
+  eventRuntimeParticipantDocumentSchema,
+  eventRuntimeClaimRequestDocumentSchema,
   eventCrossPathsConsentDocumentSchema,
   crossPathsShowcaseEligibilityDocumentSchema,
   crossPathsSuggestionExposureDocumentSchema,
@@ -411,6 +427,14 @@ import {
   markEventAttendeeAttendanceCallablePayloadSchema,
   registerPublicEventCallablePayloadSchema,
   registerPublicEventCallableResponseSchema,
+  getEventRuntimeBootstrapCallablePayloadSchema,
+  getEventRuntimeBootstrapCallableResponseSchema,
+  claimEventRuntimeAccessCallablePayloadSchema,
+  claimEventRuntimeAccessCallableResponseSchema,
+  submitEventRuntimeProfileCallablePayloadSchema,
+  submitEventRuntimeProfileCallableResponseSchema,
+  approveEventRuntimeClaimCallablePayloadSchema,
+  approveEventRuntimeClaimCallableResponseSchema,
   getOrganizerCrmSummaryCallablePayloadSchema,
   getOrganizerCrmSummaryCallableResponseSchema,
   eventJoinRequestDecisionCallablePayloadSchema,
@@ -520,6 +544,14 @@ export const validateUploadedPhoto:
   ValidateFunction<UploadedPhoto> =
     ajv.compile(uploadedPhotoSchema) as
       ValidateFunction<UploadedPhoto>;
+export const validateEventOrigin:
+  ValidateFunction<EventOrigin> =
+    ajv.compile(eventOriginSchema) as
+      ValidateFunction<EventOrigin>;
+export const validateEventRuntimeAccess:
+  ValidateFunction<EventRuntimeAccess> =
+    ajv.compile(eventRuntimeAccessSchema) as
+      ValidateFunction<EventRuntimeAccess>;
 export const validateActivityPreferences:
   ValidateFunction<ActivityPreferences> =
     ajv.compile(activityPreferencesSchema) as
@@ -636,6 +668,14 @@ export const validateEventAttendeeImportDocument:
   ValidateFunction<EventAttendeeImportDocument> =
     ajv.compile(eventAttendeeImportDocumentSchema) as
       ValidateFunction<EventAttendeeImportDocument>;
+export const validateEventRuntimeParticipantDocument:
+  ValidateFunction<EventRuntimeParticipantDocument> =
+    ajv.compile(eventRuntimeParticipantDocumentSchema) as
+      ValidateFunction<EventRuntimeParticipantDocument>;
+export const validateEventRuntimeClaimRequestDocument:
+  ValidateFunction<EventRuntimeClaimRequestDocument> =
+    ajv.compile(eventRuntimeClaimRequestDocumentSchema) as
+      ValidateFunction<EventRuntimeClaimRequestDocument>;
 export const validateEventCrossPathsConsentDocument:
   ValidateFunction<EventCrossPathsConsentDocument> =
     ajv.compile(eventCrossPathsConsentDocumentSchema) as
@@ -1152,6 +1192,38 @@ export const validateRegisterPublicEventCallableResponse:
   ValidateFunction<RegisterPublicEventCallableResponse> =
     ajv.compile(registerPublicEventCallableResponseSchema) as
       ValidateFunction<RegisterPublicEventCallableResponse>;
+export const validateGetEventRuntimeBootstrapCallablePayload:
+  ValidateFunction<GetEventRuntimeBootstrapCallablePayload> =
+    ajv.compile(getEventRuntimeBootstrapCallablePayloadSchema) as
+      ValidateFunction<GetEventRuntimeBootstrapCallablePayload>;
+export const validateGetEventRuntimeBootstrapCallableResponse:
+  ValidateFunction<GetEventRuntimeBootstrapCallableResponse> =
+    ajv.compile(getEventRuntimeBootstrapCallableResponseSchema) as
+      ValidateFunction<GetEventRuntimeBootstrapCallableResponse>;
+export const validateClaimEventRuntimeAccessCallablePayload:
+  ValidateFunction<ClaimEventRuntimeAccessCallablePayload> =
+    ajv.compile(claimEventRuntimeAccessCallablePayloadSchema) as
+      ValidateFunction<ClaimEventRuntimeAccessCallablePayload>;
+export const validateClaimEventRuntimeAccessCallableResponse:
+  ValidateFunction<ClaimEventRuntimeAccessCallableResponse> =
+    ajv.compile(claimEventRuntimeAccessCallableResponseSchema) as
+      ValidateFunction<ClaimEventRuntimeAccessCallableResponse>;
+export const validateSubmitEventRuntimeProfileCallablePayload:
+  ValidateFunction<SubmitEventRuntimeProfileCallablePayload> =
+    ajv.compile(submitEventRuntimeProfileCallablePayloadSchema) as
+      ValidateFunction<SubmitEventRuntimeProfileCallablePayload>;
+export const validateSubmitEventRuntimeProfileCallableResponse:
+  ValidateFunction<SubmitEventRuntimeProfileCallableResponse> =
+    ajv.compile(submitEventRuntimeProfileCallableResponseSchema) as
+      ValidateFunction<SubmitEventRuntimeProfileCallableResponse>;
+export const validateApproveEventRuntimeClaimCallablePayload:
+  ValidateFunction<ApproveEventRuntimeClaimCallablePayload> =
+    ajv.compile(approveEventRuntimeClaimCallablePayloadSchema) as
+      ValidateFunction<ApproveEventRuntimeClaimCallablePayload>;
+export const validateApproveEventRuntimeClaimCallableResponse:
+  ValidateFunction<ApproveEventRuntimeClaimCallableResponse> =
+    ajv.compile(approveEventRuntimeClaimCallableResponseSchema) as
+      ValidateFunction<ApproveEventRuntimeClaimCallableResponse>;
 export const validateGetOrganizerCrmSummaryCallablePayload:
   ValidateFunction<GetOrganizerCrmSummaryCallablePayload> =
     ajv.compile(getOrganizerCrmSummaryCallablePayloadSchema) as

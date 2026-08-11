@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.13.1
-updated: 2026-08-10
+version: 1.14.0
+updated: 2026-08-11
 owner: recursive_audit_loop
 status: active
 ---
@@ -347,6 +347,8 @@ Root-level edge/action documents are the source of truth for many-to-many state:
 | Event booking, waitlist, attendance, cancellation | `eventParticipations/{eventId_uid}` |
 | Unified Host operational roster row | `eventAttendees/{attendeeId}` |
 | Roster import audit and idempotency receipt | `eventAttendeeImports/{importId}` |
+| Private no-download Event Success identity | server-owned `eventRuntimeParticipants/{eventId_uid}` |
+| Ambiguous or walk-in Event Success claim review | server-owned `eventRuntimeClaimRequests/{eventId_uid}` |
 | Organizer-scoped communication permission | server-only `organizerCommunicationPreferences/{organizerId_uid}` |
 | Cross Paths event visibility | `eventCrossPathsConsents/{eventId_uid}` |
 | Cross Paths showcase eligibility | server-only `crossPathsShowcaseEligibility/{uid}` |
@@ -427,6 +429,39 @@ name and verified phone. That seed is a continuation convenience for a later,
 intentional Consumer onboarding flow, not a profile or advertising permission.
 The person must review/edit the draft before any public or dating-profile
 projection is created.
+
+### External Booking Event Success Runtime
+
+An event may carry optional server-owned `eventOrigin` and `runtimeAccess`
+objects. Their absence preserves legacy behavior. `eventOrigin.mode` records
+whether Catch owns the booking (`catchNative`) or overlays an event booked on
+another provider (`externalCompanion`); its provider/source identifiers are
+provenance, not a claim that Catch owns or has synchronized the source event.
+`runtimeAccess.publicRuntimeId` is an opaque join identifier, never the event
+document id or a bearer authorization credential. The runtime bootstrap
+callable resolves it and returns only a bounded public event projection.
+
+`eventRuntimeParticipants/{eventId_uid}` is the private bridge between a
+Firebase phone-auth identity and an event-scoped operational attendee. It owns
+the claim method, optional `eventAttendeeId`, minimum runtime-profile fields,
+explicit terms versions, and readiness state. It does not create or imply a
+Consumer `users/{uid}`, `publicProfiles/{uid}`, `eventParticipations/{eventId_uid}`,
+dating match, or marketing grant. Clients may get only their own deterministic
+edge; list and direct writes are denied. Event Success modules authorize a
+`ready` runtime edge independently of the Consumer booking/network edge.
+
+When the verified phone cannot be matched unambiguously, or when the event's
+walk-in policy requires review, the server writes
+`eventRuntimeClaimRequests/{eventId_uid}` with only the last four phone digits
+and bounded candidate attendee ids. Authorized organizer managers may review
+that request through a callable. A rejection cannot expose alternative roster
+identities to the claimant.
+
+The minimum event-scoped questionnaire is plan-derived. Display name is always
+required; sensitive or compatibility fields are requested only when an enabled
+module needs them. Saving the answers as a later Catch onboarding prefill is a
+separate explicit consent. A prefill remains private and must never overwrite a
+completed Consumer profile or create a public projection.
 
 ### Organizer Communication Preferences And CRM
 

@@ -10,6 +10,8 @@ import {
   photoPromptAnswerSchema,
   profilePhotoSchema,
   uploadedPhotoSchema,
+  eventOriginSchema,
+  eventRuntimeAccessSchema,
   activityPreferencesSchema,
   organizerSupplyCapabilitiesSchema,
   externalEventBlockerResolutionSchema,
@@ -39,6 +41,8 @@ import {
   eventParticipationDocumentSchema,
   eventAttendeeDocumentSchema,
   eventAttendeeImportDocumentSchema,
+  eventRuntimeParticipantDocumentSchema,
+  eventRuntimeClaimRequestDocumentSchema,
   eventCrossPathsConsentDocumentSchema,
   crossPathsShowcaseEligibilityDocumentSchema,
   crossPathsSuggestionExposureDocumentSchema,
@@ -168,6 +172,14 @@ import {
   markEventAttendeeAttendanceCallablePayloadSchema,
   registerPublicEventCallablePayloadSchema,
   registerPublicEventCallableResponseSchema,
+  getEventRuntimeBootstrapCallablePayloadSchema,
+  getEventRuntimeBootstrapCallableResponseSchema,
+  claimEventRuntimeAccessCallablePayloadSchema,
+  claimEventRuntimeAccessCallableResponseSchema,
+  submitEventRuntimeProfileCallablePayloadSchema,
+  submitEventRuntimeProfileCallableResponseSchema,
+  approveEventRuntimeClaimCallablePayloadSchema,
+  approveEventRuntimeClaimCallableResponseSchema,
   getOrganizerCrmSummaryCallablePayloadSchema,
   getOrganizerCrmSummaryCallableResponseSchema,
   eventJoinRequestDecisionCallablePayloadSchema,
@@ -275,6 +287,8 @@ export const validateProfilePromptAnswer = ajv.compile(profilePromptAnswerSchema
 export const validatePhotoPromptAnswer = ajv.compile(photoPromptAnswerSchema);
 export const validateProfilePhoto = ajv.compile(profilePhotoSchema);
 export const validateUploadedPhoto = ajv.compile(uploadedPhotoSchema);
+export const validateEventOrigin = ajv.compile(eventOriginSchema);
+export const validateEventRuntimeAccess = ajv.compile(eventRuntimeAccessSchema);
 export const validateActivityPreferences = ajv.compile(activityPreferencesSchema);
 export const validateOrganizerSupplyCapabilities = ajv.compile(organizerSupplyCapabilitiesSchema);
 export const validateExternalEventBlockerResolution = ajv.compile(externalEventBlockerResolutionSchema);
@@ -304,6 +318,8 @@ export const validateEventInviteLinkDocument = ajv.compile(eventInviteLinkDocume
 export const validateEventParticipationDocument = ajv.compile(eventParticipationDocumentSchema);
 export const validateEventAttendeeDocument = ajv.compile(eventAttendeeDocumentSchema);
 export const validateEventAttendeeImportDocument = ajv.compile(eventAttendeeImportDocumentSchema);
+export const validateEventRuntimeParticipantDocument = ajv.compile(eventRuntimeParticipantDocumentSchema);
+export const validateEventRuntimeClaimRequestDocument = ajv.compile(eventRuntimeClaimRequestDocumentSchema);
 export const validateEventCrossPathsConsentDocument = ajv.compile(eventCrossPathsConsentDocumentSchema);
 export const validateCrossPathsShowcaseEligibilityDocument = ajv.compile(crossPathsShowcaseEligibilityDocumentSchema);
 export const validateCrossPathsSuggestionExposureDocument = ajv.compile(crossPathsSuggestionExposureDocumentSchema);
@@ -433,6 +449,14 @@ export const validateImportEventAttendeesCallablePayload = ajv.compile(importEve
 export const validateMarkEventAttendeeAttendanceCallablePayload = ajv.compile(markEventAttendeeAttendanceCallablePayloadSchema);
 export const validateRegisterPublicEventCallablePayload = ajv.compile(registerPublicEventCallablePayloadSchema);
 export const validateRegisterPublicEventCallableResponse = ajv.compile(registerPublicEventCallableResponseSchema);
+export const validateGetEventRuntimeBootstrapCallablePayload = ajv.compile(getEventRuntimeBootstrapCallablePayloadSchema);
+export const validateGetEventRuntimeBootstrapCallableResponse = ajv.compile(getEventRuntimeBootstrapCallableResponseSchema);
+export const validateClaimEventRuntimeAccessCallablePayload = ajv.compile(claimEventRuntimeAccessCallablePayloadSchema);
+export const validateClaimEventRuntimeAccessCallableResponse = ajv.compile(claimEventRuntimeAccessCallableResponseSchema);
+export const validateSubmitEventRuntimeProfileCallablePayload = ajv.compile(submitEventRuntimeProfileCallablePayloadSchema);
+export const validateSubmitEventRuntimeProfileCallableResponse = ajv.compile(submitEventRuntimeProfileCallableResponseSchema);
+export const validateApproveEventRuntimeClaimCallablePayload = ajv.compile(approveEventRuntimeClaimCallablePayloadSchema);
+export const validateApproveEventRuntimeClaimCallableResponse = ajv.compile(approveEventRuntimeClaimCallableResponseSchema);
 export const validateGetOrganizerCrmSummaryCallablePayload = ajv.compile(getOrganizerCrmSummaryCallablePayloadSchema);
 export const validateGetOrganizerCrmSummaryCallableResponse = ajv.compile(getOrganizerCrmSummaryCallableResponseSchema);
 export const validateEventJoinRequestDecisionCallablePayload = ajv.compile(eventJoinRequestDecisionCallablePayloadSchema);

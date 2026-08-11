@@ -75,6 +75,172 @@ const schemaEventDocumentSchema = <String, Object?>{
       'maxLength': 180,
       'x-catch-ownership': 'callable-owned',
     },
+    'eventOrigin': <String, Object?>{
+      'title': 'EventOrigin',
+      'description': 'Immutable operational booking/roster provenance. Missing legacy values read as Catch-native.',
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'mode',
+        'bookingAuthority',
+        'rosterAuthority',
+        'provider',
+        'externalEventId',
+        'externalEventUrl',
+        'sourceExternalEventId',
+        'adapterVersion',
+        'connectedAt',
+        'connectedBy',
+      ],
+      'properties': <String, Object?>{
+        'mode': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'catchNative',
+            'externalCompanion',
+          ],
+        },
+        'bookingAuthority': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'catch',
+            'external',
+          ],
+        },
+        'rosterAuthority': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'catchProjection',
+            'hostImport',
+            'providerSync',
+          ],
+        },
+        'provider': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'catch',
+            'generic',
+            'luma',
+            'eventbrite',
+            'partiful',
+            'posh',
+            'bookmyshow',
+            'district',
+            'sortmyscene',
+            'airbnb',
+          ],
+        },
+        'externalEventId': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'maxLength': 240,
+        },
+        'externalEventUrl': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'string',
+              'format': 'uri',
+              'maxLength': 2048,
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
+        'sourceExternalEventId': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'adapterVersion': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'minLength': 1,
+          'maxLength': 80,
+        },
+        'connectedAt': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'object',
+              'description': 'Serialized Firestore Timestamp fixture shape.',
+              'x-firestore-type': 'timestamp',
+              'additionalProperties': false,
+              'required': <Object?>[
+                '_seconds',
+                '_nanoseconds',
+              ],
+              'properties': <String, Object?>{
+                '_seconds': <String, Object?>{
+                  'type': 'integer',
+                },
+                '_nanoseconds': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 999999999,
+                },
+              },
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
+        'connectedBy': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'minLength': 1,
+          'maxLength': 180,
+        },
+      },
+      'x-catch-ownership': 'callable-owned',
+    },
+    'runtimeAccess': <String, Object?>{
+      'title': 'EventRuntimeAccess',
+      'description': 'Server-owned no-download Event Success runtime access configuration.',
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'enabled',
+        'publicRuntimeId',
+        'walkInPolicy',
+        'termsVersion',
+      ],
+      'properties': <String, Object?>{
+        'enabled': <String, Object?>{
+          'type': 'boolean',
+        },
+        'publicRuntimeId': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'pattern': '^[A-Za-z0-9_-]{20,80}\$',
+        },
+        'walkInPolicy': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'deny',
+            'hostApproval',
+            'autoCreate',
+          ],
+        },
+        'termsVersion': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 80,
+        },
+      },
+      'x-catch-ownership': 'callable-owned',
+    },
     'startTime': <String, Object?>{
       'type': 'object',
       'description': 'Serialized Firestore Timestamp fixture shape.',

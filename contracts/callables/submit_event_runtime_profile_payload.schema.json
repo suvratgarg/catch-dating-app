@@ -1,0 +1,34 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/submit_event_runtime_profile_payload.schema.json",
+  "title": "SubmitEventRuntimeProfileCallablePayload",
+  "description": "Submits the minimum event-scoped profile required by enabled Event Success modules.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["publicRuntimeId", "runtimeTermsVersion", "saveAsCatchPrefill", "fields"],
+  "properties": {
+    "publicRuntimeId": {"type": "string", "pattern": "^[A-Za-z0-9_-]{20,80}$"},
+    "runtimeTermsVersion": {"type": "string", "minLength": 1, "maxLength": 80},
+    "sensitiveDataTermsVersion": {"type": ["string", "null"], "maxLength": 80},
+    "saveAsCatchPrefill": {"type": "boolean"},
+    "fields": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "displayName": {"type": "string", "minLength": 1, "maxLength": 120},
+        "gender": {"type": ["string", "null"], "enum": ["man", "woman", "nonBinary", "other", null]},
+        "interestedInGenders": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 4,
+          "items": {"type": "string", "enum": ["man", "woman", "nonBinary", "other"]}
+        },
+        "relationshipGoal": {
+          "type": ["string", "null"],
+          "enum": ["relationship", "casual", "marriage", "friendship", "unsure", null]
+        },
+        "dateOfBirthMillis": {"type": ["integer", "null"]}
+      }
+    }
+  }
+}

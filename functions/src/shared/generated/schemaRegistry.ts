@@ -3308,6 +3308,176 @@ export const uploadedPhotoSchema: Record<string, unknown> = {
   }
 } as const;
 
+export const eventOriginSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/embedded/event_origin.schema.json",
+  "title": "EventOrigin",
+  "description": "Immutable booking and roster provenance for one operational event.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "mode",
+    "bookingAuthority",
+    "rosterAuthority",
+    "provider",
+    "externalEventId",
+    "externalEventUrl",
+    "sourceExternalEventId",
+    "adapterVersion",
+    "connectedAt",
+    "connectedBy"
+  ],
+  "properties": {
+    "mode": {
+      "type": "string",
+      "enum": [
+        "catchNative",
+        "externalCompanion"
+      ]
+    },
+    "bookingAuthority": {
+      "type": "string",
+      "enum": [
+        "catch",
+        "external"
+      ]
+    },
+    "rosterAuthority": {
+      "type": "string",
+      "enum": [
+        "catchProjection",
+        "hostImport",
+        "providerSync"
+      ]
+    },
+    "provider": {
+      "type": "string",
+      "enum": [
+        "catch",
+        "generic",
+        "luma",
+        "eventbrite",
+        "partiful",
+        "posh",
+        "bookmyshow",
+        "district",
+        "sortmyscene",
+        "airbnb"
+      ]
+    },
+    "externalEventId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 240
+    },
+    "externalEventUrl": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2048
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sourceExternalEventId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "adapterVersion": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "connectedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "connectedBy": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+} as const;
+
+export const eventRuntimeAccessSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/embedded/event_runtime_access.schema.json",
+  "title": "EventRuntimeAccess",
+  "description": "Server-owned public join configuration for the no-download Event Success runtime.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "enabled",
+    "publicRuntimeId",
+    "walkInPolicy",
+    "termsVersion"
+  ],
+  "properties": {
+    "enabled": {
+      "type": "boolean"
+    },
+    "publicRuntimeId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Za-z0-9_-]{20,80}$"
+    },
+    "walkInPolicy": {
+      "type": "string",
+      "enum": [
+        "deny",
+        "hostApproval",
+        "autoCreate"
+      ]
+    },
+    "termsVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    }
+  }
+} as const;
+
 export const activityPreferencesSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/embedded/activity_preferences.schema.json",
@@ -12490,6 +12660,172 @@ export const eventDocumentSchema: Record<string, unknown> = {
       "maxLength": 180,
       "x-catch-ownership": "callable-owned"
     },
+    "eventOrigin": {
+      "title": "EventOrigin",
+      "description": "Immutable operational booking/roster provenance. Missing legacy values read as Catch-native.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "bookingAuthority",
+        "rosterAuthority",
+        "provider",
+        "externalEventId",
+        "externalEventUrl",
+        "sourceExternalEventId",
+        "adapterVersion",
+        "connectedAt",
+        "connectedBy"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "catchNative",
+            "externalCompanion"
+          ]
+        },
+        "bookingAuthority": {
+          "type": "string",
+          "enum": [
+            "catch",
+            "external"
+          ]
+        },
+        "rosterAuthority": {
+          "type": "string",
+          "enum": [
+            "catchProjection",
+            "hostImport",
+            "providerSync"
+          ]
+        },
+        "provider": {
+          "type": "string",
+          "enum": [
+            "catch",
+            "generic",
+            "luma",
+            "eventbrite",
+            "partiful",
+            "posh",
+            "bookmyshow",
+            "district",
+            "sortmyscene",
+            "airbnb"
+          ]
+        },
+        "externalEventId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 240
+        },
+        "externalEventUrl": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uri",
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sourceExternalEventId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "adapterVersion": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "connectedAt": {
+          "anyOf": [
+            {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "connectedBy": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 180
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "runtimeAccess": {
+      "title": "EventRuntimeAccess",
+      "description": "Server-owned no-download Event Success runtime access configuration.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "enabled",
+        "publicRuntimeId",
+        "walkInPolicy",
+        "termsVersion"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "publicRuntimeId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[A-Za-z0-9_-]{20,80}$"
+        },
+        "walkInPolicy": {
+          "type": "string",
+          "enum": [
+            "deny",
+            "hostApproval",
+            "autoCreate"
+          ]
+        },
+        "termsVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
     "startTime": {
       "type": "object",
       "description": "Serialized Firestore Timestamp fixture shape.",
@@ -15749,6 +16085,511 @@ export const eventAttendeeImportDocumentSchema: Record<string, unknown> = {
       }
     },
     "completedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+} as const;
+
+export const eventRuntimeParticipantDocumentSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_runtime_participants.schema.json",
+  "title": "EventRuntimeParticipantDocument",
+  "description": "Participant-private runtime identity stored at eventRuntimeParticipants/{eventId_uid}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventRuntimeParticipants",
+  "x-firestore-path": "eventRuntimeParticipants/{participantId}",
+  "x-document-id-field": "id",
+  "x-owner": "runtime claim/profile callables; owner get only; no client writes or list access",
+  "required": [
+    "eventId",
+    "clubId",
+    "organizerId",
+    "uid",
+    "eventAttendeeId",
+    "identityVersion",
+    "claimMethod",
+    "accessStatus",
+    "requiredFieldIds",
+    "completedFieldIds",
+    "runtimeProfile",
+    "consents",
+    "claimedAt",
+    "readyAt",
+    "revokedAt",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "eventAttendeeId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "identityVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "claimMethod": {
+      "type": "string",
+      "enum": [
+        "verifiedPhone",
+        "signedAttendeeToken",
+        "verifiedEmail",
+        "hostApproval",
+        "catchParticipation"
+      ]
+    },
+    "accessStatus": {
+      "type": "string",
+      "enum": [
+        "pendingApproval",
+        "needsInput",
+        "ready",
+        "optedOut",
+        "revoked"
+      ]
+    },
+    "requiredFieldIds": {
+      "type": "array",
+      "uniqueItems": true,
+      "maxItems": 5,
+      "items": {
+        "type": "string",
+        "enum": [
+          "displayName",
+          "gender",
+          "interestedInGenders",
+          "relationshipGoal",
+          "dateOfBirth"
+        ]
+      }
+    },
+    "completedFieldIds": {
+      "type": "array",
+      "uniqueItems": true,
+      "maxItems": 5,
+      "items": {
+        "type": "string",
+        "enum": [
+          "displayName",
+          "gender",
+          "interestedInGenders",
+          "relationshipGoal",
+          "dateOfBirth"
+        ]
+      }
+    },
+    "runtimeProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "displayName",
+        "gender",
+        "interestedInGenders",
+        "relationshipGoal",
+        "dateOfBirth"
+      ],
+      "properties": {
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "gender": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "man",
+                "woman",
+                "nonBinary",
+                "other"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "interestedInGenders": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 4,
+          "items": {
+            "type": "string",
+            "enum": [
+              "man",
+              "woman",
+              "nonBinary",
+              "other"
+            ]
+          }
+        },
+        "relationshipGoal": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "relationship",
+            "casual",
+            "marriage",
+            "friendship",
+            "unsure",
+            null
+          ]
+        },
+        "dateOfBirth": {
+          "anyOf": [
+            {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "consents": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "runtimeTermsVersion",
+        "sensitiveDataTermsVersion",
+        "saveAsCatchPrefill"
+      ],
+      "properties": {
+        "runtimeTermsVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "sensitiveDataTermsVersion": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 80
+        },
+        "saveAsCatchPrefill": {
+          "type": "boolean"
+        }
+      }
+    },
+    "claimedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "readyAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "revokedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  }
+} as const;
+
+export const eventRuntimeClaimRequestDocumentSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_runtime_claim_requests.schema.json",
+  "title": "EventRuntimeClaimRequestDocument",
+  "description": "Host-reviewable pending runtime identity claim stored at eventRuntimeClaimRequests/{eventId_uid}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventRuntimeClaimRequests",
+  "x-firestore-path": "eventRuntimeClaimRequests/{requestId}",
+  "x-document-id-field": "id",
+  "x-owner": "runtime claim and Host approval callables; no client writes",
+  "required": [
+    "eventId",
+    "clubId",
+    "organizerId",
+    "uid",
+    "displayName",
+    "phoneLastFour",
+    "candidateAttendeeIds",
+    "status",
+    "reviewedBy",
+    "reviewReason",
+    "createdAt",
+    "updatedAt",
+    "reviewedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "phoneLastFour": {
+      "type": "string",
+      "pattern": "^[0-9]{4}$"
+    },
+    "candidateAttendeeIds": {
+      "type": "array",
+      "uniqueItems": true,
+      "maxItems": 20,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected",
+        "cancelled"
+      ]
+    },
+    "reviewedBy": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "reviewReason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 240
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "reviewedAt": {
       "anyOf": [
         {
           "type": "object",
@@ -37007,6 +37848,480 @@ export const registerPublicEventCallableResponseSchema: Record<string, unknown> 
         "registered",
         "waitlisted",
         "alreadyRegistered"
+      ]
+    }
+  }
+} as const;
+
+export const getEventRuntimeBootstrapCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_event_runtime_bootstrap_payload.schema.json",
+  "title": "GetEventRuntimeBootstrapCallablePayload",
+  "description": "Opaque public Event Success runtime lookup.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "publicRuntimeId"
+  ],
+  "properties": {
+    "publicRuntimeId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{20,80}$"
+    }
+  }
+} as const;
+
+export const getEventRuntimeBootstrapCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_event_runtime_bootstrap_response.schema.json",
+  "title": "GetEventRuntimeBootstrapCallableResponse",
+  "description": "Sanitized event and caller state for the no-download runtime.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "event",
+    "participant"
+  ],
+  "properties": {
+    "event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "publicRuntimeId",
+        "title",
+        "startTimeMillis",
+        "endTimeMillis",
+        "locationName"
+      ],
+      "properties": {
+        "publicRuntimeId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{20,80}$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "startTimeMillis": {
+          "type": "integer"
+        },
+        "endTimeMillis": {
+          "type": "integer"
+        },
+        "locationName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        }
+      }
+    },
+    "participant": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "accessStatus",
+            "attendanceStatus",
+            "requiredFieldIds",
+            "completedFieldIds",
+            "runtimeProfile"
+          ],
+          "properties": {
+            "accessStatus": {
+              "type": "string",
+              "enum": [
+                "needsClaim",
+                "pendingApproval",
+                "needsInput",
+                "ready",
+                "optedOut",
+                "revoked"
+              ]
+            },
+            "attendanceStatus": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "invited",
+                "registered",
+                "waitlisted",
+                "checkedIn",
+                "cancelled",
+                null
+              ]
+            },
+            "requiredFieldIds": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 5
+            },
+            "completedFieldIds": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 5
+            },
+            "runtimeProfile": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "displayName",
+                "gender",
+                "interestedInGenders",
+                "relationshipGoal",
+                "dateOfBirthMillis"
+              ],
+              "properties": {
+                "displayName": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "gender": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "enum": [
+                    "man",
+                    "woman",
+                    "nonBinary",
+                    "other",
+                    null
+                  ]
+                },
+                "interestedInGenders": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "man",
+                      "woman",
+                      "nonBinary",
+                      "other"
+                    ]
+                  }
+                },
+                "relationshipGoal": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "enum": [
+                    "relationship",
+                    "casual",
+                    "marriage",
+                    "friendship",
+                    "unsure",
+                    null
+                  ]
+                },
+                "dateOfBirthMillis": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+} as const;
+
+export const claimEventRuntimeAccessCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/claim_event_runtime_access_payload.schema.json",
+  "title": "ClaimEventRuntimeAccessCallablePayload",
+  "description": "Claims one operational attendee after Firebase phone verification.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "publicRuntimeId",
+    "displayName",
+    "runtimeTermsVersion"
+  ],
+  "properties": {
+    "publicRuntimeId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{20,80}$"
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "runtimeTermsVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "attendeeToken": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 20,
+      "maxLength": 240
+    }
+  }
+} as const;
+
+export const claimEventRuntimeAccessCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/claim_event_runtime_access_response.schema.json",
+  "title": "ClaimEventRuntimeAccessCallableResponse",
+  "description": "Result of claiming or requesting approval for Event Success runtime access.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "status",
+    "attendeeId",
+    "requiredFieldIds",
+    "completedFieldIds"
+  ],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": [
+        "pendingApproval",
+        "needsInput",
+        "ready"
+      ]
+    },
+    "attendeeId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "requiredFieldIds": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 5
+    },
+    "completedFieldIds": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 5
+    }
+  }
+} as const;
+
+export const submitEventRuntimeProfileCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/submit_event_runtime_profile_payload.schema.json",
+  "title": "SubmitEventRuntimeProfileCallablePayload",
+  "description": "Submits the minimum event-scoped profile required by enabled Event Success modules.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "publicRuntimeId",
+    "runtimeTermsVersion",
+    "saveAsCatchPrefill",
+    "fields"
+  ],
+  "properties": {
+    "publicRuntimeId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{20,80}$"
+    },
+    "runtimeTermsVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "sensitiveDataTermsVersion": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 80
+    },
+    "saveAsCatchPrefill": {
+      "type": "boolean"
+    },
+    "fields": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "gender": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "man",
+            "woman",
+            "nonBinary",
+            "other",
+            null
+          ]
+        },
+        "interestedInGenders": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 4,
+          "items": {
+            "type": "string",
+            "enum": [
+              "man",
+              "woman",
+              "nonBinary",
+              "other"
+            ]
+          }
+        },
+        "relationshipGoal": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "relationship",
+            "casual",
+            "marriage",
+            "friendship",
+            "unsure",
+            null
+          ]
+        },
+        "dateOfBirthMillis": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+} as const;
+
+export const submitEventRuntimeProfileCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/submit_event_runtime_profile_response.schema.json",
+  "title": "SubmitEventRuntimeProfileCallableResponse",
+  "description": "Server-recomputed Event Success runtime profile readiness.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "status",
+    "requiredFieldIds",
+    "completedFieldIds"
+  ],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": [
+        "needsInput",
+        "ready"
+      ]
+    },
+    "requiredFieldIds": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 5
+    },
+    "completedFieldIds": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 5
+    }
+  }
+} as const;
+
+export const approveEventRuntimeClaimCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/approve_event_runtime_claim_payload.schema.json",
+  "title": "ApproveEventRuntimeClaimCallablePayload",
+  "description": "Host decision for one pending Event Success runtime claim.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "uid",
+    "decision"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "approve",
+        "reject"
+      ]
+    },
+    "attendeeId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "reason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 240
+    }
+  }
+} as const;
+
+export const approveEventRuntimeClaimCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/approve_event_runtime_claim_response.schema.json",
+  "title": "ApproveEventRuntimeClaimCallableResponse",
+  "description": "Host runtime-claim decision receipt.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "status"
+  ],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": [
+        "approved",
+        "rejected"
       ]
     }
   }

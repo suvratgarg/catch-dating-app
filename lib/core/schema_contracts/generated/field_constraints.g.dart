@@ -3743,6 +3743,49 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const approveEventRuntimeClaimCallablePayloadAttendeeId = CatchContractFieldConstraints(
+    path: 'approveEventRuntimeClaimCallablePayload.attendeeId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const approveEventRuntimeClaimCallablePayloadDecision = CatchContractFieldConstraints(
+    path: 'approveEventRuntimeClaimCallablePayload.decision',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['approve', 'reject'],
+  );
+
+  static const approveEventRuntimeClaimCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'approveEventRuntimeClaimCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const approveEventRuntimeClaimCallablePayloadReason = CatchContractFieldConstraints(
+    path: 'approveEventRuntimeClaimCallablePayload.reason',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const approveEventRuntimeClaimCallablePayloadUid = CatchContractFieldConstraints(
+    path: 'approveEventRuntimeClaimCallablePayload.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const approveEventRuntimeClaimCallableResponseStatus = CatchContractFieldConstraints(
+    path: 'approveEventRuntimeClaimCallableResponse.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['approved', 'rejected'],
+  );
+
   static const archiveClubCallablePayloadClubId = CatchContractFieldConstraints(
     path: 'archiveClubCallablePayload.clubId',
     maxLength: 180,
@@ -3949,6 +3992,78 @@ abstract final class CatchContractConstraints {
     maxLength: 2000,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const claimEventRuntimeAccessCallablePayloadAttendeeToken = CatchContractFieldConstraints(
+    path: 'claimEventRuntimeAccessCallablePayload.attendeeToken',
+    maxLength: 240,
+    minLength: 20,
+    valueTypes: <String>['string'],
+  );
+
+  static const claimEventRuntimeAccessCallablePayloadDisplayName = CatchContractFieldConstraints(
+    path: 'claimEventRuntimeAccessCallablePayload.displayName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const claimEventRuntimeAccessCallablePayloadPublicRuntimeId = CatchContractFieldConstraints(
+    path: 'claimEventRuntimeAccessCallablePayload.publicRuntimeId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{20,80}\$',
+  );
+
+  static const claimEventRuntimeAccessCallablePayloadRuntimeTermsVersion = CatchContractFieldConstraints(
+    path: 'claimEventRuntimeAccessCallablePayload.runtimeTermsVersion',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const claimEventRuntimeAccessCallableResponseAttendeeId = CatchContractFieldConstraints(
+    path: 'claimEventRuntimeAccessCallableResponse.attendeeId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const claimEventRuntimeAccessCallableResponseCompletedFieldIds = CatchContractFieldConstraints(
+    path: 'claimEventRuntimeAccessCallableResponse.completedFieldIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 5,
+  );
+
+  static const claimEventRuntimeAccessCallableResponseCompletedFieldIdsItems = CatchContractFieldConstraints(
+    path: 'claimEventRuntimeAccessCallableResponse.completedFieldIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const claimEventRuntimeAccessCallableResponseRequiredFieldIds = CatchContractFieldConstraints(
+    path: 'claimEventRuntimeAccessCallableResponse.requiredFieldIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 5,
+  );
+
+  static const claimEventRuntimeAccessCallableResponseRequiredFieldIdsItems = CatchContractFieldConstraints(
+    path: 'claimEventRuntimeAccessCallableResponse.requiredFieldIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const claimEventRuntimeAccessCallableResponseStatus = CatchContractFieldConstraints(
+    path: 'claimEventRuntimeAccessCallableResponse.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pendingApproval', 'needsInput', 'ready'],
   );
 
   static const clubClaimRequestDocumentBusinessEmail = CatchContractFieldConstraints(
@@ -10831,6 +10946,82 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const eventDocumentEventOriginAdapterVersion = CatchContractFieldConstraints(
+    path: 'eventDocument.eventOrigin.adapterVersion',
+    maxLength: 80,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventDocumentEventOriginBookingAuthority = CatchContractFieldConstraints(
+    path: 'eventDocument.eventOrigin.bookingAuthority',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catch', 'external'],
+  );
+
+  static const eventDocumentEventOriginConnectedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventDocument.eventOrigin.connectedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventDocumentEventOriginConnectedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventDocument.eventOrigin.connectedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventDocumentEventOriginConnectedBy = CatchContractFieldConstraints(
+    path: 'eventDocument.eventOrigin.connectedBy',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventDocumentEventOriginExternalEventId = CatchContractFieldConstraints(
+    path: 'eventDocument.eventOrigin.externalEventId',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventDocumentEventOriginExternalEventUrl = CatchContractFieldConstraints(
+    path: 'eventDocument.eventOrigin.externalEventUrl',
+    maxLength: 2048,
+    valueTypes: <String>['string'],
+    format: 'uri',
+  );
+
+  static const eventDocumentEventOriginMode = CatchContractFieldConstraints(
+    path: 'eventDocument.eventOrigin.mode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchNative', 'externalCompanion'],
+  );
+
+  static const eventDocumentEventOriginProvider = CatchContractFieldConstraints(
+    path: 'eventDocument.eventOrigin.provider',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catch', 'generic', 'luma', 'eventbrite', 'partiful', 'posh', 'bookmyshow', 'district', 'sortmyscene', 'airbnb'],
+  );
+
+  static const eventDocumentEventOriginRosterAuthority = CatchContractFieldConstraints(
+    path: 'eventDocument.eventOrigin.rosterAuthority',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchProjection', 'hostImport', 'providerSync'],
+  );
+
+  static const eventDocumentEventOriginSourceExternalEventId = CatchContractFieldConstraints(
+    path: 'eventDocument.eventOrigin.sourceExternalEventId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
   static const eventDocumentEventPhotos = CatchContractFieldConstraints(
     path: 'eventDocument.eventPhotos',
     valueTypes: <String>['array'],
@@ -11264,6 +11455,33 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['boolean'],
   );
 
+  static const eventDocumentRuntimeAccessEnabled = CatchContractFieldConstraints(
+    path: 'eventDocument.runtimeAccess.enabled',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventDocumentRuntimeAccessPublicRuntimeId = CatchContractFieldConstraints(
+    path: 'eventDocument.runtimeAccess.publicRuntimeId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{20,80}\$',
+  );
+
+  static const eventDocumentRuntimeAccessTermsVersion = CatchContractFieldConstraints(
+    path: 'eventDocument.runtimeAccess.termsVersion',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventDocumentRuntimeAccessWalkInPolicy = CatchContractFieldConstraints(
+    path: 'eventDocument.runtimeAccess.walkInPolicy',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['deny', 'hostApproval', 'autoCreate'],
+  );
+
   static const eventDocumentScenario = CatchContractFieldConstraints(
     path: 'eventDocument.scenario',
     maxLength: 120,
@@ -11677,6 +11895,82 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventOriginAdapterVersion = CatchContractFieldConstraints(
+    path: 'eventOrigin.adapterVersion',
+    maxLength: 80,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventOriginBookingAuthority = CatchContractFieldConstraints(
+    path: 'eventOrigin.bookingAuthority',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catch', 'external'],
+  );
+
+  static const eventOriginConnectedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventOrigin.connectedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventOriginConnectedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventOrigin.connectedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventOriginConnectedBy = CatchContractFieldConstraints(
+    path: 'eventOrigin.connectedBy',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventOriginExternalEventId = CatchContractFieldConstraints(
+    path: 'eventOrigin.externalEventId',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventOriginExternalEventUrl = CatchContractFieldConstraints(
+    path: 'eventOrigin.externalEventUrl',
+    maxLength: 2048,
+    valueTypes: <String>['string'],
+    format: 'uri',
+  );
+
+  static const eventOriginMode = CatchContractFieldConstraints(
+    path: 'eventOrigin.mode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchNative', 'externalCompanion'],
+  );
+
+  static const eventOriginProvider = CatchContractFieldConstraints(
+    path: 'eventOrigin.provider',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catch', 'generic', 'luma', 'eventbrite', 'partiful', 'posh', 'bookmyshow', 'district', 'sortmyscene', 'airbnb'],
+  );
+
+  static const eventOriginRosterAuthority = CatchContractFieldConstraints(
+    path: 'eventOrigin.rosterAuthority',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchProjection', 'hostImport', 'providerSync'],
+  );
+
+  static const eventOriginSourceExternalEventId = CatchContractFieldConstraints(
+    path: 'eventOrigin.sourceExternalEventId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
   static const eventParticipationDocumentAttendedAtNanoseconds = CatchContractFieldConstraints(
     path: 'eventParticipationDocument.attendedAt._nanoseconds',
     required: true,
@@ -12031,6 +12325,393 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const eventRuntimeAccessEnabled = CatchContractFieldConstraints(
+    path: 'eventRuntimeAccess.enabled',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventRuntimeAccessPublicRuntimeId = CatchContractFieldConstraints(
+    path: 'eventRuntimeAccess.publicRuntimeId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{20,80}\$',
+  );
+
+  static const eventRuntimeAccessTermsVersion = CatchContractFieldConstraints(
+    path: 'eventRuntimeAccess.termsVersion',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRuntimeAccessWalkInPolicy = CatchContractFieldConstraints(
+    path: 'eventRuntimeAccess.walkInPolicy',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['deny', 'hostApproval', 'autoCreate'],
+  );
+
+  static const eventRuntimeClaimRequestDocumentCandidateAttendeeIds = CatchContractFieldConstraints(
+    path: 'eventRuntimeClaimRequestDocument.candidateAttendeeIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 20,
+    uniqueItems: true,
+  );
+
+  static const eventRuntimeClaimRequestDocumentCandidateAttendeeIdsItems = CatchContractFieldConstraints(
+    path: 'eventRuntimeClaimRequestDocument.candidateAttendeeIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRuntimeClaimRequestDocumentClubId = CatchContractFieldConstraints(
+    path: 'eventRuntimeClaimRequestDocument.clubId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRuntimeClaimRequestDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventRuntimeClaimRequestDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventRuntimeClaimRequestDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventRuntimeClaimRequestDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventRuntimeClaimRequestDocumentDisplayName = CatchContractFieldConstraints(
+    path: 'eventRuntimeClaimRequestDocument.displayName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRuntimeClaimRequestDocumentEventId = CatchContractFieldConstraints(
+    path: 'eventRuntimeClaimRequestDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRuntimeClaimRequestDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventRuntimeClaimRequestDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRuntimeClaimRequestDocumentPhoneLastFour = CatchContractFieldConstraints(
+    path: 'eventRuntimeClaimRequestDocument.phoneLastFour',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{4}\$',
+  );
+
+  static const eventRuntimeClaimRequestDocumentReviewedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventRuntimeClaimRequestDocument.reviewedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventRuntimeClaimRequestDocumentReviewedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventRuntimeClaimRequestDocument.reviewedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventRuntimeClaimRequestDocumentReviewedBy = CatchContractFieldConstraints(
+    path: 'eventRuntimeClaimRequestDocument.reviewedBy',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRuntimeClaimRequestDocumentReviewReason = CatchContractFieldConstraints(
+    path: 'eventRuntimeClaimRequestDocument.reviewReason',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRuntimeClaimRequestDocumentStatus = CatchContractFieldConstraints(
+    path: 'eventRuntimeClaimRequestDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'approved', 'rejected', 'cancelled'],
+  );
+
+  static const eventRuntimeClaimRequestDocumentUid = CatchContractFieldConstraints(
+    path: 'eventRuntimeClaimRequestDocument.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRuntimeClaimRequestDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventRuntimeClaimRequestDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventRuntimeClaimRequestDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventRuntimeClaimRequestDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventRuntimeParticipantDocumentAccessStatus = CatchContractFieldConstraints(
+    path: 'eventRuntimeParticipantDocument.accessStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pendingApproval', 'needsInput', 'ready', 'optedOut', 'revoked'],
+  );
+
+  static const eventRuntimeParticipantDocumentClaimedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventRuntimeParticipantDocument.claimedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventRuntimeParticipantDocumentClaimedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventRuntimeParticipantDocument.claimedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventRuntimeParticipantDocumentClaimMethod = CatchContractFieldConstraints(
+    path: 'eventRuntimeParticipantDocument.claimMethod',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['verifiedPhone', 'signedAttendeeToken', 'verifiedEmail', 'hostApproval', 'catchParticipation'],
+  );
+
+  static const eventRuntimeParticipantDocumentClubId = CatchContractFieldConstraints(
+    path: 'eventRuntimeParticipantDocument.clubId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRuntimeParticipantDocumentCompletedFieldIds = CatchContractFieldConstraints(
+    path: 'eventRuntimeParticipantDocument.completedFieldIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth'],
+    maxItems: 5,
+    uniqueItems: true,
+  );
+
+  static const eventRuntimeParticipantDocumentCompletedFieldIdsItems = CatchContractFieldConstraints(
+    path: 'eventRuntimeParticipantDocument.completedFieldIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth'],
+  );
+
+  static const eventRuntimeParticipantDocumentConsentsRuntimeTermsVersion = CatchContractFieldConstraints(
+    path: 'eventRuntimeParticipantDocument.consents.runtimeTermsVersion',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRuntimeParticipantDocumentConsentsSaveAsCatchPrefill = CatchContractFieldConstraints(
+    path: 'eventRuntimeParticipantDocument.consents.saveAsCatchPrefill',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventRuntimeParticipantDocumentConsentsSensitiveDataTermsVersion = CatchContractFieldConstraints(
+    path: 'eventRuntimeParticipantDocument.consents.sensitiveDataTermsVersion',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRuntimeParticipantDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventRuntimeParticipantDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventRuntimeParticipantDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventRuntimeParticipantDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventRuntimeParticipantDocumentEventAttendeeId = CatchContractFieldConstraints(
+    path: 'eventRuntimeParticipantDocument.eventAttendeeId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRuntimeParticipantDocumentEventId = CatchContractFieldConstraints(
+    path: 'eventRuntimeParticipantDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRuntimeParticipantDocumentIdentityVersion = CatchContractFieldConstraints(
+    path: 'eventRuntimeParticipantDocument.identityVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventRuntimeParticipantDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventRuntimeParticipantDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRuntimeParticipantDocumentReadyAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventRuntimeParticipantDocument.readyAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventRuntimeParticipantDocumentReadyAtSeconds = CatchContractFieldConstraints(
+    path: 'eventRuntimeParticipantDocument.readyAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventRuntimeParticipantDocumentRequiredFieldIds = CatchContractFieldConstraints(
+    path: 'eventRuntimeParticipantDocument.requiredFieldIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth'],
+    maxItems: 5,
+    uniqueItems: true,
+  );
+
+  static const eventRuntimeParticipantDocumentRequiredFieldIdsItems = CatchContractFieldConstraints(
+    path: 'eventRuntimeParticipantDocument.requiredFieldIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth'],
+  );
+
+  static const eventRuntimeParticipantDocumentRevokedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventRuntimeParticipantDocument.revokedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventRuntimeParticipantDocumentRevokedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventRuntimeParticipantDocument.revokedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventRuntimeParticipantDocumentRuntimeProfileDateOfBirthNanoseconds = CatchContractFieldConstraints(
+    path: 'eventRuntimeParticipantDocument.runtimeProfile.dateOfBirth._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventRuntimeParticipantDocumentRuntimeProfileDateOfBirthSeconds = CatchContractFieldConstraints(
+    path: 'eventRuntimeParticipantDocument.runtimeProfile.dateOfBirth._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventRuntimeParticipantDocumentRuntimeProfileDisplayName = CatchContractFieldConstraints(
+    path: 'eventRuntimeParticipantDocument.runtimeProfile.displayName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRuntimeParticipantDocumentRuntimeProfileGender = CatchContractFieldConstraints(
+    path: 'eventRuntimeParticipantDocument.runtimeProfile.gender',
+    valueTypes: <String>['string'],
+    enumValues: <String>['man', 'woman', 'nonBinary', 'other'],
+  );
+
+  static const eventRuntimeParticipantDocumentRuntimeProfileInterestedInGenders = CatchContractFieldConstraints(
+    path: 'eventRuntimeParticipantDocument.runtimeProfile.interestedInGenders',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['man', 'woman', 'nonBinary', 'other'],
+    maxItems: 4,
+    uniqueItems: true,
+  );
+
+  static const eventRuntimeParticipantDocumentRuntimeProfileInterestedInGendersItems = CatchContractFieldConstraints(
+    path: 'eventRuntimeParticipantDocument.runtimeProfile.interestedInGenders.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['man', 'woman', 'nonBinary', 'other'],
+  );
+
+  static const eventRuntimeParticipantDocumentRuntimeProfileRelationshipGoal = CatchContractFieldConstraints(
+    path: 'eventRuntimeParticipantDocument.runtimeProfile.relationshipGoal',
+    valueTypes: <String>['string'],
+    enumValues: <String>['relationship', 'casual', 'marriage', 'friendship', 'unsure'],
+  );
+
+  static const eventRuntimeParticipantDocumentUid = CatchContractFieldConstraints(
+    path: 'eventRuntimeParticipantDocument.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRuntimeParticipantDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventRuntimeParticipantDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventRuntimeParticipantDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventRuntimeParticipantDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
   );
 
   static const eventSafetyReportDocumentClubId = CatchContractFieldConstraints(
@@ -15388,6 +16069,130 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     format: 'date-time',
+  );
+
+  static const getEventRuntimeBootstrapCallablePayloadPublicRuntimeId = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallablePayload.publicRuntimeId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{20,80}\$',
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventEndTimeMillis = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.endTimeMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventLocationName = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.locationName',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventPublicRuntimeId = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.publicRuntimeId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{20,80}\$',
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventStartTimeMillis = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.startTimeMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventTitle = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.title',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseParticipantAccessStatus = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.participant.accessStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['needsClaim', 'pendingApproval', 'needsInput', 'ready', 'optedOut', 'revoked'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseParticipantAttendanceStatus = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.participant.attendanceStatus',
+    valueTypes: <String>['string'],
+    enumValues: <String>['invited', 'registered', 'waitlisted', 'checkedIn', 'cancelled'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseParticipantCompletedFieldIds = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.participant.completedFieldIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 5,
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseParticipantCompletedFieldIdsItems = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.participant.completedFieldIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseParticipantRequiredFieldIds = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.participant.requiredFieldIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 5,
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseParticipantRequiredFieldIdsItems = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.participant.requiredFieldIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileDateOfBirthMillis = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.dateOfBirthMillis',
+    valueTypes: <String>['integer'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileDisplayName = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.displayName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileGender = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.gender',
+    valueTypes: <String>['string'],
+    enumValues: <String>['man', 'woman', 'nonBinary', 'other'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileInterestedInGenders = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.interestedInGenders',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['man', 'woman', 'nonBinary', 'other'],
+    uniqueItems: true,
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileInterestedInGendersItems = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.interestedInGenders.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['man', 'woman', 'nonBinary', 'other'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileRelationshipGoal = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.relationshipGoal',
+    valueTypes: <String>['string'],
+    enumValues: <String>['relationship', 'casual', 'marriage', 'friendship', 'unsure'],
   );
 
   static const getOrganizerCrmSummaryCallablePayloadOrganizerId = CatchContractFieldConstraints(
@@ -24974,6 +25779,109 @@ abstract final class CatchContractConstraints {
     format: 'uri',
   );
 
+  static const submitEventRuntimeProfileCallablePayloadFieldsDateOfBirthMillis = CatchContractFieldConstraints(
+    path: 'submitEventRuntimeProfileCallablePayload.fields.dateOfBirthMillis',
+    valueTypes: <String>['integer'],
+  );
+
+  static const submitEventRuntimeProfileCallablePayloadFieldsDisplayName = CatchContractFieldConstraints(
+    path: 'submitEventRuntimeProfileCallablePayload.fields.displayName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const submitEventRuntimeProfileCallablePayloadFieldsGender = CatchContractFieldConstraints(
+    path: 'submitEventRuntimeProfileCallablePayload.fields.gender',
+    valueTypes: <String>['string'],
+    enumValues: <String>['man', 'woman', 'nonBinary', 'other'],
+  );
+
+  static const submitEventRuntimeProfileCallablePayloadFieldsInterestedInGenders = CatchContractFieldConstraints(
+    path: 'submitEventRuntimeProfileCallablePayload.fields.interestedInGenders',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['man', 'woman', 'nonBinary', 'other'],
+    maxItems: 4,
+    uniqueItems: true,
+  );
+
+  static const submitEventRuntimeProfileCallablePayloadFieldsInterestedInGendersItems = CatchContractFieldConstraints(
+    path: 'submitEventRuntimeProfileCallablePayload.fields.interestedInGenders.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['man', 'woman', 'nonBinary', 'other'],
+  );
+
+  static const submitEventRuntimeProfileCallablePayloadFieldsRelationshipGoal = CatchContractFieldConstraints(
+    path: 'submitEventRuntimeProfileCallablePayload.fields.relationshipGoal',
+    valueTypes: <String>['string'],
+    enumValues: <String>['relationship', 'casual', 'marriage', 'friendship', 'unsure'],
+  );
+
+  static const submitEventRuntimeProfileCallablePayloadPublicRuntimeId = CatchContractFieldConstraints(
+    path: 'submitEventRuntimeProfileCallablePayload.publicRuntimeId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{20,80}\$',
+  );
+
+  static const submitEventRuntimeProfileCallablePayloadRuntimeTermsVersion = CatchContractFieldConstraints(
+    path: 'submitEventRuntimeProfileCallablePayload.runtimeTermsVersion',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const submitEventRuntimeProfileCallablePayloadSaveAsCatchPrefill = CatchContractFieldConstraints(
+    path: 'submitEventRuntimeProfileCallablePayload.saveAsCatchPrefill',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const submitEventRuntimeProfileCallablePayloadSensitiveDataTermsVersion = CatchContractFieldConstraints(
+    path: 'submitEventRuntimeProfileCallablePayload.sensitiveDataTermsVersion',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const submitEventRuntimeProfileCallableResponseCompletedFieldIds = CatchContractFieldConstraints(
+    path: 'submitEventRuntimeProfileCallableResponse.completedFieldIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 5,
+  );
+
+  static const submitEventRuntimeProfileCallableResponseCompletedFieldIdsItems = CatchContractFieldConstraints(
+    path: 'submitEventRuntimeProfileCallableResponse.completedFieldIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const submitEventRuntimeProfileCallableResponseRequiredFieldIds = CatchContractFieldConstraints(
+    path: 'submitEventRuntimeProfileCallableResponse.requiredFieldIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 5,
+  );
+
+  static const submitEventRuntimeProfileCallableResponseRequiredFieldIdsItems = CatchContractFieldConstraints(
+    path: 'submitEventRuntimeProfileCallableResponse.requiredFieldIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const submitEventRuntimeProfileCallableResponseStatus = CatchContractFieldConstraints(
+    path: 'submitEventRuntimeProfileCallableResponse.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['needsInput', 'ready'],
+  );
+
   static const submitEventSuccessWingmanRequestCallablePayloadEventId = CatchContractFieldConstraints(
     path: 'submitEventSuccessWingmanRequestCallablePayload.eventId',
     maxLength: 180,
@@ -30121,6 +31029,12 @@ abstract final class CatchContractConstraints {
     'adminUpdateOrganizerDetailsCallablePayload.fields.tags.items': adminUpdateOrganizerDetailsCallablePayloadFieldsTagsItems,
     'adminUpdateOrganizerDetailsCallablePayload.organizerId': adminUpdateOrganizerDetailsCallablePayloadOrganizerId,
     'adminUpdateOrganizerDetailsCallablePayload.reviewNote': adminUpdateOrganizerDetailsCallablePayloadReviewNote,
+    'approveEventRuntimeClaimCallablePayload.attendeeId': approveEventRuntimeClaimCallablePayloadAttendeeId,
+    'approveEventRuntimeClaimCallablePayload.decision': approveEventRuntimeClaimCallablePayloadDecision,
+    'approveEventRuntimeClaimCallablePayload.eventId': approveEventRuntimeClaimCallablePayloadEventId,
+    'approveEventRuntimeClaimCallablePayload.reason': approveEventRuntimeClaimCallablePayloadReason,
+    'approveEventRuntimeClaimCallablePayload.uid': approveEventRuntimeClaimCallablePayloadUid,
+    'approveEventRuntimeClaimCallableResponse.status': approveEventRuntimeClaimCallableResponseStatus,
     'archiveClubCallablePayload.clubId': archiveClubCallablePayloadClubId,
     'archiveClubCallablePayload.reason': archiveClubCallablePayloadReason,
     'archiveOrganizerCallablePayload.organizerId': archiveOrganizerCallablePayloadOrganizerId,
@@ -30150,6 +31064,16 @@ abstract final class CatchContractConstraints {
     'chatMessageDocument.sentAt._seconds': chatMessageDocumentSentAtSeconds,
     'chatMessageDocument.synthetic': chatMessageDocumentSynthetic,
     'chatMessageDocument.text': chatMessageDocumentText,
+    'claimEventRuntimeAccessCallablePayload.attendeeToken': claimEventRuntimeAccessCallablePayloadAttendeeToken,
+    'claimEventRuntimeAccessCallablePayload.displayName': claimEventRuntimeAccessCallablePayloadDisplayName,
+    'claimEventRuntimeAccessCallablePayload.publicRuntimeId': claimEventRuntimeAccessCallablePayloadPublicRuntimeId,
+    'claimEventRuntimeAccessCallablePayload.runtimeTermsVersion': claimEventRuntimeAccessCallablePayloadRuntimeTermsVersion,
+    'claimEventRuntimeAccessCallableResponse.attendeeId': claimEventRuntimeAccessCallableResponseAttendeeId,
+    'claimEventRuntimeAccessCallableResponse.completedFieldIds': claimEventRuntimeAccessCallableResponseCompletedFieldIds,
+    'claimEventRuntimeAccessCallableResponse.completedFieldIds.items': claimEventRuntimeAccessCallableResponseCompletedFieldIdsItems,
+    'claimEventRuntimeAccessCallableResponse.requiredFieldIds': claimEventRuntimeAccessCallableResponseRequiredFieldIds,
+    'claimEventRuntimeAccessCallableResponse.requiredFieldIds.items': claimEventRuntimeAccessCallableResponseRequiredFieldIdsItems,
+    'claimEventRuntimeAccessCallableResponse.status': claimEventRuntimeAccessCallableResponseStatus,
     'clubClaimRequestDocument.businessEmail': clubClaimRequestDocumentBusinessEmail,
     'clubClaimRequestDocument.businessPhone': clubClaimRequestDocumentBusinessPhone,
     'clubClaimRequestDocument.clubId': clubClaimRequestDocumentClubId,
@@ -31102,6 +32026,17 @@ abstract final class CatchContractConstraints {
     'eventDocument.eventFormat.eventSuccessPrimitives.rotationSuitability': eventDocumentEventFormatEventSuccessPrimitivesRotationSuitability,
     'eventDocument.eventFormat.interactionModel': eventDocumentEventFormatInteractionModel,
     'eventDocument.eventFormat.version': eventDocumentEventFormatVersion,
+    'eventDocument.eventOrigin.adapterVersion': eventDocumentEventOriginAdapterVersion,
+    'eventDocument.eventOrigin.bookingAuthority': eventDocumentEventOriginBookingAuthority,
+    'eventDocument.eventOrigin.connectedAt._nanoseconds': eventDocumentEventOriginConnectedAtNanoseconds,
+    'eventDocument.eventOrigin.connectedAt._seconds': eventDocumentEventOriginConnectedAtSeconds,
+    'eventDocument.eventOrigin.connectedBy': eventDocumentEventOriginConnectedBy,
+    'eventDocument.eventOrigin.externalEventId': eventDocumentEventOriginExternalEventId,
+    'eventDocument.eventOrigin.externalEventUrl': eventDocumentEventOriginExternalEventUrl,
+    'eventDocument.eventOrigin.mode': eventDocumentEventOriginMode,
+    'eventDocument.eventOrigin.provider': eventDocumentEventOriginProvider,
+    'eventDocument.eventOrigin.rosterAuthority': eventDocumentEventOriginRosterAuthority,
+    'eventDocument.eventOrigin.sourceExternalEventId': eventDocumentEventOriginSourceExternalEventId,
     'eventDocument.eventPhotos': eventDocumentEventPhotos,
     'eventDocument.eventPhotos.items.createdAt._nanoseconds': eventDocumentEventPhotosItemsCreatedAtNanoseconds,
     'eventDocument.eventPhotos.items.createdAt._seconds': eventDocumentEventPhotosItemsCreatedAtSeconds,
@@ -31162,6 +32097,10 @@ abstract final class CatchContractConstraints {
     'eventDocument.photoUrl': eventDocumentPhotoUrl,
     'eventDocument.priceInPaise': eventDocumentPriceInPaise,
     'eventDocument.publicRegistrationEnabled': eventDocumentPublicRegistrationEnabled,
+    'eventDocument.runtimeAccess.enabled': eventDocumentRuntimeAccessEnabled,
+    'eventDocument.runtimeAccess.publicRuntimeId': eventDocumentRuntimeAccessPublicRuntimeId,
+    'eventDocument.runtimeAccess.termsVersion': eventDocumentRuntimeAccessTermsVersion,
+    'eventDocument.runtimeAccess.walkInPolicy': eventDocumentRuntimeAccessWalkInPolicy,
     'eventDocument.scenario': eventDocumentScenario,
     'eventDocument.seedPrefix': eventDocumentSeedPrefix,
     'eventDocument.startingPointLat': eventDocumentStartingPointLat,
@@ -31220,6 +32159,17 @@ abstract final class CatchContractConstraints {
     'eventJoinRequestDecisionCallablePayload.decision': eventJoinRequestDecisionCallablePayloadDecision,
     'eventJoinRequestDecisionCallablePayload.eventId': eventJoinRequestDecisionCallablePayloadEventId,
     'eventJoinRequestDecisionCallablePayload.userId': eventJoinRequestDecisionCallablePayloadUserId,
+    'eventOrigin.adapterVersion': eventOriginAdapterVersion,
+    'eventOrigin.bookingAuthority': eventOriginBookingAuthority,
+    'eventOrigin.connectedAt._nanoseconds': eventOriginConnectedAtNanoseconds,
+    'eventOrigin.connectedAt._seconds': eventOriginConnectedAtSeconds,
+    'eventOrigin.connectedBy': eventOriginConnectedBy,
+    'eventOrigin.externalEventId': eventOriginExternalEventId,
+    'eventOrigin.externalEventUrl': eventOriginExternalEventUrl,
+    'eventOrigin.mode': eventOriginMode,
+    'eventOrigin.provider': eventOriginProvider,
+    'eventOrigin.rosterAuthority': eventOriginRosterAuthority,
+    'eventOrigin.sourceExternalEventId': eventOriginSourceExternalEventId,
     'eventParticipationDocument.attendedAt._nanoseconds': eventParticipationDocumentAttendedAtNanoseconds,
     'eventParticipationDocument.attendedAt._seconds': eventParticipationDocumentAttendedAtSeconds,
     'eventParticipationDocument.cancelledAt._nanoseconds': eventParticipationDocumentCancelledAtNanoseconds,
@@ -31270,6 +32220,59 @@ abstract final class CatchContractConstraints {
     'eventPrivateAccessDocument.eventId': eventPrivateAccessDocumentEventId,
     'eventPrivateAccessDocument.inviteCode': eventPrivateAccessDocumentInviteCode,
     'eventPrivateAccessDocument.organizerId': eventPrivateAccessDocumentOrganizerId,
+    'eventRuntimeAccess.enabled': eventRuntimeAccessEnabled,
+    'eventRuntimeAccess.publicRuntimeId': eventRuntimeAccessPublicRuntimeId,
+    'eventRuntimeAccess.termsVersion': eventRuntimeAccessTermsVersion,
+    'eventRuntimeAccess.walkInPolicy': eventRuntimeAccessWalkInPolicy,
+    'eventRuntimeClaimRequestDocument.candidateAttendeeIds': eventRuntimeClaimRequestDocumentCandidateAttendeeIds,
+    'eventRuntimeClaimRequestDocument.candidateAttendeeIds.items': eventRuntimeClaimRequestDocumentCandidateAttendeeIdsItems,
+    'eventRuntimeClaimRequestDocument.clubId': eventRuntimeClaimRequestDocumentClubId,
+    'eventRuntimeClaimRequestDocument.createdAt._nanoseconds': eventRuntimeClaimRequestDocumentCreatedAtNanoseconds,
+    'eventRuntimeClaimRequestDocument.createdAt._seconds': eventRuntimeClaimRequestDocumentCreatedAtSeconds,
+    'eventRuntimeClaimRequestDocument.displayName': eventRuntimeClaimRequestDocumentDisplayName,
+    'eventRuntimeClaimRequestDocument.eventId': eventRuntimeClaimRequestDocumentEventId,
+    'eventRuntimeClaimRequestDocument.organizerId': eventRuntimeClaimRequestDocumentOrganizerId,
+    'eventRuntimeClaimRequestDocument.phoneLastFour': eventRuntimeClaimRequestDocumentPhoneLastFour,
+    'eventRuntimeClaimRequestDocument.reviewedAt._nanoseconds': eventRuntimeClaimRequestDocumentReviewedAtNanoseconds,
+    'eventRuntimeClaimRequestDocument.reviewedAt._seconds': eventRuntimeClaimRequestDocumentReviewedAtSeconds,
+    'eventRuntimeClaimRequestDocument.reviewedBy': eventRuntimeClaimRequestDocumentReviewedBy,
+    'eventRuntimeClaimRequestDocument.reviewReason': eventRuntimeClaimRequestDocumentReviewReason,
+    'eventRuntimeClaimRequestDocument.status': eventRuntimeClaimRequestDocumentStatus,
+    'eventRuntimeClaimRequestDocument.uid': eventRuntimeClaimRequestDocumentUid,
+    'eventRuntimeClaimRequestDocument.updatedAt._nanoseconds': eventRuntimeClaimRequestDocumentUpdatedAtNanoseconds,
+    'eventRuntimeClaimRequestDocument.updatedAt._seconds': eventRuntimeClaimRequestDocumentUpdatedAtSeconds,
+    'eventRuntimeParticipantDocument.accessStatus': eventRuntimeParticipantDocumentAccessStatus,
+    'eventRuntimeParticipantDocument.claimedAt._nanoseconds': eventRuntimeParticipantDocumentClaimedAtNanoseconds,
+    'eventRuntimeParticipantDocument.claimedAt._seconds': eventRuntimeParticipantDocumentClaimedAtSeconds,
+    'eventRuntimeParticipantDocument.claimMethod': eventRuntimeParticipantDocumentClaimMethod,
+    'eventRuntimeParticipantDocument.clubId': eventRuntimeParticipantDocumentClubId,
+    'eventRuntimeParticipantDocument.completedFieldIds': eventRuntimeParticipantDocumentCompletedFieldIds,
+    'eventRuntimeParticipantDocument.completedFieldIds.items': eventRuntimeParticipantDocumentCompletedFieldIdsItems,
+    'eventRuntimeParticipantDocument.consents.runtimeTermsVersion': eventRuntimeParticipantDocumentConsentsRuntimeTermsVersion,
+    'eventRuntimeParticipantDocument.consents.saveAsCatchPrefill': eventRuntimeParticipantDocumentConsentsSaveAsCatchPrefill,
+    'eventRuntimeParticipantDocument.consents.sensitiveDataTermsVersion': eventRuntimeParticipantDocumentConsentsSensitiveDataTermsVersion,
+    'eventRuntimeParticipantDocument.createdAt._nanoseconds': eventRuntimeParticipantDocumentCreatedAtNanoseconds,
+    'eventRuntimeParticipantDocument.createdAt._seconds': eventRuntimeParticipantDocumentCreatedAtSeconds,
+    'eventRuntimeParticipantDocument.eventAttendeeId': eventRuntimeParticipantDocumentEventAttendeeId,
+    'eventRuntimeParticipantDocument.eventId': eventRuntimeParticipantDocumentEventId,
+    'eventRuntimeParticipantDocument.identityVersion': eventRuntimeParticipantDocumentIdentityVersion,
+    'eventRuntimeParticipantDocument.organizerId': eventRuntimeParticipantDocumentOrganizerId,
+    'eventRuntimeParticipantDocument.readyAt._nanoseconds': eventRuntimeParticipantDocumentReadyAtNanoseconds,
+    'eventRuntimeParticipantDocument.readyAt._seconds': eventRuntimeParticipantDocumentReadyAtSeconds,
+    'eventRuntimeParticipantDocument.requiredFieldIds': eventRuntimeParticipantDocumentRequiredFieldIds,
+    'eventRuntimeParticipantDocument.requiredFieldIds.items': eventRuntimeParticipantDocumentRequiredFieldIdsItems,
+    'eventRuntimeParticipantDocument.revokedAt._nanoseconds': eventRuntimeParticipantDocumentRevokedAtNanoseconds,
+    'eventRuntimeParticipantDocument.revokedAt._seconds': eventRuntimeParticipantDocumentRevokedAtSeconds,
+    'eventRuntimeParticipantDocument.runtimeProfile.dateOfBirth._nanoseconds': eventRuntimeParticipantDocumentRuntimeProfileDateOfBirthNanoseconds,
+    'eventRuntimeParticipantDocument.runtimeProfile.dateOfBirth._seconds': eventRuntimeParticipantDocumentRuntimeProfileDateOfBirthSeconds,
+    'eventRuntimeParticipantDocument.runtimeProfile.displayName': eventRuntimeParticipantDocumentRuntimeProfileDisplayName,
+    'eventRuntimeParticipantDocument.runtimeProfile.gender': eventRuntimeParticipantDocumentRuntimeProfileGender,
+    'eventRuntimeParticipantDocument.runtimeProfile.interestedInGenders': eventRuntimeParticipantDocumentRuntimeProfileInterestedInGenders,
+    'eventRuntimeParticipantDocument.runtimeProfile.interestedInGenders.items': eventRuntimeParticipantDocumentRuntimeProfileInterestedInGendersItems,
+    'eventRuntimeParticipantDocument.runtimeProfile.relationshipGoal': eventRuntimeParticipantDocumentRuntimeProfileRelationshipGoal,
+    'eventRuntimeParticipantDocument.uid': eventRuntimeParticipantDocumentUid,
+    'eventRuntimeParticipantDocument.updatedAt._nanoseconds': eventRuntimeParticipantDocumentUpdatedAtNanoseconds,
+    'eventRuntimeParticipantDocument.updatedAt._seconds': eventRuntimeParticipantDocumentUpdatedAtSeconds,
     'eventSafetyReportDocument.clubId': eventSafetyReportDocumentClubId,
     'eventSafetyReportDocument.createdAt._nanoseconds': eventSafetyReportDocumentCreatedAtNanoseconds,
     'eventSafetyReportDocument.createdAt._seconds': eventSafetyReportDocumentCreatedAtSeconds,
@@ -31731,6 +32734,24 @@ abstract final class CatchContractConstraints {
     'getCrossPathsSuggestionsCallableResponse.suggestions.items.reasonCodes.items': getCrossPathsSuggestionsCallableResponseSuggestionsItemsReasonCodesItems,
     'getCrossPathsSuggestionsCallableResponse.suggestions.items.suggestionToken': getCrossPathsSuggestionsCallableResponseSuggestionsItemsSuggestionToken,
     'getCrossPathsSuggestionsCallableResponse.suggestions.items.tokenExpiresAt': getCrossPathsSuggestionsCallableResponseSuggestionsItemsTokenExpiresAt,
+    'getEventRuntimeBootstrapCallablePayload.publicRuntimeId': getEventRuntimeBootstrapCallablePayloadPublicRuntimeId,
+    'getEventRuntimeBootstrapCallableResponse.event.endTimeMillis': getEventRuntimeBootstrapCallableResponseEventEndTimeMillis,
+    'getEventRuntimeBootstrapCallableResponse.event.locationName': getEventRuntimeBootstrapCallableResponseEventLocationName,
+    'getEventRuntimeBootstrapCallableResponse.event.publicRuntimeId': getEventRuntimeBootstrapCallableResponseEventPublicRuntimeId,
+    'getEventRuntimeBootstrapCallableResponse.event.startTimeMillis': getEventRuntimeBootstrapCallableResponseEventStartTimeMillis,
+    'getEventRuntimeBootstrapCallableResponse.event.title': getEventRuntimeBootstrapCallableResponseEventTitle,
+    'getEventRuntimeBootstrapCallableResponse.participant.accessStatus': getEventRuntimeBootstrapCallableResponseParticipantAccessStatus,
+    'getEventRuntimeBootstrapCallableResponse.participant.attendanceStatus': getEventRuntimeBootstrapCallableResponseParticipantAttendanceStatus,
+    'getEventRuntimeBootstrapCallableResponse.participant.completedFieldIds': getEventRuntimeBootstrapCallableResponseParticipantCompletedFieldIds,
+    'getEventRuntimeBootstrapCallableResponse.participant.completedFieldIds.items': getEventRuntimeBootstrapCallableResponseParticipantCompletedFieldIdsItems,
+    'getEventRuntimeBootstrapCallableResponse.participant.requiredFieldIds': getEventRuntimeBootstrapCallableResponseParticipantRequiredFieldIds,
+    'getEventRuntimeBootstrapCallableResponse.participant.requiredFieldIds.items': getEventRuntimeBootstrapCallableResponseParticipantRequiredFieldIdsItems,
+    'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.dateOfBirthMillis': getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileDateOfBirthMillis,
+    'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.displayName': getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileDisplayName,
+    'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.gender': getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileGender,
+    'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.interestedInGenders': getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileInterestedInGenders,
+    'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.interestedInGenders.items': getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileInterestedInGendersItems,
+    'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.relationshipGoal': getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileRelationshipGoal,
     'getOrganizerCrmSummaryCallablePayload.organizerId': getOrganizerCrmSummaryCallablePayloadOrganizerId,
     'getOrganizerCrmSummaryCallableResponse.contactCount': getOrganizerCrmSummaryCallableResponseContactCount,
     'getOrganizerCrmSummaryCallableResponse.importedContactCount': getOrganizerCrmSummaryCallableResponseImportedContactCount,
@@ -33072,6 +34093,21 @@ abstract final class CatchContractConstraints {
     'stripeCheckoutSessionCallableResponse.sessionId': stripeCheckoutSessionCallableResponseSessionId,
     'stripeHostOnboardingLinkCallableResponse.accountId': stripeHostOnboardingLinkCallableResponseAccountId,
     'stripeHostOnboardingLinkCallableResponse.onboardingUrl': stripeHostOnboardingLinkCallableResponseOnboardingUrl,
+    'submitEventRuntimeProfileCallablePayload.fields.dateOfBirthMillis': submitEventRuntimeProfileCallablePayloadFieldsDateOfBirthMillis,
+    'submitEventRuntimeProfileCallablePayload.fields.displayName': submitEventRuntimeProfileCallablePayloadFieldsDisplayName,
+    'submitEventRuntimeProfileCallablePayload.fields.gender': submitEventRuntimeProfileCallablePayloadFieldsGender,
+    'submitEventRuntimeProfileCallablePayload.fields.interestedInGenders': submitEventRuntimeProfileCallablePayloadFieldsInterestedInGenders,
+    'submitEventRuntimeProfileCallablePayload.fields.interestedInGenders.items': submitEventRuntimeProfileCallablePayloadFieldsInterestedInGendersItems,
+    'submitEventRuntimeProfileCallablePayload.fields.relationshipGoal': submitEventRuntimeProfileCallablePayloadFieldsRelationshipGoal,
+    'submitEventRuntimeProfileCallablePayload.publicRuntimeId': submitEventRuntimeProfileCallablePayloadPublicRuntimeId,
+    'submitEventRuntimeProfileCallablePayload.runtimeTermsVersion': submitEventRuntimeProfileCallablePayloadRuntimeTermsVersion,
+    'submitEventRuntimeProfileCallablePayload.saveAsCatchPrefill': submitEventRuntimeProfileCallablePayloadSaveAsCatchPrefill,
+    'submitEventRuntimeProfileCallablePayload.sensitiveDataTermsVersion': submitEventRuntimeProfileCallablePayloadSensitiveDataTermsVersion,
+    'submitEventRuntimeProfileCallableResponse.completedFieldIds': submitEventRuntimeProfileCallableResponseCompletedFieldIds,
+    'submitEventRuntimeProfileCallableResponse.completedFieldIds.items': submitEventRuntimeProfileCallableResponseCompletedFieldIdsItems,
+    'submitEventRuntimeProfileCallableResponse.requiredFieldIds': submitEventRuntimeProfileCallableResponseRequiredFieldIds,
+    'submitEventRuntimeProfileCallableResponse.requiredFieldIds.items': submitEventRuntimeProfileCallableResponseRequiredFieldIdsItems,
+    'submitEventRuntimeProfileCallableResponse.status': submitEventRuntimeProfileCallableResponseStatus,
     'submitEventSuccessWingmanRequestCallablePayload.eventId': submitEventSuccessWingmanRequestCallablePayloadEventId,
     'submitEventSuccessWingmanRequestCallablePayload.note': submitEventSuccessWingmanRequestCallablePayloadNote,
     'submitEventSuccessWingmanRequestCallablePayload.targetUid': submitEventSuccessWingmanRequestCallablePayloadTargetUid,

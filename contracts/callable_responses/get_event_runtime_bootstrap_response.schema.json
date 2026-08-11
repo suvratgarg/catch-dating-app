@@ -1,0 +1,78 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_event_runtime_bootstrap_response.schema.json",
+  "title": "GetEventRuntimeBootstrapCallableResponse",
+  "description": "Sanitized event and caller state for the no-download runtime.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["event", "participant"],
+  "properties": {
+    "event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["publicRuntimeId", "title", "startTimeMillis", "endTimeMillis", "locationName"],
+      "properties": {
+        "publicRuntimeId": {"type": "string", "pattern": "^[A-Za-z0-9_-]{20,80}$"},
+        "title": {"type": "string", "minLength": 1, "maxLength": 240},
+        "startTimeMillis": {"type": "integer"},
+        "endTimeMillis": {"type": "integer"},
+        "locationName": {"type": "string", "minLength": 1, "maxLength": 240}
+      }
+    },
+    "participant": {
+      "anyOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "accessStatus",
+            "attendanceStatus",
+            "requiredFieldIds",
+            "completedFieldIds",
+            "runtimeProfile"
+          ],
+          "properties": {
+            "accessStatus": {
+              "type": "string",
+              "enum": ["needsClaim", "pendingApproval", "needsInput", "ready", "optedOut", "revoked"]
+            },
+            "attendanceStatus": {
+              "type": ["string", "null"],
+              "enum": ["invited", "registered", "waitlisted", "checkedIn", "cancelled", null]
+            },
+            "requiredFieldIds": {
+              "type": "array",
+              "items": {"type": "string"},
+              "maxItems": 5
+            },
+            "completedFieldIds": {
+              "type": "array",
+              "items": {"type": "string"},
+              "maxItems": 5
+            },
+            "runtimeProfile": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["displayName", "gender", "interestedInGenders", "relationshipGoal", "dateOfBirthMillis"],
+              "properties": {
+                "displayName": {"type": "string", "minLength": 1, "maxLength": 120},
+                "gender": {"type": ["string", "null"], "enum": ["man", "woman", "nonBinary", "other", null]},
+                "interestedInGenders": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "items": {"type": "string", "enum": ["man", "woman", "nonBinary", "other"]}
+                },
+                "relationshipGoal": {
+                  "type": ["string", "null"],
+                  "enum": ["relationship", "casual", "marriage", "friendship", "unsure", null]
+                },
+                "dateOfBirthMillis": {"type": ["integer", "null"]}
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
