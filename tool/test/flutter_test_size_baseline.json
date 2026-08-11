@@ -21,7 +21,7 @@
     },
     {
       "path": "test/event_success/event_success_live_screens_test.dart",
-      "maxLines": 3529
+      "maxLines": 3524
     },
     {
       "path": "test/events/event_detail_widgets_test.dart",
@@ -37,7 +37,7 @@
     },
     {
       "path": "test/hosts/host_create_event_screen_test.dart",
-      "maxLines": 1656
+      "maxLines": 1652
     },
     {
       "path": "test/hosts/host_operations_screen_test.dart",

@@ -5,7 +5,6 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_analytics_kit.dart';
-import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
@@ -49,6 +48,7 @@ import 'package:flutter_test/flutter_test.dart';
 import '../events/events_test_helpers.dart'
     show buildEvent, buildEventParticipation, buildPublicProfile, buildUser;
 import '../test_pump_helpers.dart';
+import 'event_success_live_test_helpers.dart';
 
 final _l10n = AppLocalizationsEn();
 
@@ -370,72 +370,6 @@ void main() {
     expect(find.text('Next'), findsNothing);
     expect(find.text('Mark live guide complete'), findsNothing);
   });
-
-  testWidgets(
-    'compact Control Room fits the first viewport with an external-only roster',
-    (tester) async {
-      tester.view.devicePixelRatio = 1;
-      tester.view.physicalSize = const Size(390, 812);
-      addTearDown(tester.view.resetDevicePixelRatio);
-      addTearDown(tester.view.resetPhysicalSize);
-
-      final event = buildEvent(
-        id: 'external-only-control-room',
-        eventFormat: const EventFormatSnapshot(
-          activityKind: ActivityKind.pubQuiz,
-          interactionModel: EventInteractionModel.hostLedProgram,
-          customActivityLabel: 'host-led social',
-          defaultPlaybookId: 'host_led_social',
-        ),
-      );
-      final plan = EventSuccessPlan.defaultForEvent(
-        event,
-        now: event.startTime,
-      ).copyWith(status: EventSuccessPlanStatus.live, activeStepIndex: 1);
-
-      await tester.pumpWidget(
-        ProviderScope(
-          child: MaterialApp(
-            theme: AppTheme.light,
-            home: Scaffold(
-              body: EventSuccessHostPanel(
-                event: event,
-                plan: plan,
-                planIsPersisted: true,
-                roster: EventParticipationRoster.empty(),
-                operationalRosterSummary:
-                    const EventSuccessOperationalRosterSummary(
-                      checkedInCount: 18,
-                      expectedCount: 24,
-                    ),
-                initialTab: EventSuccessHostTab.live,
-                showTabs: false,
-                compactLiveControls: true,
-                fixtureActions: EventSuccessHostFixtureActions(
-                  onPreviousStep: () {},
-                  onNextStep: () {},
-                  onCompletePlan: () {},
-                ),
-                onOpenGuests: () {},
-              ),
-            ),
-          ),
-        ),
-      );
-
-      expect(find.textContaining('LIVE NOW'), findsOneWidget);
-      expect(find.textContaining('SYNCED'), findsOneWidget);
-      expect(find.textContaining('Step 2 of 4'), findsOneWidget);
-      expect(find.text('18 checked in · 24 expected'), findsOneWidget);
-      expect(find.text('Guests'), findsOneWidget);
-      expect(find.text('Help & fallback'), findsOneWidget);
-      expect(find.byType(CatchBottomAction), findsOneWidget);
-      expect(
-        tester.getBottomRight(find.byType(CatchBottomAction)).dy,
-        lessThanOrEqualTo(812),
-      );
-    },
-  );
 
   testWidgets('host live guide skips live streams until setup is saved', (
     tester,
@@ -2742,7 +2676,7 @@ void main() {
       startTime: start,
       endTime: start.add(const Duration(hours: 1)),
     );
-    final plan = _withoutModule(
+    final plan = withoutModule(
       _racketPlan(event),
       EventSuccessModuleCatalog.liveReveal.id,
     );
@@ -2988,7 +2922,7 @@ void main() {
         startTime: start,
         endTime: start.add(const Duration(hours: 1)),
       );
-      final plan = _withoutModule(
+      final plan = withoutModule(
         _racketPlan(event),
         EventSuccessModuleCatalog.liveReveal.id,
       );
@@ -3180,7 +3114,7 @@ void main() {
       startTime: start,
       endTime: start.add(const Duration(hours: 1)),
     );
-    final plan = _withoutModule(
+    final plan = withoutModule(
       _racketPlan(event),
       EventSuccessModuleCatalog.liveReveal.id,
     );
@@ -3366,14 +3300,6 @@ EventSuccessPlan _withLiveReveal(EventSuccessPlan plan) {
     EventSuccessModuleCatalog.liveReveal.id,
   }.toList()..sort();
   return plan.copyWith(selectedModuleIds: moduleIds);
-}
-
-EventSuccessPlan _withoutModule(EventSuccessPlan plan, String moduleId) {
-  return plan.copyWith(
-    selectedModuleIds: plan.selectedModuleIds
-        .where((id) => id != moduleId)
-        .toList(growable: false),
-  );
 }
 
 EventSuccessPlan _racketPlan(Event event) {
