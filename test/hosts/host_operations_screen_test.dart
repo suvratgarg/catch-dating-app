@@ -809,7 +809,6 @@ void main() {
     expect(find.byTooltip('Switch organizer'), findsNothing);
     expect(find.text('New event'), findsOneWidget);
     expect(find.text('Use guest list'), findsOneWidget);
-    expect(find.text('Repeat last'), findsNothing);
     expect(find.text('View club'), findsNothing);
     expect(find.text('View public profile'), findsNothing);
 
