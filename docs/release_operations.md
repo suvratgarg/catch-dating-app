@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.0.17
+version: 2.0.18
 updated: 2026-08-11
 owner: recursive_audit_loop
 status: active
@@ -1548,6 +1548,14 @@ the exact version code and remote SHA-256.
 The producer resolves scheme, configuration, bundle id, and entrypoint from the
 six-target manifest, then runs the package and platform gates before publishing
 authority:
+
+Every GitHub Actions `flutter build ios` entrypoint routes through
+`tool/flutter_with_env.sh`. On CI only, that wrapper retries at most three times
+when the failed output contains the exact GitHub HTTPS CocoaPods signature
+`SSL certificate problem: self signed certificate`. It does not retry Dart,
+Xcode, signing, configuration, or any other dependency error, and it never
+disables TLS verification. Local builds remain single-attempt unless they are
+running under the CI environment contract.
 
 ```sh
 node tool/run.mjs check \

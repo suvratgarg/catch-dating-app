@@ -137,6 +137,73 @@ is_android_target() {
   esac
 }
 
+is_retryable_cocoapods_git_tls_failure() {
+  local log_file="$1"
+  grep -Eq \
+    "fatal: unable to access 'https://github\\.com/[^']+/?': SSL certificate problem: self signed certificate" \
+    "$log_file"
+}
+
+run_flutter_with_cocoapods_git_tls_retry() {
+  local max_attempts="${CATCH_COCOAPODS_TLS_MAX_ATTEMPTS:-3}"
+  local retry_delay_seconds="${CATCH_COCOAPODS_TLS_RETRY_DELAY_SECONDS:-15}"
+
+  if [[ ! "$max_attempts" =~ ^[1-5]$ ]]; then
+    echo "CATCH_COCOAPODS_TLS_MAX_ATTEMPTS must be an integer from 1 to 5." >&2
+    return 64
+  fi
+  if [[ ! "$retry_delay_seconds" =~ ^[0-9]+$ ]] ||
+    ((10#$retry_delay_seconds > 60)); then
+    echo "CATCH_COCOAPODS_TLS_RETRY_DELAY_SECONDS must be an integer from 0 to 60." >&2
+    return 64
+  fi
+
+  local retry_log
+  retry_log="$(mktemp "${TMPDIR:-/tmp}/catch-cocoapods-tls.XXXXXX")"
+  trap "rm -f '$retry_log'" EXIT
+
+  local attempt=1
+  local flutter_status=0
+  local tee_status=0
+  local -a pipeline_status=()
+  while ((attempt <= max_attempts)); do
+    : >"$retry_log"
+    set +e
+    flutter "$@" 2>&1 | tee "$retry_log"
+    pipeline_status=("${PIPESTATUS[@]}")
+    set -e
+    flutter_status="${pipeline_status[0]}"
+    tee_status="${pipeline_status[1]}"
+
+    if ((tee_status != 0)); then
+      rm -f "$retry_log"
+      trap - EXIT
+      return "$tee_status"
+    fi
+    if ((flutter_status == 0)); then
+      rm -f "$retry_log"
+      trap - EXIT
+      return 0
+    fi
+    if ! is_retryable_cocoapods_git_tls_failure "$retry_log" ||
+      ((attempt == max_attempts)); then
+      rm -f "$retry_log"
+      trap - EXIT
+      return "$flutter_status"
+    fi
+
+    attempt=$((attempt + 1))
+    if [[ "${GITHUB_ACTIONS:-}" == "true" ]]; then
+      echo "::warning title=CocoaPods Git TLS retry::Retrying the iOS Flutter build after a transient verified GitHub certificate failure (attempt $attempt/$max_attempts)."
+    else
+      echo "Retrying the iOS Flutter build after a transient verified GitHub certificate failure (attempt $attempt/$max_attempts)." >&2
+    fi
+    if ((retry_delay_seconds > 0)); then
+      sleep "$retry_delay_seconds"
+    fi
+  done
+}
+
 load_local_env_file "$repo_root/.env.$environment.local"
 load_local_env_file "$repo_root/.env.local"
 
@@ -379,17 +446,21 @@ if [[ -n "${EMIT_OBSERVABILITY_SMOKE_EVENT:-}" ]]; then
   )
 fi
 
-if [[ $supports_dart_defines -eq 0 ]]; then
-  cd "$app_project_root"
-  exec flutter "${flutter_args[@]}"
-fi
-
-if [[ ${#extra_dart_defines[@]} -gt 0 ]]; then
-  cd "$app_project_root"
-  exec flutter "${flutter_args[@]}" \
-    --dart-define-from-file="$define_file" \
-    "${extra_dart_defines[@]}"
+resolved_flutter_args=("${flutter_args[@]}")
+if [[ $supports_dart_defines -eq 1 ]]; then
+  resolved_flutter_args+=("--dart-define-from-file=$define_file")
+  if [[ ${#extra_dart_defines[@]} -gt 0 ]]; then
+    resolved_flutter_args+=("${extra_dart_defines[@]}")
+  fi
 fi
 
 cd "$app_project_root"
-exec flutter "${flutter_args[@]}" --dart-define-from-file="$define_file"
+if [[ ( "${CI:-}" == "true" || "${GITHUB_ACTIONS:-}" == "true" ) &&
+  ${#flutter_args[@]} -ge 2 &&
+  "${flutter_args[0]}" == "build" &&
+  "${flutter_args[1]}" == "ios" ]]; then
+  run_flutter_with_cocoapods_git_tls_retry "${resolved_flutter_args[@]}"
+  exit 0
+fi
+
+exec flutter "${resolved_flutter_args[@]}"
