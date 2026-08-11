@@ -49,15 +49,15 @@
       "staticOutput": "postbuild",
       "indexing": "index",
       "sitemap": "included",
-      "notes": "Canonical public host acquisition page. Legacy /host/preview and nested paths redirect permanently to /host/.",
+      "notes": "Canonical public Host beta page for standalone live-event tooling that begins with an external booking-platform guest-list export. Legacy /host/preview and nested paths redirect permanently to /host/.",
       "review": {
         "priority": "p0",
         "status": "ready",
         "viewports": ["desktop", "mobile"],
-        "states": ["default", "founding-host-offer", "host-application", "capture-placeholders"],
+        "states": ["default", "beta-offer", "host-application", "capture-placeholders"],
         "stateCoverage": {
           "storybook": ["default"],
-          "manual": ["founding-host-offer", "host-application", "capture-placeholders"]
+          "manual": ["beta-offer", "host-application", "capture-placeholders"]
         }
       }
     },

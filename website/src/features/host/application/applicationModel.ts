@@ -1,7 +1,8 @@
 import {websiteCopy} from "@content/generated";
+import {hostApplicationCopy} from "@content/host";
 import {activeFeaturedCity} from "@content/markets";
 
-export type HostApplicationStep = "profile" | "event" | "policy" | "success" | "review";
+export type HostApplicationStep = "profile" | "event" | "setup" | "success" | "review";
 
 export interface HostApplicationDraft {
   fullName: string;
@@ -17,10 +18,8 @@ export interface HostApplicationDraft {
   nextEventDate: string;
   eventLocation: string;
   expectedCapacity: string;
-  priceRange: string;
-  admissionModel: string;
-  waitlistPlan: string;
-  paymentReadiness: string;
+  bookingPlatform: string;
+  guestListFormat: string;
   eventSuccessModules: string[];
   hostGoals: string;
   operatingNotes: string;
@@ -33,28 +32,28 @@ export const hostApplicationSteps: Array<{
 }> = [
   {
     id: "profile",
-    label: websiteCopy["applicationmodel_0185"],
-    body: websiteCopy["applicationmodel_0204"],
+    label: hostApplicationCopy.steps.profile.label,
+    body: hostApplicationCopy.steps.profile.body,
   },
   {
     id: "event",
-    label: websiteCopy["applicationmodel_0179"],
-    body: websiteCopy["applicationmodel_0200"],
+    label: hostApplicationCopy.steps.event.label,
+    body: hostApplicationCopy.steps.event.body,
   },
   {
-    id: "policy",
-    label: websiteCopy["applicationmodel_0169"],
-    body: websiteCopy["applicationmodel_0174"],
+    id: "setup",
+    label: hostApplicationCopy.steps.setup.label,
+    body: hostApplicationCopy.steps.setup.body,
   },
   {
     id: "success",
-    label: websiteCopy["applicationmodel_0195"],
-    body: websiteCopy["applicationmodel_0180"],
+    label: hostApplicationCopy.steps.success.label,
+    body: hostApplicationCopy.steps.success.body,
   },
   {
     id: "review",
-    label: websiteCopy["applicationmodel_0199"],
-    body: websiteCopy["applicationmodel_0175"],
+    label: hostApplicationCopy.steps.review.label,
+    body: hostApplicationCopy.steps.review.body,
   },
 ];
 
@@ -69,17 +68,7 @@ export const hostFormatOptions = [
   websiteCopy["applicationmodel_0177"],
 ];
 
-export const hostSuccessModuleOptions = [
-  websiteCopy["applicationmodel_0173"],
-  websiteCopy["applicationmodel_0171"],
-  websiteCopy["applicationmodel_0203"],
-  websiteCopy["applicationmodel_0198"],
-  websiteCopy["applicationmodel_0201"],
-  websiteCopy["applicationmodel_0184"],
-  websiteCopy["applicationmodel_0191"],
-  websiteCopy["applicationmodel_0202"],
-  websiteCopy["applicationmodel_0190"],
-];
+export const hostSuccessModuleOptions = [...hostApplicationCopy.liveToolOptions];
 
 export const initialHostApplicationDraft: HostApplicationDraft = {
   fullName: "",
@@ -95,14 +84,12 @@ export const initialHostApplicationDraft: HostApplicationDraft = {
   nextEventDate: "",
   eventLocation: "",
   expectedCapacity: "20",
-  priceRange: "₹1,000–₹2,000",
-  admissionModel: websiteCopy["applicationmodel_0194"],
-  waitlistPlan: websiteCopy["applicationmodel_0193"],
-  paymentReadiness: websiteCopy["applicationmodel_0188"],
+  bookingPlatform: hostApplicationCopy.setup.bookingPlatforms[0],
+  guestListFormat: hostApplicationCopy.setup.guestListFormats[0],
   eventSuccessModules: [
-    websiteCopy["applicationmodel_0171"],
-    websiteCopy["applicationmodel_0203"],
-    websiteCopy["applicationmodel_0191"],
+    hostApplicationCopy.liveToolOptions[0],
+    hostApplicationCopy.liveToolOptions[1],
+    hostApplicationCopy.liveToolOptions[2],
   ],
   hostGoals: "",
   operatingNotes: "",
@@ -128,13 +115,11 @@ export function hostApplicationStepIsComplete(
       draft.eventLocation.trim()
     );
   }
-  if (step === "policy") {
+  if (step === "setup") {
     return Boolean(
       draft.expectedCapacity.trim() &&
-      draft.priceRange.trim() &&
-      draft.admissionModel &&
-      draft.waitlistPlan &&
-      draft.paymentReadiness
+      draft.bookingPlatform &&
+      draft.guestListFormat
     );
   }
   if (step === "success") {
@@ -149,8 +134,8 @@ export function hostApplicationStepError(step: HostApplicationStep) {
       return "Add your identity, organizer name, city, and public link.";
     case "event":
       return "Choose at least one format and describe the first event and location.";
-    case "policy":
-      return "Add capacity, pricing, admission, waitlist, and payment readiness.";
+    case "setup":
+      return hostApplicationCopy.errors.setup;
     case "success":
       return "Choose at least one Playbook module and add your host goal.";
     case "review":
@@ -173,19 +158,19 @@ export function hostApplicationCompleteness(draft: HostApplicationDraft) {
 export function hostApplicationChecklist(draft: HostApplicationDraft) {
   return [
     {
-      label: websiteCopy["applicationmodel_0183"],
+      label: hostApplicationCopy.checklist.profile,
       done: hostApplicationStepIsComplete("profile", draft),
     },
     {
-      label: websiteCopy["applicationmodel_0182"],
+      label: hostApplicationCopy.checklist.event,
       done: hostApplicationStepIsComplete("event", draft),
     },
     {
-      label: websiteCopy["applicationmodel_0170"],
-      done: hostApplicationStepIsComplete("policy", draft),
+      label: hostApplicationCopy.checklist.setup,
+      done: hostApplicationStepIsComplete("setup", draft),
     },
     {
-      label: websiteCopy["applicationmodel_0181"],
+      label: hostApplicationCopy.checklist.live,
       done: hostApplicationStepIsComplete("success", draft),
     },
   ];

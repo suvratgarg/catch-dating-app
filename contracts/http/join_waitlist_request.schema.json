@@ -111,6 +111,14 @@
           "type": "string",
           "maxLength": 40
         },
+        "bookingPlatform": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "guestListFormat": {
+          "type": "string",
+          "maxLength": 120
+        },
         "priceRange": {
           "type": "string",
           "maxLength": 80

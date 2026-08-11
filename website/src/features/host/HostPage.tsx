@@ -1,4 +1,4 @@
-import {websiteCopy} from "@content/generated";
+import {hostPageCopy} from "@content/host";
 import {siteFooterLegalLinks, siteMenuCopy} from "@content/site";
 import {SiteFooter, SiteHeader, WebsitePageMain} from "../../shared/site";
 import type {HostCaptureMap} from "./sections/CaptureFrames";
@@ -12,12 +12,9 @@ import {
 } from "./sections/HostSupportingSections";
 import {
   HostApplySection,
-  HostCapturesSection,
-  HostFillRoomSection,
   HostHeroSection,
   HostLiveModulesSection,
   HostProofLedgerSection,
-  HostSurfaceSection,
   HostWorkflowSection,
 } from "./sections/HostPageSections";
 
@@ -29,40 +26,36 @@ export function HostPage({captures}: {captures: HostCaptureMap}) {
         menuCopy={siteMenuCopy}
         tone="dark"
         nav={[
-          {href: "#workflow", label: websiteCopy["hostpage_0275"]},
-          {href: "#fill-room", label: websiteCopy["hostpage_0269"]},
-          {href: "#live", label: websiteCopy["hostpage_0271"]},
-          {href: "#screens", label: websiteCopy["hostpage_0274"]},
-          {href: "/organizers/", label: websiteCopy["hostpage_0273"]},
-          {href: "/", label: websiteCopy["hostpage_0272"]},
+          {href: "#workflow", label: hostPageCopy.nav.workflow},
+          {href: "#live", label: hostPageCopy.nav.liveTools},
+          {href: "#works-now", label: hostPageCopy.nav.worksNow},
+          {href: "#coming-soon", label: hostPageCopy.nav.comingSoon},
+          {href: "/organizers/", label: hostPageCopy.nav.organizers},
         ]}
         ctaHref="#founding-hosts"
-        ctaLabel={websiteCopy["hostpage_0268"]}
+        ctaLabel={hostPageCopy.nav.apply}
       />
       <WebsitePageMain id="top">
         <HostHeroSection captures={captures} />
-        <HostFoundingOfferSection />
         <HostWorkflowSection />
         <CreateEventWalkthrough captures={captures} />
-        <HostSurfaceSection />
-        <HostFillRoomSection />
         <HostLiveModulesSection />
         <PlaybookShowcase captures={captures} />
-        <HostProofLedgerSection />
         <HostComparisonSection />
         <HostTrustSection />
+        <HostProofLedgerSection />
         <HostFaqSection />
-        <HostCapturesSection captures={captures} />
+        <HostFoundingOfferSection />
         <HostApplySection />
       </WebsitePageMain>
       <SiteFooter
         brandHref="/"
-        body={websiteCopy["hostpage_0270"]}
+        body={hostPageCopy.footer}
         links={[
-          {href: "/", label: websiteCopy["hostpage_0272"]},
-          {href: "#workflow", label: websiteCopy["hostpage_0275"]},
-          {href: "#live", label: websiteCopy["hostpage_0271"]},
-          {href: "#founding-hosts", label: websiteCopy["hostpage_0267"]},
+          {href: "#workflow", label: hostPageCopy.nav.workflow},
+          {href: "#live", label: hostPageCopy.nav.liveTools},
+          {href: "#coming-soon", label: hostPageCopy.nav.comingSoon},
+          {href: "#founding-hosts", label: hostPageCopy.nav.apply},
           ...siteFooterLegalLinks,
         ]}
       />

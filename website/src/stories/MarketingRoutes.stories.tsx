@@ -79,13 +79,13 @@ export const Host: Story = {
       path: "/host/",
       reviewStates: [
         "default",
-        "founding-host-offer",
+        "beta-offer",
         "host-application",
         "capture-placeholders",
       ],
       stateCoverage: {
         storybook: ["default"],
-        manual: ["founding-host-offer", "host-application", "capture-placeholders"],
+        manual: ["beta-offer", "host-application", "capture-placeholders"],
       },
     },
     catchComponent: {
@@ -93,7 +93,7 @@ export const Host: Story = {
       routeIds: ["host"],
       states: [
         "default",
-        "founding-host-offer",
+        "beta-offer",
         "host-application",
         "capture-placeholders",
       ],

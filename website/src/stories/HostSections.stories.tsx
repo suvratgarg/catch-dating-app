@@ -200,7 +200,7 @@ export const HostFoundingOfferSectionStory: Story = {
     catchComponent: {
       id: "host_founding_offer_section",
       routeIds: ["host"],
-      states: ["founding-host-offer"],
+      states: ["beta-offer"],
     },
   },
   render: () => <HostFoundingOfferSectionComponent />,

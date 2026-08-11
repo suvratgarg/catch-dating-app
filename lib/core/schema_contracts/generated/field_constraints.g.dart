@@ -18603,6 +18603,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const joinWaitlistHTTPRequestHostApplicationBookingPlatform = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.hostApplication.bookingPlatform',
+    maxLength: 120,
+    valueTypes: <String>['string'],
+  );
+
   static const joinWaitlistHTTPRequestHostApplicationCommunityLink = CatchContractFieldConstraints(
     path: 'joinWaitlistHTTPRequest.hostApplication.communityLink',
     maxLength: 512,
@@ -18654,6 +18660,12 @@ abstract final class CatchContractConstraints {
     path: 'joinWaitlistHTTPRequest.hostApplication.formats.items',
     maxLength: 80,
     required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestHostApplicationGuestListFormat = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.hostApplication.guestListFormat',
+    maxLength: 120,
     valueTypes: <String>['string'],
   );
 
@@ -33451,6 +33463,7 @@ abstract final class CatchContractConstraints {
     'joinWaitlistHTTPRequest.email': joinWaitlistHTTPRequestEmail,
     'joinWaitlistHTTPRequest.fullName': joinWaitlistHTTPRequestFullName,
     'joinWaitlistHTTPRequest.hostApplication.admissionModel': joinWaitlistHTTPRequestHostApplicationAdmissionModel,
+    'joinWaitlistHTTPRequest.hostApplication.bookingPlatform': joinWaitlistHTTPRequestHostApplicationBookingPlatform,
     'joinWaitlistHTTPRequest.hostApplication.communityLink': joinWaitlistHTTPRequestHostApplicationCommunityLink,
     'joinWaitlistHTTPRequest.hostApplication.eventCadence': joinWaitlistHTTPRequestHostApplicationEventCadence,
     'joinWaitlistHTTPRequest.hostApplication.eventLocation': joinWaitlistHTTPRequestHostApplicationEventLocation,
@@ -33459,6 +33472,7 @@ abstract final class CatchContractConstraints {
     'joinWaitlistHTTPRequest.hostApplication.expectedCapacity': joinWaitlistHTTPRequestHostApplicationExpectedCapacity,
     'joinWaitlistHTTPRequest.hostApplication.formats': joinWaitlistHTTPRequestHostApplicationFormats,
     'joinWaitlistHTTPRequest.hostApplication.formats.items': joinWaitlistHTTPRequestHostApplicationFormatsItems,
+    'joinWaitlistHTTPRequest.hostApplication.guestListFormat': joinWaitlistHTTPRequestHostApplicationGuestListFormat,
     'joinWaitlistHTTPRequest.hostApplication.hostGoals': joinWaitlistHTTPRequestHostApplicationHostGoals,
     'joinWaitlistHTTPRequest.hostApplication.nextEventDate': joinWaitlistHTTPRequestHostApplicationNextEventDate,
     'joinWaitlistHTTPRequest.hostApplication.nextEventName': joinWaitlistHTTPRequestHostApplicationNextEventName,

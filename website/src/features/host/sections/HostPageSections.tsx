@@ -1,11 +1,21 @@
 import type {CSSProperties} from "react";
-import {websiteCopy} from "@content/generated";
+import {
+  hostComingSoonItems,
+  hostCurrentLayers,
+  hostHeroCopy,
+  hostLiveTools,
+  hostPageCopy,
+  hostSetupProof,
+  hostWorkflowSteps,
+} from "@content/host";
 import {SectionHeader} from "../../../shared/site";
 import {
   ActionGroup,
   ButtonLink,
   CaptureGrid,
   HomeHeroStage,
+  HostBridgeDemo,
+  HostCompatibilityLine,
   HostHeroCopy,
   HostHeroInner,
   HostHeroShell,
@@ -17,29 +27,23 @@ import {
   ModuleStack,
   ProductModuleGrid,
   ProofLedgerRows,
-  UiLabel,
   WaitlistSection,
 } from "../../../shared/ui/primitives";
-import {
-  hostFillRoomModules,
-  hostLoop,
-  hostModules,
-  hostProofRows,
-  hostSurfaceCards,
-} from "@content/marketing";
-import {hostHeroCopy} from "@content/host";
 import {trackCtaClick} from "../../marketing/tracking";
 import {HostApplicationFlow} from "../application/HostApplicationFlow";
-import {CaptureCard, PhoneCaptureFrame, type HostCaptureMap} from "./CaptureFrames";
+import {CaptureCard, type HostCaptureMap} from "./CaptureFrames";
 
-export function HostHeroSection({captures}: {captures: HostCaptureMap}) {
+export function HostHeroSection({captures: _captures}: {captures: HostCaptureMap}) {
   return (
     <HostHeroShell>
       <HostHeroInner>
         <HostHeroCopy>
-          <UiLabel>{hostHeroCopy.kicker}</UiLabel>
-          <h1 data-reveal style={{"--reveal-delay": "70ms"} as CSSProperties}>{websiteCopy["hostpagesections_0314"]}</h1>
-          <p data-reveal style={{"--reveal-delay": "150ms"} as CSSProperties}>{websiteCopy["hostpagesections_0300"]}</p>
+          <h1 data-reveal style={{"--reveal-delay": "70ms"} as CSSProperties}>
+            {hostPageCopy.hero.title}
+          </h1>
+          <p data-reveal style={{"--reveal-delay": "150ms"} as CSSProperties}>
+            {hostPageCopy.hero.body}
+          </p>
           <ActionGroup
             reveal
             style={{"--reveal-delay": "230ms"} as CSSProperties}
@@ -48,23 +52,24 @@ export function HostHeroSection({captures}: {captures: HostCaptureMap}) {
             <ButtonLink
               href="#founding-hosts"
               onClick={() => trackCtaClick("host_hero_apply", "#founding-hosts")}
-            >{websiteCopy["hostpagesections_0296"]}</ButtonLink>
+            >
+              {hostPageCopy.hero.primaryAction}
+            </ButtonLink>
             <ButtonLink
               variant="ghost"
               href="#workflow"
               onClick={() => trackCtaClick("host_hero_workflow", "#workflow")}
-            >{websiteCopy["hostpagesections_0317"]}</ButtonLink>
+            >
+              {hostPageCopy.hero.secondaryAction}
+            </ButtonLink>
           </ActionGroup>
         </HostHeroCopy>
 
-        <HomeHeroStage data-reveal="scale" style={{"--reveal-delay": "300ms"} as CSSProperties}>
-          <PhoneCaptureFrame
-            id="host-live-console"
-            fallbackStep={hostHeroCopy.stageCaption}
-            captures={captures}
-          />
+        <HomeHeroStage>
+          <HostBridgeDemo {...hostHeroCopy.demo} />
         </HomeHeroStage>
       </HostHeroInner>
+      <HostCompatibilityLine>{hostPageCopy.hero.compatibility}</HostCompatibilityLine>
     </HostHeroShell>
   );
 }
@@ -74,39 +79,40 @@ export function HostWorkflowSection() {
     <MarketingSection variant="story" id="workflow" aria-labelledby="workflow-title">
       <SectionHeader
         id="workflow-title"
-        title={websiteCopy["hostpagesections_0311"]}
-        body={websiteCopy["hostpagesections_0312"]}
+        title={hostPageCopy.workflow.title}
+        body={hostPageCopy.workflow.body}
       />
-      <MarketingLoopList items={hostLoop} variant="host" />
+      <MarketingLoopList items={[...hostWorkflowSteps]} variant="host" />
     </MarketingSection>
   );
 }
 
 export function HostSurfaceSection() {
   return (
-    <HostPageSection variant="surface" aria-labelledby="surface-title">
+    <HostPageSection variant="surface" id="works-now" aria-labelledby="surface-title">
       <SectionHeader
-        eyebrow={websiteCopy["hostpagesections_0324"]}
+        eyebrow={hostPageCopy.comparison.label}
         id="surface-title"
-        title={websiteCopy["hostpagesections_0322"]}
+        title={hostPageCopy.live.title}
+        body={hostPageCopy.live.body}
         wide
       />
-      <MarketingInfoCardGrid items={hostSurfaceCards} variant="surface" />
+      <MarketingInfoCardGrid items={[...hostCurrentLayers]} variant="surface" />
     </HostPageSection>
   );
 }
 
 export function HostFillRoomSection() {
   return (
-    <HostPageSection variant="fill-room" id="fill-room" aria-labelledby="fill-room-title">
+    <HostPageSection variant="fill-room" aria-labelledby="host-setup-proof-title">
       <SectionHeader
-        eyebrow={websiteCopy["hostpagesections_0304"]}
-        id="fill-room-title"
-        title={websiteCopy["hostpagesections_0302"]}
-        body={websiteCopy["hostpagesections_0321"]}
+        eyebrow={hostPageCopy.workflow.railLabel}
+        id="host-setup-proof-title"
+        title={hostPageCopy.workflow.title}
+        body={hostPageCopy.workflow.body}
         wide
       />
-      <ProductModuleGrid modules={hostFillRoomModules} />
+      <ProductModuleGrid modules={[...hostSetupProof]} />
     </HostPageSection>
   );
 }
@@ -115,27 +121,30 @@ export function HostLiveModulesSection() {
   return (
     <MarketingSection variant="proof-host" id="live">
       <MarketingSectionCopy
-        body={websiteCopy["hostpagesections_0320"]}
-        eyebrow={websiteCopy["hostpagesections_0303"]}
-        title={websiteCopy["hostpagesections_0309"]}
+        body={hostPageCopy.live.body}
+        eyebrow={hostPageCopy.live.label}
+        title={hostPageCopy.live.title}
         variant="proof"
       />
-
-      <ModuleStack items={hostModules} reveal />
+      <ModuleStack items={[...hostLiveTools]} reveal />
     </MarketingSection>
   );
 }
 
 export function HostProofLedgerSection() {
   return (
-    <HostPageSection variant="proof-ledger" aria-labelledby="proof-ledger-title">
+    <HostPageSection
+      variant="proof-ledger"
+      id="coming-soon"
+      aria-labelledby="coming-soon-title"
+    >
       <SectionHeader
-        eyebrow={websiteCopy["hostpagesections_0305"]}
-        id="proof-ledger-title"
-        title={websiteCopy["hostpagesections_0315"]}
-        body={websiteCopy["hostpagesections_0299"]}
+        eyebrow={hostPageCopy.comingSoon.label}
+        id="coming-soon-title"
+        title={hostPageCopy.comingSoon.title}
+        body={hostPageCopy.comingSoon.body}
       />
-      <ProofLedgerRows items={hostProofRows} reveal />
+      <ProofLedgerRows items={[...hostComingSoonItems]} reveal />
     </HostPageSection>
   );
 }
@@ -144,16 +153,16 @@ export function HostCapturesSection({captures}: {captures: HostCaptureMap}) {
   return (
     <MarketingSection variant="captures" id="screens" aria-labelledby="screens-title">
       <SectionHeader
-        eyebrow={websiteCopy["hostpagesections_0307"]}
+        eyebrow={hostPageCopy.captures.label}
         id="screens-title"
-        title={websiteCopy["hostpagesections_0316"]}
-        body={websiteCopy["hostpagesections_0318"]}
+        title={hostPageCopy.captures.title}
+        body={hostPageCopy.captures.body}
       />
 
       <CaptureGrid variant="host">
-        <CaptureCard id="host-event-setup" fallbackStep={websiteCopy["hostpagesections_0319"]} captures={captures} />
-        <CaptureCard id="host-live-console" fallbackStep={websiteCopy["hostpagesections_0308"]} captures={captures} />
-        <CaptureCard id="host-post-event-report" fallbackStep={websiteCopy["hostpagesections_0313"]} captures={captures} />
+        <CaptureCard id="host-event-setup" fallbackStep={hostPageCopy.captures.setup} captures={captures} />
+        <CaptureCard id="host-live-console" fallbackStep={hostPageCopy.captures.live} captures={captures} />
+        <CaptureCard id="host-post-event-report" fallbackStep={hostPageCopy.captures.report} captures={captures} />
       </CaptureGrid>
     </MarketingSection>
   );
@@ -164,8 +173,8 @@ export function HostApplySection() {
     <WaitlistSection
       id="founding-hosts"
       titleId="host-apply-title"
-      title={websiteCopy["hostpagesections_0297"]}
-      body={websiteCopy["hostpagesections_0295"]}
+      title={hostPageCopy.apply.title}
+      body={hostPageCopy.apply.body}
     >
       <HostApplicationFlow />
     </WaitlistSection>

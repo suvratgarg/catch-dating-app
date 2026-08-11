@@ -5,24 +5,17 @@ import {trackMarketingEvent} from "../../../analytics";
 import {playbook, playbookModules, playbookStages} from "@content/host";
 import {SectionHeader} from "../../../shared/site";
 import {
-  HostFeatureGrid,
   HostFeatureRail,
   HostFeatureSection,
   PlaybookCatalog,
   PlaybookFormatNote,
   PlaybookIntro,
-  PlaybookStageCopy,
   PrivacyGuardrail,
 } from "../../../shared/ui/primitives";
-import {CaptureCard, type HostCaptureMap} from "./CaptureFrames";
+import type {HostCaptureMap} from "./CaptureFrames";
 
-export function PlaybookShowcase({captures}: {captures: HostCaptureMap}) {
-  const [stage, setStage] = useState("activity");
-  const captureId = stage === "after"
-    ? "post-run-catch-window"
-    : stage === "debrief"
-      ? "host-post-event-report"
-      : "host-live-console";
+export function PlaybookShowcase({captures: _captures}: {captures: HostCaptureMap}) {
+  const [stage, setStage] = useState("arrival");
 
   useEffect(() => {
     const anchor = window.location.hash.slice(1);
@@ -49,13 +42,6 @@ export function PlaybookShowcase({captures}: {captures: HostCaptureMap}) {
         reveal
         variant="event-success"
       />
-      <HostFeatureGrid variant="event-success">
-        <PlaybookStageCopy aria-live="polite">
-          <strong>{websiteCopy["playbookshowcase_0326"]}</strong>
-          <p>{playbookStages.find((item) => item.id === stage)?.guestLine}</p>
-        </PlaybookStageCopy>
-        <CaptureCard id={captureId} fallbackStep={playbook.captureFallback} captures={captures} />
-      </HostFeatureGrid>
       <PlaybookCatalog
         activeAnchor={window.location.hash.slice(1)}
         aria-label={websiteCopy["playbookshowcase_0325"]}

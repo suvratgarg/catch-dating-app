@@ -26,6 +26,8 @@ export interface JoinWaitlistHTTPRequest {
     nextEventDate?: string;
     eventLocation?: string;
     expectedCapacity?: string;
+    bookingPlatform?: string;
+    guestListFormat?: string;
     priceRange?: string;
     admissionModel?: string;
     waitlistPlan?: string;

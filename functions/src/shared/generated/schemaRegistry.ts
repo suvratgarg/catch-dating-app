@@ -46881,6 +46881,14 @@ export const joinWaitlistHTTPRequestSchema: Record<string, unknown> = {
           "type": "string",
           "maxLength": 40
         },
+        "bookingPlatform": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "guestListFormat": {
+          "type": "string",
+          "maxLength": 120
+        },
         "priceRange": {
           "type": "string",
           "maxLength": 80
@@ -47249,6 +47257,14 @@ export const joinWaitlistHTTPRequestSchema: Record<string, unknown> = {
         "expectedCapacity": {
           "type": "string",
           "maxLength": 40
+        },
+        "bookingPlatform": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "guestListFormat": {
+          "type": "string",
+          "maxLength": 120
         },
         "priceRange": {
           "type": "string",

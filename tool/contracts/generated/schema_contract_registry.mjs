@@ -46880,6 +46880,14 @@ export const joinWaitlistHTTPRequestSchema = {
           "type": "string",
           "maxLength": 40
         },
+        "bookingPlatform": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "guestListFormat": {
+          "type": "string",
+          "maxLength": 120
+        },
         "priceRange": {
           "type": "string",
           "maxLength": 80
@@ -47248,6 +47256,14 @@ export const joinWaitlistHTTPRequestSchema = {
         "expectedCapacity": {
           "type": "string",
           "maxLength": 40
+        },
+        "bookingPlatform": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "guestListFormat": {
+          "type": "string",
+          "maxLength": 120
         },
         "priceRange": {
           "type": "string",

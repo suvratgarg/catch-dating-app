@@ -1,117 +1,384 @@
 import type {FaqItem, PlaybookModule, PlaybookStage, SectionCopy} from "./types";
 
-export const hostHeroCopy = {
-  kicker: "Catch for hosts",
-  stageCaption:
-    "The host console: check-in, live modules, and the roster in one screen.",
+export const hostPageCopy = {
+  nav: {
+    workflow: "How it works",
+    liveTools: "Live tools",
+    worksNow: "What works now",
+    comingSoon: "Coming soon",
+    organizers: "Organizers",
+    apply: "Apply for beta",
+  },
+  hero: {
+    title: "Keep your booking platform. Run a better event.",
+    body:
+      "Import your guest list, share one QR code, and give every checked-in guest the live Catch experience—no app download required.",
+    primaryAction: "Apply for beta access",
+    secondaryAction: "See how it works",
+    compatibility:
+      "Bring a CSV from Luma, Eventbrite, Partiful, POSH, Airbnb, BookMyShow—or anywhere else.",
+  },
+  workflow: {
+    title: "From exported guest list to live room in minutes.",
+    body:
+      "Keep selling tickets or taking RSVPs where you already do. Catch begins with the guest list you export.",
+    railLabel: "Setup steps",
+    mockLabel: "Companion event",
+    nextLabel: "Next",
+    readyLabel: "Ready to share",
+  },
+  live: {
+    label: "Live tools",
+    title: "Useful before the Catch network exists.",
+    body:
+      "Every guest opens the event in a mobile browser after phone verification. The host controls attendance, approvals, and the live flow from the organizer app.",
+  },
+  comparison: {
+    label: "What works now",
+    title: "Use Catch for the part ticketing tools leave unfinished.",
+    bookingColumn: "Your booking platform",
+    catchColumn: "Catch alongside it",
+    callout:
+      "A QR scanner alone is not the product. One imported guest list unlocks arrival, live facilitation, and post-event learning together.",
+    limits:
+      "Today: CSV-based setup for up to 250 guests at a time. Very large guest lists and provider-direct sync come later.",
+    tableLabel: "How a booking platform and Catch divide the work",
+  },
+  captures: {
+    label: "What the host sees",
+    title: "One event record from the door to the recap.",
+    body:
+      "The organizer app keeps the imported guest list, check-in state, live controls, approval requests, and event recap connected.",
+    setup: "Guest list setup",
+    live: "Live host controls",
+    report: "Event recap",
+  },
+  comingSoon: {
+    label: "Coming later with the Catch platform",
+    title: "What’s next—and not required to start.",
+    body:
+      "Useful now does not depend on these. They deepen the system when you choose to adopt them.",
+  },
+  apply: {
+    title: "Apply for beta access.",
+    body:
+      "We are approving a small group of hosts whose next event can teach us something. Apply with a real event; selected hosts get hands-on onboarding and free beta access.",
+  },
+  footer:
+    "Standalone live-event tools for hosts who already have a way to sell tickets or collect RSVPs.",
 } as const;
 
+export const hostHeroCopy = {
+  stageCaption: "Guest list, arrival, live tools, and host approvals in one view.",
+  demo: {
+    eventName: "Sunday Supper",
+    hostLabel: "Host console",
+    guestListLabel: "Guest list",
+    checkedInLabel: "Checked in",
+    guestLabel: "Guest",
+    statusLabel: "Status",
+    timeLabel: "Arrival",
+    shareLabel: "Share event QR",
+    runtimeLabel: "Guest web check-in",
+    runtimeTitle: "You’re checked in.",
+    runtimeBody: "No app download required.",
+    runtimeItems: ["First Hello", "Prompts", "Ask for an introduction"],
+    guests: [
+      {name: "Avery", status: "Checked in", time: "7:02"},
+      {name: "Jordan", status: "Checked in", time: "7:01"},
+      {name: "Taylor", status: "Expected", time: "—"},
+      {name: "Morgan", status: "Expected", time: "—"},
+    ],
+  },
+} as const;
+
+export const hostWorkflowSteps = [
+  {
+    step: "01",
+    title: "Create the companion event",
+    body: "Keep selling tickets or taking RSVPs where you already do.",
+  },
+  {
+    step: "02",
+    title: "Import the guest list",
+    body: "Upload a CSV in the organizer app or use secure forwarding.",
+  },
+  {
+    step: "03",
+    title: "Share the event QR",
+    body: "Phone verification links each arrival to the right guest-list entry.",
+  },
+] as const;
+
+export const hostLiveTools = [
+  {
+    label: "Arrival",
+    title: "Guest list and attendance",
+    body: "Import names and phone numbers, then see who is expected, checked in, or awaiting approval.",
+  },
+  {
+    label: "Door",
+    title: "QR and manual check-in",
+    body: "Guests scan the event QR, or a host confirms attendance manually when the door is busy.",
+  },
+  {
+    label: "First minutes",
+    title: "First Hello",
+    body: "Give each arrival a simple first interaction they can skip or replace.",
+  },
+  {
+    label: "Context",
+    title: "Compatibility prompts",
+    body: "A short optional questionnaire supplies conversation context without pretending to score chemistry.",
+  },
+  {
+    label: "Introductions",
+    title: "Help me say hi",
+    body: "A checked-in guest can quietly ask the host for an introduction; the other person is not notified.",
+  },
+  {
+    label: "Control",
+    title: "Host approvals and overrides",
+    body: "Review unmatched arrivals, control what runs, and override assignments without exposing private answers.",
+  },
+] as const;
+
+export const hostCurrentLayers = [
+  {
+    label: "Bring",
+    title: "Your existing guest list",
+    body: "Catch begins with names and phone numbers exported from the tool you already use.",
+  },
+  {
+    label: "Run",
+    title: "A no-download live room",
+    body: "Phone verification opens event-only tools in the guest’s mobile browser.",
+  },
+  {
+    label: "Learn",
+    title: "One connected event record",
+    body: "Attendance, host actions, and private feedback stay connected without creating a dating profile.",
+  },
+] as const;
+
+export const hostSetupProof = [
+  {
+    id: "imports",
+    label: "Guest-list import",
+    title: "Map the file once.",
+    body: "Reviewed exports map automatically, while unknown files keep a manual mapping path.",
+    facts: [
+      "CSV and XLSX upload in the organizer app.",
+      "Secure email and WhatsApp forwarding when provider routing is configured.",
+      "Duplicate contacts are detected inside the event.",
+    ],
+    activityToken: "var(--catch-activity-dinner-accent)",
+  },
+  {
+    id: "arrival",
+    label: "Arrival",
+    title: "Keep the door moving.",
+    body: "A QR opens phone verification; manual attendance and walk-in approvals remain available to the host.",
+    facts: [
+      "QR and direct-link entry.",
+      "Manual check-in when a guest cannot scan.",
+      "Approval queue for unmatched walk-ins when enabled.",
+    ],
+    activityToken: "var(--catch-activity-social-run-accent)",
+  },
+  {
+    id: "browser",
+    label: "Guest browser",
+    title: "Open only what the event needs.",
+    body: "The event can request a few optional fields before opening First Hello, prompts, or introduction requests.",
+    facts: [
+      "No app download or public profile required.",
+      "Sensitive fields appear only when selected logic needs them.",
+      "Answers can prefill a later opt-in profile without publishing one.",
+    ],
+    activityToken: "var(--catch-activity-padel-accent)",
+  },
+] as const;
+
+export const hostComparisonRows = [
+  ["Sell tickets or take RSVPs", "Import the guest list"],
+  ["Guest list before doors", "Verified attendance at the door"],
+  ["Broadcast updates", "First Hello, prompts, and quiet introduction requests"],
+  ["RSVP totals", "A private event recap with concrete next steps"],
+] as const;
+
+export const hostComingSoonItems = [
+  {
+    label: "Booking",
+    proof: "Catch-native ticketing and waitlists",
+  },
+  {
+    label: "Profiles",
+    proof: "Full member profiles and mutual catching",
+  },
+  {
+    label: "Conversation",
+    proof: "Event-context chats",
+  },
+  {
+    label: "Network",
+    proof: "Catch discovery and the social graph",
+  },
+] as const;
+
 export const playbook = {
-  eyebrow: "THE PLAYBOOK",
-  title: "A better room, without more work for the host.",
+  eyebrow: "The live room",
+  title: "Turn on only the help this event needs.",
   body: [
-    "Choose the facilitation that fits your format, from a light arrival flow to a fully guided night.",
-    "Every stage stays connected to the same attendance record, with host overrides and guest privacy built in.",
+    "A run may need only attendance and a First Hello. A dinner or mixer can add prompts, introductions, and guided rotations.",
+    "Every live tool is optional per event, works in the guest’s browser, and stays tied to the same attendance record.",
   ],
-  railLabel: "Playbook stages",
-  captureFallback: "Playbook",
-  guardrailTitle: "Guardrails are part of the product.",
+  railLabel: "Live stages",
+  captureFallback: "Live host controls",
+  guardrailTitle: "Guests opt in. Hosts stay in control.",
   guardrailBody:
-    "You see coaching, never who caught whom. Guests can opt out of any live module. Blocked pairs are never assigned together.",
+    "Guests can skip any prompt or request. Hosts never see private questionnaire answers, and sensitive traits are requested only when a selected live tool genuinely needs them.",
   formatNote:
-    "Social runs stay light — movement is the icebreaker. Dinners and mixers can run the full program. Every module is optional, per event.",
+    "Use the lightest version that improves the room. A feature that distracts guests from the event should stay off.",
 } as const;
 
 export const playbookStages = [
-  {id: "before", label: "Before", sub: "The room takes shape", guestLine: "The room feels put together, not random.", hostLine: "The balance preview shows gaps in mix, pace, and group size while there is still time to fix them."},
-  {id: "arrival", label: "Arrival", sub: "First Hello", guestLine: "A guided first interaction helps arrivals join the room.", hostLine: "Check-in confirms who is present and gives each guest a clear first step."},
-  {id: "opening", label: "Opening", sub: "Welcome script", guestLine: "The room gets clear permission to talk.", hostLine: "A concise script opens the night well without requiring a professional MC."},
-  {id: "mixing", label: "Mixing", sub: "Missions and introductions", guestLine: "Guests get an easy reason to start another conversation.", hostLine: "Small groups, prompts, and consented introduction requests keep the room moving."},
-  {id: "activity", label: "Activity", sub: "Rotations and reveals", guestLine: "Assignments make it easier to meet across the room.", hostLine: "Timed rotations and synchronized reveals keep the flow visible, with overrides close by."},
-  {id: "after", label: "After", sub: "The catch window", guestLine: "Private catches turn shared event context into warmer conversations.", hostLine: "Suggested openers support the first message without adding host admin."},
-  {id: "debrief", label: "Debrief", sub: "The recap", guestLine: "Feedback helps the next event improve.", hostLine: "Attendance, mixing, catches, matches, and reviews return as concrete operating advice."},
+  {id: "before", label: "Before", sub: "Guest list ready", guestLine: "Your phone number links you only to this event.", hostLine: "Import the guest list and choose the live tools that fit."},
+  {id: "arrival", label: "Arrival", sub: "The door", guestLine: "Scan, verify, and enter the live room without downloading an app.", hostLine: "Watch attendance and review unmatched arrivals."},
+  {id: "mixing", label: "Live", sub: "Room in motion", guestLine: "Get a simple first step, prompt, or optional introduction request.", hostLine: "Run First Hello, prompts, and assignments with overrides close by."},
+  {id: "debrief", label: "After", sub: "The recap", guestLine: "Private feedback helps the next event improve.", hostLine: "Review attendance and event-level patterns without seeing private answers."},
 ] satisfies readonly PlaybookStage[];
 
 export const playbookModules = [
-  {id:"crowd_balance",anchor:"playbook-balance-preview",publicName:"Balance preview",stageId:"before",chip:"NEW POWER",oneLiner:"See who the room is missing — while you can still fix it.",more:"As bookings arrive, see the shape of the room: mix, age spread, pace, skill gaps, and group sizes. Guests never see these numbers; the room simply feels more intentional.",fits:"Every format."},
-  {id:"qr_check_in",anchor:"playbook-door-check-in",publicName:"Door check-in",stageId:"arrival",chip:"OFF YOUR PLATE",oneLiner:"Know who is actually in the room.",more:"Guests check in by QR or with a host tap. One attendance record unlocks catching, verified reviews, and reporting, with manual check-in available when needed.",fits:"Every format."},
-  {id:"first_hello_check_in",anchor:"playbook-first-hello",publicName:"First Hello",stageId:"arrival",chip:"NEW POWER",oneLiner:"Give every arrival a clear first interaction.",more:"A small arrival mission suggests a person to find and a question to ask. Guests can skip or request another mission; blocked pairs are never assigned.",fits:"Dinners, mixers, quiz nights, and pickleball. Off by default."},
-  {id:"host_script",anchor:"playbook-welcome-script",publicName:"Welcome script",stageId:"opening",chip:"OFF YOUR PLATE",oneLiner:"Open the night with a clear, concise guide.",more:"A welcome line, safety note, and first prompt fit on the host screen and give the room permission to talk.",fits:"Every format."},
-  {id:"micro_pods",anchor:"playbook-starter-pods",publicName:"Starter pods",stageId:"opening",chip:"OFF YOUR PLATE",oneLiner:"Start in small groups instead of cold approaches.",more:"Guests begin in groups of four to six based on pace, interests, or who came together. Hosts can reshuffle when arrivals differ from signups.",fits:"Every format; especially runs and large mixers."},
-  {id:"social_missions",anchor:"playbook-missions",publicName:"Missions",stageId:"mixing",chip:"OFF YOUR PLATE",oneLiner:"An easy reason to start one more conversation.",more:"Three light prompts tailored to the event run while the room mixes. They are optional and return attention to the event rather than the app.",fits:"Every format."},
-  {id:"guided_rotations",anchor:"playbook-rotations",publicName:"Rotations",stageId:"activity",chip:"OFF YOUR PLATE",oneLiner:"Move pairs, tables, or pods without manual logistics.",more:"Set round length and count; the Playbook reshuffles assignments and shows each guest only where to go next. The host keeps override control.",fits:"Dinners, mixers, quiz nights, and racket socials."},
-  {id:"live_reveal",anchor:"playbook-countdown-reveals",publicName:"Countdown reveals",stageId:"activity",chip:"NEW POWER",oneLiner:"Give the night shared transition moments.",more:"A synchronized countdown, optional clue, and reveal move the room together. Hosts control each round from the live screen.",fits:"Dinners, mixers, quiz nights, and pickleball."},
-  {id:"compatibility_questionnaire",anchor:"playbook-match-clues",publicName:"Match clues",stageId:"before",chip:"NEW POWER",oneLiner:"Add conversation context beyond looks.",more:"An optional short questionnaire creates reveal clues and light pairing context as conversation starters, never a chemistry score.",fits:"Mixers, dinners, and quiz nights. Off by default."},
-  {id:"wingman_requests",anchor:"playbook-help-me-say-hi",publicName:"Help me say hi",stageId:"mixing",chip:"NEW POWER",oneLiner:"Let guests request a quiet introduction.",more:"Checked-in guests can make explicit, private requests. The other person is not notified; the host decides whether and how to make the introduction.",fits:"Every stationary format."},
-  {id:"contextual_openers",anchor:"playbook-openers",publicName:"Openers",stageId:"after",chip:"NEW POWER",oneLiner:"Start a match chat with shared context.",more:"Catch suggests openers based on the event both people attended. Either person can ignore them, and the host has no extra work.",fits:"Every format; automatic."},
-  {id:"decomposed_feedback",anchor:"playbook-guest-feedback",publicName:"Guest feedback",stageId:"after",chip:"NEW POWER",oneLiner:"Learn what guests experienced and what can improve.",more:"Short private questions cover welcome, balance, structure, safety, and connection. Hosts see aggregate patterns, not individual answers.",fits:"Every format."},
-  {id:"host_analytics",anchor:"playbook-recap",publicName:"The recap",stageId:"debrief",chip:"NEW POWER",oneLiner:"Turn event signals into one or two next steps.",more:"Attendance, mixing, catches, matches, reviews, and repeat guests become a concise brief with concrete recommendations.",fits:"Every format; automatic."},
-  {id:"safety_controls",anchor:"playbook-safety-layer",publicName:"Safety layer",stageId:"always",oneLiner:"Not a module. The floor.",more:"Blocks and reports apply to every assignment, reveal, and introduction. Guests can opt out, and help actions remain close throughout the event.",fits:"Every format; always on."},
+  {id: "guest_list", anchor: "playbook-guest-list", publicName: "Guest list import", stageId: "before", chip: "OFF YOUR PLATE", oneLiner: "Start with the list your booking tool already gives you.", more: "Upload CSV or XLSX in the organizer app. Reviewed formats map automatically; every other file keeps a manual column-mapping path.", fits: "Every format."},
+  {id: "qr_check_in", anchor: "playbook-door-check-in", publicName: "Door check-in", stageId: "arrival", chip: "OFF YOUR PLATE", oneLiner: "Know who is actually in the room.", more: "Guests verify the phone number on the imported list, while hosts keep manual attendance and an approval queue for unmatched arrivals.", fits: "Every format."},
+  {id: "first_hello_check_in", anchor: "playbook-first-hello", publicName: "First Hello", stageId: "arrival", chip: "NEW POWER", oneLiner: "Give every arrival a clear first interaction.", more: "A small arrival mission suggests a person to find and a question to ask. Guests can skip or request another mission.", fits: "Dinners, mixers, quiz nights, and racket socials. Off by default."},
+  {id: "compatibility_questionnaire", anchor: "playbook-compatibility-prompts", publicName: "Compatibility prompts", stageId: "before", chip: "NEW POWER", oneLiner: "Add context without requiring a full dating profile.", more: "A short event-only questionnaire can supply the fields a selected prompt or assignment needs. Answers remain private and can prefill an optional later profile.", fits: "Mixers, dinners, and quiz nights. Off by default."},
+  {id: "wingman_requests", anchor: "playbook-help-me-say-hi", publicName: "Help me say hi", stageId: "mixing", chip: "NEW POWER", oneLiner: "Let guests request a quiet introduction.", more: "Checked-in guests can make an explicit, private request. The other person is not notified; the host decides whether and how to introduce them.", fits: "Every stationary format."},
+  {id: "guided_rotations", anchor: "playbook-rotations", publicName: "Guided assignments", stageId: "mixing", chip: "OFF YOUR PLATE", oneLiner: "Move pairs, tables, or small groups without manual logistics.", more: "Show each guest only where to go next and keep host overrides available when attendance changes.", fits: "Dinners, mixers, quiz nights, and racket socials."},
+  {id: "decomposed_feedback", anchor: "playbook-guest-feedback", publicName: "Guest feedback", stageId: "debrief", chip: "NEW POWER", oneLiner: "Learn what guests experienced and what can improve.", more: "Short private questions cover welcome, structure, safety, and conversation. Hosts see combined patterns, not individual answers.", fits: "Every format."},
+  {id: "host_recap", anchor: "playbook-recap", publicName: "The event recap", stageId: "debrief", chip: "NEW POWER", oneLiner: "Turn live activity into one or two next steps.", more: "Attendance, participation, and private feedback become a concise operating brief without promising conclusions the event did not produce.", fits: "Every format."},
 ] satisfies readonly PlaybookModule[];
 
 export const hostFoundingOffer = {
-  title: "Founding hosts pay 0% Catch platform fee for 24 months.",
+  title: "Free to use. Deliberately limited access.",
   body:
-    "Apply for manual approval. Your 24-month lock starts when your first Catch event goes live. Standard payment processor fees still apply, e.g. Stripe, Razorpay, etc.",
-  badgeAriaLabel: "Founding Host badge preview",
-  badgeLabel: "Founding",
-  badgeValue: "Host",
-  steps: ["Apply", "Get approved", "Publish first event", "Lock begins"],
+    "Beta access is free, but onboarding is hands-on. We select hosts with a real upcoming event, a guest list they can import, and a format where the live tools can be evaluated honestly.",
+  badgeAriaLabel: "Catch beta access",
+  badgeLabel: "Private",
+  badgeValue: "Beta",
+  steps: ["Apply with an event", "Get selected", "Import the guest list", "Run the room"],
 } as const;
 
 export const hostTrust = {
-  title: "Guardrails are part of the product.",
+  title: "The useful part is the connected system, not any one feature.",
   body:
-    "Get clear controls for admission, payments, attendance, privacy, safety, and post-event follow-up in one operating flow.",
+    "QR check-in is common. What matters is that the same verified attendance record powers the guest’s live tools, the host’s controls, and an honest recap.",
 } satisfies SectionCopy;
 
 export const hostTrustItems = [
   {
-    title: "Attendance-gated reputation",
-    body: "Reviews and post-event signals can be tied to real attendance instead of anonymous public noise.",
+    title: "No app requirement",
+    body: "Guests verify their phone number and use the live event in a mobile browser.",
   },
   {
-    title: "Private catch targets stay private",
-    body: "Hosts see aggregate outcomes. They do not see who privately caught whom.",
+    title: "Event-only identity",
+    body: "A guest can participate without creating a public dating profile or joining the Catch network.",
   },
   {
-    title: "Moderation and disputes are part of the workflow",
-    body: "Reports, review disputes, cancellation handling, and refund paths sit beside the event record.",
+    title: "Private by design",
+    body: "Hosts manage the room without seeing private questionnaire answers or exposing an introduction request.",
   },
 ] as const;
 
 export const hostFaq = {
-  title: "Questions hosts ask before switching tools.",
+  title: "Questions hosts ask before adding another tool.",
 } satisfies SectionCopy;
 
 export const hostFaqs = [
   {
-    question: "What does founding host access include?",
+    question: "Do I have to stop using my current booking platform?",
     answer:
-      "Manual approval, 0% Catch platform fee for 24 months from your first published event, a public Founding Host badge, and increased visibility in Catch discovery.",
+      "No. Keep selling tickets or collecting RSVPs where you already do. Export the guest list and create a companion event in Catch.",
   },
   {
-    question: "Are there any fees?",
+    question: "Do guests have to download the Catch app?",
     answer:
-      "Catch charges founding hosts 0% platform fee during the 24-month founding period. Standard payment processor fees still apply, e.g. Stripe, Razorpay, etc.",
+      "No. The event QR opens a mobile web experience. Guests verify the phone number used on the guest list and enter the event directly.",
   },
   {
-    question: "When does the 24-month lock start?",
-    answer: "It starts when your first Catch event is published.",
+    question: "Which guest-list exports work?",
+    answer:
+      "CSV and XLSX upload are supported. Luma, Eventbrite, Partiful, and POSH have reviewed mappings; other exports can use manual column mapping while their samples are verified.",
   },
   {
-    question: "What kinds of events can I host?",
+    question: "What if someone arrives without a matching guest-list entry?",
     answer:
-      "Runs, dinners, mixers, game nights, quizzes, racket sports, walks, venue events, and custom hosted social formats.",
+      "The host can allow walk-ins for the event. The guest verifies a phone number and enters an approval queue before the live tools unlock.",
   },
   {
-    question: "Can I control who gets in?",
+    question: "Is the beta really free?",
     answer:
-      "Yes. Catch supports open booking, invite-only events, request-to-join, waitlists, timed offers, capacity rules, and balanced cohorts.",
+      "Yes. Access is limited because onboarding and event review are hands-on, not because there is a software fee during the beta.",
   },
   {
-    question: "Does Catch handle payments and refunds?",
+    question: "What still requires the future Catch platform?",
     answer:
-      "Yes. Payments, refunds, cancellations, and attendance are connected to the event roster.",
+      "Catch-native ticketing and waitlists, full member profiles, mutual catching, event-context chats, and the broader discovery network come later.",
   },
 ] satisfies readonly FaqItem[];
+
+export const hostApplicationCopy = {
+  steps: {
+    profile: {label: "Host identity", body: "Who you are and what you run."},
+    event: {label: "Next event", body: "The real event we can learn from."},
+    setup: {label: "Current setup", body: "Booking tool and guest-list size."},
+    success: {label: "Live tools", body: "Where Catch could help most."},
+    review: {label: "Review", body: "Confirm the beta application."},
+  },
+  setup: {
+    bookingPlatformLabel: "Current booking or RSVP platform",
+    guestListFormatLabel: "How can you export the guest list?",
+    guestCountLabel: "Expected guest count",
+    bookingPlatforms: [
+      "Luma",
+      "Eventbrite",
+      "Partiful",
+      "POSH",
+      "Airbnb Experiences",
+      "BookMyShow / District",
+      "SortMyScene",
+      "Google Form / spreadsheet",
+      "Another platform",
+    ],
+    guestListFormats: ["CSV", "XLSX", "Not sure yet"],
+  },
+  liveToolOptions: [
+    "Guest list and attendance",
+    "QR and manual check-in",
+    "First Hello",
+    "Compatibility prompts",
+    "Help me say hi",
+    "Guided assignments",
+    "Guest feedback",
+    "Event recap",
+  ],
+  checklist: {
+    profile: "Host identity",
+    event: "Real upcoming event",
+    setup: "Current booking setup",
+    live: "Live-tool goal",
+  },
+  errors: {
+    setup: "Add the booking platform, export format, and expected guest count.",
+  },
+  review: {
+    setupTitle: "Current setup",
+    platformLabel: "Platform",
+    formatLabel: "Export",
+    guestsLabel: "Guests",
+    noteTitle: "What happens after you apply",
+    noteBody:
+      "Catch reviews the event, guest-list setup, and selected live tools before confirming beta access. Selected hosts get a guided import check and a run-through before doors open.",
+  },
+} as const;

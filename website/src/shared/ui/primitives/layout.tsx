@@ -51,7 +51,7 @@ export type ProductShellVariant =
 export interface ProductModuleCardItem {
   activityToken?: string;
   body: ReactNode;
-  facts: ReactNode[];
+  facts: readonly ReactNode[];
   id: string;
   label: ReactNode;
   title: ReactNode;
@@ -359,7 +359,7 @@ export function ProductModuleGrid({
   reveal = true,
   ...props
 }: HTMLAttributes<HTMLDivElement> & {
-  modules: ProductModuleCardItem[];
+  modules: readonly ProductModuleCardItem[];
   reveal?: boolean;
 }) {
   return (
