@@ -877,6 +877,102 @@ abstract class AppLocalizations {
   /// **'COVER'**
   String get coreOrderedPhotoPickerTextCover;
 
+  /// Opens the scalable ordered gallery manager.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Manage 1 photo} other{Manage all {count} photos}}'**
+  String coreOrderedPhotoPickerActionManageAll({required int count});
+
+  /// Title for the full-screen ordered gallery manager.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos'**
+  String get coreOrderedPhotoPickerTitlePhotoManager;
+
+  /// Photo count shown in the gallery manager header.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 photo} other{{count} photos}}'**
+  String coreOrderedPhotoPickerSubtitlePhotoCount({required int count});
+
+  /// Closes the full-screen gallery manager.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get coreOrderedPhotoPickerActionDone;
+
+  /// Title for the selected cover photo.
+  ///
+  /// In en, this message translates to:
+  /// **'Cover photo'**
+  String get coreOrderedPhotoPickerTitleCoverPhoto;
+
+  /// Explains cover-photo semantics in the gallery manager.
+  ///
+  /// In en, this message translates to:
+  /// **'This is the first image guests see. Choose any gallery photo as the cover.'**
+  String get coreOrderedPhotoPickerBodyCoverPhoto;
+
+  /// Title for the ordered gallery grid.
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery'**
+  String get coreOrderedPhotoPickerTitleGallery;
+
+  /// Adds more images to an unbounded Host gallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Add photos'**
+  String get coreOrderedPhotoPickerActionAddPhotos;
+
+  /// Tooltip for the per-photo action menu.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo options'**
+  String get coreOrderedPhotoPickerActionPhotoOptions;
+
+  /// Moves a gallery image to the cover position.
+  ///
+  /// In en, this message translates to:
+  /// **'Set as cover'**
+  String get coreOrderedPhotoPickerActionSetAsCover;
+
+  /// Moves a gallery image one position earlier.
+  ///
+  /// In en, this message translates to:
+  /// **'Move earlier'**
+  String get coreOrderedPhotoPickerActionMoveEarlier;
+
+  /// Moves a gallery image one position later.
+  ///
+  /// In en, this message translates to:
+  /// **'Move later'**
+  String get coreOrderedPhotoPickerActionMoveLater;
+
+  /// Removes an image from a Host gallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove photo'**
+  String get coreOrderedPhotoPickerActionRemove;
+
+  /// Status shown on a Host gallery image while it uploads.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading…'**
+  String get coreOrderedPhotoPickerStatusUploading;
+
+  /// Status shown on a Host gallery image after an upload failure.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload failed'**
+  String get coreOrderedPhotoPickerStatusUploadFailed;
+
+  /// Retries a failed Host gallery upload.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get coreOrderedPhotoPickerActionRetry;
+
   /// Product copy used by lib/dashboard/presentation/activity_screen.dart (title).
   ///
   /// In en, this message translates to:
@@ -2442,25 +2538,25 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart (Text).
   ///
   /// In en, this message translates to:
-  /// **'Drag to reorder - the first photo is your cover. Add as many as you like.'**
+  /// **'Add as many as you need. The first photo is the cover.'**
   String get hostsCreateClubPhotosPickerTextDragToReorderThe;
 
   /// Product copy used by lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart (Text).
   ///
   /// In en, this message translates to:
-  /// **'A square logo, shown on your organizer profile and every event.'**
+  /// **'A square logo shown on your organizer profile and events. It stays separate from your gallery.'**
   String get hostsCreateClubPhotosPickerTextASquareLogoShown;
 
   /// Product copy used by lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Change organizer profile image'**
+  /// **'Change organizer logo'**
   String get hostsCreateClubPhotosPickerLabelChangeClubProfileImage;
 
   /// Product copy used by lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Add organizer profile image'**
+  /// **'Add organizer logo'**
   String get hostsCreateClubPhotosPickerLabelAddClubProfileImage;
 
   /// Product copy used by lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart (Text).
@@ -2468,6 +2564,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add image'**
   String get hostsCreateClubPhotosPickerTextAddImage;
+
+  /// Adds the organizer logo, separate from gallery media.
+  ///
+  /// In en, this message translates to:
+  /// **'Add logo'**
+  String get hostsCreateClubPhotosPickerActionAddLogo;
+
+  /// Replaces the organizer logo.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace'**
+  String get hostsCreateClubPhotosPickerActionReplaceLogo;
+
+  /// Removes the organizer logo without affecting gallery photos.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get hostsCreateClubPhotosPickerActionRemoveLogo;
 
   /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (body).
   ///
@@ -5383,13 +5497,13 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Organizer photos'**
+  /// **'Gallery & cover'**
   String get hostsCreateClubPhotosPickerLabelClubPhotos;
 
   /// Product copy used by lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Organizer profile image'**
+  /// **'Organizer logo'**
   String get hostsCreateClubPhotosPickerLabelClubProfileImage;
 
   /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (title).
@@ -5494,11 +5608,23 @@ abstract class AppLocalizations {
   /// **'Only this organizer\'\'s host team can create events for this organizer.'**
   String get hostsHostCreateEventScreenMessageOnlyThisClubS;
 
-  /// Product copy used by lib/hosts/presentation/event_management/widgets/create_event_photo_picker.dart (label).
+  /// Title for event-specific cover and gallery media.
   ///
   /// In en, this message translates to:
-  /// **'Event photos'**
-  String get hostsCreateEventPhotoPickerLabelEventPhotos;
+  /// **'Event cover & gallery'**
+  String get hostsCreateEventPhotoPickerTitleCoverAndGallery;
+
+  /// Explains that the event uses its organizer logo separately from event media.
+  ///
+  /// In en, this message translates to:
+  /// **'Organizer logo · inherited'**
+  String get hostsCreateEventPhotoPickerBodyInheritedLogo;
+
+  /// Explains the unbounded ordered event gallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Add as many event photos as you need. The first photo is the cover.'**
+  String get hostsCreateEventPhotoPickerBodyUnlimitedGallery;
 
   /// Product copy used by lib/hosts/presentation/event_management/widgets/event_details_step.dart (label).
   ///
@@ -9049,16 +9175,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Media'**
   String get hostsHostClubProfileTitleMedia;
-
-  /// Club photo count shown in the organizer Media section header.
-  ///
-  /// In en, this message translates to:
-  /// **'{completedCount} of {maximumClubPhotoCount} added'**
-  String
-  hostsHostClubProfileVisiblecopyCompletedcountOfMaximumclubphotocountAdded({
-    required Object completedCount,
-    required Object maximumClubPhotoCount,
-  });
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (label).
   ///

@@ -1646,6 +1646,7 @@ abstract final class CatchOpacity {
 
   /// Loading scrim over profile-photo upload slots.
   static const double photoUploadLoadingScrim = 0.45;
+  static const double hostMediaStatusScrim = 0.88;
 
   /// Floating edit chrome over profile-photo slots.
   static const double photoSlotEditChrome = 0.85;
@@ -2164,6 +2165,11 @@ abstract final class CatchLayout {
   static const double eventTypeSkeletonCardHeight = 120.0;
   static const double photoSlotDeleteExtent = CatchSpacing.s7;
   static const double photoSlotDeleteControlInset = 34.0;
+  static const double hostMediaThumbnailExtent = 88;
+  static const double hostMediaManagerCoverWidth = 128;
+  static const double hostMediaInheritedLogoExtent = 52;
+  static const double hostMediaCoverMaxWidth = 540;
+  static const double hostMediaWideGridBreakpoint = 720;
   static const double reactionControlExtent = CatchSpacing.s11;
   static const double reactionControlIconSize = 21.0;
   static const double profileFallbackArtworkIconSize = 160.0;

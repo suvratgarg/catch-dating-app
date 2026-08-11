@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.13.1
-updated: 2026-08-10
+version: 1.13.2
+updated: 2026-08-11
 owner: recursive_audit_loop
 status: active
 ---
@@ -974,6 +974,19 @@ and product-facing copy are the current local authority. `Club`-named Dart
 types/folders and callable wrappers are compatibility adapters until the remote
 backfill and supported-client window are proven. They must not be used to
 introduce new club-only behavior.
+
+### Host media galleries
+
+Organizer and event galleries are ordered `UploadedPhoto` arrays with no
+product-level item cap. `position` is a non-negative sequence, the first item is
+the explicit cover projection (`imageUrl` for organizers and `photoUrl` for
+events), and the organizer `logoPhoto` / `profileImageUrl` remains a separate
+optional asset that is never inserted into the gallery. Callable and Firestore
+schemas intentionally do not declare `maxItems`; they remain bounded by the
+underlying callable and Firestore document-size limits, so clients must render
+and edit them through a virtualized/scrolling manager rather than an expanding
+inline grid. Consumer dating-profile media retains its independent six-photo
+policy and grouped `profilePhotos` contract.
 
 Remote organizer backfill is complete in staging and production; legacy
 cleanup is intentionally not complete. Follow

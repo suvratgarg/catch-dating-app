@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_organizer_create.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:38c103b03568be338a3d66fe372203d0f37154c828caa79e70b1c88760c21350",
-  "resolvedDigest": "sha256:f74b0e9da3db62644be48c833b6ce4c5ee2851aa1ae878792d2e4de7126049bd",
+  "resolvedDigest": "sha256:de4d9f27febf87db8c9763a5511f739b4c9c87ce7071ebe0b74369d3038d34bc",
   "feature": {
     "id": "feature.host_organizer_create",
     "name": "Host Organizer Create",
@@ -18,7 +18,7 @@
     "scenarios": 17,
     "actionCases": 19,
     "actions": 12,
-    "captures": 15,
+    "captures": 16,
     "previews": 1,
     "testFiles": 3,
     "evidenceExceptions": 14
@@ -90,7 +90,7 @@
         "scenarios": 17,
         "actionCases": 19,
         "actions": 12,
-        "captures": 15,
+        "captures": 16,
         "previews": 1,
         "testFiles": 3,
         "evidenceExceptions": 14
@@ -745,7 +745,8 @@
           },
           "evidence": {
             "captureIds": [
-              "create_club_picked_media"
+              "create_club_picked_media",
+              "host_media_gallery_manager"
             ],
             "previewIds": [
               "HostCreateClubScreen/Route and wizard states"

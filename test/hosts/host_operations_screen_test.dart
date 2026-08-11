@@ -1514,7 +1514,7 @@ void main() {
         closeTo(CatchLayout.maxContentWidth, 0.1),
       );
       expect(tester.getCenter(editTab).dx, closeTo(450, 0.1));
-      expect(find.text('0 of 6 added'), findsOneWidget);
+      expect(find.text('0 photos'), findsOneWidget);
 
       final descriptionEditor = find.byKey(
         const ValueKey('catch-form-text-description'),
@@ -1550,6 +1550,38 @@ void main() {
 
     expect(actions.mediaWrites, hasLength(1));
     expect(actions.mediaWrites.single, hasLength(1));
+    expect(actions.mediaWrites.single.single, isA<HostNewClubPhotoInput>());
+  });
+
+  testWidgets('Host club photo upload failures stay visible and retry', (
+    tester,
+  ) async {
+    final photoBytes = _testPngBytes();
+    final actions = _RecordingHostClubEditActions(
+      pickedPhotos: [
+        HostPickedClubPhoto(
+          image: XFile.fromData(photoBytes, name: 'retry.jpg'),
+          bytes: photoBytes,
+        ),
+      ],
+      mediaFailuresRemaining: 1,
+    );
+    final club = buildClub(id: 'media-retry', ownerUserId: _hostUid);
+
+    await _pumpHostClubEditTab(tester, club: club, actions: actions);
+    final add = find.byKey(OrderedPhotoPickerKeys.addAction('Add photos'));
+    await Scrollable.ensureVisible(tester.element(add));
+    await tester.tap(add);
+    await pumpFeatureUi(tester);
+
+    expect(actions.mediaUpdateCalls, 1);
+    expect(find.textContaining('Upload failed'), findsWidgets);
+
+    await tester.tap(find.byKey(OrderedPhotoPickerKeys.coverRetryAction));
+    await pumpFeatureUi(tester);
+
+    expect(actions.mediaUpdateCalls, 2);
+    expect(actions.mediaWrites, hasLength(1));
     expect(actions.mediaWrites.single.single, isA<HostNewClubPhotoInput>());
   });
 
@@ -1680,9 +1712,14 @@ void main() {
     );
 
     await _pumpHostClubEditTab(tester, club: club, actions: actions);
-    final remove = find.byKey(OrderedPhotoPickerKeys.removeAction(0));
-    await Scrollable.ensureVisible(tester.element(remove));
-    await tester.tap(remove);
+    final manage = find.byKey(OrderedPhotoPickerKeys.manageAction);
+    await Scrollable.ensureVisible(tester.element(manage));
+    await tester.tap(manage);
+    await pumpFeatureUi(tester);
+
+    await tester.tap(find.byKey(OrderedPhotoPickerKeys.setCoverAction(0)));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Remove photo'));
     await pumpFeatureUi(tester);
 
     expect(actions.mediaWrites, hasLength(1));

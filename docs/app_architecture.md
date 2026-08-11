@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.10.3
+version: 1.10.4
 updated: 2026-08-11
 owner: app_architecture
 status: active
@@ -60,6 +60,14 @@ taxonomy `club`, `community`, `individual`, `eventProducer`, `venue`, and
 `brand`. Managers do not own this classification change. Generic visible copy
 must say organizer/follow rather than club/join; “Club” remains valid only as
 the label for the `club` subtype or as specific real-world content.
+
+Host organizer/event galleries use one scalable ordered-media editor in create
+and edit flows. The inline surface previews the explicit cover and a short
+thumbnail rail; the full-screen manager owns long-list scrolling, set-cover,
+reorder, remove, and add-more actions. Host code must not reuse the Consumer
+profile six-slot cap. Organizer logo state is a separate optional mutation, and
+event creation displays that inherited identity without treating it as event
+gallery media.
 
 Organizer and external-event action rendering consumes
 `OrganizerSupplyCapabilities`; claim state or provenance alone never enables

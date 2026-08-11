@@ -1,11 +1,17 @@
 part of '../host_operations_screen_test.dart';
 
 class _RecordingHostClubEditActions implements HostClubEditActions {
-  _RecordingHostClubEditActions({this.pickedPhotos = const []});
+  _RecordingHostClubEditActions({
+    this.pickedPhotos = const [],
+    this.mediaFailuresRemaining = 0,
+  });
 
   final List<HostPickedClubPhoto> pickedPhotos;
   final List<UpdateClubPatch> profileWrites = [];
   final List<List<HostClubMediaInput>> mediaWrites = [];
+  int mediaFailuresRemaining;
+  int mediaUpdateCalls = 0;
+  final List<bool> removeLogoWrites = [];
 
   @override
   Future<void> updateClub({
@@ -16,9 +22,10 @@ class _RecordingHostClubEditActions implements HostClubEditActions {
   }
 
   @override
-  Future<List<HostPickedClubPhoto>> pickClubPhotos({
-    required int limit,
-  }) async => pickedPhotos.take(limit).toList(growable: false);
+  Future<List<HostPickedClubPhoto>> pickClubPhotos({int? limit}) async =>
+      limit == null
+      ? pickedPhotos
+      : pickedPhotos.take(limit).toList(growable: false);
 
   @override
   Future<HostPickedClubLogo?> pickClubLogo() async => null;
@@ -28,7 +35,14 @@ class _RecordingHostClubEditActions implements HostClubEditActions {
     required Club club,
     List<HostClubMediaInput>? photoInputs,
     HostPickedClubLogo? logo,
+    bool removeLogo = false,
   }) async {
+    mediaUpdateCalls += 1;
+    removeLogoWrites.add(removeLogo);
+    if (mediaFailuresRemaining > 0) {
+      mediaFailuresRemaining -= 1;
+      throw StateError('media update failed');
+    }
     if (photoInputs != null) {
       mediaWrites.add(List<HostClubMediaInput>.of(photoInputs));
     }

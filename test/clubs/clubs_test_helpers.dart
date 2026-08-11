@@ -213,6 +213,7 @@ class FakeClubsRepository implements ClubsRepository {
   Object? createError;
   Object? joinError;
   Object? leaveError;
+  Object? updateError;
   CreateClubCall? lastCreateCall;
   String? lastUpdatedClubId;
   Map<String, dynamic>? lastUpdatedFields;
@@ -298,6 +299,9 @@ class FakeClubsRepository implements ClubsRepository {
     required String clubId,
     required UpdateClubPatch patch,
   }) async {
+    if (updateError != null) {
+      throw updateError!;
+    }
     lastUpdatedClubId = clubId;
     lastUpdatedFields = Map<String, dynamic>.from(patch.toFieldsJson());
   }

@@ -97,7 +97,7 @@ Non-goals:
 | F14 | Add host = tooltip-only `CatchIconButton` in the section header trailing slot; the DS already has the `CatchField.add` row constructor used by the consumer prompt editor | `host_team_management_section.dart` ~line 155; `catch_field.dart` ~line 844; `inline_editor_prompt.dart` ~line 343 |
 | F15 | Field expansion keys are LOCALIZED strings (`context.l10n.…Visiblecopy…` used as `fieldName` and compared against `initialExpandedEditField`); breaks on locale change and unstable for deep links. The organizer route never passes `initialExpandedEditField` (dead plumbing) | `host_club_profile.dart` ~line 318 etc.; `go_router.dart` organizer branch (~line 872) passes only `clubId` + `tab` |
 | F16 | Accordion behavior (single expanded field) duplicated verbatim in `_HostClubProfileCardState` and `_ProfileTabContentState` | both files, `_expandedField`/`_toggleField`/`_collapseField` |
-| F17 | `_maxClubPhotos = 6` is a widget-local const (consumer photo cap lives in domain `profile_photo_policy.dart`); media section shows no "n of 6" count while the consumer photos section does | `host_club_profile.dart` ~line 26; `profile_tab.dart` ~line 640 |
+| F17 | Historical audit finding, now superseded: `_maxClubPhotos = 6` was a widget-local const while the consumer cap lived in `profile_photo_policy.dart`; Host organizer galleries now intentionally have no product-level cap and consumer profiles retain their six-photo policy | `host_club_profile.dart` ~line 26 at audit time; current shared Host media editor and consumer policy |
 | F18 | `_capacitySummary` renders a bare "20-80" as `valueText` with no unit | `event_success_setup_body.dart` ~line 341 |
 | F19 | `HostClubProfileCard` is not a card; it is the entire tab body | naming only |
 | F20 | Module inventory: 14 modules; 3 already hidden as platform (`safety_controls`, `qr_check_in`, `crowd_balance` via `_platformModuleIds`); of the visible ones, contextual openers / decomposed feedback / host recap / wingman requests are not real per-event host decisions; `micro_pods` + `guided_rotations` + the structure editor all model the same "how the room is grouped" concept (`unitKind`); `first_hello_check_in` is an arrival-mission flavor of check-in | `modules.dart`, `rules.dart` (quiz reason: "For quiz formats this is the team setup"), `event_success_structure.dart` |
@@ -250,15 +250,13 @@ class CatchFieldAccordion extends ChangeNotifier {
   Mechanical; zero behavior change. Add a unit test in `test/core/`.
 - Do not migrate other accordion-ish call sites in this pass.
 
-### 4.5 Club media policy + count
+### 4.5 Club media policy + count (historical, superseded)
 
-- Move `_maxClubPhotos` to domain: add `maxClubPhotos = 6` to the club domain
-  (new `lib/clubs/domain/club_media_policy.dart`, mirroring
-  `user_profile/domain/profile_photo_policy.dart`).
-- Media section header gains `count:` "n of 6 added" using the existing
-  consumer pattern (`CatchSection.fieldRows(count: …)` — see
-  `profile_tab.dart` `ProfilePhotosSection`). New ARB key mirroring
-  `userProfileProfileTabVisiblecopyCompletedcountOf…` for the club wording.
+- This earlier proposal introduced `maxClubPhotos = 6` by mirroring the
+  consumer profile policy. It is superseded: Host organizer and event
+  galleries have no product-level photo cap, while consumer profiles retain
+  their separate six-photo policy. Host media counts report the current total
+  without presenting a false maximum.
 
 ### 4.6 Paired numeric input convention
 

@@ -28,9 +28,6 @@ export interface UpdateOrganizerCallablePayload {
     hostAvatarUrl?: string | null;
     imageUrl?: string | null;
     profileImageUrl?: string | null;
-    /**
-     * @maxItems 12
-     */
     organizerPhotos?: UploadedPhoto[];
     logoPhoto?: UploadedPhoto | null;
     /**

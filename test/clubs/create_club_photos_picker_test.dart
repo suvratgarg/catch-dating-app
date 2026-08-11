@@ -25,7 +25,11 @@ void main() {
       ),
     );
 
-    expect(find.text('Organizer photos'), findsOneWidget);
+    expect(find.text('Gallery & cover'), findsOneWidget);
+    expect(
+      find.text('Add as many as you need. The first photo is the cover.'),
+      findsOneWidget,
+    );
     expect(find.bySemanticsLabel('Add organizer photos'), findsOneWidget);
 
     await tester.tap(
@@ -53,12 +57,15 @@ void main() {
     expect(find.text('COVER'), findsOneWidget);
     expect(find.text('PHOTOS'), findsNothing);
     expect(find.bySemanticsLabel('Photo 1'), findsOneWidget);
-    expect(find.bySemanticsLabel('Photo 2'), findsOneWidget);
+    expect(find.text('Manage all 2 photos'), findsOneWidget);
     expect(
       find.byKey(OrderedPhotoPickerKeys.addAction('Add photos')),
       findsOneWidget,
     );
-    expect(find.textContaining('first photo is your cover'), findsOneWidget);
+    expect(
+      find.text('Add as many as you need. The first photo is the cover.'),
+      findsOneWidget,
+    );
 
     await tester.tap(
       find.byKey(OrderedPhotoPickerKeys.addAction('Add photos')),
@@ -83,10 +90,7 @@ void main() {
     );
 
     expect(find.text('CLUB LOGO'), findsNothing);
-    expect(
-      find.bySemanticsLabel('Add organizer profile image'),
-      findsOneWidget,
-    );
+    expect(find.bySemanticsLabel('Add organizer logo'), findsOneWidget);
     expect(
       find.byWidgetPredicate(
         (widget) =>
@@ -96,7 +100,7 @@ void main() {
       findsOneWidget,
     );
 
-    await tester.tap(find.bySemanticsLabel('Add organizer profile image'));
+    await tester.tap(find.bySemanticsLabel('Add organizer logo'));
     await tester.pump();
 
     expect(tapCount, 1);
