@@ -1,6 +1,6 @@
 ---
 doc_id: standalone_host_product_and_crm_delivery_plan
-version: 2.0.0
+version: 2.1.0
 updated: 2026-08-11
 owner: host_tooling
 status: active
@@ -125,11 +125,11 @@ The first standalone MVP excludes:
 - global Host bottom-navigation redesign;
 - profile-derived compatibility, ranking, approval, or cohort balancing;
 - swiping, catches, Cross Paths, dating chat, or cross-event discovery;
-- First Hello personalized missions, wingman requests, or individualized live
-  reveals for operational-only attendees;
+- persistent mutual Catch, Consumer chat, Cross Paths, and other cross-event
+  network relationships for operational-only attendees;
 - organizer-wide reputation analytics;
-- fully automated intelligent grouping; and
-- third-party ticketing integrations beyond a future adapter boundary.
+- provider API sync that lacks documented partner access; and
+- unreviewed booking-platform adapters built from guessed export headers.
 
 The schemas may preserve seams for these capabilities, but MVP UI, copy, and
 success criteria must not depend on them.
@@ -175,7 +175,7 @@ success criteria must not depend on them.
 | 3. Publish | Acquire demand through a Catch public page and accept free/open reservations | Public organizer/event projection, publication eligibility, attendee phone OTP | "Publish once; registrations join the same roster." |
 | 4. Transact | Sell tickets and manage refunds/payouts | Payment onboarding, supported policy, payout readiness | "Let Catch own checkout and payment operations." |
 | 5. Establish identity | Own an existing public listing and reputation channel | Organizer claim and verification | "Claim your page and make your reputation portable." |
-| 6. Use the network | Add profile review, compatibility, discovery, swiping, catches, and chat | Feature-specific Consumer profile and consent | "Unlock identity-rich participation for guests who choose it." |
+| 6. Use the network | Add persistent profiles, discovery, swiping, mutual Catch, cross-event recommendations and chat | Feature-specific Consumer profile and consent | "Unlock a relationship that continues after the event." |
 | 7. Grow with Catch | Measure acquisition and use lawful first-party advertising activation | Separate Catch marketing consent, legal/policy approval, suppression and deletion controls | "Use only the audience that explicitly chose Catch marketing." |
 
 Rung 2 is deliberately before Catch booking. A Host may build repeat business
@@ -250,8 +250,9 @@ same server-owned ledger and suppress future sends immediately.
 | Surface | Owns | Does not own |
 | --- | --- | --- |
 | Host Flutter app/web | Workspace, events, roster import/manual entry, check-in, Event Success runtime, feedback/review inbox, CRM segments, campaign composer, analytics, publication/payment/claim readiness | Consumer dating profile or a separate React Host dashboard |
-| Marketing React website | Crawlable organizer/event pages, phone-OTP reservation, confirmation/change/cancel entry, optional organizer channel permissions, account-continuation CTA | Private roster, campaign management, or Host runtime |
-| Consumer Flutter app | Intentional profile completion, identity-rich booking, profile approval, compatibility, discovery, swiping, catches, chat | Basic prerequisite for Host operations or OTP reservation |
+| Marketing React website | Crawlable organizer/event pages, phone-OTP reservation, confirmation/change/cancel entry, optional organizer channel permissions, account-continuation CTA | Private roster, campaign management, or live Event Success state |
+| Event runtime React app | No-download phone OTP, roster claim/approval, minimal event-scoped questionnaire, attendee-private Event Success moments and feedback | Public discovery, Host management, Consumer profile creation, mutual Catch or chat |
+| Consumer Flutter app | Intentional persistent profile completion, identity-rich booking, discovery, swiping, mutual Catch, cross-event recommendations and chat | Basic prerequisite for Host operations, OTP reservation, or event-scoped Event Success |
 | Admin React app | Consent disputes, import/link support, publication and message-template moderation, provider/webhook failures, refunds and deletion support | Routine Host operations |
 
 ## Product Object Model
