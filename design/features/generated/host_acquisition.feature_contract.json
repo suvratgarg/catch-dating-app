@@ -2,22 +2,22 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/host_acquisition.feature.json",
-  "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:081d2ce90bbbf75ccc1b507886c0b073988a4e4504ad733acf064033bcbf03be",
-  "resolvedDigest": "sha256:8c11c9320fc2ce21f17743456cc5b2900ff4e6dab368d237b2f9e5d36898d1cc",
+  "generatedFor": "2026-08-11",
+  "sourceDigest": "sha256:ac600ca3e15df711b9a07f42f3d94758e9ad02c72433b8bd5c274239b907c4dd",
+  "resolvedDigest": "sha256:8be3498fc67539a6691622f571791471e1c4ca5ddd51e066fe1b849d0a4a3c46",
   "feature": {
     "id": "feature.host_acquisition",
     "name": "Host Acquisition",
     "owner": "marketing_website",
     "status": "pilot",
-    "description": "Orchestrates the public Host product narrative, interactive operating previews, founding-host application, and post-submission organizer and claim handoffs."
+    "description": "Orchestrates the public standalone Host-tooling narrative, external-booking setup and live-tool previews, selective beta application, and post-submission organizer and claim handoffs."
   },
   "coverage": {
     "surfaces": 1,
     "states": 4,
     "scenarios": 4,
     "actionCases": 8,
-    "actions": 12,
+    "actions": 11,
     "captures": 0,
     "previews": 3,
     "testFiles": 2,
@@ -32,10 +32,10 @@
         "id": "host"
       },
       "actionScope": {
-        "included": "Opening the application, operating the create-event and Playbook previews, expanding the comparison, navigating the application, choosing bounded format/module decisions, submitting the host packet, and following post-submission routes.",
+        "included": "Opening the beta application, operating the companion-event setup and live-stage previews, expanding Playbook modules, navigating the application, choosing bounded event/live-tool decisions, recording the current booking-platform setup, submitting the host packet, and following post-submission routes.",
         "excluded": [
           "Site-header anchors, consent choices, static FAQ/trust content, and capture rendering retain shared shell or presentation ownership.",
-          "Host application text and select field edits remain form data governed by the application model rather than separate feature actions."
+          "The static current-versus-coming-later comparison and Host application text/select edits remain presentation or form data governed by their existing owners rather than separate feature actions."
         ]
       },
       "bindings": {
@@ -103,7 +103,7 @@
         "states": 4,
         "scenarios": 4,
         "actionCases": 8,
-        "actions": 12,
+        "actions": 11,
         "captures": 0,
         "previews": 3,
         "testFiles": 2,
@@ -124,7 +124,7 @@
           "values": [
             "profile",
             "event",
-            "policy",
+            "setup",
             "success",
             "review",
             "submitted"
@@ -145,8 +145,7 @@
             "idle",
             "create_step_selected",
             "playbook_stage_selected",
-            "module_expanded",
-            "comparison_expanded"
+            "module_expanded"
           ]
         }
       },
@@ -172,7 +171,7 @@
               "id": "analytics.host_application_opened"
             }
           ],
-          "description": "Moves to the founding-host application section and records the CTA placement.",
+          "description": "Moves to the selective beta application section and records the CTA placement.",
           "implementationStatus": "implemented"
         },
         {
@@ -193,7 +192,7 @@
               ]
             }
           ],
-          "description": "Selects a bounded create-event demonstration step and its matching capture or fallback.",
+          "description": "Selects a bounded companion-event setup step for creation, guest-list import, or QR sharing.",
           "implementationStatus": "implemented"
         },
         {
@@ -214,7 +213,7 @@
               ]
             }
           ],
-          "description": "Selects the activity, after, or debrief Playbook stage and its corresponding capture.",
+          "description": "Selects the before, arrival, live, or after stage of the standalone live-tool Playbook.",
           "implementationStatus": "implemented"
         },
         {
@@ -233,26 +232,6 @@
             }
           ],
           "description": "Expands one Playbook module and records its module and lifecycle-stage identity.",
-          "implementationStatus": "implemented"
-        },
-        {
-          "id": "toggle_host_comparison",
-          "owner": "comparison",
-          "codeValue": "setOpen",
-          "cardinality": "unbounded",
-          "scopeKeys": [
-            "routeInstanceId",
-            "comparisonVersion"
-          ],
-          "outcomes": [
-            {
-              "kind": "surface_state",
-              "stateIds": [
-                "default"
-              ]
-            }
-          ],
-          "description": "Shows or hides the full Host comparison table and scrolls the expanded table into view.",
           "implementationStatus": "implemented"
         },
         {
@@ -335,7 +314,7 @@
               ]
             }
           ],
-          "description": "Adds or removes a bounded event-format or Event Success module choice from the local application draft.",
+          "description": "Adds or removes a bounded event-format or standalone live-tool choice from the local application draft.",
           "implementationStatus": "implemented"
         },
         {
@@ -409,7 +388,7 @@
         {
           "stateIds": [
             "default",
-            "founding-host-offer",
+            "beta-offer",
             "capture-placeholders"
           ],
           "evidence": [
@@ -454,8 +433,7 @@
                   "open_host_application",
                   "select_create_walkthrough_step",
                   "select_playbook_stage",
-                  "expand_playbook_module",
-                  "toggle_host_comparison"
+                  "expand_playbook_module"
                 ],
                 "disabled": [],
                 "notAllowed": [
@@ -472,8 +450,8 @@
           ]
         },
         {
-          "id": "founding_host_offer",
-          "stateId": "founding-host-offer",
+          "id": "beta_offer",
+          "stateId": "beta-offer",
           "kind": "route_state",
           "status": "manual",
           "dimensions": {
@@ -503,8 +481,7 @@
                   "open_host_application",
                   "select_create_walkthrough_step",
                   "select_playbook_stage",
-                  "expand_playbook_module",
-                  "toggle_host_comparison"
+                  "expand_playbook_module"
                 ],
                 "disabled": [],
                 "notAllowed": [
@@ -563,7 +540,6 @@
                   "select_create_walkthrough_step",
                   "select_playbook_stage",
                   "expand_playbook_module",
-                  "toggle_host_comparison",
                   "submit_host_application",
                   "open_organizer_search_after_submit",
                   "open_claim_after_submit"
@@ -591,7 +567,6 @@
                   "select_create_walkthrough_step",
                   "select_playbook_stage",
                   "expand_playbook_module",
-                  "toggle_host_comparison",
                   "continue_application",
                   "open_organizer_search_after_submit",
                   "open_claim_after_submit"
@@ -620,7 +595,6 @@
                   "select_create_walkthrough_step",
                   "select_playbook_stage",
                   "expand_playbook_module",
-                  "toggle_host_comparison",
                   "open_organizer_search_after_submit",
                   "open_claim_after_submit"
                 ]
@@ -647,7 +621,6 @@
                   "select_create_walkthrough_step",
                   "select_playbook_stage",
                   "expand_playbook_module",
-                  "toggle_host_comparison",
                   "continue_application",
                   "open_organizer_search_after_submit",
                   "open_claim_after_submit"
@@ -673,7 +646,6 @@
                   "select_create_walkthrough_step",
                   "select_playbook_stage",
                   "expand_playbook_module",
-                  "toggle_host_comparison",
                   "go_to_application_step",
                   "continue_application",
                   "back_application",
@@ -716,8 +688,7 @@
                   "open_host_application",
                   "select_create_walkthrough_step",
                   "select_playbook_stage",
-                  "expand_playbook_module",
-                  "toggle_host_comparison"
+                  "expand_playbook_module"
                 ],
                 "disabled": [],
                 "notAllowed": [
@@ -752,7 +723,7 @@
               "exportName": "Host",
               "states": [
                 "default",
-                "founding-host-offer",
+                "beta-offer",
                 "host-application",
                 "capture-placeholders"
               ]

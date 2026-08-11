@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:archive/archive.dart';
-import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
 import 'package:crypto/crypto.dart';
 import 'package:xml/xml.dart';
