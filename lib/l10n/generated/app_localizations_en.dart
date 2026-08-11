@@ -442,6 +442,71 @@ class AppLocalizationsEn extends AppLocalizations {
   String get coreOrderedPhotoPickerTextCover => 'COVER';
 
   @override
+  String coreOrderedPhotoPickerActionManageAll({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Manage all $count photos',
+      one: 'Manage 1 photo',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get coreOrderedPhotoPickerTitlePhotoManager => 'Photos';
+
+  @override
+  String coreOrderedPhotoPickerSubtitlePhotoCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count photos',
+      one: '1 photo',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get coreOrderedPhotoPickerActionDone => 'Done';
+
+  @override
+  String get coreOrderedPhotoPickerTitleCoverPhoto => 'Cover photo';
+
+  @override
+  String get coreOrderedPhotoPickerBodyCoverPhoto =>
+      'This is the first image guests see. Choose any gallery photo as the cover.';
+
+  @override
+  String get coreOrderedPhotoPickerTitleGallery => 'Gallery';
+
+  @override
+  String get coreOrderedPhotoPickerActionAddPhotos => 'Add photos';
+
+  @override
+  String get coreOrderedPhotoPickerActionPhotoOptions => 'Photo options';
+
+  @override
+  String get coreOrderedPhotoPickerActionSetAsCover => 'Set as cover';
+
+  @override
+  String get coreOrderedPhotoPickerActionMoveEarlier => 'Move earlier';
+
+  @override
+  String get coreOrderedPhotoPickerActionMoveLater => 'Move later';
+
+  @override
+  String get coreOrderedPhotoPickerActionRemove => 'Remove photo';
+
+  @override
+  String get coreOrderedPhotoPickerStatusUploading => 'Uploading…';
+
+  @override
+  String get coreOrderedPhotoPickerStatusUploadFailed => 'Upload failed';
+
+  @override
+  String get coreOrderedPhotoPickerActionRetry => 'Retry';
+
+  @override
   String get dashboardActivityScreenTitleActivity => 'Activity';
 
   @override
@@ -1387,22 +1452,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsCreateClubPhotosPickerTextDragToReorderThe =>
-      'Drag to reorder - the first photo is your cover. Add as many as you like.';
+      'Add as many as you need. The first photo is the cover.';
 
   @override
   String get hostsCreateClubPhotosPickerTextASquareLogoShown =>
-      'A square logo, shown on your organizer profile and every event.';
+      'A square logo shown on your organizer profile and events. It stays separate from your gallery.';
 
   @override
   String get hostsCreateClubPhotosPickerLabelChangeClubProfileImage =>
-      'Change organizer profile image';
+      'Change organizer logo';
 
   @override
   String get hostsCreateClubPhotosPickerLabelAddClubProfileImage =>
-      'Add organizer profile image';
+      'Add organizer logo';
 
   @override
   String get hostsCreateClubPhotosPickerTextAddImage => 'Add image';
+
+  @override
+  String get hostsCreateClubPhotosPickerActionAddLogo => 'Add logo';
+
+  @override
+  String get hostsCreateClubPhotosPickerActionReplaceLogo => 'Replace';
+
+  @override
+  String get hostsCreateClubPhotosPickerActionRemoveLogo => 'Remove';
 
   @override
   String get hostsEditHostedEventScreenBodyDecreaseDuration =>
@@ -3075,11 +3149,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsCreateClubContactFieldsLabelContact => 'Contact';
 
   @override
-  String get hostsCreateClubPhotosPickerLabelClubPhotos => 'Organizer photos';
+  String get hostsCreateClubPhotosPickerLabelClubPhotos => 'Gallery & cover';
 
   @override
   String get hostsCreateClubPhotosPickerLabelClubProfileImage =>
-      'Organizer profile image';
+      'Organizer logo';
 
   @override
   String get hostsEditHostedEventScreenTitleEditEvent => 'Edit event';
@@ -3143,7 +3217,16 @@ class AppLocalizationsEn extends AppLocalizations {
       'Only this organizer\'s host team can create events for this organizer.';
 
   @override
-  String get hostsCreateEventPhotoPickerLabelEventPhotos => 'Event photos';
+  String get hostsCreateEventPhotoPickerTitleCoverAndGallery =>
+      'Event cover & gallery';
+
+  @override
+  String get hostsCreateEventPhotoPickerBodyInheritedLogo =>
+      'Organizer logo · inherited';
+
+  @override
+  String get hostsCreateEventPhotoPickerBodyUnlimitedGallery =>
+      'Add as many event photos as you need. The first photo is the cover.';
 
   @override
   String get hostsEventDetailsStepLabelActivityType => 'Activity type';
@@ -5723,15 +5806,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostClubProfileTitleMedia => 'Media';
-
-  @override
-  String
-  hostsHostClubProfileVisiblecopyCompletedcountOfMaximumclubphotocountAdded({
-    required Object completedCount,
-    required Object maximumClubPhotoCount,
-  }) {
-    return '$completedCount of $maximumClubPhotoCount added';
-  }
 
   @override
   String get hostsHostClubProfileLabelClubName => 'Organizer name';

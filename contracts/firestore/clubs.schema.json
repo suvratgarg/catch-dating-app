@@ -139,7 +139,6 @@
     },
     "clubPhotos": {
       "type": "array",
-      "maxItems": 12,
       "items": {
         "$ref": "../embedded/uploaded_photo.schema.json"
       },

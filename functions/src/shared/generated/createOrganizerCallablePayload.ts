@@ -28,9 +28,6 @@ export interface CreateOrganizerCallablePayload {
     | "brand";
   imageUrl?: string | null;
   profileImageUrl?: string | null;
-  /**
-   * @maxItems 12
-   */
   organizerPhotos?: UploadedPhoto[];
   logoPhoto?: UploadedPhoto | null;
   instagramHandle?: string | null;

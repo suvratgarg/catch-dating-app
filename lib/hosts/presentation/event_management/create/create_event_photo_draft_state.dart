@@ -1,23 +1,20 @@
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_controller.dart';
 
-const createEventMaxPhotos = 6;
-
 class CreateEventPhotoDraftState {
   const CreateEventPhotoDraftState({
     required this.photos,
     required this.nextPhotoId,
-    this.maxPhotos = createEventMaxPhotos,
+    this.maxPhotos,
   });
 
-  const CreateEventPhotoDraftState.empty({
-    this.maxPhotos = createEventMaxPhotos,
-  }) : photos = const <CreateEventPhotoDraft>[],
-       nextPhotoId = 0;
+  const CreateEventPhotoDraftState.empty({this.maxPhotos})
+    : photos = const <CreateEventPhotoDraft>[],
+      nextPhotoId = 0;
 
   factory CreateEventPhotoDraftState.fromPicked(
     List<PickedEventPhoto> picked, {
-    int maxPhotos = createEventMaxPhotos,
+    int? maxPhotos,
   }) {
     return CreateEventPhotoDraftState.empty(
       maxPhotos: maxPhotos,
@@ -26,11 +23,12 @@ class CreateEventPhotoDraftState {
 
   final List<CreateEventPhotoDraft> photos;
   final int nextPhotoId;
-  final int maxPhotos;
+  final int? maxPhotos;
 
-  int get remainingSlots => maxPhotos - photos.length;
+  int? get remainingSlots =>
+      maxPhotos == null ? null : maxPhotos! - photos.length;
 
-  bool get canPickMore => remainingSlots > 0;
+  bool get canPickMore => remainingSlots == null || remainingSlots! > 0;
 
   String get signature => photos.map((photo) => photo.id).join(',');
 
@@ -47,12 +45,14 @@ class CreateEventPhotoDraftState {
     int? maxPhotos,
   }) {
     final resolvedMaxPhotos = maxPhotos ?? this.maxPhotos;
-    final slots = resolvedMaxPhotos - photos.length;
-    if (slots <= 0) return this;
+    final slots = resolvedMaxPhotos == null
+        ? null
+        : resolvedMaxPhotos - photos.length;
+    if (slots != null && slots <= 0) return this;
 
     var nextId = nextPhotoId;
     final added = [
-      for (final photo in picked.take(slots))
+      for (final photo in slots == null ? picked : picked.take(slots))
         CreateEventPhotoDraft(nextId++, photo),
     ];
     if (added.isEmpty) return this;

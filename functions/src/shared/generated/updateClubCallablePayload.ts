@@ -28,9 +28,6 @@ export interface UpdateClubCallablePayload {
     hostAvatarUrl?: string | null;
     imageUrl?: string | null;
     profileImageUrl?: string | null;
-    /**
-     * @maxItems 12
-     */
     clubPhotos?: UploadedPhoto[];
     logoPhoto?: UploadedPhoto | null;
     /**

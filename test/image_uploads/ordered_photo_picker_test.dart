@@ -6,6 +6,8 @@ import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../test_pump_helpers.dart';
+
 void main() {
   testWidgets('empty picker exposes the add photo action', (tester) async {
     var addCount = 0;
@@ -37,7 +39,9 @@ void main() {
     expect(addCount, 1);
   });
 
-  testWidgets('filled picker exposes keyed remove actions', (tester) async {
+  testWidgets('filled picker manages and removes photos in the full editor', (
+    tester,
+  ) async {
     final removed = <int>[];
 
     await tester.pumpWidget(
@@ -62,12 +66,82 @@ void main() {
     await tester.pump();
 
     expect(find.bySemanticsLabel('Photo 1'), findsOneWidget);
-    expect(find.byTooltip('Remove photo 2'), findsOneWidget);
+    expect(find.text('Manage all 2 photos'), findsOneWidget);
 
-    await tester.tap(find.byKey(OrderedPhotoPickerKeys.removeAction(1)));
-    await tester.pump();
+    await tester.tap(find.byKey(OrderedPhotoPickerKeys.manageAction));
+    await pumpFeatureUi(tester);
+    expect(find.byKey(OrderedPhotoPickerKeys.managerScreen), findsOneWidget);
+
+    await tester.tap(find.byKey(OrderedPhotoPickerKeys.setCoverAction(1)));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Remove photo'));
+    await pumpFeatureUi(tester);
 
     expect(removed, [1]);
+  });
+
+  testWidgets('host gallery has no default photo cap', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: Scaffold(
+          body: SingleChildScrollView(
+            child: OrderedPhotoPicker(
+              photos: [
+                for (var index = 0; index < 24; index++)
+                  OrderedPhotoPreview(id: 'photo-$index', bytes: _pngBytes()),
+              ],
+              onAddPhotos: () {},
+              onRemovePhoto: (_) {},
+              onReorderPhoto: (_, _) {},
+              emptyActionLabel: 'Add photos',
+              addActionLabel: 'Add photos',
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('Manage all 24 photos'), findsOneWidget);
+    expect(
+      find.byKey(OrderedPhotoPickerKeys.addAction('Add photos')),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('photo manager exposes inline retry for failed uploads', (
+    tester,
+  ) async {
+    final retried = <int>[];
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: OrderedPhotoManagerScreen(
+          photos: [
+            OrderedPhotoPreview(
+              id: 'failed-photo',
+              bytes: _pngBytes(),
+              status: OrderedPhotoStatus.failed,
+            ),
+          ],
+          onAddPhotos: () {},
+          onRemovePhoto: (_) {},
+          onReorderPhoto: (_, _) {},
+          onRetryPhoto: retried.add,
+          canAdd: true,
+        ),
+      ),
+    );
+    await tester.pump();
+
+    final retry = find.byKey(OrderedPhotoPickerKeys.managerRetryAction(0));
+    expect(retry, findsOneWidget);
+    await tester.tap(retry);
+    await tester.pump();
+
+    expect(retried, [0]);
+    expect(find.text('Uploading…'), findsWidgets);
   });
 
   testWidgets('picker supports section-owned labels without a spacer', (

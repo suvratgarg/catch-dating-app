@@ -4,7 +4,7 @@
   "storagePath": "clubs/club-1/photos/club_photo_01.jpg",
   "thumbnailUrl": null,
   "thumbnailStoragePath": null,
-  "position": 20,
+  "position": -1,
   "moderation": null,
   "createdAt": {
     "_seconds": 1770000000,

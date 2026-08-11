@@ -133,7 +133,6 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
     },
     'eventPhotos': <String, Object?>{
       'type': 'array',
-      'maxItems': 12,
       'items': <String, Object?>{
         'title': 'UploadedPhoto',
         'description': 'Canonical uploaded image object for ordered media galleries, logos, and event photos.',
@@ -195,7 +194,6 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
           'position': <String, Object?>{
             'type': 'integer',
             'minimum': 0,
-            'maximum': 19,
           },
           'moderation': <String, Object?>{
             'type': <Object?>[

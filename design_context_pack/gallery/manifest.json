@@ -3,7 +3,7 @@
   "source": "test/ui_captures/catalog/screen_capture_catalog.dart",
   "coverage": {
     "routes": 50,
-    "captures": 619,
+    "captures": 620,
     "statusCounts": {
       "excluded": 2,
       "captured": 37,
@@ -4339,6 +4339,24 @@
         "dark": "dark/create_club_picked_media.png"
       },
       "whatItIs": "Create Club Picked Media",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_media_gallery_manager",
+      "routes": [
+        "hostCreateClubScreen",
+        "hostCreateEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_media_gallery_manager.png",
+        "dark": "dark/host_media_gallery_manager.png"
+      },
+      "whatItIs": "Host Media Gallery Manager",
       "keepChangeNotes": ""
     },
     {

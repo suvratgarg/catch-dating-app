@@ -28,9 +28,6 @@ export interface CreateClubCallablePayload {
     | "brand";
   imageUrl?: string | null;
   profileImageUrl?: string | null;
-  /**
-   * @maxItems 12
-   */
   clubPhotos?: UploadedPhoto[];
   logoPhoto?: UploadedPhoto | null;
   instagramHandle?: string | null;

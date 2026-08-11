@@ -3200,8 +3200,7 @@ export const uploadedPhotoSchema: Record<string, unknown> = {
     },
     "position": {
       "type": "integer",
-      "minimum": 0,
-      "maximum": 19
+      "minimum": 0
     },
     "moderation": {
       "type": [
@@ -6452,7 +6451,6 @@ export const clubDocumentSchema: Record<string, unknown> = {
     },
     "clubPhotos": {
       "type": "array",
-      "maxItems": 12,
       "items": {
         "title": "UploadedPhoto",
         "description": "Canonical uploaded image object for ordered media galleries, logos, and event photos.",
@@ -6513,8 +6511,7 @@ export const clubDocumentSchema: Record<string, unknown> = {
           },
           "position": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 19
+            "minimum": 0
           },
           "moderation": {
             "type": [
@@ -6684,8 +6681,7 @@ export const clubDocumentSchema: Record<string, unknown> = {
             },
             "position": {
               "type": "integer",
-              "minimum": 0,
-              "maximum": 19
+              "minimum": 0
             },
             "moderation": {
               "type": [
@@ -8677,7 +8673,6 @@ export const organizerDocumentSchema: Record<string, unknown> = {
     },
     "clubPhotos": {
       "type": "array",
-      "maxItems": 12,
       "items": {
         "title": "UploadedPhoto",
         "description": "Canonical uploaded image object for ordered media galleries, logos, and event photos.",
@@ -8738,8 +8733,7 @@ export const organizerDocumentSchema: Record<string, unknown> = {
           },
           "position": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 19
+            "minimum": 0
           },
           "moderation": {
             "type": [
@@ -8849,7 +8843,6 @@ export const organizerDocumentSchema: Record<string, unknown> = {
     },
     "organizerPhotos": {
       "type": "array",
-      "maxItems": 12,
       "items": {
         "title": "UploadedPhoto",
         "description": "Canonical uploaded image object for ordered media galleries, logos, and event photos.",
@@ -8910,8 +8903,7 @@ export const organizerDocumentSchema: Record<string, unknown> = {
           },
           "position": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 19
+            "minimum": 0
           },
           "moderation": {
             "type": [
@@ -9082,8 +9074,7 @@ export const organizerDocumentSchema: Record<string, unknown> = {
             },
             "position": {
               "type": "integer",
-              "minimum": 0,
-              "maximum": 19
+              "minimum": 0
             },
             "moderation": {
               "type": [
@@ -12623,7 +12614,6 @@ export const eventDocumentSchema: Record<string, unknown> = {
     },
     "eventPhotos": {
       "type": "array",
-      "maxItems": 12,
       "items": {
         "title": "UploadedPhoto",
         "description": "Canonical uploaded image object for ordered media galleries, logos, and event photos.",
@@ -12684,8 +12674,7 @@ export const eventDocumentSchema: Record<string, unknown> = {
           },
           "position": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 19
+            "minimum": 0
           },
           "moderation": {
             "type": [
@@ -25832,7 +25821,6 @@ export const createClubCallablePayloadSchema: Record<string, unknown> = {
     },
     "clubPhotos": {
       "type": "array",
-      "maxItems": 12,
       "items": {
         "title": "UploadedPhoto",
         "description": "Canonical uploaded image object for ordered media galleries, logos, and event photos.",
@@ -25893,8 +25881,7 @@ export const createClubCallablePayloadSchema: Record<string, unknown> = {
           },
           "position": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 19
+            "minimum": 0
           },
           "moderation": {
             "type": [
@@ -26063,8 +26050,7 @@ export const createClubCallablePayloadSchema: Record<string, unknown> = {
             },
             "position": {
               "type": "integer",
-              "minimum": 0,
-              "maximum": 19
+              "minimum": 0
             },
             "moderation": {
               "type": [
@@ -26799,7 +26785,6 @@ export const createOrganizerCallablePayloadSchema: Record<string, unknown> = {
     },
     "organizerPhotos": {
       "type": "array",
-      "maxItems": 12,
       "items": {
         "title": "UploadedPhoto",
         "description": "Canonical uploaded image object for ordered media galleries, logos, and event photos.",
@@ -26860,8 +26845,7 @@ export const createOrganizerCallablePayloadSchema: Record<string, unknown> = {
           },
           "position": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 19
+            "minimum": 0
           },
           "moderation": {
             "type": [
@@ -27030,8 +27014,7 @@ export const createOrganizerCallablePayloadSchema: Record<string, unknown> = {
             },
             "position": {
               "type": "integer",
-              "minimum": 0,
-              "maximum": 19
+              "minimum": 0
             },
             "moderation": {
               "type": [
@@ -27801,7 +27784,6 @@ export const updateOrganizerCallablePayloadSchema: Record<string, unknown> = {
         },
         "organizerPhotos": {
           "type": "array",
-          "maxItems": 12,
           "items": {
             "title": "UploadedPhoto",
             "description": "Canonical uploaded image object for ordered media galleries, logos, and event photos.",
@@ -27862,8 +27844,7 @@ export const updateOrganizerCallablePayloadSchema: Record<string, unknown> = {
               },
               "position": {
                 "type": "integer",
-                "minimum": 0,
-                "maximum": 19
+                "minimum": 0
               },
               "moderation": {
                 "type": [
@@ -28032,8 +28013,7 @@ export const updateOrganizerCallablePayloadSchema: Record<string, unknown> = {
                 },
                 "position": {
                   "type": "integer",
-                  "minimum": 0,
-                  "maximum": 19
+                  "minimum": 0
                 },
                 "moderation": {
                   "type": [
@@ -29225,7 +29205,6 @@ export const updateClubCallablePayloadSchema: Record<string, unknown> = {
         },
         "clubPhotos": {
           "type": "array",
-          "maxItems": 12,
           "items": {
             "title": "UploadedPhoto",
             "description": "Canonical uploaded image object for ordered media galleries, logos, and event photos.",
@@ -29286,8 +29265,7 @@ export const updateClubCallablePayloadSchema: Record<string, unknown> = {
               },
               "position": {
                 "type": "integer",
-                "minimum": 0,
-                "maximum": 19
+                "minimum": 0
               },
               "moderation": {
                 "type": [
@@ -29456,8 +29434,7 @@ export const updateClubCallablePayloadSchema: Record<string, unknown> = {
                 },
                 "position": {
                   "type": "integer",
-                  "minimum": 0,
-                  "maximum": 19
+                  "minimum": 0
                 },
                 "moderation": {
                   "type": [
@@ -34801,7 +34778,6 @@ export const createEventCallablePayloadSchema: Record<string, unknown> = {
     },
     "eventPhotos": {
       "type": "array",
-      "maxItems": 12,
       "items": {
         "title": "UploadedPhoto",
         "description": "Canonical uploaded image object for ordered media galleries, logos, and event photos.",
@@ -34862,8 +34838,7 @@ export const createEventCallablePayloadSchema: Record<string, unknown> = {
           },
           "position": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 19
+            "minimum": 0
           },
           "moderation": {
             "type": [
@@ -35770,7 +35745,6 @@ export const updateEventCallablePayloadSchema: Record<string, unknown> = {
         },
         "eventPhotos": {
           "type": "array",
-          "maxItems": 12,
           "items": {
             "title": "UploadedPhoto",
             "description": "Canonical uploaded image object for ordered media galleries, logos, and event photos.",
@@ -35831,8 +35805,7 @@ export const updateEventCallablePayloadSchema: Record<string, unknown> = {
               },
               "position": {
                 "type": "integer",
-                "minimum": 0,
-                "maximum": 19
+                "minimum": 0
               },
               "moderation": {
                 "type": [

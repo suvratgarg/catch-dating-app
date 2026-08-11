@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.screens.schema.json",
   "version": 1,
-  "updated": "2026-08-10",
+  "updated": "2026-08-11",
   "sourceOfTruth": {
     "purpose": "Screen contracts connect route state, controller ownership, section composition, captures, and design references.",
     "tokens": "Foundation values remain in design/tokens/catch.tokens.json.",
@@ -12252,13 +12252,14 @@
           "id": "event_photos",
           "kind": "populated",
           "status": "captured",
-          "source": "CreateEventScreen supports up to six ordered event photos through CreateEventController.pickEventPhotos and OrderedPhotoPicker previews.",
-          "nextAction": "CreateEventScreen supports up to six ordered event photos through CreateEventController.pickEventPhotos and OrderedPhotoPicker previews. Captures now cover seeded picked-photo previews without platform picker calls; remaining variants are six-photo, reorder/remove, picker cancel, and picker failure.",
+          "source": "CreateEventScreen supports an ordered Host cover-and-gallery collection with no product-level photo cap through CreateEventController.pickEventPhotos and the scalable OrderedPhotoPicker manager; the organizer logo remains separate and inherited.",
+          "nextAction": "Captures cover seeded picked-photo previews without platform picker calls and Widgetbook covers a 24-photo gallery. Remaining route variants are reorder/remove, picker cancel, and picker failure.",
           "previewIds": [
             "HostCreateEventRouteScreen/Route and wizard states"
           ],
           "captureIds": [
-            "host_create_event_photos"
+            "host_create_event_photos",
+            "host_media_gallery_manager"
           ]
         },
         {
@@ -20360,16 +20361,17 @@
           "id": "club_photos",
           "kind": "populated",
           "status": "captured",
-          "source": "Club photo picker reads selected image bytes and previews picked club photos.",
+          "source": "Organizer logo and ordered cover/gallery media remain separate, and the shared Host gallery manager has no product-level photo cap.",
           "previewIds": [
             "HostCreateClubScreen/Route and wizard states"
           ],
           "tests": [
             "test/explore/explore_widgets_test.dart"
           ],
-          "nextAction": "Compare captured picked-media layout against canonical design references once exported.",
+          "nextAction": "Compare the captured wizard and 24-photo gallery manager layouts against canonical design references once exported.",
           "captureIds": [
-            "create_club_picked_media"
+            "create_club_picked_media",
+            "host_media_gallery_manager"
           ]
         },
         {

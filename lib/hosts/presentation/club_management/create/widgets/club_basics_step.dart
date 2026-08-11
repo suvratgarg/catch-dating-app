@@ -30,6 +30,7 @@ class ClubBasicsStep extends StatelessWidget {
     required this.onRemoveClubPhoto,
     required this.onReorderClubPhoto,
     required this.onPickProfileImage,
+    required this.onRemoveProfileImage,
     this.detailsEnabled = true,
   });
 
@@ -49,6 +50,7 @@ class ClubBasicsStep extends StatelessWidget {
   final ValueChanged<int>? onRemoveClubPhoto;
   final void Function(int fromIndex, int toIndex)? onReorderClubPhoto;
   final VoidCallback? onPickProfileImage;
+  final VoidCallback? onRemoveProfileImage;
   final bool detailsEnabled;
 
   @override
@@ -69,6 +71,7 @@ class ClubBasicsStep extends StatelessWidget {
                     imageBytes: profileImageBytes,
                     existingImageUrl: existingProfileImageUrl,
                     onTap: onPickProfileImage,
+                    onRemove: onRemoveProfileImage,
                   ),
                   gapH16,
                   CreateClubPhotosPicker(

@@ -3199,8 +3199,7 @@ export const uploadedPhotoSchema = {
     },
     "position": {
       "type": "integer",
-      "minimum": 0,
-      "maximum": 19
+      "minimum": 0
     },
     "moderation": {
       "type": [
@@ -6451,7 +6450,6 @@ export const clubDocumentSchema = {
     },
     "clubPhotos": {
       "type": "array",
-      "maxItems": 12,
       "items": {
         "title": "UploadedPhoto",
         "description": "Canonical uploaded image object for ordered media galleries, logos, and event photos.",
@@ -6512,8 +6510,7 @@ export const clubDocumentSchema = {
           },
           "position": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 19
+            "minimum": 0
           },
           "moderation": {
             "type": [
@@ -6683,8 +6680,7 @@ export const clubDocumentSchema = {
             },
             "position": {
               "type": "integer",
-              "minimum": 0,
-              "maximum": 19
+              "minimum": 0
             },
             "moderation": {
               "type": [
@@ -8676,7 +8672,6 @@ export const organizerDocumentSchema = {
     },
     "clubPhotos": {
       "type": "array",
-      "maxItems": 12,
       "items": {
         "title": "UploadedPhoto",
         "description": "Canonical uploaded image object for ordered media galleries, logos, and event photos.",
@@ -8737,8 +8732,7 @@ export const organizerDocumentSchema = {
           },
           "position": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 19
+            "minimum": 0
           },
           "moderation": {
             "type": [
@@ -8848,7 +8842,6 @@ export const organizerDocumentSchema = {
     },
     "organizerPhotos": {
       "type": "array",
-      "maxItems": 12,
       "items": {
         "title": "UploadedPhoto",
         "description": "Canonical uploaded image object for ordered media galleries, logos, and event photos.",
@@ -8909,8 +8902,7 @@ export const organizerDocumentSchema = {
           },
           "position": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 19
+            "minimum": 0
           },
           "moderation": {
             "type": [
@@ -9081,8 +9073,7 @@ export const organizerDocumentSchema = {
             },
             "position": {
               "type": "integer",
-              "minimum": 0,
-              "maximum": 19
+              "minimum": 0
             },
             "moderation": {
               "type": [
@@ -12622,7 +12613,6 @@ export const eventDocumentSchema = {
     },
     "eventPhotos": {
       "type": "array",
-      "maxItems": 12,
       "items": {
         "title": "UploadedPhoto",
         "description": "Canonical uploaded image object for ordered media galleries, logos, and event photos.",
@@ -12683,8 +12673,7 @@ export const eventDocumentSchema = {
           },
           "position": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 19
+            "minimum": 0
           },
           "moderation": {
             "type": [
@@ -25831,7 +25820,6 @@ export const createClubCallablePayloadSchema = {
     },
     "clubPhotos": {
       "type": "array",
-      "maxItems": 12,
       "items": {
         "title": "UploadedPhoto",
         "description": "Canonical uploaded image object for ordered media galleries, logos, and event photos.",
@@ -25892,8 +25880,7 @@ export const createClubCallablePayloadSchema = {
           },
           "position": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 19
+            "minimum": 0
           },
           "moderation": {
             "type": [
@@ -26062,8 +26049,7 @@ export const createClubCallablePayloadSchema = {
             },
             "position": {
               "type": "integer",
-              "minimum": 0,
-              "maximum": 19
+              "minimum": 0
             },
             "moderation": {
               "type": [
@@ -26798,7 +26784,6 @@ export const createOrganizerCallablePayloadSchema = {
     },
     "organizerPhotos": {
       "type": "array",
-      "maxItems": 12,
       "items": {
         "title": "UploadedPhoto",
         "description": "Canonical uploaded image object for ordered media galleries, logos, and event photos.",
@@ -26859,8 +26844,7 @@ export const createOrganizerCallablePayloadSchema = {
           },
           "position": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 19
+            "minimum": 0
           },
           "moderation": {
             "type": [
@@ -27029,8 +27013,7 @@ export const createOrganizerCallablePayloadSchema = {
             },
             "position": {
               "type": "integer",
-              "minimum": 0,
-              "maximum": 19
+              "minimum": 0
             },
             "moderation": {
               "type": [
@@ -27800,7 +27783,6 @@ export const updateOrganizerCallablePayloadSchema = {
         },
         "organizerPhotos": {
           "type": "array",
-          "maxItems": 12,
           "items": {
             "title": "UploadedPhoto",
             "description": "Canonical uploaded image object for ordered media galleries, logos, and event photos.",
@@ -27861,8 +27843,7 @@ export const updateOrganizerCallablePayloadSchema = {
               },
               "position": {
                 "type": "integer",
-                "minimum": 0,
-                "maximum": 19
+                "minimum": 0
               },
               "moderation": {
                 "type": [
@@ -28031,8 +28012,7 @@ export const updateOrganizerCallablePayloadSchema = {
                 },
                 "position": {
                   "type": "integer",
-                  "minimum": 0,
-                  "maximum": 19
+                  "minimum": 0
                 },
                 "moderation": {
                   "type": [
@@ -29224,7 +29204,6 @@ export const updateClubCallablePayloadSchema = {
         },
         "clubPhotos": {
           "type": "array",
-          "maxItems": 12,
           "items": {
             "title": "UploadedPhoto",
             "description": "Canonical uploaded image object for ordered media galleries, logos, and event photos.",
@@ -29285,8 +29264,7 @@ export const updateClubCallablePayloadSchema = {
               },
               "position": {
                 "type": "integer",
-                "minimum": 0,
-                "maximum": 19
+                "minimum": 0
               },
               "moderation": {
                 "type": [
@@ -29455,8 +29433,7 @@ export const updateClubCallablePayloadSchema = {
                 },
                 "position": {
                   "type": "integer",
-                  "minimum": 0,
-                  "maximum": 19
+                  "minimum": 0
                 },
                 "moderation": {
                   "type": [
@@ -34800,7 +34777,6 @@ export const createEventCallablePayloadSchema = {
     },
     "eventPhotos": {
       "type": "array",
-      "maxItems": 12,
       "items": {
         "title": "UploadedPhoto",
         "description": "Canonical uploaded image object for ordered media galleries, logos, and event photos.",
@@ -34861,8 +34837,7 @@ export const createEventCallablePayloadSchema = {
           },
           "position": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 19
+            "minimum": 0
           },
           "moderation": {
             "type": [
@@ -35769,7 +35744,6 @@ export const updateEventCallablePayloadSchema = {
         },
         "eventPhotos": {
           "type": "array",
-          "maxItems": 12,
           "items": {
             "title": "UploadedPhoto",
             "description": "Canonical uploaded image object for ordered media galleries, logos, and event photos.",
@@ -35830,8 +35804,7 @@ export const updateEventCallablePayloadSchema = {
               },
               "position": {
                 "type": "integer",
-                "minimum": 0,
-                "maximum": 19
+                "minimum": 0
               },
               "moderation": {
                 "type": [

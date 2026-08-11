@@ -59,14 +59,9 @@ export interface OrganizerDocument {
   };
   imageUrl: string | null;
   profileImageUrl: string | null;
-  /**
-   * @maxItems 12
-   */
   clubPhotos?: UploadedPhoto[];
   /**
    * Canonical organizer gallery. clubPhotos is tolerated only while released clients migrate.
-   *
-   * @maxItems 12
    */
   organizerPhotos: UploadedPhoto[];
   logoPhoto?: UploadedPhoto | null;

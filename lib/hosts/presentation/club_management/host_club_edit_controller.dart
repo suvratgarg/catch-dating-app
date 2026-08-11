@@ -23,7 +23,7 @@ abstract interface class HostClubEditActions {
     required UpdateClubPatch patch,
   });
 
-  Future<List<HostPickedClubPhoto>> pickClubPhotos({required int limit});
+  Future<List<HostPickedClubPhoto>> pickClubPhotos({int? limit});
 
   Future<HostPickedClubLogo?> pickClubLogo();
 
@@ -31,6 +31,7 @@ abstract interface class HostClubEditActions {
     required Club club,
     List<HostClubMediaInput>? photoInputs,
     HostPickedClubLogo? logo,
+    bool removeLogo = false,
   });
 }
 
@@ -86,7 +87,7 @@ class HostClubEditController implements HostClubEditActions {
   }
 
   @override
-  Future<List<HostPickedClubPhoto>> pickClubPhotos({required int limit}) async {
+  Future<List<HostPickedClubPhoto>> pickClubPhotos({int? limit}) async {
     final images = await _ref
         .read(imageUploadRepositoryProvider)
         .pickImages(
@@ -117,6 +118,7 @@ class HostClubEditController implements HostClubEditActions {
     required Club club,
     List<HostClubMediaInput>? photoInputs,
     HostPickedClubLogo? logo,
+    bool removeLogo = false,
   }) async {
     final uid = requireSignedInUid(_ref, action: 'edit this organizer media');
     if (!club.isHostedBy(uid)) {
@@ -131,39 +133,59 @@ class HostClubEditController implements HostClubEditActions {
     }
 
     final patch = <String, Object?>{};
-    if (photoInputs != null) {
-      final photos = await _resolvePhotoInputs(
-        uid: uid,
-        clubId: club.id,
-        inputs: photoInputs,
-      );
-      patch['imageUrl'] = photos.isEmpty ? null : photos.first.url;
-      patch['clubPhotos'] = photos
-          .map((photo) => photo.toJson())
-          .toList(growable: false);
+    final newStoragePaths = <String>[];
+    try {
+      if (photoInputs != null) {
+        final photos = await _resolvePhotoInputs(
+          uid: uid,
+          clubId: club.id,
+          inputs: photoInputs,
+          newStoragePaths: newStoragePaths,
+        );
+        patch['imageUrl'] = photos.isEmpty ? null : photos.first.url;
+        patch['clubPhotos'] = photos
+            .map((photo) => photo.toJson())
+            .toList(growable: false);
+      }
+      if (logo != null) {
+        final upload = await _ref
+            .read(imageUploadRepositoryProvider)
+            .uploadClubLogo(uid: uid, clubId: club.id, image: logo.image);
+        newStoragePaths.add(upload.storagePath);
+        final logoPhoto = UploadedPhoto.fromUpload(
+          url: upload.url,
+          storagePath: upload.storagePath,
+          position: 0,
+        );
+        patch['profileImageUrl'] = logoPhoto.thumbnailOrUrl;
+        patch['logoPhoto'] = logoPhoto.toJson();
+      } else if (removeLogo) {
+        patch['profileImageUrl'] = null;
+        patch['logoPhoto'] = null;
+      }
+      if (patch.isEmpty) return;
+      await _ref
+          .read(clubsRepositoryProvider)
+          .updateClub(clubId: club.id, patch: UpdateClubPatch.raw(patch));
+    } catch (_) {
+      for (final storagePath in newStoragePaths) {
+        try {
+          await _ref
+              .read(imageUploadRepositoryProvider)
+              .deleteByPath(storagePath);
+        } catch (_) {
+          // Preserve the mutation failure; storage cleanup is best effort.
+        }
+      }
+      rethrow;
     }
-    if (logo != null) {
-      final upload = await _ref
-          .read(imageUploadRepositoryProvider)
-          .uploadClubLogo(uid: uid, clubId: club.id, image: logo.image);
-      final logoPhoto = UploadedPhoto.fromUpload(
-        url: upload.url,
-        storagePath: upload.storagePath,
-        position: 0,
-      );
-      patch['profileImageUrl'] = logoPhoto.thumbnailOrUrl;
-      patch['logoPhoto'] = logoPhoto.toJson();
-    }
-    if (patch.isEmpty) return;
-    await _ref
-        .read(clubsRepositoryProvider)
-        .updateClub(clubId: club.id, patch: UpdateClubPatch.raw(patch));
   }
 
   Future<List<UploadedPhoto>> _resolvePhotoInputs({
     required String uid,
     required String clubId,
     required List<HostClubMediaInput> inputs,
+    required List<String> newStoragePaths,
   }) async {
     final photos = <UploadedPhoto>[];
     for (final indexedInput in inputs.indexed) {
@@ -182,6 +204,7 @@ class HostClubEditController implements HostClubEditActions {
                 position: position,
                 image: image,
               );
+          newStoragePaths.add(upload.storagePath);
           photos.add(
             UploadedPhoto.fromUpload(
               url: upload.url,

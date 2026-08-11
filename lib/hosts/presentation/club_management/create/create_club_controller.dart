@@ -60,7 +60,7 @@ class CreateClubController extends _$CreateClubController {
 
   Future<List<PickedClubPhoto>> pickClubPhotos({
     int imageQuality = 85,
-    int limit = 6,
+    int? limit,
   }) async {
     final images = await ref
         .read(imageUploadRepositoryProvider)

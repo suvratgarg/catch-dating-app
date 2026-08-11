@@ -1,11 +1,17 @@
 part of '../host_operations_screen_test.dart';
 
 class _RecordingHostClubEditActions implements HostClubEditActions {
-  _RecordingHostClubEditActions({this.pickedPhotos = const []});
+  _RecordingHostClubEditActions({
+    this.pickedPhotos = const [],
+    this.mediaFailuresRemaining = 0,
+  });
 
   final List<HostPickedClubPhoto> pickedPhotos;
   final List<UpdateClubPatch> profileWrites = [];
   final List<List<HostClubMediaInput>> mediaWrites = [];
+  int mediaFailuresRemaining;
+  int mediaUpdateCalls = 0;
+  final List<bool> removeLogoWrites = [];
 
   @override
   Future<void> updateClub({
@@ -16,9 +22,10 @@ class _RecordingHostClubEditActions implements HostClubEditActions {
   }
 
   @override
-  Future<List<HostPickedClubPhoto>> pickClubPhotos({
-    required int limit,
-  }) async => pickedPhotos.take(limit).toList(growable: false);
+  Future<List<HostPickedClubPhoto>> pickClubPhotos({int? limit}) async =>
+      limit == null
+      ? pickedPhotos
+      : pickedPhotos.take(limit).toList(growable: false);
 
   @override
   Future<HostPickedClubLogo?> pickClubLogo() async => null;
@@ -28,7 +35,14 @@ class _RecordingHostClubEditActions implements HostClubEditActions {
     required Club club,
     List<HostClubMediaInput>? photoInputs,
     HostPickedClubLogo? logo,
+    bool removeLogo = false,
   }) async {
+    mediaUpdateCalls += 1;
+    removeLogoWrites.add(removeLogo);
+    if (mediaFailuresRemaining > 0) {
+      mediaFailuresRemaining -= 1;
+      throw StateError('media update failed');
+    }
     if (photoInputs != null) {
       mediaWrites.add(List<HostClubMediaInput>.of(photoInputs));
     }
@@ -190,4 +204,45 @@ HostCrmSummary _emptyCrmSummary(String organizerId) => HostCrmSummary(
   inAppReadiness: HostCrmChannelReadiness.currentEventOnly,
   whatsappReadiness: HostCrmChannelReadiness.providerSetupRequired,
   smsReadiness: HostCrmChannelReadiness.providerAndDltSetupRequired,
+);
+
+Club _hostTeamClubWithoutProfile() => buildClub(
+  id: 'owned-club',
+  name: 'Saket Run Club',
+  hostUserId: 'other-host',
+  ownerUserId: 'other-host',
+  hostProfiles: const [],
+);
+
+Future<void> _pumpHostClubEditTab(
+  WidgetTester tester, {
+  required Club club,
+  required HostClubEditActions actions,
+}) {
+  return _pumpHostScreen(
+    tester,
+    Scaffold(
+      body: SingleChildScrollView(
+        child: HostClubEditTab(club: club, currentUid: _hostUid, isOwner: true),
+      ),
+    ),
+    overrides: [hostClubEditControllerProvider.overrideWithValue(actions)],
+  );
+}
+
+UploadedPhoto _uploadedClubPhoto(String id, {required int position}) {
+  final timestamp = DateTime(2026);
+  return UploadedPhoto(
+    id: id,
+    url: 'https://example.test/$id.jpg',
+    storagePath: 'clubs/test/$id.jpg',
+    position: position,
+    createdAt: timestamp,
+    updatedAt: timestamp,
+  );
+}
+
+Uint8List _testPngBytes() => base64Decode(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUl'
+  'EQVQIHWP4////fwAJ+wP9KobjigAAAABJRU5ErkJggg==',
 );

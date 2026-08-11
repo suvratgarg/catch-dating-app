@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +23,7 @@ class CreateClubPhotosPicker extends StatelessWidget {
     required this.onAddPhotos,
     required this.onRemovePhoto,
     required this.onReorderPhoto,
+    this.onRetryPhoto,
     this.variant = CreateClubPhotosPickerVariant.standard,
   });
 
@@ -30,6 +32,7 @@ class CreateClubPhotosPicker extends StatelessWidget {
   final VoidCallback? onAddPhotos;
   final ValueChanged<int>? onRemovePhoto;
   final void Function(int fromIndex, int toIndex)? onReorderPhoto;
+  final ValueChanged<int>? onRetryPhoto;
   final CreateClubPhotosPickerVariant variant;
 
   @override
@@ -48,24 +51,35 @@ class CreateClubPhotosPicker extends StatelessWidget {
     final picker = OrderedPhotoPicker(
       label: editStrip
           ? null
-          : CatchFormFieldLabel(
-              label: context.l10n.hostsCreateClubPhotosPickerLabelClubPhotos,
-              isOptional: true,
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CatchFormFieldLabel(
+                  label:
+                      context.l10n.hostsCreateClubPhotosPickerLabelClubPhotos,
+                  isOptional: true,
+                ),
+                gapH4,
+                Text(
+                  context.l10n.hostsCreateClubPhotosPickerTextDragToReorderThe,
+                  style: CatchTextStyles.supporting(
+                    context,
+                    color: CatchTokens.of(context).ink3,
+                  ),
+                ),
+              ],
             ),
       photos: visiblePhotos,
       onAddPhotos: onAddPhotos,
       onRemovePhoto: hasEditablePhotos ? onRemovePhoto : null,
       onReorderPhoto: hasEditablePhotos ? onReorderPhoto : null,
+      onRetryPhoto: hasEditablePhotos ? onRetryPhoto : null,
       emptyActionLabel: editStrip
           ? context.l10n.hostsCreateClubPhotosPickerVisiblecopyAddPhotos
           : context.l10n.hostsCreateClubPhotosPickerVisiblecopyAddClubPhotos,
       addActionLabel:
           context.l10n.hostsCreateClubPhotosPickerVisiblecopyAddPhotos,
-      maxPhotos: editStrip ? 4 : 6,
-      crossAxisCount: editStrip ? 4 : 2,
-      childAspectRatio: editStrip ? 1 : CatchAspectRatio.wide16x9,
-      showCoverBadge: editStrip,
-      showReorderHandle: !editStrip,
+      showCoverBadge: true,
     );
 
     if (!editStrip) return picker;
@@ -94,38 +108,72 @@ class CreateClubProfileImagePicker extends StatelessWidget {
     required this.imageBytes,
     this.existingImageUrl,
     required this.onTap,
+    this.onRemove,
     this.variant = CreateClubProfileImagePickerVariant.standard,
   });
 
   final Uint8List? imageBytes;
   final String? existingImageUrl;
   final VoidCallback? onTap;
+  final VoidCallback? onRemove;
   final CreateClubProfileImagePickerVariant variant;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    if (variant == CreateClubProfileImagePickerVariant.editLogo) {
-      return Row(
-        children: [
-          ClubProfileImageTile(
-            imageBytes: imageBytes,
-            existingImageUrl: existingImageUrl,
-            onTap: onTap,
-            size: 64,
+    final hasImage = imageBytes != null || existingImageUrl != null;
+    final compact = variant == CreateClubProfileImagePickerVariant.editLogo;
+    final content = Row(
+      children: [
+        ClubProfileImageTile(
+          imageBytes: imageBytes,
+          existingImageUrl: existingImageUrl,
+          onTap: onTap,
+          size: compact ? 72 : CatchLayout.clubProfileImagePickerExtent,
+          showEmptyLabel: !compact,
+        ),
+        gapW16,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                context.l10n.hostsCreateClubPhotosPickerTextASquareLogoShown,
+                style: CatchTextStyles.supporting(context, color: t.ink2),
+              ),
+              gapH8,
+              Wrap(
+                spacing: CatchSpacing.s1,
+                runSpacing: CatchSpacing.s1,
+                children: [
+                  CatchTextButton(
+                    label: hasImage
+                        ? context
+                              .l10n
+                              .hostsCreateClubPhotosPickerActionReplaceLogo
+                        : context.l10n.hostsCreateClubPhotosPickerActionAddLogo,
+                    onPressed: onTap,
+                    padding: EdgeInsets.zero,
+                  ),
+                  if (hasImage)
+                    CatchTextButton(
+                      label: context
+                          .l10n
+                          .hostsCreateClubPhotosPickerActionRemoveLogo,
+                      onPressed: onRemove,
+                      tone: CatchTextButtonTone.danger,
+                      padding: EdgeInsets.zero,
+                    ),
+                ],
+              ),
+            ],
           ),
-          gapW16,
-          Expanded(
-            child: Text(
-              context.l10n.hostsCreateClubPhotosPickerTextASquareLogoShown,
-              style: CatchTextStyles.supporting(context, color: t.ink2),
-            ),
-          ),
-        ],
-      );
-    }
+        ),
+      ],
+    );
 
+    if (compact) return content;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -134,13 +182,7 @@ class CreateClubProfileImagePicker extends StatelessWidget {
           isOptional: true,
         ),
         gapH8,
-        ClubProfileImageTile(
-          imageBytes: imageBytes,
-          existingImageUrl: existingImageUrl,
-          onTap: onTap,
-          size: CatchLayout.clubProfileImagePickerExtent,
-          showEmptyLabel: true,
-        ),
+        content,
       ],
     );
   }

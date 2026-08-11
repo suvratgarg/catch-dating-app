@@ -883,9 +883,6 @@ export interface ClubDocument {
   createdAt: FirebaseFirestore.Timestamp;
   imageUrl: string | null;
   profileImageUrl: string | null;
-  /**
-   * @maxItems 12
-   */
   clubPhotos?: UploadedPhoto[];
   logoPhoto?: UploadedPhoto | null;
   /**
@@ -1126,14 +1123,9 @@ export interface OrganizerDocument {
   createdAt: FirebaseFirestore.Timestamp;
   imageUrl: string | null;
   profileImageUrl: string | null;
-  /**
-   * @maxItems 12
-   */
   clubPhotos?: UploadedPhoto[];
   /**
    * Canonical organizer gallery. clubPhotos is tolerated only while released clients migrate.
-   *
-   * @maxItems 12
    */
   organizerPhotos: UploadedPhoto[];
   logoPhoto?: UploadedPhoto | null;
@@ -1706,9 +1698,6 @@ export interface EventDocument {
   startingPointLng: number;
   locationDetails?: string | null;
   photoUrl?: string | null;
-  /**
-   * @maxItems 12
-   */
   eventPhotos?: UploadedPhoto[];
   distanceKm: number;
   eventFormat: EventFormatSnapshot;

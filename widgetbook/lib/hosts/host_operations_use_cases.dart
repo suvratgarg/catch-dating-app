@@ -3702,7 +3702,54 @@ Widget createClubPhotosPickerCatalogStates(BuildContext context) {
           ),
         ),
       ),
+      _StateCard(
+        label: '24-photo scalable gallery',
+        child: _DeviceFrame(
+          child: CreateClubPhotosPicker(
+            photos: _orderedPhotoPreviews('large-club-photo', 24),
+            onAddPhotos: () {},
+            onRemovePhoto: (_) {},
+            onReorderPhoto: (_, _) {},
+            variant: CreateClubPhotosPickerVariant.editStrip,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'failed upload',
+        child: _DeviceFrame(
+          child: CreateClubPhotosPicker(
+            photos: _orderedPhotoPreviews(
+              'failed-club-photo',
+              3,
+              failedIndex: 0,
+            ),
+            onAddPhotos: () {},
+            onRemovePhoto: (_) {},
+            onReorderPhoto: (_, _) {},
+            onRetryPhoto: (_) {},
+            variant: CreateClubPhotosPickerVariant.editStrip,
+          ),
+        ),
+      ),
     ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Scalable gallery manager',
+  type: OrderedPhotoManagerScreen,
+  path: '[P1 product surfaces]/Host create club',
+)
+Widget orderedPhotoManagerCatalogState(BuildContext context) {
+  return _DeviceFrame(
+    child: OrderedPhotoManagerScreen(
+      photos: _orderedPhotoPreviews('manager-photo', 24),
+      onAddPhotos: () {},
+      onRemovePhoto: (_) {},
+      onReorderPhoto: (_, _) {},
+      onRetryPhoto: (_) {},
+      canAdd: true,
+    ),
   );
 }
 
@@ -3731,6 +3778,7 @@ Widget createClubProfileImagePickerCatalogStates(BuildContext context) {
           child: CreateClubProfileImagePicker(
             imageBytes: _createClubPngBytes(),
             onTap: () {},
+            onRemove: () {},
             variant: CreateClubProfileImagePickerVariant.editLogo,
           ),
         ),
@@ -4061,6 +4109,7 @@ Widget createEventPhotoPickerCatalogStates(BuildContext context) {
         child: _DeviceFrame(
           child: CreateEventPhotoPicker(
             photos: const [],
+            organizerName: 'Sea Face Runs',
             onAddPhotos: () {},
             onRemovePhoto: (_) {},
             onReorderPhoto: (_, _) {},
@@ -4072,6 +4121,19 @@ Widget createEventPhotoPickerCatalogStates(BuildContext context) {
         child: _DeviceFrame(
           child: CreateEventPhotoPicker(
             photos: _orderedPhotoPreviews('event-photo', 3),
+            organizerName: 'Sea Face Runs',
+            onAddPhotos: () {},
+            onRemovePhoto: (_) {},
+            onReorderPhoto: (_, _) {},
+          ),
+        ),
+      ),
+      _StateCard(
+        label: '24-photo gallery',
+        child: _DeviceFrame(
+          child: CreateEventPhotoPicker(
+            photos: _orderedPhotoPreviews('large-event-photo', 24),
+            organizerName: 'Sea Face Runs',
             onAddPhotos: () {},
             onRemovePhoto: (_) {},
             onReorderPhoto: (_, _) {},
@@ -4961,11 +5023,21 @@ class _HostCreateEventMutationPreviewState
   Widget build(BuildContext context) => widget.child;
 }
 
-List<OrderedPhotoPreview> _orderedPhotoPreviews(String prefix, int count) {
+List<OrderedPhotoPreview> _orderedPhotoPreviews(
+  String prefix,
+  int count, {
+  int? failedIndex,
+}) {
   final bytes = _createClubPngBytes();
   return [
     for (var index = 0; index < count; index++)
-      OrderedPhotoPreview(id: '$prefix-$index', bytes: bytes),
+      OrderedPhotoPreview(
+        id: '$prefix-$index',
+        bytes: bytes,
+        status: index == failedIndex
+            ? OrderedPhotoStatus.failed
+            : OrderedPhotoStatus.ready,
+      ),
   ];
 }
 
@@ -5024,6 +5096,7 @@ class _ClubBasicsStepFrameState extends State<_ClubBasicsStepFrame> {
       onRemoveClubPhoto: (_) {},
       onReorderClubPhoto: (_, _) {},
       onPickProfileImage: () {},
+      onRemoveProfileImage: () {},
     );
   }
 }
@@ -5238,6 +5311,7 @@ class _EventDetailsStepFrameState extends State<_EventDetailsStepFrame> {
       onPickPhotos: () {},
       onRemovePhoto: (_) {},
       onReorderPhoto: (_, _) {},
+      organizerName: 'Sea Face Runs',
       distanceController: _distanceController,
       customActivityLabelController: _customActivityLabelController,
       descriptionController: _descriptionController,
@@ -6225,9 +6299,8 @@ final class _NoopHostClubEditActions implements HostClubEditActions {
   }) async {}
 
   @override
-  Future<List<HostPickedClubPhoto>> pickClubPhotos({
-    required int limit,
-  }) async => const [];
+  Future<List<HostPickedClubPhoto>> pickClubPhotos({int? limit}) async =>
+      const [];
 
   @override
   Future<HostPickedClubLogo?> pickClubLogo() async => null;
@@ -6237,6 +6310,7 @@ final class _NoopHostClubEditActions implements HostClubEditActions {
     required Club club,
     List<HostClubMediaInput>? photoInputs,
     HostPickedClubLogo? logo,
+    bool removeLogo = false,
   }) async {}
 }
 

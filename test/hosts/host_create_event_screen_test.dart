@@ -162,7 +162,7 @@ void main() {
       await _pumpTestAnimation(tester);
 
       expect(find.text('Event basics'), findsWidgets);
-      expect(find.text('Extra Hydration Club'), findsOneWidget);
+      expect(find.text('Extra Hydration Club'), findsWidgets);
       expect(find.text('Loading club'), findsNothing);
       expect(find.text('Host access required'), findsNothing);
     });

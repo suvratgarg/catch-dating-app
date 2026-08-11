@@ -4,20 +4,32 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_reorderable_grid_view/entities/reorderable_animation_config.dart';
 import 'package:flutter_reorderable_grid_view/widgets/widgets.dart';
 
+enum OrderedPhotoStatus { ready, uploading, failed }
+
 class OrderedPhotoPreview {
-  const OrderedPhotoPreview({required this.id, this.bytes, this.imageUrl});
+  const OrderedPhotoPreview({
+    required this.id,
+    this.bytes,
+    this.imageUrl,
+    this.status = OrderedPhotoStatus.ready,
+  });
 
   final String id;
   final Uint8List? bytes;
   final String? imageUrl;
+  final OrderedPhotoStatus status;
 
   bool get hasImage => bytes != null || imageUrl != null;
 }
@@ -28,6 +40,14 @@ abstract final class OrderedPhotoPickerKeys {
 
   static ValueKey<String> removeAction(int index) =>
       ValueKey('ordered_photo_remove_$index');
+
+  static const manageAction = ValueKey('ordered_photo_manage');
+  static const managerScreen = ValueKey('ordered_photo_manager_screen');
+  static const coverRetryAction = ValueKey('ordered_photo_cover_retry');
+  static ValueKey<String> setCoverAction(int index) =>
+      ValueKey('ordered_photo_set_cover_$index');
+  static ValueKey<String> managerRetryAction(int index) =>
+      ValueKey('ordered_photo_manager_retry_$index');
 }
 
 class OrderedPhotoPicker extends StatefulWidget {
@@ -40,11 +60,12 @@ class OrderedPhotoPicker extends StatefulWidget {
     required this.onReorderPhoto,
     required this.emptyActionLabel,
     required this.addActionLabel,
-    this.maxPhotos = 6,
+    this.maxPhotos,
     this.crossAxisCount = 2,
     this.childAspectRatio = CatchAspectRatio.wide16x9,
     this.showCoverBadge = false,
     this.showReorderHandle = true,
+    this.onRetryPhoto,
   });
 
   final Widget? label;
@@ -54,25 +75,27 @@ class OrderedPhotoPicker extends StatefulWidget {
   final void Function(int fromIndex, int toIndex)? onReorderPhoto;
   final String emptyActionLabel;
   final String addActionLabel;
-  final int maxPhotos;
+
+  /// Optional platform or contract limit. Host galleries leave this null so
+  /// the editor never imposes a product-level photo cap.
+  final int? maxPhotos;
   final int crossAxisCount;
   final double childAspectRatio;
   final bool showCoverBadge;
   final bool showReorderHandle;
+  final ValueChanged<int>? onRetryPhoto;
 
   @override
   State<OrderedPhotoPicker> createState() => _OrderedPhotoPickerState();
 }
 
 class _OrderedPhotoPickerState extends State<OrderedPhotoPicker> {
-  int? _draggedIndex;
-
   @override
   Widget build(BuildContext context) {
     final photos = widget.photos.where((photo) => photo.hasImage).toList();
     final canAdd =
-        widget.onAddPhotos != null && photos.length < widget.maxPhotos;
-    final canReorder = widget.onReorderPhoto != null && photos.length > 1;
+        widget.onAddPhotos != null &&
+        (widget.maxPhotos == null || photos.length < widget.maxPhotos!);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -86,68 +109,434 @@ class _OrderedPhotoPickerState extends State<OrderedPhotoPicker> {
               onTap: widget.onAddPhotos,
             ),
           )
-        else
-          ReorderableBuilder<int>.builder(
-            itemCount: photos.length,
-            animationConfig: const ReorderableAnimationConfig(
-              enableAnimations: false,
-            ),
-            enableDraggable: canReorder,
-            onDragStarted: (index) => _draggedIndex = index,
-            onReorder: canReorder
-                ? (reorderedListFunction) {
-                    final originalOrder = List<int>.generate(
-                      photos.length,
-                      (index) => index,
-                    );
-                    final reorderedOrder = reorderedListFunction(originalOrder);
-                    final fromIndex = _draggedIndex;
-                    _draggedIndex = null;
-                    if (fromIndex == null) return;
-                    final toIndex = reorderedOrder.indexOf(fromIndex);
-                    if (toIndex == -1 || toIndex == fromIndex) return;
-                    widget.onReorderPhoto!(fromIndex, toIndex);
-                  }
-                : null,
-            childBuilder: (itemBuilder) {
-              final itemCount = photos.length + (canAdd ? 1 : 0);
-              return GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: itemCount,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: widget.crossAxisCount,
-                  mainAxisSpacing: CatchSpacing.s2,
-                  crossAxisSpacing: CatchSpacing.s2,
-                  childAspectRatio: widget.childAspectRatio,
+        else ...[
+          Align(
+            alignment: Alignment.centerLeft,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                maxWidth: CatchLayout.hostMediaCoverMaxWidth,
+              ),
+              child: AspectRatio(
+                aspectRatio: CatchAspectRatio.wide16x9,
+                child: OrderedPhotoTile(
+                  key: ValueKey('ordered_photo_cover_${photos.first.id}'),
+                  photo: photos.first,
+                  index: 0,
+                  canReorder: false,
+                  showCoverBadge: true,
+                  showReorderHandle: false,
+                  onRetry:
+                      photos.first.status == OrderedPhotoStatus.failed &&
+                          widget.onRetryPhoto != null
+                      ? () => widget.onRetryPhoto!(0)
+                      : null,
+                  statusActionKey: OrderedPhotoPickerKeys.coverRetryAction,
                 ),
-                itemBuilder: (context, index) {
-                  if (index >= photos.length) {
-                    return OrderedPhotoAddTile(
+              ),
+            ),
+          ),
+          gapH8,
+          SizedBox(
+            height: CatchLayout.hostMediaThumbnailExtent,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount:
+                  (photos.length > 4 ? 4 : photos.length) + (canAdd ? 1 : 0),
+              separatorBuilder: (_, _) => gapW8,
+              itemBuilder: (context, index) {
+                final visibleCount = photos.length > 4 ? 4 : photos.length;
+                if (index >= visibleCount) {
+                  return SizedBox.square(
+                    dimension: CatchLayout.hostMediaThumbnailExtent,
+                    child: OrderedPhotoAddTile(
                       label: widget.addActionLabel,
                       onTap: widget.onAddPhotos,
-                    );
-                  }
-                  final photo = photos[index];
-                  return itemBuilder(
-                    OrderedPhotoTile(
-                      key: ValueKey(photo.id),
-                      photo: photo,
-                      index: index,
-                      canReorder: canReorder,
-                      showCoverBadge: widget.showCoverBadge && index == 0,
-                      showReorderHandle: widget.showReorderHandle,
-                      onRemove: widget.onRemovePhoto == null
-                          ? null
-                          : () => widget.onRemovePhoto!(index),
                     ),
-                    index,
                   );
-                },
-              );
-            },
+                }
+                return SizedBox.square(
+                  dimension: CatchLayout.hostMediaThumbnailExtent,
+                  child: ExcludeSemantics(
+                    child: OrderedPhotoTile(
+                      key: ValueKey(
+                        'ordered_photo_preview_${photos[index].id}',
+                      ),
+                      photo: photos[index],
+                      index: index,
+                      canReorder: false,
+                      showCoverBadge: false,
+                      showReorderHandle: false,
+                      onRetry:
+                          photos[index].status == OrderedPhotoStatus.failed &&
+                              widget.onRetryPhoto != null
+                          ? () => widget.onRetryPhoto!(index)
+                          : null,
+                    ),
+                  ),
+                );
+              },
+            ),
           ),
+          gapH12,
+          CatchButton(
+            key: OrderedPhotoPickerKeys.manageAction,
+            label: context.l10n.coreOrderedPhotoPickerActionManageAll(
+              count: photos.length,
+            ),
+            icon: Icon(CatchIcons.photoLibraryOutlined),
+            onPressed: () => _openManager(context, photos),
+            variant: CatchButtonVariant.secondary,
+            fullWidth: true,
+          ),
+        ],
       ],
+    );
+  }
+
+  Future<void> _openManager(
+    BuildContext context,
+    List<OrderedPhotoPreview> photos,
+  ) {
+    return Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        fullscreenDialog: true,
+        builder: (_) => OrderedPhotoManagerScreen(
+          photos: photos,
+          onAddPhotos: widget.onAddPhotos,
+          onRemovePhoto: widget.onRemovePhoto,
+          onReorderPhoto: widget.onReorderPhoto,
+          onRetryPhoto: widget.onRetryPhoto,
+          canAdd: widget.maxPhotos == null || photos.length < widget.maxPhotos!,
+        ),
+      ),
+    );
+  }
+}
+
+enum _OrderedPhotoAction { retry, setCover, moveEarlier, moveLater, remove }
+
+/// Full-screen editor for long ordered galleries. It keeps a local mirror so
+/// dozens of items can be reordered or removed without collapsing the route;
+/// every operation is also forwarded to the owning draft/controller.
+class OrderedPhotoManagerScreen extends StatefulWidget {
+  const OrderedPhotoManagerScreen({
+    super.key,
+    required this.photos,
+    required this.onAddPhotos,
+    required this.onRemovePhoto,
+    required this.onReorderPhoto,
+    required this.onRetryPhoto,
+    required this.canAdd,
+  });
+
+  final List<OrderedPhotoPreview> photos;
+  final VoidCallback? onAddPhotos;
+  final ValueChanged<int>? onRemovePhoto;
+  final void Function(int fromIndex, int toIndex)? onReorderPhoto;
+  final ValueChanged<int>? onRetryPhoto;
+  final bool canAdd;
+
+  @override
+  State<OrderedPhotoManagerScreen> createState() =>
+      _OrderedPhotoManagerScreenState();
+}
+
+class _OrderedPhotoManagerScreenState extends State<OrderedPhotoManagerScreen> {
+  late final List<OrderedPhotoPreview> _photos = [...widget.photos];
+  int? _draggedIndex;
+
+  bool get _canReorder => widget.onReorderPhoto != null && _photos.length > 1;
+
+  void _move(int fromIndex, int toIndex) {
+    if (fromIndex == toIndex ||
+        fromIndex < 0 ||
+        toIndex < 0 ||
+        fromIndex >= _photos.length ||
+        toIndex >= _photos.length) {
+      return;
+    }
+    setState(() {
+      final moved = _photos.removeAt(fromIndex);
+      _photos.insert(toIndex, moved);
+    });
+    widget.onReorderPhoto?.call(fromIndex, toIndex);
+  }
+
+  void _remove(int index) {
+    if (index < 0 || index >= _photos.length) return;
+    setState(() => _photos.removeAt(index));
+    widget.onRemovePhoto?.call(index);
+  }
+
+  void _retry(int index) {
+    if (index < 0 || index >= _photos.length || widget.onRetryPhoto == null) {
+      return;
+    }
+    widget.onRetryPhoto!(index);
+    setState(() {
+      final photo = _photos[index];
+      _photos[index] = OrderedPhotoPreview(
+        id: photo.id,
+        bytes: photo.bytes,
+        imageUrl: photo.imageUrl,
+        status: OrderedPhotoStatus.uploading,
+      );
+    });
+  }
+
+  void _addPhotos() {
+    Navigator.of(context).pop();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.onAddPhotos?.call();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Scaffold(
+      key: OrderedPhotoPickerKeys.managerScreen,
+      backgroundColor: t.bg,
+      appBar: CatchTopBar(
+        title: context.l10n.coreOrderedPhotoPickerTitlePhotoManager,
+        subtitle: context.l10n.coreOrderedPhotoPickerSubtitlePhotoCount(
+          count: _photos.length,
+        ),
+        leadingType: CatchTopBarLeading.close,
+        actions: [
+          CatchTextButton(
+            label: context.l10n.coreOrderedPhotoPickerActionDone,
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ],
+      ),
+      body: SafeArea(
+        top: false,
+        child: Column(
+          children: [
+            if (_photos.isNotEmpty)
+              Padding(
+                padding: CatchInsets.pageHeaderBody,
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: CatchLayout.hostMediaManagerCoverWidth,
+                      child: AspectRatio(
+                        aspectRatio: CatchAspectRatio.wide16x9,
+                        child: ExcludeSemantics(
+                          child: OrderedPhotoTile(
+                            photo: _photos.first,
+                            index: 0,
+                            canReorder: false,
+                            showCoverBadge: true,
+                            showReorderHandle: false,
+                          ),
+                        ),
+                      ),
+                    ),
+                    gapW12,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            context.l10n.coreOrderedPhotoPickerTitleCoverPhoto,
+                            style: CatchTextStyles.sectionTitle(context),
+                          ),
+                          gapH4,
+                          Text(
+                            context.l10n.coreOrderedPhotoPickerBodyCoverPhoto,
+                            style: CatchTextStyles.supporting(
+                              context,
+                              color: t.ink3,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            Padding(
+              padding: CatchInsets.pageHorizontal,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      context.l10n.coreOrderedPhotoPickerTitleGallery,
+                      style: CatchTextStyles.sectionTitle(context),
+                    ),
+                  ),
+                  CatchTextButton(
+                    label: context.l10n.coreOrderedPhotoPickerActionAddPhotos,
+                    onPressed: widget.canAdd && widget.onAddPhotos != null
+                        ? _addPhotos
+                        : null,
+                    leading: Icon(
+                      CatchIcons.addPhotoAlternateOutlined,
+                      size: CatchIcon.sm,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            gapH8,
+            Expanded(
+              child: _photos.isEmpty
+                  ? Padding(
+                      padding: CatchInsets.pageBodyTight,
+                      child: OrderedPhotoAddTile(
+                        label:
+                            context.l10n.coreOrderedPhotoPickerActionAddPhotos,
+                        onTap: widget.canAdd ? _addPhotos : null,
+                      ),
+                    )
+                  : ReorderableBuilder<int>.builder(
+                      itemCount: _photos.length,
+                      animationConfig: const ReorderableAnimationConfig(
+                        enableAnimations: false,
+                      ),
+                      enableDraggable: _canReorder,
+                      onDragStarted: (index) => _draggedIndex = index,
+                      onReorder: _canReorder
+                          ? (reorderedListFunction) {
+                              final originalOrder = List<int>.generate(
+                                _photos.length,
+                                (index) => index,
+                              );
+                              final reorderedOrder = reorderedListFunction(
+                                originalOrder,
+                              );
+                              final fromIndex = _draggedIndex;
+                              _draggedIndex = null;
+                              if (fromIndex == null) return;
+                              final toIndex = reorderedOrder.indexOf(fromIndex);
+                              _move(fromIndex, toIndex);
+                            }
+                          : null,
+                      childBuilder: (itemBuilder) => LayoutBuilder(
+                        builder: (context, constraints) {
+                          final columns =
+                              constraints.maxWidth >=
+                                  CatchLayout.hostMediaWideGridBreakpoint
+                              ? 3
+                              : 2;
+                          return GridView.builder(
+                            padding: CatchInsets.pageHorizontal.add(
+                              const EdgeInsets.only(bottom: CatchSpacing.s8),
+                            ),
+                            itemCount: _photos.length,
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: columns,
+                                  mainAxisSpacing: CatchSpacing.s2,
+                                  crossAxisSpacing: CatchSpacing.s2,
+                                  childAspectRatio: CatchAspectRatio.wide16x9,
+                                ),
+                            itemBuilder: (context, index) {
+                              final photo = _photos[index];
+                              return itemBuilder(
+                                OrderedPhotoTile(
+                                  key: ValueKey(photo.id),
+                                  photo: photo,
+                                  index: index,
+                                  canReorder: _canReorder,
+                                  showCoverBadge: index == 0,
+                                  showReorderHandle: _canReorder,
+                                  onRetry:
+                                      photo.status == OrderedPhotoStatus.failed
+                                      ? () => _retry(index)
+                                      : null,
+                                  statusActionKey:
+                                      OrderedPhotoPickerKeys.managerRetryAction(
+                                        index,
+                                      ),
+                                  actionMenu: CatchActionMenu<_OrderedPhotoAction>(
+                                    key: OrderedPhotoPickerKeys.setCoverAction(
+                                      index,
+                                    ),
+                                    tooltip: context
+                                        .l10n
+                                        .coreOrderedPhotoPickerActionPhotoOptions,
+                                    items: [
+                                      if (photo.status ==
+                                          OrderedPhotoStatus.failed)
+                                        CatchActionMenuItem(
+                                          value: _OrderedPhotoAction.retry,
+                                          label: context
+                                              .l10n
+                                              .coreOrderedPhotoPickerActionRetry,
+                                          icon: CatchIcons.refreshRounded,
+                                          enabled: widget.onRetryPhoto != null,
+                                        ),
+                                      CatchActionMenuItem(
+                                        value: _OrderedPhotoAction.setCover,
+                                        label: context
+                                            .l10n
+                                            .coreOrderedPhotoPickerActionSetAsCover,
+                                        icon: CatchIcons.starOutlineRounded,
+                                        enabled: index != 0 && _canReorder,
+                                      ),
+                                      CatchActionMenuItem(
+                                        value: _OrderedPhotoAction.moveEarlier,
+                                        label: context
+                                            .l10n
+                                            .coreOrderedPhotoPickerActionMoveEarlier,
+                                        icon: CatchIcons.arrowBackRounded,
+                                        enabled: index > 0 && _canReorder,
+                                      ),
+                                      CatchActionMenuItem(
+                                        value: _OrderedPhotoAction.moveLater,
+                                        label: context
+                                            .l10n
+                                            .coreOrderedPhotoPickerActionMoveLater,
+                                        icon: CatchIcons.arrowForwardRounded,
+                                        enabled:
+                                            index < _photos.length - 1 &&
+                                            _canReorder,
+                                      ),
+                                      CatchActionMenuItem(
+                                        value: _OrderedPhotoAction.remove,
+                                        label: context
+                                            .l10n
+                                            .coreOrderedPhotoPickerActionRemove,
+                                        icon: CatchIcons.deleteOutline,
+                                        enabled: widget.onRemovePhoto != null,
+                                        isDestructive: true,
+                                      ),
+                                    ],
+                                    onSelected: (action) {
+                                      switch (action) {
+                                        case _OrderedPhotoAction.retry:
+                                          _retry(index);
+                                          break;
+                                        case _OrderedPhotoAction.setCover:
+                                          _move(index, 0);
+                                          break;
+                                        case _OrderedPhotoAction.moveEarlier:
+                                          _move(index, index - 1);
+                                          break;
+                                        case _OrderedPhotoAction.moveLater:
+                                          _move(index, index + 1);
+                                          break;
+                                        case _OrderedPhotoAction.remove:
+                                          _remove(index);
+                                          break;
+                                      }
+                                    },
+                                  ),
+                                ),
+                                index,
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -161,6 +550,9 @@ class OrderedPhotoTile extends StatelessWidget {
     required this.showCoverBadge,
     required this.showReorderHandle,
     this.onRemove,
+    this.actionMenu,
+    this.onRetry,
+    this.statusActionKey,
   });
 
   final OrderedPhotoPreview photo;
@@ -169,6 +561,9 @@ class OrderedPhotoTile extends StatelessWidget {
   final bool showCoverBadge;
   final bool showReorderHandle;
   final VoidCallback? onRemove;
+  final Widget? actionMenu;
+  final VoidCallback? onRetry;
+  final Key? statusActionKey;
 
   @override
   Widget build(BuildContext context) {
@@ -239,6 +634,19 @@ class OrderedPhotoTile extends StatelessWidget {
                     ),
                   ),
                 ),
+              if (actionMenu != null)
+                Positioned(
+                  top: CatchSpacing.s1,
+                  right: CatchSpacing.s1,
+                  child: Material(
+                    color: t.surface.withValues(
+                      alpha: CatchOpacity.imageEditControlFill,
+                    ),
+                    shape: const CircleBorder(),
+                    clipBehavior: Clip.antiAlias,
+                    child: actionMenu!,
+                  ),
+                ),
               if (showCoverBadge)
                 Positioned(
                   top: CatchSpacing.s1,
@@ -261,7 +669,9 @@ class OrderedPhotoTile extends StatelessWidget {
                     ),
                   ),
                 ),
-              if (canReorder && showReorderHandle)
+              if (canReorder &&
+                  showReorderHandle &&
+                  photo.status == OrderedPhotoStatus.ready)
                 Positioned(
                   bottom: CatchSpacing.s1,
                   right: CatchSpacing.s1,
@@ -277,7 +687,77 @@ class OrderedPhotoTile extends StatelessWidget {
                     radius: CatchRadius.pill,
                   ),
                 ),
+              if (photo.status != OrderedPhotoStatus.ready)
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: _OrderedPhotoStatusBanner(
+                    key: statusActionKey,
+                    status: photo.status,
+                    onRetry: onRetry,
+                  ),
+                ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _OrderedPhotoStatusBanner extends StatelessWidget {
+  const _OrderedPhotoStatusBanner({
+    super.key,
+    required this.status,
+    this.onRetry,
+  });
+
+  final OrderedPhotoStatus status;
+  final VoidCallback? onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final failed = status == OrderedPhotoStatus.failed;
+    final label = failed
+        ? context.l10n.coreOrderedPhotoPickerStatusUploadFailed
+        : context.l10n.coreOrderedPhotoPickerStatusUploading;
+    final retryLabel = context.l10n.coreOrderedPhotoPickerActionRetry;
+    return Semantics(
+      button: failed && onRetry != null,
+      label: failed && onRetry != null ? '$label. $retryLabel' : label,
+      child: Material(
+        color: (failed ? t.danger : t.ink).withValues(
+          alpha: CatchOpacity.hostMediaStatusScrim,
+        ),
+        child: InkWell(
+          onTap: failed ? onRetry : null,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: CatchSpacing.s2,
+              vertical: CatchSpacing.micro6,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (!failed) ...[
+                  SizedBox.square(
+                    dimension: CatchIcon.xs,
+                    child: CatchLoadingIndicator(color: t.surface),
+                  ),
+                  gapW6,
+                ],
+                Flexible(
+                  child: Text(
+                    failed && onRetry != null ? '$label · $retryLabel' : label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: CatchTextStyles.monoLabel(context, color: t.surface),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

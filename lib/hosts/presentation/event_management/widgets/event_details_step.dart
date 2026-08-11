@@ -22,6 +22,8 @@ class EventDetailsStep extends StatefulWidget {
     required this.onPickPhotos,
     required this.onRemovePhoto,
     required this.onReorderPhoto,
+    required this.organizerName,
+    this.organizerLogoUrl,
     required this.distanceController,
     required this.customActivityLabelController,
     required this.descriptionController,
@@ -39,6 +41,8 @@ class EventDetailsStep extends StatefulWidget {
   final VoidCallback? onPickPhotos;
   final ValueChanged<int>? onRemovePhoto;
   final void Function(int fromIndex, int toIndex)? onReorderPhoto;
+  final String organizerName;
+  final String? organizerLogoUrl;
   final TextEditingController distanceController;
   final TextEditingController customActivityLabelController;
   final TextEditingController descriptionController;
@@ -107,6 +111,8 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                 onAddPhotos: widget.onPickPhotos,
                 onRemovePhoto: widget.onRemovePhoto,
                 onReorderPhoto: widget.onReorderPhoto,
+                organizerName: widget.organizerName,
+                organizerLogoUrl: widget.organizerLogoUrl,
               ),
               CatchSection.fieldRows(
                 children: [
