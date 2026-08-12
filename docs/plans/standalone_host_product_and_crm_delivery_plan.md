@@ -1,6 +1,6 @@
 ---
 doc_id: standalone_host_product_and_crm_delivery_plan
-version: 3.0.0
+version: 4.0.0
 updated: 2026-08-12
 owner: host_tooling
 status: active
@@ -49,17 +49,39 @@ Every capability in this document uses one of these delivery labels:
 
 | Label | Meaning |
 | --- | --- |
-| **Implemented** | Present on the current `main` branch, subject to the exact limitations stated here |
+| **Implemented** | Present in the implementation covered by this specification and on `main` after this change set is merged, subject to the exact limitations stated here |
 | **Foundation** | A production contract or aggregate exists, but the end-to-end Host job is not complete |
 | **Specified** | Approved product/technical design for a future implementation slice |
 | **Provider-gated** | Catch can build its side, but launch also requires a third-party account, approval, API, webhook, template, or regulatory asset |
 | **Policy-gated** | Technically feasible, but it must remain off until the named consent, safety, legal, or platform-policy decision is complete |
 
 No **Specified** item may be described in Host-facing copy as available today.
+An **Implemented** item can still be deployment- or provider-config-gated; the
+tables below distinguish source completeness from a live credential, approved
+sender, connected external account, deployed function, or completed backfill.
 
-It does not authorize production implementation by itself. Contract/schema
-changes, screen and feature contracts, preview coverage, tests, provider work,
-and deployment remain normal reviewed changes under their existing owner docs.
+## Delivery Snapshot
+
+The 2026-08-12 implementation provides the standalone Host platform in these
+independent layers:
+
+| Layer | Source status | External requirement or honest limit |
+| --- | --- | --- |
+| External event + roster | **Implemented** | CSV/XLSX/manual import and provider-specific normalization work without Catch checkout; provider export samples still determine adapter confidence |
+| No-download Event Success | **Implemented** | Guests use phone OTP at `/join/:publicRuntimeId`; First Hello, wingman, questionnaires, groups, pairs, rotations, assignment delivery, self check-in and feedback do not require the Consumer app |
+| Host CRM/Audience | **Implemented** | Person directory, timeline, fixed categories, search, detail, safe merge/unmerge, export, privacy requests and suppression work from any roster source; migration coverage is shown rather than hidden |
+| WhatsApp Business campaigns | **Implemented; provider-gated** | Catch supports Meta account authorization, WABA/number selection, sender verification, template sync/test, preview/approval/schedule/dispatch/report, status webhooks and STOP; production sending requires Meta assets, credentials, webhook configuration, approved templates and exact recipient consent |
+| Rich Host invitations | **Implemented** | Host/channel/direct-recipient/promoter/partner links, rich creative, bearer-token landing, likely-human opens and downstream conversions work without Catch booking; external booking conversion stays unknown without reconciliation/provider evidence |
+| Attendee share attribution | **Implemented in web runtime and Consumer app** | Eligible attendees receive one stable personal link in no-download event mode, event detail or payment confirmation; Catch records use of its share/copy controls, opens, verified registrations and attendance, never private WhatsApp sends or forwards |
+| Provider sync | **Implemented for Luma polling; cataloged for all providers** | Luma account connection, event selection, manual refresh and roster/check-in reconciliation are implemented; Eventbrite needs app/OAuth configuration, Partiful/Posh use exports, and other named providers remain sample/partner-gated |
+| Offline event operations | **Partially implemented** | Absolute revisioned attendance mutations, a PII-free durable outbox, retry, conflict review and expiry are implemented; offline roster/run-sheet cache and revisioned run-step replay remain promotion gates |
+| Event staff | **Implemented for scoped check-in/runtime review** | Expiring/revocable event grants and a restricted operator route work without a Consumer profile; multi-device live-run leadership/lease transfer remains pending |
+| Catch bookings | **Implemented separately** | Catch RSVP/checkout adds authoritative capacity, waitlist, payment/refund and revenue facts; it is not a prerequisite for the layers above |
+| Consumer network | **Separate optional layer** | Persistent mutual matching, chat, cross-event discovery and profile-derived reasoning still require the relevant Consumer profile and consent gates |
+
+This snapshot is the source-of-truth answer to “what works at what integration
+level.” Later sections retain the full architecture, safety constraints and
+remaining promotion work.
 
 ## Target Customer And First Wedge
 
@@ -93,8 +115,8 @@ The MVP promise is deliberately narrower than the full product promise:
 | --- | --- | --- |
 | Private workspace owner | Set up the first event without asserting public business ownership | Authenticated owner of the private workspace |
 | Organizer owner/manager | Publish, manage identity, configure payments, inspect permitted business data | Verified organizer authority appropriate to the action |
-| Event lead | Prepare and control the live run sheet | Owner authority in the first single-operator pilot; later event-scoped runtime grant without payout or public-page authority |
-| Check-in staff | Search the roster and set attendance state | Event-scoped, expiring attendance grant with least-privilege PII access; not part of the first single-operator pilot |
+| Event lead | Prepare and control the live run sheet | Organizer manager or event-scoped, expiring runtime grant without payout, CRM or public-page authority; multi-device leadership fencing remains separate |
+| Check-in staff | Search the roster and set attendance state | Implemented event-scoped, expiring attendance grant with bounded roster access and no organizer-wide CRM/provider/import authority |
 | Operational attendee | Exist on the roster and participate in Host-led activities | No account required for Host-only operations |
 | Event-scoped verified attendee | Use private RSVP, feedback, assignment, or self-service actions | Phone-auth or purpose-scoped signed authorization linked server-side |
 | Consumer member | Use profile-dependent network experiences | Completed relevant Consumer/profile/consent gates |
@@ -105,8 +127,8 @@ authority to an event-scoped role.
 
 ## Product Evidence Gate
 
-Before the first production implementation tranche is promoted beyond an
-internal or founding-Host pilot:
+Before the implemented product is promoted beyond an internal or
+founding-Host beta:
 
 1. Interview at least eight target Hosts across at least three event formats.
 2. Observe at least three real event runtimes, including one weak-connectivity
@@ -128,9 +150,12 @@ Proposed usability gates are:
 
 These thresholds are release gates to validate, not forecasts.
 
-## MVP Non-Goals
+## Narrow Operations-Only MVP Boundary
 
-The first standalone MVP excludes:
+This subsection records the intentionally narrow launch-validation wedge. It
+is not a list of features absent from the fuller implementation snapshot above.
+
+The narrow standalone validation MVP can exclude:
 
 - paid OTP checkout, refunds, receipts, payouts, and payment onboarding;
 - WhatsApp or SMS campaign sending;
@@ -240,7 +265,7 @@ connection does not create permission to message imported phone numbers.
 | Profile | Host setup | What becomes dependable | What remains unknowable or unavailable |
 | --- | --- | --- | --- |
 | **E0: external roster only** | Create/import the event and CSV/XLSX/manual guest list | Operational roster, source provenance, Host manual check-in, run sheet, Host-directed grouping, attendance history, aggregate turnout, exact repeat attendance after identity resolution | Guest-facing QR/runtime actions; whether an external booking later changed unless re-imported; exact link-to-booking conversion; payment/refund truth |
-| **E1: external roster + web runtime** | E0 plus attendee opens Catch QR/link, verifies phone, claims/joins the event, and answers only module-required questions | Everything in E0 plus guest-facing join QR/link, verified event identity, self check-in, First Hello, compatibility questionnaire, wingman requests, pairing/grouping/rotations, feedback, event-scoped permissions, and attributable link use after verification | External-provider payment/refund truth; whether a WhatsApp message was forwarded; persistent mutual matching/chat |
+| **E1: external roster + web runtime** | E0 plus attendee opens Catch QR/link, verifies phone, claims/joins the event, and answers only module-required questions | Everything in E0 plus guest-facing join QR/link, verified event identity, self check-in, First Hello, compatibility questionnaire, wingman requests, pairing/grouping/rotations, feedback, event-scoped permissions, and a self-service personal referrer link after verification | External-provider payment/refund truth; whether a WhatsApp message was sent or forwarded; persistent mutual matching/chat |
 | **E2: external booking + Consumer app** | E0 or E1 plus attendee intentionally installs/uses Catch | Persistent Catch identity, native rich sharing, referrer links created from the app, share-intent telemetry, push/Activity, profile-dependent matching and chat after their own gates | External booking conversion or revenue unless the provider returns data or the attendee is reconciled later |
 | **E3: supported external provider sync** | Host connects an approved provider account/API or imports repeatable provider exports | Automatic roster/status reconciliation and any stable attendee, order, ticket, referral, check-in, cancellation, refund, or amount fields the provider actually exposes | Fields the provider does not expose; APIs requiring unavailable partner access; off-platform forwards or screenshots |
 | **C1: Catch registration** | Publish a Catch event page and let Catch own free/open RSVP, capacity and waitlist state | Deterministic registration, cancellation, capacity, waitlist, attendee identity, invite-link conversion, service messaging, and runtime access | Paid value, refunds and payout data; profile-dependent network behavior without Consumer adoption |
@@ -286,10 +311,11 @@ connection's proven coverage projection.
 Legend: **Yes** is dependable at that profile; **Conditional** requires the
 condition in the cell; **No** means the claimed outcome cannot be measured or
 performed honestly. E2 below assumes the booking itself still occurs outside
-Catch. This table is the integration feasibility contract after the named
-feature is delivered; it is not a current-shipping checklist. The
-`Current-state audit` and `Marketing claim contract` below own what `main` may
-advertise today.
+Catch. This table is both the integration feasibility contract and product
+availability map. A conditional cell names an external setup, consent or
+identity condition rather than implying Catch checkout is required. The
+`Current-state audit` and `Marketing claim contract` below further distinguish
+source-complete features from provider/deployment gates.
 
 | Capability | E0 roster | E1 web runtime | E2 Consumer app | E3 provider sync | C1 Catch RSVP | C2 Catch paid |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -304,12 +330,12 @@ advertise today.
 | Event compatibility questionnaire | No private guest surface | Yes | Yes | Provider sync alone is insufficient | Yes | Yes |
 | Post-event structured feedback | Conditional on service link/contact policy | Yes | Yes | Conditional on a reachable/verified identity | Yes | Yes |
 | Aggregate turnout and repeat attendance | Yes, after dedupe | Yes | Yes | Yes | Yes | Yes |
-| Person-level cross-event CRM | Specified after contact projection | Specified with stronger verified links | Specified | Specified with provider provenance | Specified | Specified |
+| Person-level cross-event CRM | Yes, with confidence/coverage labels | Yes, with stronger verified links | Yes | Yes, with provider provenance | Yes | Yes |
 | Current-event in-app broadcast | No | Conditional on linked Catch UIDs | Yes | No by sync alone | Conditional on linked UIDs | Conditional on linked UIDs |
-| Organizer WhatsApp campaigns | Conditional on opt-in + sender connection | Same | Same | Same | Same | Same |
+| Organizer WhatsApp campaigns | Conditional on exact opt-in + active Meta sender/template | Same | Same | Same | Same | Same |
 | Rich image/link invitation created by Host | Yes | Yes | Yes | Yes | Yes | Yes |
-| Personal attendee/referrer link | Conditional on Host-issued link to a known contact | Yes | Yes, self-service | Conditional on provider referral support | Yes | Yes |
-| Observe share button tapped | Host share action only | Web share intent only | Yes, Consumer share intent | No by sync alone | Web/app share intent | Web/app share intent |
+| Personal attendee/referrer link | Conditional on Host-issued link to a known contact | Yes, self-service after verified runtime claim | Yes, self-service | Conditional on provider referral support | Yes, self-service for eligible attendees | Yes, self-service for eligible attendees |
+| Observe Catch share surface opened | Host share action only | Yes, runtime share/copy intent | Yes, Consumer share intent | No by sync alone | Yes on the adopted attendee surface | Yes on the adopted attendee surface |
 | Prove a WhatsApp message was sent or forwarded | No | No | No; Catch only sees its own share action and later link use | No | No | No |
 | Count human link opens | Conditional; bot-filtered estimate | Yes, estimate | Yes, estimate | Yes, estimate | Yes, estimate | Yes, estimate |
 | Count additional verified people using a link | Conditional on later OTP/check-in reconciliation | Yes | Yes | Conditional on returned code/identity | Yes | Yes |
@@ -351,8 +377,8 @@ Naming a provider is provenance, not proof of API support.
 | Provider | Current Catch file adapter | Direct-sync planning class | Launch requirement |
 | --- | --- | --- | --- |
 | Generic CSV/XLSX | Generic header mapping | Class C | Representative Host files and mapping/duplicate proof |
-| Luma | `luma-v1` header signature | Class A candidate; official API is calendar-scoped and requires Luma Plus | Real export fixtures, organizer key/secret UX, endpoint/webhook scope and terms review |
-| Eventbrite | `eventbrite-v1` header signature | Class A candidate; official attendees/orders and webhooks exist | OAuth/application access, sample payloads, scopes, webhook verification and terms review |
+| Luma | `luma-v1` header signature plus implemented API-key connection, event discovery, manual poll, cursor/paging and roster/check-in reconciliation | Implemented Class B polling subset; official API is calendar-scoped and requires Luma Plus; webhook automation is not implemented | Production organizer key, endpoint/terms review, representative payload monitoring and webhook work before a real-time claim |
+| Eventbrite | `eventbrite-v1` header signature | Class A candidate; official attendees/orders and webhooks exist, and Catch exposes a configuration-required provider state | OAuth/application access, sample payloads, scopes, webhook verification and terms review |
 | Partiful | `partiful-v1` header signature | Class C; official guest-list CSV export is documented | Real current export fixtures and incremental re-import semantics |
 | Posh | `posh-v1` header signature | Unclassified beyond Class C until official access review | Real exports and official API/terms evidence before any sync claim |
 | BookMyShow | `sample-required` | Class D/E until official organizer access is proven | Host export sample and written API/partner evidence |
@@ -575,14 +601,18 @@ network access.
 
 `organizerTeamMemberships` remains organizer-wide and continues to grant only
 owner/manager authority. It must not be stretched for temporary event workers.
-A later `eventStaffGrants/{eventId_uid}` authority contains event id, uid,
-role (`runtimeLead` or `checkIn`), explicit permissions, grantor, issued and
-expiry timestamps, revoked timestamp, and revision. Reads revalidate the grant;
-cached access expires after the documented offline authorization window.
+The implemented `eventStaffGrants/{eventId_uid}` authority contains event id,
+organizer id, uid, role, explicit permissions, grantor, issued and expiry
+timestamps, revoked timestamp, and revision. Grants are limited to 14 days and
+50 active staff per event. Reads revalidate event, organizer, expiry and
+revocation; staff resolve directly through Firebase Auth and need no Consumer
+profile. The operator route permits only its granted roster, attendance and
+runtime-claim actions and excludes CRM, imports, provider setup, event editing,
+campaigns and organizer-wide PII.
 
-The first pilot is single-operator: the private workspace owner runs and checks
-in the event. Multi-staff setup, device leadership transfer, and staff PII are
-not readiness requirements until the event-scoped grant slice ships.
+Multi-device live-run leadership transfer remains a separate unimplemented
+lease/fencing contract. Staff grants must not be represented as solving that
+concurrency problem.
 
 ### Attendee identities
 
@@ -815,7 +845,7 @@ booking edge or installed Consumer app.
 This is an E1 capability. It is not part of the contactless E0 Host MVP, but it
 is implemented and must not be advertised as Consumer-app-only.
 
-### Runtime minimum-data contract and current shortcoming
+### Runtime minimum-data contract
 
 The runtime must derive required fields per enabled module and selected
 behavior, not from one broad "compatibility module" set:
@@ -829,14 +859,13 @@ behavior, not from one broad "compatibility module" set:
 | Compatibility questionnaire without demographic ranking | display name plus selected event-answer ids | Gender/interests are not prerequisites |
 | Preference-aware pairing/grouping/rotation | display name, exact selected preference fields and event answers | Gender, interested-in genders, relationship goal or age only when the configured policy actually consumes each field |
 
-**Current shortcoming:** `requiredRuntimeFieldIds` and the React
-`compatibilityModuleIds` set currently require gender and
-`interestedInGenders` for First Hello, guided rotations and wingman even when
-the selected policy could run neutrally. A focused contract/UI/backend change
-must replace this with a plan-derived `runtimeFieldRequirements` projection.
-It must include purpose copy, sensitive-data terms version, opt-out, retention,
-late plan-change behavior and a safe fallback that runs neutral rather than
-blocking entry.
+**Implemented behavior:** runtime entry always requires only `displayName`.
+Gender and `interestedInGenders` are optional and are offered only when an
+enabled preference-aware module and its policy consume them. First Hello,
+wingman, neutral grouping/pairing/rotation and questionnaires can therefore run
+without demographic answers. The backend upgrades earlier demographic-gated
+participants to this contract, preserves explicit consent for sensitive
+answers, and falls back to neutral logic rather than blocking entry.
 
 Saving any event-scoped answers into an onboarding draft remains an unchecked,
 optional `saveAsCatchPrefill` choice. Declining it cannot block runtime access.
@@ -877,7 +906,7 @@ Destructive or room-visible actions show their consequence before commit.
 
 ### Offline and concurrency contract
 
-Standalone positioning requires:
+Fully offline Control Room positioning ultimately requires:
 
 - locally cached event facts and roster;
 - absolute offline attendance operations carrying desired checked-in state,
@@ -892,11 +921,29 @@ Standalone positioning requires:
 - recovery after process death/restart; and
 - no silent loss or double application.
 
-Recommended policy:
+Implemented attendance subset:
 
-- replace the current replay-unsafe attendance toggle before offline support;
-  check-in uses per-attendee desired state, expected revision, accepted server
-  revision, and a durable idempotency receipt;
+- the Host app stores a PII-free per-account local outbox containing event id,
+  attendee id, absolute desired attendance state, expected revision, client
+  operation id and timestamps;
+- replay uses the server's idempotent revisioned attendance mutation, resumes
+  on connectivity, and exposes pending, failed, expired and manual-conflict
+  review states;
+- queued operations expire after 30 days, prompt review after seven days and
+  are capped at 200 per signed-in account; logout/account changes isolate the
+  queue; and
+- event cancellation/deletion, authorization changes and revision conflicts
+  fail visibly rather than becoming last-write-wins toggles.
+
+Remaining promotion gap: the roster/run-sheet cache, revisioned offline
+run-step operations, encrypted local PII, process-death live-step recovery and
+single-writer leadership lease are not implemented. Marketing may promise
+resilient attendance replay, not a fully offline Control Room.
+
+Target policy for the remaining work:
+
+- keep check-in on the implemented per-attendee desired state, expected
+  revision, accepted server revision, and durable idempotency receipt;
 - run-sheet progression uses revisioned compare-and-set with an explicit
   conflict surface;
 - the current device may continue locally while offline, but room-visible
@@ -917,14 +964,13 @@ staff revocation, cache eviction, or an expired offline-authorization window.
 Conflict choices are explicit: retain server, retain local when still lawful,
 or reconcile manually. Shared-device logout clears cached PII and keys.
 
-## Implemented Foundation
+## Implemented Product Foundation
 
-The current foundation provides these backend and contract seams; UI adoption
-is not complete where noted:
+The current product provides these end-to-end seams, with the exact provider
+and promotion limitations stated below:
 
-- a unified private operational-roster contract for imported, manual,
-  Catch-booked, and web-OTP sources, while the current Host composition still
-  presents operational attendees and Consumer participation separately;
+- a unified private operational-roster contract and Host composition for
+  imported, manual, Catch-booked, provider-synced, and web-OTP sources;
 - CSV/XLSX/manual import, idempotent import receipts, check-in, and independent
   Host turnout/source analytics;
 - public phone-OTP registration for explicitly published, future, free,
@@ -934,8 +980,8 @@ is not complete where noted:
 - optional organizer-scoped WhatsApp and SMS grants collected independently at
   registration;
 - a server-only communication-preference ledger and privacy-bounded Host CRM
-  summary for contacts, past/repeat attendees, linked accounts, imports, and
-  channel-reachable audiences;
+  summary plus a Host Audience workspace for contacts, past/repeat attendees,
+  linked accounts, imports, channel-reachable audiences, export and privacy;
 - a manager-authorized people directory, explainable person timeline,
   reversible duplicate resolution and organizer-scoped attendance traits;
 - versioned opaque invitation bearer tokens for Host channel, direct-recipient,
@@ -943,13 +989,18 @@ is not complete where noted:
 - likely-human open deduplication, Catch share-intent evidence, and reversible
   verified registration/check-in attribution with trailing-365-day advocate
   traits; web registration and the no-download runtime preserve attribution;
+- organizer campaign preview/approval/scheduling/dispatch/report and a
+  consent-safe Meta WhatsApp adapter, gated by live sender credentials,
+  approved templates and production webhook configuration;
 - current-event in-app broadcast delivery through Activity and eligible push;
+- expiring/revocable event staff grants, a restricted operator route and a
+  revisioned PII-free offline attendance outbox with conflict review; and
 - public organizer reviews and owner responses on the marketing website;
 - account deletion of onboarding drafts and organizer communication grants.
 
-The CRM summary is not a campaign sender. WhatsApp and SMS remain visibly
-`provider setup required` until their delivery and compliance gates below are
-complete.
+SMS remains `provider setup required`. WhatsApp is source-complete but remains
+provider-gated until the organizer connects an eligible Meta sender and every
+recipient/template/suppression check passes.
 
 ## Feature-Complete CRM
 
@@ -962,15 +1013,15 @@ imported person.
 | Capability | Current state | Honest Host-facing status |
 | --- | --- | --- |
 | Cross-event aggregate | **Implemented:** scalable organizer projections return total, past, repeat, imported, linked, advocate and channel-opt-in counts with migration coverage | "Audience overview"; partial migration coverage remains explicit |
-| Person directory/timeline | **Implemented backend:** paginated fixed-segment/name search, person detail, event timeline and safe merge/unmerge callables exist | Host Audience UI is still pending; backend excludes private Event Success and safety data |
+| Person directory/timeline | **Implemented:** paginated fixed-segment/name search, person detail, event timeline, Audience UI and safe merge/unmerge callables exist | Available to organizer managers; excludes private Event Success and safety data |
 | Current-event announcement | **Implemented:** `sendEventBroadcast` sends a non-replyable Activity and eligible push to booked, prospective, or everyone for one active event, capped at 500 recipients | "Event announcement"; not a cross-event campaign |
-| WhatsApp and SMS send | **Foundation only:** readiness contracts explicitly return `providerSetupRequired` | Unavailable until sender/provider and compliance gates pass |
+| WhatsApp and SMS send | **WhatsApp implemented/provider-gated; SMS foundation only:** Meta setup, templates, campaigns, delivery receipts and STOP are implemented; SMS has no sender adapter | WhatsApp activates only after sender/template/consent/compliance gates; SMS remains unavailable |
 | Channel permission ledger | **Foundation:** organizer-scoped WhatsApp/SMS preferences exist and account deletion removes them | Permission evidence only; not delivery readiness |
-| Named invite-source links | **Implemented backend + existing Host link UI:** opaque tokens, Host/direct/promoter/partner and stable attendee-referrer kinds, token retrieval/disable, likely-human opens and share intents | Host reporting and attendee share UI are still pending; no person-to-person send proof |
+| Named invite-source links | **Implemented end to end:** opaque tokens, Host/direct/promoter/partner and stable attendee-referrer kinds, token retrieval/disable, Host reporting, likely-human opens and share intents | Runtime-web and Consumer attendee sharing are self-service; no person-to-person send proof |
 | Rich share card | **Implemented in Flutter:** event details can be rendered and shared as an image plus text/link | Share creative; delivery and forwarding remain outside Catch |
 | Structured post-event feedback | **Implemented in Consumer Flutter and the no-download runtime:** ratings, number met, safety flag and private note feed protected feedback/scorecard contracts | Available per eligible event; automated cross-channel invitation is not complete |
 | Email/WhatsApp roster forwarding | **Implemented foundation:** expiring per-event alias/code, HMAC-authenticated normalized webhook, verified sender match and idempotent CSV import exist | Available only when the deployment configures an inbound provider; the current webhook commits after validation rather than creating the future manual-review draft |
-| Person-level value/referral view | **Implemented backend:** verified registration/check-in credit and reversals feed advocate/high-impact traits; high-impact means 3 referred check-ins in 365 days | Dedicated Host report/detail UI, provider booking/revenue facts and campaign joins remain pending |
+| Person-level value/referral view | **Implemented:** person detail and transparent traits use verified registration/check-in credit and reversals; high-impact means 3 referred check-ins in 365 days | Exact provider booking/revenue stays unavailable outside proven coverage; no opaque value score |
 
 ### Audience workspace
 
@@ -984,15 +1035,17 @@ The Host app adds one organizer-level **Audience** destination with:
    Result rows show name or safe fallback, last event, attendance count,
    transparent value badges, permission state, and data-confidence warning.
 3. **Person detail:** event timeline, expected/checked-in/no-show facts,
-   registrations/orders whose provenance permits display, attributed guests,
-   feedback-completion facts, message history, preferences, notes/tags, merge
-   history, export/correction/delete actions, and field-level source labels.
+   attributed registration/attendance totals, permitted channel state, merge
+   history, export/privacy actions, and field-level source labels. Exact orders
+   appear only when authoritative provider/payment coverage exists; Host notes,
+   custom tags and per-person campaign history remain specified follow-ons.
    Raw private or safety feedback is never copied into this view.
 4. **Segments:** fixed reviewed segments first, custom saved filters later.
    Each segment shows total, contactable by selected channel, excluded and
    unknown counts before any campaign can be drafted.
-5. **Campaigns:** drafts, scheduled sends, delivery reports, replies/opt-outs
-   and failed-recipient remediation.
+5. **Campaigns:** drafts, immutable previews, approvals, scheduling,
+   cancellation and aggregate delivery/opt-out reports. Per-recipient failure
+   remediation and an inbound reply inbox remain follow-ons.
 6. **Messaging setup:** organizer sender connections, template status, sending
    quality/limits, compliance identity, webhook health and disconnect/export.
 
@@ -1039,8 +1092,8 @@ independent, explainable dimensions:
 | Attendance | Resolved event-attendee edges and authoritative check-ins | New, first-time attendee, repeat attendee, regular, lapsed regular |
 | Reliability | Expected roster/registration edges compared with attendance | Reliable attendee, needs confirmation; only after enough known opportunities |
 | Advocacy | Attributable additional verified registrants/attendees from the person's link | Advocate, high-impact advocate |
-| Engagement | Feedback completion and permitted campaign/link actions | Feedback contributor, recently engaged |
-| Spend | Catch orders or provider-authoritative order/refund amounts | Known spender, top spender within this organizer; otherwise unknown |
+| Engagement | Feedback completion and permitted campaign/link actions | Specified: feedback contributor, recently engaged; not yet projected as fixed segments |
+| Spend | Catch orders or provider-authoritative order/refund amounts | Specified: known spender/top spender; current CRM keeps spend unknown until a financial projection ships |
 | Reachability | Current purpose- and channel-specific permission plus valid endpoint | WhatsApp reachable, SMS reachable, in-app reachable, email reachable when added |
 
 The initial fixed segment rules are versioned server definitions:
@@ -1056,11 +1109,11 @@ The initial fixed segment rules are versioned server definitions:
 | `needs_confirmation` | at least three known opportunities and at least two no-shows with no cancellation | Internal planning aid; never a punitive public badge |
 | `advocate` | at least one additional verified person registered or checked in through the contact's link | The intended recipient does not count as a referral |
 | `high_impact_advocate` | at least three attributed additional attendees checked in during trailing 365 days | Registration-only and attendance-qualified counts stay separate |
-| `feedback_contributor` | at least two eligible post-event feedback submissions | Does not expose answer content |
-| `recently_engaged` | verified link open, reply, registration or attendance in trailing 60 days | A share tap alone is not recipient engagement |
-| `known_spender` | positive non-refunded authoritative amount | Catch paid or financially complete provider sync only |
-| `top_spender` | top quartile by authoritative net amount with at least two paid orders | Never computed from ticket face value or partial files |
-| `channel_reachable` | active permission for selected organizer/channel/purpose, valid endpoint, no suppression and sender available | Recomputed at preview and send |
+| `feedback_contributor` | **Specified:** at least two eligible post-event feedback submissions | Does not expose answer content |
+| `recently_engaged` | **Specified:** verified link open, reply, registration or attendance in trailing 60 days | A share tap alone is not recipient engagement |
+| `known_spender` | **Specified:** positive non-refunded authoritative amount | Catch paid or financially complete provider sync only |
+| `top_spender` | **Specified:** top quartile by authoritative net amount with at least two paid orders | Never computed from ticket face value or partial files |
+| `whatsapp_reachable` / `sms_reachable` | active organizer-scoped permission, valid endpoint and no suppression | Implemented trait; campaign preview/send rechecks sender and eligibility |
 
 Every segment membership includes `definitionVersion`, `computedAt`, source
 coverage and an `exact`, `derived`, or `insufficientData` confidence. A segment
@@ -1081,12 +1134,12 @@ client writes.
 
 | Collection/path | Owner and purpose | Required fields |
 | --- | --- | --- |
-| `organizerContacts/{organizerId_contactId}` | Server-owned restricted person index | organizer/contact ids, optional linked UID, display fields, endpoint refs, identity state/confidence, first/last seen, source count, merge/revision/retention state |
-| `organizerContactEventEdges/{organizerId_contactId_eventId}` | One resolved organizer-person-event fact edge | organizer/contact/event ids, attendee/participation/provider refs, expected/registered/cancelled/checked-in facts with timestamps/provenance, known money/currency, attribution refs, revision |
-| `organizerContactTraits/{organizerId_contactId}` | Rebuildable query projection | attendance/reliability/advocacy/engagement/spend counts, fixed segment ids/versions, source coverage, computed time/version |
+| `organizerContacts/{contactId}` | Server-owned restricted organizer-scoped person index | organizer/contact ids, optional linked UID, display fields, endpoint refs, identity state/confidence, first/last seen, source count, merge/revision/retention state |
+| `organizerContactEventEdges/{attendeeId}` | One resolved organizer-person-event fact edge keyed to its operational attendee | organizer/contact/event/attendee ids, expected/registered/cancelled/checked-in facts with timestamps/provenance and attribution ref/revision |
+| `organizerContactTraits/{contactId}` | Rebuildable query projection | attendance/advocacy/engagement counts, fixed segment ids/versions, source coverage, computed time/version |
 | `organizerContactMergeReceipts/{receiptId}` | Immutable merge/unmerge evidence | organizer, survivor/source ids, evidence, conflicts, actor, before revisions, operation, timestamp and reversal link |
 | `organizerCommunicationPreferences/{organizerId_uidOrContactId}` | Existing server-owned permission ledger, expanded without weakening current semantics | channel, purpose, status, consent text/version/source, actor or attendee evidence, granted/withdrawn time, endpoint, suppression reason, revision |
-| `organizerContactNotes/{noteId}` | Restricted, auditable Host notes/tags | organizer/contact ids, content/tag, actor, created/edited/deleted time, retention class; never safety or dating-private data |
+| `organizerContactNotes/{noteId}` | **Specified, not implemented:** restricted, auditable Host notes/tags | organizer/contact ids, content/tag, actor, created/edited/deleted time, retention class; never safety or dating-private data |
 | `organizerCampaigns/{campaignId}` | One campaign definition and frozen report | organizer, message class, channel, segment/filter version, event/template/sender refs, variables, schedule/state/counts, actor/revision/idempotency key |
 | `organizerCampaignRecipients/{campaignId_contactId}` | Immutable recipient snapshot and delivery state | campaign/contact, eligibility/suppression decision, endpoint ref, rendered hash, provider message id, attempts, monotonic status times, reply/opt-out state |
 | `organizerSenderConnections/{organizerId_channel}` | Safe sender metadata only | provider, owner mode, business/WABA/phone ids, display identity, status/scopes/quality/limit, webhook health, actor/time, secret reference name |
@@ -1501,7 +1554,7 @@ machine-readable screen and feature contracts in the implementing PR.
 | Contract | Requirement |
 | --- | --- |
 | Primary object | Attendance reconciliation and learning summary |
-| Actions | Resolve pending check-ins, request private feedback, invite eligible reviews, add Host notes, duplicate event |
+| Actions | Resolve pending check-ins, request private feedback, invite eligible reviews, duplicate event; Host notes remain specified |
 | Review provenance | Label external attendee invitations separately from Catch-attendance verified reviews |
 | Privacy | Hosts receive aggregate coaching, never raw safety/private notes |
 | Progressive unlock | Publishing/reputation/audience prompts appear only after core completion |
@@ -1533,7 +1586,7 @@ machine-readable screen and feature contracts in the implementing PR.
 | Contract | Requirement |
 | --- | --- |
 | Primary object | One organizer contact plus provenance-bearing event edges |
-| Sections | Identity/provenance, event timeline, attendance/reliability, referrals, exact spend coverage, permissions, message history, notes/tags and privacy actions |
+| Sections | Implemented identity/provenance, event timeline, attendance/reliability, referrals, permissions and privacy actions; exact spend, message history and notes/tags appear only after their facts/features ship |
 | Actions | Correct, propose/confirm merge, unmerge, edit note/tag, create direct invitation, export/delete/suppress |
 | Exclusions | Raw feedback/safety, compatibility answers, wingman target, blocks and Consumer profile internals |
 | States | Verified, imported/unverified, ambiguous/shared endpoint, merged alias, incomplete provider data, deleted/suppressed |
@@ -1591,26 +1644,29 @@ machine-readable screen and feature contracts in the implementing PR.
 
 ### Marketing claim contract
 
-The organizer page may advertise as **available today** only current verified
-main-branch behavior: external event setup/provenance, CSV/XLSX/manual roster,
-provider-specific adapter presets where verified, roster check-in, no-download
-phone-OTP Event Success, First Hello, questionnaires, wingman, assignments and
-feedback, current-event announcements, named invite links, rich Flutter share
-cards, aggregate CRM counts, and expiring roster-forwarding infrastructure with
-an environment/provider qualifier.
+The organizer page may advertise as **available in the private beta**:
+external event setup/provenance, CSV/XLSX/manual roster, supported provider
+presets, one Host roster, manual and replay-safe check-in, no-download phone-OTP
+Event Success, First Hello, questionnaires, wingman, assignments and feedback,
+current-event announcements, the Audience people/segment/detail workspace,
+rich and named invite links, web-runtime and Consumer attendee referral links, invitation
+reports, privacy/export controls and roster-forwarding infrastructure. Luma
+polling may be labeled beta only with a connected eligible account.
 
-It may advertise as **beta/coming soon**: Host UI for the implemented people
-directory/fixed segments/person-level attendance and advocacy facts,
-cross-event campaigns, organizer-owned WhatsApp sender onboarding, attendee
-share surfaces and rich invitation reports, external provider connectors,
-exact external booking/revenue attribution and paid Catch checkout. Copy must
-preserve provider, permission and data-coverage conditions.
+It may describe **WhatsApp campaigns** as provider-gated beta: the workflow is
+implemented, but no sender is usable until Meta authorization, phone/WABA
+verification, template approval, webhook configuration and consent checks are
+complete. It may advertise as **coming soon**: automatic Luma webhooks,
+production Eventbrite connection, other partner APIs, SMS/email
+campaign adapters, full offline run-sheet/roster operation, multi-device live
+leadership, exact external booking/revenue attribution where no provider fact
+exists, and any paid Catch checkout not already live in the target market.
 
 It must not claim universal direct provider sync, WhatsApp send/forward counts,
 exact external booking/revenue without evidence, or a magical "most valuable
 customer" score. Consumer-app-only copy is reserved for persistent mutual
-matching/chat, cross-event discovery/profile features, native share intent and
-network continuity—not First Hello, wingman or event-scoped grouping.
+matching/chat, cross-event discovery/profile features, app-native share presentation and
+network continuity—not personal referral links, First Hello, wingman or event-scoped grouping.
 
 ### Required lifecycle and edge-state matrix
 
@@ -1859,13 +1915,18 @@ and re-import/conditional-undo tests.
 
 ### Slice 4A: revisioned offline operations and recovery engine
 
+**Status: partially implemented.** Absolute revisioned attendance, idempotent
+receipts, a PII-free durable per-account outbox, retry, expiry and manual
+conflict review are delivered. The bullets below that concern run-step replay,
+roster/run-sheet cache and exclusive runtime leadership remain open.
+
 Domain/data:
 
 - introduce revisioned run-step operations with client operation ids;
 - acquire one exclusive MVP runtime session and reject concurrent live writers;
 - add local event/roster/run-sheet cache;
-- replace check-in toggle with absolute, revisioned attendance/undo operations;
-- queue attendance and run-step operations with idempotent receipts;
+- keep check-in on the implemented absolute, revisioned attendance operations;
+- extend the implemented attendance queue to revisioned run-step operations;
 - reconcile idempotently after reconnect;
 - surface conflicts instead of last-write-wins silence; and
 - restore pending/synced state after restart.
@@ -1900,21 +1961,24 @@ rehearsal.
 
 ### Slice 4C: event staff and multi-device leadership
 
-After the single-operator pilot, add event-scoped expiring grants, least-PII
-check-in access, a runtime leadership lease with epoch/fencing token, explicit
-transfer, and stale-leader rejection. Required proof includes two-device
-split-brain, old-device-offline, revoked-access, lease-expiry, and transfer
-tests. Until this slice ships, Prepare does not promise staff assignment.
+**Status: staff authority implemented; leadership pending.** Event-scoped
+expiring/revocable grants, least-PII check-in/runtime permissions, direct Auth
+staff resolution, restricted operator navigation and cross-event denial are
+delivered. Add a runtime leadership lease with epoch/fencing token, explicit
+transfer, and stale-leader rejection before claiming multi-device live-run
+control. Remaining proof includes two-device split-brain, old-device-offline,
+lease-expiry and transfer tests.
 
 ### Runtime hardening: grouping, rotations, wingman and preferences
 
 The no-download runtime and backend already support external runtime attendees
 in First Hello, wingman, guided pairs/rotations and groups/table rotations.
-This slice hardens rather than re-invents those modules:
+This slice hardens rather than re-invents those modules. Minimum-data gating
+and neutral fallback are implemented; the remaining bullets are edge-policy
+and offline hardening work:
 
-- replace broad compatibility-field gating with the plan-derived minimum-data
-  projection in this specification;
-- expose neutral pairing/grouping/rotation when demographic preferences are
+- preserve the implemented plan-derived minimum-data projection;
+- preserve neutral pairing/grouping/rotation when demographic preferences are
   absent or declined;
 - preserve explicit opt-out, block/keep-apart safety, too-few-eligible,
   sit-out/fairness and Host override behavior;
@@ -1962,7 +2026,10 @@ value proposition.
 
 ### Expansion 6: reputation and permissioned retention
 
-Only after activation and repeat-use thresholds are met:
+**Status: items 1-5 are implemented in source; Meta production assets and
+provider approval still gate live WhatsApp sending.** The numbered list remains
+the maintenance/rollout checklist. Email, India SMS and the consolidated
+review/feedback inbox remain future work.
 
 1. Build and backfill organizer contact/event/trait projections from existing
    roster and communication-preference facts; compare against the existing CRM
@@ -1989,6 +2056,10 @@ send and zero-send-on-uncertain-authority tests.
 
 ### Expansion 6B: rich invitation and attribution
 
+**Status: implemented through Host reports, Consumer attendee sharing and
+verified registration/check-in attribution.** Runtime-web share UI and
+provider-specific external booking/revenue reconciliation remain open.
+
 1. Extend existing named links with `hostChannel`, `directRecipient`,
    `attendeeReferrer`, `promoter` and `partner` ownership through a versioned
    schema migration that preserves existing counters.
@@ -2010,6 +2081,11 @@ multi-touch, cancellation/refund reversal, identity merge/unmerge, provider
 re-import, disabled/expired token, enumeration resistance and raw-touch TTL.
 
 ### Expansion 6C: provider adapter program
+
+**Status: provider catalog and capability projection are implemented; Luma
+Class B manual polling is implemented; file adapters are available as listed
+above.** Automatic Luma webhook sync, production Eventbrite connection and
+partner/private providers remain gated.
 
 1. Collect real exports and publish supported-field mappings for every launch
    provider; generic aliases remain fallback, not guessed provider support.
@@ -2295,8 +2371,8 @@ The owner must resolve these before their dependent implementation slice:
 4. Maximum offline-authorization age, local key-storage owner, and supported
    cache/recovery behavior by platform.
 5. Supported roster ceiling and chunking policy above 250 rows.
-6. Event-staff role details, lease duration, and PII field access for the
-   post-pilot slice.
+6. Multi-device runtime leadership lease duration, takeover UX and offline
+   fencing. Event staff roles and their PII boundary are implemented.
 7. Whether operations-only guests may omit all contact fields.
 8. Access for contactless guests: shared display, signed QR capability, or
    Host-only.
@@ -2312,9 +2388,9 @@ The owner must resolve these before their dependent implementation slice:
 16. Exact notice when phone OTP creates or reuses a persistent Firebase identity.
 17. Promotion evidence for Direction 3: venue readability, target-Host
     comprehension, offline recovery, and single-writer fencing.
-18. WhatsApp implementation partner: direct Meta Tech Provider path or a
-    reviewed BSP, including onboarding availability, coexistence with the
-    WhatsApp Business app, countries, support and unit economics.
+18. Production WhatsApp operating path: continue the implemented direct Meta
+    Cloud API connection or introduce a reviewed BSP, including embedded
+    onboarding availability, coexistence, countries, support and unit economics.
 19. Event-service sender identity: whether Catch will operate a narrow
     transactional sender before organizer-owned WABA onboarding is available.
 20. WhatsApp reply destination and retention for Phase 1.
@@ -2323,8 +2399,9 @@ The owner must resolve these before their dependent implementation slice:
 22. Fixed-segment thresholds after pilot data; every changed definition needs
     a new version rather than rewriting historical meaning.
 23. Default invite attribution window and last-touch rule by event format.
-24. Which external provider is the first Class A/B connector after sample
-    payload, access, terms and target-Host demand review.
+24. Whether to promote implemented Luma polling to automated webhook sync or
+    prioritize production Eventbrite OAuth after sample, access, terms and
+    target-Host demand review.
 25. Whether CRM intake over email and WhatsApp ships in the first retention
     tranche or after the desktop/web uploader proves sufficient.
 
@@ -2373,7 +2450,12 @@ The owner must resolve these before their dependent implementation slice:
 
 ## MVP Acceptance Criteria
 
-The standalone MVP is complete only when:
+The standalone MVP promotion is complete only when all criteria below pass.
+The 2026-08-12 source delivery satisfies the external-event, unified-roster,
+Event Success runtime, CRM, consent-safe WhatsApp, attribution, scoped-staff and
+offline-attendance portions; private quick-start polish, complete offline live
+run, leadership fencing, remaining feedback/review provenance and pilot/visual
+evidence still prevent a claim that this entire promotion checklist is done:
 
 - a phone-authenticated Host with no Consumer profile can create a private
   workspace and operations-only event without creating public identity;
@@ -2387,9 +2469,10 @@ The standalone MVP is complete only when:
   Success configuration;
 - the Control Room shows one current action, the next action, Guests, recovery,
   and sync state within the tested viewport;
-- ordinary check-in and run-sheet progression survive offline use, reconnect,
-  and application restart without silent loss or double application, while a
-  second runtime writer is safely locked out;
+- ordinary check-in and run-sheet progression eventually survive offline use,
+  reconnect and application restart without silent loss or double application,
+  while a second runtime writer is safely locked out; only the attendance
+  portion of this criterion is implemented today;
 - any optional manual team-placement beat remains Host-directed and never
   implies compatibility; random grouping is not part of MVP;
 - Follow up reconciles attendance and supports authorized private feedback
