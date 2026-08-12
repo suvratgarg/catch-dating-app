@@ -12118,6 +12118,85 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostAudienceNewCampaign => 'New campaign';
 
   @override
+  String get eventsAttendeeShareLinkLabel => 'Attendee share';
+
+  @override
+  String get hostsHostAudienceExport => 'Export this audience';
+
+  @override
+  String get hostsHostAudienceExportSubject => 'Catch audience export';
+
+  @override
+  String get hostsHostAudienceExportTruncated =>
+      'This export reached the 2,500-contact safety limit.';
+
+  @override
+  String hostsHostAudienceExportCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count organizer contacts.',
+      one: '1 organizer contact.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostsHostAudienceRemoveTitle => 'Remove from Audience?';
+
+  @override
+  String get hostsHostAudienceRemoveBody =>
+      'This hides the person from CRM and future campaigns. Event attendance and audit history stay intact.';
+
+  @override
+  String get hostsHostAudienceRemoveConfirm => 'Remove';
+
+  @override
+  String get hostsHostAudienceRemoveAction => 'Remove from Audience';
+
+  @override
+  String get hostsHostAudienceContactSubtitle => 'Organizer-only CRM record';
+
+  @override
+  String get hostsHostAudienceContactName => 'Name shown to your team';
+
+  @override
+  String get hostsHostAudienceContactNameHelp =>
+      'This does not alter the guest’s Catch profile or verified contact details.';
+
+  @override
+  String get hostsHostAudienceContactSaveName => 'Save name';
+
+  @override
+  String get hostsHostAudienceContactVerifiedPhone => 'Verified phone';
+
+  @override
+  String get hostsHostAudienceContactEmail => 'Email';
+
+  @override
+  String get hostsHostAudienceContactConsentTitle =>
+      'Consent controls delivery';
+
+  @override
+  String get hostsHostAudienceContactConsentPaused =>
+      'Your team has paused WhatsApp campaigns to this person. Their own opt-out remains authoritative.';
+
+  @override
+  String get hostsHostAudienceContactConsentActive =>
+      'Only the person-verified number and active organizer consent can receive a campaign.';
+
+  @override
+  String get hostsHostAudienceContactResumeMessages =>
+      'Resume organizer messages';
+
+  @override
+  String get hostsHostAudienceContactPauseMessages =>
+      'Pause organizer messages';
+
+  @override
+  String get hostsHostAudienceContactEventHistory => 'Event history';
+
+  @override
   String get hostsHostAudienceSegmentFirstTime => 'First-time attendees';
 
   @override

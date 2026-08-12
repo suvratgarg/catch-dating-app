@@ -292,7 +292,7 @@ class _HostAudiencePaneState extends ConsumerState<HostAudiencePane> {
                 ),
               gapH12,
               CatchButton(
-                label: 'Export this audience',
+                label: context.l10n.hostsHostAudienceExport,
                 variant: CatchButtonVariant.secondary,
                 size: CatchButtonSize.sm,
                 onPressed: _busy ? null : _exportAudience,
@@ -623,6 +623,7 @@ class _HostAudiencePaneState extends ConsumerState<HostAudiencePane> {
   }
 
   Future<void> _exportAudience() => _run(() async {
+    final l10n = context.l10n;
     final export = await ref
         .read(hostAudienceControllerProvider)
         .exportContacts(organizerId: widget.club.id, segment: _query.segment);
@@ -631,10 +632,10 @@ class _HostAudiencePaneState extends ConsumerState<HostAudiencePane> {
         .shareCsvFile(
           csv: export.csv,
           fileName: export.fileName,
-          subject: 'Catch audience export',
+          subject: l10n.hostsHostAudienceExportSubject,
           text: export.truncated
-              ? 'This export reached the 2,500-contact safety limit.'
-              : '${export.rowCount} organizer contacts.',
+              ? l10n.hostsHostAudienceExportTruncated
+              : l10n.hostsHostAudienceExportCount(count: export.rowCount),
         );
   });
 
@@ -662,10 +663,9 @@ class _HostAudiencePaneState extends ConsumerState<HostAudiencePane> {
           Navigator.of(sheetContext).pop();
           final confirmed = await showCatchConfirmDialog(
             context: context,
-            title: 'Remove from Audience?',
-            message:
-                'This hides the person from CRM and future campaigns. Event attendance and audit history stay intact.',
-            confirmLabel: 'Remove',
+            title: context.l10n.hostsHostAudienceRemoveTitle,
+            message: context.l10n.hostsHostAudienceRemoveBody,
+            confirmLabel: context.l10n.hostsHostAudienceRemoveConfirm,
             danger: true,
           );
           if (confirmed == true) await _mutateContact(detail, hidden: true);
@@ -988,23 +988,22 @@ class _HostAudienceContactSheetState extends State<_HostAudienceContactSheet> {
   @override
   Widget build(BuildContext context) => CatchBottomSheetScaffold(
     title: widget.detail.displayName,
-    subtitle: 'Organizer-only CRM record',
+    subtitle: context.l10n.hostsHostAudienceContactSubtitle,
     child: SingleChildScrollView(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           CatchField.input(
-            title: 'Name shown to your team',
+            title: context.l10n.hostsHostAudienceContactName,
             contract: CatchContractConstraints
                 .mutateOrganizerContactCallablePayloadDisplayNameOverride,
             controller: _nameController,
-            helperText:
-                'This does not alter the guest’s Catch profile or verified contact details.',
+            helperText: context.l10n.hostsHostAudienceContactNameHelp,
           ),
           gapH8,
           CatchButton(
-            label: 'Save name',
+            label: context.l10n.hostsHostAudienceContactSaveName,
             size: CatchButtonSize.sm,
             onPressed: widget.busy
                 ? null
@@ -1017,25 +1016,31 @@ class _HostAudienceContactSheetState extends State<_HostAudienceContactSheet> {
           ),
           if (widget.detail.phoneE164 case final phone?) ...[
             gapH16,
-            CatchField.read(title: 'Verified phone', body: phone),
+            CatchField.read(
+              title: context.l10n.hostsHostAudienceContactVerifiedPhone,
+              body: phone,
+            ),
           ],
           if (widget.detail.email case final email?)
-            CatchField.read(title: 'Email', body: email),
+            CatchField.read(
+              title: context.l10n.hostsHostAudienceContactEmail,
+              body: email,
+            ),
           gapH12,
           CatchNotice(
             notice: CatchNoticeData(
               id: 'host.audience.contact.delivery-boundary',
-              title: 'Consent controls delivery',
+              title: context.l10n.hostsHostAudienceContactConsentTitle,
               message: widget.detail.whatsappAdminSuppressed
-                  ? 'Your team has paused WhatsApp campaigns to this person. Their own opt-out remains authoritative.'
-                  : 'Only the person-verified number and active organizer consent can receive a campaign.',
+                  ? context.l10n.hostsHostAudienceContactConsentPaused
+                  : context.l10n.hostsHostAudienceContactConsentActive,
             ),
           ),
           gapH12,
           CatchButton(
             label: widget.detail.whatsappAdminSuppressed
-                ? 'Resume organizer messages'
-                : 'Pause organizer messages',
+                ? context.l10n.hostsHostAudienceContactResumeMessages
+                : context.l10n.hostsHostAudienceContactPauseMessages,
             variant: CatchButtonVariant.secondary,
             onPressed: widget.busy
                 ? null
@@ -1045,7 +1050,10 @@ class _HostAudienceContactSheetState extends State<_HostAudienceContactSheet> {
           ),
           if (widget.detail.events.isNotEmpty) ...[
             gapH20,
-            Text('Event history', style: CatchTextStyles.sectionTitle(context)),
+            Text(
+              context.l10n.hostsHostAudienceContactEventHistory,
+              style: CatchTextStyles.sectionTitle(context),
+            ),
             gapH8,
             for (final event in widget.detail.events.take(8))
               CatchField.read(
@@ -1058,7 +1066,7 @@ class _HostAudienceContactSheetState extends State<_HostAudienceContactSheet> {
           ],
           gapH16,
           CatchButton(
-            label: 'Remove from Audience',
+            label: context.l10n.hostsHostAudienceRemoveAction,
             variant: CatchButtonVariant.ghost,
             onPressed: widget.busy ? null : widget.onHide,
           ),

@@ -8,6 +8,7 @@ abstract interface class AttendeeEventShareActions {
   Future<CreateEventInviteLinkCallableResponse> createInviteLink({
     required String eventId,
     required bool isExternalEvent,
+    required String label,
   });
 
   Future<void> recordShareIntent({
@@ -29,9 +30,10 @@ class RepositoryAttendeeEventShareActions implements AttendeeEventShareActions {
   Future<CreateEventInviteLinkCallableResponse> createInviteLink({
     required String eventId,
     required bool isExternalEvent,
+    required String label,
   }) => _repository.createAttendeeInviteLink(
     eventId: eventId,
-    label: 'Attendee share',
+    label: label,
     source: 'consumer_app',
     destinationKind: isExternalEvent ? 'externalBooking' : 'catchEvent',
   );

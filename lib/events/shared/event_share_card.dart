@@ -66,6 +66,7 @@ Future<void> showTrackedAttendeeEventShareCardSheet(
       personalLink = await actions.createInviteLink(
         eventId: event.id,
         isExternalEvent: event.eventOrigin?.isExternal == true,
+        label: context.l10n.eventsAttendeeShareLinkLabel,
       );
     } on Object {
       if (attempt < 2) {

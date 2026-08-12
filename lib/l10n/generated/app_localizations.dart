@@ -18896,6 +18896,132 @@ abstract class AppLocalizations {
   /// **'New campaign'**
   String get hostsHostAudienceNewCampaign;
 
+  /// Internal label for a stable attendee-created invite link.
+  ///
+  /// In en, this message translates to:
+  /// **'Attendee share'**
+  String get eventsAttendeeShareLinkLabel;
+
+  /// Export current audience CTA.
+  ///
+  /// In en, this message translates to:
+  /// **'Export this audience'**
+  String get hostsHostAudienceExport;
+
+  /// Audience CSV share subject.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch audience export'**
+  String get hostsHostAudienceExportSubject;
+
+  /// Audience export truncation disclosure.
+  ///
+  /// In en, this message translates to:
+  /// **'This export reached the 2,500-contact safety limit.'**
+  String get hostsHostAudienceExportTruncated;
+
+  /// Audience CSV share body count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 organizer contact.} other{{count} organizer contacts.}}'**
+  String hostsHostAudienceExportCount({required int count});
+
+  /// Audience contact removal confirmation title.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from Audience?'**
+  String get hostsHostAudienceRemoveTitle;
+
+  /// Audience contact removal consequence.
+  ///
+  /// In en, this message translates to:
+  /// **'This hides the person from CRM and future campaigns. Event attendance and audit history stay intact.'**
+  String get hostsHostAudienceRemoveBody;
+
+  /// Confirm audience contact removal CTA.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get hostsHostAudienceRemoveConfirm;
+
+  /// Open audience contact removal confirmation CTA.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from Audience'**
+  String get hostsHostAudienceRemoveAction;
+
+  /// Audience contact sheet privacy subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Organizer-only CRM record'**
+  String get hostsHostAudienceContactSubtitle;
+
+  /// Organizer-local audience contact name field.
+  ///
+  /// In en, this message translates to:
+  /// **'Name shown to your team'**
+  String get hostsHostAudienceContactName;
+
+  /// Organizer-local audience contact name disclosure.
+  ///
+  /// In en, this message translates to:
+  /// **'This does not alter the guest’s Catch profile or verified contact details.'**
+  String get hostsHostAudienceContactNameHelp;
+
+  /// Save organizer-local contact name CTA.
+  ///
+  /// In en, this message translates to:
+  /// **'Save name'**
+  String get hostsHostAudienceContactSaveName;
+
+  /// Verified contact phone label.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified phone'**
+  String get hostsHostAudienceContactVerifiedPhone;
+
+  /// Contact email label.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get hostsHostAudienceContactEmail;
+
+  /// Audience contact consent notice title.
+  ///
+  /// In en, this message translates to:
+  /// **'Consent controls delivery'**
+  String get hostsHostAudienceContactConsentTitle;
+
+  /// Organizer-suppressed WhatsApp delivery explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Your team has paused WhatsApp campaigns to this person. Their own opt-out remains authoritative.'**
+  String get hostsHostAudienceContactConsentPaused;
+
+  /// Eligible WhatsApp delivery explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Only the person-verified number and active organizer consent can receive a campaign.'**
+  String get hostsHostAudienceContactConsentActive;
+
+  /// Resume organizer WhatsApp campaigns for a contact CTA.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume organizer messages'**
+  String get hostsHostAudienceContactResumeMessages;
+
+  /// Pause organizer WhatsApp campaigns for a contact CTA.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause organizer messages'**
+  String get hostsHostAudienceContactPauseMessages;
+
+  /// Audience contact event history heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Event history'**
+  String get hostsHostAudienceContactEventHistory;
+
   /// First-time attendee segment label.
   ///
   /// In en, this message translates to:
