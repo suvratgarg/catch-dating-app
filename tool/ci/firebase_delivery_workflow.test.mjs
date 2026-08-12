@@ -469,6 +469,18 @@ test("promotion keeps the verified package immutable and reverifies its deploy c
     promotion,
     /--indexes build\/delivery\/package\/firestore\.indexes\.json/,
   );
+  const promoteStep = promotion.slice(
+    promotion.indexOf("- id: promote"),
+    promotion.indexOf("- name: Upload resumable checkpoint"),
+  );
+  assert.match(promoteStep, /META_WHATSAPP_APP_ID: " "/);
+  assert.match(
+    promoteStep,
+    /META_WHATSAPP_EMBEDDED_SIGNUP_CONFIG_ID: " "/,
+  );
+  assert.match(promoteStep, /META_WHATSAPP_GRAPH_VERSION: v23\.0/);
+  assert.match(promoteStep, /META_WHATSAPP_ENABLED: "false"/);
+  assert.doesNotMatch(promoteStep, /META_WHATSAPP_APP_SECRET:/);
 });
 
 test("automatic target planning rejects broad and unrelated Firebase products", () => {

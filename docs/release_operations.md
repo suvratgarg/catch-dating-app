@@ -671,6 +671,14 @@ normalization changes no query capability because Firestore's built-in
 single-field index already owns the shape; all other packaged bytes and stages
 remain bound to the original CI authority.
 
+The promotion process also supplies a fixed disabled profile for the
+non-secret Meta WhatsApp parameters during Functions discovery. This lets an
+older verified package deploy non-interactively without inventing live Meta
+credentials: both identifier values contain only whitespace, which the
+source-owned configuration check trims to empty, the graph version remains
+`v23.0`, and the newer explicit gate remains `false`. Secret values still come
+only from Secret Manager, and the recovery path never enables the provider.
+
 Mobile artifacts remain separate from backend deployment. A successful
 same-repository `main` CI attempt wakes `.github/workflows/mobile-internal-release.yml`,
 which verifies CI authority v3 and consumes only the exact
