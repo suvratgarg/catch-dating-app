@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_audience_summaries.schema.json",
+  "title": "OrganizerAudienceSummaryDocument",
+  "description": "Server-maintained scalable organizer audience summary projected from contact traits.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerAudienceSummaries",
+  "x-firestore-path": "organizerAudienceSummaries/{organizerId}",
+  "x-document-id-field": "organizerId",
+  "x-owner": "organizer audience projection and getOrganizerCrmSummary",
+  "required": [
+    "organizerId", "contactCount", "pastAttendeeCount",
+    "repeatAttendeeCount", "linkedAccountCount", "importedContactCount",
+    "advocateCount", "highImpactAdvocateCount",
+    "whatsappOptInCount", "smsOptInCount", "sourceCoverage",
+    "projectionVersion", "computedAt"
+  ],
+  "properties": {
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "contactCount": {"$ref": "#/definitions/count"},
+    "pastAttendeeCount": {"$ref": "#/definitions/count"},
+    "repeatAttendeeCount": {"$ref": "#/definitions/count"},
+    "linkedAccountCount": {"$ref": "#/definitions/count"},
+    "importedContactCount": {"$ref": "#/definitions/count"},
+    "advocateCount": {"$ref": "#/definitions/count"},
+    "highImpactAdvocateCount": {"$ref": "#/definitions/count"},
+    "whatsappOptInCount": {"$ref": "#/definitions/count"},
+    "smsOptInCount": {"$ref": "#/definitions/count"},
+    "sourceCoverage": {"type": "string", "enum": ["exact", "partial"]},
+    "projectionVersion": {"type": "integer", "minimum": 1, "maximum": 1000},
+    "computedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}
+  },
+  "definitions": {
+    "count": {"type": "integer", "minimum": 0, "maximum": 2147483647}
+  }
+}

@@ -6,7 +6,8 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
     show
         CreateEventRosterHandoffCallableRequest,
         ImportEventAttendeesCallableRequest,
-        MarkEventAttendeeAttendanceCallableRequest;
+        MarkEventAttendeeAttendanceCallableRequest,
+        SetEventAttendeeAttendanceCallableRequest;
 import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -87,6 +88,37 @@ class EventAttendeeRepository {
     ),
   );
 
+  Future<EventAttendeeAttendanceResult> setAttendance({
+    required String eventId,
+    required String attendeeId,
+    required bool desiredCheckedIn,
+    required int expectedRevision,
+    required String clientOperationId,
+  }) => withBackendErrorContext(
+    () async {
+      final result = await _functions
+          .httpsCallable('setEventAttendeeAttendance')
+          .call<Object?>(
+            SetEventAttendeeAttendanceCallableRequest(
+              eventId: eventId,
+              attendeeId: attendeeId,
+              desiredCheckedIn: desiredCheckedIn,
+              expectedRevision: expectedRevision,
+              clientOperationId: clientOperationId,
+            ).toJson(),
+          );
+      return EventAttendeeAttendanceResult.fromCallableData(result.data);
+    },
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'mark operational attendee attendance',
+      resource: _collectionPath,
+    ),
+  );
+
+  /// Compatibility boundary for released clients. New Host code must use
+  /// [setAttendance] so retries never invert state.
+  @Deprecated('Use setAttendance with an absolute desired state.')
   Future<bool> markAttendance({
     required String eventId,
     required String attendeeId,
@@ -141,3 +173,32 @@ EventAttendeeRepository eventAttendeeRepository(Ref ref) =>
 @riverpod
 Stream<List<EventAttendee>> watchEventAttendees(Ref ref, String eventId) =>
     ref.watch(eventAttendeeRepositoryProvider).watchForEvent(eventId);
+
+class EventAttendeeAttendanceResult {
+  const EventAttendeeAttendanceResult({
+    required this.attendeeId,
+    required this.checkedIn,
+    required this.acceptedRevision,
+    required this.replayed,
+    required this.changed,
+  });
+
+  factory EventAttendeeAttendanceResult.fromCallableData(Object? value) {
+    if (value case final Map<Object?, Object?> data) {
+      return EventAttendeeAttendanceResult(
+        attendeeId: data['attendeeId'] as String,
+        checkedIn: data['checkedIn'] as bool,
+        acceptedRevision: (data['acceptedRevision'] as num).toInt(),
+        replayed: data['replayed'] as bool,
+        changed: data['changed'] as bool,
+      );
+    }
+    throw const FormatException('Invalid operational attendance response.');
+  }
+
+  final String attendeeId;
+  final bool checkedIn;
+  final int acceptedRevision;
+  final bool replayed;
+  final bool changed;
+}

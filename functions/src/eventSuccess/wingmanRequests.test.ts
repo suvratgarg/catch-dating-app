@@ -300,6 +300,51 @@ test(
   }
 );
 
+test("wingman candidates work without dating-profile answers", async () => {
+  const {deps} = harness({
+    "eventParticipations/event-1_runner-1": undefined,
+    "eventParticipations/event-1_runner-2": undefined,
+    "users/runner-1": undefined,
+    "publicProfiles/runner-2": undefined,
+    "eventRuntimeParticipants/event-1_runner-1": runtimeParticipant({
+      uid: "runner-1",
+      attendeeId: "attendee-1",
+      displayName: "Dev",
+      gender: null,
+      interestedInGenders: [],
+    }),
+    "eventRuntimeParticipants/event-1_runner-2": runtimeParticipant({
+      uid: "runner-2",
+      attendeeId: "attendee-2",
+      displayName: "Rhea",
+      gender: null,
+      interestedInGenders: [],
+    }),
+    "eventAttendees/attendee-1": {
+      eventId: "event-1",
+      linkedUid: "runner-1",
+      status: "checkedIn",
+    },
+    "eventAttendees/attendee-2": {
+      eventId: "event-1",
+      linkedUid: "runner-2",
+      status: "checkedIn",
+    },
+  });
+
+  const result = await fetchEventSuccessWingmanCandidatesHandler(
+    request("runner-1", {eventId: "event-1"}),
+    deps
+  );
+
+  assert.deepEqual(result.candidates, [{
+    uid: "runner-2",
+    displayName: "Rhea",
+    gender: null,
+    source: "externalRuntime",
+  }]);
+});
+
 test("submit wingman request writes server-owned request", async () => {
   const {firestore, deps, rateLimitCalls} = harness();
 
@@ -395,7 +440,7 @@ function runtimeParticipant(params: {
   uid: string;
   attendeeId: string;
   displayName: string;
-  gender: "man" | "woman";
+  gender: "man" | "woman" | null;
   interestedInGenders: Array<"man" | "woman">;
 }): FakeData {
   return {

@@ -1,0 +1,71 @@
+/* eslint-disable */
+// GENERATED CODE - DO NOT MODIFY BY HAND.
+// Regenerate with: node tool/contracts/generate_schema_contracts.mjs
+
+/**
+ * Rebuildable, explainable organizer-contact CRM traits. Sensitive Event Success answers are excluded by contract.
+ */
+export interface OrganizerContactTraitDocument {
+  organizerId: string;
+  contactId: string;
+  expectedEventCount: number;
+  attendedEventCount: number;
+  cancelledEventCount: number;
+  noShowCount: number;
+  importedEventCount: number;
+  referredRegistrationCount: number;
+  referredCheckedInCount: number;
+  referredCheckedIn365DayCount: number;
+  linkedAccount: boolean;
+  /**
+   * Serialized Firestore Timestamp fixture shape.
+   */
+  firstSeenAt: {
+    _seconds: number;
+    _nanoseconds: number;
+  };
+  /**
+   * Serialized Firestore Timestamp fixture shape.
+   */
+  lastSeenAt: {
+    _seconds: number;
+    _nanoseconds: number;
+  };
+  firstAttendedAt: {
+    _seconds: number;
+    _nanoseconds: number;
+  } | null;
+  lastAttendedAt: {
+    _seconds: number;
+    _nanoseconds: number;
+  } | null;
+  attendanceRate: number | null;
+  /**
+   * @maxItems 16
+   */
+  segmentIds: (
+    | "new_to_organizer"
+    | "first_time_attendee"
+    | "repeat_attendee"
+    | "regular"
+    | "lapsed_regular"
+    | "reliable_attendee"
+    | "needs_confirmation"
+    | "advocate"
+    | "high_impact_advocate"
+    | "whatsapp_reachable"
+    | "sms_reachable"
+  )[];
+  definitionVersion: number;
+  whatsappStatus: "unknown" | "optedIn" | "optedOut";
+  smsStatus: "unknown" | "optedIn" | "optedOut";
+  sourceCoverage: "exact" | "partial" | "insufficientData";
+  projectionVersion: number;
+  /**
+   * Serialized Firestore Timestamp fixture shape.
+   */
+  computedAt: {
+    _seconds: number;
+    _nanoseconds: number;
+  };
+}

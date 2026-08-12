@@ -39,6 +39,121 @@
       self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
     }
   </script>
+  <script>
+    // Meta Embedded Signup is loaded only when a manager chooses to connect
+    // their own WhatsApp Business sender. The browser receives public Meta
+    // identifiers; authorization-code exchange and token storage stay server-side.
+    self.catchStartWhatsappEmbeddedSignup = async function (configuration) {
+      if (!configuration?.appId || !configuration?.configId || !configuration?.graphVersion) {
+        throw new Error('WhatsApp Embedded Signup is not configured.');
+      }
+
+      if (!self.FB) {
+        await new Promise((resolve, reject) => {
+          const existing = document.getElementById('facebook-jssdk');
+          if (existing?.dataset.loaded === 'true') {
+            resolve();
+            return;
+          }
+          if (existing) {
+            existing.addEventListener('load', resolve, { once: true });
+            existing.addEventListener('error', reject, { once: true });
+            return;
+          }
+          const script = document.createElement('script');
+          script.id = 'facebook-jssdk';
+          script.src = 'https://connect.facebook.net/en_US/sdk.js';
+          script.async = true;
+          script.defer = true;
+          script.onload = () => {
+            script.dataset.loaded = 'true';
+            resolve();
+          };
+          script.onerror = () => reject(new Error('Could not load Meta Embedded Signup.'));
+          document.head.appendChild(script);
+        });
+      }
+
+      self.FB.init({
+        appId: configuration.appId,
+        autoLogAppEvents: true,
+        xfbml: false,
+        version: configuration.graphVersion,
+      });
+
+      return new Promise((resolve, reject) => {
+        let authorizationCode = null;
+        let signupData = null;
+        let settled = false;
+        let timeout = null;
+
+        const cleanup = () => {
+          self.removeEventListener('message', onMessage);
+          if (timeout !== null) self.clearTimeout(timeout);
+        };
+        const fail = (message) => {
+          if (settled) return;
+          settled = true;
+          cleanup();
+          reject(new Error(message));
+        };
+        const finish = () => {
+          if (settled || !authorizationCode || !signupData) return;
+          settled = true;
+          cleanup();
+          resolve({ authorizationCode, ...signupData });
+        };
+        const onMessage = (event) => {
+          if (!/^https:\/\/([a-z0-9-]+\.)*facebook\.com$/i.test(event.origin)) return;
+          let payload = event.data;
+          if (typeof payload === 'string') {
+            try { payload = JSON.parse(payload); } catch (_) { return; }
+          }
+          if (payload?.type !== 'WA_EMBEDDED_SIGNUP') return;
+          if (payload.event === 'CANCEL') {
+            fail('WhatsApp connection was cancelled.');
+            return;
+          }
+          if (payload.event === 'ERROR') {
+            fail(payload.data?.error_message || 'WhatsApp connection failed.');
+            return;
+          }
+          if (payload.event !== 'FINISH') return;
+          const data = payload.data || {};
+          if (!data.waba_id || !data.phone_number_id) {
+            fail('Meta did not return the selected WhatsApp identifiers.');
+            return;
+          }
+          signupData = {
+            wabaId: String(data.waba_id),
+            phoneNumberId: String(data.phone_number_id),
+            businessId: data.business_id ? String(data.business_id) : null,
+          };
+          finish();
+        };
+
+        self.addEventListener('message', onMessage);
+        timeout = self.setTimeout(
+          () => fail('WhatsApp connection timed out. Please try again.'),
+          3 * 60 * 1000,
+        );
+        self.FB.login((response) => {
+          const code = response?.authResponse?.code;
+          if (!code) {
+            fail('Meta did not authorize the WhatsApp connection.');
+            return;
+          }
+          authorizationCode = String(code);
+          finish();
+        }, {
+          config_id: configuration.configId,
+          response_type: 'code',
+          override_default_response_type: true,
+          extras: { setup: {} },
+        });
+      });
+    };
+  </script>
   <style id="splash-screen-style">
     html {
       height: 100%

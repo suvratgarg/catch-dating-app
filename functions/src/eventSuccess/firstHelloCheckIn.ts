@@ -7,7 +7,6 @@ import {
   EventAttendeeDocument,
   EventParticipationDocument,
   EventRuntimeParticipantDocument,
-  Gender,
 } from "../shared/generated/firestoreAdminTypes";
 import {requireAuth} from "../shared/auth";
 import {StartEventSuccessFirstHelloMissionCallablePayload} from
@@ -22,7 +21,6 @@ import {validateCallableWithAjv, requireDoc} from "../shared/validation";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {normalizeEventIdPayload} from "../events/eventPayloadNormalization";
-import {cohortIds} from "../events/eventPolicy";
 import {blockDocId} from "../safety/blocking";
 import {
   eventParticipationId,
@@ -157,10 +155,10 @@ export async function startEventSuccessFirstHelloMissionHandler(
     data.eventId,
     observerUid
   );
-  if (!viewer || !viewer.gender || viewer.interestedInGenders.length === 0) {
+  if (!viewer) {
     throw new HttpsError(
       "failed-precondition",
-      "Join this event and finish its minimum profile before First Hello."
+      "Join this event before using First Hello."
     );
   }
   if (viewer.status === "attended") {
@@ -386,6 +384,8 @@ export async function completeEventSuccessFirstHelloMissionHandler(
         status: "checkedIn",
         checkedInAt: now,
         checkedInBy: observerUid,
+        attendanceRevision: (runtimeAttendee!.attendanceRevision ?? 0) + 1,
+        preCheckInStatus: runtimeAttendee!.status,
         updatedAt: now,
       });
     }
@@ -446,25 +446,21 @@ async function chooseFirstHelloTarget(params: {
 }): Promise<FirstHelloCandidate> {
   const {db, eventId, observerUid, viewer} = params;
   const roster = await loadEventSuccessRoster(db, eventId);
-  const viewerCohortId = viewer.cohortAtSignup;
   const blockedUids = await fetchUidsBlockedWithViewer(db, observerUid);
   const candidates = roster
     .filter((candidate) => isEligibleFirstHelloCandidate({
       viewer,
       observerUid,
-      viewerCohortId,
       candidate,
       blockedUids,
     }))
-    .sort((a, b) => stableMissionRank({
-      eventId,
-      observerUid,
-      targetUid: a.uid,
-    }) - stableMissionRank({
-      eventId,
-      observerUid,
-      targetUid: b.uid,
-    }));
+    .sort((a, b) => {
+      const preferenceDifference = firstHelloPreferenceRank(viewer, a) -
+        firstHelloPreferenceRank(viewer, b);
+      if (preferenceDifference !== 0) return preferenceDifference;
+      return stableMissionRank({eventId, observerUid, targetUid: a.uid}) -
+        stableMissionRank({eventId, observerUid, targetUid: b.uid});
+    });
 
   if (candidates.length > 0) return candidates[0];
 
@@ -505,7 +501,6 @@ async function fetchUidsBlockedWithViewer(
  * @param {object} params Eligibility inputs.
  * @param {EventSuccessRosterParticipant} params.viewer Caller profile.
  * @param {string} params.observerUid Caller user id.
- * @param {string} params.viewerCohortId Caller event cohort id.
  * @param {EventSuccessRosterParticipant} params.candidate Candidate edge.
  * @param {Set<string>} params.blockedUids Blocked user ids.
  * @return {boolean} True when assignable.
@@ -513,59 +508,29 @@ async function fetchUidsBlockedWithViewer(
 function isEligibleFirstHelloCandidate(params: {
   viewer: EventSuccessRosterParticipant;
   observerUid: string;
-  viewerCohortId: string;
   candidate: EventSuccessRosterParticipant;
   blockedUids: Set<string>;
 }): boolean {
   const candidate = params.candidate;
-  const candidateGender = candidate.gender;
   if (
     candidate.uid === params.observerUid ||
     candidate.status !== "attended" ||
-    candidateGender == null ||
     params.blockedUids.has(candidate.uid)
   ) {
     return false;
   }
-  if (!params.viewer.interestedInGenders.includes(candidateGender)) {
-    return false;
-  }
-
-  const candidateCohortId = candidate.cohortAtSignup;
-  switch (params.viewerCohortId) {
-  case cohortIds.womenInterestedInMen:
-    return candidateCohortId === cohortIds.menInterestedInWomen;
-  case cohortIds.menInterestedInWomen:
-    return candidateCohortId === cohortIds.womenInterestedInMen;
-  default:
-    return candidateCohortCanIncludeViewer(
-      candidateCohortId,
-      params.viewer.gender
-    );
-  }
+  return true;
 }
 
-/**
- * Checks whether the candidate cohort can include the viewer's gender.
- * @param {string|null|undefined} candidateCohortId Candidate cohort id.
- * @param {Gender} viewerGender Viewer gender.
- * @return {boolean} True when compatible.
- */
-function candidateCohortCanIncludeViewer(
-  candidateCohortId: string | null | undefined,
-  viewerGender: Gender | undefined
-): boolean {
-  switch (candidateCohortId) {
-  case cohortIds.menInterestedInWomen:
-    return viewerGender === "woman";
-  case cohortIds.womenInterestedInMen:
-    return viewerGender === "man";
-  case cohortIds.queerOrOpen:
-  case cohortIds.nonBinaryOrOther:
-    return true;
-  default:
-    return false;
-  }
+function firstHelloPreferenceRank(
+  viewer: EventSuccessRosterParticipant,
+  candidate: EventSuccessRosterParticipant
+): number {
+  if (!viewer.gender || !candidate.gender ||
+      viewer.interestedInGenders.length === 0 ||
+      candidate.interestedInGenders.length === 0) return 1;
+  return viewer.interestedInGenders.includes(candidate.gender) &&
+      candidate.interestedInGenders.includes(viewer.gender) ? 0 : 2;
 }
 
 /**
@@ -696,7 +661,7 @@ function requireReadyRuntimeParticipant(
   if (!snap.exists) {
     throw new HttpsError(
       "failed-precondition",
-      "Join this event and finish its minimum profile before First Hello."
+      "Join this event before using First Hello."
     );
   }
   const participant = requireDoc<EventRuntimeParticipantDocument>(
@@ -711,7 +676,7 @@ function requireReadyRuntimeParticipant(
   ) {
     throw new HttpsError(
       "failed-precondition",
-      "Join this event and finish its minimum profile before First Hello."
+      "Join this event before using First Hello."
     );
   }
   return participant;

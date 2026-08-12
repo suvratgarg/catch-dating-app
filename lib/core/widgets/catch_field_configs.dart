@@ -341,6 +341,7 @@ final class _EditConfig extends _CatchFieldConfig {
     Key? key,
     required String title,
     CatchContractFieldConstraints? contract,
+    this.contractExemption,
     this.placeholder,
     this.emptyValueText,
     this.inputHint,
@@ -423,6 +424,7 @@ final class _EditConfig extends _CatchFieldConfig {
     Key? key,
     required String title,
     CatchContractFieldConstraints? contract,
+    this.contractExemption,
     required this.controller,
     required bool open,
     required ValueChanged<bool> onOpenChanged,
@@ -496,6 +498,7 @@ final class _EditConfig extends _CatchFieldConfig {
        );
 
   final TextEditingController? controller;
+  final String? contractExemption;
   final String? initialValue;
   final ValueChanged<String>? onChanged;
   final ValueChanged<String>? onSubmitted;

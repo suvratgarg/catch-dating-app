@@ -291,6 +291,81 @@
       ]
     },
     {
+      "id": "functions.secret.meta-whatsapp-app-secret",
+      "kind": "secret-version",
+      "name": "META_WHATSAPP_APP_SECRET",
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
+      "requiredWhen": {
+        "anyDeployTarget": [
+          "functions:completeOrganizerWhatsappConnection",
+          "functions:disconnectOrganizerWhatsappConnection",
+          "functions:dispatchOrganizerCampaign",
+          "functions:dispatchScheduledOrganizerCampaigns",
+          "functions:getOrganizerMessagingSetup",
+          "functions:organizerWhatsappWebhook",
+          "functions:sendOrganizerWhatsappTest",
+          "functions:syncOrganizerWhatsappTemplates"
+        ]
+      },
+      "acceptedStates": [
+        "ENABLED"
+      ],
+      "owner": "organizer-messaging",
+      "sourcePaths": [
+        "functions/src/organizers/organizerCampaignDispatcher.ts",
+        "functions/src/organizers/organizerMessagingSetup.ts",
+        "functions/src/organizers/organizerWhatsappWebhook.ts"
+      ]
+    },
+    {
+      "id": "functions.secret.meta-whatsapp-webhook-verify-token",
+      "kind": "secret-version",
+      "name": "META_WHATSAPP_WEBHOOK_VERIFY_TOKEN",
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
+      "requiredWhen": {
+        "anyDeployTarget": [
+          "functions:organizerWhatsappWebhook"
+        ]
+      },
+      "acceptedStates": [
+        "ENABLED"
+      ],
+      "owner": "organizer-messaging",
+      "sourcePaths": [
+        "functions/src/organizers/organizerWhatsappWebhook.ts"
+      ]
+    },
+    {
+      "id": "functions.secret.organizer-contact-identity-key",
+      "kind": "secret-version",
+      "name": "ORGANIZER_CONTACT_IDENTITY_KEY",
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
+      "requiredWhen": {
+        "anyDeployTarget": [
+          "functions:onEventAttendeeAudienceProjected"
+        ]
+      },
+      "acceptedStates": [
+        "ENABLED"
+      ],
+      "owner": "organizer-audience",
+      "sourcePaths": [
+        "functions/src/organizers/organizerAudienceProjection.ts"
+      ]
+    },
+    {
       "id": "firestore.ttl.cross-paths-suggestion-exposures",
       "kind": "firestore-ttl",
       "collectionGroup": "crossPathsSuggestionExposures",

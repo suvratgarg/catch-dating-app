@@ -537,6 +537,7 @@ void main() {
       (functions.httpsCallable('createEventInviteLink') as TestHttpsCallable)
           .resultData = {
         'inviteLinkId': 'invite-link-1',
+        'inviteToken': 'v2_invite-link-1_test-token',
         'eventId': 'event-1',
         'label': 'Instagram bio',
         'source': 'instagram',
@@ -552,7 +553,53 @@ void main() {
         {'eventId': 'event-1', 'label': 'Instagram bio', 'source': 'instagram'},
       ]);
       expect(result.inviteLinkId, 'invite-link-1');
+      expect(result.inviteToken, 'v2_invite-link-1_test-token');
       expect(result.label, 'Instagram bio');
+    });
+
+    test('creates an attributable attendee link and share intent', () async {
+      (functions.httpsCallable('createAttendeeInviteLink') as TestHttpsCallable)
+          .resultData = {
+        'inviteLinkId': 'attendee-link-1',
+        'inviteToken': 'v2_attendee-link-1_test-token',
+        'eventId': 'event-1',
+        'label': 'Attendee share',
+        'source': 'consumer_app',
+      };
+
+      final result = await repository.createAttendeeInviteLink(
+        eventId: 'event-1',
+        label: 'Attendee share',
+        source: 'consumer_app',
+        destinationKind: 'externalBooking',
+      );
+      await repository.recordShareIntent(
+        eventId: 'event-1',
+        inviteLinkId: result.inviteLinkId,
+        surface: 'consumerApp',
+        creativeId: 'event-share-card',
+        channelHint: 'systemShare',
+      );
+
+      expect(functions.callables['createAttendeeInviteLink']!.calls, [
+        {
+          'eventId': 'event-1',
+          'label': 'Attendee share',
+          'source': 'consumer_app',
+          'linkKind': 'attendeeReferrer',
+          'destinationKind': 'externalBooking',
+        },
+      ]);
+      expect(functions.callables['recordEventShareIntent']!.calls, [
+        {
+          'eventId': 'event-1',
+          'inviteLinkId': 'attendee-link-1',
+          'surface': 'consumerApp',
+          'creativeId': 'event-share-card',
+          'channelHint': 'systemShare',
+        },
+      ]);
+      expect(result.inviteToken, 'v2_attendee-link-1_test-token');
     });
 
     test('recordInviteLinkOpen calls the matching Cloud Function', () async {

@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_contact_identity_claims.schema.json",
+  "title": "OrganizerContactIdentityClaimDocument",
+  "description": "Singleton organizer-scoped ownership claim for a person-verified UID or phone identity.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerContactIdentityClaims",
+  "x-firestore-path": "organizerContactIdentityClaims/{identityClaimId}",
+  "x-document-id-field": "identityClaimId",
+  "x-owner": "organizer audience identity resolver and merge operations",
+  "required": ["organizerId", "kind", "identityHash", "hashVersion", "verifiedContactId", "originVerifiedContactId", "state", "conflictingContactIds", "revision", "createdAt", "updatedAt"],
+  "properties": {
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "kind": {"type": "string", "enum": ["uid", "phone"]},
+    "identityHash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "hashVersion": {"type": "string", "enum": ["hmac-sha256-v1"]},
+    "verifiedContactId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "originVerifiedContactId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "state": {"type": "string", "enum": ["verified", "conflicted"]},
+    "conflictingContactIds": {"type": "array", "maxItems": 20, "uniqueItems": true, "items": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}},
+    "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}
+  }
+}

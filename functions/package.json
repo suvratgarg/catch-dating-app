@@ -22,6 +22,7 @@
   },
   "main": "lib/index.js",
   "dependencies": {
+    "@google-cloud/secret-manager": "^6.3.0",
     "@google-cloud/vision": "^5.3.7",
     "ajv": "^8.20.0",
     "ajv-formats": "^3.0.1",

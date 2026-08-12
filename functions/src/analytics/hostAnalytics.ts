@@ -995,7 +995,13 @@ function eventMetricFromEvent(event: EventRecord): EventMetricAccumulator {
 function emptyAttendeeSources(): Record<
   EventAttendeeDocument["source"], number
   > {
-  return {catchBooking: 0, hostImport: 0, hostManual: 0, webOtp: 0};
+  return {
+    catchBooking: 0,
+    hostImport: 0,
+    hostManual: 0,
+    webOtp: 0,
+    providerSync: 0,
+  };
 }
 
 function summarizeEventMetrics(events: EventMetricAccumulator[]) {

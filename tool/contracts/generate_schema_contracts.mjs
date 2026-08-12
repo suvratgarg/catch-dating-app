@@ -149,6 +149,114 @@ const schemaSpecs = [
       "organizerCommunicationPreferenceDocument.ts",
   },
   {
+    name: "OrganizerContactDocument",
+    source: "firestore/organizer_contacts.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerContactDocument.ts",
+  },
+  {
+    name: "OrganizerContactIdentityLinkDocument",
+    source: "firestore/organizer_contact_identity_links.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerContactIdentityLinkDocument.ts",
+  },
+  {
+    name: "OrganizerContactIdentityClaimDocument",
+    source: "firestore/organizer_contact_identity_claims.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerContactIdentityClaimDocument.ts",
+  },
+  {
+    name: "OrganizerContactEventEdgeDocument",
+    source: "firestore/organizer_contact_event_edges.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerContactEventEdgeDocument.ts",
+  },
+  {
+    name: "OrganizerContactTraitDocument",
+    source: "firestore/organizer_contact_traits.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerContactTraitDocument.ts",
+  },
+  {
+    name: "OrganizerAudienceSummaryDocument",
+    source: "firestore/organizer_audience_summaries.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerAudienceSummaryDocument.ts",
+  },
+  {
+    name: "OrganizerAudienceProjectionReceiptDocument",
+    source: "firestore/organizer_audience_projection_receipts.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerAudienceProjectionReceiptDocument.ts",
+  },
+  {
+    name: "OrganizerContactMergeReceiptDocument",
+    source: "firestore/organizer_contact_merge_receipts.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerContactMergeReceiptDocument.ts",
+  },
+  {
+    name: "OrganizerSenderConnectionDocument",
+    source: "firestore/organizer_sender_connections.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerSenderConnectionDocument.ts",
+  },
+  {
+    name: "OrganizerProviderConnectionDocument",
+    source: "firestore/organizer_provider_connections.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerProviderConnectionDocument.ts",
+  },
+  {
+    name: "ExternalEventMappingDocument",
+    source: "firestore/external_event_mappings.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/externalEventMappingDocument.ts",
+  },
+  {
+    name: "ProviderSyncRunDocument",
+    source: "firestore/provider_sync_runs.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/providerSyncRunDocument.ts",
+  },
+  {
+    name: "OrganizerMessageTemplateDocument",
+    source: "firestore/organizer_message_templates.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerMessageTemplateDocument.ts",
+  },
+  {
+    name: "OrganizerContactChannelStateDocument",
+    source: "firestore/organizer_contact_channel_states.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerContactChannelStateDocument.ts",
+  },
+  {
+    name: "OrganizerCampaignDocument",
+    source: "firestore/organizer_campaigns.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerCampaignDocument.ts",
+  },
+  {
+    name: "OrganizerCampaignRecipientDocument",
+    source: "firestore/organizer_campaign_recipients.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerCampaignRecipientDocument.ts",
+  },
+  {
+    name: "OrganizerCampaignWebhookReceiptDocument",
+    source: "firestore/organizer_campaign_webhook_receipts.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "organizerCampaignWebhookReceiptDocument.ts",
+  },
+  {
+    name: "OrganizerMessagingWebhookEventDocument",
+    source: "firestore/organizer_messaging_webhook_events.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "organizerMessagingWebhookEventDocument.ts",
+  },
+  {
     name: "OrganizerClaimRequestDocument",
     source: "firestore/organizer_claim_requests.schema.json",
     typeOutput:
@@ -203,6 +311,30 @@ const schemaSpecs = [
       "functions/src/shared/generated/eventInviteLinkDocument.ts",
   },
   {
+    name: "EventInviteLinkSecretDocument",
+    source: "firestore/event_invite_link_secrets.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventInviteLinkSecretDocument.ts",
+  },
+  {
+    name: "EventInviteTouchDocument",
+    source: "firestore/event_invite_touches.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventInviteTouchDocument.ts",
+  },
+  {
+    name: "EventShareIntentDocument",
+    source: "firestore/event_share_intents.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventShareIntentDocument.ts",
+  },
+  {
+    name: "EventInviteAttributionDocument",
+    source: "firestore/event_invite_attributions.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventInviteAttributionDocument.ts",
+  },
+  {
     name: "EventParticipationDocument",
     source: "firestore/event_participations.schema.json",
     typeOutput: "functions/src/shared/generated/eventParticipationDocument.ts",
@@ -211,6 +343,18 @@ const schemaSpecs = [
     name: "EventAttendeeDocument",
     source: "firestore/event_attendees.schema.json",
     typeOutput: "functions/src/shared/generated/eventAttendeeDocument.ts",
+  },
+  {
+    name: "EventStaffGrantDocument",
+    source: "firestore/event_staff_grants.schema.json",
+    typeOutput: "functions/src/shared/generated/eventStaffGrantDocument.ts",
+  },
+  {
+    name: "EventAttendeeAttendanceReceiptDocument",
+    source: "firestore/event_attendee_attendance_receipts.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "eventAttendeeAttendanceReceiptDocument.ts",
   },
   {
     name: "EventAttendeeImportDocument",
@@ -986,6 +1130,140 @@ const schemaSpecs = [
       "recordEventInviteLinkOpenCallablePayload.ts",
   },
   {
+    name: "ResolveEventInviteLandingCallablePayload",
+    source: "callables/resolve_event_invite_landing_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "resolveEventInviteLandingCallablePayload.ts",
+  },
+  {
+    name: "ResolveEventInviteLandingCallableResponse",
+    source:
+      "callable_responses/resolve_event_invite_landing_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "resolveEventInviteLandingCallableResponse.ts",
+  },
+  {
+    name: "GetEventInviteLinkTokenCallablePayload",
+    source: "callables/get_event_invite_link_token_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "getEventInviteLinkTokenCallablePayload.ts",
+  },
+  {
+    name: "RecordEventShareIntentCallablePayload",
+    source: "callables/record_event_share_intent_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/recordEventShareIntentCallablePayload.ts",
+  },
+  {
+    name: "UpsertOrganizerCampaignCallablePayload",
+    source: "callables/upsert_organizer_campaign_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/upsertOrganizerCampaignCallablePayload.ts",
+  },
+  {
+    name: "OrganizerCampaignActionCallablePayload",
+    source: "callables/organizer_campaign_action_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerCampaignActionCallablePayload.ts",
+  },
+  {
+    name: "CompleteOrganizerWhatsappConnectionCallablePayload",
+    source:
+      "callables/complete_organizer_whatsapp_connection_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "completeOrganizerWhatsappConnectionCallablePayload.ts",
+  },
+  {
+    name: "OrganizerSenderConnectionActionCallablePayload",
+    source:
+      "callables/organizer_sender_connection_action_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "organizerSenderConnectionActionCallablePayload.ts",
+  },
+  {
+    name: "SendOrganizerWhatsappTestCallablePayload",
+    source: "callables/send_organizer_whatsapp_test_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/sendOrganizerWhatsappTestCallablePayload.ts",
+  },
+  {
+    name: "OrganizerCampaignCallableResponse",
+    source: "callable_responses/organizer_campaign_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerCampaignCallableResponse.ts",
+  },
+  {
+    name: "OrganizerMessagingSetupCallableResponse",
+    source:
+      "callable_responses/organizer_messaging_setup_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerMessagingSetupCallableResponse.ts",
+  },
+  {
+    name: "GetOrganizerProviderSetupCallablePayload",
+    source: "callables/get_organizer_provider_setup_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "getOrganizerProviderSetupCallablePayload.ts",
+  },
+  {
+    name: "ConnectOrganizerLumaProviderCallablePayload",
+    source: "callables/connect_organizer_luma_provider_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "connectOrganizerLumaProviderCallablePayload.ts",
+  },
+  {
+    name: "ListOrganizerLumaEventsCallablePayload",
+    source: "callables/list_organizer_luma_events_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "listOrganizerLumaEventsCallablePayload.ts",
+  },
+  {
+    name: "SyncOrganizerProviderEventCallablePayload",
+    source: "callables/sync_organizer_provider_event_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "syncOrganizerProviderEventCallablePayload.ts",
+  },
+  {
+    name: "DisconnectOrganizerProviderCallablePayload",
+    source: "callables/disconnect_organizer_provider_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "disconnectOrganizerProviderCallablePayload.ts",
+  },
+  {
+    name: "OrganizerProviderSetupCallableResponse",
+    source:
+      "callable_responses/organizer_provider_setup_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "organizerProviderSetupCallableResponse.ts",
+  },
+  {
+    name: "ListOrganizerLumaEventsCallableResponse",
+    source:
+      "callable_responses/list_organizer_luma_events_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "listOrganizerLumaEventsCallableResponse.ts",
+  },
+  {
+    name: "SyncOrganizerProviderEventCallableResponse",
+    source:
+      "callable_responses/sync_organizer_provider_event_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "syncOrganizerProviderEventCallableResponse.ts",
+  },
+  {
     name: "RecordOrganizerAnalyticsEventCallablePayload",
     source:
       "callables/record_organizer_analytics_event_payload.schema.json",
@@ -1020,6 +1298,52 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "markEventAttendeeAttendanceCallablePayload.ts",
+  },
+  {
+    name: "SetEventAttendeeAttendanceCallablePayload",
+    source:
+      "callables/set_event_attendee_attendance_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "setEventAttendeeAttendanceCallablePayload.ts",
+  },
+  {
+    name: "SetEventAttendeeAttendanceCallableResponse",
+    source:
+      "callable_responses/set_event_attendee_attendance_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "setEventAttendeeAttendanceCallableResponse.ts",
+  },
+  {
+    name: "EventOperatorAccessCallablePayload",
+    source: "callables/event_operator_access_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventOperatorAccessCallablePayload.ts",
+  },
+  {
+    name: "EventOperatorAccessCallableResponse",
+    source: "callable_responses/event_operator_access_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventOperatorAccessCallableResponse.ts",
+  },
+  {
+    name: "GrantEventStaffCallablePayload",
+    source: "callables/grant_event_staff_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/grantEventStaffCallablePayload.ts",
+  },
+  {
+    name: "RevokeEventStaffCallablePayload",
+    source: "callables/revoke_event_staff_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/revokeEventStaffCallablePayload.ts",
+  },
+  {
+    name: "EventStaffListCallableResponse",
+    source: "callable_responses/event_staff_list_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventStaffListCallableResponse.ts",
   },
   {
     name: "RegisterPublicEventCallablePayload",
@@ -1123,6 +1447,76 @@ const schemaSpecs = [
       "callable_responses/get_organizer_crm_summary_response.schema.json",
     typeOutput:
       "functions/src/shared/generated/getOrganizerCrmSummaryCallableResponse.ts",
+  },
+  {
+    name: "ListOrganizerContactsCallablePayload",
+    source: "callables/list_organizer_contacts_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/listOrganizerContactsCallablePayload.ts",
+  },
+  {
+    name: "ListOrganizerContactsCallableResponse",
+    source:
+      "callable_responses/list_organizer_contacts_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/listOrganizerContactsCallableResponse.ts",
+  },
+  {
+    name: "GetOrganizerContactDetailCallablePayload",
+    source: "callables/get_organizer_contact_detail_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/getOrganizerContactDetailCallablePayload.ts",
+  },
+  {
+    name: "GetOrganizerContactDetailCallableResponse",
+    source:
+      "callable_responses/get_organizer_contact_detail_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/getOrganizerContactDetailCallableResponse.ts",
+  },
+  {
+    name: "MutateOrganizerContactCallablePayload",
+    source: "callables/mutate_organizer_contact_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/mutateOrganizerContactCallablePayload.ts",
+  },
+  {
+    name: "MutateOrganizerContactCallableResponse",
+    source: "callable_responses/mutate_organizer_contact_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/mutateOrganizerContactCallableResponse.ts",
+  },
+  {
+    name: "ExportOrganizerContactsCallablePayload",
+    source: "callables/export_organizer_contacts_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/exportOrganizerContactsCallablePayload.ts",
+  },
+  {
+    name: "ExportOrganizerContactsCallableResponse",
+    source: "callable_responses/export_organizer_contacts_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/exportOrganizerContactsCallableResponse.ts",
+  },
+  {
+    name: "MergeOrganizerContactsCallablePayload",
+    source: "callables/merge_organizer_contacts_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/mergeOrganizerContactsCallablePayload.ts",
+  },
+  {
+    name: "UnmergeOrganizerContactsCallablePayload",
+    source: "callables/unmerge_organizer_contacts_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/unmergeOrganizerContactsCallablePayload.ts",
+  },
+  {
+    name: "MutateOrganizerContactMergeCallableResponse",
+    source:
+      "callable_responses/mutate_organizer_contact_merge_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "mutateOrganizerContactMergeCallableResponse.ts",
   },
   {
     name: "EventJoinRequestDecisionCallablePayload",

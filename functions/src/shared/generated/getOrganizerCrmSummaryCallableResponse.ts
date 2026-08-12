@@ -3,13 +3,15 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 /**
- * Deduplicated Host CRM counts. No attendee identity or contact field is returned.
+ * Projected Host CRM counts. No attendee identity or contact field is returned.
  */
 export interface GetOrganizerCrmSummaryCallableResponse {
   organizerId: string;
   contactCount: number;
   pastAttendeeCount: number;
   repeatAttendeeCount: number;
+  advocateCount: number;
+  highImpactAdvocateCount: number;
   linkedAccountCount: number;
   importedContactCount: number;
   whatsappOptInCount: number;

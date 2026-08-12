@@ -96,7 +96,7 @@ interface EventSuccessCompatibilityResponseDocument {
 interface RotationParticipant extends AssignmentParticipant {
   uid: string;
   status: ActiveStatus;
-  gender: string;
+  gender?: string;
   interestedInGenders: string[];
   compatibilityAnswerIds: string[];
 }
@@ -420,14 +420,12 @@ async function loadEligibleRotationParticipants(
     fetchGuidedRotationOptOutUids(db, eventId),
   ]);
   const activeEdges = roster
-    .filter((participant) =>
-      !optedOutUids.has(participant.uid) && participant.gender !== undefined
-    );
+    .filter((participant) => !optedOutUids.has(participant.uid));
   const eligibleEdges = preferCheckedInParticipants(activeEdges);
   let participants = eligibleEdges.map((participant): RotationParticipant => ({
     uid: participant.uid,
     status: participant.status,
-    gender: participant.gender!,
+    gender: participant.gender,
     interestedInGenders: participant.interestedInGenders,
     compatibilityAnswerIds: [],
     activityAttributes: activityAttributesForProfile(participant.profile),

@@ -9475,7 +9475,7 @@ abstract class AppLocalizations {
   /// Accessibility hint for switching Host Clubs workspace pages.
   ///
   /// In en, this message translates to:
-  /// **'Drag left or right to switch between Edit, Insights, and Preview.'**
+  /// **'Drag left or right to switch between Edit, Audience, Insights, and Preview.'**
   String get hostsHostClubsScaffoldBodyDragLeftOrRight;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_clubs_scaffold.dart (label).
@@ -17903,6 +17903,270 @@ abstract class AppLocalizations {
   /// **'Upload a CSV or XLSX from your ticketing tool, or add guests one at a time.'**
   String get hostsOperationalRosterEmptyMessage;
 
+  /// External booking provider disclosure title.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking source'**
+  String get hostsOperationalRosterProviderTitle;
+
+  /// External booking provider disclosure body.
+  ///
+  /// In en, this message translates to:
+  /// **'Bring your {provider} guest list into this roster.'**
+  String hostsOperationalRosterProviderBody({required String provider});
+
+  /// Lazy provider setup guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Open this section to check available import and sync options.'**
+  String get hostsOperationalRosterProviderOpenToLoad;
+
+  /// Unknown provider capability fallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch could not identify a safe import option for this booking source.'**
+  String get hostsOperationalRosterProviderUnavailable;
+
+  /// Connected provider account label.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected calendar'**
+  String get hostsOperationalRosterProviderAccount;
+
+  /// Provider field coverage label.
+  ///
+  /// In en, this message translates to:
+  /// **'What syncs'**
+  String get hostsOperationalRosterProviderCoverage;
+
+  /// Provider last sync label.
+  ///
+  /// In en, this message translates to:
+  /// **'Last successful sync'**
+  String get hostsOperationalRosterProviderLastSync;
+
+  /// Provider never synced status.
+  ///
+  /// In en, this message translates to:
+  /// **'Not synced yet'**
+  String get hostsOperationalRosterProviderNeverSynced;
+
+  /// Provider limitations label.
+  ///
+  /// In en, this message translates to:
+  /// **'Not supplied by this connection'**
+  String get hostsOperationalRosterProviderLimits;
+
+  /// Honest Luma sync limitations.
+  ///
+  /// In en, this message translates to:
+  /// **'Payments, refunds, referral codes and automatic background updates. Catch check-ins are never undone when Luma omits a check-in.'**
+  String get hostsOperationalRosterProviderLumaLimits;
+
+  /// Provider roster identity capability.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest names and contact details'**
+  String get hostsOperationalRosterProviderCapabilityGuests;
+
+  /// Provider registration status capability.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration status'**
+  String get hostsOperationalRosterProviderCapabilityStatus;
+
+  /// Provider check-in capability.
+  ///
+  /// In en, this message translates to:
+  /// **'Provider check-ins'**
+  String get hostsOperationalRosterProviderCapabilityCheckIn;
+
+  /// Manual provider sync action.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync now'**
+  String get hostsOperationalRosterProviderSyncNow;
+
+  /// Provider disconnect action.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnect'**
+  String get hostsOperationalRosterProviderDisconnect;
+
+  /// Provider disconnect confirmation title.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnect booking source?'**
+  String get hostsOperationalRosterProviderDisconnectTitle;
+
+  /// Provider disconnect consequence.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests already in Catch stay on this roster. Future provider changes will not appear until you reconnect.'**
+  String get hostsOperationalRosterProviderDisconnectBody;
+
+  /// Luma connection action.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect Luma'**
+  String get hostsOperationalRosterProviderConnect;
+
+  /// Luma credential replacement action.
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnect Luma'**
+  String get hostsOperationalRosterProviderReconnect;
+
+  /// Provider spreadsheet import action.
+  ///
+  /// In en, this message translates to:
+  /// **'Import spreadsheet'**
+  String get hostsOperationalRosterProviderImport;
+
+  /// Luma connection confirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Luma connected. Sync when you want to refresh the roster.'**
+  String get hostsOperationalRosterProviderConnected;
+
+  /// Provider sync result.
+  ///
+  /// In en, this message translates to:
+  /// **'Roster synced: {created} added, {updated} refreshed, {skipped} skipped.'**
+  String hostsOperationalRosterProviderSyncSuccess({
+    required int created,
+    required int updated,
+    required int skipped,
+  });
+
+  /// Luma connection sheet title.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect your Luma calendar'**
+  String get hostsOperationalRosterProviderConnectTitle;
+
+  /// Luma connection security and sequence guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch checks the calendar key without saving it, then lets you choose an event. The key is stored only after you confirm the event.'**
+  String get hostsOperationalRosterProviderConnectBody;
+
+  /// Luma API key field.
+  ///
+  /// In en, this message translates to:
+  /// **'Luma calendar API key'**
+  String get hostsOperationalRosterProviderApiKey;
+
+  /// Luma API key requirements and storage guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Requires Luma Plus. Catch encrypts the key in Google Secret Manager after you choose an event.'**
+  String get hostsOperationalRosterProviderApiKeyHelp;
+
+  /// Provider connection field validation.
+  ///
+  /// In en, this message translates to:
+  /// **'Check this value and try again.'**
+  String get hostsOperationalRosterProviderFieldRequired;
+
+  /// Verifies Luma key and opens event selection.
+  ///
+  /// In en, this message translates to:
+  /// **'Check key and choose event'**
+  String get hostsOperationalRosterProviderChooseEvent;
+
+  /// Luma event selection title.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the Luma event'**
+  String get hostsOperationalRosterProviderChooseEventTitle;
+
+  /// Luma event selection guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Events managed by {calendar}. Choose the one that matches this Catch event.'**
+  String hostsOperationalRosterProviderChooseEventBody({
+    required String calendar,
+  });
+
+  /// Empty Luma event list title.
+  ///
+  /// In en, this message translates to:
+  /// **'No manageable events found'**
+  String get hostsOperationalRosterProviderNoEventsTitle;
+
+  /// Empty Luma event list guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'This key did not return an event the calendar can manage.'**
+  String get hostsOperationalRosterProviderNoEventsBody;
+
+  /// Bounded Luma event selection warning.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing the 50 most recent manageable events. Use spreadsheet import if the event you need is older.'**
+  String get hostsOperationalRosterProviderEventsTruncated;
+
+  /// Direct provider sync availability.
+  ///
+  /// In en, this message translates to:
+  /// **'Direct sync available'**
+  String get hostsOperationalRosterProviderAvailable;
+
+  /// Export-only provider availability.
+  ///
+  /// In en, this message translates to:
+  /// **'Spreadsheet import'**
+  String get hostsOperationalRosterProviderExportOnly;
+
+  /// Provider configuration required availability.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch setup pending'**
+  String get hostsOperationalRosterProviderConfigurationRequired;
+
+  /// Provider partner access availability.
+  ///
+  /// In en, this message translates to:
+  /// **'Provider approval required'**
+  String get hostsOperationalRosterProviderPartnerRequired;
+
+  /// Provider sample required availability.
+  ///
+  /// In en, this message translates to:
+  /// **'Export sample needed'**
+  String get hostsOperationalRosterProviderSampleRequired;
+
+  /// Manual-only provider availability.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual import'**
+  String get hostsOperationalRosterProviderManualOnly;
+
+  /// Active provider connection status.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected'**
+  String get hostsOperationalRosterProviderStatusActive;
+
+  /// Degraded provider connection status.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection needs attention'**
+  String get hostsOperationalRosterProviderStatusDegraded;
+
+  /// Revoked credential status.
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnect required'**
+  String get hostsOperationalRosterProviderStatusReconnect;
+
+  /// Disconnected provider status.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnected'**
+  String get hostsOperationalRosterProviderStatusDisconnected;
+
   /// Roster source label for Catch booking.
   ///
   /// In en, this message translates to:
@@ -17926,6 +18190,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Web registration'**
   String get hostsOperationalRosterSourceWebOtp;
+
+  /// Roster source label for direct booking-provider synchronization.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking provider'**
+  String get hostsOperationalRosterSourceProviderSync;
 
   /// Operational attendee invited status.
   ///
@@ -18324,6 +18594,889 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Disable website sign-up'**
   String get hostsHostPublicRegistrationActionDisable;
+
+  /// Organizer audience workspace tab.
+  ///
+  /// In en, this message translates to:
+  /// **'Audience'**
+  String get hostsHostClubsScaffoldLabelAudience;
+
+  /// Audience workspace title.
+  ///
+  /// In en, this message translates to:
+  /// **'Your audience'**
+  String get hostsHostAudienceTitle;
+
+  /// Explains audience inputs and standalone value.
+  ///
+  /// In en, this message translates to:
+  /// **'Build a useful history from Catch bookings, roster imports, manual guests, provider sync, and phone-verified event runtime check-ins. Catch bookings and the Consumer app are not required.'**
+  String get hostsHostAudienceIntro;
+
+  /// Audience people lens.
+  ///
+  /// In en, this message translates to:
+  /// **'People'**
+  String get hostsHostAudiencePeople;
+
+  /// Audience messaging lens.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get hostsHostAudienceMessage;
+
+  /// Audience summary heading.
+  ///
+  /// In en, this message translates to:
+  /// **'At a glance'**
+  String get hostsHostAudienceAtAGlance;
+
+  /// Contact count label.
+  ///
+  /// In en, this message translates to:
+  /// **'Contacts'**
+  String get hostsHostAudienceContacts;
+
+  /// Past attendee count label.
+  ///
+  /// In en, this message translates to:
+  /// **'Attended'**
+  String get hostsHostAudienceAttended;
+
+  /// Repeat attendee count label.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat'**
+  String get hostsHostAudienceRepeat;
+
+  /// WhatsApp reachable count label.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp ready'**
+  String get hostsHostAudienceWhatsappReady;
+
+  /// Audience source composition.
+  ///
+  /// In en, this message translates to:
+  /// **'{importedCount} came through external or manual rosters · {linkedCount} are linked to verified Catch identities'**
+  String hostsHostAudienceSources({
+    required int importedCount,
+    required int linkedCount,
+  });
+
+  /// Audience directory heading.
+  ///
+  /// In en, this message translates to:
+  /// **'People'**
+  String get hostsHostAudienceDirectory;
+
+  /// Audience search field.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name'**
+  String get hostsHostAudienceSearch;
+
+  /// Clear audience segment filter.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get hostsHostAudienceAll;
+
+  /// Partial audience coverage notice title.
+  ///
+  /// In en, this message translates to:
+  /// **'Some history is still being reconciled'**
+  String get hostsHostAudienceCoveragePartial;
+
+  /// Partial audience coverage explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Counts may omit older roster changes. Messaging stays blocked until the projection is exact, so nobody receives an accidental blast.'**
+  String get hostsHostAudienceCoveragePartialBody;
+
+  /// Empty audience state.
+  ///
+  /// In en, this message translates to:
+  /// **'No people match this filter yet. Import a roster or use the event runtime to start building your history.'**
+  String get hostsHostAudienceEmpty;
+
+  /// WhatsApp sender section title.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp Business sender'**
+  String get hostsHostAudienceWhatsappSender;
+
+  /// WhatsApp ownership and consent explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect your own Meta WhatsApp Business account. Catch never sends from a shared number, and only people with explicit organizer-specific opt-in are eligible.'**
+  String get hostsHostAudienceWhatsappOwnedSender;
+
+  /// Missing platform-level Meta setup title.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp setup is not enabled in this environment'**
+  String get hostsHostAudienceProviderUnavailable;
+
+  /// Missing platform-level Meta setup body.
+  ///
+  /// In en, this message translates to:
+  /// **'An administrator must configure the Catch Meta app and Embedded Signup configuration before organizers can connect their own senders.'**
+  String get hostsHostAudienceProviderUnavailableBody;
+
+  /// Open Meta Embedded Signup CTA.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect WhatsApp Business'**
+  String get hostsHostAudienceConnectWhatsapp;
+
+  /// WhatsApp templates row title.
+  ///
+  /// In en, this message translates to:
+  /// **'Message templates'**
+  String get hostsHostAudienceTemplates;
+
+  /// Approved WhatsApp template count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No approved templates} =1{1 approved template} other{{count} approved templates}}'**
+  String hostsHostAudienceApprovedTemplates({required int count});
+
+  /// Sync WhatsApp templates CTA.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync templates'**
+  String get hostsHostAudienceSyncTemplates;
+
+  /// Disconnect WhatsApp sender CTA.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnect'**
+  String get hostsHostAudienceDisconnect;
+
+  /// WhatsApp test recipient field.
+  ///
+  /// In en, this message translates to:
+  /// **'Test recipient phone'**
+  String get hostsHostAudienceTestPhone;
+
+  /// WhatsApp test recipient helper.
+  ///
+  /// In en, this message translates to:
+  /// **'Use an opted-in number you control, including the country code.'**
+  String get hostsHostAudienceTestPhoneHelp;
+
+  /// Send WhatsApp test CTA.
+  ///
+  /// In en, this message translates to:
+  /// **'Send verification message'**
+  String get hostsHostAudienceSendTest;
+
+  /// WhatsApp test accepted confirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Meta accepted the test. The sender becomes active after the delivered webhook arrives.'**
+  String get hostsHostAudienceTestPending;
+
+  /// Cross-event campaign section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Message past attendees'**
+  String get hostsHostAudienceCampaign;
+
+  /// Campaign sender prerequisite.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish sender verification before creating a campaign. A delivered test proves that webhooks and the selected number work end to end.'**
+  String get hostsHostAudienceCampaignNeedsActiveSender;
+
+  /// Campaign template prerequisite.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync an approved Meta template before creating a campaign.'**
+  String get hostsHostAudienceCampaignNeedsTemplate;
+
+  /// Campaign name field.
+  ///
+  /// In en, this message translates to:
+  /// **'Internal campaign name'**
+  String get hostsHostAudienceCampaignName;
+
+  /// Campaign name example.
+  ///
+  /// In en, this message translates to:
+  /// **'September regulars invitation'**
+  String get hostsHostAudienceCampaignNameExample;
+
+  /// Campaign message class field.
+  ///
+  /// In en, this message translates to:
+  /// **'Message type'**
+  String get hostsHostAudienceMessageType;
+
+  /// Campaign recipient segment heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Recipient categories'**
+  String get hostsHostAudienceRecipients;
+
+  /// Campaign template picker title.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved template'**
+  String get hostsHostAudienceTemplate;
+
+  /// Campaign preview CTA.
+  ///
+  /// In en, this message translates to:
+  /// **'Save and preview recipients'**
+  String get hostsHostAudiencePreviewCampaign;
+
+  /// Campaign validation message.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a campaign name and complete every template field before previewing.'**
+  String get hostsHostAudienceCompleteCampaign;
+
+  /// Campaign status title.
+  ///
+  /// In en, this message translates to:
+  /// **'Campaign status: {status}'**
+  String hostsHostAudienceCampaignStatus({required String status});
+
+  /// Campaign audience preview counts.
+  ///
+  /// In en, this message translates to:
+  /// **'{reachable} of {total} are reachable · {optedOut} opted out · {unknown} have unknown permission or identity'**
+  String hostsHostAudienceCampaignCounts({
+    required int total,
+    required int reachable,
+    required int optedOut,
+    required int unknown,
+  });
+
+  /// Campaign delivery outcome counts.
+  ///
+  /// In en, this message translates to:
+  /// **'{sent} sent · {delivered} delivered · {read} read · {failed} failed'**
+  String hostsHostAudienceDeliveryCounts({
+    required int sent,
+    required int delivered,
+    required int read,
+    required int failed,
+  });
+
+  /// Approve campaign audience snapshot CTA.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve exact audience'**
+  String get hostsHostAudienceApprove;
+
+  /// Dispatch approved campaign CTA.
+  ///
+  /// In en, this message translates to:
+  /// **'Send now'**
+  String get hostsHostAudienceSendNow;
+
+  /// Refresh campaign outcomes CTA.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh results'**
+  String get hostsHostAudienceRefresh;
+
+  /// Cancel campaign CTA.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel campaign'**
+  String get hostsHostAudienceCancel;
+
+  /// Reset campaign composer CTA.
+  ///
+  /// In en, this message translates to:
+  /// **'New campaign'**
+  String get hostsHostAudienceNewCampaign;
+
+  /// Internal label for a stable attendee-created invite link.
+  ///
+  /// In en, this message translates to:
+  /// **'Attendee share'**
+  String get eventsAttendeeShareLinkLabel;
+
+  /// Export current audience CTA.
+  ///
+  /// In en, this message translates to:
+  /// **'Export this audience'**
+  String get hostsHostAudienceExport;
+
+  /// Audience CSV share subject.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch audience export'**
+  String get hostsHostAudienceExportSubject;
+
+  /// Audience export truncation disclosure.
+  ///
+  /// In en, this message translates to:
+  /// **'This export reached the 2,500-contact safety limit.'**
+  String get hostsHostAudienceExportTruncated;
+
+  /// Audience CSV share body count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 organizer contact.} other{{count} organizer contacts.}}'**
+  String hostsHostAudienceExportCount({required int count});
+
+  /// Audience contact removal confirmation title.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from Audience?'**
+  String get hostsHostAudienceRemoveTitle;
+
+  /// Audience contact removal consequence.
+  ///
+  /// In en, this message translates to:
+  /// **'This hides the person from CRM and future campaigns. Event attendance and audit history stay intact.'**
+  String get hostsHostAudienceRemoveBody;
+
+  /// Confirm audience contact removal CTA.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get hostsHostAudienceRemoveConfirm;
+
+  /// Open audience contact removal confirmation CTA.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from Audience'**
+  String get hostsHostAudienceRemoveAction;
+
+  /// Audience contact sheet privacy subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Organizer-only CRM record'**
+  String get hostsHostAudienceContactSubtitle;
+
+  /// Organizer-local audience contact name field.
+  ///
+  /// In en, this message translates to:
+  /// **'Name shown to your team'**
+  String get hostsHostAudienceContactName;
+
+  /// Organizer-local audience contact name disclosure.
+  ///
+  /// In en, this message translates to:
+  /// **'This does not alter the guest’s Catch profile or verified contact details.'**
+  String get hostsHostAudienceContactNameHelp;
+
+  /// Save organizer-local contact name CTA.
+  ///
+  /// In en, this message translates to:
+  /// **'Save name'**
+  String get hostsHostAudienceContactSaveName;
+
+  /// Verified contact phone label.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified phone'**
+  String get hostsHostAudienceContactVerifiedPhone;
+
+  /// Contact email label.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get hostsHostAudienceContactEmail;
+
+  /// Audience contact consent notice title.
+  ///
+  /// In en, this message translates to:
+  /// **'Consent controls delivery'**
+  String get hostsHostAudienceContactConsentTitle;
+
+  /// Organizer-suppressed WhatsApp delivery explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Your team has paused WhatsApp campaigns to this person. Their own opt-out remains authoritative.'**
+  String get hostsHostAudienceContactConsentPaused;
+
+  /// Eligible WhatsApp delivery explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Only the person-verified number and active organizer consent can receive a campaign.'**
+  String get hostsHostAudienceContactConsentActive;
+
+  /// Resume organizer WhatsApp campaigns for a contact CTA.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume organizer messages'**
+  String get hostsHostAudienceContactResumeMessages;
+
+  /// Pause organizer WhatsApp campaigns for a contact CTA.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause organizer messages'**
+  String get hostsHostAudienceContactPauseMessages;
+
+  /// Audience contact event history heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Event history'**
+  String get hostsHostAudienceContactEventHistory;
+
+  /// First-time attendee segment label.
+  ///
+  /// In en, this message translates to:
+  /// **'First-time attendees'**
+  String get hostsHostAudienceSegmentFirstTime;
+
+  /// Repeat attendee segment label.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat attendees'**
+  String get hostsHostAudienceSegmentRepeat;
+
+  /// Regular attendee segment label.
+  ///
+  /// In en, this message translates to:
+  /// **'Regulars'**
+  String get hostsHostAudienceSegmentRegular;
+
+  /// Lapsed regular segment label.
+  ///
+  /// In en, this message translates to:
+  /// **'Lapsed regulars'**
+  String get hostsHostAudienceSegmentLapsed;
+
+  /// Reliable attendee segment label.
+  ///
+  /// In en, this message translates to:
+  /// **'Reliable attendees'**
+  String get hostsHostAudienceSegmentReliable;
+
+  /// Advocate segment label.
+  ///
+  /// In en, this message translates to:
+  /// **'Advocates'**
+  String get hostsHostAudienceSegmentAdvocate;
+
+  /// High-impact advocate segment label.
+  ///
+  /// In en, this message translates to:
+  /// **'High-impact advocates'**
+  String get hostsHostAudienceSegmentHighImpact;
+
+  /// WhatsApp reachable segment label.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp reachable'**
+  String get hostsHostAudienceSegmentWhatsapp;
+
+  /// Campaign follow-up message class label.
+  ///
+  /// In en, this message translates to:
+  /// **'Post-event follow-up'**
+  String get hostsHostAudienceMessageFollowUp;
+
+  /// Campaign organizer update class label.
+  ///
+  /// In en, this message translates to:
+  /// **'Organizer update'**
+  String get hostsHostAudienceMessageUpdate;
+
+  /// Campaign organizer promotion class label.
+  ///
+  /// In en, this message translates to:
+  /// **'Event invitation or promotion'**
+  String get hostsHostAudienceMessagePromotion;
+
+  /// Active WhatsApp sender state.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get hostsHostAudienceSenderActive;
+
+  /// Testing WhatsApp sender state.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification pending'**
+  String get hostsHostAudienceSenderTesting;
+
+  /// Degraded WhatsApp sender state.
+  ///
+  /// In en, this message translates to:
+  /// **'Degraded'**
+  String get hostsHostAudienceSenderDegraded;
+
+  /// Blocked WhatsApp sender state.
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnect required'**
+  String get hostsHostAudienceSenderNeedsAttention;
+
+  /// Contact attended event count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No check-ins yet} =1{1 event attended} other{{count} events attended}}'**
+  String hostsHostAudienceEventsAttended({required int count});
+
+  /// Contact last attended date.
+  ///
+  /// In en, this message translates to:
+  /// **'Last seen {date}'**
+  String hostsHostAudienceLastSeen({required String date});
+
+  /// Contact WhatsApp permission state.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp opted in'**
+  String get hostsHostAudienceWhatsappOptedIn;
+
+  /// Ambiguous contact identity label.
+  ///
+  /// In en, this message translates to:
+  /// **'Identity needs review'**
+  String get hostsHostAudienceIdentityNeedsReview;
+
+  /// Embedded signup platform limitation.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect WhatsApp from the Host web app. Once connected, the sender can be managed on any device.'**
+  String get hostsHostAudienceWebSignupOnly;
+
+  /// Campaign provider blocker.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp provider setup is incomplete'**
+  String get hostsHostAudienceBlockerProvider;
+
+  /// Campaign sender blocker.
+  ///
+  /// In en, this message translates to:
+  /// **'Sender verification is incomplete'**
+  String get hostsHostAudienceBlockerSender;
+
+  /// Campaign template blocker.
+  ///
+  /// In en, this message translates to:
+  /// **'The template is missing or no longer approved'**
+  String get hostsHostAudienceBlockerTemplate;
+
+  /// Campaign recipient blocker.
+  ///
+  /// In en, this message translates to:
+  /// **'No selected contacts are both verified and opted in'**
+  String get hostsHostAudienceBlockerNoRecipients;
+
+  /// Campaign coverage blocker.
+  ///
+  /// In en, this message translates to:
+  /// **'Audience history is still being reconciled'**
+  String get hostsHostAudienceBlockerCoverage;
+
+  /// Campaign size blocker.
+  ///
+  /// In en, this message translates to:
+  /// **'This first release supports up to 100 evaluated contacts per campaign'**
+  String get hostsHostAudienceBlockerTooLarge;
+
+  /// Campaign event blocker.
+  ///
+  /// In en, this message translates to:
+  /// **'The linked event or destination is unavailable'**
+  String get hostsHostAudienceBlockerEvent;
+
+  /// Campaign schedule blocker.
+  ///
+  /// In en, this message translates to:
+  /// **'The scheduled time has passed'**
+  String get hostsHostAudienceBlockerSchedule;
+
+  /// Campaign linked event picker title.
+  ///
+  /// In en, this message translates to:
+  /// **'Event invitation'**
+  String get hostsHostAudienceLinkedEvent;
+
+  /// Campaign event picker placeholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose an event'**
+  String get hostsHostAudienceChooseEvent;
+
+  /// Recipient-specific invitation link explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch creates a different private link for each eligible recipient so opens, registrations, referrals, and check-ins can be attributed safely.'**
+  String get hostsHostAudienceLinkedEventHelp;
+
+  /// Campaign invite destination field.
+  ///
+  /// In en, this message translates to:
+  /// **'Where the invitation opens'**
+  String get hostsHostAudienceInviteDestination;
+
+  /// Catch event page invitation destination.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch event page'**
+  String get hostsHostAudienceDestinationCatchPage;
+
+  /// Event runtime invitation destination.
+  ///
+  /// In en, this message translates to:
+  /// **'No-download event runtime'**
+  String get hostsHostAudienceDestinationRuntime;
+
+  /// External booking invitation destination.
+  ///
+  /// In en, this message translates to:
+  /// **'External booking site via Catch event page'**
+  String get hostsHostAudienceDestinationExternal;
+
+  /// Truthful external booking attribution limits.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch records the private-link open, then sends the guest to the external booking page. Registration is confirmed only when a supported provider returns the referral code or the guest later makes a phone-verified runtime claim tied to the roster. An ordinary re-import or manual check-in cannot prove which link caused the booking.'**
+  String get hostsHostAudienceExternalAttributionExplanation;
+
+  /// Catch registration and guest referral attribution explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch can attribute private-link opens and phone-verified web registration. If guests share their own Catch-generated link, their referred registrations and check-ins are counted separately.'**
+  String get hostsHostAudienceCatchAttributionExplanation;
+
+  /// Event staff section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Event staff access'**
+  String get hostsEventStaffTitle;
+
+  /// Least privilege event staff explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Give a trusted operator temporary access to the guest names, check-ins, and runtime identity claims for this event. They cannot edit the event, import guests, see your audience, send messages, connect providers, or view analytics.'**
+  String get hostsEventStaffSubtitle;
+
+  /// Add event staff action.
+  ///
+  /// In en, this message translates to:
+  /// **'Add event staff'**
+  String get hostsEventStaffAdd;
+
+  /// Copy operator workspace link.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy staff link'**
+  String get hostsEventStaffCopyLink;
+
+  /// Empty staff list title.
+  ///
+  /// In en, this message translates to:
+  /// **'No temporary staff access'**
+  String get hostsEventStaffEmptyTitle;
+
+  /// Empty staff list guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Add someone by the phone number they use to sign in to Catch Host. Access expires automatically.'**
+  String get hostsEventStaffEmptyMessage;
+
+  /// Masked event staff phone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone ending {digits}'**
+  String hostsEventStaffPhoneEnding({required String digits});
+
+  /// Event staff expiry.
+  ///
+  /// In en, this message translates to:
+  /// **'Access expires {date}'**
+  String hostsEventStaffExpires({required String date});
+
+  /// Revoke event staff access action.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoke'**
+  String get hostsEventStaffRevoke;
+
+  /// Revoke event staff dialog title.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoke event access?'**
+  String get hostsEventStaffRevokeTitle;
+
+  /// Revoke event staff dialog message.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} will immediately lose access to the roster and runtime claims for this event.'**
+  String hostsEventStaffRevokeMessage({required String name});
+
+  /// Staff workspace clipboard success.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff workspace link copied'**
+  String get hostsEventStaffLinkCopied;
+
+  /// Grant event staff sheet title.
+  ///
+  /// In en, this message translates to:
+  /// **'Add event staff'**
+  String get hostsEventStaffGrantTitle;
+
+  /// Grant event staff sheet guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'They must first sign in to Catch Host with this phone number. Access applies only to this event and expires automatically.'**
+  String get hostsEventStaffGrantSubtitle;
+
+  /// Grant event staff sheet action.
+  ///
+  /// In en, this message translates to:
+  /// **'Grant access'**
+  String get hostsEventStaffGrantAction;
+
+  /// Event staff phone field.
+  ///
+  /// In en, this message translates to:
+  /// **'Operator phone number'**
+  String get hostsEventStaffPhone;
+
+  /// Event staff phone validation.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the phone number used for Catch Host'**
+  String get hostsEventStaffPhoneRequired;
+
+  /// Event staff duration field.
+  ///
+  /// In en, this message translates to:
+  /// **'Access duration'**
+  String get hostsEventStaffAccessDuration;
+
+  /// Four hour staff grant option.
+  ///
+  /// In en, this message translates to:
+  /// **'4 hours'**
+  String get hostsEventStaffDurationFourHours;
+
+  /// Twelve hour staff grant option.
+  ///
+  /// In en, this message translates to:
+  /// **'12 hours'**
+  String get hostsEventStaffDurationTwelveHours;
+
+  /// One day staff grant option.
+  ///
+  /// In en, this message translates to:
+  /// **'1 day'**
+  String get hostsEventStaffDurationOneDay;
+
+  /// Seven day staff grant option.
+  ///
+  /// In en, this message translates to:
+  /// **'7 days'**
+  String get hostsEventStaffDurationSevenDays;
+
+  /// Active staff status.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get hostsEventStaffStatusActive;
+
+  /// Revoked staff status.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoked'**
+  String get hostsEventStaffStatusRevoked;
+
+  /// Expired staff status.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired'**
+  String get hostsEventStaffStatusExpired;
+
+  /// Restricted operator route title.
+  ///
+  /// In en, this message translates to:
+  /// **'Event operations'**
+  String get hostsEventOperatorTitle;
+
+  /// Cancelled event operator state title.
+  ///
+  /// In en, this message translates to:
+  /// **'This event was cancelled'**
+  String get hostsEventOperatorCancelledTitle;
+
+  /// Cancelled event operator state message.
+  ///
+  /// In en, this message translates to:
+  /// **'Its roster can no longer be changed from the staff workspace.'**
+  String get hostsEventOperatorCancelledMessage;
+
+  /// Operator access summary title.
+  ///
+  /// In en, this message translates to:
+  /// **'Restricted event access'**
+  String get hostsEventOperatorAccessTitle;
+
+  /// Operator access boundary explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'This workspace contains only the guest roster, check-in controls, and identity claims for this event.'**
+  String get hostsEventOperatorAccessSubtitle;
+
+  /// Manager role in operator workspace.
+  ///
+  /// In en, this message translates to:
+  /// **'Organizer manager'**
+  String get hostsEventOperatorRoleManager;
+
+  /// Staff role in operator workspace.
+  ///
+  /// In en, this message translates to:
+  /// **'Event staff'**
+  String get hostsEventOperatorRoleStaff;
+
+  /// Operator grant expiry badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Expires {date}'**
+  String hostsEventOperatorExpires({required String date});
+
+  /// Pending offline attendance title.
+  ///
+  /// In en, this message translates to:
+  /// **'Check-ins waiting to sync'**
+  String get hostsOperationalRosterOutboxPendingTitle;
+
+  /// Pending offline attendance count and idempotency explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 attendance change is saved on this device and will retry with the same operation ID.} other{{count} attendance changes are saved on this device and will retry with their original operation IDs.}}'**
+  String hostsOperationalRosterOutboxPendingBody({required int count});
+
+  /// Attendance conflict title.
+  ///
+  /// In en, this message translates to:
+  /// **'Some check-ins need review'**
+  String get hostsOperationalRosterOutboxReviewTitle;
+
+  /// Attendance conflict count and recovery guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 saved change could not be applied because the roster changed. Reload the roster, verify the guest, then discard the stale change.} other{{count} saved changes could not be applied because the roster changed. Reload the roster, verify the guests, then discard the stale changes.}}'**
+  String hostsOperationalRosterOutboxReviewBody({required int count});
+
+  /// Retry pending attendance changes.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry sync'**
+  String get hostsOperationalRosterOutboxRetry;
+
+  /// Discard attendance conflicts after review.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard stale changes'**
+  String get hostsOperationalRosterOutboxDiscard;
 }
 
 class _AppLocalizationsDelegate

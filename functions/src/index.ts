@@ -31,17 +31,30 @@ export {
   expireEventWaitlistOffers,
 } from "./events/waitlistOffers";
 export {
+  createAttendeeInviteLink,
   createEventInviteLink,
   disableEventInviteLink,
+  getEventInviteLinkToken,
   recordEventInviteLinkOpen,
+  recordEventShareIntent,
+  resolveEventInviteLanding,
 } from "./events/inviteLinks";
+export {onOrganizerContactEventEdgeInviteAttributed} from
+  "./events/eventInviteAttributionProjection";
 export {decideEventJoinRequest} from "./events/decideEventJoinRequest";
 export {markEventAttendance} from "./events/markEventAttendance";
 export {
   importEventAttendees,
   markEventAttendeeAttendance,
   registerPublicEvent,
+  setEventAttendeeAttendance,
 } from "./events/eventAttendees";
+export {
+  getEventOperatorAccess,
+  grantEventStaff,
+  listEventStaff,
+  revokeEventStaff,
+} from "./events/eventStaff";
 export {
   createEventRosterHandoff,
   ingestEventRosterWebhook,
@@ -117,6 +130,49 @@ export {
 } from "./organizers/manageOrganizerTeam";
 export {createOrganizerPost} from "./organizers/organizerPosts";
 export {getOrganizerCrmSummary} from "./organizers/organizerCrm";
+export {
+  exportOrganizerContacts,
+  getOrganizerContactDetail,
+  listOrganizerContacts,
+  mutateOrganizerContact,
+} from "./organizers/organizerContacts";
+export {
+  mergeOrganizerContacts,
+  unmergeOrganizerContacts,
+} from "./organizers/organizerContactMerges";
+export {
+  approveOrganizerCampaign,
+  cancelOrganizerCampaign,
+  getOrganizerCampaignReport,
+  previewOrganizerCampaign,
+  upsertOrganizerCampaign,
+} from "./organizers/organizerCampaigns";
+export {
+  dispatchOrganizerCampaign,
+  dispatchScheduledOrganizerCampaigns,
+} from "./organizers/organizerCampaignDispatcher";
+export {
+  completeOrganizerWhatsappConnection,
+  disconnectOrganizerWhatsappConnection,
+  getOrganizerMessagingSetup,
+  sendOrganizerWhatsappTest,
+  syncOrganizerWhatsappTemplates,
+} from "./organizers/organizerMessagingSetup";
+export {
+  connectOrganizerLumaProvider,
+  disconnectOrganizerProvider,
+  getOrganizerProviderSetup,
+  listOrganizerLumaEvents,
+  syncOrganizerProviderEvent,
+} from "./organizers/organizerProviderSetup";
+export {
+  onOrganizerMessagingWebhookEventCreated,
+  organizerWhatsappWebhook,
+} from "./organizers/organizerWhatsappWebhook";
+export {
+  onEventAttendeeAudienceProjected,
+  onOrganizerCommunicationPreferenceAudienceProjected,
+} from "./organizers/organizerAudienceProjection";
 export {
   adminDecideOrganizerClaim,
   requestOrganizerClaim,

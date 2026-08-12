@@ -75,6 +75,7 @@ export interface HostAnalyticsCallableResponse {
       hostImport: number;
       hostManual: number;
       webOtp: number;
+      providerSync: number;
     };
   }[];
   reviewSummary: {

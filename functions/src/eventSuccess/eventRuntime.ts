@@ -41,9 +41,10 @@ import {
 } from "../shared/generated/schemaValidators";
 import {
   eventOrganizerRef,
-  isEventOrganizerManager,
   requireEventOrganizer,
 } from "../shared/eventOrganizers";
+import {requireEventOperatorPermission} from
+  "../shared/eventOperatorAuthority";
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {
@@ -51,6 +52,8 @@ import {
   normalizeRosterPhone,
   onboardingDraftSeed,
 } from "../events/eventAttendees";
+import {resolveInviteAttributionToken} from "../events/inviteLinks";
+import {eventSuccessPrimitivesFor} from "./formatPrimitives";
 
 type RuntimeFieldId =
   EventRuntimeParticipantDocument["requiredFieldIds"][number];
@@ -71,10 +74,10 @@ const defaultDeps: EventRuntimeDeps = {
     admin.firestore.Timestamp.fromMillis(millis),
 };
 
-const COMPATIBILITY_MODULE_IDS = new Set([
-  "compatibility_questionnaire",
+const PREFERENCE_AWARE_MODULE_IDS = new Set([
   "first_hello_check_in",
   "guided_rotations",
+  "micro_pods",
   "wingman_requests",
 ]);
 
@@ -110,12 +113,20 @@ export async function getEventRuntimeBootstrapHandler(
     planSnap,
     "EventSuccessPlanDocument"
   ) : null;
-  const participant = participantSnap?.exists ?
+  let participant = participantSnap?.exists ?
     requireRuntimeParticipant(
       participantSnap,
       resolved.eventId,
       request.auth!.uid
     ) : null;
+  if (participant && participantRef) {
+    participant = await reconcileRuntimeParticipantRequirements({
+      participant,
+      participantRef,
+      requiredFieldIds: requiredRuntimeFieldIds(plan),
+      now: deps.timestamp(),
+    });
+  }
   let attendeeStatus: EventAttendeeDocument["status"] | null = null;
   if (participant?.eventAttendeeId) {
     const attendeeSnap = await db
@@ -135,6 +146,7 @@ export async function getEventRuntimeBootstrapHandler(
   return {
     event: publicRuntimeEventProjection(
       resolved.event,
+      resolved.eventId,
       payload.publicRuntimeId,
       plan
     ),
@@ -168,6 +180,11 @@ export async function claimEventRuntimeAccessHandler(
   const db = deps.firestore();
   await deps.checkRateLimit(db, uid, "claimEventRuntimeAccess");
   const resolved = await resolveRuntimeEvent(db, payload.publicRuntimeId);
+  const inviteAttribution = await resolveInviteAttributionToken({
+    db,
+    eventId: resolved.eventId,
+    inviteToken: payload.inviteToken,
+  });
   requireRuntimeTerms(resolved.event, payload.runtimeTermsVersion);
 
   const participantRef = db.collection("eventRuntimeParticipants")
@@ -240,6 +257,7 @@ export async function claimEventRuntimeAccessHandler(
         displayName: payload.displayName,
         phone,
         status: walkInPolicy === "autoCreate" ? "registered" : "invited",
+        inviteLinkId: inviteAttribution?.inviteLinkId ?? null,
         now,
       });
       tx.create(attendeeRef, attendee);
@@ -247,6 +265,10 @@ export async function claimEventRuntimeAccessHandler(
       tx.update(attendeeRef, {
         linkedUid: uid,
         linkedAt: attendee.linkedAt ?? now,
+        ...(attendee.inviteLinkId || !inviteAttribution ? {} : {
+          inviteLinkId: inviteAttribution.inviteLinkId,
+          inviteCapturedAt: now,
+        }),
         updatedAt: now,
       });
       attendee = {...attendee, linkedUid: uid};
@@ -365,7 +387,9 @@ export async function submitEventRuntimeProfileHandler(
       completedFieldIds
     );
     if (completedFieldIds.some((field) =>
-      isSensitiveRuntimeField(field)) && !payload.sensitiveDataTermsVersion) {
+      isSensitiveRuntimeField(field)) &&
+      !payload.sensitiveDataTermsVersion &&
+      !participant.consents.sensitiveDataTermsVersion) {
       throw new HttpsError(
         "failed-precondition",
         "Accept the sensitive-data notice before submitting these answers."
@@ -379,7 +403,8 @@ export async function submitEventRuntimeProfileHandler(
       accessStatus,
       consents: {
         runtimeTermsVersion: payload.runtimeTermsVersion,
-        sensitiveDataTermsVersion: payload.sensitiveDataTermsVersion ?? null,
+        sensitiveDataTermsVersion: payload.sensitiveDataTermsVersion ??
+          participant.consents.sensitiveDataTermsVersion,
         saveAsCatchPrefill: payload.saveAsCatchPrefill,
       },
       readyAt: accessStatus === "ready" ? participant.readyAt ?? now : null,
@@ -457,6 +482,8 @@ export async function checkInEventRuntimeHandler(
       status: "checkedIn",
       checkedInAt: now,
       checkedInBy: uid,
+      attendanceRevision: (attendee.attendanceRevision ?? 0) + 1,
+      preCheckInStatus: attendee.status,
       updatedAt: now,
     });
     tx.update(eventRef, {
@@ -497,12 +524,16 @@ export async function approveEventRuntimeClaimHandler(
     const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
     const organizerSnap = await tx.get(eventOrganizerRef(db, event));
     const organizer = requireEventOrganizer(organizerSnap, event);
-    if (!isEventOrganizerManager(organizer, event, hostUid)) {
-      throw new HttpsError(
-        "permission-denied",
-        "Only an organizer manager can review runtime claims."
-      );
-    }
+    await requireEventOperatorPermission({
+      db,
+      organizer,
+      event,
+      eventId: payload.eventId,
+      actorUid: hostUid,
+      permission: "reviewRuntimeClaims",
+      now: deps.timestamp(),
+      transaction: tx,
+    });
     const [participantSnap, claimSnap] = await Promise.all([
       tx.get(participantRef),
       tx.get(claimRef),
@@ -576,6 +607,8 @@ export async function approveEventRuntimeClaimHandler(
       linkedAt: attendee.linkedAt ?? now,
       status: attendee.status === "invited" ? "registered" : attendee.status,
       registeredAt: attendee.registeredAt ?? now,
+      attendanceRevision: attendee.attendanceRevision ?? 0,
+      preCheckInStatus: attendee.preCheckInStatus ?? null,
       updatedAt: now,
     });
     tx.update(participantRef, {
@@ -604,14 +637,24 @@ export function eventRuntimeParticipantId(
 }
 
 export function requiredRuntimeFieldIds(
+  _plan?: EventSuccessPlanDocument | null
+): RuntimeFieldId[] {
+  void _plan;
+  return ["displayName"];
+}
+
+/** Sensitive preference fields offered by this plan, but never required. */
+export function optionalRuntimeFieldIds(
+  event: EventDocument,
   plan: EventSuccessPlanDocument | null
 ): RuntimeFieldId[] {
-  const fields: RuntimeFieldId[] = ["displayName"];
-  if (plan?.selectedModuleIds.some((id) =>
-    COMPATIBILITY_MODULE_IDS.has(id))) {
-    fields.push("gender", "interestedInGenders");
-  }
-  return fields;
+  if (!plan?.selectedModuleIds.some((id) =>
+    PREFERENCE_AWARE_MODULE_IDS.has(id))) return [];
+  const policy = eventSuccessPrimitivesFor(event.eventFormat)
+    .compatibilityPolicy;
+  if (policy !== "mutualInterestOnly" &&
+      policy !== "socialCohortBalance") return [];
+  return ["gender", "interestedInGenders"];
 }
 
 export function completedRuntimeFieldIds(
@@ -708,11 +751,13 @@ function requireRuntimeParticipant(
 
 function publicRuntimeEventProjection(
   event: EventDocument,
+  eventId: string,
   publicRuntimeId: string,
   plan: EventSuccessPlanDocument | null
 ): GetEventRuntimeBootstrapCallableResponse["event"] {
   const customLabel = event.eventFormat.customActivityLabel?.trim();
   return {
+    eventId,
     publicRuntimeId,
     title: customLabel || activityTitle(event.eventFormat.activityKind),
     startTimeMillis: event.startTime.toMillis(),
@@ -720,8 +765,53 @@ function publicRuntimeEventProjection(
     locationName: event.meetingLocation.name || event.meetingPoint,
     runtimeTermsVersion: event.runtimeAccess!.termsVersion,
     moduleIds: plan?.selectedModuleIds ?? [],
+    requiredFieldIds: requiredRuntimeFieldIds(plan),
+    optionalFieldIds: optionalRuntimeFieldIds(event, plan),
     questionnaireConfig: plan?.questionnaireConfig ?? null,
   };
+}
+
+async function reconcileRuntimeParticipantRequirements(params: {
+  participant: EventRuntimeParticipantDocument;
+  participantRef: FirebaseFirestore.DocumentReference;
+  requiredFieldIds: RuntimeFieldId[];
+  now: FirebaseFirestore.Timestamp;
+}): Promise<EventRuntimeParticipantDocument> {
+  const {participant, participantRef, requiredFieldIds, now} = params;
+  const completedFieldIds = completedRuntimeFieldIds(
+    participant.runtimeProfile
+  );
+  const accessStatus = participant.accessStatus === "pendingApproval" ||
+      participant.accessStatus === "revoked" ||
+      participant.accessStatus === "optedOut" ?
+    participant.accessStatus :
+    runtimeAccessStatus(requiredFieldIds, completedFieldIds);
+  const unchanged = arraysEqual(
+    participant.requiredFieldIds,
+    requiredFieldIds
+  ) && arraysEqual(participant.completedFieldIds, completedFieldIds) &&
+    participant.accessStatus === accessStatus;
+  if (unchanged) return participant;
+  const readyAt = accessStatus === "ready" ? participant.readyAt ?? now : null;
+  await participantRef.update({
+    requiredFieldIds,
+    completedFieldIds,
+    accessStatus,
+    readyAt,
+    updatedAt: now,
+  });
+  return {
+    ...participant,
+    requiredFieldIds,
+    completedFieldIds,
+    accessStatus,
+    readyAt,
+    updatedAt: now,
+  };
+}
+
+function arraysEqual<T>(a: T[], b: T[]): boolean {
+  return a.length === b.length && a.every((value, index) => value === b[index]);
 }
 
 function activityTitle(
@@ -823,6 +913,7 @@ function runtimeAttendeeDocument(params: {
   displayName: string;
   phone: string;
   status: "invited" | "registered";
+  inviteLinkId: string | null;
   now: FirebaseFirestore.Timestamp;
 }): EventAttendeeDocument {
   return {
@@ -848,6 +939,10 @@ function runtimeAttendeeDocument(params: {
     cancelledAt: null,
     checkedInBy: null,
     linkedAt: params.uid ? params.now : null,
+    inviteLinkId: params.inviteLinkId,
+    inviteCapturedAt: params.inviteLinkId ? params.now : null,
+    attendanceRevision: 0,
+    preCheckInStatus: null,
   };
 }
 
@@ -899,6 +994,7 @@ function normalizeClaimPayload(data: unknown): unknown {
     "displayName",
     "runtimeTermsVersion",
     "attendeeToken",
+    "inviteToken",
   ]);
 }
 

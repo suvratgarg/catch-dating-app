@@ -103,6 +103,22 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
         linkedUid: "runner-1",
         phoneE164: "+919876543210",
       },
+      "organizerContacts/contact-1": {
+        organizerId: "club-1",
+        linkedUid: "runner-1",
+        identityState: "verified",
+      },
+      "organizerContactEventEdges/attendee-1": {
+        organizerId: "club-1",
+        contactId: "contact-1",
+        linkedUid: "runner-1",
+      },
+      "organizerContactIdentityLinks/evidence-uid": {
+        organizerId: "club-1",
+        contactId: "contact-1",
+        kind: "uid",
+        identityHash: "a".repeat(64),
+      },
       "eventCrossPathsConsents/event-1_runner-1": {
         eventId: "event-1",
         uid: "runner-1",
@@ -257,6 +273,29 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
     harness.updateWrites.some((write) =>
       write.path === "organizers/club-1" &&
       write.data.followerCount !== undefined
+    )
+  );
+  assert.ok(
+    harness.updateWrites.some((write) =>
+      write.path === "organizerContacts/contact-1" &&
+      write.data.linkedUid === null &&
+      write.data.whatsappStatus === "unknown"
+    )
+  );
+  assert.ok(
+    harness.updateWrites.some((write) =>
+      write.path === "organizerContactEventEdges/attendee-1" &&
+      write.data.linkedUid === null
+    )
+  );
+  assert.ok(
+    harness.deletedPublicDocs.includes(
+      "organizerContactIdentityLinks/evidence-uid"
+    )
+  );
+  assert.ok(
+    harness.deletedPublicDocs.includes(
+      `organizerContactIdentityClaims/ocic_${"a".repeat(48)}`
     )
   );
   assert.ok(
@@ -552,6 +591,7 @@ test("requestAccountDeletionHandler tolerates an already-removed Auth user",
 type FakeDocumentData = Record<string, unknown>;
 
 interface FakeDocumentReference {
+  id: string;
   path: string;
   collectionPath: string;
   docId: string;
@@ -593,6 +633,7 @@ function createAccountDeletionHarness(params: {
   ): FakeDocumentReference => {
     const path = `${collectionPath}/${docId}`;
     const ref = {
+      id: docId,
       path,
       collectionPath,
       docId,

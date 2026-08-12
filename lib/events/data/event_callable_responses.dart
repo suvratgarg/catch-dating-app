@@ -99,6 +99,7 @@ int? _callableInt(Object? value) => value is num ? value.toInt() : null;
 final class CreateEventInviteLinkCallableResponse {
   const CreateEventInviteLinkCallableResponse({
     required this.inviteLinkId,
+    required this.inviteToken,
     required this.eventId,
     required this.label,
     this.source,
@@ -107,12 +108,17 @@ final class CreateEventInviteLinkCallableResponse {
   factory CreateEventInviteLinkCallableResponse.fromCallableData(Object? data) {
     if (data case final Map<Object?, Object?> map) {
       final inviteLinkId = map['inviteLinkId'];
+      final inviteToken = map['inviteToken'];
       final eventId = map['eventId'];
       final label = map['label'];
       final source = map['source'];
-      if (inviteLinkId is String && eventId is String && label is String) {
+      if (inviteLinkId is String &&
+          inviteToken is String &&
+          eventId is String &&
+          label is String) {
         return CreateEventInviteLinkCallableResponse(
           inviteLinkId: inviteLinkId,
+          inviteToken: inviteToken,
           eventId: eventId,
           label: label,
           source: source is String ? source : null,
@@ -125,6 +131,7 @@ final class CreateEventInviteLinkCallableResponse {
   }
 
   final String inviteLinkId;
+  final String inviteToken;
   final String eventId;
   final String label;
   final String? source;

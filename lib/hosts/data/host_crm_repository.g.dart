@@ -130,3 +130,160 @@ final class HostCrmSummaryFamily extends $Family
   @override
   String toString() => r'hostCrmSummaryProvider';
 }
+
+@ProviderFor(hostAudience)
+final hostAudienceProvider = HostAudienceFamily._();
+
+final class HostAudienceProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<HostAudiencePage>,
+          HostAudiencePage,
+          FutureOr<HostAudiencePage>
+        >
+    with $FutureModifier<HostAudiencePage>, $FutureProvider<HostAudiencePage> {
+  HostAudienceProvider._({
+    required HostAudienceFamily super.from,
+    required (String, HostAudienceQuery) super.argument,
+  }) : super(
+         retry: null,
+         name: r'hostAudienceProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$hostAudienceHash();
+
+  @override
+  String toString() {
+    return r'hostAudienceProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<HostAudiencePage> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<HostAudiencePage> create(Ref ref) {
+    final argument = this.argument as (String, HostAudienceQuery);
+    return hostAudience(ref, argument.$1, argument.$2);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is HostAudienceProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$hostAudienceHash() => r'f895d84a108d214b9d0afe8f90bdbd95cf020489';
+
+final class HostAudienceFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<HostAudiencePage>,
+          (String, HostAudienceQuery)
+        > {
+  HostAudienceFamily._()
+    : super(
+        retry: null,
+        name: r'hostAudienceProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  HostAudienceProvider call(String organizerId, HostAudienceQuery query) =>
+      HostAudienceProvider._(argument: (organizerId, query), from: this);
+
+  @override
+  String toString() => r'hostAudienceProvider';
+}
+
+@ProviderFor(hostMessagingSetup)
+final hostMessagingSetupProvider = HostMessagingSetupFamily._();
+
+final class HostMessagingSetupProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<HostMessagingSetup>,
+          HostMessagingSetup,
+          FutureOr<HostMessagingSetup>
+        >
+    with
+        $FutureModifier<HostMessagingSetup>,
+        $FutureProvider<HostMessagingSetup> {
+  HostMessagingSetupProvider._({
+    required HostMessagingSetupFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'hostMessagingSetupProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$hostMessagingSetupHash();
+
+  @override
+  String toString() {
+    return r'hostMessagingSetupProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<HostMessagingSetup> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<HostMessagingSetup> create(Ref ref) {
+    final argument = this.argument as String;
+    return hostMessagingSetup(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is HostMessagingSetupProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$hostMessagingSetupHash() =>
+    r'46702bc3ef9b10def08a4dd457f55f59ff6a6aed';
+
+final class HostMessagingSetupFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<HostMessagingSetup>, String> {
+  HostMessagingSetupFamily._()
+    : super(
+        retry: null,
+        name: r'hostMessagingSetupProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  HostMessagingSetupProvider call(String organizerId) =>
+      HostMessagingSetupProvider._(argument: organizerId, from: this);
+
+  @override
+  String toString() => r'hostMessagingSetupProvider';
+}

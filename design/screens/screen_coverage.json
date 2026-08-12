@@ -1,7 +1,7 @@
 {
   "$schema": "./screen_coverage.schema.json",
   "version": 1,
-  "updated": "2026-08-10",
+  "updated": "2026-08-12",
   "generatedAgainst": "tool/ui_capture/route_inventory.json",
   "description": "Design screen coverage policy. Every route from the generated route inventory must be contracted, aliased to a canonical design surface, planned for a future screen contract, or explicitly excluded from baseline design parity.",
   "routes": [
@@ -233,6 +233,13 @@
       "priority": "P1",
       "reason": "Covered by screen.host.home as the dedicated Events branch of the Host lifecycle shell.",
       "screenId": "screen.host.home"
+    },
+    {
+      "routeId": "hostOperatorEventScreen",
+      "status": "alias",
+      "priority": "P1",
+      "canonicalRouteId": "hostAppEventManageScreen",
+      "reason": "Least-privilege staff variant of the canonical per-event Host roster workspace; it intentionally removes manager-only sections and actions."
     },
     {
       "routeId": "hostOrganizerScreen",

@@ -1,7 +1,7 @@
 {
   "$schema": "./state_matrix.schema.json",
   "version": 1,
-  "updated": "2026-08-11",
+  "updated": "2026-08-12",
   "requiredStateKinds": [
     "loading",
     "populated",
@@ -4887,7 +4887,7 @@
               "tests": [
                 "test/hosts/host_operations_screen_test.dart"
               ],
-              "notes": "Host Home separates HostHomeTab.today from HostHomeTab.events and mounts both through the production HostAppShell. Events implements the Host-v2 lifecycle workspace and is bounded at 14.74% mismatch / 18.63 meanDelta under HOST-V2-EVENTS-VISUAL-DRIFT-001 while the canonical mean-delta threshold remains 18. Today now uses a minute-refreshing countdown, event-identified cross-event waitlist tasks with exact-event routing, lifecycle-aware live run-of-show routing, and later-event rows while omitting unsupported task types; it remains open at 28.48% / 37.31 under HOST-V2-TODAY-FUNCTIONAL-PARITY-001.",
+              "notes": "Host Home separates HostHomeTab.today from HostHomeTab.events and mounts both through the production HostAppShell. Events implements the Host-v2 lifecycle workspace and, after the first-class Audience destination was added to Host navigation, is bounded at 14.93% mismatch / 19.05 meanDelta under HOST-V2-EVENTS-VISUAL-DRIFT-001 while the canonical mean-delta threshold remains 18. Today now uses a minute-refreshing countdown, event-identified cross-event waitlist tasks with exact-event routing, lifecycle-aware live run-of-show routing, and later-event rows while omitting unsupported task types; it remains open at 28.48% / 37.31 under HOST-V2-TODAY-FUNCTIONAL-PARITY-001.",
               "previewIds": [
                 "hostHomeRouteStates",
                 "hostHomeEventSectionStates",

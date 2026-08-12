@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/sync_organizer_provider_event_response.schema.json",
+  "title": "SyncOrganizerProviderEventCallableResponse",
+  "description": "Safe result of one provider roster reconciliation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["runId", "status", "pageCount", "receivedCount", "createdCount", "updatedCount", "skippedCount", "truncated", "replayed"],
+  "properties": {
+    "runId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "status": {"type": "string", "enum": ["completed", "partial", "failed"]},
+    "pageCount": {"type": "integer", "minimum": 0, "maximum": 10},
+    "receivedCount": {"type": "integer", "minimum": 0, "maximum": 250},
+    "createdCount": {"type": "integer", "minimum": 0, "maximum": 250},
+    "updatedCount": {"type": "integer", "minimum": 0, "maximum": 250},
+    "skippedCount": {"type": "integer", "minimum": 0, "maximum": 250},
+    "truncated": {"type": "boolean"},
+    "replayed": {"type": "boolean"}
+  }
+}

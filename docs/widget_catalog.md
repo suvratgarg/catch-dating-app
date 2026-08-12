@@ -1,7 +1,7 @@
 ---
 doc_id: widget_catalog
-version: 3.0.6
-updated: 2026-08-11
+version: 3.1.0
+updated: 2026-08-12
 owner: recursive_audit_loop
 status: active
 ---
@@ -1033,6 +1033,17 @@ Widgetbook callers.
 ---
 
 ## Event Success
+
+### Standalone Host Audience And Operations
+
+| Widget | File | Purpose |
+|---|---|---|
+| `HostAudiencePane` | `lib/hosts/presentation/host_operations/host_audience.dart:25` | Organizer-level Audience workspace embedded in the Host operations shell. Owns Overview, paginated People/search/fixed categories, person-detail controls/export/privacy, WhatsApp sender setup, campaign compose/preview/approval/dispatch/report, and explicit coverage/provider-gate states. It consumes `HostCrmRepository` through the controller and never reads CRM Firestore collections directly. |
+| `_HostAudienceContactSheet` | `lib/hosts/presentation/host_operations/host_audience.dart:944` | Manager-only contact detail sheet with operational event timeline, transparent traits, endpoint permission/suppression controls and privacy/export actions. It deliberately excludes private feedback, safety, dating and Event Success answers. |
+| `_HostCampaignReview` | `lib/hosts/presentation/host_operations/host_audience.dart:1059` | Campaign snapshot/report surface that keeps eligible, excluded, attempted, accepted, sent, delivered, read, failed and opted-out states distinct. It never labels a provider acceptance as delivery or a link open as a share. |
+| `HostEventOperatorScreen` | `lib/hosts/presentation/host_event_operator_screen.dart:18` | Restricted event-staff route. Resolves server-authorized event access and composes only the roster, absolute attendance and runtime-claim capabilities present in an unexpired grant; it has no Audience, provider, import, event-edit, campaign or organizer-settings navigation. |
+| `_HostProviderControl` | `lib/hosts/presentation/widgets/host_operational_roster_panel.dart:661` | Provider capability/status block inside the canonical roster panel. Shows Luma connection and manual refresh when available and exact configuration/export/sample/partner/manual limits for every other provider without implying universal sync. |
+| `_HostLumaConnectionSheet` | `lib/hosts/presentation/widgets/host_operational_roster_panel.dart:887` | Luma credential and external-event selection flow. API keys go only to callable requests, event choices come from the server, and the stored client state receives safe connection/mapping/capability projections rather than credentials. |
 
 ### StatefulWidget
 

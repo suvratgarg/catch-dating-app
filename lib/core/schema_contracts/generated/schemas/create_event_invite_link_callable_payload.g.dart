@@ -8,9 +8,10 @@ const schemaCreateEventInviteLinkCallablePayloadSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/callables/create_event_invite_link_payload.schema.json',
   'title': 'CreateEventInviteLinkCallablePayload',
-  'description': 'Callable payload accepted by createEventInviteLink. Hosts use this to create named share links such as Instagram bio, WhatsApp alumni, or venue partner.',
+  'description': 'Callable payload accepted by createEventInviteLink for Host channels, direct recipients, partners, promoters, or eligible attendee referrers.',
   'x-callable-aliases': <Object?>[
     'createEventInviteLink',
+    'createAttendeeInviteLink',
   ],
   'type': 'object',
   'additionalProperties': false,
@@ -36,6 +37,49 @@ const schemaCreateEventInviteLinkCallablePayloadSchema = <String, Object?>{
       ],
       'minLength': 1,
       'maxLength': 80,
+    },
+    'linkKind': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'hostChannel',
+        'directRecipient',
+        'attendeeReferrer',
+        'promoter',
+        'partner',
+      ],
+    },
+    'intendedRecipientContactId': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'campaignId': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'destinationKind': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'catchEvent',
+        'eventRuntime',
+        'externalBooking',
+        'marketingLanding',
+      ],
+    },
+    'attributionWindowDays': <String, Object?>{
+      'type': <Object?>[
+        'integer',
+        'null',
+      ],
+      'minimum': 1,
+      'maximum': 90,
     },
   },
 };

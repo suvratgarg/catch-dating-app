@@ -15,8 +15,15 @@ import {
   TextField,
 } from "../../shared/ui/primitives";
 import type {FormStatus as FormStatusModel} from "../../shared/forms/types";
+import {eventInviteTokenFromLocation} from "../../shared/eventInviteAttribution";
 
-export function PublicEventRegistration({eventId}: {eventId: string}) {
+export function PublicEventRegistration({
+  eventId,
+  inviteToken: inviteTokenOverride,
+}: {
+  eventId: string;
+  inviteToken?: string | null;
+}) {
   const reactId = useId();
   const recaptchaContainerId = `event-registration-recaptcha-${reactId.replace(/:/gu, "")}`;
   const verificationRef = useRef<PublicEventPhoneVerification | null>(null);
@@ -29,9 +36,9 @@ export function PublicEventRegistration({eventId}: {eventId: string}) {
   const [pending, setPending] = useState(false);
   const [status, setStatus] = useState<FormStatusModel>({message: "", tone: ""});
   const copy = eventDetailCopy.hero.webRegistration;
+  const inviteToken = inviteTokenOverride ?? eventInviteTokenFromLocation();
 
   useEffect(() => () => verificationRef.current?.clear(), []);
-
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (pending || stage === "success") return;
@@ -77,6 +84,7 @@ export function PublicEventRegistration({eventId}: {eventId: string}) {
           sms: smsUpdates,
           termsVersion: "organizer-updates-v1",
         },
+        inviteToken,
       });
       verificationRef.current?.clear();
       verificationRef.current = null;

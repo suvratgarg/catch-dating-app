@@ -102,10 +102,10 @@ export async function loadEventSuccessRoster(
       attendeeSnap,
       "EventAttendeeDocument"
     );
-    const gender = edge.runtimeProfile.gender;
+    const gender = edge.runtimeProfile.gender ?? undefined;
     const interests = edge.runtimeProfile.interestedInGenders;
     const status = runtimeRosterStatus(attendee, eventId, edge.uid);
-    if (!status || !gender || interests.length === 0) return;
+    if (!status) return;
     byUid.set(edge.uid, {
       uid: edge.uid,
       status,
@@ -194,9 +194,7 @@ export async function loadEventSuccessRosterParticipant(
     edge.eventId !== eventId ||
     edge.uid !== uid ||
     edge.accessStatus !== "ready" ||
-    !edge.eventAttendeeId ||
-    !edge.runtimeProfile.gender ||
-    edge.runtimeProfile.interestedInGenders.length === 0
+    !edge.eventAttendeeId
   ) return null;
   const attendeeSnap = await db.collection("eventAttendees")
     .doc(edge.eventAttendeeId)
@@ -211,15 +209,15 @@ export async function loadEventSuccessRosterParticipant(
   return {
     uid,
     status,
-    gender: edge.runtimeProfile.gender,
+    gender: edge.runtimeProfile.gender ?? undefined,
     interestedInGenders: edge.runtimeProfile.interestedInGenders,
     displayName: edge.runtimeProfile.displayName,
     cohortAtSignup: cohortFor(
-      edge.runtimeProfile.gender,
+      edge.runtimeProfile.gender ?? undefined,
       edge.runtimeProfile.interestedInGenders
     ),
     profile: {
-      gender: edge.runtimeProfile.gender,
+      gender: edge.runtimeProfile.gender ?? undefined,
       interestedInGenders: edge.runtimeProfile.interestedInGenders,
       displayName: edge.runtimeProfile.displayName,
       relationshipGoal: edge.runtimeProfile.relationshipGoal,
@@ -248,7 +246,8 @@ function cohortFor(gender: Gender | undefined, interests: Gender[]): string {
   if (gender === "nonBinary" || gender === "other") {
     return "nonBinaryOrOther";
   }
-  return "queerOrOpen";
+  if (gender !== undefined && interests.length > 0) return "queerOrOpen";
+  return "unclassified";
 }
 
 function normalizeRuntimeGender(value: unknown): Gender | undefined {

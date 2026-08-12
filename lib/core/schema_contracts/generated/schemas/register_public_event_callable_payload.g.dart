@@ -26,6 +26,15 @@ const schemaRegisterPublicEventCallablePayloadSchema = <String, Object?>{
       'minLength': 1,
       'maxLength': 120,
     },
+    'inviteToken': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 1,
+      'maxLength': 180,
+      'description': 'Legacy invite-link id or versioned opaque invitation bearer token.',
+    },
     'organizerUpdates': <String, Object?>{
       'description': 'Optional, explicit opt-in to organizer marketing updates. Absence never grants consent.',
       'type': 'object',

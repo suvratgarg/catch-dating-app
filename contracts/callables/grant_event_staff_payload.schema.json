@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/grant_event_staff_payload.schema.json",
+  "title": "GrantEventStaffCallablePayload",
+  "description": "Organizer-manager request to grant an existing phone-auth account expiring event-operator access.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["eventId", "phoneNumber", "expiresAtMillis"],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "phoneNumber": {"type": "string", "minLength": 8, "maxLength": 32},
+    "expiresAtMillis": {"type": "integer", "minimum": 0}
+  }
+}

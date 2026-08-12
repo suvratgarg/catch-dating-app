@@ -9,7 +9,7 @@ export const appCheckCallableOptions: CallableOptions = {
 export function appCheckCallableOptionsWithLimits(
   limits: Pick<
     CallableOptions,
-    "concurrency" | "maxInstances" | "timeoutSeconds"
+    "concurrency" | "maxInstances" | "memory" | "timeoutSeconds"
   >
 ): CallableOptions {
   return {
@@ -25,10 +25,15 @@ export function appCheckCallableOptionsWithLimits(
  * @return {CallableOptions} Callable options with App Check and secrets.
  */
 export function appCheckCallableOptionsWithSecrets(
-  secrets: NonNullable<CallableOptions["secrets"]>
+  secrets: NonNullable<CallableOptions["secrets"]>,
+  limits: Pick<
+    CallableOptions,
+    "concurrency" | "maxInstances" | "timeoutSeconds"
+  > = {}
 ): CallableOptions {
   return {
     ...appCheckCallableOptions,
+    ...limits,
     secrets,
   };
 }

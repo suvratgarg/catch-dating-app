@@ -2,7 +2,7 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/foundation.dart';
 
-enum HostClubTab { edit, insights, preview }
+enum HostClubTab { edit, audience, insights, preview }
 
 enum HostClubInsightsRangePreset { thirtyDays, ninetyDays, twelveMonths }
 

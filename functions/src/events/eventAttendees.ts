@@ -13,6 +13,10 @@ import {ImportEventAttendeesCallablePayload} from
   "../shared/generated/importEventAttendeesCallablePayload";
 import {MarkEventAttendeeAttendanceCallablePayload} from
   "../shared/generated/markEventAttendeeAttendanceCallablePayload";
+import {SetEventAttendeeAttendanceCallablePayload} from
+  "../shared/generated/setEventAttendeeAttendanceCallablePayload";
+import {SetEventAttendeeAttendanceCallableResponse} from
+  "../shared/generated/setEventAttendeeAttendanceCallableResponse";
 import {RegisterPublicEventCallablePayload} from
   "../shared/generated/registerPublicEventCallablePayload";
 import {RegisterPublicEventCallableResponse} from
@@ -21,6 +25,7 @@ import {
   validateImportEventAttendeesCallablePayload,
   validateMarkEventAttendeeAttendanceCallablePayload,
   validateRegisterPublicEventCallablePayload,
+  validateSetEventAttendeeAttendanceCallablePayload,
 } from "../shared/generated/schemaValidators";
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptions} from "../shared/callableOptions";
@@ -29,9 +34,14 @@ import {
   isEventOrganizerManager,
   requireEventOrganizer,
 } from "../shared/eventOrganizers";
+import {requireEventOperatorPermission} from
+  "../shared/eventOperatorAuthority";
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
+import {organizerCommunicationPreferenceId} from
+  "../shared/organizerCommunicationPreferences";
 import {eventPolicyFromEvent} from "./eventPolicy";
+import {resolveInviteAttributionToken} from "./inviteLinks";
 
 type ImportRow = ImportEventAttendeesCallablePayload["rows"][number];
 type ImportError = EventAttendeeImportDocument["errors"][number];
@@ -47,6 +57,8 @@ const defaultDeps: EventAttendeeDeps = {
   checkRateLimit,
   timestamp: () => admin.firestore.Timestamp.now(),
 };
+
+const attendanceReceiptRetentionMillis = 30 * 24 * 60 * 60 * 1000;
 
 export interface EventAttendeeImportResult {
   importId: string;
@@ -192,6 +204,10 @@ export async function importEventAttendeesForHost(
       cancelledAt: existing?.cancelledAt ?? null,
       checkedInBy: existing?.checkedInBy ?? null,
       linkedAt: existing?.linkedAt ?? null,
+      inviteLinkId: existing?.inviteLinkId ?? null,
+      inviteCapturedAt: existing?.inviteCapturedAt ?? null,
+      attendanceRevision: existing?.attendanceRevision ?? 0,
+      preCheckInStatus: existing?.preCheckInStatus ?? null,
     };
     batch.set(attendeeRef, document);
   }
@@ -256,12 +272,16 @@ export async function markEventAttendeeAttendanceHandler(
     }
     const organizerSnap = await tx.get(eventOrganizerRef(db, event));
     const organizer = requireEventOrganizer(organizerSnap, event);
-    if (!isEventOrganizerManager(organizer, event, hostUid)) {
-      throw new HttpsError(
-        "permission-denied",
-        "Only an organizer manager can mark attendance."
-      );
-    }
+    await requireEventOperatorPermission({
+      db,
+      organizer,
+      event,
+      eventId: payload.eventId,
+      actorUid: hostUid,
+      permission: "setAttendance",
+      now: deps.timestamp(),
+      transaction: tx,
+    });
     const attendeeSnap = await tx.get(attendeeRef);
     if (!attendeeSnap.exists) {
       throw new HttpsError("not-found", "Attendee not found.");
@@ -295,6 +315,158 @@ export async function markEventAttendeeAttendanceHandler(
 }
 
 /**
+ * Sets one attendee's desired attendance state without replaying a toggle.
+ * A client operation id is immutable, and stale revisions fail visibly.
+ */
+export async function setEventAttendeeAttendanceHandler(
+  request: CallableRequest<unknown>,
+  deps: EventAttendeeDeps = defaultDeps
+): Promise<SetEventAttendeeAttendanceCallableResponse> {
+  const hostUid = requireAuth(request);
+  const payload = validateCallableWithAjv<
+    SetEventAttendeeAttendanceCallablePayload
+  >(
+    request,
+    validateSetEventAttendeeAttendanceCallablePayload,
+    normalizeSetAttendancePayload
+  );
+  const db = deps.firestore();
+  await deps.checkRateLimit(db, hostUid, "setEventAttendeeAttendance");
+  const eventRef = db.collection("events").doc(payload.eventId);
+  const attendeeRef = db.collection("eventAttendees")
+    .doc(payload.attendeeId);
+  const receiptId = attendanceReceiptId({
+    eventId: payload.eventId,
+    actorUid: hostUid,
+    clientOperationId: payload.clientOperationId,
+  });
+  const receiptRef = db.collection("eventAttendeeAttendanceReceipts")
+    .doc(receiptId);
+  return db.runTransaction(async (tx) => {
+    const [eventSnap, receiptSnap] = await Promise.all([
+      tx.get(eventRef),
+      tx.get(receiptRef),
+    ]);
+    if (!eventSnap.exists) {
+      throw new HttpsError("not-found", "Event not found.");
+    }
+    const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
+    if (event.status === "cancelled") {
+      throw new HttpsError("failed-precondition", "This event is cancelled.");
+    }
+    const organizerSnap = await tx.get(eventOrganizerRef(db, event));
+    const organizer = requireEventOrganizer(organizerSnap, event);
+    await requireEventOperatorPermission({
+      db,
+      organizer,
+      event,
+      eventId: payload.eventId,
+      actorUid: hostUid,
+      permission: "setAttendance",
+      now: deps.timestamp(),
+      transaction: tx,
+    });
+    if (receiptSnap.exists) {
+      const receipt = receiptSnap.data() as {
+        eventId?: string;
+        attendeeId?: string;
+        desiredCheckedIn?: boolean;
+        acceptedRevision?: number;
+        changed?: boolean;
+      };
+      if (receipt.eventId !== payload.eventId ||
+          receipt.attendeeId !== payload.attendeeId ||
+          receipt.desiredCheckedIn !== payload.desiredCheckedIn ||
+          typeof receipt.acceptedRevision !== "number" ||
+          typeof receipt.changed !== "boolean") {
+        throw new HttpsError(
+          "failed-precondition",
+          "This attendance operation id was already used differently."
+        );
+      }
+      return {
+        attendeeId: payload.attendeeId,
+        checkedIn: receipt.desiredCheckedIn,
+        acceptedRevision: receipt.acceptedRevision,
+        replayed: true,
+        changed: receipt.changed,
+      };
+    }
+    const attendeeSnap = await tx.get(attendeeRef);
+    if (!attendeeSnap.exists) {
+      throw new HttpsError("not-found", "Attendee not found.");
+    }
+    const attendee = requireDoc<EventAttendeeDocument>(
+      attendeeSnap,
+      "EventAttendeeDocument"
+    );
+    if (attendee.eventId !== payload.eventId) {
+      throw new HttpsError(
+        "failed-precondition",
+        "This attendee does not belong to the event."
+      );
+    }
+    if (attendee.status === "cancelled") {
+      throw new HttpsError(
+        "failed-precondition",
+        "A cancelled attendee cannot be checked in."
+      );
+    }
+    const priorRevision = attendee.attendanceRevision ?? 0;
+    if (payload.expectedRevision !== priorRevision) {
+      throw new HttpsError(
+        "aborted",
+        "Attendance changed on another device. Current revision: " +
+          `${priorRevision}.`
+      );
+    }
+    const alreadyCheckedIn = attendee.status === "checkedIn";
+    const changed = alreadyCheckedIn !== payload.desiredCheckedIn;
+    const acceptedRevision = changed ? priorRevision + 1 : priorRevision;
+    const now = deps.timestamp();
+    if (changed) {
+      const restoredStatus = attendee.preCheckInStatus ?? "registered";
+      tx.update(attendeeRef, {
+        status: payload.desiredCheckedIn ? "checkedIn" : restoredStatus,
+        checkedInAt: payload.desiredCheckedIn ? now : null,
+        checkedInBy: payload.desiredCheckedIn ? hostUid : null,
+        attendanceRevision: acceptedRevision,
+        preCheckInStatus: payload.desiredCheckedIn ? attendee.status : null,
+        updatedAt: now,
+      });
+      tx.update(eventRef, {
+        checkedInCount: admin.firestore.FieldValue.increment(
+          payload.desiredCheckedIn ? 1 : -1
+        ),
+        updatedAt: now,
+      });
+    }
+    tx.create(receiptRef, {
+      eventId: payload.eventId,
+      organizerId: event.organizerId ?? event.clubId,
+      attendeeId: payload.attendeeId,
+      actorUid: hostUid,
+      clientOperationId: payload.clientOperationId,
+      desiredCheckedIn: payload.desiredCheckedIn,
+      priorRevision,
+      acceptedRevision,
+      changed,
+      createdAt: now,
+      expiresAt: admin.firestore.Timestamp.fromMillis(
+        now.toMillis() + attendanceReceiptRetentionMillis
+      ),
+    });
+    return {
+      attendeeId: payload.attendeeId,
+      checkedIn: payload.desiredCheckedIn,
+      acceptedRevision,
+      replayed: false,
+      changed,
+    };
+  });
+}
+
+/**
  * Registers a phone-authenticated website visitor without requiring the
  * Consumer onboarding/profile contract. A matching imported phone row is
  * linked in place, so the Host never sees duplicate operational identities.
@@ -322,6 +494,11 @@ export async function registerPublicEventHandler(
 
   const db = deps.firestore();
   await deps.checkRateLimit(db, uid, "registerPublicEvent");
+  const inviteAttribution = await resolveInviteAttributionToken({
+    db,
+    eventId: payload.eventId,
+    inviteToken: payload.inviteToken,
+  });
   const eventRef = db.collection("events").doc(payload.eventId);
   const attendeeId = eventAttendeeId(payload.eventId, `phone:${phone}`);
   const attendeeRef = db.collection("eventAttendees").doc(attendeeId);
@@ -412,6 +589,12 @@ export async function registerPublicEventHandler(
       cancelledAt: null,
       checkedInBy: existing?.checkedInBy ?? null,
       linkedAt: existing?.linkedAt ?? now,
+      inviteLinkId: existing?.inviteLinkId ??
+        inviteAttribution?.inviteLinkId ?? null,
+      inviteCapturedAt: existing?.inviteCapturedAt ??
+        (inviteAttribution ? now : null),
+      attendanceRevision: existing?.attendanceRevision ?? 0,
+      preCheckInStatus: existing?.preCheckInStatus ?? null,
     };
     tx.set(attendeeRef, document);
     if (!onboardingDraftSnap.exists) {
@@ -498,13 +681,6 @@ export function mergeOrganizerCommunicationPreference(params: {
     createdAt: params.existing?.createdAt ?? params.now,
     updatedAt: params.now,
   };
-}
-
-export function organizerCommunicationPreferenceId(
-  organizerId: string,
-  uid: string
-): string {
-  return `orgpref_${sha256(`${organizerId}|${uid}`).slice(0, 48)}`;
 }
 
 function splitSupportedPhone(phoneE164: string): {
@@ -740,12 +916,33 @@ function normalizeAttendancePayload(data: unknown): unknown {
   return normalized;
 }
 
+function normalizeSetAttendancePayload(data: unknown): unknown {
+  const normalized = normalizeAttendancePayload(data);
+  if (!normalized || typeof normalized !== "object" ||
+      Array.isArray(normalized)) return normalized;
+  const payload = {...normalized as Record<string, unknown>};
+  if (typeof payload.clientOperationId === "string") {
+    payload.clientOperationId = payload.clientOperationId.trim();
+  }
+  return payload;
+}
+
+export function attendanceReceiptId(params: {
+  eventId: string;
+  actorUid: string;
+  clientOperationId: string;
+}): string {
+  return `ear_${sha256(
+    `${params.eventId}|${params.actorUid}|${params.clientOperationId}`
+  ).slice(0, 48)}`;
+}
+
 function normalizePublicRegistrationPayload(data: unknown): unknown {
   if (typeof data !== "object" || data === null || Array.isArray(data)) {
     return data;
   }
   const normalized = {...data} as Record<string, unknown>;
-  for (const field of ["eventId", "displayName"]) {
+  for (const field of ["eventId", "displayName", "inviteToken"]) {
     if (typeof normalized[field] === "string") {
       normalized[field] = normalized[field].trim().replace(/\s+/g, " ");
     }
@@ -803,6 +1000,11 @@ export const importEventAttendees = onCall(
 export const markEventAttendeeAttendance = onCall(
   appCheckCallableOptions,
   (request) => markEventAttendeeAttendanceHandler(request)
+);
+
+export const setEventAttendeeAttendance = onCall(
+  appCheckCallableOptions,
+  (request) => setEventAttendeeAttendanceHandler(request)
 );
 
 export const registerPublicEvent = onCall(

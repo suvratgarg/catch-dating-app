@@ -28,6 +28,24 @@ import {
   organizerTeamMembershipDocumentSchema,
   organizerFollowDocumentSchema,
   organizerCommunicationPreferenceDocumentSchema,
+  organizerContactDocumentSchema,
+  organizerContactIdentityLinkDocumentSchema,
+  organizerContactIdentityClaimDocumentSchema,
+  organizerContactEventEdgeDocumentSchema,
+  organizerContactTraitDocumentSchema,
+  organizerAudienceSummaryDocumentSchema,
+  organizerAudienceProjectionReceiptDocumentSchema,
+  organizerContactMergeReceiptDocumentSchema,
+  organizerSenderConnectionDocumentSchema,
+  organizerProviderConnectionDocumentSchema,
+  externalEventMappingDocumentSchema,
+  providerSyncRunDocumentSchema,
+  organizerMessageTemplateDocumentSchema,
+  organizerContactChannelStateDocumentSchema,
+  organizerCampaignDocumentSchema,
+  organizerCampaignRecipientDocumentSchema,
+  organizerCampaignWebhookReceiptDocumentSchema,
+  organizerMessagingWebhookEventDocumentSchema,
   organizerClaimRequestDocumentSchema,
   organizerScheduleLockDocumentSchema,
   clubPostDocumentSchema,
@@ -38,8 +56,14 @@ import {
   externalEventDocumentSchema,
   eventPrivateAccessDocumentSchema,
   eventInviteLinkDocumentSchema,
+  eventInviteLinkSecretDocumentSchema,
+  eventInviteTouchDocumentSchema,
+  eventShareIntentDocumentSchema,
+  eventInviteAttributionDocumentSchema,
   eventParticipationDocumentSchema,
   eventAttendeeDocumentSchema,
+  eventStaffGrantDocumentSchema,
+  eventAttendeeAttendanceReceiptDocumentSchema,
   eventAttendeeImportDocumentSchema,
   eventRosterHandoffDocumentSchema,
   eventRuntimeParticipantDocumentSchema,
@@ -166,11 +190,37 @@ import {
   createEventInviteLinkCallablePayloadSchema,
   disableEventInviteLinkCallablePayloadSchema,
   recordEventInviteLinkOpenCallablePayloadSchema,
+  resolveEventInviteLandingCallablePayloadSchema,
+  resolveEventInviteLandingCallableResponseSchema,
+  getEventInviteLinkTokenCallablePayloadSchema,
+  recordEventShareIntentCallablePayloadSchema,
+  upsertOrganizerCampaignCallablePayloadSchema,
+  organizerCampaignActionCallablePayloadSchema,
+  completeOrganizerWhatsappConnectionCallablePayloadSchema,
+  organizerSenderConnectionActionCallablePayloadSchema,
+  sendOrganizerWhatsappTestCallablePayloadSchema,
+  organizerCampaignCallableResponseSchema,
+  organizerMessagingSetupCallableResponseSchema,
+  getOrganizerProviderSetupCallablePayloadSchema,
+  connectOrganizerLumaProviderCallablePayloadSchema,
+  listOrganizerLumaEventsCallablePayloadSchema,
+  syncOrganizerProviderEventCallablePayloadSchema,
+  disconnectOrganizerProviderCallablePayloadSchema,
+  organizerProviderSetupCallableResponseSchema,
+  listOrganizerLumaEventsCallableResponseSchema,
+  syncOrganizerProviderEventCallableResponseSchema,
   recordOrganizerAnalyticsEventCallablePayloadSchema,
   recordOrganizerAnalyticsEventCallableResponseSchema,
   markEventAttendanceCallablePayloadSchema,
   importEventAttendeesCallablePayloadSchema,
   markEventAttendeeAttendanceCallablePayloadSchema,
+  setEventAttendeeAttendanceCallablePayloadSchema,
+  setEventAttendeeAttendanceCallableResponseSchema,
+  eventOperatorAccessCallablePayloadSchema,
+  eventOperatorAccessCallableResponseSchema,
+  grantEventStaffCallablePayloadSchema,
+  revokeEventStaffCallablePayloadSchema,
+  eventStaffListCallableResponseSchema,
   registerPublicEventCallablePayloadSchema,
   registerPublicEventCallableResponseSchema,
   getEventRuntimeBootstrapCallablePayloadSchema,
@@ -187,6 +237,17 @@ import {
   createEventRosterHandoffCallableResponseSchema,
   getOrganizerCrmSummaryCallablePayloadSchema,
   getOrganizerCrmSummaryCallableResponseSchema,
+  listOrganizerContactsCallablePayloadSchema,
+  listOrganizerContactsCallableResponseSchema,
+  getOrganizerContactDetailCallablePayloadSchema,
+  getOrganizerContactDetailCallableResponseSchema,
+  mutateOrganizerContactCallablePayloadSchema,
+  mutateOrganizerContactCallableResponseSchema,
+  exportOrganizerContactsCallablePayloadSchema,
+  exportOrganizerContactsCallableResponseSchema,
+  mergeOrganizerContactsCallablePayloadSchema,
+  unmergeOrganizerContactsCallablePayloadSchema,
+  mutateOrganizerContactMergeCallableResponseSchema,
   eventJoinRequestDecisionCallablePayloadSchema,
   overrideEventSuccessRotationsCallablePayloadSchema,
   overrideEventSuccessGroupsCallablePayloadSchema,
@@ -310,6 +371,24 @@ export const validateOrganizerPostDocument = ajv.compile(organizerPostDocumentSc
 export const validateOrganizerTeamMembershipDocument = ajv.compile(organizerTeamMembershipDocumentSchema);
 export const validateOrganizerFollowDocument = ajv.compile(organizerFollowDocumentSchema);
 export const validateOrganizerCommunicationPreferenceDocument = ajv.compile(organizerCommunicationPreferenceDocumentSchema);
+export const validateOrganizerContactDocument = ajv.compile(organizerContactDocumentSchema);
+export const validateOrganizerContactIdentityLinkDocument = ajv.compile(organizerContactIdentityLinkDocumentSchema);
+export const validateOrganizerContactIdentityClaimDocument = ajv.compile(organizerContactIdentityClaimDocumentSchema);
+export const validateOrganizerContactEventEdgeDocument = ajv.compile(organizerContactEventEdgeDocumentSchema);
+export const validateOrganizerContactTraitDocument = ajv.compile(organizerContactTraitDocumentSchema);
+export const validateOrganizerAudienceSummaryDocument = ajv.compile(organizerAudienceSummaryDocumentSchema);
+export const validateOrganizerAudienceProjectionReceiptDocument = ajv.compile(organizerAudienceProjectionReceiptDocumentSchema);
+export const validateOrganizerContactMergeReceiptDocument = ajv.compile(organizerContactMergeReceiptDocumentSchema);
+export const validateOrganizerSenderConnectionDocument = ajv.compile(organizerSenderConnectionDocumentSchema);
+export const validateOrganizerProviderConnectionDocument = ajv.compile(organizerProviderConnectionDocumentSchema);
+export const validateExternalEventMappingDocument = ajv.compile(externalEventMappingDocumentSchema);
+export const validateProviderSyncRunDocument = ajv.compile(providerSyncRunDocumentSchema);
+export const validateOrganizerMessageTemplateDocument = ajv.compile(organizerMessageTemplateDocumentSchema);
+export const validateOrganizerContactChannelStateDocument = ajv.compile(organizerContactChannelStateDocumentSchema);
+export const validateOrganizerCampaignDocument = ajv.compile(organizerCampaignDocumentSchema);
+export const validateOrganizerCampaignRecipientDocument = ajv.compile(organizerCampaignRecipientDocumentSchema);
+export const validateOrganizerCampaignWebhookReceiptDocument = ajv.compile(organizerCampaignWebhookReceiptDocumentSchema);
+export const validateOrganizerMessagingWebhookEventDocument = ajv.compile(organizerMessagingWebhookEventDocumentSchema);
 export const validateOrganizerClaimRequestDocument = ajv.compile(organizerClaimRequestDocumentSchema);
 export const validateOrganizerScheduleLockDocument = ajv.compile(organizerScheduleLockDocumentSchema);
 export const validateClubPostDocument = ajv.compile(clubPostDocumentSchema);
@@ -320,8 +399,14 @@ export const validateEventDocument = ajv.compile(eventDocumentSchema);
 export const validateExternalEventDocument = ajv.compile(externalEventDocumentSchema);
 export const validateEventPrivateAccessDocument = ajv.compile(eventPrivateAccessDocumentSchema);
 export const validateEventInviteLinkDocument = ajv.compile(eventInviteLinkDocumentSchema);
+export const validateEventInviteLinkSecretDocument = ajv.compile(eventInviteLinkSecretDocumentSchema);
+export const validateEventInviteTouchDocument = ajv.compile(eventInviteTouchDocumentSchema);
+export const validateEventShareIntentDocument = ajv.compile(eventShareIntentDocumentSchema);
+export const validateEventInviteAttributionDocument = ajv.compile(eventInviteAttributionDocumentSchema);
 export const validateEventParticipationDocument = ajv.compile(eventParticipationDocumentSchema);
 export const validateEventAttendeeDocument = ajv.compile(eventAttendeeDocumentSchema);
+export const validateEventStaffGrantDocument = ajv.compile(eventStaffGrantDocumentSchema);
+export const validateEventAttendeeAttendanceReceiptDocument = ajv.compile(eventAttendeeAttendanceReceiptDocumentSchema);
 export const validateEventAttendeeImportDocument = ajv.compile(eventAttendeeImportDocumentSchema);
 export const validateEventRosterHandoffDocument = ajv.compile(eventRosterHandoffDocumentSchema);
 export const validateEventRuntimeParticipantDocument = ajv.compile(eventRuntimeParticipantDocumentSchema);
@@ -448,11 +533,37 @@ export const validateCreateEventWaitlistOffersCallablePayload = ajv.compile(crea
 export const validateCreateEventInviteLinkCallablePayload = ajv.compile(createEventInviteLinkCallablePayloadSchema);
 export const validateDisableEventInviteLinkCallablePayload = ajv.compile(disableEventInviteLinkCallablePayloadSchema);
 export const validateRecordEventInviteLinkOpenCallablePayload = ajv.compile(recordEventInviteLinkOpenCallablePayloadSchema);
+export const validateResolveEventInviteLandingCallablePayload = ajv.compile(resolveEventInviteLandingCallablePayloadSchema);
+export const validateResolveEventInviteLandingCallableResponse = ajv.compile(resolveEventInviteLandingCallableResponseSchema);
+export const validateGetEventInviteLinkTokenCallablePayload = ajv.compile(getEventInviteLinkTokenCallablePayloadSchema);
+export const validateRecordEventShareIntentCallablePayload = ajv.compile(recordEventShareIntentCallablePayloadSchema);
+export const validateUpsertOrganizerCampaignCallablePayload = ajv.compile(upsertOrganizerCampaignCallablePayloadSchema);
+export const validateOrganizerCampaignActionCallablePayload = ajv.compile(organizerCampaignActionCallablePayloadSchema);
+export const validateCompleteOrganizerWhatsappConnectionCallablePayload = ajv.compile(completeOrganizerWhatsappConnectionCallablePayloadSchema);
+export const validateOrganizerSenderConnectionActionCallablePayload = ajv.compile(organizerSenderConnectionActionCallablePayloadSchema);
+export const validateSendOrganizerWhatsappTestCallablePayload = ajv.compile(sendOrganizerWhatsappTestCallablePayloadSchema);
+export const validateOrganizerCampaignCallableResponse = ajv.compile(organizerCampaignCallableResponseSchema);
+export const validateOrganizerMessagingSetupCallableResponse = ajv.compile(organizerMessagingSetupCallableResponseSchema);
+export const validateGetOrganizerProviderSetupCallablePayload = ajv.compile(getOrganizerProviderSetupCallablePayloadSchema);
+export const validateConnectOrganizerLumaProviderCallablePayload = ajv.compile(connectOrganizerLumaProviderCallablePayloadSchema);
+export const validateListOrganizerLumaEventsCallablePayload = ajv.compile(listOrganizerLumaEventsCallablePayloadSchema);
+export const validateSyncOrganizerProviderEventCallablePayload = ajv.compile(syncOrganizerProviderEventCallablePayloadSchema);
+export const validateDisconnectOrganizerProviderCallablePayload = ajv.compile(disconnectOrganizerProviderCallablePayloadSchema);
+export const validateOrganizerProviderSetupCallableResponse = ajv.compile(organizerProviderSetupCallableResponseSchema);
+export const validateListOrganizerLumaEventsCallableResponse = ajv.compile(listOrganizerLumaEventsCallableResponseSchema);
+export const validateSyncOrganizerProviderEventCallableResponse = ajv.compile(syncOrganizerProviderEventCallableResponseSchema);
 export const validateRecordOrganizerAnalyticsEventCallablePayload = ajv.compile(recordOrganizerAnalyticsEventCallablePayloadSchema);
 export const validateRecordOrganizerAnalyticsEventCallableResponse = ajv.compile(recordOrganizerAnalyticsEventCallableResponseSchema);
 export const validateMarkEventAttendanceCallablePayload = ajv.compile(markEventAttendanceCallablePayloadSchema);
 export const validateImportEventAttendeesCallablePayload = ajv.compile(importEventAttendeesCallablePayloadSchema);
 export const validateMarkEventAttendeeAttendanceCallablePayload = ajv.compile(markEventAttendeeAttendanceCallablePayloadSchema);
+export const validateSetEventAttendeeAttendanceCallablePayload = ajv.compile(setEventAttendeeAttendanceCallablePayloadSchema);
+export const validateSetEventAttendeeAttendanceCallableResponse = ajv.compile(setEventAttendeeAttendanceCallableResponseSchema);
+export const validateEventOperatorAccessCallablePayload = ajv.compile(eventOperatorAccessCallablePayloadSchema);
+export const validateEventOperatorAccessCallableResponse = ajv.compile(eventOperatorAccessCallableResponseSchema);
+export const validateGrantEventStaffCallablePayload = ajv.compile(grantEventStaffCallablePayloadSchema);
+export const validateRevokeEventStaffCallablePayload = ajv.compile(revokeEventStaffCallablePayloadSchema);
+export const validateEventStaffListCallableResponse = ajv.compile(eventStaffListCallableResponseSchema);
 export const validateRegisterPublicEventCallablePayload = ajv.compile(registerPublicEventCallablePayloadSchema);
 export const validateRegisterPublicEventCallableResponse = ajv.compile(registerPublicEventCallableResponseSchema);
 export const validateGetEventRuntimeBootstrapCallablePayload = ajv.compile(getEventRuntimeBootstrapCallablePayloadSchema);
@@ -469,6 +580,17 @@ export const validateCreateEventRosterHandoffCallablePayload = ajv.compile(creat
 export const validateCreateEventRosterHandoffCallableResponse = ajv.compile(createEventRosterHandoffCallableResponseSchema);
 export const validateGetOrganizerCrmSummaryCallablePayload = ajv.compile(getOrganizerCrmSummaryCallablePayloadSchema);
 export const validateGetOrganizerCrmSummaryCallableResponse = ajv.compile(getOrganizerCrmSummaryCallableResponseSchema);
+export const validateListOrganizerContactsCallablePayload = ajv.compile(listOrganizerContactsCallablePayloadSchema);
+export const validateListOrganizerContactsCallableResponse = ajv.compile(listOrganizerContactsCallableResponseSchema);
+export const validateGetOrganizerContactDetailCallablePayload = ajv.compile(getOrganizerContactDetailCallablePayloadSchema);
+export const validateGetOrganizerContactDetailCallableResponse = ajv.compile(getOrganizerContactDetailCallableResponseSchema);
+export const validateMutateOrganizerContactCallablePayload = ajv.compile(mutateOrganizerContactCallablePayloadSchema);
+export const validateMutateOrganizerContactCallableResponse = ajv.compile(mutateOrganizerContactCallableResponseSchema);
+export const validateExportOrganizerContactsCallablePayload = ajv.compile(exportOrganizerContactsCallablePayloadSchema);
+export const validateExportOrganizerContactsCallableResponse = ajv.compile(exportOrganizerContactsCallableResponseSchema);
+export const validateMergeOrganizerContactsCallablePayload = ajv.compile(mergeOrganizerContactsCallablePayloadSchema);
+export const validateUnmergeOrganizerContactsCallablePayload = ajv.compile(unmergeOrganizerContactsCallablePayloadSchema);
+export const validateMutateOrganizerContactMergeCallableResponse = ajv.compile(mutateOrganizerContactMergeCallableResponseSchema);
 export const validateEventJoinRequestDecisionCallablePayload = ajv.compile(eventJoinRequestDecisionCallablePayloadSchema);
 export const validateOverrideEventSuccessRotationsCallablePayload = ajv.compile(overrideEventSuccessRotationsCallablePayloadSchema);
 export const validateOverrideEventSuccessGroupsCallablePayload = ajv.compile(overrideEventSuccessGroupsCallablePayloadSchema);

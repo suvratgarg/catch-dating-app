@@ -10,6 +10,7 @@ import {
   completedRuntimeFieldIds,
   eventRuntimeParticipantId,
   getEventRuntimeBootstrapHandler,
+  optionalRuntimeFieldIds,
   requiredRuntimeFieldIds,
   submitEventRuntimeProfileHandler,
 } from "./eventRuntime";
@@ -23,6 +24,11 @@ class FakeDocRef {
   }
   async get(): Promise<FakeSnapshot> {
     return new FakeSnapshot(this.firestore, this.path);
+  }
+  async update(data: FakeData): Promise<void> {
+    const current = this.firestore.get(this.path);
+    if (!current) throw new Error(`Document missing: ${this.path}`);
+    this.firestore.set(this.path, {...current, ...data});
   }
 }
 
@@ -303,11 +309,23 @@ function code(error: unknown, expected: string): boolean {
   return error instanceof HttpsError && error.code === expected;
 }
 
-test("plan-derived intake asks only for fields active modules need", () => {
+test("runtime entry requires only a name and offers preference fields", () => {
   assert.deepEqual(requiredRuntimeFieldIds(null), ["displayName"]);
   assert.deepEqual(requiredRuntimeFieldIds({
     selectedModuleIds: ["first_hello_check_in"],
-  } as never), ["displayName", "gender", "interestedInGenders"]);
+  } as never), ["displayName"]);
+  assert.deepEqual(optionalRuntimeFieldIds(
+    event() as never,
+    {selectedModuleIds: ["first_hello_check_in"]} as never
+  ), ["gender", "interestedInGenders"]);
+  assert.deepEqual(optionalRuntimeFieldIds(
+    event({eventFormat: {
+      version: 1,
+      activityKind: "pubQuiz",
+      interactionModel: "teamRotations",
+    }}) as never,
+    {selectedModuleIds: ["first_hello_check_in"]} as never
+  ), []);
   assert.deepEqual(completedRuntimeFieldIds({
     displayName: "Asha",
     gender: "woman",
@@ -331,6 +349,7 @@ test("bootstrap returns bounded event and own state", async () => {
     {publicRuntimeId: "runtime_123456789012345678901234"}
   ), h.deps);
   assert.deepEqual(result.event, {
+    eventId: "event-1",
     publicRuntimeId: "runtime_123456789012345678901234",
     title: "Wednesday Social",
     startTimeMillis: Date.parse("2026-08-11T12:00:00.000Z"),
@@ -338,6 +357,8 @@ test("bootstrap returns bounded event and own state", async () => {
     locationName: "The Courtyard",
     runtimeTermsVersion: "event-runtime-v1",
     moduleIds: [],
+    requiredFieldIds: ["displayName"],
+    optionalFieldIds: [],
     questionnaireConfig: null,
   });
   assert.equal(result.participant?.attendanceStatus, "checkedIn");
@@ -364,13 +385,9 @@ test("verified phone claims the matching imported attendee", async () => {
     displayName: "  Asha   Shah ",
     runtimeTermsVersion: "event-runtime-v1",
   }), h.deps);
-  assert.equal(result.status, "needsInput");
+  assert.equal(result.status, "ready");
   assert.equal(result.attendeeId, attendeeId);
-  assert.deepEqual(result.requiredFieldIds, [
-    "displayName",
-    "gender",
-    "interestedInGenders",
-  ]);
+  assert.deepEqual(result.requiredFieldIds, ["displayName"]);
   assert.equal(h.firestore.get(`eventAttendees/${attendeeId}`)?.linkedUid,
     "runner-1");
   assert.equal(h.firestore.get("users/runner-1"), undefined);
@@ -452,6 +469,35 @@ test("profile submission requires sensitive consent and seeds only a draft",
     assert.equal(draft?.gender, "woman");
     assert.equal(h.firestore.get("users/runner-1"), undefined);
   });
+
+test("bootstrap upgrades legacy demographic-gated participants", async () => {
+  const h = harness({
+    "events/event-1": event(),
+    "eventSuccessPlans/event-1": {
+      selectedModuleIds: ["first_hello_check_in"],
+    },
+    "eventRuntimeParticipants/event-1_runner-1": participant({
+      accessStatus: "needsInput",
+      requiredFieldIds: ["displayName", "gender", "interestedInGenders"],
+      completedFieldIds: ["displayName"],
+      readyAt: null,
+    }),
+    "eventAttendees/attendee-1": attendee({linkedUid: "runner-1"}),
+  });
+  const result = await getEventRuntimeBootstrapHandler(request(
+    "runner-1",
+    {publicRuntimeId: "runtime_123456789012345678901234"}
+  ), h.deps);
+  assert.equal(result.participant?.accessStatus, "ready");
+  assert.deepEqual(result.participant?.requiredFieldIds, ["displayName"]);
+  assert.deepEqual(result.event.optionalFieldIds, [
+    "gender",
+    "interestedInGenders",
+  ]);
+  assert.equal(h.firestore.get(
+    "eventRuntimeParticipants/event-1_runner-1"
+  )?.accessStatus, "ready");
+});
 
 test("ready runtime attendance checks in without a Consumer booking edge",
   async () => {

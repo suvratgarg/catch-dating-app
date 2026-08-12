@@ -138,8 +138,20 @@ export function EventRuntimePage() {
               onChange={(event) => controller.setDisplayName(event.target.value)}
               value={controller.displayName}
             />
-            {controller.requiresCompatibilityProfile ? (
-              <CompatibilityProfileFields controller={controller} />
+            {controller.offersPreferenceProfile ? (
+              <>
+                <EventRuntimeConsent
+                  checked={controller.preferenceProfileEnabled}
+                  onChange={(event) => controller.setPreferenceProfileEnabled(event.target.checked)}
+                >
+                  {eventRuntimeCopy.preferenceOptIn}
+                </EventRuntimeConsent>
+                {controller.preferenceProfileEnabled ? (
+                  <CompatibilityProfileFields controller={controller} />
+                ) : (
+                  <p>{eventRuntimeCopy.preferenceSkipped}</p>
+                )}
+              </>
             ) : null}
             <EventRuntimeConsent
               checked={controller.saveAsCatchPrefill}
@@ -217,7 +229,6 @@ function CompatibilityProfileFields({
       <EventRuntimeConsent
         checked={controller.sensitiveConsent}
         onChange={(event) => controller.setSensitiveConsent(event.target.checked)}
-        required
       >
         {eventRuntimeCopy.sensitiveConsent}
       </EventRuntimeConsent>
@@ -242,6 +253,20 @@ function LiveEventRuntime({
         <h1>{event.title}</h1>
         <p>{event.locationName} · {formatEventTime(event.startTimeMillis)}</p>
       </EventRuntimeLiveHeader>
+
+      <EventRuntimeModule title={eventRuntimeCopy.shareTitle}>
+        <p>{eventRuntimeCopy.shareBody}</p>
+        <Button
+          loading={controller.attendeeInviteLinkLoading}
+          loadingLabel={eventRuntimeCopy.sharePreparing}
+          onClick={() => controller.attendeeInviteLink ?
+            void controller.shareEvent() : controller.retryAttendeeInviteLink()}
+          type="button"
+        >
+          {controller.attendeeInviteLink ?
+            eventRuntimeCopy.shareAction : eventRuntimeCopy.shareRetry}
+        </Button>
+      </EventRuntimeModule>
 
       <EventRuntimeModule title={eventRuntimeCopy.assignmentTitle} accent="coral">
         {revealBlocked ? <p>{eventRuntimeCopy.revealWaiting}</p> :

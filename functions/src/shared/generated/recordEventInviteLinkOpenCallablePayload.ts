@@ -3,9 +3,16 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 /**
- * Callable payload accepted by recordEventInviteLinkOpen. It increments a live open counter and returns whether attribution can be attached to downstream booking actions.
+ * Callable payload accepted by recordEventInviteLinkOpen. inviteLinkId accepts a legacy document id or a versioned opaque bearer token.
  */
 export interface RecordEventInviteLinkOpenCallablePayload {
   eventId: string;
   inviteLinkId: string;
+  surface?:
+    | "consumerApp"
+    | "hostApp"
+    | "runtimeWeb"
+    | "marketingWeb"
+    | "unknown";
+  sessionId?: string | null;
 }

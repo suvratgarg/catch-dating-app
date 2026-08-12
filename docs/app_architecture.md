@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.10.4
-updated: 2026-08-11
+version: 1.11.0
+updated: 2026-08-12
 owner: app_architecture
 status: active
 ---
@@ -1871,6 +1871,44 @@ Rules:
   and launcher resources are release-configuration concerns; current release
   evidence and remaining TestFlight/Play work live in
   `docs/release_operations.md`.
+
+### Host Audience, Provider, Staff, And Offline Boundaries
+
+- `HostCrmRepository` is the single Flutter Functions facade for organizer
+  Audience summary, directory/detail, contact controls/export, Meta sender
+  setup and campaign lifecycle. `HostAudienceWorkspace` owns organizer-level
+  navigation and display state; event-manage widgets must not duplicate a
+  second CRM or read restricted audience collections directly.
+- CRM categories are server facts. Flutter may label fixed segment ids but must
+  not infer “valuable customer” from ticket price, private feedback, gender,
+  compatibility, wingman, dating or safety data.
+- `HostProviderRepository` consumes the server capability catalog. UI renders
+  `available`, `configurationRequired`, `exportOnly`, `sampleRequired` and
+  `partnerAccessRequired` honestly. A provider name on `EventOrigin` never
+  implies API sync or complete financial coverage.
+- `HostEventStaffRepository` is the event-scoped operator authority facade.
+  `/host/operator/:eventId` composes only roster, attendance and runtime-claim
+  actions granted by the backend. It must not mount Audience, campaigns,
+  providers, imports, event editing or organizer-wide settings.
+- `HostAttendanceOutbox` stores only opaque ids, desired attendance, expected
+  revision, client operation id and timing/retry state, partitioned by signed-in
+  account. It never stores roster PII. Connectivity replay delegates to the
+  absolute server mutation; conflicts remain visible for review instead of
+  silently rebasing a toggle.
+- Consumer event detail and payment confirmation may call the attendee-link
+  helper before sharing. The helper falls back to the ordinary event URL if
+  eligibility/audience projection has not converged. Opening the native share
+  sheet records a best-effort share intent and must never be labeled a message,
+  send, WhatsApp forward or recipient.
+- The no-download runtime prepares the same stable attendee link after a
+  verified event identity reaches live mode. It opens the browser share surface
+  or copies the opaque invite URL, records only that Catch-owned intent, and
+  lets the backend choose Catch registration versus the verified external
+  booking destination from `EventOrigin`.
+- The no-download React runtime and Host/Consumer Flutter apps share backend
+  Event Success authority, not widget code. First Hello, wingman,
+  questionnaires, groups, pairs and rotations consume event-scoped identity
+  and inputs; persistent match/chat/network behavior remains Consumer-only.
 
 ### Consumer Cold-Start Composition
 

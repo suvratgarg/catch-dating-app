@@ -10,6 +10,7 @@ import {
   ClubMembershipDocument,
   OrganizerFollowDocument,
   EventParticipationDocument,
+  OrganizerContactIdentityLinkDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {releaseCrossPathsPairHold} from "../crossPaths/pairHolds";
 
@@ -192,6 +193,7 @@ async function queueRelationshipCleanup(params: {
     queueClubMembershipCleanup(db, uid, now, writer),
     queueEventParticipationCleanup(db, uid, now, writer),
     queueEventAttendeeIdentityCleanup(db, uid, now, writer),
+    queueOrganizerAudienceIdentityCleanup(db, uid, now, writer),
     queueCrossPathsConsentCleanup(db, uid, writer),
     queueCrossPathsSuggestionExposureCleanup(db, uid, writer),
     queueCrossPathsInvitationCleanup(db, uid, writer),
@@ -228,6 +230,46 @@ async function queueEventAttendeeIdentityCleanup(
     linkedAt: null,
     updatedAt: now,
   }));
+}
+
+/** Removes Catch identity linkage from retained organizer CRM projections. */
+async function queueOrganizerAudienceIdentityCleanup(
+  db: FirebaseFirestore.Firestore,
+  uid: string,
+  now: FirebaseFirestore.FieldValue,
+  writer: BatchQueue
+) {
+  const contacts = await db.collection("organizerContacts")
+    .where("linkedUid", "==", uid)
+    .get();
+  for (const contact of contacts.docs) {
+    writer.update(contact.ref, {
+      linkedUid: null,
+      identityState: "unlinked",
+      identityConfidence: "proposed",
+      whatsappStatus: "unknown",
+      smsStatus: "unknown",
+      updatedAt: now,
+    });
+    const [edges, evidence] = await Promise.all([
+      db.collection("organizerContactEventEdges")
+        .where("contactId", "==", contact.id).get(),
+      db.collection("organizerContactIdentityLinks")
+        .where("contactId", "==", contact.id).get(),
+    ]);
+    edges.forEach((edge) => {
+      if (edge.data().linkedUid === uid) {
+        writer.update(edge.ref, {linkedUid: null, updatedAt: now});
+      }
+    });
+    evidence.forEach((item) => {
+      const link = item.data() as OrganizerContactIdentityLinkDocument;
+      if (link.kind !== "uid") return;
+      writer.delete(item.ref);
+      writer.delete(db.collection("organizerContactIdentityClaims")
+        .doc(`ocic_${link.identityHash.slice(0, 48)}`));
+    });
+  }
 }
 
 /** Deletes organizer-scoped marketing grants owned by the account. */

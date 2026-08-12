@@ -7217,7 +7217,8 @@ const model = {
                   "catchBooking",
                   "hostImport",
                   "hostManual",
-                  "webOtp"
+                  "webOtp",
+                  "providerSync"
                 ],
                 "properties": {
                   "catchBooking": {
@@ -7233,6 +7234,10 @@ const model = {
                     "minimum": 0
                   },
                   "webOtp": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "providerSync": {
                     "type": "integer",
                     "minimum": 0
                   }

@@ -1560,19 +1560,666 @@ export interface OrganizerCommunicationPreferenceDocument {
   whatsapp: {
     status: "unknown" | "optedIn" | "optedOut";
     termsVersion: string | null;
-    source: null | "publicEventRegistration" | "unsubscribeLink" | "hostApp";
+    source:
+      | null
+      | "publicEventRegistration"
+      | "unsubscribeLink"
+      | "hostApp"
+      | "inboundStop"
+      | "providerWebhook";
     sourceEventId: string | null;
     updatedAt: FirebaseFirestore.Timestamp | null;
   };
   sms: {
     status: "unknown" | "optedIn" | "optedOut";
     termsVersion: string | null;
-    source: null | "publicEventRegistration" | "unsubscribeLink" | "hostApp";
+    source:
+      | null
+      | "publicEventRegistration"
+      | "unsubscribeLink"
+      | "hostApp"
+      | "inboundStop"
+      | "providerWebhook";
     sourceEventId: string | null;
     updatedAt: FirebaseFirestore.Timestamp | null;
   };
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Server-owned organizer-scoped contact projection. It is not a Consumer profile and may contain restricted operational contact data.
+ */
+export interface OrganizerContactDocument {
+  organizerId: string;
+  displayName: string;
+  /**
+   * Organizer-scoped label correction. It never changes the Consumer profile or a provider/roster source row.
+   */
+  displayNameOverride?: string | null;
+  searchName: string;
+  linkedUid: string | null;
+  phoneE164: string | null;
+  email: string | null;
+  identityState: "unlinked" | "verified" | "ambiguous" | "merged";
+  identityConfidence: "eventOnly" | "proposed" | "verified";
+  primarySource:
+    | "catchBooking"
+    | "hostImport"
+    | "hostManual"
+    | "webOtp"
+    | "providerSync";
+  /**
+   * @maxItems 20
+   */
+  ambiguousCandidateContactIds: string[];
+  firstSeenAt: FirebaseFirestore.Timestamp;
+  lastSeenAt: FirebaseFirestore.Timestamp;
+  sourceCount: number;
+  whatsappStatus: "unknown" | "optedIn" | "optedOut";
+  smsStatus: "unknown" | "optedIn" | "optedOut";
+  revision: number;
+  mergedIntoContactId: string | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  deletedAt: FirebaseFirestore.Timestamp | null;
+  /**
+   * Organizer-requested CRM hiding. Operational attendee and audit facts remain intact.
+   */
+  hiddenAt?: FirebaseFirestore.Timestamp | null;
+  hiddenBy?: string | null;
+  /**
+   * Bounded organizer-audience contribution snapshot used only to restore a hidden contact without recomputing private event history.
+   */
+  hiddenTraitSnapshot?: OrganizerContactTraitDocument | null;
+}
+
+/**
+ * Server-only identity evidence edge used for keyed candidate lookup. Hashes are restricted identifiers, not anonymous data.
+ */
+export interface OrganizerContactIdentityLinkDocument {
+  organizerId: string;
+  contactId: string;
+  originContactId: string;
+  attendeeId: string;
+  kind: "uid" | "phone" | "email" | "provider";
+  identityHash: string;
+  hashVersion: "hmac-sha256-v1";
+  confidence: "proposed" | "verified";
+  source:
+    | "catchBooking"
+    | "hostImport"
+    | "hostManual"
+    | "webOtp"
+    | "providerSync";
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Singleton organizer-scoped ownership claim for a person-verified UID or phone identity.
+ */
+export interface OrganizerContactIdentityClaimDocument {
+  organizerId: string;
+  kind: "uid" | "phone";
+  identityHash: string;
+  hashVersion: "hmac-sha256-v1";
+  verifiedContactId: string;
+  originVerifiedContactId: string;
+  state: "verified" | "conflicted";
+  /**
+   * @maxItems 20
+   */
+  conflictingContactIds: string[];
+  revision: number;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Rebuildable organizer-person-event fact edge projected from the canonical operational attendee.
+ */
+export interface OrganizerContactEventEdgeDocument {
+  organizerId: string;
+  contactId: string;
+  originContactId: string;
+  eventId: string;
+  attendeeId: string;
+  displayName: string;
+  linkedUid: string | null;
+  phoneE164: string | null;
+  email: string | null;
+  source:
+    | "catchBooking"
+    | "hostImport"
+    | "hostManual"
+    | "webOtp"
+    | "providerSync";
+  status: "invited" | "registered" | "waitlisted" | "checkedIn" | "cancelled";
+  expected: boolean;
+  registered: boolean;
+  cancelled: boolean;
+  checkedIn: boolean;
+  eventStartAt: FirebaseFirestore.Timestamp | null;
+  eventEndAt: FirebaseFirestore.Timestamp | null;
+  registeredAt: FirebaseFirestore.Timestamp | null;
+  cancelledAt: FirebaseFirestore.Timestamp | null;
+  checkedInAt: FirebaseFirestore.Timestamp | null;
+  inviteLinkId?: string | null;
+  inviteCapturedAt?: FirebaseFirestore.Timestamp | null;
+  sourceCreatedAt: FirebaseFirestore.Timestamp;
+  sourceUpdatedAt: FirebaseFirestore.Timestamp;
+  revision: number;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Rebuildable, explainable organizer-contact CRM traits. Sensitive Event Success answers are excluded by contract.
+ */
+export interface OrganizerContactTraitDocument {
+  organizerId: string;
+  contactId: string;
+  expectedEventCount: number;
+  attendedEventCount: number;
+  cancelledEventCount: number;
+  noShowCount: number;
+  importedEventCount: number;
+  referredRegistrationCount: number;
+  referredCheckedInCount: number;
+  referredCheckedIn365DayCount: number;
+  linkedAccount: boolean;
+  firstSeenAt: FirebaseFirestore.Timestamp;
+  lastSeenAt: FirebaseFirestore.Timestamp;
+  firstAttendedAt: FirebaseFirestore.Timestamp | null;
+  lastAttendedAt: FirebaseFirestore.Timestamp | null;
+  attendanceRate: number | null;
+  /**
+   * @maxItems 16
+   */
+  segmentIds: (
+    | "new_to_organizer"
+    | "first_time_attendee"
+    | "repeat_attendee"
+    | "regular"
+    | "lapsed_regular"
+    | "reliable_attendee"
+    | "needs_confirmation"
+    | "advocate"
+    | "high_impact_advocate"
+    | "whatsapp_reachable"
+    | "sms_reachable"
+  )[];
+  definitionVersion: number;
+  whatsappStatus: "unknown" | "optedIn" | "optedOut";
+  smsStatus: "unknown" | "optedIn" | "optedOut";
+  sourceCoverage: "exact" | "partial" | "insufficientData";
+  projectionVersion: number;
+  computedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Server-maintained scalable organizer audience summary projected from contact traits.
+ */
+export interface OrganizerAudienceSummaryDocument {
+  organizerId: string;
+  contactCount: number;
+  pastAttendeeCount: number;
+  repeatAttendeeCount: number;
+  linkedAccountCount: number;
+  importedContactCount: number;
+  advocateCount: number;
+  highImpactAdvocateCount: number;
+  whatsappOptInCount: number;
+  smsOptInCount: number;
+  sourceCoverage: "exact" | "partial";
+  projectionVersion: number;
+  computedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Short-lived exactly-once receipt for a contact-trait delta applied to an organizer audience summary.
+ */
+export interface OrganizerAudienceProjectionReceiptDocument {
+  organizerId: string;
+  eventId: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Immutable evidence for a manager-confirmed organizer contact merge or its reversal.
+ */
+export interface OrganizerContactMergeReceiptDocument {
+  organizerId: string;
+  operation: "merge" | "unmerge";
+  survivorContactId: string;
+  sourceContactId: string;
+  /**
+   * @maxItems 20
+   */
+  evidence: (
+    | "sameVerifiedUid"
+    | "sameVerifiedPhone"
+    | "sameImportedPhone"
+    | "sameEmail"
+    | "managerConfirmed"
+  )[];
+  /**
+   * @maxItems 20
+   */
+  conflicts: string[];
+  actorUid: string;
+  survivorRevision: number;
+  sourceRevision: number;
+  /**
+   * @maxItems 400
+   */
+  movedEdgeIds: string[];
+  /**
+   * @maxItems 400
+   */
+  movedIdentityEvidenceIds: string[];
+  /**
+   * @maxItems 400
+   */
+  movedClaimIds: string[];
+  movedEdgeCount: number;
+  movedIdentityEvidenceCount: number;
+  movedClaimCount: number;
+  idempotencyKey: string;
+  reversalOfReceiptId: string | null;
+  createdAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Safe organizer-owned messaging sender metadata. Provider access tokens live in Secret Manager, never Firestore.
+ */
+export interface OrganizerSenderConnectionDocument {
+  organizerId: string;
+  channel: "whatsapp";
+  provider: "metaCloudApi";
+  status:
+    | "pending"
+    | "testing"
+    | "active"
+    | "degraded"
+    | "blocked"
+    | "tokenRevoked"
+    | "disconnected";
+  wabaId: string | null;
+  phoneNumberId: string | null;
+  businessId: string | null;
+  displayPhoneNumber: string | null;
+  verifiedName: string | null;
+  secretVersionResource: string | null;
+  qualityRating: null | "GREEN" | "YELLOW" | "RED" | "UNKNOWN";
+  messagingLimitTier: string | null;
+  templateSyncStatus: "notStarted" | "current" | "stale" | "failed";
+  webhookStatus: "notSubscribed" | "subscribed" | "degraded";
+  testStatus: "notSent" | "pending" | "delivered" | "failed";
+  testProviderMessageId: string | null;
+  testRecipientHash: string | null;
+  connectedByUid: string;
+  revision: number;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  lastHealthSyncAt?: FirebaseFirestore.Timestamp | null;
+  disconnectedAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Safe organizer-owned booking-provider connection metadata. Provider credentials live in Secret Manager, never Firestore.
+ */
+export interface OrganizerProviderConnectionDocument {
+  organizerId: string;
+  provider: "luma";
+  adapterClass: "A";
+  status: "active" | "degraded" | "credentialRevoked" | "disconnected";
+  externalAccountId: string;
+  externalAccountName: string;
+  secretVersionResource: string | null;
+  syncMode: "manualPoll";
+  capabilities: {
+    eventList: boolean;
+    rosterIdentity: boolean;
+    registrationStatus: boolean;
+    providerCheckIn: boolean;
+    orderAmount: boolean;
+    refundStatus: boolean;
+    referralCode: boolean;
+    webhooks: boolean;
+    writeBookings: boolean;
+  };
+  connectedByUid: string;
+  revision: number;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  lastHealthSyncAt: FirebaseFirestore.Timestamp | null;
+  lastSuccessfulSyncAt: FirebaseFirestore.Timestamp | null;
+  lastErrorCode: string | null;
+  disconnectedAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Stable mapping and field-level authority between one Catch event and one organizer-authorized booking-provider event.
+ */
+export interface ExternalEventMappingDocument {
+  organizerId: string;
+  eventId: string;
+  connectionId: string;
+  provider: "luma";
+  externalEventId: string;
+  status: "active" | "paused" | "disconnected";
+  fieldAuthority: {
+    rosterIdentity: "provider";
+    registrationStatus: "provider";
+    checkIn: "providerWhenPresent";
+    orderAmount: "unavailable";
+    refundStatus: "unavailable";
+    referralCode: "unavailable";
+  };
+  revision: number;
+  createdByUid: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  lastSyncAt: FirebaseFirestore.Timestamp | null;
+  lastSuccessfulSyncAt: FirebaseFirestore.Timestamp | null;
+  lastSyncStatus: "never" | "running" | "completed" | "partial" | "failed";
+  lastSyncRunId: string | null;
+  disconnectedAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Idempotent audit and replay receipt for one external-provider event reconciliation.
+ */
+export interface ProviderSyncRunDocument {
+  organizerId: string;
+  eventId: string;
+  connectionId: string;
+  mappingId: string;
+  provider: "luma";
+  clientOperationId: string;
+  inputHash: string;
+  status: "running" | "completed" | "partial" | "failed";
+  pageCount: number;
+  receivedCount: number;
+  createdCount: number;
+  updatedCount: number;
+  skippedCount: number;
+  truncated: boolean;
+  errorCode: string | null;
+  startedByUid: string;
+  startedAt: FirebaseFirestore.Timestamp;
+  completedAt: FirebaseFirestore.Timestamp | null;
+  expiresAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Sanitized provider template metadata used for preview and send eligibility.
+ */
+export interface OrganizerMessageTemplateDocument {
+  organizerId: string;
+  connectionId: string;
+  providerTemplateId: string;
+  name: string;
+  language: string;
+  category: "MARKETING" | "UTILITY" | "AUTHENTICATION" | "UNKNOWN";
+  status:
+    | "APPROVED"
+    | "PENDING"
+    | "REJECTED"
+    | "PAUSED"
+    | "DISABLED"
+    | "DELETED"
+    | "UNKNOWN";
+  /**
+   * @maxItems 20
+   */
+  variableNames: string[];
+  /**
+   * @maxItems 20
+   */
+  parameterBindings: {
+    variableName: string;
+    component: "header" | "body" | "button";
+    position: number;
+    buttonIndex: number | null;
+  }[];
+  hasMediaHeader: boolean;
+  /**
+   * @maxItems 10
+   */
+  buttonKinds: (
+    | "URL"
+    | "PHONE_NUMBER"
+    | "QUICK_REPLY"
+    | "COPY_CODE"
+    | "UNKNOWN"
+  )[];
+  providerUpdatedAt: FirebaseFirestore.Timestamp | null;
+  syncedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Organizer-contact channel frequency and suppression state rechecked immediately before delivery.
+ */
+export interface OrganizerContactChannelStateDocument {
+  organizerId: string;
+  contactId: string;
+  channel: "whatsapp";
+  endpointHash: string;
+  suppressionStatus:
+    | "none"
+    | "optedOut"
+    | "providerBlocked"
+    | "invalidEndpoint"
+    | "adminSuppressed";
+  suppressionSource: null | "preference" | "inboundStop" | "provider" | "admin";
+  /**
+   * Independent organizer pause. It never replaces a person opt-out or provider suppression.
+   */
+  adminSuppressed?: boolean;
+  campaignAcceptedCount: number;
+  lastCampaignAcceptedAt: FirebaseFirestore.Timestamp | null;
+  lastInboundAt: FirebaseFirestore.Timestamp | null;
+  lastReplyAt: FirebaseFirestore.Timestamp | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * One organizer-owned cross-event campaign with frozen approval and aggregate delivery state.
+ */
+export interface OrganizerCampaignDocument {
+  organizerId: string;
+  createdByUid: string;
+  messageClass: "eventFollowUp" | "organizerUpdate" | "organizerPromotion";
+  channel: "whatsapp";
+  status:
+    | "draft"
+    | "previewed"
+    | "approved"
+    | "scheduled"
+    | "resolving"
+    | "sending"
+    | "completed"
+    | "partiallyFailed"
+    | "cancelled"
+    | "blocked";
+  name: string;
+  /**
+   * @minItems 1
+   * @maxItems 5
+   */
+  segmentIds: (
+    | "first_time_attendee"
+    | "repeat_attendee"
+    | "regular"
+    | "lapsed_regular"
+    | "reliable_attendee"
+    | "advocate"
+    | "high_impact_advocate"
+    | "whatsapp_reachable"
+  )[];
+  connectionId: string;
+  templateId: string;
+  templateVariables: {
+    [k: string]: string;
+  };
+  eventId: string | null;
+  inviteDestinationKind:
+    | null
+    | "catchEvent"
+    | "eventRuntime"
+    | "externalBooking"
+    | "marketingLanding";
+  scheduledAt: FirebaseFirestore.Timestamp | null;
+  recipientSnapshotHash: string | null;
+  contentHash: string;
+  audienceCounts: {
+    total: number;
+    reachable: number;
+    optedOut: number;
+    invalid: number;
+    duplicate: number;
+    unsupported: number;
+    frequencyCapped: number;
+    providerBlocked: number;
+    unknown: number;
+  };
+  deliveryCounts: {
+    pending: number;
+    suppressed: number;
+    accepted: number;
+    sent: number;
+    delivered: number;
+    read: number;
+    failed: number;
+    replied: number;
+    optedOut: number;
+  };
+  revision: number;
+  leaseOwner: string | null;
+  leaseExpiresAt: FirebaseFirestore.Timestamp | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  approvedAt: FirebaseFirestore.Timestamp | null;
+  completedAt: FirebaseFirestore.Timestamp | null;
+  cancelledAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Frozen recipient eligibility and monotonic delivery receipt for one organizer campaign contact.
+ */
+export interface OrganizerCampaignRecipientDocument {
+  organizerId: string;
+  campaignId: string;
+  contactId: string;
+  channel: "whatsapp";
+  eligibility: "eligible" | "excluded";
+  exclusionReason:
+    | null
+    | "optedOut"
+    | "noVerifiedEndpoint"
+    | "duplicateEndpoint"
+    | "frequencyCapped"
+    | "providerBlocked"
+    | "invalidEndpoint"
+    | "unknownPermission"
+    | "identityUnresolved"
+    | "deleted";
+  endpointE164: string | null;
+  endpointHash: string | null;
+  permissionTermsVersion: string | null;
+  permissionUpdatedAt: FirebaseFirestore.Timestamp | null;
+  renderedVariablesHash: string;
+  inviteLinkId: string | null;
+  status:
+    | "pending"
+    | "sending"
+    | "suppressed"
+    | "accepted"
+    | "sent"
+    | "delivered"
+    | "read"
+    | "failed"
+    | "replied"
+    | "optedOut";
+  providerMessageId: string | null;
+  providerErrorCategory:
+    | null
+    | "authentication"
+    | "template"
+    | "quality"
+    | "rateLimit"
+    | "invalidRecipient"
+    | "policy"
+    | "provider"
+    | "unknown";
+  retryEligible: boolean;
+  attemptCount: number;
+  leaseOwner: string | null;
+  leaseExpiresAt: FirebaseFirestore.Timestamp | null;
+  acceptedAt: FirebaseFirestore.Timestamp | null;
+  sentAt: FirebaseFirestore.Timestamp | null;
+  deliveredAt: FirebaseFirestore.Timestamp | null;
+  readAt: FirebaseFirestore.Timestamp | null;
+  failedAt: FirebaseFirestore.Timestamp | null;
+  repliedAt: FirebaseFirestore.Timestamp | null;
+  optedOutAt: FirebaseFirestore.Timestamp | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * TTL idempotency receipt for one authenticated provider webhook event.
+ */
+export interface OrganizerCampaignWebhookReceiptDocument {
+  provider: "metaCloudApi";
+  providerEventId: string;
+  organizerId: string | null;
+  connectionId: string | null;
+  eventKind:
+    | "status"
+    | "inbound"
+    | "template"
+    | "quality"
+    | "account"
+    | "unmatched";
+  payloadHash: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Sanitized durable provider event queued after signature verification. Message bodies and phone numbers are not retained.
+ */
+export interface OrganizerMessagingWebhookEventDocument {
+  provider: "metaCloudApi";
+  providerEventId: string;
+  organizerId: string | null;
+  connectionId: string | null;
+  eventKind:
+    | "status"
+    | "inbound"
+    | "template"
+    | "quality"
+    | "account"
+    | "unmatched";
+  providerMessageId: string | null;
+  contextProviderMessageId: string | null;
+  deliveryStatus: null | "sent" | "delivered" | "read" | "failed";
+  endpointHash: string | null;
+  isStop: boolean;
+  hasReply: boolean;
+  providerErrorCode: number | null;
+  providerOccurredAt: FirebaseFirestore.Timestamp | null;
+  processingStatus: "pending" | "processed" | "unmatched" | "failed";
+  attemptCount: number;
+  createdAt: FirebaseFirestore.Timestamp;
+  processedAt: FirebaseFirestore.Timestamp | null;
+  expiresAt: FirebaseFirestore.Timestamp;
 }
 
 /**
@@ -1933,7 +2580,7 @@ export interface EventPrivateAccessDocument {
 }
 
 /**
- * Host-created named invite link stored at eventInviteLinks/{inviteLinkId}. The document tracks live attribution counters while preserving disabled links for historical reporting.
+ * Opaque event invitation metadata stored at eventInviteLinks/{inviteLinkId}. The public bearer token is stored separately in a server-only secret document.
  */
 export interface EventInviteLinkDocument {
   eventId: string;
@@ -1943,7 +2590,36 @@ export interface EventInviteLinkDocument {
   label: string;
   source: string | null;
   tokenHash: string;
+  contractVersion?: number;
+  linkKind?:
+    | "hostChannel"
+    | "directRecipient"
+    | "attendeeReferrer"
+    | "promoter"
+    | "partner";
+  ownerContactId?: string | null;
+  ownerUid?: string | null;
+  intendedRecipientContactId?: string | null;
+  campaignId?: string | null;
+  issuanceChannel?:
+    | "hostApp"
+    | "consumerApp"
+    | "runtimeWeb"
+    | "campaign"
+    | "api";
+  destinationKind?:
+    | "catchEvent"
+    | "eventRuntime"
+    | "externalBooking"
+    | "marketingLanding";
+  tokenVersion?: number;
+  attributionWindowEndsAt?: FirebaseFirestore.Timestamp | null;
   openCount: number;
+  likelyHumanOpenCount?: number;
+  shareIntentCount?: number;
+  verifiedRegistrationCount?: number;
+  referredRegistrationCount?: number;
+  referredCheckedInCount?: number;
   requestCount: number;
   confirmedCount: number;
   paidCount: number;
@@ -1954,6 +2630,93 @@ export interface EventInviteLinkDocument {
   disabledAt: FirebaseFirestore.Timestamp | null;
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Server-only bearer token material for one event invitation link.
+ */
+export interface EventInviteLinkSecretDocument {
+  eventId: string;
+  organizerId: string;
+  token: string;
+  tokenHash: string;
+  tokenVersion: number;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Short-lived privacy-minimized evidence that an invitation URL was resolved.
+ */
+export interface EventInviteTouchDocument {
+  eventId: string;
+  organizerId: string;
+  inviteLinkId: string;
+  touchKind: "open" | "redirect";
+  surface:
+    | "consumerApp"
+    | "hostApp"
+    | "runtimeWeb"
+    | "marketingWeb"
+    | "unknown";
+  actorUid: string | null;
+  sessionHash: string | null;
+  likelyHuman: boolean;
+  botReason: "previewCrawler" | "knownBot" | "missingClientSignal" | null;
+  attributionEligible: boolean;
+  createdAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Evidence that a signed-in actor opened a Catch-owned share surface; it is not proof that a message was sent.
+ */
+export interface EventShareIntentDocument {
+  eventId: string;
+  organizerId: string;
+  inviteLinkId: string;
+  actorUid: string;
+  actorKind: "host" | "attendee" | "member";
+  surface: "hostApp" | "consumerApp" | "runtimeWeb";
+  creativeId: string | null;
+  channelHint: "systemShare" | "copyLink" | "whatsapp" | "sms" | "email" | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Immutable evidence assigning or reversing one downstream event fact to one invitation link.
+ */
+export interface EventInviteAttributionDocument {
+  eventId: string;
+  organizerId: string;
+  inviteLinkId: string;
+  linkKind:
+    | "hostChannel"
+    | "directRecipient"
+    | "attendeeReferrer"
+    | "promoter"
+    | "partner";
+  ownerContactId: string | null;
+  intendedRecipientContactId: string | null;
+  subjectContactId: string | null;
+  subjectUid: string | null;
+  factKind: "registration" | "booking" | "checkIn" | "revenue" | "refund";
+  operation: "credit" | "reversal";
+  sourceKind:
+    | "catchParticipation"
+    | "eventAttendee"
+    | "provider"
+    | "selfReport";
+  sourceFactId: string;
+  primaryCredit: boolean;
+  confidence: "exact" | "reconciled" | "selfReported";
+  referralCredit: boolean;
+  amountMinor?: number | null;
+  currency?: string | null;
+  reversalOfAttributionId: string | null;
+  occurredAt: FirebaseFirestore.Timestamp;
+  createdAt: FirebaseFirestore.Timestamp;
 }
 
 /**
@@ -2014,7 +2777,12 @@ export interface EventAttendeeDocument {
   organizerId: string;
   displayName: string;
   searchName: string;
-  source: "catchBooking" | "hostImport" | "hostManual" | "webOtp";
+  source:
+    | "catchBooking"
+    | "hostImport"
+    | "hostManual"
+    | "webOtp"
+    | "providerSync";
   status: "invited" | "registered" | "waitlisted" | "checkedIn" | "cancelled";
   linkedUid: string | null;
   phoneE164: string | null;
@@ -2031,6 +2799,78 @@ export interface EventAttendeeDocument {
   cancelledAt: FirebaseFirestore.Timestamp | null;
   checkedInBy: string | null;
   linkedAt: FirebaseFirestore.Timestamp | null;
+  /**
+   * First eligible opaque invitation link preserved on this operational attendee.
+   */
+  inviteLinkId?: string | null;
+  inviteCapturedAt?: FirebaseFirestore.Timestamp | null;
+  /**
+   * Monotonic revision for absolute Host attendance operations. Missing legacy values read as zero.
+   */
+  attendanceRevision?: number;
+  /**
+   * Operational status restored by an absolute undo. Null outside checked-in state.
+   */
+  preCheckInStatus?: "invited" | "registered" | "waitlisted" | null;
+  /**
+   * External source that most recently supplied provider-authoritative fields, independent of row creation source.
+   */
+  provider?:
+    | "luma"
+    | "eventbrite"
+    | "partiful"
+    | "posh"
+    | "bookmyshow"
+    | "district"
+    | "sortmyscene"
+    | "airbnb"
+    | null;
+  providerConnectionId?: string | null;
+  providerGuestId?: string | null;
+  providerSyncedAt?: FirebaseFirestore.Timestamp | null;
+  providerDataRevision?: number;
+}
+
+/**
+ * Server-owned, expiring least-privilege access to one event's operational roster. It never grants organizer, CRM, provider, campaign, analytics, or event-edit authority.
+ */
+export interface EventStaffGrantDocument {
+  organizerId: string;
+  eventId: string;
+  uid: string;
+  displayName: string;
+  phoneLastFour: string;
+  role: "checkInOperator";
+  /**
+   * @minItems 3
+   * @maxItems 3
+   */
+  permissions: ("viewRoster" | "setAttendance" | "reviewRuntimeClaims")[];
+  status: "active" | "revoked";
+  createdBy: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+  revokedBy: string | null;
+  revokedAt: FirebaseFirestore.Timestamp | null;
+  updatedAt: FirebaseFirestore.Timestamp;
+  revision: number;
+}
+
+/**
+ * Short-lived server-only idempotency receipt for one absolute Host attendance operation.
+ */
+export interface EventAttendeeAttendanceReceiptDocument {
+  eventId: string;
+  organizerId: string;
+  attendeeId: string;
+  actorUid: string;
+  clientOperationId: string;
+  desiredCheckedIn: boolean;
+  priorRevision: number;
+  acceptedRevision: number;
+  changed: boolean;
+  createdAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
 }
 
 /**

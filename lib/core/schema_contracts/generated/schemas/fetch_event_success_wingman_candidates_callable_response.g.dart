@@ -60,12 +60,16 @@ const schemaFetchEventSuccessWingmanCandidatesCallableResponseSchema = <String, 
             'maxLength': 120,
           },
           'gender': <String, Object?>{
-            'type': 'string',
+            'type': <Object?>[
+              'string',
+              'null',
+            ],
             'enum': <Object?>[
               'man',
               'woman',
               'nonBinary',
               'other',
+              null,
             ],
           },
           'source': <String, Object?>{

@@ -12,17 +12,20 @@ final class ClaimEventRuntimeAccessCallableRequest {
     required this.displayName,
     required this.runtimeTermsVersion,
     this.attendeeToken,
+    this.inviteToken,
   });
 
   final String publicRuntimeId;
   final String displayName;
   final String runtimeTermsVersion;
   final String? attendeeToken;
+  final String? inviteToken;
 
   Map<String, Object?> toJson() => {
     'publicRuntimeId': publicRuntimeId,
     'displayName': displayName,
     'runtimeTermsVersion': runtimeTermsVersion,
     'attendeeToken': ?attendeeToken,
+    'inviteToken': ?inviteToken,
   };
 }

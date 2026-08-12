@@ -5,6 +5,7 @@ import {OrganizerCommunicationPreferenceDocument} from
   "../shared/generated/firestoreAdminTypes";
 import {
   OrganizerCrmAttendeeRow,
+  projectedOrganizerCrmSummary,
   summarizeOrganizerCrm,
 } from "./organizerCrm";
 
@@ -53,6 +54,8 @@ test(
       contactCount: 2,
       pastAttendeeCount: 1,
       repeatAttendeeCount: 1,
+      advocateCount: 0,
+      highImpactAdvocateCount: 0,
       linkedAccountCount: 2,
       importedContactCount: 1,
       whatsappOptInCount: 1,
@@ -84,6 +87,27 @@ test("imported phone numbers are never treated as marketing permission", () => {
   assert.equal(summary.pastAttendeeCount, 1);
   assert.equal(summary.whatsappOptInCount, 0);
   assert.equal(summary.smsOptInCount, 0);
+});
+
+test("projected CRM summary preserves compatibility and coverage", () => {
+  const summary = projectedOrganizerCrmSummary({
+    organizerId: "organizer-1",
+    contactCount: 5000,
+    pastAttendeeCount: 4000,
+    repeatAttendeeCount: 2000,
+    advocateCount: 400,
+    highImpactAdvocateCount: 100,
+    linkedAccountCount: 3000,
+    importedContactCount: 3500,
+    whatsappOptInCount: 1200,
+    smsOptInCount: 800,
+    sourceCoverage: "partial",
+    projectionVersion: 1,
+    computedAt: timestamp,
+  });
+  assert.equal(summary.contactCount, 5000);
+  assert.equal(summary.truncated, true);
+  assert.equal(summary.readiness.whatsapp, "providerSetupRequired");
 });
 
 function attendee(overrides: Partial<OrganizerCrmAttendeeRow> & {

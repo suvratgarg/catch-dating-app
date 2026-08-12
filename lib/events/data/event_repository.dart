@@ -11,8 +11,10 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
         DisableEventInviteLinkCallableRequest,
         EventIdCallableRequest,
         EventJoinRequestDecisionCallableRequest,
+        GetEventInviteLinkTokenCallableRequest,
         MarkEventAttendanceCallableRequest,
         RecordEventInviteLinkOpenCallableRequest,
+        RecordEventShareIntentCallableRequest,
         SendEventBroadcastCallableRequest,
         SelfCheckInAttendanceCallableRequest,
         UpdateEventCallableRequest;
@@ -436,6 +438,60 @@ class EventRepository {
     ),
   );
 
+  Future<CreateEventInviteLinkCallableResponse> createAttendeeInviteLink({
+    required String eventId,
+    required String label,
+    required String destinationKind,
+    String? source,
+  }) => withBackendErrorContext(
+    () async {
+      final result = await _functions
+          .httpsCallable('createAttendeeInviteLink')
+          .call(
+            CreateEventInviteLinkCallableRequest(
+              eventId: eventId,
+              label: label,
+              source: source,
+              linkKind: 'attendeeReferrer',
+              destinationKind: destinationKind,
+            ).toJson(),
+          );
+      return CreateEventInviteLinkCallableResponse.fromCallableData(
+        result.data,
+      );
+    },
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'create attendee invite link',
+      resource: 'eventInviteLinks',
+    ),
+  );
+
+  Future<void> recordShareIntent({
+    required String eventId,
+    required String inviteLinkId,
+    required String surface,
+    String? creativeId,
+    String? channelHint,
+  }) => withBackendErrorContext(
+    () => _functions
+        .httpsCallable('recordEventShareIntent')
+        .call(
+          RecordEventShareIntentCallableRequest(
+            eventId: eventId,
+            inviteLinkId: inviteLinkId,
+            surface: surface,
+            creativeId: creativeId,
+            channelHint: channelHint,
+          ).toJson(),
+        ),
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'record event share intent',
+      resource: 'eventShareIntents',
+    ),
+  );
+
   Future<void> disableInviteLink({
     required String eventId,
     required String inviteLinkId,
@@ -452,6 +508,29 @@ class EventRepository {
       service: BackendService.functions,
       action: 'disable invite link',
       resource: 'eventInviteLinks',
+    ),
+  );
+
+  Future<String> getInviteLinkToken({
+    required String eventId,
+    required String inviteLinkId,
+  }) => withBackendErrorContext(
+    () async {
+      final result = await _functions
+          .httpsCallable('getEventInviteLinkToken')
+          .call(
+            GetEventInviteLinkTokenCallableRequest(
+              eventId: eventId,
+              inviteLinkId: inviteLinkId,
+            ).toJson(),
+          );
+      if (result.data case {'inviteToken': final String token}) return token;
+      throw StateError('getEventInviteLinkToken response was missing token.');
+    },
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'get invite link token',
+      resource: 'eventInviteLinkSecrets',
     ),
   );
 

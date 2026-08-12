@@ -8,7 +8,7 @@ const schemaGetOrganizerCrmSummaryCallableResponseSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/callable_responses/get_organizer_crm_summary_response.schema.json',
   'title': 'GetOrganizerCrmSummaryCallableResponse',
-  'description': 'Deduplicated Host CRM counts. No attendee identity or contact field is returned.',
+  'description': 'Projected Host CRM counts. No attendee identity or contact field is returned.',
   'type': 'object',
   'additionalProperties': false,
   'required': <Object?>[
@@ -16,6 +16,8 @@ const schemaGetOrganizerCrmSummaryCallableResponseSchema = <String, Object?>{
     'contactCount',
     'pastAttendeeCount',
     'repeatAttendeeCount',
+    'advocateCount',
+    'highImpactAdvocateCount',
     'linkedAccountCount',
     'importedContactCount',
     'whatsappOptInCount',
@@ -32,37 +34,47 @@ const schemaGetOrganizerCrmSummaryCallableResponseSchema = <String, Object?>{
     'contactCount': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
-      'maximum': 2500,
+      'maximum': 2147483647,
     },
     'pastAttendeeCount': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
-      'maximum': 2500,
+      'maximum': 2147483647,
     },
     'repeatAttendeeCount': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
-      'maximum': 2500,
+      'maximum': 2147483647,
+    },
+    'advocateCount': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'maximum': 2147483647,
+    },
+    'highImpactAdvocateCount': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'maximum': 2147483647,
     },
     'linkedAccountCount': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
-      'maximum': 2500,
+      'maximum': 2147483647,
     },
     'importedContactCount': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
-      'maximum': 2500,
+      'maximum': 2147483647,
     },
     'whatsappOptInCount': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
-      'maximum': 2500,
+      'maximum': 2147483647,
     },
     'smsOptInCount': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
-      'maximum': 2500,
+      'maximum': 2147483647,
     },
     'truncated': <String, Object?>{
       'type': 'boolean',

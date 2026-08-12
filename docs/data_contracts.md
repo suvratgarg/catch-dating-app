@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.14.1
-updated: 2026-08-11
+version: 1.15.0
+updated: 2026-08-12
 owner: recursive_audit_loop
 status: active
 ---
@@ -350,6 +350,17 @@ Root-level edge/action documents are the source of truth for many-to-many state:
 | Private no-download Event Success identity | server-owned `eventRuntimeParticipants/{eventId_uid}` |
 | Ambiguous or walk-in Event Success claim review | server-owned `eventRuntimeClaimRequests/{eventId_uid}` |
 | Organizer-scoped communication permission | server-only `organizerCommunicationPreferences/{organizerId_uid}` |
+| Organizer-scoped operational contact | server-only `organizerContacts/{contactId}` |
+| Contact-to-event fact | server-only `organizerContactEventEdges/{attendeeId}` |
+| Contact identity evidence and verified claim | server-only `organizerContactIdentityLinks/{evidenceId}` and `organizerContactIdentityClaims/{claimId}` |
+| Rebuildable contact traits and organizer summary | server-only `organizerContactTraits/{contactId}` and `organizerAudienceSummaries/{organizerId}` |
+| Invitation aggregate and isolated bearer token | host-readable `eventInviteLinks/{inviteLinkId}` and server-only `eventInviteLinkSecrets/{inviteLinkId}` |
+| Short-lived invite open/share evidence | server-only `eventInviteTouches/{touchId}` and `eventShareIntents/{intentId}` |
+| Verified registration/check-in attribution | server-only immutable `eventInviteAttributions/{attributionId}` credit/reversal fact |
+| Organizer campaign and recipient snapshot | server-only `organizerCampaigns/{campaignId}` and `organizerCampaignRecipients/{recipientId}` |
+| Organizer WhatsApp sender/template state | server-only `organizerSenderConnections/{connectionId}`, `organizerMessageTemplates/{templateId}`, and webhook receipts/events |
+| External provider connection and event mapping | server-only `organizerProviderConnections/{connectionId}`, `externalEventMappings/{mappingId}`, and `providerSyncRuns/{runId}` |
+| Event-scoped staff authority | server-owned `eventStaffGrants/{eventId_uid}` with direct reads denied |
 | Cross Paths event visibility | `eventCrossPathsConsents/{eventId_uid}` |
 | Cross Paths showcase eligibility | server-only `crossPathsShowcaseEligibility/{uid}` |
 | Cross Paths suggestion exposure | server-only `crossPathsSuggestionExposures/{exposureId}` |
@@ -473,17 +484,89 @@ unchecked box does not grant permission and cannot revoke a prior grant;
 withdrawal belongs to the future self-service/STOP callable. Host imports and
 manual roster entry never create channel permission.
 
-`getOrganizerCrmSummary` returns only privacy-bounded, deduplicated counts for
-contacts, past and repeat attendees, linked accounts, imported contacts, and
-explicit WhatsApp/SMS reachability. It never returns attendee identity or
-contact fields. Hosts currently retain event-scoped roster access through the
-existing authorized roster boundary; campaign delivery is a separate future
-contract. Account deletion removes both the onboarding draft and every
-organizer communication preference owned by the UID.
+Every canonical `eventAttendees` write projects into an organizer-scoped
+contact plus one event fact edge. A contact is operational memory for one
+organizer, not a Consumer profile. An imported normalized phone/email creates
+only proposed identity evidence; it never silently merges two people. A UID or
+person-verified OTP phone may own a singleton identity claim. Conflicting
+verified claims stop automatic convergence and require an immutable,
+reversible manager merge receipt. Name alone is never merge evidence.
+
+Manager merges are optimistic and receipt-backed. The client supplies the
+current survivor and source revisions; the transaction also verifies every
+source-origin fact has the same Firestore version observed during planning.
+Conflicting UID, phone, or email facts require explicit confirmation. Unmerge
+restores only the exact source-origin edge, evidence, and claim identifiers in
+the original receipt and creates one deterministic reversal receipt. Facts
+created after a merge remain with the survivor instead of being guessed back.
+
+`organizerContactTraits` are rebuilt from event edges and verified invite
+attribution facts and contain only
+attendance, reliability, source and channel-reachability facts. Compatibility
+answers, gender, sexual orientation, relationship state, wingman targets,
+safety reports and inferred social desirability are prohibited CRM inputs.
+An `advocate` has at least one verified referred registration or check-in. A
+`high_impact_advocate` has at least three referred verified check-ins in the
+trailing 365 days; raw link opens and share-button taps never qualify.
+Trait and summary writes use exactly-once TTL receipts, so retries cannot
+double-count an organizer. The dry-run-first organizer-audience backfill uses
+the same production projector and marks a summary `exact` only after every
+current attendee row has completed. Newer live rows always win over stale
+backfill snapshots.
+
+`getOrganizerCrmSummary` reads `organizerAudienceSummaries` only when its
+coverage is `exact` and returns only privacy-bounded counts for contacts, past
+and repeat attendees,
+linked accounts, imports, and explicit WhatsApp/SMS reachability. During the
+dual-write migration it falls back to the legacy bounded attendee/preference
+scan for organizers without exact coverage. Partial summaries remain migration
+diagnostics and never replace the legacy cards. It never returns attendee
+identity or contact fields. `listOrganizerContacts` and
+`getOrganizerContactDetail` are separate manager-authorized, server-paginated
+boundaries. They return only organizer-owned endpoints plus explainable
+attendance/reachability facts; no Event Success private input is a CRM field.
+Hosts currently retain event-scoped roster access through the existing
+authorized roster boundary. The Host Audience client consumes the directory,
+detail, export and contact-mutation callables; it never reads these collections
+directly. Campaign approval freezes a server-owned recipient snapshot and
+dispatch rechecks current permission, contact suppression, sender/template
+health and event state before each attempt. Meta provider tokens live in Secret
+Manager. Webhook receipts are signature-verified, deduplicated and monotonic;
+STOP updates the same organizer-scoped preference/suppression boundary without
+retaining inbound message content. Account
+deletion removes the onboarding draft, organizer communication grants, UID
+identity evidence and verified UID claims. Retained operational attendee,
+contact and event-edge history is unlinked from the deleted Catch UID.
 Retained organizer roster history is unlinked by setting `linkedUid` and
 `linkedAt` to null; any separately retained operational contact field remains
 subject to the organizer's stated booking/records purpose rather than Catch
 account or marketing permission.
+
+### Provider Sync, Staff, And Offline Attendance
+
+`organizerProviderConnections` contains safe organizer/provider identifiers,
+capability coverage, state, freshness and a secret reference, never an API key.
+`externalEventMappings` pins one Catch event to one external event and records
+which fields the provider can authoritatively supply. `providerSyncRuns` owns
+cursor, counts, state and sanitized errors. The implemented Luma poller imports
+registration and provider check-in facts through the canonical attendee
+reconciler. It does not invent orders, refunds, revenue, referral coverage or
+webhook freshness that Luma has not supplied.
+
+`eventStaffGrants/{eventId_uid}` grants a bounded subset of `viewRoster`,
+`setAttendance`, and `reviewRuntimeClaims` for one event. It records organizer,
+grantor, role, issue/expiry/revocation and revision; grants expire within 14
+days and are capped at 50 active rows per event. Firestore direct access is
+denied. Staff operate through callables and the restricted Host operator route,
+which never grants CRM, campaign, import, provider, event-edit or organizer-wide
+authority. Organizer managers continue to work without a grant.
+
+The Host attendance outbox is local client state, not Firestore authority. It
+contains no names, phones or emails: only account/event/attendee ids, absolute
+desired attendance, expected revision, client operation id, timestamps and
+retry/conflict state. Server authority remains `setEventAttendeeAttendance`
+plus its 30-day receipt. Local operations review after seven days, expire after
+30, cap at 200 and never turn a revision conflict into a silent toggle replay.
 
 Cross Paths visibility is a two-part, private consent contract. The optional
 `users/{uid}.prefsShowInCrossPaths` master preference resolves to false when

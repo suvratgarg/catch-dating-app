@@ -29,6 +29,7 @@ import 'package:catch_dating_app/hosts/presentation/club_management/host_create_
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_operator_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_home_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
@@ -568,6 +569,12 @@ class _RouteLoadingScreen extends StatelessWidget {
 List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
   return [
     ..._legacyHostClubRoutes(),
+    GoRoute(
+      path: Routes.hostOperatorEventScreen.path,
+      name: Routes.hostOperatorEventScreen.name,
+      builder: (context, state) =>
+          HostEventOperatorScreen(eventId: state.pathParameters['eventId']!),
+    ),
     GoRoute(
       path: '/host/organizer/:clubId/insights',
       redirect: (context, state) =>

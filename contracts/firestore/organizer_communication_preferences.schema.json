@@ -62,7 +62,7 @@
         },
         "source": {
           "type": ["string", "null"],
-          "enum": [null, "publicEventRegistration", "unsubscribeLink", "hostApp"],
+          "enum": [null, "publicEventRegistration", "unsubscribeLink", "hostApp", "inboundStop", "providerWebhook"],
           "x-catch-ownership": "server-only"
         },
         "sourceEventId": {

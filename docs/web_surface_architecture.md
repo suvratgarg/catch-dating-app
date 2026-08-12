@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.12.0
-updated: 2026-08-10
+version: 0.13.0
+updated: 2026-08-12
 owner: web_platform
 status: active
 ---
@@ -1030,9 +1030,11 @@ Implemented website behavior:
 - `/host/` presents Catch as additive live-event tooling for hosts who keep
   their existing booking or RSVP platform. It explains companion-event setup,
   CSV-based roster import, verified attendance, the no-download guest runtime,
-  optional live modules, and selective free beta access. Catch-native booking,
-  full profiles, chats, and social-network effects are labelled as later and
-  are not prerequisites in the current flow.
+  First Hello, wingman, pairing/grouping/rotations, feedback, Audience/CRM,
+  consent-gated WhatsApp invitations, share attribution limits, optional live
+  modules, and selective free beta access. Catch-native booking, full profiles,
+  persistent matching/chat, universal provider sync and exact external revenue
+  are not prerequisites and must not be presented as current dependencies.
 
 Deferred website decisions:
 
@@ -1078,6 +1080,31 @@ roster, and hands authenticated runtime work to Host web, an event-scoped
 attendee web route, or the Consumer app according to capability. A web RSVP
 creates/links the same operational attendee record consumed by Host mobile and
 web; it does not require or silently create a dating profile.
+
+### No-Download Event Runtime And Invite Landing
+
+The React marketing runtime owns two non-SEO transactional routes:
+
+- `/join/:publicRuntimeId` resolves only a bounded event projection before
+  Firebase phone OTP. After authentication it claims or requests one roster
+  identity, collects display name plus only the optional fields required by the
+  configured preference-aware behavior, and exposes self check-in, First
+  Hello, wingman, questionnaire, private assignment/rotation/group state and
+  feedback without creating a Consumer profile or booking edge.
+- `/invite/:inviteToken` resolves an opaque bearer token server-side, records a
+  short-lived bot-classified touch, preserves the token through registration or
+  runtime claim, and redirects to Catch RSVP/runtime or an allowlisted external
+  booking URL. The page never exposes internal link, contact, UID or attendee
+  identifiers.
+
+The web runtime prepares one stable attendee-referrer token after a verified
+guest reaches event mode. Its share control opens the browser/system share
+surface when available and otherwise copies the opaque `/invite/:inviteToken`
+URL. The backend resolves external-companion links to the event's verified
+external booking URL and Catch events to Catch registration. Consumer Flutter
+event detail and payment confirmation expose the same personal-link contract.
+Both surfaces can observe only use of the Catch share/copy control and later
+token use; neither can inspect an ordinary WhatsApp send or forward.
 
 ## Why Subdomains Instead Of Paths
 

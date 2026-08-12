@@ -6,8 +6,11 @@ import {
   checkInEventRuntime,
   claimEventRuntimeAccess,
   completeEventRuntimeFirstHello,
+  createEventRuntimeAttendeeInviteLink,
   fetchEventRuntimeWingmanCandidates,
   getEventRuntimeBootstrap,
+  recordEventInviteLinkOpen,
+  recordEventRuntimeShareIntent,
   saveEventRuntimeCompatibilityAnswers,
   saveEventRuntimeFeedback,
   startEventRuntimeFirstHello,
@@ -17,6 +20,7 @@ import {
   watchEventRuntimeLiveState,
   withdrawEventRuntimeWingmanRequest,
   type EventRuntimeLiveState,
+  type EventRuntimeAttendeeInviteLink,
   type PublicEventPhoneVerification,
 } from "../../firebase";
 import {eventRuntimeCopy} from "../../content/eventRuntime";
@@ -29,6 +33,8 @@ import {
   type EventRuntimeBootstrap,
   type EventRuntimeGender,
 } from "./eventRuntimeModel";
+import {eventInviteSessionId, eventInviteTokenFromLocation} from
+  "../../shared/eventInviteAttribution";
 
 export type EventRuntimeStage =
   | "loading"
@@ -42,15 +48,8 @@ export type EventRuntimeStage =
 export interface WingmanCandidate {
   uid: string;
   displayName: string;
-  gender: EventRuntimeGender;
+  gender: EventRuntimeGender | null;
 }
-
-const compatibilityModuleIds = new Set([
-  "compatibility_questionnaire",
-  "first_hello_check_in",
-  "guided_rotations",
-  "wingman_requests",
-]);
 
 const emptyLiveState: EventRuntimeLiveState = {
   assignments: [],
@@ -67,6 +66,7 @@ export function useEventRuntimeController(publicRuntimeId: string) {
   const verificationRef = useRef<PublicEventPhoneVerification | null>(null);
   const userRef = useRef<User | null>(null);
   const loadingRef = useRef<Promise<void> | null>(null);
+  const attendeeLinkEventIdRef = useRef<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [bootstrap, setBootstrap] = useState<EventRuntimeBootstrap | null>(null);
   const [stage, setStage] = useState<EventRuntimeStage>("loading");
@@ -76,6 +76,7 @@ export function useEventRuntimeController(publicRuntimeId: string) {
   const [displayName, setDisplayName] = useState("");
   const [gender, setGender] = useState<EventRuntimeGender | null>(null);
   const [interestedInGenders, setInterestedInGenders] = useState<EventRuntimeGender[]>([]);
+  const [preferenceProfileEnabled, setPreferenceProfileEnabled] = useState(false);
   const [sensitiveConsent, setSensitiveConsent] = useState(false);
   const [saveAsCatchPrefill, setSaveAsCatchPrefill] = useState(false);
   const [liveState, setLiveState] = useState<EventRuntimeLiveState>(emptyLiveState);
@@ -93,15 +94,32 @@ export function useEventRuntimeController(publicRuntimeId: string) {
       setStatus({message: eventRuntimeError(error), tone: "is-error"});
     },
   });
+  const attendeeLinkMutation = useMutation<
+    EventRuntimeAttendeeInviteLink,
+    unknown,
+    string
+  >({
+    mutationFn: (eventId) => createEventRuntimeAttendeeInviteLink(
+      eventId,
+      eventRuntimeCopy.shareLinkLabel
+    ),
+    onError: (error) => {
+      setStatus({message: eventRuntimeError(error), tone: "is-error"});
+    },
+  });
   const pending = actionMutation.isPending;
+  const attendeeInviteLink = attendeeLinkMutation.data ?? null;
+  const inviteToken = useMemo(eventInviteTokenFromLocation, []);
+  const recordedInviteOpenRef = useRef(false);
 
   const questionnaire = useMemo(
     () => resolveEventRuntimeQuestionnaire(bootstrap?.event.questionnaireConfig ?? null),
     [bootstrap]
   );
-  const requiresCompatibilityProfile = Boolean(bootstrap?.event.moduleIds.some(
-    (moduleId) => compatibilityModuleIds.has(moduleId)
-  ));
+  const offersPreferenceProfile = Boolean(
+    bootstrap?.event.optionalFieldIds.includes("gender") &&
+    bootstrap.event.optionalFieldIds.includes("interestedInGenders")
+  );
 
   const loadAuthenticatedRuntime = useCallback(async (activeUser: User) => {
     if (loadingRef.current) return loadingRef.current;
@@ -137,6 +155,15 @@ export function useEventRuntimeController(publicRuntimeId: string) {
       .then((next) => {
         if (cancelled) return;
         setBootstrap(next);
+        if (inviteToken && !recordedInviteOpenRef.current) {
+          recordedInviteOpenRef.current = true;
+          void recordEventInviteLinkOpen({
+            eventId: next.event.eventId,
+            inviteLinkId: inviteToken,
+            surface: "runtimeWeb",
+            sessionId: eventInviteSessionId(),
+          }).catch(() => undefined);
+        }
         if (!userRef.current) setStage("phone");
       })
       .catch((error) => {
@@ -158,7 +185,7 @@ export function useEventRuntimeController(publicRuntimeId: string) {
       verificationRef.current?.clear();
       unsubscribe();
     };
-  }, [loadAuthenticatedRuntime, publicRuntimeId]);
+  }, [inviteToken, loadAuthenticatedRuntime, publicRuntimeId]);
 
   useEffect(() => {
     const participant = bootstrap?.participant;
@@ -206,6 +233,19 @@ export function useEventRuntimeController(publicRuntimeId: string) {
       unsubscribe();
     };
   }, [bootstrap, questionnaire.questions, stage, user]);
+
+  useEffect(() => {
+    const participant = bootstrap?.participant;
+    if (stage !== "runtime" || !participant || attendeeInviteLink ||
+        attendeeLinkEventIdRef.current === participant.eventId) return;
+    attendeeLinkEventIdRef.current = participant.eventId;
+    attendeeLinkMutation.mutate(participant.eventId);
+  }, [
+    attendeeInviteLink,
+    attendeeLinkMutation,
+    bootstrap?.participant,
+    stage,
+  ]);
 
   async function handlePhoneSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -259,11 +299,11 @@ export function useEventRuntimeController(publicRuntimeId: string) {
       setStatus({message: eventRuntimeCopy.missingName, tone: "is-error"});
       return;
     }
-    if (requiresCompatibilityProfile && interestedInGenders.length === 0) {
+    if (preferenceProfileEnabled && interestedInGenders.length === 0) {
       setStatus({message: eventRuntimeCopy.missingInterests, tone: "is-error"});
       return;
     }
-    if (requiresCompatibilityProfile && (!gender || !sensitiveConsent)) {
+    if (preferenceProfileEnabled && (!gender || !sensitiveConsent)) {
       setStatus({message: eventRuntimeCopy.missingSensitiveConsent, tone: "is-error"});
       return;
     }
@@ -275,6 +315,7 @@ export function useEventRuntimeController(publicRuntimeId: string) {
           publicRuntimeId,
           displayName: name,
           runtimeTermsVersion: bootstrap.event.runtimeTermsVersion,
+          inviteToken,
         });
         accessStatus = claim.status;
       }
@@ -282,20 +323,21 @@ export function useEventRuntimeController(publicRuntimeId: string) {
         await loadAuthenticatedRuntime(user);
         return;
       }
-      if (requiresCompatibilityProfile || accessStatus === "needsInput") {
-        await submitEventRuntimeProfile({
-          publicRuntimeId,
-          runtimeTermsVersion: bootstrap.event.runtimeTermsVersion,
-          sensitiveDataTermsVersion: requiresCompatibilityProfile ?
-            "event-runtime-sensitive-v1" : null,
-          saveAsCatchPrefill,
-          fields: {
-            displayName: name,
-            gender,
-            interestedInGenders,
-          },
-        });
-      }
+      await submitEventRuntimeProfile({
+        publicRuntimeId,
+        runtimeTermsVersion: bootstrap.event.runtimeTermsVersion,
+        sensitiveDataTermsVersion: preferenceProfileEnabled ?
+          "event-runtime-sensitive-v1" : null,
+        saveAsCatchPrefill,
+        fields: {
+          displayName: name,
+          gender: preferenceProfileEnabled ? gender : null,
+          interestedInGenders: preferenceProfileEnabled ?
+            interestedInGenders : [],
+          relationshipGoal: preferenceProfileEnabled ? undefined : null,
+          dateOfBirthMillis: preferenceProfileEnabled ? undefined : null,
+        },
+      });
       await loadAuthenticatedRuntime(user);
     }).catch(() => undefined);
   }
@@ -306,6 +348,67 @@ export function useEventRuntimeController(publicRuntimeId: string) {
     await actionMutation.mutateAsync(async () => {
       await loadAuthenticatedRuntime(user);
     }).catch(() => undefined);
+  }
+
+  async function shareEvent() {
+    const participant = bootstrap?.participant;
+    if (!participant || pending) return;
+    setStatus({message: "", tone: ""});
+    const link = attendeeInviteLink;
+    if (!link) {
+      setStatus({message: eventRuntimeCopy.shareNotReady, tone: ""});
+      return;
+    }
+    const shareUrl = new URL(
+      `/invite/${encodeURIComponent(link.inviteToken)}`,
+      window.location.origin
+    ).toString();
+    const shareData = {
+      title: bootstrap.event.title,
+      text: eventRuntimeCopy.shareText(bootstrap.event.title),
+      url: shareUrl,
+    };
+    if (typeof navigator.share === "function") {
+      void recordEventRuntimeShareIntent({
+        eventId: participant.eventId,
+        inviteLinkId: link.inviteLinkId,
+        channelHint: "systemShare",
+      }).catch(() => undefined);
+      try {
+        await navigator.share(shareData);
+        setStatus({message: eventRuntimeCopy.shareOpened, tone: "is-success"});
+      } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") {
+          setStatus({message: eventRuntimeCopy.shareCancelled, tone: ""});
+          return;
+        }
+        setStatus({message: eventRuntimeError(error), tone: "is-error"});
+      }
+      return;
+    }
+    if (navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+      } catch (error) {
+        setStatus({message: eventRuntimeError(error), tone: "is-error"});
+        return;
+      }
+      void recordEventRuntimeShareIntent({
+        eventId: participant.eventId,
+        inviteLinkId: link.inviteLinkId,
+        channelHint: "copyLink",
+      }).catch(() => undefined);
+      setStatus({message: eventRuntimeCopy.shareCopied, tone: "is-success"});
+      return;
+    }
+    setStatus({message: eventRuntimeCopy.shareManual(shareUrl), tone: ""});
+  }
+
+  function retryAttendeeInviteLink() {
+    const participant = bootstrap?.participant;
+    if (!participant || attendeeLinkMutation.isPending || attendeeInviteLink) return;
+    setStatus({message: "", tone: ""});
+    attendeeLinkMutation.mutate(participant.eventId);
   }
 
   function toggleInterest(nextGender: EventRuntimeGender) {
@@ -399,10 +502,15 @@ export function useEventRuntimeController(publicRuntimeId: string) {
     setDisplayName(profile.displayName);
     setGender(profile.gender);
     setInterestedInGenders(profile.interestedInGenders);
+    setPreferenceProfileEnabled(
+      profile.gender !== null || profile.interestedInGenders.length > 0
+    );
   }
 
   return {
     bootstrap,
+    attendeeInviteLink,
+    attendeeInviteLinkLoading: attendeeLinkMutation.isPending,
     code,
     completeFirstHello,
     displayName,
@@ -420,16 +528,20 @@ export function useEventRuntimeController(publicRuntimeId: string) {
     questionnaire,
     questionAnswers,
     recaptchaContainerId,
-    requiresCompatibilityProfile,
+    retryAttendeeInviteLink,
+    offersPreferenceProfile,
     privateNote,
+    preferenceProfileEnabled,
     saveAsCatchPrefill,
     saveCompatibilityAnswers,
+    shareEvent,
     selectQuestionAnswer,
     sensitiveConsent,
     setCode,
     setDisplayName,
     setGender,
     setPhoneNumber,
+    setPreferenceProfileEnabled,
     setMetNewPeopleCount,
     setPrivateNote,
     setSaveAsCatchPrefill,

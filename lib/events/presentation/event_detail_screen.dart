@@ -20,6 +20,7 @@ import 'package:catch_dating_app/event_success/data/event_success_repository.dar
 import 'package:catch_dating_app/events/data/event_calendar_links.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/events/presentation/attendee_event_share_controller.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_controller.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';
@@ -271,6 +272,8 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
           buttonContext,
           vm.event,
           share,
+          ref.read(attendeeEventShareActionsProvider),
+          vm.isAuthenticated && !vm.isHost,
           widget.inviteCode,
           widget.inviteLinkId,
         ),
@@ -798,9 +801,22 @@ Future<void> _shareEvent(
   BuildContext context,
   Event event,
   ExternalShareController share,
+  AttendeeEventShareActions actions,
+  bool useAttendeeAttribution,
   String? inviteCode,
   String? inviteLinkId,
 ) async {
+  if (useAttendeeAttribution) {
+    await showTrackedAttendeeEventShareCardSheet(
+      context,
+      event: event,
+      share: share,
+      actions: actions,
+      fallbackInviteCode: inviteCode,
+      fallbackInviteLinkId: inviteLinkId,
+    );
+    return;
+  }
   await showEventShareCardSheet(
     context,
     event: event,

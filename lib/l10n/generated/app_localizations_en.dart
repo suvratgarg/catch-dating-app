@@ -5983,7 +5983,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostClubsScaffoldBodyDragLeftOrRight =>
-      'Drag left or right to switch between Edit, Insights, and Preview.';
+      'Drag left or right to switch between Edit, Audience, Insights, and Preview.';
 
   @override
   String get hostsHostClubsScaffoldLabelEdit => 'Edit';
@@ -11506,6 +11506,171 @@ class AppLocalizationsEn extends AppLocalizations {
       'Upload a CSV or XLSX from your ticketing tool, or add guests one at a time.';
 
   @override
+  String get hostsOperationalRosterProviderTitle => 'Booking source';
+
+  @override
+  String hostsOperationalRosterProviderBody({required String provider}) {
+    return 'Bring your $provider guest list into this roster.';
+  }
+
+  @override
+  String get hostsOperationalRosterProviderOpenToLoad =>
+      'Open this section to check available import and sync options.';
+
+  @override
+  String get hostsOperationalRosterProviderUnavailable =>
+      'Catch could not identify a safe import option for this booking source.';
+
+  @override
+  String get hostsOperationalRosterProviderAccount => 'Connected calendar';
+
+  @override
+  String get hostsOperationalRosterProviderCoverage => 'What syncs';
+
+  @override
+  String get hostsOperationalRosterProviderLastSync => 'Last successful sync';
+
+  @override
+  String get hostsOperationalRosterProviderNeverSynced => 'Not synced yet';
+
+  @override
+  String get hostsOperationalRosterProviderLimits =>
+      'Not supplied by this connection';
+
+  @override
+  String get hostsOperationalRosterProviderLumaLimits =>
+      'Payments, refunds, referral codes and automatic background updates. Catch check-ins are never undone when Luma omits a check-in.';
+
+  @override
+  String get hostsOperationalRosterProviderCapabilityGuests =>
+      'Guest names and contact details';
+
+  @override
+  String get hostsOperationalRosterProviderCapabilityStatus =>
+      'Registration status';
+
+  @override
+  String get hostsOperationalRosterProviderCapabilityCheckIn =>
+      'Provider check-ins';
+
+  @override
+  String get hostsOperationalRosterProviderSyncNow => 'Sync now';
+
+  @override
+  String get hostsOperationalRosterProviderDisconnect => 'Disconnect';
+
+  @override
+  String get hostsOperationalRosterProviderDisconnectTitle =>
+      'Disconnect booking source?';
+
+  @override
+  String get hostsOperationalRosterProviderDisconnectBody =>
+      'Guests already in Catch stay on this roster. Future provider changes will not appear until you reconnect.';
+
+  @override
+  String get hostsOperationalRosterProviderConnect => 'Connect Luma';
+
+  @override
+  String get hostsOperationalRosterProviderReconnect => 'Reconnect Luma';
+
+  @override
+  String get hostsOperationalRosterProviderImport => 'Import spreadsheet';
+
+  @override
+  String get hostsOperationalRosterProviderConnected =>
+      'Luma connected. Sync when you want to refresh the roster.';
+
+  @override
+  String hostsOperationalRosterProviderSyncSuccess({
+    required int created,
+    required int updated,
+    required int skipped,
+  }) {
+    return 'Roster synced: $created added, $updated refreshed, $skipped skipped.';
+  }
+
+  @override
+  String get hostsOperationalRosterProviderConnectTitle =>
+      'Connect your Luma calendar';
+
+  @override
+  String get hostsOperationalRosterProviderConnectBody =>
+      'Catch checks the calendar key without saving it, then lets you choose an event. The key is stored only after you confirm the event.';
+
+  @override
+  String get hostsOperationalRosterProviderApiKey => 'Luma calendar API key';
+
+  @override
+  String get hostsOperationalRosterProviderApiKeyHelp =>
+      'Requires Luma Plus. Catch encrypts the key in Google Secret Manager after you choose an event.';
+
+  @override
+  String get hostsOperationalRosterProviderFieldRequired =>
+      'Check this value and try again.';
+
+  @override
+  String get hostsOperationalRosterProviderChooseEvent =>
+      'Check key and choose event';
+
+  @override
+  String get hostsOperationalRosterProviderChooseEventTitle =>
+      'Choose the Luma event';
+
+  @override
+  String hostsOperationalRosterProviderChooseEventBody({
+    required String calendar,
+  }) {
+    return 'Events managed by $calendar. Choose the one that matches this Catch event.';
+  }
+
+  @override
+  String get hostsOperationalRosterProviderNoEventsTitle =>
+      'No manageable events found';
+
+  @override
+  String get hostsOperationalRosterProviderNoEventsBody =>
+      'This key did not return an event the calendar can manage.';
+
+  @override
+  String get hostsOperationalRosterProviderEventsTruncated =>
+      'Showing the 50 most recent manageable events. Use spreadsheet import if the event you need is older.';
+
+  @override
+  String get hostsOperationalRosterProviderAvailable => 'Direct sync available';
+
+  @override
+  String get hostsOperationalRosterProviderExportOnly => 'Spreadsheet import';
+
+  @override
+  String get hostsOperationalRosterProviderConfigurationRequired =>
+      'Catch setup pending';
+
+  @override
+  String get hostsOperationalRosterProviderPartnerRequired =>
+      'Provider approval required';
+
+  @override
+  String get hostsOperationalRosterProviderSampleRequired =>
+      'Export sample needed';
+
+  @override
+  String get hostsOperationalRosterProviderManualOnly => 'Manual import';
+
+  @override
+  String get hostsOperationalRosterProviderStatusActive => 'Connected';
+
+  @override
+  String get hostsOperationalRosterProviderStatusDegraded =>
+      'Connection needs attention';
+
+  @override
+  String get hostsOperationalRosterProviderStatusReconnect =>
+      'Reconnect required';
+
+  @override
+  String get hostsOperationalRosterProviderStatusDisconnected => 'Disconnected';
+
+  @override
   String get hostsOperationalRosterSourceCatchBooking => 'Catch booking';
 
   @override
@@ -11516,6 +11681,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsOperationalRosterSourceWebOtp => 'Web registration';
+
+  @override
+  String get hostsOperationalRosterSourceProviderSync => 'Booking provider';
 
   @override
   String get hostsOperationalRosterStatusInvited => 'Invited';
@@ -11761,4 +11929,559 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostsHostPublicRegistrationActionDisable =>
       'Disable website sign-up';
+
+  @override
+  String get hostsHostClubsScaffoldLabelAudience => 'Audience';
+
+  @override
+  String get hostsHostAudienceTitle => 'Your audience';
+
+  @override
+  String get hostsHostAudienceIntro =>
+      'Build a useful history from Catch bookings, roster imports, manual guests, provider sync, and phone-verified event runtime check-ins. Catch bookings and the Consumer app are not required.';
+
+  @override
+  String get hostsHostAudiencePeople => 'People';
+
+  @override
+  String get hostsHostAudienceMessage => 'Message';
+
+  @override
+  String get hostsHostAudienceAtAGlance => 'At a glance';
+
+  @override
+  String get hostsHostAudienceContacts => 'Contacts';
+
+  @override
+  String get hostsHostAudienceAttended => 'Attended';
+
+  @override
+  String get hostsHostAudienceRepeat => 'Repeat';
+
+  @override
+  String get hostsHostAudienceWhatsappReady => 'WhatsApp ready';
+
+  @override
+  String hostsHostAudienceSources({
+    required int importedCount,
+    required int linkedCount,
+  }) {
+    return '$importedCount came through external or manual rosters · $linkedCount are linked to verified Catch identities';
+  }
+
+  @override
+  String get hostsHostAudienceDirectory => 'People';
+
+  @override
+  String get hostsHostAudienceSearch => 'Search by name';
+
+  @override
+  String get hostsHostAudienceAll => 'All';
+
+  @override
+  String get hostsHostAudienceCoveragePartial =>
+      'Some history is still being reconciled';
+
+  @override
+  String get hostsHostAudienceCoveragePartialBody =>
+      'Counts may omit older roster changes. Messaging stays blocked until the projection is exact, so nobody receives an accidental blast.';
+
+  @override
+  String get hostsHostAudienceEmpty =>
+      'No people match this filter yet. Import a roster or use the event runtime to start building your history.';
+
+  @override
+  String get hostsHostAudienceWhatsappSender => 'WhatsApp Business sender';
+
+  @override
+  String get hostsHostAudienceWhatsappOwnedSender =>
+      'Connect your own Meta WhatsApp Business account. Catch never sends from a shared number, and only people with explicit organizer-specific opt-in are eligible.';
+
+  @override
+  String get hostsHostAudienceProviderUnavailable =>
+      'WhatsApp setup is not enabled in this environment';
+
+  @override
+  String get hostsHostAudienceProviderUnavailableBody =>
+      'An administrator must configure the Catch Meta app and Embedded Signup configuration before organizers can connect their own senders.';
+
+  @override
+  String get hostsHostAudienceConnectWhatsapp => 'Connect WhatsApp Business';
+
+  @override
+  String get hostsHostAudienceTemplates => 'Message templates';
+
+  @override
+  String hostsHostAudienceApprovedTemplates({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count approved templates',
+      one: '1 approved template',
+      zero: 'No approved templates',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostsHostAudienceSyncTemplates => 'Sync templates';
+
+  @override
+  String get hostsHostAudienceDisconnect => 'Disconnect';
+
+  @override
+  String get hostsHostAudienceTestPhone => 'Test recipient phone';
+
+  @override
+  String get hostsHostAudienceTestPhoneHelp =>
+      'Use an opted-in number you control, including the country code.';
+
+  @override
+  String get hostsHostAudienceSendTest => 'Send verification message';
+
+  @override
+  String get hostsHostAudienceTestPending =>
+      'Meta accepted the test. The sender becomes active after the delivered webhook arrives.';
+
+  @override
+  String get hostsHostAudienceCampaign => 'Message past attendees';
+
+  @override
+  String get hostsHostAudienceCampaignNeedsActiveSender =>
+      'Finish sender verification before creating a campaign. A delivered test proves that webhooks and the selected number work end to end.';
+
+  @override
+  String get hostsHostAudienceCampaignNeedsTemplate =>
+      'Sync an approved Meta template before creating a campaign.';
+
+  @override
+  String get hostsHostAudienceCampaignName => 'Internal campaign name';
+
+  @override
+  String get hostsHostAudienceCampaignNameExample =>
+      'September regulars invitation';
+
+  @override
+  String get hostsHostAudienceMessageType => 'Message type';
+
+  @override
+  String get hostsHostAudienceRecipients => 'Recipient categories';
+
+  @override
+  String get hostsHostAudienceTemplate => 'Approved template';
+
+  @override
+  String get hostsHostAudiencePreviewCampaign => 'Save and preview recipients';
+
+  @override
+  String get hostsHostAudienceCompleteCampaign =>
+      'Add a campaign name and complete every template field before previewing.';
+
+  @override
+  String hostsHostAudienceCampaignStatus({required String status}) {
+    return 'Campaign status: $status';
+  }
+
+  @override
+  String hostsHostAudienceCampaignCounts({
+    required int total,
+    required int reachable,
+    required int optedOut,
+    required int unknown,
+  }) {
+    return '$reachable of $total are reachable · $optedOut opted out · $unknown have unknown permission or identity';
+  }
+
+  @override
+  String hostsHostAudienceDeliveryCounts({
+    required int sent,
+    required int delivered,
+    required int read,
+    required int failed,
+  }) {
+    return '$sent sent · $delivered delivered · $read read · $failed failed';
+  }
+
+  @override
+  String get hostsHostAudienceApprove => 'Approve exact audience';
+
+  @override
+  String get hostsHostAudienceSendNow => 'Send now';
+
+  @override
+  String get hostsHostAudienceRefresh => 'Refresh results';
+
+  @override
+  String get hostsHostAudienceCancel => 'Cancel campaign';
+
+  @override
+  String get hostsHostAudienceNewCampaign => 'New campaign';
+
+  @override
+  String get eventsAttendeeShareLinkLabel => 'Attendee share';
+
+  @override
+  String get hostsHostAudienceExport => 'Export this audience';
+
+  @override
+  String get hostsHostAudienceExportSubject => 'Catch audience export';
+
+  @override
+  String get hostsHostAudienceExportTruncated =>
+      'This export reached the 2,500-contact safety limit.';
+
+  @override
+  String hostsHostAudienceExportCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count organizer contacts.',
+      one: '1 organizer contact.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostsHostAudienceRemoveTitle => 'Remove from Audience?';
+
+  @override
+  String get hostsHostAudienceRemoveBody =>
+      'This hides the person from CRM and future campaigns. Event attendance and audit history stay intact.';
+
+  @override
+  String get hostsHostAudienceRemoveConfirm => 'Remove';
+
+  @override
+  String get hostsHostAudienceRemoveAction => 'Remove from Audience';
+
+  @override
+  String get hostsHostAudienceContactSubtitle => 'Organizer-only CRM record';
+
+  @override
+  String get hostsHostAudienceContactName => 'Name shown to your team';
+
+  @override
+  String get hostsHostAudienceContactNameHelp =>
+      'This does not alter the guest’s Catch profile or verified contact details.';
+
+  @override
+  String get hostsHostAudienceContactSaveName => 'Save name';
+
+  @override
+  String get hostsHostAudienceContactVerifiedPhone => 'Verified phone';
+
+  @override
+  String get hostsHostAudienceContactEmail => 'Email';
+
+  @override
+  String get hostsHostAudienceContactConsentTitle =>
+      'Consent controls delivery';
+
+  @override
+  String get hostsHostAudienceContactConsentPaused =>
+      'Your team has paused WhatsApp campaigns to this person. Their own opt-out remains authoritative.';
+
+  @override
+  String get hostsHostAudienceContactConsentActive =>
+      'Only the person-verified number and active organizer consent can receive a campaign.';
+
+  @override
+  String get hostsHostAudienceContactResumeMessages =>
+      'Resume organizer messages';
+
+  @override
+  String get hostsHostAudienceContactPauseMessages =>
+      'Pause organizer messages';
+
+  @override
+  String get hostsHostAudienceContactEventHistory => 'Event history';
+
+  @override
+  String get hostsHostAudienceSegmentFirstTime => 'First-time attendees';
+
+  @override
+  String get hostsHostAudienceSegmentRepeat => 'Repeat attendees';
+
+  @override
+  String get hostsHostAudienceSegmentRegular => 'Regulars';
+
+  @override
+  String get hostsHostAudienceSegmentLapsed => 'Lapsed regulars';
+
+  @override
+  String get hostsHostAudienceSegmentReliable => 'Reliable attendees';
+
+  @override
+  String get hostsHostAudienceSegmentAdvocate => 'Advocates';
+
+  @override
+  String get hostsHostAudienceSegmentHighImpact => 'High-impact advocates';
+
+  @override
+  String get hostsHostAudienceSegmentWhatsapp => 'WhatsApp reachable';
+
+  @override
+  String get hostsHostAudienceMessageFollowUp => 'Post-event follow-up';
+
+  @override
+  String get hostsHostAudienceMessageUpdate => 'Organizer update';
+
+  @override
+  String get hostsHostAudienceMessagePromotion =>
+      'Event invitation or promotion';
+
+  @override
+  String get hostsHostAudienceSenderActive => 'Active';
+
+  @override
+  String get hostsHostAudienceSenderTesting => 'Verification pending';
+
+  @override
+  String get hostsHostAudienceSenderDegraded => 'Degraded';
+
+  @override
+  String get hostsHostAudienceSenderNeedsAttention => 'Reconnect required';
+
+  @override
+  String hostsHostAudienceEventsAttended({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count events attended',
+      one: '1 event attended',
+      zero: 'No check-ins yet',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostsHostAudienceLastSeen({required String date}) {
+    return 'Last seen $date';
+  }
+
+  @override
+  String get hostsHostAudienceWhatsappOptedIn => 'WhatsApp opted in';
+
+  @override
+  String get hostsHostAudienceIdentityNeedsReview => 'Identity needs review';
+
+  @override
+  String get hostsHostAudienceWebSignupOnly =>
+      'Connect WhatsApp from the Host web app. Once connected, the sender can be managed on any device.';
+
+  @override
+  String get hostsHostAudienceBlockerProvider =>
+      'WhatsApp provider setup is incomplete';
+
+  @override
+  String get hostsHostAudienceBlockerSender =>
+      'Sender verification is incomplete';
+
+  @override
+  String get hostsHostAudienceBlockerTemplate =>
+      'The template is missing or no longer approved';
+
+  @override
+  String get hostsHostAudienceBlockerNoRecipients =>
+      'No selected contacts are both verified and opted in';
+
+  @override
+  String get hostsHostAudienceBlockerCoverage =>
+      'Audience history is still being reconciled';
+
+  @override
+  String get hostsHostAudienceBlockerTooLarge =>
+      'This first release supports up to 100 evaluated contacts per campaign';
+
+  @override
+  String get hostsHostAudienceBlockerEvent =>
+      'The linked event or destination is unavailable';
+
+  @override
+  String get hostsHostAudienceBlockerSchedule =>
+      'The scheduled time has passed';
+
+  @override
+  String get hostsHostAudienceLinkedEvent => 'Event invitation';
+
+  @override
+  String get hostsHostAudienceChooseEvent => 'Choose an event';
+
+  @override
+  String get hostsHostAudienceLinkedEventHelp =>
+      'Catch creates a different private link for each eligible recipient so opens, registrations, referrals, and check-ins can be attributed safely.';
+
+  @override
+  String get hostsHostAudienceInviteDestination => 'Where the invitation opens';
+
+  @override
+  String get hostsHostAudienceDestinationCatchPage => 'Catch event page';
+
+  @override
+  String get hostsHostAudienceDestinationRuntime => 'No-download event runtime';
+
+  @override
+  String get hostsHostAudienceDestinationExternal =>
+      'External booking site via Catch event page';
+
+  @override
+  String get hostsHostAudienceExternalAttributionExplanation =>
+      'Catch records the private-link open, then sends the guest to the external booking page. Registration is confirmed only when a supported provider returns the referral code or the guest later makes a phone-verified runtime claim tied to the roster. An ordinary re-import or manual check-in cannot prove which link caused the booking.';
+
+  @override
+  String get hostsHostAudienceCatchAttributionExplanation =>
+      'Catch can attribute private-link opens and phone-verified web registration. If guests share their own Catch-generated link, their referred registrations and check-ins are counted separately.';
+
+  @override
+  String get hostsEventStaffTitle => 'Event staff access';
+
+  @override
+  String get hostsEventStaffSubtitle =>
+      'Give a trusted operator temporary access to the guest names, check-ins, and runtime identity claims for this event. They cannot edit the event, import guests, see your audience, send messages, connect providers, or view analytics.';
+
+  @override
+  String get hostsEventStaffAdd => 'Add event staff';
+
+  @override
+  String get hostsEventStaffCopyLink => 'Copy staff link';
+
+  @override
+  String get hostsEventStaffEmptyTitle => 'No temporary staff access';
+
+  @override
+  String get hostsEventStaffEmptyMessage =>
+      'Add someone by the phone number they use to sign in to Catch Host. Access expires automatically.';
+
+  @override
+  String hostsEventStaffPhoneEnding({required String digits}) {
+    return 'Phone ending $digits';
+  }
+
+  @override
+  String hostsEventStaffExpires({required String date}) {
+    return 'Access expires $date';
+  }
+
+  @override
+  String get hostsEventStaffRevoke => 'Revoke';
+
+  @override
+  String get hostsEventStaffRevokeTitle => 'Revoke event access?';
+
+  @override
+  String hostsEventStaffRevokeMessage({required String name}) {
+    return '$name will immediately lose access to the roster and runtime claims for this event.';
+  }
+
+  @override
+  String get hostsEventStaffLinkCopied => 'Staff workspace link copied';
+
+  @override
+  String get hostsEventStaffGrantTitle => 'Add event staff';
+
+  @override
+  String get hostsEventStaffGrantSubtitle =>
+      'They must first sign in to Catch Host with this phone number. Access applies only to this event and expires automatically.';
+
+  @override
+  String get hostsEventStaffGrantAction => 'Grant access';
+
+  @override
+  String get hostsEventStaffPhone => 'Operator phone number';
+
+  @override
+  String get hostsEventStaffPhoneRequired =>
+      'Enter the phone number used for Catch Host';
+
+  @override
+  String get hostsEventStaffAccessDuration => 'Access duration';
+
+  @override
+  String get hostsEventStaffDurationFourHours => '4 hours';
+
+  @override
+  String get hostsEventStaffDurationTwelveHours => '12 hours';
+
+  @override
+  String get hostsEventStaffDurationOneDay => '1 day';
+
+  @override
+  String get hostsEventStaffDurationSevenDays => '7 days';
+
+  @override
+  String get hostsEventStaffStatusActive => 'Active';
+
+  @override
+  String get hostsEventStaffStatusRevoked => 'Revoked';
+
+  @override
+  String get hostsEventStaffStatusExpired => 'Expired';
+
+  @override
+  String get hostsEventOperatorTitle => 'Event operations';
+
+  @override
+  String get hostsEventOperatorCancelledTitle => 'This event was cancelled';
+
+  @override
+  String get hostsEventOperatorCancelledMessage =>
+      'Its roster can no longer be changed from the staff workspace.';
+
+  @override
+  String get hostsEventOperatorAccessTitle => 'Restricted event access';
+
+  @override
+  String get hostsEventOperatorAccessSubtitle =>
+      'This workspace contains only the guest roster, check-in controls, and identity claims for this event.';
+
+  @override
+  String get hostsEventOperatorRoleManager => 'Organizer manager';
+
+  @override
+  String get hostsEventOperatorRoleStaff => 'Event staff';
+
+  @override
+  String hostsEventOperatorExpires({required String date}) {
+    return 'Expires $date';
+  }
+
+  @override
+  String get hostsOperationalRosterOutboxPendingTitle =>
+      'Check-ins waiting to sync';
+
+  @override
+  String hostsOperationalRosterOutboxPendingBody({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count attendance changes are saved on this device and will retry with their original operation IDs.',
+      one:
+          '1 attendance change is saved on this device and will retry with the same operation ID.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostsOperationalRosterOutboxReviewTitle =>
+      'Some check-ins need review';
+
+  @override
+  String hostsOperationalRosterOutboxReviewBody({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count saved changes could not be applied because the roster changed. Reload the roster, verify the guests, then discard the stale changes.',
+      one:
+          '1 saved change could not be applied because the roster changed. Reload the roster, verify the guest, then discard the stale change.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostsOperationalRosterOutboxRetry => 'Retry sync';
+
+  @override
+  String get hostsOperationalRosterOutboxDiscard => 'Discard stale changes';
 }

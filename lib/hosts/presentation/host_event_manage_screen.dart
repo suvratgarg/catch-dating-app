@@ -54,6 +54,7 @@ import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_attendance_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_reviews_panel.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_event_staff_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_operational_roster_panel.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -280,8 +281,13 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
               inviteCode: privateLinkActionState!.inviteCode!,
               draft: draft,
             ),
-            onCopyInviteLink: (link, url) =>
-                unawaited(_copyNamedInviteLink(link: link, url: url)),
+            onCopyInviteLink: (link) => unawaited(
+              _copyNamedInviteLink(
+                event: event,
+                inviteCode: privateAccessState!.value!.inviteCode,
+                link: link,
+              ),
+            ),
             onDisableInviteLink: (link) =>
                 unawaited(_disableNamedInviteLink(event: event, link: link)),
           ),
@@ -296,6 +302,8 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
         ),
       ],
       HostEventManageSection.guests => <Widget>[
+        HostEventStaffSection(eventId: event.id),
+        gapH20,
         if (event.isExternalCompanion && event.hasWebRuntime) ...[
           CatchSection.fieldRows(
             first: true,
@@ -315,6 +323,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
         ],
         HostOperationalRosterPanel(
           eventId: event.id,
+          organizerId: event.clubId,
           bookingProvider: event.eventOrigin?.provider,
         ),
         if (!event.isExternalCompanion) ...[
@@ -347,7 +356,11 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
       HostEventManageSection.report => <Widget>[
         HostOperationalRosterPanel(
           eventId: event.id,
-          allowRosterChanges: false,
+          organizerId: event.clubId,
+          allowRosterIntake: false,
+          allowAttendanceChanges: false,
+          allowRuntimeClaimReview: false,
+          showProviderControls: false,
           bookingProvider: event.eventOrigin?.provider,
         ),
         gapH20,
@@ -579,15 +592,16 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
   }
 
   Future<void> _copyNamedInviteLink({
+    required Event event,
+    required String inviteCode,
     required EventInviteLink link,
-    required String url,
   }) async {
     try {
       final label = await HostEventManageController.copyInviteLinkMutation.run(
         ref,
         (tx) => tx
             .get(hostEventManageActionsProvider)
-            .copyInviteLink(label: link.label, url: url),
+            .copyInviteLink(event: event, inviteCode: inviteCode, link: link),
       );
       if (!mounted) return;
       showCatchSnackBar(
@@ -820,7 +834,7 @@ class HostPrivateAccessCard extends StatelessWidget {
   final VoidCallback onRetryInviteLinks;
   final ValueChanged<String> onSharePrivateLink;
   final Future<void> Function(HostInviteLinkDraft draft) onCreateInviteLink;
-  final void Function(EventInviteLink link, String url) onCopyInviteLink;
+  final void Function(EventInviteLink link) onCopyInviteLink;
   final void Function(EventInviteLink link) onDisableInviteLink;
 
   @override
@@ -948,7 +962,7 @@ class HostPrivateAccessBody extends StatelessWidget {
   final VoidCallback onRetryInviteLinks;
   final ValueChanged<String> onSharePrivateLink;
   final Future<void> Function(HostInviteLinkDraft draft) onCreateInviteLink;
-  final void Function(EventInviteLink link, String url) onCopyInviteLink;
+  final void Function(EventInviteLink link) onCopyInviteLink;
   final void Function(EventInviteLink link) onDisableInviteLink;
 
   @override
@@ -1056,7 +1070,7 @@ class HostInviteLinksList extends StatelessWidget {
   final Object? mutationError;
   final VoidCallback onRetry;
   final Future<void> Function(HostInviteLinkDraft draft) onCreateInviteLink;
-  final void Function(EventInviteLink link, String url) onCopyInviteLink;
+  final void Function(EventInviteLink link) onCopyInviteLink;
   final void Function(EventInviteLink link) onDisableInviteLink;
 
   @override
@@ -1168,7 +1182,7 @@ class HostInviteLinkRow extends StatelessWidget {
   final String inviteCode;
   final EventInviteLink link;
   final bool actionsDisabled;
-  final void Function(EventInviteLink link, String url) onCopyInviteLink;
+  final void Function(EventInviteLink link) onCopyInviteLink;
   final void Function(EventInviteLink link) onDisableInviteLink;
 
   @override
@@ -1225,7 +1239,7 @@ class HostInviteLinkRow extends StatelessWidget {
           child: CatchIconButton(
             onTap: rowState.actionsDisabled
                 ? null
-                : () => onCopyInviteLink(link, rowState.url),
+                : () => onCopyInviteLink(link),
             disabled: rowState.actionsDisabled,
             child: Icon(CatchIcons.contentCopyRounded, size: CatchIcon.sm),
           ),

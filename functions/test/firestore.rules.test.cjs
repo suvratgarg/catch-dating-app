@@ -78,6 +78,28 @@ function event(overrides = {}) {
   };
 }
 
+function eventStaffGrant(overrides = {}) {
+  const now = Timestamp.fromDate(new Date("2026-08-12T10:00:00.000Z"));
+  return {
+    organizerId: "club-1",
+    eventId: "event-1",
+    uid: "operator-1",
+    displayName: "Casey",
+    phoneLastFour: "3210",
+    role: "checkInOperator",
+    permissions: ["viewRoster", "setAttendance", "reviewRuntimeClaims"],
+    status: "active",
+    createdBy: "host-1",
+    createdAt: now,
+    expiresAt: Timestamp.fromDate(new Date("2030-08-12T10:00:00.000Z")),
+    revokedBy: null,
+    revokedAt: null,
+    updatedAt: now,
+    revision: 1,
+    ...overrides,
+  };
+}
+
 function externalEvent(overrides = {}) {
   return {
     schemaVersion: 1,
@@ -961,6 +983,105 @@ describe("firestore.rules", () => {
       );
     });
 
+    it("limits event staff to one event's live operational surfaces", async () => {
+      await seed(["clubs", "club-1"], club());
+      await seed(["events", "event-1"], event());
+      await seed(["events", "event-2"], event());
+      await seed(["eventAttendees", "attendee-1"], {
+        eventId: "event-1",
+        clubId: "club-1",
+        displayName: "Asha Shah",
+        phoneE164: "+919876543210",
+        linkedUid: "runner-1",
+        source: "hostImport",
+        status: "registered",
+      });
+      await seed(["eventAttendees", "attendee-2"], {
+        eventId: "event-2",
+        clubId: "club-1",
+        displayName: "Bea Shah",
+        phoneE164: "+919876543211",
+        linkedUid: "runner-2",
+        source: "hostImport",
+        status: "registered",
+      });
+      await seed(["eventAttendeeImports", "import-1"], {
+        eventId: "event-1",
+        clubId: "club-1",
+        uploadedBy: "host-1",
+      });
+      await seed(
+        ["eventRuntimeClaimRequests", "event-1_runner-1"],
+        eventRuntimeClaimRequest(),
+      );
+      await seed(
+        ["eventStaffGrants", "event-1__operator-1"],
+        eventStaffGrant(),
+      );
+
+      await assertSucceeds(getDocs(query(
+        collection(authedDb("operator-1"), "eventAttendees"),
+        where("eventId", "==", "event-1"),
+      )));
+      await assertSucceeds(getDocs(query(
+        collection(authedDb("operator-1"), "eventRuntimeClaimRequests"),
+        where("eventId", "==", "event-1"),
+      )));
+      await assertSucceeds(getDoc(doc(
+        authedDb("operator-1"),
+        "eventStaffGrants",
+        "event-1__operator-1",
+      )));
+      await assertFails(getDocs(query(
+        collection(authedDb("operator-1"), "eventAttendees"),
+        where("eventId", "==", "event-2"),
+      )));
+      await assertFails(getDoc(doc(
+        authedDb("operator-1"),
+        "eventAttendeeImports",
+        "import-1",
+      )));
+      await assertFails(getDocs(collection(
+        authedDb("operator-1"),
+        "eventStaffGrants",
+      )));
+      await assertFails(setDoc(doc(
+        authedDb("operator-1"),
+        "eventStaffGrants",
+        "event-2__operator-1",
+      ), eventStaffGrant({eventId: "event-2"})));
+    });
+
+    it("fails closed for revoked, expired, and wrong-organizer staff grants", async () => {
+      await seed(["clubs", "club-1"], club());
+      await seed(["events", "event-1"], event());
+      await seed(["eventAttendees", "attendee-1"], {
+        eventId: "event-1",
+        clubId: "club-1",
+        displayName: "Asha Shah",
+        phoneE164: "+919876543210",
+        linkedUid: "runner-1",
+        source: "hostImport",
+        status: "registered",
+      });
+      for (const [uid, overrides] of [
+        ["revoked-operator", {status: "revoked"}],
+        ["expired-operator", {
+          expiresAt: Timestamp.fromDate(new Date("2020-08-12T10:00:00.000Z")),
+        }],
+        ["wrong-organizer", {organizerId: "club-2"}],
+      ]) {
+        await seed(
+          ["eventStaffGrants", `event-1__${uid}`],
+          eventStaffGrant({uid, ...overrides}),
+        );
+        await assertFails(getDocs(query(
+          collection(authedDb(uid), "eventAttendees"),
+          where("eventId", "==", "event-1"),
+        )));
+      }
+    });
+
     it("keeps runtime identity owner-private and claim review host-only", async () => {
       await seed(["clubs", "club-1"], club());
       await seed(["events", "event-1"], event());
@@ -1273,6 +1394,32 @@ describe("firestore.rules", () => {
           doc(authedDb("host-1"), "eventBroadcasts", "broadcast-1"),
         ),
       );
+    });
+
+    it("keeps invite secrets, touches, share intents, and attribution server-only", async () => {
+      const paths = [
+        ["eventInviteLinkSecrets", "invite-1"],
+        ["eventInviteTouches", "touch-1"],
+        ["eventShareIntents", "intent-1"],
+        ["eventInviteAttributions", "attribution-1"],
+        ["eventAttendeeAttendanceReceipts", "receipt-1"],
+        ["organizerProviderConnections", "connection-1"],
+        ["externalEventMappings", "mapping-1"],
+        ["providerSyncRuns", "sync-1"],
+      ];
+      for (const path of paths) {
+        await seed(path, {eventId: "event-1", organizerId: "club-1"});
+        for (const uid of ["host-1", "runner-1"]) {
+          await assertFails(getDoc(doc(authedDb(uid), ...path)));
+          await assertFails(setDoc(doc(authedDb(uid), ...path), {
+            eventId: "event-1",
+          }));
+        }
+        await assertFails(getDoc(doc(
+          testEnv.unauthenticatedContext().firestore(),
+          ...path,
+        )));
+      }
     });
 
     it("keeps organizer communication preferences server-only", async () => {

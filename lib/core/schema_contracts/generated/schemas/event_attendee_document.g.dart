@@ -72,6 +72,7 @@ const schemaEventAttendeeDocumentSchema = <String, Object?>{
         'hostImport',
         'hostManual',
         'webOtp',
+        'providerSync',
       ],
     },
     'status': <String, Object?>{
@@ -321,6 +322,127 @@ const schemaEventAttendeeDocumentSchema = <String, Object?>{
           'type': 'null',
         },
       ],
+    },
+    'inviteLinkId': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 1,
+      'maxLength': 180,
+      'description': 'First eligible opaque invitation link preserved on this operational attendee.',
+    },
+    'inviteCapturedAt': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'object',
+          'description': 'Serialized Firestore Timestamp fixture shape.',
+          'x-firestore-type': 'timestamp',
+          'additionalProperties': false,
+          'required': <Object?>[
+            '_seconds',
+            '_nanoseconds',
+          ],
+          'properties': <String, Object?>{
+            '_seconds': <String, Object?>{
+              'type': 'integer',
+            },
+            '_nanoseconds': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 999999999,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+    },
+    'attendanceRevision': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'maximum': 9007199254740991,
+      'description': 'Monotonic revision for absolute Host attendance operations. Missing legacy values read as zero.',
+    },
+    'preCheckInStatus': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'enum': <Object?>[
+        'invited',
+        'registered',
+        'waitlisted',
+        null,
+      ],
+      'description': 'Operational status restored by an absolute undo. Null outside checked-in state.',
+    },
+    'provider': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'enum': <Object?>[
+        'luma',
+        'eventbrite',
+        'partiful',
+        'posh',
+        'bookmyshow',
+        'district',
+        'sortmyscene',
+        'airbnb',
+        null,
+      ],
+      'description': 'External source that most recently supplied provider-authoritative fields, independent of row creation source.',
+    },
+    'providerConnectionId': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'providerGuestId': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 1,
+      'maxLength': 240,
+    },
+    'providerSyncedAt': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'object',
+          'description': 'Serialized Firestore Timestamp fixture shape.',
+          'x-firestore-type': 'timestamp',
+          'additionalProperties': false,
+          'required': <Object?>[
+            '_seconds',
+            '_nanoseconds',
+          ],
+          'properties': <String, Object?>{
+            '_seconds': <String, Object?>{
+              'type': 'integer',
+            },
+            '_nanoseconds': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 999999999,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+    },
+    'providerDataRevision': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'maximum': 9007199254740991,
     },
   },
 };

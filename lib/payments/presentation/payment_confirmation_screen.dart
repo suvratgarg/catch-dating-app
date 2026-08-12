@@ -18,6 +18,7 @@ import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/events/presentation/attendee_event_share_controller.dart';
 import 'package:catch_dating_app/events/shared/event_joined_celebration_screen.dart';
 import 'package:catch_dating_app/events/shared/event_share_card.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -460,10 +461,20 @@ class PaymentConfirmationBodyController extends ConsumerWidget {
       onAddToCalendar: () => unawaited(controller.addToCalendar(event)),
       onOpenDirections: () => unawaited(controller.openDirections(event)),
       onInviteFriend: () => unawaited(
-        showEventShareCardSheet(context, event: event, share: share),
+        showTrackedAttendeeEventShareCardSheet(
+          context,
+          event: event,
+          share: share,
+          actions: ref.read(attendeeEventShareActionsProvider),
+        ),
       ),
       onReferralShare: () => unawaited(
-        showEventShareCardSheet(context, event: event, share: share),
+        showTrackedAttendeeEventShareCardSheet(
+          context,
+          event: event,
+          share: share,
+          actions: ref.read(attendeeEventShareActionsProvider),
+        ),
       ),
       onViewEvent: () => context.goNamed(
         Routes.eventDetailScreen.name,
@@ -644,7 +655,12 @@ class PaymentReferralBannerController extends ConsumerWidget {
     final share = ref.watch(externalShareControllerProvider);
     return PaymentReferralBanner(
       onShare: () => unawaited(
-        showEventShareCardSheet(context, event: event, share: share),
+        showTrackedAttendeeEventShareCardSheet(
+          context,
+          event: event,
+          share: share,
+          actions: ref.read(attendeeEventShareActionsProvider),
+        ),
       ),
     );
   }

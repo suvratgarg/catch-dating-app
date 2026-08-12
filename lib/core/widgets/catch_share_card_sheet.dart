@@ -30,6 +30,7 @@ class CatchShareCardSheet extends StatefulWidget {
     required this.footnote,
     this.subject,
     this.text,
+    this.onShareIntent,
     this.maxWidth = CatchLayout.richShareCardWidth,
     this.pixelRatio = CatchLayout.richShareCardPixelRatio,
   });
@@ -41,6 +42,7 @@ class CatchShareCardSheet extends StatefulWidget {
   final String footnote;
   final String? subject;
   final String? text;
+  final Future<void> Function()? onShareIntent;
   final double maxWidth;
   final double pixelRatio;
 
@@ -69,6 +71,9 @@ class _RichShareCardSheetState extends State<CatchShareCardSheet> {
         key: _captureKey,
         pixelRatio: widget.pixelRatio,
       );
+      if (widget.onShareIntent case final onShareIntent?) {
+        unawaited(_recordShareIntent(onShareIntent));
+      }
       await widget.share.sharePngFile(
         pngBytes: bytes,
         fileName: widget.fileName,
@@ -84,6 +89,14 @@ class _RichShareCardSheetState extends State<CatchShareCardSheet> {
       );
     } finally {
       if (mounted) setState(() => _sharing = false);
+    }
+  }
+
+  Future<void> _recordShareIntent(Future<void> Function() callback) async {
+    try {
+      await callback();
+    } on Object {
+      // Attribution telemetry must never delay or prevent platform sharing.
     }
   }
 

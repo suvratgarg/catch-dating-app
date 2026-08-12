@@ -20,6 +20,7 @@ const schemaGetEventRuntimeBootstrapCallableResponseSchema = <String, Object?>{
       'type': 'object',
       'additionalProperties': false,
       'required': <Object?>[
+        'eventId',
         'publicRuntimeId',
         'title',
         'startTimeMillis',
@@ -27,9 +28,16 @@ const schemaGetEventRuntimeBootstrapCallableResponseSchema = <String, Object?>{
         'locationName',
         'runtimeTermsVersion',
         'moduleIds',
+        'requiredFieldIds',
+        'optionalFieldIds',
         'questionnaireConfig',
       ],
       'properties': <String, Object?>{
+        'eventId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
         'publicRuntimeId': <String, Object?>{
           'type': 'string',
           'pattern': '^[A-Za-z0-9_-]{20,80}\$',
@@ -63,6 +71,38 @@ const schemaGetEventRuntimeBootstrapCallableResponseSchema = <String, Object?>{
             'type': 'string',
             'minLength': 1,
             'maxLength': 120,
+          },
+        },
+        'requiredFieldIds': <String, Object?>{
+          'description': 'Fields that must be completed before event mode opens. Sensitive preference fields are never required for entry.',
+          'type': 'array',
+          'uniqueItems': true,
+          'maxItems': 5,
+          'items': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'displayName',
+              'gender',
+              'interestedInGenders',
+              'relationshipGoal',
+              'dateOfBirth',
+            ],
+          },
+        },
+        'optionalFieldIds': <String, Object?>{
+          'description': 'Plan-derived event-only answers the guest may provide to improve preference-aware suggestions. Guests may skip them and receive neutral assignments.',
+          'type': 'array',
+          'uniqueItems': true,
+          'maxItems': 5,
+          'items': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'displayName',
+              'gender',
+              'interestedInGenders',
+              'relationshipGoal',
+              'dateOfBirth',
+            ],
           },
         },
         'questionnaireConfig': <String, Object?>{

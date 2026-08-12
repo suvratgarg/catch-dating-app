@@ -11,6 +11,12 @@ class AppDeepLinks {
     pathParameters: {'clubId': clubId},
   );
 
+  static Uri eventInvite(String inviteToken) => Uri(
+    scheme: 'https',
+    host: _deepLinkHost,
+    pathSegments: ['invite', inviteToken],
+  );
+
   static Uri event({
     required String clubId,
     required String eventId,
@@ -23,6 +29,11 @@ class AppDeepLinks {
       inviteCode: inviteCode,
       inviteLinkId: inviteLinkId,
     ),
+  );
+
+  static Uri hostOperatorEvent(String eventId) => _httpsRoute(
+    Routes.hostOperatorEventScreen.path,
+    pathParameters: {'eventId': eventId},
   );
 
   static String inAppEventPath({

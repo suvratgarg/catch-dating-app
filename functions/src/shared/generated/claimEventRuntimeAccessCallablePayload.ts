@@ -10,4 +10,8 @@ export interface ClaimEventRuntimeAccessCallablePayload {
   displayName: string;
   runtimeTermsVersion: string;
   attendeeToken?: string | null;
+  /**
+   * Legacy invite-link id or versioned opaque invitation bearer token.
+   */
+  inviteToken?: string | null;
 }

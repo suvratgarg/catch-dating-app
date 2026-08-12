@@ -1,7 +1,7 @@
 {
   "$schema": "./feature_coverage.schema.json",
   "version": 1,
-  "updated": "2026-08-11",
+  "updated": "2026-08-12",
   "owner": "product_design_parity",
   "sourceOfTruth": "Exhaustive migration ledger for feature orchestration contracts across registered Flutter screens, marketing routes, and admin route components. A planned entry names its intended shared feature identity; grouped entries are secondary route projections, not independent features.",
   "authorities": [
@@ -335,6 +335,14 @@
       "priority": "P1",
       "reason": "The no-download attendee runtime is a public-web projection of Event Success with phone OTP, roster claim or approval, event-scoped intake, verified check-in, live modules, and private feedback.",
       "featureContract": "feature.event_success"
+    },
+    {
+      "authority": "marketing_routes",
+      "authorityId": "event_invite",
+      "status": "grouped",
+      "priority": "P1",
+      "reason": "Opaque attributed invitation links are a focused Event Detail entry projection: they record a deduplicated open and hand the guest to Catch registration, the no-download runtime, or the official external booking destination.",
+      "primaryAuthorityId": "event_detail_canonical"
     },
     {
       "authority": "marketing_routes",

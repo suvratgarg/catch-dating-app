@@ -80,6 +80,12 @@ export async function projectEventParticipationToAttendee(
       participation.cancelledAt ?? participation.deletedAt ?? now : null,
     checkedInBy: existing?.checkedInBy ?? null,
     linkedAt: existing?.linkedAt ?? participation.createdAt,
+    inviteLinkId: existing?.inviteLinkId ?? participation.inviteLinkId ?? null,
+    inviteCapturedAt: existing?.inviteCapturedAt ??
+      participation.inviteCapturedAt ?? null,
+    attendanceRevision: existing?.attendanceRevision ?? 0,
+    preCheckInStatus: status === "checkedIn" ?
+      existing?.preCheckInStatus ?? "registered" : null,
   };
   await attendeeRef.set(document);
 }

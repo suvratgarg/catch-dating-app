@@ -1,7 +1,7 @@
 ---
 doc_id: docs_index
-version: 5.3.3
-updated: 2026-08-11
+version: 5.4.0
+updated: 2026-08-12
 owner: agent_operating_model
 status: active
 ---
@@ -66,7 +66,7 @@ document catalog.
 | Clubs-to-organizers migration | `migrations/clubs_to_organizers.md`, `../contracts/migrations/clubs_to_organizers.json` | Organizer subtype taxonomy, canonical/compatibility authority map, dry-run/apply order, parity evidence, recovery, and legacy retirement boundary. |
 | Backend operation ownership | `backend_operation_catalog.md` | Human-readable catalog of direct client writes, callable-owned mutations, trigger-owned projections, server-only collections, and notification starting points. |
 | Event success | `event_success.md` | Live event-success architecture, product guardrails, Firestore contracts, manual QA, participant metrics, and open product decisions. |
-| Standalone Host product and CRM | `host_tooling_consolidation_tracker.md`, `plans/standalone_host_product_and_crm_delivery_plan.md` | Standalone product promise, identity/consent tiers, progressive value ladder, privacy-bounded CRM, profile-free reservation scope, provider gates, remaining delivery tranches, and acceptance criteria. |
+| Standalone Host product and CRM | `host_tooling_consolidation_tracker.md`, `plans/standalone_host_product_and_crm_delivery_plan.md` | Standalone product promise; external-roster, web-runtime, Consumer, provider-sync and Catch-booking capability gates; CRM contacts/categories; WhatsApp Business campaigns; rich invitations/share attribution; profile-free reservation scope; delivery slices; and acceptance criteria. |
 | Cross Paths | `cross_paths.md` | Approved people-in-Explore contract plus implementation receipts for roster privacy and fail-closed global/per-event consent; showcase readiness, sanitized suggestions, invitation, temporary event-plan, capacity, privacy, ranking, analytics, and phased rollout remain owned here. |
 | Location stack | `location_stack_plan.md` | Google Maps/Places, location permissions, run coordinates, check-in geofencing, map navigation, and current map/demo readiness. |
 | Demo data seeding | `demo_data_seeding.md` | Demo seeding scenarios, warm account workflows, demo ops, cleanup/reset commands, and validation workflow. |

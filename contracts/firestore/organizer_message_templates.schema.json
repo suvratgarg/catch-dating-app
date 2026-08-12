@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_message_templates.schema.json",
+  "title": "OrganizerMessageTemplateDocument",
+  "description": "Sanitized provider template metadata used for preview and send eligibility.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerMessageTemplates",
+  "x-firestore-path": "organizerMessageTemplates/{templateId}",
+  "x-document-id-field": "templateId",
+  "x-owner": "WhatsApp template synchronization",
+  "required": ["organizerId", "connectionId", "providerTemplateId", "name", "language", "category", "status", "variableNames", "parameterBindings", "hasMediaHeader", "buttonKinds", "providerUpdatedAt", "syncedAt"],
+  "properties": {
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "connectionId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "providerTemplateId": {"type": "string", "minLength": 1, "maxLength": 120},
+    "name": {"type": "string", "pattern": "^[a-z0-9_]{1,512}$"},
+    "language": {"type": "string", "pattern": "^[A-Za-z]{2,3}(?:_[A-Za-z]{2})?$"},
+    "category": {"type": "string", "enum": ["MARKETING", "UTILITY", "AUTHENTICATION", "UNKNOWN"]},
+    "status": {"type": "string", "enum": ["APPROVED", "PENDING", "REJECTED", "PAUSED", "DISABLED", "DELETED", "UNKNOWN"]},
+    "variableNames": {"type": "array", "maxItems": 20, "uniqueItems": true, "items": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_]{0,63}$"}},
+    "parameterBindings": {"type": "array", "maxItems": 20, "items": {"type": "object", "additionalProperties": false, "required": ["variableName", "component", "position", "buttonIndex"], "properties": {"variableName": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_]{0,63}$"}, "component": {"type": "string", "enum": ["header", "body", "button"]}, "position": {"type": "integer", "minimum": 0, "maximum": 19}, "buttonIndex": {"type": ["integer", "null"], "minimum": 0, "maximum": 9}}}},
+    "hasMediaHeader": {"type": "boolean"},
+    "buttonKinds": {"type": "array", "maxItems": 10, "items": {"type": "string", "enum": ["URL", "PHONE_NUMBER", "QUICK_REPLY", "COPY_CODE", "UNKNOWN"]}},
+    "providerUpdatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
+    "syncedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}
+  }
+}

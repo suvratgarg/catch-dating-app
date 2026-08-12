@@ -191,6 +191,26 @@ service cloud.firestore {
         );
     }
 
+    function eventStaffGrantDocId(eventId, uid) {
+      return eventId + '__' + uid;
+    }
+
+    function hasActiveEventOperatorGrant(eventId, permission) {
+      let grantId = eventStaffGrantDocId(eventId, request.auth.uid);
+      return isAuthed()
+        && exists(/databases/$(database)/documents/eventStaffGrants/$(grantId))
+        && get(/databases/$(database)/documents/eventStaffGrants/$(grantId)).data.eventId == eventId
+        && get(/databases/$(database)/documents/eventStaffGrants/$(grantId)).data.uid == request.auth.uid
+        && get(/databases/$(database)/documents/eventStaffGrants/$(grantId)).data.organizerId == (
+          get(/databases/$(database)/documents/events/$(eventId)).data.keys().hasAny(['organizerId'])
+            ? get(/databases/$(database)/documents/events/$(eventId)).data.organizerId
+            : get(/databases/$(database)/documents/events/$(eventId)).data.clubId
+        )
+        && get(/databases/$(database)/documents/eventStaffGrants/$(grantId)).data.status == 'active'
+        && get(/databases/$(database)/documents/eventStaffGrants/$(grantId)).data.expiresAt > request.time
+        && permission in get(/databases/$(database)/documents/eventStaffGrants/$(grantId)).data.permissions;
+    }
+
     function hasEventParticipationStatus(eventId, uid, statuses) {
       return exists(/databases/$(database)/documents/eventParticipations/$(eventParticipationDocId(eventId, uid)))
         && get(/databases/$(database)/documents/eventParticipations/$(eventParticipationDocId(eventId, uid)))
@@ -923,6 +943,84 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Organizer Audience/CRM projections contain restricted operational PII,
+    // identity candidates, and business traits. All client access is through
+    // manager-authorized, purpose-built callable projections.
+    match /organizerContacts/{contactId} {
+      allow read, write: if false;
+    }
+
+    match /organizerContactIdentityLinks/{identityLinkId} {
+      allow read, write: if false;
+    }
+
+    match /organizerContactIdentityClaims/{identityClaimId} {
+      allow read, write: if false;
+    }
+
+    match /organizerContactEventEdges/{edgeId} {
+      allow read, write: if false;
+    }
+
+    match /organizerContactTraits/{contactId} {
+      allow read, write: if false;
+    }
+
+    match /organizerAudienceSummaries/{organizerId} {
+      allow read, write: if false;
+    }
+
+    match /organizerAudienceProjectionReceipts/{eventId} {
+      allow read, write: if false;
+    }
+
+    match /organizerContactMergeReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
+    // Cross-event CRM campaigns, recipient endpoint snapshots, sender health,
+    // provider receipts, and suppression state are callable/trigger-only. The
+    // Host client receives only purpose-built sanitized projections.
+    match /organizerSenderConnections/{connectionId} {
+      allow read, write: if false;
+    }
+
+    match /organizerProviderConnections/{connectionId} {
+      allow read, write: if false;
+    }
+
+    match /externalEventMappings/{mappingId} {
+      allow read, write: if false;
+    }
+
+    match /providerSyncRuns/{runId} {
+      allow read, write: if false;
+    }
+
+    match /organizerMessageTemplates/{templateId} {
+      allow read, write: if false;
+    }
+
+    match /organizerContactChannelStates/{stateId} {
+      allow read, write: if false;
+    }
+
+    match /organizerCampaigns/{campaignId} {
+      allow read, write: if false;
+    }
+
+    match /organizerCampaignRecipients/{recipientId} {
+      allow read, write: if false;
+    }
+
+    match /organizerCampaignWebhookReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
+    match /organizerMessagingWebhookEvents/{eventId} {
+      allow read, write: if false;
+    }
+
     match /organizerClaimRequests/{requestId} {
       allow read, write: if false;
     }
@@ -1011,7 +1109,10 @@ service cloud.firestore {
     match /eventAttendees/{attendeeId} {
       allow read: if isAuthed()
         && resource.data.eventId is string
-        && isClubHostForEvent(resource.data.eventId);
+        && (
+          isClubHostForEvent(resource.data.eventId)
+          || hasActiveEventOperatorGrant(resource.data.eventId, 'viewRoster')
+        );
       allow write: if false;
     }
 
@@ -1020,6 +1121,12 @@ service cloud.firestore {
         && resource.data.eventId is string
         && isClubHostForEvent(resource.data.eventId);
       allow write: if false;
+    }
+
+    // Idempotency receipts reveal actor and operational state; the callable
+    // returns the bounded result and no client reads or writes this ledger.
+    match /eventAttendeeAttendanceReceipts/{receiptId} {
+      allow read, write: if false;
     }
 
     // The no-download identity edge is private to the authenticated owner.
@@ -1041,8 +1148,21 @@ service cloud.firestore {
     match /eventRuntimeClaimRequests/{requestId} {
       allow read: if isAuthed()
         && resource.data.eventId is string
-        && isClubHostForEvent(resource.data.eventId);
+        && (
+          isClubHostForEvent(resource.data.eventId)
+          || hasActiveEventOperatorGrant(
+            resource.data.eventId,
+            'reviewRuntimeClaims'
+          )
+        );
       allow write: if false;
+    }
+
+    match /eventStaffGrants/{grantId} {
+      allow get: if isAuthed()
+        && resource.data.uid == request.auth.uid
+        && grantId == eventStaffGrantDocId(resource.data.eventId, request.auth.uid);
+      allow list, write: if false;
     }
 
     match /eventParticipations/{participationId} {
@@ -1121,6 +1241,22 @@ service cloud.firestore {
         && resource.data.eventId is string
         && isClubHostForEvent(resource.data.eventId);
       allow write: if false;
+    }
+
+    match /eventInviteLinkSecrets/{inviteLinkId} {
+      allow read, write: if false;
+    }
+
+    match /eventInviteTouches/{touchId} {
+      allow read, write: if false;
+    }
+
+    match /eventShareIntents/{intentId} {
+      allow read, write: if false;
+    }
+
+    match /eventInviteAttributions/{attributionId} {
+      allow read, write: if false;
     }
 
     match /savedEvents/{savedEventId} {

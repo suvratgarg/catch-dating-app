@@ -527,11 +527,28 @@
       "exportedFunctions": [
         "importEventAttendees",
         "markEventAttendeeAttendance",
+        "setEventAttendeeAttendance",
         "registerPublicEvent",
-        "onEventParticipationRosterProjected"
+        "onEventParticipationRosterProjected",
+        "onOrganizerContactEventEdgeInviteAttributed"
       ],
       "migrationNotes": [
         "Private event-scoped operational roster across Catch bookings, Host imports/manual rows, and web OTP registration; linkedUid is optional and never synthetic."
+      ]
+    },
+    {
+      "id": "eventAttendeeAttendanceReceipts",
+      "path": "eventAttendeeAttendanceReceipts/{receiptId}",
+      "rulesMatch": "/eventAttendeeAttendanceReceipts/{receiptId}",
+      "typescriptInterface": "EventAttendeeAttendanceReceiptDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "setEventAttendeeAttendance callable",
+      "read": "server only; replay result is returned by the callable",
+      "write": "server only",
+      "exportedFunctions": ["setEventAttendeeAttendance"],
+      "migrationNotes": [
+        "Thirty-day TTL receipts make absolute Host attendance retries idempotent without retaining a second roster."
       ]
     },
     {
@@ -553,6 +570,209 @@
         "A roster phone number never grants marketing permission. Only an explicit per-channel organizer opt-in creates or advances this record.",
         "Catch platform marketing consent remains a separate purpose and is not represented here."
       ]
+    },
+    {
+      "id": "organizerContacts",
+      "path": "organizerContacts/{contactId}",
+      "rulesMatch": "/organizerContacts/{contactId}",
+      "typescriptInterface": "OrganizerContactDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "organizer audience projection and manager-only CRM callables",
+      "read": "server only; manager access is through safe paginated callables",
+      "write": "server only",
+      "exportedFunctions": [
+        "onEventAttendeeAudienceProjected",
+        "onOrganizerCommunicationPreferenceAudienceProjected",
+        "onOrganizerContactEventEdgeInviteAttributed",
+        "getOrganizerCrmSummary",
+        "listOrganizerContacts",
+        "getOrganizerContactDetail",
+        "mergeOrganizerContacts",
+        "unmergeOrganizerContacts"
+      ],
+      "migrationNotes": [
+        "Contacts are organizer-scoped operational records, never Consumer profiles.",
+        "Imported phone and email values are duplicate candidates rather than verified merge evidence."
+      ]
+    },
+    {
+      "id": "organizerContactIdentityLinks",
+      "path": "organizerContactIdentityLinks/{identityLinkId}",
+      "rulesMatch": "/organizerContactIdentityLinks/{identityLinkId}",
+      "typescriptInterface": "OrganizerContactIdentityLinkDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "organizer audience identity resolver",
+      "read": "server only",
+      "write": "server only",
+      "exportedFunctions": [
+        "onEventAttendeeAudienceProjected",
+        "getOrganizerContactDetail",
+        "mergeOrganizerContacts",
+        "unmergeOrganizerContacts"
+      ],
+      "migrationNotes": [
+        "Each document is one attendee-to-contact identity evidence edge; candidate sets are queried rather than stored as mutable arrays.",
+        "Keyed hashes are restricted lookup identifiers, not anonymous data.",
+        "Secret rotation requires a dual-hash backfill before changing the active version."
+      ]
+    },
+    {
+      "id": "organizerContactEventEdges",
+      "path": "organizerContactEventEdges/{edgeId}",
+      "rulesMatch": "/organizerContactEventEdges/{edgeId}",
+      "typescriptInterface": "OrganizerContactEventEdgeDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "organizer audience projection",
+      "read": "server only; manager access is through CRM detail callables",
+      "write": "server only",
+      "exportedFunctions": [
+        "onEventAttendeeAudienceProjected",
+        "mergeOrganizerContacts",
+        "unmergeOrganizerContacts"
+      ],
+      "migrationNotes": [
+        "Edges are rebuildable from canonical attendee and event facts and retain the attendee source revision."
+      ]
+    },
+    {
+      "id": "organizerContactIdentityClaims",
+      "path": "organizerContactIdentityClaims/{identityClaimId}",
+      "rulesMatch": "/organizerContactIdentityClaims/{identityClaimId}",
+      "typescriptInterface": "OrganizerContactIdentityClaimDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "organizer audience identity resolver and merge operations",
+      "read": "server only",
+      "write": "server only",
+      "exportedFunctions": [
+        "onEventAttendeeAudienceProjected",
+        "mergeOrganizerContacts",
+        "unmergeOrganizerContacts"
+      ],
+      "migrationNotes": [
+        "Only person-verified UID and phone identities receive singleton ownership claims.",
+        "Conflicting verified claims stop automatic merging and require a receipt-backed manager decision."
+      ]
+    },
+    {
+      "id": "organizerContactTraits",
+      "path": "organizerContactTraits/{contactId}",
+      "rulesMatch": "/organizerContactTraits/{contactId}",
+      "typescriptInterface": "OrganizerContactTraitDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "organizer audience projection",
+      "read": "server only; purpose-built CRM callables expose safe fields",
+      "write": "server only",
+      "exportedFunctions": [
+        "onEventAttendeeAudienceProjected",
+        "onOrganizerCommunicationPreferenceAudienceProjected",
+        "onOrganizerContactEventEdgeInviteAttributed",
+        "listOrganizerContacts",
+        "getOrganizerContactDetail"
+      ],
+      "migrationNotes": [
+        "Traits are rebuildable and exclude Event Success compatibility, safety, dating and demographic inputs."
+      ]
+    },
+    {
+      "id": "organizerAudienceSummaries",
+      "path": "organizerAudienceSummaries/{organizerId}",
+      "rulesMatch": "/organizerAudienceSummaries/{organizerId}",
+      "typescriptInterface": "OrganizerAudienceSummaryDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "organizer audience projection and getOrganizerCrmSummary",
+      "read": "server only; manager aggregate access is callable-owned",
+      "write": "server only",
+      "exportedFunctions": [
+        "onEventAttendeeAudienceProjected",
+        "onOrganizerCommunicationPreferenceAudienceProjected",
+        "onOrganizerContactEventEdgeInviteAttributed",
+        "getOrganizerCrmSummary"
+      ],
+      "migrationNotes": [
+        "Summary reads replace the legacy 2500-row callable scan after dual-write backfill comparison."
+      ]
+    },
+    {
+      "id": "organizerContactMergeReceipts",
+      "path": "organizerContactMergeReceipts/{receiptId}",
+      "rulesMatch": "/organizerContactMergeReceipts/{receiptId}",
+      "typescriptInterface": "OrganizerContactMergeReceiptDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "organizer contact merge and unmerge callables",
+      "read": "server only; authorized managers receive sanitized merge history",
+      "write": "server only",
+      "exportedFunctions": [
+        "mergeOrganizerContacts",
+        "unmergeOrganizerContacts"
+      ],
+      "migrationNotes": [
+        "Receipts are immutable. Unmerge writes a new reversal receipt and rebuilds source edges."
+      ]
+    },
+    {
+      "id": "organizerAudienceProjectionReceipts",
+      "path": "organizerAudienceProjectionReceipts/{eventId}",
+      "rulesMatch": "/organizerAudienceProjectionReceipts/{eventId}",
+      "typescriptInterface": "OrganizerAudienceProjectionReceiptDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "organizer audience summary projection",
+      "read": "server only",
+      "write": "server only",
+      "exportedFunctions": [
+        "onEventAttendeeAudienceProjected",
+        "onOrganizerCommunicationPreferenceAudienceProjected"
+      ],
+      "migrationNotes": [
+        "Receipts make summary deltas exactly once across trigger retries.",
+        "Requires a Firestore TTL policy on expiresAt."
+      ]
+    },
+    {
+      "id": "organizerProviderConnections",
+      "path": "organizerProviderConnections/{connectionId}",
+      "rulesMatch": "/organizerProviderConnections/{connectionId}",
+      "typescriptInterface": "OrganizerProviderConnectionDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "organizer booking-provider connection callables",
+      "read": "server only; manager setup projection is callable-owned",
+      "write": "server only; credentials remain in Secret Manager",
+      "exportedFunctions": ["connectOrganizerLumaProvider", "disconnectOrganizerProvider", "getOrganizerProviderSetup", "listOrganizerLumaEvents", "syncOrganizerProviderEvent"],
+      "migrationNotes": ["Provider capability coverage is field-scoped; a connection never implies universal booking, payment, refund, referral, or webhook authority."]
+    },
+    {
+      "id": "externalEventMappings",
+      "path": "externalEventMappings/{mappingId}",
+      "rulesMatch": "/externalEventMappings/{mappingId}",
+      "typescriptInterface": "ExternalEventMappingDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "external event provider mapping and reconciliation callables",
+      "read": "server only; manager setup projection is callable-owned",
+      "write": "server only",
+      "exportedFunctions": ["connectOrganizerLumaProvider", "disconnectOrganizerProvider", "getOrganizerProviderSetup", "syncOrganizerProviderEvent"],
+      "migrationNotes": ["One deterministic mapping per Catch event preserves immutable provider and field authority while allowing credential rotation."]
+    },
+    {
+      "id": "providerSyncRuns",
+      "path": "providerSyncRuns/{runId}",
+      "rulesMatch": "/providerSyncRuns/{runId}",
+      "typescriptInterface": "ProviderSyncRunDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "external provider roster reconciliation callable",
+      "read": "server only; sanitized result is callable-owned",
+      "write": "server only",
+      "exportedFunctions": ["syncOrganizerProviderEvent"],
+      "migrationNotes": ["Thirty-day TTL receipt prevents duplicate sync operations and records bounded counts without retaining provider payloads."]
     },
     {
       "id": "eventRuntimeParticipants",
@@ -704,8 +924,12 @@
       "write": "server only",
       "exportedFunctions": [
         "createEventInviteLink",
+        "createAttendeeInviteLink",
+        "getEventInviteLinkToken",
         "disableEventInviteLink",
         "recordEventInviteLinkOpen",
+        "recordEventShareIntent",
+        "onOrganizerContactEventEdgeInviteAttributed",
         "onEventInviteLinkWritten",
         "onEventParticipationWritten",
         "onPaymentWritten",
@@ -714,7 +938,73 @@
         "onMessageCreated"
       ],
       "migrationNotes": [
-        "Named host links track opens, requests, confirmations, payments, check-ins, matches, and chat starts without erasing disabled-link history."
+        "Named host, direct-recipient, promoter, partner, and attendee-referrer links carry opaque versioned bearer tokens; secret material is never client-readable.",
+        "Share intent is a Catch-owned button action, not proof that WhatsApp or another destination received a message. Verified registration and check-in attribution is projected from canonical attendee facts and remains reversible."
+      ]
+    },
+    {
+      "id": "eventInviteLinkSecrets",
+      "path": "eventInviteLinkSecrets/{inviteLinkId}",
+      "rulesMatch": "/eventInviteLinkSecrets/{inviteLinkId}",
+      "typescriptInterface": "EventInviteLinkSecretDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "event invite link token callables",
+      "read": "server only; authorized token retrieval is callable-owned",
+      "write": "server only",
+      "exportedFunctions": [
+        "createEventInviteLink",
+        "createAttendeeInviteLink",
+        "getEventInviteLinkToken"
+      ],
+      "migrationNotes": [
+        "Raw bearer tokens are isolated from host-readable aggregate link documents and direct client access is denied."
+      ]
+    },
+    {
+      "id": "eventInviteTouches",
+      "path": "eventInviteTouches/{touchId}",
+      "rulesMatch": "/eventInviteTouches/{touchId}",
+      "typescriptInterface": "EventInviteTouchDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "recordEventInviteLinkOpen",
+      "read": "server only; Hosts receive aggregate link counts",
+      "write": "server only",
+      "exportedFunctions": ["recordEventInviteLinkOpen"],
+      "migrationNotes": [
+        "Short-lived deduplication evidence expires by TTL; no recipient identity is inferred from an open."
+      ]
+    },
+    {
+      "id": "eventShareIntents",
+      "path": "eventShareIntents/{intentId}",
+      "rulesMatch": "/eventShareIntents/{intentId}",
+      "typescriptInterface": "EventShareIntentDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "recordEventShareIntent",
+      "read": "server only; Hosts receive aggregate link counts",
+      "write": "server only",
+      "exportedFunctions": ["recordEventShareIntent"],
+      "migrationNotes": [
+        "A share intent records only a Catch-owned share action and expires by TTL; it does not assert delivery or recipient identity."
+      ]
+    },
+    {
+      "id": "eventInviteAttributions",
+      "path": "eventInviteAttributions/{attributionId}",
+      "rulesMatch": "/eventInviteAttributions/{attributionId}",
+      "typescriptInterface": "EventInviteAttributionDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "verified event fact attribution projection",
+      "read": "server only; Hosts receive authorized aggregates and traits",
+      "write": "server only",
+      "exportedFunctions": ["onOrganizerContactEventEdgeInviteAttributed"],
+      "migrationNotes": [
+        "Immutable deterministic credit and reversal facts use one primary invite link per attendee fact; self-use never creates referral credit.",
+        "High-impact advocate status requires three referred verified check-ins during the trailing 365 days."
       ]
     },
     {

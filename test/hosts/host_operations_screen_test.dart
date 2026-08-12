@@ -1230,6 +1230,7 @@ void main() {
       expect(tabRail, findsOneWidget);
       expect(tab('Organizer'), findsNothing);
       expect(tab('Edit'), findsOneWidget);
+      expect(tab('Audience'), findsOneWidget);
       expect(tab('Insights'), findsOneWidget);
       expect(tab('Preview'), findsOneWidget);
       expect(
@@ -1245,7 +1246,7 @@ void main() {
       );
       expect(
         workspaceSemantics.properties.hint,
-        'Drag left or right to switch between Edit, Insights, and Preview.',
+        'Drag left or right to switch between Edit, Audience, Insights, and Preview.',
       );
       final currentPage = tester.widget<CatchTabbedPageScrollView>(
         find.byType(CatchTabbedPageScrollView),
@@ -1408,77 +1409,7 @@ void main() {
     );
   });
 
-  testWidgets('Host club workspace uses native horizontal tab paging', (
-    tester,
-  ) async {
-    tester.view.devicePixelRatio = 1;
-    tester.view.physicalSize = const Size(390, 844);
-    addTearDown(tester.view.resetPhysicalSize);
-    addTearDown(tester.view.resetDevicePixelRatio);
-
-    final ownedClub = buildClub(
-      id: 'paged-club',
-      name: 'Paged Club',
-      ownerUserId: _hostUid,
-    );
-
-    await _pumpHostScreen(
-      tester,
-      const HostClubsScreen(),
-      overrides: [
-        ..._hostClubOverrides(owned: [ownedClub]),
-        watchEventsForClubProvider(
-          ownedClub.id,
-        ).overrideWithValue(const AsyncData<List<Event>>([])),
-        clubDetailViewModelProvider(ownedClub.id).overrideWithValue(
-          AsyncData<ClubDetailViewModel?>(_previewViewModel(ownedClub)),
-        ),
-        watchHostPaymentAccountProvider(
-          _hostUid,
-        ).overrideWithValue(const AsyncData<HostPaymentAccount?>(null)),
-        hostAnalyticsRepositoryProvider.overrideWithValue(
-          const _EmptyHostAnalyticsRepository(),
-        ),
-      ],
-    );
-
-    final pager = find.byType(TabBarView);
-    expect(
-      find.byKey(const ValueKey('host-club-insights-summary')),
-      findsNothing,
-    );
-    expect(find.byType(HostClubEditTab), findsOneWidget);
-    expect(find.byType(HostClubInsightsPane), findsNothing);
-
-    await tester.drag(pager, const Offset(-320, 0));
-    await pumpFeatureUi(tester);
-    expect(find.byType(HostClubInsightsPane), findsOneWidget);
-    expect(
-      find.byKey(const ValueKey('host-club-insights-summary')),
-      findsOneWidget,
-    );
-    expect(find.byType(HostClubEditTab), findsNothing);
-
-    await tester.drag(pager, const Offset(-320, 0));
-    await pumpFeatureUi(tester);
-    expect(
-      find.byKey(const ValueKey('club-detail-hero-module')),
-      findsOneWidget,
-    );
-    expect(find.text('Open public preview'), findsNothing);
-
-    await tester.drag(pager, const Offset(320, 0));
-    await pumpFeatureUi(tester);
-    expect(find.byType(HostClubInsightsPane), findsOneWidget);
-
-    await tester.drag(pager, const Offset(320, 0));
-    await pumpFeatureUi(tester);
-    expect(find.byType(HostClubEditTab), findsOneWidget);
-    expect(
-      find.byKey(const ValueKey('host-club-insights-summary')),
-      findsNothing,
-    );
-  });
+  registerHostWorkspacePagingTest();
 
   testWidgets(
     'Host edit content is centered, capped, and reveals stable keys',

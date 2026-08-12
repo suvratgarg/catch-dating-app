@@ -122,6 +122,10 @@
         {
           "source": "/join/**",
           "destination": "/join/index.html"
+        },
+        {
+          "source": "/invite/**",
+          "destination": "/invite/index.html"
         }
       ]
     },

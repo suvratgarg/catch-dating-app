@@ -9,6 +9,12 @@
   "properties": {
     "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "displayName": {"type": "string", "minLength": 1, "maxLength": 120},
+    "inviteToken": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Legacy invite-link id or versioned opaque invitation bearer token."
+    },
     "organizerUpdates": {
       "description": "Optional, explicit opt-in to organizer marketing updates. Absence never grants consent.",
       "type": "object",
