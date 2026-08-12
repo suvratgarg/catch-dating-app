@@ -144,22 +144,46 @@ is_retryable_cocoapods_git_tls_failure() {
     "$log_file"
 }
 
-run_flutter_with_cocoapods_git_tls_retry() {
-  local max_attempts="${CATCH_COCOAPODS_TLS_MAX_ATTEMPTS:-3}"
-  local retry_delay_seconds="${CATCH_COCOAPODS_TLS_RETRY_DELAY_SECONDS:-15}"
+is_retryable_gradle_wrapper_download_failure() {
+  local log_file="$1"
+  grep -Eq \
+    'java\.net\.(SocketException|SocketTimeoutException): (Unexpected end of file from server|Connection reset|Read timed out)' \
+    "$log_file" &&
+    grep -Eq 'at org\.gradle\.wrapper\.Download\.download' "$log_file"
+}
+
+run_flutter_with_bounded_ci_retry() {
+  local retry_kind="$1"
+  shift
+  local max_attempts
+  local retry_delay_seconds
+  case "$retry_kind" in
+    cocoapods-git-tls)
+      max_attempts="${CATCH_COCOAPODS_TLS_MAX_ATTEMPTS:-3}"
+      retry_delay_seconds="${CATCH_COCOAPODS_TLS_RETRY_DELAY_SECONDS:-15}"
+      ;;
+    gradle-wrapper-download)
+      max_attempts="${CATCH_GRADLE_WRAPPER_MAX_ATTEMPTS:-3}"
+      retry_delay_seconds="${CATCH_GRADLE_WRAPPER_RETRY_DELAY_SECONDS:-15}"
+      ;;
+    *)
+      echo "Unsupported CI retry kind: $retry_kind" >&2
+      return 64
+      ;;
+  esac
 
   if [[ ! "$max_attempts" =~ ^[1-5]$ ]]; then
-    echo "CATCH_COCOAPODS_TLS_MAX_ATTEMPTS must be an integer from 1 to 5." >&2
+    echo "CI dependency retry attempts must be an integer from 1 to 5." >&2
     return 64
   fi
   if [[ ! "$retry_delay_seconds" =~ ^[0-9]+$ ]] ||
     ((10#$retry_delay_seconds > 60)); then
-    echo "CATCH_COCOAPODS_TLS_RETRY_DELAY_SECONDS must be an integer from 0 to 60." >&2
+    echo "CI dependency retry delay must be an integer from 0 to 60." >&2
     return 64
   fi
 
   local retry_log
-  retry_log="$(mktemp "${TMPDIR:-/tmp}/catch-cocoapods-tls.XXXXXX")"
+  retry_log="$(mktemp "${TMPDIR:-/tmp}/catch-ci-dependency.XXXXXX")"
   trap "rm -f '$retry_log'" EXIT
 
   local attempt=1
@@ -185,18 +209,32 @@ run_flutter_with_cocoapods_git_tls_retry() {
       trap - EXIT
       return 0
     fi
-    if ! is_retryable_cocoapods_git_tls_failure "$retry_log" ||
-      ((attempt == max_attempts)); then
+    local is_retryable=1
+    if [[ "$retry_kind" == "cocoapods-git-tls" ]]; then
+      is_retryable_cocoapods_git_tls_failure "$retry_log" && is_retryable=0
+    else
+      is_retryable_gradle_wrapper_download_failure "$retry_log" && is_retryable=0
+    fi
+    if ((is_retryable != 0 || attempt == max_attempts)); then
       rm -f "$retry_log"
       trap - EXIT
       return "$flutter_status"
     fi
 
     attempt=$((attempt + 1))
-    if [[ "${GITHUB_ACTIONS:-}" == "true" ]]; then
-      echo "::warning title=CocoaPods Git TLS retry::Retrying the iOS Flutter build after a transient verified GitHub certificate failure (attempt $attempt/$max_attempts)."
+    local retry_message
+    local warning_title
+    if [[ "$retry_kind" == "cocoapods-git-tls" ]]; then
+      warning_title="CocoaPods Git TLS retry"
+      retry_message="Retrying the iOS Flutter build after a transient verified GitHub certificate failure"
     else
-      echo "Retrying the iOS Flutter build after a transient verified GitHub certificate failure (attempt $attempt/$max_attempts)." >&2
+      warning_title="Gradle wrapper download retry"
+      retry_message="Retrying the Android Flutter build after a transient verified Gradle wrapper download failure"
+    fi
+    if [[ "${GITHUB_ACTIONS:-}" == "true" ]]; then
+      echo "::warning title=$warning_title::$retry_message (attempt $attempt/$max_attempts)."
+    else
+      echo "$retry_message (attempt $attempt/$max_attempts)." >&2
     fi
     if ((retry_delay_seconds > 0)); then
       sleep "$retry_delay_seconds"
@@ -457,10 +495,19 @@ fi
 cd "$app_project_root"
 if [[ ( "${CI:-}" == "true" || "${GITHUB_ACTIONS:-}" == "true" ) &&
   ${#flutter_args[@]} -ge 2 &&
-  "${flutter_args[0]}" == "build" &&
-  "${flutter_args[1]}" == "ios" ]]; then
-  run_flutter_with_cocoapods_git_tls_retry "${resolved_flutter_args[@]}"
-  exit 0
+  "${flutter_args[0]}" == "build" ]]; then
+  case "${flutter_args[1]}" in
+    ios)
+      run_flutter_with_bounded_ci_retry \
+        cocoapods-git-tls "${resolved_flutter_args[@]}"
+      exit 0
+      ;;
+    apk|appbundle)
+      run_flutter_with_bounded_ci_retry \
+        gradle-wrapper-download "${resolved_flutter_args[@]}"
+      exit 0
+      ;;
+  esac
 fi
 
 exec flutter "${resolved_flutter_args[@]}"

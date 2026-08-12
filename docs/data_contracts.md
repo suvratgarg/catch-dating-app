@@ -531,7 +531,16 @@ detail, export and contact-mutation callables; it never reads these collections
 directly. Campaign approval freezes a server-owned recipient snapshot and
 dispatch rechecks current permission, contact suppression, sender/template
 health and event state before each attempt. Meta provider tokens live in Secret
-Manager. Webhook receipts are signature-verified, deduplicated and monotonic;
+Manager. Every environment pre-provisions one
+`ORGANIZER_WHATSAPP_ACCESS_TOKENS` vault; each organizer connection is stored
+as a distinct immutable secret version containing its organizer and connection
+binding, and retired versions are disabled. The Functions runtime receives
+secret-level accessor and version-manager roles on that vault only; it may not
+create secrets or access unrelated application secrets. Existing raw-token
+versions remain readable only for migration compatibility. Meta integration is
+reported configured only when `META_WHATSAPP_ENABLED=true` and the real Meta
+app/config credentials are present. Webhook receipts are signature-verified,
+deduplicated and monotonic;
 STOP updates the same organizer-scoped preference/suppression boundary without
 retaining inbound message content. Account
 deletion removes the onboarding draft, organizer communication grants, UID

@@ -1,5 +1,4 @@
 import {SecretManagerServiceClient} from "@google-cloud/secret-manager";
-import * as crypto from "node:crypto";
 import * as admin from "firebase-admin";
 import {HttpsError} from "firebase-functions/v2/https";
 import {OrganizerMessageTemplateDocument} from
@@ -53,7 +52,13 @@ export class MetaProviderError extends Error {
 }
 
 export class OrganizerTokenStore {
-  constructor(private readonly client = new SecretManagerServiceClient()) {}
+  constructor(
+    private readonly client = new SecretManagerServiceClient(),
+    private readonly secretId = (
+      process.env.ORGANIZER_WHATSAPP_TOKEN_SECRET_ID ??
+        "ORGANIZER_WHATSAPP_ACCESS_TOKENS"
+    ),
+  ) {}
 
   async store(params: {
     organizerId: string;
@@ -63,24 +68,16 @@ export class OrganizerTokenStore {
     const projectId =
       process.env.GCLOUD_PROJECT ?? admin.app().options.projectId;
     if (!projectId) throw new Error("Firebase project id is unavailable.");
-    const parent = `projects/${projectId}`;
-    const secretId = `organizer-whatsapp-${crypto
-      .createHash("sha256")
-      .update(`${params.organizerId}|${params.connectionId}`)
-      .digest("hex")
-      .slice(0, 32)}`;
-    try {
-      await this.client.createSecret({
-        parent,
-        secretId,
-        secret: {replication: {automatic: {}}},
-      });
-    } catch (error) {
-      if (grpcCode(error) !== 6) throw error;
-    }
+    const secretResource = `projects/${projectId}/secrets/${this.secretId}`;
+    const credential = JSON.stringify({
+      schema: "catch.organizer-whatsapp-token/v1",
+      organizerId: params.organizerId,
+      connectionId: params.connectionId,
+      accessToken: params.accessToken,
+    });
     const [version] = await this.client.addSecretVersion({
-      parent: `${parent}/secrets/${secretId}`,
-      payload: {data: Buffer.from(params.accessToken, "utf8")},
+      parent: secretResource,
+      payload: {data: Buffer.from(credential, "utf8")},
     });
     if (!version.name) throw new Error("Secret Manager returned no version.");
     return version.name;
@@ -91,12 +88,28 @@ export class OrganizerTokenStore {
       name: versionResource,
     });
     const value = version.payload?.data?.toString("utf8") ?? "";
-    if (!value) throw new Error("Organizer sender credential is empty.");
-    return value;
+    const credential = parseStoredCredential(value);
+    if (!credential.accessToken) {
+      throw new Error("Organizer sender credential is empty.");
+    }
+    return credential.accessToken;
   }
 
   async disable(versionResource: string): Promise<void> {
     await this.client.disableSecretVersion({name: versionResource});
+  }
+}
+
+function parseStoredCredential(value: string): {accessToken: string} {
+  try {
+    const parsed = JSON.parse(value) as Record<string, unknown>;
+    return {
+      accessToken: typeof parsed.accessToken === "string" ?
+        parsed.accessToken : "",
+    };
+  } catch {
+    // Accept the original raw-token versions during the vault migration.
+    return {accessToken: value};
   }
 }
 
@@ -526,10 +539,4 @@ function stringValue(value: unknown): string | null {
 
 function numberValue(value: unknown): number | null {
   return typeof value === "number" && Number.isFinite(value) ? value : null;
-}
-
-function grpcCode(value: unknown): number | null {
-  if (typeof value !== "object" || value === null) return null;
-  const code = (value as { code?: unknown }).code;
-  return typeof code === "number" ? code : null;
 }

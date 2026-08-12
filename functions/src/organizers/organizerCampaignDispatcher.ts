@@ -46,6 +46,7 @@ import {
   metaWhatsappAppSecret,
   metaWhatsappConfigId,
   metaWhatsappGraphVersion,
+  organizerWhatsappAccessTokens,
 } from "./organizerMessagingSetup";
 import {
   MetaProviderError,
@@ -680,7 +681,7 @@ const dispatcherCallableLimits = {
 
 export const dispatchOrganizerCampaign = onCall(
   appCheckCallableOptionsWithSecrets(
-    [metaWhatsappAppSecret],
+    [metaWhatsappAppSecret, organizerWhatsappAccessTokens],
     dispatcherCallableLimits,
   ),
   (request) => dispatchOrganizerCampaignHandler(request),
@@ -692,7 +693,7 @@ export const dispatchScheduledOrganizerCampaigns = onSchedule(
     timeZone: "Asia/Kolkata",
     timeoutSeconds: 540,
     maxInstances: 1,
-    secrets: [metaWhatsappAppSecret],
+    secrets: [metaWhatsappAppSecret, organizerWhatsappAccessTokens],
   },
   async () => {
     const db = defaultDeps.firestore();

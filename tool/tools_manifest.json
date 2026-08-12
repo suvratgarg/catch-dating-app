@@ -687,7 +687,7 @@
       "command": "bash tool/flutter_with_env.test.sh",
       "safety": "local-readonly",
       "status": "active",
-      "description": "Regression-checks canonical Flutter app-target arguments and the narrowly bounded CI-only CocoaPods Git TLS retry contract.",
+      "description": "Regression-checks canonical Flutter app-target arguments and narrowly bounded CI-only retries for verified CocoaPods Git TLS and Gradle-wrapper download failures.",
       "checks": [
         "bash -n tool/flutter_with_env.sh",
         "bash -n tool/flutter_with_env.test.sh",
@@ -706,6 +706,8 @@
           "Expected exact CocoaPods Git TLS failure to succeed on bounded retry.",
           "Expected non-TLS compile failures to fail immediately without retry.",
           "Expected CocoaPods Git TLS retries to stop after exactly three attempts.",
+          "Expected exact Gradle wrapper download failure to succeed on bounded retry.",
+          "Expected unrelated Android network-like failures to fail without retry.",
           "Expected local Flutter builds to retain single-attempt behavior."
         ]
       }

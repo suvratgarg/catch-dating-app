@@ -344,6 +344,39 @@
       ]
     },
     {
+      "id": "functions.secret.organizer-whatsapp-access-tokens",
+      "kind": "secret-version",
+      "name": "ORGANIZER_WHATSAPP_ACCESS_TOKENS",
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
+      "requiredWhen": {
+        "anyDeployTarget": [
+          "functions:completeOrganizerWhatsappConnection",
+          "functions:disconnectOrganizerWhatsappConnection",
+          "functions:dispatchOrganizerCampaign",
+          "functions:dispatchScheduledOrganizerCampaigns",
+          "functions:sendOrganizerWhatsappTest",
+          "functions:syncOrganizerWhatsappTemplates"
+        ]
+      },
+      "acceptedStates": [
+        "ENABLED"
+      ],
+      "runtimeRoles": [
+        "roles/secretmanager.secretAccessor",
+        "roles/secretmanager.secretVersionManager"
+      ],
+      "owner": "organizer-messaging",
+      "sourcePaths": [
+        "functions/src/organizers/organizerCampaignDispatcher.ts",
+        "functions/src/organizers/organizerMessagingSetup.ts",
+        "functions/src/organizers/organizerWhatsappProvider.ts"
+      ]
+    },
+    {
       "id": "functions.secret.organizer-contact-identity-key",
       "kind": "secret-version",
       "name": "ORGANIZER_CONTACT_IDENTITY_KEY",
