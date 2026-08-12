@@ -305,7 +305,15 @@
         },
         "contract": {
           "type": "object",
-          "required": ["props", "states", "slots", "tokens", "dartRoles", "goldens"],
+          "required": [
+            "props",
+            "states",
+            "slots",
+            "tokens",
+            "dartRoles",
+            "goldens",
+            "accessibility"
+          ],
           "additionalProperties": false,
           "properties": {
             "props": {
@@ -359,6 +367,9 @@
                 "type": "string"
               },
               "uniqueItems": true
+            },
+            "accessibility": {
+              "$ref": "#/$defs/accessibilityAcceptance"
             },
             "members": {
               "type": "array",
@@ -472,6 +483,52 @@
         },
         "waiver": {
           "$ref": "#/$defs/enforcementWaiver"
+        }
+      }
+    },
+    "accessibilityAcceptance": {
+      "type": "object",
+      "required": ["largeText", "reducedMotion", "themes"],
+      "additionalProperties": false,
+      "properties": {
+        "largeText": {
+          "type": "object",
+          "required": ["minimumScale", "policy"],
+          "additionalProperties": false,
+          "properties": {
+            "minimumScale": {
+              "type": "number",
+              "minimum": 2
+            },
+            "policy": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "reducedMotion": {
+          "type": "object",
+          "required": ["policy"],
+          "additionalProperties": false,
+          "properties": {
+            "policy": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "themes": {
+          "type": "array",
+          "items": {
+            "enum": ["light", "dark"]
+          },
+          "minItems": 2,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "allOf": [
+            {"contains": {"const": "light"}},
+            {"contains": {"const": "dark"}}
+          ]
         }
       }
     },
