@@ -23,6 +23,7 @@ abstract final class EventInviteShareCopy {
     required AppLocalizations l10n,
     String? inviteCode,
     String? inviteLinkId,
+    Uri? inviteUri,
   }) {
     return _composeInvite(
       event,
@@ -30,6 +31,7 @@ abstract final class EventInviteShareCopy {
       intro: l10n.eventsInviteShareEventDetailIntro,
       inviteCode: inviteCode,
       inviteLinkId: inviteLinkId,
+      inviteUri: inviteUri,
     );
   }
 
@@ -75,12 +77,11 @@ abstract final class EventInviteShareCopy {
     required String intro,
     String? inviteCode,
     String? inviteLinkId,
+    Uri? inviteUri,
   }) {
-    final link = eventUri(
-      event,
-      inviteCode: inviteCode,
-      inviteLinkId: inviteLinkId,
-    );
+    final link =
+        inviteUri ??
+        eventUri(event, inviteCode: inviteCode, inviteLinkId: inviteLinkId);
     return [
       intro,
       '',

@@ -460,10 +460,20 @@ class PaymentConfirmationBodyController extends ConsumerWidget {
       onAddToCalendar: () => unawaited(controller.addToCalendar(event)),
       onOpenDirections: () => unawaited(controller.openDirections(event)),
       onInviteFriend: () => unawaited(
-        showEventShareCardSheet(context, event: event, share: share),
+        showTrackedAttendeeEventShareCardSheet(
+          context,
+          event: event,
+          share: share,
+          repository: ref.read(eventRepositoryProvider),
+        ),
       ),
       onReferralShare: () => unawaited(
-        showEventShareCardSheet(context, event: event, share: share),
+        showTrackedAttendeeEventShareCardSheet(
+          context,
+          event: event,
+          share: share,
+          repository: ref.read(eventRepositoryProvider),
+        ),
       ),
       onViewEvent: () => context.goNamed(
         Routes.eventDetailScreen.name,
@@ -644,7 +654,12 @@ class PaymentReferralBannerController extends ConsumerWidget {
     final share = ref.watch(externalShareControllerProvider);
     return PaymentReferralBanner(
       onShare: () => unawaited(
-        showEventShareCardSheet(context, event: event, share: share),
+        showTrackedAttendeeEventShareCardSheet(
+          context,
+          event: event,
+          share: share,
+          repository: ref.read(eventRepositoryProvider),
+        ),
       ),
     );
   }

@@ -70,4 +70,56 @@ void main() {
     expect(sharedParams?.files, hasLength(1));
     expect(sharedParams?.fileNameOverrides, ['catch-event-invite.png']);
   });
+
+  testWidgets('uses a personal invite URL and records only share intent', (
+    tester,
+  ) async {
+    ShareParams? sharedParams;
+    var shareIntentCount = 0;
+    final event = buildEvent();
+    final share = ExternalShareController((params) async {
+      sharedParams = params;
+    });
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: Builder(
+          builder: (context) => Scaffold(
+            body: FilledButton(
+              onPressed: () => showEventShareCardSheet(
+                context,
+                event: event,
+                share: share,
+                inviteUri: Uri.parse(
+                  'https://catchdates.com/invite/v2_personal_token',
+                ),
+                onShareIntent: () async => shareIntentCount += 1,
+              ),
+              child: const Text('Open personal share'),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Open personal share'));
+    await pumpFeatureUi(tester);
+    expect(shareIntentCount, 0);
+
+    await tester.tap(find.byKey(RichShareCardSheetKeys.shareButton));
+    await tester.pump();
+    await pumpFeatureUi(tester);
+    await tester.runAsync(() async {
+      for (var i = 0; i < 20 && sharedParams == null; i++) {
+        await Future<void>.delayed(const Duration(milliseconds: 10));
+      }
+    });
+
+    expect(shareIntentCount, 1);
+    expect(
+      sharedParams?.text,
+      contains('https://catchdates.com/invite/v2_personal_token'),
+    );
+  });
 }

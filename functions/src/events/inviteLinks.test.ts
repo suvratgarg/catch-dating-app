@@ -3,10 +3,12 @@ import test from "node:test";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import {
   attendeeInviteLinkId,
+  createAttendeeInviteLinkHandler,
   eventInviteToken,
   inviteLinkTokenHash,
   resolveEventInviteLandingHandler,
 } from "./inviteLinks";
+import {eventAttendeeId} from "./eventAttendees";
 
 type FakeData = Record<string, unknown>;
 
@@ -32,6 +34,9 @@ class FakeSnapshot {
 
 class FakeDocRef {
   constructor(readonly firestore: FakeFirestore, readonly path: string) {}
+  get id() {
+    return this.path.split("/").at(-1)!;
+  }
   async get() {
     return new FakeSnapshot(this, this.firestore.get(this.path));
   }
@@ -95,6 +100,14 @@ function request(inviteToken: string, sessionId = "session-12345678") {
   } as CallableRequest<unknown>;
 }
 
+function authenticatedRequest(data: Record<string, unknown>) {
+  return {
+    data,
+    auth: {uid: "user-1", token: {}},
+    rawRequest: {},
+  } as CallableRequest<unknown>;
+}
+
 test("attendee referral links are stable and event scoped", () => {
   const first = attendeeInviteLinkId("event-1", "user-1");
   assert.equal(first, attendeeInviteLinkId("event-1", "user-1"));
@@ -110,6 +123,72 @@ test("versioned invite bearer tokens are random and hashable", () => {
   assert.match(first, /^v2_invite-1_[A-Za-z0-9_-]{43}$/u);
   assert.match(inviteLinkTokenHash(first), /^[a-f0-9]{64}$/u);
   assert.notEqual(inviteLinkTokenHash(first), inviteLinkTokenHash(second));
+});
+
+test("Catch-booked attendees can create their own referral link", async () => {
+  const now = new FakeTimestamp(Date.parse("2026-08-12T12:00:00.000Z"));
+  const attendeeId = eventAttendeeId("event-1", "phone:+919876543210");
+  const firestore = new FakeFirestore({
+    "events/event-1": {
+      clubId: "organizer-1",
+      organizerId: "organizer-1",
+      status: "active",
+      startTime: new FakeTimestamp(Date.parse("2026-08-16T13:00:00.000Z")),
+      endTime: new FakeTimestamp(Date.parse("2026-08-16T16:00:00.000Z")),
+      meetingPoint: "The Courtyard",
+      meetingLocation: {name: "The Courtyard"},
+      eventFormat: {activityKind: "singlesMixer"},
+    },
+    "eventParticipations/event-1_user-1": {
+      eventId: "event-1",
+      clubId: "organizer-1",
+      organizerId: "organizer-1",
+      uid: "user-1",
+      status: "signedUp",
+    },
+    "users/user-1": {phoneNumber: "+919876543210"},
+    [`eventAttendees/${attendeeId}`]: {
+      eventId: "event-1",
+      organizerId: "organizer-1",
+      linkedUid: "user-1",
+    },
+    [`organizerContactEventEdges/${attendeeId}`]: {
+      organizerId: "organizer-1",
+      contactId: "contact-1",
+    },
+  });
+  const deps = {
+    firestore: () => firestore as unknown as FirebaseFirestore.Firestore,
+    checkRateLimit: async () => undefined,
+    timestamp: () => now as unknown as FirebaseFirestore.Timestamp,
+    serverTimestamp: () => ({serverTimestamp: true}) as unknown as
+      FirebaseFirestore.FieldValue,
+    increment: (value: number) => ({increment: value}) as unknown as
+      FirebaseFirestore.FieldValue,
+  };
+
+  const result = await createAttendeeInviteLinkHandler(
+    authenticatedRequest({
+      eventId: "event-1",
+      label: "Attendee share",
+      source: "consumer_app",
+      linkKind: "attendeeReferrer",
+      destinationKind: "catchEvent",
+    }),
+    deps
+  );
+
+  assert.equal(result.eventId, "event-1");
+  assert.equal(result.label, "Attendee share");
+  assert.equal(result.source, "consumer_app");
+  assert.match(result.inviteToken, /^v2_/u);
+  const stored = firestore.get(`eventInviteLinks/${result.inviteLinkId}`);
+  assert.ok(stored, firestore.paths("").join("\n"));
+  assert.equal(stored?.ownerUid, "user-1");
+  assert.equal(stored?.ownerContactId, "contact-1");
+  assert.equal(stored?.issuanceChannel, "consumerApp");
+  assert.equal(stored?.destinationKind, "catchEvent");
+  assert.ok(firestore.get(`eventInviteLinkSecrets/${result.inviteLinkId}`));
 });
 
 test("invite landing verifies its token and bounds projection", async () => {

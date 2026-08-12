@@ -14,6 +14,7 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
         GetEventInviteLinkTokenCallableRequest,
         MarkEventAttendanceCallableRequest,
         RecordEventInviteLinkOpenCallableRequest,
+        RecordEventShareIntentCallableRequest,
         SendEventBroadcastCallableRequest,
         SelfCheckInAttendanceCallableRequest,
         UpdateEventCallableRequest;
@@ -434,6 +435,60 @@ class EventRepository {
       service: BackendService.functions,
       action: 'create invite link',
       resource: 'eventInviteLinks',
+    ),
+  );
+
+  Future<CreateEventInviteLinkCallableResponse> createAttendeeInviteLink({
+    required String eventId,
+    required String label,
+    required String destinationKind,
+    String? source,
+  }) => withBackendErrorContext(
+    () async {
+      final result = await _functions
+          .httpsCallable('createAttendeeInviteLink')
+          .call(
+            CreateEventInviteLinkCallableRequest(
+              eventId: eventId,
+              label: label,
+              source: source,
+              linkKind: 'attendeeReferrer',
+              destinationKind: destinationKind,
+            ).toJson(),
+          );
+      return CreateEventInviteLinkCallableResponse.fromCallableData(
+        result.data,
+      );
+    },
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'create attendee invite link',
+      resource: 'eventInviteLinks',
+    ),
+  );
+
+  Future<void> recordShareIntent({
+    required String eventId,
+    required String inviteLinkId,
+    required String surface,
+    String? creativeId,
+    String? channelHint,
+  }) => withBackendErrorContext(
+    () => _functions
+        .httpsCallable('recordEventShareIntent')
+        .call(
+          RecordEventShareIntentCallableRequest(
+            eventId: eventId,
+            inviteLinkId: inviteLinkId,
+            surface: surface,
+            creativeId: creativeId,
+            channelHint: channelHint,
+          ).toJson(),
+        ),
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'record event share intent',
+      resource: 'eventShareIntents',
     ),
   );
 

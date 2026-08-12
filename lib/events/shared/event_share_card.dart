@@ -10,10 +10,13 @@ import 'package:catch_dating_app/core/widgets/catch_share_card_footer.dart';
 import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
+import 'package:catch_dating_app/events/data/event_callable_responses.dart';
+import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/shared/event_invite_share_copy.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:flutter/material.dart';
 
 Future<void> showEventShareCardSheet(
@@ -22,6 +25,8 @@ Future<void> showEventShareCardSheet(
   required ExternalShareController share,
   String? inviteCode,
   String? inviteLinkId,
+  Uri? inviteUri,
+  Future<void> Function()? onShareIntent,
 }) {
   return showCatchBottomSheet<void>(
     context: context,
@@ -37,8 +42,60 @@ Future<void> showEventShareCardSheet(
         l10n: context.l10n,
         inviteCode: inviteCode,
         inviteLinkId: inviteLinkId,
+        inviteUri: inviteUri,
       ),
+      onShareIntent: onShareIntent,
     ),
+  );
+}
+
+/// Creates the attendee's stable referral link before opening the native share
+/// sheet. If audience projection is still converging, sharing still works with
+/// the ordinary event URL and never makes a false attribution claim.
+Future<void> showTrackedAttendeeEventShareCardSheet(
+  BuildContext context, {
+  required Event event,
+  required ExternalShareController share,
+  required EventRepository repository,
+  String? fallbackInviteCode,
+  String? fallbackInviteLinkId,
+}) async {
+  CreateEventInviteLinkCallableResponse? personalLink;
+  for (var attempt = 0; attempt < 3 && personalLink == null; attempt += 1) {
+    try {
+      personalLink = await repository.createAttendeeInviteLink(
+        eventId: event.id,
+        label: 'Attendee share',
+        source: 'consumer_app',
+        destinationKind: event.eventOrigin?.isExternal == true
+            ? 'externalBooking'
+            : 'catchEvent',
+      );
+    } on Object {
+      if (attempt < 2) {
+        await Future<void>.delayed(Duration(milliseconds: 250 * (attempt + 1)));
+      }
+    }
+  }
+  if (!context.mounted) return;
+  await showEventShareCardSheet(
+    context,
+    event: event,
+    share: share,
+    inviteCode: personalLink == null ? fallbackInviteCode : null,
+    inviteLinkId: personalLink == null ? fallbackInviteLinkId : null,
+    inviteUri: personalLink == null
+        ? null
+        : AppDeepLinks.eventInvite(personalLink.inviteToken),
+    onShareIntent: personalLink == null
+        ? null
+        : () => repository.recordShareIntent(
+            eventId: event.id,
+            inviteLinkId: personalLink!.inviteLinkId,
+            surface: 'consumerApp',
+            creativeId: 'event-share-card',
+            channelHint: 'systemShare',
+          ),
   );
 }
 

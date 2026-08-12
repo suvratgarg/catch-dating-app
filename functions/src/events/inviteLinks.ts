@@ -8,8 +8,11 @@ import {
 } from "firebase-functions/v2/https";
 import {
   EventDocument,
+  EventAttendeeDocument,
+  EventParticipationDocument,
   EventInviteLinkDocument,
   EventInviteLinkSecretDocument,
+  UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {
   CreateEventInviteLinkCallablePayload,
@@ -45,6 +48,8 @@ import {
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
+import {eventParticipationId} from "../shared/relationshipDocuments";
+import {eventAttendeeId, normalizeRosterPhone} from "./eventAttendees";
 
 export type InviteLinkCounterField =
   | "openCount"
@@ -242,6 +247,8 @@ export async function createAttendeeInviteLinkHandler(
   inviteLinkId: string;
   inviteToken: string;
   eventId: string;
+  label: string;
+  source: string | null;
 }> {
   const actorUid = requireAuth(request);
   const payload = validateCallableWithAjv<
@@ -267,14 +274,20 @@ export async function createAttendeeInviteLinkHandler(
   const eventRef = db.collection("events").doc(payload.eventId);
   const runtimeRef = db.collection("eventRuntimeParticipants")
     .doc(`${payload.eventId}_${actorUid}`);
+  const participationRef = db.collection("eventParticipations")
+    .doc(eventParticipationId(payload.eventId, actorUid));
+  const userRef = db.collection("users").doc(actorUid);
   const inviteToken = eventInviteToken(inviteRef.id);
   let returnedToken = inviteToken;
   await db.runTransaction(async (tx) => {
-    const [eventSnap, runtimeSnap] = await Promise.all([
+    const [eventSnap, runtimeSnap, participationSnap, userSnap] =
+      await Promise.all([
       tx.get(eventRef),
       tx.get(runtimeRef),
+      tx.get(participationRef),
+      tx.get(userRef),
     ]);
-    if (!eventSnap.exists || !runtimeSnap.exists) {
+    if (!eventSnap.exists) {
       throw new HttpsError(
         "permission-denied",
         "Verify your event access before creating a referral link."
@@ -286,23 +299,43 @@ export async function createAttendeeInviteLinkHandler(
       uid?: string;
       eventAttendeeId?: string | null;
       accessStatus?: string;
-    };
-    if (runtime.eventId !== payload.eventId || runtime.uid !== actorUid ||
-        !runtime.eventAttendeeId ||
-        !["needsInput", "ready"].includes(runtime.accessStatus ?? "")) {
+    } | undefined;
+    const participation = participationSnap.data() as
+      EventParticipationDocument | undefined;
+    const validRuntime = runtime?.eventId === payload.eventId &&
+      runtime.uid === actorUid && Boolean(runtime.eventAttendeeId) &&
+      ["needsInput", "ready"].includes(runtime.accessStatus ?? "");
+    const validParticipation = participation?.eventId === payload.eventId &&
+      participation.uid === actorUid &&
+      ["signedUp", "waitlisted", "attended"].includes(
+        participation.status ?? ""
+      );
+    if (!validRuntime && !validParticipation) {
       throw new HttpsError(
         "permission-denied",
         "Verify your event access before creating a referral link."
       );
     }
-    const edgeSnap = await tx.get(db.collection("organizerContactEventEdges")
-      .doc(runtime.eventAttendeeId));
+    const user = userSnap.data() as UserProfileDocument | undefined;
+    const phone = normalizeRosterPhone(user?.phoneNumber).value;
+    const attendeeId = validRuntime ? runtime!.eventAttendeeId! :
+      eventAttendeeId(
+        payload.eventId,
+        phone ? `phone:${phone}` : `uid:${actorUid}`
+      );
+    const [attendeeSnap, edgeSnap] = await Promise.all([
+      tx.get(db.collection("eventAttendees").doc(attendeeId)),
+      tx.get(db.collection("organizerContactEventEdges").doc(attendeeId)),
+    ]);
+    const attendee = attendeeSnap.data() as EventAttendeeDocument | undefined;
     const edge = edgeSnap.data() as {
       organizerId?: string;
       contactId?: string;
     } | undefined;
     const organizerId = event.organizerId ?? event.clubId;
-    if (!edge || edge.organizerId !== organizerId || !edge.contactId) {
+    if (!attendee || attendee.eventId !== payload.eventId ||
+        attendee.linkedUid !== actorUid ||
+        !edge || edge.organizerId !== organizerId || !edge.contactId) {
       throw new HttpsError(
         "failed-precondition",
         "Audience identity is still being prepared. Try again shortly."
@@ -402,6 +435,8 @@ export async function createAttendeeInviteLinkHandler(
     inviteLinkId: inviteRef.id,
     inviteToken: returnedToken,
     eventId: payload.eventId,
+    label: payload.label.trim(),
+    source: stringOrNull(payload.source),
   };
 }
 
