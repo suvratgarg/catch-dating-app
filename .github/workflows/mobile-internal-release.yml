@@ -832,6 +832,9 @@ jobs:
           printf '\nGOOGLE_MAPS_ANDROID_API_KEY_PROD=%s\n' "$GOOGLE_MAPS_ANDROID_API_KEY_PROD" >> "$APP_PROJECT_ROOT/android/local.properties"
 
       - name: Build signed prod Android App Bundle
+        env:
+          CATCH_GRADLE_WRAPPER_MAX_ATTEMPTS: 5
+          CATCH_GRADLE_WRAPPER_RETRY_DELAY_SECONDS: 20
         run: |
           ./tool/flutter_with_env.sh prod --role "$APP_ROLE" build appbundle --release \
             --build-name="$FLUTTER_BUILD_NAME" \

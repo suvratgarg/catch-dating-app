@@ -457,6 +457,18 @@ test("promotion keeps the verified package immutable and reverifies its deploy c
   assert.match(promotion, /restarting its same verified package at the first stage/);
   assert.match(promotion, /\.conclusion == "failure"[\s\S]*\.conclusion == "cancelled"[\s\S]*\.conclusion == "timed_out"/);
   assert.match(promotion, /git -C "\$SOURCE_CHECKOUT" merge-base --is-ancestor "\$SOURCE_SHA" refs\/remotes\/origin\/main/);
+  assert.match(
+    promotion,
+    /Reverify every authored byte immediately before deployment[\s\S]*sanitize_firestore_indexes_for_deploy\.mjs[\s\S]*Resume ordered backend stages/,
+  );
+  assert.match(
+    promotion,
+    /--indexes build\/delivery\/deploy-tree\/firestore\.indexes\.json[\s\S]*--current-indexes firestore\.indexes\.json/,
+  );
+  assert.doesNotMatch(
+    promotion,
+    /--indexes build\/delivery\/package\/firestore\.indexes\.json/,
+  );
 });
 
 test("automatic target planning rejects broad and unrelated Firebase products", () => {

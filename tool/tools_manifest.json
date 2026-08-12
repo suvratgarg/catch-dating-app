@@ -614,6 +614,7 @@
           "exact releaseTargets select role-platform builds without Cartesian widening",
           "partial producer reruns fail closed with a current-attempt completeness authority",
           "finalizer downloads and re-verifies exact package bytes before authority",
+          "Android release jobs use the same checksummed Gradle distribution with bounded recovery",
           "producer performs no App Store, Play, or legacy-owner mutation"
         ]
       }
@@ -649,6 +650,42 @@
           "missing and building indexes remain pending while failed indexes stop",
           "waiter polls metadata until every desired index is ready",
           "gcloud query is metadata-only, project-bound, and quiet"
+        ]
+      }
+    },
+    {
+      "id": "firebase:index-deploy-sanitizer",
+      "category": "firebase",
+      "path": "tool/firebase/sanitize_firestore_indexes_for_deploy.mjs",
+      "command": "node --test tool/firebase/sanitize_firestore_indexes_for_deploy.test.mjs",
+      "safety": "local-writes-build-artifacts",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        ".github/workflows/_firebase-promote.yml",
+        "firestore.indexes.json",
+        "tool/contracts/check_firestore_query_indexes.mjs",
+        "tool/contracts/check_firestore_query_indexes.test.mjs",
+        "tool/firebase/sanitize_firestore_indexes_for_deploy.test.mjs"
+      ],
+      "description": "Removes only obsolete, collection-scoped, non-vector one-field composite declarations from a verified Firebase deploy copy after current source proves the exact declaration was retired and no matching field override exists.",
+      "checks": [
+        "node --check tool/firebase/sanitize_firestore_indexes_for_deploy.mjs",
+        "node --test tool/firebase/sanitize_firestore_indexes_for_deploy.test.mjs"
+      ],
+      "role": "operator",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/firebase/sanitize_firestore_indexes_for_deploy.test.mjs",
+        "contains": [
+          "an obsolete redundant declaration is removed from only the deploy copy",
+          "a declaration still present in current source is never removed",
+          "field overrides fail closed instead of assuming a built-in index"
         ]
       }
     },

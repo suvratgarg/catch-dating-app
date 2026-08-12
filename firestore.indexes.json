@@ -346,13 +346,6 @@
       ]
     },
     {
-      "collectionGroup": "organizerCampaignRecipients",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {"fieldPath": "providerMessageId", "mode": "ASCENDING"}
-      ]
-    },
-    {
       "collectionGroup": "organizerContactChannelStates",
       "queryScope": "COLLECTION",
       "fields": [

@@ -992,8 +992,9 @@ Repository-owned composite query builders declare adjacent contracts using:
 `node tool/run.mjs check contracts:firestore-query-indexes` scans every
 handwritten repository source, rejects composite builders with no contract,
 verifies each declared ordered field list against `firestore.indexes.json`,
-and rejects single-field plus `__name__` pseudo-composites that Firestore
-refuses to deploy because the built-in single-field index already owns them.
+and rejects non-vector one-field composites, with or without an explicit
+`__name__`, that Firestore refuses to deploy because built-in single-field
+indexes already own those query shapes.
 The check also runs inside `./tool/check_data_contract.sh` and Tools CI whenever
 repository data code or the index file changes.
 
