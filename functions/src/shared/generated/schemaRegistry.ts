@@ -41257,6 +41257,151 @@ export const getOrganizerContactDetailCallableResponseSchema: Record<string, unk
   }
 } as const;
 
+export const mergeOrganizerContactsCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/merge_organizer_contacts_payload.schema.json",
+  "title": "MergeOrganizerContactsCallablePayload",
+  "description": "Manager-confirmed, revision-checked organizer contact merge.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "survivorContactId",
+    "sourceContactId",
+    "survivorRevision",
+    "sourceRevision",
+    "confirmConflicts",
+    "idempotencyKey"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "survivorContactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "sourceContactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "survivorRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "sourceRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "confirmConflicts": {
+      "type": "boolean"
+    },
+    "idempotencyKey": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 120
+    }
+  }
+} as const;
+
+export const unmergeOrganizerContactsCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/unmerge_organizer_contacts_payload.schema.json",
+  "title": "UnmergeOrganizerContactsCallablePayload",
+  "description": "Manager request to reverse one organizer contact merge receipt.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "mergeReceiptId",
+    "idempotencyKey"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "mergeReceiptId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "idempotencyKey": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 120
+    }
+  }
+} as const;
+
+export const mutateOrganizerContactMergeCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/mutate_organizer_contact_merge_response.schema.json",
+  "title": "MutateOrganizerContactMergeCallableResponse",
+  "description": "Immutable organizer contact merge or reversal receipt projection.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "receiptId",
+    "operation",
+    "survivorContactId",
+    "sourceContactId",
+    "movedEdgeCount",
+    "movedIdentityEvidenceCount",
+    "movedClaimCount",
+    "replayed"
+  ],
+  "properties": {
+    "receiptId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "operation": {
+      "type": "string",
+      "enum": [
+        "merge",
+        "unmerge"
+      ]
+    },
+    "survivorContactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "sourceContactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "movedEdgeCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 400
+    },
+    "movedIdentityEvidenceCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 400
+    },
+    "movedClaimCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 400
+    },
+    "replayed": {
+      "type": "boolean"
+    }
+  }
+} as const;
+
 export const eventJoinRequestDecisionCallablePayloadSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/event_join_request_decision_payload.schema.json",

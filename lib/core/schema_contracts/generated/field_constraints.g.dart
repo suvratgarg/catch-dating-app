@@ -19761,6 +19761,60 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const mergeOrganizerContactsCallablePayloadConfirmConflicts = CatchContractFieldConstraints(
+    path: 'mergeOrganizerContactsCallablePayload.confirmConflicts',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const mergeOrganizerContactsCallablePayloadIdempotencyKey = CatchContractFieldConstraints(
+    path: 'mergeOrganizerContactsCallablePayload.idempotencyKey',
+    maxLength: 120,
+    minLength: 8,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const mergeOrganizerContactsCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'mergeOrganizerContactsCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const mergeOrganizerContactsCallablePayloadSourceContactId = CatchContractFieldConstraints(
+    path: 'mergeOrganizerContactsCallablePayload.sourceContactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const mergeOrganizerContactsCallablePayloadSourceRevision = CatchContractFieldConstraints(
+    path: 'mergeOrganizerContactsCallablePayload.sourceRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const mergeOrganizerContactsCallablePayloadSurvivorContactId = CatchContractFieldConstraints(
+    path: 'mergeOrganizerContactsCallablePayload.survivorContactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const mergeOrganizerContactsCallablePayloadSurvivorRevision = CatchContractFieldConstraints(
+    path: 'mergeOrganizerContactsCallablePayload.survivorRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
   static const mobileFormStateAuthOtpCode = CatchContractFieldConstraints(
     path: 'mobileFormState.authOtpCode',
     maxLength: 6,
@@ -19959,6 +20013,67 @@ abstract final class CatchContractConstraints {
 
   static const moderationFlagDocumentTargetUserId = CatchContractFieldConstraints(
     path: 'moderationFlagDocument.targetUserId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const mutateOrganizerContactMergeCallableResponseMovedClaimCount = CatchContractFieldConstraints(
+    path: 'mutateOrganizerContactMergeCallableResponse.movedClaimCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 400,
+  );
+
+  static const mutateOrganizerContactMergeCallableResponseMovedEdgeCount = CatchContractFieldConstraints(
+    path: 'mutateOrganizerContactMergeCallableResponse.movedEdgeCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 400,
+  );
+
+  static const mutateOrganizerContactMergeCallableResponseMovedIdentityEvidenceCount = CatchContractFieldConstraints(
+    path: 'mutateOrganizerContactMergeCallableResponse.movedIdentityEvidenceCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 400,
+  );
+
+  static const mutateOrganizerContactMergeCallableResponseOperation = CatchContractFieldConstraints(
+    path: 'mutateOrganizerContactMergeCallableResponse.operation',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['merge', 'unmerge'],
+  );
+
+  static const mutateOrganizerContactMergeCallableResponseReceiptId = CatchContractFieldConstraints(
+    path: 'mutateOrganizerContactMergeCallableResponse.receiptId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const mutateOrganizerContactMergeCallableResponseReplayed = CatchContractFieldConstraints(
+    path: 'mutateOrganizerContactMergeCallableResponse.replayed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const mutateOrganizerContactMergeCallableResponseSourceContactId = CatchContractFieldConstraints(
+    path: 'mutateOrganizerContactMergeCallableResponse.sourceContactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const mutateOrganizerContactMergeCallableResponseSurvivorContactId = CatchContractFieldConstraints(
+    path: 'mutateOrganizerContactMergeCallableResponse.survivorContactId',
     maxLength: 180,
     minLength: 1,
     required: true,
@@ -28043,6 +28158,30 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const unmergeOrganizerContactsCallablePayloadIdempotencyKey = CatchContractFieldConstraints(
+    path: 'unmergeOrganizerContactsCallablePayload.idempotencyKey',
+    maxLength: 120,
+    minLength: 8,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const unmergeOrganizerContactsCallablePayloadMergeReceiptId = CatchContractFieldConstraints(
+    path: 'unmergeOrganizerContactsCallablePayload.mergeReceiptId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const unmergeOrganizerContactsCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'unmergeOrganizerContactsCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const updateClubPatchArea = CatchContractFieldConstraints(
     path: 'updateClubPatch.area',
     maxLength: 120,
@@ -35231,6 +35370,13 @@ abstract final class CatchContractConstraints {
     'matchDocument.unreadCounts': matchDocumentUnreadCounts,
     'matchDocument.user1Id': matchDocumentUser1Id,
     'matchDocument.user2Id': matchDocumentUser2Id,
+    'mergeOrganizerContactsCallablePayload.confirmConflicts': mergeOrganizerContactsCallablePayloadConfirmConflicts,
+    'mergeOrganizerContactsCallablePayload.idempotencyKey': mergeOrganizerContactsCallablePayloadIdempotencyKey,
+    'mergeOrganizerContactsCallablePayload.organizerId': mergeOrganizerContactsCallablePayloadOrganizerId,
+    'mergeOrganizerContactsCallablePayload.sourceContactId': mergeOrganizerContactsCallablePayloadSourceContactId,
+    'mergeOrganizerContactsCallablePayload.sourceRevision': mergeOrganizerContactsCallablePayloadSourceRevision,
+    'mergeOrganizerContactsCallablePayload.survivorContactId': mergeOrganizerContactsCallablePayloadSurvivorContactId,
+    'mergeOrganizerContactsCallablePayload.survivorRevision': mergeOrganizerContactsCallablePayloadSurvivorRevision,
     'mobileFormState.authOtpCode': mobileFormStateAuthOtpCode,
     'mobileFormState.chatsInboxSearchQuery': mobileFormStateChatsInboxSearchQuery,
     'mobileFormState.eventCohortCapsEnabled': mobileFormStateEventCohortCapsEnabled,
@@ -35262,6 +35408,14 @@ abstract final class CatchContractConstraints {
     'moderationFlagDocument.source': moderationFlagDocumentSource,
     'moderationFlagDocument.status': moderationFlagDocumentStatus,
     'moderationFlagDocument.targetUserId': moderationFlagDocumentTargetUserId,
+    'mutateOrganizerContactMergeCallableResponse.movedClaimCount': mutateOrganizerContactMergeCallableResponseMovedClaimCount,
+    'mutateOrganizerContactMergeCallableResponse.movedEdgeCount': mutateOrganizerContactMergeCallableResponseMovedEdgeCount,
+    'mutateOrganizerContactMergeCallableResponse.movedIdentityEvidenceCount': mutateOrganizerContactMergeCallableResponseMovedIdentityEvidenceCount,
+    'mutateOrganizerContactMergeCallableResponse.operation': mutateOrganizerContactMergeCallableResponseOperation,
+    'mutateOrganizerContactMergeCallableResponse.receiptId': mutateOrganizerContactMergeCallableResponseReceiptId,
+    'mutateOrganizerContactMergeCallableResponse.replayed': mutateOrganizerContactMergeCallableResponseReplayed,
+    'mutateOrganizerContactMergeCallableResponse.sourceContactId': mutateOrganizerContactMergeCallableResponseSourceContactId,
+    'mutateOrganizerContactMergeCallableResponse.survivorContactId': mutateOrganizerContactMergeCallableResponseSurvivorContactId,
     'onboardingDraftDocument.countryCode': onboardingDraftDocumentCountryCode,
     'onboardingDraftDocument.dateOfBirth._nanoseconds': onboardingDraftDocumentDateOfBirthNanoseconds,
     'onboardingDraftDocument.dateOfBirth._seconds': onboardingDraftDocumentDateOfBirthSeconds,
@@ -36377,6 +36531,9 @@ abstract final class CatchContractConstraints {
     'transferOrganizerOwnershipCallablePayload.organizerId': transferOrganizerOwnershipCallablePayloadOrganizerId,
     'transferOrganizerOwnershipCallablePayload.uid': transferOrganizerOwnershipCallablePayloadUid,
     'unblockUserCallablePayload.targetUserId': unblockUserCallablePayloadTargetUserId,
+    'unmergeOrganizerContactsCallablePayload.idempotencyKey': unmergeOrganizerContactsCallablePayloadIdempotencyKey,
+    'unmergeOrganizerContactsCallablePayload.mergeReceiptId': unmergeOrganizerContactsCallablePayloadMergeReceiptId,
+    'unmergeOrganizerContactsCallablePayload.organizerId': unmergeOrganizerContactsCallablePayloadOrganizerId,
     'updateClubPatch.area': updateClubPatchArea,
     'updateClubPatch.clubPhotos': updateClubPatchClubPhotos,
     'updateClubPatch.clubPhotos.items.createdAt._nanoseconds': updateClubPatchClubPhotosItemsCreatedAtNanoseconds,

@@ -199,6 +199,9 @@ import {
   listOrganizerContactsCallableResponseSchema,
   getOrganizerContactDetailCallablePayloadSchema,
   getOrganizerContactDetailCallableResponseSchema,
+  mergeOrganizerContactsCallablePayloadSchema,
+  unmergeOrganizerContactsCallablePayloadSchema,
+  mutateOrganizerContactMergeCallableResponseSchema,
   eventJoinRequestDecisionCallablePayloadSchema,
   overrideEventSuccessRotationsCallablePayloadSchema,
   overrideEventSuccessGroupsCallablePayloadSchema,
@@ -493,6 +496,9 @@ export const validateListOrganizerContactsCallablePayload = ajv.compile(listOrga
 export const validateListOrganizerContactsCallableResponse = ajv.compile(listOrganizerContactsCallableResponseSchema);
 export const validateGetOrganizerContactDetailCallablePayload = ajv.compile(getOrganizerContactDetailCallablePayloadSchema);
 export const validateGetOrganizerContactDetailCallableResponse = ajv.compile(getOrganizerContactDetailCallableResponseSchema);
+export const validateMergeOrganizerContactsCallablePayload = ajv.compile(mergeOrganizerContactsCallablePayloadSchema);
+export const validateUnmergeOrganizerContactsCallablePayload = ajv.compile(unmergeOrganizerContactsCallablePayloadSchema);
+export const validateMutateOrganizerContactMergeCallableResponse = ajv.compile(mutateOrganizerContactMergeCallableResponseSchema);
 export const validateEventJoinRequestDecisionCallablePayload = ajv.compile(eventJoinRequestDecisionCallablePayloadSchema);
 export const validateOverrideEventSuccessRotationsCallablePayload = ajv.compile(overrideEventSuccessRotationsCallablePayloadSchema);
 export const validateOverrideEventSuccessGroupsCallablePayload = ajv.compile(overrideEventSuccessGroupsCallablePayloadSchema);

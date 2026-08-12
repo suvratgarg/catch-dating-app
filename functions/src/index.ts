@@ -122,6 +122,10 @@ export {
   listOrganizerContacts,
 } from "./organizers/organizerContacts";
 export {
+  mergeOrganizerContacts,
+  unmergeOrganizerContacts,
+} from "./organizers/organizerContactMerges";
+export {
   onEventAttendeeAudienceProjected,
   onOrganizerCommunicationPreferenceAudienceProjected,
 } from "./organizers/organizerAudienceProjection";

@@ -569,7 +569,9 @@
         "onOrganizerCommunicationPreferenceAudienceProjected",
         "getOrganizerCrmSummary",
         "listOrganizerContacts",
-        "getOrganizerContactDetail"
+        "getOrganizerContactDetail",
+        "mergeOrganizerContacts",
+        "unmergeOrganizerContacts"
       ],
       "migrationNotes": [
         "Contacts are organizer-scoped operational records, never Consumer profiles.",
@@ -588,7 +590,9 @@
       "write": "server only",
       "exportedFunctions": [
         "onEventAttendeeAudienceProjected",
-        "getOrganizerContactDetail"
+        "getOrganizerContactDetail",
+        "mergeOrganizerContacts",
+        "unmergeOrganizerContacts"
       ],
       "migrationNotes": [
         "Each document is one attendee-to-contact identity evidence edge; candidate sets are queried rather than stored as mutable arrays.",
@@ -606,7 +610,11 @@
       "owner": "organizer audience projection",
       "read": "server only; manager access is through CRM detail callables",
       "write": "server only",
-      "exportedFunctions": ["onEventAttendeeAudienceProjected"],
+      "exportedFunctions": [
+        "onEventAttendeeAudienceProjected",
+        "mergeOrganizerContacts",
+        "unmergeOrganizerContacts"
+      ],
       "migrationNotes": [
         "Edges are rebuildable from canonical attendee and event facts and retain the attendee source revision."
       ]
@@ -621,7 +629,11 @@
       "owner": "organizer audience identity resolver and merge operations",
       "read": "server only",
       "write": "server only",
-      "exportedFunctions": ["onEventAttendeeAudienceProjected"],
+      "exportedFunctions": [
+        "onEventAttendeeAudienceProjected",
+        "mergeOrganizerContacts",
+        "unmergeOrganizerContacts"
+      ],
       "migrationNotes": [
         "Only person-verified UID and phone identities receive singleton ownership claims.",
         "Conflicting verified claims stop automatic merging and require a receipt-backed manager decision."
@@ -676,6 +688,10 @@
       "owner": "organizer contact merge and unmerge callables",
       "read": "server only; authorized managers receive sanitized merge history",
       "write": "server only",
+      "exportedFunctions": [
+        "mergeOrganizerContacts",
+        "unmergeOrganizerContacts"
+      ],
       "migrationNotes": [
         "Receipts are immutable. Unmerge writes a new reversal receipt and rebuilds source edges."
       ]

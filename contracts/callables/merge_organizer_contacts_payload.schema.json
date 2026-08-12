@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/merge_organizer_contacts_payload.schema.json",
+  "title": "MergeOrganizerContactsCallablePayload",
+  "description": "Manager-confirmed, revision-checked organizer contact merge.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["organizerId", "survivorContactId", "sourceContactId", "survivorRevision", "sourceRevision", "confirmConflicts", "idempotencyKey"],
+  "properties": {
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "survivorContactId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "sourceContactId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "survivorRevision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+    "sourceRevision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+    "confirmConflicts": {"type": "boolean"},
+    "idempotencyKey": {"type": "string", "minLength": 8, "maxLength": 120}
+  }
+}

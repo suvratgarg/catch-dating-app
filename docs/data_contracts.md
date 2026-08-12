@@ -485,6 +485,14 @@ person-verified OTP phone may own a singleton identity claim. Conflicting
 verified claims stop automatic convergence and require an immutable,
 reversible manager merge receipt. Name alone is never merge evidence.
 
+Manager merges are optimistic and receipt-backed. The client supplies the
+current survivor and source revisions; the transaction also verifies every
+source-origin fact has the same Firestore version observed during planning.
+Conflicting UID, phone, or email facts require explicit confirmation. Unmerge
+restores only the exact source-origin edge, evidence, and claim identifiers in
+the original receipt and creates one deterministic reversal receipt. Facts
+created after a merge remain with the survivor instead of being guessed back.
+
 `organizerContactTraits` are rebuilt from event edges and contain only
 attendance, reliability, source and channel-reachability facts. Compatibility
 answers, gender, sexual orientation, relationship state, wingman targets,

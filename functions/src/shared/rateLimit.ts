@@ -110,6 +110,8 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   getOrganizerCrmSummary: {maxRequests: 30, windowMs: 60 * 1000},
   listOrganizerContacts: {maxRequests: 60, windowMs: 60 * 1000},
   getOrganizerContactDetail: {maxRequests: 60, windowMs: 60 * 1000},
+  mergeOrganizerContacts: {maxRequests: 20, windowMs: 60 * 1000},
+  unmergeOrganizerContacts: {maxRequests: 20, windowMs: 60 * 1000},
   startOrganizerConversation: {maxRequests: 5, windowMs: 60 * 1000},
   addOrganizerManager: {maxRequests: 20, windowMs: 60 * 1000},
   removeOrganizerManager: {maxRequests: 20, windowMs: 60 * 1000},

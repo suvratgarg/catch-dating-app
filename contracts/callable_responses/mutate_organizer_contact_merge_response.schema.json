@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/mutate_organizer_contact_merge_response.schema.json",
+  "title": "MutateOrganizerContactMergeCallableResponse",
+  "description": "Immutable organizer contact merge or reversal receipt projection.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["receiptId", "operation", "survivorContactId", "sourceContactId", "movedEdgeCount", "movedIdentityEvidenceCount", "movedClaimCount", "replayed"],
+  "properties": {
+    "receiptId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "operation": {"type": "string", "enum": ["merge", "unmerge"]},
+    "survivorContactId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "sourceContactId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "movedEdgeCount": {"type": "integer", "minimum": 0, "maximum": 400},
+    "movedIdentityEvidenceCount": {"type": "integer", "minimum": 0, "maximum": 400},
+    "movedClaimCount": {"type": "integer", "minimum": 0, "maximum": 400},
+    "replayed": {"type": "boolean"}
+  }
+}

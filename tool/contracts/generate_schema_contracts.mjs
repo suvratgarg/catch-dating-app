@@ -1198,6 +1198,26 @@ const schemaSpecs = [
       "functions/src/shared/generated/getOrganizerContactDetailCallableResponse.ts",
   },
   {
+    name: "MergeOrganizerContactsCallablePayload",
+    source: "callables/merge_organizer_contacts_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/mergeOrganizerContactsCallablePayload.ts",
+  },
+  {
+    name: "UnmergeOrganizerContactsCallablePayload",
+    source: "callables/unmerge_organizer_contacts_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/unmergeOrganizerContactsCallablePayload.ts",
+  },
+  {
+    name: "MutateOrganizerContactMergeCallableResponse",
+    source:
+      "callable_responses/mutate_organizer_contact_merge_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "mutateOrganizerContactMergeCallableResponse.ts",
+  },
+  {
     name: "EventJoinRequestDecisionCallablePayload",
     source: "callables/event_join_request_decision_payload.schema.json",
     typeOutput:
