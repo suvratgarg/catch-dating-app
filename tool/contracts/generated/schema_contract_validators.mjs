@@ -28,6 +28,14 @@ import {
   organizerTeamMembershipDocumentSchema,
   organizerFollowDocumentSchema,
   organizerCommunicationPreferenceDocumentSchema,
+  organizerContactDocumentSchema,
+  organizerContactIdentityLinkDocumentSchema,
+  organizerContactIdentityClaimDocumentSchema,
+  organizerContactEventEdgeDocumentSchema,
+  organizerContactTraitDocumentSchema,
+  organizerAudienceSummaryDocumentSchema,
+  organizerAudienceProjectionReceiptDocumentSchema,
+  organizerContactMergeReceiptDocumentSchema,
   organizerClaimRequestDocumentSchema,
   organizerScheduleLockDocumentSchema,
   clubPostDocumentSchema,
@@ -310,6 +318,14 @@ export const validateOrganizerPostDocument = ajv.compile(organizerPostDocumentSc
 export const validateOrganizerTeamMembershipDocument = ajv.compile(organizerTeamMembershipDocumentSchema);
 export const validateOrganizerFollowDocument = ajv.compile(organizerFollowDocumentSchema);
 export const validateOrganizerCommunicationPreferenceDocument = ajv.compile(organizerCommunicationPreferenceDocumentSchema);
+export const validateOrganizerContactDocument = ajv.compile(organizerContactDocumentSchema);
+export const validateOrganizerContactIdentityLinkDocument = ajv.compile(organizerContactIdentityLinkDocumentSchema);
+export const validateOrganizerContactIdentityClaimDocument = ajv.compile(organizerContactIdentityClaimDocumentSchema);
+export const validateOrganizerContactEventEdgeDocument = ajv.compile(organizerContactEventEdgeDocumentSchema);
+export const validateOrganizerContactTraitDocument = ajv.compile(organizerContactTraitDocumentSchema);
+export const validateOrganizerAudienceSummaryDocument = ajv.compile(organizerAudienceSummaryDocumentSchema);
+export const validateOrganizerAudienceProjectionReceiptDocument = ajv.compile(organizerAudienceProjectionReceiptDocumentSchema);
+export const validateOrganizerContactMergeReceiptDocument = ajv.compile(organizerContactMergeReceiptDocumentSchema);
 export const validateOrganizerClaimRequestDocument = ajv.compile(organizerClaimRequestDocumentSchema);
 export const validateOrganizerScheduleLockDocument = ajv.compile(organizerScheduleLockDocumentSchema);
 export const validateClubPostDocument = ajv.compile(clubPostDocumentSchema);

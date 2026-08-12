@@ -161,6 +161,54 @@
       ]
     },
     {
+      "collectionGroup": "organizerContacts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "linkedUid", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerContactTraits",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "attendedEventCount", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerContactTraits",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "linkedAccount", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerContactTraits",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "importedEventCount", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerContactTraits",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "whatsappStatus", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerContactTraits",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "smsStatus", "mode": "ASCENDING"}
+      ]
+    },
+    {
       "collectionGroup": "events",
       "queryScope": "COLLECTION",
       "fields": [

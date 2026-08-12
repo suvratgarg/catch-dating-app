@@ -8,6 +8,7 @@ import {isClubHost} from "../shared/clubHosts";
 import {
   ClubDocument,
   EventAttendeeDocument,
+  OrganizerAudienceSummaryDocument,
   OrganizerCommunicationPreferenceDocument,
   OrganizerDocument,
 } from "../shared/generated/firestoreAdminTypes";
@@ -72,6 +73,16 @@ export async function getOrganizerCrmSummaryHandler(
     );
   }
 
+  const projectedSummarySnap = await db.collection("organizerAudienceSummaries")
+    .doc(data.organizerId)
+    .get();
+  if (projectedSummarySnap.exists) {
+    const summary = requireDoc<OrganizerAudienceSummaryDocument>(
+      projectedSummarySnap,
+      "OrganizerAudienceSummaryDocument"
+    );
+    return projectedOrganizerCrmSummary(summary);
+  }
   const [rosterSnap, preferenceSnap] = await Promise.all([
     db.collection("eventAttendees")
       .where("organizerId", "==", data.organizerId)
@@ -98,6 +109,28 @@ export async function getOrganizerCrmSummaryHandler(
     preferences,
     truncated,
   });
+}
+
+/** Preserves the existing callable response while reading scalable counts. */
+export function projectedOrganizerCrmSummary(
+  summary: OrganizerAudienceSummaryDocument
+): GetOrganizerCrmSummaryCallableResponse {
+  return {
+    organizerId: summary.organizerId,
+    contactCount: summary.contactCount,
+    pastAttendeeCount: summary.pastAttendeeCount,
+    repeatAttendeeCount: summary.repeatAttendeeCount,
+    linkedAccountCount: summary.linkedAccountCount,
+    importedContactCount: summary.importedContactCount,
+    whatsappOptInCount: summary.whatsappOptInCount,
+    smsOptInCount: summary.smsOptInCount,
+    truncated: summary.sourceCoverage !== "exact",
+    readiness: {
+      inApp: "currentEventOnly",
+      whatsapp: "providerSetupRequired",
+      sms: "providerAndDltSetupRequired",
+    },
+  };
 }
 
 /** Deduplicates roster history and counts only explicit channel grants. */

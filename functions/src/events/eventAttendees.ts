@@ -31,6 +31,8 @@ import {
 } from "../shared/eventOrganizers";
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
+import {organizerCommunicationPreferenceId} from
+  "../shared/organizerCommunicationPreferences";
 import {eventPolicyFromEvent} from "./eventPolicy";
 
 type ImportRow = ImportEventAttendeesCallablePayload["rows"][number];
@@ -498,13 +500,6 @@ export function mergeOrganizerCommunicationPreference(params: {
     createdAt: params.existing?.createdAt ?? params.now,
     updatedAt: params.now,
   };
-}
-
-export function organizerCommunicationPreferenceId(
-  organizerId: string,
-  uid: string
-): string {
-  return `orgpref_${sha256(`${organizerId}|${uid}`).slice(0, 48)}`;
 }
 
 function splitSupportedPhone(phoneE164: string): {

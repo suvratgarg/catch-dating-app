@@ -37,6 +37,14 @@ Do not edit it by hand.
 | OrganizerTeamMembershipDocument | `firestore/organizer_team_memberships.schema.json` | `functions/src/shared/generated/organizerTeamMembershipDocument.ts` |
 | OrganizerFollowDocument | `firestore/organizer_follows.schema.json` | `functions/src/shared/generated/organizerFollowDocument.ts` |
 | OrganizerCommunicationPreferenceDocument | `firestore/organizer_communication_preferences.schema.json` | `functions/src/shared/generated/organizerCommunicationPreferenceDocument.ts` |
+| OrganizerContactDocument | `firestore/organizer_contacts.schema.json` | `functions/src/shared/generated/organizerContactDocument.ts` |
+| OrganizerContactIdentityLinkDocument | `firestore/organizer_contact_identity_links.schema.json` | `functions/src/shared/generated/organizerContactIdentityLinkDocument.ts` |
+| OrganizerContactIdentityClaimDocument | `firestore/organizer_contact_identity_claims.schema.json` | `functions/src/shared/generated/organizerContactIdentityClaimDocument.ts` |
+| OrganizerContactEventEdgeDocument | `firestore/organizer_contact_event_edges.schema.json` | `functions/src/shared/generated/organizerContactEventEdgeDocument.ts` |
+| OrganizerContactTraitDocument | `firestore/organizer_contact_traits.schema.json` | `functions/src/shared/generated/organizerContactTraitDocument.ts` |
+| OrganizerAudienceSummaryDocument | `firestore/organizer_audience_summaries.schema.json` | `functions/src/shared/generated/organizerAudienceSummaryDocument.ts` |
+| OrganizerAudienceProjectionReceiptDocument | `firestore/organizer_audience_projection_receipts.schema.json` | `functions/src/shared/generated/organizerAudienceProjectionReceiptDocument.ts` |
+| OrganizerContactMergeReceiptDocument | `firestore/organizer_contact_merge_receipts.schema.json` | `functions/src/shared/generated/organizerContactMergeReceiptDocument.ts` |
 | OrganizerClaimRequestDocument | `firestore/organizer_claim_requests.schema.json` | `functions/src/shared/generated/organizerClaimRequestDocument.ts` |
 | OrganizerScheduleLockDocument | `firestore/organizer_schedule_locks.schema.json` | `functions/src/shared/generated/organizerScheduleLockDocument.ts` |
 | ClubPostDocument | `firestore/club_posts.schema.json` | `functions/src/shared/generated/clubPostDocument.ts` |
@@ -300,6 +308,14 @@ Do not edit it by hand.
 | `schemaOrganizerTeamMembershipDocumentSchema` | OrganizerTeamMembershipDocument | `firestore/organizer_team_memberships.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_team_membership_document.g.dart` |
 | `schemaOrganizerFollowDocumentSchema` | OrganizerFollowDocument | `firestore/organizer_follows.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_follow_document.g.dart` |
 | `schemaOrganizerCommunicationPreferenceDocumentSchema` | OrganizerCommunicationPreferenceDocument | `firestore/organizer_communication_preferences.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_communication_preference_document.g.dart` |
+| `schemaOrganizerContactDocumentSchema` | OrganizerContactDocument | `firestore/organizer_contacts.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_contact_document.g.dart` |
+| `schemaOrganizerContactIdentityLinkDocumentSchema` | OrganizerContactIdentityLinkDocument | `firestore/organizer_contact_identity_links.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_contact_identity_link_document.g.dart` |
+| `schemaOrganizerContactIdentityClaimDocumentSchema` | OrganizerContactIdentityClaimDocument | `firestore/organizer_contact_identity_claims.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_contact_identity_claim_document.g.dart` |
+| `schemaOrganizerContactEventEdgeDocumentSchema` | OrganizerContactEventEdgeDocument | `firestore/organizer_contact_event_edges.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_contact_event_edge_document.g.dart` |
+| `schemaOrganizerContactTraitDocumentSchema` | OrganizerContactTraitDocument | `firestore/organizer_contact_traits.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_contact_trait_document.g.dart` |
+| `schemaOrganizerAudienceSummaryDocumentSchema` | OrganizerAudienceSummaryDocument | `firestore/organizer_audience_summaries.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_audience_summary_document.g.dart` |
+| `schemaOrganizerAudienceProjectionReceiptDocumentSchema` | OrganizerAudienceProjectionReceiptDocument | `firestore/organizer_audience_projection_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_audience_projection_receipt_document.g.dart` |
+| `schemaOrganizerContactMergeReceiptDocumentSchema` | OrganizerContactMergeReceiptDocument | `firestore/organizer_contact_merge_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_contact_merge_receipt_document.g.dart` |
 | `schemaOrganizerClaimRequestDocumentSchema` | OrganizerClaimRequestDocument | `firestore/organizer_claim_requests.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_claim_request_document.g.dart` |
 | `schemaOrganizerScheduleLockDocumentSchema` | OrganizerScheduleLockDocument | `firestore/organizer_schedule_locks.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_schedule_lock_document.g.dart` |
 | `schemaClubPostDocumentSchema` | ClubPostDocument | `firestore/club_posts.schema.json` | `lib/core/schema_contracts/generated/schemas/club_post_document.g.dart` |

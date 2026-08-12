@@ -29,6 +29,14 @@ import {OrganizerPostDocument} from "./organizerPostDocument";
 import {OrganizerTeamMembershipDocument} from "./organizerTeamMembershipDocument";
 import {OrganizerFollowDocument} from "./organizerFollowDocument";
 import {OrganizerCommunicationPreferenceDocument} from "./organizerCommunicationPreferenceDocument";
+import {OrganizerContactDocument} from "./organizerContactDocument";
+import {OrganizerContactIdentityLinkDocument} from "./organizerContactIdentityLinkDocument";
+import {OrganizerContactIdentityClaimDocument} from "./organizerContactIdentityClaimDocument";
+import {OrganizerContactEventEdgeDocument} from "./organizerContactEventEdgeDocument";
+import {OrganizerContactTraitDocument} from "./organizerContactTraitDocument";
+import {OrganizerAudienceSummaryDocument} from "./organizerAudienceSummaryDocument";
+import {OrganizerAudienceProjectionReceiptDocument} from "./organizerAudienceProjectionReceiptDocument";
+import {OrganizerContactMergeReceiptDocument} from "./organizerContactMergeReceiptDocument";
 import {OrganizerClaimRequestDocument} from "./organizerClaimRequestDocument";
 import {OrganizerScheduleLockDocument} from "./organizerScheduleLockDocument";
 import {ClubPostDocument} from "./clubPostDocument";
@@ -288,6 +296,14 @@ import {
   organizerTeamMembershipDocumentSchema,
   organizerFollowDocumentSchema,
   organizerCommunicationPreferenceDocumentSchema,
+  organizerContactDocumentSchema,
+  organizerContactIdentityLinkDocumentSchema,
+  organizerContactIdentityClaimDocumentSchema,
+  organizerContactEventEdgeDocumentSchema,
+  organizerContactTraitDocumentSchema,
+  organizerAudienceSummaryDocumentSchema,
+  organizerAudienceProjectionReceiptDocumentSchema,
+  organizerContactMergeReceiptDocumentSchema,
   organizerClaimRequestDocumentSchema,
   organizerScheduleLockDocumentSchema,
   clubPostDocumentSchema,
@@ -626,6 +642,38 @@ export const validateOrganizerCommunicationPreferenceDocument:
   ValidateFunction<OrganizerCommunicationPreferenceDocument> =
     ajv.compile(organizerCommunicationPreferenceDocumentSchema) as
       ValidateFunction<OrganizerCommunicationPreferenceDocument>;
+export const validateOrganizerContactDocument:
+  ValidateFunction<OrganizerContactDocument> =
+    ajv.compile(organizerContactDocumentSchema) as
+      ValidateFunction<OrganizerContactDocument>;
+export const validateOrganizerContactIdentityLinkDocument:
+  ValidateFunction<OrganizerContactIdentityLinkDocument> =
+    ajv.compile(organizerContactIdentityLinkDocumentSchema) as
+      ValidateFunction<OrganizerContactIdentityLinkDocument>;
+export const validateOrganizerContactIdentityClaimDocument:
+  ValidateFunction<OrganizerContactIdentityClaimDocument> =
+    ajv.compile(organizerContactIdentityClaimDocumentSchema) as
+      ValidateFunction<OrganizerContactIdentityClaimDocument>;
+export const validateOrganizerContactEventEdgeDocument:
+  ValidateFunction<OrganizerContactEventEdgeDocument> =
+    ajv.compile(organizerContactEventEdgeDocumentSchema) as
+      ValidateFunction<OrganizerContactEventEdgeDocument>;
+export const validateOrganizerContactTraitDocument:
+  ValidateFunction<OrganizerContactTraitDocument> =
+    ajv.compile(organizerContactTraitDocumentSchema) as
+      ValidateFunction<OrganizerContactTraitDocument>;
+export const validateOrganizerAudienceSummaryDocument:
+  ValidateFunction<OrganizerAudienceSummaryDocument> =
+    ajv.compile(organizerAudienceSummaryDocumentSchema) as
+      ValidateFunction<OrganizerAudienceSummaryDocument>;
+export const validateOrganizerAudienceProjectionReceiptDocument:
+  ValidateFunction<OrganizerAudienceProjectionReceiptDocument> =
+    ajv.compile(organizerAudienceProjectionReceiptDocumentSchema) as
+      ValidateFunction<OrganizerAudienceProjectionReceiptDocument>;
+export const validateOrganizerContactMergeReceiptDocument:
+  ValidateFunction<OrganizerContactMergeReceiptDocument> =
+    ajv.compile(organizerContactMergeReceiptDocumentSchema) as
+      ValidateFunction<OrganizerContactMergeReceiptDocument>;
 export const validateOrganizerClaimRequestDocument:
   ValidateFunction<OrganizerClaimRequestDocument> =
     ajv.compile(organizerClaimRequestDocumentSchema) as

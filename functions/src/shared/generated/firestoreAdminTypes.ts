@@ -1576,6 +1576,195 @@ export interface OrganizerCommunicationPreferenceDocument {
 }
 
 /**
+ * Server-owned organizer-scoped contact projection. It is not a Consumer profile and may contain restricted operational contact data.
+ */
+export interface OrganizerContactDocument {
+  organizerId: string;
+  displayName: string;
+  searchName: string;
+  linkedUid: string | null;
+  phoneE164: string | null;
+  email: string | null;
+  identityState: "unlinked" | "verified" | "ambiguous" | "merged";
+  identityConfidence: "eventOnly" | "proposed" | "verified";
+  primarySource: "catchBooking" | "hostImport" | "hostManual" | "webOtp";
+  /**
+   * @maxItems 20
+   */
+  ambiguousCandidateContactIds: string[];
+  firstSeenAt: FirebaseFirestore.Timestamp;
+  lastSeenAt: FirebaseFirestore.Timestamp;
+  sourceCount: number;
+  whatsappStatus: "unknown" | "optedIn" | "optedOut";
+  smsStatus: "unknown" | "optedIn" | "optedOut";
+  revision: number;
+  mergedIntoContactId: string | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  deletedAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Server-only identity evidence edge used for keyed candidate lookup. Hashes are restricted identifiers, not anonymous data.
+ */
+export interface OrganizerContactIdentityLinkDocument {
+  organizerId: string;
+  contactId: string;
+  attendeeId: string;
+  kind: "uid" | "phone" | "email" | "provider";
+  identityHash: string;
+  hashVersion: "hmac-sha256-v1";
+  confidence: "proposed" | "verified";
+  source: "catchBooking" | "hostImport" | "hostManual" | "webOtp";
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Singleton organizer-scoped ownership claim for a person-verified UID or phone identity.
+ */
+export interface OrganizerContactIdentityClaimDocument {
+  organizerId: string;
+  kind: "uid" | "phone";
+  identityHash: string;
+  hashVersion: "hmac-sha256-v1";
+  verifiedContactId: string;
+  state: "verified" | "conflicted";
+  /**
+   * @maxItems 20
+   */
+  conflictingContactIds: string[];
+  revision: number;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Rebuildable organizer-person-event fact edge projected from the canonical operational attendee.
+ */
+export interface OrganizerContactEventEdgeDocument {
+  organizerId: string;
+  contactId: string;
+  eventId: string;
+  attendeeId: string;
+  displayName: string;
+  linkedUid: string | null;
+  phoneE164: string | null;
+  email: string | null;
+  source: "catchBooking" | "hostImport" | "hostManual" | "webOtp";
+  status: "invited" | "registered" | "waitlisted" | "checkedIn" | "cancelled";
+  expected: boolean;
+  registered: boolean;
+  cancelled: boolean;
+  checkedIn: boolean;
+  eventStartAt: FirebaseFirestore.Timestamp | null;
+  eventEndAt: FirebaseFirestore.Timestamp | null;
+  registeredAt: FirebaseFirestore.Timestamp | null;
+  cancelledAt: FirebaseFirestore.Timestamp | null;
+  checkedInAt: FirebaseFirestore.Timestamp | null;
+  sourceCreatedAt: FirebaseFirestore.Timestamp;
+  sourceUpdatedAt: FirebaseFirestore.Timestamp;
+  revision: number;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Rebuildable, explainable organizer-contact CRM traits. Sensitive Event Success answers are excluded by contract.
+ */
+export interface OrganizerContactTraitDocument {
+  organizerId: string;
+  contactId: string;
+  expectedEventCount: number;
+  attendedEventCount: number;
+  cancelledEventCount: number;
+  noShowCount: number;
+  importedEventCount: number;
+  linkedAccount: boolean;
+  firstSeenAt: FirebaseFirestore.Timestamp;
+  lastSeenAt: FirebaseFirestore.Timestamp;
+  firstAttendedAt: FirebaseFirestore.Timestamp | null;
+  lastAttendedAt: FirebaseFirestore.Timestamp | null;
+  attendanceRate: number | null;
+  /**
+   * @maxItems 16
+   */
+  segmentIds: (
+    | "new_to_organizer"
+    | "first_time_attendee"
+    | "repeat_attendee"
+    | "regular"
+    | "lapsed_regular"
+    | "reliable_attendee"
+    | "needs_confirmation"
+    | "whatsapp_reachable"
+    | "sms_reachable"
+  )[];
+  definitionVersion: number;
+  whatsappStatus: "unknown" | "optedIn" | "optedOut";
+  smsStatus: "unknown" | "optedIn" | "optedOut";
+  sourceCoverage: "exact" | "partial" | "insufficientData";
+  projectionVersion: number;
+  computedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Server-maintained scalable organizer audience summary projected from contact traits.
+ */
+export interface OrganizerAudienceSummaryDocument {
+  organizerId: string;
+  contactCount: number;
+  pastAttendeeCount: number;
+  repeatAttendeeCount: number;
+  linkedAccountCount: number;
+  importedContactCount: number;
+  whatsappOptInCount: number;
+  smsOptInCount: number;
+  sourceCoverage: "exact" | "partial";
+  projectionVersion: number;
+  computedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Short-lived exactly-once receipt for a contact-trait delta applied to an organizer audience summary.
+ */
+export interface OrganizerAudienceProjectionReceiptDocument {
+  organizerId: string;
+  eventId: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Immutable evidence for a manager-confirmed organizer contact merge or its reversal.
+ */
+export interface OrganizerContactMergeReceiptDocument {
+  organizerId: string;
+  operation: "merge" | "unmerge";
+  survivorContactId: string;
+  sourceContactId: string;
+  /**
+   * @maxItems 20
+   */
+  evidence: (
+    | "sameVerifiedUid"
+    | "sameVerifiedPhone"
+    | "sameImportedPhone"
+    | "sameEmail"
+    | "managerConfirmed"
+  )[];
+  /**
+   * @maxItems 20
+   */
+  conflicts: string[];
+  actorUid: string;
+  survivorRevision: number;
+  sourceRevision: number;
+  reversalOfReceiptId: string | null;
+  createdAt: FirebaseFirestore.Timestamp;
+}
+
+/**
  * Server-owned organizer listing claim request stored at organizerClaimRequests/{requestId}.
  */
 export interface OrganizerClaimRequestDocument {

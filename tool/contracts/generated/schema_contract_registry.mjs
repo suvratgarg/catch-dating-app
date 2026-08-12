@@ -11762,6 +11762,1439 @@ export const organizerCommunicationPreferenceDocumentSchema = {
   }
 };
 
+export const organizerContactDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_contacts.schema.json",
+  "title": "OrganizerContactDocument",
+  "description": "Server-owned organizer-scoped contact projection. It is not a Consumer profile and may contain restricted operational contact data.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerContacts",
+  "x-firestore-path": "organizerContacts/{contactId}",
+  "x-document-id-field": "contactId",
+  "x-owner": "organizer audience projection and manager-only CRM callables",
+  "required": [
+    "organizerId",
+    "displayName",
+    "searchName",
+    "linkedUid",
+    "phoneE164",
+    "email",
+    "identityState",
+    "identityConfidence",
+    "primarySource",
+    "ambiguousCandidateContactIds",
+    "firstSeenAt",
+    "lastSeenAt",
+    "sourceCount",
+    "whatsappStatus",
+    "smsStatus",
+    "revision",
+    "mergedIntoContactId",
+    "createdAt",
+    "updatedAt",
+    "deletedAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "x-catch-ownership": "server-only"
+    },
+    "searchName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "x-catch-ownership": "server-only"
+    },
+    "linkedUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "phoneE164": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^\\+[1-9][0-9]{7,14}$",
+      "x-catch-ownership": "server-only"
+    },
+    "email": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "email",
+      "maxLength": 320,
+      "x-catch-ownership": "server-only"
+    },
+    "identityState": {
+      "type": "string",
+      "enum": [
+        "unlinked",
+        "verified",
+        "ambiguous",
+        "merged"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "identityConfidence": {
+      "type": "string",
+      "enum": [
+        "eventOnly",
+        "proposed",
+        "verified"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "primarySource": {
+      "type": "string",
+      "enum": [
+        "catchBooking",
+        "hostImport",
+        "hostManual",
+        "webOtp"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "ambiguousCandidateContactIds": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "firstSeenAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "lastSeenAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "sourceCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000,
+      "x-catch-ownership": "server-only"
+    },
+    "whatsappStatus": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "optedIn",
+        "optedOut"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "smsStatus": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "optedIn",
+        "optedOut"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "mergedIntoContactId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "deletedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "server-only"
+    }
+  },
+  "definitions": {
+    "channelStatus": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "optedIn",
+        "optedOut"
+      ],
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
+export const organizerContactIdentityLinkDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_contact_identity_links.schema.json",
+  "title": "OrganizerContactIdentityLinkDocument",
+  "description": "Server-only identity evidence edge used for keyed candidate lookup. Hashes are restricted identifiers, not anonymous data.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerContactIdentityLinks",
+  "x-firestore-path": "organizerContactIdentityLinks/{identityLinkId}",
+  "x-document-id-field": "identityLinkId",
+  "x-owner": "organizer audience identity resolver",
+  "required": [
+    "organizerId",
+    "contactId",
+    "attendeeId",
+    "kind",
+    "identityHash",
+    "hashVersion",
+    "confidence",
+    "source",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "contactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "attendeeId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "uid",
+        "phone",
+        "email",
+        "provider"
+      ]
+    },
+    "identityHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "hashVersion": {
+      "type": "string",
+      "enum": [
+        "hmac-sha256-v1"
+      ]
+    },
+    "confidence": {
+      "type": "string",
+      "enum": [
+        "proposed",
+        "verified"
+      ]
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "catchBooking",
+        "hostImport",
+        "hostManual",
+        "webOtp"
+      ]
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  }
+};
+
+export const organizerContactIdentityClaimDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_contact_identity_claims.schema.json",
+  "title": "OrganizerContactIdentityClaimDocument",
+  "description": "Singleton organizer-scoped ownership claim for a person-verified UID or phone identity.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerContactIdentityClaims",
+  "x-firestore-path": "organizerContactIdentityClaims/{identityClaimId}",
+  "x-document-id-field": "identityClaimId",
+  "x-owner": "organizer audience identity resolver and merge operations",
+  "required": [
+    "organizerId",
+    "kind",
+    "identityHash",
+    "hashVersion",
+    "verifiedContactId",
+    "state",
+    "conflictingContactIds",
+    "revision",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "uid",
+        "phone"
+      ]
+    },
+    "identityHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "hashVersion": {
+      "type": "string",
+      "enum": [
+        "hmac-sha256-v1"
+      ]
+    },
+    "verifiedContactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "verified",
+        "conflicted"
+      ]
+    },
+    "conflictingContactIds": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      }
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  }
+};
+
+export const organizerContactEventEdgeDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_contact_event_edges.schema.json",
+  "title": "OrganizerContactEventEdgeDocument",
+  "description": "Rebuildable organizer-person-event fact edge projected from the canonical operational attendee.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerContactEventEdges",
+  "x-firestore-path": "organizerContactEventEdges/{edgeId}",
+  "x-document-id-field": "edgeId",
+  "x-owner": "organizer audience projection",
+  "required": [
+    "organizerId",
+    "contactId",
+    "eventId",
+    "attendeeId",
+    "displayName",
+    "linkedUid",
+    "phoneE164",
+    "email",
+    "source",
+    "status",
+    "expected",
+    "registered",
+    "cancelled",
+    "checkedIn",
+    "eventStartAt",
+    "eventEndAt",
+    "registeredAt",
+    "cancelledAt",
+    "checkedInAt",
+    "sourceCreatedAt",
+    "sourceUpdatedAt",
+    "revision",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "contactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "attendeeId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "linkedUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "phoneE164": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^\\+[1-9][0-9]{7,14}$"
+    },
+    "email": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "email",
+      "maxLength": 320
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "catchBooking",
+        "hostImport",
+        "hostManual",
+        "webOtp"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "invited",
+        "registered",
+        "waitlisted",
+        "checkedIn",
+        "cancelled"
+      ]
+    },
+    "expected": {
+      "type": "boolean"
+    },
+    "registered": {
+      "type": "boolean"
+    },
+    "cancelled": {
+      "type": "boolean"
+    },
+    "checkedIn": {
+      "type": "boolean"
+    },
+    "eventStartAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "eventEndAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "registeredAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "cancelledAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "checkedInAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sourceCreatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "sourceUpdatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  }
+};
+
+export const organizerContactTraitDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_contact_traits.schema.json",
+  "title": "OrganizerContactTraitDocument",
+  "description": "Rebuildable, explainable organizer-contact CRM traits. Sensitive Event Success answers are excluded by contract.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerContactTraits",
+  "x-firestore-path": "organizerContactTraits/{contactId}",
+  "x-document-id-field": "contactId",
+  "x-owner": "organizer audience projection",
+  "required": [
+    "organizerId",
+    "contactId",
+    "expectedEventCount",
+    "attendedEventCount",
+    "cancelledEventCount",
+    "noShowCount",
+    "importedEventCount",
+    "linkedAccount",
+    "firstSeenAt",
+    "lastSeenAt",
+    "firstAttendedAt",
+    "lastAttendedAt",
+    "attendanceRate",
+    "segmentIds",
+    "definitionVersion",
+    "whatsappStatus",
+    "smsStatus",
+    "sourceCoverage",
+    "projectionVersion",
+    "computedAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "contactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedEventCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000
+    },
+    "attendedEventCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000
+    },
+    "cancelledEventCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000
+    },
+    "noShowCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000
+    },
+    "importedEventCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000
+    },
+    "linkedAccount": {
+      "type": "boolean"
+    },
+    "firstSeenAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "lastSeenAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "firstAttendedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "lastAttendedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "attendanceRate": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 1
+    },
+    "segmentIds": {
+      "type": "array",
+      "uniqueItems": true,
+      "maxItems": 16,
+      "items": {
+        "type": "string",
+        "enum": [
+          "new_to_organizer",
+          "first_time_attendee",
+          "repeat_attendee",
+          "regular",
+          "lapsed_regular",
+          "reliable_attendee",
+          "needs_confirmation",
+          "whatsapp_reachable",
+          "sms_reachable"
+        ]
+      }
+    },
+    "definitionVersion": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000
+    },
+    "whatsappStatus": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "optedIn",
+        "optedOut"
+      ]
+    },
+    "smsStatus": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "optedIn",
+        "optedOut"
+      ]
+    },
+    "sourceCoverage": {
+      "type": "string",
+      "enum": [
+        "exact",
+        "partial",
+        "insufficientData"
+      ]
+    },
+    "projectionVersion": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000
+    },
+    "computedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  },
+  "definitions": {
+    "segmentId": {
+      "type": "string",
+      "enum": [
+        "new_to_organizer",
+        "first_time_attendee",
+        "repeat_attendee",
+        "regular",
+        "lapsed_regular",
+        "reliable_attendee",
+        "needs_confirmation",
+        "whatsapp_reachable",
+        "sms_reachable"
+      ]
+    },
+    "channelStatus": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "optedIn",
+        "optedOut"
+      ]
+    }
+  }
+};
+
+export const organizerAudienceSummaryDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_audience_summaries.schema.json",
+  "title": "OrganizerAudienceSummaryDocument",
+  "description": "Server-maintained scalable organizer audience summary projected from contact traits.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerAudienceSummaries",
+  "x-firestore-path": "organizerAudienceSummaries/{organizerId}",
+  "x-document-id-field": "organizerId",
+  "x-owner": "organizer audience projection and getOrganizerCrmSummary",
+  "required": [
+    "organizerId",
+    "contactCount",
+    "pastAttendeeCount",
+    "repeatAttendeeCount",
+    "linkedAccountCount",
+    "importedContactCount",
+    "whatsappOptInCount",
+    "smsOptInCount",
+    "sourceCoverage",
+    "projectionVersion",
+    "computedAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "contactCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "pastAttendeeCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "repeatAttendeeCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "linkedAccountCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "importedContactCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "whatsappOptInCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "smsOptInCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "sourceCoverage": {
+      "type": "string",
+      "enum": [
+        "exact",
+        "partial"
+      ]
+    },
+    "projectionVersion": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000
+    },
+    "computedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  },
+  "definitions": {
+    "count": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    }
+  }
+};
+
+export const organizerAudienceProjectionReceiptDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_audience_projection_receipts.schema.json",
+  "title": "OrganizerAudienceProjectionReceiptDocument",
+  "description": "Short-lived exactly-once receipt for a contact-trait delta applied to an organizer audience summary.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerAudienceProjectionReceipts",
+  "x-firestore-path": "organizerAudienceProjectionReceipts/{eventId}",
+  "x-document-id-field": "eventId",
+  "x-owner": "organizer audience summary projection",
+  "required": [
+    "organizerId",
+    "eventId",
+    "createdAt",
+    "expiresAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  }
+};
+
+export const organizerContactMergeReceiptDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_contact_merge_receipts.schema.json",
+  "title": "OrganizerContactMergeReceiptDocument",
+  "description": "Immutable evidence for a manager-confirmed organizer contact merge or its reversal.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerContactMergeReceipts",
+  "x-firestore-path": "organizerContactMergeReceipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "organizer contact merge and unmerge callables",
+  "required": [
+    "organizerId",
+    "operation",
+    "survivorContactId",
+    "sourceContactId",
+    "evidence",
+    "conflicts",
+    "actorUid",
+    "survivorRevision",
+    "sourceRevision",
+    "reversalOfReceiptId",
+    "createdAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "operation": {
+      "type": "string",
+      "enum": [
+        "merge",
+        "unmerge"
+      ]
+    },
+    "survivorContactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "sourceContactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "evidence": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "sameVerifiedUid",
+          "sameVerifiedPhone",
+          "sameImportedPhone",
+          "sameEmail",
+          "managerConfirmed"
+        ]
+      }
+    },
+    "conflicts": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "maxLength": 120
+      }
+    },
+    "actorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "survivorRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "sourceRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "reversalOfReceiptId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  }
+};
+
 export const organizerClaimRequestDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_claim_requests.schema.json",
@@ -38764,7 +40197,7 @@ export const getOrganizerCrmSummaryCallableResponseSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callable_responses/get_organizer_crm_summary_response.schema.json",
   "title": "GetOrganizerCrmSummaryCallableResponse",
-  "description": "Deduplicated Host CRM counts. No attendee identity or contact field is returned.",
+  "description": "Projected Host CRM counts. No attendee identity or contact field is returned.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -38788,37 +40221,37 @@ export const getOrganizerCrmSummaryCallableResponseSchema = {
     "contactCount": {
       "type": "integer",
       "minimum": 0,
-      "maximum": 2500
+      "maximum": 2147483647
     },
     "pastAttendeeCount": {
       "type": "integer",
       "minimum": 0,
-      "maximum": 2500
+      "maximum": 2147483647
     },
     "repeatAttendeeCount": {
       "type": "integer",
       "minimum": 0,
-      "maximum": 2500
+      "maximum": 2147483647
     },
     "linkedAccountCount": {
       "type": "integer",
       "minimum": 0,
-      "maximum": 2500
+      "maximum": 2147483647
     },
     "importedContactCount": {
       "type": "integer",
       "minimum": 0,
-      "maximum": 2500
+      "maximum": 2147483647
     },
     "whatsappOptInCount": {
       "type": "integer",
       "minimum": 0,
-      "maximum": 2500
+      "maximum": 2147483647
     },
     "smsOptInCount": {
       "type": "integer",
       "minimum": 0,
-      "maximum": 2500
+      "maximum": 2147483647
     },
     "truncated": {
       "type": "boolean"

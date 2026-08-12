@@ -149,6 +149,53 @@ const schemaSpecs = [
       "organizerCommunicationPreferenceDocument.ts",
   },
   {
+    name: "OrganizerContactDocument",
+    source: "firestore/organizer_contacts.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerContactDocument.ts",
+  },
+  {
+    name: "OrganizerContactIdentityLinkDocument",
+    source: "firestore/organizer_contact_identity_links.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerContactIdentityLinkDocument.ts",
+  },
+  {
+    name: "OrganizerContactIdentityClaimDocument",
+    source: "firestore/organizer_contact_identity_claims.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerContactIdentityClaimDocument.ts",
+  },
+  {
+    name: "OrganizerContactEventEdgeDocument",
+    source: "firestore/organizer_contact_event_edges.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerContactEventEdgeDocument.ts",
+  },
+  {
+    name: "OrganizerContactTraitDocument",
+    source: "firestore/organizer_contact_traits.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerContactTraitDocument.ts",
+  },
+  {
+    name: "OrganizerAudienceSummaryDocument",
+    source: "firestore/organizer_audience_summaries.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerAudienceSummaryDocument.ts",
+  },
+  {
+    name: "OrganizerAudienceProjectionReceiptDocument",
+    source: "firestore/organizer_audience_projection_receipts.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerAudienceProjectionReceiptDocument.ts",
+  },
+  {
+    name: "OrganizerContactMergeReceiptDocument",
+    source: "firestore/organizer_contact_merge_receipts.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerContactMergeReceiptDocument.ts",
+  },
+  {
     name: "OrganizerClaimRequestDocument",
     source: "firestore/organizer_claim_requests.schema.json",
     typeOutput:

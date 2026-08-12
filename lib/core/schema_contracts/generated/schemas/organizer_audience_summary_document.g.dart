@@ -2,15 +2,19 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 // ignore_for_file: constant_identifier_names, use_null_aware_elements
 
-// JSON Schema constant emitted from callable_responses/get_organizer_crm_summary_response.schema.json.
+// JSON Schema constant emitted from firestore/organizer_audience_summaries.schema.json.
 
-const schemaGetOrganizerCrmSummaryCallableResponseSchema = <String, Object?>{
+const schemaOrganizerAudienceSummaryDocumentSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
-  '\$id': 'https://catch.app/contracts/callable_responses/get_organizer_crm_summary_response.schema.json',
-  'title': 'GetOrganizerCrmSummaryCallableResponse',
-  'description': 'Projected Host CRM counts. No attendee identity or contact field is returned.',
+  '\$id': 'https://catch.app/contracts/firestore/organizer_audience_summaries.schema.json',
+  'title': 'OrganizerAudienceSummaryDocument',
+  'description': 'Server-maintained scalable organizer audience summary projected from contact traits.',
   'type': 'object',
   'additionalProperties': false,
+  'x-firestore-collection': 'organizerAudienceSummaries',
+  'x-firestore-path': 'organizerAudienceSummaries/{organizerId}',
+  'x-document-id-field': 'organizerId',
+  'x-owner': 'organizer audience projection and getOrganizerCrmSummary',
   'required': <Object?>[
     'organizerId',
     'contactCount',
@@ -20,8 +24,9 @@ const schemaGetOrganizerCrmSummaryCallableResponseSchema = <String, Object?>{
     'importedContactCount',
     'whatsappOptInCount',
     'smsOptInCount',
-    'truncated',
-    'readiness',
+    'sourceCoverage',
+    'projectionVersion',
+    'computedAt',
   ],
   'properties': <String, Object?>{
     'organizerId': <String, Object?>{
@@ -64,37 +69,44 @@ const schemaGetOrganizerCrmSummaryCallableResponseSchema = <String, Object?>{
       'minimum': 0,
       'maximum': 2147483647,
     },
-    'truncated': <String, Object?>{
-      'type': 'boolean',
+    'sourceCoverage': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'exact',
+        'partial',
+      ],
     },
-    'readiness': <String, Object?>{
+    'projectionVersion': <String, Object?>{
+      'type': 'integer',
+      'minimum': 1,
+      'maximum': 1000,
+    },
+    'computedAt': <String, Object?>{
       'type': 'object',
+      'description': 'Serialized Firestore Timestamp fixture shape.',
+      'x-firestore-type': 'timestamp',
       'additionalProperties': false,
       'required': <Object?>[
-        'inApp',
-        'whatsapp',
-        'sms',
+        '_seconds',
+        '_nanoseconds',
       ],
       'properties': <String, Object?>{
-        'inApp': <String, Object?>{
-          'type': 'string',
-          'enum': <Object?>[
-            'currentEventOnly',
-          ],
+        '_seconds': <String, Object?>{
+          'type': 'integer',
         },
-        'whatsapp': <String, Object?>{
-          'type': 'string',
-          'enum': <Object?>[
-            'providerSetupRequired',
-          ],
-        },
-        'sms': <String, Object?>{
-          'type': 'string',
-          'enum': <Object?>[
-            'providerAndDltSetupRequired',
-          ],
+        '_nanoseconds': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 999999999,
         },
       },
+    },
+  },
+  'definitions': <String, Object?>{
+    'count': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'maximum': 2147483647,
     },
   },
 };

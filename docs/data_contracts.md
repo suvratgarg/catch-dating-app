@@ -350,6 +350,10 @@ Root-level edge/action documents are the source of truth for many-to-many state:
 | Private no-download Event Success identity | server-owned `eventRuntimeParticipants/{eventId_uid}` |
 | Ambiguous or walk-in Event Success claim review | server-owned `eventRuntimeClaimRequests/{eventId_uid}` |
 | Organizer-scoped communication permission | server-only `organizerCommunicationPreferences/{organizerId_uid}` |
+| Organizer-scoped operational contact | server-only `organizerContacts/{contactId}` |
+| Contact-to-event fact | server-only `organizerContactEventEdges/{attendeeId}` |
+| Contact identity evidence and verified claim | server-only `organizerContactIdentityLinks/{evidenceId}` and `organizerContactIdentityClaims/{claimId}` |
+| Rebuildable contact traits and organizer summary | server-only `organizerContactTraits/{contactId}` and `organizerAudienceSummaries/{organizerId}` |
 | Cross Paths event visibility | `eventCrossPathsConsents/{eventId_uid}` |
 | Cross Paths showcase eligibility | server-only `crossPathsShowcaseEligibility/{uid}` |
 | Cross Paths suggestion exposure | server-only `crossPathsSuggestionExposures/{exposureId}` |
@@ -473,13 +477,34 @@ unchecked box does not grant permission and cannot revoke a prior grant;
 withdrawal belongs to the future self-service/STOP callable. Host imports and
 manual roster entry never create channel permission.
 
-`getOrganizerCrmSummary` returns only privacy-bounded, deduplicated counts for
-contacts, past and repeat attendees, linked accounts, imported contacts, and
-explicit WhatsApp/SMS reachability. It never returns attendee identity or
-contact fields. Hosts currently retain event-scoped roster access through the
-existing authorized roster boundary; campaign delivery is a separate future
-contract. Account deletion removes both the onboarding draft and every
-organizer communication preference owned by the UID.
+Every canonical `eventAttendees` write projects into an organizer-scoped
+contact plus one event fact edge. A contact is operational memory for one
+organizer, not a Consumer profile. An imported normalized phone/email creates
+only proposed identity evidence; it never silently merges two people. A UID or
+person-verified OTP phone may own a singleton identity claim. Conflicting
+verified claims stop automatic convergence and require an immutable,
+reversible manager merge receipt. Name alone is never merge evidence.
+
+`organizerContactTraits` are rebuilt from event edges and contain only
+attendance, reliability, source and channel-reachability facts. Compatibility
+answers, gender, sexual orientation, relationship state, wingman targets,
+safety reports and inferred social desirability are prohibited CRM inputs.
+Trait and summary writes use exactly-once TTL receipts, so retries cannot
+double-count an organizer. The dry-run-first organizer-audience backfill uses
+the same production projector and marks a summary `exact` only after every
+current attendee row has completed. Newer live rows always win over stale
+backfill snapshots.
+
+`getOrganizerCrmSummary` reads `organizerAudienceSummaries` when present and
+returns only privacy-bounded counts for contacts, past and repeat attendees,
+linked accounts, imports, and explicit WhatsApp/SMS reachability. During the
+dual-write migration it falls back to the legacy bounded attendee/preference
+scan for organizers without a summary; `truncated` remains true while projected
+source coverage is partial. It never returns attendee identity or contact
+fields. Hosts currently retain event-scoped roster access through the existing
+authorized roster boundary; campaign delivery is a separate contract. Account
+deletion removes the onboarding draft and every organizer communication
+preference owned by the UID.
 Retained organizer roster history is unlinked by setting `linkedUid` and
 `linkedAt` to null; any separately retained operational contact field remains
 subject to the organizer's stated booking/records purpose rather than Catch

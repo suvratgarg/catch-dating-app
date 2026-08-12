@@ -118,6 +118,10 @@ export {
 export {createOrganizerPost} from "./organizers/organizerPosts";
 export {getOrganizerCrmSummary} from "./organizers/organizerCrm";
 export {
+  onEventAttendeeAudienceProjected,
+  onOrganizerCommunicationPreferenceAudienceProjected,
+} from "./organizers/organizerAudienceProjection";
+export {
   adminDecideOrganizerClaim,
   requestOrganizerClaim,
 } from "./organizers/organizerClaims";

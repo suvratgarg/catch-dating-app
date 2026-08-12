@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_contacts.schema.json",
+  "title": "OrganizerContactDocument",
+  "description": "Server-owned organizer-scoped contact projection. It is not a Consumer profile and may contain restricted operational contact data.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerContacts",
+  "x-firestore-path": "organizerContacts/{contactId}",
+  "x-document-id-field": "contactId",
+  "x-owner": "organizer audience projection and manager-only CRM callables",
+  "required": [
+    "organizerId", "displayName", "searchName", "linkedUid", "phoneE164",
+    "email", "identityState", "identityConfidence", "primarySource",
+    "ambiguousCandidateContactIds", "firstSeenAt", "lastSeenAt",
+    "sourceCount", "whatsappStatus", "smsStatus", "revision",
+    "mergedIntoContactId", "createdAt", "updatedAt", "deletedAt"
+  ],
+  "properties": {
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "server-only"},
+    "displayName": {"type": "string", "minLength": 1, "maxLength": 120, "x-catch-ownership": "server-only"},
+    "searchName": {"type": "string", "minLength": 1, "maxLength": 120, "x-catch-ownership": "server-only"},
+    "linkedUid": {"type": ["string", "null"], "minLength": 1, "maxLength": 180, "x-catch-ownership": "server-only"},
+    "phoneE164": {"type": ["string", "null"], "pattern": "^\\+[1-9][0-9]{7,14}$", "x-catch-ownership": "server-only"},
+    "email": {"type": ["string", "null"], "format": "email", "maxLength": 320, "x-catch-ownership": "server-only"},
+    "identityState": {"type": "string", "enum": ["unlinked", "verified", "ambiguous", "merged"], "x-catch-ownership": "server-only"},
+    "identityConfidence": {"type": "string", "enum": ["eventOnly", "proposed", "verified"], "x-catch-ownership": "server-only"},
+    "primarySource": {"type": "string", "enum": ["catchBooking", "hostImport", "hostManual", "webOtp"], "x-catch-ownership": "server-only"},
+    "ambiguousCandidateContactIds": {"type": "array", "maxItems": 20, "uniqueItems": true, "items": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, "x-catch-ownership": "server-only"},
+    "firstSeenAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "server-only"},
+    "lastSeenAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "server-only"},
+    "sourceCount": {"type": "integer", "minimum": 0, "maximum": 1000000, "x-catch-ownership": "server-only"},
+    "whatsappStatus": {"$ref": "#/definitions/channelStatus"},
+    "smsStatus": {"$ref": "#/definitions/channelStatus"},
+    "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991, "x-catch-ownership": "server-only"},
+    "mergedIntoContactId": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}], "x-catch-ownership": "server-only"},
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "server-only"},
+    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "server-only"},
+    "deletedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp", "x-catch-ownership": "server-only"}
+  },
+  "definitions": {
+    "channelStatus": {"type": "string", "enum": ["unknown", "optedIn", "optedOut"], "x-catch-ownership": "server-only"}
+  }
+}

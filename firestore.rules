@@ -923,6 +923,41 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Organizer Audience/CRM projections contain restricted operational PII,
+    // identity candidates, and business traits. All client access is through
+    // manager-authorized, purpose-built callable projections.
+    match /organizerContacts/{contactId} {
+      allow read, write: if false;
+    }
+
+    match /organizerContactIdentityLinks/{identityLinkId} {
+      allow read, write: if false;
+    }
+
+    match /organizerContactIdentityClaims/{identityClaimId} {
+      allow read, write: if false;
+    }
+
+    match /organizerContactEventEdges/{edgeId} {
+      allow read, write: if false;
+    }
+
+    match /organizerContactTraits/{contactId} {
+      allow read, write: if false;
+    }
+
+    match /organizerAudienceSummaries/{organizerId} {
+      allow read, write: if false;
+    }
+
+    match /organizerAudienceProjectionReceipts/{eventId} {
+      allow read, write: if false;
+    }
+
+    match /organizerContactMergeReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
     match /organizerClaimRequests/{requestId} {
       allow read, write: if false;
     }
