@@ -12271,6 +12271,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostAudienceContactEventHistory => 'Event history';
 
   @override
+  String get hostsHostAudienceSegmentNew => 'New to your audience';
+
+  @override
   String get hostsHostAudienceSegmentFirstTime => 'First-time attendees';
 
   @override
@@ -12286,6 +12289,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostAudienceSegmentReliable => 'Reliable attendees';
 
   @override
+  String get hostsHostAudienceSegmentNeedsConfirmation => 'Needs confirmation';
+
+  @override
   String get hostsHostAudienceSegmentAdvocate => 'Advocates';
 
   @override
@@ -12293,6 +12299,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostAudienceSegmentWhatsapp => 'WhatsApp reachable';
+
+  @override
+  String get hostsHostAudienceSegmentSms => 'SMS reachable';
 
   @override
   String get hostsHostAudienceMessageFollowUp => 'Post-event follow-up';

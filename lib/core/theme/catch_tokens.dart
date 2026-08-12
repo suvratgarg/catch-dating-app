@@ -372,6 +372,14 @@ abstract final class CatchInsets {
     CatchSpacing.screenPb,
   );
 
+  /// Customer-label lane beneath an operational roster person row. Aligns
+  /// badges with the row's text column after its gutter, avatar, and gap.
+  static const EdgeInsets operationalRosterInsightLane = EdgeInsets.only(
+    left: CatchSpacing.s5 + 48 + CatchSpacing.s3,
+    right: CatchSpacing.s5,
+    bottom: CatchSpacing.s2,
+  );
+
   /// Page body padding for flows that need extra scroll-end breathing room.
   static const EdgeInsets pageBodyRelaxed = EdgeInsets.fromLTRB(
     CatchSpacing.screenPx,

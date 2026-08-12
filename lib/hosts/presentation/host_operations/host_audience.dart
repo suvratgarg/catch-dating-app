@@ -1211,6 +1211,8 @@ String _segmentLabel(
   BuildContext context,
   HostAudienceSegment value,
 ) => switch (value) {
+  HostAudienceSegment.newToOrganizer =>
+    context.l10n.hostsHostAudienceSegmentNew,
   HostAudienceSegment.firstTimeAttendee =>
     context.l10n.hostsHostAudienceSegmentFirstTime,
   HostAudienceSegment.repeatAttendee =>
@@ -1220,11 +1222,14 @@ String _segmentLabel(
     context.l10n.hostsHostAudienceSegmentLapsed,
   HostAudienceSegment.reliableAttendee =>
     context.l10n.hostsHostAudienceSegmentReliable,
+  HostAudienceSegment.needsConfirmation =>
+    context.l10n.hostsHostAudienceSegmentNeedsConfirmation,
   HostAudienceSegment.advocate => context.l10n.hostsHostAudienceSegmentAdvocate,
   HostAudienceSegment.highImpactAdvocate =>
     context.l10n.hostsHostAudienceSegmentHighImpact,
   HostAudienceSegment.whatsappReachable =>
     context.l10n.hostsHostAudienceSegmentWhatsapp,
+  HostAudienceSegment.smsReachable => context.l10n.hostsHostAudienceSegmentSms,
 };
 
 String _messageClassLabel(

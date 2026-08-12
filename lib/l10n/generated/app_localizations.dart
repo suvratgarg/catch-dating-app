@@ -19145,6 +19145,12 @@ abstract class AppLocalizations {
   /// **'Event history'**
   String get hostsHostAudienceContactEventHistory;
 
+  /// New-to-organizer audience segment label.
+  ///
+  /// In en, this message translates to:
+  /// **'New to your audience'**
+  String get hostsHostAudienceSegmentNew;
+
   /// First-time attendee segment label.
   ///
   /// In en, this message translates to:
@@ -19175,6 +19181,12 @@ abstract class AppLocalizations {
   /// **'Reliable attendees'**
   String get hostsHostAudienceSegmentReliable;
 
+  /// Audience segment for guests with repeated prior no-shows.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs confirmation'**
+  String get hostsHostAudienceSegmentNeedsConfirmation;
+
   /// Advocate segment label.
   ///
   /// In en, this message translates to:
@@ -19192,6 +19204,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'WhatsApp reachable'**
   String get hostsHostAudienceSegmentWhatsapp;
+
+  /// SMS reachable segment label.
+  ///
+  /// In en, this message translates to:
+  /// **'SMS reachable'**
+  String get hostsHostAudienceSegmentSms;
 
   /// Campaign follow-up message class label.
   ///

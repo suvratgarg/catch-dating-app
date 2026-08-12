@@ -817,11 +817,7 @@ class _HostOperationalAttendeeRow extends StatelessWidget {
         ),
         if (signals.isNotEmpty)
           Padding(
-            padding: const EdgeInsets.only(
-              left: CatchSpacing.s5 + 48 + CatchSpacing.s3,
-              right: CatchSpacing.s5,
-              bottom: CatchSpacing.s2,
-            ),
+            padding: CatchInsets.operationalRosterInsightLane,
             child: Wrap(
               spacing: CatchSpacing.s1,
               runSpacing: CatchSpacing.s1,
