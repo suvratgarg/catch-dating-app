@@ -11454,6 +11454,80 @@ class AppLocalizationsEn extends AppLocalizations {
       'Run this event even when Catch did not handle the booking. Imported, manually added, and web-registered guests stay in one private roster.';
 
   @override
+  String get hostsOperationalRosterInsightsLoading =>
+      'Loading customer labels…';
+
+  @override
+  String get hostsOperationalRosterInsightsUnavailable =>
+      'Customer labels are unavailable. Check-in still works.';
+
+  @override
+  String get hostsOperationalRosterInsightsPreparing =>
+      'Some customer labels are still being prepared. The roster remains complete.';
+
+  @override
+  String get hostsOperationalRosterInsightsRetry => 'Retry labels';
+
+  @override
+  String get hostsOperationalRosterInsightsCaption =>
+      'Customer labels use history from before this event began, so they do not change as you check people in.';
+
+  @override
+  String get hostsOperationalRosterInsightsSpendFootnote =>
+      'Spend labels count only completed, non-refunded Catch payments known before this event. External ticket spend is not guessed.';
+
+  @override
+  String get hostsOperationalRosterInsightsFilterAll => 'All';
+
+  @override
+  String hostsOperationalRosterInsightsFilterCount({
+    required String label,
+    required int count,
+  }) {
+    return '$label $count';
+  }
+
+  @override
+  String get hostsOperationalRosterInsightsFilterEmptyTitle =>
+      'No guests match this label';
+
+  @override
+  String get hostsOperationalRosterInsightsFilterEmptyMessage =>
+      'Choose another label or All to return to the full roster.';
+
+  @override
+  String get hostsOperationalRosterInsightFirstTime => 'First event';
+
+  @override
+  String get hostsOperationalRosterInsightReturning => 'Returning';
+
+  @override
+  String get hostsOperationalRosterInsightRegular => 'Regular';
+
+  @override
+  String get hostsOperationalRosterInsightReEngaging => 'Re-engaging';
+
+  @override
+  String get hostsOperationalRosterInsightReliable => 'Reliable';
+
+  @override
+  String get hostsOperationalRosterInsightNeedsConfirmation =>
+      'Needs confirmation';
+
+  @override
+  String get hostsOperationalRosterInsightAdvocate => 'Advocate';
+
+  @override
+  String get hostsOperationalRosterInsightHighImpactAdvocate => 'Top advocate';
+
+  @override
+  String get hostsOperationalRosterInsightCatchSpender => 'Catch spender';
+
+  @override
+  String get hostsOperationalRosterInsightTopCatchSpender =>
+      'Top Catch spender';
+
+  @override
   String get hostsOperationalRosterImport => 'Import spreadsheet';
 
   @override
@@ -12197,6 +12271,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostAudienceContactEventHistory => 'Event history';
 
   @override
+  String get hostsHostAudienceSegmentNew => 'New to your audience';
+
+  @override
   String get hostsHostAudienceSegmentFirstTime => 'First-time attendees';
 
   @override
@@ -12212,6 +12289,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostAudienceSegmentReliable => 'Reliable attendees';
 
   @override
+  String get hostsHostAudienceSegmentNeedsConfirmation => 'Needs confirmation';
+
+  @override
   String get hostsHostAudienceSegmentAdvocate => 'Advocates';
 
   @override
@@ -12219,6 +12299,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostAudienceSegmentWhatsapp => 'WhatsApp reachable';
+
+  @override
+  String get hostsHostAudienceSegmentSms => 'SMS reachable';
 
   @override
   String get hostsHostAudienceMessageFollowUp => 'Post-event follow-up';

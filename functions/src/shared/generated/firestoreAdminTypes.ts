@@ -3663,6 +3663,7 @@ export interface PaymentDocument {
   crossPathsPairHoldId?: string | null;
   signUpFailed: boolean;
   createdAt: FirebaseFirestore.Timestamp;
+  completedAt?: FirebaseFirestore.Timestamp;
 }
 
 /**

@@ -44,6 +44,13 @@ export interface PaymentDocument {
     _nanoseconds: number;
   };
   /**
+   * Authoritative completion time for a successful payment. Older completed records may omit it and fall back to createdAt.
+   */
+  completedAt?: {
+    _seconds: number;
+    _nanoseconds: number;
+  };
+  /**
    * Internal demo seed marker used for cleanup and diagnostics.
    */
   synthetic?: boolean;

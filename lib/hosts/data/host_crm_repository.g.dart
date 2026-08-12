@@ -131,6 +131,85 @@ final class HostCrmSummaryFamily extends $Family
   String toString() => r'hostCrmSummaryProvider';
 }
 
+@ProviderFor(hostEventRosterInsights)
+final hostEventRosterInsightsProvider = HostEventRosterInsightsFamily._();
+
+final class HostEventRosterInsightsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<HostEventRosterInsights>,
+          HostEventRosterInsights,
+          FutureOr<HostEventRosterInsights>
+        >
+    with
+        $FutureModifier<HostEventRosterInsights>,
+        $FutureProvider<HostEventRosterInsights> {
+  HostEventRosterInsightsProvider._({
+    required HostEventRosterInsightsFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'hostEventRosterInsightsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$hostEventRosterInsightsHash();
+
+  @override
+  String toString() {
+    return r'hostEventRosterInsightsProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<HostEventRosterInsights> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<HostEventRosterInsights> create(Ref ref) {
+    final argument = this.argument as String;
+    return hostEventRosterInsights(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is HostEventRosterInsightsProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$hostEventRosterInsightsHash() =>
+    r'6006a6ca9aa528ab69d2663b83fa5ddcec6bcf5d';
+
+final class HostEventRosterInsightsFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<HostEventRosterInsights>, String> {
+  HostEventRosterInsightsFamily._()
+    : super(
+        retry: null,
+        name: r'hostEventRosterInsightsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  HostEventRosterInsightsProvider call(String eventId) =>
+      HostEventRosterInsightsProvider._(argument: eventId, from: this);
+
+  @override
+  String toString() => r'hostEventRosterInsightsProvider';
+}
+
 @ProviderFor(hostAudience)
 final hostAudienceProvider = HostAudienceFamily._();
 

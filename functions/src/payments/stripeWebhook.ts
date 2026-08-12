@@ -215,6 +215,7 @@ async function fulfillStripeCheckoutSession({
     checkoutSessionId: session.id,
     status: "completed",
     signUpFailed: false,
+    completedAt: deps.serverTimestamp(),
     ...(crossPathsPairHoldId ? {crossPathsPairHoldId} : {}),
     ...(inviteAttribution?.inviteLinkId ?
       {inviteLinkId: inviteAttribution.inviteLinkId} :

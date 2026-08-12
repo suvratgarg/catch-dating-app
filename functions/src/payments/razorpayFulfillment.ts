@@ -168,6 +168,7 @@ export async function fulfillRazorpayPayment({
       crossPathsPairHoldId: booking.crossPathsPairHoldId,
     }),
     createdAt: deps.serverTimestamp(),
+    completedAt: deps.serverTimestamp(),
   };
 
   // Atomically flip the payment to "completed" and (exactly once) bump the

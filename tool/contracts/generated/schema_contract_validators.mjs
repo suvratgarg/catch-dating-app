@@ -236,6 +236,8 @@ import {
   createEventRosterHandoffCallablePayloadSchema,
   createEventRosterHandoffCallableResponseSchema,
   getOrganizerCrmSummaryCallablePayloadSchema,
+  getEventRosterInsightsCallablePayloadSchema,
+  getEventRosterInsightsCallableResponseSchema,
   getOrganizerCrmSummaryCallableResponseSchema,
   listOrganizerContactsCallablePayloadSchema,
   listOrganizerContactsCallableResponseSchema,
@@ -579,6 +581,8 @@ export const validateApproveEventRuntimeClaimCallableResponse = ajv.compile(appr
 export const validateCreateEventRosterHandoffCallablePayload = ajv.compile(createEventRosterHandoffCallablePayloadSchema);
 export const validateCreateEventRosterHandoffCallableResponse = ajv.compile(createEventRosterHandoffCallableResponseSchema);
 export const validateGetOrganizerCrmSummaryCallablePayload = ajv.compile(getOrganizerCrmSummaryCallablePayloadSchema);
+export const validateGetEventRosterInsightsCallablePayload = ajv.compile(getEventRosterInsightsCallablePayloadSchema);
+export const validateGetEventRosterInsightsCallableResponse = ajv.compile(getEventRosterInsightsCallableResponseSchema);
 export const validateGetOrganizerCrmSummaryCallableResponse = ajv.compile(getOrganizerCrmSummaryCallableResponseSchema);
 export const validateListOrganizerContactsCallablePayload = ajv.compile(listOrganizerContactsCallablePayloadSchema);
 export const validateListOrganizerContactsCallableResponse = ajv.compile(listOrganizerContactsCallableResponseSchema);
