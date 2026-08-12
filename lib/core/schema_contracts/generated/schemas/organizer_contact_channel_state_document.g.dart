@@ -70,6 +70,10 @@ const schemaOrganizerContactChannelStateDocumentSchema = <String, Object?>{
         'admin',
       ],
     },
+    'adminSuppressed': <String, Object?>{
+      'type': 'boolean',
+      'description': 'Independent organizer pause. It never replaces a person opt-out or provider suppression.',
+    },
     'campaignAcceptedCount': <String, Object?>{
       'type': 'integer',
       'minimum': 0,

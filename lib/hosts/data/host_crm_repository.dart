@@ -86,6 +86,7 @@ class HostAudienceContact {
     required this.lastAttendedAt,
     required this.segments,
     required this.whatsappStatus,
+    required this.whatsappAdminSuppressed,
     required this.smsStatus,
     required this.sourceCoverage,
     required this.revision,
@@ -116,6 +117,7 @@ class HostAudienceContact {
           _requiredString(map, 'whatsappStatus'),
           'whatsappStatus',
         ),
+        whatsappAdminSuppressed: _requiredBool(map, 'whatsappAdminSuppressed'),
         smsStatus: _enumByName(
           HostAudiencePermissionStatus.values,
           _requiredString(map, 'smsStatus'),
@@ -141,9 +143,110 @@ class HostAudienceContact {
   final DateTime? lastAttendedAt;
   final Set<HostAudienceSegment> segments;
   final HostAudiencePermissionStatus whatsappStatus;
+  final bool whatsappAdminSuppressed;
   final HostAudiencePermissionStatus smsStatus;
   final HostAudienceSourceCoverage sourceCoverage;
   final int revision;
+}
+
+class HostAudienceEventFact {
+  const HostAudienceEventFact({
+    required this.eventId,
+    required this.displayName,
+    required this.source,
+    required this.status,
+    required this.checkedIn,
+    required this.eventStartAt,
+  });
+
+  factory HostAudienceEventFact.fromMap(Map<Object?, Object?> map) =>
+      HostAudienceEventFact(
+        eventId: _requiredString(map, 'eventId'),
+        displayName: _requiredString(map, 'displayName'),
+        source: _requiredString(map, 'source'),
+        status: _requiredString(map, 'status'),
+        checkedIn: _requiredBool(map, 'checkedIn'),
+        eventStartAt: _dateTimeFromMillis(map['eventStartAtMillis']),
+      );
+
+  final String eventId;
+  final String displayName;
+  final String source;
+  final String status;
+  final bool checkedIn;
+  final DateTime? eventStartAt;
+}
+
+class HostAudienceContactDetail {
+  const HostAudienceContactDetail({
+    required this.organizerId,
+    required this.contactId,
+    required this.displayName,
+    required this.sourceDisplayName,
+    required this.displayNameOverride,
+    required this.phoneE164,
+    required this.email,
+    required this.whatsappAdminSuppressed,
+    required this.events,
+    required this.eventsTruncated,
+    required this.revision,
+  });
+
+  factory HostAudienceContactDetail.fromCallableData(Object? data) {
+    final map = _requiredMap(data, 'organizer contact detail');
+    return HostAudienceContactDetail(
+      organizerId: _requiredString(map, 'organizerId'),
+      contactId: _requiredString(map, 'contactId'),
+      displayName: _requiredString(map, 'displayName'),
+      sourceDisplayName: _requiredString(map, 'sourceDisplayName'),
+      displayNameOverride: _nullableString(map['displayNameOverride']),
+      phoneE164: _nullableString(map['phoneE164']),
+      email: _nullableString(map['email']),
+      whatsappAdminSuppressed: _requiredBool(map, 'whatsappAdminSuppressed'),
+      events: _mapList(
+        map['events'],
+        'contact events',
+      ).map(HostAudienceEventFact.fromMap).toList(growable: false),
+      eventsTruncated: _requiredBool(map, 'eventsTruncated'),
+      revision: _requiredInt(map, 'revision'),
+    );
+  }
+
+  final String organizerId;
+  final String contactId;
+  final String displayName;
+  final String sourceDisplayName;
+  final String? displayNameOverride;
+  final String? phoneE164;
+  final String? email;
+  final bool whatsappAdminSuppressed;
+  final List<HostAudienceEventFact> events;
+  final bool eventsTruncated;
+  final int revision;
+}
+
+class HostAudienceExport {
+  const HostAudienceExport({
+    required this.fileName,
+    required this.csv,
+    required this.rowCount,
+    required this.truncated,
+  });
+
+  factory HostAudienceExport.fromCallableData(Object? data) {
+    final map = _requiredMap(data, 'organizer audience export');
+    return HostAudienceExport(
+      fileName: _requiredString(map, 'fileName'),
+      csv: _requiredString(map, 'csv'),
+      rowCount: _requiredInt(map, 'rowCount'),
+      truncated: _requiredBool(map, 'truncated'),
+    );
+  }
+
+  final String fileName;
+  final String csv;
+  final int rowCount;
+  final bool truncated;
 }
 
 class HostAudiencePage {
@@ -507,6 +610,56 @@ class HostCrmRepository {
     ).toJson(),
     action: 'load organizer audience',
     parse: HostAudiencePage.fromCallableData,
+  );
+
+  Future<HostAudienceContactDetail> getContactDetail(
+    String organizerId,
+    String contactId,
+  ) => _call(
+    name: 'getOrganizerContactDetail',
+    payload: GetOrganizerContactDetailCallableRequest(
+      organizerId: organizerId,
+      contactId: contactId,
+    ).toJson(),
+    action: 'load organizer contact detail',
+    parse: HostAudienceContactDetail.fromCallableData,
+  );
+
+  Future<void> mutateContact({
+    required String organizerId,
+    required String contactId,
+    required int expectedRevision,
+    String? displayNameOverride,
+    bool clearDisplayNameOverride = false,
+    bool? whatsappAdminSuppressed,
+    bool? hidden,
+  }) => _call<Object?>(
+    name: 'mutateOrganizerContact',
+    payload: {
+      'organizerId': organizerId,
+      'contactId': contactId,
+      'expectedRevision': expectedRevision,
+      if (displayNameOverride != null || clearDisplayNameOverride)
+        'displayNameOverride': displayNameOverride,
+      if (whatsappAdminSuppressed != null)
+        'whatsappAdminSuppressed': whatsappAdminSuppressed,
+      if (hidden != null) 'hidden': hidden,
+    },
+    action: 'update organizer contact controls',
+    parse: (value) => value,
+  );
+
+  Future<HostAudienceExport> exportContacts(
+    String organizerId, {
+    HostAudienceSegment? segment,
+  }) => _call(
+    name: 'exportOrganizerContacts',
+    payload: ExportOrganizerContactsCallableRequest(
+      organizerId: organizerId,
+      segmentId: segment?.wireValue,
+    ).toJson(),
+    action: 'export organizer audience',
+    parse: HostAudienceExport.fromCallableData,
   );
 
   Future<HostMessagingSetup> getMessagingSetup(

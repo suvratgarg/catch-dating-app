@@ -17,6 +17,10 @@ export interface OrganizerContactChannelStateDocument {
     | "invalidEndpoint"
     | "adminSuppressed";
   suppressionSource: null | "preference" | "inboundStop" | "provider" | "admin";
+  /**
+   * Independent organizer pause. It never replaces a person opt-out or provider suppression.
+   */
+  adminSuppressed?: boolean;
   campaignAcceptedCount: number;
   lastCampaignAcceptedAt: {
     _seconds: number;

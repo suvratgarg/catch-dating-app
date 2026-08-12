@@ -11814,6 +11814,16 @@ export const organizerContactDocumentSchema = {
       "maxLength": 120,
       "x-catch-ownership": "server-only"
     },
+    "displayNameOverride": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 120,
+      "x-catch-ownership": "server-only",
+      "description": "Organizer-scoped label correction. It never changes the Consumer profile or a provider/roster source row."
+    },
     "searchName": {
       "type": "string",
       "minLength": 1,
@@ -12041,6 +12051,346 @@ export const organizerContactDocumentSchema = {
         }
       ],
       "x-catch-ownership": "server-only"
+    },
+    "hiddenAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "server-only",
+      "description": "Organizer-requested CRM hiding. Operational attendee and audit facts remain intact."
+    },
+    "hiddenBy": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "hiddenTraitSnapshot": {
+      "anyOf": [
+        {
+          "title": "OrganizerContactTraitDocument",
+          "description": "Rebuildable, explainable organizer-contact CRM traits. Sensitive Event Success answers are excluded by contract.",
+          "type": "object",
+          "additionalProperties": false,
+          "x-firestore-collection": "organizerContactTraits",
+          "x-firestore-path": "organizerContactTraits/{contactId}",
+          "x-document-id-field": "contactId",
+          "x-owner": "organizer audience projection",
+          "required": [
+            "organizerId",
+            "contactId",
+            "expectedEventCount",
+            "attendedEventCount",
+            "cancelledEventCount",
+            "noShowCount",
+            "importedEventCount",
+            "referredRegistrationCount",
+            "referredCheckedInCount",
+            "referredCheckedIn365DayCount",
+            "linkedAccount",
+            "firstSeenAt",
+            "lastSeenAt",
+            "firstAttendedAt",
+            "lastAttendedAt",
+            "attendanceRate",
+            "segmentIds",
+            "definitionVersion",
+            "whatsappStatus",
+            "smsStatus",
+            "sourceCoverage",
+            "projectionVersion",
+            "computedAt"
+          ],
+          "properties": {
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "contactId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "expectedEventCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "attendedEventCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "cancelledEventCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "noShowCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "importedEventCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "referredRegistrationCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "referredCheckedInCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "referredCheckedIn365DayCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "linkedAccount": {
+              "type": "boolean"
+            },
+            "firstSeenAt": {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            },
+            "lastSeenAt": {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            },
+            "firstAttendedAt": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "description": "Serialized Firestore Timestamp fixture shape.",
+                  "x-firestore-type": "timestamp",
+                  "additionalProperties": false,
+                  "required": [
+                    "_seconds",
+                    "_nanoseconds"
+                  ],
+                  "properties": {
+                    "_seconds": {
+                      "type": "integer"
+                    },
+                    "_nanoseconds": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 999999999
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "lastAttendedAt": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "description": "Serialized Firestore Timestamp fixture shape.",
+                  "x-firestore-type": "timestamp",
+                  "additionalProperties": false,
+                  "required": [
+                    "_seconds",
+                    "_nanoseconds"
+                  ],
+                  "properties": {
+                    "_seconds": {
+                      "type": "integer"
+                    },
+                    "_nanoseconds": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 999999999
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "attendanceRate": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 1
+            },
+            "segmentIds": {
+              "type": "array",
+              "uniqueItems": true,
+              "maxItems": 16,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "new_to_organizer",
+                  "first_time_attendee",
+                  "repeat_attendee",
+                  "regular",
+                  "lapsed_regular",
+                  "reliable_attendee",
+                  "needs_confirmation",
+                  "advocate",
+                  "high_impact_advocate",
+                  "whatsapp_reachable",
+                  "sms_reachable"
+                ]
+              }
+            },
+            "definitionVersion": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000
+            },
+            "whatsappStatus": {
+              "type": "string",
+              "enum": [
+                "unknown",
+                "optedIn",
+                "optedOut"
+              ]
+            },
+            "smsStatus": {
+              "type": "string",
+              "enum": [
+                "unknown",
+                "optedIn",
+                "optedOut"
+              ]
+            },
+            "sourceCoverage": {
+              "type": "string",
+              "enum": [
+                "exact",
+                "partial",
+                "insufficientData"
+              ]
+            },
+            "projectionVersion": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000
+            },
+            "computedAt": {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            }
+          },
+          "definitions": {
+            "segmentId": {
+              "type": "string",
+              "enum": [
+                "new_to_organizer",
+                "first_time_attendee",
+                "repeat_attendee",
+                "regular",
+                "lapsed_regular",
+                "reliable_attendee",
+                "needs_confirmation",
+                "advocate",
+                "high_impact_advocate",
+                "whatsapp_reachable",
+                "sms_reachable"
+              ]
+            },
+            "channelStatus": {
+              "type": "string",
+              "enum": [
+                "unknown",
+                "optedIn",
+                "optedOut"
+              ]
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "server-only",
+      "description": "Bounded organizer-audience contribution snapshot used only to restore a hidden contact without recomputing private event history."
     }
   },
   "definitions": {
@@ -14559,6 +14909,10 @@ export const organizerContactChannelStateDocumentSchema = {
         "provider",
         "admin"
       ]
+    },
+    "adminSuppressed": {
+      "type": "boolean",
+      "description": "Independent organizer pause. It never replaces a person opt-out or provider suppression."
     },
     "campaignAcceptedCount": {
       "type": "integer",
@@ -45999,6 +46353,7 @@ export const listOrganizerContactsCallableResponseSchema = {
           "lastAttendedAtMillis",
           "segmentIds",
           "whatsappStatus",
+          "whatsappAdminSuppressed",
           "smsStatus",
           "sourceCoverage",
           "revision"
@@ -46096,6 +46451,9 @@ export const listOrganizerContactsCallableResponseSchema = {
               "optedOut"
             ]
           },
+          "whatsappAdminSuppressed": {
+            "type": "boolean"
+          },
           "smsStatus": {
             "type": "string",
             "enum": [
@@ -46157,6 +46515,7 @@ export const listOrganizerContactsCallableResponseSchema = {
         "lastAttendedAtMillis",
         "segmentIds",
         "whatsappStatus",
+        "whatsappAdminSuppressed",
         "smsStatus",
         "sourceCoverage",
         "revision"
@@ -46254,6 +46613,9 @@ export const listOrganizerContactsCallableResponseSchema = {
             "optedOut"
           ]
         },
+        "whatsappAdminSuppressed": {
+          "type": "boolean"
+        },
         "smsStatus": {
           "type": "string",
           "enum": [
@@ -46316,12 +46678,15 @@ export const getOrganizerContactDetailCallableResponseSchema = {
     "organizerId",
     "contactId",
     "displayName",
+    "sourceDisplayName",
+    "displayNameOverride",
     "phoneE164",
     "email",
     "linkedAccount",
     "identityState",
     "identityConfidence",
     "ambiguousCandidateContactIds",
+    "whatsappAdminSuppressed",
     "traits",
     "events",
     "eventsTruncated",
@@ -46340,6 +46705,19 @@ export const getOrganizerContactDetailCallableResponseSchema = {
     },
     "displayName": {
       "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "sourceDisplayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "displayNameOverride": {
+      "type": [
+        "string",
+        "null"
+      ],
       "minLength": 1,
       "maxLength": 120
     },
@@ -46386,6 +46764,9 @@ export const getOrganizerContactDetailCallableResponseSchema = {
         "minLength": 1,
         "maxLength": 180
       }
+    },
+    "whatsappAdminSuppressed": {
+      "type": "boolean"
     },
     "traits": {
       "type": "object",
@@ -46800,6 +47181,218 @@ export const getOrganizerContactDetailCallableResponseSchema = {
           "minimum": 0
         }
       }
+    }
+  }
+};
+
+export const mutateOrganizerContactCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/mutate_organizer_contact_payload.schema.json",
+  "title": "MutateOrganizerContactCallablePayload",
+  "description": "Manager-only organizer-scoped contact correction, suppression, or hiding request.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "contactId",
+    "expectedRevision"
+  ],
+  "anyOf": [
+    {
+      "required": [
+        "displayNameOverride"
+      ]
+    },
+    {
+      "required": [
+        "whatsappAdminSuppressed"
+      ]
+    },
+    {
+      "required": [
+        "hidden"
+      ]
+    }
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "contactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "displayNameOverride": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "whatsappAdminSuppressed": {
+      "type": "boolean"
+    },
+    "hidden": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const mutateOrganizerContactCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/mutate_organizer_contact_response.schema.json",
+  "title": "MutateOrganizerContactCallableResponse",
+  "description": "Safe state returned after an organizer-scoped contact mutation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "contactId",
+    "displayName",
+    "displayNameOverride",
+    "whatsappAdminSuppressed",
+    "hidden",
+    "revision"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "contactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "displayNameOverride": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "whatsappAdminSuppressed": {
+      "type": "boolean"
+    },
+    "hidden": {
+      "type": "boolean"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const exportOrganizerContactsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/export_organizer_contacts_payload.schema.json",
+  "title": "ExportOrganizerContactsCallablePayload",
+  "description": "Manager-only bounded organizer audience export request.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "segmentId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "new_to_organizer",
+            "first_time_attendee",
+            "repeat_attendee",
+            "regular",
+            "lapsed_regular",
+            "reliable_attendee",
+            "needs_confirmation",
+            "advocate",
+            "high_impact_advocate",
+            "whatsapp_reachable",
+            "sms_reachable"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const exportOrganizerContactsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/export_organizer_contacts_response.schema.json",
+  "title": "ExportOrganizerContactsCallableResponse",
+  "description": "Bounded UTF-8 CRM CSV that omits private Event Success, dating, feedback, and safety answers.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "fileName",
+    "csv",
+    "rowCount",
+    "truncated",
+    "generatedAtMillis",
+    "sourceCoverage"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "fileName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "csv": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 5000000
+    },
+    "rowCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2500
+    },
+    "truncated": {
+      "type": "boolean"
+    },
+    "generatedAtMillis": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "sourceCoverage": {
+      "type": "string",
+      "enum": [
+        "exact",
+        "partial"
+      ]
     }
   }
 };

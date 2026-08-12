@@ -125,8 +125,10 @@ export {
 export {createOrganizerPost} from "./organizers/organizerPosts";
 export {getOrganizerCrmSummary} from "./organizers/organizerCrm";
 export {
+  exportOrganizerContacts,
   getOrganizerContactDetail,
   listOrganizerContacts,
+  mutateOrganizerContact,
 } from "./organizers/organizerContacts";
 export {
   mergeOrganizerContacts,

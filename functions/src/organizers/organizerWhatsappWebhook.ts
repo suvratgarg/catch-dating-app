@@ -352,6 +352,7 @@ async function processInbound(
         state?.suppressionStatus ?? "none",
       suppressionSource: event.isStop ? "inboundStop" :
         state?.suppressionSource ?? null,
+      adminSuppressed: state?.adminSuppressed ?? false,
       campaignAcceptedCount: state?.campaignAcceptedCount ?? 0,
       lastCampaignAcceptedAt: state?.lastCampaignAcceptedAt ?? null,
       lastInboundAt: event.providerOccurredAt ?? now,

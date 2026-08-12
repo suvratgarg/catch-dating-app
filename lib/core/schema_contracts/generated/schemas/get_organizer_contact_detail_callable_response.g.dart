@@ -15,12 +15,15 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
     'organizerId',
     'contactId',
     'displayName',
+    'sourceDisplayName',
+    'displayNameOverride',
     'phoneE164',
     'email',
     'linkedAccount',
     'identityState',
     'identityConfidence',
     'ambiguousCandidateContactIds',
+    'whatsappAdminSuppressed',
     'traits',
     'events',
     'eventsTruncated',
@@ -39,6 +42,19 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
     },
     'displayName': <String, Object?>{
       'type': 'string',
+      'minLength': 1,
+      'maxLength': 120,
+    },
+    'sourceDisplayName': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 120,
+    },
+    'displayNameOverride': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
       'minLength': 1,
       'maxLength': 120,
     },
@@ -85,6 +101,9 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
         'minLength': 1,
         'maxLength': 180,
       },
+    },
+    'whatsappAdminSuppressed': <String, Object?>{
+      'type': 'boolean',
     },
     'traits': <String, Object?>{
       'type': 'object',

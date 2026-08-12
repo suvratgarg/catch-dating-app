@@ -70,6 +70,7 @@ void main() {
               'whatsapp_reachable',
             ],
             'whatsappStatus': 'optedIn',
+            'whatsappAdminSuppressed': false,
             'smsStatus': 'unknown',
             'sourceCoverage': 'exact',
             'revision': 3,
@@ -84,6 +85,7 @@ void main() {
       expect(contact.displayName, 'Asha Shah');
       expect(contact.identityState, HostAudienceIdentityState.verified);
       expect(contact.whatsappStatus, HostAudiencePermissionStatus.optedIn);
+      expect(contact.whatsappAdminSuppressed, isFalse);
       expect(contact.segments, contains(HostAudienceSegment.repeatAttendee));
       expect(contact.segments, contains(HostAudienceSegment.whatsappReachable));
       expect(page.nextCursor, 'contact-1');
@@ -131,6 +133,35 @@ void main() {
       'first_name',
       'invite_url',
     ]);
+  });
+
+  test('parses contact detail without exposing private runtime answers', () {
+    final detail = HostAudienceContactDetail.fromCallableData({
+      'organizerId': 'organizer-1',
+      'contactId': 'contact-1',
+      'displayName': 'Asha',
+      'sourceDisplayName': 'Asha Rao',
+      'displayNameOverride': 'Asha',
+      'phoneE164': '+919876543210',
+      'email': null,
+      'whatsappAdminSuppressed': true,
+      'events': [
+        {
+          'eventId': 'event-1',
+          'displayName': 'Asha Rao',
+          'source': 'hostImport',
+          'status': 'checkedIn',
+          'checkedIn': true,
+          'eventStartAtMillis': 1700000000000,
+        },
+      ],
+      'eventsTruncated': false,
+      'revision': 7,
+    });
+
+    expect(detail.displayName, 'Asha');
+    expect(detail.whatsappAdminSuppressed, isTrue);
+    expect(detail.events.single.checkedIn, isTrue);
   });
 
   test('parses campaign blockers and aggregate delivery counts', () {

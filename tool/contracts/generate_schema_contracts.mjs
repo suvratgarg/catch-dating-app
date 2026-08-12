@@ -1440,6 +1440,30 @@ const schemaSpecs = [
       "functions/src/shared/generated/getOrganizerContactDetailCallableResponse.ts",
   },
   {
+    name: "MutateOrganizerContactCallablePayload",
+    source: "callables/mutate_organizer_contact_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/mutateOrganizerContactCallablePayload.ts",
+  },
+  {
+    name: "MutateOrganizerContactCallableResponse",
+    source: "callable_responses/mutate_organizer_contact_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/mutateOrganizerContactCallableResponse.ts",
+  },
+  {
+    name: "ExportOrganizerContactsCallablePayload",
+    source: "callables/export_organizer_contacts_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/exportOrganizerContactsCallablePayload.ts",
+  },
+  {
+    name: "ExportOrganizerContactsCallableResponse",
+    source: "callable_responses/export_organizer_contacts_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/exportOrganizerContactsCallableResponse.ts",
+  },
+  {
     name: "MergeOrganizerContactsCallablePayload",
     source: "callables/merge_organizer_contacts_payload.schema.json",
     typeOutput:

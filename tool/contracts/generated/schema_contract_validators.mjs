@@ -235,6 +235,10 @@ import {
   listOrganizerContactsCallableResponseSchema,
   getOrganizerContactDetailCallablePayloadSchema,
   getOrganizerContactDetailCallableResponseSchema,
+  mutateOrganizerContactCallablePayloadSchema,
+  mutateOrganizerContactCallableResponseSchema,
+  exportOrganizerContactsCallablePayloadSchema,
+  exportOrganizerContactsCallableResponseSchema,
   mergeOrganizerContactsCallablePayloadSchema,
   unmergeOrganizerContactsCallablePayloadSchema,
   mutateOrganizerContactMergeCallableResponseSchema,
@@ -568,6 +572,10 @@ export const validateListOrganizerContactsCallablePayload = ajv.compile(listOrga
 export const validateListOrganizerContactsCallableResponse = ajv.compile(listOrganizerContactsCallableResponseSchema);
 export const validateGetOrganizerContactDetailCallablePayload = ajv.compile(getOrganizerContactDetailCallablePayloadSchema);
 export const validateGetOrganizerContactDetailCallableResponse = ajv.compile(getOrganizerContactDetailCallableResponseSchema);
+export const validateMutateOrganizerContactCallablePayload = ajv.compile(mutateOrganizerContactCallablePayloadSchema);
+export const validateMutateOrganizerContactCallableResponse = ajv.compile(mutateOrganizerContactCallableResponseSchema);
+export const validateExportOrganizerContactsCallablePayload = ajv.compile(exportOrganizerContactsCallablePayloadSchema);
+export const validateExportOrganizerContactsCallableResponse = ajv.compile(exportOrganizerContactsCallableResponseSchema);
 export const validateMergeOrganizerContactsCallablePayload = ajv.compile(mergeOrganizerContactsCallablePayloadSchema);
 export const validateUnmergeOrganizerContactsCallablePayload = ajv.compile(unmergeOrganizerContactsCallablePayloadSchema);
 export const validateMutateOrganizerContactMergeCallableResponse = ajv.compile(mutateOrganizerContactMergeCallableResponseSchema);

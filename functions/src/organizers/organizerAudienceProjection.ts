@@ -323,6 +323,7 @@ export async function rebuildOrganizerContact(
   const edges = edgesSnap.docs.map((doc) =>
     doc.data() as OrganizerContactEventEdgeDocument
   );
+  if (contact.hiddenAt != null) return;
   if (edges.length === 0) {
     await commitContactTraitAndSummary({
       contactRef,
@@ -341,7 +342,8 @@ export async function rebuildOrganizerContact(
   const rebuiltContact: OrganizerContactDocument = {
     ...contact,
     displayName: preferred.displayName,
-    searchName: preferred.displayName.toLocaleLowerCase("en"),
+    searchName: (contact.displayNameOverride ?? preferred.displayName)
+      .toLocaleLowerCase("en"),
     linkedUid: linked.linkedUid,
     phoneE164: linked.phoneE164 ?? preferred.phoneE164,
     email: linked.email ?? preferred.email,
@@ -359,6 +361,10 @@ export async function rebuildOrganizerContact(
     revision: Math.max(contact.revision + 1, now.toMillis()),
     updatedAt: now,
     deletedAt: null,
+    displayNameOverride: contact.displayNameOverride ?? null,
+    hiddenAt: contact.hiddenAt ?? null,
+    hiddenBy: contact.hiddenBy ?? null,
+    hiddenTraitSnapshot: contact.hiddenTraitSnapshot ?? null,
   };
   const traits = organizerContactTraits({
     contactId,
@@ -613,7 +619,8 @@ function buildOrganizerContact(params: {
   return {
     organizerId: attendee.organizerId,
     displayName: attendee.displayName,
-    searchName: attendee.searchName,
+    searchName: (existing?.displayNameOverride ?? attendee.displayName)
+      .toLocaleLowerCase("en"),
     linkedUid: attendee.linkedUid ?? existing?.linkedUid ?? null,
     phoneE164: attendee.phoneE164 ?? existing?.phoneE164 ?? null,
     email: edge.email ?? existing?.email ?? null,
@@ -636,6 +643,10 @@ function buildOrganizerContact(params: {
     createdAt: existing?.createdAt ?? now,
     updatedAt: now,
     deletedAt: null,
+    displayNameOverride: existing?.displayNameOverride ?? null,
+    hiddenAt: existing?.hiddenAt ?? null,
+    hiddenBy: existing?.hiddenBy ?? null,
+    hiddenTraitSnapshot: existing?.hiddenTraitSnapshot ?? null,
   };
 }
 

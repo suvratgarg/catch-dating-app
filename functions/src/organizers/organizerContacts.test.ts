@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {HttpsError} from "firebase-functions/v2/https";
 import {
+  csvCell,
   decodeContactCursor,
   encodeContactCursor,
 } from "./organizerContacts";
@@ -32,6 +33,13 @@ test("contact cursors round trip every query plan", () => {
       cursor
     );
   }
+});
+
+test("CRM CSV cells neutralize spreadsheet formulas and quote safely", () => {
+  assert.equal(csvCell("=HYPERLINK(\"https://bad\")"),
+    "\"'=HYPERLINK(\"\"https://bad\"\")\"");
+  assert.equal(csvCell("Asha, Rao"), "\"Asha, Rao\"");
+  assert.equal(csvCell("ordinary"), "ordinary");
 });
 
 test("contact cursor rejects malformed and unrecognized values", () => {

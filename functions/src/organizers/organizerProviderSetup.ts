@@ -3,7 +3,8 @@ import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
 import {requireAuth} from "../shared/auth";
-import {appCheckCallableOptions} from "../shared/callableOptions";
+import {appCheckCallableOptionsWithLimits} from
+  "../shared/callableOptions";
 import {ConnectOrganizerLumaProviderCallablePayload} from
   "../shared/generated/connectOrganizerLumaProviderCallablePayload";
 import {DisconnectOrganizerProviderCallablePayload} from
@@ -941,24 +942,23 @@ const providerCallableLimits = {
   maxInstances: 10,
   concurrency: 10,
 };
-
 export const getOrganizerProviderSetup = onCall(
-  {...appCheckCallableOptions, ...providerCallableLimits},
+  appCheckCallableOptionsWithLimits(providerCallableLimits),
   (request) => getOrganizerProviderSetupHandler(request),
 );
 export const connectOrganizerLumaProvider = onCall(
-  {...appCheckCallableOptions, ...providerCallableLimits},
+  appCheckCallableOptionsWithLimits(providerCallableLimits),
   (request) => connectOrganizerLumaProviderHandler(request),
 );
 export const listOrganizerLumaEvents = onCall(
-  {...appCheckCallableOptions, ...providerCallableLimits},
+  appCheckCallableOptionsWithLimits(providerCallableLimits),
   (request) => listOrganizerLumaEventsHandler(request),
 );
 export const syncOrganizerProviderEvent = onCall(
-  {...appCheckCallableOptions, ...providerCallableLimits},
+  appCheckCallableOptionsWithLimits(providerCallableLimits),
   (request) => syncOrganizerProviderEventHandler(request),
 );
 export const disconnectOrganizerProvider = onCall(
-  {...appCheckCallableOptions, ...providerCallableLimits},
+  appCheckCallableOptionsWithLimits(providerCallableLimits),
   (request) => disconnectOrganizerProviderHandler(request),
 );

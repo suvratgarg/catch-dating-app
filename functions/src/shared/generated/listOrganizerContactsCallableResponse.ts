@@ -38,6 +38,7 @@ export interface ListOrganizerContactsCallableResponse {
       | "sms_reachable"
     )[];
     whatsappStatus: "unknown" | "optedIn" | "optedOut";
+    whatsappAdminSuppressed: boolean;
     smsStatus: "unknown" | "optedIn" | "optedOut";
     sourceCoverage: "exact" | "partial" | "insufficientData";
     revision: number;

@@ -17,6 +17,7 @@
     "endpointHash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
     "suppressionStatus": {"type": "string", "enum": ["none", "optedOut", "providerBlocked", "invalidEndpoint", "adminSuppressed"]},
     "suppressionSource": {"type": ["string", "null"], "enum": [null, "preference", "inboundStop", "provider", "admin"]},
+    "adminSuppressed": {"type": "boolean", "description": "Independent organizer pause. It never replaces a person opt-out or provider suppression."},
     "campaignAcceptedCount": {"type": "integer", "minimum": 0, "maximum": 1000000},
     "lastCampaignAcceptedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
     "lastInboundAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},

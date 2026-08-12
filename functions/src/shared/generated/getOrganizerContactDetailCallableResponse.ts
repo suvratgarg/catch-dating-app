@@ -9,6 +9,8 @@ export interface GetOrganizerContactDetailCallableResponse {
   organizerId: string;
   contactId: string;
   displayName: string;
+  sourceDisplayName: string;
+  displayNameOverride: string | null;
   phoneE164: string | null;
   email: string | null;
   linkedAccount: boolean;
@@ -18,6 +20,7 @@ export interface GetOrganizerContactDetailCallableResponse {
    * @maxItems 20
    */
   ambiguousCandidateContactIds: string[];
+  whatsappAdminSuppressed: boolean;
   traits: {
     expectedEventCount: number;
     attendedEventCount: number;

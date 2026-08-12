@@ -9,7 +9,7 @@ export const appCheckCallableOptions: CallableOptions = {
 export function appCheckCallableOptionsWithLimits(
   limits: Pick<
     CallableOptions,
-    "concurrency" | "maxInstances" | "timeoutSeconds"
+    "concurrency" | "maxInstances" | "memory" | "timeoutSeconds"
   >
 ): CallableOptions {
   return {

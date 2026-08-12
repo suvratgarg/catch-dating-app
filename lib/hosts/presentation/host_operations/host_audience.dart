@@ -284,9 +284,21 @@ class _HostAudiencePaneState extends ConsumerState<HostAudiencePane> {
                       _HostAudienceContactRow(
                         contact: page.contacts[index],
                         divider: index < page.contacts.length - 1,
+                        onTap: _busy
+                            ? null
+                            : () => _showContact(page.contacts[index]),
                       ),
                   ],
                 ),
+              gapH12,
+              CatchButton(
+                label: 'Export this audience',
+                variant: CatchButtonVariant.secondary,
+                size: CatchButtonSize.sm,
+                onPressed: _busy ? null : _exportAudience,
+                isLoading: _busy,
+                icon: Icon(CatchIcons.downloadRounded),
+              ),
             ],
           ),
         ),
@@ -610,6 +622,95 @@ class _HostAudiencePaneState extends ConsumerState<HostAudiencePane> {
     setState(() => _query = value);
   }
 
+  Future<void> _exportAudience() => _run(() async {
+    final export = await ref
+        .read(hostAudienceControllerProvider)
+        .exportContacts(organizerId: widget.club.id, segment: _query.segment);
+    await ref
+        .read(externalShareControllerProvider)
+        .shareCsvFile(
+          csv: export.csv,
+          fileName: export.fileName,
+          subject: 'Catch audience export',
+          text: export.truncated
+              ? 'This export reached the 2,500-contact safety limit.'
+              : '${export.rowCount} organizer contacts.',
+        );
+  });
+
+  Future<void> _showContact(HostAudienceContact contact) async {
+    final detail = await _loadContact(contact);
+    if (!mounted || detail == null) return;
+    await showCatchBottomSheet<void>(
+      context: context,
+      builder: (sheetContext) => _HostAudienceContactSheet(
+        detail: detail,
+        busy: _busy,
+        onRename: (name) async {
+          Navigator.of(sheetContext).pop();
+          await _mutateContact(
+            detail,
+            displayNameOverride: name,
+            clearDisplayNameOverride: name == null,
+          );
+        },
+        onSuppressionChanged: (suppressed) async {
+          Navigator.of(sheetContext).pop();
+          await _mutateContact(detail, whatsappAdminSuppressed: suppressed);
+        },
+        onHide: () async {
+          Navigator.of(sheetContext).pop();
+          final confirmed = await showCatchConfirmDialog(
+            context: context,
+            title: 'Remove from Audience?',
+            message:
+                'This hides the person from CRM and future campaigns. Event attendance and audit history stay intact.',
+            confirmLabel: 'Remove',
+            danger: true,
+          );
+          if (confirmed == true) await _mutateContact(detail, hidden: true);
+        },
+      ),
+    );
+  }
+
+  Future<HostAudienceContactDetail?> _loadContact(
+    HostAudienceContact contact,
+  ) async {
+    HostAudienceContactDetail? result;
+    await _run(() async {
+      result = await ref
+          .read(hostAudienceControllerProvider)
+          .getContactDetail(
+            organizerId: widget.club.id,
+            contactId: contact.contactId,
+          );
+    });
+    return result;
+  }
+
+  Future<void> _mutateContact(
+    HostAudienceContactDetail detail, {
+    String? displayNameOverride,
+    bool clearDisplayNameOverride = false,
+    bool? whatsappAdminSuppressed,
+    bool? hidden,
+  }) => _run(() async {
+    await ref
+        .read(hostAudienceControllerProvider)
+        .mutateContact(
+          organizerId: widget.club.id,
+          contactId: detail.contactId,
+          expectedRevision: detail.revision,
+          displayNameOverride: displayNameOverride,
+          clearDisplayNameOverride: clearDisplayNameOverride,
+          whatsappAdminSuppressed: whatsappAdminSuppressed,
+          hidden: hidden,
+        );
+    ref.invalidate(hostAudienceProvider(widget.club.id, _query));
+    ref.invalidate(hostCrmSummaryProvider(widget.club.id));
+  });
+
   Future<void> _connectWhatsapp(HostMessagingSetup setup) async {
     await _run(() async {
       if (!hostWhatsappEmbeddedSignupSupported) {
@@ -798,10 +899,15 @@ bool _isInviteVariable(String name) =>
     name == 'invite_url' || name == 'invite_token';
 
 class _HostAudienceContactRow extends StatelessWidget {
-  const _HostAudienceContactRow({required this.contact, required this.divider});
+  const _HostAudienceContactRow({
+    required this.contact,
+    required this.divider,
+    required this.onTap,
+  });
 
   final HostAudienceContact contact;
   final bool divider;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -818,16 +924,136 @@ class _HostAudienceContactRow extends StatelessWidget {
       if (contact.identityState == HostAudienceIdentityState.ambiguous)
         context.l10n.hostsHostAudienceIdentityNeedsReview,
     ];
-    return CatchField.read(
-      title: contact.displayName,
-      body: metadata.join(' · '),
-      valueText: contact.segments.isEmpty
-          ? null
-          : _segmentLabel(context, contact.segments.first),
-      valid: contact.identityState != HostAudienceIdentityState.ambiguous,
-      divider: divider,
+    return InkWell(
+      onTap: onTap,
+      child: CatchField.read(
+        title: contact.displayName,
+        body: metadata.join(' · '),
+        valueText: contact.whatsappAdminSuppressed
+            ? 'Messaging paused'
+            : contact.segments.isEmpty
+            ? null
+            : _segmentLabel(context, contact.segments.first),
+        valid: contact.identityState != HostAudienceIdentityState.ambiguous,
+        divider: divider,
+      ),
     );
   }
+}
+
+class _HostAudienceContactSheet extends StatefulWidget {
+  const _HostAudienceContactSheet({
+    required this.detail,
+    required this.busy,
+    required this.onRename,
+    required this.onSuppressionChanged,
+    required this.onHide,
+  });
+
+  final HostAudienceContactDetail detail;
+  final bool busy;
+  final ValueChanged<String?> onRename;
+  final ValueChanged<bool> onSuppressionChanged;
+  final VoidCallback onHide;
+
+  @override
+  State<_HostAudienceContactSheet> createState() =>
+      _HostAudienceContactSheetState();
+}
+
+class _HostAudienceContactSheetState extends State<_HostAudienceContactSheet> {
+  late final TextEditingController _nameController = TextEditingController(
+    text: widget.detail.displayNameOverride ?? widget.detail.sourceDisplayName,
+  );
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => CatchBottomSheetScaffold(
+    title: widget.detail.displayName,
+    subtitle: 'Organizer-only CRM record',
+    child: SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          CatchField.input(
+            title: 'Name shown to your team',
+            contract: CatchContractConstraints
+                .mutateOrganizerContactCallablePayloadDisplayNameOverride,
+            controller: _nameController,
+            helperText:
+                'This does not alter the guest’s Catch profile or verified contact details.',
+          ),
+          gapH8,
+          CatchButton(
+            label: 'Save name',
+            size: CatchButtonSize.sm,
+            onPressed: widget.busy
+                ? null
+                : () {
+                    final value = _nameController.text.trim();
+                    widget.onRename(
+                      value == widget.detail.sourceDisplayName ? null : value,
+                    );
+                  },
+          ),
+          if (widget.detail.phoneE164 case final phone?) ...[
+            gapH16,
+            CatchField.read(title: 'Verified phone', body: phone),
+          ],
+          if (widget.detail.email case final email?)
+            CatchField.read(title: 'Email', body: email),
+          gapH12,
+          CatchNotice(
+            notice: CatchNoticeData(
+              id: 'host.audience.contact.delivery-boundary',
+              title: 'Consent controls delivery',
+              message: widget.detail.whatsappAdminSuppressed
+                  ? 'Your team has paused WhatsApp campaigns to this person. Their own opt-out remains authoritative.'
+                  : 'Only the person-verified number and active organizer consent can receive a campaign.',
+              tone: CatchNoticeTone.status,
+            ),
+          ),
+          gapH12,
+          CatchButton(
+            label: widget.detail.whatsappAdminSuppressed
+                ? 'Resume organizer messages'
+                : 'Pause organizer messages',
+            variant: CatchButtonVariant.secondary,
+            onPressed: widget.busy
+                ? null
+                : () => widget.onSuppressionChanged(
+                    !widget.detail.whatsappAdminSuppressed,
+                  ),
+          ),
+          if (widget.detail.events.isNotEmpty) ...[
+            gapH20,
+            Text('Event history', style: CatchTextStyles.sectionTitle(context)),
+            gapH8,
+            for (final event in widget.detail.events.take(8))
+              CatchField.read(
+                title: event.displayName,
+                body: event.eventStartAt == null
+                    ? event.source
+                    : '${AppTimeFormatters.shortDate(event.eventStartAt!)} · ${event.source}',
+                valueText: event.checkedIn ? 'Checked in' : event.status,
+              ),
+          ],
+          gapH16,
+          CatchButton(
+            label: 'Remove from Audience',
+            variant: CatchButtonVariant.ghost,
+            onPressed: widget.busy ? null : widget.onHide,
+          ),
+        ],
+      ),
+    ),
+  );
 }
 
 class _HostCampaignReview extends StatelessWidget {

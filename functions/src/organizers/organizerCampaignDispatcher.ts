@@ -458,6 +458,7 @@ async function deliverRecipient(
         endpointHash: recipient.endpointHash,
         suppressionStatus: existingState?.suppressionStatus ?? "none",
         suppressionSource: existingState?.suppressionSource ?? null,
+        adminSuppressed: existingState?.adminSuppressed ?? false,
         campaignAcceptedCount: (existingState?.campaignAcceptedCount ?? 0) + 1,
         lastCampaignAcceptedAt: now,
         lastInboundAt: existingState?.lastInboundAt ?? null,
@@ -582,7 +583,8 @@ function finalSuppressionReason(params: {
   inviteToken: string | null;
   now: FirebaseFirestore.Timestamp;
 }): OrganizerCampaignRecipientDocument["exclusionReason"] {
-  if (!params.contact || params.contact.deletedAt !== null) return "deleted";
+  if (!params.contact || params.contact.deletedAt !== null ||
+      params.contact.hiddenAt != null) return "deleted";
   if (
     params.contact.identityState !== "verified" ||
     params.contact.identityConfidence !== "verified" ||
@@ -603,6 +605,11 @@ function finalSuppressionReason(params: {
     params.preference.whatsapp.status !== "optedIn"
   ) {
     return "optedOut";
+  }
+  if (
+    params.channelState?.adminSuppressed === true
+  ) {
+    return "providerBlocked";
   }
   if (
     params.channelState?.suppressionStatus !== undefined &&

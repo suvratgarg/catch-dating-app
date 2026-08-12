@@ -43,6 +43,7 @@ const schemaListOrganizerContactsCallableResponseSchema = <String, Object?>{
           'lastAttendedAtMillis',
           'segmentIds',
           'whatsappStatus',
+          'whatsappAdminSuppressed',
           'smsStatus',
           'sourceCoverage',
           'revision',
@@ -140,6 +141,9 @@ const schemaListOrganizerContactsCallableResponseSchema = <String, Object?>{
               'optedOut',
             ],
           },
+          'whatsappAdminSuppressed': <String, Object?>{
+            'type': 'boolean',
+          },
           'smsStatus': <String, Object?>{
             'type': 'string',
             'enum': <Object?>[
@@ -201,6 +205,7 @@ const schemaListOrganizerContactsCallableResponseSchema = <String, Object?>{
         'lastAttendedAtMillis',
         'segmentIds',
         'whatsappStatus',
+        'whatsappAdminSuppressed',
         'smsStatus',
         'sourceCoverage',
         'revision',
@@ -297,6 +302,9 @@ const schemaListOrganizerContactsCallableResponseSchema = <String, Object?>{
             'optedIn',
             'optedOut',
           ],
+        },
+        'whatsappAdminSuppressed': <String, Object?>{
+          'type': 'boolean',
         },
         'smsStatus': <String, Object?>{
           'type': 'string',

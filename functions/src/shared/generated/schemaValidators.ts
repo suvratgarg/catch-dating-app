@@ -236,6 +236,10 @@ import {ListOrganizerContactsCallablePayload} from "./listOrganizerContactsCalla
 import {ListOrganizerContactsCallableResponse} from "./listOrganizerContactsCallableResponse";
 import {GetOrganizerContactDetailCallablePayload} from "./getOrganizerContactDetailCallablePayload";
 import {GetOrganizerContactDetailCallableResponse} from "./getOrganizerContactDetailCallableResponse";
+import {MutateOrganizerContactCallablePayload} from "./mutateOrganizerContactCallablePayload";
+import {MutateOrganizerContactCallableResponse} from "./mutateOrganizerContactCallableResponse";
+import {ExportOrganizerContactsCallablePayload} from "./exportOrganizerContactsCallablePayload";
+import {ExportOrganizerContactsCallableResponse} from "./exportOrganizerContactsCallableResponse";
 import {MergeOrganizerContactsCallablePayload} from "./mergeOrganizerContactsCallablePayload";
 import {UnmergeOrganizerContactsCallablePayload} from "./unmergeOrganizerContactsCallablePayload";
 import {MutateOrganizerContactMergeCallableResponse} from "./mutateOrganizerContactMergeCallableResponse";
@@ -546,6 +550,10 @@ import {
   listOrganizerContactsCallableResponseSchema,
   getOrganizerContactDetailCallablePayloadSchema,
   getOrganizerContactDetailCallableResponseSchema,
+  mutateOrganizerContactCallablePayloadSchema,
+  mutateOrganizerContactCallableResponseSchema,
+  exportOrganizerContactsCallablePayloadSchema,
+  exportOrganizerContactsCallableResponseSchema,
   mergeOrganizerContactsCallablePayloadSchema,
   unmergeOrganizerContactsCallablePayloadSchema,
   mutateOrganizerContactMergeCallableResponseSchema,
@@ -1556,6 +1564,22 @@ export const validateGetOrganizerContactDetailCallableResponse:
   ValidateFunction<GetOrganizerContactDetailCallableResponse> =
     ajv.compile(getOrganizerContactDetailCallableResponseSchema) as
       ValidateFunction<GetOrganizerContactDetailCallableResponse>;
+export const validateMutateOrganizerContactCallablePayload:
+  ValidateFunction<MutateOrganizerContactCallablePayload> =
+    ajv.compile(mutateOrganizerContactCallablePayloadSchema) as
+      ValidateFunction<MutateOrganizerContactCallablePayload>;
+export const validateMutateOrganizerContactCallableResponse:
+  ValidateFunction<MutateOrganizerContactCallableResponse> =
+    ajv.compile(mutateOrganizerContactCallableResponseSchema) as
+      ValidateFunction<MutateOrganizerContactCallableResponse>;
+export const validateExportOrganizerContactsCallablePayload:
+  ValidateFunction<ExportOrganizerContactsCallablePayload> =
+    ajv.compile(exportOrganizerContactsCallablePayloadSchema) as
+      ValidateFunction<ExportOrganizerContactsCallablePayload>;
+export const validateExportOrganizerContactsCallableResponse:
+  ValidateFunction<ExportOrganizerContactsCallableResponse> =
+    ajv.compile(exportOrganizerContactsCallableResponseSchema) as
+      ValidateFunction<ExportOrganizerContactsCallableResponse>;
 export const validateMergeOrganizerContactsCallablePayload:
   ValidateFunction<MergeOrganizerContactsCallablePayload> =
     ajv.compile(mergeOrganizerContactsCallablePayloadSchema) as

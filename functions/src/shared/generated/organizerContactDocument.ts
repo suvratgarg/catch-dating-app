@@ -2,12 +2,18 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+import {OrganizerContactTraitDocument} from "./organizerContactTraitDocument";
+
 /**
  * Server-owned organizer-scoped contact projection. It is not a Consumer profile and may contain restricted operational contact data.
  */
 export interface OrganizerContactDocument {
   organizerId: string;
   displayName: string;
+  /**
+   * Organizer-scoped label correction. It never changes the Consumer profile or a provider/roster source row.
+   */
+  displayNameOverride?: string | null;
   searchName: string;
   linkedUid: string | null;
   phoneE164: string | null;
@@ -61,4 +67,16 @@ export interface OrganizerContactDocument {
     _seconds: number;
     _nanoseconds: number;
   } | null;
+  /**
+   * Organizer-requested CRM hiding. Operational attendee and audit facts remain intact.
+   */
+  hiddenAt?: {
+    _seconds: number;
+    _nanoseconds: number;
+  } | null;
+  hiddenBy?: string | null;
+  /**
+   * Bounded organizer-audience contribution snapshot used only to restore a hidden contact without recomputing private event history.
+   */
+  hiddenTraitSnapshot?: OrganizerContactTraitDocument | null;
 }

@@ -17,7 +17,7 @@
     "contact": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["contactId", "displayName", "phoneE164", "email", "identityState", "identityConfidence", "ambiguousCandidateCount", "attendedEventCount", "expectedEventCount", "lastAttendedAtMillis", "segmentIds", "whatsappStatus", "smsStatus", "sourceCoverage", "revision"],
+      "required": ["contactId", "displayName", "phoneE164", "email", "identityState", "identityConfidence", "ambiguousCandidateCount", "attendedEventCount", "expectedEventCount", "lastAttendedAtMillis", "segmentIds", "whatsappStatus", "whatsappAdminSuppressed", "smsStatus", "sourceCoverage", "revision"],
       "properties": {
         "contactId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
         "displayName": {"type": "string", "minLength": 1, "maxLength": 120},
@@ -31,6 +31,7 @@
         "lastAttendedAtMillis": {"type": ["integer", "null"], "minimum": 0},
         "segmentIds": {"type": "array", "uniqueItems": true, "maxItems": 16, "items": {"$ref": "../firestore/organizer_contact_traits.schema.json#/definitions/segmentId"}},
         "whatsappStatus": {"type": "string", "enum": ["unknown", "optedIn", "optedOut"]},
+        "whatsappAdminSuppressed": {"type": "boolean"},
         "smsStatus": {"type": "string", "enum": ["unknown", "optedIn", "optedOut"]},
         "sourceCoverage": {"type": "string", "enum": ["exact", "partial", "insufficientData"]},
         "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991}

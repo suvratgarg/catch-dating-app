@@ -50,6 +50,16 @@ const schemaOrganizerContactDocumentSchema = <String, Object?>{
       'maxLength': 120,
       'x-catch-ownership': 'server-only',
     },
+    'displayNameOverride': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 1,
+      'maxLength': 120,
+      'x-catch-ownership': 'server-only',
+      'description': 'Organizer-scoped label correction. It never changes the Consumer profile or a provider/roster source row.',
+    },
     'searchName': <String, Object?>{
       'type': 'string',
       'minLength': 1,
@@ -277,6 +287,346 @@ const schemaOrganizerContactDocumentSchema = <String, Object?>{
         },
       ],
       'x-catch-ownership': 'server-only',
+    },
+    'hiddenAt': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'object',
+          'description': 'Serialized Firestore Timestamp fixture shape.',
+          'x-firestore-type': 'timestamp',
+          'additionalProperties': false,
+          'required': <Object?>[
+            '_seconds',
+            '_nanoseconds',
+          ],
+          'properties': <String, Object?>{
+            '_seconds': <String, Object?>{
+              'type': 'integer',
+            },
+            '_nanoseconds': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 999999999,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+      'x-catch-ownership': 'server-only',
+      'description': 'Organizer-requested CRM hiding. Operational attendee and audit facts remain intact.',
+    },
+    'hiddenBy': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 1,
+      'maxLength': 180,
+      'x-catch-ownership': 'server-only',
+    },
+    'hiddenTraitSnapshot': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'title': 'OrganizerContactTraitDocument',
+          'description': 'Rebuildable, explainable organizer-contact CRM traits. Sensitive Event Success answers are excluded by contract.',
+          'type': 'object',
+          'additionalProperties': false,
+          'x-firestore-collection': 'organizerContactTraits',
+          'x-firestore-path': 'organizerContactTraits/{contactId}',
+          'x-document-id-field': 'contactId',
+          'x-owner': 'organizer audience projection',
+          'required': <Object?>[
+            'organizerId',
+            'contactId',
+            'expectedEventCount',
+            'attendedEventCount',
+            'cancelledEventCount',
+            'noShowCount',
+            'importedEventCount',
+            'referredRegistrationCount',
+            'referredCheckedInCount',
+            'referredCheckedIn365DayCount',
+            'linkedAccount',
+            'firstSeenAt',
+            'lastSeenAt',
+            'firstAttendedAt',
+            'lastAttendedAt',
+            'attendanceRate',
+            'segmentIds',
+            'definitionVersion',
+            'whatsappStatus',
+            'smsStatus',
+            'sourceCoverage',
+            'projectionVersion',
+            'computedAt',
+          ],
+          'properties': <String, Object?>{
+            'organizerId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            'contactId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            'expectedEventCount': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 1000000,
+            },
+            'attendedEventCount': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 1000000,
+            },
+            'cancelledEventCount': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 1000000,
+            },
+            'noShowCount': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 1000000,
+            },
+            'importedEventCount': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 1000000,
+            },
+            'referredRegistrationCount': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 1000000,
+            },
+            'referredCheckedInCount': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 1000000,
+            },
+            'referredCheckedIn365DayCount': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 1000000,
+            },
+            'linkedAccount': <String, Object?>{
+              'type': 'boolean',
+            },
+            'firstSeenAt': <String, Object?>{
+              'type': 'object',
+              'description': 'Serialized Firestore Timestamp fixture shape.',
+              'x-firestore-type': 'timestamp',
+              'additionalProperties': false,
+              'required': <Object?>[
+                '_seconds',
+                '_nanoseconds',
+              ],
+              'properties': <String, Object?>{
+                '_seconds': <String, Object?>{
+                  'type': 'integer',
+                },
+                '_nanoseconds': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 999999999,
+                },
+              },
+            },
+            'lastSeenAt': <String, Object?>{
+              'type': 'object',
+              'description': 'Serialized Firestore Timestamp fixture shape.',
+              'x-firestore-type': 'timestamp',
+              'additionalProperties': false,
+              'required': <Object?>[
+                '_seconds',
+                '_nanoseconds',
+              ],
+              'properties': <String, Object?>{
+                '_seconds': <String, Object?>{
+                  'type': 'integer',
+                },
+                '_nanoseconds': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 999999999,
+                },
+              },
+            },
+            'firstAttendedAt': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'object',
+                  'description': 'Serialized Firestore Timestamp fixture shape.',
+                  'x-firestore-type': 'timestamp',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    '_seconds',
+                    '_nanoseconds',
+                  ],
+                  'properties': <String, Object?>{
+                    '_seconds': <String, Object?>{
+                      'type': 'integer',
+                    },
+                    '_nanoseconds': <String, Object?>{
+                      'type': 'integer',
+                      'minimum': 0,
+                      'maximum': 999999999,
+                    },
+                  },
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
+            },
+            'lastAttendedAt': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'object',
+                  'description': 'Serialized Firestore Timestamp fixture shape.',
+                  'x-firestore-type': 'timestamp',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    '_seconds',
+                    '_nanoseconds',
+                  ],
+                  'properties': <String, Object?>{
+                    '_seconds': <String, Object?>{
+                      'type': 'integer',
+                    },
+                    '_nanoseconds': <String, Object?>{
+                      'type': 'integer',
+                      'minimum': 0,
+                      'maximum': 999999999,
+                    },
+                  },
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
+            },
+            'attendanceRate': <String, Object?>{
+              'type': <Object?>[
+                'number',
+                'null',
+              ],
+              'minimum': 0,
+              'maximum': 1,
+            },
+            'segmentIds': <String, Object?>{
+              'type': 'array',
+              'uniqueItems': true,
+              'maxItems': 16,
+              'items': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'new_to_organizer',
+                  'first_time_attendee',
+                  'repeat_attendee',
+                  'regular',
+                  'lapsed_regular',
+                  'reliable_attendee',
+                  'needs_confirmation',
+                  'advocate',
+                  'high_impact_advocate',
+                  'whatsapp_reachable',
+                  'sms_reachable',
+                ],
+              },
+            },
+            'definitionVersion': <String, Object?>{
+              'type': 'integer',
+              'minimum': 1,
+              'maximum': 1000,
+            },
+            'whatsappStatus': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'unknown',
+                'optedIn',
+                'optedOut',
+              ],
+            },
+            'smsStatus': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'unknown',
+                'optedIn',
+                'optedOut',
+              ],
+            },
+            'sourceCoverage': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'exact',
+                'partial',
+                'insufficientData',
+              ],
+            },
+            'projectionVersion': <String, Object?>{
+              'type': 'integer',
+              'minimum': 1,
+              'maximum': 1000,
+            },
+            'computedAt': <String, Object?>{
+              'type': 'object',
+              'description': 'Serialized Firestore Timestamp fixture shape.',
+              'x-firestore-type': 'timestamp',
+              'additionalProperties': false,
+              'required': <Object?>[
+                '_seconds',
+                '_nanoseconds',
+              ],
+              'properties': <String, Object?>{
+                '_seconds': <String, Object?>{
+                  'type': 'integer',
+                },
+                '_nanoseconds': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 999999999,
+                },
+              },
+            },
+          },
+          'definitions': <String, Object?>{
+            'segmentId': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'new_to_organizer',
+                'first_time_attendee',
+                'repeat_attendee',
+                'regular',
+                'lapsed_regular',
+                'reliable_attendee',
+                'needs_confirmation',
+                'advocate',
+                'high_impact_advocate',
+                'whatsapp_reachable',
+                'sms_reachable',
+              ],
+            },
+            'channelStatus': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'unknown',
+                'optedIn',
+                'optedOut',
+              ],
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+      'x-catch-ownership': 'server-only',
+      'description': 'Bounded organizer-audience contribution snapshot used only to restore a hidden contact without recomputing private event history.',
     },
   },
   'definitions': <String, Object?>{

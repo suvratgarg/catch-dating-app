@@ -716,7 +716,8 @@ export function evaluateAudienceRows(
   return inputs.map((input): AudienceRow => {
     const {contact, trait, preference, channelState} = input;
     let reason: ExclusionReason = null;
-    if (!contact || !trait || contact.deletedAt !== null) reason = "deleted";
+    if (!contact || !trait || contact.deletedAt !== null ||
+        contact.hiddenAt != null) reason = "deleted";
     else if (
       contact.identityState !== "verified" ||
       contact.identityConfidence !== "verified" ||
@@ -750,7 +751,8 @@ export function evaluateAudienceRows(
       reason = "providerBlocked";
     } else if (channelState?.suppressionStatus === "invalidEndpoint") {
       reason = "invalidEndpoint";
-    } else if (channelState?.suppressionStatus === "adminSuppressed") {
+    } else if (channelState?.adminSuppressed === true ||
+        channelState?.suppressionStatus === "adminSuppressed") {
       reason = "providerBlocked";
     } else if (
       channelState?.lastCampaignAcceptedAt &&
@@ -1108,6 +1110,9 @@ function deletedContact(
     createdAt: now,
     updatedAt: now,
     deletedAt: now,
+    displayNameOverride: null,
+    hiddenAt: null,
+    hiddenBy: null,
   };
 }
 

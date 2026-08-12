@@ -1593,6 +1593,10 @@ export interface OrganizerCommunicationPreferenceDocument {
 export interface OrganizerContactDocument {
   organizerId: string;
   displayName: string;
+  /**
+   * Organizer-scoped label correction. It never changes the Consumer profile or a provider/roster source row.
+   */
+  displayNameOverride?: string | null;
   searchName: string;
   linkedUid: string | null;
   phoneE164: string | null;
@@ -1619,6 +1623,15 @@ export interface OrganizerContactDocument {
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
   deletedAt: FirebaseFirestore.Timestamp | null;
+  /**
+   * Organizer-requested CRM hiding. Operational attendee and audit facts remain intact.
+   */
+  hiddenAt?: FirebaseFirestore.Timestamp | null;
+  hiddenBy?: string | null;
+  /**
+   * Bounded organizer-audience contribution snapshot used only to restore a hidden contact without recomputing private event history.
+   */
+  hiddenTraitSnapshot?: OrganizerContactTraitDocument | null;
 }
 
 /**
@@ -2003,6 +2016,10 @@ export interface OrganizerContactChannelStateDocument {
     | "invalidEndpoint"
     | "adminSuppressed";
   suppressionSource: null | "preference" | "inboundStop" | "provider" | "admin";
+  /**
+   * Independent organizer pause. It never replaces a person opt-out or provider suppression.
+   */
+  adminSuppressed?: boolean;
   campaignAcceptedCount: number;
   lastCampaignAcceptedAt: FirebaseFirestore.Timestamp | null;
   lastInboundAt: FirebaseFirestore.Timestamp | null;
