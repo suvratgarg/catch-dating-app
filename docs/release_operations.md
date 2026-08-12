@@ -1564,12 +1564,17 @@ Xcode, signing, configuration, or any other dependency error, and it never
 disables TLS verification. Local builds remain single-attempt unless they are
 running under the CI environment contract.
 
-The same wrapper applies a separate three-attempt CI-only retry to Android
-`apk` and `appbundle` builds when the output contains both a transient Java
-socket failure and the Gradle wrapper download stack. It does not retry Gradle
-compilation, signing, Android configuration, or unrelated network-looking
-errors. This keeps signed-package production resilient to an interrupted
-wrapper distribution download without masking deterministic product failures.
+The same wrapper applies a separate CI-only retry to Android `apk` and
+`appbundle` builds when the output contains both a transient Java socket
+failure and the Gradle wrapper download stack. The ordinary wrapper default is
+three attempts; the protected mobile producer allows five attempts with a
+20-second delay because one failed matrix runner invalidates the aggregate
+release authority. Consumer and Host use the same smaller binary-only Gradle
+distribution from Gradle's immutable GitHub release and pin its published
+SHA-256. The wrapper does not retry Gradle compilation, signing, Android
+configuration, or unrelated network-looking errors. This keeps signed-package
+production resilient to an interrupted distribution download without masking
+deterministic product failures.
 
 ```sh
 node tool/run.mjs check \

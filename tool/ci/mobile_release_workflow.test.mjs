@@ -6,6 +6,14 @@ const source = fs.readFileSync(
   new URL("../../.github/workflows/mobile-internal-release.yml", import.meta.url),
   "utf8",
 );
+const consumerGradleWrapper = fs.readFileSync(
+  new URL("../../android/gradle/wrapper/gradle-wrapper.properties", import.meta.url),
+  "utf8",
+);
+const hostGradleWrapper = fs.readFileSync(
+  new URL("../../apps/host/android/gradle/wrapper/gradle-wrapper.properties", import.meta.url),
+  "utf8",
+);
 
 test("mobile producer consumes only a successful same-repository main CI attempt", () => {
   assert.match(source, /workflow_run:\s*\n\s+workflows: \["CI"\]/u);
@@ -151,6 +159,24 @@ test("Android Maps authority reaches the compiled identity verifier step", () =>
   assert.match(verifyStep,
     /GOOGLE_MAPS_ANDROID_API_KEY_PROD: \$\{\{ secrets\.GOOGLE_MAPS_ANDROID_API_KEY_PROD \}\}/u);
   assert.match(verifyStep, /verify_android_release_bundle\.mjs/u);
+});
+
+test("Android release jobs use the same checksummed Gradle distribution with bounded recovery", () => {
+  assert.equal(hostGradleWrapper, consumerGradleWrapper);
+  assert.match(
+    consumerGradleWrapper,
+    /distributionUrl=https\\:\/\/github\.com\/gradle\/gradle-distributions\/releases\/download\/v8\.14\.0\/gradle-8\.14-bin\.zip/u,
+  );
+  assert.match(
+    consumerGradleWrapper,
+    /distributionSha256Sum=61ad310d3c7d3e5da131b76bbf22b5a4c0786e9d892dae8c1658d4b484de3caa/u,
+  );
+  const androidBuild = source.slice(
+    source.indexOf("- name: Build signed prod Android App Bundle"),
+    source.indexOf("- name: Verify signed Android release identity"),
+  );
+  assert.match(androidBuild, /CATCH_GRADLE_WRAPPER_MAX_ATTEMPTS: 5/u);
+  assert.match(androidBuild, /CATCH_GRADLE_WRAPPER_RETRY_DELAY_SECONDS: 20/u);
 });
 
 test("producer performs no App Store, Play, or legacy-owner mutation", () => {
