@@ -459,7 +459,7 @@ test("promotion keeps the verified package immutable and reverifies its deploy c
   assert.match(promotion, /git -C "\$SOURCE_CHECKOUT" merge-base --is-ancestor "\$SOURCE_SHA" refs\/remotes\/origin\/main/);
   assert.match(
     promotion,
-    /Reverify every authored byte immediately before deployment[\s\S]*sanitize_firestore_indexes_for_deploy\.mjs[\s\S]*Resume ordered backend stages/,
+    /Reverify every authored byte immediately before deployment[\s\S]*sanitize_firestore_indexes_for_deploy\.mjs[\s\S]*prepare_functions_params_for_deploy\.mjs[\s\S]*Resume ordered backend stages/,
   );
   assert.match(
     promotion,
@@ -473,14 +473,22 @@ test("promotion keeps the verified package immutable and reverifies its deploy c
     promotion.indexOf("- id: promote"),
     promotion.indexOf("- name: Upload resumable checkpoint"),
   );
-  assert.match(promoteStep, /META_WHATSAPP_APP_ID: " "/);
-  assert.match(
-    promoteStep,
-    /META_WHATSAPP_EMBEDDED_SIGNUP_CONFIG_ID: " "/,
+  const paramsStep = promotion.slice(
+    promotion.indexOf("Materialize non-secret Functions params"),
+    promotion.indexOf("- id: promote"),
   );
-  assert.match(promoteStep, /META_WHATSAPP_GRAPH_VERSION: v23\.0/);
-  assert.match(promoteStep, /META_WHATSAPP_ENABLED: "false"/);
-  assert.doesNotMatch(promoteStep, /META_WHATSAPP_APP_SECRET:/);
+  assert.match(paramsStep, /prepare_functions_params_for_deploy\.mjs/);
+  assert.match(paramsStep, /--functions-dir build\/delivery\/deploy-tree\/functions/);
+  assert.match(paramsStep, /--project "\$\{\{ steps\.verify\.outputs\.project_id \}\}"/);
+  assert.match(paramsStep, /META_WHATSAPP_APP_ID: \$\{\{ vars\.META_WHATSAPP_APP_ID \}\}/);
+  assert.match(
+    paramsStep,
+    /META_WHATSAPP_EMBEDDED_SIGNUP_CONFIG_ID: \$\{\{ vars\.META_WHATSAPP_EMBEDDED_SIGNUP_CONFIG_ID \}\}/,
+  );
+  assert.match(paramsStep, /META_WHATSAPP_GRAPH_VERSION: \$\{\{ vars\.META_WHATSAPP_GRAPH_VERSION \}\}/);
+  assert.match(paramsStep, /META_WHATSAPP_ENABLED: \$\{\{ vars\.META_WHATSAPP_ENABLED \}\}/);
+  assert.doesNotMatch(paramsStep, /META_WHATSAPP_APP_SECRET:/);
+  assert.doesNotMatch(promoteStep, /META_WHATSAPP_/);
 });
 
 test("automatic target planning rejects broad and unrelated Firebase products", () => {
