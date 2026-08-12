@@ -306,6 +306,14 @@ jobs:
           CHECKPOINT_SCOPE: ${{ steps.verify.outputs.checkpoint_scope }}
           DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
           DELIVERY_FUNCTIONS_DIR: build/delivery/deploy-tree/functions
+          # Older tested organizer-messaging packages predate the explicit
+          # provider gate but still declare these non-secret Firebase params.
+          # A single whitespace value satisfies non-interactive discovery and
+          # remains unconfigured under the source-owned trim check.
+          META_WHATSAPP_APP_ID: " "
+          META_WHATSAPP_EMBEDDED_SIGNUP_CONFIG_ID: " "
+          META_WHATSAPP_GRAPH_VERSION: v23.0
+          META_WHATSAPP_ENABLED: "false"
           PACKAGE_DIR: build/delivery/deploy-tree
           PROJECT_ID: ${{ steps.verify.outputs.project_id }}
           SOURCE_CHECKOUT: build/delivery/source-checkout
