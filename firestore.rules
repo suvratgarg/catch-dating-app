@@ -958,6 +958,37 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Cross-event CRM campaigns, recipient endpoint snapshots, sender health,
+    // provider receipts, and suppression state are callable/trigger-only. The
+    // Host client receives only purpose-built sanitized projections.
+    match /organizerSenderConnections/{connectionId} {
+      allow read, write: if false;
+    }
+
+    match /organizerMessageTemplates/{templateId} {
+      allow read, write: if false;
+    }
+
+    match /organizerContactChannelStates/{stateId} {
+      allow read, write: if false;
+    }
+
+    match /organizerCampaigns/{campaignId} {
+      allow read, write: if false;
+    }
+
+    match /organizerCampaignRecipients/{recipientId} {
+      allow read, write: if false;
+    }
+
+    match /organizerCampaignWebhookReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
+    match /organizerMessagingWebhookEvents/{eventId} {
+      allow read, write: if false;
+    }
+
     match /organizerClaimRequests/{requestId} {
       allow read, write: if false;
     }

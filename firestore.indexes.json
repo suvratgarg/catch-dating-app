@@ -286,6 +286,72 @@
       ]
     },
     {
+      "collectionGroup": "organizerSenderConnections",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "channel", "mode": "ASCENDING"},
+        {"fieldPath": "status", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerSenderConnections",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "channel", "mode": "ASCENDING"},
+        {"fieldPath": "updatedAt", "mode": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerSenderConnections",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "provider", "mode": "ASCENDING"},
+        {"fieldPath": "phoneNumberId", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerMessageTemplates",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "connectionId", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerCampaignRecipients",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "campaignId", "mode": "ASCENDING"},
+        {"fieldPath": "status", "mode": "ASCENDING"},
+        {"fieldPath": "__name__", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerCampaignRecipients",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "providerMessageId", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerContactChannelStates",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "endpointHash", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerCampaigns",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "status", "mode": "ASCENDING"},
+        {"fieldPath": "scheduledAt", "mode": "ASCENDING"}
+      ]
+    },
+    {
       "collectionGroup": "events",
       "queryScope": "COLLECTION",
       "fields": [
@@ -903,6 +969,26 @@
     },
     {
       "collectionGroup": "eventShareIntents",
+      "fieldPath": "expiresAt",
+      "ttl": true,
+      "indexes": [
+        {"order": "ASCENDING", "queryScope": "COLLECTION"},
+        {"order": "DESCENDING", "queryScope": "COLLECTION"},
+        {"arrayConfig": "CONTAINS", "queryScope": "COLLECTION"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerCampaignWebhookReceipts",
+      "fieldPath": "expiresAt",
+      "ttl": true,
+      "indexes": [
+        {"order": "ASCENDING", "queryScope": "COLLECTION"},
+        {"order": "DESCENDING", "queryScope": "COLLECTION"},
+        {"arrayConfig": "CONTAINS", "queryScope": "COLLECTION"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerMessagingWebhookEvents",
       "fieldPath": "expiresAt",
       "ttl": true,
       "indexes": [

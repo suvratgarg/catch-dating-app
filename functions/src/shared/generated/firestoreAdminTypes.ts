@@ -1560,14 +1560,26 @@ export interface OrganizerCommunicationPreferenceDocument {
   whatsapp: {
     status: "unknown" | "optedIn" | "optedOut";
     termsVersion: string | null;
-    source: null | "publicEventRegistration" | "unsubscribeLink" | "hostApp";
+    source:
+      | null
+      | "publicEventRegistration"
+      | "unsubscribeLink"
+      | "hostApp"
+      | "inboundStop"
+      | "providerWebhook";
     sourceEventId: string | null;
     updatedAt: FirebaseFirestore.Timestamp | null;
   };
   sms: {
     status: "unknown" | "optedIn" | "optedOut";
     termsVersion: string | null;
-    source: null | "publicEventRegistration" | "unsubscribeLink" | "hostApp";
+    source:
+      | null
+      | "publicEventRegistration"
+      | "unsubscribeLink"
+      | "hostApp"
+      | "inboundStop"
+      | "providerWebhook";
     sourceEventId: string | null;
     updatedAt: FirebaseFirestore.Timestamp | null;
   };
@@ -1790,6 +1802,305 @@ export interface OrganizerContactMergeReceiptDocument {
   idempotencyKey: string;
   reversalOfReceiptId: string | null;
   createdAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Safe organizer-owned messaging sender metadata. Provider access tokens live in Secret Manager, never Firestore.
+ */
+export interface OrganizerSenderConnectionDocument {
+  organizerId: string;
+  channel: "whatsapp";
+  provider: "metaCloudApi";
+  status:
+    | "pending"
+    | "testing"
+    | "active"
+    | "degraded"
+    | "blocked"
+    | "tokenRevoked"
+    | "disconnected";
+  wabaId: string | null;
+  phoneNumberId: string | null;
+  businessId: string | null;
+  displayPhoneNumber: string | null;
+  verifiedName: string | null;
+  secretVersionResource: string | null;
+  qualityRating: null | "GREEN" | "YELLOW" | "RED" | "UNKNOWN";
+  messagingLimitTier: string | null;
+  templateSyncStatus: "notStarted" | "current" | "stale" | "failed";
+  webhookStatus: "notSubscribed" | "subscribed" | "degraded";
+  testStatus: "notSent" | "pending" | "delivered" | "failed";
+  testProviderMessageId: string | null;
+  testRecipientHash: string | null;
+  connectedByUid: string;
+  revision: number;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  lastHealthSyncAt?: FirebaseFirestore.Timestamp | null;
+  disconnectedAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Sanitized provider template metadata used for preview and send eligibility.
+ */
+export interface OrganizerMessageTemplateDocument {
+  organizerId: string;
+  connectionId: string;
+  providerTemplateId: string;
+  name: string;
+  language: string;
+  category: "MARKETING" | "UTILITY" | "AUTHENTICATION" | "UNKNOWN";
+  status:
+    | "APPROVED"
+    | "PENDING"
+    | "REJECTED"
+    | "PAUSED"
+    | "DISABLED"
+    | "DELETED"
+    | "UNKNOWN";
+  /**
+   * @maxItems 20
+   */
+  variableNames: string[];
+  /**
+   * @maxItems 20
+   */
+  parameterBindings: {
+    variableName: string;
+    component: "header" | "body" | "button";
+    position: number;
+    buttonIndex: number | null;
+  }[];
+  hasMediaHeader: boolean;
+  /**
+   * @maxItems 10
+   */
+  buttonKinds: (
+    | "URL"
+    | "PHONE_NUMBER"
+    | "QUICK_REPLY"
+    | "COPY_CODE"
+    | "UNKNOWN"
+  )[];
+  providerUpdatedAt: FirebaseFirestore.Timestamp | null;
+  syncedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Organizer-contact channel frequency and suppression state rechecked immediately before delivery.
+ */
+export interface OrganizerContactChannelStateDocument {
+  organizerId: string;
+  contactId: string;
+  channel: "whatsapp";
+  endpointHash: string;
+  suppressionStatus:
+    | "none"
+    | "optedOut"
+    | "providerBlocked"
+    | "invalidEndpoint"
+    | "adminSuppressed";
+  suppressionSource: null | "preference" | "inboundStop" | "provider" | "admin";
+  campaignAcceptedCount: number;
+  lastCampaignAcceptedAt: FirebaseFirestore.Timestamp | null;
+  lastInboundAt: FirebaseFirestore.Timestamp | null;
+  lastReplyAt: FirebaseFirestore.Timestamp | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * One organizer-owned cross-event campaign with frozen approval and aggregate delivery state.
+ */
+export interface OrganizerCampaignDocument {
+  organizerId: string;
+  createdByUid: string;
+  messageClass: "eventFollowUp" | "organizerUpdate" | "organizerPromotion";
+  channel: "whatsapp";
+  status:
+    | "draft"
+    | "previewed"
+    | "approved"
+    | "scheduled"
+    | "resolving"
+    | "sending"
+    | "completed"
+    | "partiallyFailed"
+    | "cancelled"
+    | "blocked";
+  name: string;
+  /**
+   * @minItems 1
+   * @maxItems 5
+   */
+  segmentIds: (
+    | "first_time_attendee"
+    | "repeat_attendee"
+    | "regular"
+    | "lapsed_regular"
+    | "reliable_attendee"
+    | "advocate"
+    | "high_impact_advocate"
+    | "whatsapp_reachable"
+  )[];
+  connectionId: string;
+  templateId: string;
+  templateVariables: {
+    [k: string]: string;
+  };
+  eventId: string | null;
+  inviteDestinationKind:
+    | null
+    | "catchEvent"
+    | "eventRuntime"
+    | "externalBooking"
+    | "marketingLanding";
+  scheduledAt: FirebaseFirestore.Timestamp | null;
+  recipientSnapshotHash: string | null;
+  contentHash: string;
+  audienceCounts: {
+    total: number;
+    reachable: number;
+    optedOut: number;
+    invalid: number;
+    duplicate: number;
+    unsupported: number;
+    frequencyCapped: number;
+    providerBlocked: number;
+    unknown: number;
+  };
+  deliveryCounts: {
+    pending: number;
+    suppressed: number;
+    accepted: number;
+    sent: number;
+    delivered: number;
+    read: number;
+    failed: number;
+    replied: number;
+    optedOut: number;
+  };
+  revision: number;
+  leaseOwner: string | null;
+  leaseExpiresAt: FirebaseFirestore.Timestamp | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  approvedAt: FirebaseFirestore.Timestamp | null;
+  completedAt: FirebaseFirestore.Timestamp | null;
+  cancelledAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Frozen recipient eligibility and monotonic delivery receipt for one organizer campaign contact.
+ */
+export interface OrganizerCampaignRecipientDocument {
+  organizerId: string;
+  campaignId: string;
+  contactId: string;
+  channel: "whatsapp";
+  eligibility: "eligible" | "excluded";
+  exclusionReason:
+    | null
+    | "optedOut"
+    | "noVerifiedEndpoint"
+    | "duplicateEndpoint"
+    | "frequencyCapped"
+    | "providerBlocked"
+    | "invalidEndpoint"
+    | "unknownPermission"
+    | "identityUnresolved"
+    | "deleted";
+  endpointE164: string | null;
+  endpointHash: string | null;
+  permissionTermsVersion: string | null;
+  permissionUpdatedAt: FirebaseFirestore.Timestamp | null;
+  renderedVariablesHash: string;
+  inviteLinkId: string | null;
+  status:
+    | "pending"
+    | "sending"
+    | "suppressed"
+    | "accepted"
+    | "sent"
+    | "delivered"
+    | "read"
+    | "failed"
+    | "replied"
+    | "optedOut";
+  providerMessageId: string | null;
+  providerErrorCategory:
+    | null
+    | "authentication"
+    | "template"
+    | "quality"
+    | "rateLimit"
+    | "invalidRecipient"
+    | "policy"
+    | "provider"
+    | "unknown";
+  retryEligible: boolean;
+  attemptCount: number;
+  leaseOwner: string | null;
+  leaseExpiresAt: FirebaseFirestore.Timestamp | null;
+  acceptedAt: FirebaseFirestore.Timestamp | null;
+  sentAt: FirebaseFirestore.Timestamp | null;
+  deliveredAt: FirebaseFirestore.Timestamp | null;
+  readAt: FirebaseFirestore.Timestamp | null;
+  failedAt: FirebaseFirestore.Timestamp | null;
+  repliedAt: FirebaseFirestore.Timestamp | null;
+  optedOutAt: FirebaseFirestore.Timestamp | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * TTL idempotency receipt for one authenticated provider webhook event.
+ */
+export interface OrganizerCampaignWebhookReceiptDocument {
+  provider: "metaCloudApi";
+  providerEventId: string;
+  organizerId: string | null;
+  connectionId: string | null;
+  eventKind:
+    | "status"
+    | "inbound"
+    | "template"
+    | "quality"
+    | "account"
+    | "unmatched";
+  payloadHash: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Sanitized durable provider event queued after signature verification. Message bodies and phone numbers are not retained.
+ */
+export interface OrganizerMessagingWebhookEventDocument {
+  provider: "metaCloudApi";
+  providerEventId: string;
+  organizerId: string | null;
+  connectionId: string | null;
+  eventKind:
+    | "status"
+    | "inbound"
+    | "template"
+    | "quality"
+    | "account"
+    | "unmatched";
+  providerMessageId: string | null;
+  contextProviderMessageId: string | null;
+  deliveryStatus: null | "sent" | "delivered" | "read" | "failed";
+  endpointHash: string | null;
+  isStop: boolean;
+  hasReply: boolean;
+  providerErrorCode: number | null;
+  providerOccurredAt: FirebaseFirestore.Timestamp | null;
+  processingStatus: "pending" | "processed" | "unmatched" | "failed";
+  attemptCount: number;
+  createdAt: FirebaseFirestore.Timestamp;
+  processedAt: FirebaseFirestore.Timestamp | null;
+  expiresAt: FirebaseFirestore.Timestamp;
 }
 
 /**

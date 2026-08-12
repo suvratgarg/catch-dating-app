@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_campaign_webhook_receipts.schema.json",
+  "title": "OrganizerCampaignWebhookReceiptDocument",
+  "description": "TTL idempotency receipt for one authenticated provider webhook event.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerCampaignWebhookReceipts",
+  "x-firestore-path": "organizerCampaignWebhookReceipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "WhatsApp provider webhook",
+  "required": ["provider", "providerEventId", "organizerId", "connectionId", "eventKind", "payloadHash", "createdAt", "expiresAt"],
+  "properties": {
+    "provider": {"const": "metaCloudApi"},
+    "providerEventId": {"type": "string", "minLength": 1, "maxLength": 240},
+    "organizerId": {"type": ["string", "null"], "minLength": 1, "maxLength": 180},
+    "connectionId": {"type": ["string", "null"], "minLength": 1, "maxLength": 180},
+    "eventKind": {"type": "string", "enum": ["status", "inbound", "template", "quality", "account", "unmatched"]},
+    "payloadHash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "expiresAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}
+  }
+}

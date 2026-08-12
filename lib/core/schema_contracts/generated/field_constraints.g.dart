@@ -6042,6 +6042,43 @@ abstract final class CatchContractConstraints {
     maximum: 180,
   );
 
+  static const completeOrganizerWhatsappConnectionCallablePayloadAuthorizationCode = CatchContractFieldConstraints(
+    path: 'completeOrganizerWhatsappConnectionCallablePayload.authorizationCode',
+    maxLength: 2048,
+    minLength: 20,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const completeOrganizerWhatsappConnectionCallablePayloadBusinessId = CatchContractFieldConstraints(
+    path: 'completeOrganizerWhatsappConnectionCallablePayload.businessId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{5,40}\$',
+  );
+
+  static const completeOrganizerWhatsappConnectionCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'completeOrganizerWhatsappConnectionCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const completeOrganizerWhatsappConnectionCallablePayloadPhoneNumberId = CatchContractFieldConstraints(
+    path: 'completeOrganizerWhatsappConnectionCallablePayload.phoneNumberId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{5,40}\$',
+  );
+
+  static const completeOrganizerWhatsappConnectionCallablePayloadWabaId = CatchContractFieldConstraints(
+    path: 'completeOrganizerWhatsappConnectionCallablePayload.wabaId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{5,40}\$',
+  );
+
   static const configCitiesDocumentCities = CatchContractFieldConstraints(
     path: 'configCitiesDocument.cities',
     required: true,
@@ -21488,6 +21525,952 @@ abstract final class CatchContractConstraints {
     maximum: 2147483647,
   );
 
+  static const organizerCampaignActionCallablePayloadCampaignId = CatchContractFieldConstraints(
+    path: 'organizerCampaignActionCallablePayload.campaignId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCampaignActionCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'organizerCampaignActionCallablePayload.expectedRevision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerCampaignActionCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerCampaignActionCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCampaignCallableResponseAudienceCountsDuplicate = CatchContractFieldConstraints(
+    path: 'organizerCampaignCallableResponse.audienceCounts.duplicate',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerCampaignCallableResponseAudienceCountsFrequencyCapped = CatchContractFieldConstraints(
+    path: 'organizerCampaignCallableResponse.audienceCounts.frequencyCapped',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerCampaignCallableResponseAudienceCountsInvalid = CatchContractFieldConstraints(
+    path: 'organizerCampaignCallableResponse.audienceCounts.invalid',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerCampaignCallableResponseAudienceCountsOptedOut = CatchContractFieldConstraints(
+    path: 'organizerCampaignCallableResponse.audienceCounts.optedOut',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerCampaignCallableResponseAudienceCountsProviderBlocked = CatchContractFieldConstraints(
+    path: 'organizerCampaignCallableResponse.audienceCounts.providerBlocked',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerCampaignCallableResponseAudienceCountsReachable = CatchContractFieldConstraints(
+    path: 'organizerCampaignCallableResponse.audienceCounts.reachable',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerCampaignCallableResponseAudienceCountsTotal = CatchContractFieldConstraints(
+    path: 'organizerCampaignCallableResponse.audienceCounts.total',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerCampaignCallableResponseAudienceCountsUnknown = CatchContractFieldConstraints(
+    path: 'organizerCampaignCallableResponse.audienceCounts.unknown',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerCampaignCallableResponseAudienceCountsUnsupported = CatchContractFieldConstraints(
+    path: 'organizerCampaignCallableResponse.audienceCounts.unsupported',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerCampaignCallableResponseBlockers = CatchContractFieldConstraints(
+    path: 'organizerCampaignCallableResponse.blockers',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['providerSetupRequired', 'senderInactive', 'templateMissing', 'templateUnapproved', 'noReachableRecipients', 'audienceCoveragePartial', 'audienceTooLarge', 'eventMissing', 'eventUnavailable', 'scheduleInPast', 'campaignImmutable', 'campaignCancelled', 'campaignComplete', 'campaignLeaseActive'],
+    maxItems: 20,
+    uniqueItems: true,
+  );
+
+  static const organizerCampaignCallableResponseBlockersItems = CatchContractFieldConstraints(
+    path: 'organizerCampaignCallableResponse.blockers.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['providerSetupRequired', 'senderInactive', 'templateMissing', 'templateUnapproved', 'noReachableRecipients', 'audienceCoveragePartial', 'audienceTooLarge', 'eventMissing', 'eventUnavailable', 'scheduleInPast', 'campaignImmutable', 'campaignCancelled', 'campaignComplete', 'campaignLeaseActive'],
+  );
+
+  static const organizerCampaignCallableResponseCampaignId = CatchContractFieldConstraints(
+    path: 'organizerCampaignCallableResponse.campaignId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCampaignCallableResponseCanApprove = CatchContractFieldConstraints(
+    path: 'organizerCampaignCallableResponse.canApprove',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerCampaignCallableResponseCanDispatch = CatchContractFieldConstraints(
+    path: 'organizerCampaignCallableResponse.canDispatch',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerCampaignCallableResponseDeliveryCountsAccepted = CatchContractFieldConstraints(
+    path: 'organizerCampaignCallableResponse.deliveryCounts.accepted',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerCampaignCallableResponseDeliveryCountsDelivered = CatchContractFieldConstraints(
+    path: 'organizerCampaignCallableResponse.deliveryCounts.delivered',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerCampaignCallableResponseDeliveryCountsFailed = CatchContractFieldConstraints(
+    path: 'organizerCampaignCallableResponse.deliveryCounts.failed',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerCampaignCallableResponseDeliveryCountsOptedOut = CatchContractFieldConstraints(
+    path: 'organizerCampaignCallableResponse.deliveryCounts.optedOut',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerCampaignCallableResponseDeliveryCountsPending = CatchContractFieldConstraints(
+    path: 'organizerCampaignCallableResponse.deliveryCounts.pending',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerCampaignCallableResponseDeliveryCountsRead = CatchContractFieldConstraints(
+    path: 'organizerCampaignCallableResponse.deliveryCounts.read',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerCampaignCallableResponseDeliveryCountsReplied = CatchContractFieldConstraints(
+    path: 'organizerCampaignCallableResponse.deliveryCounts.replied',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerCampaignCallableResponseDeliveryCountsSent = CatchContractFieldConstraints(
+    path: 'organizerCampaignCallableResponse.deliveryCounts.sent',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerCampaignCallableResponseDeliveryCountsSuppressed = CatchContractFieldConstraints(
+    path: 'organizerCampaignCallableResponse.deliveryCounts.suppressed',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerCampaignCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerCampaignCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCampaignCallableResponseRevision = CatchContractFieldConstraints(
+    path: 'organizerCampaignCallableResponse.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerCampaignCallableResponseSenderStatus = CatchContractFieldConstraints(
+    path: 'organizerCampaignCallableResponse.senderStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'testing', 'active', 'degraded', 'blocked', 'tokenRevoked', 'disconnected', 'notConnected'],
+  );
+
+  static const organizerCampaignCallableResponseStatus = CatchContractFieldConstraints(
+    path: 'organizerCampaignCallableResponse.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['draft', 'previewed', 'approved', 'scheduled', 'resolving', 'sending', 'completed', 'partiallyFailed', 'cancelled', 'blocked'],
+  );
+
+  static const organizerCampaignCallableResponseTemplateStatus = CatchContractFieldConstraints(
+    path: 'organizerCampaignCallableResponse.templateStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['APPROVED', 'PENDING', 'REJECTED', 'PAUSED', 'DISABLED', 'DELETED', 'UNKNOWN', 'missing'],
+  );
+
+  static const organizerCampaignDocumentApprovedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.approvedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerCampaignDocumentApprovedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.approvedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerCampaignDocumentAudienceCountsDuplicate = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.audienceCounts.duplicate',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerCampaignDocumentAudienceCountsFrequencyCapped = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.audienceCounts.frequencyCapped',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerCampaignDocumentAudienceCountsInvalid = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.audienceCounts.invalid',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerCampaignDocumentAudienceCountsOptedOut = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.audienceCounts.optedOut',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerCampaignDocumentAudienceCountsProviderBlocked = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.audienceCounts.providerBlocked',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerCampaignDocumentAudienceCountsReachable = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.audienceCounts.reachable',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerCampaignDocumentAudienceCountsTotal = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.audienceCounts.total',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerCampaignDocumentAudienceCountsUnknown = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.audienceCounts.unknown',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerCampaignDocumentAudienceCountsUnsupported = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.audienceCounts.unsupported',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerCampaignDocumentCancelledAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.cancelledAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerCampaignDocumentCancelledAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.cancelledAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerCampaignDocumentChannel = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.channel',
+    required: true,
+  );
+
+  static const organizerCampaignDocumentCompletedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.completedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerCampaignDocumentCompletedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.completedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerCampaignDocumentConnectionId = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.connectionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCampaignDocumentContentHash = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.contentHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerCampaignDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerCampaignDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerCampaignDocumentCreatedByUid = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.createdByUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCampaignDocumentDeliveryCountsAccepted = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.deliveryCounts.accepted',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerCampaignDocumentDeliveryCountsDelivered = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.deliveryCounts.delivered',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerCampaignDocumentDeliveryCountsFailed = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.deliveryCounts.failed',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerCampaignDocumentDeliveryCountsOptedOut = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.deliveryCounts.optedOut',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerCampaignDocumentDeliveryCountsPending = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.deliveryCounts.pending',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerCampaignDocumentDeliveryCountsRead = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.deliveryCounts.read',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerCampaignDocumentDeliveryCountsReplied = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.deliveryCounts.replied',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerCampaignDocumentDeliveryCountsSent = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.deliveryCounts.sent',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerCampaignDocumentDeliveryCountsSuppressed = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.deliveryCounts.suppressed',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerCampaignDocumentEventId = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCampaignDocumentInviteDestinationKind = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.inviteDestinationKind',
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchEvent', 'eventRuntime', 'externalBooking', 'marketingLanding'],
+  );
+
+  static const organizerCampaignDocumentLeaseExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.leaseExpiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerCampaignDocumentLeaseExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.leaseExpiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerCampaignDocumentLeaseOwner = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.leaseOwner',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCampaignDocumentMessageClass = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.messageClass',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['eventFollowUp', 'organizerUpdate', 'organizerPromotion'],
+  );
+
+  static const organizerCampaignDocumentName = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.name',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCampaignDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCampaignDocumentRecipientSnapshotHash = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.recipientSnapshotHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerCampaignDocumentRevision = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerCampaignDocumentScheduledAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.scheduledAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerCampaignDocumentScheduledAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.scheduledAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerCampaignDocumentSegmentIds = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.segmentIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'advocate', 'high_impact_advocate', 'whatsapp_reachable'],
+    minItems: 1,
+    maxItems: 5,
+    uniqueItems: true,
+  );
+
+  static const organizerCampaignDocumentSegmentIdsItems = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.segmentIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'advocate', 'high_impact_advocate', 'whatsapp_reachable'],
+  );
+
+  static const organizerCampaignDocumentStatus = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['draft', 'previewed', 'approved', 'scheduled', 'resolving', 'sending', 'completed', 'partiallyFailed', 'cancelled', 'blocked'],
+  );
+
+  static const organizerCampaignDocumentTemplateId = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.templateId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCampaignDocumentTemplateVariables = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.templateVariables',
+    required: true,
+    valueTypes: <String>['object'],
+  );
+
+  static const organizerCampaignDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerCampaignDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerCampaignRecipientDocumentAcceptedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.acceptedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerCampaignRecipientDocumentAcceptedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.acceptedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerCampaignRecipientDocumentAttemptCount = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.attemptCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 20,
+  );
+
+  static const organizerCampaignRecipientDocumentCampaignId = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.campaignId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCampaignRecipientDocumentChannel = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.channel',
+    required: true,
+  );
+
+  static const organizerCampaignRecipientDocumentContactId = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.contactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCampaignRecipientDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerCampaignRecipientDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerCampaignRecipientDocumentDeliveredAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.deliveredAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerCampaignRecipientDocumentDeliveredAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.deliveredAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerCampaignRecipientDocumentEligibility = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.eligibility',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['eligible', 'excluded'],
+  );
+
+  static const organizerCampaignRecipientDocumentEndpointE164 = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.endpointE164',
+    valueTypes: <String>['string'],
+    pattern: '^\\+[1-9][0-9]{7,14}\$',
+  );
+
+  static const organizerCampaignRecipientDocumentEndpointHash = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.endpointHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerCampaignRecipientDocumentExclusionReason = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.exclusionReason',
+    valueTypes: <String>['string'],
+    enumValues: <String>['optedOut', 'noVerifiedEndpoint', 'duplicateEndpoint', 'frequencyCapped', 'providerBlocked', 'invalidEndpoint', 'unknownPermission', 'identityUnresolved', 'deleted'],
+  );
+
+  static const organizerCampaignRecipientDocumentFailedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.failedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerCampaignRecipientDocumentFailedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.failedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerCampaignRecipientDocumentInviteLinkId = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.inviteLinkId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCampaignRecipientDocumentLeaseExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.leaseExpiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerCampaignRecipientDocumentLeaseExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.leaseExpiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerCampaignRecipientDocumentLeaseOwner = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.leaseOwner',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCampaignRecipientDocumentOptedOutAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.optedOutAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerCampaignRecipientDocumentOptedOutAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.optedOutAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerCampaignRecipientDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCampaignRecipientDocumentPermissionTermsVersion = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.permissionTermsVersion',
+    maxLength: 80,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCampaignRecipientDocumentPermissionUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.permissionUpdatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerCampaignRecipientDocumentPermissionUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.permissionUpdatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerCampaignRecipientDocumentProviderErrorCategory = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.providerErrorCategory',
+    valueTypes: <String>['string'],
+    enumValues: <String>['authentication', 'template', 'quality', 'rateLimit', 'invalidRecipient', 'policy', 'provider', 'unknown'],
+  );
+
+  static const organizerCampaignRecipientDocumentProviderMessageId = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.providerMessageId',
+    maxLength: 240,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCampaignRecipientDocumentReadAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.readAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerCampaignRecipientDocumentReadAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.readAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerCampaignRecipientDocumentRenderedVariablesHash = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.renderedVariablesHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerCampaignRecipientDocumentRepliedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.repliedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerCampaignRecipientDocumentRepliedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.repliedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerCampaignRecipientDocumentRetryEligible = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.retryEligible',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerCampaignRecipientDocumentSentAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.sentAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerCampaignRecipientDocumentSentAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.sentAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerCampaignRecipientDocumentStatus = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'sending', 'suppressed', 'accepted', 'sent', 'delivered', 'read', 'failed', 'replied', 'optedOut'],
+  );
+
+  static const organizerCampaignRecipientDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerCampaignRecipientDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerCampaignWebhookReceiptDocumentConnectionId = CatchContractFieldConstraints(
+    path: 'organizerCampaignWebhookReceiptDocument.connectionId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCampaignWebhookReceiptDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerCampaignWebhookReceiptDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerCampaignWebhookReceiptDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerCampaignWebhookReceiptDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerCampaignWebhookReceiptDocumentEventKind = CatchContractFieldConstraints(
+    path: 'organizerCampaignWebhookReceiptDocument.eventKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['status', 'inbound', 'template', 'quality', 'account', 'unmatched'],
+  );
+
+  static const organizerCampaignWebhookReceiptDocumentExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerCampaignWebhookReceiptDocument.expiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerCampaignWebhookReceiptDocumentExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerCampaignWebhookReceiptDocument.expiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerCampaignWebhookReceiptDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerCampaignWebhookReceiptDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCampaignWebhookReceiptDocumentPayloadHash = CatchContractFieldConstraints(
+    path: 'organizerCampaignWebhookReceiptDocument.payloadHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerCampaignWebhookReceiptDocumentProvider = CatchContractFieldConstraints(
+    path: 'organizerCampaignWebhookReceiptDocument.provider',
+    required: true,
+  );
+
+  static const organizerCampaignWebhookReceiptDocumentProviderEventId = CatchContractFieldConstraints(
+    path: 'organizerCampaignWebhookReceiptDocument.providerEventId',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const organizerClaimRequestDocumentBusinessEmail = CatchContractFieldConstraints(
     path: 'organizerClaimRequestDocument.businessEmail',
     maxLength: 320,
@@ -21656,7 +22639,7 @@ abstract final class CatchContractConstraints {
   static const organizerCommunicationPreferenceDocumentSmsSource = CatchContractFieldConstraints(
     path: 'organizerCommunicationPreferenceDocument.sms.source',
     valueTypes: <String>['string'],
-    enumValues: <String>['publicEventRegistration', 'unsubscribeLink', 'hostApp'],
+    enumValues: <String>['publicEventRegistration', 'unsubscribeLink', 'hostApp', 'inboundStop', 'providerWebhook'],
   );
 
   static const organizerCommunicationPreferenceDocumentSmsSourceEventId = CatchContractFieldConstraints(
@@ -21719,7 +22702,7 @@ abstract final class CatchContractConstraints {
   static const organizerCommunicationPreferenceDocumentWhatsappSource = CatchContractFieldConstraints(
     path: 'organizerCommunicationPreferenceDocument.whatsapp.source',
     valueTypes: <String>['string'],
-    enumValues: <String>['publicEventRegistration', 'unsubscribeLink', 'hostApp'],
+    enumValues: <String>['publicEventRegistration', 'unsubscribeLink', 'hostApp', 'inboundStop', 'providerWebhook'],
   );
 
   static const organizerCommunicationPreferenceDocumentWhatsappSourceEventId = CatchContractFieldConstraints(
@@ -21753,6 +22736,125 @@ abstract final class CatchContractConstraints {
 
   static const organizerCommunicationPreferenceDocumentWhatsappUpdatedAtSeconds = CatchContractFieldConstraints(
     path: 'organizerCommunicationPreferenceDocument.whatsapp.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerContactChannelStateDocumentCampaignAcceptedCount = CatchContractFieldConstraints(
+    path: 'organizerContactChannelStateDocument.campaignAcceptedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerContactChannelStateDocumentChannel = CatchContractFieldConstraints(
+    path: 'organizerContactChannelStateDocument.channel',
+    required: true,
+  );
+
+  static const organizerContactChannelStateDocumentContactId = CatchContractFieldConstraints(
+    path: 'organizerContactChannelStateDocument.contactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactChannelStateDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerContactChannelStateDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerContactChannelStateDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerContactChannelStateDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerContactChannelStateDocumentEndpointHash = CatchContractFieldConstraints(
+    path: 'organizerContactChannelStateDocument.endpointHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerContactChannelStateDocumentLastCampaignAcceptedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerContactChannelStateDocument.lastCampaignAcceptedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerContactChannelStateDocumentLastCampaignAcceptedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerContactChannelStateDocument.lastCampaignAcceptedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerContactChannelStateDocumentLastInboundAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerContactChannelStateDocument.lastInboundAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerContactChannelStateDocumentLastInboundAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerContactChannelStateDocument.lastInboundAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerContactChannelStateDocumentLastReplyAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerContactChannelStateDocument.lastReplyAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerContactChannelStateDocumentLastReplyAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerContactChannelStateDocument.lastReplyAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerContactChannelStateDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerContactChannelStateDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactChannelStateDocumentSuppressionSource = CatchContractFieldConstraints(
+    path: 'organizerContactChannelStateDocument.suppressionSource',
+    valueTypes: <String>['string'],
+    enumValues: <String>['preference', 'inboundStop', 'provider', 'admin'],
+  );
+
+  static const organizerContactChannelStateDocumentSuppressionStatus = CatchContractFieldConstraints(
+    path: 'organizerContactChannelStateDocument.suppressionStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'optedOut', 'providerBlocked', 'invalidEndpoint', 'adminSuppressed'],
+  );
+
+  static const organizerContactChannelStateDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerContactChannelStateDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerContactChannelStateDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerContactChannelStateDocument.updatedAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
   );
@@ -25550,6 +26652,478 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const organizerMessageTemplateDocumentButtonKinds = CatchContractFieldConstraints(
+    path: 'organizerMessageTemplateDocument.buttonKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['URL', 'PHONE_NUMBER', 'QUICK_REPLY', 'COPY_CODE', 'UNKNOWN'],
+    maxItems: 10,
+  );
+
+  static const organizerMessageTemplateDocumentButtonKindsItems = CatchContractFieldConstraints(
+    path: 'organizerMessageTemplateDocument.buttonKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['URL', 'PHONE_NUMBER', 'QUICK_REPLY', 'COPY_CODE', 'UNKNOWN'],
+  );
+
+  static const organizerMessageTemplateDocumentCategory = CatchContractFieldConstraints(
+    path: 'organizerMessageTemplateDocument.category',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['MARKETING', 'UTILITY', 'AUTHENTICATION', 'UNKNOWN'],
+  );
+
+  static const organizerMessageTemplateDocumentConnectionId = CatchContractFieldConstraints(
+    path: 'organizerMessageTemplateDocument.connectionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMessageTemplateDocumentHasMediaHeader = CatchContractFieldConstraints(
+    path: 'organizerMessageTemplateDocument.hasMediaHeader',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerMessageTemplateDocumentLanguage = CatchContractFieldConstraints(
+    path: 'organizerMessageTemplateDocument.language',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z]{2,3}(?:_[A-Za-z]{2})?\$',
+  );
+
+  static const organizerMessageTemplateDocumentName = CatchContractFieldConstraints(
+    path: 'organizerMessageTemplateDocument.name',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z0-9_]{1,512}\$',
+  );
+
+  static const organizerMessageTemplateDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerMessageTemplateDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMessageTemplateDocumentParameterBindings = CatchContractFieldConstraints(
+    path: 'organizerMessageTemplateDocument.parameterBindings',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 20,
+  );
+
+  static const organizerMessageTemplateDocumentParameterBindingsItemsButtonIndex = CatchContractFieldConstraints(
+    path: 'organizerMessageTemplateDocument.parameterBindings.items.buttonIndex',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9,
+  );
+
+  static const organizerMessageTemplateDocumentParameterBindingsItemsComponent = CatchContractFieldConstraints(
+    path: 'organizerMessageTemplateDocument.parameterBindings.items.component',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['header', 'body', 'button'],
+  );
+
+  static const organizerMessageTemplateDocumentParameterBindingsItemsPosition = CatchContractFieldConstraints(
+    path: 'organizerMessageTemplateDocument.parameterBindings.items.position',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 19,
+  );
+
+  static const organizerMessageTemplateDocumentParameterBindingsItemsVariableName = CatchContractFieldConstraints(
+    path: 'organizerMessageTemplateDocument.parameterBindings.items.variableName',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z][A-Za-z0-9_]{0,63}\$',
+  );
+
+  static const organizerMessageTemplateDocumentProviderTemplateId = CatchContractFieldConstraints(
+    path: 'organizerMessageTemplateDocument.providerTemplateId',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMessageTemplateDocumentProviderUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerMessageTemplateDocument.providerUpdatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerMessageTemplateDocumentProviderUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerMessageTemplateDocument.providerUpdatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerMessageTemplateDocumentStatus = CatchContractFieldConstraints(
+    path: 'organizerMessageTemplateDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['APPROVED', 'PENDING', 'REJECTED', 'PAUSED', 'DISABLED', 'DELETED', 'UNKNOWN'],
+  );
+
+  static const organizerMessageTemplateDocumentSyncedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerMessageTemplateDocument.syncedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerMessageTemplateDocumentSyncedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerMessageTemplateDocument.syncedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerMessageTemplateDocumentVariableNames = CatchContractFieldConstraints(
+    path: 'organizerMessageTemplateDocument.variableNames',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 20,
+    uniqueItems: true,
+  );
+
+  static const organizerMessageTemplateDocumentVariableNamesItems = CatchContractFieldConstraints(
+    path: 'organizerMessageTemplateDocument.variableNames.items',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z][A-Za-z0-9_]{0,63}\$',
+  );
+
+  static const organizerMessagingSetupCallableResponseConnectionConnectionId = CatchContractFieldConstraints(
+    path: 'organizerMessagingSetupCallableResponse.connection.connectionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMessagingSetupCallableResponseConnectionDisplayPhoneNumber = CatchContractFieldConstraints(
+    path: 'organizerMessagingSetupCallableResponse.connection.displayPhoneNumber',
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMessagingSetupCallableResponseConnectionMessagingLimitTier = CatchContractFieldConstraints(
+    path: 'organizerMessagingSetupCallableResponse.connection.messagingLimitTier',
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMessagingSetupCallableResponseConnectionQualityRating = CatchContractFieldConstraints(
+    path: 'organizerMessagingSetupCallableResponse.connection.qualityRating',
+    valueTypes: <String>['string'],
+    enumValues: <String>['GREEN', 'YELLOW', 'RED', 'UNKNOWN'],
+  );
+
+  static const organizerMessagingSetupCallableResponseConnectionRevision = CatchContractFieldConstraints(
+    path: 'organizerMessagingSetupCallableResponse.connection.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const organizerMessagingSetupCallableResponseConnectionStatus = CatchContractFieldConstraints(
+    path: 'organizerMessagingSetupCallableResponse.connection.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'testing', 'active', 'degraded', 'blocked', 'tokenRevoked', 'disconnected'],
+  );
+
+  static const organizerMessagingSetupCallableResponseConnectionTemplateSyncStatus = CatchContractFieldConstraints(
+    path: 'organizerMessagingSetupCallableResponse.connection.templateSyncStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['notStarted', 'current', 'stale', 'failed'],
+  );
+
+  static const organizerMessagingSetupCallableResponseConnectionTestStatus = CatchContractFieldConstraints(
+    path: 'organizerMessagingSetupCallableResponse.connection.testStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['notSent', 'pending', 'delivered', 'failed'],
+  );
+
+  static const organizerMessagingSetupCallableResponseConnectionVerifiedName = CatchContractFieldConstraints(
+    path: 'organizerMessagingSetupCallableResponse.connection.verifiedName',
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMessagingSetupCallableResponseConnectionWebhookStatus = CatchContractFieldConstraints(
+    path: 'organizerMessagingSetupCallableResponse.connection.webhookStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['notSubscribed', 'subscribed', 'degraded'],
+  );
+
+  static const organizerMessagingSetupCallableResponseEmbeddedSignupAppId = CatchContractFieldConstraints(
+    path: 'organizerMessagingSetupCallableResponse.embeddedSignup.appId',
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMessagingSetupCallableResponseEmbeddedSignupConfigId = CatchContractFieldConstraints(
+    path: 'organizerMessagingSetupCallableResponse.embeddedSignup.configId',
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMessagingSetupCallableResponseEmbeddedSignupGraphVersion = CatchContractFieldConstraints(
+    path: 'organizerMessagingSetupCallableResponse.embeddedSignup.graphVersion',
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMessagingSetupCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerMessagingSetupCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMessagingSetupCallableResponseProviderConfigured = CatchContractFieldConstraints(
+    path: 'organizerMessagingSetupCallableResponse.providerConfigured',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerMessagingSetupCallableResponseTemplates = CatchContractFieldConstraints(
+    path: 'organizerMessagingSetupCallableResponse.templates',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 200,
+  );
+
+  static const organizerMessagingSetupCallableResponseTemplatesItemsButtonKinds = CatchContractFieldConstraints(
+    path: 'organizerMessagingSetupCallableResponse.templates.items.buttonKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+  );
+
+  static const organizerMessagingSetupCallableResponseTemplatesItemsButtonKindsItems = CatchContractFieldConstraints(
+    path: 'organizerMessagingSetupCallableResponse.templates.items.buttonKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMessagingSetupCallableResponseTemplatesItemsCategory = CatchContractFieldConstraints(
+    path: 'organizerMessagingSetupCallableResponse.templates.items.category',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['MARKETING', 'UTILITY', 'AUTHENTICATION', 'UNKNOWN'],
+  );
+
+  static const organizerMessagingSetupCallableResponseTemplatesItemsHasMediaHeader = CatchContractFieldConstraints(
+    path: 'organizerMessagingSetupCallableResponse.templates.items.hasMediaHeader',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerMessagingSetupCallableResponseTemplatesItemsLanguage = CatchContractFieldConstraints(
+    path: 'organizerMessagingSetupCallableResponse.templates.items.language',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMessagingSetupCallableResponseTemplatesItemsName = CatchContractFieldConstraints(
+    path: 'organizerMessagingSetupCallableResponse.templates.items.name',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMessagingSetupCallableResponseTemplatesItemsStatus = CatchContractFieldConstraints(
+    path: 'organizerMessagingSetupCallableResponse.templates.items.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['APPROVED', 'PENDING', 'REJECTED', 'PAUSED', 'DISABLED', 'DELETED', 'UNKNOWN'],
+  );
+
+  static const organizerMessagingSetupCallableResponseTemplatesItemsTemplateId = CatchContractFieldConstraints(
+    path: 'organizerMessagingSetupCallableResponse.templates.items.templateId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMessagingSetupCallableResponseTemplatesItemsVariableNames = CatchContractFieldConstraints(
+    path: 'organizerMessagingSetupCallableResponse.templates.items.variableNames',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+  );
+
+  static const organizerMessagingSetupCallableResponseTemplatesItemsVariableNamesItems = CatchContractFieldConstraints(
+    path: 'organizerMessagingSetupCallableResponse.templates.items.variableNames.items',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMessagingWebhookEventDocumentAttemptCount = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.attemptCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const organizerMessagingWebhookEventDocumentConnectionId = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.connectionId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMessagingWebhookEventDocumentContextProviderMessageId = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.contextProviderMessageId',
+    maxLength: 240,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMessagingWebhookEventDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerMessagingWebhookEventDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerMessagingWebhookEventDocumentDeliveryStatus = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.deliveryStatus',
+    valueTypes: <String>['string'],
+    enumValues: <String>['sent', 'delivered', 'read', 'failed'],
+  );
+
+  static const organizerMessagingWebhookEventDocumentEndpointHash = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.endpointHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerMessagingWebhookEventDocumentEventKind = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.eventKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['status', 'inbound', 'template', 'quality', 'account', 'unmatched'],
+  );
+
+  static const organizerMessagingWebhookEventDocumentExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.expiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerMessagingWebhookEventDocumentExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.expiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerMessagingWebhookEventDocumentHasReply = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.hasReply',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerMessagingWebhookEventDocumentIsStop = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.isStop',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerMessagingWebhookEventDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMessagingWebhookEventDocumentProcessedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.processedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerMessagingWebhookEventDocumentProcessedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.processedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerMessagingWebhookEventDocumentProcessingStatus = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.processingStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'processed', 'unmatched', 'failed'],
+  );
+
+  static const organizerMessagingWebhookEventDocumentProvider = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.provider',
+    required: true,
+  );
+
+  static const organizerMessagingWebhookEventDocumentProviderErrorCode = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.providerErrorCode',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerMessagingWebhookEventDocumentProviderEventId = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.providerEventId',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMessagingWebhookEventDocumentProviderMessageId = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.providerMessageId',
+    maxLength: 240,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMessagingWebhookEventDocumentProviderOccurredAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.providerOccurredAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerMessagingWebhookEventDocumentProviderOccurredAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.providerOccurredAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const organizerPolicyGapReviewDecisionDocumentChecklistBehaviorStillDisabledAcknowledged = CatchContractFieldConstraints(
     path: 'organizerPolicyGapReviewDecisionDocument.checklist.behaviorStillDisabledAcknowledged',
     required: true,
@@ -25785,6 +27359,202 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
+  );
+
+  static const organizerSenderConnectionActionCallablePayloadConnectionId = CatchContractFieldConstraints(
+    path: 'organizerSenderConnectionActionCallablePayload.connectionId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerSenderConnectionActionCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerSenderConnectionActionCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerSenderConnectionDocumentBusinessId = CatchContractFieldConstraints(
+    path: 'organizerSenderConnectionDocument.businessId',
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{5,40}\$',
+  );
+
+  static const organizerSenderConnectionDocumentChannel = CatchContractFieldConstraints(
+    path: 'organizerSenderConnectionDocument.channel',
+    required: true,
+  );
+
+  static const organizerSenderConnectionDocumentConnectedByUid = CatchContractFieldConstraints(
+    path: 'organizerSenderConnectionDocument.connectedByUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerSenderConnectionDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerSenderConnectionDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerSenderConnectionDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerSenderConnectionDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerSenderConnectionDocumentDisconnectedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerSenderConnectionDocument.disconnectedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerSenderConnectionDocumentDisconnectedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerSenderConnectionDocument.disconnectedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerSenderConnectionDocumentDisplayPhoneNumber = CatchContractFieldConstraints(
+    path: 'organizerSenderConnectionDocument.displayPhoneNumber',
+    maxLength: 32,
+    minLength: 7,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerSenderConnectionDocumentLastHealthSyncAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerSenderConnectionDocument.lastHealthSyncAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerSenderConnectionDocumentLastHealthSyncAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerSenderConnectionDocument.lastHealthSyncAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerSenderConnectionDocumentMessagingLimitTier = CatchContractFieldConstraints(
+    path: 'organizerSenderConnectionDocument.messagingLimitTier',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerSenderConnectionDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerSenderConnectionDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerSenderConnectionDocumentPhoneNumberId = CatchContractFieldConstraints(
+    path: 'organizerSenderConnectionDocument.phoneNumberId',
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{5,40}\$',
+  );
+
+  static const organizerSenderConnectionDocumentProvider = CatchContractFieldConstraints(
+    path: 'organizerSenderConnectionDocument.provider',
+    required: true,
+  );
+
+  static const organizerSenderConnectionDocumentQualityRating = CatchContractFieldConstraints(
+    path: 'organizerSenderConnectionDocument.qualityRating',
+    valueTypes: <String>['string'],
+    enumValues: <String>['GREEN', 'YELLOW', 'RED', 'UNKNOWN'],
+  );
+
+  static const organizerSenderConnectionDocumentRevision = CatchContractFieldConstraints(
+    path: 'organizerSenderConnectionDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerSenderConnectionDocumentSecretVersionResource = CatchContractFieldConstraints(
+    path: 'organizerSenderConnectionDocument.secretVersionResource',
+    valueTypes: <String>['string'],
+    pattern: '^projects/[^/]+/secrets/[^/]+/versions/[0-9]+\$',
+  );
+
+  static const organizerSenderConnectionDocumentStatus = CatchContractFieldConstraints(
+    path: 'organizerSenderConnectionDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'testing', 'active', 'degraded', 'blocked', 'tokenRevoked', 'disconnected'],
+  );
+
+  static const organizerSenderConnectionDocumentTemplateSyncStatus = CatchContractFieldConstraints(
+    path: 'organizerSenderConnectionDocument.templateSyncStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['notStarted', 'current', 'stale', 'failed'],
+  );
+
+  static const organizerSenderConnectionDocumentTestProviderMessageId = CatchContractFieldConstraints(
+    path: 'organizerSenderConnectionDocument.testProviderMessageId',
+    maxLength: 240,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerSenderConnectionDocumentTestRecipientHash = CatchContractFieldConstraints(
+    path: 'organizerSenderConnectionDocument.testRecipientHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerSenderConnectionDocumentTestStatus = CatchContractFieldConstraints(
+    path: 'organizerSenderConnectionDocument.testStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['notSent', 'pending', 'delivered', 'failed'],
+  );
+
+  static const organizerSenderConnectionDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerSenderConnectionDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerSenderConnectionDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerSenderConnectionDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerSenderConnectionDocumentVerifiedName = CatchContractFieldConstraints(
+    path: 'organizerSenderConnectionDocument.verifiedName',
+    maxLength: 160,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerSenderConnectionDocumentWabaId = CatchContractFieldConstraints(
+    path: 'organizerSenderConnectionDocument.wabaId',
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{5,40}\$',
+  );
+
+  static const organizerSenderConnectionDocumentWebhookStatus = CatchContractFieldConstraints(
+    path: 'organizerSenderConnectionDocument.webhookStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['notSubscribed', 'subscribed', 'degraded'],
   );
 
   static const organizerSupplyCapabilitiesBookable = CatchContractFieldConstraints(
@@ -28379,6 +30149,43 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['completed', 'partial'],
+  );
+
+  static const sendOrganizerWhatsappTestCallablePayloadConnectionId = CatchContractFieldConstraints(
+    path: 'sendOrganizerWhatsappTestCallablePayload.connectionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const sendOrganizerWhatsappTestCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'sendOrganizerWhatsappTestCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const sendOrganizerWhatsappTestCallablePayloadTemplateId = CatchContractFieldConstraints(
+    path: 'sendOrganizerWhatsappTestCallablePayload.templateId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const sendOrganizerWhatsappTestCallablePayloadTemplateVariables = CatchContractFieldConstraints(
+    path: 'sendOrganizerWhatsappTestCallablePayload.templateVariables',
+    required: true,
+    valueTypes: <String>['object'],
+  );
+
+  static const sendOrganizerWhatsappTestCallablePayloadToE164 = CatchContractFieldConstraints(
+    path: 'sendOrganizerWhatsappTestCallablePayload.toE164',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^\\+[1-9][0-9]{7,14}\$',
   );
 
   static const setClubNotificationPreferenceCallablePayloadClubId = CatchContractFieldConstraints(
@@ -31225,6 +33032,111 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     format: 'uri',
+  );
+
+  static const upsertOrganizerCampaignCallablePayloadCampaignId = CatchContractFieldConstraints(
+    path: 'upsertOrganizerCampaignCallablePayload.campaignId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertOrganizerCampaignCallablePayloadConnectionId = CatchContractFieldConstraints(
+    path: 'upsertOrganizerCampaignCallablePayload.connectionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertOrganizerCampaignCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'upsertOrganizerCampaignCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertOrganizerCampaignCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'upsertOrganizerCampaignCallablePayload.expectedRevision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const upsertOrganizerCampaignCallablePayloadInviteDestinationKind = CatchContractFieldConstraints(
+    path: 'upsertOrganizerCampaignCallablePayload.inviteDestinationKind',
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchEvent', 'eventRuntime', 'externalBooking', 'marketingLanding'],
+  );
+
+  static const upsertOrganizerCampaignCallablePayloadMessageClass = CatchContractFieldConstraints(
+    path: 'upsertOrganizerCampaignCallablePayload.messageClass',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['eventFollowUp', 'organizerUpdate', 'organizerPromotion'],
+  );
+
+  static const upsertOrganizerCampaignCallablePayloadName = CatchContractFieldConstraints(
+    path: 'upsertOrganizerCampaignCallablePayload.name',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertOrganizerCampaignCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'upsertOrganizerCampaignCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertOrganizerCampaignCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'upsertOrganizerCampaignCallablePayload.requestId',
+    maxLength: 120,
+    minLength: 8,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertOrganizerCampaignCallablePayloadScheduledAtMillis = CatchContractFieldConstraints(
+    path: 'upsertOrganizerCampaignCallablePayload.scheduledAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 4102444800000,
+  );
+
+  static const upsertOrganizerCampaignCallablePayloadSegmentIds = CatchContractFieldConstraints(
+    path: 'upsertOrganizerCampaignCallablePayload.segmentIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'advocate', 'high_impact_advocate', 'whatsapp_reachable'],
+    minItems: 1,
+    maxItems: 5,
+    uniqueItems: true,
+  );
+
+  static const upsertOrganizerCampaignCallablePayloadSegmentIdsItems = CatchContractFieldConstraints(
+    path: 'upsertOrganizerCampaignCallablePayload.segmentIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'advocate', 'high_impact_advocate', 'whatsapp_reachable'],
+  );
+
+  static const upsertOrganizerCampaignCallablePayloadTemplateId = CatchContractFieldConstraints(
+    path: 'upsertOrganizerCampaignCallablePayload.templateId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertOrganizerCampaignCallablePayloadTemplateVariables = CatchContractFieldConstraints(
+    path: 'upsertOrganizerCampaignCallablePayload.templateVariables',
+    required: true,
+    valueTypes: <String>['object'],
   );
 
   static const userAnalyticsCallableResponseCoachingTipRefs = CatchContractFieldConstraints(
@@ -34195,6 +36107,11 @@ abstract final class CatchContractConstraints {
     'completeEventSuccessFirstHelloMissionCallablePayload.eventId': completeEventSuccessFirstHelloMissionCallablePayloadEventId,
     'completeEventSuccessFirstHelloMissionCallablePayload.latitude': completeEventSuccessFirstHelloMissionCallablePayloadLatitude,
     'completeEventSuccessFirstHelloMissionCallablePayload.longitude': completeEventSuccessFirstHelloMissionCallablePayloadLongitude,
+    'completeOrganizerWhatsappConnectionCallablePayload.authorizationCode': completeOrganizerWhatsappConnectionCallablePayloadAuthorizationCode,
+    'completeOrganizerWhatsappConnectionCallablePayload.businessId': completeOrganizerWhatsappConnectionCallablePayloadBusinessId,
+    'completeOrganizerWhatsappConnectionCallablePayload.organizerId': completeOrganizerWhatsappConnectionCallablePayloadOrganizerId,
+    'completeOrganizerWhatsappConnectionCallablePayload.phoneNumberId': completeOrganizerWhatsappConnectionCallablePayloadPhoneNumberId,
+    'completeOrganizerWhatsappConnectionCallablePayload.wabaId': completeOrganizerWhatsappConnectionCallablePayloadWabaId,
     'configCitiesDocument.cities': configCitiesDocumentCities,
     'configCitiesDocument.cities.items.cityId': configCitiesDocumentCitiesItemsCityId,
     'configCitiesDocument.cities.items.countryIsoCode': configCitiesDocumentCitiesItemsCountryIsoCode,
@@ -36343,6 +38260,135 @@ abstract final class CatchContractConstraints {
     'organizerAudienceSummaryDocument.smsOptInCount': organizerAudienceSummaryDocumentSmsOptInCount,
     'organizerAudienceSummaryDocument.sourceCoverage': organizerAudienceSummaryDocumentSourceCoverage,
     'organizerAudienceSummaryDocument.whatsappOptInCount': organizerAudienceSummaryDocumentWhatsappOptInCount,
+    'organizerCampaignActionCallablePayload.campaignId': organizerCampaignActionCallablePayloadCampaignId,
+    'organizerCampaignActionCallablePayload.expectedRevision': organizerCampaignActionCallablePayloadExpectedRevision,
+    'organizerCampaignActionCallablePayload.organizerId': organizerCampaignActionCallablePayloadOrganizerId,
+    'organizerCampaignCallableResponse.audienceCounts.duplicate': organizerCampaignCallableResponseAudienceCountsDuplicate,
+    'organizerCampaignCallableResponse.audienceCounts.frequencyCapped': organizerCampaignCallableResponseAudienceCountsFrequencyCapped,
+    'organizerCampaignCallableResponse.audienceCounts.invalid': organizerCampaignCallableResponseAudienceCountsInvalid,
+    'organizerCampaignCallableResponse.audienceCounts.optedOut': organizerCampaignCallableResponseAudienceCountsOptedOut,
+    'organizerCampaignCallableResponse.audienceCounts.providerBlocked': organizerCampaignCallableResponseAudienceCountsProviderBlocked,
+    'organizerCampaignCallableResponse.audienceCounts.reachable': organizerCampaignCallableResponseAudienceCountsReachable,
+    'organizerCampaignCallableResponse.audienceCounts.total': organizerCampaignCallableResponseAudienceCountsTotal,
+    'organizerCampaignCallableResponse.audienceCounts.unknown': organizerCampaignCallableResponseAudienceCountsUnknown,
+    'organizerCampaignCallableResponse.audienceCounts.unsupported': organizerCampaignCallableResponseAudienceCountsUnsupported,
+    'organizerCampaignCallableResponse.blockers': organizerCampaignCallableResponseBlockers,
+    'organizerCampaignCallableResponse.blockers.items': organizerCampaignCallableResponseBlockersItems,
+    'organizerCampaignCallableResponse.campaignId': organizerCampaignCallableResponseCampaignId,
+    'organizerCampaignCallableResponse.canApprove': organizerCampaignCallableResponseCanApprove,
+    'organizerCampaignCallableResponse.canDispatch': organizerCampaignCallableResponseCanDispatch,
+    'organizerCampaignCallableResponse.deliveryCounts.accepted': organizerCampaignCallableResponseDeliveryCountsAccepted,
+    'organizerCampaignCallableResponse.deliveryCounts.delivered': organizerCampaignCallableResponseDeliveryCountsDelivered,
+    'organizerCampaignCallableResponse.deliveryCounts.failed': organizerCampaignCallableResponseDeliveryCountsFailed,
+    'organizerCampaignCallableResponse.deliveryCounts.optedOut': organizerCampaignCallableResponseDeliveryCountsOptedOut,
+    'organizerCampaignCallableResponse.deliveryCounts.pending': organizerCampaignCallableResponseDeliveryCountsPending,
+    'organizerCampaignCallableResponse.deliveryCounts.read': organizerCampaignCallableResponseDeliveryCountsRead,
+    'organizerCampaignCallableResponse.deliveryCounts.replied': organizerCampaignCallableResponseDeliveryCountsReplied,
+    'organizerCampaignCallableResponse.deliveryCounts.sent': organizerCampaignCallableResponseDeliveryCountsSent,
+    'organizerCampaignCallableResponse.deliveryCounts.suppressed': organizerCampaignCallableResponseDeliveryCountsSuppressed,
+    'organizerCampaignCallableResponse.organizerId': organizerCampaignCallableResponseOrganizerId,
+    'organizerCampaignCallableResponse.revision': organizerCampaignCallableResponseRevision,
+    'organizerCampaignCallableResponse.senderStatus': organizerCampaignCallableResponseSenderStatus,
+    'organizerCampaignCallableResponse.status': organizerCampaignCallableResponseStatus,
+    'organizerCampaignCallableResponse.templateStatus': organizerCampaignCallableResponseTemplateStatus,
+    'organizerCampaignDocument.approvedAt._nanoseconds': organizerCampaignDocumentApprovedAtNanoseconds,
+    'organizerCampaignDocument.approvedAt._seconds': organizerCampaignDocumentApprovedAtSeconds,
+    'organizerCampaignDocument.audienceCounts.duplicate': organizerCampaignDocumentAudienceCountsDuplicate,
+    'organizerCampaignDocument.audienceCounts.frequencyCapped': organizerCampaignDocumentAudienceCountsFrequencyCapped,
+    'organizerCampaignDocument.audienceCounts.invalid': organizerCampaignDocumentAudienceCountsInvalid,
+    'organizerCampaignDocument.audienceCounts.optedOut': organizerCampaignDocumentAudienceCountsOptedOut,
+    'organizerCampaignDocument.audienceCounts.providerBlocked': organizerCampaignDocumentAudienceCountsProviderBlocked,
+    'organizerCampaignDocument.audienceCounts.reachable': organizerCampaignDocumentAudienceCountsReachable,
+    'organizerCampaignDocument.audienceCounts.total': organizerCampaignDocumentAudienceCountsTotal,
+    'organizerCampaignDocument.audienceCounts.unknown': organizerCampaignDocumentAudienceCountsUnknown,
+    'organizerCampaignDocument.audienceCounts.unsupported': organizerCampaignDocumentAudienceCountsUnsupported,
+    'organizerCampaignDocument.cancelledAt._nanoseconds': organizerCampaignDocumentCancelledAtNanoseconds,
+    'organizerCampaignDocument.cancelledAt._seconds': organizerCampaignDocumentCancelledAtSeconds,
+    'organizerCampaignDocument.channel': organizerCampaignDocumentChannel,
+    'organizerCampaignDocument.completedAt._nanoseconds': organizerCampaignDocumentCompletedAtNanoseconds,
+    'organizerCampaignDocument.completedAt._seconds': organizerCampaignDocumentCompletedAtSeconds,
+    'organizerCampaignDocument.connectionId': organizerCampaignDocumentConnectionId,
+    'organizerCampaignDocument.contentHash': organizerCampaignDocumentContentHash,
+    'organizerCampaignDocument.createdAt._nanoseconds': organizerCampaignDocumentCreatedAtNanoseconds,
+    'organizerCampaignDocument.createdAt._seconds': organizerCampaignDocumentCreatedAtSeconds,
+    'organizerCampaignDocument.createdByUid': organizerCampaignDocumentCreatedByUid,
+    'organizerCampaignDocument.deliveryCounts.accepted': organizerCampaignDocumentDeliveryCountsAccepted,
+    'organizerCampaignDocument.deliveryCounts.delivered': organizerCampaignDocumentDeliveryCountsDelivered,
+    'organizerCampaignDocument.deliveryCounts.failed': organizerCampaignDocumentDeliveryCountsFailed,
+    'organizerCampaignDocument.deliveryCounts.optedOut': organizerCampaignDocumentDeliveryCountsOptedOut,
+    'organizerCampaignDocument.deliveryCounts.pending': organizerCampaignDocumentDeliveryCountsPending,
+    'organizerCampaignDocument.deliveryCounts.read': organizerCampaignDocumentDeliveryCountsRead,
+    'organizerCampaignDocument.deliveryCounts.replied': organizerCampaignDocumentDeliveryCountsReplied,
+    'organizerCampaignDocument.deliveryCounts.sent': organizerCampaignDocumentDeliveryCountsSent,
+    'organizerCampaignDocument.deliveryCounts.suppressed': organizerCampaignDocumentDeliveryCountsSuppressed,
+    'organizerCampaignDocument.eventId': organizerCampaignDocumentEventId,
+    'organizerCampaignDocument.inviteDestinationKind': organizerCampaignDocumentInviteDestinationKind,
+    'organizerCampaignDocument.leaseExpiresAt._nanoseconds': organizerCampaignDocumentLeaseExpiresAtNanoseconds,
+    'organizerCampaignDocument.leaseExpiresAt._seconds': organizerCampaignDocumentLeaseExpiresAtSeconds,
+    'organizerCampaignDocument.leaseOwner': organizerCampaignDocumentLeaseOwner,
+    'organizerCampaignDocument.messageClass': organizerCampaignDocumentMessageClass,
+    'organizerCampaignDocument.name': organizerCampaignDocumentName,
+    'organizerCampaignDocument.organizerId': organizerCampaignDocumentOrganizerId,
+    'organizerCampaignDocument.recipientSnapshotHash': organizerCampaignDocumentRecipientSnapshotHash,
+    'organizerCampaignDocument.revision': organizerCampaignDocumentRevision,
+    'organizerCampaignDocument.scheduledAt._nanoseconds': organizerCampaignDocumentScheduledAtNanoseconds,
+    'organizerCampaignDocument.scheduledAt._seconds': organizerCampaignDocumentScheduledAtSeconds,
+    'organizerCampaignDocument.segmentIds': organizerCampaignDocumentSegmentIds,
+    'organizerCampaignDocument.segmentIds.items': organizerCampaignDocumentSegmentIdsItems,
+    'organizerCampaignDocument.status': organizerCampaignDocumentStatus,
+    'organizerCampaignDocument.templateId': organizerCampaignDocumentTemplateId,
+    'organizerCampaignDocument.templateVariables': organizerCampaignDocumentTemplateVariables,
+    'organizerCampaignDocument.updatedAt._nanoseconds': organizerCampaignDocumentUpdatedAtNanoseconds,
+    'organizerCampaignDocument.updatedAt._seconds': organizerCampaignDocumentUpdatedAtSeconds,
+    'organizerCampaignRecipientDocument.acceptedAt._nanoseconds': organizerCampaignRecipientDocumentAcceptedAtNanoseconds,
+    'organizerCampaignRecipientDocument.acceptedAt._seconds': organizerCampaignRecipientDocumentAcceptedAtSeconds,
+    'organizerCampaignRecipientDocument.attemptCount': organizerCampaignRecipientDocumentAttemptCount,
+    'organizerCampaignRecipientDocument.campaignId': organizerCampaignRecipientDocumentCampaignId,
+    'organizerCampaignRecipientDocument.channel': organizerCampaignRecipientDocumentChannel,
+    'organizerCampaignRecipientDocument.contactId': organizerCampaignRecipientDocumentContactId,
+    'organizerCampaignRecipientDocument.createdAt._nanoseconds': organizerCampaignRecipientDocumentCreatedAtNanoseconds,
+    'organizerCampaignRecipientDocument.createdAt._seconds': organizerCampaignRecipientDocumentCreatedAtSeconds,
+    'organizerCampaignRecipientDocument.deliveredAt._nanoseconds': organizerCampaignRecipientDocumentDeliveredAtNanoseconds,
+    'organizerCampaignRecipientDocument.deliveredAt._seconds': organizerCampaignRecipientDocumentDeliveredAtSeconds,
+    'organizerCampaignRecipientDocument.eligibility': organizerCampaignRecipientDocumentEligibility,
+    'organizerCampaignRecipientDocument.endpointE164': organizerCampaignRecipientDocumentEndpointE164,
+    'organizerCampaignRecipientDocument.endpointHash': organizerCampaignRecipientDocumentEndpointHash,
+    'organizerCampaignRecipientDocument.exclusionReason': organizerCampaignRecipientDocumentExclusionReason,
+    'organizerCampaignRecipientDocument.failedAt._nanoseconds': organizerCampaignRecipientDocumentFailedAtNanoseconds,
+    'organizerCampaignRecipientDocument.failedAt._seconds': organizerCampaignRecipientDocumentFailedAtSeconds,
+    'organizerCampaignRecipientDocument.inviteLinkId': organizerCampaignRecipientDocumentInviteLinkId,
+    'organizerCampaignRecipientDocument.leaseExpiresAt._nanoseconds': organizerCampaignRecipientDocumentLeaseExpiresAtNanoseconds,
+    'organizerCampaignRecipientDocument.leaseExpiresAt._seconds': organizerCampaignRecipientDocumentLeaseExpiresAtSeconds,
+    'organizerCampaignRecipientDocument.leaseOwner': organizerCampaignRecipientDocumentLeaseOwner,
+    'organizerCampaignRecipientDocument.optedOutAt._nanoseconds': organizerCampaignRecipientDocumentOptedOutAtNanoseconds,
+    'organizerCampaignRecipientDocument.optedOutAt._seconds': organizerCampaignRecipientDocumentOptedOutAtSeconds,
+    'organizerCampaignRecipientDocument.organizerId': organizerCampaignRecipientDocumentOrganizerId,
+    'organizerCampaignRecipientDocument.permissionTermsVersion': organizerCampaignRecipientDocumentPermissionTermsVersion,
+    'organizerCampaignRecipientDocument.permissionUpdatedAt._nanoseconds': organizerCampaignRecipientDocumentPermissionUpdatedAtNanoseconds,
+    'organizerCampaignRecipientDocument.permissionUpdatedAt._seconds': organizerCampaignRecipientDocumentPermissionUpdatedAtSeconds,
+    'organizerCampaignRecipientDocument.providerErrorCategory': organizerCampaignRecipientDocumentProviderErrorCategory,
+    'organizerCampaignRecipientDocument.providerMessageId': organizerCampaignRecipientDocumentProviderMessageId,
+    'organizerCampaignRecipientDocument.readAt._nanoseconds': organizerCampaignRecipientDocumentReadAtNanoseconds,
+    'organizerCampaignRecipientDocument.readAt._seconds': organizerCampaignRecipientDocumentReadAtSeconds,
+    'organizerCampaignRecipientDocument.renderedVariablesHash': organizerCampaignRecipientDocumentRenderedVariablesHash,
+    'organizerCampaignRecipientDocument.repliedAt._nanoseconds': organizerCampaignRecipientDocumentRepliedAtNanoseconds,
+    'organizerCampaignRecipientDocument.repliedAt._seconds': organizerCampaignRecipientDocumentRepliedAtSeconds,
+    'organizerCampaignRecipientDocument.retryEligible': organizerCampaignRecipientDocumentRetryEligible,
+    'organizerCampaignRecipientDocument.sentAt._nanoseconds': organizerCampaignRecipientDocumentSentAtNanoseconds,
+    'organizerCampaignRecipientDocument.sentAt._seconds': organizerCampaignRecipientDocumentSentAtSeconds,
+    'organizerCampaignRecipientDocument.status': organizerCampaignRecipientDocumentStatus,
+    'organizerCampaignRecipientDocument.updatedAt._nanoseconds': organizerCampaignRecipientDocumentUpdatedAtNanoseconds,
+    'organizerCampaignRecipientDocument.updatedAt._seconds': organizerCampaignRecipientDocumentUpdatedAtSeconds,
+    'organizerCampaignWebhookReceiptDocument.connectionId': organizerCampaignWebhookReceiptDocumentConnectionId,
+    'organizerCampaignWebhookReceiptDocument.createdAt._nanoseconds': organizerCampaignWebhookReceiptDocumentCreatedAtNanoseconds,
+    'organizerCampaignWebhookReceiptDocument.createdAt._seconds': organizerCampaignWebhookReceiptDocumentCreatedAtSeconds,
+    'organizerCampaignWebhookReceiptDocument.eventKind': organizerCampaignWebhookReceiptDocumentEventKind,
+    'organizerCampaignWebhookReceiptDocument.expiresAt._nanoseconds': organizerCampaignWebhookReceiptDocumentExpiresAtNanoseconds,
+    'organizerCampaignWebhookReceiptDocument.expiresAt._seconds': organizerCampaignWebhookReceiptDocumentExpiresAtSeconds,
+    'organizerCampaignWebhookReceiptDocument.organizerId': organizerCampaignWebhookReceiptDocumentOrganizerId,
+    'organizerCampaignWebhookReceiptDocument.payloadHash': organizerCampaignWebhookReceiptDocumentPayloadHash,
+    'organizerCampaignWebhookReceiptDocument.provider': organizerCampaignWebhookReceiptDocumentProvider,
+    'organizerCampaignWebhookReceiptDocument.providerEventId': organizerCampaignWebhookReceiptDocumentProviderEventId,
     'organizerClaimRequestDocument.businessEmail': organizerClaimRequestDocumentBusinessEmail,
     'organizerClaimRequestDocument.businessPhone': organizerClaimRequestDocumentBusinessPhone,
     'organizerClaimRequestDocument.createdAt._nanoseconds': organizerClaimRequestDocumentCreatedAtNanoseconds,
@@ -36381,6 +38427,23 @@ abstract final class CatchContractConstraints {
     'organizerCommunicationPreferenceDocument.whatsapp.termsVersion': organizerCommunicationPreferenceDocumentWhatsappTermsVersion,
     'organizerCommunicationPreferenceDocument.whatsapp.updatedAt._nanoseconds': organizerCommunicationPreferenceDocumentWhatsappUpdatedAtNanoseconds,
     'organizerCommunicationPreferenceDocument.whatsapp.updatedAt._seconds': organizerCommunicationPreferenceDocumentWhatsappUpdatedAtSeconds,
+    'organizerContactChannelStateDocument.campaignAcceptedCount': organizerContactChannelStateDocumentCampaignAcceptedCount,
+    'organizerContactChannelStateDocument.channel': organizerContactChannelStateDocumentChannel,
+    'organizerContactChannelStateDocument.contactId': organizerContactChannelStateDocumentContactId,
+    'organizerContactChannelStateDocument.createdAt._nanoseconds': organizerContactChannelStateDocumentCreatedAtNanoseconds,
+    'organizerContactChannelStateDocument.createdAt._seconds': organizerContactChannelStateDocumentCreatedAtSeconds,
+    'organizerContactChannelStateDocument.endpointHash': organizerContactChannelStateDocumentEndpointHash,
+    'organizerContactChannelStateDocument.lastCampaignAcceptedAt._nanoseconds': organizerContactChannelStateDocumentLastCampaignAcceptedAtNanoseconds,
+    'organizerContactChannelStateDocument.lastCampaignAcceptedAt._seconds': organizerContactChannelStateDocumentLastCampaignAcceptedAtSeconds,
+    'organizerContactChannelStateDocument.lastInboundAt._nanoseconds': organizerContactChannelStateDocumentLastInboundAtNanoseconds,
+    'organizerContactChannelStateDocument.lastInboundAt._seconds': organizerContactChannelStateDocumentLastInboundAtSeconds,
+    'organizerContactChannelStateDocument.lastReplyAt._nanoseconds': organizerContactChannelStateDocumentLastReplyAtNanoseconds,
+    'organizerContactChannelStateDocument.lastReplyAt._seconds': organizerContactChannelStateDocumentLastReplyAtSeconds,
+    'organizerContactChannelStateDocument.organizerId': organizerContactChannelStateDocumentOrganizerId,
+    'organizerContactChannelStateDocument.suppressionSource': organizerContactChannelStateDocumentSuppressionSource,
+    'organizerContactChannelStateDocument.suppressionStatus': organizerContactChannelStateDocumentSuppressionStatus,
+    'organizerContactChannelStateDocument.updatedAt._nanoseconds': organizerContactChannelStateDocumentUpdatedAtNanoseconds,
+    'organizerContactChannelStateDocument.updatedAt._seconds': organizerContactChannelStateDocumentUpdatedAtSeconds,
     'organizerContactDocument.ambiguousCandidateContactIds': organizerContactDocumentAmbiguousCandidateContactIds,
     'organizerContactDocument.ambiguousCandidateContactIds.items': organizerContactDocumentAmbiguousCandidateContactIdsItems,
     'organizerContactDocument.createdAt._nanoseconds': organizerContactDocumentCreatedAtNanoseconds,
@@ -36909,6 +38972,75 @@ abstract final class CatchContractConstraints {
     'organizerIntakeReviewDecisionDocument.schemaVersion': organizerIntakeReviewDecisionDocumentSchemaVersion,
     'organizerIntakeReviewDecisionDocument.updatedAt._nanoseconds': organizerIntakeReviewDecisionDocumentUpdatedAtNanoseconds,
     'organizerIntakeReviewDecisionDocument.updatedAt._seconds': organizerIntakeReviewDecisionDocumentUpdatedAtSeconds,
+    'organizerMessageTemplateDocument.buttonKinds': organizerMessageTemplateDocumentButtonKinds,
+    'organizerMessageTemplateDocument.buttonKinds.items': organizerMessageTemplateDocumentButtonKindsItems,
+    'organizerMessageTemplateDocument.category': organizerMessageTemplateDocumentCategory,
+    'organizerMessageTemplateDocument.connectionId': organizerMessageTemplateDocumentConnectionId,
+    'organizerMessageTemplateDocument.hasMediaHeader': organizerMessageTemplateDocumentHasMediaHeader,
+    'organizerMessageTemplateDocument.language': organizerMessageTemplateDocumentLanguage,
+    'organizerMessageTemplateDocument.name': organizerMessageTemplateDocumentName,
+    'organizerMessageTemplateDocument.organizerId': organizerMessageTemplateDocumentOrganizerId,
+    'organizerMessageTemplateDocument.parameterBindings': organizerMessageTemplateDocumentParameterBindings,
+    'organizerMessageTemplateDocument.parameterBindings.items.buttonIndex': organizerMessageTemplateDocumentParameterBindingsItemsButtonIndex,
+    'organizerMessageTemplateDocument.parameterBindings.items.component': organizerMessageTemplateDocumentParameterBindingsItemsComponent,
+    'organizerMessageTemplateDocument.parameterBindings.items.position': organizerMessageTemplateDocumentParameterBindingsItemsPosition,
+    'organizerMessageTemplateDocument.parameterBindings.items.variableName': organizerMessageTemplateDocumentParameterBindingsItemsVariableName,
+    'organizerMessageTemplateDocument.providerTemplateId': organizerMessageTemplateDocumentProviderTemplateId,
+    'organizerMessageTemplateDocument.providerUpdatedAt._nanoseconds': organizerMessageTemplateDocumentProviderUpdatedAtNanoseconds,
+    'organizerMessageTemplateDocument.providerUpdatedAt._seconds': organizerMessageTemplateDocumentProviderUpdatedAtSeconds,
+    'organizerMessageTemplateDocument.status': organizerMessageTemplateDocumentStatus,
+    'organizerMessageTemplateDocument.syncedAt._nanoseconds': organizerMessageTemplateDocumentSyncedAtNanoseconds,
+    'organizerMessageTemplateDocument.syncedAt._seconds': organizerMessageTemplateDocumentSyncedAtSeconds,
+    'organizerMessageTemplateDocument.variableNames': organizerMessageTemplateDocumentVariableNames,
+    'organizerMessageTemplateDocument.variableNames.items': organizerMessageTemplateDocumentVariableNamesItems,
+    'organizerMessagingSetupCallableResponse.connection.connectionId': organizerMessagingSetupCallableResponseConnectionConnectionId,
+    'organizerMessagingSetupCallableResponse.connection.displayPhoneNumber': organizerMessagingSetupCallableResponseConnectionDisplayPhoneNumber,
+    'organizerMessagingSetupCallableResponse.connection.messagingLimitTier': organizerMessagingSetupCallableResponseConnectionMessagingLimitTier,
+    'organizerMessagingSetupCallableResponse.connection.qualityRating': organizerMessagingSetupCallableResponseConnectionQualityRating,
+    'organizerMessagingSetupCallableResponse.connection.revision': organizerMessagingSetupCallableResponseConnectionRevision,
+    'organizerMessagingSetupCallableResponse.connection.status': organizerMessagingSetupCallableResponseConnectionStatus,
+    'organizerMessagingSetupCallableResponse.connection.templateSyncStatus': organizerMessagingSetupCallableResponseConnectionTemplateSyncStatus,
+    'organizerMessagingSetupCallableResponse.connection.testStatus': organizerMessagingSetupCallableResponseConnectionTestStatus,
+    'organizerMessagingSetupCallableResponse.connection.verifiedName': organizerMessagingSetupCallableResponseConnectionVerifiedName,
+    'organizerMessagingSetupCallableResponse.connection.webhookStatus': organizerMessagingSetupCallableResponseConnectionWebhookStatus,
+    'organizerMessagingSetupCallableResponse.embeddedSignup.appId': organizerMessagingSetupCallableResponseEmbeddedSignupAppId,
+    'organizerMessagingSetupCallableResponse.embeddedSignup.configId': organizerMessagingSetupCallableResponseEmbeddedSignupConfigId,
+    'organizerMessagingSetupCallableResponse.embeddedSignup.graphVersion': organizerMessagingSetupCallableResponseEmbeddedSignupGraphVersion,
+    'organizerMessagingSetupCallableResponse.organizerId': organizerMessagingSetupCallableResponseOrganizerId,
+    'organizerMessagingSetupCallableResponse.providerConfigured': organizerMessagingSetupCallableResponseProviderConfigured,
+    'organizerMessagingSetupCallableResponse.templates': organizerMessagingSetupCallableResponseTemplates,
+    'organizerMessagingSetupCallableResponse.templates.items.buttonKinds': organizerMessagingSetupCallableResponseTemplatesItemsButtonKinds,
+    'organizerMessagingSetupCallableResponse.templates.items.buttonKinds.items': organizerMessagingSetupCallableResponseTemplatesItemsButtonKindsItems,
+    'organizerMessagingSetupCallableResponse.templates.items.category': organizerMessagingSetupCallableResponseTemplatesItemsCategory,
+    'organizerMessagingSetupCallableResponse.templates.items.hasMediaHeader': organizerMessagingSetupCallableResponseTemplatesItemsHasMediaHeader,
+    'organizerMessagingSetupCallableResponse.templates.items.language': organizerMessagingSetupCallableResponseTemplatesItemsLanguage,
+    'organizerMessagingSetupCallableResponse.templates.items.name': organizerMessagingSetupCallableResponseTemplatesItemsName,
+    'organizerMessagingSetupCallableResponse.templates.items.status': organizerMessagingSetupCallableResponseTemplatesItemsStatus,
+    'organizerMessagingSetupCallableResponse.templates.items.templateId': organizerMessagingSetupCallableResponseTemplatesItemsTemplateId,
+    'organizerMessagingSetupCallableResponse.templates.items.variableNames': organizerMessagingSetupCallableResponseTemplatesItemsVariableNames,
+    'organizerMessagingSetupCallableResponse.templates.items.variableNames.items': organizerMessagingSetupCallableResponseTemplatesItemsVariableNamesItems,
+    'organizerMessagingWebhookEventDocument.attemptCount': organizerMessagingWebhookEventDocumentAttemptCount,
+    'organizerMessagingWebhookEventDocument.connectionId': organizerMessagingWebhookEventDocumentConnectionId,
+    'organizerMessagingWebhookEventDocument.contextProviderMessageId': organizerMessagingWebhookEventDocumentContextProviderMessageId,
+    'organizerMessagingWebhookEventDocument.createdAt._nanoseconds': organizerMessagingWebhookEventDocumentCreatedAtNanoseconds,
+    'organizerMessagingWebhookEventDocument.createdAt._seconds': organizerMessagingWebhookEventDocumentCreatedAtSeconds,
+    'organizerMessagingWebhookEventDocument.deliveryStatus': organizerMessagingWebhookEventDocumentDeliveryStatus,
+    'organizerMessagingWebhookEventDocument.endpointHash': organizerMessagingWebhookEventDocumentEndpointHash,
+    'organizerMessagingWebhookEventDocument.eventKind': organizerMessagingWebhookEventDocumentEventKind,
+    'organizerMessagingWebhookEventDocument.expiresAt._nanoseconds': organizerMessagingWebhookEventDocumentExpiresAtNanoseconds,
+    'organizerMessagingWebhookEventDocument.expiresAt._seconds': organizerMessagingWebhookEventDocumentExpiresAtSeconds,
+    'organizerMessagingWebhookEventDocument.hasReply': organizerMessagingWebhookEventDocumentHasReply,
+    'organizerMessagingWebhookEventDocument.isStop': organizerMessagingWebhookEventDocumentIsStop,
+    'organizerMessagingWebhookEventDocument.organizerId': organizerMessagingWebhookEventDocumentOrganizerId,
+    'organizerMessagingWebhookEventDocument.processedAt._nanoseconds': organizerMessagingWebhookEventDocumentProcessedAtNanoseconds,
+    'organizerMessagingWebhookEventDocument.processedAt._seconds': organizerMessagingWebhookEventDocumentProcessedAtSeconds,
+    'organizerMessagingWebhookEventDocument.processingStatus': organizerMessagingWebhookEventDocumentProcessingStatus,
+    'organizerMessagingWebhookEventDocument.provider': organizerMessagingWebhookEventDocumentProvider,
+    'organizerMessagingWebhookEventDocument.providerErrorCode': organizerMessagingWebhookEventDocumentProviderErrorCode,
+    'organizerMessagingWebhookEventDocument.providerEventId': organizerMessagingWebhookEventDocumentProviderEventId,
+    'organizerMessagingWebhookEventDocument.providerMessageId': organizerMessagingWebhookEventDocumentProviderMessageId,
+    'organizerMessagingWebhookEventDocument.providerOccurredAt._nanoseconds': organizerMessagingWebhookEventDocumentProviderOccurredAtNanoseconds,
+    'organizerMessagingWebhookEventDocument.providerOccurredAt._seconds': organizerMessagingWebhookEventDocumentProviderOccurredAtSeconds,
     'organizerPolicyGapReviewDecisionDocument.checklist.behaviorStillDisabledAcknowledged': organizerPolicyGapReviewDecisionDocumentChecklistBehaviorStillDisabledAcknowledged,
     'organizerPolicyGapReviewDecisionDocument.checklist.costAndSafetyReviewed': organizerPolicyGapReviewDecisionDocumentChecklistCostAndSafetyReviewed,
     'organizerPolicyGapReviewDecisionDocument.checklist.implementationOwnerReviewed': organizerPolicyGapReviewDecisionDocumentChecklistImplementationOwnerReviewed,
@@ -36942,6 +39074,35 @@ abstract final class CatchContractConstraints {
     'organizerScheduleLockDocument.ownerType': organizerScheduleLockDocumentOwnerType,
     'organizerScheduleLockDocument.slot': organizerScheduleLockDocumentSlot,
     'organizerScheduleLockDocument.startTimeMillis': organizerScheduleLockDocumentStartTimeMillis,
+    'organizerSenderConnectionActionCallablePayload.connectionId': organizerSenderConnectionActionCallablePayloadConnectionId,
+    'organizerSenderConnectionActionCallablePayload.organizerId': organizerSenderConnectionActionCallablePayloadOrganizerId,
+    'organizerSenderConnectionDocument.businessId': organizerSenderConnectionDocumentBusinessId,
+    'organizerSenderConnectionDocument.channel': organizerSenderConnectionDocumentChannel,
+    'organizerSenderConnectionDocument.connectedByUid': organizerSenderConnectionDocumentConnectedByUid,
+    'organizerSenderConnectionDocument.createdAt._nanoseconds': organizerSenderConnectionDocumentCreatedAtNanoseconds,
+    'organizerSenderConnectionDocument.createdAt._seconds': organizerSenderConnectionDocumentCreatedAtSeconds,
+    'organizerSenderConnectionDocument.disconnectedAt._nanoseconds': organizerSenderConnectionDocumentDisconnectedAtNanoseconds,
+    'organizerSenderConnectionDocument.disconnectedAt._seconds': organizerSenderConnectionDocumentDisconnectedAtSeconds,
+    'organizerSenderConnectionDocument.displayPhoneNumber': organizerSenderConnectionDocumentDisplayPhoneNumber,
+    'organizerSenderConnectionDocument.lastHealthSyncAt._nanoseconds': organizerSenderConnectionDocumentLastHealthSyncAtNanoseconds,
+    'organizerSenderConnectionDocument.lastHealthSyncAt._seconds': organizerSenderConnectionDocumentLastHealthSyncAtSeconds,
+    'organizerSenderConnectionDocument.messagingLimitTier': organizerSenderConnectionDocumentMessagingLimitTier,
+    'organizerSenderConnectionDocument.organizerId': organizerSenderConnectionDocumentOrganizerId,
+    'organizerSenderConnectionDocument.phoneNumberId': organizerSenderConnectionDocumentPhoneNumberId,
+    'organizerSenderConnectionDocument.provider': organizerSenderConnectionDocumentProvider,
+    'organizerSenderConnectionDocument.qualityRating': organizerSenderConnectionDocumentQualityRating,
+    'organizerSenderConnectionDocument.revision': organizerSenderConnectionDocumentRevision,
+    'organizerSenderConnectionDocument.secretVersionResource': organizerSenderConnectionDocumentSecretVersionResource,
+    'organizerSenderConnectionDocument.status': organizerSenderConnectionDocumentStatus,
+    'organizerSenderConnectionDocument.templateSyncStatus': organizerSenderConnectionDocumentTemplateSyncStatus,
+    'organizerSenderConnectionDocument.testProviderMessageId': organizerSenderConnectionDocumentTestProviderMessageId,
+    'organizerSenderConnectionDocument.testRecipientHash': organizerSenderConnectionDocumentTestRecipientHash,
+    'organizerSenderConnectionDocument.testStatus': organizerSenderConnectionDocumentTestStatus,
+    'organizerSenderConnectionDocument.updatedAt._nanoseconds': organizerSenderConnectionDocumentUpdatedAtNanoseconds,
+    'organizerSenderConnectionDocument.updatedAt._seconds': organizerSenderConnectionDocumentUpdatedAtSeconds,
+    'organizerSenderConnectionDocument.verifiedName': organizerSenderConnectionDocumentVerifiedName,
+    'organizerSenderConnectionDocument.wabaId': organizerSenderConnectionDocumentWabaId,
+    'organizerSenderConnectionDocument.webhookStatus': organizerSenderConnectionDocumentWebhookStatus,
     'organizerSupplyCapabilities.bookable': organizerSupplyCapabilitiesBookable,
     'organizerSupplyCapabilities.claimable': organizerSupplyCapabilitiesClaimable,
     'organizerSupplyCapabilities.hostContactEnabled': organizerSupplyCapabilitiesHostContactEnabled,
@@ -37296,6 +39457,11 @@ abstract final class CatchContractConstraints {
     'sendEventBroadcastCallableResponse.pushUnknownCount': sendEventBroadcastCallableResponsePushUnknownCount,
     'sendEventBroadcastCallableResponse.recipientCount': sendEventBroadcastCallableResponseRecipientCount,
     'sendEventBroadcastCallableResponse.status': sendEventBroadcastCallableResponseStatus,
+    'sendOrganizerWhatsappTestCallablePayload.connectionId': sendOrganizerWhatsappTestCallablePayloadConnectionId,
+    'sendOrganizerWhatsappTestCallablePayload.organizerId': sendOrganizerWhatsappTestCallablePayloadOrganizerId,
+    'sendOrganizerWhatsappTestCallablePayload.templateId': sendOrganizerWhatsappTestCallablePayloadTemplateId,
+    'sendOrganizerWhatsappTestCallablePayload.templateVariables': sendOrganizerWhatsappTestCallablePayloadTemplateVariables,
+    'sendOrganizerWhatsappTestCallablePayload.toE164': sendOrganizerWhatsappTestCallablePayloadToE164,
     'setClubNotificationPreferenceCallablePayload.clubId': setClubNotificationPreferenceCallablePayloadClubId,
     'setClubNotificationPreferenceCallablePayload.enabled': setClubNotificationPreferenceCallablePayloadEnabled,
     'setCrossPathsEventConsentCallablePayload.enabled': setCrossPathsEventConsentCallablePayloadEnabled,
@@ -37697,6 +39863,20 @@ abstract final class CatchContractConstraints {
     'uploadedPhoto.updatedAt._nanoseconds': uploadedPhotoUpdatedAtNanoseconds,
     'uploadedPhoto.updatedAt._seconds': uploadedPhotoUpdatedAtSeconds,
     'uploadedPhoto.url': uploadedPhotoUrl,
+    'upsertOrganizerCampaignCallablePayload.campaignId': upsertOrganizerCampaignCallablePayloadCampaignId,
+    'upsertOrganizerCampaignCallablePayload.connectionId': upsertOrganizerCampaignCallablePayloadConnectionId,
+    'upsertOrganizerCampaignCallablePayload.eventId': upsertOrganizerCampaignCallablePayloadEventId,
+    'upsertOrganizerCampaignCallablePayload.expectedRevision': upsertOrganizerCampaignCallablePayloadExpectedRevision,
+    'upsertOrganizerCampaignCallablePayload.inviteDestinationKind': upsertOrganizerCampaignCallablePayloadInviteDestinationKind,
+    'upsertOrganizerCampaignCallablePayload.messageClass': upsertOrganizerCampaignCallablePayloadMessageClass,
+    'upsertOrganizerCampaignCallablePayload.name': upsertOrganizerCampaignCallablePayloadName,
+    'upsertOrganizerCampaignCallablePayload.organizerId': upsertOrganizerCampaignCallablePayloadOrganizerId,
+    'upsertOrganizerCampaignCallablePayload.requestId': upsertOrganizerCampaignCallablePayloadRequestId,
+    'upsertOrganizerCampaignCallablePayload.scheduledAtMillis': upsertOrganizerCampaignCallablePayloadScheduledAtMillis,
+    'upsertOrganizerCampaignCallablePayload.segmentIds': upsertOrganizerCampaignCallablePayloadSegmentIds,
+    'upsertOrganizerCampaignCallablePayload.segmentIds.items': upsertOrganizerCampaignCallablePayloadSegmentIdsItems,
+    'upsertOrganizerCampaignCallablePayload.templateId': upsertOrganizerCampaignCallablePayloadTemplateId,
+    'upsertOrganizerCampaignCallablePayload.templateVariables': upsertOrganizerCampaignCallablePayloadTemplateVariables,
     'userAnalyticsCallableResponse.coachingTipRefs': userAnalyticsCallableResponseCoachingTipRefs,
     'userAnalyticsCallableResponse.coachingTipRefs.items.copyKey': userAnalyticsCallableResponseCoachingTipRefsItemsCopyKey,
     'userAnalyticsCallableResponse.coachingTipRefs.items.id': userAnalyticsCallableResponseCoachingTipRefsItemsId,

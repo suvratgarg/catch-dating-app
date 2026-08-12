@@ -11,7 +11,13 @@ export interface OrganizerCommunicationPreferenceDocument {
   whatsapp: {
     status: "unknown" | "optedIn" | "optedOut";
     termsVersion: string | null;
-    source: null | "publicEventRegistration" | "unsubscribeLink" | "hostApp";
+    source:
+      | null
+      | "publicEventRegistration"
+      | "unsubscribeLink"
+      | "hostApp"
+      | "inboundStop"
+      | "providerWebhook";
     sourceEventId: string | null;
     updatedAt: {
       _seconds: number;
@@ -21,7 +27,13 @@ export interface OrganizerCommunicationPreferenceDocument {
   sms: {
     status: "unknown" | "optedIn" | "optedOut";
     termsVersion: string | null;
-    source: null | "publicEventRegistration" | "unsubscribeLink" | "hostApp";
+    source:
+      | null
+      | "publicEventRegistration"
+      | "unsubscribeLink"
+      | "hostApp"
+      | "inboundStop"
+      | "providerWebhook";
     sourceEventId: string | null;
     updatedAt: {
       _seconds: number;

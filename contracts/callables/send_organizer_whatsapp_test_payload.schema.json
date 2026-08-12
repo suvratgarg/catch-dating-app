@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/send_organizer_whatsapp_test_payload.schema.json",
+  "title": "SendOrganizerWhatsappTestCallablePayload",
+  "description": "Sends one manager-authorized template message to verify an organizer-owned WhatsApp sender.",
+  "x-callable-aliases": ["sendOrganizerWhatsappTest"],
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["organizerId", "connectionId", "templateId", "toE164", "templateVariables"],
+  "properties": {
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "connectionId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "templateId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "toE164": {"type": "string", "pattern": "^\\+[1-9][0-9]{7,14}$"},
+    "templateVariables": {"type": "object", "maxProperties": 20, "propertyNames": {"pattern": "^[A-Za-z][A-Za-z0-9_]{0,63}$"}, "additionalProperties": {"type": "string", "minLength": 1, "maxLength": 240}}
+  }
+}

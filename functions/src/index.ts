@@ -131,6 +131,28 @@ export {
   unmergeOrganizerContacts,
 } from "./organizers/organizerContactMerges";
 export {
+  approveOrganizerCampaign,
+  cancelOrganizerCampaign,
+  getOrganizerCampaignReport,
+  previewOrganizerCampaign,
+  upsertOrganizerCampaign,
+} from "./organizers/organizerCampaigns";
+export {
+  dispatchOrganizerCampaign,
+  dispatchScheduledOrganizerCampaigns,
+} from "./organizers/organizerCampaignDispatcher";
+export {
+  completeOrganizerWhatsappConnection,
+  disconnectOrganizerWhatsappConnection,
+  getOrganizerMessagingSetup,
+  sendOrganizerWhatsappTest,
+  syncOrganizerWhatsappTemplates,
+} from "./organizers/organizerMessagingSetup";
+export {
+  onOrganizerMessagingWebhookEventCreated,
+  organizerWhatsappWebhook,
+} from "./organizers/organizerWhatsappWebhook";
+export {
   onEventAttendeeAudienceProjected,
   onOrganizerCommunicationPreferenceAudienceProjected,
 } from "./organizers/organizerAudienceProjection";

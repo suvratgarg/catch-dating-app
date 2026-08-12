@@ -1,0 +1,975 @@
+import * as admin from "firebase-admin";
+import {
+  CallableRequest,
+  HttpsError,
+  onCall,
+} from "firebase-functions/v2/https";
+import {requireAuth} from "../shared/auth";
+import {appCheckCallableOptionsWithLimits} from
+  "../shared/callableOptions";
+import {
+  EventDocument,
+  OrganizerAudienceSummaryDocument,
+  OrganizerCampaignDocument,
+  OrganizerCampaignRecipientDocument,
+  OrganizerCommunicationPreferenceDocument,
+  OrganizerContactChannelStateDocument,
+  OrganizerContactDocument,
+  OrganizerContactTraitDocument,
+  OrganizerMessageTemplateDocument,
+  OrganizerSenderConnectionDocument,
+} from "../shared/generated/firestoreAdminTypes";
+import {OrganizerCampaignActionCallablePayload} from
+  "../shared/generated/organizerCampaignActionCallablePayload";
+import {OrganizerCampaignCallableResponse} from
+  "../shared/generated/organizerCampaignCallableResponse";
+import {UpsertOrganizerCampaignCallablePayload} from
+  "../shared/generated/upsertOrganizerCampaignCallablePayload";
+import {
+  validateOrganizerCampaignActionCallablePayload,
+  validateUpsertOrganizerCampaignCallablePayload,
+} from "../shared/generated/schemaValidators";
+import {organizerCommunicationPreferenceId} from
+  "../shared/organizerCommunicationPreferences";
+import {requireOrganizerManager} from
+  "../shared/organizerManagerAuthority";
+import {checkRateLimit} from "../shared/rateLimit";
+import {validateCallableWithAjv} from "../shared/validation";
+import {
+  eventInviteToken,
+  inviteLinkTokenHash,
+} from "../events/inviteLinks";
+import {
+  emptyCampaignAudienceCounts,
+  emptyCampaignDeliveryCounts,
+  hashCanonical,
+  hashEndpoint,
+  organizerCampaignAudienceLimit,
+  organizerCampaignFrequencyCapMillis,
+  organizerCampaignId,
+  organizerCampaignRecipientId,
+  organizerContactChannelStateId,
+} from "./organizerCampaignModel";
+
+type CampaignBlocker = OrganizerCampaignCallableResponse["blockers"][number];
+type ExclusionReason = OrganizerCampaignRecipientDocument["exclusionReason"];
+
+interface CampaignDeps {
+  firestore: () => FirebaseFirestore.Firestore;
+  checkRateLimit: typeof checkRateLimit;
+  now: () => FirebaseFirestore.Timestamp;
+}
+
+const defaultDeps: CampaignDeps = {
+  firestore: () => admin.firestore(),
+  checkRateLimit,
+  now: () => admin.firestore.Timestamp.now(),
+};
+
+interface AudienceRow {
+  contactId: string;
+  contact: OrganizerContactDocument;
+  trait: OrganizerContactTraitDocument;
+  preference: OrganizerCommunicationPreferenceDocument | null;
+  channelState: OrganizerContactChannelStateDocument | null;
+  eligibility: "eligible" | "excluded";
+  exclusionReason: ExclusionReason;
+  endpointHash: string | null;
+}
+
+interface CampaignContext {
+  campaignId: string;
+  campaign: OrganizerCampaignDocument;
+  connection: OrganizerSenderConnectionDocument | null;
+  template: OrganizerMessageTemplateDocument | null;
+  event: EventDocument | null;
+  summary: OrganizerAudienceSummaryDocument | null;
+  audienceRows: AudienceRow[];
+  audienceTooLarge: boolean;
+}
+
+export async function upsertOrganizerCampaignHandler(
+  request: CallableRequest<unknown>,
+  deps: CampaignDeps = defaultDeps
+): Promise<OrganizerCampaignCallableResponse> {
+  const actorUid = requireAuth(request);
+  const data = validateCallableWithAjv<UpsertOrganizerCampaignCallablePayload>(
+    request,
+    validateUpsertOrganizerCampaignCallablePayload,
+    normalizePayload
+  );
+  const db = deps.firestore();
+  await deps.checkRateLimit(db, actorUid, "upsertOrganizerCampaign");
+  await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
+  const campaignId = data.campaignId ?? organizerCampaignId(
+    data.organizerId, actorUid, data.requestId
+  );
+  const campaignRef = db.collection("organizerCampaigns").doc(campaignId);
+  const now = deps.now();
+  await db.runTransaction(async (tx) => {
+    const snapshot = await tx.get(campaignRef);
+    const existing = snapshot.data() as OrganizerCampaignDocument | undefined;
+    if (existing && existing.organizerId !== data.organizerId) {
+      throw new HttpsError("already-exists", "Campaign id collision.");
+    }
+    if (existing && !["draft", "previewed"].includes(existing.status)) {
+      throw new HttpsError(
+        "failed-precondition", "Approved campaigns are immutable."
+      );
+    }
+    if (existing && data.expectedRevision !== null &&
+        data.expectedRevision !== undefined &&
+        existing.revision !== data.expectedRevision) {
+      throw new HttpsError(
+        "aborted", "Campaign changed. Refresh before editing it."
+      );
+    }
+    const revision = (existing?.revision ?? 0) + 1;
+    const scheduledAt = data.scheduledAtMillis === null ||
+      data.scheduledAtMillis === undefined ? null :
+      admin.firestore.Timestamp.fromMillis(data.scheduledAtMillis);
+    const content = {
+      messageClass: data.messageClass,
+      segmentIds: [...data.segmentIds].sort(),
+      connectionId: data.connectionId,
+      templateId: data.templateId,
+      templateVariables: data.templateVariables,
+      eventId: data.eventId ?? null,
+      inviteDestinationKind: data.inviteDestinationKind ?? null,
+      scheduledAtMillis: scheduledAt?.toMillis() ?? null,
+    };
+    const next: OrganizerCampaignDocument = {
+      organizerId: data.organizerId,
+      createdByUid: existing?.createdByUid ?? actorUid,
+      messageClass: data.messageClass,
+      channel: "whatsapp",
+      status: "draft",
+      name: data.name,
+      segmentIds: data.segmentIds,
+      connectionId: data.connectionId,
+      templateId: data.templateId,
+      templateVariables: data.templateVariables,
+      eventId: data.eventId ?? null,
+      inviteDestinationKind: data.inviteDestinationKind ?? null,
+      scheduledAt,
+      recipientSnapshotHash: null,
+      contentHash: hashCanonical(content),
+      audienceCounts: emptyCampaignAudienceCounts(),
+      deliveryCounts: emptyCampaignDeliveryCounts(),
+      revision,
+      leaseOwner: null,
+      leaseExpiresAt: null,
+      createdAt: existing?.createdAt ?? now,
+      updatedAt: now,
+      approvedAt: null,
+      completedAt: null,
+      cancelledAt: null,
+    };
+    if (snapshot.exists) tx.set(campaignRef, next);
+    else tx.create(campaignRef, next);
+  });
+  return campaignResponse(await campaignContext(db, data.organizerId,
+    campaignId, deps.now()), deps.now());
+}
+
+export async function previewOrganizerCampaignHandler(
+  request: CallableRequest<unknown>,
+  deps: CampaignDeps = defaultDeps
+): Promise<OrganizerCampaignCallableResponse> {
+  const {data, db} = await authorizeAction(
+    request, "previewOrganizerCampaign", deps
+  );
+  const context = await campaignContext(
+    db, data.organizerId, data.campaignId, deps.now()
+  );
+  assertExpectedRevision(context.campaign, data.expectedRevision ?? null);
+  if (!["draft", "previewed"].includes(context.campaign.status)) {
+    throw new HttpsError(
+      "failed-precondition", "Approved campaigns cannot be previewed again."
+    );
+  }
+  const counts = audienceCounts(context.audienceRows);
+  await db.collection("organizerCampaigns").doc(data.campaignId).update({
+    status: "previewed",
+    audienceCounts: counts,
+    recipientSnapshotHash: null,
+    updatedAt: deps.now(),
+    revision: admin.firestore.FieldValue.increment(1),
+  });
+  return campaignResponse(await campaignContext(
+    db, data.organizerId, data.campaignId, deps.now()
+  ), deps.now());
+}
+
+export async function approveOrganizerCampaignHandler(
+  request: CallableRequest<unknown>,
+  deps: CampaignDeps = defaultDeps
+): Promise<OrganizerCampaignCallableResponse> {
+  const actorUid = requireAuth(request);
+  const data = validateCallableWithAjv<OrganizerCampaignActionCallablePayload>(
+    request,
+    validateOrganizerCampaignActionCallablePayload,
+    normalizePayload
+  );
+  const db = deps.firestore();
+  await deps.checkRateLimit(db, actorUid, "approveOrganizerCampaign");
+  await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
+  const initial = await campaignContext(
+    db, data.organizerId, data.campaignId, deps.now()
+  );
+  assertExpectedRevision(initial.campaign, data.expectedRevision ?? null);
+  const blockers = campaignBlockers(initial, deps.now());
+  if (initial.campaign.status !== "previewed" || blockers.length > 0) {
+    throw new HttpsError(
+      "failed-precondition",
+      blockers.length > 0 ?
+        `Campaign cannot be approved: ${blockers.join(", ")}.` :
+        "Preview this campaign before approval."
+    );
+  }
+  const now = deps.now();
+  const recipientTokens = new Map(initial.audienceRows
+    .filter((row) => row.eligibility === "eligible" && initial.campaign.eventId)
+    .map((row) => [row.contactId, eventInviteToken(
+      campaignInviteLinkId(data.campaignId, row.contactId)
+    )]));
+  const snapshotHash = hashCanonical(initial.audienceRows.map((row) => ({
+    contactId: row.contactId,
+    eligibility: row.eligibility,
+    exclusionReason: row.exclusionReason,
+    endpointHash: row.endpointHash,
+    permissionTermsVersion: row.preference?.whatsapp.termsVersion ?? null,
+    permissionUpdatedAtMillis:
+      row.preference?.whatsapp.updatedAt?.toMillis() ?? null,
+  })));
+  const campaignRef = db.collection("organizerCampaigns").doc(data.campaignId);
+  await db.runTransaction(async (tx) => {
+    const refs = [
+      campaignRef,
+      db.collection("organizerAudienceSummaries").doc(data.organizerId),
+      ...initial.audienceRows.flatMap((row) => [
+        db.collection("organizerContacts").doc(row.contactId),
+        db.collection("organizerContactTraits").doc(row.contactId),
+        ...(row.contact.linkedUid ? [db
+          .collection("organizerCommunicationPreferences")
+          .doc(organizerCommunicationPreferenceId(
+            data.organizerId, row.contact.linkedUid
+          ))] : []),
+        db.collection("organizerContactChannelStates").doc(
+          organizerContactChannelStateId(data.organizerId, row.contactId)
+        ),
+      ]),
+    ];
+    const snapshots = await tx.getAll(...refs);
+    const liveCampaign = snapshots[0].data() as
+      OrganizerCampaignDocument | undefined;
+    const liveSummary = snapshots[1].data() as
+      OrganizerAudienceSummaryDocument | undefined;
+    if (!liveCampaign || liveCampaign.organizerId !== data.organizerId ||
+        liveCampaign.status !== "previewed" ||
+        liveCampaign.revision !== initial.campaign.revision ||
+        liveSummary?.sourceCoverage !== "exact") {
+      throw new HttpsError(
+        "aborted", "Campaign or audience changed. Preview it again."
+      );
+    }
+    const liveRows = audienceRowsFromSnapshots({
+      organizerId: data.organizerId,
+      segmentIds: liveCampaign.segmentIds,
+      originalRows: initial.audienceRows,
+      snapshots: snapshots.slice(2),
+      now,
+    });
+    if (hashCanonical(liveRows.map((row) => ({
+      contactId: row.contactId,
+      eligibility: row.eligibility,
+      exclusionReason: row.exclusionReason,
+      endpointHash: row.endpointHash,
+      permissionTermsVersion: row.preference?.whatsapp.termsVersion ?? null,
+      permissionUpdatedAtMillis:
+        row.preference?.whatsapp.updatedAt?.toMillis() ?? null,
+    }))) !== snapshotHash) {
+      throw new HttpsError(
+        "aborted", "Campaign audience changed. Preview it again."
+      );
+    }
+    for (const row of liveRows) {
+      const inviteLinkId = liveCampaign.eventId &&
+        row.eligibility === "eligible" ?
+        campaignInviteLinkId(data.campaignId, row.contactId) : null;
+      const variables = campaignVariables(
+        liveCampaign,
+        recipientTokens.get(row.contactId) ?? null,
+        initial.event
+      );
+      const recipient: OrganizerCampaignRecipientDocument = {
+        organizerId: data.organizerId,
+        campaignId: data.campaignId,
+        contactId: row.contactId,
+        channel: "whatsapp",
+        eligibility: row.eligibility,
+        exclusionReason: row.exclusionReason,
+        endpointE164: row.eligibility === "eligible" ?
+          row.contact.phoneE164 : null,
+        endpointHash: row.endpointHash,
+        permissionTermsVersion:
+          row.preference?.whatsapp.termsVersion ?? null,
+        permissionUpdatedAt: row.preference?.whatsapp.updatedAt ?? null,
+        renderedVariablesHash: hashCanonical(variables),
+        inviteLinkId,
+        status: row.eligibility === "eligible" ? "pending" : "suppressed",
+        providerMessageId: null,
+        providerErrorCategory: null,
+        retryEligible: false,
+        attemptCount: 0,
+        leaseOwner: null,
+        leaseExpiresAt: null,
+        acceptedAt: null,
+        sentAt: null,
+        deliveredAt: null,
+        readAt: null,
+        failedAt: null,
+        repliedAt: null,
+        optedOutAt: null,
+        createdAt: now,
+        updatedAt: now,
+      };
+      tx.create(db.collection("organizerCampaignRecipients").doc(
+        organizerCampaignRecipientId(data.campaignId, row.contactId)
+      ), recipient);
+      if (inviteLinkId) {
+        createCampaignInviteLink({
+          tx,
+          db,
+          inviteLinkId,
+          token: recipientTokens.get(row.contactId)!,
+          campaignId: data.campaignId,
+          campaign: liveCampaign,
+          contactId: row.contactId,
+          hostUid: actorUid,
+          event: initial.event!,
+          now,
+        });
+      }
+    }
+    tx.update(campaignRef, {
+      status: liveCampaign.scheduledAt &&
+        liveCampaign.scheduledAt.toMillis() > now.toMillis() ?
+        "scheduled" : "approved",
+      recipientSnapshotHash: snapshotHash,
+      audienceCounts: audienceCounts(liveRows),
+      deliveryCounts: deliveryCounts(liveRows),
+      approvedAt: now,
+      updatedAt: now,
+      revision: liveCampaign.revision + 1,
+    });
+  });
+  return campaignResponse(await campaignContext(
+    db, data.organizerId, data.campaignId, deps.now(), false
+  ), deps.now());
+}
+
+export async function cancelOrganizerCampaignHandler(
+  request: CallableRequest<unknown>,
+  deps: CampaignDeps = defaultDeps
+): Promise<OrganizerCampaignCallableResponse> {
+  const {data, db} = await authorizeAction(
+    request, "cancelOrganizerCampaign", deps
+  );
+  const ref = db.collection("organizerCampaigns").doc(data.campaignId);
+  const now = deps.now();
+  await db.runTransaction(async (tx) => {
+    const snap = await tx.get(ref);
+    const campaign = snap.data() as OrganizerCampaignDocument | undefined;
+    if (!campaign || campaign.organizerId !== data.organizerId) {
+      throw new HttpsError("not-found", "Campaign not found.");
+    }
+    assertExpectedRevision(campaign, data.expectedRevision ?? null);
+    if (!["draft", "previewed", "approved", "scheduled"]
+      .includes(campaign.status)) {
+      throw new HttpsError(
+        "failed-precondition", "Campaign can no longer be cancelled."
+      );
+    }
+    tx.update(ref, {
+      status: "cancelled",
+      cancelledAt: now,
+      updatedAt: now,
+      revision: campaign.revision + 1,
+    });
+  });
+  return campaignResponse(await campaignContext(
+    db, data.organizerId, data.campaignId, deps.now(), false
+  ), deps.now());
+}
+
+export async function getOrganizerCampaignReportHandler(
+  request: CallableRequest<unknown>,
+  deps: CampaignDeps = defaultDeps
+): Promise<OrganizerCampaignCallableResponse> {
+  const {data, db} = await authorizeAction(
+    request, "getOrganizerCampaignReport", deps
+  );
+  return campaignResponse(await campaignContext(
+    db, data.organizerId, data.campaignId, deps.now(), false
+  ), deps.now());
+}
+
+async function authorizeAction(
+  request: CallableRequest<unknown>,
+  operation: string,
+  deps: CampaignDeps
+): Promise<{
+  actorUid: string;
+  data: OrganizerCampaignActionCallablePayload;
+  db: FirebaseFirestore.Firestore;
+}> {
+  const actorUid = requireAuth(request);
+  const data = validateCallableWithAjv<OrganizerCampaignActionCallablePayload>(
+    request,
+    validateOrganizerCampaignActionCallablePayload,
+    normalizePayload
+  );
+  const db = deps.firestore();
+  await deps.checkRateLimit(db, actorUid, operation);
+  await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
+  return {actorUid, data, db};
+}
+
+async function campaignContext(
+  db: FirebaseFirestore.Firestore,
+  organizerId: string,
+  campaignId: string,
+  now: FirebaseFirestore.Timestamp,
+  loadAudience = true
+): Promise<CampaignContext> {
+  const campaignSnap = await db.collection("organizerCampaigns")
+    .doc(campaignId).get();
+  const campaign = campaignSnap.data() as OrganizerCampaignDocument | undefined;
+  if (!campaign || campaign.organizerId !== organizerId) {
+    throw new HttpsError("not-found", "Campaign not found.");
+  }
+  const [connectionSnap, templateSnap, eventSnap, summarySnap] =
+    await Promise.all([
+      db.collection("organizerSenderConnections")
+        .doc(campaign.connectionId).get(),
+      db.collection("organizerMessageTemplates").doc(campaign.templateId).get(),
+      campaign.eventId ? db.collection("events").doc(campaign.eventId).get() :
+        Promise.resolve(null),
+      db.collection("organizerAudienceSummaries").doc(organizerId).get(),
+    ]);
+  const connection = connectionSnap.data() as
+    OrganizerSenderConnectionDocument | undefined;
+  const template = templateSnap.data() as
+    OrganizerMessageTemplateDocument | undefined;
+  const event = eventSnap?.data() as EventDocument | undefined;
+  const summary = summarySnap.data() as
+    OrganizerAudienceSummaryDocument | undefined;
+  const audience = loadAudience ? await loadAudienceRows({
+    db, organizerId, segmentIds: campaign.segmentIds, now,
+  }) : {rows: [], tooLarge: false};
+  return {
+    campaignId,
+    campaign,
+    connection: connection?.organizerId === organizerId ? connection : null,
+    template: template?.organizerId === organizerId &&
+      template.connectionId === campaign.connectionId ? template : null,
+    event: event && (event.organizerId ?? event.clubId) === organizerId ?
+      event : null,
+    summary: summary?.organizerId === organizerId ? summary : null,
+    audienceRows: audience.rows,
+    audienceTooLarge: audience.tooLarge,
+  };
+}
+
+async function loadAudienceRows(params: {
+  db: FirebaseFirestore.Firestore;
+  organizerId: string;
+  segmentIds: OrganizerCampaignDocument["segmentIds"];
+  now: FirebaseFirestore.Timestamp;
+}): Promise<{rows: AudienceRow[]; tooLarge: boolean}> {
+  const traitSnap = await params.db.collection("organizerContactTraits")
+    .where("organizerId", "==", params.organizerId)
+    .where("segmentIds", "array-contains-any", params.segmentIds)
+    .orderBy(admin.firestore.FieldPath.documentId())
+    .limit(organizerCampaignAudienceLimit + 1).get();
+  const selected = traitSnap.docs.slice(0, organizerCampaignAudienceLimit);
+  const contactSnaps = selected.length === 0 ? [] : await params.db.getAll(
+    ...selected.map((doc) => params.db.collection("organizerContacts")
+      .doc(doc.id))
+  );
+  const contacts = contactSnaps.map((snap) => snap.data() as
+    OrganizerContactDocument | undefined);
+  const preferenceRefs = contacts.filter((contact) => contact?.linkedUid)
+    .map((contact) => params.db.collection("organizerCommunicationPreferences")
+      .doc(organizerCommunicationPreferenceId(
+        params.organizerId, contact!.linkedUid!
+      )));
+  const channelRefs = selected.map((doc) =>
+    params.db.collection("organizerContactChannelStates")
+      .doc(organizerContactChannelStateId(params.organizerId, doc.id))
+  );
+  const [preferenceSnaps, channelSnaps] = await Promise.all([
+    preferenceRefs.length === 0 ? [] : params.db.getAll(...preferenceRefs),
+    channelRefs.length === 0 ? [] : params.db.getAll(...channelRefs),
+  ]);
+  const preferences = new Map(preferenceSnaps.map((snap) => [
+    (snap.data() as OrganizerCommunicationPreferenceDocument | undefined)?.uid,
+    snap.data() as OrganizerCommunicationPreferenceDocument | undefined,
+  ]));
+  const channelStates = new Map(channelSnaps.map((snap) => [
+    (snap.data() as OrganizerContactChannelStateDocument | undefined)
+      ?.contactId,
+    snap.data() as OrganizerContactChannelStateDocument | undefined,
+  ]));
+  return {
+    rows: evaluateAudienceRows(selected.map((traitSnap, index) => ({
+      contactId: traitSnap.id,
+      trait: traitSnap.data() as OrganizerContactTraitDocument,
+      contact: contacts[index],
+      preference: contacts[index]?.linkedUid ?
+        preferences.get(contacts[index]?.linkedUid ?? "") ?? null : null,
+      channelState: channelStates.get(traitSnap.id) ?? null,
+    })), params.now, params.segmentIds),
+    tooLarge: traitSnap.size > organizerCampaignAudienceLimit,
+  };
+}
+
+function audienceRowsFromSnapshots(params: {
+  organizerId: string;
+  segmentIds: OrganizerCampaignDocument["segmentIds"];
+  originalRows: AudienceRow[];
+  snapshots: FirebaseFirestore.DocumentSnapshot[];
+  now: FirebaseFirestore.Timestamp;
+}): AudienceRow[] {
+  let index = 0;
+  const inputs = params.originalRows.map((original) => {
+    const contact = params.snapshots[index++].data() as
+      OrganizerContactDocument | undefined;
+    const trait = params.snapshots[index++].data() as
+      OrganizerContactTraitDocument | undefined;
+    let preference: OrganizerCommunicationPreferenceDocument | null = null;
+    if (original.contact.linkedUid) {
+      preference = params.snapshots[index++].data() as
+        OrganizerCommunicationPreferenceDocument | undefined ?? null;
+    }
+    const channelState = params.snapshots[index++].data() as
+      OrganizerContactChannelStateDocument | undefined ?? null;
+    return {
+      contactId: original.contactId,
+      contact,
+      trait,
+      preference,
+      channelState,
+    };
+  });
+  return evaluateAudienceRows(inputs, params.now, params.segmentIds);
+}
+
+export function evaluateAudienceRows(
+  inputs: Array<{
+    contactId: string;
+    contact: OrganizerContactDocument | undefined;
+    trait: OrganizerContactTraitDocument | undefined;
+    preference: OrganizerCommunicationPreferenceDocument | null;
+    channelState: OrganizerContactChannelStateDocument | null;
+  }>,
+  now: FirebaseFirestore.Timestamp,
+  segmentIds: OrganizerCampaignDocument["segmentIds"]
+): AudienceRow[] {
+  const seenEndpoints = new Set<string>();
+  return inputs.map((input): AudienceRow => {
+    const {contact, trait, preference, channelState} = input;
+    let reason: ExclusionReason = null;
+    if (!contact || !trait || contact.deletedAt !== null) reason = "deleted";
+    else if (contact.identityState !== "verified" ||
+        contact.identityConfidence !== "verified" || !contact.linkedUid) {
+      reason = "identityUnresolved";
+    } else if (!trait.segmentIds.some((id) => segmentIds.includes(
+      id as OrganizerCampaignDocument["segmentIds"][number]
+    ))) reason = "deleted";
+    else if (!contact.phoneE164 || !/^\+[1-9][0-9]{7,14}$/.test(
+      contact.phoneE164
+    )) reason = "noVerifiedEndpoint";
+    else if (!preference || preference.organizerId !== contact.organizerId ||
+        preference.uid !== contact.linkedUid ||
+        preference.whatsapp.status === "unknown") reason = "unknownPermission";
+    else if (preference.whatsapp.status === "optedOut") reason = "optedOut";
+    else if (channelState?.suppressionStatus === "optedOut") {
+      reason = "optedOut";
+    } else if (channelState?.suppressionStatus === "providerBlocked") {
+      reason = "providerBlocked";
+    } else if (channelState?.suppressionStatus === "invalidEndpoint") {
+      reason = "invalidEndpoint";
+    } else if (channelState?.suppressionStatus === "adminSuppressed") {
+      reason = "providerBlocked";
+    } else if (channelState?.lastCampaignAcceptedAt &&
+        now.toMillis() - channelState.lastCampaignAcceptedAt.toMillis() <
+          organizerCampaignFrequencyCapMillis) reason = "frequencyCapped";
+    const endpointHash = contact?.phoneE164 ? hashEndpoint(contact.phoneE164) :
+      null;
+    if (!reason && endpointHash && seenEndpoints.has(endpointHash)) {
+      reason = "duplicateEndpoint";
+    }
+    if (!reason && endpointHash) seenEndpoints.add(endpointHash);
+    return {
+      contactId: input.contactId,
+      contact: contact ?? deletedContact(input.contactId, now),
+      trait: trait ?? deletedTrait(input.contactId, now),
+      preference,
+      channelState,
+      eligibility: reason ? "excluded" : "eligible",
+      exclusionReason: reason,
+      endpointHash,
+    };
+  });
+}
+
+function audienceCounts(
+  rows: AudienceRow[]
+): OrganizerCampaignDocument["audienceCounts"] {
+  const counts = emptyCampaignAudienceCounts();
+  counts.total = rows.length;
+  for (const row of rows) {
+    if (row.eligibility === "eligible") counts.reachable += 1;
+    else if (row.exclusionReason === "optedOut") counts.optedOut += 1;
+    else if (["invalidEndpoint", "noVerifiedEndpoint"]
+      .includes(row.exclusionReason ?? "")) counts.invalid += 1;
+    else if (row.exclusionReason === "duplicateEndpoint") counts.duplicate += 1;
+    else if (row.exclusionReason === "frequencyCapped") {
+      counts.frequencyCapped += 1;
+    } else if (row.exclusionReason === "providerBlocked") {
+      counts.providerBlocked += 1;
+    } else if (row.exclusionReason === "unknownPermission" ||
+        row.exclusionReason === "identityUnresolved") counts.unknown += 1;
+    else counts.unsupported += 1;
+  }
+  return counts;
+}
+
+function deliveryCounts(
+  rows: AudienceRow[]
+): OrganizerCampaignDocument["deliveryCounts"] {
+  const counts = emptyCampaignDeliveryCounts();
+  counts.pending = rows.filter((row) => row.eligibility === "eligible").length;
+  counts.suppressed = rows.length - counts.pending;
+  return counts;
+}
+
+function campaignBlockers(
+  context: CampaignContext,
+  now: FirebaseFirestore.Timestamp
+): CampaignBlocker[] {
+  const blockers: CampaignBlocker[] = [];
+  const campaign = context.campaign;
+  if (!context.connection) blockers.push("providerSetupRequired");
+  else if (context.connection.status !== "active") {
+    blockers.push("senderInactive");
+  }
+  if (!context.template) blockers.push("templateMissing");
+  else if (context.template.status !== "APPROVED") {
+    blockers.push("templateUnapproved");
+  }
+  if (context.template && !templateVariablesMatch(
+    context.template.variableNames, campaign.templateVariables,
+    campaign.eventId !== null
+  )) blockers.push("templateUnapproved");
+  if (context.summary?.sourceCoverage !== "exact") {
+    blockers.push("audienceCoveragePartial");
+  }
+  if (context.audienceTooLarge) blockers.push("audienceTooLarge");
+  if (context.audienceRows.length > 0 &&
+      !context.audienceRows.some((row) => row.eligibility === "eligible")) {
+    blockers.push("noReachableRecipients");
+  }
+  if (campaign.eventId && !context.event) blockers.push("eventMissing");
+  else if (context.event && !eventSupportsDestination(
+    context.event, campaign.inviteDestinationKind
+  )) blockers.push("eventUnavailable");
+  if (campaign.scheduledAt &&
+      campaign.scheduledAt.toMillis() < now.toMillis()) {
+    blockers.push("scheduleInPast");
+  }
+  if (!["draft", "previewed"].includes(campaign.status)) {
+    blockers.push("campaignImmutable");
+  }
+  if (campaign.status === "cancelled") blockers.push("campaignCancelled");
+  if (["completed", "partiallyFailed"].includes(campaign.status)) {
+    blockers.push("campaignComplete");
+  }
+  if (campaign.leaseExpiresAt && campaign.leaseExpiresAt.toMillis() >
+      now.toMillis()) blockers.push("campaignLeaseActive");
+  return [...new Set(blockers)];
+}
+
+function campaignResponse(
+  context: CampaignContext,
+  now: FirebaseFirestore.Timestamp
+): OrganizerCampaignCallableResponse {
+  const blockers = campaignBlockers(context, now);
+  return {
+    organizerId: context.campaign.organizerId,
+    campaignId: context.campaignId,
+    status: context.campaign.status,
+    revision: context.campaign.revision,
+    audienceCounts: context.campaign.audienceCounts,
+    deliveryCounts: context.campaign.deliveryCounts,
+    senderStatus: context.connection?.status ?? "notConnected",
+    templateStatus: context.template?.status ?? "missing",
+    canApprove: context.campaign.status === "previewed" &&
+      blockers.length === 0,
+    canDispatch: ["approved", "scheduled"].includes(context.campaign.status) &&
+      context.connection?.status === "active" &&
+      context.template?.status === "APPROVED",
+    blockers,
+  };
+}
+
+function templateVariablesMatch(
+  expected: string[],
+  provided: Record<string, string>,
+  hasEvent: boolean
+): boolean {
+  const providedKeys = Object.keys(provided);
+  return expected.every((key) => key === "invite_url" ? hasEvent :
+    providedKeys.includes(key)) && providedKeys.every((key) =>
+    expected.includes(key));
+}
+
+function eventSupportsDestination(
+  event: EventDocument,
+  destination: OrganizerCampaignDocument["inviteDestinationKind"]
+): boolean {
+  if (event.status !== "active") return false;
+  if (destination === "eventRuntime") {
+    return event.runtimeAccess?.enabled === true &&
+      Boolean(event.runtimeAccess.publicRuntimeId);
+  }
+  if (destination === "externalBooking") {
+    return event.eventOrigin?.mode === "externalCompanion" &&
+      Boolean(event.eventOrigin.externalEventUrl);
+  }
+  return destination === "catchEvent" || destination === "marketingLanding";
+}
+
+export function campaignVariables(
+  campaign: OrganizerCampaignDocument,
+  inviteToken: string | null,
+  event: EventDocument | null
+): Record<string, string> {
+  const variables = {...campaign.templateVariables};
+  if (campaign.eventId && inviteToken) {
+    variables.invite_url = campaignInviteUrl(campaign, inviteToken, event);
+  }
+  return variables;
+}
+
+function campaignInviteUrl(
+  campaign: OrganizerCampaignDocument,
+  token: string,
+  event: EventDocument | null
+): string {
+  const eventId = campaign.eventId!;
+  if (campaign.inviteDestinationKind === "eventRuntime") {
+    const runtimeId = event?.runtimeAccess?.publicRuntimeId;
+    if (!runtimeId) {
+      throw new HttpsError(
+        "failed-precondition", "Event runtime is no longer available."
+      );
+    }
+    return `https://catchdates.com/join/${encodeURIComponent(runtimeId)}` +
+      `?il=${encodeURIComponent(token)}`;
+  }
+  return `https://catchdates.com/events/${encodeURIComponent(eventId)}` +
+    `?il=${encodeURIComponent(token)}`;
+}
+
+function campaignInviteLinkId(campaignId: string, contactId: string): string {
+  return `ecil_${hashCanonical({campaignId, contactId}).slice(0, 48)}`;
+}
+
+function createCampaignInviteLink(params: {
+  tx: FirebaseFirestore.Transaction;
+  db: FirebaseFirestore.Firestore;
+  inviteLinkId: string;
+  token: string;
+  campaignId: string;
+  campaign: OrganizerCampaignDocument;
+  contactId: string;
+  hostUid: string;
+  event: EventDocument;
+  now: FirebaseFirestore.Timestamp;
+}): void {
+  const organizerId = params.event.organizerId ?? params.event.clubId;
+  const linkRef = params.db.collection("eventInviteLinks")
+    .doc(params.inviteLinkId);
+  const secretRef = params.db.collection("eventInviteLinkSecrets")
+    .doc(params.inviteLinkId);
+  params.tx.create(linkRef, {
+    eventId: params.campaign.eventId,
+    clubId: params.event.clubId,
+    organizerId,
+    hostUid: params.hostUid,
+    label: params.campaign.name.slice(0, 80),
+    source: "campaign",
+    tokenHash: inviteLinkTokenHash(params.token),
+    contractVersion: 2,
+    linkKind: "directRecipient",
+    ownerContactId: null,
+    ownerUid: null,
+    intendedRecipientContactId: params.contactId,
+    campaignId: params.campaignId,
+    issuanceChannel: "campaign",
+    destinationKind: params.campaign.inviteDestinationKind,
+    tokenVersion: 2,
+    attributionWindowEndsAt: admin.firestore.Timestamp.fromMillis(
+      params.now.toMillis() + 30 * 24 * 60 * 60 * 1000
+    ),
+    openCount: 0,
+    likelyHumanOpenCount: 0,
+    shareIntentCount: 0,
+    verifiedRegistrationCount: 0,
+    referredRegistrationCount: 0,
+    referredCheckedInCount: 0,
+    requestCount: 0,
+    confirmedCount: 0,
+    paidCount: 0,
+    checkedInCount: 0,
+    catcherCount: 0,
+    matchCount: 0,
+    chatStartedCount: 0,
+    disabledAt: null,
+    createdAt: params.now,
+    updatedAt: params.now,
+  });
+  params.tx.create(secretRef, {
+    eventId: params.campaign.eventId,
+    organizerId,
+    token: params.token,
+    tokenHash: inviteLinkTokenHash(params.token),
+    tokenVersion: 2,
+    createdAt: params.now,
+    updatedAt: params.now,
+  });
+}
+
+function assertExpectedRevision(
+  campaign: OrganizerCampaignDocument,
+  expectedRevision: number | null
+): void {
+  if (expectedRevision !== null && campaign.revision !== expectedRevision) {
+    throw new HttpsError(
+      "aborted", "Campaign changed. Refresh before continuing."
+    );
+  }
+}
+
+function normalizePayload(data: unknown): unknown {
+  if (typeof data !== "object" || data === null || Array.isArray(data)) {
+    return data;
+  }
+  const normalized = {...data as Record<string, unknown>};
+  for (const [key, value] of Object.entries(normalized)) {
+    if (typeof value === "string") normalized[key] = value.trim();
+  }
+  if (Array.isArray(normalized.segmentIds)) {
+    normalized.segmentIds = normalized.segmentIds.map((item) =>
+      typeof item === "string" ? item.trim() : item);
+  }
+  if (typeof normalized.templateVariables === "object" &&
+      normalized.templateVariables !== null &&
+      !Array.isArray(normalized.templateVariables)) {
+    normalized.templateVariables = Object.fromEntries(Object.entries(
+      normalized.templateVariables as Record<string, unknown>
+    ).map(([key, value]) => [
+      key.trim(), typeof value === "string" ? value.trim() : value,
+    ]));
+  }
+  return normalized;
+}
+
+function deletedContact(
+  contactId: string,
+  now: FirebaseFirestore.Timestamp
+): OrganizerContactDocument {
+  return {
+    organizerId: "deleted",
+    displayName: contactId,
+    searchName: contactId,
+    linkedUid: null,
+    phoneE164: null,
+    email: null,
+    identityState: "unlinked",
+    identityConfidence: "eventOnly",
+    primarySource: "hostManual",
+    ambiguousCandidateContactIds: [],
+    firstSeenAt: now,
+    lastSeenAt: now,
+    sourceCount: 0,
+    whatsappStatus: "unknown",
+    smsStatus: "unknown",
+    revision: 1,
+    mergedIntoContactId: null,
+    createdAt: now,
+    updatedAt: now,
+    deletedAt: now,
+  };
+}
+
+function deletedTrait(
+  contactId: string,
+  now: FirebaseFirestore.Timestamp
+): OrganizerContactTraitDocument {
+  return {
+    organizerId: "deleted",
+    contactId,
+    expectedEventCount: 0,
+    attendedEventCount: 0,
+    cancelledEventCount: 0,
+    noShowCount: 0,
+    importedEventCount: 0,
+    referredRegistrationCount: 0,
+    referredCheckedInCount: 0,
+    referredCheckedIn365DayCount: 0,
+    linkedAccount: false,
+    firstSeenAt: now,
+    lastSeenAt: now,
+    firstAttendedAt: null,
+    lastAttendedAt: null,
+    attendanceRate: null,
+    segmentIds: [],
+    definitionVersion: 1,
+    whatsappStatus: "unknown",
+    smsStatus: "unknown",
+    sourceCoverage: "insufficientData",
+    projectionVersion: 1,
+    computedAt: now,
+  };
+}
+
+const campaignCallableLimits = {
+  timeoutSeconds: 60,
+  maxInstances: 30,
+  concurrency: 40,
+};
+
+export const upsertOrganizerCampaign = onCall(
+  appCheckCallableOptionsWithLimits(campaignCallableLimits),
+  (request) => upsertOrganizerCampaignHandler(request)
+);
+export const previewOrganizerCampaign = onCall(
+  appCheckCallableOptionsWithLimits(campaignCallableLimits),
+  (request) => previewOrganizerCampaignHandler(request)
+);
+export const approveOrganizerCampaign = onCall(
+  appCheckCallableOptionsWithLimits(campaignCallableLimits),
+  (request) => approveOrganizerCampaignHandler(request)
+);
+export const cancelOrganizerCampaign = onCall(
+  appCheckCallableOptionsWithLimits(campaignCallableLimits),
+  (request) => cancelOrganizerCampaignHandler(request)
+);
+export const getOrganizerCampaignReport = onCall(
+  appCheckCallableOptionsWithLimits(campaignCallableLimits),
+  (request) => getOrganizerCampaignReportHandler(request)
+);

@@ -1,0 +1,120 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+import {
+  MetaWhatsappProvider,
+  MetaProviderError,
+} from "./organizerWhatsappProvider";
+
+const config = {
+  appId: "app-id",
+  appSecret: "app-secret",
+  configId: "config-id",
+  graphVersion: "v23.0",
+};
+
+test("authorization exchange keeps credentials in server request", async () => {
+  let requestedUrl = "";
+  const provider = new MetaWhatsappProvider(config, async (input) => {
+    requestedUrl = input.toString();
+    return new Response(JSON.stringify({access_token: "token-1"}), {
+      status: 200,
+    });
+  });
+  assert.equal(await provider.exchangeAuthorizationCode("code-1"), "token-1");
+  const requested = new URL(requestedUrl);
+  assert.equal(requested.hostname, "graph.facebook.com");
+  assert.equal(requested.searchParams.get("client_secret"), "app-secret");
+  assert.equal(requested.searchParams.get("code"), "code-1");
+});
+
+test("sender verification rejects a phone outside selected WABA", async () => {
+  const provider = new MetaWhatsappProvider(config, async (input) => {
+    const url = new URL(input.toString());
+    if (url.pathname.endsWith("/waba-1")) {
+      return jsonResponse({owner_business_info: {id: "business-1"}});
+    }
+    if (url.pathname.endsWith("/waba-1/phone_numbers")) {
+      return jsonResponse({data: [{id: "phone-other"}]});
+    }
+    throw new Error(`Unexpected URL ${url.toString()}`);
+  });
+  await assert.rejects(provider.verifyAndSubscribe({
+    accessToken: "token",
+    wabaId: "waba-1",
+    phoneNumberId: "phone-1",
+    businessId: "business-1",
+  }), /does not belong/);
+});
+
+test("templates preserve named parameter bindings for sending", async () => {
+  const requests: Array<{url: URL; init?: RequestInit}> = [];
+  const provider = new MetaWhatsappProvider(config, async (input, init) => {
+    const url = new URL(input.toString());
+    requests.push({url, init});
+    if (url.pathname.endsWith("/message_templates")) {
+      return jsonResponse({data: [{
+        id: "template-provider-1",
+        name: "event_invite",
+        language: "en_US",
+        category: "MARKETING",
+        status: "APPROVED",
+        components: [{
+          type: "BODY",
+          example: {
+            body_text_named_params: [
+              {param_name: "first_name"},
+              {param_name: "invite_url"},
+            ],
+          },
+        }],
+      }]});
+    }
+    return jsonResponse({messages: [{id: "wamid.1"}]});
+  });
+  const templates = await provider.listTemplates({
+    accessToken: "token",
+    wabaId: "waba-1",
+  });
+  assert.deepEqual(templates[0].variableNames, ["first_name", "invite_url"]);
+  assert.deepEqual(templates[0].parameterBindings.map((item) => ({
+    name: item.variableName,
+    position: item.position,
+  })), [
+    {name: "first_name", position: 0},
+    {name: "invite_url", position: 1},
+  ]);
+  const sent = await provider.sendTemplate({
+    accessToken: "token",
+    phoneNumberId: "phone-1",
+    toE164: "+919999999999",
+    template: templates[0],
+    variables: {
+      first_name: "Maya",
+      invite_url: "https://catchdates.com/events/e1?il=token",
+    },
+  });
+  assert.equal(sent.providerMessageId, "wamid.1");
+  const payload = JSON.parse(String(requests.at(-1)?.init?.body));
+  assert.equal(payload.to, "919999999999");
+  assert.deepEqual(payload.template.components[0].parameters, [
+    {type: "text", text: "Maya"},
+    {type: "text", text: "https://catchdates.com/events/e1?il=token"},
+  ]);
+});
+
+test("provider errors are sanitized into typed failures", async () => {
+  const provider = new MetaWhatsappProvider(config, async () =>
+    new Response(JSON.stringify({
+      error: {message: "Template paused", code: 132015},
+    }), {status: 400})
+  );
+  await assert.rejects(provider.listTemplates({
+    accessToken: "token",
+    wabaId: "waba-1",
+  }), (error: unknown) => error instanceof MetaProviderError &&
+    error.providerCode === 132015 && error.httpStatus === 400);
+});
+
+function jsonResponse(value: unknown): Response {
+  return new Response(JSON.stringify(value), {status: 200});
+}

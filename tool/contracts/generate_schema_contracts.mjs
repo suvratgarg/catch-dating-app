@@ -196,6 +196,49 @@ const schemaSpecs = [
       "functions/src/shared/generated/organizerContactMergeReceiptDocument.ts",
   },
   {
+    name: "OrganizerSenderConnectionDocument",
+    source: "firestore/organizer_sender_connections.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerSenderConnectionDocument.ts",
+  },
+  {
+    name: "OrganizerMessageTemplateDocument",
+    source: "firestore/organizer_message_templates.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerMessageTemplateDocument.ts",
+  },
+  {
+    name: "OrganizerContactChannelStateDocument",
+    source: "firestore/organizer_contact_channel_states.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerContactChannelStateDocument.ts",
+  },
+  {
+    name: "OrganizerCampaignDocument",
+    source: "firestore/organizer_campaigns.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerCampaignDocument.ts",
+  },
+  {
+    name: "OrganizerCampaignRecipientDocument",
+    source: "firestore/organizer_campaign_recipients.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerCampaignRecipientDocument.ts",
+  },
+  {
+    name: "OrganizerCampaignWebhookReceiptDocument",
+    source: "firestore/organizer_campaign_webhook_receipts.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "organizerCampaignWebhookReceiptDocument.ts",
+  },
+  {
+    name: "OrganizerMessagingWebhookEventDocument",
+    source: "firestore/organizer_messaging_webhook_events.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "organizerMessagingWebhookEventDocument.ts",
+  },
+  {
     name: "OrganizerClaimRequestDocument",
     source: "firestore/organizer_claim_requests.schema.json",
     typeOutput:
@@ -1068,6 +1111,53 @@ const schemaSpecs = [
     source: "callables/record_event_share_intent_payload.schema.json",
     typeOutput:
       "functions/src/shared/generated/recordEventShareIntentCallablePayload.ts",
+  },
+  {
+    name: "UpsertOrganizerCampaignCallablePayload",
+    source: "callables/upsert_organizer_campaign_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/upsertOrganizerCampaignCallablePayload.ts",
+  },
+  {
+    name: "OrganizerCampaignActionCallablePayload",
+    source: "callables/organizer_campaign_action_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerCampaignActionCallablePayload.ts",
+  },
+  {
+    name: "CompleteOrganizerWhatsappConnectionCallablePayload",
+    source:
+      "callables/complete_organizer_whatsapp_connection_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "completeOrganizerWhatsappConnectionCallablePayload.ts",
+  },
+  {
+    name: "OrganizerSenderConnectionActionCallablePayload",
+    source:
+      "callables/organizer_sender_connection_action_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "organizerSenderConnectionActionCallablePayload.ts",
+  },
+  {
+    name: "SendOrganizerWhatsappTestCallablePayload",
+    source: "callables/send_organizer_whatsapp_test_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/sendOrganizerWhatsappTestCallablePayload.ts",
+  },
+  {
+    name: "OrganizerCampaignCallableResponse",
+    source: "callable_responses/organizer_campaign_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerCampaignCallableResponse.ts",
+  },
+  {
+    name: "OrganizerMessagingSetupCallableResponse",
+    source:
+      "callable_responses/organizer_messaging_setup_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerMessagingSetupCallableResponse.ts",
   },
   {
     name: "RecordOrganizerAnalyticsEventCallablePayload",
