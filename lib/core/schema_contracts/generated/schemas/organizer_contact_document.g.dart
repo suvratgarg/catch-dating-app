@@ -108,6 +108,7 @@ const schemaOrganizerContactDocumentSchema = <String, Object?>{
         'hostImport',
         'hostManual',
         'webOtp',
+        'providerSync',
       ],
       'x-catch-ownership': 'server-only',
     },

@@ -1599,7 +1599,12 @@ export interface OrganizerContactDocument {
   email: string | null;
   identityState: "unlinked" | "verified" | "ambiguous" | "merged";
   identityConfidence: "eventOnly" | "proposed" | "verified";
-  primarySource: "catchBooking" | "hostImport" | "hostManual" | "webOtp";
+  primarySource:
+    | "catchBooking"
+    | "hostImport"
+    | "hostManual"
+    | "webOtp"
+    | "providerSync";
   /**
    * @maxItems 20
    */
@@ -1628,7 +1633,12 @@ export interface OrganizerContactIdentityLinkDocument {
   identityHash: string;
   hashVersion: "hmac-sha256-v1";
   confidence: "proposed" | "verified";
-  source: "catchBooking" | "hostImport" | "hostManual" | "webOtp";
+  source:
+    | "catchBooking"
+    | "hostImport"
+    | "hostManual"
+    | "webOtp"
+    | "providerSync";
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
 }
@@ -1666,7 +1676,12 @@ export interface OrganizerContactEventEdgeDocument {
   linkedUid: string | null;
   phoneE164: string | null;
   email: string | null;
-  source: "catchBooking" | "hostImport" | "hostManual" | "webOtp";
+  source:
+    | "catchBooking"
+    | "hostImport"
+    | "hostManual"
+    | "webOtp"
+    | "providerSync";
   status: "invited" | "registered" | "waitlisted" | "checkedIn" | "cancelled";
   expected: boolean;
   registered: boolean;
@@ -1838,6 +1853,93 @@ export interface OrganizerSenderConnectionDocument {
   updatedAt: FirebaseFirestore.Timestamp;
   lastHealthSyncAt?: FirebaseFirestore.Timestamp | null;
   disconnectedAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Safe organizer-owned booking-provider connection metadata. Provider credentials live in Secret Manager, never Firestore.
+ */
+export interface OrganizerProviderConnectionDocument {
+  organizerId: string;
+  provider: "luma";
+  adapterClass: "A";
+  status: "active" | "degraded" | "credentialRevoked" | "disconnected";
+  externalAccountId: string;
+  externalAccountName: string;
+  secretVersionResource: string | null;
+  syncMode: "manualPoll";
+  capabilities: {
+    eventList: boolean;
+    rosterIdentity: boolean;
+    registrationStatus: boolean;
+    providerCheckIn: boolean;
+    orderAmount: boolean;
+    refundStatus: boolean;
+    referralCode: boolean;
+    webhooks: boolean;
+    writeBookings: boolean;
+  };
+  connectedByUid: string;
+  revision: number;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  lastHealthSyncAt: FirebaseFirestore.Timestamp | null;
+  lastSuccessfulSyncAt: FirebaseFirestore.Timestamp | null;
+  lastErrorCode: string | null;
+  disconnectedAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Stable mapping and field-level authority between one Catch event and one organizer-authorized booking-provider event.
+ */
+export interface ExternalEventMappingDocument {
+  organizerId: string;
+  eventId: string;
+  connectionId: string;
+  provider: "luma";
+  externalEventId: string;
+  status: "active" | "paused" | "disconnected";
+  fieldAuthority: {
+    rosterIdentity: "provider";
+    registrationStatus: "provider";
+    checkIn: "providerWhenPresent";
+    orderAmount: "unavailable";
+    refundStatus: "unavailable";
+    referralCode: "unavailable";
+  };
+  revision: number;
+  createdByUid: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  lastSyncAt: FirebaseFirestore.Timestamp | null;
+  lastSuccessfulSyncAt: FirebaseFirestore.Timestamp | null;
+  lastSyncStatus: "never" | "running" | "completed" | "partial" | "failed";
+  lastSyncRunId: string | null;
+  disconnectedAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Idempotent audit and replay receipt for one external-provider event reconciliation.
+ */
+export interface ProviderSyncRunDocument {
+  organizerId: string;
+  eventId: string;
+  connectionId: string;
+  mappingId: string;
+  provider: "luma";
+  clientOperationId: string;
+  inputHash: string;
+  status: "running" | "completed" | "partial" | "failed";
+  pageCount: number;
+  receivedCount: number;
+  createdCount: number;
+  updatedCount: number;
+  skippedCount: number;
+  truncated: boolean;
+  errorCode: string | null;
+  startedByUid: string;
+  startedAt: FirebaseFirestore.Timestamp;
+  completedAt: FirebaseFirestore.Timestamp | null;
+  expiresAt: FirebaseFirestore.Timestamp;
 }
 
 /**
@@ -2658,7 +2760,12 @@ export interface EventAttendeeDocument {
   organizerId: string;
   displayName: string;
   searchName: string;
-  source: "catchBooking" | "hostImport" | "hostManual" | "webOtp";
+  source:
+    | "catchBooking"
+    | "hostImport"
+    | "hostManual"
+    | "webOtp"
+    | "providerSync";
   status: "invited" | "registered" | "waitlisted" | "checkedIn" | "cancelled";
   linkedUid: string | null;
   phoneE164: string | null;
@@ -2688,6 +2795,23 @@ export interface EventAttendeeDocument {
    * Operational status restored by an absolute undo. Null outside checked-in state.
    */
   preCheckInStatus?: "invited" | "registered" | "waitlisted" | null;
+  /**
+   * External source that most recently supplied provider-authoritative fields, independent of row creation source.
+   */
+  provider?:
+    | "luma"
+    | "eventbrite"
+    | "partiful"
+    | "posh"
+    | "bookmyshow"
+    | "district"
+    | "sortmyscene"
+    | "airbnb"
+    | null;
+  providerConnectionId?: string | null;
+  providerGuestId?: string | null;
+  providerSyncedAt?: FirebaseFirestore.Timestamp | null;
+  providerDataRevision?: number;
 }
 
 /**

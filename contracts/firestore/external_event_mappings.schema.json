@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/external_event_mappings.schema.json",
+  "title": "ExternalEventMappingDocument",
+  "description": "Stable mapping and field-level authority between one Catch event and one organizer-authorized booking-provider event.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "externalEventMappings",
+  "x-firestore-path": "externalEventMappings/{mappingId}",
+  "x-document-id-field": "mappingId",
+  "x-owner": "organizer provider mapping and roster reconciliation callables",
+  "required": ["organizerId", "eventId", "connectionId", "provider", "externalEventId", "status", "fieldAuthority", "revision", "createdByUid", "createdAt", "updatedAt", "lastSyncAt", "lastSuccessfulSyncAt", "lastSyncStatus", "lastSyncRunId", "disconnectedAt"],
+  "properties": {
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "connectionId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "provider": {"const": "luma"},
+    "externalEventId": {"type": "string", "minLength": 1, "maxLength": 240},
+    "status": {"type": "string", "enum": ["active", "paused", "disconnected"]},
+    "fieldAuthority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rosterIdentity", "registrationStatus", "checkIn", "orderAmount", "refundStatus", "referralCode"],
+      "properties": {
+        "rosterIdentity": {"const": "provider"},
+        "registrationStatus": {"const": "provider"},
+        "checkIn": {"const": "providerWhenPresent"},
+        "orderAmount": {"const": "unavailable"},
+        "refundStatus": {"const": "unavailable"},
+        "referralCode": {"const": "unavailable"}
+      }
+    },
+    "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+    "createdByUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "lastSyncAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
+    "lastSuccessfulSyncAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
+    "lastSyncStatus": {"type": "string", "enum": ["never", "running", "completed", "partial", "failed"]},
+    "lastSyncRunId": {"type": ["string", "null"], "minLength": 1, "maxLength": 180},
+    "disconnectedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"}
+  }
+}

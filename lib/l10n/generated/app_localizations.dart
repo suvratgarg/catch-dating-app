@@ -17903,6 +17903,270 @@ abstract class AppLocalizations {
   /// **'Upload a CSV or XLSX from your ticketing tool, or add guests one at a time.'**
   String get hostsOperationalRosterEmptyMessage;
 
+  /// External booking provider disclosure title.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking source'**
+  String get hostsOperationalRosterProviderTitle;
+
+  /// External booking provider disclosure body.
+  ///
+  /// In en, this message translates to:
+  /// **'Bring your {provider} guest list into this roster.'**
+  String hostsOperationalRosterProviderBody({required String provider});
+
+  /// Lazy provider setup guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Open this section to check available import and sync options.'**
+  String get hostsOperationalRosterProviderOpenToLoad;
+
+  /// Unknown provider capability fallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch could not identify a safe import option for this booking source.'**
+  String get hostsOperationalRosterProviderUnavailable;
+
+  /// Connected provider account label.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected calendar'**
+  String get hostsOperationalRosterProviderAccount;
+
+  /// Provider field coverage label.
+  ///
+  /// In en, this message translates to:
+  /// **'What syncs'**
+  String get hostsOperationalRosterProviderCoverage;
+
+  /// Provider last sync label.
+  ///
+  /// In en, this message translates to:
+  /// **'Last successful sync'**
+  String get hostsOperationalRosterProviderLastSync;
+
+  /// Provider never synced status.
+  ///
+  /// In en, this message translates to:
+  /// **'Not synced yet'**
+  String get hostsOperationalRosterProviderNeverSynced;
+
+  /// Provider limitations label.
+  ///
+  /// In en, this message translates to:
+  /// **'Not supplied by this connection'**
+  String get hostsOperationalRosterProviderLimits;
+
+  /// Honest Luma sync limitations.
+  ///
+  /// In en, this message translates to:
+  /// **'Payments, refunds, referral codes and automatic background updates. Catch check-ins are never undone when Luma omits a check-in.'**
+  String get hostsOperationalRosterProviderLumaLimits;
+
+  /// Provider roster identity capability.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest names and contact details'**
+  String get hostsOperationalRosterProviderCapabilityGuests;
+
+  /// Provider registration status capability.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration status'**
+  String get hostsOperationalRosterProviderCapabilityStatus;
+
+  /// Provider check-in capability.
+  ///
+  /// In en, this message translates to:
+  /// **'Provider check-ins'**
+  String get hostsOperationalRosterProviderCapabilityCheckIn;
+
+  /// Manual provider sync action.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync now'**
+  String get hostsOperationalRosterProviderSyncNow;
+
+  /// Provider disconnect action.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnect'**
+  String get hostsOperationalRosterProviderDisconnect;
+
+  /// Provider disconnect confirmation title.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnect booking source?'**
+  String get hostsOperationalRosterProviderDisconnectTitle;
+
+  /// Provider disconnect consequence.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests already in Catch stay on this roster. Future provider changes will not appear until you reconnect.'**
+  String get hostsOperationalRosterProviderDisconnectBody;
+
+  /// Luma connection action.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect Luma'**
+  String get hostsOperationalRosterProviderConnect;
+
+  /// Luma credential replacement action.
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnect Luma'**
+  String get hostsOperationalRosterProviderReconnect;
+
+  /// Provider spreadsheet import action.
+  ///
+  /// In en, this message translates to:
+  /// **'Import spreadsheet'**
+  String get hostsOperationalRosterProviderImport;
+
+  /// Luma connection confirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Luma connected. Sync when you want to refresh the roster.'**
+  String get hostsOperationalRosterProviderConnected;
+
+  /// Provider sync result.
+  ///
+  /// In en, this message translates to:
+  /// **'Roster synced: {created} added, {updated} refreshed, {skipped} skipped.'**
+  String hostsOperationalRosterProviderSyncSuccess({
+    required int created,
+    required int updated,
+    required int skipped,
+  });
+
+  /// Luma connection sheet title.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect your Luma calendar'**
+  String get hostsOperationalRosterProviderConnectTitle;
+
+  /// Luma connection security and sequence guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch checks the calendar key without saving it, then lets you choose an event. The key is stored only after you confirm the event.'**
+  String get hostsOperationalRosterProviderConnectBody;
+
+  /// Luma API key field.
+  ///
+  /// In en, this message translates to:
+  /// **'Luma calendar API key'**
+  String get hostsOperationalRosterProviderApiKey;
+
+  /// Luma API key requirements and storage guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Requires Luma Plus. Catch encrypts the key in Google Secret Manager after you choose an event.'**
+  String get hostsOperationalRosterProviderApiKeyHelp;
+
+  /// Provider connection field validation.
+  ///
+  /// In en, this message translates to:
+  /// **'Check this value and try again.'**
+  String get hostsOperationalRosterProviderFieldRequired;
+
+  /// Verifies Luma key and opens event selection.
+  ///
+  /// In en, this message translates to:
+  /// **'Check key and choose event'**
+  String get hostsOperationalRosterProviderChooseEvent;
+
+  /// Luma event selection title.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the Luma event'**
+  String get hostsOperationalRosterProviderChooseEventTitle;
+
+  /// Luma event selection guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Events managed by {calendar}. Choose the one that matches this Catch event.'**
+  String hostsOperationalRosterProviderChooseEventBody({
+    required String calendar,
+  });
+
+  /// Empty Luma event list title.
+  ///
+  /// In en, this message translates to:
+  /// **'No manageable events found'**
+  String get hostsOperationalRosterProviderNoEventsTitle;
+
+  /// Empty Luma event list guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'This key did not return an event the calendar can manage.'**
+  String get hostsOperationalRosterProviderNoEventsBody;
+
+  /// Bounded Luma event selection warning.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing the 50 most recent manageable events. Use spreadsheet import if the event you need is older.'**
+  String get hostsOperationalRosterProviderEventsTruncated;
+
+  /// Direct provider sync availability.
+  ///
+  /// In en, this message translates to:
+  /// **'Direct sync available'**
+  String get hostsOperationalRosterProviderAvailable;
+
+  /// Export-only provider availability.
+  ///
+  /// In en, this message translates to:
+  /// **'Spreadsheet import'**
+  String get hostsOperationalRosterProviderExportOnly;
+
+  /// Provider configuration required availability.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch setup pending'**
+  String get hostsOperationalRosterProviderConfigurationRequired;
+
+  /// Provider partner access availability.
+  ///
+  /// In en, this message translates to:
+  /// **'Provider approval required'**
+  String get hostsOperationalRosterProviderPartnerRequired;
+
+  /// Provider sample required availability.
+  ///
+  /// In en, this message translates to:
+  /// **'Export sample needed'**
+  String get hostsOperationalRosterProviderSampleRequired;
+
+  /// Manual-only provider availability.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual import'**
+  String get hostsOperationalRosterProviderManualOnly;
+
+  /// Active provider connection status.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected'**
+  String get hostsOperationalRosterProviderStatusActive;
+
+  /// Degraded provider connection status.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection needs attention'**
+  String get hostsOperationalRosterProviderStatusDegraded;
+
+  /// Revoked credential status.
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnect required'**
+  String get hostsOperationalRosterProviderStatusReconnect;
+
+  /// Disconnected provider status.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnected'**
+  String get hostsOperationalRosterProviderStatusDisconnected;
+
   /// Roster source label for Catch booking.
   ///
   /// In en, this message translates to:
@@ -17926,6 +18190,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Web registration'**
   String get hostsOperationalRosterSourceWebOtp;
+
+  /// Roster source label for direct booking-provider synchronization.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking provider'**
+  String get hostsOperationalRosterSourceProviderSync;
 
   /// Operational attendee invited status.
   ///

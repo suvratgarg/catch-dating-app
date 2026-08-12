@@ -11,7 +11,12 @@ export interface EventAttendeeDocument {
   organizerId: string;
   displayName: string;
   searchName: string;
-  source: "catchBooking" | "hostImport" | "hostManual" | "webOtp";
+  source:
+    | "catchBooking"
+    | "hostImport"
+    | "hostManual"
+    | "webOtp"
+    | "providerSync";
   status: "invited" | "registered" | "waitlisted" | "checkedIn" | "cancelled";
   linkedUid: string | null;
   phoneE164: string | null;
@@ -71,4 +76,24 @@ export interface EventAttendeeDocument {
    * Operational status restored by an absolute undo. Null outside checked-in state.
    */
   preCheckInStatus?: "invited" | "registered" | "waitlisted" | null;
+  /**
+   * External source that most recently supplied provider-authoritative fields, independent of row creation source.
+   */
+  provider?:
+    | "luma"
+    | "eventbrite"
+    | "partiful"
+    | "posh"
+    | "bookmyshow"
+    | "district"
+    | "sortmyscene"
+    | "airbnb"
+    | null;
+  providerConnectionId?: string | null;
+  providerGuestId?: string | null;
+  providerSyncedAt?: {
+    _seconds: number;
+    _nanoseconds: number;
+  } | null;
+  providerDataRevision?: number;
 }

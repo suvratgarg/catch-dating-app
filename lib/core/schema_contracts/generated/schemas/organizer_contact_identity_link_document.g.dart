@@ -82,6 +82,7 @@ const schemaOrganizerContactIdentityLinkDocumentSchema = <String, Object?>{
         'hostImport',
         'hostManual',
         'webOtp',
+        'providerSync',
       ],
     },
     'createdAt': <String, Object?>{

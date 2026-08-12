@@ -139,12 +139,13 @@
           "attendeeSources": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["catchBooking", "hostImport", "hostManual", "webOtp"],
+            "required": ["catchBooking", "hostImport", "hostManual", "webOtp", "providerSync"],
             "properties": {
               "catchBooking": {"type": "integer", "minimum": 0},
               "hostImport": {"type": "integer", "minimum": 0},
               "hostManual": {"type": "integer", "minimum": 0},
-              "webOtp": {"type": "integer", "minimum": 0}
+              "webOtp": {"type": "integer", "minimum": 0},
+              "providerSync": {"type": "integer", "minimum": 0}
             }
           }
         }

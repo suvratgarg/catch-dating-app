@@ -1282,6 +1282,9 @@ describe("firestore.rules", () => {
         ["eventShareIntents", "intent-1"],
         ["eventInviteAttributions", "attribution-1"],
         ["eventAttendeeAttendanceReceipts", "receipt-1"],
+        ["organizerProviderConnections", "connection-1"],
+        ["externalEventMappings", "mapping-1"],
+        ["providerSyncRuns", "sync-1"],
       ];
       for (const path of paths) {
         await seed(path, {eventId: "event-1", organizerId: "club-1"});

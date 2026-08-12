@@ -14,7 +14,12 @@ export interface OrganizerContactIdentityLinkDocument {
   identityHash: string;
   hashVersion: "hmac-sha256-v1";
   confidence: "proposed" | "verified";
-  source: "catchBooking" | "hostImport" | "hostManual" | "webOtp";
+  source:
+    | "catchBooking"
+    | "hostImport"
+    | "hostManual"
+    | "webOtp"
+    | "providerSync";
   /**
    * Serialized Firestore Timestamp fixture shape.
    */

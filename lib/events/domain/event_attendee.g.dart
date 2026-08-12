@@ -24,6 +24,16 @@ _EventAttendee _$EventAttendeeFromJson(
   ticketType: json['ticketType'] as String?,
   importId: json['importId'] as String?,
   sourceRowId: json['sourceRowId'] as String?,
+  provider: $enumDecodeNullable(
+    _$ExternalBookingProviderEnumMap,
+    json['provider'],
+  ),
+  providerConnectionId: json['providerConnectionId'] as String?,
+  providerGuestId: json['providerGuestId'] as String?,
+  providerSyncedAt: const NullableTimestampConverter().fromJson(
+    json['providerSyncedAt'],
+  ),
+  providerDataRevision: (json['providerDataRevision'] as num?)?.toInt() ?? 0,
   createdAt: const TimestampConverter().fromJson(json['createdAt']),
   updatedAt: const TimestampConverter().fromJson(json['updatedAt']),
   registeredAt: const NullableTimestampConverter().fromJson(
@@ -60,6 +70,13 @@ Map<String, dynamic> _$EventAttendeeToJson(
   'ticketType': instance.ticketType,
   'importId': instance.importId,
   'sourceRowId': instance.sourceRowId,
+  'provider': _$ExternalBookingProviderEnumMap[instance.provider],
+  'providerConnectionId': instance.providerConnectionId,
+  'providerGuestId': instance.providerGuestId,
+  'providerSyncedAt': const NullableTimestampConverter().toJson(
+    instance.providerSyncedAt,
+  ),
+  'providerDataRevision': instance.providerDataRevision,
   'createdAt': const TimestampConverter().toJson(instance.createdAt),
   'updatedAt': const TimestampConverter().toJson(instance.updatedAt),
   'registeredAt': const NullableTimestampConverter().toJson(
@@ -85,6 +102,7 @@ const _$EventAttendeeSourceEnumMap = {
   EventAttendeeSource.hostImport: 'hostImport',
   EventAttendeeSource.hostManual: 'hostManual',
   EventAttendeeSource.webOtp: 'webOtp',
+  EventAttendeeSource.providerSync: 'providerSync',
 };
 
 const _$EventAttendeeStatusEnumMap = {
@@ -93,4 +111,17 @@ const _$EventAttendeeStatusEnumMap = {
   EventAttendeeStatus.waitlisted: 'waitlisted',
   EventAttendeeStatus.checkedIn: 'checkedIn',
   EventAttendeeStatus.cancelled: 'cancelled',
+};
+
+const _$ExternalBookingProviderEnumMap = {
+  ExternalBookingProvider.catchPlatform: 'catchPlatform',
+  ExternalBookingProvider.generic: 'generic',
+  ExternalBookingProvider.luma: 'luma',
+  ExternalBookingProvider.eventbrite: 'eventbrite',
+  ExternalBookingProvider.partiful: 'partiful',
+  ExternalBookingProvider.posh: 'posh',
+  ExternalBookingProvider.bookmyshow: 'bookmyshow',
+  ExternalBookingProvider.district: 'district',
+  ExternalBookingProvider.sortmyscene: 'sortmyscene',
+  ExternalBookingProvider.airbnb: 'airbnb',
 };

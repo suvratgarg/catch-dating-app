@@ -4,6 +4,9 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/clipboard.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/time_formatters.dart';
+import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
@@ -20,6 +23,7 @@ import 'package:catch_dating_app/events/data/event_runtime_claim_repository.dart
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/events/domain/event_runtime_claim_request.dart';
+import 'package:catch_dating_app/hosts/data/host_provider_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_roster_file_parser.dart';
 import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operational_roster_controller.dart';
@@ -32,11 +36,13 @@ class HostOperationalRosterPanel extends ConsumerStatefulWidget {
   const HostOperationalRosterPanel({
     super.key,
     required this.eventId,
+    required this.organizerId,
     this.allowRosterChanges = true,
     this.bookingProvider,
   });
 
   final String eventId;
+  final String organizerId;
   final bool allowRosterChanges;
   final ExternalBookingProvider? bookingProvider;
 
@@ -51,6 +57,9 @@ class _HostOperationalRosterPanelState
   var _creatingHandoff = false;
   String? _pendingAttendanceId;
   String? _pendingClaimUid;
+  AsyncValue<HostProviderSetup>? _providerSetup;
+  var _providerMutationPending = false;
+  String? _providerSyncOperationId;
   Object? _mutationError;
 
   @override
@@ -61,7 +70,7 @@ class _HostOperationalRosterPanelState
     final claimsAsync = ref.watch(
       watchPendingEventRuntimeClaimsProvider(widget.eventId),
     );
-    return CatchSection.contained(
+    final rosterSection = CatchSection.contained(
       title: context.l10n.hostsOperationalRosterTitle,
       subtitle: context.l10n.hostsOperationalRosterSubtitle,
       child: Column(
@@ -183,6 +192,171 @@ class _HostOperationalRosterPanelState
         ],
       ),
     );
+    if (!_showsProviderSource) return rosterSection;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        CatchSection.fieldRows(
+          first: true,
+          children: [
+            CatchField.control(
+              title: context.l10n.hostsOperationalRosterProviderTitle,
+              contractExemption:
+                  'Disclosure and action surface for a server-owned '
+                  'booking-provider connection; the field itself does not '
+                  'persist an editable scalar value.',
+              body: context.l10n.hostsOperationalRosterProviderBody(
+                provider: _providerDisplayName(
+                  context,
+                  widget.bookingProvider!,
+                ),
+              ),
+              icon: CatchIcons.syncRounded,
+              control: _HostProviderControl(
+                value: _providerSetup,
+                provider: widget.bookingProvider!,
+                mutationPending: _providerMutationPending,
+                allowChanges: widget.allowRosterChanges,
+                onRetry: () => unawaited(_loadProviderSetup(force: true)),
+                onConnect: () => unawaited(_connectLuma()),
+                onSync: () => unawaited(_syncProvider()),
+                onDisconnect: () => unawaited(_disconnectProvider()),
+                onImport: () => unawaited(_pickRoster()),
+              ),
+              onOpenChanged: (open) {
+                if (open) unawaited(_loadProviderSetup());
+              },
+            ),
+          ],
+        ),
+        gapH20,
+        rosterSection,
+      ],
+    );
+  }
+
+  bool get _showsProviderSource {
+    final provider = widget.bookingProvider;
+    return provider != null && provider != ExternalBookingProvider.catchPlatform;
+  }
+
+  Future<void> _loadProviderSetup({bool force = false}) async {
+    if (!force && _providerSetup != null) return;
+    setState(() => _providerSetup = const AsyncLoading());
+    try {
+      final setup = await ref
+          .read(hostOperationalRosterControllerProvider)
+          .getProviderSetup(
+            organizerId: widget.organizerId,
+            eventId: widget.eventId,
+          );
+      if (mounted) setState(() => _providerSetup = AsyncData(setup));
+    } catch (error, stackTrace) {
+      if (mounted) {
+        setState(() => _providerSetup = AsyncError(error, stackTrace));
+      }
+    }
+  }
+
+  Future<void> _connectLuma() async {
+    final input = await showCatchBottomSheet<_LumaConnectionInput>(
+      context: context,
+      builder: (context) => _HostLumaConnectionSheet(
+        organizerId: widget.organizerId,
+        eventId: widget.eventId,
+        controller: ref.read(hostOperationalRosterControllerProvider),
+      ),
+    );
+    if (input == null || !mounted) return;
+    setState(() {
+      _providerMutationPending = true;
+      _mutationError = null;
+    });
+    try {
+      final setup = await ref
+          .read(hostOperationalRosterControllerProvider)
+          .connectLuma(
+            organizerId: widget.organizerId,
+            eventId: widget.eventId,
+            externalEventId: input.externalEventId,
+            apiKey: input.apiKey,
+          );
+      if (!mounted) return;
+      setState(() => _providerSetup = AsyncData(setup));
+      showCatchSnackBar(
+        context,
+        context.l10n.hostsOperationalRosterProviderConnected,
+      );
+    } catch (error) {
+      if (mounted) setState(() => _mutationError = error);
+    } finally {
+      if (mounted) setState(() => _providerMutationPending = false);
+    }
+  }
+
+  Future<void> _syncProvider() async {
+    if (_providerMutationPending) return;
+    final operationId = _providerSyncOperationId ??= _newProviderSyncOperationId();
+    setState(() {
+      _providerMutationPending = true;
+      _mutationError = null;
+    });
+    try {
+      final result = await ref
+          .read(hostOperationalRosterControllerProvider)
+          .syncProvider(
+            organizerId: widget.organizerId,
+            eventId: widget.eventId,
+            clientOperationId: operationId,
+          );
+      _providerSyncOperationId = null;
+      ref.invalidate(watchEventAttendeesProvider(widget.eventId));
+      await _loadProviderSetup(force: true);
+      if (!mounted) return;
+      showCatchSnackBar(
+        context,
+        context.l10n.hostsOperationalRosterProviderSyncSuccess(
+          created: result.createdCount,
+          updated: result.updatedCount,
+          skipped: result.skippedCount,
+        ),
+      );
+    } catch (error) {
+      if (mounted) setState(() => _mutationError = error);
+    } finally {
+      if (mounted) setState(() => _providerMutationPending = false);
+    }
+  }
+
+  Future<void> _disconnectProvider() async {
+    final connection = _providerSetup?.asData?.value.mappedConnection;
+    if (connection == null || _providerMutationPending) return;
+    final confirmed = await showCatchConfirmDialog(
+      context: context,
+      title: context.l10n.hostsOperationalRosterProviderDisconnectTitle,
+      message: context.l10n.hostsOperationalRosterProviderDisconnectBody,
+      confirmLabel: context.l10n.hostsOperationalRosterProviderDisconnect,
+      danger: true,
+    );
+    if (confirmed != true || !mounted) return;
+    setState(() {
+      _providerMutationPending = true;
+      _mutationError = null;
+    });
+    try {
+      final next = await ref
+          .read(hostOperationalRosterControllerProvider)
+          .disconnectProvider(
+            organizerId: widget.organizerId,
+            eventId: widget.eventId,
+            connectionId: connection.connectionId,
+          );
+      if (mounted) setState(() => _providerSetup = AsyncData(next));
+    } catch (error) {
+      if (mounted) setState(() => _mutationError = error);
+    } finally {
+      if (mounted) setState(() => _providerMutationPending = false);
+    }
   }
 
   Future<void> _pickRoster() async {
@@ -362,6 +536,402 @@ class _HostOperationalRosterPanelState
     } finally {
       if (mounted) setState(() => _pendingAttendanceId = null);
     }
+  }
+}
+
+class _HostProviderControl extends StatelessWidget {
+  const _HostProviderControl({
+    required this.value,
+    required this.provider,
+    required this.mutationPending,
+    required this.allowChanges,
+    required this.onRetry,
+    required this.onConnect,
+    required this.onSync,
+    required this.onDisconnect,
+    required this.onImport,
+  });
+
+  final AsyncValue<HostProviderSetup>? value;
+  final ExternalBookingProvider provider;
+  final bool mutationPending;
+  final bool allowChanges;
+  final VoidCallback onRetry;
+  final VoidCallback onConnect;
+  final VoidCallback onSync;
+  final VoidCallback onDisconnect;
+  final VoidCallback onImport;
+
+  @override
+  Widget build(BuildContext context) {
+    final setupValue = value;
+    if (setupValue == null) {
+      return Text(
+        context.l10n.hostsOperationalRosterProviderOpenToLoad,
+        style: CatchTextStyles.supporting(context),
+      );
+    }
+    return CatchAsyncValueView<HostProviderSetup>(
+      value: setupValue,
+      errorContext: AppErrorContext.event,
+      onRetry: onRetry,
+      builder: (context, setup) => _HostProviderSetupView(
+        setup: setup,
+        provider: provider,
+        mutationPending: mutationPending,
+        allowChanges: allowChanges,
+        onConnect: onConnect,
+        onSync: onSync,
+        onDisconnect: onDisconnect,
+        onImport: onImport,
+      ),
+    );
+  }
+}
+
+class _HostProviderSetupView extends StatelessWidget {
+  const _HostProviderSetupView({
+    required this.setup,
+    required this.provider,
+    required this.mutationPending,
+    required this.allowChanges,
+    required this.onConnect,
+    required this.onSync,
+    required this.onDisconnect,
+    required this.onImport,
+  });
+
+  final HostProviderSetup setup;
+  final ExternalBookingProvider provider;
+  final bool mutationPending;
+  final bool allowChanges;
+  final VoidCallback onConnect;
+  final VoidCallback onSync;
+  final VoidCallback onDisconnect;
+  final VoidCallback onImport;
+
+  @override
+  Widget build(BuildContext context) {
+    final entry = setup.catalogFor(provider);
+    if (entry == null) {
+      return CatchErrorBanner(
+        message: context.l10n.hostsOperationalRosterProviderUnavailable,
+      );
+    }
+    final mapping = setup.mapping;
+    final connection = setup.mappedConnection;
+    if (provider == ExternalBookingProvider.luma &&
+        mapping != null &&
+        connection != null &&
+        mapping.status == 'active') {
+      final reconnectRequired =
+          connection.status == 'credentialRevoked' ||
+          connection.status == 'disconnected';
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Align(
+            alignment: Alignment.centerLeft,
+            child: CatchBadge.functional(
+              label: _providerConnectionStatus(context, connection.status),
+              tone: connection.status == 'active'
+                  ? CatchBadgeTone.success
+                  : CatchBadgeTone.warning,
+            ),
+          ),
+          gapH8,
+          CatchFieldLanes.divided(
+            children: [
+              CatchField.read(
+                title: context.l10n.hostsOperationalRosterProviderAccount,
+                body: connection.externalAccountName,
+                icon: CatchIcons.linkOutlined,
+              ),
+              CatchField.read(
+                title: context.l10n.hostsOperationalRosterProviderCoverage,
+                body: _providerCoverage(context, connection.capabilities),
+                icon: CatchIcons.groupsOutlined,
+              ),
+              CatchField.read(
+                title: context.l10n.hostsOperationalRosterProviderLastSync,
+                body: mapping.lastSuccessfulSyncAt == null
+                    ? context.l10n.hostsOperationalRosterProviderNeverSynced
+                    : AppTimeFormatters.dateTime(
+                        mapping.lastSuccessfulSyncAt!.toLocal(),
+                      ),
+                icon: CatchIcons.refresh,
+              ),
+              CatchField.read(
+                title: context.l10n.hostsOperationalRosterProviderLimits,
+                body: context.l10n.hostsOperationalRosterProviderLumaLimits,
+                icon: CatchIcons.infoOutline,
+              ),
+            ],
+          ),
+          if (allowChanges) ...[
+            gapH12,
+            Wrap(
+              spacing: CatchSpacing.s2,
+              runSpacing: CatchSpacing.s2,
+              children: [
+                if (reconnectRequired)
+                  CatchButton(
+                    label: context.l10n.hostsOperationalRosterProviderReconnect,
+                    onPressed: mutationPending ? null : onConnect,
+                    isLoading: mutationPending,
+                    size: CatchButtonSize.sm,
+                    icon: Icon(CatchIcons.keyOutlined),
+                  )
+                else
+                  CatchButton(
+                    label: context.l10n.hostsOperationalRosterProviderSyncNow,
+                    onPressed: mutationPending ? null : onSync,
+                    isLoading: mutationPending,
+                    size: CatchButtonSize.sm,
+                    icon: Icon(CatchIcons.syncRounded),
+                  ),
+                CatchButton(
+                  label:
+                      context.l10n.hostsOperationalRosterProviderDisconnect,
+                  onPressed: mutationPending ? null : onDisconnect,
+                  size: CatchButtonSize.sm,
+                  variant: CatchButtonVariant.ghost,
+                ),
+              ],
+            ),
+          ],
+        ],
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Align(
+          alignment: Alignment.centerLeft,
+          child: CatchBadge.functional(
+            label: _providerAvailability(context, entry.availability),
+            tone: entry.availability == HostProviderAvailability.available
+                ? CatchBadgeTone.brand
+                : CatchBadgeTone.neutral,
+          ),
+        ),
+        gapH8,
+        Text(
+          entry.requirement,
+          style: CatchTextStyles.supporting(context),
+        ),
+        if (entry.importSupport == HostProviderImportSupport.sampleRequired) ...[
+          gapH8,
+          CatchErrorBanner(
+            message: context.l10n.hostsOperationalRosterAdapterSampleRequired,
+          ),
+        ],
+        if (allowChanges) ...[
+          gapH12,
+          Wrap(
+            spacing: CatchSpacing.s2,
+            runSpacing: CatchSpacing.s2,
+            children: [
+              if (provider == ExternalBookingProvider.luma &&
+                  entry.availability == HostProviderAvailability.available)
+                CatchButton(
+                  label: context.l10n.hostsOperationalRosterProviderConnect,
+                  onPressed: mutationPending ? null : onConnect,
+                  isLoading: mutationPending,
+                  size: CatchButtonSize.sm,
+                  icon: Icon(CatchIcons.keyOutlined),
+                ),
+              if (entry.capabilities.fileImport)
+                CatchButton(
+                  label: context.l10n.hostsOperationalRosterProviderImport,
+                  onPressed: mutationPending ? null : onImport,
+                  size: CatchButtonSize.sm,
+                  variant: CatchButtonVariant.secondary,
+                  icon: Icon(CatchIcons.cloudUploadOutlined),
+                ),
+            ],
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _LumaConnectionInput {
+  const _LumaConnectionInput({
+    required this.externalEventId,
+    required this.apiKey,
+  });
+
+  final String externalEventId;
+  final String apiKey;
+}
+
+class _HostLumaConnectionSheet extends StatefulWidget {
+  const _HostLumaConnectionSheet({
+    required this.organizerId,
+    required this.eventId,
+    required this.controller,
+  });
+
+  final String organizerId;
+  final String eventId;
+  final HostOperationalRosterController controller;
+
+  @override
+  State<_HostLumaConnectionSheet> createState() =>
+      _HostLumaConnectionSheetState();
+}
+
+class _HostLumaConnectionSheetState extends State<_HostLumaConnectionSheet> {
+  final _apiKeyController = TextEditingController();
+  var _showErrors = false;
+  var _loading = false;
+  Object? _error;
+
+  @override
+  void dispose() {
+    _apiKeyController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final apiKey = _apiKeyController.text.trim();
+    return CatchBottomSheetScaffold(
+      title: context.l10n.hostsOperationalRosterProviderConnectTitle,
+      subtitle: context.l10n.hostsOperationalRosterProviderConnectBody,
+      keyboardSafe: true,
+      action: CatchButton(
+        label: context.l10n.hostsOperationalRosterProviderChooseEvent,
+        onPressed: _loading ? null : _verifyAndChoose,
+        isLoading: _loading,
+        fullWidth: true,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          CatchFieldLanes.single(
+            child: CatchField.input(
+            title: context.l10n.hostsOperationalRosterProviderApiKey,
+            contract: CatchContractConstraints
+                .listOrganizerLumaEventsCallablePayloadApiKey,
+            controller: _apiKeyController,
+            obscureText: true,
+            helperText: context.l10n.hostsOperationalRosterProviderApiKeyHelp,
+            errorText: _showErrors && apiKey.length < 16
+                ? context.l10n.hostsOperationalRosterProviderFieldRequired
+                : null,
+            onChanged: (_) => setState(() {}),
+          ),
+          ),
+          if (_error case final error?) ...[
+            gapH12,
+            CatchErrorBanner.fromError(error, context: AppErrorContext.event),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Future<void> _verifyAndChoose() async {
+    final apiKey = _apiKeyController.text.trim();
+    if (apiKey.length < 16) {
+      setState(() => _showErrors = true);
+      return;
+    }
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      final choices = await widget.controller.listLumaEvents(
+        organizerId: widget.organizerId,
+        eventId: widget.eventId,
+        apiKey: apiKey,
+      );
+      if (!mounted) return;
+      final choice = await showCatchBottomSheet<HostProviderEventChoice>(
+        context: context,
+        builder: (context) => _HostLumaEventChoiceSheet(choices: choices),
+      );
+      if (choice != null && mounted) {
+        Navigator.of(context).pop(
+          _LumaConnectionInput(
+            externalEventId: choice.externalEventId,
+            apiKey: apiKey,
+          ),
+        );
+      }
+    } catch (error) {
+      if (mounted) setState(() => _error = error);
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+}
+
+class _HostLumaEventChoiceSheet extends StatelessWidget {
+  const _HostLumaEventChoiceSheet({required this.choices});
+
+  final HostProviderEventChoices choices;
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchBottomSheetScaffold(
+      title: context.l10n.hostsOperationalRosterProviderChooseEventTitle,
+      subtitle: context.l10n.hostsOperationalRosterProviderChooseEventBody(
+        calendar: choices.calendarName,
+      ),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.sizeOf(context).height * 0.58,
+        ),
+        child: choices.events.isEmpty
+            ? CatchEmptyState(
+                layout: CatchEmptyStateLayout.inline,
+                icon: CatchIcons.calendarMonthOutlined,
+                title: context.l10n
+                    .hostsOperationalRosterProviderNoEventsTitle,
+                message: context.l10n
+                    .hostsOperationalRosterProviderNoEventsBody,
+              )
+            : SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (choices.truncated) ...[
+                      CatchErrorBanner(
+                        message: context.l10n
+                            .hostsOperationalRosterProviderEventsTruncated,
+                      ),
+                      gapH12,
+                    ],
+                    CatchFieldLanes.single(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          for (final indexed in choices.events.indexed) ...[
+                            if (indexed.$1 > 0)
+                              const CatchDivider.fieldRow(),
+                            CatchField.nav(
+                              title: indexed.$2.name,
+                              body: AppTimeFormatters.dateTime(
+                                indexed.$2.startAt.toLocal(),
+                              ),
+                              onTap: () =>
+                                  Navigator.of(context).pop(indexed.$2),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+      ),
+    );
   }
 }
 
@@ -869,6 +1439,9 @@ String _newAttendanceOperationId(String attendeeId) =>
     'attendance_${attendeeId.hashCode.abs().toRadixString(36)}_'
     '${DateTime.now().microsecondsSinceEpoch.toRadixString(36)}';
 
+String _newProviderSyncOperationId() =>
+    'provider_sync_${DateTime.now().microsecondsSinceEpoch.toRadixString(36)}';
+
 String _attendeeMeta(BuildContext context, EventAttendee attendee) => [
   _sourceCopy(context, attendee.source),
   attendee.phoneE164,
@@ -885,6 +1458,76 @@ String _sourceCopy(BuildContext context, EventAttendeeSource source) =>
         context.l10n.hostsOperationalRosterSourceHostManual,
       EventAttendeeSource.webOtp =>
         context.l10n.hostsOperationalRosterSourceWebOtp,
+      EventAttendeeSource.providerSync =>
+        context.l10n.hostsOperationalRosterSourceProviderSync,
+    };
+
+String _providerDisplayName(
+  BuildContext context,
+  ExternalBookingProvider provider,
+) => switch (provider) {
+  ExternalBookingProvider.catchPlatform =>
+    context.l10n.hostsEventDetailsStepExternalProviderCatch,
+  ExternalBookingProvider.generic =>
+    context.l10n.hostsEventDetailsStepExternalProviderOther,
+  ExternalBookingProvider.luma =>
+    context.l10n.hostsEventDetailsStepExternalProviderLuma,
+  ExternalBookingProvider.eventbrite =>
+    context.l10n.hostsEventDetailsStepExternalProviderEventbrite,
+  ExternalBookingProvider.partiful =>
+    context.l10n.hostsEventDetailsStepExternalProviderPartiful,
+  ExternalBookingProvider.posh =>
+    context.l10n.hostsEventDetailsStepExternalProviderPosh,
+  ExternalBookingProvider.bookmyshow =>
+    context.l10n.hostsEventDetailsStepExternalProviderBookMyShow,
+  ExternalBookingProvider.district =>
+    context.l10n.hostsEventDetailsStepExternalProviderDistrict,
+  ExternalBookingProvider.sortmyscene =>
+    context.l10n.hostsEventDetailsStepExternalProviderSortMyScene,
+  ExternalBookingProvider.airbnb =>
+    context.l10n.hostsEventDetailsStepExternalProviderAirbnbExperiences,
+};
+
+String _providerCoverage(
+  BuildContext context,
+  HostProviderCapabilities capabilities,
+) {
+  final values = <String>[
+    if (capabilities.rosterIdentity)
+      context.l10n.hostsOperationalRosterProviderCapabilityGuests,
+    if (capabilities.registrationStatus)
+      context.l10n.hostsOperationalRosterProviderCapabilityStatus,
+    if (capabilities.providerCheckIn)
+      context.l10n.hostsOperationalRosterProviderCapabilityCheckIn,
+  ];
+  return values.join(' · ');
+}
+
+String _providerAvailability(
+  BuildContext context,
+  HostProviderAvailability value,
+) => switch (value) {
+  HostProviderAvailability.available =>
+    context.l10n.hostsOperationalRosterProviderAvailable,
+  HostProviderAvailability.exportOnly =>
+    context.l10n.hostsOperationalRosterProviderExportOnly,
+  HostProviderAvailability.configurationRequired =>
+    context.l10n.hostsOperationalRosterProviderConfigurationRequired,
+  HostProviderAvailability.partnerAccessRequired =>
+    context.l10n.hostsOperationalRosterProviderPartnerRequired,
+  HostProviderAvailability.sampleRequired =>
+    context.l10n.hostsOperationalRosterProviderSampleRequired,
+  HostProviderAvailability.manualOnly =>
+    context.l10n.hostsOperationalRosterProviderManualOnly,
+};
+
+String _providerConnectionStatus(BuildContext context, String value) =>
+    switch (value) {
+      'active' => context.l10n.hostsOperationalRosterProviderStatusActive,
+      'degraded' => context.l10n.hostsOperationalRosterProviderStatusDegraded,
+      'credentialRevoked' =>
+        context.l10n.hostsOperationalRosterProviderStatusReconnect,
+      _ => context.l10n.hostsOperationalRosterProviderStatusDisconnected,
     };
 
 String _statusCopy(BuildContext context, EventAttendeeStatus status) =>

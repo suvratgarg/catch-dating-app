@@ -202,6 +202,24 @@ const schemaSpecs = [
       "functions/src/shared/generated/organizerSenderConnectionDocument.ts",
   },
   {
+    name: "OrganizerProviderConnectionDocument",
+    source: "firestore/organizer_provider_connections.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerProviderConnectionDocument.ts",
+  },
+  {
+    name: "ExternalEventMappingDocument",
+    source: "firestore/external_event_mappings.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/externalEventMappingDocument.ts",
+  },
+  {
+    name: "ProviderSyncRunDocument",
+    source: "firestore/provider_sync_runs.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/providerSyncRunDocument.ts",
+  },
+  {
     name: "OrganizerMessageTemplateDocument",
     source: "firestore/organizer_message_templates.schema.json",
     typeOutput:
@@ -1180,6 +1198,65 @@ const schemaSpecs = [
       "callable_responses/organizer_messaging_setup_response.schema.json",
     typeOutput:
       "functions/src/shared/generated/organizerMessagingSetupCallableResponse.ts",
+  },
+  {
+    name: "GetOrganizerProviderSetupCallablePayload",
+    source: "callables/get_organizer_provider_setup_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "getOrganizerProviderSetupCallablePayload.ts",
+  },
+  {
+    name: "ConnectOrganizerLumaProviderCallablePayload",
+    source: "callables/connect_organizer_luma_provider_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "connectOrganizerLumaProviderCallablePayload.ts",
+  },
+  {
+    name: "ListOrganizerLumaEventsCallablePayload",
+    source: "callables/list_organizer_luma_events_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "listOrganizerLumaEventsCallablePayload.ts",
+  },
+  {
+    name: "SyncOrganizerProviderEventCallablePayload",
+    source: "callables/sync_organizer_provider_event_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "syncOrganizerProviderEventCallablePayload.ts",
+  },
+  {
+    name: "DisconnectOrganizerProviderCallablePayload",
+    source: "callables/disconnect_organizer_provider_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "disconnectOrganizerProviderCallablePayload.ts",
+  },
+  {
+    name: "OrganizerProviderSetupCallableResponse",
+    source:
+      "callable_responses/organizer_provider_setup_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "organizerProviderSetupCallableResponse.ts",
+  },
+  {
+    name: "ListOrganizerLumaEventsCallableResponse",
+    source:
+      "callable_responses/list_organizer_luma_events_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "listOrganizerLumaEventsCallableResponse.ts",
+  },
+  {
+    name: "SyncOrganizerProviderEventCallableResponse",
+    source:
+      "callable_responses/sync_organizer_provider_event_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "syncOrganizerProviderEventCallableResponse.ts",
   },
   {
     name: "RecordOrganizerAnalyticsEventCallablePayload",

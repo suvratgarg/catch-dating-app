@@ -45,7 +45,7 @@
         "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
         "attendeeId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
         "displayName": {"type": "string", "minLength": 1, "maxLength": 120},
-        "source": {"type": "string", "enum": ["catchBooking", "hostImport", "hostManual", "webOtp"]},
+        "source": {"type": "string", "enum": ["catchBooking", "hostImport", "hostManual", "webOtp", "providerSync"]},
         "status": {"type": "string", "enum": ["invited", "registered", "waitlisted", "checkedIn", "cancelled"]},
         "expected": {"type": "boolean"},
         "registered": {"type": "boolean"},

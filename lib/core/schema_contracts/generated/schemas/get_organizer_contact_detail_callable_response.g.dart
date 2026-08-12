@@ -227,6 +227,7 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
               'hostImport',
               'hostManual',
               'webOtp',
+              'providerSync',
             ],
           },
           'status': <String, Object?>{
@@ -437,6 +438,7 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
             'hostImport',
             'hostManual',
             'webOtp',
+            'providerSync',
           ],
         },
         'status': <String, Object?>{

@@ -52,7 +52,12 @@ export interface GetOrganizerContactDetailCallableResponse {
     eventId: string;
     attendeeId: string;
     displayName: string;
-    source: "catchBooking" | "hostImport" | "hostManual" | "webOtp";
+    source:
+      | "catchBooking"
+      | "hostImport"
+      | "hostManual"
+      | "webOtp"
+      | "providerSync";
     status: "invited" | "registered" | "waitlisted" | "checkedIn" | "cancelled";
     expected: boolean;
     registered: boolean;

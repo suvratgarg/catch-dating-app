@@ -11872,7 +11872,8 @@ export const organizerContactDocumentSchema: Record<string, unknown> = {
         "catchBooking",
         "hostImport",
         "hostManual",
-        "webOtp"
+        "webOtp",
+        "providerSync"
       ],
       "x-catch-ownership": "server-only"
     },
@@ -12133,7 +12134,8 @@ export const organizerContactIdentityLinkDocumentSchema: Record<string, unknown>
         "catchBooking",
         "hostImport",
         "hostManual",
-        "webOtp"
+        "webOtp",
+        "providerSync"
       ]
     },
     "createdAt": {
@@ -12399,7 +12401,8 @@ export const organizerContactEventEdgeDocumentSchema: Record<string, unknown> = 
         "catchBooking",
         "hostImport",
         "hostManual",
-        "webOtp"
+        "webOtp",
+        "providerSync"
       ]
     },
     "status": {
@@ -13613,6 +13616,693 @@ export const organizerSenderConnectionDocumentSchema: Record<string, unknown> = 
           "type": "null"
         }
       ]
+    }
+  }
+} as const;
+
+export const organizerProviderConnectionDocumentSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_provider_connections.schema.json",
+  "title": "OrganizerProviderConnectionDocument",
+  "description": "Safe organizer-owned booking-provider connection metadata. Provider credentials live in Secret Manager, never Firestore.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerProviderConnections",
+  "x-firestore-path": "organizerProviderConnections/{connectionId}",
+  "x-document-id-field": "connectionId",
+  "x-owner": "organizer provider connection and health callables",
+  "required": [
+    "organizerId",
+    "provider",
+    "adapterClass",
+    "status",
+    "externalAccountId",
+    "externalAccountName",
+    "secretVersionResource",
+    "syncMode",
+    "capabilities",
+    "connectedByUid",
+    "revision",
+    "createdAt",
+    "updatedAt",
+    "lastHealthSyncAt",
+    "lastSuccessfulSyncAt",
+    "lastErrorCode",
+    "disconnectedAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "provider": {
+      "const": "luma"
+    },
+    "adapterClass": {
+      "const": "A"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "degraded",
+        "credentialRevoked",
+        "disconnected"
+      ]
+    },
+    "externalAccountId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "externalAccountName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "secretVersionResource": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^projects/[^/]+/secrets/[^/]+/versions/[0-9]+$"
+    },
+    "syncMode": {
+      "const": "manualPoll"
+    },
+    "capabilities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventList",
+        "rosterIdentity",
+        "registrationStatus",
+        "providerCheckIn",
+        "orderAmount",
+        "refundStatus",
+        "referralCode",
+        "webhooks",
+        "writeBookings"
+      ],
+      "properties": {
+        "eventList": {
+          "type": "boolean"
+        },
+        "rosterIdentity": {
+          "type": "boolean"
+        },
+        "registrationStatus": {
+          "type": "boolean"
+        },
+        "providerCheckIn": {
+          "type": "boolean"
+        },
+        "orderAmount": {
+          "type": "boolean"
+        },
+        "refundStatus": {
+          "type": "boolean"
+        },
+        "referralCode": {
+          "type": "boolean"
+        },
+        "webhooks": {
+          "type": "boolean"
+        },
+        "writeBookings": {
+          "type": "boolean"
+        }
+      }
+    },
+    "connectedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "lastHealthSyncAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "lastSuccessfulSyncAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "lastErrorCode": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "disconnectedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+} as const;
+
+export const externalEventMappingDocumentSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/external_event_mappings.schema.json",
+  "title": "ExternalEventMappingDocument",
+  "description": "Stable mapping and field-level authority between one Catch event and one organizer-authorized booking-provider event.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "externalEventMappings",
+  "x-firestore-path": "externalEventMappings/{mappingId}",
+  "x-document-id-field": "mappingId",
+  "x-owner": "organizer provider mapping and roster reconciliation callables",
+  "required": [
+    "organizerId",
+    "eventId",
+    "connectionId",
+    "provider",
+    "externalEventId",
+    "status",
+    "fieldAuthority",
+    "revision",
+    "createdByUid",
+    "createdAt",
+    "updatedAt",
+    "lastSyncAt",
+    "lastSuccessfulSyncAt",
+    "lastSyncStatus",
+    "lastSyncRunId",
+    "disconnectedAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "connectionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "provider": {
+      "const": "luma"
+    },
+    "externalEventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "paused",
+        "disconnected"
+      ]
+    },
+    "fieldAuthority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rosterIdentity",
+        "registrationStatus",
+        "checkIn",
+        "orderAmount",
+        "refundStatus",
+        "referralCode"
+      ],
+      "properties": {
+        "rosterIdentity": {
+          "const": "provider"
+        },
+        "registrationStatus": {
+          "const": "provider"
+        },
+        "checkIn": {
+          "const": "providerWhenPresent"
+        },
+        "orderAmount": {
+          "const": "unavailable"
+        },
+        "refundStatus": {
+          "const": "unavailable"
+        },
+        "referralCode": {
+          "const": "unavailable"
+        }
+      }
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "createdByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "lastSyncAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "lastSuccessfulSyncAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "lastSyncStatus": {
+      "type": "string",
+      "enum": [
+        "never",
+        "running",
+        "completed",
+        "partial",
+        "failed"
+      ]
+    },
+    "lastSyncRunId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "disconnectedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+} as const;
+
+export const providerSyncRunDocumentSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/provider_sync_runs.schema.json",
+  "title": "ProviderSyncRunDocument",
+  "description": "Idempotent audit and replay receipt for one external-provider event reconciliation.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "providerSyncRuns",
+  "x-firestore-path": "providerSyncRuns/{runId}",
+  "x-document-id-field": "runId",
+  "x-owner": "organizer provider roster reconciliation callable",
+  "required": [
+    "organizerId",
+    "eventId",
+    "connectionId",
+    "mappingId",
+    "provider",
+    "clientOperationId",
+    "inputHash",
+    "status",
+    "pageCount",
+    "receivedCount",
+    "createdCount",
+    "updatedCount",
+    "skippedCount",
+    "truncated",
+    "errorCode",
+    "startedByUid",
+    "startedAt",
+    "completedAt",
+    "expiresAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "connectionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "mappingId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "provider": {
+      "const": "luma"
+    },
+    "clientOperationId": {
+      "type": "string",
+      "minLength": 16,
+      "maxLength": 120
+    },
+    "inputHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "running",
+        "completed",
+        "partial",
+        "failed"
+      ]
+    },
+    "pageCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10
+    },
+    "receivedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 250
+    },
+    "createdCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 250
+    },
+    "updatedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 250
+    },
+    "skippedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 250
+    },
+    "truncated": {
+      "type": "boolean"
+    },
+    "errorCode": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "startedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "startedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "completedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
     }
   }
 } as const;
@@ -19962,7 +20652,8 @@ export const eventAttendeeDocumentSchema: Record<string, unknown> = {
         "catchBooking",
         "hostImport",
         "hostManual",
-        "webOtp"
+        "webOtp",
+        "providerSync"
       ]
     },
     "status": {
@@ -20267,6 +20958,72 @@ export const eventAttendeeDocumentSchema: Record<string, unknown> = {
         null
       ],
       "description": "Operational status restored by an absolute undo. Null outside checked-in state."
+    },
+    "provider": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "luma",
+        "eventbrite",
+        "partiful",
+        "posh",
+        "bookmyshow",
+        "district",
+        "sortmyscene",
+        "airbnb",
+        null
+      ],
+      "description": "External source that most recently supplied provider-authoritative fields, independent of row creation source."
+    },
+    "providerConnectionId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "providerGuestId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "providerSyncedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "providerDataRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
     }
   }
 } as const;
@@ -28095,7 +28852,8 @@ export const hostAnalyticsSnapshotDocumentSchema: Record<string, unknown> = {
                   "catchBooking",
                   "hostImport",
                   "hostManual",
-                  "webOtp"
+                  "webOtp",
+                  "providerSync"
                 ],
                 "properties": {
                   "catchBooking": {
@@ -28111,6 +28869,10 @@ export const hostAnalyticsSnapshotDocumentSchema: Record<string, unknown> = {
                     "minimum": 0
                   },
                   "webOtp": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "providerSync": {
                     "type": "integer",
                     "minimum": 0
                   }
@@ -36018,7 +36780,8 @@ export const hostAnalyticsCallableResponseSchema: Record<string, unknown> = {
               "catchBooking",
               "hostImport",
               "hostManual",
-              "webOtp"
+              "webOtp",
+              "providerSync"
             ],
             "properties": {
               "catchBooking": {
@@ -36034,6 +36797,10 @@ export const hostAnalyticsCallableResponseSchema: Record<string, unknown> = {
                 "minimum": 0
               },
               "webOtp": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "providerSync": {
                 "type": "integer",
                 "minimum": 0
               }
@@ -43173,6 +43940,657 @@ export const organizerMessagingSetupCallableResponseSchema: Record<string, unkno
   }
 } as const;
 
+export const getOrganizerProviderSetupCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_organizer_provider_setup_payload.schema.json",
+  "title": "GetOrganizerProviderSetupCallablePayload",
+  "description": "Manager request for safe provider capabilities and one event mapping.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "eventId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+} as const;
+
+export const connectOrganizerLumaProviderCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/connect_organizer_luma_provider_payload.schema.json",
+  "title": "ConnectOrganizerLumaProviderCallablePayload",
+  "description": "Connect a calendar-scoped Luma API key and map one Catch event after provider verification.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "eventId",
+    "externalEventId",
+    "apiKey"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "externalEventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "apiKey": {
+      "type": "string",
+      "minLength": 16,
+      "maxLength": 512
+    }
+  }
+} as const;
+
+export const listOrganizerLumaEventsCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_organizer_luma_events_payload.schema.json",
+  "title": "ListOrganizerLumaEventsCallablePayload",
+  "description": "Manager request to verify a calendar-scoped Luma API key and list manageable events without persisting the key.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "eventId",
+    "apiKey"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "apiKey": {
+      "type": "string",
+      "minLength": 16,
+      "maxLength": 512
+    }
+  }
+} as const;
+
+export const syncOrganizerProviderEventCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/sync_organizer_provider_event_payload.schema.json",
+  "title": "SyncOrganizerProviderEventCallablePayload",
+  "description": "Idempotent manager request to reconcile one mapped external event into the Catch operational roster.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "eventId",
+    "clientOperationId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "clientOperationId": {
+      "type": "string",
+      "minLength": 16,
+      "maxLength": 120
+    }
+  }
+} as const;
+
+export const disconnectOrganizerProviderCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/disconnect_organizer_provider_payload.schema.json",
+  "title": "DisconnectOrganizerProviderCallablePayload",
+  "description": "Manager request to revoke one organizer provider connection and stop future synchronization.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "eventId",
+    "connectionId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "connectionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+} as const;
+
+export const organizerProviderSetupCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/organizer_provider_setup_response.schema.json",
+  "title": "OrganizerProviderSetupCallableResponse",
+  "description": "Safe provider capability catalog, organizer connections and event mapping projection.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "eventId",
+    "providers",
+    "connections",
+    "mapping"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "providers": {
+      "type": "array",
+      "minItems": 9,
+      "maxItems": 9,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "provider",
+          "displayName",
+          "adapterClass",
+          "availability",
+          "importSupport",
+          "connectionMethod",
+          "capabilities",
+          "requirement"
+        ],
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": [
+              "generic",
+              "luma",
+              "eventbrite",
+              "partiful",
+              "posh",
+              "bookmyshow",
+              "district",
+              "sortmyscene",
+              "airbnb"
+            ]
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "adapterClass": {
+            "type": "string",
+            "enum": [
+              "A",
+              "C",
+              "D",
+              "E",
+              "unclassified"
+            ]
+          },
+          "availability": {
+            "type": "string",
+            "enum": [
+              "available",
+              "exportOnly",
+              "configurationRequired",
+              "partnerAccessRequired",
+              "sampleRequired",
+              "manualOnly"
+            ]
+          },
+          "importSupport": {
+            "type": "string",
+            "enum": [
+              "verified",
+              "generic",
+              "sampleRequired"
+            ]
+          },
+          "connectionMethod": {
+            "type": "string",
+            "enum": [
+              "apiKey",
+              "oauth",
+              "partner",
+              "none"
+            ]
+          },
+          "capabilities": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "fileImport",
+              "eventList",
+              "rosterIdentity",
+              "registrationStatus",
+              "providerCheckIn",
+              "orderAmount",
+              "refundStatus",
+              "referralCode",
+              "webhooks",
+              "writeBookings"
+            ],
+            "properties": {
+              "fileImport": {
+                "type": "boolean"
+              },
+              "eventList": {
+                "type": "boolean"
+              },
+              "rosterIdentity": {
+                "type": "boolean"
+              },
+              "registrationStatus": {
+                "type": "boolean"
+              },
+              "providerCheckIn": {
+                "type": "boolean"
+              },
+              "orderAmount": {
+                "type": "boolean"
+              },
+              "refundStatus": {
+                "type": "boolean"
+              },
+              "referralCode": {
+                "type": "boolean"
+              },
+              "webhooks": {
+                "type": "boolean"
+              },
+              "writeBookings": {
+                "type": "boolean"
+              }
+            }
+          },
+          "requirement": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        }
+      }
+    },
+    "connections": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "connectionId",
+          "provider",
+          "status",
+          "externalAccountId",
+          "externalAccountName",
+          "syncMode",
+          "capabilities",
+          "revision",
+          "lastHealthSyncAtMillis",
+          "lastSuccessfulSyncAtMillis"
+        ],
+        "properties": {
+          "connectionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "provider": {
+            "const": "luma"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "degraded",
+              "credentialRevoked",
+              "disconnected"
+            ]
+          },
+          "externalAccountId": {
+            "type": "string"
+          },
+          "externalAccountName": {
+            "type": "string"
+          },
+          "syncMode": {
+            "const": "manualPoll"
+          },
+          "capabilities": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "eventList",
+              "rosterIdentity",
+              "registrationStatus",
+              "providerCheckIn",
+              "orderAmount",
+              "refundStatus",
+              "referralCode",
+              "webhooks",
+              "writeBookings"
+            ],
+            "properties": {
+              "eventList": {
+                "type": "boolean"
+              },
+              "rosterIdentity": {
+                "type": "boolean"
+              },
+              "registrationStatus": {
+                "type": "boolean"
+              },
+              "providerCheckIn": {
+                "type": "boolean"
+              },
+              "orderAmount": {
+                "type": "boolean"
+              },
+              "refundStatus": {
+                "type": "boolean"
+              },
+              "referralCode": {
+                "type": "boolean"
+              },
+              "webhooks": {
+                "type": "boolean"
+              },
+              "writeBookings": {
+                "type": "boolean"
+              }
+            }
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "lastHealthSyncAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "lastSuccessfulSyncAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "mapping": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "mappingId",
+        "connectionId",
+        "provider",
+        "externalEventId",
+        "status",
+        "fieldAuthority",
+        "revision",
+        "lastSyncAtMillis",
+        "lastSuccessfulSyncAtMillis",
+        "lastSyncStatus",
+        "lastSyncRunId"
+      ],
+      "properties": {
+        "mappingId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "connectionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "provider": {
+          "const": "luma"
+        },
+        "externalEventId": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "active",
+            "paused",
+            "disconnected"
+          ]
+        },
+        "fieldAuthority": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "rosterIdentity",
+            "registrationStatus",
+            "checkIn",
+            "orderAmount",
+            "refundStatus",
+            "referralCode"
+          ],
+          "properties": {
+            "rosterIdentity": {
+              "const": "provider"
+            },
+            "registrationStatus": {
+              "const": "provider"
+            },
+            "checkIn": {
+              "const": "providerWhenPresent"
+            },
+            "orderAmount": {
+              "const": "unavailable"
+            },
+            "refundStatus": {
+              "const": "unavailable"
+            },
+            "referralCode": {
+              "const": "unavailable"
+            }
+          }
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "lastSyncAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "lastSuccessfulSyncAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "lastSyncStatus": {
+          "type": "string",
+          "enum": [
+            "never",
+            "running",
+            "completed",
+            "partial",
+            "failed"
+          ]
+        },
+        "lastSyncRunId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+} as const;
+
+export const listOrganizerLumaEventsCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_organizer_luma_events_response.schema.json",
+  "title": "ListOrganizerLumaEventsCallableResponse",
+  "description": "Safe calendar identity and manageable Luma event choices returned after transient key verification.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "calendarName",
+    "events",
+    "truncated"
+  ],
+  "properties": {
+    "calendarName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "events": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "externalEventId",
+          "name",
+          "startAtMillis"
+        ],
+        "properties": {
+          "externalEventId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "startAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "truncated": {
+      "type": "boolean"
+    }
+  }
+} as const;
+
+export const syncOrganizerProviderEventCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/sync_organizer_provider_event_response.schema.json",
+  "title": "SyncOrganizerProviderEventCallableResponse",
+  "description": "Safe result of one provider roster reconciliation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "runId",
+    "status",
+    "pageCount",
+    "receivedCount",
+    "createdCount",
+    "updatedCount",
+    "skippedCount",
+    "truncated",
+    "replayed"
+  ],
+  "properties": {
+    "runId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "completed",
+        "partial",
+        "failed"
+      ]
+    },
+    "pageCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10
+    },
+    "receivedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 250
+    },
+    "createdCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 250
+    },
+    "updatedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 250
+    },
+    "skippedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 250
+    },
+    "truncated": {
+      "type": "boolean"
+    },
+    "replayed": {
+      "type": "boolean"
+    }
+  }
+} as const;
+
 export const recordOrganizerAnalyticsEventCallablePayloadSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/record_organizer_analytics_event_payload.schema.json",
@@ -45110,7 +46528,8 @@ export const getOrganizerContactDetailCallableResponseSchema: Record<string, unk
               "catchBooking",
               "hostImport",
               "hostManual",
-              "webOtp"
+              "webOtp",
+              "providerSync"
             ]
           },
           "status": {
@@ -45320,7 +46739,8 @@ export const getOrganizerContactDetailCallableResponseSchema: Record<string, unk
             "catchBooking",
             "hostImport",
             "hostManual",
-            "webOtp"
+            "webOtp",
+            "providerSync"
           ]
         },
         "status": {

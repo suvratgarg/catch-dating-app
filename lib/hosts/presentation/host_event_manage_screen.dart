@@ -320,6 +320,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
         ],
         HostOperationalRosterPanel(
           eventId: event.id,
+          organizerId: event.clubId,
           bookingProvider: event.eventOrigin?.provider,
         ),
         if (!event.isExternalCompanion) ...[
@@ -352,6 +353,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
       HostEventManageSection.report => <Widget>[
         HostOperationalRosterPanel(
           eventId: event.id,
+          organizerId: event.clubId,
           allowRosterChanges: false,
           bookingProvider: event.eventOrigin?.provider,
         ),

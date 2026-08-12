@@ -1,10 +1,17 @@
 import 'package:catch_dating_app/core/firestore_converters.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'event_attendee.freezed.dart';
 part 'event_attendee.g.dart';
 
-enum EventAttendeeSource { catchBooking, hostImport, hostManual, webOtp }
+enum EventAttendeeSource {
+  catchBooking,
+  hostImport,
+  hostManual,
+  webOtp,
+  providerSync,
+}
 
 enum EventAttendeeStatus {
   invited,
@@ -36,6 +43,11 @@ abstract class EventAttendee with _$EventAttendee {
     String? ticketType,
     String? importId,
     String? sourceRowId,
+    ExternalBookingProvider? provider,
+    String? providerConnectionId,
+    String? providerGuestId,
+    @NullableTimestampConverter() DateTime? providerSyncedAt,
+    @Default(0) int providerDataRevision,
     @TimestampConverter() required DateTime createdAt,
     @TimestampConverter() required DateTime updatedAt,
     @NullableTimestampConverter() DateTime? registeredAt,

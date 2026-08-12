@@ -11506,6 +11506,171 @@ class AppLocalizationsEn extends AppLocalizations {
       'Upload a CSV or XLSX from your ticketing tool, or add guests one at a time.';
 
   @override
+  String get hostsOperationalRosterProviderTitle => 'Booking source';
+
+  @override
+  String hostsOperationalRosterProviderBody({required String provider}) {
+    return 'Bring your $provider guest list into this roster.';
+  }
+
+  @override
+  String get hostsOperationalRosterProviderOpenToLoad =>
+      'Open this section to check available import and sync options.';
+
+  @override
+  String get hostsOperationalRosterProviderUnavailable =>
+      'Catch could not identify a safe import option for this booking source.';
+
+  @override
+  String get hostsOperationalRosterProviderAccount => 'Connected calendar';
+
+  @override
+  String get hostsOperationalRosterProviderCoverage => 'What syncs';
+
+  @override
+  String get hostsOperationalRosterProviderLastSync => 'Last successful sync';
+
+  @override
+  String get hostsOperationalRosterProviderNeverSynced => 'Not synced yet';
+
+  @override
+  String get hostsOperationalRosterProviderLimits =>
+      'Not supplied by this connection';
+
+  @override
+  String get hostsOperationalRosterProviderLumaLimits =>
+      'Payments, refunds, referral codes and automatic background updates. Catch check-ins are never undone when Luma omits a check-in.';
+
+  @override
+  String get hostsOperationalRosterProviderCapabilityGuests =>
+      'Guest names and contact details';
+
+  @override
+  String get hostsOperationalRosterProviderCapabilityStatus =>
+      'Registration status';
+
+  @override
+  String get hostsOperationalRosterProviderCapabilityCheckIn =>
+      'Provider check-ins';
+
+  @override
+  String get hostsOperationalRosterProviderSyncNow => 'Sync now';
+
+  @override
+  String get hostsOperationalRosterProviderDisconnect => 'Disconnect';
+
+  @override
+  String get hostsOperationalRosterProviderDisconnectTitle =>
+      'Disconnect booking source?';
+
+  @override
+  String get hostsOperationalRosterProviderDisconnectBody =>
+      'Guests already in Catch stay on this roster. Future provider changes will not appear until you reconnect.';
+
+  @override
+  String get hostsOperationalRosterProviderConnect => 'Connect Luma';
+
+  @override
+  String get hostsOperationalRosterProviderReconnect => 'Reconnect Luma';
+
+  @override
+  String get hostsOperationalRosterProviderImport => 'Import spreadsheet';
+
+  @override
+  String get hostsOperationalRosterProviderConnected =>
+      'Luma connected. Sync when you want to refresh the roster.';
+
+  @override
+  String hostsOperationalRosterProviderSyncSuccess({
+    required int created,
+    required int updated,
+    required int skipped,
+  }) {
+    return 'Roster synced: $created added, $updated refreshed, $skipped skipped.';
+  }
+
+  @override
+  String get hostsOperationalRosterProviderConnectTitle =>
+      'Connect your Luma calendar';
+
+  @override
+  String get hostsOperationalRosterProviderConnectBody =>
+      'Catch checks the calendar key without saving it, then lets you choose an event. The key is stored only after you confirm the event.';
+
+  @override
+  String get hostsOperationalRosterProviderApiKey => 'Luma calendar API key';
+
+  @override
+  String get hostsOperationalRosterProviderApiKeyHelp =>
+      'Requires Luma Plus. Catch encrypts the key in Google Secret Manager after you choose an event.';
+
+  @override
+  String get hostsOperationalRosterProviderFieldRequired =>
+      'Check this value and try again.';
+
+  @override
+  String get hostsOperationalRosterProviderChooseEvent =>
+      'Check key and choose event';
+
+  @override
+  String get hostsOperationalRosterProviderChooseEventTitle =>
+      'Choose the Luma event';
+
+  @override
+  String hostsOperationalRosterProviderChooseEventBody({
+    required String calendar,
+  }) {
+    return 'Events managed by $calendar. Choose the one that matches this Catch event.';
+  }
+
+  @override
+  String get hostsOperationalRosterProviderNoEventsTitle =>
+      'No manageable events found';
+
+  @override
+  String get hostsOperationalRosterProviderNoEventsBody =>
+      'This key did not return an event the calendar can manage.';
+
+  @override
+  String get hostsOperationalRosterProviderEventsTruncated =>
+      'Showing the 50 most recent manageable events. Use spreadsheet import if the event you need is older.';
+
+  @override
+  String get hostsOperationalRosterProviderAvailable => 'Direct sync available';
+
+  @override
+  String get hostsOperationalRosterProviderExportOnly => 'Spreadsheet import';
+
+  @override
+  String get hostsOperationalRosterProviderConfigurationRequired =>
+      'Catch setup pending';
+
+  @override
+  String get hostsOperationalRosterProviderPartnerRequired =>
+      'Provider approval required';
+
+  @override
+  String get hostsOperationalRosterProviderSampleRequired =>
+      'Export sample needed';
+
+  @override
+  String get hostsOperationalRosterProviderManualOnly => 'Manual import';
+
+  @override
+  String get hostsOperationalRosterProviderStatusActive => 'Connected';
+
+  @override
+  String get hostsOperationalRosterProviderStatusDegraded =>
+      'Connection needs attention';
+
+  @override
+  String get hostsOperationalRosterProviderStatusReconnect =>
+      'Reconnect required';
+
+  @override
+  String get hostsOperationalRosterProviderStatusDisconnected => 'Disconnected';
+
+  @override
   String get hostsOperationalRosterSourceCatchBooking => 'Catch booking';
 
   @override
@@ -11516,6 +11681,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsOperationalRosterSourceWebOtp => 'Web registration';
+
+  @override
+  String get hostsOperationalRosterSourceProviderSync => 'Booking provider';
 
   @override
   String get hostsOperationalRosterStatusInvited => 'Invited';

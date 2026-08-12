@@ -15,7 +15,12 @@ export interface OrganizerContactEventEdgeDocument {
   linkedUid: string | null;
   phoneE164: string | null;
   email: string | null;
-  source: "catchBooking" | "hostImport" | "hostManual" | "webOtp";
+  source:
+    | "catchBooking"
+    | "hostImport"
+    | "hostManual"
+    | "webOtp"
+    | "providerSync";
   status: "invited" | "registered" | "waitlisted" | "checkedIn" | "cancelled";
   expected: boolean;
   registered: boolean;

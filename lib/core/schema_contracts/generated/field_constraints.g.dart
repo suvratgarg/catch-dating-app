@@ -6438,6 +6438,38 @@ abstract final class CatchContractConstraints {
     minimum: 2,
   );
 
+  static const connectOrganizerLumaProviderCallablePayloadApiKey = CatchContractFieldConstraints(
+    path: 'connectOrganizerLumaProviderCallablePayload.apiKey',
+    maxLength: 512,
+    minLength: 16,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const connectOrganizerLumaProviderCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'connectOrganizerLumaProviderCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const connectOrganizerLumaProviderCallablePayloadExternalEventId = CatchContractFieldConstraints(
+    path: 'connectOrganizerLumaProviderCallablePayload.externalEventId',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const connectOrganizerLumaProviderCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'connectOrganizerLumaProviderCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const createChatMessageClientWriteDataImageUrl = CatchContractFieldConstraints(
     path: 'createChatMessageClientWrite.data.imageUrl',
     maxLength: 2048,
@@ -9994,6 +10026,30 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const disconnectOrganizerProviderCallablePayloadConnectionId = CatchContractFieldConstraints(
+    path: 'disconnectOrganizerProviderCallablePayload.connectionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const disconnectOrganizerProviderCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'disconnectOrganizerProviderCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const disconnectOrganizerProviderCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'disconnectOrganizerProviderCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const eventAttendeeAttendanceReceiptDocumentAcceptedRevision = CatchContractFieldConstraints(
     path: 'eventAttendeeAttendanceReceiptDocument.acceptedRevision',
     required: true,
@@ -10252,6 +10308,47 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['invited', 'registered', 'waitlisted'],
   );
 
+  static const eventAttendeeDocumentProvider = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.provider',
+    valueTypes: <String>['string'],
+    enumValues: <String>['luma', 'eventbrite', 'partiful', 'posh', 'bookmyshow', 'district', 'sortmyscene', 'airbnb'],
+  );
+
+  static const eventAttendeeDocumentProviderConnectionId = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.providerConnectionId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAttendeeDocumentProviderDataRevision = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.providerDataRevision',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAttendeeDocumentProviderGuestId = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.providerGuestId',
+    maxLength: 240,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAttendeeDocumentProviderSyncedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.providerSyncedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventAttendeeDocumentProviderSyncedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.providerSyncedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const eventAttendeeDocumentRegisteredAtNanoseconds = CatchContractFieldConstraints(
     path: 'eventAttendeeDocument.registeredAt._nanoseconds',
     required: true,
@@ -10278,7 +10375,7 @@ abstract final class CatchContractConstraints {
     path: 'eventAttendeeDocument.source',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp'],
+    enumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp', 'providerSync'],
   );
 
   static const eventAttendeeDocumentSourceRowId = CatchContractFieldConstraints(
@@ -16569,6 +16666,180 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const externalEventMappingDocumentConnectionId = CatchContractFieldConstraints(
+    path: 'externalEventMappingDocument.connectionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const externalEventMappingDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'externalEventMappingDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const externalEventMappingDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'externalEventMappingDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const externalEventMappingDocumentCreatedByUid = CatchContractFieldConstraints(
+    path: 'externalEventMappingDocument.createdByUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const externalEventMappingDocumentDisconnectedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'externalEventMappingDocument.disconnectedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const externalEventMappingDocumentDisconnectedAtSeconds = CatchContractFieldConstraints(
+    path: 'externalEventMappingDocument.disconnectedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const externalEventMappingDocumentEventId = CatchContractFieldConstraints(
+    path: 'externalEventMappingDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const externalEventMappingDocumentExternalEventId = CatchContractFieldConstraints(
+    path: 'externalEventMappingDocument.externalEventId',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const externalEventMappingDocumentFieldAuthorityCheckIn = CatchContractFieldConstraints(
+    path: 'externalEventMappingDocument.fieldAuthority.checkIn',
+    required: true,
+  );
+
+  static const externalEventMappingDocumentFieldAuthorityOrderAmount = CatchContractFieldConstraints(
+    path: 'externalEventMappingDocument.fieldAuthority.orderAmount',
+    required: true,
+  );
+
+  static const externalEventMappingDocumentFieldAuthorityReferralCode = CatchContractFieldConstraints(
+    path: 'externalEventMappingDocument.fieldAuthority.referralCode',
+    required: true,
+  );
+
+  static const externalEventMappingDocumentFieldAuthorityRefundStatus = CatchContractFieldConstraints(
+    path: 'externalEventMappingDocument.fieldAuthority.refundStatus',
+    required: true,
+  );
+
+  static const externalEventMappingDocumentFieldAuthorityRegistrationStatus = CatchContractFieldConstraints(
+    path: 'externalEventMappingDocument.fieldAuthority.registrationStatus',
+    required: true,
+  );
+
+  static const externalEventMappingDocumentFieldAuthorityRosterIdentity = CatchContractFieldConstraints(
+    path: 'externalEventMappingDocument.fieldAuthority.rosterIdentity',
+    required: true,
+  );
+
+  static const externalEventMappingDocumentLastSuccessfulSyncAtNanoseconds = CatchContractFieldConstraints(
+    path: 'externalEventMappingDocument.lastSuccessfulSyncAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const externalEventMappingDocumentLastSuccessfulSyncAtSeconds = CatchContractFieldConstraints(
+    path: 'externalEventMappingDocument.lastSuccessfulSyncAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const externalEventMappingDocumentLastSyncAtNanoseconds = CatchContractFieldConstraints(
+    path: 'externalEventMappingDocument.lastSyncAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const externalEventMappingDocumentLastSyncAtSeconds = CatchContractFieldConstraints(
+    path: 'externalEventMappingDocument.lastSyncAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const externalEventMappingDocumentLastSyncRunId = CatchContractFieldConstraints(
+    path: 'externalEventMappingDocument.lastSyncRunId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const externalEventMappingDocumentLastSyncStatus = CatchContractFieldConstraints(
+    path: 'externalEventMappingDocument.lastSyncStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['never', 'running', 'completed', 'partial', 'failed'],
+  );
+
+  static const externalEventMappingDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'externalEventMappingDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const externalEventMappingDocumentProvider = CatchContractFieldConstraints(
+    path: 'externalEventMappingDocument.provider',
+    required: true,
+  );
+
+  static const externalEventMappingDocumentRevision = CatchContractFieldConstraints(
+    path: 'externalEventMappingDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const externalEventMappingDocumentStatus = CatchContractFieldConstraints(
+    path: 'externalEventMappingDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['active', 'paused', 'disconnected'],
+  );
+
+  static const externalEventMappingDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'externalEventMappingDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const externalEventMappingDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'externalEventMappingDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const externalEventPublicationReceiptDocumentAction = CatchContractFieldConstraints(
     path: 'externalEventPublicationReceiptDocument.action',
     required: true,
@@ -17462,7 +17733,7 @@ abstract final class CatchContractConstraints {
     path: 'getOrganizerContactDetailCallableResponse.events.items.source',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp'],
+    enumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp', 'providerSync'],
   );
 
   static const getOrganizerContactDetailCallableResponseEventsItemsStatus = CatchContractFieldConstraints(
@@ -17718,6 +17989,22 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 0,
     maximum: 2147483647,
+  );
+
+  static const getOrganizerProviderSetupCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'getOrganizerProviderSetupCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerProviderSetupCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'getOrganizerProviderSetupCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const hostAnalyticsCallableResponseDataQuality = CatchContractFieldConstraints(
@@ -18056,6 +18343,13 @@ abstract final class CatchContractConstraints {
 
   static const hostAnalyticsCallableResponseTopEventsItemsAttendeeSourcesHostManual = CatchContractFieldConstraints(
     path: 'hostAnalyticsCallableResponse.topEvents.items.attendeeSources.hostManual',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const hostAnalyticsCallableResponseTopEventsItemsAttendeeSourcesProviderSync = CatchContractFieldConstraints(
+    path: 'hostAnalyticsCallableResponse.topEvents.items.attendeeSources.providerSync',
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
@@ -18789,6 +19083,13 @@ abstract final class CatchContractConstraints {
 
   static const hostAnalyticsSnapshotDocumentResponseTopEventsItemsAttendeeSourcesHostManual = CatchContractFieldConstraints(
     path: 'hostAnalyticsSnapshotDocument.response.topEvents.items.attendeeSources.hostManual',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const hostAnalyticsSnapshotDocumentResponseTopEventsItemsAttendeeSourcesProviderSync = CatchContractFieldConstraints(
+    path: 'hostAnalyticsSnapshotDocument.response.topEvents.items.attendeeSources.providerSync',
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
@@ -20014,6 +20315,75 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['exact', 'partial'],
+  );
+
+  static const listOrganizerLumaEventsCallablePayloadApiKey = CatchContractFieldConstraints(
+    path: 'listOrganizerLumaEventsCallablePayload.apiKey',
+    maxLength: 512,
+    minLength: 16,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerLumaEventsCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'listOrganizerLumaEventsCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerLumaEventsCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'listOrganizerLumaEventsCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerLumaEventsCallableResponseCalendarName = CatchContractFieldConstraints(
+    path: 'listOrganizerLumaEventsCallableResponse.calendarName',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerLumaEventsCallableResponseEvents = CatchContractFieldConstraints(
+    path: 'listOrganizerLumaEventsCallableResponse.events',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 50,
+  );
+
+  static const listOrganizerLumaEventsCallableResponseEventsItemsExternalEventId = CatchContractFieldConstraints(
+    path: 'listOrganizerLumaEventsCallableResponse.events.items.externalEventId',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerLumaEventsCallableResponseEventsItemsName = CatchContractFieldConstraints(
+    path: 'listOrganizerLumaEventsCallableResponse.events.items.name',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerLumaEventsCallableResponseEventsItemsStartAtMillis = CatchContractFieldConstraints(
+    path: 'listOrganizerLumaEventsCallableResponse.events.items.startAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const listOrganizerLumaEventsCallableResponseTruncated = CatchContractFieldConstraints(
+    path: 'listOrganizerLumaEventsCallableResponse.truncated',
+    required: true,
+    valueTypes: <String>['boolean'],
   );
 
   static const listPublicClubReviewsCallablePayloadClubId = CatchContractFieldConstraints(
@@ -23133,7 +23503,7 @@ abstract final class CatchContractConstraints {
     path: 'organizerContactDocument.primarySource',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp'],
+    enumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp', 'providerSync'],
   );
 
   static const organizerContactDocumentRevision = CatchContractFieldConstraints(
@@ -23397,7 +23767,7 @@ abstract final class CatchContractConstraints {
     path: 'organizerContactEventEdgeDocument.source',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp'],
+    enumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp', 'providerSync'],
   );
 
   static const organizerContactEventEdgeDocumentSourceCreatedAtNanoseconds = CatchContractFieldConstraints(
@@ -23632,7 +24002,7 @@ abstract final class CatchContractConstraints {
     path: 'organizerContactIdentityLinkDocument.source',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp'],
+    enumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp', 'providerSync'],
   );
 
   static const organizerContactIdentityLinkDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
@@ -27450,6 +27820,550 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerProviderConnectionDocumentAdapterClass = CatchContractFieldConstraints(
+    path: 'organizerProviderConnectionDocument.adapterClass',
+    required: true,
+  );
+
+  static const organizerProviderConnectionDocumentCapabilitiesEventList = CatchContractFieldConstraints(
+    path: 'organizerProviderConnectionDocument.capabilities.eventList',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerProviderConnectionDocumentCapabilitiesOrderAmount = CatchContractFieldConstraints(
+    path: 'organizerProviderConnectionDocument.capabilities.orderAmount',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerProviderConnectionDocumentCapabilitiesProviderCheckIn = CatchContractFieldConstraints(
+    path: 'organizerProviderConnectionDocument.capabilities.providerCheckIn',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerProviderConnectionDocumentCapabilitiesReferralCode = CatchContractFieldConstraints(
+    path: 'organizerProviderConnectionDocument.capabilities.referralCode',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerProviderConnectionDocumentCapabilitiesRefundStatus = CatchContractFieldConstraints(
+    path: 'organizerProviderConnectionDocument.capabilities.refundStatus',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerProviderConnectionDocumentCapabilitiesRegistrationStatus = CatchContractFieldConstraints(
+    path: 'organizerProviderConnectionDocument.capabilities.registrationStatus',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerProviderConnectionDocumentCapabilitiesRosterIdentity = CatchContractFieldConstraints(
+    path: 'organizerProviderConnectionDocument.capabilities.rosterIdentity',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerProviderConnectionDocumentCapabilitiesWebhooks = CatchContractFieldConstraints(
+    path: 'organizerProviderConnectionDocument.capabilities.webhooks',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerProviderConnectionDocumentCapabilitiesWriteBookings = CatchContractFieldConstraints(
+    path: 'organizerProviderConnectionDocument.capabilities.writeBookings',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerProviderConnectionDocumentConnectedByUid = CatchContractFieldConstraints(
+    path: 'organizerProviderConnectionDocument.connectedByUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerProviderConnectionDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerProviderConnectionDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerProviderConnectionDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerProviderConnectionDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerProviderConnectionDocumentDisconnectedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerProviderConnectionDocument.disconnectedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerProviderConnectionDocumentDisconnectedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerProviderConnectionDocument.disconnectedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerProviderConnectionDocumentExternalAccountId = CatchContractFieldConstraints(
+    path: 'organizerProviderConnectionDocument.externalAccountId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerProviderConnectionDocumentExternalAccountName = CatchContractFieldConstraints(
+    path: 'organizerProviderConnectionDocument.externalAccountName',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerProviderConnectionDocumentLastErrorCode = CatchContractFieldConstraints(
+    path: 'organizerProviderConnectionDocument.lastErrorCode',
+    maxLength: 80,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerProviderConnectionDocumentLastHealthSyncAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerProviderConnectionDocument.lastHealthSyncAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerProviderConnectionDocumentLastHealthSyncAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerProviderConnectionDocument.lastHealthSyncAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerProviderConnectionDocumentLastSuccessfulSyncAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerProviderConnectionDocument.lastSuccessfulSyncAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerProviderConnectionDocumentLastSuccessfulSyncAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerProviderConnectionDocument.lastSuccessfulSyncAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerProviderConnectionDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerProviderConnectionDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerProviderConnectionDocumentProvider = CatchContractFieldConstraints(
+    path: 'organizerProviderConnectionDocument.provider',
+    required: true,
+  );
+
+  static const organizerProviderConnectionDocumentRevision = CatchContractFieldConstraints(
+    path: 'organizerProviderConnectionDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerProviderConnectionDocumentSecretVersionResource = CatchContractFieldConstraints(
+    path: 'organizerProviderConnectionDocument.secretVersionResource',
+    valueTypes: <String>['string'],
+    pattern: '^projects/[^/]+/secrets/[^/]+/versions/[0-9]+\$',
+  );
+
+  static const organizerProviderConnectionDocumentStatus = CatchContractFieldConstraints(
+    path: 'organizerProviderConnectionDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['active', 'degraded', 'credentialRevoked', 'disconnected'],
+  );
+
+  static const organizerProviderConnectionDocumentSyncMode = CatchContractFieldConstraints(
+    path: 'organizerProviderConnectionDocument.syncMode',
+    required: true,
+  );
+
+  static const organizerProviderConnectionDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerProviderConnectionDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerProviderConnectionDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerProviderConnectionDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerProviderSetupCallableResponseConnections = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.connections',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 20,
+  );
+
+  static const organizerProviderSetupCallableResponseConnectionsItemsCapabilitiesEventList = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.connections.items.capabilities.eventList',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerProviderSetupCallableResponseConnectionsItemsCapabilitiesOrderAmount = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.connections.items.capabilities.orderAmount',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerProviderSetupCallableResponseConnectionsItemsCapabilitiesProviderCheckIn = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.connections.items.capabilities.providerCheckIn',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerProviderSetupCallableResponseConnectionsItemsCapabilitiesReferralCode = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.connections.items.capabilities.referralCode',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerProviderSetupCallableResponseConnectionsItemsCapabilitiesRefundStatus = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.connections.items.capabilities.refundStatus',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerProviderSetupCallableResponseConnectionsItemsCapabilitiesRegistrationStatus = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.connections.items.capabilities.registrationStatus',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerProviderSetupCallableResponseConnectionsItemsCapabilitiesRosterIdentity = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.connections.items.capabilities.rosterIdentity',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerProviderSetupCallableResponseConnectionsItemsCapabilitiesWebhooks = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.connections.items.capabilities.webhooks',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerProviderSetupCallableResponseConnectionsItemsCapabilitiesWriteBookings = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.connections.items.capabilities.writeBookings',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerProviderSetupCallableResponseConnectionsItemsConnectionId = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.connections.items.connectionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerProviderSetupCallableResponseConnectionsItemsExternalAccountId = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.connections.items.externalAccountId',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerProviderSetupCallableResponseConnectionsItemsExternalAccountName = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.connections.items.externalAccountName',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerProviderSetupCallableResponseConnectionsItemsLastHealthSyncAtMillis = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.connections.items.lastHealthSyncAtMillis',
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerProviderSetupCallableResponseConnectionsItemsLastSuccessfulSyncAtMillis = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.connections.items.lastSuccessfulSyncAtMillis',
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerProviderSetupCallableResponseConnectionsItemsProvider = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.connections.items.provider',
+    required: true,
+  );
+
+  static const organizerProviderSetupCallableResponseConnectionsItemsRevision = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.connections.items.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const organizerProviderSetupCallableResponseConnectionsItemsStatus = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.connections.items.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['active', 'degraded', 'credentialRevoked', 'disconnected'],
+  );
+
+  static const organizerProviderSetupCallableResponseConnectionsItemsSyncMode = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.connections.items.syncMode',
+    required: true,
+  );
+
+  static const organizerProviderSetupCallableResponseEventId = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerProviderSetupCallableResponseMappingConnectionId = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.mapping.connectionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerProviderSetupCallableResponseMappingExternalEventId = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.mapping.externalEventId',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerProviderSetupCallableResponseMappingFieldAuthorityCheckIn = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.mapping.fieldAuthority.checkIn',
+    required: true,
+  );
+
+  static const organizerProviderSetupCallableResponseMappingFieldAuthorityOrderAmount = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.mapping.fieldAuthority.orderAmount',
+    required: true,
+  );
+
+  static const organizerProviderSetupCallableResponseMappingFieldAuthorityReferralCode = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.mapping.fieldAuthority.referralCode',
+    required: true,
+  );
+
+  static const organizerProviderSetupCallableResponseMappingFieldAuthorityRefundStatus = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.mapping.fieldAuthority.refundStatus',
+    required: true,
+  );
+
+  static const organizerProviderSetupCallableResponseMappingFieldAuthorityRegistrationStatus = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.mapping.fieldAuthority.registrationStatus',
+    required: true,
+  );
+
+  static const organizerProviderSetupCallableResponseMappingFieldAuthorityRosterIdentity = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.mapping.fieldAuthority.rosterIdentity',
+    required: true,
+  );
+
+  static const organizerProviderSetupCallableResponseMappingLastSuccessfulSyncAtMillis = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.mapping.lastSuccessfulSyncAtMillis',
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerProviderSetupCallableResponseMappingLastSyncAtMillis = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.mapping.lastSyncAtMillis',
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerProviderSetupCallableResponseMappingLastSyncRunId = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.mapping.lastSyncRunId',
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerProviderSetupCallableResponseMappingLastSyncStatus = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.mapping.lastSyncStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['never', 'running', 'completed', 'partial', 'failed'],
+  );
+
+  static const organizerProviderSetupCallableResponseMappingMappingId = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.mapping.mappingId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerProviderSetupCallableResponseMappingProvider = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.mapping.provider',
+    required: true,
+  );
+
+  static const organizerProviderSetupCallableResponseMappingRevision = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.mapping.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const organizerProviderSetupCallableResponseMappingStatus = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.mapping.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['active', 'paused', 'disconnected'],
+  );
+
+  static const organizerProviderSetupCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerProviderSetupCallableResponseProviders = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.providers',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 9,
+    maxItems: 9,
+  );
+
+  static const organizerProviderSetupCallableResponseProvidersItemsAdapterClass = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.providers.items.adapterClass',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['A', 'C', 'D', 'E', 'unclassified'],
+  );
+
+  static const organizerProviderSetupCallableResponseProvidersItemsAvailability = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.providers.items.availability',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['available', 'exportOnly', 'configurationRequired', 'partnerAccessRequired', 'sampleRequired', 'manualOnly'],
+  );
+
+  static const organizerProviderSetupCallableResponseProvidersItemsCapabilitiesEventList = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.providers.items.capabilities.eventList',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerProviderSetupCallableResponseProvidersItemsCapabilitiesFileImport = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.providers.items.capabilities.fileImport',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerProviderSetupCallableResponseProvidersItemsCapabilitiesOrderAmount = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.providers.items.capabilities.orderAmount',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerProviderSetupCallableResponseProvidersItemsCapabilitiesProviderCheckIn = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.providers.items.capabilities.providerCheckIn',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerProviderSetupCallableResponseProvidersItemsCapabilitiesReferralCode = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.providers.items.capabilities.referralCode',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerProviderSetupCallableResponseProvidersItemsCapabilitiesRefundStatus = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.providers.items.capabilities.refundStatus',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerProviderSetupCallableResponseProvidersItemsCapabilitiesRegistrationStatus = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.providers.items.capabilities.registrationStatus',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerProviderSetupCallableResponseProvidersItemsCapabilitiesRosterIdentity = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.providers.items.capabilities.rosterIdentity',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerProviderSetupCallableResponseProvidersItemsCapabilitiesWebhooks = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.providers.items.capabilities.webhooks',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerProviderSetupCallableResponseProvidersItemsCapabilitiesWriteBookings = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.providers.items.capabilities.writeBookings',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerProviderSetupCallableResponseProvidersItemsConnectionMethod = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.providers.items.connectionMethod',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['apiKey', 'oauth', 'partner', 'none'],
+  );
+
+  static const organizerProviderSetupCallableResponseProvidersItemsDisplayName = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.providers.items.displayName',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerProviderSetupCallableResponseProvidersItemsImportSupport = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.providers.items.importSupport',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['verified', 'generic', 'sampleRequired'],
+  );
+
+  static const organizerProviderSetupCallableResponseProvidersItemsProvider = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.providers.items.provider',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['generic', 'luma', 'eventbrite', 'partiful', 'posh', 'bookmyshow', 'district', 'sortmyscene', 'airbnb'],
+  );
+
+  static const organizerProviderSetupCallableResponseProvidersItemsRequirement = CatchContractFieldConstraints(
+    path: 'organizerProviderSetupCallableResponse.providers.items.requirement',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const organizerScheduleLockDocumentEndTimeMillis = CatchContractFieldConstraints(
     path: 'organizerScheduleLockDocument.endTimeMillis',
     required: true,
@@ -28406,6 +29320,168 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const providerSyncRunDocumentClientOperationId = CatchContractFieldConstraints(
+    path: 'providerSyncRunDocument.clientOperationId',
+    maxLength: 120,
+    minLength: 16,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const providerSyncRunDocumentCompletedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'providerSyncRunDocument.completedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const providerSyncRunDocumentCompletedAtSeconds = CatchContractFieldConstraints(
+    path: 'providerSyncRunDocument.completedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const providerSyncRunDocumentConnectionId = CatchContractFieldConstraints(
+    path: 'providerSyncRunDocument.connectionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const providerSyncRunDocumentCreatedCount = CatchContractFieldConstraints(
+    path: 'providerSyncRunDocument.createdCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 250,
+  );
+
+  static const providerSyncRunDocumentErrorCode = CatchContractFieldConstraints(
+    path: 'providerSyncRunDocument.errorCode',
+    maxLength: 80,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const providerSyncRunDocumentEventId = CatchContractFieldConstraints(
+    path: 'providerSyncRunDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const providerSyncRunDocumentExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'providerSyncRunDocument.expiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const providerSyncRunDocumentExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'providerSyncRunDocument.expiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const providerSyncRunDocumentInputHash = CatchContractFieldConstraints(
+    path: 'providerSyncRunDocument.inputHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const providerSyncRunDocumentMappingId = CatchContractFieldConstraints(
+    path: 'providerSyncRunDocument.mappingId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const providerSyncRunDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'providerSyncRunDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const providerSyncRunDocumentPageCount = CatchContractFieldConstraints(
+    path: 'providerSyncRunDocument.pageCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10,
+  );
+
+  static const providerSyncRunDocumentProvider = CatchContractFieldConstraints(
+    path: 'providerSyncRunDocument.provider',
+    required: true,
+  );
+
+  static const providerSyncRunDocumentReceivedCount = CatchContractFieldConstraints(
+    path: 'providerSyncRunDocument.receivedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 250,
+  );
+
+  static const providerSyncRunDocumentSkippedCount = CatchContractFieldConstraints(
+    path: 'providerSyncRunDocument.skippedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 250,
+  );
+
+  static const providerSyncRunDocumentStartedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'providerSyncRunDocument.startedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const providerSyncRunDocumentStartedAtSeconds = CatchContractFieldConstraints(
+    path: 'providerSyncRunDocument.startedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const providerSyncRunDocumentStartedByUid = CatchContractFieldConstraints(
+    path: 'providerSyncRunDocument.startedByUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const providerSyncRunDocumentStatus = CatchContractFieldConstraints(
+    path: 'providerSyncRunDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['running', 'completed', 'partial', 'failed'],
+  );
+
+  static const providerSyncRunDocumentTruncated = CatchContractFieldConstraints(
+    path: 'providerSyncRunDocument.truncated',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const providerSyncRunDocumentUpdatedCount = CatchContractFieldConstraints(
+    path: 'providerSyncRunDocument.updatedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 250,
   );
 
   static const publicProfileDocumentActivityPreferencesRunningPaceMaxSecsPerKm = CatchContractFieldConstraints(
@@ -30938,6 +32014,97 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const syncOrganizerProviderEventCallablePayloadClientOperationId = CatchContractFieldConstraints(
+    path: 'syncOrganizerProviderEventCallablePayload.clientOperationId',
+    maxLength: 120,
+    minLength: 16,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const syncOrganizerProviderEventCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'syncOrganizerProviderEventCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const syncOrganizerProviderEventCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'syncOrganizerProviderEventCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const syncOrganizerProviderEventCallableResponseCreatedCount = CatchContractFieldConstraints(
+    path: 'syncOrganizerProviderEventCallableResponse.createdCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 250,
+  );
+
+  static const syncOrganizerProviderEventCallableResponsePageCount = CatchContractFieldConstraints(
+    path: 'syncOrganizerProviderEventCallableResponse.pageCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10,
+  );
+
+  static const syncOrganizerProviderEventCallableResponseReceivedCount = CatchContractFieldConstraints(
+    path: 'syncOrganizerProviderEventCallableResponse.receivedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 250,
+  );
+
+  static const syncOrganizerProviderEventCallableResponseReplayed = CatchContractFieldConstraints(
+    path: 'syncOrganizerProviderEventCallableResponse.replayed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const syncOrganizerProviderEventCallableResponseRunId = CatchContractFieldConstraints(
+    path: 'syncOrganizerProviderEventCallableResponse.runId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const syncOrganizerProviderEventCallableResponseSkippedCount = CatchContractFieldConstraints(
+    path: 'syncOrganizerProviderEventCallableResponse.skippedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 250,
+  );
+
+  static const syncOrganizerProviderEventCallableResponseStatus = CatchContractFieldConstraints(
+    path: 'syncOrganizerProviderEventCallableResponse.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['completed', 'partial', 'failed'],
+  );
+
+  static const syncOrganizerProviderEventCallableResponseTruncated = CatchContractFieldConstraints(
+    path: 'syncOrganizerProviderEventCallableResponse.truncated',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const syncOrganizerProviderEventCallableResponseUpdatedCount = CatchContractFieldConstraints(
+    path: 'syncOrganizerProviderEventCallableResponse.updatedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 250,
   );
 
   static const transferClubOwnershipCallablePayloadClubId = CatchContractFieldConstraints(
@@ -36441,6 +37608,10 @@ abstract final class CatchContractConstraints {
     'configCitiesDocument.markets.items.slug': configCitiesDocumentMarketsItemsSlug,
     'configCitiesDocument.markets.items.timeZone': configCitiesDocumentMarketsItemsTimeZone,
     'configCitiesDocument.version': configCitiesDocumentVersion,
+    'connectOrganizerLumaProviderCallablePayload.apiKey': connectOrganizerLumaProviderCallablePayloadApiKey,
+    'connectOrganizerLumaProviderCallablePayload.eventId': connectOrganizerLumaProviderCallablePayloadEventId,
+    'connectOrganizerLumaProviderCallablePayload.externalEventId': connectOrganizerLumaProviderCallablePayloadExternalEventId,
+    'connectOrganizerLumaProviderCallablePayload.organizerId': connectOrganizerLumaProviderCallablePayloadOrganizerId,
     'createChatMessageClientWrite.data.imageUrl': createChatMessageClientWriteDataImageUrl,
     'createChatMessageClientWrite.data.senderId': createChatMessageClientWriteDataSenderId,
     'createChatMessageClientWrite.data.sentAt._nanoseconds': createChatMessageClientWriteDataSentAtNanoseconds,
@@ -36937,6 +38108,9 @@ abstract final class CatchContractConstraints {
     'deleteSavedEventClientWrite.path.savedEventId': deleteSavedEventClientWritePathSavedEventId,
     'disableEventInviteLinkCallablePayload.eventId': disableEventInviteLinkCallablePayloadEventId,
     'disableEventInviteLinkCallablePayload.inviteLinkId': disableEventInviteLinkCallablePayloadInviteLinkId,
+    'disconnectOrganizerProviderCallablePayload.connectionId': disconnectOrganizerProviderCallablePayloadConnectionId,
+    'disconnectOrganizerProviderCallablePayload.eventId': disconnectOrganizerProviderCallablePayloadEventId,
+    'disconnectOrganizerProviderCallablePayload.organizerId': disconnectOrganizerProviderCallablePayloadOrganizerId,
     'eventAttendeeAttendanceReceiptDocument.acceptedRevision': eventAttendeeAttendanceReceiptDocumentAcceptedRevision,
     'eventAttendeeAttendanceReceiptDocument.actorUid': eventAttendeeAttendanceReceiptDocumentActorUid,
     'eventAttendeeAttendanceReceiptDocument.attendeeId': eventAttendeeAttendanceReceiptDocumentAttendeeId,
@@ -36973,6 +38147,12 @@ abstract final class CatchContractConstraints {
     'eventAttendeeDocument.organizerId': eventAttendeeDocumentOrganizerId,
     'eventAttendeeDocument.phoneE164': eventAttendeeDocumentPhoneE164,
     'eventAttendeeDocument.preCheckInStatus': eventAttendeeDocumentPreCheckInStatus,
+    'eventAttendeeDocument.provider': eventAttendeeDocumentProvider,
+    'eventAttendeeDocument.providerConnectionId': eventAttendeeDocumentProviderConnectionId,
+    'eventAttendeeDocument.providerDataRevision': eventAttendeeDocumentProviderDataRevision,
+    'eventAttendeeDocument.providerGuestId': eventAttendeeDocumentProviderGuestId,
+    'eventAttendeeDocument.providerSyncedAt._nanoseconds': eventAttendeeDocumentProviderSyncedAtNanoseconds,
+    'eventAttendeeDocument.providerSyncedAt._seconds': eventAttendeeDocumentProviderSyncedAtSeconds,
     'eventAttendeeDocument.registeredAt._nanoseconds': eventAttendeeDocumentRegisteredAtNanoseconds,
     'eventAttendeeDocument.registeredAt._seconds': eventAttendeeDocumentRegisteredAtSeconds,
     'eventAttendeeDocument.searchName': eventAttendeeDocumentSearchName,
@@ -37849,6 +39029,32 @@ abstract final class CatchContractConstraints {
     'externalEventDocument.title': externalEventDocumentTitle,
     'externalEventDocument.updatedAt._nanoseconds': externalEventDocumentUpdatedAtNanoseconds,
     'externalEventDocument.updatedAt._seconds': externalEventDocumentUpdatedAtSeconds,
+    'externalEventMappingDocument.connectionId': externalEventMappingDocumentConnectionId,
+    'externalEventMappingDocument.createdAt._nanoseconds': externalEventMappingDocumentCreatedAtNanoseconds,
+    'externalEventMappingDocument.createdAt._seconds': externalEventMappingDocumentCreatedAtSeconds,
+    'externalEventMappingDocument.createdByUid': externalEventMappingDocumentCreatedByUid,
+    'externalEventMappingDocument.disconnectedAt._nanoseconds': externalEventMappingDocumentDisconnectedAtNanoseconds,
+    'externalEventMappingDocument.disconnectedAt._seconds': externalEventMappingDocumentDisconnectedAtSeconds,
+    'externalEventMappingDocument.eventId': externalEventMappingDocumentEventId,
+    'externalEventMappingDocument.externalEventId': externalEventMappingDocumentExternalEventId,
+    'externalEventMappingDocument.fieldAuthority.checkIn': externalEventMappingDocumentFieldAuthorityCheckIn,
+    'externalEventMappingDocument.fieldAuthority.orderAmount': externalEventMappingDocumentFieldAuthorityOrderAmount,
+    'externalEventMappingDocument.fieldAuthority.referralCode': externalEventMappingDocumentFieldAuthorityReferralCode,
+    'externalEventMappingDocument.fieldAuthority.refundStatus': externalEventMappingDocumentFieldAuthorityRefundStatus,
+    'externalEventMappingDocument.fieldAuthority.registrationStatus': externalEventMappingDocumentFieldAuthorityRegistrationStatus,
+    'externalEventMappingDocument.fieldAuthority.rosterIdentity': externalEventMappingDocumentFieldAuthorityRosterIdentity,
+    'externalEventMappingDocument.lastSuccessfulSyncAt._nanoseconds': externalEventMappingDocumentLastSuccessfulSyncAtNanoseconds,
+    'externalEventMappingDocument.lastSuccessfulSyncAt._seconds': externalEventMappingDocumentLastSuccessfulSyncAtSeconds,
+    'externalEventMappingDocument.lastSyncAt._nanoseconds': externalEventMappingDocumentLastSyncAtNanoseconds,
+    'externalEventMappingDocument.lastSyncAt._seconds': externalEventMappingDocumentLastSyncAtSeconds,
+    'externalEventMappingDocument.lastSyncRunId': externalEventMappingDocumentLastSyncRunId,
+    'externalEventMappingDocument.lastSyncStatus': externalEventMappingDocumentLastSyncStatus,
+    'externalEventMappingDocument.organizerId': externalEventMappingDocumentOrganizerId,
+    'externalEventMappingDocument.provider': externalEventMappingDocumentProvider,
+    'externalEventMappingDocument.revision': externalEventMappingDocumentRevision,
+    'externalEventMappingDocument.status': externalEventMappingDocumentStatus,
+    'externalEventMappingDocument.updatedAt._nanoseconds': externalEventMappingDocumentUpdatedAtNanoseconds,
+    'externalEventMappingDocument.updatedAt._seconds': externalEventMappingDocumentUpdatedAtSeconds,
     'externalEventPublicationReceiptDocument.action': externalEventPublicationReceiptDocumentAction,
     'externalEventPublicationReceiptDocument.actorUid': externalEventPublicationReceiptDocumentActorUid,
     'externalEventPublicationReceiptDocument.createdAt._nanoseconds': externalEventPublicationReceiptDocumentCreatedAtNanoseconds,
@@ -38003,6 +39209,8 @@ abstract final class CatchContractConstraints {
     'getOrganizerCrmSummaryCallableResponse.smsOptInCount': getOrganizerCrmSummaryCallableResponseSmsOptInCount,
     'getOrganizerCrmSummaryCallableResponse.truncated': getOrganizerCrmSummaryCallableResponseTruncated,
     'getOrganizerCrmSummaryCallableResponse.whatsappOptInCount': getOrganizerCrmSummaryCallableResponseWhatsappOptInCount,
+    'getOrganizerProviderSetupCallablePayload.eventId': getOrganizerProviderSetupCallablePayloadEventId,
+    'getOrganizerProviderSetupCallablePayload.organizerId': getOrganizerProviderSetupCallablePayloadOrganizerId,
     'hostAnalyticsCallableResponse.dataQuality': hostAnalyticsCallableResponseDataQuality,
     'hostAnalyticsCallableResponse.dataQuality.items.detail': hostAnalyticsCallableResponseDataQualityItemsDetail,
     'hostAnalyticsCallableResponse.dataQuality.items.id': hostAnalyticsCallableResponseDataQualityItemsId,
@@ -38051,6 +39259,7 @@ abstract final class CatchContractConstraints {
     'hostAnalyticsCallableResponse.topEvents.items.attendeeSources.catchBooking': hostAnalyticsCallableResponseTopEventsItemsAttendeeSourcesCatchBooking,
     'hostAnalyticsCallableResponse.topEvents.items.attendeeSources.hostImport': hostAnalyticsCallableResponseTopEventsItemsAttendeeSourcesHostImport,
     'hostAnalyticsCallableResponse.topEvents.items.attendeeSources.hostManual': hostAnalyticsCallableResponseTopEventsItemsAttendeeSourcesHostManual,
+    'hostAnalyticsCallableResponse.topEvents.items.attendeeSources.providerSync': hostAnalyticsCallableResponseTopEventsItemsAttendeeSourcesProviderSync,
     'hostAnalyticsCallableResponse.topEvents.items.attendeeSources.webOtp': hostAnalyticsCallableResponseTopEventsItemsAttendeeSourcesWebOtp,
     'hostAnalyticsCallableResponse.topEvents.items.averageRating': hostAnalyticsCallableResponseTopEventsItemsAverageRating,
     'hostAnalyticsCallableResponse.topEvents.items.bookedCount': hostAnalyticsCallableResponseTopEventsItemsBookedCount,
@@ -38155,6 +39364,7 @@ abstract final class CatchContractConstraints {
     'hostAnalyticsSnapshotDocument.response.topEvents.items.attendeeSources.catchBooking': hostAnalyticsSnapshotDocumentResponseTopEventsItemsAttendeeSourcesCatchBooking,
     'hostAnalyticsSnapshotDocument.response.topEvents.items.attendeeSources.hostImport': hostAnalyticsSnapshotDocumentResponseTopEventsItemsAttendeeSourcesHostImport,
     'hostAnalyticsSnapshotDocument.response.topEvents.items.attendeeSources.hostManual': hostAnalyticsSnapshotDocumentResponseTopEventsItemsAttendeeSourcesHostManual,
+    'hostAnalyticsSnapshotDocument.response.topEvents.items.attendeeSources.providerSync': hostAnalyticsSnapshotDocumentResponseTopEventsItemsAttendeeSourcesProviderSync,
     'hostAnalyticsSnapshotDocument.response.topEvents.items.attendeeSources.webOtp': hostAnalyticsSnapshotDocumentResponseTopEventsItemsAttendeeSourcesWebOtp,
     'hostAnalyticsSnapshotDocument.response.topEvents.items.averageRating': hostAnalyticsSnapshotDocumentResponseTopEventsItemsAverageRating,
     'hostAnalyticsSnapshotDocument.response.topEvents.items.bookedCount': hostAnalyticsSnapshotDocumentResponseTopEventsItemsBookedCount,
@@ -38333,6 +39543,15 @@ abstract final class CatchContractConstraints {
     'listOrganizerContactsCallableResponse.organizerId': listOrganizerContactsCallableResponseOrganizerId,
     'listOrganizerContactsCallableResponse.projectionVersion': listOrganizerContactsCallableResponseProjectionVersion,
     'listOrganizerContactsCallableResponse.sourceCoverage': listOrganizerContactsCallableResponseSourceCoverage,
+    'listOrganizerLumaEventsCallablePayload.apiKey': listOrganizerLumaEventsCallablePayloadApiKey,
+    'listOrganizerLumaEventsCallablePayload.eventId': listOrganizerLumaEventsCallablePayloadEventId,
+    'listOrganizerLumaEventsCallablePayload.organizerId': listOrganizerLumaEventsCallablePayloadOrganizerId,
+    'listOrganizerLumaEventsCallableResponse.calendarName': listOrganizerLumaEventsCallableResponseCalendarName,
+    'listOrganizerLumaEventsCallableResponse.events': listOrganizerLumaEventsCallableResponseEvents,
+    'listOrganizerLumaEventsCallableResponse.events.items.externalEventId': listOrganizerLumaEventsCallableResponseEventsItemsExternalEventId,
+    'listOrganizerLumaEventsCallableResponse.events.items.name': listOrganizerLumaEventsCallableResponseEventsItemsName,
+    'listOrganizerLumaEventsCallableResponse.events.items.startAtMillis': listOrganizerLumaEventsCallableResponseEventsItemsStartAtMillis,
+    'listOrganizerLumaEventsCallableResponse.truncated': listOrganizerLumaEventsCallableResponseTruncated,
     'listPublicClubReviewsCallablePayload.clubId': listPublicClubReviewsCallablePayloadClubId,
     'listPublicClubReviewsCallableResponse.reviews': listPublicClubReviewsCallableResponseReviews,
     'listPublicClubReviewsCallableResponse.reviews.items.comment': listPublicClubReviewsCallableResponseReviewsItemsComment,
@@ -39369,6 +40588,91 @@ abstract final class CatchContractConstraints {
     'organizerPostDocument.photoPath': organizerPostDocumentPhotoPath,
     'organizerPostDocument.status': organizerPostDocumentStatus,
     'organizerPostDocument.text': organizerPostDocumentText,
+    'organizerProviderConnectionDocument.adapterClass': organizerProviderConnectionDocumentAdapterClass,
+    'organizerProviderConnectionDocument.capabilities.eventList': organizerProviderConnectionDocumentCapabilitiesEventList,
+    'organizerProviderConnectionDocument.capabilities.orderAmount': organizerProviderConnectionDocumentCapabilitiesOrderAmount,
+    'organizerProviderConnectionDocument.capabilities.providerCheckIn': organizerProviderConnectionDocumentCapabilitiesProviderCheckIn,
+    'organizerProviderConnectionDocument.capabilities.referralCode': organizerProviderConnectionDocumentCapabilitiesReferralCode,
+    'organizerProviderConnectionDocument.capabilities.refundStatus': organizerProviderConnectionDocumentCapabilitiesRefundStatus,
+    'organizerProviderConnectionDocument.capabilities.registrationStatus': organizerProviderConnectionDocumentCapabilitiesRegistrationStatus,
+    'organizerProviderConnectionDocument.capabilities.rosterIdentity': organizerProviderConnectionDocumentCapabilitiesRosterIdentity,
+    'organizerProviderConnectionDocument.capabilities.webhooks': organizerProviderConnectionDocumentCapabilitiesWebhooks,
+    'organizerProviderConnectionDocument.capabilities.writeBookings': organizerProviderConnectionDocumentCapabilitiesWriteBookings,
+    'organizerProviderConnectionDocument.connectedByUid': organizerProviderConnectionDocumentConnectedByUid,
+    'organizerProviderConnectionDocument.createdAt._nanoseconds': organizerProviderConnectionDocumentCreatedAtNanoseconds,
+    'organizerProviderConnectionDocument.createdAt._seconds': organizerProviderConnectionDocumentCreatedAtSeconds,
+    'organizerProviderConnectionDocument.disconnectedAt._nanoseconds': organizerProviderConnectionDocumentDisconnectedAtNanoseconds,
+    'organizerProviderConnectionDocument.disconnectedAt._seconds': organizerProviderConnectionDocumentDisconnectedAtSeconds,
+    'organizerProviderConnectionDocument.externalAccountId': organizerProviderConnectionDocumentExternalAccountId,
+    'organizerProviderConnectionDocument.externalAccountName': organizerProviderConnectionDocumentExternalAccountName,
+    'organizerProviderConnectionDocument.lastErrorCode': organizerProviderConnectionDocumentLastErrorCode,
+    'organizerProviderConnectionDocument.lastHealthSyncAt._nanoseconds': organizerProviderConnectionDocumentLastHealthSyncAtNanoseconds,
+    'organizerProviderConnectionDocument.lastHealthSyncAt._seconds': organizerProviderConnectionDocumentLastHealthSyncAtSeconds,
+    'organizerProviderConnectionDocument.lastSuccessfulSyncAt._nanoseconds': organizerProviderConnectionDocumentLastSuccessfulSyncAtNanoseconds,
+    'organizerProviderConnectionDocument.lastSuccessfulSyncAt._seconds': organizerProviderConnectionDocumentLastSuccessfulSyncAtSeconds,
+    'organizerProviderConnectionDocument.organizerId': organizerProviderConnectionDocumentOrganizerId,
+    'organizerProviderConnectionDocument.provider': organizerProviderConnectionDocumentProvider,
+    'organizerProviderConnectionDocument.revision': organizerProviderConnectionDocumentRevision,
+    'organizerProviderConnectionDocument.secretVersionResource': organizerProviderConnectionDocumentSecretVersionResource,
+    'organizerProviderConnectionDocument.status': organizerProviderConnectionDocumentStatus,
+    'organizerProviderConnectionDocument.syncMode': organizerProviderConnectionDocumentSyncMode,
+    'organizerProviderConnectionDocument.updatedAt._nanoseconds': organizerProviderConnectionDocumentUpdatedAtNanoseconds,
+    'organizerProviderConnectionDocument.updatedAt._seconds': organizerProviderConnectionDocumentUpdatedAtSeconds,
+    'organizerProviderSetupCallableResponse.connections': organizerProviderSetupCallableResponseConnections,
+    'organizerProviderSetupCallableResponse.connections.items.capabilities.eventList': organizerProviderSetupCallableResponseConnectionsItemsCapabilitiesEventList,
+    'organizerProviderSetupCallableResponse.connections.items.capabilities.orderAmount': organizerProviderSetupCallableResponseConnectionsItemsCapabilitiesOrderAmount,
+    'organizerProviderSetupCallableResponse.connections.items.capabilities.providerCheckIn': organizerProviderSetupCallableResponseConnectionsItemsCapabilitiesProviderCheckIn,
+    'organizerProviderSetupCallableResponse.connections.items.capabilities.referralCode': organizerProviderSetupCallableResponseConnectionsItemsCapabilitiesReferralCode,
+    'organizerProviderSetupCallableResponse.connections.items.capabilities.refundStatus': organizerProviderSetupCallableResponseConnectionsItemsCapabilitiesRefundStatus,
+    'organizerProviderSetupCallableResponse.connections.items.capabilities.registrationStatus': organizerProviderSetupCallableResponseConnectionsItemsCapabilitiesRegistrationStatus,
+    'organizerProviderSetupCallableResponse.connections.items.capabilities.rosterIdentity': organizerProviderSetupCallableResponseConnectionsItemsCapabilitiesRosterIdentity,
+    'organizerProviderSetupCallableResponse.connections.items.capabilities.webhooks': organizerProviderSetupCallableResponseConnectionsItemsCapabilitiesWebhooks,
+    'organizerProviderSetupCallableResponse.connections.items.capabilities.writeBookings': organizerProviderSetupCallableResponseConnectionsItemsCapabilitiesWriteBookings,
+    'organizerProviderSetupCallableResponse.connections.items.connectionId': organizerProviderSetupCallableResponseConnectionsItemsConnectionId,
+    'organizerProviderSetupCallableResponse.connections.items.externalAccountId': organizerProviderSetupCallableResponseConnectionsItemsExternalAccountId,
+    'organizerProviderSetupCallableResponse.connections.items.externalAccountName': organizerProviderSetupCallableResponseConnectionsItemsExternalAccountName,
+    'organizerProviderSetupCallableResponse.connections.items.lastHealthSyncAtMillis': organizerProviderSetupCallableResponseConnectionsItemsLastHealthSyncAtMillis,
+    'organizerProviderSetupCallableResponse.connections.items.lastSuccessfulSyncAtMillis': organizerProviderSetupCallableResponseConnectionsItemsLastSuccessfulSyncAtMillis,
+    'organizerProviderSetupCallableResponse.connections.items.provider': organizerProviderSetupCallableResponseConnectionsItemsProvider,
+    'organizerProviderSetupCallableResponse.connections.items.revision': organizerProviderSetupCallableResponseConnectionsItemsRevision,
+    'organizerProviderSetupCallableResponse.connections.items.status': organizerProviderSetupCallableResponseConnectionsItemsStatus,
+    'organizerProviderSetupCallableResponse.connections.items.syncMode': organizerProviderSetupCallableResponseConnectionsItemsSyncMode,
+    'organizerProviderSetupCallableResponse.eventId': organizerProviderSetupCallableResponseEventId,
+    'organizerProviderSetupCallableResponse.mapping.connectionId': organizerProviderSetupCallableResponseMappingConnectionId,
+    'organizerProviderSetupCallableResponse.mapping.externalEventId': organizerProviderSetupCallableResponseMappingExternalEventId,
+    'organizerProviderSetupCallableResponse.mapping.fieldAuthority.checkIn': organizerProviderSetupCallableResponseMappingFieldAuthorityCheckIn,
+    'organizerProviderSetupCallableResponse.mapping.fieldAuthority.orderAmount': organizerProviderSetupCallableResponseMappingFieldAuthorityOrderAmount,
+    'organizerProviderSetupCallableResponse.mapping.fieldAuthority.referralCode': organizerProviderSetupCallableResponseMappingFieldAuthorityReferralCode,
+    'organizerProviderSetupCallableResponse.mapping.fieldAuthority.refundStatus': organizerProviderSetupCallableResponseMappingFieldAuthorityRefundStatus,
+    'organizerProviderSetupCallableResponse.mapping.fieldAuthority.registrationStatus': organizerProviderSetupCallableResponseMappingFieldAuthorityRegistrationStatus,
+    'organizerProviderSetupCallableResponse.mapping.fieldAuthority.rosterIdentity': organizerProviderSetupCallableResponseMappingFieldAuthorityRosterIdentity,
+    'organizerProviderSetupCallableResponse.mapping.lastSuccessfulSyncAtMillis': organizerProviderSetupCallableResponseMappingLastSuccessfulSyncAtMillis,
+    'organizerProviderSetupCallableResponse.mapping.lastSyncAtMillis': organizerProviderSetupCallableResponseMappingLastSyncAtMillis,
+    'organizerProviderSetupCallableResponse.mapping.lastSyncRunId': organizerProviderSetupCallableResponseMappingLastSyncRunId,
+    'organizerProviderSetupCallableResponse.mapping.lastSyncStatus': organizerProviderSetupCallableResponseMappingLastSyncStatus,
+    'organizerProviderSetupCallableResponse.mapping.mappingId': organizerProviderSetupCallableResponseMappingMappingId,
+    'organizerProviderSetupCallableResponse.mapping.provider': organizerProviderSetupCallableResponseMappingProvider,
+    'organizerProviderSetupCallableResponse.mapping.revision': organizerProviderSetupCallableResponseMappingRevision,
+    'organizerProviderSetupCallableResponse.mapping.status': organizerProviderSetupCallableResponseMappingStatus,
+    'organizerProviderSetupCallableResponse.organizerId': organizerProviderSetupCallableResponseOrganizerId,
+    'organizerProviderSetupCallableResponse.providers': organizerProviderSetupCallableResponseProviders,
+    'organizerProviderSetupCallableResponse.providers.items.adapterClass': organizerProviderSetupCallableResponseProvidersItemsAdapterClass,
+    'organizerProviderSetupCallableResponse.providers.items.availability': organizerProviderSetupCallableResponseProvidersItemsAvailability,
+    'organizerProviderSetupCallableResponse.providers.items.capabilities.eventList': organizerProviderSetupCallableResponseProvidersItemsCapabilitiesEventList,
+    'organizerProviderSetupCallableResponse.providers.items.capabilities.fileImport': organizerProviderSetupCallableResponseProvidersItemsCapabilitiesFileImport,
+    'organizerProviderSetupCallableResponse.providers.items.capabilities.orderAmount': organizerProviderSetupCallableResponseProvidersItemsCapabilitiesOrderAmount,
+    'organizerProviderSetupCallableResponse.providers.items.capabilities.providerCheckIn': organizerProviderSetupCallableResponseProvidersItemsCapabilitiesProviderCheckIn,
+    'organizerProviderSetupCallableResponse.providers.items.capabilities.referralCode': organizerProviderSetupCallableResponseProvidersItemsCapabilitiesReferralCode,
+    'organizerProviderSetupCallableResponse.providers.items.capabilities.refundStatus': organizerProviderSetupCallableResponseProvidersItemsCapabilitiesRefundStatus,
+    'organizerProviderSetupCallableResponse.providers.items.capabilities.registrationStatus': organizerProviderSetupCallableResponseProvidersItemsCapabilitiesRegistrationStatus,
+    'organizerProviderSetupCallableResponse.providers.items.capabilities.rosterIdentity': organizerProviderSetupCallableResponseProvidersItemsCapabilitiesRosterIdentity,
+    'organizerProviderSetupCallableResponse.providers.items.capabilities.webhooks': organizerProviderSetupCallableResponseProvidersItemsCapabilitiesWebhooks,
+    'organizerProviderSetupCallableResponse.providers.items.capabilities.writeBookings': organizerProviderSetupCallableResponseProvidersItemsCapabilitiesWriteBookings,
+    'organizerProviderSetupCallableResponse.providers.items.connectionMethod': organizerProviderSetupCallableResponseProvidersItemsConnectionMethod,
+    'organizerProviderSetupCallableResponse.providers.items.displayName': organizerProviderSetupCallableResponseProvidersItemsDisplayName,
+    'organizerProviderSetupCallableResponse.providers.items.importSupport': organizerProviderSetupCallableResponseProvidersItemsImportSupport,
+    'organizerProviderSetupCallableResponse.providers.items.provider': organizerProviderSetupCallableResponseProvidersItemsProvider,
+    'organizerProviderSetupCallableResponse.providers.items.requirement': organizerProviderSetupCallableResponseProvidersItemsRequirement,
     'organizerScheduleLockDocument.endTimeMillis': organizerScheduleLockDocumentEndTimeMillis,
     'organizerScheduleLockDocument.eventId': organizerScheduleLockDocumentEventId,
     'organizerScheduleLockDocument.organizerId': organizerScheduleLockDocumentOrganizerId,
@@ -39501,6 +40805,28 @@ abstract final class CatchContractConstraints {
     'profilePromptAnswer.answer': profilePromptAnswerAnswer,
     'profilePromptAnswer.prompt': profilePromptAnswerPrompt,
     'profilePromptAnswer.promptId': profilePromptAnswerPromptId,
+    'providerSyncRunDocument.clientOperationId': providerSyncRunDocumentClientOperationId,
+    'providerSyncRunDocument.completedAt._nanoseconds': providerSyncRunDocumentCompletedAtNanoseconds,
+    'providerSyncRunDocument.completedAt._seconds': providerSyncRunDocumentCompletedAtSeconds,
+    'providerSyncRunDocument.connectionId': providerSyncRunDocumentConnectionId,
+    'providerSyncRunDocument.createdCount': providerSyncRunDocumentCreatedCount,
+    'providerSyncRunDocument.errorCode': providerSyncRunDocumentErrorCode,
+    'providerSyncRunDocument.eventId': providerSyncRunDocumentEventId,
+    'providerSyncRunDocument.expiresAt._nanoseconds': providerSyncRunDocumentExpiresAtNanoseconds,
+    'providerSyncRunDocument.expiresAt._seconds': providerSyncRunDocumentExpiresAtSeconds,
+    'providerSyncRunDocument.inputHash': providerSyncRunDocumentInputHash,
+    'providerSyncRunDocument.mappingId': providerSyncRunDocumentMappingId,
+    'providerSyncRunDocument.organizerId': providerSyncRunDocumentOrganizerId,
+    'providerSyncRunDocument.pageCount': providerSyncRunDocumentPageCount,
+    'providerSyncRunDocument.provider': providerSyncRunDocumentProvider,
+    'providerSyncRunDocument.receivedCount': providerSyncRunDocumentReceivedCount,
+    'providerSyncRunDocument.skippedCount': providerSyncRunDocumentSkippedCount,
+    'providerSyncRunDocument.startedAt._nanoseconds': providerSyncRunDocumentStartedAtNanoseconds,
+    'providerSyncRunDocument.startedAt._seconds': providerSyncRunDocumentStartedAtSeconds,
+    'providerSyncRunDocument.startedByUid': providerSyncRunDocumentStartedByUid,
+    'providerSyncRunDocument.status': providerSyncRunDocumentStatus,
+    'providerSyncRunDocument.truncated': providerSyncRunDocumentTruncated,
+    'providerSyncRunDocument.updatedCount': providerSyncRunDocumentUpdatedCount,
     'publicProfileDocument.activityPreferences.running.paceMaxSecsPerKm': publicProfileDocumentActivityPreferencesRunningPaceMaxSecsPerKm,
     'publicProfileDocument.activityPreferences.running.paceMinSecsPerKm': publicProfileDocumentActivityPreferencesRunningPaceMinSecsPerKm,
     'publicProfileDocument.activityPreferences.running.preferredDistances': publicProfileDocumentActivityPreferencesRunningPreferredDistances,
@@ -39849,6 +41175,18 @@ abstract final class CatchContractConstraints {
     'swipeDocument.swiperId': swipeDocumentSwiperId,
     'swipeDocument.synthetic': swipeDocumentSynthetic,
     'swipeDocument.targetId': swipeDocumentTargetId,
+    'syncOrganizerProviderEventCallablePayload.clientOperationId': syncOrganizerProviderEventCallablePayloadClientOperationId,
+    'syncOrganizerProviderEventCallablePayload.eventId': syncOrganizerProviderEventCallablePayloadEventId,
+    'syncOrganizerProviderEventCallablePayload.organizerId': syncOrganizerProviderEventCallablePayloadOrganizerId,
+    'syncOrganizerProviderEventCallableResponse.createdCount': syncOrganizerProviderEventCallableResponseCreatedCount,
+    'syncOrganizerProviderEventCallableResponse.pageCount': syncOrganizerProviderEventCallableResponsePageCount,
+    'syncOrganizerProviderEventCallableResponse.receivedCount': syncOrganizerProviderEventCallableResponseReceivedCount,
+    'syncOrganizerProviderEventCallableResponse.replayed': syncOrganizerProviderEventCallableResponseReplayed,
+    'syncOrganizerProviderEventCallableResponse.runId': syncOrganizerProviderEventCallableResponseRunId,
+    'syncOrganizerProviderEventCallableResponse.skippedCount': syncOrganizerProviderEventCallableResponseSkippedCount,
+    'syncOrganizerProviderEventCallableResponse.status': syncOrganizerProviderEventCallableResponseStatus,
+    'syncOrganizerProviderEventCallableResponse.truncated': syncOrganizerProviderEventCallableResponseTruncated,
+    'syncOrganizerProviderEventCallableResponse.updatedCount': syncOrganizerProviderEventCallableResponseUpdatedCount,
     'transferClubOwnershipCallablePayload.clubId': transferClubOwnershipCallablePayloadClubId,
     'transferClubOwnershipCallablePayload.uid': transferClubOwnershipCallablePayloadUid,
     'transferOrganizerOwnershipCallablePayload.organizerId': transferOrganizerOwnershipCallablePayloadOrganizerId,

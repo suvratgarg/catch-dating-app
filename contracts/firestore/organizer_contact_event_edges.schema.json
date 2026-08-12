@@ -26,7 +26,7 @@
     "linkedUid": {"type": ["string", "null"], "minLength": 1, "maxLength": 180},
     "phoneE164": {"type": ["string", "null"], "pattern": "^\\+[1-9][0-9]{7,14}$"},
     "email": {"type": ["string", "null"], "format": "email", "maxLength": 320},
-    "source": {"type": "string", "enum": ["catchBooking", "hostImport", "hostManual", "webOtp"]},
+    "source": {"type": "string", "enum": ["catchBooking", "hostImport", "hostManual", "webOtp", "providerSync"]},
     "status": {"type": "string", "enum": ["invited", "registered", "waitlisted", "checkedIn", "cancelled"]},
     "expected": {"type": "boolean"},
     "registered": {"type": "boolean"},

@@ -37,6 +37,9 @@ import {
   organizerAudienceProjectionReceiptDocumentSchema,
   organizerContactMergeReceiptDocumentSchema,
   organizerSenderConnectionDocumentSchema,
+  organizerProviderConnectionDocumentSchema,
+  externalEventMappingDocumentSchema,
+  providerSyncRunDocumentSchema,
   organizerMessageTemplateDocumentSchema,
   organizerContactChannelStateDocumentSchema,
   organizerCampaignDocumentSchema,
@@ -197,6 +200,14 @@ import {
   sendOrganizerWhatsappTestCallablePayloadSchema,
   organizerCampaignCallableResponseSchema,
   organizerMessagingSetupCallableResponseSchema,
+  getOrganizerProviderSetupCallablePayloadSchema,
+  connectOrganizerLumaProviderCallablePayloadSchema,
+  listOrganizerLumaEventsCallablePayloadSchema,
+  syncOrganizerProviderEventCallablePayloadSchema,
+  disconnectOrganizerProviderCallablePayloadSchema,
+  organizerProviderSetupCallableResponseSchema,
+  listOrganizerLumaEventsCallableResponseSchema,
+  syncOrganizerProviderEventCallableResponseSchema,
   recordOrganizerAnalyticsEventCallablePayloadSchema,
   recordOrganizerAnalyticsEventCallableResponseSchema,
   markEventAttendanceCallablePayloadSchema,
@@ -359,6 +370,9 @@ export const validateOrganizerAudienceSummaryDocument = ajv.compile(organizerAud
 export const validateOrganizerAudienceProjectionReceiptDocument = ajv.compile(organizerAudienceProjectionReceiptDocumentSchema);
 export const validateOrganizerContactMergeReceiptDocument = ajv.compile(organizerContactMergeReceiptDocumentSchema);
 export const validateOrganizerSenderConnectionDocument = ajv.compile(organizerSenderConnectionDocumentSchema);
+export const validateOrganizerProviderConnectionDocument = ajv.compile(organizerProviderConnectionDocumentSchema);
+export const validateExternalEventMappingDocument = ajv.compile(externalEventMappingDocumentSchema);
+export const validateProviderSyncRunDocument = ajv.compile(providerSyncRunDocumentSchema);
 export const validateOrganizerMessageTemplateDocument = ajv.compile(organizerMessageTemplateDocumentSchema);
 export const validateOrganizerContactChannelStateDocument = ajv.compile(organizerContactChannelStateDocumentSchema);
 export const validateOrganizerCampaignDocument = ajv.compile(organizerCampaignDocumentSchema);
@@ -519,6 +533,14 @@ export const validateOrganizerSenderConnectionActionCallablePayload = ajv.compil
 export const validateSendOrganizerWhatsappTestCallablePayload = ajv.compile(sendOrganizerWhatsappTestCallablePayloadSchema);
 export const validateOrganizerCampaignCallableResponse = ajv.compile(organizerCampaignCallableResponseSchema);
 export const validateOrganizerMessagingSetupCallableResponse = ajv.compile(organizerMessagingSetupCallableResponseSchema);
+export const validateGetOrganizerProviderSetupCallablePayload = ajv.compile(getOrganizerProviderSetupCallablePayloadSchema);
+export const validateConnectOrganizerLumaProviderCallablePayload = ajv.compile(connectOrganizerLumaProviderCallablePayloadSchema);
+export const validateListOrganizerLumaEventsCallablePayload = ajv.compile(listOrganizerLumaEventsCallablePayloadSchema);
+export const validateSyncOrganizerProviderEventCallablePayload = ajv.compile(syncOrganizerProviderEventCallablePayloadSchema);
+export const validateDisconnectOrganizerProviderCallablePayload = ajv.compile(disconnectOrganizerProviderCallablePayloadSchema);
+export const validateOrganizerProviderSetupCallableResponse = ajv.compile(organizerProviderSetupCallableResponseSchema);
+export const validateListOrganizerLumaEventsCallableResponse = ajv.compile(listOrganizerLumaEventsCallableResponseSchema);
+export const validateSyncOrganizerProviderEventCallableResponse = ajv.compile(syncOrganizerProviderEventCallableResponseSchema);
 export const validateRecordOrganizerAnalyticsEventCallablePayload = ajv.compile(recordOrganizerAnalyticsEventCallablePayloadSchema);
 export const validateRecordOrganizerAnalyticsEventCallableResponse = ajv.compile(recordOrganizerAnalyticsEventCallableResponseSchema);
 export const validateMarkEventAttendanceCallablePayload = ajv.compile(markEventAttendanceCallablePayloadSchema);

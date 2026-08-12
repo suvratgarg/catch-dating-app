@@ -398,6 +398,7 @@ const schemaHostAnalyticsSnapshotDocumentSchema = <String, Object?>{
                   'hostImport',
                   'hostManual',
                   'webOtp',
+                  'providerSync',
                 ],
                 'properties': <String, Object?>{
                   'catchBooking': <String, Object?>{
@@ -413,6 +414,10 @@ const schemaHostAnalyticsSnapshotDocumentSchema = <String, Object?>{
                     'minimum': 0,
                   },
                   'webOtp': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 0,
+                  },
+                  'providerSync': <String, Object?>{
                     'type': 'integer',
                     'minimum': 0,
                   },

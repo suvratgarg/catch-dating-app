@@ -151,6 +151,13 @@ export {
   syncOrganizerWhatsappTemplates,
 } from "./organizers/organizerMessagingSetup";
 export {
+  connectOrganizerLumaProvider,
+  disconnectOrganizerProvider,
+  getOrganizerProviderSetup,
+  listOrganizerLumaEvents,
+  syncOrganizerProviderEvent,
+} from "./organizers/organizerProviderSetup";
+export {
   onOrganizerMessagingWebhookEventCreated,
   organizerWhatsappWebhook,
 } from "./organizers/organizerWhatsappWebhook";

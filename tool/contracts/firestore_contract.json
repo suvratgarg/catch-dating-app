@@ -736,6 +736,45 @@
       ]
     },
     {
+      "id": "organizerProviderConnections",
+      "path": "organizerProviderConnections/{connectionId}",
+      "rulesMatch": "/organizerProviderConnections/{connectionId}",
+      "typescriptInterface": "OrganizerProviderConnectionDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "organizer booking-provider connection callables",
+      "read": "server only; manager setup projection is callable-owned",
+      "write": "server only; credentials remain in Secret Manager",
+      "exportedFunctions": ["connectOrganizerLumaProvider", "disconnectOrganizerProvider", "getOrganizerProviderSetup", "listOrganizerLumaEvents", "syncOrganizerProviderEvent"],
+      "migrationNotes": ["Provider capability coverage is field-scoped; a connection never implies universal booking, payment, refund, referral, or webhook authority."]
+    },
+    {
+      "id": "externalEventMappings",
+      "path": "externalEventMappings/{mappingId}",
+      "rulesMatch": "/externalEventMappings/{mappingId}",
+      "typescriptInterface": "ExternalEventMappingDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "external event provider mapping and reconciliation callables",
+      "read": "server only; manager setup projection is callable-owned",
+      "write": "server only",
+      "exportedFunctions": ["connectOrganizerLumaProvider", "disconnectOrganizerProvider", "getOrganizerProviderSetup", "syncOrganizerProviderEvent"],
+      "migrationNotes": ["One deterministic mapping per Catch event preserves immutable provider and field authority while allowing credential rotation."]
+    },
+    {
+      "id": "providerSyncRuns",
+      "path": "providerSyncRuns/{runId}",
+      "rulesMatch": "/providerSyncRuns/{runId}",
+      "typescriptInterface": "ProviderSyncRunDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "external provider roster reconciliation callable",
+      "read": "server only; sanitized result is callable-owned",
+      "write": "server only",
+      "exportedFunctions": ["syncOrganizerProviderEvent"],
+      "migrationNotes": ["Thirty-day TTL receipt prevents duplicate sync operations and records bounded counts without retaining provider payloads."]
+    },
+    {
       "id": "eventRuntimeParticipants",
       "path": "eventRuntimeParticipants/{participantId}",
       "rulesMatch": "/eventRuntimeParticipants/{participantId}",

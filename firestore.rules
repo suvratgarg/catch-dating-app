@@ -965,6 +965,18 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /organizerProviderConnections/{connectionId} {
+      allow read, write: if false;
+    }
+
+    match /externalEventMappings/{mappingId} {
+      allow read, write: if false;
+    }
+
+    match /providerSyncRuns/{runId} {
+      allow read, write: if false;
+    }
+
     match /organizerMessageTemplates/{templateId} {
       allow read, write: if false;
     }

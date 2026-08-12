@@ -41,7 +41,7 @@
     "searchName": {"type": "string", "minLength": 1, "maxLength": 120},
     "source": {
       "type": "string",
-      "enum": ["catchBooking", "hostImport", "hostManual", "webOtp"]
+      "enum": ["catchBooking", "hostImport", "hostManual", "webOtp", "providerSync"]
     },
     "status": {
       "type": "string",
@@ -113,6 +113,15 @@
       "type": ["string", "null"],
       "enum": ["invited", "registered", "waitlisted", null],
       "description": "Operational status restored by an absolute undo. Null outside checked-in state."
-    }
+    },
+    "provider": {
+      "type": ["string", "null"],
+      "enum": ["luma", "eventbrite", "partiful", "posh", "bookmyshow", "district", "sortmyscene", "airbnb", null],
+      "description": "External source that most recently supplied provider-authoritative fields, independent of row creation source."
+    },
+    "providerConnectionId": {"type": ["string", "null"], "minLength": 1, "maxLength": 180},
+    "providerGuestId": {"type": ["string", "null"], "minLength": 1, "maxLength": 240},
+    "providerSyncedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
+    "providerDataRevision": {"type": "integer", "minimum": 0, "maximum": 9007199254740991}
   }
 }

@@ -14,7 +14,12 @@ export interface OrganizerContactDocument {
   email: string | null;
   identityState: "unlinked" | "verified" | "ambiguous" | "merged";
   identityConfidence: "eventOnly" | "proposed" | "verified";
-  primarySource: "catchBooking" | "hostImport" | "hostManual" | "webOtp";
+  primarySource:
+    | "catchBooking"
+    | "hostImport"
+    | "hostManual"
+    | "webOtp"
+    | "providerSync";
   /**
    * @maxItems 20
    */

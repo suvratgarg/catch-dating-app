@@ -38,6 +38,9 @@ import {OrganizerAudienceSummaryDocument} from "./organizerAudienceSummaryDocume
 import {OrganizerAudienceProjectionReceiptDocument} from "./organizerAudienceProjectionReceiptDocument";
 import {OrganizerContactMergeReceiptDocument} from "./organizerContactMergeReceiptDocument";
 import {OrganizerSenderConnectionDocument} from "./organizerSenderConnectionDocument";
+import {OrganizerProviderConnectionDocument} from "./organizerProviderConnectionDocument";
+import {ExternalEventMappingDocument} from "./externalEventMappingDocument";
+import {ProviderSyncRunDocument} from "./providerSyncRunDocument";
 import {OrganizerMessageTemplateDocument} from "./organizerMessageTemplateDocument";
 import {OrganizerContactChannelStateDocument} from "./organizerContactChannelStateDocument";
 import {OrganizerCampaignDocument} from "./organizerCampaignDocument";
@@ -198,6 +201,14 @@ import {OrganizerSenderConnectionActionCallablePayload} from "./organizerSenderC
 import {SendOrganizerWhatsappTestCallablePayload} from "./sendOrganizerWhatsappTestCallablePayload";
 import {OrganizerCampaignCallableResponse} from "./organizerCampaignCallableResponse";
 import {OrganizerMessagingSetupCallableResponse} from "./organizerMessagingSetupCallableResponse";
+import {GetOrganizerProviderSetupCallablePayload} from "./getOrganizerProviderSetupCallablePayload";
+import {ConnectOrganizerLumaProviderCallablePayload} from "./connectOrganizerLumaProviderCallablePayload";
+import {ListOrganizerLumaEventsCallablePayload} from "./listOrganizerLumaEventsCallablePayload";
+import {SyncOrganizerProviderEventCallablePayload} from "./syncOrganizerProviderEventCallablePayload";
+import {DisconnectOrganizerProviderCallablePayload} from "./disconnectOrganizerProviderCallablePayload";
+import {OrganizerProviderSetupCallableResponse} from "./organizerProviderSetupCallableResponse";
+import {ListOrganizerLumaEventsCallableResponse} from "./listOrganizerLumaEventsCallableResponse";
+import {SyncOrganizerProviderEventCallableResponse} from "./syncOrganizerProviderEventCallableResponse";
 import {RecordOrganizerAnalyticsEventCallablePayload} from "./recordOrganizerAnalyticsEventCallablePayload";
 import {RecordOrganizerAnalyticsEventCallableResponse} from "./recordOrganizerAnalyticsEventCallableResponse";
 import {MarkEventAttendanceCallablePayload} from "./markEventAttendanceCallablePayload";
@@ -337,6 +348,9 @@ import {
   organizerAudienceProjectionReceiptDocumentSchema,
   organizerContactMergeReceiptDocumentSchema,
   organizerSenderConnectionDocumentSchema,
+  organizerProviderConnectionDocumentSchema,
+  externalEventMappingDocumentSchema,
+  providerSyncRunDocumentSchema,
   organizerMessageTemplateDocumentSchema,
   organizerContactChannelStateDocumentSchema,
   organizerCampaignDocumentSchema,
@@ -497,6 +511,14 @@ import {
   sendOrganizerWhatsappTestCallablePayloadSchema,
   organizerCampaignCallableResponseSchema,
   organizerMessagingSetupCallableResponseSchema,
+  getOrganizerProviderSetupCallablePayloadSchema,
+  connectOrganizerLumaProviderCallablePayloadSchema,
+  listOrganizerLumaEventsCallablePayloadSchema,
+  syncOrganizerProviderEventCallablePayloadSchema,
+  disconnectOrganizerProviderCallablePayloadSchema,
+  organizerProviderSetupCallableResponseSchema,
+  listOrganizerLumaEventsCallableResponseSchema,
+  syncOrganizerProviderEventCallableResponseSchema,
   recordOrganizerAnalyticsEventCallablePayloadSchema,
   recordOrganizerAnalyticsEventCallableResponseSchema,
   markEventAttendanceCallablePayloadSchema,
@@ -742,6 +764,18 @@ export const validateOrganizerSenderConnectionDocument:
   ValidateFunction<OrganizerSenderConnectionDocument> =
     ajv.compile(organizerSenderConnectionDocumentSchema) as
       ValidateFunction<OrganizerSenderConnectionDocument>;
+export const validateOrganizerProviderConnectionDocument:
+  ValidateFunction<OrganizerProviderConnectionDocument> =
+    ajv.compile(organizerProviderConnectionDocumentSchema) as
+      ValidateFunction<OrganizerProviderConnectionDocument>;
+export const validateExternalEventMappingDocument:
+  ValidateFunction<ExternalEventMappingDocument> =
+    ajv.compile(externalEventMappingDocumentSchema) as
+      ValidateFunction<ExternalEventMappingDocument>;
+export const validateProviderSyncRunDocument:
+  ValidateFunction<ProviderSyncRunDocument> =
+    ajv.compile(providerSyncRunDocumentSchema) as
+      ValidateFunction<ProviderSyncRunDocument>;
 export const validateOrganizerMessageTemplateDocument:
   ValidateFunction<OrganizerMessageTemplateDocument> =
     ajv.compile(organizerMessageTemplateDocumentSchema) as
@@ -1382,6 +1416,38 @@ export const validateOrganizerMessagingSetupCallableResponse:
   ValidateFunction<OrganizerMessagingSetupCallableResponse> =
     ajv.compile(organizerMessagingSetupCallableResponseSchema) as
       ValidateFunction<OrganizerMessagingSetupCallableResponse>;
+export const validateGetOrganizerProviderSetupCallablePayload:
+  ValidateFunction<GetOrganizerProviderSetupCallablePayload> =
+    ajv.compile(getOrganizerProviderSetupCallablePayloadSchema) as
+      ValidateFunction<GetOrganizerProviderSetupCallablePayload>;
+export const validateConnectOrganizerLumaProviderCallablePayload:
+  ValidateFunction<ConnectOrganizerLumaProviderCallablePayload> =
+    ajv.compile(connectOrganizerLumaProviderCallablePayloadSchema) as
+      ValidateFunction<ConnectOrganizerLumaProviderCallablePayload>;
+export const validateListOrganizerLumaEventsCallablePayload:
+  ValidateFunction<ListOrganizerLumaEventsCallablePayload> =
+    ajv.compile(listOrganizerLumaEventsCallablePayloadSchema) as
+      ValidateFunction<ListOrganizerLumaEventsCallablePayload>;
+export const validateSyncOrganizerProviderEventCallablePayload:
+  ValidateFunction<SyncOrganizerProviderEventCallablePayload> =
+    ajv.compile(syncOrganizerProviderEventCallablePayloadSchema) as
+      ValidateFunction<SyncOrganizerProviderEventCallablePayload>;
+export const validateDisconnectOrganizerProviderCallablePayload:
+  ValidateFunction<DisconnectOrganizerProviderCallablePayload> =
+    ajv.compile(disconnectOrganizerProviderCallablePayloadSchema) as
+      ValidateFunction<DisconnectOrganizerProviderCallablePayload>;
+export const validateOrganizerProviderSetupCallableResponse:
+  ValidateFunction<OrganizerProviderSetupCallableResponse> =
+    ajv.compile(organizerProviderSetupCallableResponseSchema) as
+      ValidateFunction<OrganizerProviderSetupCallableResponse>;
+export const validateListOrganizerLumaEventsCallableResponse:
+  ValidateFunction<ListOrganizerLumaEventsCallableResponse> =
+    ajv.compile(listOrganizerLumaEventsCallableResponseSchema) as
+      ValidateFunction<ListOrganizerLumaEventsCallableResponse>;
+export const validateSyncOrganizerProviderEventCallableResponse:
+  ValidateFunction<SyncOrganizerProviderEventCallableResponse> =
+    ajv.compile(syncOrganizerProviderEventCallableResponseSchema) as
+      ValidateFunction<SyncOrganizerProviderEventCallableResponse>;
 export const validateRecordOrganizerAnalyticsEventCallablePayload:
   ValidateFunction<RecordOrganizerAnalyticsEventCallablePayload> =
     ajv.compile(recordOrganizerAnalyticsEventCallablePayloadSchema) as

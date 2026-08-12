@@ -22,7 +22,7 @@
     "identityHash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
     "hashVersion": {"type": "string", "enum": ["hmac-sha256-v1"]},
     "confidence": {"type": "string", "enum": ["proposed", "verified"]},
-    "source": {"type": "string", "enum": ["catchBooking", "hostImport", "hostManual", "webOtp"]},
+    "source": {"type": "string", "enum": ["catchBooking", "hostImport", "hostManual", "webOtp", "providerSync"]},
     "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
     "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}
   }
