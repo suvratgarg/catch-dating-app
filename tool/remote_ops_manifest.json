@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated": "2026-08-11",
+  "updated": "2026-08-12",
   "description": "Consolidated inventory of remote operational surfaces. This file groups Firebase deploys, environment switching, data repair/backfill, App Check/security console work, CI gates, and App Store/TestFlight/Play release operations without changing the underlying tools.",
   "operations": [
     {
@@ -565,6 +565,36 @@
         "Host Android Firebase apps were registered on 2026-06-10 and mirror the matching consumer app SHA fingerprints for dev, staging, and prod.",
         "Host App Check provider registrations were verified in Firebase Console on 2026-06-10 for dev, staging, and prod: Android uses Play Integrity, iOS uses App Attest, and web uses reCAPTCHA Enterprise.",
         "Firebase CLI 15.20.0 and gcloud 566.0.0 do not expose App Check app-management commands in this local toolchain."
+      ]
+    },
+    {
+      "id": "github-branch-hygiene",
+      "category": "ci",
+      "status": "active",
+      "safety": "remote-read-issue-write",
+      "purpose": "Audit every remote branch daily, report only refs with deterministic semantic-integration proof as supervised cleanup candidates, and keep stale unique-looking code visible through a failed run and maintained GitHub issue.",
+      "entrypoints": [
+        {
+          "kind": "tool-id",
+          "ref": "git:branch-hygiene"
+        },
+        {
+          "kind": "workflow",
+          "ref": ".github/workflows/branch-hygiene.yml"
+        },
+        {
+          "kind": "doc",
+          "ref": "docs/release_operations.md"
+        }
+      ],
+      "requiredChecks": [
+        "node tool/run.mjs check git:branch-hygiene",
+        "Review the workflow artifact and prune only rows whose safeToPrune field is true."
+      ],
+      "notes": [
+        "The repository delete-after-merge setting remains enabled for exact PR heads; this workflow covers squash, integration-branch, backup-ref, and no-PR visibility gaps.",
+        "The workflow has read-only contents permission and never deletes a branch.",
+        "Branches older than seven days without an open PR or semantic integration proof update one issue and fail the scheduled run."
       ]
     },
     {

@@ -174,6 +174,38 @@
         }
       ]
     },
+    "GIT-BRANCH-HYGIENE-001": {
+      "title": "Keep completed branches disposable and surface abandoned code",
+      "status": "active",
+      "kind": "process",
+      "introduced_in": {
+        "doc_id": "release_operations",
+        "version": "2.0.19"
+      },
+      "applies_to": [
+        ".github/workflows/branch-hygiene.yml",
+        "docs/release_operations.md",
+        "tool/git/branch_hygiene.mjs",
+        "tool/git/branch_hygiene.test.mjs",
+        "tool/tools_manifest.json"
+      ],
+      "instruction": "Delete single-use branches after semantic integration is proven. Audit remote refs daily, never auto-delete open-PR or unique-looking work, and fail visibly when a branch remains outside main without an open PR beyond the review window.",
+      "sunset_when": [
+        "GitHub natively proves semantic incorporation for non-PR and squash-integrated refs and reports abandoned unique work"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "git:branch-hygiene",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/release_operations.md#git-branch-hygiene"
+        }
+      ]
+    },
     "WEB-COPY-001": {
       "title": "Keep marketing-authored website copy in the content layer",
       "status": "active",
