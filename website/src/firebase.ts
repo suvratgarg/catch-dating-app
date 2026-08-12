@@ -21,6 +21,8 @@ import type {RecordOrganizerAnalyticsEventCallableResponse} from "../../function
 import type {RecordEventInviteLinkOpenCallablePayload} from "../../functions/src/shared/generated/recordEventInviteLinkOpenCallablePayload";
 import type {RegisterPublicEventCallablePayload} from "../../functions/src/shared/generated/registerPublicEventCallablePayload";
 import type {RegisterPublicEventCallableResponse} from "../../functions/src/shared/generated/registerPublicEventCallableResponse";
+import type {ResolveEventInviteLandingCallablePayload} from "../../functions/src/shared/generated/resolveEventInviteLandingCallablePayload";
+import type {ResolveEventInviteLandingCallableResponse} from "../../functions/src/shared/generated/resolveEventInviteLandingCallableResponse";
 import type {RequestOrganizerClaimCallablePayload} from "../../functions/src/shared/generated/requestOrganizerClaimCallablePayload";
 import type {RequestOrganizerClaimCallableResponse} from "../../functions/src/shared/generated/requestOrganizerClaimCallableResponse";
 import type {StartEventSuccessFirstHelloMissionCallablePayload} from "../../functions/src/shared/generated/startEventSuccessFirstHelloMissionCallablePayload";
@@ -60,6 +62,7 @@ export type RecordOrganizerAnalyticsEventResponse =
 export type RegisterPublicEventPayload = RegisterPublicEventCallablePayload;
 export type RegisterPublicEventResponse = RegisterPublicEventCallableResponse;
 export type EventRuntimeBootstrap = GetEventRuntimeBootstrapCallableResponse;
+export type EventInviteLanding = ResolveEventInviteLandingCallableResponse;
 
 export interface PublicEventPhoneVerification {
   clear: () => void;
@@ -549,6 +552,16 @@ export async function recordEventInviteLinkOpen(
 ): Promise<{accepted: boolean; inviteLinkId: string}> {
   return invokeWebsiteCallable(
     "recordEventInviteLinkOpen",
+    payload,
+    publicEventRegistrationFirebaseConfigured || eventRuntimeFirebaseConfigured
+  );
+}
+
+export async function resolveEventInviteLanding(
+  payload: ResolveEventInviteLandingCallablePayload
+): Promise<ResolveEventInviteLandingCallableResponse> {
+  return invokeWebsiteCallable(
+    "resolveEventInviteLanding",
     payload,
     publicEventRegistrationFirebaseConfigured || eventRuntimeFirebaseConfigured
   );

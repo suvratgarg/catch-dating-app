@@ -18,6 +18,30 @@ export interface GetEventRuntimeBootstrapCallableResponse {
      * @maxItems 24
      */
     moduleIds: string[];
+    /**
+     * Fields that must be completed before event mode opens. Sensitive preference fields are never required for entry.
+     *
+     * @maxItems 5
+     */
+    requiredFieldIds: (
+      | "displayName"
+      | "gender"
+      | "interestedInGenders"
+      | "relationshipGoal"
+      | "dateOfBirth"
+    )[];
+    /**
+     * Plan-derived event-only answers the guest may provide to improve preference-aware suggestions. Guests may skip them and receive neutral assignments.
+     *
+     * @maxItems 5
+     */
+    optionalFieldIds: (
+      | "displayName"
+      | "gender"
+      | "interestedInGenders"
+      | "relationshipGoal"
+      | "dateOfBirth"
+    )[];
     questionnaireConfig: null | {
       templateId: string;
       customTitle?: string | null;

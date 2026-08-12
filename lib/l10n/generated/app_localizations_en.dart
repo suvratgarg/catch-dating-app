@@ -5983,7 +5983,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostClubsScaffoldBodyDragLeftOrRight =>
-      'Drag left or right to switch between Edit, Insights, and Preview.';
+      'Drag left or right to switch between Edit, Audience, Insights, and Preview.';
 
   @override
   String get hostsHostClubsScaffoldLabelEdit => 'Edit';
@@ -11761,4 +11761,327 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostsHostPublicRegistrationActionDisable =>
       'Disable website sign-up';
+
+  @override
+  String get hostsHostClubsScaffoldLabelAudience => 'Audience';
+
+  @override
+  String get hostsHostAudienceTitle => 'Your audience';
+
+  @override
+  String get hostsHostAudienceIntro =>
+      'Build a useful history from Catch bookings, roster imports, manual guests, provider sync, and phone-verified event runtime check-ins. Catch bookings and the Consumer app are not required.';
+
+  @override
+  String get hostsHostAudiencePeople => 'People';
+
+  @override
+  String get hostsHostAudienceMessage => 'Message';
+
+  @override
+  String get hostsHostAudienceAtAGlance => 'At a glance';
+
+  @override
+  String get hostsHostAudienceContacts => 'Contacts';
+
+  @override
+  String get hostsHostAudienceAttended => 'Attended';
+
+  @override
+  String get hostsHostAudienceRepeat => 'Repeat';
+
+  @override
+  String get hostsHostAudienceWhatsappReady => 'WhatsApp ready';
+
+  @override
+  String hostsHostAudienceSources({
+    required int importedCount,
+    required int linkedCount,
+  }) {
+    return '$importedCount came through external or manual rosters · $linkedCount are linked to verified Catch identities';
+  }
+
+  @override
+  String get hostsHostAudienceDirectory => 'People';
+
+  @override
+  String get hostsHostAudienceSearch => 'Search by name';
+
+  @override
+  String get hostsHostAudienceAll => 'All';
+
+  @override
+  String get hostsHostAudienceCoveragePartial =>
+      'Some history is still being reconciled';
+
+  @override
+  String get hostsHostAudienceCoveragePartialBody =>
+      'Counts may omit older roster changes. Messaging stays blocked until the projection is exact, so nobody receives an accidental blast.';
+
+  @override
+  String get hostsHostAudienceEmpty =>
+      'No people match this filter yet. Import a roster or use the event runtime to start building your history.';
+
+  @override
+  String get hostsHostAudienceWhatsappSender => 'WhatsApp Business sender';
+
+  @override
+  String get hostsHostAudienceWhatsappOwnedSender =>
+      'Connect your own Meta WhatsApp Business account. Catch never sends from a shared number, and only people with explicit organizer-specific opt-in are eligible.';
+
+  @override
+  String get hostsHostAudienceProviderUnavailable =>
+      'WhatsApp setup is not enabled in this environment';
+
+  @override
+  String get hostsHostAudienceProviderUnavailableBody =>
+      'An administrator must configure the Catch Meta app and Embedded Signup configuration before organizers can connect their own senders.';
+
+  @override
+  String get hostsHostAudienceConnectWhatsapp => 'Connect WhatsApp Business';
+
+  @override
+  String get hostsHostAudienceTemplates => 'Message templates';
+
+  @override
+  String hostsHostAudienceApprovedTemplates({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count approved templates',
+      one: '1 approved template',
+      zero: 'No approved templates',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostsHostAudienceSyncTemplates => 'Sync templates';
+
+  @override
+  String get hostsHostAudienceDisconnect => 'Disconnect';
+
+  @override
+  String get hostsHostAudienceTestPhone => 'Test recipient phone';
+
+  @override
+  String get hostsHostAudienceTestPhoneHelp =>
+      'Use an opted-in number you control, including the country code.';
+
+  @override
+  String get hostsHostAudienceSendTest => 'Send verification message';
+
+  @override
+  String get hostsHostAudienceTestPending =>
+      'Meta accepted the test. The sender becomes active after the delivered webhook arrives.';
+
+  @override
+  String get hostsHostAudienceCampaign => 'Message past attendees';
+
+  @override
+  String get hostsHostAudienceCampaignNeedsActiveSender =>
+      'Finish sender verification before creating a campaign. A delivered test proves that webhooks and the selected number work end to end.';
+
+  @override
+  String get hostsHostAudienceCampaignNeedsTemplate =>
+      'Sync an approved Meta template before creating a campaign.';
+
+  @override
+  String get hostsHostAudienceCampaignName => 'Internal campaign name';
+
+  @override
+  String get hostsHostAudienceCampaignNameExample =>
+      'September regulars invitation';
+
+  @override
+  String get hostsHostAudienceMessageType => 'Message type';
+
+  @override
+  String get hostsHostAudienceRecipients => 'Recipient categories';
+
+  @override
+  String get hostsHostAudienceTemplate => 'Approved template';
+
+  @override
+  String get hostsHostAudiencePreviewCampaign => 'Save and preview recipients';
+
+  @override
+  String get hostsHostAudienceCompleteCampaign =>
+      'Add a campaign name and complete every template field before previewing.';
+
+  @override
+  String hostsHostAudienceCampaignStatus({required String status}) {
+    return 'Campaign status: $status';
+  }
+
+  @override
+  String hostsHostAudienceCampaignCounts({
+    required int total,
+    required int reachable,
+    required int optedOut,
+    required int unknown,
+  }) {
+    return '$reachable of $total are reachable · $optedOut opted out · $unknown have unknown permission or identity';
+  }
+
+  @override
+  String hostsHostAudienceDeliveryCounts({
+    required int sent,
+    required int delivered,
+    required int read,
+    required int failed,
+  }) {
+    return '$sent sent · $delivered delivered · $read read · $failed failed';
+  }
+
+  @override
+  String get hostsHostAudienceApprove => 'Approve exact audience';
+
+  @override
+  String get hostsHostAudienceSendNow => 'Send now';
+
+  @override
+  String get hostsHostAudienceRefresh => 'Refresh results';
+
+  @override
+  String get hostsHostAudienceCancel => 'Cancel campaign';
+
+  @override
+  String get hostsHostAudienceNewCampaign => 'New campaign';
+
+  @override
+  String get hostsHostAudienceSegmentFirstTime => 'First-time attendees';
+
+  @override
+  String get hostsHostAudienceSegmentRepeat => 'Repeat attendees';
+
+  @override
+  String get hostsHostAudienceSegmentRegular => 'Regulars';
+
+  @override
+  String get hostsHostAudienceSegmentLapsed => 'Lapsed regulars';
+
+  @override
+  String get hostsHostAudienceSegmentReliable => 'Reliable attendees';
+
+  @override
+  String get hostsHostAudienceSegmentAdvocate => 'Advocates';
+
+  @override
+  String get hostsHostAudienceSegmentHighImpact => 'High-impact advocates';
+
+  @override
+  String get hostsHostAudienceSegmentWhatsapp => 'WhatsApp reachable';
+
+  @override
+  String get hostsHostAudienceMessageFollowUp => 'Post-event follow-up';
+
+  @override
+  String get hostsHostAudienceMessageUpdate => 'Organizer update';
+
+  @override
+  String get hostsHostAudienceMessagePromotion =>
+      'Event invitation or promotion';
+
+  @override
+  String get hostsHostAudienceSenderActive => 'Active';
+
+  @override
+  String get hostsHostAudienceSenderTesting => 'Verification pending';
+
+  @override
+  String get hostsHostAudienceSenderDegraded => 'Degraded';
+
+  @override
+  String get hostsHostAudienceSenderNeedsAttention => 'Reconnect required';
+
+  @override
+  String hostsHostAudienceEventsAttended({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count events attended',
+      one: '1 event attended',
+      zero: 'No check-ins yet',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostsHostAudienceLastSeen({required String date}) {
+    return 'Last seen $date';
+  }
+
+  @override
+  String get hostsHostAudienceWhatsappOptedIn => 'WhatsApp opted in';
+
+  @override
+  String get hostsHostAudienceIdentityNeedsReview => 'Identity needs review';
+
+  @override
+  String get hostsHostAudienceWebSignupOnly =>
+      'Connect WhatsApp from the Host web app. Once connected, the sender can be managed on any device.';
+
+  @override
+  String get hostsHostAudienceBlockerProvider =>
+      'WhatsApp provider setup is incomplete';
+
+  @override
+  String get hostsHostAudienceBlockerSender =>
+      'Sender verification is incomplete';
+
+  @override
+  String get hostsHostAudienceBlockerTemplate =>
+      'The template is missing or no longer approved';
+
+  @override
+  String get hostsHostAudienceBlockerNoRecipients =>
+      'No selected contacts are both verified and opted in';
+
+  @override
+  String get hostsHostAudienceBlockerCoverage =>
+      'Audience history is still being reconciled';
+
+  @override
+  String get hostsHostAudienceBlockerTooLarge =>
+      'This first release supports up to 100 evaluated contacts per campaign';
+
+  @override
+  String get hostsHostAudienceBlockerEvent =>
+      'The linked event or destination is unavailable';
+
+  @override
+  String get hostsHostAudienceBlockerSchedule =>
+      'The scheduled time has passed';
+
+  @override
+  String get hostsHostAudienceLinkedEvent => 'Event invitation';
+
+  @override
+  String get hostsHostAudienceChooseEvent => 'Choose an event';
+
+  @override
+  String get hostsHostAudienceLinkedEventHelp =>
+      'Catch creates a different private link for each eligible recipient so opens, registrations, referrals, and check-ins can be attributed safely.';
+
+  @override
+  String get hostsHostAudienceInviteDestination => 'Where the invitation opens';
+
+  @override
+  String get hostsHostAudienceDestinationCatchPage => 'Catch event page';
+
+  @override
+  String get hostsHostAudienceDestinationRuntime => 'No-download event runtime';
+
+  @override
+  String get hostsHostAudienceDestinationExternal =>
+      'External booking site via Catch event page';
+
+  @override
+  String get hostsHostAudienceExternalAttributionExplanation =>
+      'Catch records the private-link open, then sends the guest to the external booking page. Registration is confirmed only when a supported provider returns the referral code or the guest later makes a phone-verified runtime claim tied to the roster. An ordinary re-import or manual check-in cannot prove which link caused the booking.';
+
+  @override
+  String get hostsHostAudienceCatchAttributionExplanation =>
+      'Catch can attribute private-link opens and phone-verified web registration. If guests share their own Catch-generated link, their referred registrations and check-ins are counted separately.';
 }

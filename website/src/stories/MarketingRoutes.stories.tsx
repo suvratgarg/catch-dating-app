@@ -6,6 +6,7 @@ import {emptyClaimRouteState} from "../features/claims/claimRouting";
 import {HomePage} from "../features/home/HomePage";
 import {HostPage} from "../features/host/HostPage";
 import {EventDetailPage} from "../features/events/EventDetailPage";
+import {EventInvitePage} from "../features/events/EventInvitePage";
 import {NotFoundPage} from "../features/notFound/NotFoundPage";
 import {LegalPage} from "../features/legal/LegalPage";
 import {publishedLegalContent} from "../content/legal";
@@ -165,6 +166,41 @@ export const EventRuntimeShells: Story = {
     },
   },
   render: EventRuntime.render,
+};
+
+export const EventInvite: Story = {
+  name: "/invite/:inviteToken/",
+  parameters: {
+    a11y: {test: "error"},
+    catchRoute: {
+      id: "event_invite",
+      pathPattern: "/invite/:inviteToken/",
+      reviewStates: ["loading", "resolved-external", "resolved-runtime", "unavailable"],
+      stateCoverage: {
+        storybook: ["resolved-external"],
+        manual: ["loading", "resolved-runtime", "unavailable"],
+      },
+    },
+    catchComponent: {
+      id: "route_event_invite",
+      routeIds: ["event_invite"],
+      states: ["resolved-external"],
+    },
+  },
+  render: () => (
+    <MemoryRouter initialEntries={["/invite/v2_story_abcdefghijklmnopqrstuvwxyz12345678901234567/"]}>
+      <EventInvitePage initialLanding={{
+        destinationKind: "externalBooking",
+        destinationUrl: "https://luma.com/courtyard-social?catch_ref=story",
+        endTimeMillis: Date.parse("2026-08-18T16:00:00.000Z"),
+        eventId: "event-story",
+        locationName: "The Courtyard",
+        sourceLabel: "Luma",
+        startTimeMillis: Date.parse("2026-08-18T13:30:00.000Z"),
+        title: "Courtyard Social",
+      }} />
+    </MemoryRouter>
+  ),
 };
 
 export const Claim: Story = {

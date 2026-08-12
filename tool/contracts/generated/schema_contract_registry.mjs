@@ -42108,6 +42108,99 @@ export const recordEventInviteLinkOpenCallablePayloadSchema = {
   }
 };
 
+export const resolveEventInviteLandingCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/resolve_event_invite_landing_payload.schema.json",
+  "title": "ResolveEventInviteLandingCallablePayload",
+  "description": "Resolves an opaque invitation bearer token into one bounded event landing projection and records a deduplicated open.",
+  "x-callable-aliases": [
+    "resolveEventInviteLanding"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "inviteToken"
+  ],
+  "properties": {
+    "inviteToken": {
+      "type": "string",
+      "pattern": "^v2_[A-Za-z0-9_-]{1,180}_[A-Za-z0-9_-]{43}$",
+      "maxLength": 230
+    },
+    "sessionId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 8,
+      "maxLength": 128
+    }
+  }
+};
+
+export const resolveEventInviteLandingCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/resolve_event_invite_landing_response.schema.json",
+  "title": "ResolveEventInviteLandingCallableResponse",
+  "description": "Bounded details and handoff for a valid opaque event invitation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "title",
+    "startTimeMillis",
+    "endTimeMillis",
+    "locationName",
+    "destinationKind",
+    "destinationUrl",
+    "sourceLabel"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "startTimeMillis": {
+      "type": "integer"
+    },
+    "endTimeMillis": {
+      "type": "integer"
+    },
+    "locationName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "destinationKind": {
+      "type": "string",
+      "enum": [
+        "catchEvent",
+        "eventRuntime",
+        "externalBooking",
+        "marketingLanding"
+      ]
+    },
+    "destinationUrl": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 2048
+    },
+    "sourceLabel": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    }
+  }
+};
+
 export const getEventInviteLinkTokenCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/get_event_invite_link_token_payload.schema.json",
@@ -42382,8 +42475,7 @@ export const completeOrganizerWhatsappConnectionCallablePayloadSchema = {
     "organizerId",
     "authorizationCode",
     "wabaId",
-    "phoneNumberId",
-    "businessId"
+    "phoneNumberId"
   ],
   "properties": {
     "organizerId": {
@@ -42405,7 +42497,10 @@ export const completeOrganizerWhatsappConnectionCallablePayloadSchema = {
       "pattern": "^[0-9]{5,40}$"
     },
     "businessId": {
-      "type": "string",
+      "type": [
+        "string",
+        "null"
+      ],
       "pattern": "^[0-9]{5,40}$"
     }
   }
@@ -43330,6 +43425,8 @@ export const getEventRuntimeBootstrapCallableResponseSchema = {
         "locationName",
         "runtimeTermsVersion",
         "moduleIds",
+        "requiredFieldIds",
+        "optionalFieldIds",
         "questionnaireConfig"
       ],
       "properties": {
@@ -43371,6 +43468,38 @@ export const getEventRuntimeBootstrapCallableResponseSchema = {
             "type": "string",
             "minLength": 1,
             "maxLength": 120
+          }
+        },
+        "requiredFieldIds": {
+          "description": "Fields that must be completed before event mode opens. Sensitive preference fields are never required for entry.",
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 5,
+          "items": {
+            "type": "string",
+            "enum": [
+              "displayName",
+              "gender",
+              "interestedInGenders",
+              "relationshipGoal",
+              "dateOfBirth"
+            ]
+          }
+        },
+        "optionalFieldIds": {
+          "description": "Plan-derived event-only answers the guest may provide to improve preference-aware suggestions. Guests may skip them and receive neutral assignments.",
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 5,
+          "items": {
+            "type": "string",
+            "enum": [
+              "displayName",
+              "gender",
+              "interestedInGenders",
+              "relationshipGoal",
+              "dateOfBirth"
+            ]
           }
         },
         "questionnaireConfig": {
@@ -49603,12 +49732,16 @@ export const fetchEventSuccessWingmanCandidatesCallableResponseSchema = {
             "maxLength": 120
           },
           "gender": {
-            "type": "string",
+            "type": [
+              "string",
+              "null"
+            ],
             "enum": [
               "man",
               "woman",
               "nonBinary",
-              "other"
+              "other",
+              null
             ]
           },
           "source": {

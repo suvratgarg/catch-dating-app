@@ -1,8 +1,14 @@
+import {useEffect} from "react";
 import {eventDetailCopy} from "../../content/events";
 import {siteFooterLegalLinks, siteMenuCopy} from "../../content/site";
 import {SiteFooter, SiteHeader, WebsitePageMain} from "../../shared/site";
 import {useAppDownloadCtas} from "../marketing/useAppDownloadCtas";
 import type {EventDetailRecord} from "./eventDetailModel";
+import {recordEventInviteLinkOpen} from "../../firebase";
+import {
+  eventInviteSessionId,
+  eventInviteTokenFromLocation,
+} from "../../shared/eventInviteAttribution";
 import {
   EventDetailFactsSection,
   EventDetailHeroSection,
@@ -14,6 +20,16 @@ export function EventDetailPage({event}: {event: EventDetailRecord}) {
   const appDownloadCtas = useAppDownloadCtas({
     placement: `event-detail-${event.eventId}`,
   });
+  const inviteToken = eventInviteTokenFromLocation();
+  useEffect(() => {
+    if (!inviteToken) return;
+    void recordEventInviteLinkOpen({
+      eventId: event.eventId,
+      inviteLinkId: inviteToken,
+      surface: "marketingWeb",
+      sessionId: eventInviteSessionId(),
+    }).catch(() => undefined);
+  }, [event.eventId, inviteToken]);
   return (
     <>
       <SiteHeader

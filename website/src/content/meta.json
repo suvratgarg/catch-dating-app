@@ -20,6 +20,13 @@
       "twitterDescription": "No-download live event tools for a Catch-powered room.",
       "robots": "noindex, follow"
     },
+    "event_invite": {
+      "title": "Event invitation | Catch",
+      "description": "Open a private event invitation and continue to its verified registration or event-mode destination.",
+      "canonicalPath": "/invite/",
+      "twitterDescription": "A private event invitation powered by Catch.",
+      "robots": "noindex, follow"
+    },
     "organizers": {
       "title": "Organizer directory | Catch",
       "description": "Find singles-event organizers across India — clubs, venues, and independent hosts — with verified guest reviews and upcoming events.",

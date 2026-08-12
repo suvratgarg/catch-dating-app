@@ -9475,7 +9475,7 @@ abstract class AppLocalizations {
   /// Accessibility hint for switching Host Clubs workspace pages.
   ///
   /// In en, this message translates to:
-  /// **'Drag left or right to switch between Edit, Insights, and Preview.'**
+  /// **'Drag left or right to switch between Edit, Audience, Insights, and Preview.'**
   String get hostsHostClubsScaffoldBodyDragLeftOrRight;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_clubs_scaffold.dart (label).
@@ -18324,6 +18324,529 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Disable website sign-up'**
   String get hostsHostPublicRegistrationActionDisable;
+
+  /// Organizer audience workspace tab.
+  ///
+  /// In en, this message translates to:
+  /// **'Audience'**
+  String get hostsHostClubsScaffoldLabelAudience;
+
+  /// Audience workspace title.
+  ///
+  /// In en, this message translates to:
+  /// **'Your audience'**
+  String get hostsHostAudienceTitle;
+
+  /// Explains audience inputs and standalone value.
+  ///
+  /// In en, this message translates to:
+  /// **'Build a useful history from Catch bookings, roster imports, manual guests, provider sync, and phone-verified event runtime check-ins. Catch bookings and the Consumer app are not required.'**
+  String get hostsHostAudienceIntro;
+
+  /// Audience people lens.
+  ///
+  /// In en, this message translates to:
+  /// **'People'**
+  String get hostsHostAudiencePeople;
+
+  /// Audience messaging lens.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get hostsHostAudienceMessage;
+
+  /// Audience summary heading.
+  ///
+  /// In en, this message translates to:
+  /// **'At a glance'**
+  String get hostsHostAudienceAtAGlance;
+
+  /// Contact count label.
+  ///
+  /// In en, this message translates to:
+  /// **'Contacts'**
+  String get hostsHostAudienceContacts;
+
+  /// Past attendee count label.
+  ///
+  /// In en, this message translates to:
+  /// **'Attended'**
+  String get hostsHostAudienceAttended;
+
+  /// Repeat attendee count label.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat'**
+  String get hostsHostAudienceRepeat;
+
+  /// WhatsApp reachable count label.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp ready'**
+  String get hostsHostAudienceWhatsappReady;
+
+  /// Audience source composition.
+  ///
+  /// In en, this message translates to:
+  /// **'{importedCount} came through external or manual rosters · {linkedCount} are linked to verified Catch identities'**
+  String hostsHostAudienceSources({
+    required int importedCount,
+    required int linkedCount,
+  });
+
+  /// Audience directory heading.
+  ///
+  /// In en, this message translates to:
+  /// **'People'**
+  String get hostsHostAudienceDirectory;
+
+  /// Audience search field.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name'**
+  String get hostsHostAudienceSearch;
+
+  /// Clear audience segment filter.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get hostsHostAudienceAll;
+
+  /// Partial audience coverage notice title.
+  ///
+  /// In en, this message translates to:
+  /// **'Some history is still being reconciled'**
+  String get hostsHostAudienceCoveragePartial;
+
+  /// Partial audience coverage explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Counts may omit older roster changes. Messaging stays blocked until the projection is exact, so nobody receives an accidental blast.'**
+  String get hostsHostAudienceCoveragePartialBody;
+
+  /// Empty audience state.
+  ///
+  /// In en, this message translates to:
+  /// **'No people match this filter yet. Import a roster or use the event runtime to start building your history.'**
+  String get hostsHostAudienceEmpty;
+
+  /// WhatsApp sender section title.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp Business sender'**
+  String get hostsHostAudienceWhatsappSender;
+
+  /// WhatsApp ownership and consent explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect your own Meta WhatsApp Business account. Catch never sends from a shared number, and only people with explicit organizer-specific opt-in are eligible.'**
+  String get hostsHostAudienceWhatsappOwnedSender;
+
+  /// Missing platform-level Meta setup title.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp setup is not enabled in this environment'**
+  String get hostsHostAudienceProviderUnavailable;
+
+  /// Missing platform-level Meta setup body.
+  ///
+  /// In en, this message translates to:
+  /// **'An administrator must configure the Catch Meta app and Embedded Signup configuration before organizers can connect their own senders.'**
+  String get hostsHostAudienceProviderUnavailableBody;
+
+  /// Open Meta Embedded Signup CTA.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect WhatsApp Business'**
+  String get hostsHostAudienceConnectWhatsapp;
+
+  /// WhatsApp templates row title.
+  ///
+  /// In en, this message translates to:
+  /// **'Message templates'**
+  String get hostsHostAudienceTemplates;
+
+  /// Approved WhatsApp template count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No approved templates} =1{1 approved template} other{{count} approved templates}}'**
+  String hostsHostAudienceApprovedTemplates({required int count});
+
+  /// Sync WhatsApp templates CTA.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync templates'**
+  String get hostsHostAudienceSyncTemplates;
+
+  /// Disconnect WhatsApp sender CTA.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnect'**
+  String get hostsHostAudienceDisconnect;
+
+  /// WhatsApp test recipient field.
+  ///
+  /// In en, this message translates to:
+  /// **'Test recipient phone'**
+  String get hostsHostAudienceTestPhone;
+
+  /// WhatsApp test recipient helper.
+  ///
+  /// In en, this message translates to:
+  /// **'Use an opted-in number you control, including the country code.'**
+  String get hostsHostAudienceTestPhoneHelp;
+
+  /// Send WhatsApp test CTA.
+  ///
+  /// In en, this message translates to:
+  /// **'Send verification message'**
+  String get hostsHostAudienceSendTest;
+
+  /// WhatsApp test accepted confirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Meta accepted the test. The sender becomes active after the delivered webhook arrives.'**
+  String get hostsHostAudienceTestPending;
+
+  /// Cross-event campaign section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Message past attendees'**
+  String get hostsHostAudienceCampaign;
+
+  /// Campaign sender prerequisite.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish sender verification before creating a campaign. A delivered test proves that webhooks and the selected number work end to end.'**
+  String get hostsHostAudienceCampaignNeedsActiveSender;
+
+  /// Campaign template prerequisite.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync an approved Meta template before creating a campaign.'**
+  String get hostsHostAudienceCampaignNeedsTemplate;
+
+  /// Campaign name field.
+  ///
+  /// In en, this message translates to:
+  /// **'Internal campaign name'**
+  String get hostsHostAudienceCampaignName;
+
+  /// Campaign name example.
+  ///
+  /// In en, this message translates to:
+  /// **'September regulars invitation'**
+  String get hostsHostAudienceCampaignNameExample;
+
+  /// Campaign message class field.
+  ///
+  /// In en, this message translates to:
+  /// **'Message type'**
+  String get hostsHostAudienceMessageType;
+
+  /// Campaign recipient segment heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Recipient categories'**
+  String get hostsHostAudienceRecipients;
+
+  /// Campaign template picker title.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved template'**
+  String get hostsHostAudienceTemplate;
+
+  /// Campaign preview CTA.
+  ///
+  /// In en, this message translates to:
+  /// **'Save and preview recipients'**
+  String get hostsHostAudiencePreviewCampaign;
+
+  /// Campaign validation message.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a campaign name and complete every template field before previewing.'**
+  String get hostsHostAudienceCompleteCampaign;
+
+  /// Campaign status title.
+  ///
+  /// In en, this message translates to:
+  /// **'Campaign status: {status}'**
+  String hostsHostAudienceCampaignStatus({required String status});
+
+  /// Campaign audience preview counts.
+  ///
+  /// In en, this message translates to:
+  /// **'{reachable} of {total} are reachable · {optedOut} opted out · {unknown} have unknown permission or identity'**
+  String hostsHostAudienceCampaignCounts({
+    required int total,
+    required int reachable,
+    required int optedOut,
+    required int unknown,
+  });
+
+  /// Campaign delivery outcome counts.
+  ///
+  /// In en, this message translates to:
+  /// **'{sent} sent · {delivered} delivered · {read} read · {failed} failed'**
+  String hostsHostAudienceDeliveryCounts({
+    required int sent,
+    required int delivered,
+    required int read,
+    required int failed,
+  });
+
+  /// Approve campaign audience snapshot CTA.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve exact audience'**
+  String get hostsHostAudienceApprove;
+
+  /// Dispatch approved campaign CTA.
+  ///
+  /// In en, this message translates to:
+  /// **'Send now'**
+  String get hostsHostAudienceSendNow;
+
+  /// Refresh campaign outcomes CTA.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh results'**
+  String get hostsHostAudienceRefresh;
+
+  /// Cancel campaign CTA.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel campaign'**
+  String get hostsHostAudienceCancel;
+
+  /// Reset campaign composer CTA.
+  ///
+  /// In en, this message translates to:
+  /// **'New campaign'**
+  String get hostsHostAudienceNewCampaign;
+
+  /// First-time attendee segment label.
+  ///
+  /// In en, this message translates to:
+  /// **'First-time attendees'**
+  String get hostsHostAudienceSegmentFirstTime;
+
+  /// Repeat attendee segment label.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat attendees'**
+  String get hostsHostAudienceSegmentRepeat;
+
+  /// Regular attendee segment label.
+  ///
+  /// In en, this message translates to:
+  /// **'Regulars'**
+  String get hostsHostAudienceSegmentRegular;
+
+  /// Lapsed regular segment label.
+  ///
+  /// In en, this message translates to:
+  /// **'Lapsed regulars'**
+  String get hostsHostAudienceSegmentLapsed;
+
+  /// Reliable attendee segment label.
+  ///
+  /// In en, this message translates to:
+  /// **'Reliable attendees'**
+  String get hostsHostAudienceSegmentReliable;
+
+  /// Advocate segment label.
+  ///
+  /// In en, this message translates to:
+  /// **'Advocates'**
+  String get hostsHostAudienceSegmentAdvocate;
+
+  /// High-impact advocate segment label.
+  ///
+  /// In en, this message translates to:
+  /// **'High-impact advocates'**
+  String get hostsHostAudienceSegmentHighImpact;
+
+  /// WhatsApp reachable segment label.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp reachable'**
+  String get hostsHostAudienceSegmentWhatsapp;
+
+  /// Campaign follow-up message class label.
+  ///
+  /// In en, this message translates to:
+  /// **'Post-event follow-up'**
+  String get hostsHostAudienceMessageFollowUp;
+
+  /// Campaign organizer update class label.
+  ///
+  /// In en, this message translates to:
+  /// **'Organizer update'**
+  String get hostsHostAudienceMessageUpdate;
+
+  /// Campaign organizer promotion class label.
+  ///
+  /// In en, this message translates to:
+  /// **'Event invitation or promotion'**
+  String get hostsHostAudienceMessagePromotion;
+
+  /// Active WhatsApp sender state.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get hostsHostAudienceSenderActive;
+
+  /// Testing WhatsApp sender state.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification pending'**
+  String get hostsHostAudienceSenderTesting;
+
+  /// Degraded WhatsApp sender state.
+  ///
+  /// In en, this message translates to:
+  /// **'Degraded'**
+  String get hostsHostAudienceSenderDegraded;
+
+  /// Blocked WhatsApp sender state.
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnect required'**
+  String get hostsHostAudienceSenderNeedsAttention;
+
+  /// Contact attended event count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No check-ins yet} =1{1 event attended} other{{count} events attended}}'**
+  String hostsHostAudienceEventsAttended({required int count});
+
+  /// Contact last attended date.
+  ///
+  /// In en, this message translates to:
+  /// **'Last seen {date}'**
+  String hostsHostAudienceLastSeen({required String date});
+
+  /// Contact WhatsApp permission state.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp opted in'**
+  String get hostsHostAudienceWhatsappOptedIn;
+
+  /// Ambiguous contact identity label.
+  ///
+  /// In en, this message translates to:
+  /// **'Identity needs review'**
+  String get hostsHostAudienceIdentityNeedsReview;
+
+  /// Embedded signup platform limitation.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect WhatsApp from the Host web app. Once connected, the sender can be managed on any device.'**
+  String get hostsHostAudienceWebSignupOnly;
+
+  /// Campaign provider blocker.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp provider setup is incomplete'**
+  String get hostsHostAudienceBlockerProvider;
+
+  /// Campaign sender blocker.
+  ///
+  /// In en, this message translates to:
+  /// **'Sender verification is incomplete'**
+  String get hostsHostAudienceBlockerSender;
+
+  /// Campaign template blocker.
+  ///
+  /// In en, this message translates to:
+  /// **'The template is missing or no longer approved'**
+  String get hostsHostAudienceBlockerTemplate;
+
+  /// Campaign recipient blocker.
+  ///
+  /// In en, this message translates to:
+  /// **'No selected contacts are both verified and opted in'**
+  String get hostsHostAudienceBlockerNoRecipients;
+
+  /// Campaign coverage blocker.
+  ///
+  /// In en, this message translates to:
+  /// **'Audience history is still being reconciled'**
+  String get hostsHostAudienceBlockerCoverage;
+
+  /// Campaign size blocker.
+  ///
+  /// In en, this message translates to:
+  /// **'This first release supports up to 100 evaluated contacts per campaign'**
+  String get hostsHostAudienceBlockerTooLarge;
+
+  /// Campaign event blocker.
+  ///
+  /// In en, this message translates to:
+  /// **'The linked event or destination is unavailable'**
+  String get hostsHostAudienceBlockerEvent;
+
+  /// Campaign schedule blocker.
+  ///
+  /// In en, this message translates to:
+  /// **'The scheduled time has passed'**
+  String get hostsHostAudienceBlockerSchedule;
+
+  /// Campaign linked event picker title.
+  ///
+  /// In en, this message translates to:
+  /// **'Event invitation'**
+  String get hostsHostAudienceLinkedEvent;
+
+  /// Campaign event picker placeholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose an event'**
+  String get hostsHostAudienceChooseEvent;
+
+  /// Recipient-specific invitation link explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch creates a different private link for each eligible recipient so opens, registrations, referrals, and check-ins can be attributed safely.'**
+  String get hostsHostAudienceLinkedEventHelp;
+
+  /// Campaign invite destination field.
+  ///
+  /// In en, this message translates to:
+  /// **'Where the invitation opens'**
+  String get hostsHostAudienceInviteDestination;
+
+  /// Catch event page invitation destination.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch event page'**
+  String get hostsHostAudienceDestinationCatchPage;
+
+  /// Event runtime invitation destination.
+  ///
+  /// In en, this message translates to:
+  /// **'No-download event runtime'**
+  String get hostsHostAudienceDestinationRuntime;
+
+  /// External booking invitation destination.
+  ///
+  /// In en, this message translates to:
+  /// **'External booking site via Catch event page'**
+  String get hostsHostAudienceDestinationExternal;
+
+  /// Truthful external booking attribution limits.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch records the private-link open, then sends the guest to the external booking page. Registration is confirmed only when a supported provider returns the referral code or the guest later makes a phone-verified runtime claim tied to the roster. An ordinary re-import or manual check-in cannot prove which link caused the booking.'**
+  String get hostsHostAudienceExternalAttributionExplanation;
+
+  /// Catch registration and guest referral attribution explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch can attribute private-link opens and phone-verified web registration. If guests share their own Catch-generated link, their referred registrations and check-ins are counted separately.'**
+  String get hostsHostAudienceCatchAttributionExplanation;
 }
 
 class _AppLocalizationsDelegate

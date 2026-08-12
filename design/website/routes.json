@@ -1,7 +1,7 @@
 {
   "$schema": "./website.routes.schema.json",
-  "version": 12,
-  "updated": "2026-08-11",
+  "version": 13,
+  "updated": "2026-08-12",
   "owner": "marketing_website",
   "sourceOfTruth": {
     "architecture": "docs/web_surface_architecture.md",
@@ -80,6 +80,28 @@
         "stateCoverage": {
           "storybook": ["phone-entry"],
           "manual": ["otp", "event-intake", "pending-approval", "live-runtime", "unavailable"]
+        }
+      }
+    },
+    {
+      "id": "event_invite",
+      "kind": "clientDynamic",
+      "pathPattern": "/invite/:inviteToken/",
+      "pageKey": "event_invite",
+      "source": "website/src/features/events/EventInvitePage.tsx",
+      "metaKey": "event_invite",
+      "staticOutput": "spa-rewrite",
+      "indexing": "noindex-follow",
+      "sitemap": "excluded",
+      "notes": "Opaque invitation resolver for private or public operational events. It records a deduplicated open and returns a bounded handoff without adding the event to public discovery.",
+      "review": {
+        "priority": "p0",
+        "status": "ready",
+        "viewports": ["desktop", "mobile"],
+        "states": ["loading", "resolved-external", "resolved-runtime", "unavailable"],
+        "stateCoverage": {
+          "storybook": ["resolved-external"],
+          "manual": ["loading", "resolved-runtime", "unavailable"]
         }
       }
     },

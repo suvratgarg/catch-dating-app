@@ -10,5 +10,5 @@ export interface CompleteOrganizerWhatsappConnectionCallablePayload {
   authorizationCode: string;
   wabaId: string;
   phoneNumberId: string;
-  businessId: string;
+  businessId?: string | null;
 }

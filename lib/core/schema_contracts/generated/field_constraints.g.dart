@@ -6052,7 +6052,6 @@ abstract final class CatchContractConstraints {
 
   static const completeOrganizerWhatsappConnectionCallablePayloadBusinessId = CatchContractFieldConstraints(
     path: 'completeOrganizerWhatsappConnectionCallablePayload.businessId',
-    required: true,
     valueTypes: <String>['string'],
     pattern: '^[0-9]{5,40}\$',
   );
@@ -16588,7 +16587,6 @@ abstract final class CatchContractConstraints {
 
   static const fetchEventSuccessWingmanCandidatesCallableResponseCandidatesItemsGender = CatchContractFieldConstraints(
     path: 'fetchEventSuccessWingmanCandidatesCallableResponse.candidates.items.gender',
-    required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['man', 'woman', 'nonBinary', 'other'],
   );
@@ -16979,6 +16977,23 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const getEventRuntimeBootstrapCallableResponseEventOptionalFieldIds = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.optionalFieldIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth'],
+    maxItems: 5,
+    uniqueItems: true,
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventOptionalFieldIdsItems = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.optionalFieldIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth'],
+  );
+
   static const getEventRuntimeBootstrapCallableResponseEventPublicRuntimeId = CatchContractFieldConstraints(
     path: 'getEventRuntimeBootstrapCallableResponse.event.publicRuntimeId',
     required: true,
@@ -17046,6 +17061,23 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventRequiredFieldIds = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.requiredFieldIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth'],
+    maxItems: 5,
+    uniqueItems: true,
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventRequiredFieldIdsItems = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.requiredFieldIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth'],
   );
 
   static const getEventRuntimeBootstrapCallableResponseEventRuntimeTermsVersion = CatchContractFieldConstraints(
@@ -29504,6 +29536,78 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const resolveEventInviteLandingCallablePayloadInviteToken = CatchContractFieldConstraints(
+    path: 'resolveEventInviteLandingCallablePayload.inviteToken',
+    maxLength: 230,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^v2_[A-Za-z0-9_-]{1,180}_[A-Za-z0-9_-]{43}\$',
+  );
+
+  static const resolveEventInviteLandingCallablePayloadSessionId = CatchContractFieldConstraints(
+    path: 'resolveEventInviteLandingCallablePayload.sessionId',
+    maxLength: 128,
+    minLength: 8,
+    valueTypes: <String>['string'],
+  );
+
+  static const resolveEventInviteLandingCallableResponseDestinationKind = CatchContractFieldConstraints(
+    path: 'resolveEventInviteLandingCallableResponse.destinationKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchEvent', 'eventRuntime', 'externalBooking', 'marketingLanding'],
+  );
+
+  static const resolveEventInviteLandingCallableResponseDestinationUrl = CatchContractFieldConstraints(
+    path: 'resolveEventInviteLandingCallableResponse.destinationUrl',
+    maxLength: 2048,
+    valueTypes: <String>['string'],
+  );
+
+  static const resolveEventInviteLandingCallableResponseEndTimeMillis = CatchContractFieldConstraints(
+    path: 'resolveEventInviteLandingCallableResponse.endTimeMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const resolveEventInviteLandingCallableResponseEventId = CatchContractFieldConstraints(
+    path: 'resolveEventInviteLandingCallableResponse.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const resolveEventInviteLandingCallableResponseLocationName = CatchContractFieldConstraints(
+    path: 'resolveEventInviteLandingCallableResponse.locationName',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const resolveEventInviteLandingCallableResponseSourceLabel = CatchContractFieldConstraints(
+    path: 'resolveEventInviteLandingCallableResponse.sourceLabel',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const resolveEventInviteLandingCallableResponseStartTimeMillis = CatchContractFieldConstraints(
+    path: 'resolveEventInviteLandingCallableResponse.startTimeMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const resolveEventInviteLandingCallableResponseTitle = CatchContractFieldConstraints(
+    path: 'resolveEventInviteLandingCallableResponse.title',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const respondCrossPathsInvitationCallablePayloadDecision = CatchContractFieldConstraints(
     path: 'respondCrossPathsInvitationCallablePayload.decision',
     required: true,
@@ -37619,6 +37723,8 @@ abstract final class CatchContractConstraints {
     'getEventRuntimeBootstrapCallableResponse.event.locationName': getEventRuntimeBootstrapCallableResponseEventLocationName,
     'getEventRuntimeBootstrapCallableResponse.event.moduleIds': getEventRuntimeBootstrapCallableResponseEventModuleIds,
     'getEventRuntimeBootstrapCallableResponse.event.moduleIds.items': getEventRuntimeBootstrapCallableResponseEventModuleIdsItems,
+    'getEventRuntimeBootstrapCallableResponse.event.optionalFieldIds': getEventRuntimeBootstrapCallableResponseEventOptionalFieldIds,
+    'getEventRuntimeBootstrapCallableResponse.event.optionalFieldIds.items': getEventRuntimeBootstrapCallableResponseEventOptionalFieldIdsItems,
     'getEventRuntimeBootstrapCallableResponse.event.publicRuntimeId': getEventRuntimeBootstrapCallableResponseEventPublicRuntimeId,
     'getEventRuntimeBootstrapCallableResponse.event.questionnaireConfig.customQuestions': getEventRuntimeBootstrapCallableResponseEventQuestionnaireConfigCustomQuestions,
     'getEventRuntimeBootstrapCallableResponse.event.questionnaireConfig.customQuestions.items.id': getEventRuntimeBootstrapCallableResponseEventQuestionnaireConfigCustomQuestionsItemsId,
@@ -37628,6 +37734,8 @@ abstract final class CatchContractConstraints {
     'getEventRuntimeBootstrapCallableResponse.event.questionnaireConfig.customQuestions.items.prompt': getEventRuntimeBootstrapCallableResponseEventQuestionnaireConfigCustomQuestionsItemsPrompt,
     'getEventRuntimeBootstrapCallableResponse.event.questionnaireConfig.customTitle': getEventRuntimeBootstrapCallableResponseEventQuestionnaireConfigCustomTitle,
     'getEventRuntimeBootstrapCallableResponse.event.questionnaireConfig.templateId': getEventRuntimeBootstrapCallableResponseEventQuestionnaireConfigTemplateId,
+    'getEventRuntimeBootstrapCallableResponse.event.requiredFieldIds': getEventRuntimeBootstrapCallableResponseEventRequiredFieldIds,
+    'getEventRuntimeBootstrapCallableResponse.event.requiredFieldIds.items': getEventRuntimeBootstrapCallableResponseEventRequiredFieldIdsItems,
     'getEventRuntimeBootstrapCallableResponse.event.runtimeTermsVersion': getEventRuntimeBootstrapCallableResponseEventRuntimeTermsVersion,
     'getEventRuntimeBootstrapCallableResponse.event.startTimeMillis': getEventRuntimeBootstrapCallableResponseEventStartTimeMillis,
     'getEventRuntimeBootstrapCallableResponse.event.title': getEventRuntimeBootstrapCallableResponseEventTitle,
@@ -39368,6 +39476,16 @@ abstract final class CatchContractConstraints {
     'requestSuvbotDemoOperationCallablePayload.text': requestSuvbotDemoOperationCallablePayloadText,
     'resetMatchUnreadCountClientWrite.data.unreadCounts': resetMatchUnreadCountClientWriteDataUnreadCounts,
     'resetMatchUnreadCountClientWrite.path.matchId': resetMatchUnreadCountClientWritePathMatchId,
+    'resolveEventInviteLandingCallablePayload.inviteToken': resolveEventInviteLandingCallablePayloadInviteToken,
+    'resolveEventInviteLandingCallablePayload.sessionId': resolveEventInviteLandingCallablePayloadSessionId,
+    'resolveEventInviteLandingCallableResponse.destinationKind': resolveEventInviteLandingCallableResponseDestinationKind,
+    'resolveEventInviteLandingCallableResponse.destinationUrl': resolveEventInviteLandingCallableResponseDestinationUrl,
+    'resolveEventInviteLandingCallableResponse.endTimeMillis': resolveEventInviteLandingCallableResponseEndTimeMillis,
+    'resolveEventInviteLandingCallableResponse.eventId': resolveEventInviteLandingCallableResponseEventId,
+    'resolveEventInviteLandingCallableResponse.locationName': resolveEventInviteLandingCallableResponseLocationName,
+    'resolveEventInviteLandingCallableResponse.sourceLabel': resolveEventInviteLandingCallableResponseSourceLabel,
+    'resolveEventInviteLandingCallableResponse.startTimeMillis': resolveEventInviteLandingCallableResponseStartTimeMillis,
+    'resolveEventInviteLandingCallableResponse.title': resolveEventInviteLandingCallableResponseTitle,
     'respondCrossPathsInvitationCallablePayload.decision': respondCrossPathsInvitationCallablePayloadDecision,
     'respondCrossPathsInvitationCallablePayload.invitationId': respondCrossPathsInvitationCallablePayloadInvitationId,
     'respondCrossPathsInvitationCallableResponse.conversationId': respondCrossPathsInvitationCallableResponseConversationId,

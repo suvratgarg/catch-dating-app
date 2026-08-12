@@ -45,15 +45,8 @@ export type EventRuntimeStage =
 export interface WingmanCandidate {
   uid: string;
   displayName: string;
-  gender: EventRuntimeGender;
+  gender: EventRuntimeGender | null;
 }
-
-const compatibilityModuleIds = new Set([
-  "compatibility_questionnaire",
-  "first_hello_check_in",
-  "guided_rotations",
-  "wingman_requests",
-]);
 
 const emptyLiveState: EventRuntimeLiveState = {
   assignments: [],
@@ -79,6 +72,7 @@ export function useEventRuntimeController(publicRuntimeId: string) {
   const [displayName, setDisplayName] = useState("");
   const [gender, setGender] = useState<EventRuntimeGender | null>(null);
   const [interestedInGenders, setInterestedInGenders] = useState<EventRuntimeGender[]>([]);
+  const [preferenceProfileEnabled, setPreferenceProfileEnabled] = useState(false);
   const [sensitiveConsent, setSensitiveConsent] = useState(false);
   const [saveAsCatchPrefill, setSaveAsCatchPrefill] = useState(false);
   const [liveState, setLiveState] = useState<EventRuntimeLiveState>(emptyLiveState);
@@ -104,9 +98,10 @@ export function useEventRuntimeController(publicRuntimeId: string) {
     () => resolveEventRuntimeQuestionnaire(bootstrap?.event.questionnaireConfig ?? null),
     [bootstrap]
   );
-  const requiresCompatibilityProfile = Boolean(bootstrap?.event.moduleIds.some(
-    (moduleId) => compatibilityModuleIds.has(moduleId)
-  ));
+  const offersPreferenceProfile = Boolean(
+    bootstrap?.event.optionalFieldIds.includes("gender") &&
+    bootstrap.event.optionalFieldIds.includes("interestedInGenders")
+  );
 
   const loadAuthenticatedRuntime = useCallback(async (activeUser: User) => {
     if (loadingRef.current) return loadingRef.current;
@@ -273,11 +268,11 @@ export function useEventRuntimeController(publicRuntimeId: string) {
       setStatus({message: eventRuntimeCopy.missingName, tone: "is-error"});
       return;
     }
-    if (requiresCompatibilityProfile && interestedInGenders.length === 0) {
+    if (preferenceProfileEnabled && interestedInGenders.length === 0) {
       setStatus({message: eventRuntimeCopy.missingInterests, tone: "is-error"});
       return;
     }
-    if (requiresCompatibilityProfile && (!gender || !sensitiveConsent)) {
+    if (preferenceProfileEnabled && (!gender || !sensitiveConsent)) {
       setStatus({message: eventRuntimeCopy.missingSensitiveConsent, tone: "is-error"});
       return;
     }
@@ -297,20 +292,21 @@ export function useEventRuntimeController(publicRuntimeId: string) {
         await loadAuthenticatedRuntime(user);
         return;
       }
-      if (requiresCompatibilityProfile || accessStatus === "needsInput") {
-        await submitEventRuntimeProfile({
-          publicRuntimeId,
-          runtimeTermsVersion: bootstrap.event.runtimeTermsVersion,
-          sensitiveDataTermsVersion: requiresCompatibilityProfile ?
-            "event-runtime-sensitive-v1" : null,
-          saveAsCatchPrefill,
-          fields: {
-            displayName: name,
-            gender,
-            interestedInGenders,
-          },
-        });
-      }
+      await submitEventRuntimeProfile({
+        publicRuntimeId,
+        runtimeTermsVersion: bootstrap.event.runtimeTermsVersion,
+        sensitiveDataTermsVersion: preferenceProfileEnabled ?
+          "event-runtime-sensitive-v1" : null,
+        saveAsCatchPrefill,
+        fields: {
+          displayName: name,
+          gender: preferenceProfileEnabled ? gender : null,
+          interestedInGenders: preferenceProfileEnabled ?
+            interestedInGenders : [],
+          relationshipGoal: preferenceProfileEnabled ? undefined : null,
+          dateOfBirthMillis: preferenceProfileEnabled ? undefined : null,
+        },
+      });
       await loadAuthenticatedRuntime(user);
     }).catch(() => undefined);
   }
@@ -414,6 +410,9 @@ export function useEventRuntimeController(publicRuntimeId: string) {
     setDisplayName(profile.displayName);
     setGender(profile.gender);
     setInterestedInGenders(profile.interestedInGenders);
+    setPreferenceProfileEnabled(
+      profile.gender !== null || profile.interestedInGenders.length > 0
+    );
   }
 
   return {
@@ -435,8 +434,9 @@ export function useEventRuntimeController(publicRuntimeId: string) {
     questionnaire,
     questionAnswers,
     recaptchaContainerId,
-    requiresCompatibilityProfile,
+    offersPreferenceProfile,
     privateNote,
+    preferenceProfileEnabled,
     saveAsCatchPrefill,
     saveCompatibilityAnswers,
     selectQuestionAnswer,
@@ -445,6 +445,7 @@ export function useEventRuntimeController(publicRuntimeId: string) {
     setDisplayName,
     setGender,
     setPhoneNumber,
+    setPreferenceProfileEnabled,
     setMetNewPeopleCount,
     setPrivateNote,
     setSaveAsCatchPrefill,

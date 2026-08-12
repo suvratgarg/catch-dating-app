@@ -1,6 +1,6 @@
 part of '../host_operations_screen.dart';
 
-class HostClubsScaffold extends StatefulWidget {
+class HostClubsScaffold extends ConsumerStatefulWidget {
   const HostClubsScaffold({
     super.key,
     required this.clubs,
@@ -17,10 +17,10 @@ class HostClubsScaffold extends StatefulWidget {
   final String? initialExpandedEditField;
 
   @override
-  State<HostClubsScaffold> createState() => _HostClubsScaffoldState();
+  ConsumerState<HostClubsScaffold> createState() => _HostClubsScaffoldState();
 }
 
-class _HostClubsScaffoldState extends State<HostClubsScaffold>
+class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
     with SingleTickerProviderStateMixin {
   static const _editorRevealAlignment = 0.08;
 
@@ -140,6 +140,10 @@ class _HostClubsScaffoldState extends State<HostClubsScaffold>
             label: context.l10n.hostsHostClubsScaffoldLabelEdit,
           ),
           CatchOption(
+            value: HostClubTab.audience,
+            label: context.l10n.hostsHostClubsScaffoldLabelAudience,
+          ),
+          CatchOption(
             value: HostClubTab.insights,
             label: context.l10n.hostsHostClubsScaffoldLabelInsights,
           ),
@@ -176,6 +180,34 @@ class _HostClubsScaffoldState extends State<HostClubsScaffold>
                         initialExpandedField: widget.initialExpandedEditField,
                       ),
                     ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          CatchTabbedPageScrollView(
+            scrollStateController: _pageScrollControllers[HostClubTab.audience],
+            constrainToContentWidth: true,
+            onRefresh: () async {
+              ref.invalidate(hostCrmSummaryProvider(selectedClub.id));
+              ref.invalidate(
+                hostAudienceProvider(
+                  selectedClub.id,
+                  const HostAudienceQuery(),
+                ),
+              );
+              ref.invalidate(hostMessagingSetupProvider(selectedClub.id));
+            },
+            scrollKey: PageStorageKey(
+              'host-club-${selectedClub.id}-audience-scroll',
+            ),
+            slivers: [
+              SliverPadding(
+                padding: CatchInsets.pageBody.copyWith(bottom: 0),
+                sliver: SliverToBoxAdapter(
+                  child: HostAudiencePane(
+                    key: ValueKey('host-club-${selectedClub.id}-audience'),
+                    club: selectedClub,
                   ),
                 ),
               ),

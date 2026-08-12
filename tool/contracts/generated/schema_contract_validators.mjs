@@ -185,6 +185,8 @@ import {
   createEventInviteLinkCallablePayloadSchema,
   disableEventInviteLinkCallablePayloadSchema,
   recordEventInviteLinkOpenCallablePayloadSchema,
+  resolveEventInviteLandingCallablePayloadSchema,
+  resolveEventInviteLandingCallableResponseSchema,
   getEventInviteLinkTokenCallablePayloadSchema,
   recordEventShareIntentCallablePayloadSchema,
   upsertOrganizerCampaignCallablePayloadSchema,
@@ -502,6 +504,8 @@ export const validateCreateEventWaitlistOffersCallablePayload = ajv.compile(crea
 export const validateCreateEventInviteLinkCallablePayload = ajv.compile(createEventInviteLinkCallablePayloadSchema);
 export const validateDisableEventInviteLinkCallablePayload = ajv.compile(disableEventInviteLinkCallablePayloadSchema);
 export const validateRecordEventInviteLinkOpenCallablePayload = ajv.compile(recordEventInviteLinkOpenCallablePayloadSchema);
+export const validateResolveEventInviteLandingCallablePayload = ajv.compile(resolveEventInviteLandingCallablePayloadSchema);
+export const validateResolveEventInviteLandingCallableResponse = ajv.compile(resolveEventInviteLandingCallableResponseSchema);
 export const validateGetEventInviteLinkTokenCallablePayload = ajv.compile(getEventInviteLinkTokenCallablePayloadSchema);
 export const validateRecordEventShareIntentCallablePayload = ajv.compile(recordEventShareIntentCallablePayloadSchema);
 export const validateUpsertOrganizerCampaignCallablePayload = ajv.compile(upsertOrganizerCampaignCallablePayloadSchema);

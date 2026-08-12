@@ -300,6 +300,49 @@ test(
   }
 );
 
+test("First Hello uses neutral fallback without profile answers", async () => {
+  const {firestore, deps} = harness({
+    "eventParticipations/event-1_runner-1": undefined,
+    "eventParticipations/event-1_runner-2": undefined,
+    "users/runner-1": undefined,
+    "publicProfiles/runner-2": undefined,
+    "eventRuntimeParticipants/event-1_runner-1": runtimeParticipant({
+      uid: "runner-1",
+      attendeeId: "attendee-1",
+      displayName: "Dev",
+      gender: null,
+      interestedInGenders: [],
+    }),
+    "eventRuntimeParticipants/event-1_runner-2": runtimeParticipant({
+      uid: "runner-2",
+      attendeeId: "attendee-2",
+      displayName: "Rhea",
+      gender: null,
+      interestedInGenders: [],
+    }),
+    "eventAttendees/attendee-1": {
+      eventId: "event-1",
+      linkedUid: "runner-1",
+      status: "registered",
+    },
+    "eventAttendees/attendee-2": {
+      eventId: "event-1",
+      linkedUid: "runner-2",
+      status: "checkedIn",
+    },
+  });
+
+  await startEventSuccessFirstHelloMissionHandler(request("runner-1", {
+    eventId: "event-1",
+    latitude: 19.076,
+    longitude: 72.8777,
+  }), deps);
+
+  assert.equal(firestore.get(
+    "eventSuccessArrivalMissions/event-1_runner-1"
+  )?.targetUid, "runner-2");
+});
+
 test(
   "start First Hello rejects when no compatible attendee is checked in",
   async () => {
@@ -427,7 +470,7 @@ function runtimeParticipant(params: {
   uid: string;
   attendeeId: string;
   displayName: string;
-  gender: "man" | "woman";
+  gender: "man" | "woman" | null;
   interestedInGenders: Array<"man" | "woman">;
 }): FakeData {
   return {

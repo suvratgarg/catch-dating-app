@@ -2,7 +2,6 @@ import {type FormEvent, useEffect, useId, useRef, useState} from "react";
 import {eventDetailCopy} from "../../content/events";
 import {
   beginPublicEventPhoneVerification,
-  recordEventInviteLinkOpen,
   registerPublicEvent,
   type PublicEventPhoneVerification,
 } from "../../firebase";
@@ -16,10 +15,15 @@ import {
   TextField,
 } from "../../shared/ui/primitives";
 import type {FormStatus as FormStatusModel} from "../../shared/forms/types";
-import {eventInviteSessionId, eventInviteTokenFromLocation} from
-  "../../shared/eventInviteAttribution";
+import {eventInviteTokenFromLocation} from "../../shared/eventInviteAttribution";
 
-export function PublicEventRegistration({eventId}: {eventId: string}) {
+export function PublicEventRegistration({
+  eventId,
+  inviteToken: inviteTokenOverride,
+}: {
+  eventId: string;
+  inviteToken?: string | null;
+}) {
   const reactId = useId();
   const recaptchaContainerId = `event-registration-recaptcha-${reactId.replace(/:/gu, "")}`;
   const verificationRef = useRef<PublicEventPhoneVerification | null>(null);
@@ -32,19 +36,9 @@ export function PublicEventRegistration({eventId}: {eventId: string}) {
   const [pending, setPending] = useState(false);
   const [status, setStatus] = useState<FormStatusModel>({message: "", tone: ""});
   const copy = eventDetailCopy.hero.webRegistration;
-  const inviteToken = eventInviteTokenFromLocation();
+  const inviteToken = inviteTokenOverride ?? eventInviteTokenFromLocation();
 
   useEffect(() => () => verificationRef.current?.clear(), []);
-  useEffect(() => {
-    if (!inviteToken) return;
-    void recordEventInviteLinkOpen({
-      eventId,
-      inviteLinkId: inviteToken,
-      surface: "marketingWeb",
-      sessionId: eventInviteSessionId(),
-    }).catch(() => undefined);
-  }, [eventId, inviteToken]);
-
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (pending || stage === "success") return;

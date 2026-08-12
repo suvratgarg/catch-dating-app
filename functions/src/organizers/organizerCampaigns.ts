@@ -5,8 +5,7 @@ import {
   onCall,
 } from "firebase-functions/v2/https";
 import {requireAuth} from "../shared/auth";
-import {appCheckCallableOptionsWithLimits} from
-  "../shared/callableOptions";
+import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {
   EventDocument,
   OrganizerAudienceSummaryDocument,
@@ -31,14 +30,10 @@ import {
 } from "../shared/generated/schemaValidators";
 import {organizerCommunicationPreferenceId} from
   "../shared/organizerCommunicationPreferences";
-import {requireOrganizerManager} from
-  "../shared/organizerManagerAuthority";
+import {requireOrganizerManager} from "../shared/organizerManagerAuthority";
 import {checkRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
-import {
-  eventInviteToken,
-  inviteLinkTokenHash,
-} from "../events/inviteLinks";
+import {eventInviteToken, inviteLinkTokenHash} from "../events/inviteLinks";
 import {
   emptyCampaignAudienceCounts,
   emptyCampaignDeliveryCounts,
@@ -90,20 +85,24 @@ interface CampaignContext {
 
 export async function upsertOrganizerCampaignHandler(
   request: CallableRequest<unknown>,
-  deps: CampaignDeps = defaultDeps
+  deps: CampaignDeps = defaultDeps,
 ): Promise<OrganizerCampaignCallableResponse> {
   const actorUid = requireAuth(request);
   const data = validateCallableWithAjv<UpsertOrganizerCampaignCallablePayload>(
     request,
     validateUpsertOrganizerCampaignCallablePayload,
-    normalizePayload
+    normalizePayload,
   );
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "upsertOrganizerCampaign");
-  await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
-  const campaignId = data.campaignId ?? organizerCampaignId(
-    data.organizerId, actorUid, data.requestId
-  );
+  await requireOrganizerManager({
+    db,
+    organizerId: data.organizerId,
+    actorUid,
+  });
+  const campaignId =
+    data.campaignId ??
+    organizerCampaignId(data.organizerId, actorUid, data.requestId);
   const campaignRef = db.collection("organizerCampaigns").doc(campaignId);
   const now = deps.now();
   await db.runTransaction(async (tx) => {
@@ -114,20 +113,26 @@ export async function upsertOrganizerCampaignHandler(
     }
     if (existing && !["draft", "previewed"].includes(existing.status)) {
       throw new HttpsError(
-        "failed-precondition", "Approved campaigns are immutable."
+        "failed-precondition",
+        "Approved campaigns are immutable.",
       );
     }
-    if (existing && data.expectedRevision !== null &&
-        data.expectedRevision !== undefined &&
-        existing.revision !== data.expectedRevision) {
+    if (
+      existing &&
+      data.expectedRevision !== null &&
+      data.expectedRevision !== undefined &&
+      existing.revision !== data.expectedRevision
+    ) {
       throw new HttpsError(
-        "aborted", "Campaign changed. Refresh before editing it."
+        "aborted",
+        "Campaign changed. Refresh before editing it.",
       );
     }
     const revision = (existing?.revision ?? 0) + 1;
-    const scheduledAt = data.scheduledAtMillis === null ||
-      data.scheduledAtMillis === undefined ? null :
-      admin.firestore.Timestamp.fromMillis(data.scheduledAtMillis);
+    const scheduledAt =
+      data.scheduledAtMillis === null || data.scheduledAtMillis === undefined ?
+        null :
+        admin.firestore.Timestamp.fromMillis(data.scheduledAtMillis);
     const content = {
       messageClass: data.messageClass,
       segmentIds: [...data.segmentIds].sort(),
@@ -168,54 +173,73 @@ export async function upsertOrganizerCampaignHandler(
     if (snapshot.exists) tx.set(campaignRef, next);
     else tx.create(campaignRef, next);
   });
-  return campaignResponse(await campaignContext(db, data.organizerId,
-    campaignId, deps.now()), deps.now());
+  return campaignResponse(
+    await campaignContext(db, data.organizerId, campaignId, deps.now()),
+    deps.now(),
+  );
 }
 
 export async function previewOrganizerCampaignHandler(
   request: CallableRequest<unknown>,
-  deps: CampaignDeps = defaultDeps
+  deps: CampaignDeps = defaultDeps,
 ): Promise<OrganizerCampaignCallableResponse> {
   const {data, db} = await authorizeAction(
-    request, "previewOrganizerCampaign", deps
+    request,
+    "previewOrganizerCampaign",
+    deps,
   );
   const context = await campaignContext(
-    db, data.organizerId, data.campaignId, deps.now()
+    db,
+    data.organizerId,
+    data.campaignId,
+    deps.now(),
   );
   assertExpectedRevision(context.campaign, data.expectedRevision ?? null);
   if (!["draft", "previewed"].includes(context.campaign.status)) {
     throw new HttpsError(
-      "failed-precondition", "Approved campaigns cannot be previewed again."
+      "failed-precondition",
+      "Approved campaigns cannot be previewed again.",
     );
   }
   const counts = audienceCounts(context.audienceRows);
-  await db.collection("organizerCampaigns").doc(data.campaignId).update({
-    status: "previewed",
-    audienceCounts: counts,
-    recipientSnapshotHash: null,
-    updatedAt: deps.now(),
-    revision: admin.firestore.FieldValue.increment(1),
-  });
-  return campaignResponse(await campaignContext(
-    db, data.organizerId, data.campaignId, deps.now()
-  ), deps.now());
+  await db
+    .collection("organizerCampaigns")
+    .doc(data.campaignId)
+    .update({
+      status: "previewed",
+      audienceCounts: counts,
+      recipientSnapshotHash: null,
+      updatedAt: deps.now(),
+      revision: admin.firestore.FieldValue.increment(1),
+    });
+  return campaignResponse(
+    await campaignContext(db, data.organizerId, data.campaignId, deps.now()),
+    deps.now(),
+  );
 }
 
 export async function approveOrganizerCampaignHandler(
   request: CallableRequest<unknown>,
-  deps: CampaignDeps = defaultDeps
+  deps: CampaignDeps = defaultDeps,
 ): Promise<OrganizerCampaignCallableResponse> {
   const actorUid = requireAuth(request);
   const data = validateCallableWithAjv<OrganizerCampaignActionCallablePayload>(
     request,
     validateOrganizerCampaignActionCallablePayload,
-    normalizePayload
+    normalizePayload,
   );
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "approveOrganizerCampaign");
-  await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
+  await requireOrganizerManager({
+    db,
+    organizerId: data.organizerId,
+    actorUid,
+  });
   const initial = await campaignContext(
-    db, data.organizerId, data.campaignId, deps.now()
+    db,
+    data.organizerId,
+    data.campaignId,
+    deps.now(),
   );
   assertExpectedRevision(initial.campaign, data.expectedRevision ?? null);
   const blockers = campaignBlockers(initial, deps.now());
@@ -224,24 +248,31 @@ export async function approveOrganizerCampaignHandler(
       "failed-precondition",
       blockers.length > 0 ?
         `Campaign cannot be approved: ${blockers.join(", ")}.` :
-        "Preview this campaign before approval."
+        "Preview this campaign before approval.",
     );
   }
   const now = deps.now();
-  const recipientTokens = new Map(initial.audienceRows
-    .filter((row) => row.eligibility === "eligible" && initial.campaign.eventId)
-    .map((row) => [row.contactId, eventInviteToken(
-      campaignInviteLinkId(data.campaignId, row.contactId)
-    )]));
-  const snapshotHash = hashCanonical(initial.audienceRows.map((row) => ({
-    contactId: row.contactId,
-    eligibility: row.eligibility,
-    exclusionReason: row.exclusionReason,
-    endpointHash: row.endpointHash,
-    permissionTermsVersion: row.preference?.whatsapp.termsVersion ?? null,
-    permissionUpdatedAtMillis:
-      row.preference?.whatsapp.updatedAt?.toMillis() ?? null,
-  })));
+  const recipientTokens = new Map(
+    initial.audienceRows
+      .filter(
+        (row) => row.eligibility === "eligible" && initial.campaign.eventId,
+      )
+      .map((row) => [
+        row.contactId,
+        eventInviteToken(campaignInviteLinkId(data.campaignId, row.contactId)),
+      ]),
+  );
+  const snapshotHash = hashCanonical(
+    initial.audienceRows.map((row) => ({
+      contactId: row.contactId,
+      eligibility: row.eligibility,
+      exclusionReason: row.exclusionReason,
+      endpointHash: row.endpointHash,
+      permissionTermsVersion: row.preference?.whatsapp.termsVersion ?? null,
+      permissionUpdatedAtMillis:
+        row.preference?.whatsapp.updatedAt?.toMillis() ?? null,
+    })),
+  );
   const campaignRef = db.collection("organizerCampaigns").doc(data.campaignId);
   await db.runTransaction(async (tx) => {
     const refs = [
@@ -250,27 +281,40 @@ export async function approveOrganizerCampaignHandler(
       ...initial.audienceRows.flatMap((row) => [
         db.collection("organizerContacts").doc(row.contactId),
         db.collection("organizerContactTraits").doc(row.contactId),
-        ...(row.contact.linkedUid ? [db
-          .collection("organizerCommunicationPreferences")
-          .doc(organizerCommunicationPreferenceId(
-            data.organizerId, row.contact.linkedUid
-          ))] : []),
-        db.collection("organizerContactChannelStates").doc(
-          organizerContactChannelStateId(data.organizerId, row.contactId)
-        ),
+        ...(row.contact.linkedUid ?
+          [
+            db
+              .collection("organizerCommunicationPreferences")
+              .doc(
+                organizerCommunicationPreferenceId(
+                  data.organizerId,
+                  row.contact.linkedUid,
+                ),
+              ),
+          ] :
+          []),
+        db
+          .collection("organizerContactChannelStates")
+          .doc(organizerContactChannelStateId(data.organizerId, row.contactId)),
       ]),
     ];
     const snapshots = await tx.getAll(...refs);
     const liveCampaign = snapshots[0].data() as
-      OrganizerCampaignDocument | undefined;
+      | OrganizerCampaignDocument
+      | undefined;
     const liveSummary = snapshots[1].data() as
-      OrganizerAudienceSummaryDocument | undefined;
-    if (!liveCampaign || liveCampaign.organizerId !== data.organizerId ||
-        liveCampaign.status !== "previewed" ||
-        liveCampaign.revision !== initial.campaign.revision ||
-        liveSummary?.sourceCoverage !== "exact") {
+      | OrganizerAudienceSummaryDocument
+      | undefined;
+    if (
+      !liveCampaign ||
+      liveCampaign.organizerId !== data.organizerId ||
+      liveCampaign.status !== "previewed" ||
+      liveCampaign.revision !== initial.campaign.revision ||
+      liveSummary?.sourceCoverage !== "exact"
+    ) {
       throw new HttpsError(
-        "aborted", "Campaign or audience changed. Preview it again."
+        "aborted",
+        "Campaign or audience changed. Preview it again.",
       );
     }
     const liveRows = audienceRowsFromSnapshots({
@@ -280,27 +324,34 @@ export async function approveOrganizerCampaignHandler(
       snapshots: snapshots.slice(2),
       now,
     });
-    if (hashCanonical(liveRows.map((row) => ({
-      contactId: row.contactId,
-      eligibility: row.eligibility,
-      exclusionReason: row.exclusionReason,
-      endpointHash: row.endpointHash,
-      permissionTermsVersion: row.preference?.whatsapp.termsVersion ?? null,
-      permissionUpdatedAtMillis:
-        row.preference?.whatsapp.updatedAt?.toMillis() ?? null,
-    }))) !== snapshotHash) {
+    if (
+      hashCanonical(
+        liveRows.map((row) => ({
+          contactId: row.contactId,
+          eligibility: row.eligibility,
+          exclusionReason: row.exclusionReason,
+          endpointHash: row.endpointHash,
+          permissionTermsVersion: row.preference?.whatsapp.termsVersion ?? null,
+          permissionUpdatedAtMillis:
+            row.preference?.whatsapp.updatedAt?.toMillis() ?? null,
+        })),
+      ) !== snapshotHash
+    ) {
       throw new HttpsError(
-        "aborted", "Campaign audience changed. Preview it again."
+        "aborted",
+        "Campaign audience changed. Preview it again.",
       );
     }
     for (const row of liveRows) {
-      const inviteLinkId = liveCampaign.eventId &&
-        row.eligibility === "eligible" ?
-        campaignInviteLinkId(data.campaignId, row.contactId) : null;
+      const inviteLinkId =
+        liveCampaign.eventId && row.eligibility === "eligible" ?
+          campaignInviteLinkId(data.campaignId, row.contactId) :
+          null;
       const variables = campaignVariables(
         liveCampaign,
         recipientTokens.get(row.contactId) ?? null,
-        initial.event
+        initial.event,
+        initial.template?.variableNames ?? [],
       );
       const recipient: OrganizerCampaignRecipientDocument = {
         organizerId: data.organizerId,
@@ -309,11 +360,10 @@ export async function approveOrganizerCampaignHandler(
         channel: "whatsapp",
         eligibility: row.eligibility,
         exclusionReason: row.exclusionReason,
-        endpointE164: row.eligibility === "eligible" ?
-          row.contact.phoneE164 : null,
+        endpointE164:
+          row.eligibility === "eligible" ? row.contact.phoneE164 : null,
         endpointHash: row.endpointHash,
-        permissionTermsVersion:
-          row.preference?.whatsapp.termsVersion ?? null,
+        permissionTermsVersion: row.preference?.whatsapp.termsVersion ?? null,
         permissionUpdatedAt: row.preference?.whatsapp.updatedAt ?? null,
         renderedVariablesHash: hashCanonical(variables),
         inviteLinkId,
@@ -334,9 +384,12 @@ export async function approveOrganizerCampaignHandler(
         createdAt: now,
         updatedAt: now,
       };
-      tx.create(db.collection("organizerCampaignRecipients").doc(
-        organizerCampaignRecipientId(data.campaignId, row.contactId)
-      ), recipient);
+      tx.create(
+        db
+          .collection("organizerCampaignRecipients")
+          .doc(organizerCampaignRecipientId(data.campaignId, row.contactId)),
+        recipient,
+      );
       if (inviteLinkId) {
         createCampaignInviteLink({
           tx,
@@ -353,9 +406,11 @@ export async function approveOrganizerCampaignHandler(
       }
     }
     tx.update(campaignRef, {
-      status: liveCampaign.scheduledAt &&
+      status:
+        liveCampaign.scheduledAt &&
         liveCampaign.scheduledAt.toMillis() > now.toMillis() ?
-        "scheduled" : "approved",
+          "scheduled" :
+          "approved",
       recipientSnapshotHash: snapshotHash,
       audienceCounts: audienceCounts(liveRows),
       deliveryCounts: deliveryCounts(liveRows),
@@ -364,17 +419,26 @@ export async function approveOrganizerCampaignHandler(
       revision: liveCampaign.revision + 1,
     });
   });
-  return campaignResponse(await campaignContext(
-    db, data.organizerId, data.campaignId, deps.now(), false
-  ), deps.now());
+  return campaignResponse(
+    await campaignContext(
+      db,
+      data.organizerId,
+      data.campaignId,
+      deps.now(),
+      false,
+    ),
+    deps.now(),
+  );
 }
 
 export async function cancelOrganizerCampaignHandler(
   request: CallableRequest<unknown>,
-  deps: CampaignDeps = defaultDeps
+  deps: CampaignDeps = defaultDeps,
 ): Promise<OrganizerCampaignCallableResponse> {
   const {data, db} = await authorizeAction(
-    request, "cancelOrganizerCampaign", deps
+    request,
+    "cancelOrganizerCampaign",
+    deps,
   );
   const ref = db.collection("organizerCampaigns").doc(data.campaignId);
   const now = deps.now();
@@ -385,10 +449,12 @@ export async function cancelOrganizerCampaignHandler(
       throw new HttpsError("not-found", "Campaign not found.");
     }
     assertExpectedRevision(campaign, data.expectedRevision ?? null);
-    if (!["draft", "previewed", "approved", "scheduled"]
-      .includes(campaign.status)) {
+    if (
+      !["draft", "previewed", "approved", "scheduled"].includes(campaign.status)
+    ) {
       throw new HttpsError(
-        "failed-precondition", "Campaign can no longer be cancelled."
+        "failed-precondition",
+        "Campaign can no longer be cancelled.",
       );
     }
     tx.update(ref, {
@@ -398,27 +464,43 @@ export async function cancelOrganizerCampaignHandler(
       revision: campaign.revision + 1,
     });
   });
-  return campaignResponse(await campaignContext(
-    db, data.organizerId, data.campaignId, deps.now(), false
-  ), deps.now());
+  return campaignResponse(
+    await campaignContext(
+      db,
+      data.organizerId,
+      data.campaignId,
+      deps.now(),
+      false,
+    ),
+    deps.now(),
+  );
 }
 
 export async function getOrganizerCampaignReportHandler(
   request: CallableRequest<unknown>,
-  deps: CampaignDeps = defaultDeps
+  deps: CampaignDeps = defaultDeps,
 ): Promise<OrganizerCampaignCallableResponse> {
   const {data, db} = await authorizeAction(
-    request, "getOrganizerCampaignReport", deps
+    request,
+    "getOrganizerCampaignReport",
+    deps,
   );
-  return campaignResponse(await campaignContext(
-    db, data.organizerId, data.campaignId, deps.now(), false
-  ), deps.now());
+  return campaignResponse(
+    await campaignContext(
+      db,
+      data.organizerId,
+      data.campaignId,
+      deps.now(),
+      false,
+    ),
+    deps.now(),
+  );
 }
 
 async function authorizeAction(
   request: CallableRequest<unknown>,
   operation: string,
-  deps: CampaignDeps
+  deps: CampaignDeps,
 ): Promise<{
   actorUid: string;
   data: OrganizerCampaignActionCallablePayload;
@@ -428,11 +510,15 @@ async function authorizeAction(
   const data = validateCallableWithAjv<OrganizerCampaignActionCallablePayload>(
     request,
     validateOrganizerCampaignActionCallablePayload,
-    normalizePayload
+    normalizePayload,
   );
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, operation);
-  await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
+  await requireOrganizerManager({
+    db,
+    organizerId: data.organizerId,
+    actorUid,
+  });
   return {actorUid, data, db};
 }
 
@@ -441,41 +527,59 @@ async function campaignContext(
   organizerId: string,
   campaignId: string,
   now: FirebaseFirestore.Timestamp,
-  loadAudience = true
+  loadAudience = true,
 ): Promise<CampaignContext> {
-  const campaignSnap = await db.collection("organizerCampaigns")
-    .doc(campaignId).get();
+  const campaignSnap = await db
+    .collection("organizerCampaigns")
+    .doc(campaignId)
+    .get();
   const campaign = campaignSnap.data() as OrganizerCampaignDocument | undefined;
   if (!campaign || campaign.organizerId !== organizerId) {
     throw new HttpsError("not-found", "Campaign not found.");
   }
   const [connectionSnap, templateSnap, eventSnap, summarySnap] =
     await Promise.all([
-      db.collection("organizerSenderConnections")
-        .doc(campaign.connectionId).get(),
+      db
+        .collection("organizerSenderConnections")
+        .doc(campaign.connectionId)
+        .get(),
       db.collection("organizerMessageTemplates").doc(campaign.templateId).get(),
-      campaign.eventId ? db.collection("events").doc(campaign.eventId).get() :
+      campaign.eventId ?
+        db.collection("events").doc(campaign.eventId).get() :
         Promise.resolve(null),
       db.collection("organizerAudienceSummaries").doc(organizerId).get(),
     ]);
   const connection = connectionSnap.data() as
-    OrganizerSenderConnectionDocument | undefined;
+    | OrganizerSenderConnectionDocument
+    | undefined;
   const template = templateSnap.data() as
-    OrganizerMessageTemplateDocument | undefined;
+    | OrganizerMessageTemplateDocument
+    | undefined;
   const event = eventSnap?.data() as EventDocument | undefined;
   const summary = summarySnap.data() as
-    OrganizerAudienceSummaryDocument | undefined;
-  const audience = loadAudience ? await loadAudienceRows({
-    db, organizerId, segmentIds: campaign.segmentIds, now,
-  }) : {rows: [], tooLarge: false};
+    | OrganizerAudienceSummaryDocument
+    | undefined;
+  const audience = loadAudience ?
+    await loadAudienceRows({
+      db,
+      organizerId,
+      segmentIds: campaign.segmentIds,
+      now,
+    }) :
+    {rows: [], tooLarge: false};
   return {
     campaignId,
     campaign,
     connection: connection?.organizerId === organizerId ? connection : null,
-    template: template?.organizerId === organizerId &&
-      template.connectionId === campaign.connectionId ? template : null,
-    event: event && (event.organizerId ?? event.clubId) === organizerId ?
-      event : null,
+    template:
+      template?.organizerId === organizerId &&
+      template.connectionId === campaign.connectionId ?
+        template :
+        null,
+    event:
+      event && (event.organizerId ?? event.clubId) === organizerId ?
+        event :
+        null,
     summary: summary?.organizerId === organizerId ? summary : null,
     audienceRows: audience.rows,
     audienceTooLarge: audience.tooLarge,
@@ -487,50 +591,75 @@ async function loadAudienceRows(params: {
   organizerId: string;
   segmentIds: OrganizerCampaignDocument["segmentIds"];
   now: FirebaseFirestore.Timestamp;
-}): Promise<{rows: AudienceRow[]; tooLarge: boolean}> {
-  const traitSnap = await params.db.collection("organizerContactTraits")
+}): Promise<{ rows: AudienceRow[]; tooLarge: boolean }> {
+  const traitSnap = await params.db
+    .collection("organizerContactTraits")
     .where("organizerId", "==", params.organizerId)
     .where("segmentIds", "array-contains-any", params.segmentIds)
     .orderBy(admin.firestore.FieldPath.documentId())
-    .limit(organizerCampaignAudienceLimit + 1).get();
+    .limit(organizerCampaignAudienceLimit + 1)
+    .get();
   const selected = traitSnap.docs.slice(0, organizerCampaignAudienceLimit);
-  const contactSnaps = selected.length === 0 ? [] : await params.db.getAll(
-    ...selected.map((doc) => params.db.collection("organizerContacts")
-      .doc(doc.id))
+  const contactSnaps =
+    selected.length === 0 ?
+      [] :
+      await params.db.getAll(
+        ...selected.map((doc) =>
+          params.db.collection("organizerContacts").doc(doc.id),
+        ),
+      );
+  const contacts = contactSnaps.map(
+    (snap) => snap.data() as OrganizerContactDocument | undefined,
   );
-  const contacts = contactSnaps.map((snap) => snap.data() as
-    OrganizerContactDocument | undefined);
-  const preferenceRefs = contacts.filter((contact) => contact?.linkedUid)
-    .map((contact) => params.db.collection("organizerCommunicationPreferences")
-      .doc(organizerCommunicationPreferenceId(
-        params.organizerId, contact!.linkedUid!
-      )));
+  const preferenceRefs = contacts
+    .filter((contact) => contact?.linkedUid)
+    .map((contact) =>
+      params.db
+        .collection("organizerCommunicationPreferences")
+        .doc(
+          organizerCommunicationPreferenceId(
+            params.organizerId,
+            contact!.linkedUid!,
+          ),
+        ),
+    );
   const channelRefs = selected.map((doc) =>
-    params.db.collection("organizerContactChannelStates")
-      .doc(organizerContactChannelStateId(params.organizerId, doc.id))
+    params.db
+      .collection("organizerContactChannelStates")
+      .doc(organizerContactChannelStateId(params.organizerId, doc.id)),
   );
   const [preferenceSnaps, channelSnaps] = await Promise.all([
     preferenceRefs.length === 0 ? [] : params.db.getAll(...preferenceRefs),
     channelRefs.length === 0 ? [] : params.db.getAll(...channelRefs),
   ]);
-  const preferences = new Map(preferenceSnaps.map((snap) => [
-    (snap.data() as OrganizerCommunicationPreferenceDocument | undefined)?.uid,
-    snap.data() as OrganizerCommunicationPreferenceDocument | undefined,
-  ]));
-  const channelStates = new Map(channelSnaps.map((snap) => [
-    (snap.data() as OrganizerContactChannelStateDocument | undefined)
-      ?.contactId,
-    snap.data() as OrganizerContactChannelStateDocument | undefined,
-  ]));
+  const preferences = new Map(
+    preferenceSnaps.map((snap) => [
+      (snap.data() as OrganizerCommunicationPreferenceDocument | undefined)
+        ?.uid,
+      snap.data() as OrganizerCommunicationPreferenceDocument | undefined,
+    ]),
+  );
+  const channelStates = new Map(
+    channelSnaps.map((snap) => [
+      (snap.data() as OrganizerContactChannelStateDocument | undefined)
+        ?.contactId,
+      snap.data() as OrganizerContactChannelStateDocument | undefined,
+    ]),
+  );
   return {
-    rows: evaluateAudienceRows(selected.map((traitSnap, index) => ({
-      contactId: traitSnap.id,
-      trait: traitSnap.data() as OrganizerContactTraitDocument,
-      contact: contacts[index],
-      preference: contacts[index]?.linkedUid ?
-        preferences.get(contacts[index]?.linkedUid ?? "") ?? null : null,
-      channelState: channelStates.get(traitSnap.id) ?? null,
-    })), params.now, params.segmentIds),
+    rows: evaluateAudienceRows(
+      selected.map((traitSnap, index) => ({
+        contactId: traitSnap.id,
+        trait: traitSnap.data() as OrganizerContactTraitDocument,
+        contact: contacts[index],
+        preference: contacts[index]?.linkedUid ?
+          (preferences.get(contacts[index]?.linkedUid ?? "") ?? null) :
+          null,
+        channelState: channelStates.get(traitSnap.id) ?? null,
+      })),
+      params.now,
+      params.segmentIds,
+    ),
     tooLarge: traitSnap.size > organizerCampaignAudienceLimit,
   };
 }
@@ -545,16 +674,22 @@ function audienceRowsFromSnapshots(params: {
   let index = 0;
   const inputs = params.originalRows.map((original) => {
     const contact = params.snapshots[index++].data() as
-      OrganizerContactDocument | undefined;
+      | OrganizerContactDocument
+      | undefined;
     const trait = params.snapshots[index++].data() as
-      OrganizerContactTraitDocument | undefined;
+      | OrganizerContactTraitDocument
+      | undefined;
     let preference: OrganizerCommunicationPreferenceDocument | null = null;
     if (original.contact.linkedUid) {
-      preference = params.snapshots[index++].data() as
-        OrganizerCommunicationPreferenceDocument | undefined ?? null;
+      preference =
+        (params.snapshots[index++].data() as
+          | OrganizerCommunicationPreferenceDocument
+          | undefined) ?? null;
     }
-    const channelState = params.snapshots[index++].data() as
-      OrganizerContactChannelStateDocument | undefined ?? null;
+    const channelState =
+      (params.snapshots[index++].data() as
+        | OrganizerContactChannelStateDocument
+        | undefined) ?? null;
     return {
       contactId: original.contactId,
       contact,
@@ -575,26 +710,40 @@ export function evaluateAudienceRows(
     channelState: OrganizerContactChannelStateDocument | null;
   }>,
   now: FirebaseFirestore.Timestamp,
-  segmentIds: OrganizerCampaignDocument["segmentIds"]
+  segmentIds: OrganizerCampaignDocument["segmentIds"],
 ): AudienceRow[] {
   const seenEndpoints = new Set<string>();
   return inputs.map((input): AudienceRow => {
     const {contact, trait, preference, channelState} = input;
     let reason: ExclusionReason = null;
     if (!contact || !trait || contact.deletedAt !== null) reason = "deleted";
-    else if (contact.identityState !== "verified" ||
-        contact.identityConfidence !== "verified" || !contact.linkedUid) {
+    else if (
+      contact.identityState !== "verified" ||
+      contact.identityConfidence !== "verified" ||
+      !contact.linkedUid
+    ) {
       reason = "identityUnresolved";
-    } else if (!trait.segmentIds.some((id) => segmentIds.includes(
-      id as OrganizerCampaignDocument["segmentIds"][number]
-    ))) reason = "deleted";
-    else if (!contact.phoneE164 || !/^\+[1-9][0-9]{7,14}$/.test(
-      contact.phoneE164
-    )) reason = "noVerifiedEndpoint";
-    else if (!preference || preference.organizerId !== contact.organizerId ||
-        preference.uid !== contact.linkedUid ||
-        preference.whatsapp.status === "unknown") reason = "unknownPermission";
-    else if (preference.whatsapp.status === "optedOut") reason = "optedOut";
+    } else if (
+      !trait.segmentIds.some((id) =>
+        segmentIds.includes(
+          id as OrganizerCampaignDocument["segmentIds"][number],
+        ),
+      )
+    ) {
+      reason = "deleted";
+    } else if (
+      !contact.phoneE164 ||
+      !/^\+[1-9][0-9]{7,14}$/.test(contact.phoneE164)
+    ) {
+      reason = "noVerifiedEndpoint";
+    } else if (
+      !preference ||
+      preference.organizerId !== contact.organizerId ||
+      preference.uid !== contact.linkedUid ||
+      preference.whatsapp.status === "unknown"
+    ) {
+      reason = "unknownPermission";
+    } else if (preference.whatsapp.status === "optedOut") reason = "optedOut";
     else if (channelState?.suppressionStatus === "optedOut") {
       reason = "optedOut";
     } else if (channelState?.suppressionStatus === "providerBlocked") {
@@ -603,10 +752,15 @@ export function evaluateAudienceRows(
       reason = "invalidEndpoint";
     } else if (channelState?.suppressionStatus === "adminSuppressed") {
       reason = "providerBlocked";
-    } else if (channelState?.lastCampaignAcceptedAt &&
-        now.toMillis() - channelState.lastCampaignAcceptedAt.toMillis() <
-          organizerCampaignFrequencyCapMillis) reason = "frequencyCapped";
-    const endpointHash = contact?.phoneE164 ? hashEndpoint(contact.phoneE164) :
+    } else if (
+      channelState?.lastCampaignAcceptedAt &&
+      now.toMillis() - channelState.lastCampaignAcceptedAt.toMillis() <
+        organizerCampaignFrequencyCapMillis
+    ) {
+      reason = "frequencyCapped";
+    }
+    const endpointHash = contact?.phoneE164 ?
+      hashEndpoint(contact.phoneE164) :
       null;
     if (!reason && endpointHash && seenEndpoints.has(endpointHash)) {
       reason = "duplicateEndpoint";
@@ -626,29 +780,37 @@ export function evaluateAudienceRows(
 }
 
 function audienceCounts(
-  rows: AudienceRow[]
+  rows: AudienceRow[],
 ): OrganizerCampaignDocument["audienceCounts"] {
   const counts = emptyCampaignAudienceCounts();
   counts.total = rows.length;
   for (const row of rows) {
     if (row.eligibility === "eligible") counts.reachable += 1;
     else if (row.exclusionReason === "optedOut") counts.optedOut += 1;
-    else if (["invalidEndpoint", "noVerifiedEndpoint"]
-      .includes(row.exclusionReason ?? "")) counts.invalid += 1;
-    else if (row.exclusionReason === "duplicateEndpoint") counts.duplicate += 1;
-    else if (row.exclusionReason === "frequencyCapped") {
+    else if (
+      ["invalidEndpoint", "noVerifiedEndpoint"].includes(
+        row.exclusionReason ?? "",
+      )
+    ) {
+      counts.invalid += 1;
+    } else if (row.exclusionReason === "duplicateEndpoint") {
+      counts.duplicate += 1;
+    } else if (row.exclusionReason === "frequencyCapped") {
       counts.frequencyCapped += 1;
     } else if (row.exclusionReason === "providerBlocked") {
       counts.providerBlocked += 1;
-    } else if (row.exclusionReason === "unknownPermission" ||
-        row.exclusionReason === "identityUnresolved") counts.unknown += 1;
-    else counts.unsupported += 1;
+    } else if (
+      row.exclusionReason === "unknownPermission" ||
+      row.exclusionReason === "identityUnresolved"
+    ) {
+      counts.unknown += 1;
+    } else counts.unsupported += 1;
   }
   return counts;
 }
 
 function deliveryCounts(
-  rows: AudienceRow[]
+  rows: AudienceRow[],
 ): OrganizerCampaignDocument["deliveryCounts"] {
   const counts = emptyCampaignDeliveryCounts();
   counts.pending = rows.filter((row) => row.eligibility === "eligible").length;
@@ -658,7 +820,7 @@ function deliveryCounts(
 
 function campaignBlockers(
   context: CampaignContext,
-  now: FirebaseFirestore.Timestamp
+  now: FirebaseFirestore.Timestamp,
 ): CampaignBlocker[] {
   const blockers: CampaignBlocker[] = [];
   const campaign = context.campaign;
@@ -670,24 +832,34 @@ function campaignBlockers(
   else if (context.template.status !== "APPROVED") {
     blockers.push("templateUnapproved");
   }
-  if (context.template && !templateVariablesMatch(
-    context.template.variableNames, campaign.templateVariables,
-    campaign.eventId !== null
-  )) blockers.push("templateUnapproved");
+  if (
+    context.template &&
+    !templateVariablesMatch(
+      context.template.variableNames,
+      campaign.templateVariables,
+      campaign.eventId !== null,
+    )
+  ) {
+    blockers.push("templateUnapproved");
+  }
   if (context.summary?.sourceCoverage !== "exact") {
     blockers.push("audienceCoveragePartial");
   }
   if (context.audienceTooLarge) blockers.push("audienceTooLarge");
-  if (context.audienceRows.length > 0 &&
-      !context.audienceRows.some((row) => row.eligibility === "eligible")) {
+  if (!hasReachableCampaignRecipient(context.audienceRows)) {
     blockers.push("noReachableRecipients");
   }
   if (campaign.eventId && !context.event) blockers.push("eventMissing");
-  else if (context.event && !eventSupportsDestination(
-    context.event, campaign.inviteDestinationKind
-  )) blockers.push("eventUnavailable");
-  if (campaign.scheduledAt &&
-      campaign.scheduledAt.toMillis() < now.toMillis()) {
+  else if (
+    context.event &&
+    !eventSupportsDestination(context.event, campaign.inviteDestinationKind)
+  ) {
+    blockers.push("eventUnavailable");
+  }
+  if (
+    campaign.scheduledAt &&
+    campaign.scheduledAt.toMillis() < now.toMillis()
+  ) {
     blockers.push("scheduleInPast");
   }
   if (!["draft", "previewed"].includes(campaign.status)) {
@@ -697,14 +869,24 @@ function campaignBlockers(
   if (["completed", "partiallyFailed"].includes(campaign.status)) {
     blockers.push("campaignComplete");
   }
-  if (campaign.leaseExpiresAt && campaign.leaseExpiresAt.toMillis() >
-      now.toMillis()) blockers.push("campaignLeaseActive");
+  if (
+    campaign.leaseExpiresAt &&
+    campaign.leaseExpiresAt.toMillis() > now.toMillis()
+  ) {
+    blockers.push("campaignLeaseActive");
+  }
   return [...new Set(blockers)];
+}
+
+export function hasReachableCampaignRecipient(
+  rows: ReadonlyArray<{ eligibility: "eligible" | "excluded" }>,
+): boolean {
+  return rows.some((row) => row.eligibility === "eligible");
 }
 
 function campaignResponse(
   context: CampaignContext,
-  now: FirebaseFirestore.Timestamp
+  now: FirebaseFirestore.Timestamp,
 ): OrganizerCampaignCallableResponse {
   const blockers = campaignBlockers(context, now);
   return {
@@ -716,9 +898,10 @@ function campaignResponse(
     deliveryCounts: context.campaign.deliveryCounts,
     senderStatus: context.connection?.status ?? "notConnected",
     templateStatus: context.template?.status ?? "missing",
-    canApprove: context.campaign.status === "previewed" &&
-      blockers.length === 0,
-    canDispatch: ["approved", "scheduled"].includes(context.campaign.status) &&
+    canApprove:
+      context.campaign.status === "previewed" && blockers.length === 0,
+    canDispatch:
+      ["approved", "scheduled"].includes(context.campaign.status) &&
       context.connection?.status === "active" &&
       context.template?.status === "APPROVED",
     blockers,
@@ -728,60 +911,63 @@ function campaignResponse(
 function templateVariablesMatch(
   expected: string[],
   provided: Record<string, string>,
-  hasEvent: boolean
+  hasEvent: boolean,
 ): boolean {
   const providedKeys = Object.keys(provided);
-  return expected.every((key) => key === "invite_url" ? hasEvent :
-    providedKeys.includes(key)) && providedKeys.every((key) =>
-    expected.includes(key));
+  return (
+    expected.every((key) =>
+      isInviteTemplateVariable(key) ? hasEvent : providedKeys.includes(key),
+    ) && providedKeys.every((key) => expected.includes(key))
+  );
+}
+
+function isInviteTemplateVariable(value: string): boolean {
+  return value === "invite_url" || value === "invite_token";
 }
 
 function eventSupportsDestination(
   event: EventDocument,
-  destination: OrganizerCampaignDocument["inviteDestinationKind"]
+  destination: OrganizerCampaignDocument["inviteDestinationKind"],
 ): boolean {
   if (event.status !== "active") return false;
   if (destination === "eventRuntime") {
-    return event.runtimeAccess?.enabled === true &&
-      Boolean(event.runtimeAccess.publicRuntimeId);
+    return (
+      event.runtimeAccess?.enabled === true &&
+      Boolean(event.runtimeAccess.publicRuntimeId)
+    );
   }
   if (destination === "externalBooking") {
-    return event.eventOrigin?.mode === "externalCompanion" &&
-      Boolean(event.eventOrigin.externalEventUrl);
+    return (
+      event.eventOrigin?.mode === "externalCompanion" &&
+      Boolean(event.eventOrigin.externalEventUrl)
+    );
   }
-  return destination === "catchEvent" || destination === "marketingLanding";
+  if (destination === "catchEvent") {
+    return event.publicRegistrationEnabled === true;
+  }
+  return destination === "marketingLanding";
 }
 
 export function campaignVariables(
   campaign: OrganizerCampaignDocument,
   inviteToken: string | null,
-  event: EventDocument | null
+  event: EventDocument | null,
+  templateVariableNames: string[],
 ): Record<string, string> {
   const variables = {...campaign.templateVariables};
   if (campaign.eventId && inviteToken) {
-    variables.invite_url = campaignInviteUrl(campaign, inviteToken, event);
+    if (event && templateVariableNames.includes("invite_url")) {
+      variables.invite_url = campaignInviteUrl(inviteToken);
+    }
+    if (templateVariableNames.includes("invite_token")) {
+      variables.invite_token = encodeURIComponent(inviteToken);
+    }
   }
   return variables;
 }
 
-function campaignInviteUrl(
-  campaign: OrganizerCampaignDocument,
-  token: string,
-  event: EventDocument | null
-): string {
-  const eventId = campaign.eventId!;
-  if (campaign.inviteDestinationKind === "eventRuntime") {
-    const runtimeId = event?.runtimeAccess?.publicRuntimeId;
-    if (!runtimeId) {
-      throw new HttpsError(
-        "failed-precondition", "Event runtime is no longer available."
-      );
-    }
-    return `https://catchdates.com/join/${encodeURIComponent(runtimeId)}` +
-      `?il=${encodeURIComponent(token)}`;
-  }
-  return `https://catchdates.com/events/${encodeURIComponent(eventId)}` +
-    `?il=${encodeURIComponent(token)}`;
+function campaignInviteUrl(token: string): string {
+  return `https://catchdates.com/invite/${encodeURIComponent(token)}`;
 }
 
 function campaignInviteLinkId(campaignId: string, contactId: string): string {
@@ -801,9 +987,11 @@ function createCampaignInviteLink(params: {
   now: FirebaseFirestore.Timestamp;
 }): void {
   const organizerId = params.event.organizerId ?? params.event.clubId;
-  const linkRef = params.db.collection("eventInviteLinks")
+  const linkRef = params.db
+    .collection("eventInviteLinks")
     .doc(params.inviteLinkId);
-  const secretRef = params.db.collection("eventInviteLinkSecrets")
+  const secretRef = params.db
+    .collection("eventInviteLinkSecrets")
     .doc(params.inviteLinkId);
   params.tx.create(linkRef, {
     eventId: params.campaign.eventId,
@@ -823,7 +1011,7 @@ function createCampaignInviteLink(params: {
     destinationKind: params.campaign.inviteDestinationKind,
     tokenVersion: 2,
     attributionWindowEndsAt: admin.firestore.Timestamp.fromMillis(
-      params.now.toMillis() + 30 * 24 * 60 * 60 * 1000
+      params.now.toMillis() + 30 * 24 * 60 * 60 * 1000,
     ),
     openCount: 0,
     likelyHumanOpenCount: 0,
@@ -855,11 +1043,12 @@ function createCampaignInviteLink(params: {
 
 function assertExpectedRevision(
   campaign: OrganizerCampaignDocument,
-  expectedRevision: number | null
+  expectedRevision: number | null,
 ): void {
   if (expectedRevision !== null && campaign.revision !== expectedRevision) {
     throw new HttpsError(
-      "aborted", "Campaign changed. Refresh before continuing."
+      "aborted",
+      "Campaign changed. Refresh before continuing.",
     );
   }
 }
@@ -868,29 +1057,35 @@ function normalizePayload(data: unknown): unknown {
   if (typeof data !== "object" || data === null || Array.isArray(data)) {
     return data;
   }
-  const normalized = {...data as Record<string, unknown>};
+  const normalized = {...(data as Record<string, unknown>)};
   for (const [key, value] of Object.entries(normalized)) {
     if (typeof value === "string") normalized[key] = value.trim();
   }
   if (Array.isArray(normalized.segmentIds)) {
     normalized.segmentIds = normalized.segmentIds.map((item) =>
-      typeof item === "string" ? item.trim() : item);
+      typeof item === "string" ? item.trim() : item,
+    );
   }
-  if (typeof normalized.templateVariables === "object" &&
-      normalized.templateVariables !== null &&
-      !Array.isArray(normalized.templateVariables)) {
-    normalized.templateVariables = Object.fromEntries(Object.entries(
-      normalized.templateVariables as Record<string, unknown>
-    ).map(([key, value]) => [
-      key.trim(), typeof value === "string" ? value.trim() : value,
-    ]));
+  if (
+    typeof normalized.templateVariables === "object" &&
+    normalized.templateVariables !== null &&
+    !Array.isArray(normalized.templateVariables)
+  ) {
+    normalized.templateVariables = Object.fromEntries(
+      Object.entries(
+        normalized.templateVariables as Record<string, unknown>,
+      ).map(([key, value]) => [
+        key.trim(),
+        typeof value === "string" ? value.trim() : value,
+      ]),
+    );
   }
   return normalized;
 }
 
 function deletedContact(
   contactId: string,
-  now: FirebaseFirestore.Timestamp
+  now: FirebaseFirestore.Timestamp,
 ): OrganizerContactDocument {
   return {
     organizerId: "deleted",
@@ -918,7 +1113,7 @@ function deletedContact(
 
 function deletedTrait(
   contactId: string,
-  now: FirebaseFirestore.Timestamp
+  now: FirebaseFirestore.Timestamp,
 ): OrganizerContactTraitDocument {
   return {
     organizerId: "deleted",
@@ -955,21 +1150,21 @@ const campaignCallableLimits = {
 
 export const upsertOrganizerCampaign = onCall(
   appCheckCallableOptionsWithLimits(campaignCallableLimits),
-  (request) => upsertOrganizerCampaignHandler(request)
+  (request) => upsertOrganizerCampaignHandler(request),
 );
 export const previewOrganizerCampaign = onCall(
   appCheckCallableOptionsWithLimits(campaignCallableLimits),
-  (request) => previewOrganizerCampaignHandler(request)
+  (request) => previewOrganizerCampaignHandler(request),
 );
 export const approveOrganizerCampaign = onCall(
   appCheckCallableOptionsWithLimits(campaignCallableLimits),
-  (request) => approveOrganizerCampaignHandler(request)
+  (request) => approveOrganizerCampaignHandler(request),
 );
 export const cancelOrganizerCampaign = onCall(
   appCheckCallableOptionsWithLimits(campaignCallableLimits),
-  (request) => cancelOrganizerCampaignHandler(request)
+  (request) => cancelOrganizerCampaignHandler(request),
 );
 export const getOrganizerCampaignReport = onCall(
   appCheckCallableOptionsWithLimits(campaignCallableLimits),
-  (request) => getOrganizerCampaignReportHandler(request)
+  (request) => getOrganizerCampaignReportHandler(request),
 );

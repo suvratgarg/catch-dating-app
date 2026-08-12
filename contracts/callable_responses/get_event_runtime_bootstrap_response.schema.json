@@ -19,6 +19,8 @@
         "locationName",
         "runtimeTermsVersion",
         "moduleIds",
+        "requiredFieldIds",
+        "optionalFieldIds",
         "questionnaireConfig"
       ],
       "properties": {
@@ -34,6 +36,20 @@
           "uniqueItems": true,
           "maxItems": 24,
           "items": {"type": "string", "minLength": 1, "maxLength": 120}
+        },
+        "requiredFieldIds": {
+          "description": "Fields that must be completed before event mode opens. Sensitive preference fields are never required for entry.",
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 5,
+          "items": {"type": "string", "enum": ["displayName", "gender", "interestedInGenders", "relationshipGoal", "dateOfBirth"]}
+        },
+        "optionalFieldIds": {
+          "description": "Plan-derived event-only answers the guest may provide to improve preference-aware suggestions. Guests may skip them and receive neutral assignments.",
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 5,
+          "items": {"type": "string", "enum": ["displayName", "gender", "interestedInGenders", "relationshipGoal", "dateOfBirth"]}
         },
         "questionnaireConfig": {
           "anyOf": [

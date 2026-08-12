@@ -1230,6 +1230,7 @@ void main() {
       expect(tabRail, findsOneWidget);
       expect(tab('Organizer'), findsNothing);
       expect(tab('Edit'), findsOneWidget);
+      expect(tab('Audience'), findsOneWidget);
       expect(tab('Insights'), findsOneWidget);
       expect(tab('Preview'), findsOneWidget);
       expect(
@@ -1245,7 +1246,7 @@ void main() {
       );
       expect(
         workspaceSemantics.properties.hint,
-        'Drag left or right to switch between Edit, Insights, and Preview.',
+        'Drag left or right to switch between Edit, Audience, Insights, and Preview.',
       );
       final currentPage = tester.widget<CatchTabbedPageScrollView>(
         find.byType(CatchTabbedPageScrollView),
@@ -1452,6 +1453,11 @@ void main() {
 
     await tester.drag(pager, const Offset(-320, 0));
     await pumpFeatureUi(tester);
+    expect(find.byType(HostAudiencePane), findsOneWidget);
+    expect(find.byType(HostClubEditTab), findsNothing);
+
+    await tester.drag(pager, const Offset(-320, 0));
+    await pumpFeatureUi(tester);
     expect(find.byType(HostClubInsightsPane), findsOneWidget);
     expect(
       find.byKey(const ValueKey('host-club-insights-summary')),
@@ -1470,6 +1476,10 @@ void main() {
     await tester.drag(pager, const Offset(320, 0));
     await pumpFeatureUi(tester);
     expect(find.byType(HostClubInsightsPane), findsOneWidget);
+
+    await tester.drag(pager, const Offset(320, 0));
+    await pumpFeatureUi(tester);
+    expect(find.byType(HostAudiencePane), findsOneWidget);
 
     await tester.drag(pager, const Offset(320, 0));
     await pumpFeatureUi(tester);

@@ -38,36 +38,45 @@ test("sender verification rejects a phone outside selected WABA", async () => {
     }
     throw new Error(`Unexpected URL ${url.toString()}`);
   });
-  await assert.rejects(provider.verifyAndSubscribe({
-    accessToken: "token",
-    wabaId: "waba-1",
-    phoneNumberId: "phone-1",
-    businessId: "business-1",
-  }), /does not belong/);
+  await assert.rejects(
+    provider.verifyAndSubscribe({
+      accessToken: "token",
+      wabaId: "waba-1",
+      phoneNumberId: "phone-1",
+      businessId: "business-1",
+    }),
+    /does not belong/,
+  );
 });
 
 test("templates preserve named parameter bindings for sending", async () => {
-  const requests: Array<{url: URL; init?: RequestInit}> = [];
+  const requests: Array<{ url: URL; init?: RequestInit }> = [];
   const provider = new MetaWhatsappProvider(config, async (input, init) => {
     const url = new URL(input.toString());
     requests.push({url, init});
     if (url.pathname.endsWith("/message_templates")) {
-      return jsonResponse({data: [{
-        id: "template-provider-1",
-        name: "event_invite",
-        language: "en_US",
-        category: "MARKETING",
-        status: "APPROVED",
-        components: [{
-          type: "BODY",
-          example: {
-            body_text_named_params: [
-              {param_name: "first_name"},
-              {param_name: "invite_url"},
+      return jsonResponse({
+        data: [
+          {
+            id: "template-provider-1",
+            name: "event_invite",
+            language: "en_US",
+            category: "MARKETING",
+            status: "APPROVED",
+            components: [
+              {
+                type: "BODY",
+                example: {
+                  body_text_named_params: [
+                    {param_name: "first_name"},
+                    {param_name: "invite_url"},
+                  ],
+                },
+              },
             ],
           },
-        }],
-      }]});
+        ],
+      });
     }
     return jsonResponse({messages: [{id: "wamid.1"}]});
   });
@@ -76,13 +85,16 @@ test("templates preserve named parameter bindings for sending", async () => {
     wabaId: "waba-1",
   });
   assert.deepEqual(templates[0].variableNames, ["first_name", "invite_url"]);
-  assert.deepEqual(templates[0].parameterBindings.map((item) => ({
-    name: item.variableName,
-    position: item.position,
-  })), [
-    {name: "first_name", position: 0},
-    {name: "invite_url", position: 1},
-  ]);
+  assert.deepEqual(
+    templates[0].parameterBindings.map((item) => ({
+      name: item.variableName,
+      position: item.position,
+    })),
+    [
+      {name: "first_name", position: 0},
+      {name: "invite_url", position: 1},
+    ],
+  );
   const sent = await provider.sendTemplate({
     accessToken: "token",
     phoneNumberId: "phone-1",
@@ -102,17 +114,128 @@ test("templates preserve named parameter bindings for sending", async () => {
   ]);
 });
 
-test("provider errors are sanitized into typed failures", async () => {
-  const provider = new MetaWhatsappProvider(config, async () =>
-    new Response(JSON.stringify({
-      error: {message: "Template paused", code: 132015},
-    }), {status: 400})
-  );
-  await assert.rejects(provider.listTemplates({
+test("dynamic URL buttons bind only the provider URL suffix", async () => {
+  const requests: Array<{ url: URL; init?: RequestInit }> = [];
+  const provider = new MetaWhatsappProvider(config, async (input, init) => {
+    const url = new URL(input.toString());
+    requests.push({url, init});
+    if (url.pathname.endsWith("/message_templates")) {
+      return jsonResponse({
+        data: [
+          {
+            id: "template-provider-2",
+            name: "event_invite_button",
+            language: "en_US",
+            category: "MARKETING",
+            status: "APPROVED",
+            components: [
+              {
+                type: "BUTTONS",
+                buttons: [
+                  {
+                    type: "URL",
+                    url: "https://catchdates.com/invite/{{1}}",
+                    example: ["example-token"],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      });
+    }
+    return jsonResponse({messages: [{id: "wamid.2"}]});
+  });
+  const [template] = await provider.listTemplates({
     accessToken: "token",
     wabaId: "waba-1",
-  }), (error: unknown) => error instanceof MetaProviderError &&
-    error.providerCode === 132015 && error.httpStatus === 400);
+  });
+  assert.deepEqual(template.variableNames, ["invite_token"]);
+  assert.deepEqual(template.parameterBindings, [
+    {
+      variableName: "invite_token",
+      component: "button",
+      position: 0,
+      buttonIndex: 0,
+    },
+  ]);
+  await provider.sendTemplate({
+    accessToken: "token",
+    phoneNumberId: "phone-1",
+    toE164: "+919999999999",
+    template,
+    variables: {invite_token: "v2_invite_token"},
+  });
+  const payload = JSON.parse(String(requests.at(-1)?.init?.body));
+  assert.deepEqual(payload.template.components, [
+    {
+      type: "button",
+      sub_type: "url",
+      index: "0",
+      parameters: [{type: "text", text: "v2_invite_token"}],
+    },
+  ]);
+});
+
+test(
+  "non-Catch dynamic URL buttons are never treated as invite links",
+  async () => {
+    const provider = new MetaWhatsappProvider(config, async (input) => {
+      const url = new URL(input.toString());
+      assert.ok(url.pathname.endsWith("/message_templates"));
+      return jsonResponse({
+        data: [
+          {
+            id: "template-provider-3",
+            name: "provider_receipt",
+            language: "en_US",
+            category: "UTILITY",
+            status: "APPROVED",
+            components: [
+              {
+                type: "BUTTONS",
+                buttons: [
+                  {
+                    type: "URL",
+                    url: "https://tickets.example/receipt/{{1}}",
+                    example: ["receipt-1"],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      });
+    });
+    const [template] = await provider.listTemplates({
+      accessToken: "token",
+      wabaId: "waba-1",
+    });
+    assert.deepEqual(template.variableNames, ["button_1_url"]);
+  }
+);
+
+test("provider errors are sanitized into typed failures", async () => {
+  const provider = new MetaWhatsappProvider(
+    config,
+    async () =>
+      new Response(
+        JSON.stringify({
+          error: {message: "Template paused", code: 132015},
+        }),
+        {status: 400},
+      ),
+  );
+  await assert.rejects(
+    provider.listTemplates({
+      accessToken: "token",
+      wabaId: "waba-1",
+    }),
+    (error: unknown) =>
+      error instanceof MetaProviderError &&
+      error.providerCode === 132015 &&
+      error.httpStatus === 400,
+  );
 });
 
 function jsonResponse(value: unknown): Response {

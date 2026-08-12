@@ -6,12 +6,12 @@
   "x-callable-aliases": ["completeOrganizerWhatsappConnection"],
   "type": "object",
   "additionalProperties": false,
-  "required": ["organizerId", "authorizationCode", "wabaId", "phoneNumberId", "businessId"],
+  "required": ["organizerId", "authorizationCode", "wabaId", "phoneNumberId"],
   "properties": {
     "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "authorizationCode": {"type": "string", "minLength": 20, "maxLength": 2048},
     "wabaId": {"type": "string", "pattern": "^[0-9]{5,40}$"},
     "phoneNumberId": {"type": "string", "pattern": "^[0-9]{5,40}$"},
-    "businessId": {"type": "string", "pattern": "^[0-9]{5,40}$"}
+    "businessId": {"type": ["string", "null"], "pattern": "^[0-9]{5,40}$"}
   }
 }

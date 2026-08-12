@@ -2,9 +2,8 @@ import {SecretManagerServiceClient} from "@google-cloud/secret-manager";
 import * as crypto from "node:crypto";
 import * as admin from "firebase-admin";
 import {HttpsError} from "firebase-functions/v2/https";
-import {
-  OrganizerMessageTemplateDocument,
-} from "../shared/generated/firestoreAdminTypes";
+import {OrganizerMessageTemplateDocument} from
+  "../shared/generated/firestoreAdminTypes";
 
 export interface MetaWhatsappConfig {
   appId: string;
@@ -15,6 +14,7 @@ export interface MetaWhatsappConfig {
 
 export interface MetaPhoneMetadata {
   id: string;
+  businessId: string | null;
   displayPhoneNumber: string | null;
   verifiedName: string | null;
   qualityRating: OrganizerMessageTemplateDocument["status"] | string | null;
@@ -46,7 +46,7 @@ export class MetaProviderError extends Error {
   constructor(
     message: string,
     readonly providerCode: number | null,
-    readonly httpStatus: number | null
+    readonly httpStatus: number | null,
   ) {
     super(message);
   }
@@ -60,13 +60,15 @@ export class OrganizerTokenStore {
     connectionId: string;
     accessToken: string;
   }): Promise<string> {
-    const projectId = process.env.GCLOUD_PROJECT ??
-      admin.app().options.projectId;
+    const projectId =
+      process.env.GCLOUD_PROJECT ?? admin.app().options.projectId;
     if (!projectId) throw new Error("Firebase project id is unavailable.");
     const parent = `projects/${projectId}`;
-    const secretId = `organizer-whatsapp-${crypto.createHash("sha256")
+    const secretId = `organizer-whatsapp-${crypto
+      .createHash("sha256")
       .update(`${params.organizerId}|${params.connectionId}`)
-      .digest("hex").slice(0, 32)}`;
+      .digest("hex")
+      .slice(0, 32)}`;
     try {
       await this.client.createSecret({
         parent,
@@ -102,7 +104,7 @@ export class OrganizerTokenStore {
 export class MetaWhatsappProvider {
   constructor(
     private readonly config: MetaWhatsappConfig,
-    private readonly fetchImpl: typeof fetch = fetch
+    private readonly fetchImpl: typeof fetch = fetch,
   ) {}
 
   async exchangeAuthorizationCode(code: string): Promise<string> {
@@ -114,7 +116,9 @@ export class MetaWhatsappProvider {
     const accessToken = stringValue(body.access_token);
     if (!accessToken) {
       throw new MetaProviderError(
-        "Meta authorization did not return an access token.", null, null
+        "Meta authorization did not return an access token.",
+        null,
+        null,
       );
     }
     return accessToken;
@@ -124,52 +128,65 @@ export class MetaWhatsappProvider {
     accessToken: string;
     wabaId: string;
     phoneNumberId: string;
-    businessId: string;
+    businessId?: string | null;
   }): Promise<MetaPhoneMetadata> {
     const waba = await this.authorizedRequest(
       params.wabaId,
       params.accessToken,
-      {method: "GET", query: {fields: "id,owner_business_info"}}
+      {method: "GET", query: {fields: "id,owner_business_info"}},
     );
     const ownerBusinessId = stringValue(
-      recordValue(waba.owner_business_info).id
+      recordValue(waba.owner_business_info).id,
     );
-    if (ownerBusinessId && ownerBusinessId !== params.businessId) {
+    if (
+      ownerBusinessId &&
+      params.businessId &&
+      ownerBusinessId !== params.businessId
+    ) {
       throw new HttpsError(
         "failed-precondition",
         "The selected WhatsApp account does not belong to the selected " +
-          "business."
+          "business.",
       );
     }
     const phoneList = await this.authorizedRequest(
-      `${params.wabaId}/phone_numbers`, params.accessToken, {
+      `${params.wabaId}/phone_numbers`,
+      params.accessToken,
+      {
         method: "GET",
         query: {fields: "id", limit: "100"},
-      }
+      },
     );
-    const phoneIds = arrayValue(phoneList.data)
-      .map((item) => stringValue(recordValue(item).id));
+    const phoneIds = arrayValue(phoneList.data).map((item) =>
+      stringValue(recordValue(item).id),
+    );
     if (!phoneIds.includes(params.phoneNumberId)) {
       throw new HttpsError(
         "failed-precondition",
         "The selected phone number does not belong to the selected " +
-          "WhatsApp account."
+          "WhatsApp account.",
       );
     }
     await this.authorizedRequest(
-      `${params.wabaId}/subscribed_apps`, params.accessToken, {method: "POST"}
+      `${params.wabaId}/subscribed_apps`,
+      params.accessToken,
+      {method: "POST"},
     );
     const phone = await this.authorizedRequest(
-      params.phoneNumberId, params.accessToken, {
+      params.phoneNumberId,
+      params.accessToken,
+      {
         method: "GET",
         query: {
-          fields: "id,display_phone_number,verified_name,quality_rating," +
+          fields:
+            "id,display_phone_number,verified_name,quality_rating," +
             "messaging_limit_tier",
         },
-      }
+      },
     );
     return {
       id: params.phoneNumberId,
+      businessId: ownerBusinessId ?? params.businessId ?? null,
       displayPhoneNumber: stringValue(phone.display_phone_number),
       verifiedName: stringValue(phone.verified_name),
       qualityRating: stringValue(phone.quality_rating),
@@ -183,7 +200,8 @@ export class MetaWhatsappProvider {
   }): Promise<MetaTemplateSnapshot[]> {
     const first = this.graphUrl(`${params.wabaId}/message_templates`);
     first.searchParams.set(
-      "fields", "id,name,language,status,category,components"
+      "fields",
+      "id,name,language,status,category,components",
     );
     first.searchParams.set("limit", "200");
     let next: URL | null = first;
@@ -212,7 +230,9 @@ export class MetaWhatsappProvider {
   }): Promise<MetaSendResult> {
     const components = renderComponents(params.template, params.variables);
     const body = await this.authorizedRequest(
-      `${params.phoneNumberId}/messages`, params.accessToken, {
+      `${params.phoneNumberId}/messages`,
+      params.accessToken,
+      {
         method: "POST",
         body: {
           messaging_product: "whatsapp",
@@ -225,13 +245,15 @@ export class MetaWhatsappProvider {
             ...(components.length === 0 ? {} : {components}),
           },
         },
-      }
+      },
     );
     const message = recordValue(arrayValue(body.messages)[0]);
     const providerMessageId = stringValue(message.id);
     if (!providerMessageId) {
       throw new MetaProviderError(
-        "Meta accepted no message identifier.", null, null
+        "Meta accepted no message identifier.",
+        null,
+        null,
       );
     }
     return {providerMessageId};
@@ -242,7 +264,9 @@ export class MetaWhatsappProvider {
     wabaId: string;
   }): Promise<void> {
     await this.authorizedRequest(
-      `${params.wabaId}/subscribed_apps`, params.accessToken, {method: "DELETE"}
+      `${params.wabaId}/subscribed_apps`,
+      params.accessToken,
+      {method: "DELETE"},
     );
   }
 
@@ -253,7 +277,7 @@ export class MetaWhatsappProvider {
       method: "GET" | "POST" | "DELETE";
       query?: Record<string, string>;
       body?: Record<string, unknown>;
-    }
+    },
   ): Promise<Record<string, unknown>> {
     const url = this.graphUrl(path);
     for (const [key, value] of Object.entries(options.query ?? {})) {
@@ -271,7 +295,7 @@ export class MetaWhatsappProvider {
 
   private graphUrl(path: string): URL {
     return new URL(
-      `https://graph.facebook.com/${this.config.graphVersion}/${path}`
+      `https://graph.facebook.com/${this.config.graphVersion}/${path}`,
     );
   }
 
@@ -285,7 +309,7 @@ export class MetaWhatsappProvider {
 
   private async requestJson(
     url: URL,
-    init: RequestInit
+    init: RequestInit,
   ): Promise<Record<string, unknown>> {
     let response: Response;
     try {
@@ -297,7 +321,7 @@ export class MetaWhatsappProvider {
       throw new MetaProviderError(
         error instanceof Error ? error.message : "Meta request failed.",
         null,
-        null
+        null,
       );
     }
     const text = await response.text();
@@ -313,7 +337,7 @@ export class MetaWhatsappProvider {
         stringValue(error.message) ??
           `Meta request failed (${response.status}).`,
         numberValue(error.code),
-        response.status
+        response.status,
       );
     }
     return body;
@@ -321,26 +345,28 @@ export class MetaWhatsappProvider {
 }
 
 export function metaTemplateFromDocument(
-  template: OrganizerMessageTemplateDocument
+  template: OrganizerMessageTemplateDocument,
 ): MetaTemplateSnapshot {
   return {...template};
 }
 
 function renderComponents(
   template: MetaTemplateSnapshot,
-  variables: Record<string, string>
+  variables: Record<string, string>,
 ): Array<Record<string, unknown>> {
   const groups = new Map<string, typeof template.parameterBindings>();
   for (const binding of template.parameterBindings) {
     const key = `${binding.component}|${binding.buttonIndex ?? ""}`;
-    groups.set(key, [...groups.get(key) ?? [], binding]);
+    groups.set(key, [...(groups.get(key) ?? []), binding]);
   }
   return [...groups.entries()].map(([key, bindings]) => {
     const [component, buttonIndex] = key.split("|");
     const sorted = [...bindings].sort((a, b) => a.position - b.position);
     return {
       type: component,
-      ...(component === "button" ? {sub_type: "url", index: buttonIndex} : {}),
+      ...(component === "button" ?
+        {sub_type: "url", index: buttonIndex} :
+        {}),
       parameters: sorted.map((binding) => ({
         type: "text",
         text: requiredVariable(variables, binding.variableName),
@@ -351,19 +377,20 @@ function renderComponents(
 
 function requiredVariable(
   variables: Record<string, string>,
-  variableName: string
+  variableName: string,
 ): string {
   const value = variables[variableName]?.trim();
   if (!value) {
     throw new HttpsError(
-      "failed-precondition", `Template variable ${variableName} is missing.`
+      "failed-precondition",
+      `Template variable ${variableName} is missing.`,
     );
   }
   return value;
 }
 
 function parseTemplate(
-  item: Record<string, unknown>
+  item: Record<string, unknown>,
 ): MetaTemplateSnapshot | null {
   const providerTemplateId = stringValue(item.id);
   const name = stringValue(item.name);
@@ -384,14 +411,16 @@ function parseTemplate(
         const kind = normalizeButtonKind(stringValue(button.type));
         buttonKinds.push(kind);
         if (kind === "URL") {
-          namedParameters(button.example).forEach((variableName, position) => {
-            bindings.push({
-              variableName,
-              component: "button",
-              position,
-              buttonIndex,
-            });
-          });
+          urlButtonParameters(button, buttonIndex).forEach(
+            (variableName, position) => {
+              bindings.push({
+                variableName,
+                component: "button",
+                position,
+                buttonIndex,
+              });
+            },
+          );
         }
       });
       continue;
@@ -399,12 +428,14 @@ function parseTemplate(
     if (type !== "HEADER" && type !== "BODY") continue;
     const componentName = type.toLocaleLowerCase("en") as "header" | "body";
     const names = namedParameters(component.example);
-    names.forEach((variableName, position) => bindings.push({
-      variableName,
-      component: componentName,
-      position,
-      buttonIndex: null,
-    }));
+    names.forEach((variableName, position) =>
+      bindings.push({
+        variableName,
+        component: componentName,
+        position,
+        buttonIndex: null,
+      }),
+    );
   }
   const dedupedNames = [...new Set(bindings.map((item) => item.variableName))];
   return {
@@ -420,6 +451,22 @@ function parseTemplate(
   };
 }
 
+function urlButtonParameters(
+  button: Record<string, unknown>,
+  buttonIndex: number,
+): string[] {
+  const url = stringValue(button.url) ?? "";
+  if (/^https:\/\/catchdates\.com\/invite\/\{\{1\}\}\/?$/u.test(url)) {
+    return ["invite_token"];
+  }
+  const named = namedParameters(button.example);
+  if (named.length > 0) return named;
+  const examples = arrayValue(button.example);
+  return /\{\{\d+\}\}/u.test(url) || examples.length > 0 ?
+    [`button_${buttonIndex + 1}_url`] :
+    [];
+}
+
 function namedParameters(value: unknown): string[] {
   const example = recordValue(value);
   const named = arrayValue(example.body_text_named_params)
@@ -431,33 +478,42 @@ function namedParameters(value: unknown): string[] {
 }
 
 function normalizeCategory(
-  value: string | null
+  value: string | null,
 ): OrganizerMessageTemplateDocument["category"] {
   return ["MARKETING", "UTILITY", "AUTHENTICATION"].includes(value ?? "") ?
-    value as OrganizerMessageTemplateDocument["category"] : "UNKNOWN";
+    (value as OrganizerMessageTemplateDocument["category"]) :
+    "UNKNOWN";
 }
 
 function normalizeTemplateStatus(
-  value: string | null
+  value: string | null,
 ): OrganizerMessageTemplateDocument["status"] {
   return [
-    "APPROVED", "PENDING", "REJECTED", "PAUSED", "DISABLED", "DELETED",
+    "APPROVED",
+    "PENDING",
+    "REJECTED",
+    "PAUSED",
+    "DISABLED",
+    "DELETED",
   ].includes(value ?? "") ?
-    value as OrganizerMessageTemplateDocument["status"] : "UNKNOWN";
+    (value as OrganizerMessageTemplateDocument["status"]) :
+    "UNKNOWN";
 }
 
 function normalizeButtonKind(
-  value: string | null
+  value: string | null,
 ): OrganizerMessageTemplateDocument["buttonKinds"][number] {
-  return ["URL", "PHONE_NUMBER", "QUICK_REPLY", "COPY_CODE"]
-    .includes(value ?? "") ?
-    value as OrganizerMessageTemplateDocument["buttonKinds"][number] :
+  return ["URL", "PHONE_NUMBER", "QUICK_REPLY", "COPY_CODE"].includes(
+    value ?? "",
+  ) ?
+    (value as OrganizerMessageTemplateDocument["buttonKinds"][number]) :
     "UNKNOWN";
 }
 
 function recordValue(value: unknown): Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value) ?
-    value as Record<string, unknown> : {};
+    (value as Record<string, unknown>) :
+    {};
 }
 
 function arrayValue(value: unknown): unknown[] {
@@ -474,6 +530,6 @@ function numberValue(value: unknown): number | null {
 
 function grpcCode(value: unknown): number | null {
   if (typeof value !== "object" || value === null) return null;
-  const code = (value as {code?: unknown}).code;
+  const code = (value as { code?: unknown }).code;
   return typeof code === "number" ? code : null;
 }

@@ -24,12 +24,17 @@ import {GetEventInviteLinkTokenCallablePayload} from
   "../shared/generated/getEventInviteLinkTokenCallablePayload";
 import {RecordEventShareIntentCallablePayload} from
   "../shared/generated/recordEventShareIntentCallablePayload";
+import {ResolveEventInviteLandingCallablePayload} from
+  "../shared/generated/resolveEventInviteLandingCallablePayload";
+import {ResolveEventInviteLandingCallableResponse} from
+  "../shared/generated/resolveEventInviteLandingCallableResponse";
 import {
   validateCreateEventInviteLinkCallablePayload,
   validateDisableEventInviteLinkCallablePayload,
   validateGetEventInviteLinkTokenCallablePayload,
   validateRecordEventInviteLinkOpenCallablePayload,
   validateRecordEventShareIntentCallablePayload,
+  validateResolveEventInviteLandingCallablePayload,
 } from "../shared/generated/schemaValidators";
 import {requireAuth} from "../shared/auth";
 import {
@@ -623,6 +628,116 @@ export async function recordEventInviteLinkOpenHandler(
   return result;
 }
 
+/** Resolves a bearer link without requiring a generated public event page. */
+export async function resolveEventInviteLandingHandler(
+  request: CallableRequest<unknown>,
+  deps: EventInviteLinkDeps = defaultDeps
+): Promise<ResolveEventInviteLandingCallableResponse> {
+  const payload = validateCallableWithAjv<
+    ResolveEventInviteLandingCallablePayload
+  >(
+    request,
+    validateResolveEventInviteLandingCallablePayload,
+    normalizeInviteLandingPayload
+  );
+  const db = deps.firestore();
+  await deps.checkRateLimit(
+    db,
+    request.auth?.uid ??
+      `invite_${inviteLinkTokenHash(payload.inviteToken).slice(0, 40)}`,
+    "resolveEventInviteLanding"
+  );
+  const resolved = await resolveVersionedInviteToken({
+    db,
+    token: payload.inviteToken,
+  });
+  if (!resolved) {
+    throw new HttpsError("not-found", "Invitation not found.");
+  }
+  const linkRef = db.collection("eventInviteLinks").doc(resolved.inviteLinkId);
+  const eventRef = db.collection("events").doc(resolved.link.eventId!);
+  const eventSnap = await eventRef.get();
+  if (!eventSnap.exists) {
+    throw new HttpsError("not-found", "Invitation not found.");
+  }
+  const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
+  const now = deps.timestamp();
+  const windowEnd = resolved.link.attributionWindowEndsAt as
+    FirebaseFirestore.Timestamp | null | undefined;
+  if (event.status !== "active" || resolved.link.disabledAt != null ||
+      (windowEnd && windowEnd.toMillis() < now.toMillis())) {
+    throw new HttpsError("not-found", "Invitation is no longer available.");
+  }
+  const destinationKind = resolved.link.destinationKind ?? "catchEvent";
+  const destinationUrl = inviteDestinationUrl({
+    event,
+    eventId: resolved.link.eventId!,
+    destinationKind,
+    inviteToken: payload.inviteToken,
+    inviteLinkId: resolved.inviteLinkId,
+  });
+  if (destinationKind === "catchEvent" &&
+      event.publicRegistrationEnabled !== true) {
+    throw new HttpsError(
+      "failed-precondition", "Website registration is not enabled."
+    );
+  }
+  const touchRef = inviteTouchRef({
+    db,
+    inviteLinkId: resolved.inviteLinkId,
+    actorUid: request.auth?.uid ?? null,
+    sessionId: payload.sessionId ?? null,
+    now,
+  });
+  await db.runTransaction(async (tx) => {
+    const [freshLinkSnap, existingTouch] = await Promise.all([
+      tx.get(linkRef),
+      tx.get(touchRef),
+    ]);
+    const link = freshLinkSnap.data() as
+      Partial<EventInviteLinkDocument> | undefined;
+    if (!link || link.disabledAt != null ||
+        link.tokenHash !== inviteLinkTokenHash(payload.inviteToken) ||
+        existingTouch.exists) return;
+    const likelyHuman = request.auth != null ||
+      typeof payload.sessionId === "string";
+    tx.set(linkRef, {
+      openCount: deps.increment(1),
+      likelyHumanOpenCount: deps.increment(likelyHuman ? 1 : 0),
+      updatedAt: deps.serverTimestamp(),
+    }, {merge: true});
+    tx.create(touchRef, {
+      eventId: link.eventId,
+      organizerId: stringOrNull(link.organizerId) ?? link.clubId,
+      inviteLinkId: resolved.inviteLinkId,
+      touchKind: "open",
+      surface: "marketingWeb",
+      actorUid: request.auth?.uid ?? null,
+      sessionHash: payload.sessionId ? inviteLinkTokenHash(
+        `${resolved.inviteLinkId}|${payload.sessionId}`
+      ) : null,
+      likelyHuman,
+      botReason: likelyHuman ? null : "missingClientSignal",
+      attributionEligible: likelyHuman,
+      createdAt: now,
+      expiresAt: admin.firestore.Timestamp.fromMillis(
+        now.toMillis() + inviteTouchRetentionMillis
+      ),
+    });
+  });
+  const customLabel = event.eventFormat.customActivityLabel?.trim();
+  return {
+    eventId: resolved.link.eventId!,
+    title: customLabel || inviteActivityTitle(event.eventFormat.activityKind),
+    startTimeMillis: event.startTime.toMillis(),
+    endTimeMillis: event.endTime.toMillis(),
+    locationName: event.meetingLocation.name || event.meetingPoint,
+    destinationKind,
+    destinationUrl,
+    sourceLabel: inviteSourceLabel(event, destinationKind),
+  };
+}
+
 /** Records only a Catch-owned share action, never a claimed send. */
 export async function recordEventShareIntentHandler(
   request: CallableRequest<unknown>,
@@ -841,6 +956,85 @@ export async function resolveEventInviteToken(params: {
   return {inviteLinkId, validatedToken: token};
 }
 
+async function resolveVersionedInviteToken(params: {
+  db: FirebaseFirestore.Firestore;
+  token: string;
+}): Promise<{
+  inviteLinkId: string;
+  link: Partial<EventInviteLinkDocument>;
+} | null> {
+  const inviteLinkId = inviteLinkIdFromToken(params.token);
+  if (!inviteLinkId) return null;
+  const snap = await params.db.collection("eventInviteLinks")
+    .doc(inviteLinkId).get();
+  const link = snap.data() as Partial<EventInviteLinkDocument> | undefined;
+  if (!link || link.contractVersion !== 2 || !link.eventId ||
+      link.tokenHash !== inviteLinkTokenHash(params.token)) return null;
+  return {inviteLinkId, link};
+}
+
+function inviteDestinationUrl(params: {
+  event: EventDocument;
+  eventId: string;
+  destinationKind: NonNullable<EventInviteLinkDocument["destinationKind"]>;
+  inviteToken: string;
+  inviteLinkId: string;
+}): string | null {
+  if (params.destinationKind === "catchEvent") return null;
+  if (params.destinationKind === "eventRuntime") {
+    const runtimeId = params.event.runtimeAccess?.publicRuntimeId;
+    if (params.event.runtimeAccess?.enabled !== true || !runtimeId) {
+      throw new HttpsError(
+        "failed-precondition", "Event mode is no longer available."
+      );
+    }
+    return `https://catchdates.com/join/${encodeURIComponent(runtimeId)}` +
+      `?il=${encodeURIComponent(params.inviteToken)}`;
+  }
+  if (params.destinationKind === "externalBooking") {
+    const url = params.event.eventOrigin?.externalEventUrl;
+    if (params.event.eventOrigin?.mode !== "externalCompanion" || !url) {
+      throw new HttpsError(
+        "failed-precondition", "External registration is unavailable."
+      );
+    }
+    const destination = new URL(url);
+    destination.searchParams.set("utm_source", "catch");
+    destination.searchParams.set("utm_medium", "organizer_invite");
+    destination.searchParams.set("catch_ref", params.inviteLinkId);
+    return destination.toString();
+  }
+  return `https://catchdates.com/events/${encodeURIComponent(params.eventId)}` +
+    `?il=${encodeURIComponent(params.inviteToken)}`;
+}
+
+function inviteSourceLabel(
+  event: EventDocument,
+  destinationKind: NonNullable<EventInviteLinkDocument["destinationKind"]>
+): string {
+  if (destinationKind !== "externalBooking") return "Catch";
+  const labels: Record<string, string> = {
+    luma: "Luma",
+    eventbrite: "Eventbrite",
+    partiful: "Partiful",
+    posh: "POSH",
+    bookmyshow: "BookMyShow",
+    district: "District",
+    sortmyscene: "SortMyScene",
+    airbnb: "Airbnb",
+    generic: "the booking provider",
+  };
+  return labels[event.eventOrigin?.provider ?? "generic"] ??
+    "the booking provider";
+}
+
+function inviteActivityTitle(
+  activityKind: EventDocument["eventFormat"]["activityKind"]
+): string {
+  const spaced = activityKind.replace(/([a-z])([A-Z])/gu, "$1 $2");
+  return spaced.charAt(0).toUpperCase() + spaced.slice(1);
+}
+
 function isVersionedInviteToken(value: string): boolean {
   return /^v2_[A-Za-z0-9_-]{1,180}_[A-Za-z0-9_-]{43}$/.test(value);
 }
@@ -899,6 +1093,17 @@ function normalizeInviteLinkPayload(data: unknown): unknown {
   return payload;
 }
 
+function normalizeInviteLandingPayload(data: unknown): unknown {
+  if (typeof data !== "object" || data === null || Array.isArray(data)) {
+    return data;
+  }
+  const payload = {...data as Record<string, unknown>};
+  if (typeof payload.inviteToken === "string") {
+    payload.inviteToken = payload.inviteToken.trim();
+  }
+  return payload;
+}
+
 function stringOrNull(value: unknown): string | null {
   if (typeof value !== "string") return null;
   const trimmed = value.trim();
@@ -924,6 +1129,10 @@ export const disableEventInviteLink = onCall(appCheckCallableOptions, (
 export const recordEventInviteLinkOpen = onCall(appCheckCallableOptions, (
   request
 ) => recordEventInviteLinkOpenHandler(request));
+
+export const resolveEventInviteLanding = onCall(appCheckCallableOptions, (
+  request
+) => resolveEventInviteLandingHandler(request));
 
 export const recordEventShareIntent = onCall(appCheckCallableOptions, (
   request

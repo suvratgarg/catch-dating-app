@@ -18,7 +18,7 @@ export interface FetchEventSuccessWingmanCandidatesCallableResponse {
   candidates?: {
     uid: string;
     displayName: string;
-    gender: "man" | "woman" | "nonBinary" | "other";
+    gender: "man" | "woman" | "nonBinary" | "other" | null;
     source: "catchParticipation" | "externalRuntime";
   }[];
 }

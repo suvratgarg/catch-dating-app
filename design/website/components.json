@@ -3064,6 +3064,28 @@
         ]
       },
       "notes": "Governed visual ownership for attendee runtime frame, panels, forms, consents, live header, and module cards."
+    },
+    {
+      "id": "route_event_invite",
+      "kind": "route",
+      "routeIds": [
+        "event_invite"
+      ],
+      "owner": "features/events",
+      "source": "website/src/features/events/EventInvitePage.tsx",
+      "exportName": "EventInvitePage",
+      "css": [
+        "website/src/styles/event-runtime.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/MarketingRoutes.stories.tsx",
+        "exportName": "EventInvite",
+        "states": [
+          "resolved-external"
+        ]
+      },
+      "notes": "Noindex opaque invitation landing for private and public operational events; records one deduplicated open before an external, Catch registration, or event-runtime handoff."
     }
   ]
 }

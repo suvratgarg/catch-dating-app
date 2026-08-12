@@ -254,6 +254,8 @@ export 'request_organizer_claim_callable_payload.g.dart';
 export 'request_organizer_claim_callable_response.g.dart';
 export 'request_suvbot_demo_operation_callable_payload.g.dart';
 export 'reset_match_unread_count_client_write.g.dart';
+export 'resolve_event_invite_landing_callable_payload.g.dart';
+export 'resolve_event_invite_landing_callable_response.g.dart';
 export 'respond_cross_paths_invitation_callable_payload.g.dart';
 export 'respond_cross_paths_invitation_callable_response.g.dart';
 export 'review_document.g.dart';

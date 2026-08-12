@@ -12,20 +12,20 @@ final class CompleteOrganizerWhatsappConnectionCallableRequest {
     required this.authorizationCode,
     required this.wabaId,
     required this.phoneNumberId,
-    required this.businessId,
+    this.businessId,
   });
 
   final String organizerId;
   final String authorizationCode;
   final String wabaId;
   final String phoneNumberId;
-  final String businessId;
+  final String? businessId;
 
   Map<String, Object?> toJson() => {
     'organizerId': organizerId,
     'authorizationCode': authorizationCode,
     'wabaId': wabaId,
     'phoneNumberId': phoneNumberId,
-    'businessId': businessId,
+    'businessId': ?businessId,
   };
 }

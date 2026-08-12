@@ -52,6 +52,8 @@ function bootstrap(participant: unknown = null) {
       locationName: "The Courtyard",
       runtimeTermsVersion: "event-runtime-v1",
       moduleIds: [],
+      requiredFieldIds: ["displayName"],
+      optionalFieldIds: [],
       questionnaireConfig: null,
     },
     participant,

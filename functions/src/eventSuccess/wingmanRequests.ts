@@ -6,7 +6,6 @@ import {
   EventDocument,
   EventParticipationDocument,
   EventRuntimeParticipantDocument,
-  Gender,
 } from "../shared/generated/firestoreAdminTypes";
 import {requireAuth} from "../shared/auth";
 import {EventIdCallablePayload} from
@@ -21,7 +20,6 @@ import {validateCallableWithAjv, requireDoc} from "../shared/validation";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {normalizeEventIdPayload} from "../events/eventPayloadNormalization";
-import {cohortIds} from "../events/eventPolicy";
 import {blockDocId} from "../safety/blocking";
 import {
   CandidatePublicProfile,
@@ -85,7 +83,7 @@ export async function fetchEventSuccessWingmanCandidatesHandler(
   candidates: Array<{
     uid: string;
     displayName: string;
-    gender: EventSuccessRosterParticipant["gender"];
+    gender: EventSuccessRosterParticipant["gender"] | null;
     source: EventSuccessRosterParticipant["source"];
   }>;
 }> {
@@ -120,9 +118,7 @@ export async function fetchEventSuccessWingmanCandidatesHandler(
   );
   if (
     !viewer ||
-    viewer.status !== "attended" ||
-    !viewer.gender ||
-    viewer.interestedInGenders.length === 0
+    viewer.status !== "attended"
   ) {
     throw new HttpsError(
       "failed-precondition",
@@ -136,7 +132,12 @@ export async function fetchEventSuccessWingmanCandidatesHandler(
       viewerUid,
       candidate,
     }))
-    .sort((a, b) => a.uid.localeCompare(b.uid));
+    .sort((a, b) => {
+      const preferenceDifference = wingmanPreferenceRank(viewer, a) -
+        wingmanPreferenceRank(viewer, b);
+      return preferenceDifference !== 0 ? preferenceDifference :
+        a.uid.localeCompare(b.uid);
+    });
 
   const blockedUids = await fetchUidsBlockedWithViewer(db, viewerUid);
   const visibleRoster = candidateRoster.filter((candidate) =>
@@ -149,7 +150,7 @@ export async function fetchEventSuccessWingmanCandidatesHandler(
     candidates: visibleRoster.map((candidate) => ({
       uid: candidate.uid,
       displayName: candidate.displayName,
-      gender: candidate.gender!,
+      gender: candidate.gender ?? null,
       source: candidate.source,
     })),
   };
@@ -497,45 +498,24 @@ function isEligibleWingmanRequestCandidate(params: {
   candidate: EventSuccessRosterParticipant;
 }): boolean {
   const candidate = params.candidate;
-  const candidateGender = candidate.gender;
   if (
     candidate.uid === params.viewerUid ||
-    candidate.status !== "attended" ||
-    candidateGender == null
+    candidate.status !== "attended"
   ) {
     return false;
   }
-  if (!params.viewer.interestedInGenders.includes(candidateGender)) {
-    return false;
-  }
-  switch (params.viewer.cohortAtSignup) {
-  case cohortIds.womenInterestedInMen:
-    return candidate.cohortAtSignup === cohortIds.menInterestedInWomen;
-  case cohortIds.menInterestedInWomen:
-    return candidate.cohortAtSignup === cohortIds.womenInterestedInMen;
-  default:
-    return candidateCohortCanIncludeViewer(
-      candidate.cohortAtSignup,
-      params.viewer.gender
-    );
-  }
+  return true;
 }
 
-function candidateCohortCanIncludeViewer(
-  candidateCohortId: string,
-  viewerGender: Gender | undefined
-): boolean {
-  switch (candidateCohortId) {
-  case cohortIds.menInterestedInWomen:
-    return viewerGender === "woman";
-  case cohortIds.womenInterestedInMen:
-    return viewerGender === "man";
-  case cohortIds.queerOrOpen:
-  case cohortIds.nonBinaryOrOther:
-    return true;
-  default:
-    return false;
-  }
+function wingmanPreferenceRank(
+  viewer: EventSuccessRosterParticipant,
+  candidate: EventSuccessRosterParticipant
+): number {
+  if (!viewer.gender || !candidate.gender ||
+      viewer.interestedInGenders.length === 0 ||
+      candidate.interestedInGenders.length === 0) return 1;
+  return viewer.interestedInGenders.includes(candidate.gender) &&
+      candidate.interestedInGenders.includes(viewer.gender) ? 0 : 2;
 }
 
 /**

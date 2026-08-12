@@ -186,6 +186,8 @@ import {CreateEventWaitlistOffersCallablePayload} from "./createEventWaitlistOff
 import {CreateEventInviteLinkCallablePayload} from "./createEventInviteLinkCallablePayload";
 import {DisableEventInviteLinkCallablePayload} from "./disableEventInviteLinkCallablePayload";
 import {RecordEventInviteLinkOpenCallablePayload} from "./recordEventInviteLinkOpenCallablePayload";
+import {ResolveEventInviteLandingCallablePayload} from "./resolveEventInviteLandingCallablePayload";
+import {ResolveEventInviteLandingCallableResponse} from "./resolveEventInviteLandingCallableResponse";
 import {GetEventInviteLinkTokenCallablePayload} from "./getEventInviteLinkTokenCallablePayload";
 import {RecordEventShareIntentCallablePayload} from "./recordEventShareIntentCallablePayload";
 import {UpsertOrganizerCampaignCallablePayload} from "./upsertOrganizerCampaignCallablePayload";
@@ -480,6 +482,8 @@ import {
   createEventInviteLinkCallablePayloadSchema,
   disableEventInviteLinkCallablePayloadSchema,
   recordEventInviteLinkOpenCallablePayloadSchema,
+  resolveEventInviteLandingCallablePayloadSchema,
+  resolveEventInviteLandingCallableResponseSchema,
   getEventInviteLinkTokenCallablePayloadSchema,
   recordEventShareIntentCallablePayloadSchema,
   upsertOrganizerCampaignCallablePayloadSchema,
@@ -1324,6 +1328,14 @@ export const validateRecordEventInviteLinkOpenCallablePayload:
   ValidateFunction<RecordEventInviteLinkOpenCallablePayload> =
     ajv.compile(recordEventInviteLinkOpenCallablePayloadSchema) as
       ValidateFunction<RecordEventInviteLinkOpenCallablePayload>;
+export const validateResolveEventInviteLandingCallablePayload:
+  ValidateFunction<ResolveEventInviteLandingCallablePayload> =
+    ajv.compile(resolveEventInviteLandingCallablePayloadSchema) as
+      ValidateFunction<ResolveEventInviteLandingCallablePayload>;
+export const validateResolveEventInviteLandingCallableResponse:
+  ValidateFunction<ResolveEventInviteLandingCallableResponse> =
+    ajv.compile(resolveEventInviteLandingCallableResponseSchema) as
+      ValidateFunction<ResolveEventInviteLandingCallableResponse>;
 export const validateGetEventInviteLinkTokenCallablePayload:
   ValidateFunction<GetEventInviteLinkTokenCallablePayload> =
     ajv.compile(getEventInviteLinkTokenCallablePayloadSchema) as

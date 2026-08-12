@@ -125,7 +125,7 @@ export async function completeOrganizerWhatsappConnectionHandler(
     status: "testing",
     wabaId: data.wabaId,
     phoneNumberId: data.phoneNumberId,
-    businessId: data.businessId,
+    businessId: phone.businessId,
     displayPhoneNumber: phone.displayPhoneNumber,
     verifiedName: phone.verifiedName,
     secretVersionResource,

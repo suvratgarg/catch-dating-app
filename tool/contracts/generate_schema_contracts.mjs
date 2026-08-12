@@ -1100,6 +1100,21 @@ const schemaSpecs = [
       "recordEventInviteLinkOpenCallablePayload.ts",
   },
   {
+    name: "ResolveEventInviteLandingCallablePayload",
+    source: "callables/resolve_event_invite_landing_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "resolveEventInviteLandingCallablePayload.ts",
+  },
+  {
+    name: "ResolveEventInviteLandingCallableResponse",
+    source:
+      "callable_responses/resolve_event_invite_landing_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "resolveEventInviteLandingCallableResponse.ts",
+  },
+  {
     name: "GetEventInviteLinkTokenCallablePayload",
     source: "callables/get_event_invite_link_token_payload.schema.json",
     typeOutput:

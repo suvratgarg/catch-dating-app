@@ -107,6 +107,7 @@ export 'callables/report_user_callable_request.g.dart';
 export 'callables/request_club_claim_callable_request.g.dart';
 export 'callables/request_organizer_claim_callable_request.g.dart';
 export 'callables/request_suvbot_demo_operation_callable_request.g.dart';
+export 'callables/resolve_event_invite_landing_callable_request.g.dart';
 export 'callables/respond_cross_paths_invitation_callable_request.g.dart';
 export 'callables/self_check_in_attendance_callable_request.g.dart';
 export 'callables/send_cross_paths_invitation_callable_request.g.dart';

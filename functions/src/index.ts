@@ -37,6 +37,7 @@ export {
   getEventInviteLinkToken,
   recordEventInviteLinkOpen,
   recordEventShareIntent,
+  resolveEventInviteLanding,
 } from "./events/inviteLinks";
 export {onOrganizerContactEventEdgeInviteAttributed} from
   "./events/eventInviteAttributionProjection";

@@ -188,6 +188,37 @@ List _hostClubOverrides({
       hostCrmSummaryProvider(
         organizerId,
       ).overrideWithValue(AsyncData(_emptyCrmSummary(organizerId))),
+    for (final organizerId in organizerIds)
+      hostAudienceProvider(
+        organizerId,
+        const HostAudienceQuery(),
+      ).overrideWithValue(
+        AsyncData(
+          HostAudiencePage(
+            organizerId: organizerId,
+            contacts: const [],
+            nextCursor: null,
+            sourceCoverage: HostAudienceSourceCoverage.exact,
+            projectionVersion: 1,
+          ),
+        ),
+      ),
+    for (final organizerId in organizerIds)
+      hostMessagingSetupProvider(organizerId).overrideWithValue(
+        AsyncData(
+          HostMessagingSetup(
+            organizerId: organizerId,
+            providerConfigured: false,
+            embeddedSignup: const HostWhatsappEmbeddedSignupConfig(
+              appId: null,
+              configId: null,
+              graphVersion: null,
+            ),
+            connection: null,
+            templates: const [],
+          ),
+        ),
+      ),
   ];
 }
 

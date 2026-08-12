@@ -19,7 +19,6 @@ const schemaCompleteOrganizerWhatsappConnectionCallablePayloadSchema = <String, 
     'authorizationCode',
     'wabaId',
     'phoneNumberId',
-    'businessId',
   ],
   'properties': <String, Object?>{
     'organizerId': <String, Object?>{
@@ -41,7 +40,10 @@ const schemaCompleteOrganizerWhatsappConnectionCallablePayloadSchema = <String, 
       'pattern': '^[0-9]{5,40}\$',
     },
     'businessId': <String, Object?>{
-      'type': 'string',
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
       'pattern': '^[0-9]{5,40}\$',
     },
   },
