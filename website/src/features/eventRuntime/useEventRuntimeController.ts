@@ -6,9 +6,11 @@ import {
   checkInEventRuntime,
   claimEventRuntimeAccess,
   completeEventRuntimeFirstHello,
+  createEventRuntimeAttendeeInviteLink,
   fetchEventRuntimeWingmanCandidates,
   getEventRuntimeBootstrap,
   recordEventInviteLinkOpen,
+  recordEventRuntimeShareIntent,
   saveEventRuntimeCompatibilityAnswers,
   saveEventRuntimeFeedback,
   startEventRuntimeFirstHello,
@@ -18,6 +20,7 @@ import {
   watchEventRuntimeLiveState,
   withdrawEventRuntimeWingmanRequest,
   type EventRuntimeLiveState,
+  type EventRuntimeAttendeeInviteLink,
   type PublicEventPhoneVerification,
 } from "../../firebase";
 import {eventRuntimeCopy} from "../../content/eventRuntime";
@@ -63,6 +66,7 @@ export function useEventRuntimeController(publicRuntimeId: string) {
   const verificationRef = useRef<PublicEventPhoneVerification | null>(null);
   const userRef = useRef<User | null>(null);
   const loadingRef = useRef<Promise<void> | null>(null);
+  const attendeeLinkEventIdRef = useRef<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [bootstrap, setBootstrap] = useState<EventRuntimeBootstrap | null>(null);
   const [stage, setStage] = useState<EventRuntimeStage>("loading");
@@ -90,7 +94,21 @@ export function useEventRuntimeController(publicRuntimeId: string) {
       setStatus({message: eventRuntimeError(error), tone: "is-error"});
     },
   });
+  const attendeeLinkMutation = useMutation<
+    EventRuntimeAttendeeInviteLink,
+    unknown,
+    string
+  >({
+    mutationFn: (eventId) => createEventRuntimeAttendeeInviteLink(
+      eventId,
+      eventRuntimeCopy.shareLinkLabel
+    ),
+    onError: (error) => {
+      setStatus({message: eventRuntimeError(error), tone: "is-error"});
+    },
+  });
   const pending = actionMutation.isPending;
+  const attendeeInviteLink = attendeeLinkMutation.data ?? null;
   const inviteToken = useMemo(eventInviteTokenFromLocation, []);
   const recordedInviteOpenRef = useRef(false);
 
@@ -216,6 +234,19 @@ export function useEventRuntimeController(publicRuntimeId: string) {
     };
   }, [bootstrap, questionnaire.questions, stage, user]);
 
+  useEffect(() => {
+    const participant = bootstrap?.participant;
+    if (stage !== "runtime" || !participant || attendeeInviteLink ||
+        attendeeLinkEventIdRef.current === participant.eventId) return;
+    attendeeLinkEventIdRef.current = participant.eventId;
+    attendeeLinkMutation.mutate(participant.eventId);
+  }, [
+    attendeeInviteLink,
+    attendeeLinkMutation,
+    bootstrap?.participant,
+    stage,
+  ]);
+
   async function handlePhoneSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (pending) return;
@@ -319,6 +350,67 @@ export function useEventRuntimeController(publicRuntimeId: string) {
     }).catch(() => undefined);
   }
 
+  async function shareEvent() {
+    const participant = bootstrap?.participant;
+    if (!participant || pending) return;
+    setStatus({message: "", tone: ""});
+    const link = attendeeInviteLink;
+    if (!link) {
+      setStatus({message: eventRuntimeCopy.shareNotReady, tone: ""});
+      return;
+    }
+    const shareUrl = new URL(
+      `/invite/${encodeURIComponent(link.inviteToken)}`,
+      window.location.origin
+    ).toString();
+    const shareData = {
+      title: bootstrap.event.title,
+      text: eventRuntimeCopy.shareText(bootstrap.event.title),
+      url: shareUrl,
+    };
+    if (typeof navigator.share === "function") {
+      void recordEventRuntimeShareIntent({
+        eventId: participant.eventId,
+        inviteLinkId: link.inviteLinkId,
+        channelHint: "systemShare",
+      }).catch(() => undefined);
+      try {
+        await navigator.share(shareData);
+        setStatus({message: eventRuntimeCopy.shareOpened, tone: "is-success"});
+      } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") {
+          setStatus({message: eventRuntimeCopy.shareCancelled, tone: ""});
+          return;
+        }
+        setStatus({message: eventRuntimeError(error), tone: "is-error"});
+      }
+      return;
+    }
+    if (navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+      } catch (error) {
+        setStatus({message: eventRuntimeError(error), tone: "is-error"});
+        return;
+      }
+      void recordEventRuntimeShareIntent({
+        eventId: participant.eventId,
+        inviteLinkId: link.inviteLinkId,
+        channelHint: "copyLink",
+      }).catch(() => undefined);
+      setStatus({message: eventRuntimeCopy.shareCopied, tone: "is-success"});
+      return;
+    }
+    setStatus({message: eventRuntimeCopy.shareManual(shareUrl), tone: ""});
+  }
+
+  function retryAttendeeInviteLink() {
+    const participant = bootstrap?.participant;
+    if (!participant || attendeeLinkMutation.isPending || attendeeInviteLink) return;
+    setStatus({message: "", tone: ""});
+    attendeeLinkMutation.mutate(participant.eventId);
+  }
+
   function toggleInterest(nextGender: EventRuntimeGender) {
     if (pending) return;
     setInterestedInGenders((current) => current.includes(nextGender) ?
@@ -417,6 +509,8 @@ export function useEventRuntimeController(publicRuntimeId: string) {
 
   return {
     bootstrap,
+    attendeeInviteLink,
+    attendeeInviteLinkLoading: attendeeLinkMutation.isPending,
     code,
     completeFirstHello,
     displayName,
@@ -434,11 +528,13 @@ export function useEventRuntimeController(publicRuntimeId: string) {
     questionnaire,
     questionAnswers,
     recaptchaContainerId,
+    retryAttendeeInviteLink,
     offersPreferenceProfile,
     privateNote,
     preferenceProfileEnabled,
     saveAsCatchPrefill,
     saveCompatibilityAnswers,
+    shareEvent,
     selectQuestionAnswer,
     sensitiveConsent,
     setCode,

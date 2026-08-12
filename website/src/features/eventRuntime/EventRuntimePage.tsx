@@ -254,6 +254,20 @@ function LiveEventRuntime({
         <p>{event.locationName} · {formatEventTime(event.startTimeMillis)}</p>
       </EventRuntimeLiveHeader>
 
+      <EventRuntimeModule title={eventRuntimeCopy.shareTitle}>
+        <p>{eventRuntimeCopy.shareBody}</p>
+        <Button
+          loading={controller.attendeeInviteLinkLoading}
+          loadingLabel={eventRuntimeCopy.sharePreparing}
+          onClick={() => controller.attendeeInviteLink ?
+            void controller.shareEvent() : controller.retryAttendeeInviteLink()}
+          type="button"
+        >
+          {controller.attendeeInviteLink ?
+            eventRuntimeCopy.shareAction : eventRuntimeCopy.shareRetry}
+        </Button>
+      </EventRuntimeModule>
+
       <EventRuntimeModule title={eventRuntimeCopy.assignmentTitle} accent="coral">
         {revealBlocked ? <p>{eventRuntimeCopy.revealWaiting}</p> :
           controller.liveState.assignments.length ? (

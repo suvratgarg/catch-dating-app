@@ -282,11 +282,11 @@ export async function createAttendeeInviteLinkHandler(
   await db.runTransaction(async (tx) => {
     const [eventSnap, runtimeSnap, participationSnap, userSnap] =
       await Promise.all([
-      tx.get(eventRef),
-      tx.get(runtimeRef),
-      tx.get(participationRef),
-      tx.get(userRef),
-    ]);
+        tx.get(eventRef),
+        tx.get(runtimeRef),
+        tx.get(participationRef),
+        tx.get(userRef),
+      ]);
     if (!eventSnap.exists) {
       throw new HttpsError(
         "permission-denied",
@@ -366,7 +366,8 @@ export async function createAttendeeInviteLinkHandler(
       returnedToken = existingSecret.token;
       return;
     }
-    const destinationKind = payload.destinationKind ?? "catchEvent";
+    const destinationKind = payload.destinationKind ??
+      defaultAttendeeInviteDestination(event);
     if (destinationKind === "externalBooking" &&
         !event.eventOrigin?.externalEventUrl) {
       throw new HttpsError(
@@ -397,7 +398,8 @@ export async function createAttendeeInviteLinkHandler(
       ownerUid: actorUid,
       intendedRecipientContactId: null,
       campaignId: null,
-      issuanceChannel: "consumerApp",
+      issuanceChannel: payload.source === "runtime_web" ?
+        "runtimeWeb" : "consumerApp",
       destinationKind,
       tokenVersion: 2,
       attributionWindowEndsAt: admin.firestore.Timestamp.fromMillis(
@@ -1041,6 +1043,14 @@ function inviteDestinationUrl(params: {
   }
   return `https://catchdates.com/events/${encodeURIComponent(params.eventId)}` +
     `?il=${encodeURIComponent(params.inviteToken)}`;
+}
+
+function defaultAttendeeInviteDestination(
+  event: EventDocument
+): NonNullable<EventInviteLinkDocument["destinationKind"]> {
+  return event.eventOrigin?.mode === "externalCompanion" &&
+    Boolean(event.eventOrigin.externalEventUrl) ?
+    "externalBooking" : "catchEvent";
 }
 
 function inviteSourceLabel(

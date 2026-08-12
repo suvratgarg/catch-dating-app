@@ -125,7 +125,7 @@ test("versioned invite bearer tokens are random and hashable", () => {
   assert.notEqual(inviteLinkTokenHash(first), inviteLinkTokenHash(second));
 });
 
-test("Catch-booked attendees can create their own referral link", async () => {
+test("attendee links default to the external booking destination", async () => {
   const now = new FakeTimestamp(Date.parse("2026-08-12T12:00:00.000Z"));
   const attendeeId = eventAttendeeId("event-1", "phone:+919876543210");
   const firestore = new FakeFirestore({
@@ -138,6 +138,11 @@ test("Catch-booked attendees can create their own referral link", async () => {
       meetingPoint: "The Courtyard",
       meetingLocation: {name: "The Courtyard"},
       eventFormat: {activityKind: "singlesMixer"},
+      eventOrigin: {
+        mode: "externalCompanion",
+        provider: "luma",
+        externalEventUrl: "https://lu.ma/courtyard",
+      },
     },
     "eventParticipations/event-1_user-1": {
       eventId: "event-1",
@@ -171,23 +176,22 @@ test("Catch-booked attendees can create their own referral link", async () => {
     authenticatedRequest({
       eventId: "event-1",
       label: "Attendee share",
-      source: "consumer_app",
+      source: "runtime_web",
       linkKind: "attendeeReferrer",
-      destinationKind: "catchEvent",
     }),
     deps
   );
 
   assert.equal(result.eventId, "event-1");
   assert.equal(result.label, "Attendee share");
-  assert.equal(result.source, "consumer_app");
+  assert.equal(result.source, "runtime_web");
   assert.match(result.inviteToken, /^v2_/u);
   const stored = firestore.get(`eventInviteLinks/${result.inviteLinkId}`);
   assert.ok(stored, firestore.paths("").join("\n"));
   assert.equal(stored?.ownerUid, "user-1");
   assert.equal(stored?.ownerContactId, "contact-1");
-  assert.equal(stored?.issuanceChannel, "consumerApp");
-  assert.equal(stored?.destinationKind, "catchEvent");
+  assert.equal(stored?.issuanceChannel, "runtimeWeb");
+  assert.equal(stored?.destinationKind, "externalBooking");
   assert.ok(firestore.get(`eventInviteLinkSecrets/${result.inviteLinkId}`));
 });
 
@@ -252,7 +256,10 @@ test("invite landing verifies its token and bounds projection", async () => {
   assert.equal(firestore.paths("eventInviteTouches/").length, 1);
 
   await assert.rejects(
-    resolveEventInviteLandingHandler(request(`${token.slice(0, -1)}A`), deps),
+    resolveEventInviteLandingHandler(
+      request(`${token.slice(0, -1)}${token.endsWith("A") ? "B" : "A"}`),
+      deps
+    ),
     (error: unknown) =>
       error instanceof HttpsError && error.code === "not-found"
   );

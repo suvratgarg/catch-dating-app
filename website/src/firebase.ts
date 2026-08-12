@@ -7,6 +7,7 @@ import type {CheckInEventRuntimeCallableResponse} from "../../functions/src/shar
 import type {ClaimEventRuntimeAccessCallablePayload} from "../../functions/src/shared/generated/claimEventRuntimeAccessCallablePayload";
 import type {ClaimEventRuntimeAccessCallableResponse} from "../../functions/src/shared/generated/claimEventRuntimeAccessCallableResponse";
 import type {CompleteEventSuccessFirstHelloMissionCallablePayload} from "../../functions/src/shared/generated/completeEventSuccessFirstHelloMissionCallablePayload";
+import type {CreateEventInviteLinkCallablePayload} from "../../functions/src/shared/generated/createEventInviteLinkCallablePayload";
 import type {CreatePublicOrganizerReviewCallablePayload} from "../../functions/src/shared/generated/createPublicOrganizerReviewCallablePayload";
 import type {CreatePublicOrganizerReviewCallableResponse} from "../../functions/src/shared/generated/createPublicOrganizerReviewCallableResponse";
 import type {EventSuccessAssignmentDocument} from "../../functions/src/shared/generated/eventSuccessAssignmentDocument";
@@ -19,6 +20,7 @@ import type {ListPublicOrganizerReviewsCallableResponse} from "../../functions/s
 import type {RecordOrganizerAnalyticsEventCallablePayload} from "../../functions/src/shared/generated/recordOrganizerAnalyticsEventCallablePayload";
 import type {RecordOrganizerAnalyticsEventCallableResponse} from "../../functions/src/shared/generated/recordOrganizerAnalyticsEventCallableResponse";
 import type {RecordEventInviteLinkOpenCallablePayload} from "../../functions/src/shared/generated/recordEventInviteLinkOpenCallablePayload";
+import type {RecordEventShareIntentCallablePayload} from "../../functions/src/shared/generated/recordEventShareIntentCallablePayload";
 import type {RegisterPublicEventCallablePayload} from "../../functions/src/shared/generated/registerPublicEventCallablePayload";
 import type {RegisterPublicEventCallableResponse} from "../../functions/src/shared/generated/registerPublicEventCallableResponse";
 import type {ResolveEventInviteLandingCallablePayload} from "../../functions/src/shared/generated/resolveEventInviteLandingCallablePayload";
@@ -67,6 +69,14 @@ export type EventInviteLanding = ResolveEventInviteLandingCallableResponse;
 export interface PublicEventPhoneVerification {
   clear: () => void;
   confirm: (code: string) => Promise<User>;
+}
+
+export interface EventRuntimeAttendeeInviteLink {
+  inviteLinkId: string;
+  inviteToken: string;
+  eventId: string;
+  label: string;
+  source: string | null;
 }
 
 let runtimePromise: Promise<FirebaseRuntime | null> | null = null;
@@ -187,6 +197,36 @@ export async function checkInEventRuntime(
   return invokeWebsiteCallable(
     "checkInEventRuntime",
     payload,
+    eventRuntimeFirebaseConfigured
+  );
+}
+
+export async function createEventRuntimeAttendeeInviteLink(
+  eventId: string,
+  label: string
+): Promise<EventRuntimeAttendeeInviteLink> {
+  const payload: CreateEventInviteLinkCallablePayload = {
+    eventId,
+    label,
+    source: "runtime_web",
+    linkKind: "attendeeReferrer",
+  };
+  return invokeWebsiteCallable(
+    "createAttendeeInviteLink",
+    payload,
+    eventRuntimeFirebaseConfigured
+  );
+}
+
+export async function recordEventRuntimeShareIntent(
+  payload: Pick<
+    RecordEventShareIntentCallablePayload,
+    "eventId" | "inviteLinkId" | "channelHint"
+  >
+): Promise<{recorded: boolean}> {
+  return invokeWebsiteCallable(
+    "recordEventShareIntent",
+    {...payload, surface: "runtimeWeb"},
     eventRuntimeFirebaseConfigured
   );
 }
