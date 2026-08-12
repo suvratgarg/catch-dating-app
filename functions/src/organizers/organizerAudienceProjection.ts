@@ -143,6 +143,8 @@ export async function projectEventAttendeeToOrganizerAudience(
         identityHash: verifiedEvidence[index].identityHash,
         hashVersion: "hmac-sha256-v1",
         verifiedContactId: existing?.verifiedContactId ?? contactId,
+        originVerifiedContactId: existing?.originVerifiedContactId ??
+          existing?.verifiedContactId ?? contactId,
         state: conflicted ? "conflicted" : "verified",
         conflictingContactIds: conflicted ? [...allContactIds]
           .filter((candidate) =>
@@ -238,6 +240,10 @@ export async function projectEventAttendeeToOrganizerAudience(
     const link: OrganizerContactIdentityLinkDocument = {
       organizerId: after.organizerId,
       contactId,
+      originContactId: (existingEvidenceSnap.docs.find((doc) =>
+        doc.id === evidenceId
+      )?.data() as OrganizerContactIdentityLinkDocument | undefined)
+        ?.originContactId ?? contactId,
       attendeeId,
       kind: item.kind,
       identityHash: item.identityHash,

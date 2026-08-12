@@ -18,6 +18,7 @@ const schemaOrganizerContactIdentityLinkDocumentSchema = <String, Object?>{
   'required': <Object?>[
     'organizerId',
     'contactId',
+    'originContactId',
     'attendeeId',
     'kind',
     'identityHash',
@@ -34,6 +35,11 @@ const schemaOrganizerContactIdentityLinkDocumentSchema = <String, Object?>{
       'maxLength': 180,
     },
     'contactId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'originContactId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,

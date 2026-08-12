@@ -8,6 +8,7 @@
 export interface OrganizerContactIdentityLinkDocument {
   organizerId: string;
   contactId: string;
+  originContactId: string;
   attendeeId: string;
   kind: "uid" | "phone" | "email" | "provider";
   identityHash: string;

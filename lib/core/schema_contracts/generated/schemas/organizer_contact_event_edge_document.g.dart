@@ -18,6 +18,7 @@ const schemaOrganizerContactEventEdgeDocumentSchema = <String, Object?>{
   'required': <Object?>[
     'organizerId',
     'contactId',
+    'originContactId',
     'eventId',
     'attendeeId',
     'displayName',
@@ -48,6 +49,11 @@ const schemaOrganizerContactEventEdgeDocumentSchema = <String, Object?>{
       'maxLength': 180,
     },
     'contactId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'originContactId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,

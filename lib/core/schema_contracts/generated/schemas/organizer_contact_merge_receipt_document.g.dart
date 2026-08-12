@@ -25,6 +25,13 @@ const schemaOrganizerContactMergeReceiptDocumentSchema = <String, Object?>{
     'actorUid',
     'survivorRevision',
     'sourceRevision',
+    'movedEdgeIds',
+    'movedIdentityEvidenceIds',
+    'movedClaimIds',
+    'movedEdgeCount',
+    'movedIdentityEvidenceCount',
+    'movedClaimCount',
+    'idempotencyKey',
     'reversalOfReceiptId',
     'createdAt',
   ],
@@ -89,6 +96,56 @@ const schemaOrganizerContactMergeReceiptDocumentSchema = <String, Object?>{
       'type': 'integer',
       'minimum': 1,
       'maximum': 9007199254740991,
+    },
+    'movedEdgeIds': <String, Object?>{
+      'type': 'array',
+      'maxItems': 400,
+      'uniqueItems': true,
+      'items': <String, Object?>{
+        'type': 'string',
+        'minLength': 1,
+        'maxLength': 180,
+      },
+    },
+    'movedIdentityEvidenceIds': <String, Object?>{
+      'type': 'array',
+      'maxItems': 400,
+      'uniqueItems': true,
+      'items': <String, Object?>{
+        'type': 'string',
+        'minLength': 1,
+        'maxLength': 180,
+      },
+    },
+    'movedClaimIds': <String, Object?>{
+      'type': 'array',
+      'maxItems': 400,
+      'uniqueItems': true,
+      'items': <String, Object?>{
+        'type': 'string',
+        'minLength': 1,
+        'maxLength': 180,
+      },
+    },
+    'movedEdgeCount': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'maximum': 400,
+    },
+    'movedIdentityEvidenceCount': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'maximum': 400,
+    },
+    'movedClaimCount': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'maximum': 400,
+    },
+    'idempotencyKey': <String, Object?>{
+      'type': 'string',
+      'minLength': 8,
+      'maxLength': 120,
     },
     'reversalOfReceiptId': <String, Object?>{
       'anyOf': <Object?>[

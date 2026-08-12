@@ -12064,6 +12064,7 @@ export const organizerContactIdentityLinkDocumentSchema: Record<string, unknown>
   "required": [
     "organizerId",
     "contactId",
+    "originContactId",
     "attendeeId",
     "kind",
     "identityHash",
@@ -12080,6 +12081,11 @@ export const organizerContactIdentityLinkDocumentSchema: Record<string, unknown>
       "maxLength": 180
     },
     "contactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "originContactId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
@@ -12184,6 +12190,7 @@ export const organizerContactIdentityClaimDocumentSchema: Record<string, unknown
     "identityHash",
     "hashVersion",
     "verifiedContactId",
+    "originVerifiedContactId",
     "state",
     "conflictingContactIds",
     "revision",
@@ -12214,6 +12221,11 @@ export const organizerContactIdentityClaimDocumentSchema: Record<string, unknown
       ]
     },
     "verifiedContactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "originVerifiedContactId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
@@ -12297,6 +12309,7 @@ export const organizerContactEventEdgeDocumentSchema: Record<string, unknown> = 
   "required": [
     "organizerId",
     "contactId",
+    "originContactId",
     "eventId",
     "attendeeId",
     "displayName",
@@ -12327,6 +12340,11 @@ export const organizerContactEventEdgeDocumentSchema: Record<string, unknown> = 
       "maxLength": 180
     },
     "contactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "originContactId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
@@ -13096,6 +13114,13 @@ export const organizerContactMergeReceiptDocumentSchema: Record<string, unknown>
     "actorUid",
     "survivorRevision",
     "sourceRevision",
+    "movedEdgeIds",
+    "movedIdentityEvidenceIds",
+    "movedClaimIds",
+    "movedEdgeCount",
+    "movedIdentityEvidenceCount",
+    "movedClaimCount",
+    "idempotencyKey",
     "reversalOfReceiptId",
     "createdAt"
   ],
@@ -13160,6 +13185,56 @@ export const organizerContactMergeReceiptDocumentSchema: Record<string, unknown>
       "type": "integer",
       "minimum": 1,
       "maximum": 9007199254740991
+    },
+    "movedEdgeIds": {
+      "type": "array",
+      "maxItems": 400,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      }
+    },
+    "movedIdentityEvidenceIds": {
+      "type": "array",
+      "maxItems": 400,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      }
+    },
+    "movedClaimIds": {
+      "type": "array",
+      "maxItems": 400,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      }
+    },
+    "movedEdgeCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 400
+    },
+    "movedIdentityEvidenceCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 400
+    },
+    "movedClaimCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 400
+    },
+    "idempotencyKey": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 120
     },
     "reversalOfReceiptId": {
       "anyOf": [
@@ -40283,6 +40358,899 @@ export const getOrganizerCrmSummaryCallableResponseSchema: Record<string, unknow
           "enum": [
             "providerAndDltSetupRequired"
           ]
+        }
+      }
+    }
+  }
+} as const;
+
+export const listOrganizerContactsCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_organizer_contacts_payload.schema.json",
+  "title": "ListOrganizerContactsCallablePayload",
+  "description": "Manager-authorized paginated organizer audience query.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+    },
+    "cursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 1000
+    },
+    "query": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120
+    },
+    "segmentId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "new_to_organizer",
+            "first_time_attendee",
+            "repeat_attendee",
+            "regular",
+            "lapsed_regular",
+            "reliable_attendee",
+            "needs_confirmation",
+            "whatsapp_reachable",
+            "sms_reachable"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+} as const;
+
+export const listOrganizerContactsCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_organizer_contacts_response.schema.json",
+  "title": "ListOrganizerContactsCallableResponse",
+  "description": "Safe manager-only organizer contact rows and opaque pagination state.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "contacts",
+    "nextCursor",
+    "sourceCoverage",
+    "projectionVersion"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "contacts": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "contactId",
+          "displayName",
+          "phoneE164",
+          "email",
+          "identityState",
+          "identityConfidence",
+          "ambiguousCandidateCount",
+          "attendedEventCount",
+          "expectedEventCount",
+          "lastAttendedAtMillis",
+          "segmentIds",
+          "whatsappStatus",
+          "smsStatus",
+          "sourceCoverage",
+          "revision"
+        ],
+        "properties": {
+          "contactId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "phoneE164": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^\\+[1-9][0-9]{7,14}$"
+          },
+          "email": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "email",
+            "maxLength": 320
+          },
+          "identityState": {
+            "type": "string",
+            "enum": [
+              "unlinked",
+              "verified",
+              "ambiguous"
+            ]
+          },
+          "identityConfidence": {
+            "type": "string",
+            "enum": [
+              "eventOnly",
+              "proposed",
+              "verified"
+            ]
+          },
+          "ambiguousCandidateCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 20
+          },
+          "attendedEventCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000
+          },
+          "expectedEventCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000
+          },
+          "lastAttendedAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "segmentIds": {
+            "type": "array",
+            "uniqueItems": true,
+            "maxItems": 16,
+            "items": {
+              "type": "string",
+              "enum": [
+                "new_to_organizer",
+                "first_time_attendee",
+                "repeat_attendee",
+                "regular",
+                "lapsed_regular",
+                "reliable_attendee",
+                "needs_confirmation",
+                "whatsapp_reachable",
+                "sms_reachable"
+              ]
+            }
+          },
+          "whatsappStatus": {
+            "type": "string",
+            "enum": [
+              "unknown",
+              "optedIn",
+              "optedOut"
+            ]
+          },
+          "smsStatus": {
+            "type": "string",
+            "enum": [
+              "unknown",
+              "optedIn",
+              "optedOut"
+            ]
+          },
+          "sourceCoverage": {
+            "type": "string",
+            "enum": [
+              "exact",
+              "partial",
+              "insufficientData"
+            ]
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          }
+        }
+      }
+    },
+    "nextCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 1000
+    },
+    "sourceCoverage": {
+      "type": "string",
+      "enum": [
+        "exact",
+        "partial"
+      ]
+    },
+    "projectionVersion": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000
+    }
+  },
+  "definitions": {
+    "contact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contactId",
+        "displayName",
+        "phoneE164",
+        "email",
+        "identityState",
+        "identityConfidence",
+        "ambiguousCandidateCount",
+        "attendedEventCount",
+        "expectedEventCount",
+        "lastAttendedAtMillis",
+        "segmentIds",
+        "whatsappStatus",
+        "smsStatus",
+        "sourceCoverage",
+        "revision"
+      ],
+      "properties": {
+        "contactId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "phoneE164": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^\\+[1-9][0-9]{7,14}$"
+        },
+        "email": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "email",
+          "maxLength": 320
+        },
+        "identityState": {
+          "type": "string",
+          "enum": [
+            "unlinked",
+            "verified",
+            "ambiguous"
+          ]
+        },
+        "identityConfidence": {
+          "type": "string",
+          "enum": [
+            "eventOnly",
+            "proposed",
+            "verified"
+          ]
+        },
+        "ambiguousCandidateCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 20
+        },
+        "attendedEventCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "expectedEventCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "lastAttendedAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "segmentIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 16,
+          "items": {
+            "type": "string",
+            "enum": [
+              "new_to_organizer",
+              "first_time_attendee",
+              "repeat_attendee",
+              "regular",
+              "lapsed_regular",
+              "reliable_attendee",
+              "needs_confirmation",
+              "whatsapp_reachable",
+              "sms_reachable"
+            ]
+          }
+        },
+        "whatsappStatus": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "optedIn",
+            "optedOut"
+          ]
+        },
+        "smsStatus": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "optedIn",
+            "optedOut"
+          ]
+        },
+        "sourceCoverage": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "partial",
+            "insufficientData"
+          ]
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
+    }
+  }
+} as const;
+
+export const getOrganizerContactDetailCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_organizer_contact_detail_payload.schema.json",
+  "title": "GetOrganizerContactDetailCallablePayload",
+  "description": "Manager-authorized organizer contact detail request.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "contactId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "contactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+} as const;
+
+export const getOrganizerContactDetailCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_organizer_contact_detail_response.schema.json",
+  "title": "GetOrganizerContactDetailCallableResponse",
+  "description": "Manager-only contact facts and bounded event timeline. Private feedback and Event Success inputs are excluded.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "contactId",
+    "displayName",
+    "phoneE164",
+    "email",
+    "linkedAccount",
+    "identityState",
+    "identityConfidence",
+    "ambiguousCandidateContactIds",
+    "traits",
+    "events",
+    "eventsTruncated",
+    "revision"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "contactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "phoneE164": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^\\+[1-9][0-9]{7,14}$"
+    },
+    "email": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "email",
+      "maxLength": 320
+    },
+    "linkedAccount": {
+      "type": "boolean"
+    },
+    "identityState": {
+      "type": "string",
+      "enum": [
+        "unlinked",
+        "verified",
+        "ambiguous"
+      ]
+    },
+    "identityConfidence": {
+      "type": "string",
+      "enum": [
+        "eventOnly",
+        "proposed",
+        "verified"
+      ]
+    },
+    "ambiguousCandidateContactIds": {
+      "type": "array",
+      "uniqueItems": true,
+      "maxItems": 20,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      }
+    },
+    "traits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "expectedEventCount",
+        "attendedEventCount",
+        "cancelledEventCount",
+        "noShowCount",
+        "importedEventCount",
+        "attendanceRate",
+        "segmentIds",
+        "whatsappStatus",
+        "smsStatus",
+        "sourceCoverage"
+      ],
+      "properties": {
+        "expectedEventCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "attendedEventCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "cancelledEventCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "noShowCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "importedEventCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "attendanceRate": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "segmentIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 16,
+          "items": {
+            "type": "string",
+            "enum": [
+              "new_to_organizer",
+              "first_time_attendee",
+              "repeat_attendee",
+              "regular",
+              "lapsed_regular",
+              "reliable_attendee",
+              "needs_confirmation",
+              "whatsapp_reachable",
+              "sms_reachable"
+            ]
+          }
+        },
+        "whatsappStatus": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "optedIn",
+            "optedOut"
+          ]
+        },
+        "smsStatus": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "optedIn",
+            "optedOut"
+          ]
+        },
+        "sourceCoverage": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "partial",
+            "insufficientData"
+          ]
+        }
+      }
+    },
+    "events": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "eventId",
+          "attendeeId",
+          "displayName",
+          "source",
+          "status",
+          "expected",
+          "registered",
+          "cancelled",
+          "checkedIn",
+          "eventStartAtMillis",
+          "eventEndAtMillis",
+          "registeredAtMillis",
+          "cancelledAtMillis",
+          "checkedInAtMillis"
+        ],
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "attendeeId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "catchBooking",
+              "hostImport",
+              "hostManual",
+              "webOtp"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "invited",
+              "registered",
+              "waitlisted",
+              "checkedIn",
+              "cancelled"
+            ]
+          },
+          "expected": {
+            "type": "boolean"
+          },
+          "registered": {
+            "type": "boolean"
+          },
+          "cancelled": {
+            "type": "boolean"
+          },
+          "checkedIn": {
+            "type": "boolean"
+          },
+          "eventStartAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "eventEndAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "registeredAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "cancelledAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "checkedInAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "eventsTruncated": {
+      "type": "boolean"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  },
+  "definitions": {
+    "traits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "expectedEventCount",
+        "attendedEventCount",
+        "cancelledEventCount",
+        "noShowCount",
+        "importedEventCount",
+        "attendanceRate",
+        "segmentIds",
+        "whatsappStatus",
+        "smsStatus",
+        "sourceCoverage"
+      ],
+      "properties": {
+        "expectedEventCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "attendedEventCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "cancelledEventCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "noShowCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "importedEventCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "attendanceRate": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "segmentIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 16,
+          "items": {
+            "type": "string",
+            "enum": [
+              "new_to_organizer",
+              "first_time_attendee",
+              "repeat_attendee",
+              "regular",
+              "lapsed_regular",
+              "reliable_attendee",
+              "needs_confirmation",
+              "whatsapp_reachable",
+              "sms_reachable"
+            ]
+          }
+        },
+        "whatsappStatus": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "optedIn",
+            "optedOut"
+          ]
+        },
+        "smsStatus": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "optedIn",
+            "optedOut"
+          ]
+        },
+        "sourceCoverage": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "partial",
+            "insufficientData"
+          ]
+        }
+      }
+    },
+    "event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "attendeeId",
+        "displayName",
+        "source",
+        "status",
+        "expected",
+        "registered",
+        "cancelled",
+        "checkedIn",
+        "eventStartAtMillis",
+        "eventEndAtMillis",
+        "registeredAtMillis",
+        "cancelledAtMillis",
+        "checkedInAtMillis"
+      ],
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "attendeeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "catchBooking",
+            "hostImport",
+            "hostManual",
+            "webOtp"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "invited",
+            "registered",
+            "waitlisted",
+            "checkedIn",
+            "cancelled"
+          ]
+        },
+        "expected": {
+          "type": "boolean"
+        },
+        "registered": {
+          "type": "boolean"
+        },
+        "cancelled": {
+          "type": "boolean"
+        },
+        "checkedIn": {
+          "type": "boolean"
+        },
+        "eventStartAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "eventEndAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "registeredAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "cancelledAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "checkedInAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
         }
       }
     }

@@ -169,11 +169,48 @@
       ]
     },
     {
+      "collectionGroup": "organizerContacts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "deletedAt", "mode": "ASCENDING"},
+        {"fieldPath": "lastSeenAt", "mode": "DESCENDING"},
+        {"fieldPath": "__name__", "mode": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerContacts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "deletedAt", "mode": "ASCENDING"},
+        {"fieldPath": "searchName", "mode": "ASCENDING"},
+        {"fieldPath": "__name__", "mode": "ASCENDING"}
+      ]
+    },
+    {
       "collectionGroup": "organizerContactTraits",
       "queryScope": "COLLECTION",
       "fields": [
         {"fieldPath": "organizerId", "mode": "ASCENDING"},
         {"fieldPath": "attendedEventCount", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerContactTraits",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "segmentIds", "arrayConfig": "CONTAINS"},
+        {"fieldPath": "__name__", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerContactEventEdges",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "contactId", "mode": "ASCENDING"},
+        {"fieldPath": "eventStartAt", "mode": "DESCENDING"}
       ]
     },
     {

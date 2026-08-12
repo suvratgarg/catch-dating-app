@@ -1172,6 +1172,32 @@ const schemaSpecs = [
       "functions/src/shared/generated/getOrganizerCrmSummaryCallableResponse.ts",
   },
   {
+    name: "ListOrganizerContactsCallablePayload",
+    source: "callables/list_organizer_contacts_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/listOrganizerContactsCallablePayload.ts",
+  },
+  {
+    name: "ListOrganizerContactsCallableResponse",
+    source:
+      "callable_responses/list_organizer_contacts_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/listOrganizerContactsCallableResponse.ts",
+  },
+  {
+    name: "GetOrganizerContactDetailCallablePayload",
+    source: "callables/get_organizer_contact_detail_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/getOrganizerContactDetailCallablePayload.ts",
+  },
+  {
+    name: "GetOrganizerContactDetailCallableResponse",
+    source:
+      "callable_responses/get_organizer_contact_detail_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/getOrganizerContactDetailCallableResponse.ts",
+  },
+  {
     name: "EventJoinRequestDecisionCallablePayload",
     source: "callables/event_join_request_decision_payload.schema.json",
     typeOutput:

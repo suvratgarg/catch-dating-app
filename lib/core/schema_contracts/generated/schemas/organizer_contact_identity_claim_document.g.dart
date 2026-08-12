@@ -21,6 +21,7 @@ const schemaOrganizerContactIdentityClaimDocumentSchema = <String, Object?>{
     'identityHash',
     'hashVersion',
     'verifiedContactId',
+    'originVerifiedContactId',
     'state',
     'conflictingContactIds',
     'revision',
@@ -51,6 +52,11 @@ const schemaOrganizerContactIdentityClaimDocumentSchema = <String, Object?>{
       ],
     },
     'verifiedContactId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'originVerifiedContactId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,

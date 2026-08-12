@@ -27,6 +27,22 @@ export interface OrganizerContactMergeReceiptDocument {
   actorUid: string;
   survivorRevision: number;
   sourceRevision: number;
+  /**
+   * @maxItems 400
+   */
+  movedEdgeIds: string[];
+  /**
+   * @maxItems 400
+   */
+  movedIdentityEvidenceIds: string[];
+  /**
+   * @maxItems 400
+   */
+  movedClaimIds: string[];
+  movedEdgeCount: number;
+  movedIdentityEvidenceCount: number;
+  movedClaimCount: number;
+  idempotencyKey: string;
   reversalOfReceiptId: string | null;
   /**
    * Serialized Firestore Timestamp fixture shape.

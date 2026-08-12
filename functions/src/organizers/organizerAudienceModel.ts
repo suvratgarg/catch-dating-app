@@ -114,6 +114,7 @@ export function organizerContactEventEdge(params: {
   return {
     organizerId: attendee.organizerId,
     contactId: params.contactId,
+    originContactId: existing?.originContactId ?? params.contactId,
     eventId: attendee.eventId,
     attendeeId: params.attendeeId,
     displayName: attendee.displayName,

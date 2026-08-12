@@ -8,6 +8,7 @@
 export interface OrganizerContactEventEdgeDocument {
   organizerId: string;
   contactId: string;
+  originContactId: string;
   eventId: string;
   attendeeId: string;
   displayName: string;

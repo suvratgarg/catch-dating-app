@@ -1610,6 +1610,7 @@ export interface OrganizerContactDocument {
 export interface OrganizerContactIdentityLinkDocument {
   organizerId: string;
   contactId: string;
+  originContactId: string;
   attendeeId: string;
   kind: "uid" | "phone" | "email" | "provider";
   identityHash: string;
@@ -1629,6 +1630,7 @@ export interface OrganizerContactIdentityClaimDocument {
   identityHash: string;
   hashVersion: "hmac-sha256-v1";
   verifiedContactId: string;
+  originVerifiedContactId: string;
   state: "verified" | "conflicted";
   /**
    * @maxItems 20
@@ -1645,6 +1647,7 @@ export interface OrganizerContactIdentityClaimDocument {
 export interface OrganizerContactEventEdgeDocument {
   organizerId: string;
   contactId: string;
+  originContactId: string;
   eventId: string;
   attendeeId: string;
   displayName: string;
@@ -1760,6 +1763,22 @@ export interface OrganizerContactMergeReceiptDocument {
   actorUid: string;
   survivorRevision: number;
   sourceRevision: number;
+  /**
+   * @maxItems 400
+   */
+  movedEdgeIds: string[];
+  /**
+   * @maxItems 400
+   */
+  movedIdentityEvidenceIds: string[];
+  /**
+   * @maxItems 400
+   */
+  movedClaimIds: string[];
+  movedEdgeCount: number;
+  movedIdentityEvidenceCount: number;
+  movedClaimCount: number;
+  idempotencyKey: string;
   reversalOfReceiptId: string | null;
   createdAt: FirebaseFirestore.Timestamp;
 }

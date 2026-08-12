@@ -567,7 +567,9 @@
       "exportedFunctions": [
         "onEventAttendeeAudienceProjected",
         "onOrganizerCommunicationPreferenceAudienceProjected",
-        "getOrganizerCrmSummary"
+        "getOrganizerCrmSummary",
+        "listOrganizerContacts",
+        "getOrganizerContactDetail"
       ],
       "migrationNotes": [
         "Contacts are organizer-scoped operational records, never Consumer profiles.",
@@ -584,7 +586,10 @@
       "owner": "organizer audience identity resolver",
       "read": "server only",
       "write": "server only",
-      "exportedFunctions": ["onEventAttendeeAudienceProjected"],
+      "exportedFunctions": [
+        "onEventAttendeeAudienceProjected",
+        "getOrganizerContactDetail"
+      ],
       "migrationNotes": [
         "Each document is one attendee-to-contact identity evidence edge; candidate sets are queried rather than stored as mutable arrays.",
         "Keyed hashes are restricted lookup identifiers, not anonymous data.",
@@ -634,7 +639,9 @@
       "write": "server only",
       "exportedFunctions": [
         "onEventAttendeeAudienceProjected",
-        "onOrganizerCommunicationPreferenceAudienceProjected"
+        "onOrganizerCommunicationPreferenceAudienceProjected",
+        "listOrganizerContacts",
+        "getOrganizerContactDetail"
       ],
       "migrationNotes": [
         "Traits are rebuildable and exclude Event Success compatibility, safety, dating and demographic inputs."

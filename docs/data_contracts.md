@@ -495,16 +495,22 @@ the same production projector and marks a summary `exact` only after every
 current attendee row has completed. Newer live rows always win over stale
 backfill snapshots.
 
-`getOrganizerCrmSummary` reads `organizerAudienceSummaries` when present and
-returns only privacy-bounded counts for contacts, past and repeat attendees,
+`getOrganizerCrmSummary` reads `organizerAudienceSummaries` only when its
+coverage is `exact` and returns only privacy-bounded counts for contacts, past
+and repeat attendees,
 linked accounts, imports, and explicit WhatsApp/SMS reachability. During the
 dual-write migration it falls back to the legacy bounded attendee/preference
-scan for organizers without a summary; `truncated` remains true while projected
-source coverage is partial. It never returns attendee identity or contact
-fields. Hosts currently retain event-scoped roster access through the existing
+scan for organizers without exact coverage. Partial summaries remain migration
+diagnostics and never replace the legacy cards. It never returns attendee
+identity or contact fields. `listOrganizerContacts` and
+`getOrganizerContactDetail` are separate manager-authorized, server-paginated
+boundaries. They return only organizer-owned endpoints plus explainable
+attendance/reachability facts; no Event Success private input is a CRM field.
+Hosts currently retain event-scoped roster access through the existing
 authorized roster boundary; campaign delivery is a separate contract. Account
-deletion removes the onboarding draft and every organizer communication
-preference owned by the UID.
+deletion removes the onboarding draft, organizer communication grants, UID
+identity evidence and verified UID claims. Retained operational attendee,
+contact and event-edge history is unlinked from the deleted Catch UID.
 Retained organizer roster history is unlinked by setting `linkedUid` and
 `linkedAt` to null; any separately retained operational contact field remains
 subject to the organizer's stated booking/records purpose rather than Catch

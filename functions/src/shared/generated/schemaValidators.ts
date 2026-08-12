@@ -196,6 +196,10 @@ import {CreateEventRosterHandoffCallablePayload} from "./createEventRosterHandof
 import {CreateEventRosterHandoffCallableResponse} from "./createEventRosterHandoffCallableResponse";
 import {GetOrganizerCrmSummaryCallablePayload} from "./getOrganizerCrmSummaryCallablePayload";
 import {GetOrganizerCrmSummaryCallableResponse} from "./getOrganizerCrmSummaryCallableResponse";
+import {ListOrganizerContactsCallablePayload} from "./listOrganizerContactsCallablePayload";
+import {ListOrganizerContactsCallableResponse} from "./listOrganizerContactsCallableResponse";
+import {GetOrganizerContactDetailCallablePayload} from "./getOrganizerContactDetailCallablePayload";
+import {GetOrganizerContactDetailCallableResponse} from "./getOrganizerContactDetailCallableResponse";
 import {EventJoinRequestDecisionCallablePayload} from "./eventJoinRequestDecisionCallablePayload";
 import {OverrideEventSuccessRotationsCallablePayload} from "./overrideEventSuccessRotationsCallablePayload";
 import {OverrideEventSuccessGroupsCallablePayload} from "./overrideEventSuccessGroupsCallablePayload";
@@ -463,6 +467,10 @@ import {
   createEventRosterHandoffCallableResponseSchema,
   getOrganizerCrmSummaryCallablePayloadSchema,
   getOrganizerCrmSummaryCallableResponseSchema,
+  listOrganizerContactsCallablePayloadSchema,
+  listOrganizerContactsCallableResponseSchema,
+  getOrganizerContactDetailCallablePayloadSchema,
+  getOrganizerContactDetailCallableResponseSchema,
   eventJoinRequestDecisionCallablePayloadSchema,
   overrideEventSuccessRotationsCallablePayloadSchema,
   overrideEventSuccessGroupsCallablePayloadSchema,
@@ -1310,6 +1318,22 @@ export const validateGetOrganizerCrmSummaryCallableResponse:
   ValidateFunction<GetOrganizerCrmSummaryCallableResponse> =
     ajv.compile(getOrganizerCrmSummaryCallableResponseSchema) as
       ValidateFunction<GetOrganizerCrmSummaryCallableResponse>;
+export const validateListOrganizerContactsCallablePayload:
+  ValidateFunction<ListOrganizerContactsCallablePayload> =
+    ajv.compile(listOrganizerContactsCallablePayloadSchema) as
+      ValidateFunction<ListOrganizerContactsCallablePayload>;
+export const validateListOrganizerContactsCallableResponse:
+  ValidateFunction<ListOrganizerContactsCallableResponse> =
+    ajv.compile(listOrganizerContactsCallableResponseSchema) as
+      ValidateFunction<ListOrganizerContactsCallableResponse>;
+export const validateGetOrganizerContactDetailCallablePayload:
+  ValidateFunction<GetOrganizerContactDetailCallablePayload> =
+    ajv.compile(getOrganizerContactDetailCallablePayloadSchema) as
+      ValidateFunction<GetOrganizerContactDetailCallablePayload>;
+export const validateGetOrganizerContactDetailCallableResponse:
+  ValidateFunction<GetOrganizerContactDetailCallableResponse> =
+    ajv.compile(getOrganizerContactDetailCallableResponseSchema) as
+      ValidateFunction<GetOrganizerContactDetailCallableResponse>;
 export const validateEventJoinRequestDecisionCallablePayload:
   ValidateFunction<EventJoinRequestDecisionCallablePayload> =
     ajv.compile(eventJoinRequestDecisionCallablePayloadSchema) as

@@ -195,6 +195,10 @@ import {
   createEventRosterHandoffCallableResponseSchema,
   getOrganizerCrmSummaryCallablePayloadSchema,
   getOrganizerCrmSummaryCallableResponseSchema,
+  listOrganizerContactsCallablePayloadSchema,
+  listOrganizerContactsCallableResponseSchema,
+  getOrganizerContactDetailCallablePayloadSchema,
+  getOrganizerContactDetailCallableResponseSchema,
   eventJoinRequestDecisionCallablePayloadSchema,
   overrideEventSuccessRotationsCallablePayloadSchema,
   overrideEventSuccessGroupsCallablePayloadSchema,
@@ -485,6 +489,10 @@ export const validateCreateEventRosterHandoffCallablePayload = ajv.compile(creat
 export const validateCreateEventRosterHandoffCallableResponse = ajv.compile(createEventRosterHandoffCallableResponseSchema);
 export const validateGetOrganizerCrmSummaryCallablePayload = ajv.compile(getOrganizerCrmSummaryCallablePayloadSchema);
 export const validateGetOrganizerCrmSummaryCallableResponse = ajv.compile(getOrganizerCrmSummaryCallableResponseSchema);
+export const validateListOrganizerContactsCallablePayload = ajv.compile(listOrganizerContactsCallablePayloadSchema);
+export const validateListOrganizerContactsCallableResponse = ajv.compile(listOrganizerContactsCallableResponseSchema);
+export const validateGetOrganizerContactDetailCallablePayload = ajv.compile(getOrganizerContactDetailCallablePayloadSchema);
+export const validateGetOrganizerContactDetailCallableResponse = ajv.compile(getOrganizerContactDetailCallableResponseSchema);
 export const validateEventJoinRequestDecisionCallablePayload = ajv.compile(eventJoinRequestDecisionCallablePayloadSchema);
 export const validateOverrideEventSuccessRotationsCallablePayload = ajv.compile(overrideEventSuccessRotationsCallablePayloadSchema);
 export const validateOverrideEventSuccessGroupsCallablePayload = ajv.compile(overrideEventSuccessGroupsCallablePayloadSchema);

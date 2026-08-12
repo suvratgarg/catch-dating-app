@@ -1,16 +1,13 @@
-import {CallableRequest, HttpsError, onCall} from
+import {CallableRequest, onCall} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {appCheckCallableOptionsWithLimits} from
   "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
-import {isClubHost} from "../shared/clubHosts";
 import {
-  ClubDocument,
   EventAttendeeDocument,
   OrganizerAudienceSummaryDocument,
   OrganizerCommunicationPreferenceDocument,
-  OrganizerDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {GetOrganizerCrmSummaryCallablePayload} from
   "../shared/generated/getOrganizerCrmSummaryCallablePayload";
@@ -18,7 +15,7 @@ import {GetOrganizerCrmSummaryCallableResponse} from
   "../shared/generated/getOrganizerCrmSummaryCallableResponse";
 import {validateGetOrganizerCrmSummaryCallablePayload} from
   "../shared/generated/schemaValidators";
-import {isOrganizerManager} from "../shared/organizerHosts";
+import {requireOrganizerManager} from "../shared/organizerManagerAuthority";
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 
@@ -52,26 +49,11 @@ export async function getOrganizerCrmSummaryHandler(
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "getOrganizerCrmSummary");
 
-  const [organizerSnap, clubSnap] = await Promise.all([
-    db.collection("organizers").doc(data.organizerId).get(),
-    db.collection("clubs").doc(data.organizerId).get(),
-  ]);
-  const authorized = organizerSnap.exists ?
-    isOrganizerManager(
-      requireDoc<OrganizerDocument>(organizerSnap, "OrganizerDocument"),
-      actorUid
-    ) : clubSnap.exists ?
-      isClubHost(requireDoc<ClubDocument>(clubSnap, "ClubDocument"), actorUid) :
-      false;
-  if (!organizerSnap.exists && !clubSnap.exists) {
-    throw new HttpsError("not-found", "Organizer not found.");
-  }
-  if (!authorized) {
-    throw new HttpsError(
-      "permission-denied",
-      "Only organizer owners and managers can view CRM audiences."
-    );
-  }
+  await requireOrganizerManager({
+    db,
+    organizerId: data.organizerId,
+    actorUid,
+  });
 
   const projectedSummarySnap = await db.collection("organizerAudienceSummaries")
     .doc(data.organizerId)
@@ -81,7 +63,9 @@ export async function getOrganizerCrmSummaryHandler(
       projectedSummarySnap,
       "OrganizerAudienceSummaryDocument"
     );
-    return projectedOrganizerCrmSummary(summary);
+    if (summary.sourceCoverage === "exact") {
+      return projectedOrganizerCrmSummary(summary);
+    }
   }
   const [rosterSnap, preferenceSnap] = await Promise.all([
     db.collection("eventAttendees")

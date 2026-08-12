@@ -16540,6 +16540,295 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['relationship', 'casual', 'marriage', 'friendship', 'unsure'],
   );
 
+  static const getOrganizerContactDetailCallablePayloadContactId = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallablePayload.contactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerContactDetailCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseAmbiguousCandidateContactIds = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.ambiguousCandidateContactIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 20,
+    uniqueItems: true,
+  );
+
+  static const getOrganizerContactDetailCallableResponseAmbiguousCandidateContactIdsItems = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.ambiguousCandidateContactIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseContactId = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.contactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseDisplayName = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.displayName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseEmail = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.email',
+    maxLength: 320,
+    valueTypes: <String>['string'],
+    format: 'email',
+  );
+
+  static const getOrganizerContactDetailCallableResponseEvents = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.events',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 100,
+  );
+
+  static const getOrganizerContactDetailCallableResponseEventsItemsAttendeeId = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.events.items.attendeeId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseEventsItemsCancelled = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.events.items.cancelled',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseEventsItemsCancelledAtMillis = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.events.items.cancelledAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const getOrganizerContactDetailCallableResponseEventsItemsCheckedIn = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.events.items.checkedIn',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseEventsItemsCheckedInAtMillis = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.events.items.checkedInAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const getOrganizerContactDetailCallableResponseEventsItemsDisplayName = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.events.items.displayName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseEventsItemsEventEndAtMillis = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.events.items.eventEndAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const getOrganizerContactDetailCallableResponseEventsItemsEventId = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.events.items.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseEventsItemsEventStartAtMillis = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.events.items.eventStartAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const getOrganizerContactDetailCallableResponseEventsItemsExpected = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.events.items.expected',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseEventsItemsRegistered = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.events.items.registered',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseEventsItemsRegisteredAtMillis = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.events.items.registeredAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const getOrganizerContactDetailCallableResponseEventsItemsSource = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.events.items.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseEventsItemsStatus = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.events.items.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['invited', 'registered', 'waitlisted', 'checkedIn', 'cancelled'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseEventsTruncated = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.eventsTruncated',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseIdentityConfidence = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.identityConfidence',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['eventOnly', 'proposed', 'verified'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseIdentityState = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.identityState',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['unlinked', 'verified', 'ambiguous'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseLinkedAccount = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.linkedAccount',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerContactDetailCallableResponsePhoneE164 = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.phoneE164',
+    valueTypes: <String>['string'],
+    pattern: '^\\+[1-9][0-9]{7,14}\$',
+  );
+
+  static const getOrganizerContactDetailCallableResponseRevision = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const getOrganizerContactDetailCallableResponseTraitsAttendanceRate = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.traits.attendanceRate',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const getOrganizerContactDetailCallableResponseTraitsAttendedEventCount = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.traits.attendedEventCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const getOrganizerContactDetailCallableResponseTraitsCancelledEventCount = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.traits.cancelledEventCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const getOrganizerContactDetailCallableResponseTraitsExpectedEventCount = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.traits.expectedEventCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const getOrganizerContactDetailCallableResponseTraitsImportedEventCount = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.traits.importedEventCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const getOrganizerContactDetailCallableResponseTraitsNoShowCount = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.traits.noShowCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const getOrganizerContactDetailCallableResponseTraitsSegmentIds = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.traits.segmentIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['new_to_organizer', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'whatsapp_reachable', 'sms_reachable'],
+    maxItems: 16,
+    uniqueItems: true,
+  );
+
+  static const getOrganizerContactDetailCallableResponseTraitsSegmentIdsItems = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.traits.segmentIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['new_to_organizer', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'whatsapp_reachable', 'sms_reachable'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseTraitsSmsStatus = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.traits.smsStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['unknown', 'optedIn', 'optedOut'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseTraitsSourceCoverage = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.traits.sourceCoverage',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['exact', 'partial', 'insufficientData'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseTraitsWhatsappStatus = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.traits.whatsappStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['unknown', 'optedIn', 'optedOut'],
+  );
+
   static const getOrganizerCrmSummaryCallablePayloadOrganizerId = CatchContractFieldConstraints(
     path: 'getOrganizerCrmSummaryCallablePayload.organizerId',
     maxLength: 180,
@@ -18746,6 +19035,195 @@ abstract final class CatchContractConstraints {
     required: true,
   );
 
+  static const listOrganizerContactsCallablePayloadCursor = CatchContractFieldConstraints(
+    path: 'listOrganizerContactsCallablePayload.cursor',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerContactsCallablePayloadLimit = CatchContractFieldConstraints(
+    path: 'listOrganizerContactsCallablePayload.limit',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 100,
+  );
+
+  static const listOrganizerContactsCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'listOrganizerContactsCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerContactsCallablePayloadQuery = CatchContractFieldConstraints(
+    path: 'listOrganizerContactsCallablePayload.query',
+    maxLength: 120,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerContactsCallablePayloadSegmentId = CatchContractFieldConstraints(
+    path: 'listOrganizerContactsCallablePayload.segmentId',
+    valueTypes: <String>['string'],
+    enumValues: <String>['new_to_organizer', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'whatsapp_reachable', 'sms_reachable'],
+  );
+
+  static const listOrganizerContactsCallableResponseContacts = CatchContractFieldConstraints(
+    path: 'listOrganizerContactsCallableResponse.contacts',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 100,
+  );
+
+  static const listOrganizerContactsCallableResponseContactsItemsAmbiguousCandidateCount = CatchContractFieldConstraints(
+    path: 'listOrganizerContactsCallableResponse.contacts.items.ambiguousCandidateCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 20,
+  );
+
+  static const listOrganizerContactsCallableResponseContactsItemsAttendedEventCount = CatchContractFieldConstraints(
+    path: 'listOrganizerContactsCallableResponse.contacts.items.attendedEventCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const listOrganizerContactsCallableResponseContactsItemsContactId = CatchContractFieldConstraints(
+    path: 'listOrganizerContactsCallableResponse.contacts.items.contactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerContactsCallableResponseContactsItemsDisplayName = CatchContractFieldConstraints(
+    path: 'listOrganizerContactsCallableResponse.contacts.items.displayName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerContactsCallableResponseContactsItemsEmail = CatchContractFieldConstraints(
+    path: 'listOrganizerContactsCallableResponse.contacts.items.email',
+    maxLength: 320,
+    valueTypes: <String>['string'],
+    format: 'email',
+  );
+
+  static const listOrganizerContactsCallableResponseContactsItemsExpectedEventCount = CatchContractFieldConstraints(
+    path: 'listOrganizerContactsCallableResponse.contacts.items.expectedEventCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const listOrganizerContactsCallableResponseContactsItemsIdentityConfidence = CatchContractFieldConstraints(
+    path: 'listOrganizerContactsCallableResponse.contacts.items.identityConfidence',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['eventOnly', 'proposed', 'verified'],
+  );
+
+  static const listOrganizerContactsCallableResponseContactsItemsIdentityState = CatchContractFieldConstraints(
+    path: 'listOrganizerContactsCallableResponse.contacts.items.identityState',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['unlinked', 'verified', 'ambiguous'],
+  );
+
+  static const listOrganizerContactsCallableResponseContactsItemsLastAttendedAtMillis = CatchContractFieldConstraints(
+    path: 'listOrganizerContactsCallableResponse.contacts.items.lastAttendedAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const listOrganizerContactsCallableResponseContactsItemsPhoneE164 = CatchContractFieldConstraints(
+    path: 'listOrganizerContactsCallableResponse.contacts.items.phoneE164',
+    valueTypes: <String>['string'],
+    pattern: '^\\+[1-9][0-9]{7,14}\$',
+  );
+
+  static const listOrganizerContactsCallableResponseContactsItemsRevision = CatchContractFieldConstraints(
+    path: 'listOrganizerContactsCallableResponse.contacts.items.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const listOrganizerContactsCallableResponseContactsItemsSegmentIds = CatchContractFieldConstraints(
+    path: 'listOrganizerContactsCallableResponse.contacts.items.segmentIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['new_to_organizer', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'whatsapp_reachable', 'sms_reachable'],
+    maxItems: 16,
+    uniqueItems: true,
+  );
+
+  static const listOrganizerContactsCallableResponseContactsItemsSegmentIdsItems = CatchContractFieldConstraints(
+    path: 'listOrganizerContactsCallableResponse.contacts.items.segmentIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['new_to_organizer', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'whatsapp_reachable', 'sms_reachable'],
+  );
+
+  static const listOrganizerContactsCallableResponseContactsItemsSmsStatus = CatchContractFieldConstraints(
+    path: 'listOrganizerContactsCallableResponse.contacts.items.smsStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['unknown', 'optedIn', 'optedOut'],
+  );
+
+  static const listOrganizerContactsCallableResponseContactsItemsSourceCoverage = CatchContractFieldConstraints(
+    path: 'listOrganizerContactsCallableResponse.contacts.items.sourceCoverage',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['exact', 'partial', 'insufficientData'],
+  );
+
+  static const listOrganizerContactsCallableResponseContactsItemsWhatsappStatus = CatchContractFieldConstraints(
+    path: 'listOrganizerContactsCallableResponse.contacts.items.whatsappStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['unknown', 'optedIn', 'optedOut'],
+  );
+
+  static const listOrganizerContactsCallableResponseNextCursor = CatchContractFieldConstraints(
+    path: 'listOrganizerContactsCallableResponse.nextCursor',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerContactsCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'listOrganizerContactsCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerContactsCallableResponseProjectionVersion = CatchContractFieldConstraints(
+    path: 'listOrganizerContactsCallableResponse.projectionVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
+  static const listOrganizerContactsCallableResponseSourceCoverage = CatchContractFieldConstraints(
+    path: 'listOrganizerContactsCallableResponse.sourceCoverage',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['exact', 'partial'],
+  );
+
   static const listPublicClubReviewsCallablePayloadClubId = CatchContractFieldConstraints(
     path: 'listPublicClubReviewsCallablePayload.clubId',
     maxLength: 180,
@@ -20864,6 +21342,14 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerContactEventEdgeDocumentOriginContactId = CatchContractFieldConstraints(
+    path: 'organizerContactEventEdgeDocument.originContactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const organizerContactEventEdgeDocumentPhoneE164 = CatchContractFieldConstraints(
     path: 'organizerContactEventEdgeDocument.phoneE164',
     valueTypes: <String>['string'],
@@ -21014,6 +21500,14 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerContactIdentityClaimDocumentOriginVerifiedContactId = CatchContractFieldConstraints(
+    path: 'organizerContactIdentityClaimDocument.originVerifiedContactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const organizerContactIdentityClaimDocumentRevision = CatchContractFieldConstraints(
     path: 'organizerContactIdentityClaimDocument.revision',
     required: true,
@@ -21117,6 +21611,14 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerContactIdentityLinkDocumentOriginContactId = CatchContractFieldConstraints(
+    path: 'organizerContactIdentityLinkDocument.originContactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const organizerContactIdentityLinkDocumentSource = CatchContractFieldConstraints(
     path: 'organizerContactIdentityLinkDocument.source',
     required: true,
@@ -21191,6 +21693,89 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['sameVerifiedUid', 'sameVerifiedPhone', 'sameImportedPhone', 'sameEmail', 'managerConfirmed'],
+  );
+
+  static const organizerContactMergeReceiptDocumentIdempotencyKey = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.idempotencyKey',
+    maxLength: 120,
+    minLength: 8,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactMergeReceiptDocumentMovedClaimCount = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.movedClaimCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 400,
+  );
+
+  static const organizerContactMergeReceiptDocumentMovedClaimIds = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.movedClaimIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 400,
+    uniqueItems: true,
+  );
+
+  static const organizerContactMergeReceiptDocumentMovedClaimIdsItems = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.movedClaimIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactMergeReceiptDocumentMovedEdgeCount = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.movedEdgeCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 400,
+  );
+
+  static const organizerContactMergeReceiptDocumentMovedEdgeIds = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.movedEdgeIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 400,
+    uniqueItems: true,
+  );
+
+  static const organizerContactMergeReceiptDocumentMovedEdgeIdsItems = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.movedEdgeIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactMergeReceiptDocumentMovedIdentityEvidenceCount = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.movedIdentityEvidenceCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 400,
+  );
+
+  static const organizerContactMergeReceiptDocumentMovedIdentityEvidenceIds = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.movedIdentityEvidenceIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 400,
+    uniqueItems: true,
+  );
+
+  static const organizerContactMergeReceiptDocumentMovedIdentityEvidenceIdsItems = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.movedIdentityEvidenceIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const organizerContactMergeReceiptDocumentOperation = CatchContractFieldConstraints(
@@ -34188,6 +34773,46 @@ abstract final class CatchContractConstraints {
     'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.interestedInGenders': getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileInterestedInGenders,
     'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.interestedInGenders.items': getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileInterestedInGendersItems,
     'getEventRuntimeBootstrapCallableResponse.participant.runtimeProfile.relationshipGoal': getEventRuntimeBootstrapCallableResponseParticipantRuntimeProfileRelationshipGoal,
+    'getOrganizerContactDetailCallablePayload.contactId': getOrganizerContactDetailCallablePayloadContactId,
+    'getOrganizerContactDetailCallablePayload.organizerId': getOrganizerContactDetailCallablePayloadOrganizerId,
+    'getOrganizerContactDetailCallableResponse.ambiguousCandidateContactIds': getOrganizerContactDetailCallableResponseAmbiguousCandidateContactIds,
+    'getOrganizerContactDetailCallableResponse.ambiguousCandidateContactIds.items': getOrganizerContactDetailCallableResponseAmbiguousCandidateContactIdsItems,
+    'getOrganizerContactDetailCallableResponse.contactId': getOrganizerContactDetailCallableResponseContactId,
+    'getOrganizerContactDetailCallableResponse.displayName': getOrganizerContactDetailCallableResponseDisplayName,
+    'getOrganizerContactDetailCallableResponse.email': getOrganizerContactDetailCallableResponseEmail,
+    'getOrganizerContactDetailCallableResponse.events': getOrganizerContactDetailCallableResponseEvents,
+    'getOrganizerContactDetailCallableResponse.events.items.attendeeId': getOrganizerContactDetailCallableResponseEventsItemsAttendeeId,
+    'getOrganizerContactDetailCallableResponse.events.items.cancelled': getOrganizerContactDetailCallableResponseEventsItemsCancelled,
+    'getOrganizerContactDetailCallableResponse.events.items.cancelledAtMillis': getOrganizerContactDetailCallableResponseEventsItemsCancelledAtMillis,
+    'getOrganizerContactDetailCallableResponse.events.items.checkedIn': getOrganizerContactDetailCallableResponseEventsItemsCheckedIn,
+    'getOrganizerContactDetailCallableResponse.events.items.checkedInAtMillis': getOrganizerContactDetailCallableResponseEventsItemsCheckedInAtMillis,
+    'getOrganizerContactDetailCallableResponse.events.items.displayName': getOrganizerContactDetailCallableResponseEventsItemsDisplayName,
+    'getOrganizerContactDetailCallableResponse.events.items.eventEndAtMillis': getOrganizerContactDetailCallableResponseEventsItemsEventEndAtMillis,
+    'getOrganizerContactDetailCallableResponse.events.items.eventId': getOrganizerContactDetailCallableResponseEventsItemsEventId,
+    'getOrganizerContactDetailCallableResponse.events.items.eventStartAtMillis': getOrganizerContactDetailCallableResponseEventsItemsEventStartAtMillis,
+    'getOrganizerContactDetailCallableResponse.events.items.expected': getOrganizerContactDetailCallableResponseEventsItemsExpected,
+    'getOrganizerContactDetailCallableResponse.events.items.registered': getOrganizerContactDetailCallableResponseEventsItemsRegistered,
+    'getOrganizerContactDetailCallableResponse.events.items.registeredAtMillis': getOrganizerContactDetailCallableResponseEventsItemsRegisteredAtMillis,
+    'getOrganizerContactDetailCallableResponse.events.items.source': getOrganizerContactDetailCallableResponseEventsItemsSource,
+    'getOrganizerContactDetailCallableResponse.events.items.status': getOrganizerContactDetailCallableResponseEventsItemsStatus,
+    'getOrganizerContactDetailCallableResponse.eventsTruncated': getOrganizerContactDetailCallableResponseEventsTruncated,
+    'getOrganizerContactDetailCallableResponse.identityConfidence': getOrganizerContactDetailCallableResponseIdentityConfidence,
+    'getOrganizerContactDetailCallableResponse.identityState': getOrganizerContactDetailCallableResponseIdentityState,
+    'getOrganizerContactDetailCallableResponse.linkedAccount': getOrganizerContactDetailCallableResponseLinkedAccount,
+    'getOrganizerContactDetailCallableResponse.organizerId': getOrganizerContactDetailCallableResponseOrganizerId,
+    'getOrganizerContactDetailCallableResponse.phoneE164': getOrganizerContactDetailCallableResponsePhoneE164,
+    'getOrganizerContactDetailCallableResponse.revision': getOrganizerContactDetailCallableResponseRevision,
+    'getOrganizerContactDetailCallableResponse.traits.attendanceRate': getOrganizerContactDetailCallableResponseTraitsAttendanceRate,
+    'getOrganizerContactDetailCallableResponse.traits.attendedEventCount': getOrganizerContactDetailCallableResponseTraitsAttendedEventCount,
+    'getOrganizerContactDetailCallableResponse.traits.cancelledEventCount': getOrganizerContactDetailCallableResponseTraitsCancelledEventCount,
+    'getOrganizerContactDetailCallableResponse.traits.expectedEventCount': getOrganizerContactDetailCallableResponseTraitsExpectedEventCount,
+    'getOrganizerContactDetailCallableResponse.traits.importedEventCount': getOrganizerContactDetailCallableResponseTraitsImportedEventCount,
+    'getOrganizerContactDetailCallableResponse.traits.noShowCount': getOrganizerContactDetailCallableResponseTraitsNoShowCount,
+    'getOrganizerContactDetailCallableResponse.traits.segmentIds': getOrganizerContactDetailCallableResponseTraitsSegmentIds,
+    'getOrganizerContactDetailCallableResponse.traits.segmentIds.items': getOrganizerContactDetailCallableResponseTraitsSegmentIdsItems,
+    'getOrganizerContactDetailCallableResponse.traits.smsStatus': getOrganizerContactDetailCallableResponseTraitsSmsStatus,
+    'getOrganizerContactDetailCallableResponse.traits.sourceCoverage': getOrganizerContactDetailCallableResponseTraitsSourceCoverage,
+    'getOrganizerContactDetailCallableResponse.traits.whatsappStatus': getOrganizerContactDetailCallableResponseTraitsWhatsappStatus,
     'getOrganizerCrmSummaryCallablePayload.organizerId': getOrganizerCrmSummaryCallablePayloadOrganizerId,
     'getOrganizerCrmSummaryCallableResponse.contactCount': getOrganizerCrmSummaryCallableResponseContactCount,
     'getOrganizerCrmSummaryCallableResponse.importedContactCount': getOrganizerCrmSummaryCallableResponseImportedContactCount,
@@ -34505,6 +35130,32 @@ abstract final class CatchContractConstraints {
     'joinWaitlistHTTPRequest.website': joinWaitlistHTTPRequestWebsite,
     'joinWaitlistHTTPResponse.alreadyJoined': joinWaitlistHTTPResponseAlreadyJoined,
     'joinWaitlistHTTPResponse.ok': joinWaitlistHTTPResponseOk,
+    'listOrganizerContactsCallablePayload.cursor': listOrganizerContactsCallablePayloadCursor,
+    'listOrganizerContactsCallablePayload.limit': listOrganizerContactsCallablePayloadLimit,
+    'listOrganizerContactsCallablePayload.organizerId': listOrganizerContactsCallablePayloadOrganizerId,
+    'listOrganizerContactsCallablePayload.query': listOrganizerContactsCallablePayloadQuery,
+    'listOrganizerContactsCallablePayload.segmentId': listOrganizerContactsCallablePayloadSegmentId,
+    'listOrganizerContactsCallableResponse.contacts': listOrganizerContactsCallableResponseContacts,
+    'listOrganizerContactsCallableResponse.contacts.items.ambiguousCandidateCount': listOrganizerContactsCallableResponseContactsItemsAmbiguousCandidateCount,
+    'listOrganizerContactsCallableResponse.contacts.items.attendedEventCount': listOrganizerContactsCallableResponseContactsItemsAttendedEventCount,
+    'listOrganizerContactsCallableResponse.contacts.items.contactId': listOrganizerContactsCallableResponseContactsItemsContactId,
+    'listOrganizerContactsCallableResponse.contacts.items.displayName': listOrganizerContactsCallableResponseContactsItemsDisplayName,
+    'listOrganizerContactsCallableResponse.contacts.items.email': listOrganizerContactsCallableResponseContactsItemsEmail,
+    'listOrganizerContactsCallableResponse.contacts.items.expectedEventCount': listOrganizerContactsCallableResponseContactsItemsExpectedEventCount,
+    'listOrganizerContactsCallableResponse.contacts.items.identityConfidence': listOrganizerContactsCallableResponseContactsItemsIdentityConfidence,
+    'listOrganizerContactsCallableResponse.contacts.items.identityState': listOrganizerContactsCallableResponseContactsItemsIdentityState,
+    'listOrganizerContactsCallableResponse.contacts.items.lastAttendedAtMillis': listOrganizerContactsCallableResponseContactsItemsLastAttendedAtMillis,
+    'listOrganizerContactsCallableResponse.contacts.items.phoneE164': listOrganizerContactsCallableResponseContactsItemsPhoneE164,
+    'listOrganizerContactsCallableResponse.contacts.items.revision': listOrganizerContactsCallableResponseContactsItemsRevision,
+    'listOrganizerContactsCallableResponse.contacts.items.segmentIds': listOrganizerContactsCallableResponseContactsItemsSegmentIds,
+    'listOrganizerContactsCallableResponse.contacts.items.segmentIds.items': listOrganizerContactsCallableResponseContactsItemsSegmentIdsItems,
+    'listOrganizerContactsCallableResponse.contacts.items.smsStatus': listOrganizerContactsCallableResponseContactsItemsSmsStatus,
+    'listOrganizerContactsCallableResponse.contacts.items.sourceCoverage': listOrganizerContactsCallableResponseContactsItemsSourceCoverage,
+    'listOrganizerContactsCallableResponse.contacts.items.whatsappStatus': listOrganizerContactsCallableResponseContactsItemsWhatsappStatus,
+    'listOrganizerContactsCallableResponse.nextCursor': listOrganizerContactsCallableResponseNextCursor,
+    'listOrganizerContactsCallableResponse.organizerId': listOrganizerContactsCallableResponseOrganizerId,
+    'listOrganizerContactsCallableResponse.projectionVersion': listOrganizerContactsCallableResponseProjectionVersion,
+    'listOrganizerContactsCallableResponse.sourceCoverage': listOrganizerContactsCallableResponseSourceCoverage,
     'listPublicClubReviewsCallablePayload.clubId': listPublicClubReviewsCallablePayloadClubId,
     'listPublicClubReviewsCallableResponse.reviews': listPublicClubReviewsCallableResponseReviews,
     'listPublicClubReviewsCallableResponse.reviews.items.comment': listPublicClubReviewsCallableResponseReviewsItemsComment,
@@ -34801,6 +35452,7 @@ abstract final class CatchContractConstraints {
     'organizerContactEventEdgeDocument.expected': organizerContactEventEdgeDocumentExpected,
     'organizerContactEventEdgeDocument.linkedUid': organizerContactEventEdgeDocumentLinkedUid,
     'organizerContactEventEdgeDocument.organizerId': organizerContactEventEdgeDocumentOrganizerId,
+    'organizerContactEventEdgeDocument.originContactId': organizerContactEventEdgeDocumentOriginContactId,
     'organizerContactEventEdgeDocument.phoneE164': organizerContactEventEdgeDocumentPhoneE164,
     'organizerContactEventEdgeDocument.registered': organizerContactEventEdgeDocumentRegistered,
     'organizerContactEventEdgeDocument.registeredAt._nanoseconds': organizerContactEventEdgeDocumentRegisteredAtNanoseconds,
@@ -34822,6 +35474,7 @@ abstract final class CatchContractConstraints {
     'organizerContactIdentityClaimDocument.identityHash': organizerContactIdentityClaimDocumentIdentityHash,
     'organizerContactIdentityClaimDocument.kind': organizerContactIdentityClaimDocumentKind,
     'organizerContactIdentityClaimDocument.organizerId': organizerContactIdentityClaimDocumentOrganizerId,
+    'organizerContactIdentityClaimDocument.originVerifiedContactId': organizerContactIdentityClaimDocumentOriginVerifiedContactId,
     'organizerContactIdentityClaimDocument.revision': organizerContactIdentityClaimDocumentRevision,
     'organizerContactIdentityClaimDocument.state': organizerContactIdentityClaimDocumentState,
     'organizerContactIdentityClaimDocument.updatedAt._nanoseconds': organizerContactIdentityClaimDocumentUpdatedAtNanoseconds,
@@ -34836,6 +35489,7 @@ abstract final class CatchContractConstraints {
     'organizerContactIdentityLinkDocument.identityHash': organizerContactIdentityLinkDocumentIdentityHash,
     'organizerContactIdentityLinkDocument.kind': organizerContactIdentityLinkDocumentKind,
     'organizerContactIdentityLinkDocument.organizerId': organizerContactIdentityLinkDocumentOrganizerId,
+    'organizerContactIdentityLinkDocument.originContactId': organizerContactIdentityLinkDocumentOriginContactId,
     'organizerContactIdentityLinkDocument.source': organizerContactIdentityLinkDocumentSource,
     'organizerContactIdentityLinkDocument.updatedAt._nanoseconds': organizerContactIdentityLinkDocumentUpdatedAtNanoseconds,
     'organizerContactIdentityLinkDocument.updatedAt._seconds': organizerContactIdentityLinkDocumentUpdatedAtSeconds,
@@ -34846,6 +35500,16 @@ abstract final class CatchContractConstraints {
     'organizerContactMergeReceiptDocument.createdAt._seconds': organizerContactMergeReceiptDocumentCreatedAtSeconds,
     'organizerContactMergeReceiptDocument.evidence': organizerContactMergeReceiptDocumentEvidence,
     'organizerContactMergeReceiptDocument.evidence.items': organizerContactMergeReceiptDocumentEvidenceItems,
+    'organizerContactMergeReceiptDocument.idempotencyKey': organizerContactMergeReceiptDocumentIdempotencyKey,
+    'organizerContactMergeReceiptDocument.movedClaimCount': organizerContactMergeReceiptDocumentMovedClaimCount,
+    'organizerContactMergeReceiptDocument.movedClaimIds': organizerContactMergeReceiptDocumentMovedClaimIds,
+    'organizerContactMergeReceiptDocument.movedClaimIds.items': organizerContactMergeReceiptDocumentMovedClaimIdsItems,
+    'organizerContactMergeReceiptDocument.movedEdgeCount': organizerContactMergeReceiptDocumentMovedEdgeCount,
+    'organizerContactMergeReceiptDocument.movedEdgeIds': organizerContactMergeReceiptDocumentMovedEdgeIds,
+    'organizerContactMergeReceiptDocument.movedEdgeIds.items': organizerContactMergeReceiptDocumentMovedEdgeIdsItems,
+    'organizerContactMergeReceiptDocument.movedIdentityEvidenceCount': organizerContactMergeReceiptDocumentMovedIdentityEvidenceCount,
+    'organizerContactMergeReceiptDocument.movedIdentityEvidenceIds': organizerContactMergeReceiptDocumentMovedIdentityEvidenceIds,
+    'organizerContactMergeReceiptDocument.movedIdentityEvidenceIds.items': organizerContactMergeReceiptDocumentMovedIdentityEvidenceIdsItems,
     'organizerContactMergeReceiptDocument.operation': organizerContactMergeReceiptDocumentOperation,
     'organizerContactMergeReceiptDocument.organizerId': organizerContactMergeReceiptDocumentOrganizerId,
     'organizerContactMergeReceiptDocument.reversalOfReceiptId': organizerContactMergeReceiptDocumentReversalOfReceiptId,

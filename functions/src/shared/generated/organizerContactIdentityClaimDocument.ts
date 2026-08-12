@@ -11,6 +11,7 @@ export interface OrganizerContactIdentityClaimDocument {
   identityHash: string;
   hashVersion: "hmac-sha256-v1";
   verifiedContactId: string;
+  originVerifiedContactId: string;
   state: "verified" | "conflicted";
   /**
    * @maxItems 20
