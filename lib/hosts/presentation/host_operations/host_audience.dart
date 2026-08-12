@@ -950,18 +950,23 @@ class _HostAudienceContactRow extends StatelessWidget {
         context.l10n.hostsHostAudienceIdentityNeedsReview,
     ];
     return CatchFieldLanes.single(
-      child: InkWell(
-        onTap: onTap,
-        child: CatchField.read(
-          title: contact.displayName,
-          body: metadata.join(' · '),
-          valueText: contact.whatsappAdminSuppressed
-              ? 'Messaging paused'
-              : contact.segments.isEmpty
-              ? null
-              : _segmentLabel(context, contact.segments.first),
-          valid: contact.identityState != HostAudienceIdentityState.ambiguous,
-          divider: divider,
+      child: Semantics(
+        button: onTap != null,
+        enabled: onTap != null,
+        label: contact.displayName,
+        child: InkWell(
+          onTap: onTap,
+          child: CatchField.read(
+            title: contact.displayName,
+            body: metadata.join(' · '),
+            valueText: contact.whatsappAdminSuppressed
+                ? 'Messaging paused'
+                : contact.segments.isEmpty
+                ? null
+                : _segmentLabel(context, contact.segments.first),
+            valid: contact.identityState != HostAudienceIdentityState.ambiguous,
+            divider: divider,
+          ),
         ),
       ),
     );
