@@ -18,6 +18,7 @@ import type {ListPublicOrganizerReviewsCallablePayload} from "../../functions/sr
 import type {ListPublicOrganizerReviewsCallableResponse} from "../../functions/src/shared/generated/listPublicOrganizerReviewsCallableResponse";
 import type {RecordOrganizerAnalyticsEventCallablePayload} from "../../functions/src/shared/generated/recordOrganizerAnalyticsEventCallablePayload";
 import type {RecordOrganizerAnalyticsEventCallableResponse} from "../../functions/src/shared/generated/recordOrganizerAnalyticsEventCallableResponse";
+import type {RecordEventInviteLinkOpenCallablePayload} from "../../functions/src/shared/generated/recordEventInviteLinkOpenCallablePayload";
 import type {RegisterPublicEventCallablePayload} from "../../functions/src/shared/generated/registerPublicEventCallablePayload";
 import type {RegisterPublicEventCallableResponse} from "../../functions/src/shared/generated/registerPublicEventCallableResponse";
 import type {RequestOrganizerClaimCallablePayload} from "../../functions/src/shared/generated/requestOrganizerClaimCallablePayload";
@@ -541,6 +542,16 @@ export async function registerPublicEvent(
     RegisterPublicEventResponse
   >(runtime.functions, "registerPublicEvent");
   return (await callable(payload)).data;
+}
+
+export async function recordEventInviteLinkOpen(
+  payload: RecordEventInviteLinkOpenCallablePayload
+): Promise<{accepted: boolean; inviteLinkId: string}> {
+  return invokeWebsiteCallable(
+    "recordEventInviteLinkOpen",
+    payload,
+    publicEventRegistrationFirebaseConfigured || eventRuntimeFirebaseConfigured
+  );
 }
 
 async function getFirebaseRuntime() {

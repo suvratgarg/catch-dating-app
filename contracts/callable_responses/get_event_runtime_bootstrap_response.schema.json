@@ -11,6 +11,7 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
+        "eventId",
         "publicRuntimeId",
         "title",
         "startTimeMillis",
@@ -21,6 +22,7 @@
         "questionnaireConfig"
       ],
       "properties": {
+        "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
         "publicRuntimeId": {"type": "string", "pattern": "^[A-Za-z0-9_-]{20,80}$"},
         "title": {"type": "string", "minLength": 1, "maxLength": 240},
         "startTimeMillis": {"type": "integer"},

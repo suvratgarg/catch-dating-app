@@ -331,6 +331,7 @@ test("bootstrap returns bounded event and own state", async () => {
     {publicRuntimeId: "runtime_123456789012345678901234"}
   ), h.deps);
   assert.deepEqual(result.event, {
+    eventId: "event-1",
     publicRuntimeId: "runtime_123456789012345678901234",
     title: "Wednesday Social",
     startTimeMillis: Date.parse("2026-08-11T12:00:00.000Z"),

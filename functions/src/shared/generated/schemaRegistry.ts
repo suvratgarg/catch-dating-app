@@ -12553,6 +12553,41 @@ export const organizerContactEventEdgeDocumentSchema: Record<string, unknown> = 
         }
       ]
     },
+    "inviteLinkId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "inviteCapturedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "sourceCreatedAt": {
       "type": "object",
       "description": "Serialized Firestore Timestamp fixture shape.",
@@ -12660,6 +12695,9 @@ export const organizerContactTraitDocumentSchema: Record<string, unknown> = {
     "cancelledEventCount",
     "noShowCount",
     "importedEventCount",
+    "referredRegistrationCount",
+    "referredCheckedInCount",
+    "referredCheckedIn365DayCount",
     "linkedAccount",
     "firstSeenAt",
     "lastSeenAt",
@@ -12706,6 +12744,21 @@ export const organizerContactTraitDocumentSchema: Record<string, unknown> = {
       "maximum": 1000000
     },
     "importedEventCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000
+    },
+    "referredRegistrationCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000
+    },
+    "referredCheckedInCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000
+    },
+    "referredCheckedIn365DayCount": {
       "type": "integer",
       "minimum": 0,
       "maximum": 1000000
@@ -12829,6 +12882,8 @@ export const organizerContactTraitDocumentSchema: Record<string, unknown> = {
           "lapsed_regular",
           "reliable_attendee",
           "needs_confirmation",
+          "advocate",
+          "high_impact_advocate",
           "whatsapp_reachable",
           "sms_reachable"
         ]
@@ -12900,6 +12955,8 @@ export const organizerContactTraitDocumentSchema: Record<string, unknown> = {
         "lapsed_regular",
         "reliable_attendee",
         "needs_confirmation",
+        "advocate",
+        "high_impact_advocate",
         "whatsapp_reachable",
         "sms_reachable"
       ]
@@ -12933,6 +12990,8 @@ export const organizerAudienceSummaryDocumentSchema: Record<string, unknown> = {
     "repeatAttendeeCount",
     "linkedAccountCount",
     "importedContactCount",
+    "advocateCount",
+    "highImpactAdvocateCount",
     "whatsappOptInCount",
     "smsOptInCount",
     "sourceCoverage",
@@ -12966,6 +13025,16 @@ export const organizerAudienceSummaryDocumentSchema: Record<string, unknown> = {
       "maximum": 2147483647
     },
     "importedContactCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "advocateCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "highImpactAdvocateCount": {
       "type": "integer",
       "minimum": 0,
       "maximum": 2147483647
@@ -16369,7 +16438,7 @@ export const eventInviteLinkDocumentSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/event_invite_links.schema.json",
   "title": "EventInviteLinkDocument",
-  "description": "Host-created named invite link stored at eventInviteLinks/{inviteLinkId}. The document tracks live attribution counters while preserving disabled links for historical reporting.",
+  "description": "Opaque event invitation metadata stored at eventInviteLinks/{inviteLinkId}. The public bearer token is stored separately in a server-only secret document.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "eventInviteLinks",
@@ -16442,10 +16511,143 @@ export const eventInviteLinkDocumentSchema: Record<string, unknown> = {
       "pattern": "^[a-f0-9]{64}$",
       "x-catch-ownership": "callable-owned"
     },
+    "contractVersion": {
+      "type": "integer",
+      "minimum": 2,
+      "maximum": 2,
+      "x-catch-ownership": "callable-owned"
+    },
+    "linkKind": {
+      "type": "string",
+      "enum": [
+        "hostChannel",
+        "directRecipient",
+        "attendeeReferrer",
+        "promoter",
+        "partner"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "ownerContactId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "ownerUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "intendedRecipientContactId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "campaignId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "issuanceChannel": {
+      "type": "string",
+      "enum": [
+        "hostApp",
+        "consumerApp",
+        "runtimeWeb",
+        "campaign",
+        "api"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "destinationKind": {
+      "type": "string",
+      "enum": [
+        "catchEvent",
+        "eventRuntime",
+        "externalBooking",
+        "marketingLanding"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "tokenVersion": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10,
+      "x-catch-ownership": "callable-owned"
+    },
+    "attributionWindowEndsAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
     "openCount": {
       "type": "integer",
       "minimum": 0,
       "x-catch-ownership": "callable-owned"
+    },
+    "likelyHumanOpenCount": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "callable-owned"
+    },
+    "shareIntentCount": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "callable-owned"
+    },
+    "verifiedRegistrationCount": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "referredRegistrationCount": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "referredCheckedInCount": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "trigger-owned"
     },
     "requestCount": {
       "type": "integer",
@@ -16551,6 +16753,557 @@ export const eventInviteLinkDocumentSchema: Record<string, unknown> = {
         }
       },
       "x-catch-ownership": "callable-owned"
+    }
+  }
+} as const;
+
+export const eventInviteLinkSecretDocumentSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_invite_link_secrets.schema.json",
+  "title": "EventInviteLinkSecretDocument",
+  "description": "Server-only bearer token material for one event invitation link.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventInviteLinkSecrets",
+  "x-firestore-path": "eventInviteLinkSecrets/{inviteLinkId}",
+  "x-document-id-field": "inviteLinkId",
+  "x-owner": "event invite link callables",
+  "required": [
+    "eventId",
+    "organizerId",
+    "token",
+    "tokenHash",
+    "tokenVersion",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "token": {
+      "type": "string",
+      "minLength": 32,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9_-]+$"
+    },
+    "tokenHash": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64,
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "tokenVersion": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  }
+} as const;
+
+export const eventInviteTouchDocumentSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_invite_touches.schema.json",
+  "title": "EventInviteTouchDocument",
+  "description": "Short-lived privacy-minimized evidence that an invitation URL was resolved.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventInviteTouches",
+  "x-firestore-path": "eventInviteTouches/{touchId}",
+  "x-document-id-field": "touchId",
+  "x-owner": "event invite resolution callable",
+  "required": [
+    "eventId",
+    "organizerId",
+    "inviteLinkId",
+    "touchKind",
+    "surface",
+    "actorUid",
+    "sessionHash",
+    "likelyHuman",
+    "botReason",
+    "attributionEligible",
+    "createdAt",
+    "expiresAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "inviteLinkId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "touchKind": {
+      "type": "string",
+      "enum": [
+        "open",
+        "redirect"
+      ]
+    },
+    "surface": {
+      "type": "string",
+      "enum": [
+        "consumerApp",
+        "hostApp",
+        "runtimeWeb",
+        "marketingWeb",
+        "unknown"
+      ]
+    },
+    "actorUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "sessionHash": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 64,
+      "maxLength": 64,
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "likelyHuman": {
+      "type": "boolean"
+    },
+    "botReason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "previewCrawler",
+        "knownBot",
+        "missingClientSignal",
+        null
+      ]
+    },
+    "attributionEligible": {
+      "type": "boolean"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  }
+} as const;
+
+export const eventShareIntentDocumentSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_share_intents.schema.json",
+  "title": "EventShareIntentDocument",
+  "description": "Evidence that a signed-in actor opened a Catch-owned share surface; it is not proof that a message was sent.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventShareIntents",
+  "x-firestore-path": "eventShareIntents/{intentId}",
+  "x-document-id-field": "intentId",
+  "x-owner": "event share intent callable",
+  "required": [
+    "eventId",
+    "organizerId",
+    "inviteLinkId",
+    "actorUid",
+    "actorKind",
+    "surface",
+    "creativeId",
+    "channelHint",
+    "createdAt",
+    "expiresAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "inviteLinkId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "actorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "actorKind": {
+      "type": "string",
+      "enum": [
+        "host",
+        "attendee",
+        "member"
+      ]
+    },
+    "surface": {
+      "type": "string",
+      "enum": [
+        "hostApp",
+        "consumerApp",
+        "runtimeWeb"
+      ]
+    },
+    "creativeId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "channelHint": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "systemShare",
+        "copyLink",
+        "whatsapp",
+        "sms",
+        "email",
+        null
+      ]
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  }
+} as const;
+
+export const eventInviteAttributionDocumentSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_invite_attributions.schema.json",
+  "title": "EventInviteAttributionDocument",
+  "description": "Immutable evidence assigning or reversing one downstream event fact to one invitation link.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventInviteAttributions",
+  "x-firestore-path": "eventInviteAttributions/{attributionId}",
+  "x-document-id-field": "attributionId",
+  "x-owner": "event participation and operational attendee attribution triggers",
+  "required": [
+    "eventId",
+    "organizerId",
+    "inviteLinkId",
+    "linkKind",
+    "ownerContactId",
+    "intendedRecipientContactId",
+    "subjectContactId",
+    "subjectUid",
+    "factKind",
+    "operation",
+    "sourceKind",
+    "sourceFactId",
+    "primaryCredit",
+    "confidence",
+    "referralCredit",
+    "reversalOfAttributionId",
+    "occurredAt",
+    "createdAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "inviteLinkId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "linkKind": {
+      "type": "string",
+      "enum": [
+        "hostChannel",
+        "directRecipient",
+        "attendeeReferrer",
+        "promoter",
+        "partner"
+      ]
+    },
+    "ownerContactId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "intendedRecipientContactId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "subjectContactId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "subjectUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "factKind": {
+      "type": "string",
+      "enum": [
+        "registration",
+        "booking",
+        "checkIn",
+        "revenue",
+        "refund"
+      ]
+    },
+    "operation": {
+      "type": "string",
+      "enum": [
+        "credit",
+        "reversal"
+      ]
+    },
+    "sourceKind": {
+      "type": "string",
+      "enum": [
+        "catchParticipation",
+        "eventAttendee",
+        "provider",
+        "selfReport"
+      ]
+    },
+    "sourceFactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "primaryCredit": {
+      "type": "boolean"
+    },
+    "confidence": {
+      "type": "string",
+      "enum": [
+        "exact",
+        "reconciled",
+        "selfReported"
+      ]
+    },
+    "referralCredit": {
+      "type": "boolean"
+    },
+    "amountMinor": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "currency": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Z]{3}$"
+    },
+    "reversalOfAttributionId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "occurredAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
     }
   }
 } as const;
@@ -17381,6 +18134,42 @@ export const eventAttendeeDocumentSchema: Record<string, unknown> = {
       "maxLength": 180
     },
     "linkedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "inviteLinkId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "First eligible opaque invitation link preserved on this operational attendee."
+    },
+    "inviteCapturedAt": {
       "anyOf": [
         {
           "type": "object",
@@ -39117,9 +39906,10 @@ export const createEventInviteLinkCallablePayloadSchema: Record<string, unknown>
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/create_event_invite_link_payload.schema.json",
   "title": "CreateEventInviteLinkCallablePayload",
-  "description": "Callable payload accepted by createEventInviteLink. Hosts use this to create named share links such as Instagram bio, WhatsApp alumni, or venue partner.",
+  "description": "Callable payload accepted by createEventInviteLink for Host channels, direct recipients, partners, promoters, or eligible attendee referrers.",
   "x-callable-aliases": [
-    "createEventInviteLink"
+    "createEventInviteLink",
+    "createAttendeeInviteLink"
   ],
   "type": "object",
   "additionalProperties": false,
@@ -39145,6 +39935,49 @@ export const createEventInviteLinkCallablePayloadSchema: Record<string, unknown>
       ],
       "minLength": 1,
       "maxLength": 80
+    },
+    "linkKind": {
+      "type": "string",
+      "enum": [
+        "hostChannel",
+        "directRecipient",
+        "attendeeReferrer",
+        "promoter",
+        "partner"
+      ]
+    },
+    "intendedRecipientContactId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "campaignId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "destinationKind": {
+      "type": "string",
+      "enum": [
+        "catchEvent",
+        "eventRuntime",
+        "externalBooking",
+        "marketingLanding"
+      ]
+    },
+    "attributionWindowDays": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 90
     }
   }
 } as const;
@@ -39181,7 +40014,7 @@ export const recordEventInviteLinkOpenCallablePayloadSchema: Record<string, unkn
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/record_event_invite_link_open_payload.schema.json",
   "title": "RecordEventInviteLinkOpenCallablePayload",
-  "description": "Callable payload accepted by recordEventInviteLinkOpen. It increments a live open counter and returns whether attribution can be attached to downstream booking actions.",
+  "description": "Callable payload accepted by recordEventInviteLinkOpen. inviteLinkId accepts a legacy document id or a versioned opaque bearer token.",
   "x-callable-aliases": [
     "recordEventInviteLinkOpen"
   ],
@@ -39201,6 +40034,111 @@ export const recordEventInviteLinkOpenCallablePayloadSchema: Record<string, unkn
       "type": "string",
       "minLength": 1,
       "maxLength": 180
+    },
+    "surface": {
+      "type": "string",
+      "enum": [
+        "consumerApp",
+        "hostApp",
+        "runtimeWeb",
+        "marketingWeb",
+        "unknown"
+      ]
+    },
+    "sessionId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 8,
+      "maxLength": 128
+    }
+  }
+} as const;
+
+export const getEventInviteLinkTokenCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_event_invite_link_token_payload.schema.json",
+  "title": "GetEventInviteLinkTokenCallablePayload",
+  "description": "Manager-authorized request for the shareable bearer token of one event invitation link.",
+  "x-callable-aliases": [
+    "getEventInviteLinkToken"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "inviteLinkId"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "inviteLinkId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+} as const;
+
+export const recordEventShareIntentCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/record_event_share_intent_payload.schema.json",
+  "title": "RecordEventShareIntentCallablePayload",
+  "description": "Records that a signed-in actor opened a Catch share surface. It never claims a message was sent or forwarded.",
+  "x-callable-aliases": [
+    "recordEventShareIntent"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "inviteLinkId",
+    "surface"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "inviteLinkId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "surface": {
+      "type": "string",
+      "enum": [
+        "hostApp",
+        "consumerApp",
+        "runtimeWeb"
+      ]
+    },
+    "creativeId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "channelHint": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "systemShare",
+        "copyLink",
+        "whatsapp",
+        "sms",
+        "email",
+        null
+      ]
     }
   }
 } as const;
@@ -39474,6 +40412,15 @@ export const registerPublicEventCallablePayloadSchema: Record<string, unknown> =
       "minLength": 1,
       "maxLength": 120
     },
+    "inviteToken": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Legacy invite-link id or versioned opaque invitation bearer token."
+    },
     "organizerUpdates": {
       "description": "Optional, explicit opt-in to organizer marketing updates. Absence never grants consent.",
       "type": "object",
@@ -39568,6 +40515,7 @@ export const getEventRuntimeBootstrapCallableResponseSchema: Record<string, unkn
       "type": "object",
       "additionalProperties": false,
       "required": [
+        "eventId",
         "publicRuntimeId",
         "title",
         "startTimeMillis",
@@ -39578,6 +40526,11 @@ export const getEventRuntimeBootstrapCallableResponseSchema: Record<string, unkn
         "questionnaireConfig"
       ],
       "properties": {
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
         "publicRuntimeId": {
           "type": "string",
           "pattern": "^[A-Za-z0-9_-]{20,80}$"
@@ -39871,6 +40824,15 @@ export const claimEventRuntimeAccessCallablePayloadSchema: Record<string, unknow
       ],
       "minLength": 20,
       "maxLength": 240
+    },
+    "inviteToken": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Legacy invite-link id or versioned opaque invitation bearer token."
     }
   }
 } as const;
@@ -40281,6 +41243,8 @@ export const getOrganizerCrmSummaryCallableResponseSchema: Record<string, unknow
     "contactCount",
     "pastAttendeeCount",
     "repeatAttendeeCount",
+    "advocateCount",
+    "highImpactAdvocateCount",
     "linkedAccountCount",
     "importedContactCount",
     "whatsappOptInCount",
@@ -40305,6 +41269,16 @@ export const getOrganizerCrmSummaryCallableResponseSchema: Record<string, unknow
       "maximum": 2147483647
     },
     "repeatAttendeeCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "advocateCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "highImpactAdvocateCount": {
       "type": "integer",
       "minimum": 0,
       "maximum": 2147483647
@@ -40411,6 +41385,8 @@ export const listOrganizerContactsCallablePayloadSchema: Record<string, unknown>
             "lapsed_regular",
             "reliable_attendee",
             "needs_confirmation",
+            "advocate",
+            "high_impact_advocate",
             "whatsapp_reachable",
             "sms_reachable"
           ]
@@ -40544,6 +41520,8 @@ export const listOrganizerContactsCallableResponseSchema: Record<string, unknown
                 "lapsed_regular",
                 "reliable_attendee",
                 "needs_confirmation",
+                "advocate",
+                "high_impact_advocate",
                 "whatsapp_reachable",
                 "sms_reachable"
               ]
@@ -40700,6 +41678,8 @@ export const listOrganizerContactsCallableResponseSchema: Record<string, unknown
               "lapsed_regular",
               "reliable_attendee",
               "needs_confirmation",
+              "advocate",
+              "high_impact_advocate",
               "whatsapp_reachable",
               "sms_reachable"
             ]
@@ -40909,6 +41889,8 @@ export const getOrganizerContactDetailCallableResponseSchema: Record<string, unk
               "lapsed_regular",
               "reliable_attendee",
               "needs_confirmation",
+              "advocate",
+              "high_impact_advocate",
               "whatsapp_reachable",
               "sms_reachable"
             ]
@@ -41120,6 +42102,8 @@ export const getOrganizerContactDetailCallableResponseSchema: Record<string, unk
               "lapsed_regular",
               "reliable_attendee",
               "needs_confirmation",
+              "advocate",
+              "high_impact_advocate",
               "whatsapp_reachable",
               "sms_reachable"
             ]

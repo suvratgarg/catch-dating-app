@@ -4027,6 +4027,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const claimEventRuntimeAccessCallablePayloadInviteToken = CatchContractFieldConstraints(
+    path: 'claimEventRuntimeAccessCallablePayload.inviteToken',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
   static const claimEventRuntimeAccessCallablePayloadPublicRuntimeId = CatchContractFieldConstraints(
     path: 'claimEventRuntimeAccessCallablePayload.publicRuntimeId',
     required: true,
@@ -7938,11 +7945,38 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const createEventInviteLinkCallablePayloadAttributionWindowDays = CatchContractFieldConstraints(
+    path: 'createEventInviteLinkCallablePayload.attributionWindowDays',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 90,
+  );
+
+  static const createEventInviteLinkCallablePayloadCampaignId = CatchContractFieldConstraints(
+    path: 'createEventInviteLinkCallablePayload.campaignId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventInviteLinkCallablePayloadDestinationKind = CatchContractFieldConstraints(
+    path: 'createEventInviteLinkCallablePayload.destinationKind',
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchEvent', 'eventRuntime', 'externalBooking', 'marketingLanding'],
+  );
+
   static const createEventInviteLinkCallablePayloadEventId = CatchContractFieldConstraints(
     path: 'createEventInviteLinkCallablePayload.eventId',
     maxLength: 180,
     minLength: 1,
     required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventInviteLinkCallablePayloadIntendedRecipientContactId = CatchContractFieldConstraints(
+    path: 'createEventInviteLinkCallablePayload.intendedRecipientContactId',
+    maxLength: 180,
+    minLength: 1,
     valueTypes: <String>['string'],
   );
 
@@ -7952,6 +7986,12 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const createEventInviteLinkCallablePayloadLinkKind = CatchContractFieldConstraints(
+    path: 'createEventInviteLinkCallablePayload.linkKind',
+    valueTypes: <String>['string'],
+    enumValues: <String>['hostChannel', 'directRecipient', 'attendeeReferrer', 'promoter', 'partner'],
   );
 
   static const createEventInviteLinkCallablePayloadSource = CatchContractFieldConstraints(
@@ -10012,6 +10052,27 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventAttendeeDocumentInviteCapturedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.inviteCapturedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventAttendeeDocumentInviteCapturedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.inviteCapturedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAttendeeDocumentInviteLinkId = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.inviteLinkId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
   static const eventAttendeeDocumentLinkedAtNanoseconds = CatchContractFieldConstraints(
     path: 'eventAttendeeDocument.linkedAt._nanoseconds',
     required: true,
@@ -11820,6 +11881,181 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const eventInviteAttributionDocumentAmountMinor = CatchContractFieldConstraints(
+    path: 'eventInviteAttributionDocument.amountMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const eventInviteAttributionDocumentConfidence = CatchContractFieldConstraints(
+    path: 'eventInviteAttributionDocument.confidence',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['exact', 'reconciled', 'selfReported'],
+  );
+
+  static const eventInviteAttributionDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventInviteAttributionDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventInviteAttributionDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventInviteAttributionDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventInviteAttributionDocumentCurrency = CatchContractFieldConstraints(
+    path: 'eventInviteAttributionDocument.currency',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const eventInviteAttributionDocumentEventId = CatchContractFieldConstraints(
+    path: 'eventInviteAttributionDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventInviteAttributionDocumentFactKind = CatchContractFieldConstraints(
+    path: 'eventInviteAttributionDocument.factKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['registration', 'booking', 'checkIn', 'revenue', 'refund'],
+  );
+
+  static const eventInviteAttributionDocumentIntendedRecipientContactId = CatchContractFieldConstraints(
+    path: 'eventInviteAttributionDocument.intendedRecipientContactId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventInviteAttributionDocumentInviteLinkId = CatchContractFieldConstraints(
+    path: 'eventInviteAttributionDocument.inviteLinkId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventInviteAttributionDocumentLinkKind = CatchContractFieldConstraints(
+    path: 'eventInviteAttributionDocument.linkKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['hostChannel', 'directRecipient', 'attendeeReferrer', 'promoter', 'partner'],
+  );
+
+  static const eventInviteAttributionDocumentOccurredAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventInviteAttributionDocument.occurredAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventInviteAttributionDocumentOccurredAtSeconds = CatchContractFieldConstraints(
+    path: 'eventInviteAttributionDocument.occurredAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventInviteAttributionDocumentOperation = CatchContractFieldConstraints(
+    path: 'eventInviteAttributionDocument.operation',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['credit', 'reversal'],
+  );
+
+  static const eventInviteAttributionDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventInviteAttributionDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventInviteAttributionDocumentOwnerContactId = CatchContractFieldConstraints(
+    path: 'eventInviteAttributionDocument.ownerContactId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventInviteAttributionDocumentPrimaryCredit = CatchContractFieldConstraints(
+    path: 'eventInviteAttributionDocument.primaryCredit',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventInviteAttributionDocumentReferralCredit = CatchContractFieldConstraints(
+    path: 'eventInviteAttributionDocument.referralCredit',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventInviteAttributionDocumentReversalOfAttributionId = CatchContractFieldConstraints(
+    path: 'eventInviteAttributionDocument.reversalOfAttributionId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventInviteAttributionDocumentSourceFactId = CatchContractFieldConstraints(
+    path: 'eventInviteAttributionDocument.sourceFactId',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventInviteAttributionDocumentSourceKind = CatchContractFieldConstraints(
+    path: 'eventInviteAttributionDocument.sourceKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchParticipation', 'eventAttendee', 'provider', 'selfReport'],
+  );
+
+  static const eventInviteAttributionDocumentSubjectContactId = CatchContractFieldConstraints(
+    path: 'eventInviteAttributionDocument.subjectContactId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventInviteAttributionDocumentSubjectUid = CatchContractFieldConstraints(
+    path: 'eventInviteAttributionDocument.subjectUid',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventInviteLinkDocumentAttributionWindowEndsAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventInviteLinkDocument.attributionWindowEndsAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventInviteLinkDocumentAttributionWindowEndsAtSeconds = CatchContractFieldConstraints(
+    path: 'eventInviteLinkDocument.attributionWindowEndsAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventInviteLinkDocumentCampaignId = CatchContractFieldConstraints(
+    path: 'eventInviteLinkDocument.campaignId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
   static const eventInviteLinkDocumentCatcherCount = CatchContractFieldConstraints(
     path: 'eventInviteLinkDocument.catcherCount',
     required: true,
@@ -11856,6 +12092,13 @@ abstract final class CatchContractConstraints {
     minimum: 0,
   );
 
+  static const eventInviteLinkDocumentContractVersion = CatchContractFieldConstraints(
+    path: 'eventInviteLinkDocument.contractVersion',
+    valueTypes: <String>['integer'],
+    minimum: 2,
+    maximum: 2,
+  );
+
   static const eventInviteLinkDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
     path: 'eventInviteLinkDocument.createdAt._nanoseconds',
     required: true,
@@ -11868,6 +12111,12 @@ abstract final class CatchContractConstraints {
     path: 'eventInviteLinkDocument.createdAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
+  );
+
+  static const eventInviteLinkDocumentDestinationKind = CatchContractFieldConstraints(
+    path: 'eventInviteLinkDocument.destinationKind',
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchEvent', 'eventRuntime', 'externalBooking', 'marketingLanding'],
   );
 
   static const eventInviteLinkDocumentDisabledAtNanoseconds = CatchContractFieldConstraints(
@@ -11900,12 +12149,37 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventInviteLinkDocumentIntendedRecipientContactId = CatchContractFieldConstraints(
+    path: 'eventInviteLinkDocument.intendedRecipientContactId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventInviteLinkDocumentIssuanceChannel = CatchContractFieldConstraints(
+    path: 'eventInviteLinkDocument.issuanceChannel',
+    valueTypes: <String>['string'],
+    enumValues: <String>['hostApp', 'consumerApp', 'runtimeWeb', 'campaign', 'api'],
+  );
+
   static const eventInviteLinkDocumentLabel = CatchContractFieldConstraints(
     path: 'eventInviteLinkDocument.label',
     maxLength: 80,
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const eventInviteLinkDocumentLikelyHumanOpenCount = CatchContractFieldConstraints(
+    path: 'eventInviteLinkDocument.likelyHumanOpenCount',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const eventInviteLinkDocumentLinkKind = CatchContractFieldConstraints(
+    path: 'eventInviteLinkDocument.linkKind',
+    valueTypes: <String>['string'],
+    enumValues: <String>['hostChannel', 'directRecipient', 'attendeeReferrer', 'promoter', 'partner'],
   );
 
   static const eventInviteLinkDocumentMatchCount = CatchContractFieldConstraints(
@@ -11930,6 +12204,20 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventInviteLinkDocumentOwnerContactId = CatchContractFieldConstraints(
+    path: 'eventInviteLinkDocument.ownerContactId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventInviteLinkDocumentOwnerUid = CatchContractFieldConstraints(
+    path: 'eventInviteLinkDocument.ownerUid',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
   static const eventInviteLinkDocumentPaidCount = CatchContractFieldConstraints(
     path: 'eventInviteLinkDocument.paidCount',
     required: true,
@@ -11937,9 +12225,27 @@ abstract final class CatchContractConstraints {
     minimum: 0,
   );
 
+  static const eventInviteLinkDocumentReferredCheckedInCount = CatchContractFieldConstraints(
+    path: 'eventInviteLinkDocument.referredCheckedInCount',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const eventInviteLinkDocumentReferredRegistrationCount = CatchContractFieldConstraints(
+    path: 'eventInviteLinkDocument.referredRegistrationCount',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
   static const eventInviteLinkDocumentRequestCount = CatchContractFieldConstraints(
     path: 'eventInviteLinkDocument.requestCount',
     required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const eventInviteLinkDocumentShareIntentCount = CatchContractFieldConstraints(
+    path: 'eventInviteLinkDocument.shareIntentCount',
     valueTypes: <String>['integer'],
     minimum: 0,
   );
@@ -11960,6 +12266,13 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-f0-9]{64}\$',
   );
 
+  static const eventInviteLinkDocumentTokenVersion = CatchContractFieldConstraints(
+    path: 'eventInviteLinkDocument.tokenVersion',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 10,
+  );
+
   static const eventInviteLinkDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
     path: 'eventInviteLinkDocument.updatedAt._nanoseconds',
     required: true,
@@ -11972,6 +12285,181 @@ abstract final class CatchContractConstraints {
     path: 'eventInviteLinkDocument.updatedAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
+  );
+
+  static const eventInviteLinkDocumentVerifiedRegistrationCount = CatchContractFieldConstraints(
+    path: 'eventInviteLinkDocument.verifiedRegistrationCount',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const eventInviteLinkSecretDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventInviteLinkSecretDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventInviteLinkSecretDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventInviteLinkSecretDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventInviteLinkSecretDocumentEventId = CatchContractFieldConstraints(
+    path: 'eventInviteLinkSecretDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventInviteLinkSecretDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventInviteLinkSecretDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventInviteLinkSecretDocumentToken = CatchContractFieldConstraints(
+    path: 'eventInviteLinkSecretDocument.token',
+    maxLength: 128,
+    minLength: 32,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const eventInviteLinkSecretDocumentTokenHash = CatchContractFieldConstraints(
+    path: 'eventInviteLinkSecretDocument.tokenHash',
+    maxLength: 64,
+    minLength: 64,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventInviteLinkSecretDocumentTokenVersion = CatchContractFieldConstraints(
+    path: 'eventInviteLinkSecretDocument.tokenVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 10,
+  );
+
+  static const eventInviteLinkSecretDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventInviteLinkSecretDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventInviteLinkSecretDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventInviteLinkSecretDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventInviteTouchDocumentActorUid = CatchContractFieldConstraints(
+    path: 'eventInviteTouchDocument.actorUid',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventInviteTouchDocumentAttributionEligible = CatchContractFieldConstraints(
+    path: 'eventInviteTouchDocument.attributionEligible',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventInviteTouchDocumentBotReason = CatchContractFieldConstraints(
+    path: 'eventInviteTouchDocument.botReason',
+    valueTypes: <String>['string'],
+    enumValues: <String>['previewCrawler', 'knownBot', 'missingClientSignal'],
+  );
+
+  static const eventInviteTouchDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventInviteTouchDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventInviteTouchDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventInviteTouchDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventInviteTouchDocumentEventId = CatchContractFieldConstraints(
+    path: 'eventInviteTouchDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventInviteTouchDocumentExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventInviteTouchDocument.expiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventInviteTouchDocumentExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'eventInviteTouchDocument.expiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventInviteTouchDocumentInviteLinkId = CatchContractFieldConstraints(
+    path: 'eventInviteTouchDocument.inviteLinkId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventInviteTouchDocumentLikelyHuman = CatchContractFieldConstraints(
+    path: 'eventInviteTouchDocument.likelyHuman',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventInviteTouchDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventInviteTouchDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventInviteTouchDocumentSessionHash = CatchContractFieldConstraints(
+    path: 'eventInviteTouchDocument.sessionHash',
+    maxLength: 64,
+    minLength: 64,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventInviteTouchDocumentSurface = CatchContractFieldConstraints(
+    path: 'eventInviteTouchDocument.surface',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['consumerApp', 'hostApp', 'runtimeWeb', 'marketingWeb', 'unknown'],
+  );
+
+  static const eventInviteTouchDocumentTouchKind = CatchContractFieldConstraints(
+    path: 'eventInviteTouchDocument.touchKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['open', 'redirect'],
   );
 
   static const eventJoinRequestDecisionCallablePayloadDecision = CatchContractFieldConstraints(
@@ -12997,6 +13485,93 @@ abstract final class CatchContractConstraints {
     path: 'eventSafetyReportDocument.updatedAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
+  );
+
+  static const eventShareIntentDocumentActorKind = CatchContractFieldConstraints(
+    path: 'eventShareIntentDocument.actorKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['host', 'attendee', 'member'],
+  );
+
+  static const eventShareIntentDocumentActorUid = CatchContractFieldConstraints(
+    path: 'eventShareIntentDocument.actorUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventShareIntentDocumentChannelHint = CatchContractFieldConstraints(
+    path: 'eventShareIntentDocument.channelHint',
+    valueTypes: <String>['string'],
+    enumValues: <String>['systemShare', 'copyLink', 'whatsapp', 'sms', 'email'],
+  );
+
+  static const eventShareIntentDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventShareIntentDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventShareIntentDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventShareIntentDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventShareIntentDocumentCreativeId = CatchContractFieldConstraints(
+    path: 'eventShareIntentDocument.creativeId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventShareIntentDocumentEventId = CatchContractFieldConstraints(
+    path: 'eventShareIntentDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventShareIntentDocumentExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventShareIntentDocument.expiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventShareIntentDocumentExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'eventShareIntentDocument.expiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventShareIntentDocumentInviteLinkId = CatchContractFieldConstraints(
+    path: 'eventShareIntentDocument.inviteLinkId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventShareIntentDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventShareIntentDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventShareIntentDocumentSurface = CatchContractFieldConstraints(
+    path: 'eventShareIntentDocument.surface',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['hostApp', 'consumerApp', 'runtimeWeb'],
   );
 
   static const eventSuccessArrivalMissionDocumentAnswerOptions = CatchContractFieldConstraints(
@@ -16305,6 +16880,22 @@ abstract final class CatchContractConstraints {
     format: 'date-time',
   );
 
+  static const getEventInviteLinkTokenCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'getEventInviteLinkTokenCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventInviteLinkTokenCallablePayloadInviteLinkId = CatchContractFieldConstraints(
+    path: 'getEventInviteLinkTokenCallablePayload.inviteLinkId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const getEventRuntimeBootstrapCallablePayloadPublicRuntimeId = CatchContractFieldConstraints(
     path: 'getEventRuntimeBootstrapCallablePayload.publicRuntimeId',
     required: true,
@@ -16316,6 +16907,14 @@ abstract final class CatchContractConstraints {
     path: 'getEventRuntimeBootstrapCallableResponse.event.endTimeMillis',
     required: true,
     valueTypes: <String>['integer'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseEventEventId = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.event.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const getEventRuntimeBootstrapCallableResponseEventLocationName = CatchContractFieldConstraints(
@@ -16796,7 +17395,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['new_to_organizer', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'whatsapp_reachable', 'sms_reachable'],
+    itemEnumValues: <String>['new_to_organizer', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
     maxItems: 16,
     uniqueItems: true,
   );
@@ -16805,7 +17404,7 @@ abstract final class CatchContractConstraints {
     path: 'getOrganizerContactDetailCallableResponse.traits.segmentIds.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
   );
 
   static const getOrganizerContactDetailCallableResponseTraitsSmsStatus = CatchContractFieldConstraints(
@@ -16837,8 +17436,24 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const getOrganizerCrmSummaryCallableResponseAdvocateCount = CatchContractFieldConstraints(
+    path: 'getOrganizerCrmSummaryCallableResponse.advocateCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
   static const getOrganizerCrmSummaryCallableResponseContactCount = CatchContractFieldConstraints(
     path: 'getOrganizerCrmSummaryCallableResponse.contactCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const getOrganizerCrmSummaryCallableResponseHighImpactAdvocateCount = CatchContractFieldConstraints(
+    path: 'getOrganizerCrmSummaryCallableResponse.highImpactAdvocateCount',
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
@@ -19065,7 +19680,7 @@ abstract final class CatchContractConstraints {
   static const listOrganizerContactsCallablePayloadSegmentId = CatchContractFieldConstraints(
     path: 'listOrganizerContactsCallablePayload.segmentId',
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
   );
 
   static const listOrganizerContactsCallableResponseContacts = CatchContractFieldConstraints(
@@ -19162,7 +19777,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['new_to_organizer', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'whatsapp_reachable', 'sms_reachable'],
+    itemEnumValues: <String>['new_to_organizer', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
     maxItems: 16,
     uniqueItems: true,
   );
@@ -19171,7 +19786,7 @@ abstract final class CatchContractConstraints {
     path: 'listOrganizerContactsCallableResponse.contacts.items.segmentIds.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
   );
 
   static const listOrganizerContactsCallableResponseContactsItemsSmsStatus = CatchContractFieldConstraints(
@@ -20764,6 +21379,14 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerAudienceSummaryDocumentAdvocateCount = CatchContractFieldConstraints(
+    path: 'organizerAudienceSummaryDocument.advocateCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
   static const organizerAudienceSummaryDocumentComputedAtNanoseconds = CatchContractFieldConstraints(
     path: 'organizerAudienceSummaryDocument.computedAt._nanoseconds',
     required: true,
@@ -20780,6 +21403,14 @@ abstract final class CatchContractConstraints {
 
   static const organizerAudienceSummaryDocumentContactCount = CatchContractFieldConstraints(
     path: 'organizerAudienceSummaryDocument.contactCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const organizerAudienceSummaryDocumentHighImpactAdvocateCount = CatchContractFieldConstraints(
+    path: 'organizerAudienceSummaryDocument.highImpactAdvocateCount',
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
@@ -21442,6 +22073,27 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['boolean'],
   );
 
+  static const organizerContactEventEdgeDocumentInviteCapturedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerContactEventEdgeDocument.inviteCapturedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerContactEventEdgeDocumentInviteCapturedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerContactEventEdgeDocument.inviteCapturedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerContactEventEdgeDocumentInviteLinkId = CatchContractFieldConstraints(
+    path: 'organizerContactEventEdgeDocument.inviteLinkId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
   static const organizerContactEventEdgeDocumentLinkedUid = CatchContractFieldConstraints(
     path: 'organizerContactEventEdgeDocument.linkedUid',
     maxLength: 180,
@@ -22102,12 +22754,36 @@ abstract final class CatchContractConstraints {
     maximum: 1000,
   );
 
+  static const organizerContactTraitDocumentReferredCheckedIn365DayCount = CatchContractFieldConstraints(
+    path: 'organizerContactTraitDocument.referredCheckedIn365DayCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerContactTraitDocumentReferredCheckedInCount = CatchContractFieldConstraints(
+    path: 'organizerContactTraitDocument.referredCheckedInCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerContactTraitDocumentReferredRegistrationCount = CatchContractFieldConstraints(
+    path: 'organizerContactTraitDocument.referredRegistrationCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
   static const organizerContactTraitDocumentSegmentIds = CatchContractFieldConstraints(
     path: 'organizerContactTraitDocument.segmentIds',
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['new_to_organizer', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'whatsapp_reachable', 'sms_reachable'],
+    itemEnumValues: <String>['new_to_organizer', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
     maxItems: 16,
     uniqueItems: true,
   );
@@ -22116,7 +22792,7 @@ abstract final class CatchContractConstraints {
     path: 'organizerContactTraitDocument.segmentIds.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
   );
 
   static const organizerContactTraitDocumentSmsStatus = CatchContractFieldConstraints(
@@ -26580,6 +27256,55 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const recordEventInviteLinkOpenCallablePayloadSessionId = CatchContractFieldConstraints(
+    path: 'recordEventInviteLinkOpenCallablePayload.sessionId',
+    maxLength: 128,
+    minLength: 8,
+    valueTypes: <String>['string'],
+  );
+
+  static const recordEventInviteLinkOpenCallablePayloadSurface = CatchContractFieldConstraints(
+    path: 'recordEventInviteLinkOpenCallablePayload.surface',
+    valueTypes: <String>['string'],
+    enumValues: <String>['consumerApp', 'hostApp', 'runtimeWeb', 'marketingWeb', 'unknown'],
+  );
+
+  static const recordEventShareIntentCallablePayloadChannelHint = CatchContractFieldConstraints(
+    path: 'recordEventShareIntentCallablePayload.channelHint',
+    valueTypes: <String>['string'],
+    enumValues: <String>['systemShare', 'copyLink', 'whatsapp', 'sms', 'email'],
+  );
+
+  static const recordEventShareIntentCallablePayloadCreativeId = CatchContractFieldConstraints(
+    path: 'recordEventShareIntentCallablePayload.creativeId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const recordEventShareIntentCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'recordEventShareIntentCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const recordEventShareIntentCallablePayloadInviteLinkId = CatchContractFieldConstraints(
+    path: 'recordEventShareIntentCallablePayload.inviteLinkId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const recordEventShareIntentCallablePayloadSurface = CatchContractFieldConstraints(
+    path: 'recordEventShareIntentCallablePayload.surface',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['hostApp', 'consumerApp', 'runtimeWeb'],
+  );
+
   static const recordOrganizerAnalyticsEventCallablePayloadClubId = CatchContractFieldConstraints(
     path: 'recordOrganizerAnalyticsEventCallablePayload.clubId',
     maxLength: 180,
@@ -26655,6 +27380,13 @@ abstract final class CatchContractConstraints {
     maxLength: 180,
     minLength: 1,
     required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const registerPublicEventCallablePayloadInviteToken = CatchContractFieldConstraints(
+    path: 'registerPublicEventCallablePayload.inviteToken',
+    maxLength: 180,
+    minLength: 1,
     valueTypes: <String>['string'],
   );
 
@@ -33180,6 +33912,7 @@ abstract final class CatchContractConstraints {
     'checkInEventRuntimeCallableResponse.status': checkInEventRuntimeCallableResponseStatus,
     'claimEventRuntimeAccessCallablePayload.attendeeToken': claimEventRuntimeAccessCallablePayloadAttendeeToken,
     'claimEventRuntimeAccessCallablePayload.displayName': claimEventRuntimeAccessCallablePayloadDisplayName,
+    'claimEventRuntimeAccessCallablePayload.inviteToken': claimEventRuntimeAccessCallablePayloadInviteToken,
     'claimEventRuntimeAccessCallablePayload.publicRuntimeId': claimEventRuntimeAccessCallablePayloadPublicRuntimeId,
     'claimEventRuntimeAccessCallablePayload.runtimeTermsVersion': claimEventRuntimeAccessCallablePayloadRuntimeTermsVersion,
     'claimEventRuntimeAccessCallableResponse.attendeeId': claimEventRuntimeAccessCallableResponseAttendeeId,
@@ -33725,8 +34458,13 @@ abstract final class CatchContractConstraints {
     'createEventCallablePayload.startingPointLat': createEventCallablePayloadStartingPointLat,
     'createEventCallablePayload.startingPointLng': createEventCallablePayloadStartingPointLng,
     'createEventCallablePayload.startTimeMillis': createEventCallablePayloadStartTimeMillis,
+    'createEventInviteLinkCallablePayload.attributionWindowDays': createEventInviteLinkCallablePayloadAttributionWindowDays,
+    'createEventInviteLinkCallablePayload.campaignId': createEventInviteLinkCallablePayloadCampaignId,
+    'createEventInviteLinkCallablePayload.destinationKind': createEventInviteLinkCallablePayloadDestinationKind,
     'createEventInviteLinkCallablePayload.eventId': createEventInviteLinkCallablePayloadEventId,
+    'createEventInviteLinkCallablePayload.intendedRecipientContactId': createEventInviteLinkCallablePayloadIntendedRecipientContactId,
     'createEventInviteLinkCallablePayload.label': createEventInviteLinkCallablePayloadLabel,
+    'createEventInviteLinkCallablePayload.linkKind': createEventInviteLinkCallablePayloadLinkKind,
     'createEventInviteLinkCallablePayload.source': createEventInviteLinkCallablePayloadSource,
     'createEventReviewCallablePayload.clubId': createEventReviewCallablePayloadClubId,
     'createEventReviewCallablePayload.comment': createEventReviewCallablePayloadComment,
@@ -34012,6 +34750,9 @@ abstract final class CatchContractConstraints {
     'eventAttendeeDocument.eventId': eventAttendeeDocumentEventId,
     'eventAttendeeDocument.externalReference': eventAttendeeDocumentExternalReference,
     'eventAttendeeDocument.importId': eventAttendeeDocumentImportId,
+    'eventAttendeeDocument.inviteCapturedAt._nanoseconds': eventAttendeeDocumentInviteCapturedAtNanoseconds,
+    'eventAttendeeDocument.inviteCapturedAt._seconds': eventAttendeeDocumentInviteCapturedAtSeconds,
+    'eventAttendeeDocument.inviteLinkId': eventAttendeeDocumentInviteLinkId,
     'eventAttendeeDocument.linkedAt._nanoseconds': eventAttendeeDocumentLinkedAtNanoseconds,
     'eventAttendeeDocument.linkedAt._seconds': eventAttendeeDocumentLinkedAtSeconds,
     'eventAttendeeDocument.linkedUid': eventAttendeeDocumentLinkedUid,
@@ -34263,27 +35004,88 @@ abstract final class CatchContractConstraints {
     'eventIntakeReviewDecisionDocument.targetType': eventIntakeReviewDecisionDocumentTargetType,
     'eventIntakeReviewDecisionDocument.updatedAt._nanoseconds': eventIntakeReviewDecisionDocumentUpdatedAtNanoseconds,
     'eventIntakeReviewDecisionDocument.updatedAt._seconds': eventIntakeReviewDecisionDocumentUpdatedAtSeconds,
+    'eventInviteAttributionDocument.amountMinor': eventInviteAttributionDocumentAmountMinor,
+    'eventInviteAttributionDocument.confidence': eventInviteAttributionDocumentConfidence,
+    'eventInviteAttributionDocument.createdAt._nanoseconds': eventInviteAttributionDocumentCreatedAtNanoseconds,
+    'eventInviteAttributionDocument.createdAt._seconds': eventInviteAttributionDocumentCreatedAtSeconds,
+    'eventInviteAttributionDocument.currency': eventInviteAttributionDocumentCurrency,
+    'eventInviteAttributionDocument.eventId': eventInviteAttributionDocumentEventId,
+    'eventInviteAttributionDocument.factKind': eventInviteAttributionDocumentFactKind,
+    'eventInviteAttributionDocument.intendedRecipientContactId': eventInviteAttributionDocumentIntendedRecipientContactId,
+    'eventInviteAttributionDocument.inviteLinkId': eventInviteAttributionDocumentInviteLinkId,
+    'eventInviteAttributionDocument.linkKind': eventInviteAttributionDocumentLinkKind,
+    'eventInviteAttributionDocument.occurredAt._nanoseconds': eventInviteAttributionDocumentOccurredAtNanoseconds,
+    'eventInviteAttributionDocument.occurredAt._seconds': eventInviteAttributionDocumentOccurredAtSeconds,
+    'eventInviteAttributionDocument.operation': eventInviteAttributionDocumentOperation,
+    'eventInviteAttributionDocument.organizerId': eventInviteAttributionDocumentOrganizerId,
+    'eventInviteAttributionDocument.ownerContactId': eventInviteAttributionDocumentOwnerContactId,
+    'eventInviteAttributionDocument.primaryCredit': eventInviteAttributionDocumentPrimaryCredit,
+    'eventInviteAttributionDocument.referralCredit': eventInviteAttributionDocumentReferralCredit,
+    'eventInviteAttributionDocument.reversalOfAttributionId': eventInviteAttributionDocumentReversalOfAttributionId,
+    'eventInviteAttributionDocument.sourceFactId': eventInviteAttributionDocumentSourceFactId,
+    'eventInviteAttributionDocument.sourceKind': eventInviteAttributionDocumentSourceKind,
+    'eventInviteAttributionDocument.subjectContactId': eventInviteAttributionDocumentSubjectContactId,
+    'eventInviteAttributionDocument.subjectUid': eventInviteAttributionDocumentSubjectUid,
+    'eventInviteLinkDocument.attributionWindowEndsAt._nanoseconds': eventInviteLinkDocumentAttributionWindowEndsAtNanoseconds,
+    'eventInviteLinkDocument.attributionWindowEndsAt._seconds': eventInviteLinkDocumentAttributionWindowEndsAtSeconds,
+    'eventInviteLinkDocument.campaignId': eventInviteLinkDocumentCampaignId,
     'eventInviteLinkDocument.catcherCount': eventInviteLinkDocumentCatcherCount,
     'eventInviteLinkDocument.chatStartedCount': eventInviteLinkDocumentChatStartedCount,
     'eventInviteLinkDocument.checkedInCount': eventInviteLinkDocumentCheckedInCount,
     'eventInviteLinkDocument.clubId': eventInviteLinkDocumentClubId,
     'eventInviteLinkDocument.confirmedCount': eventInviteLinkDocumentConfirmedCount,
+    'eventInviteLinkDocument.contractVersion': eventInviteLinkDocumentContractVersion,
     'eventInviteLinkDocument.createdAt._nanoseconds': eventInviteLinkDocumentCreatedAtNanoseconds,
     'eventInviteLinkDocument.createdAt._seconds': eventInviteLinkDocumentCreatedAtSeconds,
+    'eventInviteLinkDocument.destinationKind': eventInviteLinkDocumentDestinationKind,
     'eventInviteLinkDocument.disabledAt._nanoseconds': eventInviteLinkDocumentDisabledAtNanoseconds,
     'eventInviteLinkDocument.disabledAt._seconds': eventInviteLinkDocumentDisabledAtSeconds,
     'eventInviteLinkDocument.eventId': eventInviteLinkDocumentEventId,
     'eventInviteLinkDocument.hostUid': eventInviteLinkDocumentHostUid,
+    'eventInviteLinkDocument.intendedRecipientContactId': eventInviteLinkDocumentIntendedRecipientContactId,
+    'eventInviteLinkDocument.issuanceChannel': eventInviteLinkDocumentIssuanceChannel,
     'eventInviteLinkDocument.label': eventInviteLinkDocumentLabel,
+    'eventInviteLinkDocument.likelyHumanOpenCount': eventInviteLinkDocumentLikelyHumanOpenCount,
+    'eventInviteLinkDocument.linkKind': eventInviteLinkDocumentLinkKind,
     'eventInviteLinkDocument.matchCount': eventInviteLinkDocumentMatchCount,
     'eventInviteLinkDocument.openCount': eventInviteLinkDocumentOpenCount,
     'eventInviteLinkDocument.organizerId': eventInviteLinkDocumentOrganizerId,
+    'eventInviteLinkDocument.ownerContactId': eventInviteLinkDocumentOwnerContactId,
+    'eventInviteLinkDocument.ownerUid': eventInviteLinkDocumentOwnerUid,
     'eventInviteLinkDocument.paidCount': eventInviteLinkDocumentPaidCount,
+    'eventInviteLinkDocument.referredCheckedInCount': eventInviteLinkDocumentReferredCheckedInCount,
+    'eventInviteLinkDocument.referredRegistrationCount': eventInviteLinkDocumentReferredRegistrationCount,
     'eventInviteLinkDocument.requestCount': eventInviteLinkDocumentRequestCount,
+    'eventInviteLinkDocument.shareIntentCount': eventInviteLinkDocumentShareIntentCount,
     'eventInviteLinkDocument.source': eventInviteLinkDocumentSource,
     'eventInviteLinkDocument.tokenHash': eventInviteLinkDocumentTokenHash,
+    'eventInviteLinkDocument.tokenVersion': eventInviteLinkDocumentTokenVersion,
     'eventInviteLinkDocument.updatedAt._nanoseconds': eventInviteLinkDocumentUpdatedAtNanoseconds,
     'eventInviteLinkDocument.updatedAt._seconds': eventInviteLinkDocumentUpdatedAtSeconds,
+    'eventInviteLinkDocument.verifiedRegistrationCount': eventInviteLinkDocumentVerifiedRegistrationCount,
+    'eventInviteLinkSecretDocument.createdAt._nanoseconds': eventInviteLinkSecretDocumentCreatedAtNanoseconds,
+    'eventInviteLinkSecretDocument.createdAt._seconds': eventInviteLinkSecretDocumentCreatedAtSeconds,
+    'eventInviteLinkSecretDocument.eventId': eventInviteLinkSecretDocumentEventId,
+    'eventInviteLinkSecretDocument.organizerId': eventInviteLinkSecretDocumentOrganizerId,
+    'eventInviteLinkSecretDocument.token': eventInviteLinkSecretDocumentToken,
+    'eventInviteLinkSecretDocument.tokenHash': eventInviteLinkSecretDocumentTokenHash,
+    'eventInviteLinkSecretDocument.tokenVersion': eventInviteLinkSecretDocumentTokenVersion,
+    'eventInviteLinkSecretDocument.updatedAt._nanoseconds': eventInviteLinkSecretDocumentUpdatedAtNanoseconds,
+    'eventInviteLinkSecretDocument.updatedAt._seconds': eventInviteLinkSecretDocumentUpdatedAtSeconds,
+    'eventInviteTouchDocument.actorUid': eventInviteTouchDocumentActorUid,
+    'eventInviteTouchDocument.attributionEligible': eventInviteTouchDocumentAttributionEligible,
+    'eventInviteTouchDocument.botReason': eventInviteTouchDocumentBotReason,
+    'eventInviteTouchDocument.createdAt._nanoseconds': eventInviteTouchDocumentCreatedAtNanoseconds,
+    'eventInviteTouchDocument.createdAt._seconds': eventInviteTouchDocumentCreatedAtSeconds,
+    'eventInviteTouchDocument.eventId': eventInviteTouchDocumentEventId,
+    'eventInviteTouchDocument.expiresAt._nanoseconds': eventInviteTouchDocumentExpiresAtNanoseconds,
+    'eventInviteTouchDocument.expiresAt._seconds': eventInviteTouchDocumentExpiresAtSeconds,
+    'eventInviteTouchDocument.inviteLinkId': eventInviteTouchDocumentInviteLinkId,
+    'eventInviteTouchDocument.likelyHuman': eventInviteTouchDocumentLikelyHuman,
+    'eventInviteTouchDocument.organizerId': eventInviteTouchDocumentOrganizerId,
+    'eventInviteTouchDocument.sessionHash': eventInviteTouchDocumentSessionHash,
+    'eventInviteTouchDocument.surface': eventInviteTouchDocumentSurface,
+    'eventInviteTouchDocument.touchKind': eventInviteTouchDocumentTouchKind,
     'eventJoinRequestDecisionCallablePayload.decision': eventJoinRequestDecisionCallablePayloadDecision,
     'eventJoinRequestDecisionCallablePayload.eventId': eventJoinRequestDecisionCallablePayloadEventId,
     'eventJoinRequestDecisionCallablePayload.userId': eventJoinRequestDecisionCallablePayloadUserId,
@@ -34426,6 +35228,18 @@ abstract final class CatchContractConstraints {
     'eventSafetyReportDocument.status': eventSafetyReportDocumentStatus,
     'eventSafetyReportDocument.updatedAt._nanoseconds': eventSafetyReportDocumentUpdatedAtNanoseconds,
     'eventSafetyReportDocument.updatedAt._seconds': eventSafetyReportDocumentUpdatedAtSeconds,
+    'eventShareIntentDocument.actorKind': eventShareIntentDocumentActorKind,
+    'eventShareIntentDocument.actorUid': eventShareIntentDocumentActorUid,
+    'eventShareIntentDocument.channelHint': eventShareIntentDocumentChannelHint,
+    'eventShareIntentDocument.createdAt._nanoseconds': eventShareIntentDocumentCreatedAtNanoseconds,
+    'eventShareIntentDocument.createdAt._seconds': eventShareIntentDocumentCreatedAtSeconds,
+    'eventShareIntentDocument.creativeId': eventShareIntentDocumentCreativeId,
+    'eventShareIntentDocument.eventId': eventShareIntentDocumentEventId,
+    'eventShareIntentDocument.expiresAt._nanoseconds': eventShareIntentDocumentExpiresAtNanoseconds,
+    'eventShareIntentDocument.expiresAt._seconds': eventShareIntentDocumentExpiresAtSeconds,
+    'eventShareIntentDocument.inviteLinkId': eventShareIntentDocumentInviteLinkId,
+    'eventShareIntentDocument.organizerId': eventShareIntentDocumentOrganizerId,
+    'eventShareIntentDocument.surface': eventShareIntentDocumentSurface,
     'eventSuccessArrivalMissionDocument.answerOptions': eventSuccessArrivalMissionDocumentAnswerOptions,
     'eventSuccessArrivalMissionDocument.answerOptions.items.id': eventSuccessArrivalMissionDocumentAnswerOptionsItemsId,
     'eventSuccessArrivalMissionDocument.answerOptions.items.label': eventSuccessArrivalMissionDocumentAnswerOptionsItemsLabel,
@@ -34880,8 +35694,11 @@ abstract final class CatchContractConstraints {
     'getCrossPathsSuggestionsCallableResponse.suggestions.items.reasonCodes.items': getCrossPathsSuggestionsCallableResponseSuggestionsItemsReasonCodesItems,
     'getCrossPathsSuggestionsCallableResponse.suggestions.items.suggestionToken': getCrossPathsSuggestionsCallableResponseSuggestionsItemsSuggestionToken,
     'getCrossPathsSuggestionsCallableResponse.suggestions.items.tokenExpiresAt': getCrossPathsSuggestionsCallableResponseSuggestionsItemsTokenExpiresAt,
+    'getEventInviteLinkTokenCallablePayload.eventId': getEventInviteLinkTokenCallablePayloadEventId,
+    'getEventInviteLinkTokenCallablePayload.inviteLinkId': getEventInviteLinkTokenCallablePayloadInviteLinkId,
     'getEventRuntimeBootstrapCallablePayload.publicRuntimeId': getEventRuntimeBootstrapCallablePayloadPublicRuntimeId,
     'getEventRuntimeBootstrapCallableResponse.event.endTimeMillis': getEventRuntimeBootstrapCallableResponseEventEndTimeMillis,
+    'getEventRuntimeBootstrapCallableResponse.event.eventId': getEventRuntimeBootstrapCallableResponseEventEventId,
     'getEventRuntimeBootstrapCallableResponse.event.locationName': getEventRuntimeBootstrapCallableResponseEventLocationName,
     'getEventRuntimeBootstrapCallableResponse.event.moduleIds': getEventRuntimeBootstrapCallableResponseEventModuleIds,
     'getEventRuntimeBootstrapCallableResponse.event.moduleIds.items': getEventRuntimeBootstrapCallableResponseEventModuleIdsItems,
@@ -34953,7 +35770,9 @@ abstract final class CatchContractConstraints {
     'getOrganizerContactDetailCallableResponse.traits.sourceCoverage': getOrganizerContactDetailCallableResponseTraitsSourceCoverage,
     'getOrganizerContactDetailCallableResponse.traits.whatsappStatus': getOrganizerContactDetailCallableResponseTraitsWhatsappStatus,
     'getOrganizerCrmSummaryCallablePayload.organizerId': getOrganizerCrmSummaryCallablePayloadOrganizerId,
+    'getOrganizerCrmSummaryCallableResponse.advocateCount': getOrganizerCrmSummaryCallableResponseAdvocateCount,
     'getOrganizerCrmSummaryCallableResponse.contactCount': getOrganizerCrmSummaryCallableResponseContactCount,
+    'getOrganizerCrmSummaryCallableResponse.highImpactAdvocateCount': getOrganizerCrmSummaryCallableResponseHighImpactAdvocateCount,
     'getOrganizerCrmSummaryCallableResponse.importedContactCount': getOrganizerCrmSummaryCallableResponseImportedContactCount,
     'getOrganizerCrmSummaryCallableResponse.linkedAccountCount': getOrganizerCrmSummaryCallableResponseLinkedAccountCount,
     'getOrganizerCrmSummaryCallableResponse.organizerId': getOrganizerCrmSummaryCallableResponseOrganizerId,
@@ -35510,9 +36329,11 @@ abstract final class CatchContractConstraints {
     'organizerAudienceProjectionReceiptDocument.expiresAt._nanoseconds': organizerAudienceProjectionReceiptDocumentExpiresAtNanoseconds,
     'organizerAudienceProjectionReceiptDocument.expiresAt._seconds': organizerAudienceProjectionReceiptDocumentExpiresAtSeconds,
     'organizerAudienceProjectionReceiptDocument.organizerId': organizerAudienceProjectionReceiptDocumentOrganizerId,
+    'organizerAudienceSummaryDocument.advocateCount': organizerAudienceSummaryDocumentAdvocateCount,
     'organizerAudienceSummaryDocument.computedAt._nanoseconds': organizerAudienceSummaryDocumentComputedAtNanoseconds,
     'organizerAudienceSummaryDocument.computedAt._seconds': organizerAudienceSummaryDocumentComputedAtSeconds,
     'organizerAudienceSummaryDocument.contactCount': organizerAudienceSummaryDocumentContactCount,
+    'organizerAudienceSummaryDocument.highImpactAdvocateCount': organizerAudienceSummaryDocumentHighImpactAdvocateCount,
     'organizerAudienceSummaryDocument.importedContactCount': organizerAudienceSummaryDocumentImportedContactCount,
     'organizerAudienceSummaryDocument.linkedAccountCount': organizerAudienceSummaryDocumentLinkedAccountCount,
     'organizerAudienceSummaryDocument.organizerId': organizerAudienceSummaryDocumentOrganizerId,
@@ -35604,6 +36425,9 @@ abstract final class CatchContractConstraints {
     'organizerContactEventEdgeDocument.eventStartAt._nanoseconds': organizerContactEventEdgeDocumentEventStartAtNanoseconds,
     'organizerContactEventEdgeDocument.eventStartAt._seconds': organizerContactEventEdgeDocumentEventStartAtSeconds,
     'organizerContactEventEdgeDocument.expected': organizerContactEventEdgeDocumentExpected,
+    'organizerContactEventEdgeDocument.inviteCapturedAt._nanoseconds': organizerContactEventEdgeDocumentInviteCapturedAtNanoseconds,
+    'organizerContactEventEdgeDocument.inviteCapturedAt._seconds': organizerContactEventEdgeDocumentInviteCapturedAtSeconds,
+    'organizerContactEventEdgeDocument.inviteLinkId': organizerContactEventEdgeDocumentInviteLinkId,
     'organizerContactEventEdgeDocument.linkedUid': organizerContactEventEdgeDocumentLinkedUid,
     'organizerContactEventEdgeDocument.organizerId': organizerContactEventEdgeDocumentOrganizerId,
     'organizerContactEventEdgeDocument.originContactId': organizerContactEventEdgeDocumentOriginContactId,
@@ -35692,6 +36516,9 @@ abstract final class CatchContractConstraints {
     'organizerContactTraitDocument.noShowCount': organizerContactTraitDocumentNoShowCount,
     'organizerContactTraitDocument.organizerId': organizerContactTraitDocumentOrganizerId,
     'organizerContactTraitDocument.projectionVersion': organizerContactTraitDocumentProjectionVersion,
+    'organizerContactTraitDocument.referredCheckedIn365DayCount': organizerContactTraitDocumentReferredCheckedIn365DayCount,
+    'organizerContactTraitDocument.referredCheckedInCount': organizerContactTraitDocumentReferredCheckedInCount,
+    'organizerContactTraitDocument.referredRegistrationCount': organizerContactTraitDocumentReferredRegistrationCount,
     'organizerContactTraitDocument.segmentIds': organizerContactTraitDocumentSegmentIds,
     'organizerContactTraitDocument.segmentIds.items': organizerContactTraitDocumentSegmentIdsItems,
     'organizerContactTraitDocument.smsStatus': organizerContactTraitDocumentSmsStatus,
@@ -36313,6 +37140,13 @@ abstract final class CatchContractConstraints {
     'razorpayPendingOrderDocument.userId': razorpayPendingOrderDocumentUserId,
     'recordEventInviteLinkOpenCallablePayload.eventId': recordEventInviteLinkOpenCallablePayloadEventId,
     'recordEventInviteLinkOpenCallablePayload.inviteLinkId': recordEventInviteLinkOpenCallablePayloadInviteLinkId,
+    'recordEventInviteLinkOpenCallablePayload.sessionId': recordEventInviteLinkOpenCallablePayloadSessionId,
+    'recordEventInviteLinkOpenCallablePayload.surface': recordEventInviteLinkOpenCallablePayloadSurface,
+    'recordEventShareIntentCallablePayload.channelHint': recordEventShareIntentCallablePayloadChannelHint,
+    'recordEventShareIntentCallablePayload.creativeId': recordEventShareIntentCallablePayloadCreativeId,
+    'recordEventShareIntentCallablePayload.eventId': recordEventShareIntentCallablePayloadEventId,
+    'recordEventShareIntentCallablePayload.inviteLinkId': recordEventShareIntentCallablePayloadInviteLinkId,
+    'recordEventShareIntentCallablePayload.surface': recordEventShareIntentCallablePayloadSurface,
     'recordOrganizerAnalyticsEventCallablePayload.clubId': recordOrganizerAnalyticsEventCallablePayloadClubId,
     'recordOrganizerAnalyticsEventCallablePayload.eventId': recordOrganizerAnalyticsEventCallablePayloadEventId,
     'recordOrganizerAnalyticsEventCallablePayload.eventName': recordOrganizerAnalyticsEventCallablePayloadEventName,
@@ -36324,6 +37158,7 @@ abstract final class CatchContractConstraints {
     'recordOrganizerAnalyticsEventCallableResponse.accepted': recordOrganizerAnalyticsEventCallableResponseAccepted,
     'registerPublicEventCallablePayload.displayName': registerPublicEventCallablePayloadDisplayName,
     'registerPublicEventCallablePayload.eventId': registerPublicEventCallablePayloadEventId,
+    'registerPublicEventCallablePayload.inviteToken': registerPublicEventCallablePayloadInviteToken,
     'registerPublicEventCallablePayload.organizerUpdates.sms': registerPublicEventCallablePayloadOrganizerUpdatesSms,
     'registerPublicEventCallablePayload.organizerUpdates.termsVersion': registerPublicEventCallablePayloadOrganizerUpdatesTermsVersion,
     'registerPublicEventCallablePayload.organizerUpdates.whatsapp': registerPublicEventCallablePayloadOrganizerUpdatesWhatsapp,

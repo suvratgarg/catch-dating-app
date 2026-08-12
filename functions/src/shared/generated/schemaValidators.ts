@@ -47,6 +47,10 @@ import {EventDocument} from "./eventDocument";
 import {ExternalEventDocument} from "./externalEventDocument";
 import {EventPrivateAccessDocument} from "./eventPrivateAccessDocument";
 import {EventInviteLinkDocument} from "./eventInviteLinkDocument";
+import {EventInviteLinkSecretDocument} from "./eventInviteLinkSecretDocument";
+import {EventInviteTouchDocument} from "./eventInviteTouchDocument";
+import {EventShareIntentDocument} from "./eventShareIntentDocument";
+import {EventInviteAttributionDocument} from "./eventInviteAttributionDocument";
 import {EventParticipationDocument} from "./eventParticipationDocument";
 import {EventAttendeeDocument} from "./eventAttendeeDocument";
 import {EventAttendeeImportDocument} from "./eventAttendeeImportDocument";
@@ -175,6 +179,8 @@ import {CreateEventWaitlistOffersCallablePayload} from "./createEventWaitlistOff
 import {CreateEventInviteLinkCallablePayload} from "./createEventInviteLinkCallablePayload";
 import {DisableEventInviteLinkCallablePayload} from "./disableEventInviteLinkCallablePayload";
 import {RecordEventInviteLinkOpenCallablePayload} from "./recordEventInviteLinkOpenCallablePayload";
+import {GetEventInviteLinkTokenCallablePayload} from "./getEventInviteLinkTokenCallablePayload";
+import {RecordEventShareIntentCallablePayload} from "./recordEventShareIntentCallablePayload";
 import {RecordOrganizerAnalyticsEventCallablePayload} from "./recordOrganizerAnalyticsEventCallablePayload";
 import {RecordOrganizerAnalyticsEventCallableResponse} from "./recordOrganizerAnalyticsEventCallableResponse";
 import {MarkEventAttendanceCallablePayload} from "./markEventAttendanceCallablePayload";
@@ -321,6 +327,10 @@ import {
   externalEventDocumentSchema,
   eventPrivateAccessDocumentSchema,
   eventInviteLinkDocumentSchema,
+  eventInviteLinkSecretDocumentSchema,
+  eventInviteTouchDocumentSchema,
+  eventShareIntentDocumentSchema,
+  eventInviteAttributionDocumentSchema,
   eventParticipationDocumentSchema,
   eventAttendeeDocumentSchema,
   eventAttendeeImportDocumentSchema,
@@ -449,6 +459,8 @@ import {
   createEventInviteLinkCallablePayloadSchema,
   disableEventInviteLinkCallablePayloadSchema,
   recordEventInviteLinkOpenCallablePayloadSchema,
+  getEventInviteLinkTokenCallablePayloadSchema,
+  recordEventShareIntentCallablePayloadSchema,
   recordOrganizerAnalyticsEventCallablePayloadSchema,
   recordOrganizerAnalyticsEventCallableResponseSchema,
   markEventAttendanceCallablePayloadSchema,
@@ -728,6 +740,22 @@ export const validateEventInviteLinkDocument:
   ValidateFunction<EventInviteLinkDocument> =
     ajv.compile(eventInviteLinkDocumentSchema) as
       ValidateFunction<EventInviteLinkDocument>;
+export const validateEventInviteLinkSecretDocument:
+  ValidateFunction<EventInviteLinkSecretDocument> =
+    ajv.compile(eventInviteLinkSecretDocumentSchema) as
+      ValidateFunction<EventInviteLinkSecretDocument>;
+export const validateEventInviteTouchDocument:
+  ValidateFunction<EventInviteTouchDocument> =
+    ajv.compile(eventInviteTouchDocumentSchema) as
+      ValidateFunction<EventInviteTouchDocument>;
+export const validateEventShareIntentDocument:
+  ValidateFunction<EventShareIntentDocument> =
+    ajv.compile(eventShareIntentDocumentSchema) as
+      ValidateFunction<EventShareIntentDocument>;
+export const validateEventInviteAttributionDocument:
+  ValidateFunction<EventInviteAttributionDocument> =
+    ajv.compile(eventInviteAttributionDocumentSchema) as
+      ValidateFunction<EventInviteAttributionDocument>;
 export const validateEventParticipationDocument:
   ValidateFunction<EventParticipationDocument> =
     ajv.compile(eventParticipationDocumentSchema) as
@@ -1240,6 +1268,14 @@ export const validateRecordEventInviteLinkOpenCallablePayload:
   ValidateFunction<RecordEventInviteLinkOpenCallablePayload> =
     ajv.compile(recordEventInviteLinkOpenCallablePayloadSchema) as
       ValidateFunction<RecordEventInviteLinkOpenCallablePayload>;
+export const validateGetEventInviteLinkTokenCallablePayload:
+  ValidateFunction<GetEventInviteLinkTokenCallablePayload> =
+    ajv.compile(getEventInviteLinkTokenCallablePayloadSchema) as
+      ValidateFunction<GetEventInviteLinkTokenCallablePayload>;
+export const validateRecordEventShareIntentCallablePayload:
+  ValidateFunction<RecordEventShareIntentCallablePayload> =
+    ajv.compile(recordEventShareIntentCallablePayloadSchema) as
+      ValidateFunction<RecordEventShareIntentCallablePayload>;
 export const validateRecordOrganizerAnalyticsEventCallablePayload:
   ValidateFunction<RecordOrganizerAnalyticsEventCallablePayload> =
     ajv.compile(recordOrganizerAnalyticsEventCallablePayloadSchema) as

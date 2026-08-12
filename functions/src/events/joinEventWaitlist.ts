@@ -40,7 +40,7 @@ import {assertRunPreferencesReadyForEvent} from
 import {
   incrementInviteLinkCounterInTransaction,
   inviteAttributionWriteFields,
-  resolveInviteAttributionInTransaction,
+  resolveInviteAttribution,
 } from "./inviteLinks";
 
 /**
@@ -60,6 +60,11 @@ export const joinEventWaitlist = onCall(appCheckCallableOptions, async (
 
   const db = admin.firestore();
   await checkRateLimit(db, userId, "joinEventWaitlist");
+  const inviteAttribution = await resolveInviteAttribution({
+    db,
+    eventId,
+    inviteLinkId,
+  });
 
   const eventRef = db.collection("events").doc(eventId);
   const participationRef = db
@@ -144,12 +149,6 @@ export const joinEventWaitlist = onCall(appCheckCallableOptions, async (
     }
 
     const cohortAtSignup = cohortIdForUser(user);
-    const inviteAttribution = await resolveInviteAttributionInTransaction({
-      tx,
-      db,
-      eventId,
-      inviteLinkId,
-    });
     await claimUserEventScheduleInTransaction(tx, db, {
       uid: userId,
       eventId,

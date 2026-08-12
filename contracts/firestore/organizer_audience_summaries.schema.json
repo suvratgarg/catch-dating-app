@@ -12,6 +12,7 @@
   "required": [
     "organizerId", "contactCount", "pastAttendeeCount",
     "repeatAttendeeCount", "linkedAccountCount", "importedContactCount",
+    "advocateCount", "highImpactAdvocateCount",
     "whatsappOptInCount", "smsOptInCount", "sourceCoverage",
     "projectionVersion", "computedAt"
   ],
@@ -22,6 +23,8 @@
     "repeatAttendeeCount": {"$ref": "#/definitions/count"},
     "linkedAccountCount": {"$ref": "#/definitions/count"},
     "importedContactCount": {"$ref": "#/definitions/count"},
+    "advocateCount": {"$ref": "#/definitions/count"},
+    "highImpactAdvocateCount": {"$ref": "#/definitions/count"},
     "whatsappOptInCount": {"$ref": "#/definitions/count"},
     "smsOptInCount": {"$ref": "#/definitions/count"},
     "sourceCoverage": {"type": "string", "enum": ["exact", "partial"]},

@@ -46,6 +46,10 @@ import {
   externalEventDocumentSchema,
   eventPrivateAccessDocumentSchema,
   eventInviteLinkDocumentSchema,
+  eventInviteLinkSecretDocumentSchema,
+  eventInviteTouchDocumentSchema,
+  eventShareIntentDocumentSchema,
+  eventInviteAttributionDocumentSchema,
   eventParticipationDocumentSchema,
   eventAttendeeDocumentSchema,
   eventAttendeeImportDocumentSchema,
@@ -174,6 +178,8 @@ import {
   createEventInviteLinkCallablePayloadSchema,
   disableEventInviteLinkCallablePayloadSchema,
   recordEventInviteLinkOpenCallablePayloadSchema,
+  getEventInviteLinkTokenCallablePayloadSchema,
+  recordEventShareIntentCallablePayloadSchema,
   recordOrganizerAnalyticsEventCallablePayloadSchema,
   recordOrganizerAnalyticsEventCallableResponseSchema,
   markEventAttendanceCallablePayloadSchema,
@@ -343,6 +349,10 @@ export const validateEventDocument = ajv.compile(eventDocumentSchema);
 export const validateExternalEventDocument = ajv.compile(externalEventDocumentSchema);
 export const validateEventPrivateAccessDocument = ajv.compile(eventPrivateAccessDocumentSchema);
 export const validateEventInviteLinkDocument = ajv.compile(eventInviteLinkDocumentSchema);
+export const validateEventInviteLinkSecretDocument = ajv.compile(eventInviteLinkSecretDocumentSchema);
+export const validateEventInviteTouchDocument = ajv.compile(eventInviteTouchDocumentSchema);
+export const validateEventShareIntentDocument = ajv.compile(eventShareIntentDocumentSchema);
+export const validateEventInviteAttributionDocument = ajv.compile(eventInviteAttributionDocumentSchema);
 export const validateEventParticipationDocument = ajv.compile(eventParticipationDocumentSchema);
 export const validateEventAttendeeDocument = ajv.compile(eventAttendeeDocumentSchema);
 export const validateEventAttendeeImportDocument = ajv.compile(eventAttendeeImportDocumentSchema);
@@ -471,6 +481,8 @@ export const validateCreateEventWaitlistOffersCallablePayload = ajv.compile(crea
 export const validateCreateEventInviteLinkCallablePayload = ajv.compile(createEventInviteLinkCallablePayloadSchema);
 export const validateDisableEventInviteLinkCallablePayload = ajv.compile(disableEventInviteLinkCallablePayloadSchema);
 export const validateRecordEventInviteLinkOpenCallablePayload = ajv.compile(recordEventInviteLinkOpenCallablePayloadSchema);
+export const validateGetEventInviteLinkTokenCallablePayload = ajv.compile(getEventInviteLinkTokenCallablePayloadSchema);
+export const validateRecordEventShareIntentCallablePayload = ajv.compile(recordEventShareIntentCallablePayloadSchema);
 export const validateRecordOrganizerAnalyticsEventCallablePayload = ajv.compile(recordOrganizerAnalyticsEventCallablePayloadSchema);
 export const validateRecordOrganizerAnalyticsEventCallableResponse = ajv.compile(recordOrganizerAnalyticsEventCallableResponseSchema);
 export const validateMarkEventAttendanceCallablePayload = ajv.compile(markEventAttendanceCallablePayloadSchema);

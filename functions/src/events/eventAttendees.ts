@@ -34,6 +34,7 @@ import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {organizerCommunicationPreferenceId} from
   "../shared/organizerCommunicationPreferences";
 import {eventPolicyFromEvent} from "./eventPolicy";
+import {resolveInviteAttributionToken} from "./inviteLinks";
 
 type ImportRow = ImportEventAttendeesCallablePayload["rows"][number];
 type ImportError = EventAttendeeImportDocument["errors"][number];
@@ -194,6 +195,8 @@ export async function importEventAttendeesForHost(
       cancelledAt: existing?.cancelledAt ?? null,
       checkedInBy: existing?.checkedInBy ?? null,
       linkedAt: existing?.linkedAt ?? null,
+      inviteLinkId: existing?.inviteLinkId ?? null,
+      inviteCapturedAt: existing?.inviteCapturedAt ?? null,
     };
     batch.set(attendeeRef, document);
   }
@@ -324,6 +327,11 @@ export async function registerPublicEventHandler(
 
   const db = deps.firestore();
   await deps.checkRateLimit(db, uid, "registerPublicEvent");
+  const inviteAttribution = await resolveInviteAttributionToken({
+    db,
+    eventId: payload.eventId,
+    inviteToken: payload.inviteToken,
+  });
   const eventRef = db.collection("events").doc(payload.eventId);
   const attendeeId = eventAttendeeId(payload.eventId, `phone:${phone}`);
   const attendeeRef = db.collection("eventAttendees").doc(attendeeId);
@@ -414,6 +422,10 @@ export async function registerPublicEventHandler(
       cancelledAt: null,
       checkedInBy: existing?.checkedInBy ?? null,
       linkedAt: existing?.linkedAt ?? now,
+      inviteLinkId: existing?.inviteLinkId ??
+        inviteAttribution?.inviteLinkId ?? null,
+      inviteCapturedAt: existing?.inviteCapturedAt ??
+        (inviteAttribution ? now : null),
     };
     tx.set(attendeeRef, document);
     if (!onboardingDraftSnap.exists) {
@@ -740,7 +752,7 @@ function normalizePublicRegistrationPayload(data: unknown): unknown {
     return data;
   }
   const normalized = {...data} as Record<string, unknown>;
-  for (const field of ["eventId", "displayName"]) {
+  for (const field of ["eventId", "displayName", "inviteToken"]) {
     if (typeof normalized[field] === "string") {
       normalized[field] = normalized[field].trim().replace(/\s+/g, " ");
     }

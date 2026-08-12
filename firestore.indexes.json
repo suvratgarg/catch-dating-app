@@ -161,6 +161,38 @@
       ]
     },
     {
+      "collectionGroup": "eventInviteAttributions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "eventId", "mode": "ASCENDING"},
+        {"fieldPath": "createdAt", "mode": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "eventInviteAttributions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "ownerContactId", "mode": "ASCENDING"},
+        {"fieldPath": "referralCredit", "mode": "ASCENDING"},
+        {"fieldPath": "factKind", "mode": "ASCENDING"},
+        {"fieldPath": "operation", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "eventInviteAttributions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "ownerContactId", "mode": "ASCENDING"},
+        {"fieldPath": "referralCredit", "mode": "ASCENDING"},
+        {"fieldPath": "factKind", "mode": "ASCENDING"},
+        {"fieldPath": "operation", "mode": "ASCENDING"},
+        {"fieldPath": "occurredAt", "mode": "ASCENDING"}
+      ]
+    },
+    {
       "collectionGroup": "organizerContacts",
       "queryScope": "COLLECTION",
       "fields": [
@@ -227,6 +259,14 @@
       "fields": [
         {"fieldPath": "organizerId", "mode": "ASCENDING"},
         {"fieldPath": "importedEventCount", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerContactTraits",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "referredCheckedIn365DayCount", "mode": "ASCENDING"}
       ]
     },
     {
@@ -843,6 +883,26 @@
     },
     {
       "collectionGroup": "hostAnalyticsSnapshots",
+      "fieldPath": "expiresAt",
+      "ttl": true,
+      "indexes": [
+        {"order": "ASCENDING", "queryScope": "COLLECTION"},
+        {"order": "DESCENDING", "queryScope": "COLLECTION"},
+        {"arrayConfig": "CONTAINS", "queryScope": "COLLECTION"}
+      ]
+    },
+    {
+      "collectionGroup": "eventInviteTouches",
+      "fieldPath": "expiresAt",
+      "ttl": true,
+      "indexes": [
+        {"order": "ASCENDING", "queryScope": "COLLECTION"},
+        {"order": "DESCENDING", "queryScope": "COLLECTION"},
+        {"arrayConfig": "CONTAINS", "queryScope": "COLLECTION"}
+      ]
+    },
+    {
+      "collectionGroup": "eventShareIntents",
       "fieldPath": "expiresAt",
       "ttl": true,
       "indexes": [

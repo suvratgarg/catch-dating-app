@@ -12,6 +12,8 @@ export interface OrganizerAudienceSummaryDocument {
   repeatAttendeeCount: number;
   linkedAccountCount: number;
   importedContactCount: number;
+  advocateCount: number;
+  highImpactAdvocateCount: number;
   whatsappOptInCount: number;
   smsOptInCount: number;
   sourceCoverage: "exact" | "partial";

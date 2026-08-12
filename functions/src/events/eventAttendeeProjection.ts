@@ -80,6 +80,9 @@ export async function projectEventParticipationToAttendee(
       participation.cancelledAt ?? participation.deletedAt ?? now : null,
     checkedInBy: existing?.checkedInBy ?? null,
     linkedAt: existing?.linkedAt ?? participation.createdAt,
+    inviteLinkId: existing?.inviteLinkId ?? participation.inviteLinkId ?? null,
+    inviteCapturedAt: existing?.inviteCapturedAt ??
+      participation.inviteCapturedAt ?? null,
   };
   await attendeeRef.set(document);
 }

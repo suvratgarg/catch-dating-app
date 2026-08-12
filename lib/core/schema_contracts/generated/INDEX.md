@@ -55,6 +55,10 @@ Do not edit it by hand.
 | ExternalEventDocument | `firestore/external_events.schema.json` | `functions/src/shared/generated/externalEventDocument.ts` |
 | EventPrivateAccessDocument | `firestore/event_private_access.schema.json` | `functions/src/shared/generated/eventPrivateAccessDocument.ts` |
 | EventInviteLinkDocument | `firestore/event_invite_links.schema.json` | `functions/src/shared/generated/eventInviteLinkDocument.ts` |
+| EventInviteLinkSecretDocument | `firestore/event_invite_link_secrets.schema.json` | `functions/src/shared/generated/eventInviteLinkSecretDocument.ts` |
+| EventInviteTouchDocument | `firestore/event_invite_touches.schema.json` | `functions/src/shared/generated/eventInviteTouchDocument.ts` |
+| EventShareIntentDocument | `firestore/event_share_intents.schema.json` | `functions/src/shared/generated/eventShareIntentDocument.ts` |
+| EventInviteAttributionDocument | `firestore/event_invite_attributions.schema.json` | `functions/src/shared/generated/eventInviteAttributionDocument.ts` |
 | EventParticipationDocument | `firestore/event_participations.schema.json` | `functions/src/shared/generated/eventParticipationDocument.ts` |
 | EventAttendeeDocument | `firestore/event_attendees.schema.json` | `functions/src/shared/generated/eventAttendeeDocument.ts` |
 | EventAttendeeImportDocument | `firestore/event_attendee_imports.schema.json` | `functions/src/shared/generated/eventAttendeeImportDocument.ts` |
@@ -183,6 +187,8 @@ Do not edit it by hand.
 | CreateEventInviteLinkCallablePayload | `callables/create_event_invite_link_payload.schema.json` | `functions/src/shared/generated/createEventInviteLinkCallablePayload.ts` |
 | DisableEventInviteLinkCallablePayload | `callables/disable_event_invite_link_payload.schema.json` | `functions/src/shared/generated/disableEventInviteLinkCallablePayload.ts` |
 | RecordEventInviteLinkOpenCallablePayload | `callables/record_event_invite_link_open_payload.schema.json` | `functions/src/shared/generated/recordEventInviteLinkOpenCallablePayload.ts` |
+| GetEventInviteLinkTokenCallablePayload | `callables/get_event_invite_link_token_payload.schema.json` | `functions/src/shared/generated/getEventInviteLinkTokenCallablePayload.ts` |
+| RecordEventShareIntentCallablePayload | `callables/record_event_share_intent_payload.schema.json` | `functions/src/shared/generated/recordEventShareIntentCallablePayload.ts` |
 | RecordOrganizerAnalyticsEventCallablePayload | `callables/record_organizer_analytics_event_payload.schema.json` | `functions/src/shared/generated/recordOrganizerAnalyticsEventCallablePayload.ts` |
 | RecordOrganizerAnalyticsEventCallableResponse | `callable_responses/record_organizer_analytics_event_response.schema.json` | `functions/src/shared/generated/recordOrganizerAnalyticsEventCallableResponse.ts` |
 | MarkEventAttendanceCallablePayload | `callables/mark_event_attendance_payload.schema.json` | `functions/src/shared/generated/markEventAttendanceCallablePayload.ts` |
@@ -333,6 +339,10 @@ Do not edit it by hand.
 | `schemaExternalEventDocumentSchema` | ExternalEventDocument | `firestore/external_events.schema.json` | `lib/core/schema_contracts/generated/schemas/external_event_document.g.dart` |
 | `schemaEventPrivateAccessDocumentSchema` | EventPrivateAccessDocument | `firestore/event_private_access.schema.json` | `lib/core/schema_contracts/generated/schemas/event_private_access_document.g.dart` |
 | `schemaEventInviteLinkDocumentSchema` | EventInviteLinkDocument | `firestore/event_invite_links.schema.json` | `lib/core/schema_contracts/generated/schemas/event_invite_link_document.g.dart` |
+| `schemaEventInviteLinkSecretDocumentSchema` | EventInviteLinkSecretDocument | `firestore/event_invite_link_secrets.schema.json` | `lib/core/schema_contracts/generated/schemas/event_invite_link_secret_document.g.dart` |
+| `schemaEventInviteTouchDocumentSchema` | EventInviteTouchDocument | `firestore/event_invite_touches.schema.json` | `lib/core/schema_contracts/generated/schemas/event_invite_touch_document.g.dart` |
+| `schemaEventShareIntentDocumentSchema` | EventShareIntentDocument | `firestore/event_share_intents.schema.json` | `lib/core/schema_contracts/generated/schemas/event_share_intent_document.g.dart` |
+| `schemaEventInviteAttributionDocumentSchema` | EventInviteAttributionDocument | `firestore/event_invite_attributions.schema.json` | `lib/core/schema_contracts/generated/schemas/event_invite_attribution_document.g.dart` |
 | `schemaEventParticipationDocumentSchema` | EventParticipationDocument | `firestore/event_participations.schema.json` | `lib/core/schema_contracts/generated/schemas/event_participation_document.g.dart` |
 | `schemaEventAttendeeDocumentSchema` | EventAttendeeDocument | `firestore/event_attendees.schema.json` | `lib/core/schema_contracts/generated/schemas/event_attendee_document.g.dart` |
 | `schemaEventAttendeeImportDocumentSchema` | EventAttendeeImportDocument | `firestore/event_attendee_imports.schema.json` | `lib/core/schema_contracts/generated/schemas/event_attendee_import_document.g.dart` |
@@ -461,6 +471,8 @@ Do not edit it by hand.
 | `schemaCreateEventInviteLinkCallablePayloadSchema` | CreateEventInviteLinkCallablePayload | `callables/create_event_invite_link_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/create_event_invite_link_callable_payload.g.dart` |
 | `schemaDisableEventInviteLinkCallablePayloadSchema` | DisableEventInviteLinkCallablePayload | `callables/disable_event_invite_link_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/disable_event_invite_link_callable_payload.g.dart` |
 | `schemaRecordEventInviteLinkOpenCallablePayloadSchema` | RecordEventInviteLinkOpenCallablePayload | `callables/record_event_invite_link_open_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/record_event_invite_link_open_callable_payload.g.dart` |
+| `schemaGetEventInviteLinkTokenCallablePayloadSchema` | GetEventInviteLinkTokenCallablePayload | `callables/get_event_invite_link_token_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_invite_link_token_callable_payload.g.dart` |
+| `schemaRecordEventShareIntentCallablePayloadSchema` | RecordEventShareIntentCallablePayload | `callables/record_event_share_intent_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/record_event_share_intent_callable_payload.g.dart` |
 | `schemaRecordOrganizerAnalyticsEventCallablePayloadSchema` | RecordOrganizerAnalyticsEventCallablePayload | `callables/record_organizer_analytics_event_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/record_organizer_analytics_event_callable_payload.g.dart` |
 | `schemaRecordOrganizerAnalyticsEventCallableResponseSchema` | RecordOrganizerAnalyticsEventCallableResponse | `callable_responses/record_organizer_analytics_event_response.schema.json` | `lib/core/schema_contracts/generated/schemas/record_organizer_analytics_event_callable_response.g.dart` |
 | `schemaMarkEventAttendanceCallablePayloadSchema` | MarkEventAttendanceCallablePayload | `callables/mark_event_attendance_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/mark_event_attendance_callable_payload.g.dart` |
@@ -632,6 +644,8 @@ Do not edit it by hand.
 | CreateEventInviteLinkCallableRequest | CreateEventInviteLinkCallablePayload | `callables/create_event_invite_link_payload.schema.json` | `lib/core/schema_contracts/generated/callables/create_event_invite_link_callable_request.g.dart` |
 | DisableEventInviteLinkCallableRequest | DisableEventInviteLinkCallablePayload | `callables/disable_event_invite_link_payload.schema.json` | `lib/core/schema_contracts/generated/callables/disable_event_invite_link_callable_request.g.dart` |
 | RecordEventInviteLinkOpenCallableRequest | RecordEventInviteLinkOpenCallablePayload | `callables/record_event_invite_link_open_payload.schema.json` | `lib/core/schema_contracts/generated/callables/record_event_invite_link_open_callable_request.g.dart` |
+| GetEventInviteLinkTokenCallableRequest | GetEventInviteLinkTokenCallablePayload | `callables/get_event_invite_link_token_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_invite_link_token_callable_request.g.dart` |
+| RecordEventShareIntentCallableRequest | RecordEventShareIntentCallablePayload | `callables/record_event_share_intent_payload.schema.json` | `lib/core/schema_contracts/generated/callables/record_event_share_intent_callable_request.g.dart` |
 | RecordOrganizerAnalyticsEventCallableRequest | RecordOrganizerAnalyticsEventCallablePayload | `callables/record_organizer_analytics_event_payload.schema.json` | `lib/core/schema_contracts/generated/callables/record_organizer_analytics_event_callable_request.g.dart` |
 | MarkEventAttendanceCallableRequest | MarkEventAttendanceCallablePayload | `callables/mark_event_attendance_payload.schema.json` | `lib/core/schema_contracts/generated/callables/mark_event_attendance_callable_request.g.dart` |
 | ImportEventAttendeesCallableRequest | ImportEventAttendeesCallablePayload | `callables/import_event_attendees_payload.schema.json` | `lib/core/schema_contracts/generated/callables/import_event_attendees_callable_request.g.dart` |

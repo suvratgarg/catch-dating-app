@@ -39,5 +39,14 @@ const schemaClaimEventRuntimeAccessCallablePayloadSchema = <String, Object?>{
       'minLength': 20,
       'maxLength': 240,
     },
+    'inviteToken': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 1,
+      'maxLength': 180,
+      'description': 'Legacy invite-link id or versioned opaque invitation bearer token.',
+    },
   },
 };

@@ -1275,6 +1275,28 @@ describe("firestore.rules", () => {
       );
     });
 
+    it("keeps invite secrets, touches, share intents, and attribution server-only", async () => {
+      const paths = [
+        ["eventInviteLinkSecrets", "invite-1"],
+        ["eventInviteTouches", "touch-1"],
+        ["eventShareIntents", "intent-1"],
+        ["eventInviteAttributions", "attribution-1"],
+      ];
+      for (const path of paths) {
+        await seed(path, {eventId: "event-1", organizerId: "club-1"});
+        for (const uid of ["host-1", "runner-1"]) {
+          await assertFails(getDoc(doc(authedDb(uid), ...path)));
+          await assertFails(setDoc(doc(authedDb(uid), ...path), {
+            eventId: "event-1",
+          }));
+        }
+        await assertFails(getDoc(doc(
+          testEnv.unauthenticatedContext().firestore(),
+          ...path,
+        )));
+      }
+    });
+
     it("keeps organizer communication preferences server-only", async () => {
       await seed(["organizerCommunicationPreferences", "club-1_runner-1"], {
         organizerId: "club-1",

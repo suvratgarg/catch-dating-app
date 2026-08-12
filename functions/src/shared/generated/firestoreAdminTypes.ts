@@ -1665,6 +1665,8 @@ export interface OrganizerContactEventEdgeDocument {
   registeredAt: FirebaseFirestore.Timestamp | null;
   cancelledAt: FirebaseFirestore.Timestamp | null;
   checkedInAt: FirebaseFirestore.Timestamp | null;
+  inviteLinkId?: string | null;
+  inviteCapturedAt?: FirebaseFirestore.Timestamp | null;
   sourceCreatedAt: FirebaseFirestore.Timestamp;
   sourceUpdatedAt: FirebaseFirestore.Timestamp;
   revision: number;
@@ -1683,6 +1685,9 @@ export interface OrganizerContactTraitDocument {
   cancelledEventCount: number;
   noShowCount: number;
   importedEventCount: number;
+  referredRegistrationCount: number;
+  referredCheckedInCount: number;
+  referredCheckedIn365DayCount: number;
   linkedAccount: boolean;
   firstSeenAt: FirebaseFirestore.Timestamp;
   lastSeenAt: FirebaseFirestore.Timestamp;
@@ -1700,6 +1705,8 @@ export interface OrganizerContactTraitDocument {
     | "lapsed_regular"
     | "reliable_attendee"
     | "needs_confirmation"
+    | "advocate"
+    | "high_impact_advocate"
     | "whatsapp_reachable"
     | "sms_reachable"
   )[];
@@ -1721,6 +1728,8 @@ export interface OrganizerAudienceSummaryDocument {
   repeatAttendeeCount: number;
   linkedAccountCount: number;
   importedContactCount: number;
+  advocateCount: number;
+  highImpactAdvocateCount: number;
   whatsappOptInCount: number;
   smsOptInCount: number;
   sourceCoverage: "exact" | "partial";
@@ -2141,7 +2150,7 @@ export interface EventPrivateAccessDocument {
 }
 
 /**
- * Host-created named invite link stored at eventInviteLinks/{inviteLinkId}. The document tracks live attribution counters while preserving disabled links for historical reporting.
+ * Opaque event invitation metadata stored at eventInviteLinks/{inviteLinkId}. The public bearer token is stored separately in a server-only secret document.
  */
 export interface EventInviteLinkDocument {
   eventId: string;
@@ -2151,7 +2160,36 @@ export interface EventInviteLinkDocument {
   label: string;
   source: string | null;
   tokenHash: string;
+  contractVersion?: number;
+  linkKind?:
+    | "hostChannel"
+    | "directRecipient"
+    | "attendeeReferrer"
+    | "promoter"
+    | "partner";
+  ownerContactId?: string | null;
+  ownerUid?: string | null;
+  intendedRecipientContactId?: string | null;
+  campaignId?: string | null;
+  issuanceChannel?:
+    | "hostApp"
+    | "consumerApp"
+    | "runtimeWeb"
+    | "campaign"
+    | "api";
+  destinationKind?:
+    | "catchEvent"
+    | "eventRuntime"
+    | "externalBooking"
+    | "marketingLanding";
+  tokenVersion?: number;
+  attributionWindowEndsAt?: FirebaseFirestore.Timestamp | null;
   openCount: number;
+  likelyHumanOpenCount?: number;
+  shareIntentCount?: number;
+  verifiedRegistrationCount?: number;
+  referredRegistrationCount?: number;
+  referredCheckedInCount?: number;
   requestCount: number;
   confirmedCount: number;
   paidCount: number;
@@ -2162,6 +2200,93 @@ export interface EventInviteLinkDocument {
   disabledAt: FirebaseFirestore.Timestamp | null;
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Server-only bearer token material for one event invitation link.
+ */
+export interface EventInviteLinkSecretDocument {
+  eventId: string;
+  organizerId: string;
+  token: string;
+  tokenHash: string;
+  tokenVersion: number;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Short-lived privacy-minimized evidence that an invitation URL was resolved.
+ */
+export interface EventInviteTouchDocument {
+  eventId: string;
+  organizerId: string;
+  inviteLinkId: string;
+  touchKind: "open" | "redirect";
+  surface:
+    | "consumerApp"
+    | "hostApp"
+    | "runtimeWeb"
+    | "marketingWeb"
+    | "unknown";
+  actorUid: string | null;
+  sessionHash: string | null;
+  likelyHuman: boolean;
+  botReason: "previewCrawler" | "knownBot" | "missingClientSignal" | null;
+  attributionEligible: boolean;
+  createdAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Evidence that a signed-in actor opened a Catch-owned share surface; it is not proof that a message was sent.
+ */
+export interface EventShareIntentDocument {
+  eventId: string;
+  organizerId: string;
+  inviteLinkId: string;
+  actorUid: string;
+  actorKind: "host" | "attendee" | "member";
+  surface: "hostApp" | "consumerApp" | "runtimeWeb";
+  creativeId: string | null;
+  channelHint: "systemShare" | "copyLink" | "whatsapp" | "sms" | "email" | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Immutable evidence assigning or reversing one downstream event fact to one invitation link.
+ */
+export interface EventInviteAttributionDocument {
+  eventId: string;
+  organizerId: string;
+  inviteLinkId: string;
+  linkKind:
+    | "hostChannel"
+    | "directRecipient"
+    | "attendeeReferrer"
+    | "promoter"
+    | "partner";
+  ownerContactId: string | null;
+  intendedRecipientContactId: string | null;
+  subjectContactId: string | null;
+  subjectUid: string | null;
+  factKind: "registration" | "booking" | "checkIn" | "revenue" | "refund";
+  operation: "credit" | "reversal";
+  sourceKind:
+    | "catchParticipation"
+    | "eventAttendee"
+    | "provider"
+    | "selfReport";
+  sourceFactId: string;
+  primaryCredit: boolean;
+  confidence: "exact" | "reconciled" | "selfReported";
+  referralCredit: boolean;
+  amountMinor?: number | null;
+  currency?: string | null;
+  reversalOfAttributionId: string | null;
+  occurredAt: FirebaseFirestore.Timestamp;
+  createdAt: FirebaseFirestore.Timestamp;
 }
 
 /**
@@ -2239,6 +2364,11 @@ export interface EventAttendeeDocument {
   cancelledAt: FirebaseFirestore.Timestamp | null;
   checkedInBy: string | null;
   linkedAt: FirebaseFirestore.Timestamp | null;
+  /**
+   * First eligible opaque invitation link preserved on this operational attendee.
+   */
+  inviteLinkId?: string | null;
+  inviteCapturedAt?: FirebaseFirestore.Timestamp | null;
 }
 
 /**

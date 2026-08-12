@@ -93,5 +93,15 @@
       "maxLength": 180
     },
     "linkedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"}
+    ,
+    "inviteLinkId": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "First eligible opaque invitation link preserved on this operational attendee."
+    },
+    "inviteCapturedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+    }
   }
 }

@@ -8,7 +8,7 @@ const schemaRecordEventInviteLinkOpenCallablePayloadSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/callables/record_event_invite_link_open_payload.schema.json',
   'title': 'RecordEventInviteLinkOpenCallablePayload',
-  'description': 'Callable payload accepted by recordEventInviteLinkOpen. It increments a live open counter and returns whether attribution can be attached to downstream booking actions.',
+  'description': 'Callable payload accepted by recordEventInviteLinkOpen. inviteLinkId accepts a legacy document id or a versioned opaque bearer token.',
   'x-callable-aliases': <Object?>[
     'recordEventInviteLinkOpen',
   ],
@@ -28,6 +28,24 @@ const schemaRecordEventInviteLinkOpenCallablePayloadSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+    },
+    'surface': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'consumerApp',
+        'hostApp',
+        'runtimeWeb',
+        'marketingWeb',
+        'unknown',
+      ],
+    },
+    'sessionId': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 8,
+      'maxLength': 128,
     },
   },
 };

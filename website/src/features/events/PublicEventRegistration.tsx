@@ -2,6 +2,7 @@ import {type FormEvent, useEffect, useId, useRef, useState} from "react";
 import {eventDetailCopy} from "../../content/events";
 import {
   beginPublicEventPhoneVerification,
+  recordEventInviteLinkOpen,
   registerPublicEvent,
   type PublicEventPhoneVerification,
 } from "../../firebase";
@@ -15,6 +16,8 @@ import {
   TextField,
 } from "../../shared/ui/primitives";
 import type {FormStatus as FormStatusModel} from "../../shared/forms/types";
+import {eventInviteSessionId, eventInviteTokenFromLocation} from
+  "../../shared/eventInviteAttribution";
 
 export function PublicEventRegistration({eventId}: {eventId: string}) {
   const reactId = useId();
@@ -29,8 +32,18 @@ export function PublicEventRegistration({eventId}: {eventId: string}) {
   const [pending, setPending] = useState(false);
   const [status, setStatus] = useState<FormStatusModel>({message: "", tone: ""});
   const copy = eventDetailCopy.hero.webRegistration;
+  const inviteToken = eventInviteTokenFromLocation();
 
   useEffect(() => () => verificationRef.current?.clear(), []);
+  useEffect(() => {
+    if (!inviteToken) return;
+    void recordEventInviteLinkOpen({
+      eventId,
+      inviteLinkId: inviteToken,
+      surface: "marketingWeb",
+      sessionId: eventInviteSessionId(),
+    }).catch(() => undefined);
+  }, [eventId, inviteToken]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -77,6 +90,7 @@ export function PublicEventRegistration({eventId}: {eventId: string}) {
           sms: smsUpdates,
           termsVersion: "organizer-updates-v1",
         },
+        inviteToken,
       });
       verificationRef.current?.clear();
       verificationRef.current = null;

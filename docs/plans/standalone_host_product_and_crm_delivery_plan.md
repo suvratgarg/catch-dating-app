@@ -936,6 +936,13 @@ is not complete where noted:
 - a server-only communication-preference ledger and privacy-bounded Host CRM
   summary for contacts, past/repeat attendees, linked accounts, imports, and
   channel-reachable audiences;
+- a manager-authorized people directory, explainable person timeline,
+  reversible duplicate resolution and organizer-scoped attendance traits;
+- versioned opaque invitation bearer tokens for Host channel, direct-recipient,
+  promoter, partner and stable attendee-referrer links;
+- likely-human open deduplication, Catch share-intent evidence, and reversible
+  verified registration/check-in attribution with trailing-365-day advocate
+  traits; web registration and the no-download runtime preserve attribution;
 - current-event in-app broadcast delivery through Activity and eligible push;
 - public organizer reviews and owner responses on the marketing website;
 - account deletion of onboarding drafts and organizer communication grants.
@@ -954,16 +961,16 @@ imported person.
 
 | Capability | Current state | Honest Host-facing status |
 | --- | --- | --- |
-| Cross-event aggregate | **Implemented:** `getOrganizerCrmSummary` deduplicates its bounded scan across linked UID, phone and email and returns total, past, repeat, imported, linked and channel-opt-in counts | "Audience overview"; may be marked truncated and is not a people list |
-| Person directory/timeline | **Not implemented** | Coming later; do not imply that aggregate cards are a CRM |
+| Cross-event aggregate | **Implemented:** scalable organizer projections return total, past, repeat, imported, linked, advocate and channel-opt-in counts with migration coverage | "Audience overview"; partial migration coverage remains explicit |
+| Person directory/timeline | **Implemented backend:** paginated fixed-segment/name search, person detail, event timeline and safe merge/unmerge callables exist | Host Audience UI is still pending; backend excludes private Event Success and safety data |
 | Current-event announcement | **Implemented:** `sendEventBroadcast` sends a non-replyable Activity and eligible push to booked, prospective, or everyone for one active event, capped at 500 recipients | "Event announcement"; not a cross-event campaign |
 | WhatsApp and SMS send | **Foundation only:** readiness contracts explicitly return `providerSetupRequired` | Unavailable until sender/provider and compliance gates pass |
 | Channel permission ledger | **Foundation:** organizer-scoped WhatsApp/SMS preferences exist and account deletion removes them | Permission evidence only; not delivery readiness |
-| Named invite-source links | **Implemented:** Hosts create, copy and disable named links with opens, requests, confirmed, paid, checked-in and Event Success outcome counters | Channel/source attribution; not person-to-person share proof |
+| Named invite-source links | **Implemented backend + existing Host link UI:** opaque tokens, Host/direct/promoter/partner and stable attendee-referrer kinds, token retrieval/disable, likely-human opens and share intents | Host reporting and attendee share UI are still pending; no person-to-person send proof |
 | Rich share card | **Implemented in Flutter:** event details can be rendered and shared as an image plus text/link | Share creative; delivery and forwarding remain outside Catch |
 | Structured post-event feedback | **Implemented in Consumer Flutter and the no-download runtime:** ratings, number met, safety flag and private note feed protected feedback/scorecard contracts | Available per eligible event; automated cross-channel invitation is not complete |
 | Email/WhatsApp roster forwarding | **Implemented foundation:** expiring per-event alias/code, HMAC-authenticated normalized webhook, verified sender match and idempotent CSV import exist | Available only when the deployment configures an inbound provider; the current webhook commits after validation rather than creating the future manual-review draft |
-| Person-level value/referral view | **Not implemented** | Requires the facts, identity resolution and attribution projections below |
+| Person-level value/referral view | **Implemented backend:** verified registration/check-in credit and reversals feed advocate/high-impact traits; high-impact means 3 referred check-ins in 365 days | Dedicated Host report/detail UI, provider booking/revenue facts and campaign joins remain pending |
 
 ### Audience workspace
 
@@ -1592,11 +1599,12 @@ feedback, current-event announcements, named invite links, rich Flutter share
 cards, aggregate CRM counts, and expiring roster-forwarding infrastructure with
 an environment/provider qualifier.
 
-It may advertise as **beta/coming soon**: people directory, fixed segments,
-person-level advocacy/value facts, cross-event campaigns, organizer-owned
-WhatsApp sender onboarding, rich direct-recipient/attendee links, external
-provider connectors, exact external booking/revenue attribution and paid Catch
-checkout. Copy must preserve provider, permission and data-coverage conditions.
+It may advertise as **beta/coming soon**: Host UI for the implemented people
+directory/fixed segments/person-level attendance and advocacy facts,
+cross-event campaigns, organizer-owned WhatsApp sender onboarding, attendee
+share surfaces and rich invitation reports, external provider connectors,
+exact external booking/revenue attribution and paid Catch checkout. Copy must
+preserve provider, permission and data-coverage conditions.
 
 It must not claim universal direct provider sync, WhatsApp send/forward counts,
 exact external booking/revenue without evidence, or a magical "most valuable

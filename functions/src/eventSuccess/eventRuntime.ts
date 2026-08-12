@@ -51,6 +51,7 @@ import {
   normalizeRosterPhone,
   onboardingDraftSeed,
 } from "../events/eventAttendees";
+import {resolveInviteAttributionToken} from "../events/inviteLinks";
 
 type RuntimeFieldId =
   EventRuntimeParticipantDocument["requiredFieldIds"][number];
@@ -135,6 +136,7 @@ export async function getEventRuntimeBootstrapHandler(
   return {
     event: publicRuntimeEventProjection(
       resolved.event,
+      resolved.eventId,
       payload.publicRuntimeId,
       plan
     ),
@@ -168,6 +170,11 @@ export async function claimEventRuntimeAccessHandler(
   const db = deps.firestore();
   await deps.checkRateLimit(db, uid, "claimEventRuntimeAccess");
   const resolved = await resolveRuntimeEvent(db, payload.publicRuntimeId);
+  const inviteAttribution = await resolveInviteAttributionToken({
+    db,
+    eventId: resolved.eventId,
+    inviteToken: payload.inviteToken,
+  });
   requireRuntimeTerms(resolved.event, payload.runtimeTermsVersion);
 
   const participantRef = db.collection("eventRuntimeParticipants")
@@ -240,6 +247,7 @@ export async function claimEventRuntimeAccessHandler(
         displayName: payload.displayName,
         phone,
         status: walkInPolicy === "autoCreate" ? "registered" : "invited",
+        inviteLinkId: inviteAttribution?.inviteLinkId ?? null,
         now,
       });
       tx.create(attendeeRef, attendee);
@@ -247,6 +255,10 @@ export async function claimEventRuntimeAccessHandler(
       tx.update(attendeeRef, {
         linkedUid: uid,
         linkedAt: attendee.linkedAt ?? now,
+        ...(attendee.inviteLinkId || !inviteAttribution ? {} : {
+          inviteLinkId: inviteAttribution.inviteLinkId,
+          inviteCapturedAt: now,
+        }),
         updatedAt: now,
       });
       attendee = {...attendee, linkedUid: uid};
@@ -708,11 +720,13 @@ function requireRuntimeParticipant(
 
 function publicRuntimeEventProjection(
   event: EventDocument,
+  eventId: string,
   publicRuntimeId: string,
   plan: EventSuccessPlanDocument | null
 ): GetEventRuntimeBootstrapCallableResponse["event"] {
   const customLabel = event.eventFormat.customActivityLabel?.trim();
   return {
+    eventId,
     publicRuntimeId,
     title: customLabel || activityTitle(event.eventFormat.activityKind),
     startTimeMillis: event.startTime.toMillis(),
@@ -823,6 +837,7 @@ function runtimeAttendeeDocument(params: {
   displayName: string;
   phone: string;
   status: "invited" | "registered";
+  inviteLinkId: string | null;
   now: FirebaseFirestore.Timestamp;
 }): EventAttendeeDocument {
   return {
@@ -848,6 +863,8 @@ function runtimeAttendeeDocument(params: {
     cancelledAt: null,
     checkedInBy: null,
     linkedAt: params.uid ? params.now : null,
+    inviteLinkId: params.inviteLinkId,
+    inviteCapturedAt: params.inviteLinkId ? params.now : null,
   };
 }
 
@@ -899,6 +916,7 @@ function normalizeClaimPayload(data: unknown): unknown {
     "displayName",
     "runtimeTermsVersion",
     "attendeeToken",
+    "inviteToken",
   ]);
 }
 

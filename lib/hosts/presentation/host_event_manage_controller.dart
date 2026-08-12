@@ -31,7 +31,11 @@ abstract interface class HostEventManageActions {
     required HostInviteLinkDraft draft,
   });
 
-  Future<String> copyInviteLink({required String label, required String url});
+  Future<String> copyInviteLink({
+    required Event event,
+    required String inviteCode,
+    required EventInviteLink link,
+  });
 
   Future<String> disableInviteLink({
     required Event event,
@@ -91,7 +95,7 @@ class HostEventManageController implements HostEventManageActions {
     final url = hostInviteLinkUrl(
       event: event,
       inviteCode: inviteCode,
-      inviteLinkId: response.inviteLinkId,
+      inviteLinkId: response.inviteToken,
     );
     await _ref.read(clipboardControllerProvider).copyText(url);
     _ref.invalidate(watchEventInviteLinksProvider(event.id));
@@ -100,11 +104,20 @@ class HostEventManageController implements HostEventManageActions {
 
   @override
   Future<String> copyInviteLink({
-    required String label,
-    required String url,
+    required Event event,
+    required String inviteCode,
+    required EventInviteLink link,
   }) async {
+    final token = await _ref
+        .read(eventRepositoryProvider)
+        .getInviteLinkToken(eventId: event.id, inviteLinkId: link.id);
+    final url = hostInviteLinkUrl(
+      event: event,
+      inviteCode: inviteCode,
+      inviteLinkId: token,
+    );
     await _ref.read(clipboardControllerProvider).copyText(url);
-    return label;
+    return link.label;
   }
 
   @override

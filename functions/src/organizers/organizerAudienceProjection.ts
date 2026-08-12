@@ -283,6 +283,42 @@ export async function rebuildOrganizerContact(
   ]);
   const contact = contactSnap.data() as OrganizerContactDocument | undefined;
   if (!contact) return;
+  const attributions = db.collection("eventInviteAttributions")
+    .where("organizerId", "==", contact.organizerId)
+    .where("ownerContactId", "==", contactId)
+    .where("referralCredit", "==", true);
+  const recentCheckIns = attributions
+    .where("factKind", "==", "checkIn")
+    .where("occurredAt", ">=", admin.firestore.Timestamp.fromMillis(
+      deps.timestamp().toMillis() - 365 * 24 * 60 * 60 * 1000
+    ));
+  const [registrationCredit, registrationReversal,
+    attendanceCredit, attendanceReversal,
+    recentAttendanceCredit, recentAttendanceReversal] = await Promise.all([
+    attributions.where("factKind", "==", "registration")
+      .where("operation", "==", "credit").count().get(),
+    attributions.where("factKind", "==", "registration")
+      .where("operation", "==", "reversal").count().get(),
+    attributions.where("factKind", "==", "checkIn")
+      .where("operation", "==", "credit").count().get(),
+    attributions.where("factKind", "==", "checkIn")
+      .where("operation", "==", "reversal").count().get(),
+    recentCheckIns.where("operation", "==", "credit").count().get(),
+    recentCheckIns.where("operation", "==", "reversal").count().get(),
+  ]);
+  const referredRegistrationCount = Math.max(
+    0,
+    registrationCredit.data().count - registrationReversal.data().count
+  );
+  const referredCheckedInCount = Math.max(
+    0,
+    attendanceCredit.data().count - attendanceReversal.data().count
+  );
+  const referredCheckedIn365DayCount = Math.max(
+    0,
+    recentAttendanceCredit.data().count -
+      recentAttendanceReversal.data().count
+  );
   const now = deps.timestamp();
   const edges = edgesSnap.docs.map((doc) =>
     doc.data() as OrganizerContactEventEdgeDocument
@@ -329,6 +365,9 @@ export async function rebuildOrganizerContact(
     contact: rebuiltContact,
     edges,
     now,
+    referredRegistrationCount,
+    referredCheckedInCount,
+    referredCheckedIn365DayCount,
   });
   await commitContactTraitAndSummary({
     contactRef,
@@ -497,6 +536,8 @@ export async function rebuildOrganizerAudienceSummary(
     repeatAttendeeCount,
     linkedAccountCount,
     importedContactCount,
+    advocateCount,
+    highImpactAdvocateCount,
     whatsappOptInCount,
     smsOptInCount,
   ] = await Promise.all([
@@ -505,6 +546,8 @@ export async function rebuildOrganizerAudienceSummary(
     traits.where("attendedEventCount", ">", 1).count().get(),
     traits.where("linkedAccount", "==", true).count().get(),
     traits.where("importedEventCount", ">", 0).count().get(),
+    traits.where("segmentIds", "array-contains", "advocate").count().get(),
+    traits.where("referredCheckedIn365DayCount", ">=", 3).count().get(),
     traits.where("whatsappStatus", "==", "optedIn").count().get(),
     traits.where("smsStatus", "==", "optedIn").count().get(),
   ]);
@@ -515,6 +558,8 @@ export async function rebuildOrganizerAudienceSummary(
     repeatAttendeeCount: repeatAttendeeCount.data().count,
     linkedAccountCount: linkedAccountCount.data().count,
     importedContactCount: importedContactCount.data().count,
+    advocateCount: advocateCount.data().count,
+    highImpactAdvocateCount: highImpactAdvocateCount.data().count,
     whatsappOptInCount: whatsappOptInCount.data().count,
     smsOptInCount: smsOptInCount.data().count,
     sourceCoverage,
@@ -545,6 +590,8 @@ export function audienceSummaryAfterDelta(params: {
     repeatAttendeeCount: value("repeatAttendeeCount"),
     linkedAccountCount: value("linkedAccountCount"),
     importedContactCount: value("importedContactCount"),
+    advocateCount: value("advocateCount"),
+    highImpactAdvocateCount: value("highImpactAdvocateCount"),
     whatsappOptInCount: value("whatsappOptInCount"),
     smsOptInCount: value("smsOptInCount"),
     sourceCoverage: params.existing?.sourceCoverage ?? "partial",

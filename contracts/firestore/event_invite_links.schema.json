@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/event_invite_links.schema.json",
   "title": "EventInviteLinkDocument",
-  "description": "Host-created named invite link stored at eventInviteLinks/{inviteLinkId}. The document tracks live attribution counters while preserving disabled links for historical reporting.",
+  "description": "Opaque event invitation metadata stored at eventInviteLinks/{inviteLinkId}. The public bearer token is stored separately in a server-only secret document.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "eventInviteLinks",
@@ -67,10 +67,101 @@
       "pattern": "^[a-f0-9]{64}$",
       "x-catch-ownership": "callable-owned"
     },
+    "contractVersion": {
+      "type": "integer",
+      "minimum": 2,
+      "maximum": 2,
+      "x-catch-ownership": "callable-owned"
+    },
+    "linkKind": {
+      "type": "string",
+      "enum": [
+        "hostChannel",
+        "directRecipient",
+        "attendeeReferrer",
+        "promoter",
+        "partner"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "ownerContactId": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "ownerUid": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "intendedRecipientContactId": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "campaignId": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "issuanceChannel": {
+      "type": "string",
+      "enum": ["hostApp", "consumerApp", "runtimeWeb", "campaign", "api"],
+      "x-catch-ownership": "callable-owned"
+    },
+    "destinationKind": {
+      "type": "string",
+      "enum": [
+        "catchEvent",
+        "eventRuntime",
+        "externalBooking",
+        "marketingLanding"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "tokenVersion": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10,
+      "x-catch-ownership": "callable-owned"
+    },
+    "attributionWindowEndsAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "callable-owned"
+    },
     "openCount": {
       "type": "integer",
       "minimum": 0,
       "x-catch-ownership": "callable-owned"
+    },
+    "likelyHumanOpenCount": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "callable-owned"
+    },
+    "shareIntentCount": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "callable-owned"
+    },
+    "verifiedRegistrationCount": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "referredRegistrationCount": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "referredCheckedInCount": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "trigger-owned"
     },
     "requestCount": {
       "type": "integer",

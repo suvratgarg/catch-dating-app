@@ -20,6 +20,7 @@ const schemaGetEventRuntimeBootstrapCallableResponseSchema = <String, Object?>{
       'type': 'object',
       'additionalProperties': false,
       'required': <Object?>[
+        'eventId',
         'publicRuntimeId',
         'title',
         'startTimeMillis',
@@ -30,6 +31,11 @@ const schemaGetEventRuntimeBootstrapCallableResponseSchema = <String, Object?>{
         'questionnaireConfig',
       ],
       'properties': <String, Object?>{
+        'eventId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
         'publicRuntimeId': <String, Object?>{
           'type': 'string',
           'pattern': '^[A-Za-z0-9_-]{20,80}\$',

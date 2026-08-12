@@ -13,6 +13,9 @@ export interface OrganizerContactTraitDocument {
   cancelledEventCount: number;
   noShowCount: number;
   importedEventCount: number;
+  referredRegistrationCount: number;
+  referredCheckedInCount: number;
+  referredCheckedIn365DayCount: number;
   linkedAccount: boolean;
   /**
    * Serialized Firestore Timestamp fixture shape.
@@ -48,6 +51,8 @@ export interface OrganizerContactTraitDocument {
     | "lapsed_regular"
     | "reliable_attendee"
     | "needs_confirmation"
+    | "advocate"
+    | "high_impact_advocate"
     | "whatsapp_reachable"
     | "sms_reachable"
   )[];

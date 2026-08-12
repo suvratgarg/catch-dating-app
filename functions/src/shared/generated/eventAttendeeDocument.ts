@@ -55,4 +55,12 @@ export interface EventAttendeeDocument {
     _seconds: number;
     _nanoseconds: number;
   } | null;
+  /**
+   * First eligible opaque invitation link preserved on this operational attendee.
+   */
+  inviteLinkId?: string | null;
+  inviteCapturedAt?: {
+    _seconds: number;
+    _nanoseconds: number;
+  } | null;
 }

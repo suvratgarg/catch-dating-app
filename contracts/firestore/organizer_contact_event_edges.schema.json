@@ -37,6 +37,8 @@
     "registeredAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
     "cancelledAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
     "checkedInAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
+    "inviteLinkId": {"type": ["string", "null"], "minLength": 1, "maxLength": 180},
+    "inviteCapturedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
     "sourceCreatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
     "sourceUpdatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
     "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},

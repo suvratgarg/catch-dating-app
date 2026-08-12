@@ -16,6 +16,8 @@ const schemaGetOrganizerCrmSummaryCallableResponseSchema = <String, Object?>{
     'contactCount',
     'pastAttendeeCount',
     'repeatAttendeeCount',
+    'advocateCount',
+    'highImpactAdvocateCount',
     'linkedAccountCount',
     'importedContactCount',
     'whatsappOptInCount',
@@ -40,6 +42,16 @@ const schemaGetOrganizerCrmSummaryCallableResponseSchema = <String, Object?>{
       'maximum': 2147483647,
     },
     'repeatAttendeeCount': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'maximum': 2147483647,
+    },
+    'advocateCount': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'maximum': 2147483647,
+    },
+    'highImpactAdvocateCount': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
       'maximum': 2147483647,

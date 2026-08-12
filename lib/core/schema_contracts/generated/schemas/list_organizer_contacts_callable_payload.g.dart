@@ -51,6 +51,8 @@ const schemaListOrganizerContactsCallablePayloadSchema = <String, Object?>{
             'lapsed_regular',
             'reliable_attendee',
             'needs_confirmation',
+            'advocate',
+            'high_impact_advocate',
             'whatsapp_reachable',
             'sms_reachable',
           ],

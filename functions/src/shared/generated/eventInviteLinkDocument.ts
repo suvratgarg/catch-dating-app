@@ -3,7 +3,7 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 /**
- * Host-created named invite link stored at eventInviteLinks/{inviteLinkId}. The document tracks live attribution counters while preserving disabled links for historical reporting.
+ * Opaque event invitation metadata stored at eventInviteLinks/{inviteLinkId}. The public bearer token is stored separately in a server-only secret document.
  */
 export interface EventInviteLinkDocument {
   eventId: string;
@@ -13,7 +13,39 @@ export interface EventInviteLinkDocument {
   label: string;
   source: string | null;
   tokenHash: string;
+  contractVersion?: number;
+  linkKind?:
+    | "hostChannel"
+    | "directRecipient"
+    | "attendeeReferrer"
+    | "promoter"
+    | "partner";
+  ownerContactId?: string | null;
+  ownerUid?: string | null;
+  intendedRecipientContactId?: string | null;
+  campaignId?: string | null;
+  issuanceChannel?:
+    | "hostApp"
+    | "consumerApp"
+    | "runtimeWeb"
+    | "campaign"
+    | "api";
+  destinationKind?:
+    | "catchEvent"
+    | "eventRuntime"
+    | "externalBooking"
+    | "marketingLanding";
+  tokenVersion?: number;
+  attributionWindowEndsAt?: {
+    _seconds: number;
+    _nanoseconds: number;
+  } | null;
   openCount: number;
+  likelyHumanOpenCount?: number;
+  shareIntentCount?: number;
+  verifiedRegistrationCount?: number;
+  referredRegistrationCount?: number;
+  referredCheckedInCount?: number;
   requestCount: number;
   confirmedCount: number;
   paidCount: number;

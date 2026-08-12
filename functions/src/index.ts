@@ -31,10 +31,15 @@ export {
   expireEventWaitlistOffers,
 } from "./events/waitlistOffers";
 export {
+  createAttendeeInviteLink,
   createEventInviteLink,
   disableEventInviteLink,
+  getEventInviteLinkToken,
   recordEventInviteLinkOpen,
+  recordEventShareIntent,
 } from "./events/inviteLinks";
+export {onOrganizerContactEventEdgeInviteAttributed} from
+  "./events/eventInviteAttributionProjection";
 export {decideEventJoinRequest} from "./events/decideEventJoinRequest";
 export {markEventAttendance} from "./events/markEventAttendance";
 export {

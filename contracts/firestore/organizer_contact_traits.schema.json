@@ -12,6 +12,8 @@
   "required": [
     "organizerId", "contactId", "expectedEventCount", "attendedEventCount",
     "cancelledEventCount", "noShowCount", "importedEventCount",
+    "referredRegistrationCount", "referredCheckedInCount",
+    "referredCheckedIn365DayCount",
     "linkedAccount", "firstSeenAt", "lastSeenAt", "firstAttendedAt",
     "lastAttendedAt", "attendanceRate", "segmentIds", "definitionVersion",
     "whatsappStatus", "smsStatus", "sourceCoverage", "projectionVersion",
@@ -25,6 +27,9 @@
     "cancelledEventCount": {"type": "integer", "minimum": 0, "maximum": 1000000},
     "noShowCount": {"type": "integer", "minimum": 0, "maximum": 1000000},
     "importedEventCount": {"type": "integer", "minimum": 0, "maximum": 1000000},
+    "referredRegistrationCount": {"type": "integer", "minimum": 0, "maximum": 1000000},
+    "referredCheckedInCount": {"type": "integer", "minimum": 0, "maximum": 1000000},
+    "referredCheckedIn365DayCount": {"type": "integer", "minimum": 0, "maximum": 1000000},
     "linkedAccount": {"type": "boolean"},
     "firstSeenAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
     "lastSeenAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
@@ -40,7 +45,7 @@
     "computedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}
   },
   "definitions": {
-    "segmentId": {"type": "string", "enum": ["new_to_organizer", "first_time_attendee", "repeat_attendee", "regular", "lapsed_regular", "reliable_attendee", "needs_confirmation", "whatsapp_reachable", "sms_reachable"]},
+    "segmentId": {"type": "string", "enum": ["new_to_organizer", "first_time_attendee", "repeat_attendee", "regular", "lapsed_regular", "reliable_attendee", "needs_confirmation", "advocate", "high_impact_advocate", "whatsapp_reachable", "sms_reachable"]},
     "channelStatus": {"type": "string", "enum": ["unknown", "optedIn", "optedOut"]}
   }
 }

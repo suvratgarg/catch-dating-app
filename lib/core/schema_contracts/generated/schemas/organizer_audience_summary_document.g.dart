@@ -22,6 +22,8 @@ const schemaOrganizerAudienceSummaryDocumentSchema = <String, Object?>{
     'repeatAttendeeCount',
     'linkedAccountCount',
     'importedContactCount',
+    'advocateCount',
+    'highImpactAdvocateCount',
     'whatsappOptInCount',
     'smsOptInCount',
     'sourceCoverage',
@@ -55,6 +57,16 @@ const schemaOrganizerAudienceSummaryDocumentSchema = <String, Object?>{
       'maximum': 2147483647,
     },
     'importedContactCount': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'maximum': 2147483647,
+    },
+    'advocateCount': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'maximum': 2147483647,
+    },
+    'highImpactAdvocateCount': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
       'maximum': 2147483647,

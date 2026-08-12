@@ -8,7 +8,7 @@ import {
 } from "../shared/generated/firestoreAdminTypes";
 
 export const organizerAudienceProjectionVersion = 1;
-export const organizerAudienceDefinitionVersion = 1;
+export const organizerAudienceDefinitionVersion = 2;
 export const organizerIdentityHashVersion = "hmac-sha256-v1" as const;
 
 export type OrganizerIdentityKind =
@@ -133,6 +133,8 @@ export function organizerContactEventEdge(params: {
     registeredAt: attendee.registeredAt,
     cancelledAt: attendee.cancelledAt,
     checkedInAt: attendee.checkedInAt,
+    inviteLinkId: attendee.inviteLinkId ?? null,
+    inviteCapturedAt: attendee.inviteCapturedAt ?? null,
     sourceCreatedAt: attendee.createdAt,
     sourceUpdatedAt: attendee.updatedAt,
     revision: Math.max(
@@ -151,6 +153,9 @@ export function organizerContactTraits(params: {
   contact: OrganizerContactDocument;
   edges: OrganizerContactEventEdgeDocument[];
   now: FirebaseFirestore.Timestamp;
+  referredRegistrationCount?: number;
+  referredCheckedInCount?: number;
+  referredCheckedIn365DayCount?: number;
 }): OrganizerContactTraitDocument | null {
   const {contact, edges, now} = params;
   if (contact.deletedAt !== null || contact.identityState === "merged" ||
@@ -202,6 +207,16 @@ export function organizerContactTraits(params: {
   if (expected.length >= 3 && noShows.length >= 2) {
     segmentIds.push("needs_confirmation");
   }
+  const referredRegistrationCount = params.referredRegistrationCount ?? 0;
+  const referredCheckedInCount = params.referredCheckedInCount ?? 0;
+  const referredCheckedIn365DayCount =
+    params.referredCheckedIn365DayCount ?? referredCheckedInCount;
+  if (referredRegistrationCount > 0 || referredCheckedInCount > 0) {
+    segmentIds.push("advocate");
+  }
+  if (referredCheckedIn365DayCount >= 3) {
+    segmentIds.push("high_impact_advocate");
+  }
   if (contact.whatsappStatus === "optedIn" && contact.phoneE164 !== null) {
     segmentIds.push("whatsapp_reachable");
   }
@@ -217,6 +232,9 @@ export function organizerContactTraits(params: {
     cancelledEventCount: cancelled.length,
     noShowCount: noShows.length,
     importedEventCount: imported.length,
+    referredRegistrationCount,
+    referredCheckedInCount,
+    referredCheckedIn365DayCount,
     linkedAccount: contact.linkedUid !== null,
     firstSeenAt,
     lastSeenAt,
@@ -240,6 +258,8 @@ export interface OrganizerAudienceContribution {
   repeatAttendeeCount: number;
   linkedAccountCount: number;
   importedContactCount: number;
+  advocateCount: number;
+  highImpactAdvocateCount: number;
   whatsappOptInCount: number;
   smsOptInCount: number;
 }
@@ -254,6 +274,10 @@ export function organizerAudienceContribution(
     repeatAttendeeCount: trait && trait.attendedEventCount > 1 ? 1 : 0,
     linkedAccountCount: trait?.linkedAccount ? 1 : 0,
     importedContactCount: trait && trait.importedEventCount > 0 ? 1 : 0,
+    advocateCount: trait && (trait.referredRegistrationCount > 0 ||
+      trait.referredCheckedInCount > 0) ? 1 : 0,
+    highImpactAdvocateCount: trait &&
+      trait.referredCheckedIn365DayCount >= 3 ? 1 : 0,
     whatsappOptInCount: trait?.whatsappStatus === "optedIn" ? 1 : 0,
     smsOptInCount: trait?.smsStatus === "optedIn" ? 1 : 0,
   };

@@ -21,6 +21,7 @@ vi.mock("../../firebase", () => ({
   completeEventRuntimeFirstHello: vi.fn(),
   fetchEventRuntimeWingmanCandidates: vi.fn(),
   getEventRuntimeBootstrap,
+  recordEventInviteLinkOpen: vi.fn(),
   saveEventRuntimeCompatibilityAnswers: vi.fn(),
   saveEventRuntimeFeedback: vi.fn(),
   startEventRuntimeFirstHello: vi.fn(),
@@ -43,6 +44,7 @@ function wrapper() {
 function bootstrap(participant: unknown = null) {
   return {
     event: {
+      eventId: "event-1",
       publicRuntimeId: "runtime_123456789012345678901234",
       title: "Courtyard Social",
       startTimeMillis: 1,

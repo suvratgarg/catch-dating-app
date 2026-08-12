@@ -368,6 +368,8 @@ class FakeEventRepository extends Fake implements EventRepository {
   String? createdInviteLinkSource;
   String? disabledInviteLinkEventId;
   String? disabledInviteLinkId;
+  String? requestedInviteLinkTokenEventId;
+  String? requestedInviteLinkTokenId;
   String? recordedInviteOpenEventId;
   String? recordedInviteOpenLinkId;
   String? createdWaitlistOfferEventId;
@@ -524,10 +526,21 @@ class FakeEventRepository extends Fake implements EventRepository {
     createdInviteLinkSource = source;
     return CreateEventInviteLinkCallableResponse(
       inviteLinkId: 'invite-link-1',
+      inviteToken: 'v2_invite-link-1_test-token',
       eventId: eventId,
       label: label,
       source: source,
     );
+  }
+
+  @override
+  Future<String> getInviteLinkToken({
+    required String eventId,
+    required String inviteLinkId,
+  }) async {
+    requestedInviteLinkTokenEventId = eventId;
+    requestedInviteLinkTokenId = inviteLinkId;
+    return 'v2_${inviteLinkId}_test-token';
   }
 
   @override

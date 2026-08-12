@@ -41,6 +41,11 @@ export interface OrganizerContactEventEdgeDocument {
     _seconds: number;
     _nanoseconds: number;
   } | null;
+  inviteLinkId?: string | null;
+  inviteCapturedAt?: {
+    _seconds: number;
+    _nanoseconds: number;
+  } | null;
   /**
    * Serialized Firestore Timestamp fixture shape.
    */

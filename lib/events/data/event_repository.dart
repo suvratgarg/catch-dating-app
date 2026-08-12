@@ -11,6 +11,7 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
         DisableEventInviteLinkCallableRequest,
         EventIdCallableRequest,
         EventJoinRequestDecisionCallableRequest,
+        GetEventInviteLinkTokenCallableRequest,
         MarkEventAttendanceCallableRequest,
         RecordEventInviteLinkOpenCallableRequest,
         SendEventBroadcastCallableRequest,
@@ -452,6 +453,29 @@ class EventRepository {
       service: BackendService.functions,
       action: 'disable invite link',
       resource: 'eventInviteLinks',
+    ),
+  );
+
+  Future<String> getInviteLinkToken({
+    required String eventId,
+    required String inviteLinkId,
+  }) => withBackendErrorContext(
+    () async {
+      final result = await _functions
+          .httpsCallable('getEventInviteLinkToken')
+          .call(
+            GetEventInviteLinkTokenCallableRequest(
+              eventId: eventId,
+              inviteLinkId: inviteLinkId,
+            ).toJson(),
+          );
+      if (result.data case {'inviteToken': final String token}) return token;
+      throw StateError('getEventInviteLinkToken response was missing token.');
+    },
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'get invite link token',
+      resource: 'eventInviteLinkSecrets',
     ),
   );
 

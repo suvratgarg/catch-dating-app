@@ -77,27 +77,26 @@ void main() {
       expect(eventRepository.createdInviteLinkLabel, 'Instagram bio');
       expect(eventRepository.createdInviteLinkSource, 'instagram');
       expect(copiedText.single, contains('invite=VIP123'));
-      expect(copiedText.single, contains('il=invite-link-1'));
+      expect(copiedText.single, contains('il=v2_invite-link-1_test-token'));
     },
   );
 
-  test(
-    'copyInviteLink copies the supplied URL and returns its label',
-    () async {
-      final controller = container.read(hostEventManageActionsProvider);
+  test('copyInviteLink resolves and copies the opaque token URL', () async {
+    final event = HostOperationsFixtures.privateEvent;
+    final link = HostOperationsFixtures.inviteLinks.first;
+    final controller = container.read(hostEventManageActionsProvider);
 
-      final label = await controller.copyInviteLink(
-        label: 'Venue partner',
-        url: 'https://catchdates.com/events/e-1?invite=VIP123&il=venue',
-      );
+    final label = await controller.copyInviteLink(
+      event: event,
+      inviteCode: 'VIP123',
+      link: link,
+    );
 
-      expect(label, 'Venue partner');
-      expect(
-        copiedText.single,
-        'https://catchdates.com/events/e-1?invite=VIP123&il=venue',
-      );
-    },
-  );
+    expect(label, link.label);
+    expect(copiedText.single, contains('invite=VIP123'));
+    expect(copiedText.single, contains('il=v2_${link.id}_test-token'));
+    expect(eventRepository.requestedInviteLinkTokenId, link.id);
+  });
 
   test(
     'disableInviteLink delegates to repository and returns its label',

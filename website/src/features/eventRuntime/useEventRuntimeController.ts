@@ -8,6 +8,7 @@ import {
   completeEventRuntimeFirstHello,
   fetchEventRuntimeWingmanCandidates,
   getEventRuntimeBootstrap,
+  recordEventInviteLinkOpen,
   saveEventRuntimeCompatibilityAnswers,
   saveEventRuntimeFeedback,
   startEventRuntimeFirstHello,
@@ -29,6 +30,8 @@ import {
   type EventRuntimeBootstrap,
   type EventRuntimeGender,
 } from "./eventRuntimeModel";
+import {eventInviteSessionId, eventInviteTokenFromLocation} from
+  "../../shared/eventInviteAttribution";
 
 export type EventRuntimeStage =
   | "loading"
@@ -94,6 +97,8 @@ export function useEventRuntimeController(publicRuntimeId: string) {
     },
   });
   const pending = actionMutation.isPending;
+  const inviteToken = useMemo(eventInviteTokenFromLocation, []);
+  const recordedInviteOpenRef = useRef(false);
 
   const questionnaire = useMemo(
     () => resolveEventRuntimeQuestionnaire(bootstrap?.event.questionnaireConfig ?? null),
@@ -137,6 +142,15 @@ export function useEventRuntimeController(publicRuntimeId: string) {
       .then((next) => {
         if (cancelled) return;
         setBootstrap(next);
+        if (inviteToken && !recordedInviteOpenRef.current) {
+          recordedInviteOpenRef.current = true;
+          void recordEventInviteLinkOpen({
+            eventId: next.event.eventId,
+            inviteLinkId: inviteToken,
+            surface: "runtimeWeb",
+            sessionId: eventInviteSessionId(),
+          }).catch(() => undefined);
+        }
         if (!userRef.current) setStage("phone");
       })
       .catch((error) => {
@@ -158,7 +172,7 @@ export function useEventRuntimeController(publicRuntimeId: string) {
       verificationRef.current?.clear();
       unsubscribe();
     };
-  }, [loadAuthenticatedRuntime, publicRuntimeId]);
+  }, [inviteToken, loadAuthenticatedRuntime, publicRuntimeId]);
 
   useEffect(() => {
     const participant = bootstrap?.participant;
@@ -275,6 +289,7 @@ export function useEventRuntimeController(publicRuntimeId: string) {
           publicRuntimeId,
           displayName: name,
           runtimeTermsVersion: bootstrap.event.runtimeTermsVersion,
+          inviteToken,
         });
         accessStatus = claim.status;
       }

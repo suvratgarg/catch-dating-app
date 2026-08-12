@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_share_intents.schema.json",
+  "title": "EventShareIntentDocument",
+  "description": "Evidence that a signed-in actor opened a Catch-owned share surface; it is not proof that a message was sent.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventShareIntents",
+  "x-firestore-path": "eventShareIntents/{intentId}",
+  "x-document-id-field": "intentId",
+  "x-owner": "event share intent callable",
+  "required": [
+    "eventId",
+    "organizerId",
+    "inviteLinkId",
+    "actorUid",
+    "actorKind",
+    "surface",
+    "creativeId",
+    "channelHint",
+    "createdAt",
+    "expiresAt"
+  ],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "inviteLinkId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "actorUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "actorKind": {"type": "string", "enum": ["host", "attendee", "member"]},
+    "surface": {"type": "string", "enum": ["hostApp", "consumerApp", "runtimeWeb"]},
+    "creativeId": {"type": ["string", "null"], "minLength": 1, "maxLength": 180},
+    "channelHint": {
+      "type": ["string", "null"],
+      "enum": ["systemShare", "copyLink", "whatsapp", "sms", "email", null]
+    },
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "expiresAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}
+  }
+}

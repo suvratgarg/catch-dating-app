@@ -10,16 +10,19 @@ final class RegisterPublicEventCallableRequest {
   const RegisterPublicEventCallableRequest({
     required this.eventId,
     required this.displayName,
+    this.inviteToken,
     this.organizerUpdates,
   });
 
   final String eventId;
   final String displayName;
+  final String? inviteToken;
   final Map<String, Object?>? organizerUpdates;
 
   Map<String, Object?> toJson() => {
     'eventId': eventId,
     'displayName': displayName,
+    'inviteToken': ?inviteToken,
     'organizerUpdates': ?organizerUpdates,
   };
 }

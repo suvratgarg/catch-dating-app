@@ -91,7 +91,10 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   // than inheriting the loose default callable limit.
   sendEventBroadcast: {maxRequests: 3, windowMs: 60 * 60 * 1000},
   createEventInviteLink: {maxRequests: 20, windowMs: 60 * 1000},
+  createAttendeeInviteLink: {maxRequests: 5, windowMs: 60 * 60 * 1000},
   disableEventInviteLink: {maxRequests: 20, windowMs: 60 * 1000},
+  getEventInviteLinkToken: {maxRequests: 60, windowMs: 60 * 1000},
+  recordEventShareIntent: {maxRequests: 60, windowMs: 60 * 1000},
   joinClub: {maxRequests: 30, windowMs: 60 * 1000},
   leaveClub: {maxRequests: 30, windowMs: 60 * 1000},
   createClubPost: {maxRequests: 10, windowMs: 60 * 1000},

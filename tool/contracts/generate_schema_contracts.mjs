@@ -250,6 +250,30 @@ const schemaSpecs = [
       "functions/src/shared/generated/eventInviteLinkDocument.ts",
   },
   {
+    name: "EventInviteLinkSecretDocument",
+    source: "firestore/event_invite_link_secrets.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventInviteLinkSecretDocument.ts",
+  },
+  {
+    name: "EventInviteTouchDocument",
+    source: "firestore/event_invite_touches.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventInviteTouchDocument.ts",
+  },
+  {
+    name: "EventShareIntentDocument",
+    source: "firestore/event_share_intents.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventShareIntentDocument.ts",
+  },
+  {
+    name: "EventInviteAttributionDocument",
+    source: "firestore/event_invite_attributions.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventInviteAttributionDocument.ts",
+  },
+  {
     name: "EventParticipationDocument",
     source: "firestore/event_participations.schema.json",
     typeOutput: "functions/src/shared/generated/eventParticipationDocument.ts",
@@ -1031,6 +1055,19 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "recordEventInviteLinkOpenCallablePayload.ts",
+  },
+  {
+    name: "GetEventInviteLinkTokenCallablePayload",
+    source: "callables/get_event_invite_link_token_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "getEventInviteLinkTokenCallablePayload.ts",
+  },
+  {
+    name: "RecordEventShareIntentCallablePayload",
+    source: "callables/record_event_share_intent_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/recordEventShareIntentCallablePayload.ts",
   },
   {
     name: "RecordOrganizerAnalyticsEventCallablePayload",

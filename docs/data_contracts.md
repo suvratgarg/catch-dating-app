@@ -354,6 +354,9 @@ Root-level edge/action documents are the source of truth for many-to-many state:
 | Contact-to-event fact | server-only `organizerContactEventEdges/{attendeeId}` |
 | Contact identity evidence and verified claim | server-only `organizerContactIdentityLinks/{evidenceId}` and `organizerContactIdentityClaims/{claimId}` |
 | Rebuildable contact traits and organizer summary | server-only `organizerContactTraits/{contactId}` and `organizerAudienceSummaries/{organizerId}` |
+| Invitation aggregate and isolated bearer token | host-readable `eventInviteLinks/{inviteLinkId}` and server-only `eventInviteLinkSecrets/{inviteLinkId}` |
+| Short-lived invite open/share evidence | server-only `eventInviteTouches/{touchId}` and `eventShareIntents/{intentId}` |
+| Verified registration/check-in attribution | server-only immutable `eventInviteAttributions/{attributionId}` credit/reversal fact |
 | Cross Paths event visibility | `eventCrossPathsConsents/{eventId_uid}` |
 | Cross Paths showcase eligibility | server-only `crossPathsShowcaseEligibility/{uid}` |
 | Cross Paths suggestion exposure | server-only `crossPathsSuggestionExposures/{exposureId}` |
@@ -493,10 +496,14 @@ restores only the exact source-origin edge, evidence, and claim identifiers in
 the original receipt and creates one deterministic reversal receipt. Facts
 created after a merge remain with the survivor instead of being guessed back.
 
-`organizerContactTraits` are rebuilt from event edges and contain only
+`organizerContactTraits` are rebuilt from event edges and verified invite
+attribution facts and contain only
 attendance, reliability, source and channel-reachability facts. Compatibility
 answers, gender, sexual orientation, relationship state, wingman targets,
 safety reports and inferred social desirability are prohibited CRM inputs.
+An `advocate` has at least one verified referred registration or check-in. A
+`high_impact_advocate` has at least three referred verified check-ins in the
+trailing 365 days; raw link opens and share-button taps never qualify.
 Trait and summary writes use exactly-once TTL receipts, so retries cannot
 double-count an organizer. The dry-run-first organizer-audience backfill uses
 the same production projector and marks a summary `exact` only after every

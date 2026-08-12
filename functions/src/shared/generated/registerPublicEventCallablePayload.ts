@@ -9,6 +9,10 @@ export interface RegisterPublicEventCallablePayload {
   eventId: string;
   displayName: string;
   /**
+   * Legacy invite-link id or versioned opaque invitation bearer token.
+   */
+  inviteToken?: string | null;
+  /**
    * Optional, explicit opt-in to organizer marketing updates. Absence never grants consent.
    */
   organizerUpdates?: {

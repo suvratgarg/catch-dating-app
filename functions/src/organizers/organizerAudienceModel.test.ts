@@ -132,6 +132,24 @@ test("summary deltas add, update, and remove without negatives", () => {
   assert.equal(removed.repeatAttendeeCount, 0);
 });
 
+test("qualified referrals create explainable advocate segments", () => {
+  const traits = organizerContactTraits({
+    contactId: "contact-1",
+    contact: organizerContact(),
+    edges: [edge({eventId: "event-1", checkedIn: true})],
+    now,
+    referredRegistrationCount: 4,
+    referredCheckedInCount: 3,
+    referredCheckedIn365DayCount: 3,
+  });
+  assert.ok(traits);
+  assert.equal(traits.referredRegistrationCount, 4);
+  assert.equal(traits.referredCheckedInCount, 3);
+  assert.equal(traits.referredCheckedIn365DayCount, 3);
+  assert.ok(traits.segmentIds.includes("advocate"));
+  assert.ok(traits.segmentIds.includes("high_impact_advocate"));
+});
+
 function attendee(
   overrides: Partial<EventAttendeeDocument> = {}
 ): EventAttendeeDocument {

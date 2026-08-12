@@ -7,6 +7,7 @@
  */
 export interface GetEventRuntimeBootstrapCallableResponse {
   event: {
+    eventId: string;
     publicRuntimeId: string;
     title: string;
     startTimeMillis: number;

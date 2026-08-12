@@ -10,6 +10,8 @@ export interface GetOrganizerCrmSummaryCallableResponse {
   contactCount: number;
   pastAttendeeCount: number;
   repeatAttendeeCount: number;
+  advocateCount: number;
+  highImpactAdvocateCount: number;
   linkedAccountCount: number;
   importedContactCount: number;
   whatsappOptInCount: number;

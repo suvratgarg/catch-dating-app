@@ -537,6 +537,7 @@ void main() {
       (functions.httpsCallable('createEventInviteLink') as TestHttpsCallable)
           .resultData = {
         'inviteLinkId': 'invite-link-1',
+        'inviteToken': 'v2_invite-link-1_test-token',
         'eventId': 'event-1',
         'label': 'Instagram bio',
         'source': 'instagram',
@@ -552,6 +553,7 @@ void main() {
         {'eventId': 'event-1', 'label': 'Instagram bio', 'source': 'instagram'},
       ]);
       expect(result.inviteLinkId, 'invite-link-1');
+      expect(result.inviteToken, 'v2_invite-link-1_test-token');
       expect(result.label, 'Instagram bio');
     });
 

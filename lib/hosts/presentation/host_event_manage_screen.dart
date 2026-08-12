@@ -280,8 +280,13 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
               inviteCode: privateLinkActionState!.inviteCode!,
               draft: draft,
             ),
-            onCopyInviteLink: (link, url) =>
-                unawaited(_copyNamedInviteLink(link: link, url: url)),
+            onCopyInviteLink: (link) => unawaited(
+              _copyNamedInviteLink(
+                event: event,
+                inviteCode: privateAccessState!.value!.inviteCode,
+                link: link,
+              ),
+            ),
             onDisableInviteLink: (link) =>
                 unawaited(_disableNamedInviteLink(event: event, link: link)),
           ),
@@ -579,15 +584,16 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
   }
 
   Future<void> _copyNamedInviteLink({
+    required Event event,
+    required String inviteCode,
     required EventInviteLink link,
-    required String url,
   }) async {
     try {
       final label = await HostEventManageController.copyInviteLinkMutation.run(
         ref,
         (tx) => tx
             .get(hostEventManageActionsProvider)
-            .copyInviteLink(label: link.label, url: url),
+            .copyInviteLink(event: event, inviteCode: inviteCode, link: link),
       );
       if (!mounted) return;
       showCatchSnackBar(
@@ -820,7 +826,7 @@ class HostPrivateAccessCard extends StatelessWidget {
   final VoidCallback onRetryInviteLinks;
   final ValueChanged<String> onSharePrivateLink;
   final Future<void> Function(HostInviteLinkDraft draft) onCreateInviteLink;
-  final void Function(EventInviteLink link, String url) onCopyInviteLink;
+  final void Function(EventInviteLink link) onCopyInviteLink;
   final void Function(EventInviteLink link) onDisableInviteLink;
 
   @override
@@ -948,7 +954,7 @@ class HostPrivateAccessBody extends StatelessWidget {
   final VoidCallback onRetryInviteLinks;
   final ValueChanged<String> onSharePrivateLink;
   final Future<void> Function(HostInviteLinkDraft draft) onCreateInviteLink;
-  final void Function(EventInviteLink link, String url) onCopyInviteLink;
+  final void Function(EventInviteLink link) onCopyInviteLink;
   final void Function(EventInviteLink link) onDisableInviteLink;
 
   @override
@@ -1056,7 +1062,7 @@ class HostInviteLinksList extends StatelessWidget {
   final Object? mutationError;
   final VoidCallback onRetry;
   final Future<void> Function(HostInviteLinkDraft draft) onCreateInviteLink;
-  final void Function(EventInviteLink link, String url) onCopyInviteLink;
+  final void Function(EventInviteLink link) onCopyInviteLink;
   final void Function(EventInviteLink link) onDisableInviteLink;
 
   @override
@@ -1168,7 +1174,7 @@ class HostInviteLinkRow extends StatelessWidget {
   final String inviteCode;
   final EventInviteLink link;
   final bool actionsDisabled;
-  final void Function(EventInviteLink link, String url) onCopyInviteLink;
+  final void Function(EventInviteLink link) onCopyInviteLink;
   final void Function(EventInviteLink link) onDisableInviteLink;
 
   @override
@@ -1225,7 +1231,7 @@ class HostInviteLinkRow extends StatelessWidget {
           child: CatchIconButton(
             onTap: rowState.actionsDisabled
                 ? null
-                : () => onCopyInviteLink(link, rowState.url),
+                : () => onCopyInviteLink(link),
             disabled: rowState.actionsDisabled,
             child: Icon(CatchIcons.contentCopyRounded, size: CatchIcon.sm),
           ),
