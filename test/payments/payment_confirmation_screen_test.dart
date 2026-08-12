@@ -3,8 +3,10 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/events/data/event_callable_responses.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/presentation/attendee_event_share_controller.dart';
 import 'package:catch_dating_app/events/shared/event_share_card.dart';
 import 'package:catch_dating_app/payments/data/payment_history_repository.dart';
 import 'package:catch_dating_app/payments/domain/payment.dart';
@@ -241,6 +243,9 @@ Future<void> _pumpPaymentConfirmation(
         watchClubProvider(
           event.clubId,
         ).overrideWith((ref) => Stream.value(club)),
+        attendeeEventShareActionsProvider.overrideWithValue(
+          const _TestAttendeeEventShareActions(),
+        ),
         if (data.isPendingExternalCheckout)
           watchPaymentProvider(
             data.paymentId,
@@ -254,4 +259,27 @@ Future<void> _pumpPaymentConfirmation(
   );
   await tester.pump();
   await tester.pump();
+}
+
+class _TestAttendeeEventShareActions implements AttendeeEventShareActions {
+  const _TestAttendeeEventShareActions();
+
+  @override
+  Future<CreateEventInviteLinkCallableResponse> createInviteLink({
+    required String eventId,
+    required bool isExternalEvent,
+    required String label,
+  }) async => CreateEventInviteLinkCallableResponse(
+    inviteLinkId: 'invite-link-payment-confirmation',
+    inviteToken: 'v2_invite-link-payment-confirmation_test-token',
+    eventId: eventId,
+    label: label,
+    source: 'consumer_app',
+  );
+
+  @override
+  Future<void> recordShareIntent({
+    required String eventId,
+    required String inviteLinkId,
+  }) async {}
 }
