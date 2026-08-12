@@ -293,6 +293,12 @@ jobs:
             --allow-runtime-dependencies true \
             --trusted-package-dir build/delivery/package
 
+      - name: Remove only obsolete non-deployable indexes from the deploy copy
+        run: >-
+          node tool/firebase/sanitize_firestore_indexes_for_deploy.mjs
+          --indexes build/delivery/deploy-tree/firestore.indexes.json
+          --current-indexes firestore.indexes.json
+
       - id: promote
         name: Resume ordered backend stages
         env:

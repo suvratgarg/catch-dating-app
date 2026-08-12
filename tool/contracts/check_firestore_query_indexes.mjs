@@ -66,13 +66,13 @@ export function validateConfiguredIndexes(indexConfig) {
   const errors = [];
   for (const index of indexConfig.indexes ?? []) {
     const fields = index.fields ?? [];
-    const explicitNameField = fields.some(
-      (field) => field.fieldPath === "__name__"
-    );
     const userFields = fields.filter(
       (field) => field.fieldPath !== "__name__"
     );
-    if (explicitNameField && userFields.length < 2) {
+    const hasVectorField = userFields.some(
+      (field) => field.vectorConfig != null
+    );
+    if (userFields.length === 1 && !hasVectorField) {
       errors.push(
         "firestore.indexes.json: unnecessary composite index " +
           canonicalIndex(

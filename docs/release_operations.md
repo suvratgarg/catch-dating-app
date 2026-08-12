@@ -663,6 +663,13 @@ restores a matching checkpoint when present and restarts that same verified
 package at stage one when the terminal attempt ended before checkpoint
 publication. It cannot rebuild a branch, borrow an unrelated failed run,
 broaden the authorized targets, or substitute newer workspace contents.
+The original package and its pristine extracted tree remain byte-verified and
+immutable. A separate deploy copy may remove only a non-vector one-field
+composite index that Firestore cannot create, and only after the current
+control plane no longer declares that exact index. This deterministic recovery
+normalization changes no query capability because Firestore's built-in
+single-field index already owns the shape; all other packaged bytes and stages
+remain bound to the original CI authority.
 
 Mobile artifacts remain separate from backend deployment. A successful
 same-repository `main` CI attempt wakes `.github/workflows/mobile-internal-release.yml`,

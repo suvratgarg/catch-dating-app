@@ -68,6 +68,12 @@ test("known-bad unnecessary single-field composite index is detected", () => {
   const errors = validateConfiguredIndexes({
     indexes: [
       {
+        collectionGroup: "organizerCampaignRecipients",
+        fields: [
+          {fieldPath: "providerMessageId", mode: "ASCENDING"},
+        ],
+      },
+      {
         collectionGroup: "adminActionExecutions",
         fields: [
           {fieldPath: "startedAt", mode: "DESCENDING"},
@@ -78,8 +84,22 @@ test("known-bad unnecessary single-field composite index is detected", () => {
   });
   assert.match(
     errors.join("\n"),
+    /unnecessary composite index organizerCampaignRecipients\|providerMessageId:ASCENDING/u
+  );
+  assert.match(
+    errors.join("\n"),
     /unnecessary composite index adminActionExecutions\|startedAt:DESCENDING,__name__:DESCENDING/u
   );
+});
+
+test("single-field vector indexes are not classified as built-in indexes", () => {
+  const errors = validateConfiguredIndexes({
+    indexes: [{
+      collectionGroup: "profiles",
+      fields: [{fieldPath: "embedding", vectorConfig: {dimension: 128}}],
+    }],
+  });
+  assert.deepEqual(errors, []);
 });
 
 test("contract parser preserves ordered and array index modes", () => {
