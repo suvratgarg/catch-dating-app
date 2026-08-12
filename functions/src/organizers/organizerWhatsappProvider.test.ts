@@ -3,6 +3,7 @@ import test from "node:test";
 import {
   MetaWhatsappProvider,
   MetaProviderError,
+  OrganizerTokenStore,
 } from "./organizerWhatsappProvider";
 
 const config = {
@@ -236,6 +237,77 @@ test("provider errors are sanitized into typed failures", async () => {
       error.providerCode === 132015 &&
       error.httpStatus === 400,
   );
+});
+
+test("organizer tokens use a pre-provisioned versioned vault", async () => {
+  const calls: Array<{method: string; value: unknown}> = [];
+  const client = {
+    addSecretVersion: async (value: unknown) => {
+      calls.push({method: "add", value});
+      return [{
+        name: "projects/project-1/secrets/ORGANIZER_WHATSAPP_ACCESS_TOKENS/" +
+          "versions/7",
+      }];
+    },
+    accessSecretVersion: async (value: unknown) => {
+      calls.push({method: "access", value});
+      return [{payload: {data: Buffer.from(JSON.stringify({
+        schema: "catch.organizer-whatsapp-token/v1",
+        organizerId: "organizer-1",
+        connectionId: "connection-1",
+        accessToken: "token-1",
+      }))}}];
+    },
+    disableSecretVersion: async (value: unknown) => {
+      calls.push({method: "disable", value});
+      return [{}];
+    },
+  };
+  const originalProjectId = process.env.GCLOUD_PROJECT;
+  process.env.GCLOUD_PROJECT = "project-1";
+  try {
+    const store = new OrganizerTokenStore(
+      client as never,
+      "ORGANIZER_WHATSAPP_ACCESS_TOKENS",
+    );
+    const resource = await store.store({
+      organizerId: "organizer-1",
+      connectionId: "connection-1",
+      accessToken: "token-1",
+    });
+    assert.equal(
+      resource,
+      "projects/project-1/secrets/ORGANIZER_WHATSAPP_ACCESS_TOKENS/versions/7",
+    );
+    assert.equal(await store.access(resource), "token-1");
+    await store.disable(resource);
+    assert.deepEqual(calls.map((call) => call.method), [
+      "add", "access", "disable",
+    ]);
+    const addRequest = calls[0].value as {
+      parent: string;
+      payload: {data: Buffer};
+    };
+    assert.equal(
+      addRequest.parent,
+      "projects/project-1/secrets/ORGANIZER_WHATSAPP_ACCESS_TOKENS",
+    );
+    assert.deepEqual(
+      JSON.parse(addRequest.payload.data.toString("utf8")),
+      {
+        schema: "catch.organizer-whatsapp-token/v1",
+        organizerId: "organizer-1",
+        connectionId: "connection-1",
+        accessToken: "token-1",
+      },
+    );
+  } finally {
+    if (originalProjectId === undefined) {
+      delete process.env.GCLOUD_PROJECT;
+    } else {
+      process.env.GCLOUD_PROJECT = originalProjectId;
+    }
+  }
 });
 
 function jsonResponse(value: unknown): Response {

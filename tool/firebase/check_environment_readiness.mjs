@@ -13,6 +13,10 @@ const supportedRequirementKinds = new Set([
 const deployTargetPattern = /^[A-Za-z0-9_.-]+(?::[A-Za-z0-9_.-]+)*$/u;
 const capabilityPattern = /^[a-z][a-z0-9-]*$/u;
 const secretNamePattern = /^[A-Z][A-Z0-9_]*$/u;
+const supportedSecretRuntimeRoles = new Set([
+  "roles/secretmanager.secretAccessor",
+  "roles/secretmanager.secretVersionManager",
+]);
 const resourceNamePattern = /^[A-Za-z][A-Za-z0-9_-]*$/u;
 const projectIdPattern = /^[a-z][a-z0-9-]{4,28}[a-z0-9]$/u;
 const projectNumberPattern = /^[1-9][0-9]*$/u;
@@ -274,6 +278,24 @@ export function validateEnvironmentReadinessManifest(
       manifestSecrets.add(requirement.name);
       if (acceptedStates.length !== 1 || acceptedStates[0] !== "ENABLED") {
         errors.push(`${label}: secret versions must accept only ENABLED.`);
+      }
+      if (requirement.runtimeRoles != null) {
+        validateStringArray({
+          errors,
+          key: "runtimeRoles",
+          label,
+          value: requirement.runtimeRoles,
+        });
+        for (const role of requirement.runtimeRoles ?? []) {
+          if (!supportedSecretRuntimeRoles.has(role)) {
+            errors.push(`${label}: unsupported runtime role ${role}.`);
+          }
+        }
+        if (!(requirement.runtimeRoles ?? []).includes(
+          "roles/secretmanager.secretAccessor"
+        )) {
+          errors.push(`${label}: runtimeRoles must include secretAccessor.`);
+        }
       }
     } else if (requirement.kind === "firestore-ttl") {
       if (!resourceNamePattern.test(requirement.collectionGroup ?? "")) {
@@ -602,15 +624,21 @@ export function classifySecretRuntimeAccess({
     });
   }
   const member = `serviceAccount:${serviceAccount}`;
-  const hasAccess = (payload.bindings ?? []).some((binding) =>
-    binding?.role === "roles/secretmanager.secretAccessor" &&
-    binding.condition == null &&
-    Array.isArray(binding.members) && binding.members.includes(member));
-  if (!hasAccess) {
+  const requiredRoles = requirement.runtimeRoles ?? [
+    "roles/secretmanager.secretAccessor",
+  ];
+  const presentRoles = requiredRoles.filter((role) =>
+    (payload.bindings ?? []).some((binding) =>
+      binding?.role === role &&
+      binding.condition == null &&
+      Array.isArray(binding.members) && binding.members.includes(member)));
+  const missingRoles = requiredRoles.filter((role) =>
+    !presentRoles.includes(role));
+  if (missingRoles.length > 0) {
     return readinessResult({
       id: `${requirement.id}.runtime-access`,
       kind: "secret-runtime-access",
-      metadata: {serviceAccount},
+      metadata: {missingRoles, serviceAccount},
       reason: "runtime-secret-access-missing",
       resource,
       status: "not-ready",
@@ -620,7 +648,7 @@ export function classifySecretRuntimeAccess({
     id: `${requirement.id}.runtime-access`,
     kind: "secret-runtime-access",
     metadata: {
-      role: "roles/secretmanager.secretAccessor",
+      roles: presentRoles,
       serviceAccount,
     },
     reason: "runtime-secret-access-present",

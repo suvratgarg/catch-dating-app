@@ -47,6 +47,19 @@ printf '%s\n' \
   '    echo "Dart compilation failed" >&2' \
   '    exit 17' \
   '    ;;' \
+  '  gradle-once)' \
+  '    if [[ "$count" == "1" ]]; then' \
+  '      echo "Exception in thread \"main\" java.net.SocketException: Unexpected end of file from server" >&2' \
+  '      echo "  at org.gradle.wrapper.Download.downloadInternal(Download.java:58)" >&2' \
+  '      echo "  at org.gradle.wrapper.Download.download(Download.java:44)" >&2' \
+  '      exit 1' \
+  '    fi' \
+  '    ;;' \
+  '  gradle-unrelated)' \
+  '    echo "Exception in thread \"main\" java.net.SocketException: Unexpected end of file from server" >&2' \
+  '    echo "  at com.example.ProductCompiler.compile(ProductCompiler.java:44)" >&2' \
+  '    exit 19' \
+  '    ;;' \
   'esac' \
   'exit 0' \
   >"$stub_dir/flutter"
@@ -128,6 +141,54 @@ if [[ "$exhausted_status" != "1" || "$(<"$exhausted_counter")" != "3" ]]; then
   exit 1
 fi
 
+run_stubbed_android_build() {
+  local mode="$1"
+  local ci="$2"
+  local counter_file="$3"
+  local output_var="$4"
+  local status_var="$5"
+  local output
+  local status
+  set +e
+  output="$(
+    PATH="$stub_dir:$PATH" \
+      CI="$ci" \
+      GITHUB_ACTIONS=false \
+      FLUTTER_STUB_MODE="$mode" \
+      FLUTTER_STUB_COUNT_FILE="$counter_file" \
+      CATCH_GRADLE_WRAPPER_RETRY_DELAY_SECONDS=0 \
+      /bin/bash "$repo_root/tool/flutter_with_env.sh" \
+      dev --role host build appbundle --release 2>&1
+  )"
+  status=$?
+  set -e
+  printf -v "$output_var" '%s' "$output"
+  printf -v "$status_var" '%s' "$status"
+}
+
+gradle_counter="$state_dir/gradle-count"
+run_stubbed_android_build gradle-once true \
+  "$gradle_counter" gradle_output gradle_status
+if [[ "$gradle_status" != "0" || "$(<"$gradle_counter")" != "2" ]]; then
+  echo "Expected exact Gradle wrapper download failure to succeed on bounded retry." >&2
+  echo "$gradle_output" >&2
+  exit 1
+fi
+if [[ "$gradle_output" != *"Retrying the Android Flutter build after a transient verified Gradle wrapper download failure (attempt 2/3)."* ]]; then
+  echo "Expected a visible Gradle wrapper bounded-retry diagnostic." >&2
+  echo "$gradle_output" >&2
+  exit 1
+fi
+
+gradle_unrelated_counter="$state_dir/gradle-unrelated-count"
+run_stubbed_android_build gradle-unrelated true \
+  "$gradle_unrelated_counter" gradle_unrelated_output gradle_unrelated_status
+if [[ "$gradle_unrelated_status" != "19" || "$(<"$gradle_unrelated_counter")" != "1" ]]; then
+  echo "Expected unrelated Android network-like failures to fail without retry." >&2
+  echo "$gradle_unrelated_output" >&2
+  exit 1
+fi
+
 local_counter="$state_dir/local-count"
 run_stubbed_ios_build tls-once false "$local_counter" local_output local_status
 if [[ "$local_status" != "1" || "$(<"$local_counter")" != "1" ]]; then
@@ -136,4 +197,4 @@ if [[ "$local_status" != "1" || "$(<"$local_counter")" != "1" ]]; then
   exit 1
 fi
 
-echo "flutter_with_env app-target and bounded CocoaPods TLS retry checks passed."
+echo "flutter_with_env app-target and bounded CI dependency retry checks passed."

@@ -50,7 +50,13 @@ export const metaWhatsappConfigId = defineString(
 export const metaWhatsappGraphVersion = defineString(
   "META_WHATSAPP_GRAPH_VERSION", {default: "v23.0"}
 );
+export const metaWhatsappEnabled = defineString(
+  "META_WHATSAPP_ENABLED", {default: "false"}
+);
 export const metaWhatsappAppSecret = defineSecret("META_WHATSAPP_APP_SECRET");
+export const organizerWhatsappAccessTokens = defineSecret(
+  "ORGANIZER_WHATSAPP_ACCESS_TOKENS"
+);
 
 interface OrganizerMessagingSetupDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -384,7 +390,7 @@ async function getSetupResponse(
       ...templateResponse(doc.data() as OrganizerMessageTemplateDocument),
     }));
   const providerConfigured = configured(metaWhatsappAppId.value()) &&
-    configured(metaWhatsappConfigId.value());
+    configured(metaWhatsappConfigId.value()) && metaProviderEnabled();
   return {
     organizerId,
     providerConfigured,
@@ -440,13 +446,17 @@ function templateDocument(params: {
 }
 
 function assertProviderConfigured(): void {
-  if (!configured(metaWhatsappAppId.value()) ||
+  if (!metaProviderEnabled() || !configured(metaWhatsappAppId.value()) ||
       !configured(metaWhatsappConfigId.value()) ||
       !configured(metaWhatsappAppSecret.value())) {
     throw new HttpsError(
       "failed-precondition", "WhatsApp provider setup is not configured."
     );
   }
+}
+
+function metaProviderEnabled(): boolean {
+  return metaWhatsappEnabled.value().trim().toLowerCase() === "true";
 }
 
 function configured(value: string): boolean {
@@ -511,31 +521,36 @@ const messagingCallableLimits = {
 
 export const completeOrganizerWhatsappConnection = onCall(
   appCheckCallableOptionsWithSecrets(
-    [metaWhatsappAppSecret], messagingCallableLimits
+    [metaWhatsappAppSecret, organizerWhatsappAccessTokens],
+    messagingCallableLimits
   ),
   (request) => completeOrganizerWhatsappConnectionHandler(request)
 );
 export const getOrganizerMessagingSetup = onCall(
   appCheckCallableOptionsWithSecrets(
-    [metaWhatsappAppSecret], messagingCallableLimits
+    [metaWhatsappAppSecret, organizerWhatsappAccessTokens],
+    messagingCallableLimits
   ),
   (request) => getOrganizerMessagingSetupHandler(request)
 );
 export const syncOrganizerWhatsappTemplates = onCall(
   appCheckCallableOptionsWithSecrets(
-    [metaWhatsappAppSecret], messagingCallableLimits
+    [metaWhatsappAppSecret, organizerWhatsappAccessTokens],
+    messagingCallableLimits
   ),
   (request) => syncOrganizerWhatsappTemplatesHandler(request)
 );
 export const sendOrganizerWhatsappTest = onCall(
   appCheckCallableOptionsWithSecrets(
-    [metaWhatsappAppSecret], messagingCallableLimits
+    [metaWhatsappAppSecret, organizerWhatsappAccessTokens],
+    messagingCallableLimits
   ),
   (request) => sendOrganizerWhatsappTestHandler(request)
 );
 export const disconnectOrganizerWhatsappConnection = onCall(
   appCheckCallableOptionsWithSecrets(
-    [metaWhatsappAppSecret], messagingCallableLimits
+    [metaWhatsappAppSecret, organizerWhatsappAccessTokens],
+    messagingCallableLimits
   ),
   (request) => disconnectOrganizerWhatsappConnectionHandler(request)
 );

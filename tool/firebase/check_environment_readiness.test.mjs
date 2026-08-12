@@ -48,8 +48,8 @@ test("checked manifest validates offline without invoking gcloud", () => {
   );
 
   assert.equal(execution.exitCode, 0);
-  assert.equal(execution.report.secretCount, 14);
-  assert.equal(execution.report.requirementCount, 15);
+  assert.equal(execution.report.secretCount, 15);
+  assert.equal(execution.report.requirementCount, 16);
   assert.equal(commandCalls, 0);
 });
 
@@ -151,9 +151,9 @@ test("target and capability filtering selects only relevant prerequisites", () =
     selected("dev", ["functions"]).filter(
       (entry) => entry.kind === "secret-version",
     ).length,
-    14,
+    15,
   );
-  assert.equal(selected("dev", ["functions"]).length, 15);
+  assert.equal(selected("dev", ["functions"]).length, 16);
   assert.deepEqual(
     selected("dev", ["functions:getCrossPathsSuggestions"])
       .map((entry) => entry.id),
@@ -281,9 +281,48 @@ test("secret runtime IAM fails closed before Firebase can mutate policy", () => 
   assert.equal(ready.status, "ready");
   assert.equal(ready.reason, "runtime-secret-access-present");
   assert.deepEqual(ready.metadata, {
-    role: "roles/secretmanager.secretAccessor",
+    roles: ["roles/secretmanager.secretAccessor"],
     serviceAccount: "619661127800-compute@developer.gserviceaccount.com",
   });
+
+  const vaultRequirement = manifest.requirements.find(
+    (entry) => entry.name === "ORGANIZER_WHATSAPP_ACCESS_TOKENS",
+  );
+  const vaultReady = classifySecretRuntimeAccess({
+    projectNumber,
+    requirement: vaultRequirement,
+    result: {
+      status: 0,
+      stderr: "",
+      stdout: JSON.stringify({bindings: [
+        {
+          members: [member],
+          role: "roles/secretmanager.secretAccessor",
+        },
+        {
+          members: [member],
+          role: "roles/secretmanager.secretVersionManager",
+        },
+      ]}),
+    },
+  });
+  assert.equal(vaultReady.status, "ready");
+  const vaultMissingManager = classifySecretRuntimeAccess({
+    projectNumber,
+    requirement: vaultRequirement,
+    result: {
+      status: 0,
+      stderr: "",
+      stdout: JSON.stringify({bindings: [{
+        members: [member],
+        role: "roles/secretmanager.secretAccessor",
+      }]}),
+    },
+  });
+  assert.equal(vaultMissingManager.status, "not-ready");
+  assert.deepEqual(vaultMissingManager.metadata.missingRoles, [
+    "roles/secretmanager.secretVersionManager",
+  ]);
 
   const absent = classify([]);
   assert.equal(absent.status, "not-ready");
