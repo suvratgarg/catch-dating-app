@@ -123,13 +123,14 @@ class _HostAudiencePaneState extends ConsumerState<HostAudiencePane> {
     );
   }
 
-  Widget _buildSummary(
+  CatchSection _buildSummary(
     BuildContext context,
     AsyncValue<HostCrmSummary> summary,
   ) => CatchSection.divided(
     title: context.l10n.hostsHostAudienceAtAGlance,
     child: CatchAsyncValueView<HostCrmSummary>(
       value: summary,
+      onRetry: () => ref.invalidate(hostCrmSummaryProvider(widget.club.id)),
       initialLoadTimeout: null,
       loadingBuilder: (_) => const CatchSkeletonRows(count: 2),
       errorBuilder: (_, error, _) => CatchErrorState.fromError(
@@ -190,7 +191,7 @@ class _HostAudiencePaneState extends ConsumerState<HostAudiencePane> {
     ),
   );
 
-  Widget _buildDirectory(
+  CatchSection _buildDirectory(
     BuildContext context,
     AsyncValue<HostAudiencePage> audience,
   ) => CatchSection.divided(
@@ -242,6 +243,8 @@ class _HostAudiencePaneState extends ConsumerState<HostAudiencePane> {
         gapH12,
         CatchAsyncValueView<HostAudiencePage>(
           value: audience,
+          onRetry: () =>
+              ref.invalidate(hostAudienceProvider(widget.club.id, _query)),
           initialLoadTimeout: null,
           loadingBuilder: (_) => const CatchSkeletonRows(count: 4),
           errorBuilder: (_, error, _) => CatchErrorState.fromError(
@@ -306,13 +309,14 @@ class _HostAudiencePaneState extends ConsumerState<HostAudiencePane> {
     ),
   );
 
-  Widget _buildWhatsappSetup(
+  CatchSection _buildWhatsappSetup(
     BuildContext context,
     AsyncValue<HostMessagingSetup> messaging,
   ) => CatchSection.divided(
     title: context.l10n.hostsHostAudienceWhatsappSender,
     child: CatchAsyncValueView<HostMessagingSetup>(
       value: messaging,
+      onRetry: () => ref.invalidate(hostMessagingSetupProvider(widget.club.id)),
       initialLoadTimeout: null,
       loadingBuilder: (_) => const CatchSkeletonRows(count: 2),
       errorBuilder: (_, error, _) => CatchErrorState.fromError(
@@ -324,112 +328,117 @@ class _HostAudiencePaneState extends ConsumerState<HostAudiencePane> {
       ),
       builder: (context, setup) {
         final connection = setup.connection;
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              context.l10n.hostsHostAudienceWhatsappOwnedSender,
-              style: CatchTextStyles.supporting(
-                context,
-                color: CatchTokens.of(context).ink2,
-              ),
-            ),
-            gapH12,
-            if (!setup.providerConfigured)
-              CatchNotice(
-                notice: CatchNoticeData(
-                  id: 'host.audience.whatsapp.provider-unavailable',
-                  title: context.l10n.hostsHostAudienceProviderUnavailable,
-                  message:
-                      context.l10n.hostsHostAudienceProviderUnavailableBody,
-                  tone: CatchNoticeTone.warning,
+        return CatchFieldLanes.custom(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                context.l10n.hostsHostAudienceWhatsappOwnedSender,
+                style: CatchTextStyles.supporting(
+                  context,
+                  color: CatchTokens.of(context).ink2,
                 ),
-              )
-            else if (connection == null)
-              CatchButton(
-                label: context.l10n.hostsHostAudienceConnectWhatsapp,
-                onPressed: _busy ? null : () => _connectWhatsapp(setup),
-                isLoading: _busy,
-              )
-            else ...[
-              CatchField.read(
-                title:
-                    connection.verifiedName ??
-                    context.l10n.hostsHostAudienceWhatsappSender,
-                body: connection.displayPhoneNumber,
-                valueText: _connectionStatusLabel(context, connection),
               ),
-              CatchField.read(
-                title: context.l10n.hostsHostAudienceTemplates,
-                body: context.l10n.hostsHostAudienceApprovedTemplates(
-                  count: setup.approvedTemplates.length,
+              gapH12,
+              if (!setup.providerConfigured)
+                CatchNotice(
+                  notice: CatchNoticeData(
+                    id: 'host.audience.whatsapp.provider-unavailable',
+                    title: context.l10n.hostsHostAudienceProviderUnavailable,
+                    message:
+                        context.l10n.hostsHostAudienceProviderUnavailableBody,
+                    tone: CatchNoticeTone.warning,
+                  ),
+                )
+              else if (connection == null)
+                CatchButton(
+                  label: context.l10n.hostsHostAudienceConnectWhatsapp,
+                  onPressed: _busy ? null : () => _connectWhatsapp(setup),
+                  isLoading: _busy,
+                )
+              else ...[
+                CatchField.read(
+                  title:
+                      connection.verifiedName ??
+                      context.l10n.hostsHostAudienceWhatsappSender,
+                  body: connection.displayPhoneNumber,
+                  valueText: _connectionStatusLabel(context, connection),
                 ),
-                valueText: connection.templateSyncStatus,
-              ),
-              Wrap(
-                spacing: CatchSpacing.s2,
-                runSpacing: CatchSpacing.s2,
-                children: [
+                CatchField.read(
+                  title: context.l10n.hostsHostAudienceTemplates,
+                  body: context.l10n.hostsHostAudienceApprovedTemplates(
+                    count: setup.approvedTemplates.length,
+                  ),
+                  valueText: connection.templateSyncStatus,
+                ),
+                Wrap(
+                  spacing: CatchSpacing.s2,
+                  runSpacing: CatchSpacing.s2,
+                  children: [
+                    CatchButton(
+                      label: context.l10n.hostsHostAudienceSyncTemplates,
+                      variant: CatchButtonVariant.secondary,
+                      size: CatchButtonSize.sm,
+                      onPressed: _busy
+                          ? null
+                          : () => _syncTemplates(connection.connectionId),
+                      isLoading: _busy,
+                    ),
+                    CatchButton(
+                      label: context.l10n.hostsHostAudienceDisconnect,
+                      variant: CatchButtonVariant.ghost,
+                      size: CatchButtonSize.sm,
+                      onPressed: _busy
+                          ? null
+                          : () => _disconnectWhatsapp(connection.connectionId),
+                    ),
+                  ],
+                ),
+                if (!connection.isActive &&
+                    setup.approvedTemplates.isNotEmpty) ...[
+                  gapH16,
+                  CatchField.input(
+                    title: context.l10n.hostsHostAudienceTestPhone,
+                    contract: CatchContractConstraints
+                        .sendOrganizerWhatsappTestCallablePayloadToE164,
+                    controller: _testPhoneController,
+                    keyboardType: TextInputType.phone,
+                    placeholder: '+919876543210',
+                    helperText: context.l10n.hostsHostAudienceTestPhoneHelp,
+                  ),
+                  gapH8,
                   CatchButton(
-                    label: context.l10n.hostsHostAudienceSyncTemplates,
-                    variant: CatchButtonVariant.secondary,
-                    size: CatchButtonSize.sm,
+                    label: context.l10n.hostsHostAudienceSendTest,
                     onPressed: _busy
                         ? null
-                        : () => _syncTemplates(connection.connectionId),
+                        : () => _sendTest(setup, setup.approvedTemplates.first),
                     isLoading: _busy,
                   ),
-                  CatchButton(
-                    label: context.l10n.hostsHostAudienceDisconnect,
-                    variant: CatchButtonVariant.ghost,
-                    size: CatchButtonSize.sm,
-                    onPressed: _busy
-                        ? null
-                        : () => _disconnectWhatsapp(connection.connectionId),
-                  ),
                 ],
-              ),
-              if (!connection.isActive &&
-                  setup.approvedTemplates.isNotEmpty) ...[
-                gapH16,
-                CatchField.input(
-                  title: context.l10n.hostsHostAudienceTestPhone,
-                  contract: CatchContractConstraints
-                      .sendOrganizerWhatsappTestCallablePayloadToE164,
-                  controller: _testPhoneController,
-                  keyboardType: TextInputType.phone,
-                  placeholder: '+919876543210',
-                  helperText: context.l10n.hostsHostAudienceTestPhoneHelp,
-                ),
-                gapH8,
-                CatchButton(
-                  label: context.l10n.hostsHostAudienceSendTest,
-                  onPressed: _busy
-                      ? null
-                      : () => _sendTest(setup, setup.approvedTemplates.first),
-                  isLoading: _busy,
-                ),
               ],
             ],
-          ],
+          ),
         );
       },
     ),
   );
 
-  Widget _buildCampaignComposer(
+  CatchSection _buildCampaignComposer(
     BuildContext context,
     AsyncValue<HostMessagingSetup> messaging,
   ) => CatchSection.divided(
     title: context.l10n.hostsHostAudienceCampaign,
     child: CatchAsyncValueView<HostMessagingSetup>(
       value: messaging,
+      onRetry: () => ref.invalidate(hostMessagingSetupProvider(widget.club.id)),
       initialLoadTimeout: null,
       loadingBuilder: (_) => const CatchSkeletonRows(),
       errorBuilder: (_, error, _) => CatchErrorState.fromError(
         error,
         context: AppErrorContext.club,
         mode: CatchErrorStateMode.compact,
+        onRetry: () =>
+            ref.invalidate(hostMessagingSetupProvider(widget.club.id)),
       ),
       builder: (context, setup) {
         final connection = setup.connection;
@@ -461,158 +470,161 @@ class _HostAudiencePaneState extends ConsumerState<HostAudiencePane> {
           );
         }
         final template = _selectedTemplate ?? approved.first;
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CatchField.input(
-              title: context.l10n.hostsHostAudienceCampaignName,
-              contract: CatchContractConstraints
-                  .upsertOrganizerCampaignCallablePayloadName,
-              controller: _campaignNameController,
-              placeholder: context.l10n.hostsHostAudienceCampaignNameExample,
-              enabled: _campaign == null,
-            ),
-            gapH12,
-            CatchField.select<_HostCampaignMessageClass>(
-              title: context.l10n.hostsHostAudienceMessageType,
-              contract: CatchContractConstraints
-                  .upsertOrganizerCampaignCallablePayloadMessageClass,
-              contractValue: (value) => value.wireValue,
-              values: _HostCampaignMessageClass.values,
-              itemLabel: (value) => _messageClassLabel(context, value),
-              value: _messageClass,
-              enabled: _campaign == null,
-              onChanged: (value) {
-                if (value != null) setState(() => _messageClass = value);
-              },
-            ),
-            gapH12,
-            Text(
-              context.l10n.hostsHostAudienceRecipients,
-              style: CatchTextStyles.fieldRowTitle(context),
-            ),
-            gapH8,
-            Wrap(
-              spacing: CatchSpacing.s2,
-              runSpacing: CatchSpacing.s2,
-              children: [
-                for (final segment in HostAudienceSegment.values)
-                  CatchChip.selectable(
-                    label: _segmentLabel(context, segment),
-                    selected: _campaignSegments.contains(segment),
-                    enabled: _campaign == null,
-                    contract: CatchContractConstraints
-                        .upsertOrganizerCampaignCallablePayloadSegmentIds,
-                    contractValue: segment.wireValue,
-                    onChanged: (selected) => setState(() {
-                      if (selected && _campaignSegments.length < 5) {
-                        _campaignSegments.add(segment);
-                      } else if (!selected && _campaignSegments.length > 1) {
-                        _campaignSegments.remove(segment);
-                      }
-                    }),
-                  ),
-              ],
-            ),
-            gapH12,
-            CatchField.select<HostWhatsappTemplate>(
-              title: context.l10n.hostsHostAudienceTemplate,
-              contract: CatchContractConstraints
-                  .upsertOrganizerCampaignCallablePayloadTemplateId,
-              contractValue: (value) => value.templateId,
-              values: approved,
-              itemLabel: (value) => '${value.name} · ${value.language}',
-              value: template,
-              enabled: _campaign == null,
-              onChanged: (value) {
-                if (value == null) return;
-                setState(() {
-                  _selectedTemplate = value;
-                  _syncVariableControllers(value);
-                });
-              },
-            ),
-            if (_templateUsesInvite(template)) ...[
-              gapH12,
-              CatchField.select<Event>(
-                title: context.l10n.hostsHostAudienceLinkedEvent,
+        return CatchFieldLanes.custom(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CatchField.input(
+                title: context.l10n.hostsHostAudienceCampaignName,
                 contract: CatchContractConstraints
-                    .upsertOrganizerCampaignCallablePayloadEventId,
-                contractValue: (event) => event.id,
-                values: events,
-                itemLabel: (event) =>
-                    '${event.title} · ${AppTimeFormatters.shortDate(event.startTime)}',
-                value: _eventIn(events, _selectedEvent),
-                hintText: context.l10n.hostsHostAudienceChooseEvent,
-                helperText: context.l10n.hostsHostAudienceLinkedEventHelp,
+                    .upsertOrganizerCampaignCallablePayloadName,
+                controller: _campaignNameController,
+                placeholder: context.l10n.hostsHostAudienceCampaignNameExample,
                 enabled: _campaign == null,
-                onChanged: (value) => setState(() {
-                  _selectedEvent = value;
-                  _inviteDestination = value == null
-                      ? null
-                      : _destinationsFor(value).first;
-                }),
               ),
-              if (_selectedEvent case final event?) ...[
+              gapH12,
+              CatchField.select<_HostCampaignMessageClass>(
+                title: context.l10n.hostsHostAudienceMessageType,
+                contract: CatchContractConstraints
+                    .upsertOrganizerCampaignCallablePayloadMessageClass,
+                contractValue: (value) => value.wireValue,
+                values: _HostCampaignMessageClass.values,
+                itemLabel: (value) => _messageClassLabel(context, value),
+                value: _messageClass,
+                enabled: _campaign == null,
+                onChanged: (value) {
+                  if (value != null) setState(() => _messageClass = value);
+                },
+              ),
+              gapH12,
+              Text(
+                context.l10n.hostsHostAudienceRecipients,
+                style: CatchTextStyles.fieldRowTitle(context),
+              ),
+              gapH8,
+              Wrap(
+                spacing: CatchSpacing.s2,
+                runSpacing: CatchSpacing.s2,
+                children: [
+                  for (final segment in HostAudienceSegment.values)
+                    CatchChip.selectable(
+                      label: _segmentLabel(context, segment),
+                      selected: _campaignSegments.contains(segment),
+                      enabled: _campaign == null,
+                      contract: CatchContractConstraints
+                          .upsertOrganizerCampaignCallablePayloadSegmentIds,
+                      contractValue: segment.wireValue,
+                      onChanged: (selected) => setState(() {
+                        if (selected && _campaignSegments.length < 5) {
+                          _campaignSegments.add(segment);
+                        } else if (!selected && _campaignSegments.length > 1) {
+                          _campaignSegments.remove(segment);
+                        }
+                      }),
+                    ),
+                ],
+              ),
+              gapH12,
+              CatchField.select<HostWhatsappTemplate>(
+                title: context.l10n.hostsHostAudienceTemplate,
+                contract: CatchContractConstraints
+                    .upsertOrganizerCampaignCallablePayloadTemplateId,
+                contractValue: (value) => value.templateId,
+                values: approved,
+                itemLabel: (value) => '${value.name} · ${value.language}',
+                value: template,
+                enabled: _campaign == null,
+                onChanged: (value) {
+                  if (value == null) return;
+                  setState(() {
+                    _selectedTemplate = value;
+                    _syncVariableControllers(value);
+                  });
+                },
+              ),
+              if (_templateUsesInvite(template)) ...[
                 gapH12,
-                CatchField.select<_HostInviteDestination>(
-                  title: context.l10n.hostsHostAudienceInviteDestination,
+                CatchField.select<Event>(
+                  title: context.l10n.hostsHostAudienceLinkedEvent,
                   contract: CatchContractConstraints
-                      .upsertOrganizerCampaignCallablePayloadInviteDestinationKind,
-                  contractValue: (value) => value.wireValue,
-                  values: _destinationsFor(event),
-                  itemLabel: (value) => _inviteDestinationLabel(context, value),
-                  value: _inviteDestination ?? _destinationsFor(event).first,
-                  helperText: event.isExternalCompanion
-                      ? context
-                            .l10n
-                            .hostsHostAudienceExternalAttributionExplanation
-                      : context
-                            .l10n
-                            .hostsHostAudienceCatchAttributionExplanation,
+                      .upsertOrganizerCampaignCallablePayloadEventId,
+                  contractValue: (event) => event.id,
+                  values: events,
+                  itemLabel: (event) =>
+                      '${event.title} · ${AppTimeFormatters.shortDate(event.startTime)}',
+                  value: _eventIn(events, _selectedEvent),
+                  hintText: context.l10n.hostsHostAudienceChooseEvent,
+                  helperText: context.l10n.hostsHostAudienceLinkedEventHelp,
                   enabled: _campaign == null,
-                  onChanged: (value) =>
-                      setState(() => _inviteDestination = value),
+                  onChanged: (value) => setState(() {
+                    _selectedEvent = value;
+                    _inviteDestination = value == null
+                        ? null
+                        : _destinationsFor(value).first;
+                  }),
                 ),
+                if (_selectedEvent case final event?) ...[
+                  gapH12,
+                  CatchField.select<_HostInviteDestination>(
+                    title: context.l10n.hostsHostAudienceInviteDestination,
+                    contract: CatchContractConstraints
+                        .upsertOrganizerCampaignCallablePayloadInviteDestinationKind,
+                    contractValue: (value) => value.wireValue,
+                    values: _destinationsFor(event),
+                    itemLabel: (value) =>
+                        _inviteDestinationLabel(context, value),
+                    value: _inviteDestination ?? _destinationsFor(event).first,
+                    helperText: event.isExternalCompanion
+                        ? context
+                              .l10n
+                              .hostsHostAudienceExternalAttributionExplanation
+                        : context
+                              .l10n
+                              .hostsHostAudienceCatchAttributionExplanation,
+                    enabled: _campaign == null,
+                    onChanged: (value) =>
+                        setState(() => _inviteDestination = value),
+                  ),
+                ],
               ],
+              for (final variable in template.variableNames)
+                if (!_isInviteVariable(variable)) ...[
+                  gapH12,
+                  CatchField.input(
+                    title: variable,
+                    contractExemption:
+                        'Template-variable keys are provider-defined; the generated contract constrains the map, not each dynamic value field.',
+                    controller: _controllerForVariable(variable),
+                    maxLength: 240,
+                    enabled: _campaign == null,
+                  ),
+                ],
+              gapH16,
+              if (_campaign == null)
+                CatchButton(
+                  label: context.l10n.hostsHostAudiencePreviewCampaign,
+                  onPressed: _busy
+                      ? null
+                      : () => _saveAndPreview(connection, template),
+                  isLoading: _busy,
+                )
+              else
+                _HostCampaignReview(
+                  campaign: _campaign!,
+                  busy: _busy,
+                  onApprove: _campaign!.canApprove ? _approveCampaign : null,
+                  onSend: _campaign!.canDispatch ? _dispatchCampaign : null,
+                  onCancel:
+                      _campaign!.status == 'cancelled' ||
+                          _campaign!.status == 'completed' ||
+                          _campaign!.status == 'partiallyFailed'
+                      ? null
+                      : _cancelCampaign,
+                  onRefresh: _refreshCampaign,
+                  onNew: _newCampaign,
+                ),
             ],
-            for (final variable in template.variableNames)
-              if (!_isInviteVariable(variable)) ...[
-                gapH12,
-                CatchField.input(
-                  title: variable,
-                  contractExemption:
-                      'Template-variable keys are provider-defined; the generated contract constrains the map, not each dynamic value field.',
-                  controller: _controllerForVariable(variable),
-                  maxLength: 240,
-                  enabled: _campaign == null,
-                ),
-              ],
-            gapH16,
-            if (_campaign == null)
-              CatchButton(
-                label: context.l10n.hostsHostAudiencePreviewCampaign,
-                onPressed: _busy
-                    ? null
-                    : () => _saveAndPreview(connection, template),
-                isLoading: _busy,
-              )
-            else
-              _HostCampaignReview(
-                campaign: _campaign!,
-                busy: _busy,
-                onApprove: _campaign!.canApprove ? _approveCampaign : null,
-                onSend: _campaign!.canDispatch ? _dispatchCampaign : null,
-                onCancel:
-                    _campaign!.status == 'cancelled' ||
-                        _campaign!.status == 'completed' ||
-                        _campaign!.status == 'partiallyFailed'
-                    ? null
-                    : _cancelCampaign,
-                onRefresh: _refreshCampaign,
-                onNew: _newCampaign,
-              ),
-          ],
+          ),
         );
       },
     ),
@@ -937,18 +949,20 @@ class _HostAudienceContactRow extends StatelessWidget {
       if (contact.identityState == HostAudienceIdentityState.ambiguous)
         context.l10n.hostsHostAudienceIdentityNeedsReview,
     ];
-    return InkWell(
-      onTap: onTap,
-      child: CatchField.read(
-        title: contact.displayName,
-        body: metadata.join(' · '),
-        valueText: contact.whatsappAdminSuppressed
-            ? 'Messaging paused'
-            : contact.segments.isEmpty
-            ? null
-            : _segmentLabel(context, contact.segments.first),
-        valid: contact.identityState != HostAudienceIdentityState.ambiguous,
-        divider: divider,
+    return CatchFieldLanes.single(
+      child: InkWell(
+        onTap: onTap,
+        child: CatchField.read(
+          title: contact.displayName,
+          body: metadata.join(' · '),
+          valueText: contact.whatsappAdminSuppressed
+              ? 'Messaging paused'
+              : contact.segments.isEmpty
+              ? null
+              : _segmentLabel(context, contact.segments.first),
+          valid: contact.identityState != HostAudienceIdentityState.ambiguous,
+          divider: divider,
+        ),
       ),
     );
   }
@@ -990,87 +1004,89 @@ class _HostAudienceContactSheetState extends State<_HostAudienceContactSheet> {
     title: widget.detail.displayName,
     subtitle: context.l10n.hostsHostAudienceContactSubtitle,
     child: SingleChildScrollView(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          CatchField.input(
-            title: context.l10n.hostsHostAudienceContactName,
-            contract: CatchContractConstraints
-                .mutateOrganizerContactCallablePayloadDisplayNameOverride,
-            controller: _nameController,
-            helperText: context.l10n.hostsHostAudienceContactNameHelp,
-          ),
-          gapH8,
-          CatchButton(
-            label: context.l10n.hostsHostAudienceContactSaveName,
-            size: CatchButtonSize.sm,
-            onPressed: widget.busy
-                ? null
-                : () {
-                    final value = _nameController.text.trim();
-                    widget.onRename(
-                      value == widget.detail.sourceDisplayName ? null : value,
-                    );
-                  },
-          ),
-          if (widget.detail.phoneE164 case final phone?) ...[
-            gapH16,
-            CatchField.read(
-              title: context.l10n.hostsHostAudienceContactVerifiedPhone,
-              body: phone,
-            ),
-          ],
-          if (widget.detail.email case final email?)
-            CatchField.read(
-              title: context.l10n.hostsHostAudienceContactEmail,
-              body: email,
-            ),
-          gapH12,
-          CatchNotice(
-            notice: CatchNoticeData(
-              id: 'host.audience.contact.delivery-boundary',
-              title: context.l10n.hostsHostAudienceContactConsentTitle,
-              message: widget.detail.whatsappAdminSuppressed
-                  ? context.l10n.hostsHostAudienceContactConsentPaused
-                  : context.l10n.hostsHostAudienceContactConsentActive,
-            ),
-          ),
-          gapH12,
-          CatchButton(
-            label: widget.detail.whatsappAdminSuppressed
-                ? context.l10n.hostsHostAudienceContactResumeMessages
-                : context.l10n.hostsHostAudienceContactPauseMessages,
-            variant: CatchButtonVariant.secondary,
-            onPressed: widget.busy
-                ? null
-                : () => widget.onSuppressionChanged(
-                    !widget.detail.whatsappAdminSuppressed,
-                  ),
-          ),
-          if (widget.detail.events.isNotEmpty) ...[
-            gapH20,
-            Text(
-              context.l10n.hostsHostAudienceContactEventHistory,
-              style: CatchTextStyles.sectionTitle(context),
+      child: CatchFieldLanes.custom(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            CatchField.input(
+              title: context.l10n.hostsHostAudienceContactName,
+              contract: CatchContractConstraints
+                  .mutateOrganizerContactCallablePayloadDisplayNameOverride,
+              controller: _nameController,
+              helperText: context.l10n.hostsHostAudienceContactNameHelp,
             ),
             gapH8,
-            for (final event in widget.detail.events.take(8))
+            CatchButton(
+              label: context.l10n.hostsHostAudienceContactSaveName,
+              size: CatchButtonSize.sm,
+              onPressed: widget.busy
+                  ? null
+                  : () {
+                      final value = _nameController.text.trim();
+                      widget.onRename(
+                        value == widget.detail.sourceDisplayName ? null : value,
+                      );
+                    },
+            ),
+            if (widget.detail.phoneE164 case final phone?) ...[
+              gapH16,
               CatchField.read(
-                title: event.displayName,
-                body: event.eventStartAt == null
-                    ? event.source
-                    : '${AppTimeFormatters.shortDate(event.eventStartAt!)} · ${event.source}',
-                valueText: event.checkedIn ? 'Checked in' : event.status,
+                title: context.l10n.hostsHostAudienceContactVerifiedPhone,
+                body: phone,
               ),
+            ],
+            if (widget.detail.email case final email?)
+              CatchField.read(
+                title: context.l10n.hostsHostAudienceContactEmail,
+                body: email,
+              ),
+            gapH12,
+            CatchNotice(
+              notice: CatchNoticeData(
+                id: 'host.audience.contact.delivery-boundary',
+                title: context.l10n.hostsHostAudienceContactConsentTitle,
+                message: widget.detail.whatsappAdminSuppressed
+                    ? context.l10n.hostsHostAudienceContactConsentPaused
+                    : context.l10n.hostsHostAudienceContactConsentActive,
+              ),
+            ),
+            gapH12,
+            CatchButton(
+              label: widget.detail.whatsappAdminSuppressed
+                  ? context.l10n.hostsHostAudienceContactResumeMessages
+                  : context.l10n.hostsHostAudienceContactPauseMessages,
+              variant: CatchButtonVariant.secondary,
+              onPressed: widget.busy
+                  ? null
+                  : () => widget.onSuppressionChanged(
+                      !widget.detail.whatsappAdminSuppressed,
+                    ),
+            ),
+            if (widget.detail.events.isNotEmpty) ...[
+              gapH20,
+              Text(
+                context.l10n.hostsHostAudienceContactEventHistory,
+                style: CatchTextStyles.sectionTitle(context),
+              ),
+              gapH8,
+              for (final event in widget.detail.events.take(8))
+                CatchField.read(
+                  title: event.displayName,
+                  body: event.eventStartAt == null
+                      ? event.source
+                      : '${AppTimeFormatters.shortDate(event.eventStartAt!)} · ${event.source}',
+                  valueText: event.checkedIn ? 'Checked in' : event.status,
+                ),
+            ],
+            gapH16,
+            CatchButton(
+              label: context.l10n.hostsHostAudienceRemoveAction,
+              variant: CatchButtonVariant.ghost,
+              onPressed: widget.busy ? null : widget.onHide,
+            ),
           ],
-          gapH16,
-          CatchButton(
-            label: context.l10n.hostsHostAudienceRemoveAction,
-            variant: CatchButtonVariant.ghost,
-            onPressed: widget.busy ? null : widget.onHide,
-          ),
-        ],
+        ),
       ),
     ),
   );

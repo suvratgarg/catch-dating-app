@@ -641,9 +641,8 @@ class HostCrmRepository {
       'expectedRevision': expectedRevision,
       if (displayNameOverride != null || clearDisplayNameOverride)
         'displayNameOverride': displayNameOverride,
-      if (whatsappAdminSuppressed != null)
-        'whatsappAdminSuppressed': whatsappAdminSuppressed,
-      if (hidden != null) 'hidden': hidden,
+      'whatsappAdminSuppressed': ?whatsappAdminSuppressed,
+      'hidden': ?hidden,
     },
     action: 'update organizer contact controls',
     parse: (value) => value,
