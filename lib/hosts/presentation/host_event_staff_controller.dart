@@ -1,9 +1,11 @@
 import 'package:catch_dating_app/hosts/data/host_event_staff_repository.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-final hostEventStaffControllerProvider = Provider<HostEventStaffController>(
-  HostEventStaffController.new,
-);
+part 'host_event_staff_controller.g.dart';
+
+@riverpod
+HostEventStaffController hostEventStaffController(Ref ref) =>
+    HostEventStaffController(ref);
 
 class HostEventStaffController {
   const HostEventStaffController(this._ref);

@@ -2,8 +2,10 @@ import 'dart:convert';
 
 import 'package:catch_dating_app/events/data/event_attendee_repository.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+part 'host_attendance_outbox.g.dart';
 
 abstract interface class HostAttendanceMutator {
   Future<EventAttendeeAttendanceResult> setAttendance({
@@ -316,13 +318,16 @@ class HostAttendanceOutbox {
   }
 }
 
-final hostAttendanceOutboxStoreProvider = Provider<HostAttendanceOutboxStore>(
-  (ref) => SharedPreferencesHostAttendanceOutboxStore(),
-);
+// keepalive: a single local store preserves queued attendance mutations while
+// the operator moves between roster surfaces.
+@Riverpod(keepAlive: true)
+HostAttendanceOutboxStore hostAttendanceOutboxStore(Ref ref) =>
+    SharedPreferencesHostAttendanceOutboxStore();
 
-final hostAttendanceOutboxProvider = Provider<HostAttendanceOutbox>(
-  (ref) => HostAttendanceOutbox(
-    ref.watch(hostAttendanceOutboxStoreProvider),
-    RepositoryHostAttendanceMutator(ref.watch(eventAttendeeRepositoryProvider)),
-  ),
+// keepalive: the replay coordinator must retain one serialized queue for the
+// lifetime of the Host application process.
+@Riverpod(keepAlive: true)
+HostAttendanceOutbox hostAttendanceOutbox(Ref ref) => HostAttendanceOutbox(
+  ref.watch(hostAttendanceOutboxStoreProvider),
+  RepositoryHostAttendanceMutator(ref.watch(eventAttendeeRepositoryProvider)),
 );

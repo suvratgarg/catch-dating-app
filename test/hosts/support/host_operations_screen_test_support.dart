@@ -1,5 +1,88 @@
 part of '../host_operations_screen_test.dart';
 
+void registerHostWorkspacePagingTest() {
+  testWidgets('Host club workspace uses native horizontal tab paging', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(390, 844);
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final ownedClub = buildClub(
+      id: 'paged-club',
+      name: 'Paged Club',
+      ownerUserId: _hostUid,
+    );
+
+    await _pumpHostScreen(
+      tester,
+      const HostClubsScreen(),
+      overrides: [
+        ..._hostClubOverrides(owned: [ownedClub]),
+        watchEventsForClubProvider(
+          ownedClub.id,
+        ).overrideWithValue(const AsyncData<List<Event>>([])),
+        clubDetailViewModelProvider(ownedClub.id).overrideWithValue(
+          AsyncData<ClubDetailViewModel?>(_previewViewModel(ownedClub)),
+        ),
+        watchHostPaymentAccountProvider(
+          _hostUid,
+        ).overrideWithValue(const AsyncData<HostPaymentAccount?>(null)),
+        hostAnalyticsRepositoryProvider.overrideWithValue(
+          const _EmptyHostAnalyticsRepository(),
+        ),
+      ],
+    );
+
+    final pager = find.byType(TabBarView);
+    expect(
+      find.byKey(const ValueKey('host-club-insights-summary')),
+      findsNothing,
+    );
+    expect(find.byType(HostClubEditTab), findsOneWidget);
+    expect(find.byType(HostClubInsightsPane), findsNothing);
+
+    await tester.drag(pager, const Offset(-320, 0));
+    await pumpFeatureUi(tester);
+    expect(find.byType(HostAudiencePane), findsOneWidget);
+    expect(find.byType(HostClubEditTab), findsNothing);
+
+    await tester.drag(pager, const Offset(-320, 0));
+    await pumpFeatureUi(tester);
+    expect(find.byType(HostClubInsightsPane), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('host-club-insights-summary')),
+      findsOneWidget,
+    );
+    expect(find.byType(HostClubEditTab), findsNothing);
+
+    await tester.drag(pager, const Offset(-320, 0));
+    await pumpFeatureUi(tester);
+    expect(
+      find.byKey(const ValueKey('club-detail-hero-module')),
+      findsOneWidget,
+    );
+    expect(find.text('Open public preview'), findsNothing);
+
+    await tester.drag(pager, const Offset(320, 0));
+    await pumpFeatureUi(tester);
+    expect(find.byType(HostClubInsightsPane), findsOneWidget);
+
+    await tester.drag(pager, const Offset(320, 0));
+    await pumpFeatureUi(tester);
+    expect(find.byType(HostAudiencePane), findsOneWidget);
+
+    await tester.drag(pager, const Offset(320, 0));
+    await pumpFeatureUi(tester);
+    expect(find.byType(HostClubEditTab), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('host-club-insights-summary')),
+      findsNothing,
+    );
+  });
+}
+
 class _RecordingHostClubEditActions implements HostClubEditActions {
   _RecordingHostClubEditActions({
     this.pickedPhotos = const [],

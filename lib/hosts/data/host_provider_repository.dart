@@ -192,12 +192,14 @@ class HostProviderSetup {
     return HostProviderSetup(
       organizerId: _requiredString(map, 'organizerId'),
       eventId: _requiredString(map, 'eventId'),
-      providers: _mapList(map['providers'], 'providers')
-          .map(HostProviderCatalogEntry.fromMap)
-          .toList(growable: false),
-      connections: _mapList(map['connections'], 'connections')
-          .map(HostProviderConnection.fromMap)
-          .toList(growable: false),
+      providers: _mapList(
+        map['providers'],
+        'providers',
+      ).map(HostProviderCatalogEntry.fromMap).toList(growable: false),
+      connections: _mapList(
+        map['connections'],
+        'connections',
+      ).map(HostProviderConnection.fromMap).toList(growable: false),
       mapping: map['mapping'] == null
           ? null
           : HostProviderEventMapping.fromMap(
@@ -301,9 +303,10 @@ class HostProviderEventChoices {
     final map = _requiredMap(data, 'Luma event list response');
     return HostProviderEventChoices(
       calendarName: _requiredString(map, 'calendarName'),
-      events: _mapList(map['events'], 'Luma events')
-          .map(HostProviderEventChoice.fromMap)
-          .toList(growable: false),
+      events: _mapList(
+        map['events'],
+        'Luma events',
+      ).map(HostProviderEventChoice.fromMap).toList(growable: false),
       truncated: _requiredBool(map, 'truncated'),
     );
   }
@@ -400,7 +403,9 @@ class HostProviderRepository {
     required T Function(Object?) parse,
   }) => withBackendErrorContext(
     () async {
-      final result = await _functions.httpsCallable(name).call<Object?>(payload);
+      final result = await _functions
+          .httpsCallable(name)
+          .call<Object?>(payload);
       return parse(result.data);
     },
     context: BackendErrorContext(
@@ -411,6 +416,8 @@ class HostProviderRepository {
   );
 }
 
+// keepalive: one provider client coordinates setup, sync, and disconnect state
+// across every external-booking management surface.
 @Riverpod(keepAlive: true)
 HostProviderRepository hostProviderRepository(Ref ref) =>
     HostProviderRepository(ref.watch(firebaseFunctionsProvider));
@@ -420,10 +427,9 @@ Future<HostProviderSetup> hostProviderSetup(
   Ref ref,
   String organizerId,
   String eventId,
-) => ref.read(hostProviderRepositoryProvider).getSetup(
-  organizerId: organizerId,
-  eventId: eventId,
-);
+) => ref
+    .read(hostProviderRepositoryProvider)
+    .getSetup(organizerId: organizerId, eventId: eventId);
 
 ExternalBookingProvider _providerFromWire(String value) => switch (value) {
   'generic' => ExternalBookingProvider.generic,

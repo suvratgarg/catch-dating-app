@@ -3,7 +3,9 @@ import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'host_event_staff_repository.g.dart';
 
 enum HostEventOperatorPermission {
   viewRoster,
@@ -198,15 +200,15 @@ class HostEventStaffRepository {
   );
 }
 
-final hostEventStaffRepositoryProvider = Provider<HostEventStaffRepository>(
-  (ref) => HostEventStaffRepository(ref.watch(firebaseFunctionsProvider)),
-);
+@riverpod
+HostEventStaffRepository hostEventStaffRepository(Ref ref) =>
+    HostEventStaffRepository(ref.watch(firebaseFunctionsProvider));
 
-final hostEventOperatorAccessProvider = FutureProvider.autoDispose
-    .family<HostEventOperatorAccess, String>(
-      (ref, eventId) =>
-          ref.read(hostEventStaffRepositoryProvider).getAccess(eventId),
-    );
+@riverpod
+Future<HostEventOperatorAccess> hostEventOperatorAccess(
+  Ref ref,
+  String eventId,
+) => ref.read(hostEventStaffRepositoryProvider).getAccess(eventId);
 
 Map<Object?, Object?> _requiredMap(Object? value, String label) {
   if (value is Map<Object?, Object?>) return value;

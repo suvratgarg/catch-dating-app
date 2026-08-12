@@ -11,9 +11,9 @@ import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/events/data/event_callable_responses.dart';
-import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/events/presentation/attendee_event_share_controller.dart';
 import 'package:catch_dating_app/events/shared/event_invite_share_copy.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
@@ -56,20 +56,16 @@ Future<void> showTrackedAttendeeEventShareCardSheet(
   BuildContext context, {
   required Event event,
   required ExternalShareController share,
-  required EventRepository repository,
+  required AttendeeEventShareActions actions,
   String? fallbackInviteCode,
   String? fallbackInviteLinkId,
 }) async {
   CreateEventInviteLinkCallableResponse? personalLink;
   for (var attempt = 0; attempt < 3 && personalLink == null; attempt += 1) {
     try {
-      personalLink = await repository.createAttendeeInviteLink(
+      personalLink = await actions.createInviteLink(
         eventId: event.id,
-        label: 'Attendee share',
-        source: 'consumer_app',
-        destinationKind: event.eventOrigin?.isExternal == true
-            ? 'externalBooking'
-            : 'catchEvent',
+        isExternalEvent: event.eventOrigin?.isExternal == true,
       );
     } on Object {
       if (attempt < 2) {
@@ -89,12 +85,9 @@ Future<void> showTrackedAttendeeEventShareCardSheet(
         : AppDeepLinks.eventInvite(personalLink.inviteToken),
     onShareIntent: personalLink == null
         ? null
-        : () => repository.recordShareIntent(
+        : () => actions.recordShareIntent(
             eventId: event.id,
             inviteLinkId: personalLink!.inviteLinkId,
-            surface: 'consumerApp',
-            creativeId: 'event-share-card',
-            channelHint: 'systemShare',
           ),
   );
 }

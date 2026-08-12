@@ -720,23 +720,32 @@ class _HostAudiencePaneState extends ConsumerState<HostAudiencePane> {
         setup.embeddedSignup,
       );
       await ref
-          .read(hostCrmRepositoryProvider)
-          .completeWhatsappConnection(widget.club.id, result);
+          .read(hostAudienceControllerProvider)
+          .completeWhatsappConnection(
+            organizerId: widget.club.id,
+            result: result,
+          );
       ref.invalidate(hostMessagingSetupProvider(widget.club.id));
     });
   }
 
   Future<void> _syncTemplates(String connectionId) => _run(() async {
     await ref
-        .read(hostCrmRepositoryProvider)
-        .syncWhatsappTemplates(widget.club.id, connectionId);
+        .read(hostAudienceControllerProvider)
+        .syncWhatsappTemplates(
+          organizerId: widget.club.id,
+          connectionId: connectionId,
+        );
     ref.invalidate(hostMessagingSetupProvider(widget.club.id));
   });
 
   Future<void> _disconnectWhatsapp(String connectionId) => _run(() async {
     await ref
-        .read(hostCrmRepositoryProvider)
-        .disconnectWhatsapp(widget.club.id, connectionId);
+        .read(hostAudienceControllerProvider)
+        .disconnectWhatsapp(
+          organizerId: widget.club.id,
+          connectionId: connectionId,
+        );
     _newCampaign();
     ref.invalidate(hostMessagingSetupProvider(widget.club.id));
   });
@@ -755,7 +764,7 @@ class _HostAudiencePaneState extends ConsumerState<HostAudiencePane> {
             : 'Catch test',
     };
     await ref
-        .read(hostCrmRepositoryProvider)
+        .read(hostAudienceControllerProvider)
         .sendWhatsappTest(
           organizerId: widget.club.id,
           connectionId: connection.connectionId,
@@ -785,53 +794,57 @@ class _HostAudiencePaneState extends ConsumerState<HostAudiencePane> {
         (needsInvite && _selectedEvent == null)) {
       throw StateError(context.l10n.hostsHostAudienceCompleteCampaign);
     }
-    final repository = ref.read(hostCrmRepositoryProvider);
-    final saved = await repository.upsertCampaign(
-      widget.club.id,
-      HostCampaignDraft(
-        requestId: '${DateTime.now().microsecondsSinceEpoch}-host',
-        name: _campaignNameController.text.trim(),
-        messageClass: _messageClass.wireValue,
-        segments: _campaignSegments,
-        connectionId: connection.connectionId,
-        templateId: template.templateId,
-        templateVariables: variables,
-        eventId: needsInvite ? _selectedEvent!.id : null,
-        inviteDestinationKind: needsInvite
-            ? (_inviteDestination ?? _destinationsFor(_selectedEvent!).first)
-                  .wireValue
-            : null,
-      ),
-    );
-    final preview = await repository.previewCampaign(widget.club.id, saved);
+    final preview = await ref
+        .read(hostAudienceControllerProvider)
+        .saveAndPreviewCampaign(
+          organizerId: widget.club.id,
+          draft: HostCampaignDraft(
+            requestId: '${DateTime.now().microsecondsSinceEpoch}-host',
+            name: _campaignNameController.text.trim(),
+            messageClass: _messageClass.wireValue,
+            segments: _campaignSegments,
+            connectionId: connection.connectionId,
+            templateId: template.templateId,
+            templateVariables: variables,
+            eventId: needsInvite ? _selectedEvent!.id : null,
+            inviteDestinationKind: needsInvite
+                ? (_inviteDestination ??
+                          _destinationsFor(_selectedEvent!).first)
+                      .wireValue
+                : null,
+          ),
+        );
     if (mounted) setState(() => _campaign = preview);
   });
 
   Future<void> _approveCampaign() => _run(() async {
     final campaign = await ref
-        .read(hostCrmRepositoryProvider)
-        .approveCampaign(widget.club.id, _campaign!);
+        .read(hostAudienceControllerProvider)
+        .approveCampaign(organizerId: widget.club.id, campaign: _campaign!);
     if (mounted) setState(() => _campaign = campaign);
   });
 
   Future<void> _dispatchCampaign() => _run(() async {
     final campaign = await ref
-        .read(hostCrmRepositoryProvider)
-        .dispatchCampaign(widget.club.id, _campaign!);
+        .read(hostAudienceControllerProvider)
+        .dispatchCampaign(organizerId: widget.club.id, campaign: _campaign!);
     if (mounted) setState(() => _campaign = campaign);
   });
 
   Future<void> _cancelCampaign() => _run(() async {
     final campaign = await ref
-        .read(hostCrmRepositoryProvider)
-        .cancelCampaign(widget.club.id, _campaign!);
+        .read(hostAudienceControllerProvider)
+        .cancelCampaign(organizerId: widget.club.id, campaign: _campaign!);
     if (mounted) setState(() => _campaign = campaign);
   });
 
   Future<void> _refreshCampaign() => _run(() async {
     final campaign = await ref
-        .read(hostCrmRepositoryProvider)
-        .getCampaignReport(widget.club.id, _campaign!.campaignId);
+        .read(hostAudienceControllerProvider)
+        .getCampaignReport(
+          organizerId: widget.club.id,
+          campaignId: _campaign!.campaignId,
+        );
     if (mounted) setState(() => _campaign = campaign);
   });
 
@@ -1016,7 +1029,6 @@ class _HostAudienceContactSheetState extends State<_HostAudienceContactSheet> {
               message: widget.detail.whatsappAdminSuppressed
                   ? 'Your team has paused WhatsApp campaigns to this person. Their own opt-out remains authoritative.'
                   : 'Only the person-verified number and active organizer consent can receive a campaign.',
-              tone: CatchNoticeTone.status,
             ),
           ),
           gapH12,
