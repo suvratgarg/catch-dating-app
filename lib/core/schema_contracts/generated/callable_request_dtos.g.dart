@@ -115,6 +115,7 @@ export 'callables/send_event_broadcast_callable_request.g.dart';
 export 'callables/send_organizer_whatsapp_test_callable_request.g.dart';
 export 'callables/set_club_notification_preference_callable_request.g.dart';
 export 'callables/set_cross_paths_event_consent_callable_request.g.dart';
+export 'callables/set_event_attendee_attendance_callable_request.g.dart';
 export 'callables/set_organizer_notification_preference_callable_request.g.dart';
 export 'callables/set_review_response_callable_request.g.dart';
 export 'callables/start_club_host_conversation_callable_request.g.dart';

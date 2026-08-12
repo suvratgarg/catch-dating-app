@@ -47,6 +47,7 @@ export {
   importEventAttendees,
   markEventAttendeeAttendance,
   registerPublicEvent,
+  setEventAttendeeAttendance,
 } from "./events/eventAttendees";
 export {
   createEventRosterHandoff,

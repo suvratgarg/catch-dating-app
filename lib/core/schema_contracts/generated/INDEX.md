@@ -68,6 +68,7 @@ Do not edit it by hand.
 | EventInviteAttributionDocument | `firestore/event_invite_attributions.schema.json` | `functions/src/shared/generated/eventInviteAttributionDocument.ts` |
 | EventParticipationDocument | `firestore/event_participations.schema.json` | `functions/src/shared/generated/eventParticipationDocument.ts` |
 | EventAttendeeDocument | `firestore/event_attendees.schema.json` | `functions/src/shared/generated/eventAttendeeDocument.ts` |
+| EventAttendeeAttendanceReceiptDocument | `firestore/event_attendee_attendance_receipts.schema.json` | `functions/src/shared/generated/eventAttendeeAttendanceReceiptDocument.ts` |
 | EventAttendeeImportDocument | `firestore/event_attendee_imports.schema.json` | `functions/src/shared/generated/eventAttendeeImportDocument.ts` |
 | EventRosterHandoffDocument | `firestore/event_roster_handoffs.schema.json` | `functions/src/shared/generated/eventRosterHandoffDocument.ts` |
 | EventRuntimeParticipantDocument | `firestore/event_runtime_participants.schema.json` | `functions/src/shared/generated/eventRuntimeParticipantDocument.ts` |
@@ -210,6 +211,8 @@ Do not edit it by hand.
 | MarkEventAttendanceCallablePayload | `callables/mark_event_attendance_payload.schema.json` | `functions/src/shared/generated/markEventAttendanceCallablePayload.ts` |
 | ImportEventAttendeesCallablePayload | `callables/import_event_attendees_payload.schema.json` | `functions/src/shared/generated/importEventAttendeesCallablePayload.ts` |
 | MarkEventAttendeeAttendanceCallablePayload | `callables/mark_event_attendee_attendance_payload.schema.json` | `functions/src/shared/generated/markEventAttendeeAttendanceCallablePayload.ts` |
+| SetEventAttendeeAttendanceCallablePayload | `callables/set_event_attendee_attendance_payload.schema.json` | `functions/src/shared/generated/setEventAttendeeAttendanceCallablePayload.ts` |
+| SetEventAttendeeAttendanceCallableResponse | `callable_responses/set_event_attendee_attendance_response.schema.json` | `functions/src/shared/generated/setEventAttendeeAttendanceCallableResponse.ts` |
 | RegisterPublicEventCallablePayload | `callables/register_public_event_payload.schema.json` | `functions/src/shared/generated/registerPublicEventCallablePayload.ts` |
 | RegisterPublicEventCallableResponse | `callable_responses/register_public_event_response.schema.json` | `functions/src/shared/generated/registerPublicEventCallableResponse.ts` |
 | GetEventRuntimeBootstrapCallablePayload | `callables/get_event_runtime_bootstrap_payload.schema.json` | `functions/src/shared/generated/getEventRuntimeBootstrapCallablePayload.ts` |
@@ -368,6 +371,7 @@ Do not edit it by hand.
 | `schemaEventInviteAttributionDocumentSchema` | EventInviteAttributionDocument | `firestore/event_invite_attributions.schema.json` | `lib/core/schema_contracts/generated/schemas/event_invite_attribution_document.g.dart` |
 | `schemaEventParticipationDocumentSchema` | EventParticipationDocument | `firestore/event_participations.schema.json` | `lib/core/schema_contracts/generated/schemas/event_participation_document.g.dart` |
 | `schemaEventAttendeeDocumentSchema` | EventAttendeeDocument | `firestore/event_attendees.schema.json` | `lib/core/schema_contracts/generated/schemas/event_attendee_document.g.dart` |
+| `schemaEventAttendeeAttendanceReceiptDocumentSchema` | EventAttendeeAttendanceReceiptDocument | `firestore/event_attendee_attendance_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/event_attendee_attendance_receipt_document.g.dart` |
 | `schemaEventAttendeeImportDocumentSchema` | EventAttendeeImportDocument | `firestore/event_attendee_imports.schema.json` | `lib/core/schema_contracts/generated/schemas/event_attendee_import_document.g.dart` |
 | `schemaEventRosterHandoffDocumentSchema` | EventRosterHandoffDocument | `firestore/event_roster_handoffs.schema.json` | `lib/core/schema_contracts/generated/schemas/event_roster_handoff_document.g.dart` |
 | `schemaEventRuntimeParticipantDocumentSchema` | EventRuntimeParticipantDocument | `firestore/event_runtime_participants.schema.json` | `lib/core/schema_contracts/generated/schemas/event_runtime_participant_document.g.dart` |
@@ -510,6 +514,8 @@ Do not edit it by hand.
 | `schemaMarkEventAttendanceCallablePayloadSchema` | MarkEventAttendanceCallablePayload | `callables/mark_event_attendance_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/mark_event_attendance_callable_payload.g.dart` |
 | `schemaImportEventAttendeesCallablePayloadSchema` | ImportEventAttendeesCallablePayload | `callables/import_event_attendees_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/import_event_attendees_callable_payload.g.dart` |
 | `schemaMarkEventAttendeeAttendanceCallablePayloadSchema` | MarkEventAttendeeAttendanceCallablePayload | `callables/mark_event_attendee_attendance_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/mark_event_attendee_attendance_callable_payload.g.dart` |
+| `schemaSetEventAttendeeAttendanceCallablePayloadSchema` | SetEventAttendeeAttendanceCallablePayload | `callables/set_event_attendee_attendance_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/set_event_attendee_attendance_callable_payload.g.dart` |
+| `schemaSetEventAttendeeAttendanceCallableResponseSchema` | SetEventAttendeeAttendanceCallableResponse | `callable_responses/set_event_attendee_attendance_response.schema.json` | `lib/core/schema_contracts/generated/schemas/set_event_attendee_attendance_callable_response.g.dart` |
 | `schemaRegisterPublicEventCallablePayloadSchema` | RegisterPublicEventCallablePayload | `callables/register_public_event_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/register_public_event_callable_payload.g.dart` |
 | `schemaRegisterPublicEventCallableResponseSchema` | RegisterPublicEventCallableResponse | `callable_responses/register_public_event_response.schema.json` | `lib/core/schema_contracts/generated/schemas/register_public_event_callable_response.g.dart` |
 | `schemaGetEventRuntimeBootstrapCallablePayloadSchema` | GetEventRuntimeBootstrapCallablePayload | `callables/get_event_runtime_bootstrap_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_runtime_bootstrap_callable_payload.g.dart` |
@@ -688,6 +694,7 @@ Do not edit it by hand.
 | MarkEventAttendanceCallableRequest | MarkEventAttendanceCallablePayload | `callables/mark_event_attendance_payload.schema.json` | `lib/core/schema_contracts/generated/callables/mark_event_attendance_callable_request.g.dart` |
 | ImportEventAttendeesCallableRequest | ImportEventAttendeesCallablePayload | `callables/import_event_attendees_payload.schema.json` | `lib/core/schema_contracts/generated/callables/import_event_attendees_callable_request.g.dart` |
 | MarkEventAttendeeAttendanceCallableRequest | MarkEventAttendeeAttendanceCallablePayload | `callables/mark_event_attendee_attendance_payload.schema.json` | `lib/core/schema_contracts/generated/callables/mark_event_attendee_attendance_callable_request.g.dart` |
+| SetEventAttendeeAttendanceCallableRequest | SetEventAttendeeAttendanceCallablePayload | `callables/set_event_attendee_attendance_payload.schema.json` | `lib/core/schema_contracts/generated/callables/set_event_attendee_attendance_callable_request.g.dart` |
 | RegisterPublicEventCallableRequest | RegisterPublicEventCallablePayload | `callables/register_public_event_payload.schema.json` | `lib/core/schema_contracts/generated/callables/register_public_event_callable_request.g.dart` |
 | GetEventRuntimeBootstrapCallableRequest | GetEventRuntimeBootstrapCallablePayload | `callables/get_event_runtime_bootstrap_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_runtime_bootstrap_callable_request.g.dart` |
 | ClaimEventRuntimeAccessCallableRequest | ClaimEventRuntimeAccessCallablePayload | `callables/claim_event_runtime_access_payload.schema.json` | `lib/core/schema_contracts/generated/callables/claim_event_runtime_access_callable_request.g.dart` |

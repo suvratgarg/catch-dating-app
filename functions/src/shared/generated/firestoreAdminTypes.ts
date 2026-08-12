@@ -2680,6 +2680,31 @@ export interface EventAttendeeDocument {
    */
   inviteLinkId?: string | null;
   inviteCapturedAt?: FirebaseFirestore.Timestamp | null;
+  /**
+   * Monotonic revision for absolute Host attendance operations. Missing legacy values read as zero.
+   */
+  attendanceRevision?: number;
+  /**
+   * Operational status restored by an absolute undo. Null outside checked-in state.
+   */
+  preCheckInStatus?: "invited" | "registered" | "waitlisted" | null;
+}
+
+/**
+ * Short-lived server-only idempotency receipt for one absolute Host attendance operation.
+ */
+export interface EventAttendeeAttendanceReceiptDocument {
+  eventId: string;
+  organizerId: string;
+  attendeeId: string;
+  actorUid: string;
+  clientOperationId: string;
+  desiredCheckedIn: boolean;
+  priorRevision: number;
+  acceptedRevision: number;
+  changed: boolean;
+  createdAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
 }
 
 /**

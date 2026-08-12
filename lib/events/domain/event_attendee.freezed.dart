@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$EventAttendee {
 
-@JsonKey(includeToJson: false) String get id; String get eventId; String get clubId; String get organizerId; String get displayName; String get searchName; EventAttendeeSource get source; EventAttendeeStatus get status; String? get linkedUid; String? get phoneE164; String? get email; String? get externalReference; String? get ticketType; String? get importId; String? get sourceRowId;@TimestampConverter() DateTime get createdAt;@TimestampConverter() DateTime get updatedAt;@NullableTimestampConverter() DateTime? get registeredAt;@NullableTimestampConverter() DateTime? get waitlistedAt;@NullableTimestampConverter() DateTime? get checkedInAt;@NullableTimestampConverter() DateTime? get cancelledAt; String? get checkedInBy;@NullableTimestampConverter() DateTime? get linkedAt;
+@JsonKey(includeToJson: false) String get id; String get eventId; String get clubId; String get organizerId; String get displayName; String get searchName; EventAttendeeSource get source; EventAttendeeStatus get status; String? get linkedUid; String? get phoneE164; String? get email; String? get externalReference; String? get ticketType; String? get importId; String? get sourceRowId;@TimestampConverter() DateTime get createdAt;@TimestampConverter() DateTime get updatedAt;@NullableTimestampConverter() DateTime? get registeredAt;@NullableTimestampConverter() DateTime? get waitlistedAt;@NullableTimestampConverter() DateTime? get checkedInAt;@NullableTimestampConverter() DateTime? get cancelledAt; String? get checkedInBy;@NullableTimestampConverter() DateTime? get linkedAt; int get attendanceRevision; EventAttendeeStatus? get preCheckInStatus;
 /// Create a copy of EventAttendee
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $EventAttendeeCopyWith<EventAttendee> get copyWith => _$EventAttendeeCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventAttendee&&(identical(other.id, id) || other.id == id)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.clubId, clubId) || other.clubId == clubId)&&(identical(other.organizerId, organizerId) || other.organizerId == organizerId)&&(identical(other.displayName, displayName) || other.displayName == displayName)&&(identical(other.searchName, searchName) || other.searchName == searchName)&&(identical(other.source, source) || other.source == source)&&(identical(other.status, status) || other.status == status)&&(identical(other.linkedUid, linkedUid) || other.linkedUid == linkedUid)&&(identical(other.phoneE164, phoneE164) || other.phoneE164 == phoneE164)&&(identical(other.email, email) || other.email == email)&&(identical(other.externalReference, externalReference) || other.externalReference == externalReference)&&(identical(other.ticketType, ticketType) || other.ticketType == ticketType)&&(identical(other.importId, importId) || other.importId == importId)&&(identical(other.sourceRowId, sourceRowId) || other.sourceRowId == sourceRowId)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.registeredAt, registeredAt) || other.registeredAt == registeredAt)&&(identical(other.waitlistedAt, waitlistedAt) || other.waitlistedAt == waitlistedAt)&&(identical(other.checkedInAt, checkedInAt) || other.checkedInAt == checkedInAt)&&(identical(other.cancelledAt, cancelledAt) || other.cancelledAt == cancelledAt)&&(identical(other.checkedInBy, checkedInBy) || other.checkedInBy == checkedInBy)&&(identical(other.linkedAt, linkedAt) || other.linkedAt == linkedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventAttendee&&(identical(other.id, id) || other.id == id)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.clubId, clubId) || other.clubId == clubId)&&(identical(other.organizerId, organizerId) || other.organizerId == organizerId)&&(identical(other.displayName, displayName) || other.displayName == displayName)&&(identical(other.searchName, searchName) || other.searchName == searchName)&&(identical(other.source, source) || other.source == source)&&(identical(other.status, status) || other.status == status)&&(identical(other.linkedUid, linkedUid) || other.linkedUid == linkedUid)&&(identical(other.phoneE164, phoneE164) || other.phoneE164 == phoneE164)&&(identical(other.email, email) || other.email == email)&&(identical(other.externalReference, externalReference) || other.externalReference == externalReference)&&(identical(other.ticketType, ticketType) || other.ticketType == ticketType)&&(identical(other.importId, importId) || other.importId == importId)&&(identical(other.sourceRowId, sourceRowId) || other.sourceRowId == sourceRowId)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.registeredAt, registeredAt) || other.registeredAt == registeredAt)&&(identical(other.waitlistedAt, waitlistedAt) || other.waitlistedAt == waitlistedAt)&&(identical(other.checkedInAt, checkedInAt) || other.checkedInAt == checkedInAt)&&(identical(other.cancelledAt, cancelledAt) || other.cancelledAt == cancelledAt)&&(identical(other.checkedInBy, checkedInBy) || other.checkedInBy == checkedInBy)&&(identical(other.linkedAt, linkedAt) || other.linkedAt == linkedAt)&&(identical(other.attendanceRevision, attendanceRevision) || other.attendanceRevision == attendanceRevision)&&(identical(other.preCheckInStatus, preCheckInStatus) || other.preCheckInStatus == preCheckInStatus));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,eventId,clubId,organizerId,displayName,searchName,source,status,linkedUid,phoneE164,email,externalReference,ticketType,importId,sourceRowId,createdAt,updatedAt,registeredAt,waitlistedAt,checkedInAt,cancelledAt,checkedInBy,linkedAt]);
+int get hashCode => Object.hashAll([runtimeType,id,eventId,clubId,organizerId,displayName,searchName,source,status,linkedUid,phoneE164,email,externalReference,ticketType,importId,sourceRowId,createdAt,updatedAt,registeredAt,waitlistedAt,checkedInAt,cancelledAt,checkedInBy,linkedAt,attendanceRevision,preCheckInStatus]);
 
 @override
 String toString() {
-  return 'EventAttendee(id: $id, eventId: $eventId, clubId: $clubId, organizerId: $organizerId, displayName: $displayName, searchName: $searchName, source: $source, status: $status, linkedUid: $linkedUid, phoneE164: $phoneE164, email: $email, externalReference: $externalReference, ticketType: $ticketType, importId: $importId, sourceRowId: $sourceRowId, createdAt: $createdAt, updatedAt: $updatedAt, registeredAt: $registeredAt, waitlistedAt: $waitlistedAt, checkedInAt: $checkedInAt, cancelledAt: $cancelledAt, checkedInBy: $checkedInBy, linkedAt: $linkedAt)';
+  return 'EventAttendee(id: $id, eventId: $eventId, clubId: $clubId, organizerId: $organizerId, displayName: $displayName, searchName: $searchName, source: $source, status: $status, linkedUid: $linkedUid, phoneE164: $phoneE164, email: $email, externalReference: $externalReference, ticketType: $ticketType, importId: $importId, sourceRowId: $sourceRowId, createdAt: $createdAt, updatedAt: $updatedAt, registeredAt: $registeredAt, waitlistedAt: $waitlistedAt, checkedInAt: $checkedInAt, cancelledAt: $cancelledAt, checkedInBy: $checkedInBy, linkedAt: $linkedAt, attendanceRevision: $attendanceRevision, preCheckInStatus: $preCheckInStatus)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $EventAttendeeCopyWith<$Res>  {
   factory $EventAttendeeCopyWith(EventAttendee value, $Res Function(EventAttendee) _then) = _$EventAttendeeCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String eventId, String clubId, String organizerId, String displayName, String searchName, EventAttendeeSource source, EventAttendeeStatus status, String? linkedUid, String? phoneE164, String? email, String? externalReference, String? ticketType, String? importId, String? sourceRowId,@TimestampConverter() DateTime createdAt,@TimestampConverter() DateTime updatedAt,@NullableTimestampConverter() DateTime? registeredAt,@NullableTimestampConverter() DateTime? waitlistedAt,@NullableTimestampConverter() DateTime? checkedInAt,@NullableTimestampConverter() DateTime? cancelledAt, String? checkedInBy,@NullableTimestampConverter() DateTime? linkedAt
+@JsonKey(includeToJson: false) String id, String eventId, String clubId, String organizerId, String displayName, String searchName, EventAttendeeSource source, EventAttendeeStatus status, String? linkedUid, String? phoneE164, String? email, String? externalReference, String? ticketType, String? importId, String? sourceRowId,@TimestampConverter() DateTime createdAt,@TimestampConverter() DateTime updatedAt,@NullableTimestampConverter() DateTime? registeredAt,@NullableTimestampConverter() DateTime? waitlistedAt,@NullableTimestampConverter() DateTime? checkedInAt,@NullableTimestampConverter() DateTime? cancelledAt, String? checkedInBy,@NullableTimestampConverter() DateTime? linkedAt, int attendanceRevision, EventAttendeeStatus? preCheckInStatus
 });
 
 
@@ -65,7 +65,7 @@ class _$EventAttendeeCopyWithImpl<$Res>
 
 /// Create a copy of EventAttendee
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? eventId = null,Object? clubId = null,Object? organizerId = null,Object? displayName = null,Object? searchName = null,Object? source = null,Object? status = null,Object? linkedUid = freezed,Object? phoneE164 = freezed,Object? email = freezed,Object? externalReference = freezed,Object? ticketType = freezed,Object? importId = freezed,Object? sourceRowId = freezed,Object? createdAt = null,Object? updatedAt = null,Object? registeredAt = freezed,Object? waitlistedAt = freezed,Object? checkedInAt = freezed,Object? cancelledAt = freezed,Object? checkedInBy = freezed,Object? linkedAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? eventId = null,Object? clubId = null,Object? organizerId = null,Object? displayName = null,Object? searchName = null,Object? source = null,Object? status = null,Object? linkedUid = freezed,Object? phoneE164 = freezed,Object? email = freezed,Object? externalReference = freezed,Object? ticketType = freezed,Object? importId = freezed,Object? sourceRowId = freezed,Object? createdAt = null,Object? updatedAt = null,Object? registeredAt = freezed,Object? waitlistedAt = freezed,Object? checkedInAt = freezed,Object? cancelledAt = freezed,Object? checkedInBy = freezed,Object? linkedAt = freezed,Object? attendanceRevision = null,Object? preCheckInStatus = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,eventId: null == eventId ? _self.eventId : eventId // ignore: cast_nullable_to_non_nullable
@@ -90,7 +90,9 @@ as DateTime?,checkedInAt: freezed == checkedInAt ? _self.checkedInAt : checkedIn
 as DateTime?,cancelledAt: freezed == cancelledAt ? _self.cancelledAt : cancelledAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,checkedInBy: freezed == checkedInBy ? _self.checkedInBy : checkedInBy // ignore: cast_nullable_to_non_nullable
 as String?,linkedAt: freezed == linkedAt ? _self.linkedAt : linkedAt // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as DateTime?,attendanceRevision: null == attendanceRevision ? _self.attendanceRevision : attendanceRevision // ignore: cast_nullable_to_non_nullable
+as int,preCheckInStatus: freezed == preCheckInStatus ? _self.preCheckInStatus : preCheckInStatus // ignore: cast_nullable_to_non_nullable
+as EventAttendeeStatus?,
   ));
 }
 
@@ -175,10 +177,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String clubId,  String organizerId,  String displayName,  String searchName,  EventAttendeeSource source,  EventAttendeeStatus status,  String? linkedUid,  String? phoneE164,  String? email,  String? externalReference,  String? ticketType,  String? importId,  String? sourceRowId, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt, @NullableTimestampConverter()  DateTime? registeredAt, @NullableTimestampConverter()  DateTime? waitlistedAt, @NullableTimestampConverter()  DateTime? checkedInAt, @NullableTimestampConverter()  DateTime? cancelledAt,  String? checkedInBy, @NullableTimestampConverter()  DateTime? linkedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String clubId,  String organizerId,  String displayName,  String searchName,  EventAttendeeSource source,  EventAttendeeStatus status,  String? linkedUid,  String? phoneE164,  String? email,  String? externalReference,  String? ticketType,  String? importId,  String? sourceRowId, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt, @NullableTimestampConverter()  DateTime? registeredAt, @NullableTimestampConverter()  DateTime? waitlistedAt, @NullableTimestampConverter()  DateTime? checkedInAt, @NullableTimestampConverter()  DateTime? cancelledAt,  String? checkedInBy, @NullableTimestampConverter()  DateTime? linkedAt,  int attendanceRevision,  EventAttendeeStatus? preCheckInStatus)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _EventAttendee() when $default != null:
-return $default(_that.id,_that.eventId,_that.clubId,_that.organizerId,_that.displayName,_that.searchName,_that.source,_that.status,_that.linkedUid,_that.phoneE164,_that.email,_that.externalReference,_that.ticketType,_that.importId,_that.sourceRowId,_that.createdAt,_that.updatedAt,_that.registeredAt,_that.waitlistedAt,_that.checkedInAt,_that.cancelledAt,_that.checkedInBy,_that.linkedAt);case _:
+return $default(_that.id,_that.eventId,_that.clubId,_that.organizerId,_that.displayName,_that.searchName,_that.source,_that.status,_that.linkedUid,_that.phoneE164,_that.email,_that.externalReference,_that.ticketType,_that.importId,_that.sourceRowId,_that.createdAt,_that.updatedAt,_that.registeredAt,_that.waitlistedAt,_that.checkedInAt,_that.cancelledAt,_that.checkedInBy,_that.linkedAt,_that.attendanceRevision,_that.preCheckInStatus);case _:
   return orElse();
 
 }
@@ -196,10 +198,10 @@ return $default(_that.id,_that.eventId,_that.clubId,_that.organizerId,_that.disp
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String clubId,  String organizerId,  String displayName,  String searchName,  EventAttendeeSource source,  EventAttendeeStatus status,  String? linkedUid,  String? phoneE164,  String? email,  String? externalReference,  String? ticketType,  String? importId,  String? sourceRowId, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt, @NullableTimestampConverter()  DateTime? registeredAt, @NullableTimestampConverter()  DateTime? waitlistedAt, @NullableTimestampConverter()  DateTime? checkedInAt, @NullableTimestampConverter()  DateTime? cancelledAt,  String? checkedInBy, @NullableTimestampConverter()  DateTime? linkedAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String clubId,  String organizerId,  String displayName,  String searchName,  EventAttendeeSource source,  EventAttendeeStatus status,  String? linkedUid,  String? phoneE164,  String? email,  String? externalReference,  String? ticketType,  String? importId,  String? sourceRowId, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt, @NullableTimestampConverter()  DateTime? registeredAt, @NullableTimestampConverter()  DateTime? waitlistedAt, @NullableTimestampConverter()  DateTime? checkedInAt, @NullableTimestampConverter()  DateTime? cancelledAt,  String? checkedInBy, @NullableTimestampConverter()  DateTime? linkedAt,  int attendanceRevision,  EventAttendeeStatus? preCheckInStatus)  $default,) {final _that = this;
 switch (_that) {
 case _EventAttendee():
-return $default(_that.id,_that.eventId,_that.clubId,_that.organizerId,_that.displayName,_that.searchName,_that.source,_that.status,_that.linkedUid,_that.phoneE164,_that.email,_that.externalReference,_that.ticketType,_that.importId,_that.sourceRowId,_that.createdAt,_that.updatedAt,_that.registeredAt,_that.waitlistedAt,_that.checkedInAt,_that.cancelledAt,_that.checkedInBy,_that.linkedAt);case _:
+return $default(_that.id,_that.eventId,_that.clubId,_that.organizerId,_that.displayName,_that.searchName,_that.source,_that.status,_that.linkedUid,_that.phoneE164,_that.email,_that.externalReference,_that.ticketType,_that.importId,_that.sourceRowId,_that.createdAt,_that.updatedAt,_that.registeredAt,_that.waitlistedAt,_that.checkedInAt,_that.cancelledAt,_that.checkedInBy,_that.linkedAt,_that.attendanceRevision,_that.preCheckInStatus);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -216,10 +218,10 @@ return $default(_that.id,_that.eventId,_that.clubId,_that.organizerId,_that.disp
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String clubId,  String organizerId,  String displayName,  String searchName,  EventAttendeeSource source,  EventAttendeeStatus status,  String? linkedUid,  String? phoneE164,  String? email,  String? externalReference,  String? ticketType,  String? importId,  String? sourceRowId, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt, @NullableTimestampConverter()  DateTime? registeredAt, @NullableTimestampConverter()  DateTime? waitlistedAt, @NullableTimestampConverter()  DateTime? checkedInAt, @NullableTimestampConverter()  DateTime? cancelledAt,  String? checkedInBy, @NullableTimestampConverter()  DateTime? linkedAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String clubId,  String organizerId,  String displayName,  String searchName,  EventAttendeeSource source,  EventAttendeeStatus status,  String? linkedUid,  String? phoneE164,  String? email,  String? externalReference,  String? ticketType,  String? importId,  String? sourceRowId, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt, @NullableTimestampConverter()  DateTime? registeredAt, @NullableTimestampConverter()  DateTime? waitlistedAt, @NullableTimestampConverter()  DateTime? checkedInAt, @NullableTimestampConverter()  DateTime? cancelledAt,  String? checkedInBy, @NullableTimestampConverter()  DateTime? linkedAt,  int attendanceRevision,  EventAttendeeStatus? preCheckInStatus)?  $default,) {final _that = this;
 switch (_that) {
 case _EventAttendee() when $default != null:
-return $default(_that.id,_that.eventId,_that.clubId,_that.organizerId,_that.displayName,_that.searchName,_that.source,_that.status,_that.linkedUid,_that.phoneE164,_that.email,_that.externalReference,_that.ticketType,_that.importId,_that.sourceRowId,_that.createdAt,_that.updatedAt,_that.registeredAt,_that.waitlistedAt,_that.checkedInAt,_that.cancelledAt,_that.checkedInBy,_that.linkedAt);case _:
+return $default(_that.id,_that.eventId,_that.clubId,_that.organizerId,_that.displayName,_that.searchName,_that.source,_that.status,_that.linkedUid,_that.phoneE164,_that.email,_that.externalReference,_that.ticketType,_that.importId,_that.sourceRowId,_that.createdAt,_that.updatedAt,_that.registeredAt,_that.waitlistedAt,_that.checkedInAt,_that.cancelledAt,_that.checkedInBy,_that.linkedAt,_that.attendanceRevision,_that.preCheckInStatus);case _:
   return null;
 
 }
@@ -231,7 +233,7 @@ return $default(_that.id,_that.eventId,_that.clubId,_that.organizerId,_that.disp
 @JsonSerializable()
 
 class _EventAttendee extends EventAttendee {
-  const _EventAttendee({@JsonKey(includeToJson: false) required this.id, required this.eventId, required this.clubId, required this.organizerId, required this.displayName, required this.searchName, required this.source, required this.status, this.linkedUid, this.phoneE164, this.email, this.externalReference, this.ticketType, this.importId, this.sourceRowId, @TimestampConverter() required this.createdAt, @TimestampConverter() required this.updatedAt, @NullableTimestampConverter() this.registeredAt, @NullableTimestampConverter() this.waitlistedAt, @NullableTimestampConverter() this.checkedInAt, @NullableTimestampConverter() this.cancelledAt, this.checkedInBy, @NullableTimestampConverter() this.linkedAt}): super._();
+  const _EventAttendee({@JsonKey(includeToJson: false) required this.id, required this.eventId, required this.clubId, required this.organizerId, required this.displayName, required this.searchName, required this.source, required this.status, this.linkedUid, this.phoneE164, this.email, this.externalReference, this.ticketType, this.importId, this.sourceRowId, @TimestampConverter() required this.createdAt, @TimestampConverter() required this.updatedAt, @NullableTimestampConverter() this.registeredAt, @NullableTimestampConverter() this.waitlistedAt, @NullableTimestampConverter() this.checkedInAt, @NullableTimestampConverter() this.cancelledAt, this.checkedInBy, @NullableTimestampConverter() this.linkedAt, this.attendanceRevision = 0, this.preCheckInStatus}): super._();
   factory _EventAttendee.fromJson(Map<String, dynamic> json) => _$EventAttendeeFromJson(json);
 
 @override@JsonKey(includeToJson: false) final  String id;
@@ -257,6 +259,8 @@ class _EventAttendee extends EventAttendee {
 @override@NullableTimestampConverter() final  DateTime? cancelledAt;
 @override final  String? checkedInBy;
 @override@NullableTimestampConverter() final  DateTime? linkedAt;
+@override@JsonKey() final  int attendanceRevision;
+@override final  EventAttendeeStatus? preCheckInStatus;
 
 /// Create a copy of EventAttendee
 /// with the given fields replaced by the non-null parameter values.
@@ -271,16 +275,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventAttendee&&(identical(other.id, id) || other.id == id)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.clubId, clubId) || other.clubId == clubId)&&(identical(other.organizerId, organizerId) || other.organizerId == organizerId)&&(identical(other.displayName, displayName) || other.displayName == displayName)&&(identical(other.searchName, searchName) || other.searchName == searchName)&&(identical(other.source, source) || other.source == source)&&(identical(other.status, status) || other.status == status)&&(identical(other.linkedUid, linkedUid) || other.linkedUid == linkedUid)&&(identical(other.phoneE164, phoneE164) || other.phoneE164 == phoneE164)&&(identical(other.email, email) || other.email == email)&&(identical(other.externalReference, externalReference) || other.externalReference == externalReference)&&(identical(other.ticketType, ticketType) || other.ticketType == ticketType)&&(identical(other.importId, importId) || other.importId == importId)&&(identical(other.sourceRowId, sourceRowId) || other.sourceRowId == sourceRowId)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.registeredAt, registeredAt) || other.registeredAt == registeredAt)&&(identical(other.waitlistedAt, waitlistedAt) || other.waitlistedAt == waitlistedAt)&&(identical(other.checkedInAt, checkedInAt) || other.checkedInAt == checkedInAt)&&(identical(other.cancelledAt, cancelledAt) || other.cancelledAt == cancelledAt)&&(identical(other.checkedInBy, checkedInBy) || other.checkedInBy == checkedInBy)&&(identical(other.linkedAt, linkedAt) || other.linkedAt == linkedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventAttendee&&(identical(other.id, id) || other.id == id)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.clubId, clubId) || other.clubId == clubId)&&(identical(other.organizerId, organizerId) || other.organizerId == organizerId)&&(identical(other.displayName, displayName) || other.displayName == displayName)&&(identical(other.searchName, searchName) || other.searchName == searchName)&&(identical(other.source, source) || other.source == source)&&(identical(other.status, status) || other.status == status)&&(identical(other.linkedUid, linkedUid) || other.linkedUid == linkedUid)&&(identical(other.phoneE164, phoneE164) || other.phoneE164 == phoneE164)&&(identical(other.email, email) || other.email == email)&&(identical(other.externalReference, externalReference) || other.externalReference == externalReference)&&(identical(other.ticketType, ticketType) || other.ticketType == ticketType)&&(identical(other.importId, importId) || other.importId == importId)&&(identical(other.sourceRowId, sourceRowId) || other.sourceRowId == sourceRowId)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.registeredAt, registeredAt) || other.registeredAt == registeredAt)&&(identical(other.waitlistedAt, waitlistedAt) || other.waitlistedAt == waitlistedAt)&&(identical(other.checkedInAt, checkedInAt) || other.checkedInAt == checkedInAt)&&(identical(other.cancelledAt, cancelledAt) || other.cancelledAt == cancelledAt)&&(identical(other.checkedInBy, checkedInBy) || other.checkedInBy == checkedInBy)&&(identical(other.linkedAt, linkedAt) || other.linkedAt == linkedAt)&&(identical(other.attendanceRevision, attendanceRevision) || other.attendanceRevision == attendanceRevision)&&(identical(other.preCheckInStatus, preCheckInStatus) || other.preCheckInStatus == preCheckInStatus));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,eventId,clubId,organizerId,displayName,searchName,source,status,linkedUid,phoneE164,email,externalReference,ticketType,importId,sourceRowId,createdAt,updatedAt,registeredAt,waitlistedAt,checkedInAt,cancelledAt,checkedInBy,linkedAt]);
+int get hashCode => Object.hashAll([runtimeType,id,eventId,clubId,organizerId,displayName,searchName,source,status,linkedUid,phoneE164,email,externalReference,ticketType,importId,sourceRowId,createdAt,updatedAt,registeredAt,waitlistedAt,checkedInAt,cancelledAt,checkedInBy,linkedAt,attendanceRevision,preCheckInStatus]);
 
 @override
 String toString() {
-  return 'EventAttendee(id: $id, eventId: $eventId, clubId: $clubId, organizerId: $organizerId, displayName: $displayName, searchName: $searchName, source: $source, status: $status, linkedUid: $linkedUid, phoneE164: $phoneE164, email: $email, externalReference: $externalReference, ticketType: $ticketType, importId: $importId, sourceRowId: $sourceRowId, createdAt: $createdAt, updatedAt: $updatedAt, registeredAt: $registeredAt, waitlistedAt: $waitlistedAt, checkedInAt: $checkedInAt, cancelledAt: $cancelledAt, checkedInBy: $checkedInBy, linkedAt: $linkedAt)';
+  return 'EventAttendee(id: $id, eventId: $eventId, clubId: $clubId, organizerId: $organizerId, displayName: $displayName, searchName: $searchName, source: $source, status: $status, linkedUid: $linkedUid, phoneE164: $phoneE164, email: $email, externalReference: $externalReference, ticketType: $ticketType, importId: $importId, sourceRowId: $sourceRowId, createdAt: $createdAt, updatedAt: $updatedAt, registeredAt: $registeredAt, waitlistedAt: $waitlistedAt, checkedInAt: $checkedInAt, cancelledAt: $cancelledAt, checkedInBy: $checkedInBy, linkedAt: $linkedAt, attendanceRevision: $attendanceRevision, preCheckInStatus: $preCheckInStatus)';
 }
 
 
@@ -291,7 +295,7 @@ abstract mixin class _$EventAttendeeCopyWith<$Res> implements $EventAttendeeCopy
   factory _$EventAttendeeCopyWith(_EventAttendee value, $Res Function(_EventAttendee) _then) = __$EventAttendeeCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String eventId, String clubId, String organizerId, String displayName, String searchName, EventAttendeeSource source, EventAttendeeStatus status, String? linkedUid, String? phoneE164, String? email, String? externalReference, String? ticketType, String? importId, String? sourceRowId,@TimestampConverter() DateTime createdAt,@TimestampConverter() DateTime updatedAt,@NullableTimestampConverter() DateTime? registeredAt,@NullableTimestampConverter() DateTime? waitlistedAt,@NullableTimestampConverter() DateTime? checkedInAt,@NullableTimestampConverter() DateTime? cancelledAt, String? checkedInBy,@NullableTimestampConverter() DateTime? linkedAt
+@JsonKey(includeToJson: false) String id, String eventId, String clubId, String organizerId, String displayName, String searchName, EventAttendeeSource source, EventAttendeeStatus status, String? linkedUid, String? phoneE164, String? email, String? externalReference, String? ticketType, String? importId, String? sourceRowId,@TimestampConverter() DateTime createdAt,@TimestampConverter() DateTime updatedAt,@NullableTimestampConverter() DateTime? registeredAt,@NullableTimestampConverter() DateTime? waitlistedAt,@NullableTimestampConverter() DateTime? checkedInAt,@NullableTimestampConverter() DateTime? cancelledAt, String? checkedInBy,@NullableTimestampConverter() DateTime? linkedAt, int attendanceRevision, EventAttendeeStatus? preCheckInStatus
 });
 
 
@@ -308,7 +312,7 @@ class __$EventAttendeeCopyWithImpl<$Res>
 
 /// Create a copy of EventAttendee
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? eventId = null,Object? clubId = null,Object? organizerId = null,Object? displayName = null,Object? searchName = null,Object? source = null,Object? status = null,Object? linkedUid = freezed,Object? phoneE164 = freezed,Object? email = freezed,Object? externalReference = freezed,Object? ticketType = freezed,Object? importId = freezed,Object? sourceRowId = freezed,Object? createdAt = null,Object? updatedAt = null,Object? registeredAt = freezed,Object? waitlistedAt = freezed,Object? checkedInAt = freezed,Object? cancelledAt = freezed,Object? checkedInBy = freezed,Object? linkedAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? eventId = null,Object? clubId = null,Object? organizerId = null,Object? displayName = null,Object? searchName = null,Object? source = null,Object? status = null,Object? linkedUid = freezed,Object? phoneE164 = freezed,Object? email = freezed,Object? externalReference = freezed,Object? ticketType = freezed,Object? importId = freezed,Object? sourceRowId = freezed,Object? createdAt = null,Object? updatedAt = null,Object? registeredAt = freezed,Object? waitlistedAt = freezed,Object? checkedInAt = freezed,Object? cancelledAt = freezed,Object? checkedInBy = freezed,Object? linkedAt = freezed,Object? attendanceRevision = null,Object? preCheckInStatus = freezed,}) {
   return _then(_EventAttendee(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,eventId: null == eventId ? _self.eventId : eventId // ignore: cast_nullable_to_non_nullable
@@ -333,7 +337,9 @@ as DateTime?,checkedInAt: freezed == checkedInAt ? _self.checkedInAt : checkedIn
 as DateTime?,cancelledAt: freezed == cancelledAt ? _self.cancelledAt : cancelledAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,checkedInBy: freezed == checkedInBy ? _self.checkedInBy : checkedInBy // ignore: cast_nullable_to_non_nullable
 as String?,linkedAt: freezed == linkedAt ? _self.linkedAt : linkedAt // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as DateTime?,attendanceRevision: null == attendanceRevision ? _self.attendanceRevision : attendanceRevision // ignore: cast_nullable_to_non_nullable
+as int,preCheckInStatus: freezed == preCheckInStatus ? _self.preCheckInStatus : preCheckInStatus // ignore: cast_nullable_to_non_nullable
+as EventAttendeeStatus?,
   ));
 }
 

@@ -327,6 +327,13 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/eventAttendeeDocument.ts",
   },
   {
+    name: "EventAttendeeAttendanceReceiptDocument",
+    source: "firestore/event_attendee_attendance_receipts.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "eventAttendeeAttendanceReceiptDocument.ts",
+  },
+  {
     name: "EventAttendeeImportDocument",
     source: "firestore/event_attendee_imports.schema.json",
     typeOutput:
@@ -1209,6 +1216,22 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "markEventAttendeeAttendanceCallablePayload.ts",
+  },
+  {
+    name: "SetEventAttendeeAttendanceCallablePayload",
+    source:
+      "callables/set_event_attendee_attendance_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "setEventAttendeeAttendanceCallablePayload.ts",
+  },
+  {
+    name: "SetEventAttendeeAttendanceCallableResponse",
+    source:
+      "callable_responses/set_event_attendee_attendance_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "setEventAttendeeAttendanceCallableResponse.ts",
   },
   {
     name: "RegisterPublicEventCallablePayload",

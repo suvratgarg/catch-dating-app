@@ -527,12 +527,28 @@
       "exportedFunctions": [
         "importEventAttendees",
         "markEventAttendeeAttendance",
+        "setEventAttendeeAttendance",
         "registerPublicEvent",
         "onEventParticipationRosterProjected",
         "onOrganizerContactEventEdgeInviteAttributed"
       ],
       "migrationNotes": [
         "Private event-scoped operational roster across Catch bookings, Host imports/manual rows, and web OTP registration; linkedUid is optional and never synthetic."
+      ]
+    },
+    {
+      "id": "eventAttendeeAttendanceReceipts",
+      "path": "eventAttendeeAttendanceReceipts/{receiptId}",
+      "rulesMatch": "/eventAttendeeAttendanceReceipts/{receiptId}",
+      "typescriptInterface": "EventAttendeeAttendanceReceiptDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "setEventAttendeeAttendance callable",
+      "read": "server only; replay result is returned by the callable",
+      "write": "server only",
+      "exportedFunctions": ["setEventAttendeeAttendance"],
+      "migrationNotes": [
+        "Thirty-day TTL receipts make absolute Host attendance retries idempotent without retaining a second roster."
       ]
     },
     {

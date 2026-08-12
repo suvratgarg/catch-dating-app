@@ -9994,6 +9994,108 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventAttendeeAttendanceReceiptDocumentAcceptedRevision = CatchContractFieldConstraints(
+    path: 'eventAttendeeAttendanceReceiptDocument.acceptedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAttendeeAttendanceReceiptDocumentActorUid = CatchContractFieldConstraints(
+    path: 'eventAttendeeAttendanceReceiptDocument.actorUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAttendeeAttendanceReceiptDocumentAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAttendeeAttendanceReceiptDocument.attendeeId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAttendeeAttendanceReceiptDocumentChanged = CatchContractFieldConstraints(
+    path: 'eventAttendeeAttendanceReceiptDocument.changed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventAttendeeAttendanceReceiptDocumentClientOperationId = CatchContractFieldConstraints(
+    path: 'eventAttendeeAttendanceReceiptDocument.clientOperationId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{16,120}\$',
+  );
+
+  static const eventAttendeeAttendanceReceiptDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventAttendeeAttendanceReceiptDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventAttendeeAttendanceReceiptDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventAttendeeAttendanceReceiptDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAttendeeAttendanceReceiptDocumentDesiredCheckedIn = CatchContractFieldConstraints(
+    path: 'eventAttendeeAttendanceReceiptDocument.desiredCheckedIn',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventAttendeeAttendanceReceiptDocumentEventId = CatchContractFieldConstraints(
+    path: 'eventAttendeeAttendanceReceiptDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAttendeeAttendanceReceiptDocumentExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventAttendeeAttendanceReceiptDocument.expiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventAttendeeAttendanceReceiptDocumentExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'eventAttendeeAttendanceReceiptDocument.expiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAttendeeAttendanceReceiptDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAttendeeAttendanceReceiptDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAttendeeAttendanceReceiptDocumentPriorRevision = CatchContractFieldConstraints(
+    path: 'eventAttendeeAttendanceReceiptDocument.priorRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAttendeeDocumentAttendanceRevision = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.attendanceRevision',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
   static const eventAttendeeDocumentCancelledAtNanoseconds = CatchContractFieldConstraints(
     path: 'eventAttendeeDocument.cancelledAt._nanoseconds',
     required: true,
@@ -10142,6 +10244,12 @@ abstract final class CatchContractConstraints {
     path: 'eventAttendeeDocument.phoneE164',
     valueTypes: <String>['string'],
     pattern: '^\\+[1-9][0-9]{7,14}\$',
+  );
+
+  static const eventAttendeeDocumentPreCheckInStatus = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.preCheckInStatus',
+    valueTypes: <String>['string'],
+    enumValues: <String>['invited', 'registered', 'waitlisted'],
   );
 
   static const eventAttendeeDocumentRegisteredAtNanoseconds = CatchContractFieldConstraints(
@@ -30355,6 +30463,77 @@ abstract final class CatchContractConstraints {
     minimum: 1,
   );
 
+  static const setEventAttendeeAttendanceCallablePayloadAttendeeId = CatchContractFieldConstraints(
+    path: 'setEventAttendeeAttendanceCallablePayload.attendeeId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventAttendeeAttendanceCallablePayloadClientOperationId = CatchContractFieldConstraints(
+    path: 'setEventAttendeeAttendanceCallablePayload.clientOperationId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{16,120}\$',
+  );
+
+  static const setEventAttendeeAttendanceCallablePayloadDesiredCheckedIn = CatchContractFieldConstraints(
+    path: 'setEventAttendeeAttendanceCallablePayload.desiredCheckedIn',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const setEventAttendeeAttendanceCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'setEventAttendeeAttendanceCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventAttendeeAttendanceCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'setEventAttendeeAttendanceCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const setEventAttendeeAttendanceCallableResponseAcceptedRevision = CatchContractFieldConstraints(
+    path: 'setEventAttendeeAttendanceCallableResponse.acceptedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const setEventAttendeeAttendanceCallableResponseAttendeeId = CatchContractFieldConstraints(
+    path: 'setEventAttendeeAttendanceCallableResponse.attendeeId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventAttendeeAttendanceCallableResponseChanged = CatchContractFieldConstraints(
+    path: 'setEventAttendeeAttendanceCallableResponse.changed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const setEventAttendeeAttendanceCallableResponseCheckedIn = CatchContractFieldConstraints(
+    path: 'setEventAttendeeAttendanceCallableResponse.checkedIn',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const setEventAttendeeAttendanceCallableResponseReplayed = CatchContractFieldConstraints(
+    path: 'setEventAttendeeAttendanceCallableResponse.replayed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
   static const setOrganizerNotificationPreferenceCallablePayloadEnabled = CatchContractFieldConstraints(
     path: 'setOrganizerNotificationPreferenceCallablePayload.enabled',
     required: true,
@@ -36758,6 +36937,20 @@ abstract final class CatchContractConstraints {
     'deleteSavedEventClientWrite.path.savedEventId': deleteSavedEventClientWritePathSavedEventId,
     'disableEventInviteLinkCallablePayload.eventId': disableEventInviteLinkCallablePayloadEventId,
     'disableEventInviteLinkCallablePayload.inviteLinkId': disableEventInviteLinkCallablePayloadInviteLinkId,
+    'eventAttendeeAttendanceReceiptDocument.acceptedRevision': eventAttendeeAttendanceReceiptDocumentAcceptedRevision,
+    'eventAttendeeAttendanceReceiptDocument.actorUid': eventAttendeeAttendanceReceiptDocumentActorUid,
+    'eventAttendeeAttendanceReceiptDocument.attendeeId': eventAttendeeAttendanceReceiptDocumentAttendeeId,
+    'eventAttendeeAttendanceReceiptDocument.changed': eventAttendeeAttendanceReceiptDocumentChanged,
+    'eventAttendeeAttendanceReceiptDocument.clientOperationId': eventAttendeeAttendanceReceiptDocumentClientOperationId,
+    'eventAttendeeAttendanceReceiptDocument.createdAt._nanoseconds': eventAttendeeAttendanceReceiptDocumentCreatedAtNanoseconds,
+    'eventAttendeeAttendanceReceiptDocument.createdAt._seconds': eventAttendeeAttendanceReceiptDocumentCreatedAtSeconds,
+    'eventAttendeeAttendanceReceiptDocument.desiredCheckedIn': eventAttendeeAttendanceReceiptDocumentDesiredCheckedIn,
+    'eventAttendeeAttendanceReceiptDocument.eventId': eventAttendeeAttendanceReceiptDocumentEventId,
+    'eventAttendeeAttendanceReceiptDocument.expiresAt._nanoseconds': eventAttendeeAttendanceReceiptDocumentExpiresAtNanoseconds,
+    'eventAttendeeAttendanceReceiptDocument.expiresAt._seconds': eventAttendeeAttendanceReceiptDocumentExpiresAtSeconds,
+    'eventAttendeeAttendanceReceiptDocument.organizerId': eventAttendeeAttendanceReceiptDocumentOrganizerId,
+    'eventAttendeeAttendanceReceiptDocument.priorRevision': eventAttendeeAttendanceReceiptDocumentPriorRevision,
+    'eventAttendeeDocument.attendanceRevision': eventAttendeeDocumentAttendanceRevision,
     'eventAttendeeDocument.cancelledAt._nanoseconds': eventAttendeeDocumentCancelledAtNanoseconds,
     'eventAttendeeDocument.cancelledAt._seconds': eventAttendeeDocumentCancelledAtSeconds,
     'eventAttendeeDocument.checkedInAt._nanoseconds': eventAttendeeDocumentCheckedInAtNanoseconds,
@@ -36779,6 +36972,7 @@ abstract final class CatchContractConstraints {
     'eventAttendeeDocument.linkedUid': eventAttendeeDocumentLinkedUid,
     'eventAttendeeDocument.organizerId': eventAttendeeDocumentOrganizerId,
     'eventAttendeeDocument.phoneE164': eventAttendeeDocumentPhoneE164,
+    'eventAttendeeDocument.preCheckInStatus': eventAttendeeDocumentPreCheckInStatus,
     'eventAttendeeDocument.registeredAt._nanoseconds': eventAttendeeDocumentRegisteredAtNanoseconds,
     'eventAttendeeDocument.registeredAt._seconds': eventAttendeeDocumentRegisteredAtSeconds,
     'eventAttendeeDocument.searchName': eventAttendeeDocumentSearchName,
@@ -39589,6 +39783,16 @@ abstract final class CatchContractConstraints {
     'setCrossPathsEventConsentCallableResponse.enabled': setCrossPathsEventConsentCallableResponseEnabled,
     'setCrossPathsEventConsentCallableResponse.eventId': setCrossPathsEventConsentCallableResponseEventId,
     'setCrossPathsEventConsentCallableResponse.termsVersion': setCrossPathsEventConsentCallableResponseTermsVersion,
+    'setEventAttendeeAttendanceCallablePayload.attendeeId': setEventAttendeeAttendanceCallablePayloadAttendeeId,
+    'setEventAttendeeAttendanceCallablePayload.clientOperationId': setEventAttendeeAttendanceCallablePayloadClientOperationId,
+    'setEventAttendeeAttendanceCallablePayload.desiredCheckedIn': setEventAttendeeAttendanceCallablePayloadDesiredCheckedIn,
+    'setEventAttendeeAttendanceCallablePayload.eventId': setEventAttendeeAttendanceCallablePayloadEventId,
+    'setEventAttendeeAttendanceCallablePayload.expectedRevision': setEventAttendeeAttendanceCallablePayloadExpectedRevision,
+    'setEventAttendeeAttendanceCallableResponse.acceptedRevision': setEventAttendeeAttendanceCallableResponseAcceptedRevision,
+    'setEventAttendeeAttendanceCallableResponse.attendeeId': setEventAttendeeAttendanceCallableResponseAttendeeId,
+    'setEventAttendeeAttendanceCallableResponse.changed': setEventAttendeeAttendanceCallableResponseChanged,
+    'setEventAttendeeAttendanceCallableResponse.checkedIn': setEventAttendeeAttendanceCallableResponseCheckedIn,
+    'setEventAttendeeAttendanceCallableResponse.replayed': setEventAttendeeAttendanceCallableResponseReplayed,
     'setOrganizerNotificationPreferenceCallablePayload.enabled': setOrganizerNotificationPreferenceCallablePayloadEnabled,
     'setOrganizerNotificationPreferenceCallablePayload.organizerId': setOrganizerNotificationPreferenceCallablePayloadOrganizerId,
     'setReviewResponseCallablePayload.message': setReviewResponseCallablePayloadMessage,

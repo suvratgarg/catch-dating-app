@@ -31,12 +31,19 @@ class HostOperationalRosterController {
         rows: rows,
       );
 
-  Future<bool> markAttendance({
+  Future<EventAttendeeAttendanceResult> setAttendance({
     required String eventId,
-    required String attendeeId,
+    required EventAttendee attendee,
+    required String clientOperationId,
   }) => _ref
       .read(eventAttendeeRepositoryProvider)
-      .markAttendance(eventId: eventId, attendeeId: attendeeId);
+      .setAttendance(
+        eventId: eventId,
+        attendeeId: attendee.id,
+        desiredCheckedIn: !attendee.isCheckedIn,
+        expectedRevision: attendee.attendanceRevision,
+        clientOperationId: clientOperationId,
+      );
 
   Future<EventRuntimeClaimStatus> reviewRuntimeClaim({
     required String eventId,

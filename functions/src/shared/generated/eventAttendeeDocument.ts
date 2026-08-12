@@ -63,4 +63,12 @@ export interface EventAttendeeDocument {
     _seconds: number;
     _nanoseconds: number;
   } | null;
+  /**
+   * Monotonic revision for absolute Host attendance operations. Missing legacy values read as zero.
+   */
+  attendanceRevision?: number;
+  /**
+   * Operational status restored by an absolute undo. Null outside checked-in state.
+   */
+  preCheckInStatus?: "invited" | "registered" | "waitlisted" | null;
 }

@@ -1088,6 +1088,12 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Idempotency receipts reveal actor and operational state; the callable
+    // returns the bounded result and no client reads or writes this ledger.
+    match /eventAttendeeAttendanceReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
     // The no-download identity edge is private to the authenticated owner.
     // It is not a roster-list surface and every mutation is callable-owned.
     match /eventRuntimeParticipants/{participantId} {

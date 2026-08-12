@@ -358,5 +358,24 @@ const schemaEventAttendeeDocumentSchema = <String, Object?>{
         },
       ],
     },
+    'attendanceRevision': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'maximum': 9007199254740991,
+      'description': 'Monotonic revision for absolute Host attendance operations. Missing legacy values read as zero.',
+    },
+    'preCheckInStatus': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'enum': <Object?>[
+        'invited',
+        'registered',
+        'waitlisted',
+        null,
+      ],
+      'description': 'Operational status restored by an absolute undo. Null outside checked-in state.',
+    },
   },
 };

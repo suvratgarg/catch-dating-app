@@ -351,7 +351,11 @@ class _HostOperationalRosterPanelState
     try {
       await ref
           .read(hostOperationalRosterControllerProvider)
-          .markAttendance(eventId: widget.eventId, attendeeId: attendee.id);
+          .setAttendance(
+            eventId: widget.eventId,
+            attendee: attendee,
+            clientOperationId: _newAttendanceOperationId(attendee.id),
+          );
       ref.invalidate(watchEventAttendeesProvider(widget.eventId));
     } catch (error) {
       if (mounted) setState(() => _mutationError = error);
@@ -860,6 +864,10 @@ String? _nullableText(String value) {
 
 String _newImportKey() =>
     'host-${DateTime.now().microsecondsSinceEpoch.toRadixString(36)}';
+
+String _newAttendanceOperationId(String attendeeId) =>
+    'attendance_${attendeeId.hashCode.abs().toRadixString(36)}_'
+    '${DateTime.now().microsecondsSinceEpoch.toRadixString(36)}';
 
 String _attendeeMeta(BuildContext context, EventAttendee attendee) => [
   _sourceCopy(context, attendee.source),

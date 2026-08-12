@@ -384,6 +384,8 @@ export async function completeEventSuccessFirstHelloMissionHandler(
         status: "checkedIn",
         checkedInAt: now,
         checkedInBy: observerUid,
+        attendanceRevision: (runtimeAttendee!.attendanceRevision ?? 0) + 1,
+        preCheckInStatus: runtimeAttendee!.status,
         updatedAt: now,
       });
     }

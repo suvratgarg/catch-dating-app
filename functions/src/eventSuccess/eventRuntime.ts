@@ -481,6 +481,8 @@ export async function checkInEventRuntimeHandler(
       status: "checkedIn",
       checkedInAt: now,
       checkedInBy: uid,
+      attendanceRevision: (attendee.attendanceRevision ?? 0) + 1,
+      preCheckInStatus: attendee.status,
       updatedAt: now,
     });
     tx.update(eventRef, {
@@ -600,6 +602,8 @@ export async function approveEventRuntimeClaimHandler(
       linkedAt: attendee.linkedAt ?? now,
       status: attendee.status === "invited" ? "registered" : attendee.status,
       registeredAt: attendee.registeredAt ?? now,
+      attendanceRevision: attendee.attendanceRevision ?? 0,
+      preCheckInStatus: attendee.preCheckInStatus ?? null,
       updatedAt: now,
     });
     tx.update(participantRef, {
@@ -932,6 +936,8 @@ function runtimeAttendeeDocument(params: {
     linkedAt: params.uid ? params.now : null,
     inviteLinkId: params.inviteLinkId,
     inviteCapturedAt: params.inviteLinkId ? params.now : null,
+    attendanceRevision: 0,
+    preCheckInStatus: null,
   };
 }
 

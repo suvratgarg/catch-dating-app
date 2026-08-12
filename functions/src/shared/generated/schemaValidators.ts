@@ -60,6 +60,7 @@ import {EventShareIntentDocument} from "./eventShareIntentDocument";
 import {EventInviteAttributionDocument} from "./eventInviteAttributionDocument";
 import {EventParticipationDocument} from "./eventParticipationDocument";
 import {EventAttendeeDocument} from "./eventAttendeeDocument";
+import {EventAttendeeAttendanceReceiptDocument} from "./eventAttendeeAttendanceReceiptDocument";
 import {EventAttendeeImportDocument} from "./eventAttendeeImportDocument";
 import {EventRosterHandoffDocument} from "./eventRosterHandoffDocument";
 import {EventRuntimeParticipantDocument} from "./eventRuntimeParticipantDocument";
@@ -202,6 +203,8 @@ import {RecordOrganizerAnalyticsEventCallableResponse} from "./recordOrganizerAn
 import {MarkEventAttendanceCallablePayload} from "./markEventAttendanceCallablePayload";
 import {ImportEventAttendeesCallablePayload} from "./importEventAttendeesCallablePayload";
 import {MarkEventAttendeeAttendanceCallablePayload} from "./markEventAttendeeAttendanceCallablePayload";
+import {SetEventAttendeeAttendanceCallablePayload} from "./setEventAttendeeAttendanceCallablePayload";
+import {SetEventAttendeeAttendanceCallableResponse} from "./setEventAttendeeAttendanceCallableResponse";
 import {RegisterPublicEventCallablePayload} from "./registerPublicEventCallablePayload";
 import {RegisterPublicEventCallableResponse} from "./registerPublicEventCallableResponse";
 import {GetEventRuntimeBootstrapCallablePayload} from "./getEventRuntimeBootstrapCallablePayload";
@@ -356,6 +359,7 @@ import {
   eventInviteAttributionDocumentSchema,
   eventParticipationDocumentSchema,
   eventAttendeeDocumentSchema,
+  eventAttendeeAttendanceReceiptDocumentSchema,
   eventAttendeeImportDocumentSchema,
   eventRosterHandoffDocumentSchema,
   eventRuntimeParticipantDocumentSchema,
@@ -498,6 +502,8 @@ import {
   markEventAttendanceCallablePayloadSchema,
   importEventAttendeesCallablePayloadSchema,
   markEventAttendeeAttendanceCallablePayloadSchema,
+  setEventAttendeeAttendanceCallablePayloadSchema,
+  setEventAttendeeAttendanceCallableResponseSchema,
   registerPublicEventCallablePayloadSchema,
   registerPublicEventCallableResponseSchema,
   getEventRuntimeBootstrapCallablePayloadSchema,
@@ -824,6 +830,10 @@ export const validateEventAttendeeDocument:
   ValidateFunction<EventAttendeeDocument> =
     ajv.compile(eventAttendeeDocumentSchema) as
       ValidateFunction<EventAttendeeDocument>;
+export const validateEventAttendeeAttendanceReceiptDocument:
+  ValidateFunction<EventAttendeeAttendanceReceiptDocument> =
+    ajv.compile(eventAttendeeAttendanceReceiptDocumentSchema) as
+      ValidateFunction<EventAttendeeAttendanceReceiptDocument>;
 export const validateEventAttendeeImportDocument:
   ValidateFunction<EventAttendeeImportDocument> =
     ajv.compile(eventAttendeeImportDocumentSchema) as
@@ -1392,6 +1402,14 @@ export const validateMarkEventAttendeeAttendanceCallablePayload:
   ValidateFunction<MarkEventAttendeeAttendanceCallablePayload> =
     ajv.compile(markEventAttendeeAttendanceCallablePayloadSchema) as
       ValidateFunction<MarkEventAttendeeAttendanceCallablePayload>;
+export const validateSetEventAttendeeAttendanceCallablePayload:
+  ValidateFunction<SetEventAttendeeAttendanceCallablePayload> =
+    ajv.compile(setEventAttendeeAttendanceCallablePayloadSchema) as
+      ValidateFunction<SetEventAttendeeAttendanceCallablePayload>;
+export const validateSetEventAttendeeAttendanceCallableResponse:
+  ValidateFunction<SetEventAttendeeAttendanceCallableResponse> =
+    ajv.compile(setEventAttendeeAttendanceCallableResponseSchema) as
+      ValidateFunction<SetEventAttendeeAttendanceCallableResponse>;
 export const validateRegisterPublicEventCallablePayload:
   ValidateFunction<RegisterPublicEventCallablePayload> =
     ajv.compile(registerPublicEventCallablePayloadSchema) as

@@ -36,41 +36,49 @@ _EventAttendee _$EventAttendeeFromJson(
   cancelledAt: const NullableTimestampConverter().fromJson(json['cancelledAt']),
   checkedInBy: json['checkedInBy'] as String?,
   linkedAt: const NullableTimestampConverter().fromJson(json['linkedAt']),
+  attendanceRevision: (json['attendanceRevision'] as num?)?.toInt() ?? 0,
+  preCheckInStatus: $enumDecodeNullable(
+    _$EventAttendeeStatusEnumMap,
+    json['preCheckInStatus'],
+  ),
 );
 
-Map<String, dynamic> _$EventAttendeeToJson(_EventAttendee instance) =>
-    <String, dynamic>{
-      'eventId': instance.eventId,
-      'clubId': instance.clubId,
-      'organizerId': instance.organizerId,
-      'displayName': instance.displayName,
-      'searchName': instance.searchName,
-      'source': _$EventAttendeeSourceEnumMap[instance.source]!,
-      'status': _$EventAttendeeStatusEnumMap[instance.status]!,
-      'linkedUid': instance.linkedUid,
-      'phoneE164': instance.phoneE164,
-      'email': instance.email,
-      'externalReference': instance.externalReference,
-      'ticketType': instance.ticketType,
-      'importId': instance.importId,
-      'sourceRowId': instance.sourceRowId,
-      'createdAt': const TimestampConverter().toJson(instance.createdAt),
-      'updatedAt': const TimestampConverter().toJson(instance.updatedAt),
-      'registeredAt': const NullableTimestampConverter().toJson(
-        instance.registeredAt,
-      ),
-      'waitlistedAt': const NullableTimestampConverter().toJson(
-        instance.waitlistedAt,
-      ),
-      'checkedInAt': const NullableTimestampConverter().toJson(
-        instance.checkedInAt,
-      ),
-      'cancelledAt': const NullableTimestampConverter().toJson(
-        instance.cancelledAt,
-      ),
-      'checkedInBy': instance.checkedInBy,
-      'linkedAt': const NullableTimestampConverter().toJson(instance.linkedAt),
-    };
+Map<String, dynamic> _$EventAttendeeToJson(
+  _EventAttendee instance,
+) => <String, dynamic>{
+  'eventId': instance.eventId,
+  'clubId': instance.clubId,
+  'organizerId': instance.organizerId,
+  'displayName': instance.displayName,
+  'searchName': instance.searchName,
+  'source': _$EventAttendeeSourceEnumMap[instance.source]!,
+  'status': _$EventAttendeeStatusEnumMap[instance.status]!,
+  'linkedUid': instance.linkedUid,
+  'phoneE164': instance.phoneE164,
+  'email': instance.email,
+  'externalReference': instance.externalReference,
+  'ticketType': instance.ticketType,
+  'importId': instance.importId,
+  'sourceRowId': instance.sourceRowId,
+  'createdAt': const TimestampConverter().toJson(instance.createdAt),
+  'updatedAt': const TimestampConverter().toJson(instance.updatedAt),
+  'registeredAt': const NullableTimestampConverter().toJson(
+    instance.registeredAt,
+  ),
+  'waitlistedAt': const NullableTimestampConverter().toJson(
+    instance.waitlistedAt,
+  ),
+  'checkedInAt': const NullableTimestampConverter().toJson(
+    instance.checkedInAt,
+  ),
+  'cancelledAt': const NullableTimestampConverter().toJson(
+    instance.cancelledAt,
+  ),
+  'checkedInBy': instance.checkedInBy,
+  'linkedAt': const NullableTimestampConverter().toJson(instance.linkedAt),
+  'attendanceRevision': instance.attendanceRevision,
+  'preCheckInStatus': _$EventAttendeeStatusEnumMap[instance.preCheckInStatus],
+};
 
 const _$EventAttendeeSourceEnumMap = {
   EventAttendeeSource.catchBooking: 'catchBooking',

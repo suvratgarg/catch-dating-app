@@ -44,6 +44,8 @@ abstract class EventAttendee with _$EventAttendee {
     @NullableTimestampConverter() DateTime? cancelledAt,
     String? checkedInBy,
     @NullableTimestampConverter() DateTime? linkedAt,
+    @Default(0) int attendanceRevision,
+    EventAttendeeStatus? preCheckInStatus,
   }) = _EventAttendee;
 
   factory EventAttendee.fromJson(Map<String, dynamic> json) =>
