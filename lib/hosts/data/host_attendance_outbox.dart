@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:catch_dating_app/core/app_error_context.dart';
 import 'package:catch_dating_app/events/data/event_attendee_repository.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -134,8 +135,20 @@ class SharedPreferencesHostAttendanceOutboxStore
 
   static const _keyPrefix = 'host_attendance_outbox_v1_';
 
-  Future<SharedPreferences> get _prefs async =>
-      _preferences ??= await SharedPreferences.getInstance();
+  Future<SharedPreferences> get _prefs async {
+    final cached = _preferences;
+    if (cached != null) return cached;
+    final loaded = await withAppErrorContext(
+      SharedPreferences.getInstance,
+      context: const AppErrorContext(
+        operation: AppOperation.localPersistence,
+        action: 'open attendance replay queue',
+        resource: 'shared_preferences',
+      ),
+    );
+    _preferences = loaded;
+    return loaded;
+  }
 
   @override
   Future<List<HostAttendanceOutboxEntry>> load(String accountId) async {

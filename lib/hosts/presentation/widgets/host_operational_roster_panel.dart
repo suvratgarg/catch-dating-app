@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/core/app_error_context.dart' as app_ops;
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/clipboard.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
@@ -24,6 +25,7 @@ import 'package:catch_dating_app/events/data/event_runtime_claim_repository.dart
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/events/domain/event_runtime_claim_request.dart';
+import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/hosts/data/host_attendance_outbox.dart';
 import 'package:catch_dating_app/hosts/data/host_provider_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_roster_file_parser.dart';
@@ -287,6 +289,16 @@ class _HostOperationalRosterPanelState
           );
       if (mounted) setState(() => _providerSetup = AsyncData(setup));
     } catch (error, stackTrace) {
+      app_ops.logAppError(
+        error,
+        stackTrace: stackTrace,
+        context: const app_ops.AppErrorContext(
+          operation: app_ops.AppOperation.ui,
+          action: 'load organizer booking provider setup',
+          resource: 'host_provider_setup',
+        ),
+        logError: ref.read(errorLoggerProvider),
+      );
       if (mounted) {
         setState(() => _providerSetup = AsyncError(error, stackTrace));
       }
