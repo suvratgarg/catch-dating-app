@@ -156,6 +156,11 @@
       "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
       "x-catch-ownership": "callable-owned"
     },
+    "completedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "description": "Authoritative completion time for a successful payment. Older completed records may omit it and fall back to createdAt.",
+      "x-catch-ownership": "callable-owned"
+    },
     "synthetic": {
       "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"
     },

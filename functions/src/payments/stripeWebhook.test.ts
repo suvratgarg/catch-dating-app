@@ -63,6 +63,7 @@ test("stripeWebhookHandler signs up and completes trusted checkout sessions",
       providerPaymentId: "pi_test_123",
       checkoutSessionId: "cs_test_123",
       signUpFailed: false,
+      completedAt: "server-now",
       updatedAt: "server-now",
     });
   });

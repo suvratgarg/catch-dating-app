@@ -83,6 +83,7 @@ export 'callables/explore_search_callable_request.g.dart';
 export 'callables/export_organizer_contacts_callable_request.g.dart';
 export 'callables/get_cross_paths_suggestions_callable_request.g.dart';
 export 'callables/get_event_invite_link_token_callable_request.g.dart';
+export 'callables/get_event_roster_insights_callable_request.g.dart';
 export 'callables/get_event_runtime_bootstrap_callable_request.g.dart';
 export 'callables/get_organizer_contact_detail_callable_request.g.dart';
 export 'callables/get_organizer_crm_summary_callable_request.g.dart';

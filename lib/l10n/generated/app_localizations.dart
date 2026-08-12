@@ -17816,6 +17816,129 @@ abstract class AppLocalizations {
   /// **'Run this event even when Catch did not handle the booking. Imported, manually added, and web-registered guests stay in one private roster.'**
   String get hostsOperationalRosterSubtitle;
 
+  /// Non-blocking loading copy for manager-only live roster enrichment.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading customer labels…'**
+  String get hostsOperationalRosterInsightsLoading;
+
+  /// Graceful enrichment failure copy that preserves the primary roster.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer labels are unavailable. Check-in still works.'**
+  String get hostsOperationalRosterInsightsUnavailable;
+
+  /// Partial-projection copy that distinguishes missing labels from a missing attendee.
+  ///
+  /// In en, this message translates to:
+  /// **'Some customer labels are still being prepared. The roster remains complete.'**
+  String get hostsOperationalRosterInsightsPreparing;
+
+  /// Retries the optional roster insight callable.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry labels'**
+  String get hostsOperationalRosterInsightsRetry;
+
+  /// Explains the stable event-relative definition of live roster labels.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer labels use history from before this event began, so they do not change as you check people in.'**
+  String get hostsOperationalRosterInsightsCaption;
+
+  /// Honest data-coverage note for Catch-only spend labels.
+  ///
+  /// In en, this message translates to:
+  /// **'Spend labels count only completed, non-refunded Catch payments known before this event. External ticket spend is not guessed.'**
+  String get hostsOperationalRosterInsightsSpendFootnote;
+
+  /// All-guests roster insight filter label.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get hostsOperationalRosterInsightsFilterAll;
+
+  /// Roster insight filter label with matching guest count.
+  ///
+  /// In en, this message translates to:
+  /// **'{label} {count}'**
+  String hostsOperationalRosterInsightsFilterCount({
+    required String label,
+    required int count,
+  });
+
+  /// Empty state after selecting a live roster insight filter.
+  ///
+  /// In en, this message translates to:
+  /// **'No guests match this label'**
+  String get hostsOperationalRosterInsightsFilterEmptyTitle;
+
+  /// Recovery copy for an empty live roster insight filter.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose another label or All to return to the full roster.'**
+  String get hostsOperationalRosterInsightsFilterEmptyMessage;
+
+  /// Guest had attended no earlier event for this organizer when the current event began.
+  ///
+  /// In en, this message translates to:
+  /// **'First event'**
+  String get hostsOperationalRosterInsightFirstTime;
+
+  /// Guest had attended at least one earlier event for this organizer.
+  ///
+  /// In en, this message translates to:
+  /// **'Returning'**
+  String get hostsOperationalRosterInsightReturning;
+
+  /// Guest attended at least three earlier events in the preceding 180 days.
+  ///
+  /// In en, this message translates to:
+  /// **'Regular'**
+  String get hostsOperationalRosterInsightRegular;
+
+  /// Returning guest whose last earlier attendance was more than 90 days ago.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-engaging'**
+  String get hostsOperationalRosterInsightReEngaging;
+
+  /// Guest attended at least 80 percent of three or more earlier expected events.
+  ///
+  /// In en, this message translates to:
+  /// **'Reliable'**
+  String get hostsOperationalRosterInsightReliable;
+
+  /// Guest has at least two earlier no-shows across three or more expected events.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs confirmation'**
+  String get hostsOperationalRosterInsightNeedsConfirmation;
+
+  /// Guest has a verified registration or check-in referral.
+  ///
+  /// In en, this message translates to:
+  /// **'Advocate'**
+  String get hostsOperationalRosterInsightAdvocate;
+
+  /// Guest referred at least three checked-in attendees in the trailing year.
+  ///
+  /// In en, this message translates to:
+  /// **'Top advocate'**
+  String get hostsOperationalRosterInsightHighImpactAdvocate;
+
+  /// Guest has at least one completed, non-refunded Catch payment for this organizer.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch spender'**
+  String get hostsOperationalRosterInsightCatchSpender;
+
+  /// Guest is in the top quartile of known Catch spend in a currency and has at least two paid orders.
+  ///
+  /// In en, this message translates to:
+  /// **'Top Catch spender'**
+  String get hostsOperationalRosterInsightTopCatchSpender;
+
   /// CTA to import a Host roster spreadsheet.
   ///
   /// In en, this message translates to:

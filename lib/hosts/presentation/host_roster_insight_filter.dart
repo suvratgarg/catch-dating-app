@@ -1,0 +1,58 @@
+import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
+
+enum HostRosterInsightFilter {
+  all,
+  firstTime,
+  returning,
+  regular,
+  reEngaging,
+  reliable,
+  needsConfirmation,
+  advocate,
+  topCatchSpender,
+}
+
+bool hostRosterInsightMatches(
+  HostRosterInsightFilter filter,
+  HostEventRosterInsight? insight,
+) {
+  if (filter == HostRosterInsightFilter.all) return true;
+  if (insight?.availability != HostRosterInsightAvailability.ready) {
+    return false;
+  }
+  final signals = insight!.signals;
+  return switch (filter) {
+    HostRosterInsightFilter.all => true,
+    HostRosterInsightFilter.firstTime => signals.contains(
+      HostRosterInsightSignal.firstTime,
+    ),
+    HostRosterInsightFilter.returning => signals.contains(
+      HostRosterInsightSignal.returning,
+    ),
+    HostRosterInsightFilter.regular => signals.contains(
+      HostRosterInsightSignal.regular,
+    ),
+    HostRosterInsightFilter.reEngaging => signals.contains(
+      HostRosterInsightSignal.reEngaging,
+    ),
+    HostRosterInsightFilter.reliable => signals.contains(
+      HostRosterInsightSignal.reliable,
+    ),
+    HostRosterInsightFilter.needsConfirmation => signals.contains(
+      HostRosterInsightSignal.needsConfirmation,
+    ),
+    HostRosterInsightFilter.advocate =>
+      signals.contains(HostRosterInsightSignal.advocate) ||
+          signals.contains(HostRosterInsightSignal.highImpactAdvocate),
+    HostRosterInsightFilter.topCatchSpender => signals.contains(
+      HostRosterInsightSignal.topCatchSpender,
+    ),
+  };
+}
+
+int hostRosterInsightFilterCount(
+  HostRosterInsightFilter filter,
+  Iterable<HostEventRosterInsight> insights,
+) => insights
+    .where((insight) => hostRosterInsightMatches(filter, insight))
+    .length;

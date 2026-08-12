@@ -89,6 +89,7 @@ test(
         inviteLinkId: "link-1",
         inviteSource: "instagram-bio",
         createdAt: "server-now",
+        completedAt: "server-now",
       },
     ]);
     assert.equal(paymentDoc.inviteLinkSetCalls.length, 1);

@@ -100,6 +100,8 @@ class HostEventOperatorScreen extends ConsumerWidget {
                       HostEventOperatorPermission.reviewRuntimeClaims,
                     ),
                     showProviderControls: false,
+                    showAudienceInsights:
+                        access.actorRole == HostEventOperatorRole.manager,
                   ),
                 ],
               ),

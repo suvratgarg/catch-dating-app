@@ -1442,6 +1442,19 @@ const schemaSpecs = [
       "functions/src/shared/generated/getOrganizerCrmSummaryCallablePayload.ts",
   },
   {
+    name: "GetEventRosterInsightsCallablePayload",
+    source: "callables/get_event_roster_insights_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/getEventRosterInsightsCallablePayload.ts",
+  },
+  {
+    name: "GetEventRosterInsightsCallableResponse",
+    source:
+      "callable_responses/get_event_roster_insights_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/getEventRosterInsightsCallableResponse.ts",
+  },
+  {
     name: "GetOrganizerCrmSummaryCallableResponse",
     source:
       "callable_responses/get_organizer_crm_summary_response.schema.json",

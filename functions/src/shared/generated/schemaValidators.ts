@@ -237,6 +237,8 @@ import {ApproveEventRuntimeClaimCallableResponse} from "./approveEventRuntimeCla
 import {CreateEventRosterHandoffCallablePayload} from "./createEventRosterHandoffCallablePayload";
 import {CreateEventRosterHandoffCallableResponse} from "./createEventRosterHandoffCallableResponse";
 import {GetOrganizerCrmSummaryCallablePayload} from "./getOrganizerCrmSummaryCallablePayload";
+import {GetEventRosterInsightsCallablePayload} from "./getEventRosterInsightsCallablePayload";
+import {GetEventRosterInsightsCallableResponse} from "./getEventRosterInsightsCallableResponse";
 import {GetOrganizerCrmSummaryCallableResponse} from "./getOrganizerCrmSummaryCallableResponse";
 import {ListOrganizerContactsCallablePayload} from "./listOrganizerContactsCallablePayload";
 import {ListOrganizerContactsCallableResponse} from "./listOrganizerContactsCallableResponse";
@@ -557,6 +559,8 @@ import {
   createEventRosterHandoffCallablePayloadSchema,
   createEventRosterHandoffCallableResponseSchema,
   getOrganizerCrmSummaryCallablePayloadSchema,
+  getEventRosterInsightsCallablePayloadSchema,
+  getEventRosterInsightsCallableResponseSchema,
   getOrganizerCrmSummaryCallableResponseSchema,
   listOrganizerContactsCallablePayloadSchema,
   listOrganizerContactsCallableResponseSchema,
@@ -1580,6 +1584,14 @@ export const validateGetOrganizerCrmSummaryCallablePayload:
   ValidateFunction<GetOrganizerCrmSummaryCallablePayload> =
     ajv.compile(getOrganizerCrmSummaryCallablePayloadSchema) as
       ValidateFunction<GetOrganizerCrmSummaryCallablePayload>;
+export const validateGetEventRosterInsightsCallablePayload:
+  ValidateFunction<GetEventRosterInsightsCallablePayload> =
+    ajv.compile(getEventRosterInsightsCallablePayloadSchema) as
+      ValidateFunction<GetEventRosterInsightsCallablePayload>;
+export const validateGetEventRosterInsightsCallableResponse:
+  ValidateFunction<GetEventRosterInsightsCallableResponse> =
+    ajv.compile(getEventRosterInsightsCallableResponseSchema) as
+      ValidateFunction<GetEventRosterInsightsCallableResponse>;
 export const validateGetOrganizerCrmSummaryCallableResponse:
   ValidateFunction<GetOrganizerCrmSummaryCallableResponse> =
     ajv.compile(getOrganizerCrmSummaryCallableResponseSchema) as

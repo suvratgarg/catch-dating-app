@@ -17669,6 +17669,173 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const getEventRosterInsightsCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'getEventRosterInsightsCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventRosterInsightsCallableResponseComputedAtMillis = CatchContractFieldConstraints(
+    path: 'getEventRosterInsightsCallableResponse.computedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const getEventRosterInsightsCallableResponseCutoffAtMillis = CatchContractFieldConstraints(
+    path: 'getEventRosterInsightsCallableResponse.cutoffAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const getEventRosterInsightsCallableResponseEventId = CatchContractFieldConstraints(
+    path: 'getEventRosterInsightsCallableResponse.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventRosterInsightsCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'getEventRosterInsightsCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventRosterInsightsCallableResponseRows = CatchContractFieldConstraints(
+    path: 'getEventRosterInsightsCallableResponse.rows',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 1000,
+  );
+
+  static const getEventRosterInsightsCallableResponseRowsItemsAttendanceRate = CatchContractFieldConstraints(
+    path: 'getEventRosterInsightsCallableResponse.rows.items.attendanceRate',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const getEventRosterInsightsCallableResponseRowsItemsAttendeeId = CatchContractFieldConstraints(
+    path: 'getEventRosterInsightsCallableResponse.rows.items.attendeeId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventRosterInsightsCallableResponseRowsItemsAvailability = CatchContractFieldConstraints(
+    path: 'getEventRosterInsightsCallableResponse.rows.items.availability',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['ready', 'projectionPending', 'ambiguousIdentity', 'insufficientHistory'],
+  );
+
+  static const getEventRosterInsightsCallableResponseRowsItemsCatchSpend = CatchContractFieldConstraints(
+    path: 'getEventRosterInsightsCallableResponse.rows.items.catchSpend',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 12,
+  );
+
+  static const getEventRosterInsightsCallableResponseRowsItemsCatchSpendItemsAmountMinor = CatchContractFieldConstraints(
+    path: 'getEventRosterInsightsCallableResponse.rows.items.catchSpend.items.amountMinor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const getEventRosterInsightsCallableResponseRowsItemsCatchSpendItemsCurrency = CatchContractFieldConstraints(
+    path: 'getEventRosterInsightsCallableResponse.rows.items.catchSpend.items.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const getEventRosterInsightsCallableResponseRowsItemsCatchSpendItemsPaidOrderCount = CatchContractFieldConstraints(
+    path: 'getEventRosterInsightsCallableResponse.rows.items.catchSpend.items.paidOrderCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const getEventRosterInsightsCallableResponseRowsItemsContactId = CatchContractFieldConstraints(
+    path: 'getEventRosterInsightsCallableResponse.rows.items.contactId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventRosterInsightsCallableResponseRowsItemsLastAttendedAtMillis = CatchContractFieldConstraints(
+    path: 'getEventRosterInsightsCallableResponse.rows.items.lastAttendedAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const getEventRosterInsightsCallableResponseRowsItemsPriorAttendedEventCount = CatchContractFieldConstraints(
+    path: 'getEventRosterInsightsCallableResponse.rows.items.priorAttendedEventCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const getEventRosterInsightsCallableResponseRowsItemsPriorExpectedEventCount = CatchContractFieldConstraints(
+    path: 'getEventRosterInsightsCallableResponse.rows.items.priorExpectedEventCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const getEventRosterInsightsCallableResponseRowsItemsPriorNoShowCount = CatchContractFieldConstraints(
+    path: 'getEventRosterInsightsCallableResponse.rows.items.priorNoShowCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const getEventRosterInsightsCallableResponseRowsItemsSignals = CatchContractFieldConstraints(
+    path: 'getEventRosterInsightsCallableResponse.rows.items.signals',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['first_time', 'returning', 'regular', 're_engaging', 'reliable', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'known_catch_spender', 'top_catch_spender'],
+    maxItems: 10,
+    uniqueItems: true,
+  );
+
+  static const getEventRosterInsightsCallableResponseRowsItemsSignalsItems = CatchContractFieldConstraints(
+    path: 'getEventRosterInsightsCallableResponse.rows.items.signals.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['first_time', 'returning', 'regular', 're_engaging', 'reliable', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'known_catch_spender', 'top_catch_spender'],
+  );
+
+  static const getEventRosterInsightsCallableResponseSourceCoverage = CatchContractFieldConstraints(
+    path: 'getEventRosterInsightsCallableResponse.sourceCoverage',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['exact', 'partial'],
+  );
+
+  static const getEventRosterInsightsCallableResponseSpendCoverage = CatchContractFieldConstraints(
+    path: 'getEventRosterInsightsCallableResponse.spendCoverage',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchPaymentsOnly', 'insufficientData'],
+  );
+
   static const getEventRuntimeBootstrapCallablePayloadPublicRuntimeId = CatchContractFieldConstraints(
     path: 'getEventRuntimeBootstrapCallablePayload.publicRuntimeId',
     required: true,
@@ -29601,6 +29768,20 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const paymentDocumentCompletedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'paymentDocument.completedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const paymentDocumentCompletedAtSeconds = CatchContractFieldConstraints(
+    path: 'paymentDocument.completedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const paymentDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
     path: 'paymentDocument.createdAt._nanoseconds',
     required: true,
@@ -39940,6 +40121,28 @@ abstract final class CatchContractConstraints {
     'getCrossPathsSuggestionsCallableResponse.suggestions.items.tokenExpiresAt': getCrossPathsSuggestionsCallableResponseSuggestionsItemsTokenExpiresAt,
     'getEventInviteLinkTokenCallablePayload.eventId': getEventInviteLinkTokenCallablePayloadEventId,
     'getEventInviteLinkTokenCallablePayload.inviteLinkId': getEventInviteLinkTokenCallablePayloadInviteLinkId,
+    'getEventRosterInsightsCallablePayload.eventId': getEventRosterInsightsCallablePayloadEventId,
+    'getEventRosterInsightsCallableResponse.computedAtMillis': getEventRosterInsightsCallableResponseComputedAtMillis,
+    'getEventRosterInsightsCallableResponse.cutoffAtMillis': getEventRosterInsightsCallableResponseCutoffAtMillis,
+    'getEventRosterInsightsCallableResponse.eventId': getEventRosterInsightsCallableResponseEventId,
+    'getEventRosterInsightsCallableResponse.organizerId': getEventRosterInsightsCallableResponseOrganizerId,
+    'getEventRosterInsightsCallableResponse.rows': getEventRosterInsightsCallableResponseRows,
+    'getEventRosterInsightsCallableResponse.rows.items.attendanceRate': getEventRosterInsightsCallableResponseRowsItemsAttendanceRate,
+    'getEventRosterInsightsCallableResponse.rows.items.attendeeId': getEventRosterInsightsCallableResponseRowsItemsAttendeeId,
+    'getEventRosterInsightsCallableResponse.rows.items.availability': getEventRosterInsightsCallableResponseRowsItemsAvailability,
+    'getEventRosterInsightsCallableResponse.rows.items.catchSpend': getEventRosterInsightsCallableResponseRowsItemsCatchSpend,
+    'getEventRosterInsightsCallableResponse.rows.items.catchSpend.items.amountMinor': getEventRosterInsightsCallableResponseRowsItemsCatchSpendItemsAmountMinor,
+    'getEventRosterInsightsCallableResponse.rows.items.catchSpend.items.currency': getEventRosterInsightsCallableResponseRowsItemsCatchSpendItemsCurrency,
+    'getEventRosterInsightsCallableResponse.rows.items.catchSpend.items.paidOrderCount': getEventRosterInsightsCallableResponseRowsItemsCatchSpendItemsPaidOrderCount,
+    'getEventRosterInsightsCallableResponse.rows.items.contactId': getEventRosterInsightsCallableResponseRowsItemsContactId,
+    'getEventRosterInsightsCallableResponse.rows.items.lastAttendedAtMillis': getEventRosterInsightsCallableResponseRowsItemsLastAttendedAtMillis,
+    'getEventRosterInsightsCallableResponse.rows.items.priorAttendedEventCount': getEventRosterInsightsCallableResponseRowsItemsPriorAttendedEventCount,
+    'getEventRosterInsightsCallableResponse.rows.items.priorExpectedEventCount': getEventRosterInsightsCallableResponseRowsItemsPriorExpectedEventCount,
+    'getEventRosterInsightsCallableResponse.rows.items.priorNoShowCount': getEventRosterInsightsCallableResponseRowsItemsPriorNoShowCount,
+    'getEventRosterInsightsCallableResponse.rows.items.signals': getEventRosterInsightsCallableResponseRowsItemsSignals,
+    'getEventRosterInsightsCallableResponse.rows.items.signals.items': getEventRosterInsightsCallableResponseRowsItemsSignalsItems,
+    'getEventRosterInsightsCallableResponse.sourceCoverage': getEventRosterInsightsCallableResponseSourceCoverage,
+    'getEventRosterInsightsCallableResponse.spendCoverage': getEventRosterInsightsCallableResponseSpendCoverage,
     'getEventRuntimeBootstrapCallablePayload.publicRuntimeId': getEventRuntimeBootstrapCallablePayloadPublicRuntimeId,
     'getEventRuntimeBootstrapCallableResponse.event.endTimeMillis': getEventRuntimeBootstrapCallableResponseEventEndTimeMillis,
     'getEventRuntimeBootstrapCallableResponse.event.eventId': getEventRuntimeBootstrapCallableResponseEventEventId,
@@ -41618,6 +41821,8 @@ abstract final class CatchContractConstraints {
     'paymentDocument.amountMinor': paymentDocumentAmountMinor,
     'paymentDocument.applicationFeeAmount': paymentDocumentApplicationFeeAmount,
     'paymentDocument.checkoutSessionId': paymentDocumentCheckoutSessionId,
+    'paymentDocument.completedAt._nanoseconds': paymentDocumentCompletedAtNanoseconds,
+    'paymentDocument.completedAt._seconds': paymentDocumentCompletedAtSeconds,
     'paymentDocument.createdAt._nanoseconds': paymentDocumentCreatedAtNanoseconds,
     'paymentDocument.createdAt._seconds': paymentDocumentCreatedAtSeconds,
     'paymentDocument.crossPathsPairHoldId': paymentDocumentCrossPathsPairHoldId,

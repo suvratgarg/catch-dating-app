@@ -188,6 +188,27 @@ const schemaPaymentDocumentSchema = <String, Object?>{
       },
       'x-catch-ownership': 'callable-owned',
     },
+    'completedAt': <String, Object?>{
+      'type': 'object',
+      'description': 'Authoritative completion time for a successful payment. Older completed records may omit it and fall back to createdAt.',
+      'x-firestore-type': 'timestamp',
+      'additionalProperties': false,
+      'required': <Object?>[
+        '_seconds',
+        '_nanoseconds',
+      ],
+      'properties': <String, Object?>{
+        '_seconds': <String, Object?>{
+          'type': 'integer',
+        },
+        '_nanoseconds': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 999999999,
+        },
+      },
+      'x-catch-ownership': 'callable-owned',
+    },
     'synthetic': <String, Object?>{
       'type': 'boolean',
       'description': 'Internal demo seed marker used for cleanup and diagnostics.',

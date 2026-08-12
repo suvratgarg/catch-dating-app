@@ -20,15 +20,170 @@ enum HostAudienceIdentityState { unlinked, verified, ambiguous }
 
 enum HostAudiencePermissionStatus { unknown, optedIn, optedOut }
 
+enum HostRosterInsightCoverage { exact, partial }
+
+enum HostRosterSpendCoverage { catchPaymentsOnly, insufficientData }
+
+enum HostRosterInsightAvailability {
+  ready,
+  projectionPending,
+  ambiguousIdentity,
+  insufficientHistory,
+}
+
+enum HostRosterInsightSignal {
+  firstTime('first_time'),
+  returning('returning'),
+  regular('regular'),
+  reEngaging('re_engaging'),
+  reliable('reliable'),
+  needsConfirmation('needs_confirmation'),
+  advocate('advocate'),
+  highImpactAdvocate('high_impact_advocate'),
+  knownCatchSpender('known_catch_spender'),
+  topCatchSpender('top_catch_spender');
+
+  const HostRosterInsightSignal(this.wireValue);
+
+  final String wireValue;
+
+  static HostRosterInsightSignal fromWireValue(String value) =>
+      values.firstWhere(
+        (signal) => signal.wireValue == value,
+        orElse: () => throw const FormatException(
+          'Roster insight response had an invalid signal.',
+        ),
+      );
+}
+
+class HostRosterCatchSpend {
+  const HostRosterCatchSpend({
+    required this.currency,
+    required this.amountMinor,
+    required this.paidOrderCount,
+  });
+
+  factory HostRosterCatchSpend.fromMap(Map<Object?, Object?> map) =>
+      HostRosterCatchSpend(
+        currency: _requiredString(map, 'currency'),
+        amountMinor: _requiredInt(map, 'amountMinor'),
+        paidOrderCount: _requiredInt(map, 'paidOrderCount'),
+      );
+
+  final String currency;
+  final int amountMinor;
+  final int paidOrderCount;
+}
+
+class HostEventRosterInsight {
+  const HostEventRosterInsight({
+    required this.attendeeId,
+    required this.contactId,
+    required this.availability,
+    required this.signals,
+    required this.priorAttendedEventCount,
+    required this.priorExpectedEventCount,
+    required this.priorNoShowCount,
+    required this.lastAttendedAt,
+    required this.attendanceRate,
+    required this.catchSpend,
+  });
+
+  factory HostEventRosterInsight.fromMap(Map<Object?, Object?> map) =>
+      HostEventRosterInsight(
+        attendeeId: _requiredString(map, 'attendeeId'),
+        contactId: _nullableString(map['contactId']),
+        availability: _enumByName(
+          HostRosterInsightAvailability.values,
+          _requiredString(map, 'availability'),
+          'availability',
+        ),
+        signals: _stringList(
+          map['signals'],
+        ).map(HostRosterInsightSignal.fromWireValue).toSet(),
+        priorAttendedEventCount: _requiredInt(map, 'priorAttendedEventCount'),
+        priorExpectedEventCount: _requiredInt(map, 'priorExpectedEventCount'),
+        priorNoShowCount: _requiredInt(map, 'priorNoShowCount'),
+        lastAttendedAt: _dateTimeFromMillis(map['lastAttendedAtMillis']),
+        attendanceRate: _nullableDouble(map['attendanceRate']),
+        catchSpend: _mapList(
+          map['catchSpend'],
+          'catchSpend',
+        ).map(HostRosterCatchSpend.fromMap).toList(growable: false),
+      );
+
+  final String attendeeId;
+  final String? contactId;
+  final HostRosterInsightAvailability availability;
+  final Set<HostRosterInsightSignal> signals;
+  final int priorAttendedEventCount;
+  final int priorExpectedEventCount;
+  final int priorNoShowCount;
+  final DateTime? lastAttendedAt;
+  final double? attendanceRate;
+  final List<HostRosterCatchSpend> catchSpend;
+}
+
+class HostEventRosterInsights {
+  const HostEventRosterInsights({
+    required this.eventId,
+    required this.organizerId,
+    required this.cutoffAt,
+    required this.sourceCoverage,
+    required this.spendCoverage,
+    required this.rows,
+    required this.computedAt,
+  });
+
+  factory HostEventRosterInsights.fromCallableData(Object? data) {
+    final map = _requiredMap(data, 'event roster insights');
+    return HostEventRosterInsights(
+      eventId: _requiredString(map, 'eventId'),
+      organizerId: _requiredString(map, 'organizerId'),
+      cutoffAt: _requiredDateTimeFromMillis(map, 'cutoffAtMillis'),
+      sourceCoverage: _enumByName(
+        HostRosterInsightCoverage.values,
+        _requiredString(map, 'sourceCoverage'),
+        'sourceCoverage',
+      ),
+      spendCoverage: _enumByName(
+        HostRosterSpendCoverage.values,
+        _requiredString(map, 'spendCoverage'),
+        'spendCoverage',
+      ),
+      rows: _mapList(
+        map['rows'],
+        'event roster insight rows',
+      ).map(HostEventRosterInsight.fromMap).toList(growable: false),
+      computedAt: _requiredDateTimeFromMillis(map, 'computedAtMillis'),
+    );
+  }
+
+  final String eventId;
+  final String organizerId;
+  final DateTime cutoffAt;
+  final HostRosterInsightCoverage sourceCoverage;
+  final HostRosterSpendCoverage spendCoverage;
+  final List<HostEventRosterInsight> rows;
+  final DateTime computedAt;
+
+  Map<String, HostEventRosterInsight> get byAttendeeId => {
+    for (final row in rows) row.attendeeId: row,
+  };
+}
+
 enum HostAudienceSegment {
+  newToOrganizer('new_to_organizer'),
   firstTimeAttendee('first_time_attendee'),
   repeatAttendee('repeat_attendee'),
   regular('regular'),
   lapsedRegular('lapsed_regular'),
   reliableAttendee('reliable_attendee'),
+  needsConfirmation('needs_confirmation'),
   advocate('advocate'),
   highImpactAdvocate('high_impact_advocate'),
-  whatsappReachable('whatsapp_reachable');
+  whatsappReachable('whatsapp_reachable'),
+  smsReachable('sms_reachable');
 
   const HostAudienceSegment(this.wireValue);
 
@@ -595,6 +750,16 @@ class HostCrmRepository {
     parse: HostCrmSummary.fromCallableData,
   );
 
+  Future<HostEventRosterInsights> getEventRosterInsights(String eventId) =>
+      _call(
+        name: 'getEventRosterInsights',
+        payload: GetEventRosterInsightsCallableRequest(
+          eventId: eventId,
+        ).toJson(),
+        action: 'load event roster customer labels',
+        parse: HostEventRosterInsights.fromCallableData,
+      );
+
   Future<HostAudiencePage> listContacts(
     String organizerId, {
     HostAudienceQuery query = const HostAudienceQuery(),
@@ -843,6 +1008,12 @@ Future<HostCrmSummary> hostCrmSummary(Ref ref, String organizerId) =>
     ref.read(hostCrmRepositoryProvider).getSummary(organizerId);
 
 @riverpod
+Future<HostEventRosterInsights> hostEventRosterInsights(
+  Ref ref,
+  String eventId,
+) => ref.read(hostCrmRepositoryProvider).getEventRosterInsights(eventId);
+
+@riverpod
 Future<HostAudiencePage> hostAudience(
   Ref ref,
   String organizerId,
@@ -901,6 +1072,18 @@ DateTime? _dateTimeFromMillis(Object? value) {
     return DateTime.fromMillisecondsSinceEpoch(value.toInt());
   }
   throw const FormatException('Expected epoch milliseconds.');
+}
+
+DateTime _requiredDateTimeFromMillis(Map<Object?, Object?> map, String key) {
+  final value = _dateTimeFromMillis(map[key]);
+  if (value != null) return value;
+  throw FormatException('Response was missing $key.');
+}
+
+double? _nullableDouble(Object? value) {
+  if (value == null) return null;
+  if (value is num && value >= 0 && value <= 1) return value.toDouble();
+  throw const FormatException('Expected a ratio between zero and one.');
 }
 
 T _enumByName<T extends Enum>(List<T> values, String name, String label) {

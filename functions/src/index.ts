@@ -130,6 +130,7 @@ export {
 } from "./organizers/manageOrganizerTeam";
 export {createOrganizerPost} from "./organizers/organizerPosts";
 export {getOrganizerCrmSummary} from "./organizers/organizerCrm";
+export {getEventRosterInsights} from "./organizers/eventRosterInsights";
 export {
   exportOrganizerContacts,
   getOrganizerContactDetail,

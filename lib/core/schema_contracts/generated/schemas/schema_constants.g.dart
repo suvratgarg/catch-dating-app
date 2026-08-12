@@ -164,6 +164,8 @@ export 'function_event_receipt_document.g.dart';
 export 'get_cross_paths_suggestions_callable_payload.g.dart';
 export 'get_cross_paths_suggestions_callable_response.g.dart';
 export 'get_event_invite_link_token_callable_payload.g.dart';
+export 'get_event_roster_insights_callable_payload.g.dart';
+export 'get_event_roster_insights_callable_response.g.dart';
 export 'get_event_runtime_bootstrap_callable_payload.g.dart';
 export 'get_event_runtime_bootstrap_callable_response.g.dart';
 export 'get_organizer_contact_detail_callable_payload.g.dart';

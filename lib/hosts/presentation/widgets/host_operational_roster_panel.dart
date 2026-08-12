@@ -13,6 +13,7 @@ import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
@@ -27,10 +28,12 @@ import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/events/domain/event_runtime_claim_request.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/hosts/data/host_attendance_outbox.dart';
+import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_provider_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_roster_file_parser.dart';
 import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operational_roster_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/host_roster_insight_filter.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -45,6 +48,7 @@ class HostOperationalRosterPanel extends ConsumerStatefulWidget {
     this.allowAttendanceChanges = true,
     this.allowRuntimeClaimReview = true,
     this.showProviderControls = true,
+    this.showAudienceInsights = true,
     this.bookingProvider,
   });
 
@@ -54,6 +58,7 @@ class HostOperationalRosterPanel extends ConsumerStatefulWidget {
   final bool allowAttendanceChanges;
   final bool allowRuntimeClaimReview;
   final bool showProviderControls;
+  final bool showAudienceInsights;
   final ExternalBookingProvider? bookingProvider;
 
   @override
@@ -72,6 +77,7 @@ class _HostOperationalRosterPanelState
   String? _providerSyncOperationId;
   Object? _mutationError;
   HostAttendanceOutboxSummary? _attendanceOutbox;
+  HostRosterInsightFilter _insightFilter = HostRosterInsightFilter.all;
 
   @override
   void initState() {
@@ -90,6 +96,9 @@ class _HostOperationalRosterPanelState
     final attendeesAsync = ref.watch(
       watchEventAttendeesProvider(widget.eventId),
     );
+    final insightsAsync = widget.showAudienceInsights
+        ? ref.watch(hostEventRosterInsightsProvider(widget.eventId))
+        : null;
     final claimsAsync = widget.allowRuntimeClaimReview
         ? ref.watch(watchPendingEventRuntimeClaimsProvider(widget.eventId))
         : const AsyncData<List<EventRuntimeClaimRequest>>([]);
@@ -194,23 +203,53 @@ class _HostOperationalRosterPanelState
                   message: context.l10n.hostsOperationalRosterEmptyMessage,
                 );
               }
+              final insights = insightsAsync?.asData?.value;
+              final insightByAttendeeId = insights?.byAttendeeId ?? const {};
+              final effectiveFilter = insights == null
+                  ? HostRosterInsightFilter.all
+                  : _insightFilter;
+              final filteredAttendees = attendees
+                  .where(
+                    (attendee) => hostRosterInsightMatches(
+                      effectiveFilter,
+                      insightByAttendeeId[attendee.id],
+                    ),
+                  )
+                  .toList(growable: false);
               return Column(
                 mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  for (final indexed in attendees.indexed)
-                    CatchPersonRow(
-                      key: ValueKey(indexed.$2.id),
-                      data: CatchPersonRowData(
-                        name: indexed.$2.displayName,
-                        seed: indexed.$2.id,
-                        metaLine: _attendeeMeta(context, indexed.$2),
-                        contextLine: indexed.$2.hasEventIdentity
-                            ? context.l10n.hostsOperationalRosterIdentityLinked
-                            : null,
+                  if (widget.showAudienceInsights) ...[
+                    _HostRosterInsightsBar(
+                      insightsAsync: insightsAsync!,
+                      selected: _insightFilter,
+                      onSelected: (filter) =>
+                          setState(() => _insightFilter = filter),
+                      onRetry: () => ref.invalidate(
+                        hostEventRosterInsightsProvider(widget.eventId),
                       ),
-                      divider: indexed.$1 > 0,
-                      trailing: _RosterAttendanceAction(
+                    ),
+                    gapH12,
+                  ],
+                  if (filteredAttendees.isEmpty)
+                    CatchEmptyState(
+                      layout: CatchEmptyStateLayout.inline,
+                      icon: CatchIcons.searchOffRounded,
+                      title: context
+                          .l10n
+                          .hostsOperationalRosterInsightsFilterEmptyTitle,
+                      message: context
+                          .l10n
+                          .hostsOperationalRosterInsightsFilterEmptyMessage,
+                    )
+                  else
+                    for (final indexed in filteredAttendees.indexed)
+                      _HostOperationalAttendeeRow(
+                        key: ValueKey(indexed.$2.id),
                         attendee: indexed.$2,
+                        insight: insightByAttendeeId[indexed.$2.id],
+                        divider: indexed.$1 > 0,
                         pending:
                             _pendingAttendanceId == indexed.$2.id ||
                             _attendanceOutbox?.forAttendee(indexed.$2.id) !=
@@ -219,7 +258,6 @@ class _HostOperationalRosterPanelState
                         onPressed: () =>
                             unawaited(_toggleAttendance(indexed.$2)),
                       ),
-                    ),
                 ],
               );
             },
@@ -359,6 +397,7 @@ class _HostOperationalRosterPanelState
           );
       _providerSyncOperationId = null;
       ref.invalidate(watchEventAttendeesProvider(widget.eventId));
+      ref.invalidate(hostEventRosterInsightsProvider(widget.eventId));
       await _loadProviderSetup(force: true);
       if (!mounted) return;
       showCatchSnackBar(
@@ -516,6 +555,8 @@ class _HostOperationalRosterPanelState
             decision: decision,
             attendeeId: attendeeId,
           );
+      ref.invalidate(watchEventAttendeesProvider(widget.eventId));
+      ref.invalidate(hostEventRosterInsightsProvider(widget.eventId));
       if (!mounted) return;
       showCatchSnackBar(
         context,
@@ -549,6 +590,7 @@ class _HostOperationalRosterPanelState
             rows: rows,
           );
       ref.invalidate(watchEventAttendeesProvider(widget.eventId));
+      ref.invalidate(hostEventRosterInsightsProvider(widget.eventId));
       if (!mounted) return;
       showCatchSnackBar(
         context,
@@ -580,6 +622,7 @@ class _HostOperationalRosterPanelState
           );
       if (mounted) setState(() => _attendanceOutbox = outbox);
       ref.invalidate(watchEventAttendeesProvider(widget.eventId));
+      ref.invalidate(hostEventRosterInsightsProvider(widget.eventId));
     } catch (error) {
       if (mounted) setState(() => _mutationError = error);
     } finally {
@@ -606,6 +649,7 @@ class _HostOperationalRosterPanelState
       if (!mounted) return;
       setState(() => _attendanceOutbox = outbox);
       ref.invalidate(watchEventAttendeesProvider(widget.eventId));
+      ref.invalidate(hostEventRosterInsightsProvider(widget.eventId));
     } catch (error) {
       if (mounted) setState(() => _mutationError = error);
     }
@@ -622,6 +666,270 @@ class _HostOperationalRosterPanelState
     }
   }
 }
+
+class _HostRosterInsightsBar extends StatelessWidget {
+  const _HostRosterInsightsBar({
+    required this.insightsAsync,
+    required this.selected,
+    required this.onSelected,
+    required this.onRetry,
+  });
+
+  final AsyncValue<HostEventRosterInsights> insightsAsync;
+  final HostRosterInsightFilter selected;
+  final ValueChanged<HostRosterInsightFilter> onSelected;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) => insightsAsync.when(
+    loading: () => Text(
+      context.l10n.hostsOperationalRosterInsightsLoading,
+      style: CatchTextStyles.supporting(context),
+    ),
+    error: (_, _) => Wrap(
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: CatchSpacing.s2,
+      runSpacing: CatchSpacing.s2,
+      children: [
+        Text(
+          context.l10n.hostsOperationalRosterInsightsUnavailable,
+          style: CatchTextStyles.supporting(context),
+        ),
+        CatchButton(
+          label: context.l10n.hostsOperationalRosterInsightsRetry,
+          onPressed: onRetry,
+          size: CatchButtonSize.sm,
+          variant: CatchButtonVariant.ghost,
+        ),
+      ],
+    ),
+    data: (insights) {
+      final filters = <HostRosterInsightFilter>[
+        HostRosterInsightFilter.all,
+        for (final filter in HostRosterInsightFilter.values.skip(1))
+          if (hostRosterInsightFilterCount(filter, insights.rows) > 0 ||
+              filter == selected)
+            filter,
+      ];
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            context.l10n.hostsOperationalRosterInsightsCaption,
+            style: CatchTextStyles.supporting(context),
+          ),
+          gapH8,
+          Wrap(
+            spacing: CatchSpacing.s2,
+            runSpacing: CatchSpacing.s2,
+            children: [
+              for (final filter in filters)
+                CatchChip.selectable(
+                  label: _insightFilterLabel(
+                    context,
+                    filter,
+                    filter == HostRosterInsightFilter.all
+                        ? insights.rows.length
+                        : hostRosterInsightFilterCount(filter, insights.rows),
+                  ),
+                  selected: selected == filter,
+                  onChanged: (_) => onSelected(filter),
+                  contractExemption:
+                      'Manager-only, callable-owned roster insight filter; '
+                      'selection is ephemeral and is never persisted.',
+                ),
+            ],
+          ),
+          if (insights.spendCoverage ==
+              HostRosterSpendCoverage.catchPaymentsOnly) ...[
+            gapH8,
+            Text(
+              context.l10n.hostsOperationalRosterInsightsSpendFootnote,
+              style: CatchTextStyles.meta(context),
+            ),
+          ],
+          if (insights.sourceCoverage == HostRosterInsightCoverage.partial) ...[
+            gapH8,
+            Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: CatchSpacing.s2,
+              runSpacing: CatchSpacing.s2,
+              children: [
+                Text(
+                  context.l10n.hostsOperationalRosterInsightsPreparing,
+                  style: CatchTextStyles.meta(context),
+                ),
+                CatchButton(
+                  label: context.l10n.hostsOperationalRosterInsightsRetry,
+                  onPressed: onRetry,
+                  size: CatchButtonSize.sm,
+                  variant: CatchButtonVariant.ghost,
+                ),
+              ],
+            ),
+          ],
+        ],
+      );
+    },
+  );
+}
+
+class _HostOperationalAttendeeRow extends StatelessWidget {
+  const _HostOperationalAttendeeRow({
+    super.key,
+    required this.attendee,
+    required this.insight,
+    required this.divider,
+    required this.pending,
+    required this.enabled,
+    required this.onPressed,
+  });
+
+  final EventAttendee attendee;
+  final HostEventRosterInsight? insight;
+  final bool divider;
+  final bool pending;
+  final bool enabled;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final signals = _displayInsightSignals(insight);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        CatchPersonRow(
+          data: CatchPersonRowData(
+            name: attendee.displayName,
+            seed: attendee.id,
+            metaLine: _attendeeMeta(context, attendee),
+            contextLine: attendee.hasEventIdentity
+                ? context.l10n.hostsOperationalRosterIdentityLinked
+                : null,
+          ),
+          divider: divider,
+          trailing: _RosterAttendanceAction(
+            attendee: attendee,
+            pending: pending,
+            enabled: enabled,
+            onPressed: onPressed,
+          ),
+        ),
+        if (signals.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(
+              left: CatchSpacing.s5 + 48 + CatchSpacing.s3,
+              right: CatchSpacing.s5,
+              bottom: CatchSpacing.s2,
+            ),
+            child: Wrap(
+              spacing: CatchSpacing.s1,
+              runSpacing: CatchSpacing.s1,
+              children: [
+                for (final signal in signals)
+                  CatchBadge(
+                    label: _insightSignalLabel(context, signal),
+                    tone: _insightSignalTone(signal),
+                  ),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+List<HostRosterInsightSignal> _displayInsightSignals(
+  HostEventRosterInsight? insight,
+) {
+  if (insight?.availability != HostRosterInsightAvailability.ready) {
+    return const [];
+  }
+  const priority = [
+    HostRosterInsightSignal.highImpactAdvocate,
+    HostRosterInsightSignal.topCatchSpender,
+    HostRosterInsightSignal.firstTime,
+    HostRosterInsightSignal.reEngaging,
+    HostRosterInsightSignal.needsConfirmation,
+    HostRosterInsightSignal.regular,
+    HostRosterInsightSignal.reliable,
+    HostRosterInsightSignal.advocate,
+    HostRosterInsightSignal.returning,
+    HostRosterInsightSignal.knownCatchSpender,
+  ];
+  return priority
+      .where(insight!.signals.contains)
+      .take(3)
+      .toList(growable: false);
+}
+
+String _insightFilterLabel(
+  BuildContext context,
+  HostRosterInsightFilter filter,
+  int count,
+) => context.l10n.hostsOperationalRosterInsightsFilterCount(
+  label: switch (filter) {
+    HostRosterInsightFilter.all =>
+      context.l10n.hostsOperationalRosterInsightsFilterAll,
+    HostRosterInsightFilter.firstTime =>
+      context.l10n.hostsOperationalRosterInsightFirstTime,
+    HostRosterInsightFilter.returning =>
+      context.l10n.hostsOperationalRosterInsightReturning,
+    HostRosterInsightFilter.regular =>
+      context.l10n.hostsOperationalRosterInsightRegular,
+    HostRosterInsightFilter.reEngaging =>
+      context.l10n.hostsOperationalRosterInsightReEngaging,
+    HostRosterInsightFilter.reliable =>
+      context.l10n.hostsOperationalRosterInsightReliable,
+    HostRosterInsightFilter.needsConfirmation =>
+      context.l10n.hostsOperationalRosterInsightNeedsConfirmation,
+    HostRosterInsightFilter.advocate =>
+      context.l10n.hostsOperationalRosterInsightAdvocate,
+    HostRosterInsightFilter.topCatchSpender =>
+      context.l10n.hostsOperationalRosterInsightTopCatchSpender,
+  },
+  count: count,
+);
+
+String _insightSignalLabel(
+  BuildContext context,
+  HostRosterInsightSignal signal,
+) => switch (signal) {
+  HostRosterInsightSignal.firstTime =>
+    context.l10n.hostsOperationalRosterInsightFirstTime,
+  HostRosterInsightSignal.returning =>
+    context.l10n.hostsOperationalRosterInsightReturning,
+  HostRosterInsightSignal.regular =>
+    context.l10n.hostsOperationalRosterInsightRegular,
+  HostRosterInsightSignal.reEngaging =>
+    context.l10n.hostsOperationalRosterInsightReEngaging,
+  HostRosterInsightSignal.reliable =>
+    context.l10n.hostsOperationalRosterInsightReliable,
+  HostRosterInsightSignal.needsConfirmation =>
+    context.l10n.hostsOperationalRosterInsightNeedsConfirmation,
+  HostRosterInsightSignal.advocate =>
+    context.l10n.hostsOperationalRosterInsightAdvocate,
+  HostRosterInsightSignal.highImpactAdvocate =>
+    context.l10n.hostsOperationalRosterInsightHighImpactAdvocate,
+  HostRosterInsightSignal.knownCatchSpender =>
+    context.l10n.hostsOperationalRosterInsightCatchSpender,
+  HostRosterInsightSignal.topCatchSpender =>
+    context.l10n.hostsOperationalRosterInsightTopCatchSpender,
+};
+
+CatchBadgeTone _insightSignalTone(HostRosterInsightSignal signal) =>
+    switch (signal) {
+      HostRosterInsightSignal.firstTime => CatchBadgeTone.brand,
+      HostRosterInsightSignal.returning => CatchBadgeTone.neutral,
+      HostRosterInsightSignal.regular ||
+      HostRosterInsightSignal.reliable => CatchBadgeTone.success,
+      HostRosterInsightSignal.reEngaging ||
+      HostRosterInsightSignal.needsConfirmation => CatchBadgeTone.warning,
+      HostRosterInsightSignal.advocate ||
+      HostRosterInsightSignal.highImpactAdvocate ||
+      HostRosterInsightSignal.topCatchSpender => CatchBadgeTone.gold,
+      HostRosterInsightSignal.knownCatchSpender => CatchBadgeTone.neutral,
+    };
 
 class _HostAttendanceOutboxNotice extends StatelessWidget {
   const _HostAttendanceOutboxNotice({

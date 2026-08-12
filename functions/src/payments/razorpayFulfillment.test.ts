@@ -44,6 +44,7 @@ test(
     // Exactly one completed write and exactly one paidCount increment.
     assert.equal(fake.paymentSetCalls.length, 1);
     assert.equal(fake.paymentSetCalls[0].status, "completed");
+    assert.equal(fake.paymentSetCalls[0].completedAt, "server-now");
     assert.equal(fake.inviteLinkSetCalls.length, 1);
     assert.equal(fake.inviteLinkSetCalls[0].docId, "link-1");
     assert.ok("paidCount" in fake.inviteLinkSetCalls[0].data);

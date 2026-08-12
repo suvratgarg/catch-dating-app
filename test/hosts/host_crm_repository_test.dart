@@ -47,6 +47,40 @@ void main() {
     );
   });
 
+  test('parses event-relative roster labels without private profile data', () {
+    final insights = HostEventRosterInsights.fromCallableData({
+      'eventId': 'event-1',
+      'organizerId': 'organizer-1',
+      'cutoffAtMillis': 1786500000000,
+      'sourceCoverage': 'exact',
+      'spendCoverage': 'catchPaymentsOnly',
+      'rows': [
+        {
+          'attendeeId': 'attendee-1',
+          'contactId': 'contact-1',
+          'availability': 'ready',
+          'signals': ['returning', 'top_catch_spender'],
+          'priorAttendedEventCount': 3,
+          'priorExpectedEventCount': 4,
+          'priorNoShowCount': 1,
+          'lastAttendedAtMillis': 1780000000000,
+          'attendanceRate': 0.75,
+          'catchSpend': [
+            {'currency': 'INR', 'amountMinor': 600000, 'paidOrderCount': 3},
+          ],
+        },
+      ],
+      'computedAtMillis': 1786500001000,
+    });
+
+    final row = insights.rows.single;
+    expect(row.signals, contains(HostRosterInsightSignal.returning));
+    expect(row.signals, contains(HostRosterInsightSignal.topCatchSpender));
+    expect(row.catchSpend.single.currency, 'INR');
+    expect(row.catchSpend.single.amountMinor, 600000);
+    expect(insights.byAttendeeId['attendee-1'], same(row));
+  });
+
   test(
     'parses audience contacts with explainable segments and permissions',
     () {
@@ -67,7 +101,9 @@ void main() {
             'segmentIds': [
               'repeat_attendee',
               'reliable_attendee',
+              'needs_confirmation',
               'whatsapp_reachable',
+              'sms_reachable',
             ],
             'whatsappStatus': 'optedIn',
             'whatsappAdminSuppressed': false,
@@ -88,6 +124,8 @@ void main() {
       expect(contact.whatsappAdminSuppressed, isFalse);
       expect(contact.segments, contains(HostAudienceSegment.repeatAttendee));
       expect(contact.segments, contains(HostAudienceSegment.whatsappReachable));
+      expect(contact.segments, contains(HostAudienceSegment.needsConfirmation));
+      expect(contact.segments, contains(HostAudienceSegment.smsReachable));
       expect(page.nextCursor, 'contact-1');
     },
   );
