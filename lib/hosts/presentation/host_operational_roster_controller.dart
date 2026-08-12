@@ -1,7 +1,10 @@
+import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
+import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/events/data/event_attendee_repository.dart';
 import 'package:catch_dating_app/events/data/event_runtime_claim_repository.dart';
 import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/events/domain/event_runtime_claim_request.dart';
+import 'package:catch_dating_app/hosts/data/host_attendance_outbox.dart';
 import 'package:catch_dating_app/hosts/data/host_provider_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -32,19 +35,61 @@ class HostOperationalRosterController {
         rows: rows,
       );
 
-  Future<EventAttendeeAttendanceResult> setAttendance({
+  Future<HostAttendanceOutboxSummary> setAttendance({
     required String eventId,
     required EventAttendee attendee,
     required String clientOperationId,
-  }) => _ref
-      .read(eventAttendeeRepositoryProvider)
-      .setAttendance(
-        eventId: eventId,
-        attendeeId: attendee.id,
-        desiredCheckedIn: !attendee.isCheckedIn,
-        expectedRevision: attendee.attendanceRevision,
-        clientOperationId: clientOperationId,
-      );
+  }) {
+    final accountId = requireSignedInUid(
+      _ref,
+      action: 'record event attendance',
+    );
+    return _ref
+        .read(hostAttendanceOutboxProvider)
+        .enqueueAndAttempt(
+          accountId: accountId,
+          entry: HostAttendanceOutboxEntry(
+            eventId: eventId,
+            attendeeId: attendee.id,
+            desiredCheckedIn: !attendee.isCheckedIn,
+            expectedRevision: attendee.attendanceRevision,
+            clientOperationId: clientOperationId,
+            createdAt: DateTime.now(),
+            status: HostAttendanceOutboxStatus.pending,
+          ),
+          offline: _ref.read(isObviouslyOfflineProvider),
+        );
+  }
+
+  Future<HostAttendanceOutboxSummary> loadAttendanceOutbox(String eventId) {
+    final accountId = requireSignedInUid(
+      _ref,
+      action: 'load pending event attendance',
+    );
+    return _ref
+        .read(hostAttendanceOutboxProvider)
+        .loadForEvent(accountId: accountId, eventId: eventId);
+  }
+
+  Future<HostAttendanceOutboxSummary> flushAttendanceOutbox(String eventId) {
+    final accountId = requireSignedInUid(
+      _ref,
+      action: 'sync pending event attendance',
+    );
+    return _ref
+        .read(hostAttendanceOutboxProvider)
+        .flushEvent(accountId: accountId, eventId: eventId);
+  }
+
+  Future<HostAttendanceOutboxSummary> clearAttendanceConflicts(String eventId) {
+    final accountId = requireSignedInUid(
+      _ref,
+      action: 'clear stale event attendance changes',
+    );
+    return _ref
+        .read(hostAttendanceOutboxProvider)
+        .clearNeedsReview(accountId: accountId, eventId: eventId);
+  }
 
   Future<EventRuntimeClaimStatus> reviewRuntimeClaim({
     required String eventId,

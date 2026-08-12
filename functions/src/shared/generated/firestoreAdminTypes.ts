@@ -2832,6 +2832,31 @@ export interface EventAttendeeDocument {
 }
 
 /**
+ * Server-owned, expiring least-privilege access to one event's operational roster. It never grants organizer, CRM, provider, campaign, analytics, or event-edit authority.
+ */
+export interface EventStaffGrantDocument {
+  organizerId: string;
+  eventId: string;
+  uid: string;
+  displayName: string;
+  phoneLastFour: string;
+  role: "checkInOperator";
+  /**
+   * @minItems 3
+   * @maxItems 3
+   */
+  permissions: ("viewRoster" | "setAttendance" | "reviewRuntimeClaims")[];
+  status: "active" | "revoked";
+  createdBy: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+  revokedBy: string | null;
+  revokedAt: FirebaseFirestore.Timestamp | null;
+  updatedAt: FirebaseFirestore.Timestamp;
+  revision: number;
+}
+
+/**
  * Short-lived server-only idempotency receipt for one absolute Host attendance operation.
  */
 export interface EventAttendeeAttendanceReceiptDocument {

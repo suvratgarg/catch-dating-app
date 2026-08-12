@@ -19117,6 +19117,240 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Catch can attribute private-link opens and phone-verified web registration. If guests share their own Catch-generated link, their referred registrations and check-ins are counted separately.'**
   String get hostsHostAudienceCatchAttributionExplanation;
+
+  /// Event staff section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Event staff access'**
+  String get hostsEventStaffTitle;
+
+  /// Least privilege event staff explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Give a trusted operator temporary access to the guest names, check-ins, and runtime identity claims for this event. They cannot edit the event, import guests, see your audience, send messages, connect providers, or view analytics.'**
+  String get hostsEventStaffSubtitle;
+
+  /// Add event staff action.
+  ///
+  /// In en, this message translates to:
+  /// **'Add event staff'**
+  String get hostsEventStaffAdd;
+
+  /// Copy operator workspace link.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy staff link'**
+  String get hostsEventStaffCopyLink;
+
+  /// Empty staff list title.
+  ///
+  /// In en, this message translates to:
+  /// **'No temporary staff access'**
+  String get hostsEventStaffEmptyTitle;
+
+  /// Empty staff list guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Add someone by the phone number they use to sign in to Catch Host. Access expires automatically.'**
+  String get hostsEventStaffEmptyMessage;
+
+  /// Masked event staff phone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone ending {digits}'**
+  String hostsEventStaffPhoneEnding({required String digits});
+
+  /// Event staff expiry.
+  ///
+  /// In en, this message translates to:
+  /// **'Access expires {date}'**
+  String hostsEventStaffExpires({required String date});
+
+  /// Revoke event staff access action.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoke'**
+  String get hostsEventStaffRevoke;
+
+  /// Revoke event staff dialog title.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoke event access?'**
+  String get hostsEventStaffRevokeTitle;
+
+  /// Revoke event staff dialog message.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} will immediately lose access to the roster and runtime claims for this event.'**
+  String hostsEventStaffRevokeMessage({required String name});
+
+  /// Staff workspace clipboard success.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff workspace link copied'**
+  String get hostsEventStaffLinkCopied;
+
+  /// Grant event staff sheet title.
+  ///
+  /// In en, this message translates to:
+  /// **'Add event staff'**
+  String get hostsEventStaffGrantTitle;
+
+  /// Grant event staff sheet guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'They must first sign in to Catch Host with this phone number. Access applies only to this event and expires automatically.'**
+  String get hostsEventStaffGrantSubtitle;
+
+  /// Grant event staff sheet action.
+  ///
+  /// In en, this message translates to:
+  /// **'Grant access'**
+  String get hostsEventStaffGrantAction;
+
+  /// Event staff phone field.
+  ///
+  /// In en, this message translates to:
+  /// **'Operator phone number'**
+  String get hostsEventStaffPhone;
+
+  /// Event staff phone validation.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the phone number used for Catch Host'**
+  String get hostsEventStaffPhoneRequired;
+
+  /// Event staff duration field.
+  ///
+  /// In en, this message translates to:
+  /// **'Access duration'**
+  String get hostsEventStaffAccessDuration;
+
+  /// Four hour staff grant option.
+  ///
+  /// In en, this message translates to:
+  /// **'4 hours'**
+  String get hostsEventStaffDurationFourHours;
+
+  /// Twelve hour staff grant option.
+  ///
+  /// In en, this message translates to:
+  /// **'12 hours'**
+  String get hostsEventStaffDurationTwelveHours;
+
+  /// One day staff grant option.
+  ///
+  /// In en, this message translates to:
+  /// **'1 day'**
+  String get hostsEventStaffDurationOneDay;
+
+  /// Seven day staff grant option.
+  ///
+  /// In en, this message translates to:
+  /// **'7 days'**
+  String get hostsEventStaffDurationSevenDays;
+
+  /// Active staff status.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get hostsEventStaffStatusActive;
+
+  /// Revoked staff status.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoked'**
+  String get hostsEventStaffStatusRevoked;
+
+  /// Expired staff status.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired'**
+  String get hostsEventStaffStatusExpired;
+
+  /// Restricted operator route title.
+  ///
+  /// In en, this message translates to:
+  /// **'Event operations'**
+  String get hostsEventOperatorTitle;
+
+  /// Cancelled event operator state title.
+  ///
+  /// In en, this message translates to:
+  /// **'This event was cancelled'**
+  String get hostsEventOperatorCancelledTitle;
+
+  /// Cancelled event operator state message.
+  ///
+  /// In en, this message translates to:
+  /// **'Its roster can no longer be changed from the staff workspace.'**
+  String get hostsEventOperatorCancelledMessage;
+
+  /// Operator access summary title.
+  ///
+  /// In en, this message translates to:
+  /// **'Restricted event access'**
+  String get hostsEventOperatorAccessTitle;
+
+  /// Operator access boundary explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'This workspace contains only the guest roster, check-in controls, and identity claims for this event.'**
+  String get hostsEventOperatorAccessSubtitle;
+
+  /// Manager role in operator workspace.
+  ///
+  /// In en, this message translates to:
+  /// **'Organizer manager'**
+  String get hostsEventOperatorRoleManager;
+
+  /// Staff role in operator workspace.
+  ///
+  /// In en, this message translates to:
+  /// **'Event staff'**
+  String get hostsEventOperatorRoleStaff;
+
+  /// Operator grant expiry badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Expires {date}'**
+  String hostsEventOperatorExpires({required String date});
+
+  /// Pending offline attendance title.
+  ///
+  /// In en, this message translates to:
+  /// **'Check-ins waiting to sync'**
+  String get hostsOperationalRosterOutboxPendingTitle;
+
+  /// Pending offline attendance count and idempotency explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 attendance change is saved on this device and will retry with the same operation ID.} other{{count} attendance changes are saved on this device and will retry with their original operation IDs.}}'**
+  String hostsOperationalRosterOutboxPendingBody({required int count});
+
+  /// Attendance conflict title.
+  ///
+  /// In en, this message translates to:
+  /// **'Some check-ins need review'**
+  String get hostsOperationalRosterOutboxReviewTitle;
+
+  /// Attendance conflict count and recovery guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 saved change could not be applied because the roster changed. Reload the roster, verify the guest, then discard the stale change.} other{{count} saved changes could not be applied because the roster changed. Reload the roster, verify the guests, then discard the stale changes.}}'**
+  String hostsOperationalRosterOutboxReviewBody({required int count});
+
+  /// Retry pending attendance changes.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry sync'**
+  String get hostsOperationalRosterOutboxRetry;
+
+  /// Discard attendance conflicts after review.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard stale changes'**
+  String get hostsOperationalRosterOutboxDiscard;
 }
 
 class _AppLocalizationsDelegate

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-08-10",
+  "updated": "2026-08-12",
   "generatedAgainst": "tool/ui_capture/route_inventory.json",
   "description": "Phase 1 UI capture coverage policy. Every route from go_router.dart must be captured, aliased to a canonical capture surface, planned, or explicitly excluded.",
   "routes": [
@@ -643,6 +643,13 @@
         "host_home_events_list"
       ],
       "reason": "The first-class Host Events branch is captured through the real four-branch Host shell and compared against the pinned full-shell Events source reference."
+    },
+    {
+      "routeId": "hostOperatorEventScreen",
+      "status": "alias",
+      "priority": "P1",
+      "canonicalRouteId": "hostAppEventManageScreen",
+      "reason": "Restricted staff route reuses the canonical operational roster composition while removing every manager-only control."
     },
     {
       "routeId": "hostOrganizerScreen",

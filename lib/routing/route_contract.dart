@@ -55,6 +55,7 @@ enum Routes {
   paymentConfirmationScreen('/payment-confirmation', AppRouteAudience.consumer),
   hostHomeScreen('/host', AppRouteAudience.host),
   hostEventsScreen('/host/events', AppRouteAudience.host),
+  hostOperatorEventScreen('/host/operator/:eventId', AppRouteAudience.host),
   hostOrganizerScreen('/host/organizer', AppRouteAudience.host),
   hostClubsScreen('/host/organizers', AppRouteAudience.host),
   hostClubEventDefaultsScreen(

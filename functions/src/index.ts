@@ -50,6 +50,12 @@ export {
   setEventAttendeeAttendance,
 } from "./events/eventAttendees";
 export {
+  getEventOperatorAccess,
+  grantEventStaff,
+  listEventStaff,
+  revokeEventStaff,
+} from "./events/eventStaff";
+export {
   createEventRosterHandoff,
   ingestEventRosterWebhook,
 } from "./events/eventRosterHandoffs";

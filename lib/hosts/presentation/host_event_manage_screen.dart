@@ -54,6 +54,7 @@ import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_attendance_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_reviews_panel.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_event_staff_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_operational_roster_panel.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -301,6 +302,8 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
         ),
       ],
       HostEventManageSection.guests => <Widget>[
+        HostEventStaffSection(eventId: event.id),
+        gapH20,
         if (event.isExternalCompanion && event.hasWebRuntime) ...[
           CatchSection.fieldRows(
             first: true,
@@ -354,7 +357,10 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
         HostOperationalRosterPanel(
           eventId: event.id,
           organizerId: event.clubId,
-          allowRosterChanges: false,
+          allowRosterIntake: false,
+          allowAttendanceChanges: false,
+          allowRuntimeClaimReview: false,
+          showProviderControls: false,
           bookingProvider: event.eventOrigin?.provider,
         ),
         gapH20,

@@ -1,8 +1,9 @@
 import {
   ClubDocument,
   EventDocument,
-  EventFormatSnapshot,
 } from "../shared/generated/firestoreAdminTypes";
+export {eventFormatLabel, eventTitleLabel} from "../shared/eventLabels";
+import {eventFormatLabel, eventTitleLabel} from "../shared/eventLabels";
 
 const maxAdminSearchTokens = 120;
 const maxQueryTokens = 30;
@@ -23,25 +24,6 @@ const stopWords = new Set([
   "to",
   "with",
 ]);
-
-const activityLabels: Record<EventFormatSnapshot["activityKind"], string> = {
-  socialRun: "Social run",
-  running: "Running",
-  walking: "Walking",
-  pickleball: "Pickleball",
-  padel: "Padel",
-  tennis: "Tennis",
-  badminton: "Badminton",
-  cycling: "Cycling",
-  spinClass: "Spin class",
-  yoga: "Yoga",
-  strengthTraining: "Strength training",
-  pubQuiz: "Pub quiz",
-  barCrawl: "Bar crawl",
-  dinner: "Dinner",
-  singlesMixer: "Singles mixer",
-  openActivity: "Open activity",
-};
 
 export type EventAdminSearchSource =
   "adminUpdateEventDetails" | "adminEventSearchBackfill";
@@ -104,26 +86,6 @@ export function eventWithAdminFieldsForSearch(
     ...before,
     ...fields,
   };
-}
-
-/**
- * Returns the reader-facing format label used by app event surfaces.
- * @param {EventFormatSnapshot} format Event format snapshot.
- * @return {string} Activity label.
- */
-export function eventFormatLabel(format: EventFormatSnapshot): string {
-  return format.customActivityLabel?.trim() ||
-    activityLabels[format.activityKind] ||
-    humanizeToken(format.activityKind);
-}
-
-/**
- * Returns a compact title approximation for admin tables.
- * @param {EventDocument} event Canonical event document.
- * @return {string} Derived event title label.
- */
-export function eventTitleLabel(event: EventDocument): string {
-  return eventFormatLabel(event.eventFormat);
 }
 
 /**
@@ -228,17 +190,4 @@ function compactStrings(values: Array<unknown>): string[] {
   return values.filter((value): value is string =>
     typeof value === "string" && value.trim().length > 0
   );
-}
-
-/**
- * Converts a camel-case token into a display label.
- * @param {string} value Raw token.
- * @return {string} Human label.
- */
-function humanizeToken(value: string): string {
-  return value
-    .replace(/([a-z])([A-Z])/g, "$1 $2")
-    .replace(/[_-]+/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
 }

@@ -62,6 +62,7 @@ import {
   eventInviteAttributionDocumentSchema,
   eventParticipationDocumentSchema,
   eventAttendeeDocumentSchema,
+  eventStaffGrantDocumentSchema,
   eventAttendeeAttendanceReceiptDocumentSchema,
   eventAttendeeImportDocumentSchema,
   eventRosterHandoffDocumentSchema,
@@ -215,6 +216,11 @@ import {
   markEventAttendeeAttendanceCallablePayloadSchema,
   setEventAttendeeAttendanceCallablePayloadSchema,
   setEventAttendeeAttendanceCallableResponseSchema,
+  eventOperatorAccessCallablePayloadSchema,
+  eventOperatorAccessCallableResponseSchema,
+  grantEventStaffCallablePayloadSchema,
+  revokeEventStaffCallablePayloadSchema,
+  eventStaffListCallableResponseSchema,
   registerPublicEventCallablePayloadSchema,
   registerPublicEventCallableResponseSchema,
   getEventRuntimeBootstrapCallablePayloadSchema,
@@ -399,6 +405,7 @@ export const validateEventShareIntentDocument = ajv.compile(eventShareIntentDocu
 export const validateEventInviteAttributionDocument = ajv.compile(eventInviteAttributionDocumentSchema);
 export const validateEventParticipationDocument = ajv.compile(eventParticipationDocumentSchema);
 export const validateEventAttendeeDocument = ajv.compile(eventAttendeeDocumentSchema);
+export const validateEventStaffGrantDocument = ajv.compile(eventStaffGrantDocumentSchema);
 export const validateEventAttendeeAttendanceReceiptDocument = ajv.compile(eventAttendeeAttendanceReceiptDocumentSchema);
 export const validateEventAttendeeImportDocument = ajv.compile(eventAttendeeImportDocumentSchema);
 export const validateEventRosterHandoffDocument = ajv.compile(eventRosterHandoffDocumentSchema);
@@ -552,6 +559,11 @@ export const validateImportEventAttendeesCallablePayload = ajv.compile(importEve
 export const validateMarkEventAttendeeAttendanceCallablePayload = ajv.compile(markEventAttendeeAttendanceCallablePayloadSchema);
 export const validateSetEventAttendeeAttendanceCallablePayload = ajv.compile(setEventAttendeeAttendanceCallablePayloadSchema);
 export const validateSetEventAttendeeAttendanceCallableResponse = ajv.compile(setEventAttendeeAttendanceCallableResponseSchema);
+export const validateEventOperatorAccessCallablePayload = ajv.compile(eventOperatorAccessCallablePayloadSchema);
+export const validateEventOperatorAccessCallableResponse = ajv.compile(eventOperatorAccessCallableResponseSchema);
+export const validateGrantEventStaffCallablePayload = ajv.compile(grantEventStaffCallablePayloadSchema);
+export const validateRevokeEventStaffCallablePayload = ajv.compile(revokeEventStaffCallablePayloadSchema);
+export const validateEventStaffListCallableResponse = ajv.compile(eventStaffListCallableResponseSchema);
 export const validateRegisterPublicEventCallablePayload = ajv.compile(registerPublicEventCallablePayloadSchema);
 export const validateRegisterPublicEventCallableResponse = ajv.compile(registerPublicEventCallableResponseSchema);
 export const validateGetEventRuntimeBootstrapCallablePayload = ajv.compile(getEventRuntimeBootstrapCallablePayloadSchema);

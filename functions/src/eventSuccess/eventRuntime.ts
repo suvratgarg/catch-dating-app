@@ -41,9 +41,10 @@ import {
 } from "../shared/generated/schemaValidators";
 import {
   eventOrganizerRef,
-  isEventOrganizerManager,
   requireEventOrganizer,
 } from "../shared/eventOrganizers";
+import {requireEventOperatorPermission} from
+  "../shared/eventOperatorAuthority";
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {
@@ -523,12 +524,16 @@ export async function approveEventRuntimeClaimHandler(
     const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
     const organizerSnap = await tx.get(eventOrganizerRef(db, event));
     const organizer = requireEventOrganizer(organizerSnap, event);
-    if (!isEventOrganizerManager(organizer, event, hostUid)) {
-      throw new HttpsError(
-        "permission-denied",
-        "Only an organizer manager can review runtime claims."
-      );
-    }
+    await requireEventOperatorPermission({
+      db,
+      organizer,
+      event,
+      eventId: payload.eventId,
+      actorUid: hostUid,
+      permission: "reviewRuntimeClaims",
+      now: deps.timestamp(),
+      transaction: tx,
+    });
     const [participantSnap, claimSnap] = await Promise.all([
       tx.get(participantRef),
       tx.get(claimRef),

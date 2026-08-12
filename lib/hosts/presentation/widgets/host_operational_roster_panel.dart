@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/clipboard.dart';
+import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -23,6 +24,7 @@ import 'package:catch_dating_app/events/data/event_runtime_claim_repository.dart
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/events/domain/event_runtime_claim_request.dart';
+import 'package:catch_dating_app/hosts/data/host_attendance_outbox.dart';
 import 'package:catch_dating_app/hosts/data/host_provider_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_roster_file_parser.dart';
 import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
@@ -37,13 +39,19 @@ class HostOperationalRosterPanel extends ConsumerStatefulWidget {
     super.key,
     required this.eventId,
     required this.organizerId,
-    this.allowRosterChanges = true,
+    this.allowRosterIntake = true,
+    this.allowAttendanceChanges = true,
+    this.allowRuntimeClaimReview = true,
+    this.showProviderControls = true,
     this.bookingProvider,
   });
 
   final String eventId;
   final String organizerId;
-  final bool allowRosterChanges;
+  final bool allowRosterIntake;
+  final bool allowAttendanceChanges;
+  final bool allowRuntimeClaimReview;
+  final bool showProviderControls;
   final ExternalBookingProvider? bookingProvider;
 
   @override
@@ -61,22 +69,35 @@ class _HostOperationalRosterPanelState
   var _providerMutationPending = false;
   String? _providerSyncOperationId;
   Object? _mutationError;
+  HostAttendanceOutboxSummary? _attendanceOutbox;
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_loadAttendanceOutbox());
+    ref.listenManual(appConnectivityProvider, (previous, next) {
+      final results = next.asData?.value;
+      if (results != null && !connectivityResultsAreOffline(results)) {
+        unawaited(_flushAttendanceOutbox());
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final attendeesAsync = ref.watch(
       watchEventAttendeesProvider(widget.eventId),
     );
-    final claimsAsync = ref.watch(
-      watchPendingEventRuntimeClaimsProvider(widget.eventId),
-    );
+    final claimsAsync = widget.allowRuntimeClaimReview
+        ? ref.watch(watchPendingEventRuntimeClaimsProvider(widget.eventId))
+        : const AsyncData<List<EventRuntimeClaimRequest>>([]);
     final rosterSection = CatchSection.contained(
       title: context.l10n.hostsOperationalRosterTitle,
       subtitle: context.l10n.hostsOperationalRosterSubtitle,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (widget.allowRosterChanges) ...[
+          if (widget.allowRosterIntake) ...[
             Wrap(
               spacing: CatchSpacing.s2,
               runSpacing: CatchSpacing.s2,
@@ -111,6 +132,15 @@ class _HostOperationalRosterPanelState
           ],
           if (_mutationError case final error?) ...[
             CatchErrorBanner.fromError(error, context: AppErrorContext.event),
+            gapH12,
+          ],
+          if (_attendanceOutbox case final outbox?
+              when outbox.entries.isNotEmpty) ...[
+            _HostAttendanceOutboxNotice(
+              summary: outbox,
+              onRetry: () => unawaited(_flushAttendanceOutbox()),
+              onDiscardConflicts: () => unawaited(_clearAttendanceConflicts()),
+            ),
             gapH12,
           ],
           CatchAsyncValueView<List<EventRuntimeClaimRequest>>(
@@ -179,8 +209,11 @@ class _HostOperationalRosterPanelState
                       divider: indexed.$1 > 0,
                       trailing: _RosterAttendanceAction(
                         attendee: indexed.$2,
-                        pending: _pendingAttendanceId == indexed.$2.id,
-                        enabled: widget.allowRosterChanges,
+                        pending:
+                            _pendingAttendanceId == indexed.$2.id ||
+                            _attendanceOutbox?.forAttendee(indexed.$2.id) !=
+                                null,
+                        enabled: widget.allowAttendanceChanges,
                         onPressed: () =>
                             unawaited(_toggleAttendance(indexed.$2)),
                       ),
@@ -216,7 +249,7 @@ class _HostOperationalRosterPanelState
                 value: _providerSetup,
                 provider: widget.bookingProvider!,
                 mutationPending: _providerMutationPending,
-                allowChanges: widget.allowRosterChanges,
+                allowChanges: widget.allowRosterIntake,
                 onRetry: () => unawaited(_loadProviderSetup(force: true)),
                 onConnect: () => unawaited(_connectLuma()),
                 onSync: () => unawaited(_syncProvider()),
@@ -237,7 +270,9 @@ class _HostOperationalRosterPanelState
 
   bool get _showsProviderSource {
     final provider = widget.bookingProvider;
-    return provider != null && provider != ExternalBookingProvider.catchPlatform;
+    return widget.showProviderControls &&
+        provider != null &&
+        provider != ExternalBookingProvider.catchPlatform;
   }
 
   Future<void> _loadProviderSetup({bool force = false}) async {
@@ -296,7 +331,8 @@ class _HostOperationalRosterPanelState
 
   Future<void> _syncProvider() async {
     if (_providerMutationPending) return;
-    final operationId = _providerSyncOperationId ??= _newProviderSyncOperationId();
+    final operationId = _providerSyncOperationId ??=
+        _newProviderSyncOperationId();
     setState(() {
       _providerMutationPending = true;
       _mutationError = null;
@@ -523,19 +559,102 @@ class _HostOperationalRosterPanelState
       _mutationError = null;
     });
     try {
-      await ref
+      final outbox = await ref
           .read(hostOperationalRosterControllerProvider)
           .setAttendance(
             eventId: widget.eventId,
             attendee: attendee,
             clientOperationId: _newAttendanceOperationId(attendee.id),
           );
+      if (mounted) setState(() => _attendanceOutbox = outbox);
       ref.invalidate(watchEventAttendeesProvider(widget.eventId));
     } catch (error) {
       if (mounted) setState(() => _mutationError = error);
     } finally {
       if (mounted) setState(() => _pendingAttendanceId = null);
     }
+  }
+
+  Future<void> _loadAttendanceOutbox() async {
+    try {
+      final outbox = await ref
+          .read(hostOperationalRosterControllerProvider)
+          .loadAttendanceOutbox(widget.eventId);
+      if (mounted) setState(() => _attendanceOutbox = outbox);
+    } catch (error) {
+      if (mounted) setState(() => _mutationError = error);
+    }
+  }
+
+  Future<void> _flushAttendanceOutbox() async {
+    try {
+      final outbox = await ref
+          .read(hostOperationalRosterControllerProvider)
+          .flushAttendanceOutbox(widget.eventId);
+      if (!mounted) return;
+      setState(() => _attendanceOutbox = outbox);
+      ref.invalidate(watchEventAttendeesProvider(widget.eventId));
+    } catch (error) {
+      if (mounted) setState(() => _mutationError = error);
+    }
+  }
+
+  Future<void> _clearAttendanceConflicts() async {
+    try {
+      final outbox = await ref
+          .read(hostOperationalRosterControllerProvider)
+          .clearAttendanceConflicts(widget.eventId);
+      if (mounted) setState(() => _attendanceOutbox = outbox);
+    } catch (error) {
+      if (mounted) setState(() => _mutationError = error);
+    }
+  }
+}
+
+class _HostAttendanceOutboxNotice extends StatelessWidget {
+  const _HostAttendanceOutboxNotice({
+    required this.summary,
+    required this.onRetry,
+    required this.onDiscardConflicts,
+  });
+
+  final HostAttendanceOutboxSummary summary;
+  final VoidCallback onRetry;
+  final VoidCallback onDiscardConflicts;
+
+  @override
+  Widget build(BuildContext context) {
+    final needsReview = summary.needsReviewCount > 0;
+    return CatchSection.contained(
+      title: needsReview
+          ? context.l10n.hostsOperationalRosterOutboxReviewTitle
+          : context.l10n.hostsOperationalRosterOutboxPendingTitle,
+      subtitle: needsReview
+          ? context.l10n.hostsOperationalRosterOutboxReviewBody(
+              count: summary.needsReviewCount,
+            )
+          : context.l10n.hostsOperationalRosterOutboxPendingBody(
+              count: summary.pendingCount,
+            ),
+      child: Wrap(
+        spacing: CatchSpacing.s2,
+        runSpacing: CatchSpacing.s2,
+        children: [
+          if (summary.pendingCount > 0)
+            CatchButton(
+              label: context.l10n.hostsOperationalRosterOutboxRetry,
+              variant: CatchButtonVariant.secondary,
+              onPressed: onRetry,
+            ),
+          if (needsReview)
+            CatchButton(
+              label: context.l10n.hostsOperationalRosterOutboxDiscard,
+              variant: CatchButtonVariant.ghost,
+              onPressed: onDiscardConflicts,
+            ),
+        ],
+      ),
+    );
   }
 }
 
@@ -691,8 +810,7 @@ class _HostProviderSetupView extends StatelessWidget {
                     icon: Icon(CatchIcons.syncRounded),
                   ),
                 CatchButton(
-                  label:
-                      context.l10n.hostsOperationalRosterProviderDisconnect,
+                  label: context.l10n.hostsOperationalRosterProviderDisconnect,
                   onPressed: mutationPending ? null : onDisconnect,
                   size: CatchButtonSize.sm,
                   variant: CatchButtonVariant.ghost,
@@ -717,11 +835,9 @@ class _HostProviderSetupView extends StatelessWidget {
           ),
         ),
         gapH8,
-        Text(
-          entry.requirement,
-          style: CatchTextStyles.supporting(context),
-        ),
-        if (entry.importSupport == HostProviderImportSupport.sampleRequired) ...[
+        Text(entry.requirement, style: CatchTextStyles.supporting(context)),
+        if (entry.importSupport ==
+            HostProviderImportSupport.sampleRequired) ...[
           gapH8,
           CatchErrorBanner(
             message: context.l10n.hostsOperationalRosterAdapterSampleRequired,
@@ -814,17 +930,17 @@ class _HostLumaConnectionSheetState extends State<_HostLumaConnectionSheet> {
         children: [
           CatchFieldLanes.single(
             child: CatchField.input(
-            title: context.l10n.hostsOperationalRosterProviderApiKey,
-            contract: CatchContractConstraints
-                .listOrganizerLumaEventsCallablePayloadApiKey,
-            controller: _apiKeyController,
-            obscureText: true,
-            helperText: context.l10n.hostsOperationalRosterProviderApiKeyHelp,
-            errorText: _showErrors && apiKey.length < 16
-                ? context.l10n.hostsOperationalRosterProviderFieldRequired
-                : null,
-            onChanged: (_) => setState(() {}),
-          ),
+              title: context.l10n.hostsOperationalRosterProviderApiKey,
+              contract: CatchContractConstraints
+                  .listOrganizerLumaEventsCallablePayloadApiKey,
+              controller: _apiKeyController,
+              obscureText: true,
+              helperText: context.l10n.hostsOperationalRosterProviderApiKeyHelp,
+              errorText: _showErrors && apiKey.length < 16
+                  ? context.l10n.hostsOperationalRosterProviderFieldRequired
+                  : null,
+              onChanged: (_) => setState(() {}),
+            ),
           ),
           if (_error case final error?) ...[
             gapH12,
@@ -892,10 +1008,9 @@ class _HostLumaEventChoiceSheet extends StatelessWidget {
             ? CatchEmptyState(
                 layout: CatchEmptyStateLayout.inline,
                 icon: CatchIcons.calendarMonthOutlined,
-                title: context.l10n
-                    .hostsOperationalRosterProviderNoEventsTitle,
-                message: context.l10n
-                    .hostsOperationalRosterProviderNoEventsBody,
+                title: context.l10n.hostsOperationalRosterProviderNoEventsTitle,
+                message:
+                    context.l10n.hostsOperationalRosterProviderNoEventsBody,
               )
             : SingleChildScrollView(
                 child: Column(
@@ -903,7 +1018,8 @@ class _HostLumaEventChoiceSheet extends StatelessWidget {
                   children: [
                     if (choices.truncated) ...[
                       CatchErrorBanner(
-                        message: context.l10n
+                        message: context
+                            .l10n
                             .hostsOperationalRosterProviderEventsTruncated,
                       ),
                       gapH12,
@@ -913,8 +1029,7 @@ class _HostLumaEventChoiceSheet extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           for (final indexed in choices.events.indexed) ...[
-                            if (indexed.$1 > 0)
-                              const CatchDivider.fieldRow(),
+                            if (indexed.$1 > 0) const CatchDivider.fieldRow(),
                             CatchField.nav(
                               title: indexed.$2.name,
                               body: AppTimeFormatters.dateTime(

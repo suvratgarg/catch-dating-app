@@ -12252,4 +12252,157 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostsHostAudienceCatchAttributionExplanation =>
       'Catch can attribute private-link opens and phone-verified web registration. If guests share their own Catch-generated link, their referred registrations and check-ins are counted separately.';
+
+  @override
+  String get hostsEventStaffTitle => 'Event staff access';
+
+  @override
+  String get hostsEventStaffSubtitle =>
+      'Give a trusted operator temporary access to the guest names, check-ins, and runtime identity claims for this event. They cannot edit the event, import guests, see your audience, send messages, connect providers, or view analytics.';
+
+  @override
+  String get hostsEventStaffAdd => 'Add event staff';
+
+  @override
+  String get hostsEventStaffCopyLink => 'Copy staff link';
+
+  @override
+  String get hostsEventStaffEmptyTitle => 'No temporary staff access';
+
+  @override
+  String get hostsEventStaffEmptyMessage =>
+      'Add someone by the phone number they use to sign in to Catch Host. Access expires automatically.';
+
+  @override
+  String hostsEventStaffPhoneEnding({required String digits}) {
+    return 'Phone ending $digits';
+  }
+
+  @override
+  String hostsEventStaffExpires({required String date}) {
+    return 'Access expires $date';
+  }
+
+  @override
+  String get hostsEventStaffRevoke => 'Revoke';
+
+  @override
+  String get hostsEventStaffRevokeTitle => 'Revoke event access?';
+
+  @override
+  String hostsEventStaffRevokeMessage({required String name}) {
+    return '$name will immediately lose access to the roster and runtime claims for this event.';
+  }
+
+  @override
+  String get hostsEventStaffLinkCopied => 'Staff workspace link copied';
+
+  @override
+  String get hostsEventStaffGrantTitle => 'Add event staff';
+
+  @override
+  String get hostsEventStaffGrantSubtitle =>
+      'They must first sign in to Catch Host with this phone number. Access applies only to this event and expires automatically.';
+
+  @override
+  String get hostsEventStaffGrantAction => 'Grant access';
+
+  @override
+  String get hostsEventStaffPhone => 'Operator phone number';
+
+  @override
+  String get hostsEventStaffPhoneRequired =>
+      'Enter the phone number used for Catch Host';
+
+  @override
+  String get hostsEventStaffAccessDuration => 'Access duration';
+
+  @override
+  String get hostsEventStaffDurationFourHours => '4 hours';
+
+  @override
+  String get hostsEventStaffDurationTwelveHours => '12 hours';
+
+  @override
+  String get hostsEventStaffDurationOneDay => '1 day';
+
+  @override
+  String get hostsEventStaffDurationSevenDays => '7 days';
+
+  @override
+  String get hostsEventStaffStatusActive => 'Active';
+
+  @override
+  String get hostsEventStaffStatusRevoked => 'Revoked';
+
+  @override
+  String get hostsEventStaffStatusExpired => 'Expired';
+
+  @override
+  String get hostsEventOperatorTitle => 'Event operations';
+
+  @override
+  String get hostsEventOperatorCancelledTitle => 'This event was cancelled';
+
+  @override
+  String get hostsEventOperatorCancelledMessage =>
+      'Its roster can no longer be changed from the staff workspace.';
+
+  @override
+  String get hostsEventOperatorAccessTitle => 'Restricted event access';
+
+  @override
+  String get hostsEventOperatorAccessSubtitle =>
+      'This workspace contains only the guest roster, check-in controls, and identity claims for this event.';
+
+  @override
+  String get hostsEventOperatorRoleManager => 'Organizer manager';
+
+  @override
+  String get hostsEventOperatorRoleStaff => 'Event staff';
+
+  @override
+  String hostsEventOperatorExpires({required String date}) {
+    return 'Expires $date';
+  }
+
+  @override
+  String get hostsOperationalRosterOutboxPendingTitle =>
+      'Check-ins waiting to sync';
+
+  @override
+  String hostsOperationalRosterOutboxPendingBody({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count attendance changes are saved on this device and will retry with their original operation IDs.',
+      one:
+          '1 attendance change is saved on this device and will retry with the same operation ID.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostsOperationalRosterOutboxReviewTitle =>
+      'Some check-ins need review';
+
+  @override
+  String hostsOperationalRosterOutboxReviewBody({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count saved changes could not be applied because the roster changed. Reload the roster, verify the guests, then discard the stale changes.',
+      one:
+          '1 saved change could not be applied because the roster changed. Reload the roster, verify the guest, then discard the stale change.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostsOperationalRosterOutboxRetry => 'Retry sync';
+
+  @override
+  String get hostsOperationalRosterOutboxDiscard => 'Discard stale changes';
 }

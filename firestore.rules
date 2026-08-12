@@ -191,6 +191,26 @@ service cloud.firestore {
         );
     }
 
+    function eventStaffGrantDocId(eventId, uid) {
+      return eventId + '__' + uid;
+    }
+
+    function hasActiveEventOperatorGrant(eventId, permission) {
+      let grantId = eventStaffGrantDocId(eventId, request.auth.uid);
+      return isAuthed()
+        && exists(/databases/$(database)/documents/eventStaffGrants/$(grantId))
+        && get(/databases/$(database)/documents/eventStaffGrants/$(grantId)).data.eventId == eventId
+        && get(/databases/$(database)/documents/eventStaffGrants/$(grantId)).data.uid == request.auth.uid
+        && get(/databases/$(database)/documents/eventStaffGrants/$(grantId)).data.organizerId == (
+          get(/databases/$(database)/documents/events/$(eventId)).data.keys().hasAny(['organizerId'])
+            ? get(/databases/$(database)/documents/events/$(eventId)).data.organizerId
+            : get(/databases/$(database)/documents/events/$(eventId)).data.clubId
+        )
+        && get(/databases/$(database)/documents/eventStaffGrants/$(grantId)).data.status == 'active'
+        && get(/databases/$(database)/documents/eventStaffGrants/$(grantId)).data.expiresAt > request.time
+        && permission in get(/databases/$(database)/documents/eventStaffGrants/$(grantId)).data.permissions;
+    }
+
     function hasEventParticipationStatus(eventId, uid, statuses) {
       return exists(/databases/$(database)/documents/eventParticipations/$(eventParticipationDocId(eventId, uid)))
         && get(/databases/$(database)/documents/eventParticipations/$(eventParticipationDocId(eventId, uid)))
@@ -1089,7 +1109,10 @@ service cloud.firestore {
     match /eventAttendees/{attendeeId} {
       allow read: if isAuthed()
         && resource.data.eventId is string
-        && isClubHostForEvent(resource.data.eventId);
+        && (
+          isClubHostForEvent(resource.data.eventId)
+          || hasActiveEventOperatorGrant(resource.data.eventId, 'viewRoster')
+        );
       allow write: if false;
     }
 
@@ -1125,8 +1148,21 @@ service cloud.firestore {
     match /eventRuntimeClaimRequests/{requestId} {
       allow read: if isAuthed()
         && resource.data.eventId is string
-        && isClubHostForEvent(resource.data.eventId);
+        && (
+          isClubHostForEvent(resource.data.eventId)
+          || hasActiveEventOperatorGrant(
+            resource.data.eventId,
+            'reviewRuntimeClaims'
+          )
+        );
       allow write: if false;
+    }
+
+    match /eventStaffGrants/{grantId} {
+      allow get: if isAuthed()
+        && resource.data.uid == request.auth.uid
+        && grantId == eventStaffGrantDocId(resource.data.eventId, request.auth.uid);
+      allow list, write: if false;
     }
 
     match /eventParticipations/{participationId} {

@@ -153,6 +153,23 @@
       ]
     },
     {
+      "collectionGroup": "eventStaffGrants",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "eventId", "mode": "ASCENDING"},
+        {"fieldPath": "status", "mode": "ASCENDING"},
+        {"fieldPath": "expiresAt", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "eventStaffGrants",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "eventId", "mode": "ASCENDING"},
+        {"fieldPath": "updatedAt", "mode": "DESCENDING"}
+      ]
+    },
+    {
       "collectionGroup": "eventInviteLinks",
       "queryScope": "COLLECTION",
       "fields": [

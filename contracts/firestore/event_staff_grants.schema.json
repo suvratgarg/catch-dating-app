@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_staff_grants.schema.json",
+  "title": "EventStaffGrantDocument",
+  "description": "Server-owned, expiring least-privilege access to one event's operational roster. It never grants organizer, CRM, provider, campaign, analytics, or event-edit authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventStaffGrants",
+  "x-firestore-path": "eventStaffGrants/{grantId}",
+  "x-document-id-field": "grantId",
+  "x-owner": "event staff access callables",
+  "required": ["organizerId", "eventId", "uid", "displayName", "phoneLastFour", "role", "permissions", "status", "createdBy", "createdAt", "expiresAt", "revokedBy", "revokedAt", "updatedAt", "revision"],
+  "properties": {
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "uid": {"type": "string", "minLength": 1, "maxLength": 180},
+    "displayName": {"type": "string", "minLength": 1, "maxLength": 120},
+    "phoneLastFour": {"type": "string", "pattern": "^[0-9]{4}$"},
+    "role": {"const": "checkInOperator"},
+    "permissions": {"type": "array", "minItems": 3, "maxItems": 3, "uniqueItems": true, "items": {"type": "string", "enum": ["viewRoster", "setAttendance", "reviewRuntimeClaims"]}},
+    "status": {"type": "string", "enum": ["active", "revoked"]},
+    "createdBy": {"type": "string", "minLength": 1, "maxLength": 180},
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "expiresAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "revokedBy": {"type": ["string", "null"], "minLength": 1, "maxLength": 180},
+    "revokedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
+    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991}
+  }
+}

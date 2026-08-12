@@ -143,6 +143,15 @@
       "surface": "CatchRouteScaffold"
     },
     {
+      "path": "lib/hosts/presentation/host_event_operator_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold",
+      "leading": "back",
+      "occurrences": 2
+    },
+    {
       "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
       "role": "compact",
       "expression": "CatchTopBar",

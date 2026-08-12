@@ -34,6 +34,8 @@ import {
   isEventOrganizerManager,
   requireEventOrganizer,
 } from "../shared/eventOrganizers";
+import {requireEventOperatorPermission} from
+  "../shared/eventOperatorAuthority";
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {organizerCommunicationPreferenceId} from
@@ -270,12 +272,16 @@ export async function markEventAttendeeAttendanceHandler(
     }
     const organizerSnap = await tx.get(eventOrganizerRef(db, event));
     const organizer = requireEventOrganizer(organizerSnap, event);
-    if (!isEventOrganizerManager(organizer, event, hostUid)) {
-      throw new HttpsError(
-        "permission-denied",
-        "Only an organizer manager can mark attendance."
-      );
-    }
+    await requireEventOperatorPermission({
+      db,
+      organizer,
+      event,
+      eventId: payload.eventId,
+      actorUid: hostUid,
+      permission: "setAttendance",
+      now: deps.timestamp(),
+      transaction: tx,
+    });
     const attendeeSnap = await tx.get(attendeeRef);
     if (!attendeeSnap.exists) {
       throw new HttpsError("not-found", "Attendee not found.");
@@ -350,12 +356,16 @@ export async function setEventAttendeeAttendanceHandler(
     }
     const organizerSnap = await tx.get(eventOrganizerRef(db, event));
     const organizer = requireEventOrganizer(organizerSnap, event);
-    if (!isEventOrganizerManager(organizer, event, hostUid)) {
-      throw new HttpsError(
-        "permission-denied",
-        "Only an organizer manager can mark attendance."
-      );
-    }
+    await requireEventOperatorPermission({
+      db,
+      organizer,
+      event,
+      eventId: payload.eventId,
+      actorUid: hostUid,
+      permission: "setAttendance",
+      now: deps.timestamp(),
+      transaction: tx,
+    });
     if (receiptSnap.exists) {
       const receipt = receiptSnap.data() as {
         eventId?: string;

@@ -25,6 +25,11 @@ class AppDeepLinks {
     ),
   );
 
+  static Uri hostOperatorEvent(String eventId) => _httpsRoute(
+    Routes.hostOperatorEventScreen.path,
+    pathParameters: {'eventId': eventId},
+  );
+
   static String inAppEventPath({
     required String clubId,
     required String eventId,

@@ -345,6 +345,11 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/eventAttendeeDocument.ts",
   },
   {
+    name: "EventStaffGrantDocument",
+    source: "firestore/event_staff_grants.schema.json",
+    typeOutput: "functions/src/shared/generated/eventStaffGrantDocument.ts",
+  },
+  {
     name: "EventAttendeeAttendanceReceiptDocument",
     source: "firestore/event_attendee_attendance_receipts.schema.json",
     typeOutput:
@@ -1309,6 +1314,36 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "setEventAttendeeAttendanceCallableResponse.ts",
+  },
+  {
+    name: "EventOperatorAccessCallablePayload",
+    source: "callables/event_operator_access_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventOperatorAccessCallablePayload.ts",
+  },
+  {
+    name: "EventOperatorAccessCallableResponse",
+    source: "callable_responses/event_operator_access_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventOperatorAccessCallableResponse.ts",
+  },
+  {
+    name: "GrantEventStaffCallablePayload",
+    source: "callables/grant_event_staff_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/grantEventStaffCallablePayload.ts",
+  },
+  {
+    name: "RevokeEventStaffCallablePayload",
+    source: "callables/revoke_event_staff_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/revokeEventStaffCallablePayload.ts",
+  },
+  {
+    name: "EventStaffListCallableResponse",
+    source: "callable_responses/event_staff_list_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventStaffListCallableResponse.ts",
   },
   {
     name: "RegisterPublicEventCallablePayload",

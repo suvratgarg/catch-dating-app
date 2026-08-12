@@ -12726,6 +12726,90 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventOperatorAccessCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'eventOperatorAccessCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventOperatorAccessCallableResponseActorRole = CatchContractFieldConstraints(
+    path: 'eventOperatorAccessCallableResponse.actorRole',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['manager', 'operator'],
+  );
+
+  static const eventOperatorAccessCallableResponseEndAtMillis = CatchContractFieldConstraints(
+    path: 'eventOperatorAccessCallableResponse.endAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const eventOperatorAccessCallableResponseEventId = CatchContractFieldConstraints(
+    path: 'eventOperatorAccessCallableResponse.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventOperatorAccessCallableResponseEventStatus = CatchContractFieldConstraints(
+    path: 'eventOperatorAccessCallableResponse.eventStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['active', 'cancelled'],
+  );
+
+  static const eventOperatorAccessCallableResponseGrantExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'eventOperatorAccessCallableResponse.grantExpiresAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const eventOperatorAccessCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'eventOperatorAccessCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventOperatorAccessCallableResponsePermissions = CatchContractFieldConstraints(
+    path: 'eventOperatorAccessCallableResponse.permissions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['viewRoster', 'setAttendance', 'reviewRuntimeClaims'],
+    minItems: 1,
+    maxItems: 3,
+    uniqueItems: true,
+  );
+
+  static const eventOperatorAccessCallableResponsePermissionsItems = CatchContractFieldConstraints(
+    path: 'eventOperatorAccessCallableResponse.permissions.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['viewRoster', 'setAttendance', 'reviewRuntimeClaims'],
+  );
+
+  static const eventOperatorAccessCallableResponseStartAtMillis = CatchContractFieldConstraints(
+    path: 'eventOperatorAccessCallableResponse.startAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const eventOperatorAccessCallableResponseTitle = CatchContractFieldConstraints(
+    path: 'eventOperatorAccessCallableResponse.title',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const eventOriginAdapterVersion = CatchContractFieldConstraints(
     path: 'eventOrigin.adapterVersion',
     maxLength: 80,
@@ -13813,6 +13897,215 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['hostApp', 'consumerApp', 'runtimeWeb'],
+  );
+
+  static const eventStaffGrantDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventStaffGrantDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventStaffGrantDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventStaffGrantDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventStaffGrantDocumentCreatedBy = CatchContractFieldConstraints(
+    path: 'eventStaffGrantDocument.createdBy',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventStaffGrantDocumentDisplayName = CatchContractFieldConstraints(
+    path: 'eventStaffGrantDocument.displayName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventStaffGrantDocumentEventId = CatchContractFieldConstraints(
+    path: 'eventStaffGrantDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventStaffGrantDocumentExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventStaffGrantDocument.expiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventStaffGrantDocumentExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'eventStaffGrantDocument.expiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventStaffGrantDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventStaffGrantDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventStaffGrantDocumentPermissions = CatchContractFieldConstraints(
+    path: 'eventStaffGrantDocument.permissions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['viewRoster', 'setAttendance', 'reviewRuntimeClaims'],
+    minItems: 3,
+    maxItems: 3,
+    uniqueItems: true,
+  );
+
+  static const eventStaffGrantDocumentPermissionsItems = CatchContractFieldConstraints(
+    path: 'eventStaffGrantDocument.permissions.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['viewRoster', 'setAttendance', 'reviewRuntimeClaims'],
+  );
+
+  static const eventStaffGrantDocumentPhoneLastFour = CatchContractFieldConstraints(
+    path: 'eventStaffGrantDocument.phoneLastFour',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{4}\$',
+  );
+
+  static const eventStaffGrantDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventStaffGrantDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventStaffGrantDocumentRevokedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventStaffGrantDocument.revokedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventStaffGrantDocumentRevokedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventStaffGrantDocument.revokedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventStaffGrantDocumentRevokedBy = CatchContractFieldConstraints(
+    path: 'eventStaffGrantDocument.revokedBy',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventStaffGrantDocumentRole = CatchContractFieldConstraints(
+    path: 'eventStaffGrantDocument.role',
+    required: true,
+  );
+
+  static const eventStaffGrantDocumentStatus = CatchContractFieldConstraints(
+    path: 'eventStaffGrantDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['active', 'revoked'],
+  );
+
+  static const eventStaffGrantDocumentUid = CatchContractFieldConstraints(
+    path: 'eventStaffGrantDocument.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventStaffGrantDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventStaffGrantDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventStaffGrantDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventStaffGrantDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventStaffListCallableResponseEventId = CatchContractFieldConstraints(
+    path: 'eventStaffListCallableResponse.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventStaffListCallableResponseMembers = CatchContractFieldConstraints(
+    path: 'eventStaffListCallableResponse.members',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 50,
+  );
+
+  static const eventStaffListCallableResponseMembersItemsDisplayName = CatchContractFieldConstraints(
+    path: 'eventStaffListCallableResponse.members.items.displayName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventStaffListCallableResponseMembersItemsExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'eventStaffListCallableResponse.members.items.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const eventStaffListCallableResponseMembersItemsPhoneLastFour = CatchContractFieldConstraints(
+    path: 'eventStaffListCallableResponse.members.items.phoneLastFour',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{4}\$',
+  );
+
+  static const eventStaffListCallableResponseMembersItemsRevision = CatchContractFieldConstraints(
+    path: 'eventStaffListCallableResponse.members.items.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventStaffListCallableResponseMembersItemsStatus = CatchContractFieldConstraints(
+    path: 'eventStaffListCallableResponse.members.items.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['active', 'revoked', 'expired'],
+  );
+
+  static const eventStaffListCallableResponseMembersItemsUid = CatchContractFieldConstraints(
+    path: 'eventStaffListCallableResponse.members.items.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const eventSuccessArrivalMissionDocumentAnswerOptions = CatchContractFieldConstraints(
@@ -18090,6 +18383,29 @@ abstract final class CatchContractConstraints {
     path: 'getOrganizerProviderSetupCallablePayload.organizerId',
     maxLength: 180,
     minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const grantEventStaffCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'grantEventStaffCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const grantEventStaffCallablePayloadExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'grantEventStaffCallablePayload.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const grantEventStaffCallablePayloadPhoneNumber = CatchContractFieldConstraints(
+    path: 'grantEventStaffCallablePayload.phoneNumber',
+    maxLength: 32,
+    minLength: 8,
     required: true,
     valueTypes: <String>['string'],
   );
@@ -31481,6 +31797,30 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['verified', 'unverified'],
   );
 
+  static const revokeEventStaffCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'revokeEventStaffCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const revokeEventStaffCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'revokeEventStaffCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const revokeEventStaffCallablePayloadUid = CatchContractFieldConstraints(
+    path: 'revokeEventStaffCallablePayload.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const savedEventDocumentDemoOps = CatchContractFieldConstraints(
     path: 'savedEventDocument.demoOps',
     valueTypes: <String>['boolean'],
@@ -38919,6 +39259,17 @@ abstract final class CatchContractConstraints {
     'eventJoinRequestDecisionCallablePayload.decision': eventJoinRequestDecisionCallablePayloadDecision,
     'eventJoinRequestDecisionCallablePayload.eventId': eventJoinRequestDecisionCallablePayloadEventId,
     'eventJoinRequestDecisionCallablePayload.userId': eventJoinRequestDecisionCallablePayloadUserId,
+    'eventOperatorAccessCallablePayload.eventId': eventOperatorAccessCallablePayloadEventId,
+    'eventOperatorAccessCallableResponse.actorRole': eventOperatorAccessCallableResponseActorRole,
+    'eventOperatorAccessCallableResponse.endAtMillis': eventOperatorAccessCallableResponseEndAtMillis,
+    'eventOperatorAccessCallableResponse.eventId': eventOperatorAccessCallableResponseEventId,
+    'eventOperatorAccessCallableResponse.eventStatus': eventOperatorAccessCallableResponseEventStatus,
+    'eventOperatorAccessCallableResponse.grantExpiresAtMillis': eventOperatorAccessCallableResponseGrantExpiresAtMillis,
+    'eventOperatorAccessCallableResponse.organizerId': eventOperatorAccessCallableResponseOrganizerId,
+    'eventOperatorAccessCallableResponse.permissions': eventOperatorAccessCallableResponsePermissions,
+    'eventOperatorAccessCallableResponse.permissions.items': eventOperatorAccessCallableResponsePermissionsItems,
+    'eventOperatorAccessCallableResponse.startAtMillis': eventOperatorAccessCallableResponseStartAtMillis,
+    'eventOperatorAccessCallableResponse.title': eventOperatorAccessCallableResponseTitle,
     'eventOrigin.adapterVersion': eventOriginAdapterVersion,
     'eventOrigin.bookingAuthority': eventOriginBookingAuthority,
     'eventOrigin.connectedAt._nanoseconds': eventOriginConnectedAtNanoseconds,
@@ -39070,6 +39421,34 @@ abstract final class CatchContractConstraints {
     'eventShareIntentDocument.inviteLinkId': eventShareIntentDocumentInviteLinkId,
     'eventShareIntentDocument.organizerId': eventShareIntentDocumentOrganizerId,
     'eventShareIntentDocument.surface': eventShareIntentDocumentSurface,
+    'eventStaffGrantDocument.createdAt._nanoseconds': eventStaffGrantDocumentCreatedAtNanoseconds,
+    'eventStaffGrantDocument.createdAt._seconds': eventStaffGrantDocumentCreatedAtSeconds,
+    'eventStaffGrantDocument.createdBy': eventStaffGrantDocumentCreatedBy,
+    'eventStaffGrantDocument.displayName': eventStaffGrantDocumentDisplayName,
+    'eventStaffGrantDocument.eventId': eventStaffGrantDocumentEventId,
+    'eventStaffGrantDocument.expiresAt._nanoseconds': eventStaffGrantDocumentExpiresAtNanoseconds,
+    'eventStaffGrantDocument.expiresAt._seconds': eventStaffGrantDocumentExpiresAtSeconds,
+    'eventStaffGrantDocument.organizerId': eventStaffGrantDocumentOrganizerId,
+    'eventStaffGrantDocument.permissions': eventStaffGrantDocumentPermissions,
+    'eventStaffGrantDocument.permissions.items': eventStaffGrantDocumentPermissionsItems,
+    'eventStaffGrantDocument.phoneLastFour': eventStaffGrantDocumentPhoneLastFour,
+    'eventStaffGrantDocument.revision': eventStaffGrantDocumentRevision,
+    'eventStaffGrantDocument.revokedAt._nanoseconds': eventStaffGrantDocumentRevokedAtNanoseconds,
+    'eventStaffGrantDocument.revokedAt._seconds': eventStaffGrantDocumentRevokedAtSeconds,
+    'eventStaffGrantDocument.revokedBy': eventStaffGrantDocumentRevokedBy,
+    'eventStaffGrantDocument.role': eventStaffGrantDocumentRole,
+    'eventStaffGrantDocument.status': eventStaffGrantDocumentStatus,
+    'eventStaffGrantDocument.uid': eventStaffGrantDocumentUid,
+    'eventStaffGrantDocument.updatedAt._nanoseconds': eventStaffGrantDocumentUpdatedAtNanoseconds,
+    'eventStaffGrantDocument.updatedAt._seconds': eventStaffGrantDocumentUpdatedAtSeconds,
+    'eventStaffListCallableResponse.eventId': eventStaffListCallableResponseEventId,
+    'eventStaffListCallableResponse.members': eventStaffListCallableResponseMembers,
+    'eventStaffListCallableResponse.members.items.displayName': eventStaffListCallableResponseMembersItemsDisplayName,
+    'eventStaffListCallableResponse.members.items.expiresAtMillis': eventStaffListCallableResponseMembersItemsExpiresAtMillis,
+    'eventStaffListCallableResponse.members.items.phoneLastFour': eventStaffListCallableResponseMembersItemsPhoneLastFour,
+    'eventStaffListCallableResponse.members.items.revision': eventStaffListCallableResponseMembersItemsRevision,
+    'eventStaffListCallableResponse.members.items.status': eventStaffListCallableResponseMembersItemsStatus,
+    'eventStaffListCallableResponse.members.items.uid': eventStaffListCallableResponseMembersItemsUid,
     'eventSuccessArrivalMissionDocument.answerOptions': eventSuccessArrivalMissionDocumentAnswerOptions,
     'eventSuccessArrivalMissionDocument.answerOptions.items.id': eventSuccessArrivalMissionDocumentAnswerOptionsItemsId,
     'eventSuccessArrivalMissionDocument.answerOptions.items.label': eventSuccessArrivalMissionDocumentAnswerOptionsItemsLabel,
@@ -39658,6 +40037,9 @@ abstract final class CatchContractConstraints {
     'getOrganizerCrmSummaryCallableResponse.whatsappOptInCount': getOrganizerCrmSummaryCallableResponseWhatsappOptInCount,
     'getOrganizerProviderSetupCallablePayload.eventId': getOrganizerProviderSetupCallablePayloadEventId,
     'getOrganizerProviderSetupCallablePayload.organizerId': getOrganizerProviderSetupCallablePayloadOrganizerId,
+    'grantEventStaffCallablePayload.eventId': grantEventStaffCallablePayloadEventId,
+    'grantEventStaffCallablePayload.expiresAtMillis': grantEventStaffCallablePayloadExpiresAtMillis,
+    'grantEventStaffCallablePayload.phoneNumber': grantEventStaffCallablePayloadPhoneNumber,
     'hostAnalyticsCallableResponse.dataQuality': hostAnalyticsCallableResponseDataQuality,
     'hostAnalyticsCallableResponse.dataQuality.items.detail': hostAnalyticsCallableResponseDataQualityItemsDetail,
     'hostAnalyticsCallableResponse.dataQuality.items.id': hostAnalyticsCallableResponseDataQualityItemsId,
@@ -41537,6 +41919,9 @@ abstract final class CatchContractConstraints {
     'reviewDocument.updatedAt._nanoseconds': reviewDocumentUpdatedAtNanoseconds,
     'reviewDocument.updatedAt._seconds': reviewDocumentUpdatedAtSeconds,
     'reviewDocument.verificationStatus': reviewDocumentVerificationStatus,
+    'revokeEventStaffCallablePayload.eventId': revokeEventStaffCallablePayloadEventId,
+    'revokeEventStaffCallablePayload.expectedRevision': revokeEventStaffCallablePayloadExpectedRevision,
+    'revokeEventStaffCallablePayload.uid': revokeEventStaffCallablePayloadUid,
     'savedEventDocument.demoOps': savedEventDocumentDemoOps,
     'savedEventDocument.demoOpsCommand': savedEventDocumentDemoOpsCommand,
     'savedEventDocument.demoOpsId': savedEventDocumentDemoOpsId,

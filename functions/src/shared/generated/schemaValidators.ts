@@ -63,6 +63,7 @@ import {EventShareIntentDocument} from "./eventShareIntentDocument";
 import {EventInviteAttributionDocument} from "./eventInviteAttributionDocument";
 import {EventParticipationDocument} from "./eventParticipationDocument";
 import {EventAttendeeDocument} from "./eventAttendeeDocument";
+import {EventStaffGrantDocument} from "./eventStaffGrantDocument";
 import {EventAttendeeAttendanceReceiptDocument} from "./eventAttendeeAttendanceReceiptDocument";
 import {EventAttendeeImportDocument} from "./eventAttendeeImportDocument";
 import {EventRosterHandoffDocument} from "./eventRosterHandoffDocument";
@@ -216,6 +217,11 @@ import {ImportEventAttendeesCallablePayload} from "./importEventAttendeesCallabl
 import {MarkEventAttendeeAttendanceCallablePayload} from "./markEventAttendeeAttendanceCallablePayload";
 import {SetEventAttendeeAttendanceCallablePayload} from "./setEventAttendeeAttendanceCallablePayload";
 import {SetEventAttendeeAttendanceCallableResponse} from "./setEventAttendeeAttendanceCallableResponse";
+import {EventOperatorAccessCallablePayload} from "./eventOperatorAccessCallablePayload";
+import {EventOperatorAccessCallableResponse} from "./eventOperatorAccessCallableResponse";
+import {GrantEventStaffCallablePayload} from "./grantEventStaffCallablePayload";
+import {RevokeEventStaffCallablePayload} from "./revokeEventStaffCallablePayload";
+import {EventStaffListCallableResponse} from "./eventStaffListCallableResponse";
 import {RegisterPublicEventCallablePayload} from "./registerPublicEventCallablePayload";
 import {RegisterPublicEventCallableResponse} from "./registerPublicEventCallableResponse";
 import {GetEventRuntimeBootstrapCallablePayload} from "./getEventRuntimeBootstrapCallablePayload";
@@ -377,6 +383,7 @@ import {
   eventInviteAttributionDocumentSchema,
   eventParticipationDocumentSchema,
   eventAttendeeDocumentSchema,
+  eventStaffGrantDocumentSchema,
   eventAttendeeAttendanceReceiptDocumentSchema,
   eventAttendeeImportDocumentSchema,
   eventRosterHandoffDocumentSchema,
@@ -530,6 +537,11 @@ import {
   markEventAttendeeAttendanceCallablePayloadSchema,
   setEventAttendeeAttendanceCallablePayloadSchema,
   setEventAttendeeAttendanceCallableResponseSchema,
+  eventOperatorAccessCallablePayloadSchema,
+  eventOperatorAccessCallableResponseSchema,
+  grantEventStaffCallablePayloadSchema,
+  revokeEventStaffCallablePayloadSchema,
+  eventStaffListCallableResponseSchema,
   registerPublicEventCallablePayloadSchema,
   registerPublicEventCallableResponseSchema,
   getEventRuntimeBootstrapCallablePayloadSchema,
@@ -872,6 +884,10 @@ export const validateEventAttendeeDocument:
   ValidateFunction<EventAttendeeDocument> =
     ajv.compile(eventAttendeeDocumentSchema) as
       ValidateFunction<EventAttendeeDocument>;
+export const validateEventStaffGrantDocument:
+  ValidateFunction<EventStaffGrantDocument> =
+    ajv.compile(eventStaffGrantDocumentSchema) as
+      ValidateFunction<EventStaffGrantDocument>;
 export const validateEventAttendeeAttendanceReceiptDocument:
   ValidateFunction<EventAttendeeAttendanceReceiptDocument> =
     ajv.compile(eventAttendeeAttendanceReceiptDocumentSchema) as
@@ -1484,6 +1500,26 @@ export const validateSetEventAttendeeAttendanceCallableResponse:
   ValidateFunction<SetEventAttendeeAttendanceCallableResponse> =
     ajv.compile(setEventAttendeeAttendanceCallableResponseSchema) as
       ValidateFunction<SetEventAttendeeAttendanceCallableResponse>;
+export const validateEventOperatorAccessCallablePayload:
+  ValidateFunction<EventOperatorAccessCallablePayload> =
+    ajv.compile(eventOperatorAccessCallablePayloadSchema) as
+      ValidateFunction<EventOperatorAccessCallablePayload>;
+export const validateEventOperatorAccessCallableResponse:
+  ValidateFunction<EventOperatorAccessCallableResponse> =
+    ajv.compile(eventOperatorAccessCallableResponseSchema) as
+      ValidateFunction<EventOperatorAccessCallableResponse>;
+export const validateGrantEventStaffCallablePayload:
+  ValidateFunction<GrantEventStaffCallablePayload> =
+    ajv.compile(grantEventStaffCallablePayloadSchema) as
+      ValidateFunction<GrantEventStaffCallablePayload>;
+export const validateRevokeEventStaffCallablePayload:
+  ValidateFunction<RevokeEventStaffCallablePayload> =
+    ajv.compile(revokeEventStaffCallablePayloadSchema) as
+      ValidateFunction<RevokeEventStaffCallablePayload>;
+export const validateEventStaffListCallableResponse:
+  ValidateFunction<EventStaffListCallableResponse> =
+    ajv.compile(eventStaffListCallableResponseSchema) as
+      ValidateFunction<EventStaffListCallableResponse>;
 export const validateRegisterPublicEventCallablePayload:
   ValidateFunction<RegisterPublicEventCallablePayload> =
     ajv.compile(registerPublicEventCallablePayloadSchema) as

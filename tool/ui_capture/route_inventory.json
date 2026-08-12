@@ -4,13 +4,13 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "fffed19805c865c7239095f495637def1d259eb408aad839f101a5283458e6aa",
-    "routeContractSha256": "88db16c019305bac87ed2a0b336893c6a16320e8d3adcc6d23520e8379a2efc1",
-    "goRouteCount": 51,
+    "normalizedFileSha256": "4f311b2972c4a24a8842628219fbaadf97a619a770457c6752e35cfa96f46485",
+    "routeContractSha256": "2945219eded5b87c2e7e7fcd28b82c900c43a9ff2e940e5fd5b4cdd4264d0817",
+    "goRouteCount": 52,
     "shellBranchCount": 8,
-    "enumRouteCount": 50,
-    "referencedRouteCount": 50,
-    "runtimeRouteCount": 50,
+    "enumRouteCount": 51,
+    "referencedRouteCount": 51,
+    "runtimeRouteCount": 51,
     "routeHelperCount": 2,
     "routeHelpers": [
       "_hostUtilityRoutes",
@@ -444,6 +444,20 @@
       "referencedByGoRouter": true
     },
     {
+      "id": "hostOperatorEventScreen",
+      "path": "/host/operator/:eventId",
+      "pathParameters": [
+        "eventId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/operator/:eventId",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostOperatorEventScreen.path",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
       "id": "hostOrganizerScreen",
       "path": "/host/organizer",
       "pathParameters": [],
@@ -705,6 +719,7 @@
     "hostEventsScreen",
     "hostHomeScreen",
     "hostInboxScreen",
+    "hostOperatorEventScreen",
     "hostOrganizerScreen",
     "launchAccessScreen",
     "loadingScreen",
