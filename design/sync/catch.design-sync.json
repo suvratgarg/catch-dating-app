@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updated": "2026-08-11",
+  "updated": "2026-08-13",
   "sourceOfTruth": {
     "behavior": "Flutter sources named by design/components/catch.components.json",
     "componentContracts": "design/components/catch.components.json",
