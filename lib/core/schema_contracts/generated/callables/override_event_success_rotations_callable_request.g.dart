@@ -9,14 +9,17 @@
 final class OverrideEventSuccessRotationsCallableRequest {
   const OverrideEventSuccessRotationsCallableRequest({
     required this.eventId,
+    required this.expectedRevision,
     required this.rounds,
   });
 
   final String eventId;
+  final int expectedRevision;
   final List<Map<String, Object?>> rounds;
 
   Map<String, Object?> toJson() => {
     'eventId': eventId,
+    'expectedRevision': expectedRevision,
     'rounds': rounds,
   };
 }

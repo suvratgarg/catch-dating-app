@@ -198,6 +198,12 @@ export {
   overrideEventSuccessRotations,
 } from "./eventSuccess/generateEventSuccessRotations";
 export {
+  controlEventSuccessLive,
+  publishEventSuccessRotationRound,
+} from "./eventSuccess/liveControl";
+export {onEventSuccessPlanLiveControlUpdated} from
+  "./eventSuccess/rotationDraftTrigger";
+export {
   fetchEventSuccessWingmanCandidates,
   submitEventSuccessWingmanRequest,
   withdrawEventSuccessWingmanRequest,

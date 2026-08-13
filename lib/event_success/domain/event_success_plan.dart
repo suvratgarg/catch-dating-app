@@ -41,6 +41,10 @@ abstract class EventSuccessPlan with _$EventSuccessPlan {
     @Default(EventSuccessQuestionnaireConfig.defaultTemplate())
     EventSuccessQuestionnaireConfig questionnaireConfig,
     @Default(0) int activeStepIndex,
+    @Default(0) int liveControlRevision,
+    @Default(0) int assignmentDraftRevision,
+    @Default(-1) int publishedRotationRoundIndex,
+    @Default(-1) int publishedRevealRoundIndex,
     @Default(EventSuccessPlanStatus.setup) EventSuccessPlanStatus status,
     @Default(EventSuccessRevealStatus.idle)
     EventSuccessRevealStatus revealStatus,
@@ -178,12 +182,18 @@ abstract class EventSuccessPlan with _$EventSuccessPlan {
 
   int revealedThroughRoundIndex(DateTime now) {
     final activeIndex = math.max(0, activeRevealRoundIndex);
-    return switch (revealStatus) {
-      EventSuccessRevealStatus.idle => -1,
-      EventSuccessRevealStatus.revealed => activeIndex,
-      EventSuccessRevealStatus.countingDown =>
-        isRevealCountdownRunning(now) ? activeIndex - 1 : activeIndex,
-    };
+    final legacyPublishedIndex =
+        revealStatus == EventSuccessRevealStatus.revealed ? activeIndex : -1;
+    final persistedPublishedIndex = math.max(
+      publishedRevealRoundIndex,
+      legacyPublishedIndex,
+    );
+    if (revealStatus == EventSuccessRevealStatus.countingDown &&
+        !isRevealCountdownRunning(now) &&
+        revealEndsAt != null) {
+      return math.max(persistedPublishedIndex, activeIndex);
+    }
+    return persistedPublishedIndex;
   }
 
   bool isRoundRevealed(int roundIndex, DateTime now) =>

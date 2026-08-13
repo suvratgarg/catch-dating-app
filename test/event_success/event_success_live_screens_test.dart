@@ -504,6 +504,8 @@ void main() {
         rotationAssignmentsState:
             rotationAssignmentsState ??
             const CatchAsyncState<List<EventSuccessAssignment>>.data([]),
+        rotationDraftsState:
+            const CatchAsyncState<List<EventSuccessAssignmentDraft>>.data([]),
         rotationParticipantProfilesState:
             rotationProfilesState ??
             const CatchAsyncState<List<PublicProfile>>.data([]),

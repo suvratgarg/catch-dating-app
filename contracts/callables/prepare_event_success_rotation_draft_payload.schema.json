@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/prepare_event_success_rotation_draft_payload.schema.json",
+  "title": "PrepareEventSuccessRotationDraftCallablePayload",
+  "description": "Revision-fenced payload accepted by generateEventSuccessRotations when preparing the next host-only round.",
+  "x-callable-aliases": ["generateEventSuccessRotations"],
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["eventId", "expectedRevision"],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    }
+  }
+}

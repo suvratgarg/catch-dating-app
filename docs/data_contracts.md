@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.17.0
+version: 1.18.0
 updated: 2026-08-13
 owner: recursive_audit_loop
 status: active
@@ -58,6 +58,31 @@ and tool registries. Runtime resolution, including the profile-free `coverage`
 default and explicit unsupported assignment algorithms, is owned by the Event
 Success format resolver documented in `docs/event_success.md`; generated
 contract files must not encode a separate fallback.
+
+### Event Success Live-Control Boundary
+
+`contracts/firestore/event_success_plans.schema.json` declares the persisted
+live revision and monotonic publication cursors. Direct clients serialize only
+setup-owned plan fields; `liveControlRevision`, `assignmentDraftRevision`,
+`publishedRotationRoundIndex`, and `publishedRevealRoundIndex` are written by
+backend live-control transactions. Legacy documents may omit these fields and
+resolve to their schema defaults.
+
+Prepared guided rotations use
+`eventSuccessAssignmentDrafts/{eventId_moduleId_uid}` and the source schema
+`contracts/firestore/event_success_assignment_drafts.schema.json`. Each wrapper
+binds the event, organizer, attendee, module, target round, base assignment
+revision, and full Host-preview assignment. Rules permit only the event Host to
+read drafts and deny every direct client write. Attendee-readable
+`eventSuccessAssignments` contain only slots through the rotation round
+published by `publishEventSuccessRotationRound`; later precomputed slots remain
+inside the Host-only draft.
+
+Live actions, draft preparation, and rotation publication use the generated
+callable request schemas under `contracts/callables/`. Every mutating request
+carries an expected revision, and reveal or rotation publication also carries
+explicit confirmation. The asynchronous draft trigger's bounded retry count is
+deployment configuration, not a persisted plan constant.
 
 ### TypeScript Timestamp Projections
 

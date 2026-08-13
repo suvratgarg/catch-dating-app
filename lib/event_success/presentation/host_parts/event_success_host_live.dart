@@ -18,6 +18,7 @@ class LiveTab extends StatelessWidget {
     required this.assignments,
     required this.assignmentParticipantProfiles,
     required this.rotationAssignments,
+    required this.rotationDraftAssignments,
     required this.rotationParticipantProfiles,
     required this.preferences,
     required this.wingmanRequests,
@@ -33,6 +34,7 @@ class LiveTab extends StatelessWidget {
     required this.rotationsGenerationState,
     required this.onGenerateMicroPods,
     required this.onGenerateGuidedRotations,
+    required this.onPublishGuidedRotationRound,
     required this.onOverrideGroupAssignments,
     required this.onOverrideGuidedRotations,
     required this.revealActionState,
@@ -52,6 +54,7 @@ class LiveTab extends StatelessWidget {
   final List<EventSuccessAssignment> assignments;
   final List<PublicProfile> assignmentParticipantProfiles;
   final List<EventSuccessAssignment> rotationAssignments;
+  final List<EventSuccessAssignment> rotationDraftAssignments;
   final List<PublicProfile> rotationParticipantProfiles;
   final List<EventSuccessPreference> preferences;
   final List<EventSuccessWingmanRequest> wingmanRequests;
@@ -67,6 +70,7 @@ class LiveTab extends StatelessWidget {
   final EventSuccessAssignmentGenerationActionState rotationsGenerationState;
   final Future<void> Function()? onGenerateMicroPods;
   final Future<void> Function()? onGenerateGuidedRotations;
+  final Future<void> Function(int roundIndex)? onPublishGuidedRotationRound;
   final Future<void> Function(List<EventSuccessGroupOverrideRound> rounds)?
   onOverrideGroupAssignments;
   final Future<void> Function(List<EventSuccessRotationOverrideRound> rounds)?
@@ -199,11 +203,15 @@ class LiveTab extends StatelessWidget {
       event: event,
       rotationIntervalMinutes:
           plan.structureConfig.rotationIntervalMinutes ?? 15,
-      assignments: rotationAssignments,
+      assignments: rotationDraftAssignments.isNotEmpty
+          ? rotationDraftAssignments
+          : rotationAssignments,
       participantProfiles: rotationParticipantProfiles,
       preferences: preferences,
       actionState: rotationsGenerationState,
       onGenerate: onGenerateGuidedRotations,
+      nextRoundIndex: plan.publishedRotationRoundIndex + 1,
+      onPublish: onPublishGuidedRotationRound,
       onOverride: onOverrideGuidedRotations,
     );
 

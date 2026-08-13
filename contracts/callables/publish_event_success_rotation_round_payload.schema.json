@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/publish_event_success_rotation_round_payload.schema.json",
+  "title": "PublishEventSuccessRotationRoundCallablePayload",
+  "description": "Confirmed revision-fenced publication of one precomputed guided-rotation round.",
+  "x-callable-aliases": ["publishEventSuccessRotationRound"],
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["eventId", "expectedRevision", "roundIndex", "confirmed"],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "roundIndex": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "confirmed": {"type": "boolean"}
+  }
+}

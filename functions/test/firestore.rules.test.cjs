@@ -2610,7 +2610,7 @@ describe("firestore.rules", () => {
   });
 
   describe("event success", () => {
-    it("allows only the event club host to create and update event success plans", async () => {
+    it("allows host setup writes but keeps live control callable-owned", async () => {
       await seed(["clubs", "club-1"], club());
       await seed(["events", "event-1"], event({
         startTime: Timestamp.fromDate(new Date("2099-05-02T01:30:00.000Z")),
@@ -2621,6 +2621,10 @@ describe("firestore.rules", () => {
 
       await assertSucceeds(setDoc(planRef, eventSuccessPlan()));
       await assertSucceeds(updateDoc(planRef, {
+        hostGoal: "Keep the event welcoming.",
+        updatedAt: serverTimestamp(),
+      }));
+      await assertFails(updateDoc(planRef, {
         activeStepIndex: 1,
         status: "live",
         compatibilityAffectsRanking: true,
@@ -2644,7 +2648,7 @@ describe("firestore.rules", () => {
       );
       await assertFails(
         updateDoc(planRef, {
-          hostGoal: "Rewrite the locked setup.",
+          liveControlRevision: 1,
           updatedAt: serverTimestamp(),
         }),
       );
@@ -2716,7 +2720,7 @@ describe("firestore.rules", () => {
           updatedAt: serverTimestamp(),
         }),
       );
-      await assertSucceeds(
+      await assertFails(
         updateDoc(planRef, {
           activeStepIndex: 1,
           status: "live",
@@ -3392,6 +3396,43 @@ describe("firestore.rules", () => {
           eventSuccessAssignment({uid: "runner-2"}),
         ),
       );
+    });
+
+    it("keeps prepared rotation drafts host-only and server-owned", async () => {
+      await seed(["clubs", "club-1"], club());
+      await seed(["events", "event-1"], event());
+      await seed(
+        ["eventParticipations", "event-1_runner-1"],
+        eventParticipation({status: "signedUp"}),
+      );
+      await seed(
+        ["eventSuccessAssignmentDrafts", "event-1_guided_rotations_runner-1"],
+        {
+          eventId: "event-1",
+          clubId: "club-1",
+          organizerId: "club-1",
+          uid: "runner-1",
+          moduleId: "guided_rotations",
+          roundIndex: 0,
+          baseAssignmentRevision: 1,
+          assignment: eventSuccessAssignment({
+            moduleId: "guided_rotations",
+          }),
+          createdAt: Timestamp.fromDate(new Date("2026-05-02T01:00:00.000Z")),
+          updatedAt: Timestamp.fromDate(new Date("2026-05-02T01:00:00.000Z")),
+        },
+      );
+
+      const draftRef = (uid) => doc(
+        authedDb(uid),
+        "eventSuccessAssignmentDrafts",
+        "event-1_guided_rotations_runner-1",
+      );
+      await assertSucceeds(getDoc(draftRef("host-1")));
+      await assertFails(getDoc(draftRef("runner-1")));
+      await assertFails(setDoc(draftRef("host-1"), {
+        eventId: "event-1",
+      }));
     });
 
     it("exposes event scorecards only to the event host", async () => {

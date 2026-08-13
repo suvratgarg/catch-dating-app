@@ -97,6 +97,30 @@
       "maximum": 100,
       "x-catch-ownership": "callable-owned"
     },
+    "liveControlRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647,
+      "x-catch-ownership": "callable-owned"
+    },
+    "assignmentDraftRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647,
+      "x-catch-ownership": "callable-owned"
+    },
+    "publishedRotationRoundIndex": {
+      "type": "integer",
+      "minimum": -1,
+      "maximum": 100,
+      "x-catch-ownership": "callable-owned"
+    },
+    "publishedRevealRoundIndex": {
+      "type": "integer",
+      "minimum": -1,
+      "maximum": 100,
+      "x-catch-ownership": "callable-owned"
+    },
     "status": {
       "type": "string",
       "enum": [

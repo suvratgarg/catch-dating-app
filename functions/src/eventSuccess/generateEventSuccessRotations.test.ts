@@ -100,6 +100,30 @@ class FakeBatch {
   }
 }
 
+class FakeTransaction {
+  constructor(private readonly firestore: FakeFirestore) {}
+
+  async get(reference: {get: () => Promise<unknown>}): Promise<unknown> {
+    return reference.get();
+  }
+
+  set(ref: FakeDocRef, data: FakeData, options?: {merge: boolean}) {
+    if (options?.merge) {
+      this.firestore.merge(ref.path, data);
+    } else {
+      this.firestore.set(ref.path, data);
+    }
+  }
+
+  update(ref: FakeDocRef, data: FakeData) {
+    this.firestore.merge(ref.path, data);
+  }
+
+  delete(ref: FakeDocRef) {
+    this.firestore.delete(ref.path);
+  }
+}
+
 class FakeFirestore {
   constructor(private readonly docs: Record<string, FakeData | undefined>) {}
 
@@ -111,9 +135,23 @@ class FakeFirestore {
     return new FakeBatch(this);
   }
 
+  async runTransaction<T>(
+    callback: (transaction: FakeTransaction) => Promise<T>
+  ): Promise<T> {
+    return callback(new FakeTransaction(this));
+  }
+
   get(path: string): FakeData | undefined {
     const data = this.docs[path];
-    return data === undefined ? undefined : {...data};
+    if (data !== undefined) return {...data};
+    const draftPath = path.replace(
+      "eventSuccessAssignments/",
+      "eventSuccessAssignmentDrafts/"
+    );
+    const draft = this.docs[draftPath];
+    const assignment = draft?.assignment;
+    return assignment !== null && typeof assignment === "object" ?
+      {...assignment as FakeData} : undefined;
   }
 
   set(path: string, data: FakeData) {
@@ -178,6 +216,9 @@ function harness(overrides: Record<string, FakeData | undefined> = {}) {
       eventId: "event-1",
       clubId: "club-1",
       selectedModuleIds: ["guided_rotations"],
+      liveControlRevision: 0,
+      assignmentDraftRevision: 0,
+      publishedRotationRoundIndex: -1,
       structureConfig: {
         unitKind: "pairs",
         unitSize: 2,
@@ -227,6 +268,35 @@ test("pickleball defaults to profile-free coverage schedules", async () => {
 
   assert.deepEqual(result, {assignmentCount: 4, roundCount: 3});
   assert.deepEqual(rateLimitCalls, ["host-1:generateEventSuccessRotations"]);
+  assert.equal(
+    firestore.query("eventSuccessAssignments", []).length,
+    0,
+    "preparation must not write attendee-readable assignments"
+  );
+  const preparedDraft = firestore.get(
+    "eventSuccessAssignmentDrafts/event-1_guided_rotations_man-1"
+  );
+  assert.equal(preparedDraft?.roundIndex, 0);
+  assert.equal(preparedDraft?.baseAssignmentRevision, 1);
+  assert.equal(
+    (preparedDraft?.assignment as FakeData).moduleId,
+    "guided_rotations"
+  );
+  assert.deepEqual(firestore.get("eventSuccessPlans/event-1"), {
+    eventId: "event-1",
+    clubId: "club-1",
+    selectedModuleIds: ["guided_rotations"],
+    liveControlRevision: 1,
+    assignmentDraftRevision: 1,
+    publishedRotationRoundIndex: -1,
+    structureConfig: {
+      unitKind: "pairs",
+      unitSize: 2,
+      rotationIntervalMinutes: 15,
+      revealCountdownSeconds: 10,
+    },
+    updatedAt: {__serverTimestamp: true},
+  });
   const manOne = firestore.get(
     "eventSuccessAssignments/event-1_guided_rotations_man-1"
   );
@@ -246,6 +316,51 @@ test("pickleball defaults to profile-free coverage schedules", async () => {
     uniquePeerCount: 3,
     repeatPeerCount: 0,
   });
+});
+
+test("does not prepare a phantom round after the schedule ends", async () => {
+  const {firestore, deps} = harness({
+    "eventSuccessPlans/event-1": {
+      eventId: "event-1",
+      clubId: "club-1",
+      selectedModuleIds: ["guided_rotations"],
+      liveControlRevision: 4,
+      assignmentDraftRevision: 3,
+      publishedRotationRoundIndex: 2,
+      structureConfig: {
+        unitKind: "pairs",
+        unitSize: 2,
+        rotationIntervalMinutes: 15,
+        revealCountdownSeconds: 10,
+      },
+    },
+    "eventSuccessAssignmentDrafts/event-1_guided_rotations_stale": {
+      eventId: "event-1",
+      moduleId: "guided_rotations",
+      roundIndex: 2,
+      baseAssignmentRevision: 3,
+      assignment: {},
+    },
+    ...participation("man-1"),
+    ...participation("man-2"),
+    ...participation("woman-1"),
+    ...participation("woman-2"),
+    "users/man-1": user("man", ["woman"]),
+    "users/man-2": user("man", ["woman"]),
+    "users/woman-1": user("woman", ["man"]),
+    "users/woman-2": user("woman", ["man"]),
+  });
+
+  const result = await generateEventSuccessRotationsHandler(
+    callableRequest("host-1", {expectedRevision: 4}),
+    deps
+  );
+
+  assert.deepEqual(result, {assignmentCount: 0, roundCount: 3});
+  assert.equal(
+    firestore.query("eventSuccessAssignmentDrafts", []).length,
+    0
+  );
 });
 
 test("uses the saved event-structure rotation cadence", async () => {
@@ -526,7 +641,7 @@ test(
 );
 
 test(
-  "uses event duration and removes opted-out stale assignments",
+  "uses event duration and removes opted-out stale drafts",
   async () => {
     const {firestore, deps} = harness({
       "events/event-1": {
@@ -556,10 +671,19 @@ test(
         uid: "woman-2",
         guidedRotationsOptedOut: true,
       },
-      "eventSuccessAssignments/event-1_guided_rotations_woman-2": {
+      "eventSuccessAssignmentDrafts/event-1_guided_rotations_woman-2": {
         eventId: "event-1",
+        clubId: "club-1",
+        organizerId: "club-1",
         moduleId: "guided_rotations",
         uid: "woman-2",
+        roundIndex: 0,
+        baseAssignmentRevision: 1,
+        assignment: {
+          eventId: "event-1",
+          moduleId: "guided_rotations",
+          uid: "woman-2",
+        },
       },
     });
 
@@ -912,11 +1036,11 @@ function rotationEvent(
 
 function callableRequest(
   uid: string,
-  data: Record<string, unknown> = {eventId: "event-1"}
+  data: Record<string, unknown> = {}
 ): CallableRequest<unknown> {
   return {
     auth: {uid},
-    data,
+    data: {eventId: "event-1", expectedRevision: 0, ...data},
   } as CallableRequest<unknown>;
 }
 

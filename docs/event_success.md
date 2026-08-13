@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.8.0
+version: 1.9.0
 updated: 2026-08-13
 owner: recursive_audit_loop
 status: active
@@ -82,10 +82,11 @@ general attendee-id assignment migration is complete.
 Direction 3's Quiet Command Console is the selected live hierarchy: one dark
 current-beat stage, one next beat, flat Guests and recovery destinations,
 honest acknowledged/pending/failed persistence, Previous, and one pinned
-primary action. The primary action is locally pending/debounce guarded. Offline
-queueing, revisioned undo, pause, conflict/lock authority and process-death
-recovery remain explicit promotion gates rather than inactive production
-controls.
+primary action. Live transitions are revision-fenced backend writes, and reveal
+or rotation publication requires an explicit confirmation. The persisted plan
+is the restart source of truth, so process death resumes the current beat and
+published rounds without a local recovery mode. Revisioned undo and pause are
+not part of the shipped control model.
 
 ## Format Mapping And Wiring
 
@@ -109,9 +110,10 @@ The currently wired pieces are:
   the saved full format snapshot;
 - `createEvent` can create the event and initial event-success plan in one
   backend transaction when event-success defaults are enabled;
-- Firestore rules allow host setup while the event is still pre-live, then
-  freeze setup-shaping fields after bookings, waitlist activity, check-ins,
-  event start, or live-plan freezing while still allowing live-control fields;
+- Firestore rules allow direct Host setup writes while the event is still
+  pre-live, then freeze setup-shaping fields after bookings, waitlist activity,
+  check-ins, event start, or live-plan freezing. Live-control fields are
+  callable-owned and cannot be changed directly by clients;
 - attendee companion routing, event-detail entry, and check-in auto-launch use
   the saved plan/runtime rather than raw event type.
 
@@ -182,7 +184,7 @@ rather than embedded in event-type logic.
 
 | Collection | Owner and visibility |
 |---|---|
-| `eventSuccessPlans/{eventId}` | Host-owned setup/live state. Setup fields freeze once participant activity/start/live status begins; active participants can read through event-success rules. |
+| `eventSuccessPlans/{eventId}` | Host-owned setup plus backend-owned live state. `liveControlRevision`, draft revision, and published rotation/reveal indexes are callable-owned. Setup fields freeze once participant activity/start/live status begins; active participants can read through event-success rules. |
 | `eventSuccessFeedback/{eventId_uid}` | Attendee-owned decomposed post-event feedback. Raw notes and safety details are private to attendee/backend. |
 | `eventSafetyReports/{feedbackId}` | Backend-owned Catch-private safety mirror for concerning feedback. |
 | `eventSuccessPreferences/{eventId_uid}` | Attendee-owned live-guidance opt-outs. |
@@ -190,6 +192,7 @@ rather than embedded in event-type logic.
 | `eventSuccessWingmanRequests/{eventId_uid}` | Attendee consent document for host-visible introduction help. Target is not notified by this surface. |
 | `eventSuccessArrivalMissions/{eventId_uid}` | Server-owned First Hello mission. Attendee can read only their own mission; clients cannot create, update, list, or delete. |
 | `eventSuccessAssignments/{eventId_moduleId_uid}` | Server-owned assignment docs for micro-pods/guided rotations. |
+| `eventSuccessAssignmentDrafts/{eventId_moduleId_uid}` | Server-owned, Host-readable next-round rotation drafts. Participants cannot read or write this collection. |
 | `eventSuccessScorecards/{eventId}` | Server-owned aggregate coaching scorecard. Host-readable through event-success policy. |
 
 Schemas live under `contracts/firestore/` and generated outputs under
@@ -203,6 +206,25 @@ tighter First Hello venue radius, the module is selected, and a compatible
 checked-in target exists. `completeEventSuccessFirstHelloMission` verifies the
 active mission and answer, rechecks location/block state, records only the
 observer's answer on the mission, and marks attendance.
+
+### Live Control Robustness
+
+`controlEventSuccessLive` owns step, completion, reveal countdown, reveal
+publication, and pre-expiry countdown cancellation. Every non-idempotent write
+compares `expectedRevision` with `liveControlRevision`. Reveal publication is
+monotonic: an expired countdown is already published according to its persisted
+server anchor, and neither cancellation nor a later action can move the
+published reveal index backwards.
+
+Guided rotations use a two-stage boundary. `generateEventSuccessRotations` and
+Host overrides write only `eventSuccessAssignmentDrafts`; the Firestore trigger
+`onEventSuccessPlanLiveControlUpdated` prepares round N+1 asynchronously while
+round N is live. `publishEventSuccessRotationRound` transactionally publishes
+only the requested prepared round to attendee-readable assignments and is
+idempotent for retry. The beat-transition module does not import or invoke the
+assignment generator. Trigger preparation retries are bounded by the validated
+deployment setting `EVENT_SUCCESS_DRAFT_PREPARATION_ATTEMPTS` (1-10, default
+3).
 
 ## Product Guardrails
 
@@ -220,9 +242,9 @@ observer's answer on the mission, and marks attendance.
   not raw safety notes or personally identifying safety details.
 - Host reports should teach hosts how to run better events, not expose attendee
   intelligence.
-- Live reveal V1 is synchronized ceremony, not hard secrecy: assigned attendees
-  can read their own assignment docs under current rules. Stronger secrecy would
-  need host-only draft assignments and just-in-time publication.
+- Guided-rotation drafts are Host-only and become attendee-readable only through
+  explicit round publication. Already-published assignment documents remain
+  attendee-readable; publication is not a reversible secrecy control.
 - "Help me meet someone" without a selected attendee is deferred. Launch host
   help is specific-person only.
 
@@ -565,7 +587,11 @@ Check:
 - optional First Hello arrival mission from host controls through attendee
   completion and checked-in state;
 - host `Previous`/`Next` run-of-show transitions updating both panes;
-- countdown, reveal now, and reset;
+- countdown, confirmed reveal-now, pre-expiry cancellation, and irreversible
+  post-publication state;
+- confirmed, idempotent publication of the next prepared rotation round with no
+  future-round assignment leakage;
+- process-death restart during a round resumes the persisted current beat;
 - pre-arrival attendee state without live prompt/reveal/partner leakage;
 - checked-in attendee moment sync;
 - questionnaire, opt-out, wingman request, feedback, and report states;
@@ -582,10 +608,13 @@ Use a real dev/staging event for write-path proof:
 
 1. Save event-success setup as host.
 2. Book/check in at least two attendee accounts.
-3. Generate pods or rotations and edit generated rotations.
-4. Drive countdown/reveal/reset from host live mode.
-5. Submit questionnaire, opt-out, wingman request, and feedback as attendee.
-6. Confirm host report aggregate signal quality.
+3. Generate pods or prepare rotations, then edit the Host-only rotation draft.
+4. Confirm publication of one prepared rotation round and verify no later round
+   is attendee-readable.
+5. Drive countdown/reveal from host live mode; cancel only before expiry and
+   confirm a published reveal has no reset path.
+6. Submit questionnaire, opt-out, wingman request, and feedback as attendee.
+7. Confirm host report aggregate signal quality.
 
 ## Participant Metrics And Warehouse
 

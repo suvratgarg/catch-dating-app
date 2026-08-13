@@ -1,6 +1,6 @@
 ---
 doc_id: event_success_variable_model_and_runtime_parity_spec
-version: 1.2.0
+version: 1.3.0
 updated: 2026-08-13
 owner: event_success
 status: active
@@ -702,7 +702,7 @@ docs are updated. Update this table in the same commit as the tranche.
 - [x] T1 `matchingObjective` and `coverage`
 - [x] T2 `affinityConstraint` and `arrivalGroup`
 - [x] T3 Exclusion ledger
-- [ ] T4 Live control robustness
+- [x] T4 Live control robustness
 - [ ] T5 Spatial layout model and control room
 - [ ] T6 `resourceCapacity` and `sequence` topology
 - [ ] T7 `unitOutcome` and live standings

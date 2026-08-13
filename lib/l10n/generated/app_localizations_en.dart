@@ -12588,4 +12588,60 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsOperationalRosterOutboxDiscard => 'Discard stale changes';
+
+  @override
+  String get eventSuccessLiveControlCancelCountdownLabel => 'Cancel countdown';
+
+  @override
+  String get eventSuccessLiveControlPublishRevealTitle =>
+      'Publish this reveal?';
+
+  @override
+  String eventSuccessLiveControlPublishRevealMessage({
+    required int roundNumber,
+  }) {
+    return 'Round $roundNumber will become visible to everyone and cannot be hidden again.';
+  }
+
+  @override
+  String get eventSuccessLiveControlPublishRevealConfirmLabel =>
+      'Publish reveal';
+
+  @override
+  String get eventSuccessLiveControlStartCountdownTitle =>
+      'Start the final countdown?';
+
+  @override
+  String eventSuccessLiveControlStartCountdownMessage({
+    required int roundNumber,
+    required int countdownSeconds,
+  }) {
+    return 'Round $roundNumber will publish after $countdownSeconds seconds and cannot be hidden again.';
+  }
+
+  @override
+  String get eventSuccessLiveControlStartCountdownConfirmLabel =>
+      'Start countdown';
+
+  @override
+  String eventSuccessLiveControlPublishRotationRoundLabel({
+    required int roundNumber,
+  }) {
+    return 'Publish round $roundNumber';
+  }
+
+  @override
+  String get eventSuccessLiveControlPublishRotationTitle =>
+      'Publish this rotation?';
+
+  @override
+  String eventSuccessLiveControlPublishRotationMessage({
+    required int roundNumber,
+  }) {
+    return 'Round $roundNumber will become visible to attendees and cannot be withdrawn.';
+  }
+
+  @override
+  String get eventSuccessLiveControlPublishRotationConfirmLabel =>
+      'Publish rotation';
 }

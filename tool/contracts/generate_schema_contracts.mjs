@@ -430,6 +430,13 @@ const schemaSpecs = [
       "functions/src/shared/generated/eventSuccessPlanDocument.ts",
   },
   {
+    name: "EventSuccessAssignmentDraftDocument",
+    source: "firestore/event_success_assignment_drafts.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "eventSuccessAssignmentDraftDocument.ts",
+  },
+  {
     name: "EventSuccessFeedbackDocument",
     source: "firestore/event_success_feedback.schema.json",
     typeOutput:
@@ -1544,6 +1551,29 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "overrideEventSuccessRotationsCallablePayload.ts",
+  },
+  {
+    name: "PrepareEventSuccessRotationDraftCallablePayload",
+    source:
+      "callables/prepare_event_success_rotation_draft_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "prepareEventSuccessRotationDraftCallablePayload.ts",
+  },
+  {
+    name: "PublishEventSuccessRotationRoundCallablePayload",
+    source:
+      "callables/publish_event_success_rotation_round_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "publishEventSuccessRotationRoundCallablePayload.ts",
+  },
+  {
+    name: "EventSuccessLiveActionCallablePayload",
+    source: "callables/event_success_live_action_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "eventSuccessLiveActionCallablePayload.ts",
   },
   {
     name: "OverrideEventSuccessGroupsCallablePayload",

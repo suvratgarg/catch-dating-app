@@ -67,6 +67,14 @@ Stream<List<EventSuccessAssignment>> watchEventSuccessRotationAssignments(
     .watchRotationAssignmentsForEvent(eventId: eventId);
 
 @riverpod
+Stream<List<EventSuccessAssignmentDraft>> watchEventSuccessRotationDrafts(
+  Ref ref,
+  String eventId,
+) => ref
+    .watch(eventSuccessRepositoryProvider)
+    .watchRotationDraftsForEvent(eventId: eventId);
+
+@riverpod
 Stream<EventSuccessPreference?> watchUserEventSuccessPreference(
   Ref ref, {
   required String eventId,

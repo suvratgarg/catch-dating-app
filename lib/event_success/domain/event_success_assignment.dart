@@ -145,6 +145,36 @@ final class EventSuccessAssignment {
   };
 }
 
+final class EventSuccessAssignmentDraft {
+  const EventSuccessAssignmentDraft({
+    required this.id,
+    required this.eventId,
+    required this.roundIndex,
+    required this.baseAssignmentRevision,
+    required this.assignment,
+  });
+
+  factory EventSuccessAssignmentDraft.fromJson(Map<String, dynamic> json) {
+    final assignmentJson = Map<String, dynamic>.from(
+      json['assignment'] as Map? ?? const <String, dynamic>{},
+    );
+    assignmentJson['id'] = json['id'];
+    return EventSuccessAssignmentDraft(
+      id: json['id'] as String,
+      eventId: json['eventId'] as String,
+      roundIndex: json['roundIndex'] as int,
+      baseAssignmentRevision: json['baseAssignmentRevision'] as int,
+      assignment: EventSuccessAssignment.fromJson(assignmentJson),
+    );
+  }
+
+  final String id;
+  final String eventId;
+  final int roundIndex;
+  final int baseAssignmentRevision;
+  final EventSuccessAssignment assignment;
+}
+
 final class EventSuccessRotationFairness {
   const EventSuccessRotationFairness({
     required this.assignedRoundCount,

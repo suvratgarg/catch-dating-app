@@ -3288,6 +3288,10 @@ export interface EventSuccessPlanDocument {
     }[];
   };
   activeStepIndex: number;
+  liveControlRevision?: number;
+  assignmentDraftRevision?: number;
+  publishedRotationRoundIndex?: number;
+  publishedRevealRoundIndex?: number;
   status: "setup" | "live" | "complete";
   revealStatus?: "idle" | "countingDown" | "revealed";
   activeRevealRoundIndex?: number;
@@ -3297,6 +3301,22 @@ export interface EventSuccessPlanDocument {
   updatedAt: FirebaseFirestore.Timestamp;
   frozenAt?: FirebaseFirestore.Timestamp | null;
   completedAt?: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Server-owned host-only precomputed assignment stored at eventSuccessAssignmentDrafts/{eventId_moduleId_uid} until its round is published.
+ */
+export interface EventSuccessAssignmentDraftDocument {
+  eventId: string;
+  clubId: string;
+  organizerId: string;
+  uid: string;
+  moduleId: "guided_rotations";
+  roundIndex: number;
+  baseAssignmentRevision: number;
+  assignment: EventSuccessAssignmentDocument;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
 }
 
 /**

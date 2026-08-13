@@ -7,6 +7,7 @@
  */
 export interface OverrideEventSuccessRotationsCallablePayload {
   eventId: string;
+  expectedRevision: number;
   /**
    * @minItems 1
    * @maxItems 32

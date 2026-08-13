@@ -56,6 +56,10 @@ export interface EventSuccessPlanDocument {
     }[];
   };
   activeStepIndex: number;
+  liveControlRevision?: number;
+  assignmentDraftRevision?: number;
+  publishedRotationRoundIndex?: number;
+  publishedRevealRoundIndex?: number;
   status: "setup" | "live" | "complete";
   revealStatus?: "idle" | "countingDown" | "revealed";
   activeRevealRoundIndex?: number;

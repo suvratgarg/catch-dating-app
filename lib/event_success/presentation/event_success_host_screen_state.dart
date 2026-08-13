@@ -18,6 +18,7 @@ enum EventSuccessHostRetryIntent {
   roster,
   assignments,
   rotationAssignments,
+  rotationDrafts,
   assignmentParticipantProfiles,
   rotationParticipantProfiles,
   preferences,
@@ -132,6 +133,7 @@ class EventSuccessHostSectionState {
     required this.assignments,
     required this.assignmentParticipantProfiles,
     required this.rotationAssignments,
+    required this.rotationDraftAssignments,
     required this.rotationParticipantProfiles,
     required this.preferences,
     required this.wingmanRequests,
@@ -151,6 +153,8 @@ class EventSuccessHostSectionState {
     assignmentParticipantProfilesState,
     required CatchAsyncState<List<EventSuccessAssignment>>
     rotationAssignmentsState,
+    required CatchAsyncState<List<EventSuccessAssignmentDraft>>
+    rotationDraftsState,
     required CatchAsyncState<List<PublicProfile>>
     rotationParticipantProfilesState,
     required CatchAsyncState<List<EventSuccessPreference>> preferencesState,
@@ -161,6 +165,16 @@ class EventSuccessHostSectionState {
     final persistedPlan = planState.value;
     final plan =
         persistedPlan ?? EventSuccessPlan.defaultForEvent(event, now: now);
+    final matchingDraftAssignments =
+        (rotationDraftsState.value ?? const <EventSuccessAssignmentDraft>[])
+            .where(
+              (draft) =>
+                  draft.baseAssignmentRevision ==
+                      plan.assignmentDraftRevision &&
+                  draft.roundIndex == plan.publishedRotationRoundIndex + 1,
+            )
+            .map((draft) => draft.assignment)
+            .toList(growable: false);
     final fallback = EventSuccessHostSectionState._(
       status: EventSuccessHostSectionStatus.ready,
       plan: plan,
@@ -173,6 +187,7 @@ class EventSuccessHostSectionState {
           assignmentParticipantProfilesState.value ?? const <PublicProfile>[],
       rotationAssignments:
           rotationAssignmentsState.value ?? const <EventSuccessAssignment>[],
+      rotationDraftAssignments: matchingDraftAssignments,
       rotationParticipantProfiles:
           rotationParticipantProfilesState.value ?? const <PublicProfile>[],
       preferences: preferencesState.value ?? const <EventSuccessPreference>[],
@@ -188,6 +203,7 @@ class EventSuccessHostSectionState {
       assignmentsState,
       assignmentParticipantProfilesState,
       rotationAssignmentsState,
+      rotationDraftsState,
       rotationParticipantProfilesState,
       preferencesState,
       wingmanRequestsState,
@@ -204,6 +220,7 @@ class EventSuccessHostSectionState {
         rotationAssignmentsState,
         EventSuccessHostRetryIntent.rotationAssignments,
       ),
+      (rotationDraftsState, EventSuccessHostRetryIntent.rotationDrafts),
       (
         assignmentParticipantProfilesState,
         EventSuccessHostRetryIntent.assignmentParticipantProfiles,
@@ -236,6 +253,7 @@ class EventSuccessHostSectionState {
   final List<EventSuccessAssignment> assignments;
   final List<PublicProfile> assignmentParticipantProfiles;
   final List<EventSuccessAssignment> rotationAssignments;
+  final List<EventSuccessAssignment> rotationDraftAssignments;
   final List<PublicProfile> rotationParticipantProfiles;
   final List<EventSuccessPreference> preferences;
   final List<EventSuccessWingmanRequest> wingmanRequests;
@@ -257,6 +275,7 @@ class EventSuccessHostSectionState {
       assignments: assignments,
       assignmentParticipantProfiles: assignmentParticipantProfiles,
       rotationAssignments: rotationAssignments,
+      rotationDraftAssignments: rotationDraftAssignments,
       rotationParticipantProfiles: rotationParticipantProfiles,
       preferences: preferences,
       wingmanRequests: wingmanRequests,

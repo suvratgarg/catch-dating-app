@@ -90,13 +90,16 @@ mixin _EventSuccessPlanRepository on _EventSuccessRepositoryCore {
   Future<void> updateActiveStep({
     required String eventId,
     required int activeStepIndex,
+    required int expectedRevision,
   }) => withBackendErrorContext(
-    () => _planRef(eventId).update({
-      'activeStepIndex': activeStepIndex,
-      'status': EventSuccessPlanStatus.live.name,
-      'updatedAt': Timestamp.fromDate(DateTime.now()),
-      'frozenAt': FieldValue.serverTimestamp(),
-    }),
+    () => _callLiveAction(
+      EventSuccessLiveActionCallableRequest(
+        eventId: eventId,
+        expectedRevision: expectedRevision,
+        action: 'setActiveStep',
+        activeStepIndex: activeStepIndex,
+      ),
+    ),
     context: const BackendErrorContext(
       service: BackendService.firestore,
       action: 'update live event step',
@@ -107,18 +110,18 @@ mixin _EventSuccessPlanRepository on _EventSuccessRepositoryCore {
   Future<void> startLiveRevealCountdown({
     required String eventId,
     required int roundIndex,
+    required int expectedRevision,
+    required bool confirmed,
   }) => withBackendErrorContext(
-    () {
-      final safeRoundIndex = roundIndex.clamp(0, 100).toInt();
-      return _planRef(eventId).update({
-        'status': EventSuccessPlanStatus.live.name,
-        'revealStatus': EventSuccessRevealStatus.countingDown.name,
-        'activeRevealRoundIndex': safeRoundIndex,
-        'revealStartedAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-        'frozenAt': FieldValue.serverTimestamp(),
-      });
-    },
+    () => _callLiveAction(
+      EventSuccessLiveActionCallableRequest(
+        eventId: eventId,
+        expectedRevision: expectedRevision,
+        action: 'startRevealCountdown',
+        roundIndex: roundIndex,
+        confirmed: confirmed,
+      ),
+    ),
     context: const BackendErrorContext(
       service: BackendService.firestore,
       action: 'start reveal countdown',
@@ -129,15 +132,18 @@ mixin _EventSuccessPlanRepository on _EventSuccessRepositoryCore {
   Future<void> revealLiveRound({
     required String eventId,
     required int roundIndex,
+    required int expectedRevision,
+    required bool confirmed,
   }) => withBackendErrorContext(
-    () => _planRef(eventId).update({
-      'status': EventSuccessPlanStatus.live.name,
-      'revealStatus': EventSuccessRevealStatus.revealed.name,
-      'activeRevealRoundIndex': roundIndex.clamp(0, 100).toInt(),
-      'revealStartedAt': FieldValue.serverTimestamp(),
-      'updatedAt': FieldValue.serverTimestamp(),
-      'frozenAt': FieldValue.serverTimestamp(),
-    }),
+    () => _callLiveAction(
+      EventSuccessLiveActionCallableRequest(
+        eventId: eventId,
+        expectedRevision: expectedRevision,
+        action: 'publishReveal',
+        roundIndex: roundIndex,
+        confirmed: confirmed,
+      ),
+    ),
     context: const BackendErrorContext(
       service: BackendService.firestore,
       action: 'reveal event round',
@@ -145,32 +151,51 @@ mixin _EventSuccessPlanRepository on _EventSuccessRepositoryCore {
     ),
   );
 
-  Future<void> resetLiveReveal({required String eventId}) =>
-      withBackendErrorContext(
-        () => _planRef(eventId).update({
-          'revealStatus': EventSuccessRevealStatus.idle.name,
-          'activeRevealRoundIndex': 0,
-          'revealStartedAt': null,
-          'updatedAt': FieldValue.serverTimestamp(),
-        }),
-        context: const BackendErrorContext(
-          service: BackendService.firestore,
-          action: 'reset event reveal',
-          resource: _plansPath,
-        ),
-      );
+  Future<void> cancelLiveRevealCountdown({
+    required String eventId,
+    required int expectedRevision,
+  }) => withBackendErrorContext(
+    () => _callLiveAction(
+      EventSuccessLiveActionCallableRequest(
+        eventId: eventId,
+        expectedRevision: expectedRevision,
+        action: 'cancelRevealCountdown',
+      ),
+    ),
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'cancel event reveal countdown',
+      resource: _plansPath,
+    ),
+  );
 
-  Future<void> completePlan({required String eventId}) =>
-      withBackendErrorContext(
-        () => _planRef(eventId).update({
-          'status': EventSuccessPlanStatus.complete.name,
-          'updatedAt': Timestamp.fromDate(DateTime.now()),
-          'completedAt': FieldValue.serverTimestamp(),
-        }),
-        context: const BackendErrorContext(
-          service: BackendService.firestore,
-          action: 'complete live event guide',
-          resource: _plansPath,
-        ),
-      );
+  Future<void> completePlan({
+    required String eventId,
+    required int expectedRevision,
+  }) => withBackendErrorContext(
+    () => _callLiveAction(
+      EventSuccessLiveActionCallableRequest(
+        eventId: eventId,
+        expectedRevision: expectedRevision,
+        action: 'complete',
+      ),
+    ),
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'complete live event guide',
+      resource: _plansPath,
+    ),
+  );
+
+  Future<void> _callLiveAction(
+    EventSuccessLiveActionCallableRequest request,
+  ) async {
+    final functions = _functions;
+    if (functions == null) {
+      throw StateError('FirebaseFunctions is not configured.');
+    }
+    await functions
+        .httpsCallable('controlEventSuccessLive')
+        .call(request.toJson());
+  }
 }

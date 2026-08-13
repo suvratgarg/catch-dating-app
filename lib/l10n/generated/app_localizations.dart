@@ -19639,6 +19639,81 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Discard stale changes'**
   String get hostsOperationalRosterOutboxDiscard;
+
+  /// Cancels a reveal countdown before publication.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel countdown'**
+  String get eventSuccessLiveControlCancelCountdownLabel;
+
+  /// Confirmation title before an irreversible assignment reveal.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish this reveal?'**
+  String get eventSuccessLiveControlPublishRevealTitle;
+
+  /// Irreversible reveal confirmation message.
+  ///
+  /// In en, this message translates to:
+  /// **'Round {roundNumber} will become visible to everyone and cannot be hidden again.'**
+  String eventSuccessLiveControlPublishRevealMessage({
+    required int roundNumber,
+  });
+
+  /// Confirms an irreversible assignment reveal.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish reveal'**
+  String get eventSuccessLiveControlPublishRevealConfirmLabel;
+
+  /// Confirmation title before starting an auto-publishing reveal countdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Start the final countdown?'**
+  String get eventSuccessLiveControlStartCountdownTitle;
+
+  /// Countdown confirmation explains automatic irreversible publication.
+  ///
+  /// In en, this message translates to:
+  /// **'Round {roundNumber} will publish after {countdownSeconds} seconds and cannot be hidden again.'**
+  String eventSuccessLiveControlStartCountdownMessage({
+    required int roundNumber,
+    required int countdownSeconds,
+  });
+
+  /// Confirms an auto-publishing reveal countdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Start countdown'**
+  String get eventSuccessLiveControlStartCountdownConfirmLabel;
+
+  /// Publishes the prepared next rotation round.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish round {roundNumber}'**
+  String eventSuccessLiveControlPublishRotationRoundLabel({
+    required int roundNumber,
+  });
+
+  /// Confirmation title before publishing a prepared rotation.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish this rotation?'**
+  String get eventSuccessLiveControlPublishRotationTitle;
+
+  /// Irreversible rotation publication message.
+  ///
+  /// In en, this message translates to:
+  /// **'Round {roundNumber} will become visible to attendees and cannot be withdrawn.'**
+  String eventSuccessLiveControlPublishRotationMessage({
+    required int roundNumber,
+  });
+
+  /// Confirms an irreversible prepared rotation publication.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish rotation'**
+  String get eventSuccessLiveControlPublishRotationConfirmLabel;
 }
 
 class _AppLocalizationsDelegate

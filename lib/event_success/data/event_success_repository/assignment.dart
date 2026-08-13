@@ -49,6 +49,22 @@ mixin _EventSuccessAssignmentRepository on _EventSuccessRepositoryCore {
   }) =>
       watchAssignmentsForEvent(eventId: eventId, moduleId: 'guided_rotations');
 
+  Stream<List<EventSuccessAssignmentDraft>> watchRotationDraftsForEvent({
+    required String eventId,
+  }) => withBackendErrorStream(
+    () => _assignmentDraftsRef
+        .where('eventId', isEqualTo: eventId)
+        .where('moduleId', isEqualTo: 'guided_rotations')
+        .limit(ReadLimitPolicy.boundedWorkingSet)
+        .snapshots()
+        .map((snap) => snap.docs.map((doc) => doc.data()).toList()),
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'load prepared event rotations',
+      resource: _assignmentDraftsPath,
+    ),
+  );
+
   Future<void> generateMicroPodAssignments({required String eventId}) =>
       withBackendErrorContext(
         () {
@@ -67,26 +83,34 @@ mixin _EventSuccessAssignmentRepository on _EventSuccessRepositoryCore {
         ),
       );
 
-  Future<void> generateGuidedRotations({required String eventId}) =>
-      withBackendErrorContext(
-        () {
-          final functions = _functions;
-          if (functions == null) {
-            throw StateError('FirebaseFunctions is not configured.');
-          }
-          return functions
-              .httpsCallable('generateEventSuccessRotations')
-              .call(EventIdCallableRequest(eventId: eventId).toJson());
-        },
-        context: const BackendErrorContext(
-          service: BackendService.functions,
-          action: 'generate event rotations',
-          resource: _assignmentsPath,
-        ),
-      );
+  Future<void> generateGuidedRotations({
+    required String eventId,
+    required int expectedRevision,
+  }) => withBackendErrorContext(
+    () {
+      final functions = _functions;
+      if (functions == null) {
+        throw StateError('FirebaseFunctions is not configured.');
+      }
+      return functions
+          .httpsCallable('generateEventSuccessRotations')
+          .call(
+            PrepareEventSuccessRotationDraftCallableRequest(
+              eventId: eventId,
+              expectedRevision: expectedRevision,
+            ).toJson(),
+          );
+    },
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'generate event rotations',
+      resource: _assignmentsPath,
+    ),
+  );
 
   Future<void> overrideGuidedRotations({
     required String eventId,
+    required int expectedRevision,
     required List<EventSuccessRotationOverrideRound> rounds,
   }) => withBackendErrorContext(
     () {
@@ -99,6 +123,7 @@ mixin _EventSuccessAssignmentRepository on _EventSuccessRepositoryCore {
           .call(
             OverrideEventSuccessRotationsCallableRequest(
               eventId: eventId,
+              expectedRevision: expectedRevision,
               rounds: rounds.map((round) => round.toJson()).toList(),
             ).toJson(),
           );
@@ -131,6 +156,35 @@ mixin _EventSuccessAssignmentRepository on _EventSuccessRepositoryCore {
     context: const BackendErrorContext(
       service: BackendService.functions,
       action: 'adjust event groups',
+      resource: _assignmentsPath,
+    ),
+  );
+
+  Future<void> publishGuidedRotationRound({
+    required String eventId,
+    required int roundIndex,
+    required int expectedRevision,
+    required bool confirmed,
+  }) => withBackendErrorContext(
+    () {
+      final functions = _functions;
+      if (functions == null) {
+        throw StateError('FirebaseFunctions is not configured.');
+      }
+      return functions
+          .httpsCallable('publishEventSuccessRotationRound')
+          .call(
+            PublishEventSuccessRotationRoundCallableRequest(
+              eventId: eventId,
+              expectedRevision: expectedRevision,
+              roundIndex: roundIndex,
+              confirmed: confirmed,
+            ).toJson(),
+          );
+    },
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'publish event rotation round',
       resource: _assignmentsPath,
     ),
   );

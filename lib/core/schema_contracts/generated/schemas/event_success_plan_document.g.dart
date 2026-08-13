@@ -259,6 +259,30 @@ const schemaEventSuccessPlanDocumentSchema = <String, Object?>{
       'maximum': 100,
       'x-catch-ownership': 'callable-owned',
     },
+    'liveControlRevision': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'maximum': 2147483647,
+      'x-catch-ownership': 'callable-owned',
+    },
+    'assignmentDraftRevision': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'maximum': 2147483647,
+      'x-catch-ownership': 'callable-owned',
+    },
+    'publishedRotationRoundIndex': <String, Object?>{
+      'type': 'integer',
+      'minimum': -1,
+      'maximum': 100,
+      'x-catch-ownership': 'callable-owned',
+    },
+    'publishedRevealRoundIndex': <String, Object?>{
+      'type': 'integer',
+      'minimum': -1,
+      'maximum': 100,
+      'x-catch-ownership': 'callable-owned',
+    },
     'status': <String, Object?>{
       'type': 'string',
       'enum': <Object?>[

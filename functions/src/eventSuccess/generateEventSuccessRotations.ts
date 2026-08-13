@@ -4,12 +4,12 @@ import * as admin from "firebase-admin";
 import {EventDocument, BlockDocument} from
   "../shared/generated/firestoreAdminTypes";
 import {requireAuth} from "../shared/auth";
-import {EventIdCallablePayload} from
-  "../shared/generated/eventIdCallablePayload";
+import {PrepareEventSuccessRotationDraftCallablePayload} from
+  "../shared/generated/prepareEventSuccessRotationDraftCallablePayload";
 import {OverrideEventSuccessRotationsCallablePayload} from
   "../shared/generated/overrideEventSuccessRotationsCallablePayload";
 import {
-  validateEventIdCallablePayload,
+  validatePrepareEventSuccessRotationDraftCallablePayload,
   validateOverrideEventSuccessRotationsCallablePayload,
 } from
   "../shared/generated/schemaValidators";
@@ -75,6 +75,9 @@ interface EventSuccessPlanDocument {
   clubId?: string;
   selectedModuleIds?: unknown;
   compatibilityAffectsRanking?: unknown;
+  liveControlRevision?: unknown;
+  assignmentDraftRevision?: unknown;
+  publishedRotationRoundIndex?: unknown;
   structureConfig?: {
     unitKind?: unknown;
     unitSize?: unknown;
@@ -195,23 +198,54 @@ export async function generateEventSuccessRotationsHandler(
   deps: EventSuccessRotationsDeps = defaultDeps
 ): Promise<{assignmentCount: number; roundCount: number}> {
   const uid = requireAuth(request);
-  const {eventId} = validateCallableWithAjv<EventIdCallablePayload>(
-    request,
-    validateEventIdCallablePayload,
-    normalizeEventIdPayload
-  );
+  const payload =
+    validateCallableWithAjv<PrepareEventSuccessRotationDraftCallablePayload>(
+      request,
+      validatePrepareEventSuccessRotationDraftCallablePayload,
+      normalizeEventIdPayload
+    );
 
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, uid, "generateEventSuccessRotations");
 
+  return prepareEventSuccessRotationDraft({
+    eventId: payload.eventId,
+    expectedRevision: payload.expectedRevision,
+    managerUid: uid,
+  }, deps);
+}
+
+/**
+ * Pre-computes the next unpublished round and stores it in the Host-only
+ * draft collection. This function is also used by the asynchronous plan
+ * trigger after a publish; beat transitions never import or invoke it.
+ * @param {object} input Preparation fence and optional manager authorization.
+ * @param {EventSuccessRotationsDeps} deps Injectable dependencies for tests.
+ * @return {Promise<object>} Prepared round summary.
+ */
+export async function prepareEventSuccessRotationDraft(
+  input: {
+    eventId: string;
+    expectedRevision: number;
+    managerUid?: string;
+  },
+  deps: EventSuccessRotationsDeps = defaultDeps
+): Promise<{assignmentCount: number; roundCount: number}> {
+  const db = deps.firestore();
+
   const {
     event,
+    plan,
     rotationIntervalMinutes,
     questionnaireMode,
     constraints,
     rotationPolicy,
   } =
-    await loadRotationEventContext(db, eventId, uid);
+    await loadRotationEventContext(db, input.eventId, input.managerUid);
+  const liveControlRevision = nonNegativeInteger(plan.liveControlRevision);
+  if (liveControlRevision !== input.expectedRevision) {
+    throw staleLiveControlError();
+  }
   const primitives = eventSuccessPrimitivesFor(event.eventFormat);
   if (primitives.assignmentResolution.status === "unsupported") {
     throw new HttpsError(
@@ -222,7 +256,7 @@ export async function generateEventSuccessRotationsHandler(
   const {participants, blockedPairs} =
     await loadEligibleRotationParticipants(
       db,
-      eventId,
+      input.eventId,
       questionnaireMode !== "icebreaker"
     );
   const rounds = buildRotationRounds({
@@ -238,10 +272,17 @@ export async function generateEventSuccessRotationsHandler(
     constraints,
     rotationPolicy,
   });
-  const assignments = buildAssignments({
-    eventId,
+  const publishedRoundIndex = integerOr(
+    plan.publishedRotationRoundIndex,
+    -1
+  );
+  const targetRoundIndex = publishedRoundIndex + 1;
+  const hasTargetRound = rounds.some(
+    (round) => round.roundIndex === targetRoundIndex
+  );
+  const assignments = hasTargetRound ? buildAssignments({
+    eventId: input.eventId,
     clubId: event.clubId,
-
     organizerId: event.organizerId ?? event.clubId,
     participants,
     rounds,
@@ -249,8 +290,16 @@ export async function generateEventSuccessRotationsHandler(
     rotationIntervalMinutes,
     source: "server_v1",
     now: deps.serverTimestamp(),
+  }) : new Map<string, GeneratedAssignment>();
+  await writeAssignmentDrafts({
+    db,
+    eventId: input.eventId,
+    expectedRevision: input.expectedRevision,
+    expectedPublishedRoundIndex: publishedRoundIndex,
+    targetRoundIndex,
+    assignments,
+    now: deps.serverTimestamp(),
   });
-  await writeAssignments(db, eventId, assignments);
 
   return {
     assignmentCount: assignments.size,
@@ -283,8 +332,12 @@ export async function overrideEventSuccessRotationsHandler(
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, uid, "overrideEventSuccessRotations");
 
-  const {event, rotationIntervalMinutes} =
+  const {event, plan, rotationIntervalMinutes} =
     await loadRotationEventContext(db, payload.eventId, uid);
+  const liveControlRevision = nonNegativeInteger(plan.liveControlRevision);
+  if (liveControlRevision !== payload.expectedRevision) {
+    throw staleLiveControlError();
+  }
   const {participants, blockedPairs} =
     await loadEligibleRotationParticipants(db, payload.eventId, false);
   const rounds = buildOverrideRounds({
@@ -307,7 +360,24 @@ export async function overrideEventSuccessRotationsHandler(
     source: "host_override_v1",
     now: deps.serverTimestamp(),
   });
-  await writeAssignments(db, payload.eventId, assignments);
+  const publishedRoundIndex = integerOr(
+    plan.publishedRotationRoundIndex,
+    -1
+  );
+  const targetRoundIndex = publishedRoundIndex + 1;
+  if (!rounds.some((round) => round.roundIndex === targetRoundIndex)) {
+    throw new HttpsError("failed-precondition",
+      "The override must include the next unpublished round.");
+  }
+  await writeAssignmentDrafts({
+    db,
+    eventId: payload.eventId,
+    expectedRevision: payload.expectedRevision,
+    expectedPublishedRoundIndex: publishedRoundIndex,
+    targetRoundIndex,
+    assignments,
+    now: deps.serverTimestamp(),
+  });
 
   return {
     assignmentCount: assignments.size,
@@ -330,9 +400,10 @@ export const overrideEventSuccessRotations = onCall(
 async function loadRotationEventContext(
   db: FirebaseFirestore.Firestore,
   eventId: string,
-  uid: string
+  uid?: string
 ): Promise<{
   event: EventDocument;
+  plan: EventSuccessPlanDocument;
   rotationIntervalMinutes: number;
   questionnaireMode: QuestionnaireScoringMode;
   constraints: AssignmentConstraintConfig;
@@ -365,11 +436,13 @@ async function loadRotationEventContext(
       "This event has been cancelled.");
   }
 
-  const organizerSnap = await eventOrganizerRef(db, event).get();
-  const organizer = requireEventOrganizer(organizerSnap, event);
-  if (!isEventOrganizerManager(organizer, event, uid)) {
-    throw new HttpsError("permission-denied",
-      "Only an organizer manager can manage event rotations.");
+  if (uid !== undefined) {
+    const organizerSnap = await eventOrganizerRef(db, event).get();
+    const organizer = requireEventOrganizer(organizerSnap, event);
+    if (!isEventOrganizerManager(organizer, event, uid)) {
+      throw new HttpsError("permission-denied",
+        "Only an organizer manager can manage event rotations.");
+    }
   }
 
   const plan = requireDoc<EventSuccessPlanDocument>(
@@ -392,6 +465,7 @@ async function loadRotationEventContext(
 
   return {
     event,
+    plan,
     rotationIntervalMinutes:
       resolveRotationIntervalMinutes(plan) ?? ROUND_LENGTH_MINUTES,
     questionnaireMode:
@@ -1003,30 +1077,71 @@ function uniqueWhyCodes(codes: AssignmentWhyCode[]): AssignmentWhyCode[] {
  * @param {string} eventId Event id.
  * @param {Map<string, GeneratedAssignment>} assignments New assignments.
  */
-async function writeAssignments(
-  db: FirebaseFirestore.Firestore,
-  eventId: string,
-  assignments: Map<string, GeneratedAssignment>
-): Promise<void> {
-  const existingSnap = await db
-    .collection("eventSuccessAssignments")
-    .where("eventId", "==", eventId)
-    .where("moduleId", "==", GUIDED_ROTATIONS_MODULE_ID)
-    .get();
-  const batch = db.batch();
-  for (const doc of existingSnap.docs) {
-    if (!assignments.has(doc.id)) {
-      batch.delete(doc.ref);
+async function writeAssignmentDrafts(params: {
+  db: FirebaseFirestore.Firestore;
+  eventId: string;
+  expectedRevision: number;
+  expectedPublishedRoundIndex: number;
+  targetRoundIndex: number;
+  assignments: Map<string, GeneratedAssignment>;
+  now: FirebaseFirestore.FieldValue;
+}): Promise<{revision: number; assignmentRevision: number}> {
+  const planRef = params.db.collection("eventSuccessPlans").doc(params.eventId);
+  const draftQuery = params.db.collection("eventSuccessAssignmentDrafts")
+    .where("eventId", "==", params.eventId)
+    .where("moduleId", "==", GUIDED_ROTATIONS_MODULE_ID);
+  return params.db.runTransaction(async (transaction) => {
+    const [planSnap, existingSnap] = await Promise.all([
+      transaction.get(planRef),
+      transaction.get(draftQuery),
+    ]);
+    if (!planSnap.exists) {
+      throw new HttpsError("failed-precondition",
+        "Event-success setup has not been saved.");
     }
-  }
-  for (const [docId, assignment] of assignments.entries()) {
-    batch.set(
-      db.collection("eventSuccessAssignments").doc(docId),
-      assignment,
-      {merge: true}
+    const plan = planSnap.data() as EventSuccessPlanDocument;
+    const currentRevision = nonNegativeInteger(plan.liveControlRevision);
+    const publishedRoundIndex = integerOr(
+      plan.publishedRotationRoundIndex,
+      -1
     );
-  }
-  await batch.commit();
+    if (
+      currentRevision !== params.expectedRevision ||
+      publishedRoundIndex !== params.expectedPublishedRoundIndex
+    ) {
+      throw staleLiveControlError();
+    }
+    const revision = nextLiveControlRevision(currentRevision);
+    const assignmentRevision = nextLiveControlRevision(
+      nonNegativeInteger(plan.assignmentDraftRevision)
+    );
+    for (const doc of existingSnap.docs) {
+      transaction.delete(doc.ref);
+    }
+    for (const [docId, assignment] of params.assignments.entries()) {
+      transaction.set(
+        params.db.collection("eventSuccessAssignmentDrafts").doc(docId),
+        {
+          eventId: params.eventId,
+          clubId: assignment.clubId,
+          organizerId: assignment.organizerId,
+          uid: assignment.uid,
+          moduleId: GUIDED_ROTATIONS_MODULE_ID,
+          roundIndex: params.targetRoundIndex,
+          baseAssignmentRevision: assignmentRevision,
+          assignment,
+          createdAt: params.now,
+          updatedAt: params.now,
+        }
+      );
+    }
+    transaction.update(planRef, {
+      liveControlRevision: revision,
+      assignmentDraftRevision: assignmentRevision,
+      updatedAt: params.now,
+    });
+    return {revision, assignmentRevision};
+  });
 }
 
 /**
@@ -1062,4 +1177,26 @@ function chunk<T>(values: T[], size: number): T[][] {
     chunks.push(values.slice(index, index + size));
   }
   return chunks;
+}
+
+function staleLiveControlError(): HttpsError {
+  return new HttpsError("aborted",
+    "The live event guide changed on another device. Refresh and retry.");
+}
+
+function nextLiveControlRevision(current: number): number {
+  if (current >= 2147483647) {
+    throw new HttpsError("resource-exhausted",
+      "The live-control revision limit has been reached.");
+  }
+  return current + 1;
+}
+
+function nonNegativeInteger(value: unknown): number {
+  return Number.isInteger(value) && (value as number) >= 0 ?
+    value as number : 0;
+}
+
+function integerOr(value: unknown, fallback: number): number {
+  return Number.isInteger(value) ? value as number : fallback;
 }

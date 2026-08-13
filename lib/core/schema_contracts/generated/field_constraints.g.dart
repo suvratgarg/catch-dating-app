@@ -14876,6 +14876,644 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventSuccessAssignmentDraftDocumentAssignmentClubId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.clubId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentDemoOps = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.demoOps',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentDemoOpsCommand = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.demoOpsCommand',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentDemoOpsId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.demoOpsId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentDisplaySubtitle = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.displaySubtitle',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentDisplayTitle = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.displayTitle',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentEventId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlots = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 24,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsCompatibility = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.compatibility',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['mutual_interest', 'one_way_interest', 'questionnaire_match', 'social', 'mixed', 'host_override'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsEndsAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.endsAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsEndsAtSeconds = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.endsAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsLabel = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsPeerCount = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.peerCount',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 20,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsPeerUids = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.peerUids',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 20,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsPeerUidsItems = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.peerUids.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsRoundIndex = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.roundIndex',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsSlotId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.slotId',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsStartsAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.startsAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsStartsAtSeconds = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.startsAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsUnitIndex = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.unitIndex',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsUnitKind = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.unitKind',
+    valueTypes: <String>['string'],
+    enumValues: <String>['wholeGroup', 'pods', 'pairs', 'teams', 'tables'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsUnitLabel = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.unitLabel',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsWhyCodes = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.whyCodes',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['host_override', 'mutual_interest', 'questionnaire_match', 'social_fallback', 'balanced_group', 'fresh_peer', 'repeat_peer', 'pair_slot', 'pod_slot', 'table_slot', 'team_slot', 'whole_group_slot'],
+    maxItems: 12,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsWhyCodesItems = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.whyCodes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['host_override', 'mutual_interest', 'questionnaire_match', 'social_fallback', 'balanced_group', 'fresh_peer', 'repeat_peer', 'pair_slot', 'pod_slot', 'table_slot', 'team_slot', 'whole_group_slot'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsWhySummary = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.whySummary',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentLabel = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentModuleId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.moduleId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['micro_pods', 'guided_rotations'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentPeerUids = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.peerUids',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 20,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentPeerUidsItems = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.peerUids.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentRotationFairnessAssignedRoundCount = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.rotationFairness.assignedRoundCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentRotationFairnessRepeatPeerCount = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.rotationFairness.repeatPeerCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentRotationFairnessSitOutRoundCount = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.rotationFairness.sitOutRoundCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentRotationFairnessUniquePeerCount = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.rotationFairness.uniquePeerCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentRotationSlots = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.rotationSlots',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 24,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsCompatibility = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.compatibility',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['mutual_interest', 'one_way_interest', 'questionnaire_match', 'social', 'host_override'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsEndsAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.endsAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsEndsAtSeconds = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.endsAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsLabel = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsPeerCount = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.peerCount',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 20,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsPeerUid = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.peerUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsRoundIndex = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.roundIndex',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsSlotId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.slotId',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsStartsAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.startsAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsStartsAtSeconds = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.startsAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsUnitIndex = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.unitIndex',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsUnitKind = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.unitKind',
+    valueTypes: <String>['string'],
+    enumValues: <String>['pairs'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsWhyCodes = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.whyCodes',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['host_override', 'mutual_interest', 'one_way_interest', 'questionnaire_match', 'social_fallback', 'fresh_peer', 'repeat_peer', 'pair_slot'],
+    maxItems: 12,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsWhyCodesItems = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.whyCodes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['host_override', 'mutual_interest', 'one_way_interest', 'questionnaire_match', 'social_fallback', 'fresh_peer', 'repeat_peer', 'pair_slot'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsWhySummary = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.whySummary',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentScenario = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.scenario',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentSeedPrefix = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.seedPrefix',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentSitOutSlots = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.sitOutSlots',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 24,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentSitOutSlotsItemsEndsAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.sitOutSlots.items.endsAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentSitOutSlotsItemsEndsAtSeconds = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.sitOutSlots.items.endsAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentSitOutSlotsItemsLabel = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.sitOutSlots.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentSitOutSlotsItemsRoundIndex = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.sitOutSlots.items.roundIndex',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentSitOutSlotsItemsStartsAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.sitOutSlots.items.startsAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentSitOutSlotsItemsStartsAtSeconds = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.sitOutSlots.items.startsAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentSitOutSlotsItemsWhyCodes = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.sitOutSlots.items.whyCodes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['sit_out'],
+    maxItems: 12,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentSitOutSlotsItemsWhyCodesItems = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.sitOutSlots.items.whyCodes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['sit_out'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentSitOutSlotsItemsWhySummary = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.sitOutSlots.items.whySummary',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentSource = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['server_v1', 'host_override_v1', 'server'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentSynthetic = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.synthetic',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentUid = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentUnitIndex = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.unitIndex',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentUnitKind = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.unitKind',
+    valueTypes: <String>['string'],
+    enumValues: <String>['wholeGroup', 'pods', 'pairs', 'teams', 'tables'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentUnitLabel = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.unitLabel',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentWhyCodes = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.whyCodes',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['host_override', 'mutual_interest', 'one_way_interest', 'questionnaire_match', 'social_fallback', 'balanced_group', 'fresh_peer', 'repeat_peer', 'sit_out', 'pair_slot', 'pod_slot', 'table_slot', 'team_slot', 'whole_group_slot'],
+    maxItems: 12,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentWhyCodesItems = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.whyCodes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['host_override', 'mutual_interest', 'one_way_interest', 'questionnaire_match', 'social_fallback', 'balanced_group', 'fresh_peer', 'repeat_peer', 'sit_out', 'pair_slot', 'pod_slot', 'table_slot', 'team_slot', 'whole_group_slot'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentWhySummary = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignment.whySummary',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentBaseAssignmentRevision = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.baseAssignmentRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 2147483647,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentClubId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.clubId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentEventId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentModuleId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.moduleId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['guided_rotations'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentRoundIndex = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.roundIndex',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentUid = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const eventSuccessCompatibilityResponseDocumentAnswerIds = CatchContractFieldConstraints(
     path: 'eventSuccessCompatibilityResponseDocument.answerIds',
     required: true,
@@ -15133,6 +15771,48 @@ abstract final class CatchContractConstraints {
     maximum: 5,
   );
 
+  static const eventSuccessLiveActionCallablePayloadAction = CatchContractFieldConstraints(
+    path: 'eventSuccessLiveActionCallablePayload.action',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['setActiveStep', 'startRevealCountdown', 'cancelRevealCountdown', 'publishReveal', 'complete'],
+  );
+
+  static const eventSuccessLiveActionCallablePayloadActiveStepIndex = CatchContractFieldConstraints(
+    path: 'eventSuccessLiveActionCallablePayload.activeStepIndex',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const eventSuccessLiveActionCallablePayloadConfirmed = CatchContractFieldConstraints(
+    path: 'eventSuccessLiveActionCallablePayload.confirmed',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventSuccessLiveActionCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'eventSuccessLiveActionCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessLiveActionCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'eventSuccessLiveActionCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const eventSuccessLiveActionCallablePayloadRoundIndex = CatchContractFieldConstraints(
+    path: 'eventSuccessLiveActionCallablePayload.roundIndex',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
   static const eventSuccessPlanDocumentActiveRevealRoundIndex = CatchContractFieldConstraints(
     path: 'eventSuccessPlanDocument.activeRevealRoundIndex',
     valueTypes: <String>['integer'],
@@ -15146,6 +15826,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 0,
     maximum: 100,
+  );
+
+  static const eventSuccessPlanDocumentAssignmentDraftRevision = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.assignmentDraftRevision',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
   );
 
   static const eventSuccessPlanDocumentAttendeePrompt = CatchContractFieldConstraints(
@@ -15251,6 +15938,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventSuccessPlanDocumentLiveControlRevision = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.liveControlRevision',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
   static const eventSuccessPlanDocumentOrganizerId = CatchContractFieldConstraints(
     path: 'eventSuccessPlanDocument.organizerId',
     maxLength: 180,
@@ -15265,6 +15959,20 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessPlanDocumentPublishedRevealRoundIndex = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.publishedRevealRoundIndex',
+    valueTypes: <String>['integer'],
+    minimum: -1,
+    maximum: 100,
+  );
+
+  static const eventSuccessPlanDocumentPublishedRotationRoundIndex = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.publishedRotationRoundIndex',
+    valueTypes: <String>['integer'],
+    minimum: -1,
+    maximum: 100,
   );
 
   static const eventSuccessPlanDocumentQuestionnaireConfigCustomQuestions = CatchContractFieldConstraints(
@@ -29729,6 +30437,14 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const overrideEventSuccessRotationsCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'overrideEventSuccessRotationsCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
   static const overrideEventSuccessRotationsCallablePayloadRounds = CatchContractFieldConstraints(
     path: 'overrideEventSuccessRotationsCallablePayload.rounds',
     required: true,
@@ -30124,6 +30840,22 @@ abstract final class CatchContractConstraints {
     maxLength: 1000,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const prepareEventSuccessRotationDraftCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'prepareEventSuccessRotationDraftCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const prepareEventSuccessRotationDraftCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'prepareEventSuccessRotationDraftCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
   );
 
   static const profilePhotoCreatedAtNanoseconds = CatchContractFieldConstraints(
@@ -31030,6 +31762,36 @@ abstract final class CatchContractConstraints {
     path: 'publicRouteReservationDocument.updatedAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
+  );
+
+  static const publishEventSuccessRotationRoundCallablePayloadConfirmed = CatchContractFieldConstraints(
+    path: 'publishEventSuccessRotationRoundCallablePayload.confirmed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const publishEventSuccessRotationRoundCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'publishEventSuccessRotationRoundCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const publishEventSuccessRotationRoundCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'publishEventSuccessRotationRoundCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const publishEventSuccessRotationRoundCallablePayloadRoundIndex = CatchContractFieldConstraints(
+    path: 'publishEventSuccessRotationRoundCallablePayload.roundIndex',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
   );
 
   static const rateLimitDocumentAction = CatchContractFieldConstraints(
@@ -39765,6 +40527,92 @@ abstract final class CatchContractConstraints {
     'eventSuccessAssignmentDocument.whyCodes': eventSuccessAssignmentDocumentWhyCodes,
     'eventSuccessAssignmentDocument.whyCodes.items': eventSuccessAssignmentDocumentWhyCodesItems,
     'eventSuccessAssignmentDocument.whySummary': eventSuccessAssignmentDocumentWhySummary,
+    'eventSuccessAssignmentDraftDocument.assignment.clubId': eventSuccessAssignmentDraftDocumentAssignmentClubId,
+    'eventSuccessAssignmentDraftDocument.assignment.createdAt._nanoseconds': eventSuccessAssignmentDraftDocumentAssignmentCreatedAtNanoseconds,
+    'eventSuccessAssignmentDraftDocument.assignment.createdAt._seconds': eventSuccessAssignmentDraftDocumentAssignmentCreatedAtSeconds,
+    'eventSuccessAssignmentDraftDocument.assignment.demoOps': eventSuccessAssignmentDraftDocumentAssignmentDemoOps,
+    'eventSuccessAssignmentDraftDocument.assignment.demoOpsCommand': eventSuccessAssignmentDraftDocumentAssignmentDemoOpsCommand,
+    'eventSuccessAssignmentDraftDocument.assignment.demoOpsId': eventSuccessAssignmentDraftDocumentAssignmentDemoOpsId,
+    'eventSuccessAssignmentDraftDocument.assignment.displaySubtitle': eventSuccessAssignmentDraftDocumentAssignmentDisplaySubtitle,
+    'eventSuccessAssignmentDraftDocument.assignment.displayTitle': eventSuccessAssignmentDraftDocumentAssignmentDisplayTitle,
+    'eventSuccessAssignmentDraftDocument.assignment.eventId': eventSuccessAssignmentDraftDocumentAssignmentEventId,
+    'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots': eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlots,
+    'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.compatibility': eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsCompatibility,
+    'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.endsAt._nanoseconds': eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsEndsAtNanoseconds,
+    'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.endsAt._seconds': eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsEndsAtSeconds,
+    'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.label': eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsLabel,
+    'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.peerCount': eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsPeerCount,
+    'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.peerUids': eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsPeerUids,
+    'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.peerUids.items': eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsPeerUidsItems,
+    'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.roundIndex': eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsRoundIndex,
+    'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.slotId': eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsSlotId,
+    'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.startsAt._nanoseconds': eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsStartsAtNanoseconds,
+    'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.startsAt._seconds': eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsStartsAtSeconds,
+    'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.unitIndex': eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsUnitIndex,
+    'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.unitKind': eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsUnitKind,
+    'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.unitLabel': eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsUnitLabel,
+    'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.whyCodes': eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsWhyCodes,
+    'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.whyCodes.items': eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsWhyCodesItems,
+    'eventSuccessAssignmentDraftDocument.assignment.groupRotationSlots.items.whySummary': eventSuccessAssignmentDraftDocumentAssignmentGroupRotationSlotsItemsWhySummary,
+    'eventSuccessAssignmentDraftDocument.assignment.label': eventSuccessAssignmentDraftDocumentAssignmentLabel,
+    'eventSuccessAssignmentDraftDocument.assignment.moduleId': eventSuccessAssignmentDraftDocumentAssignmentModuleId,
+    'eventSuccessAssignmentDraftDocument.assignment.organizerId': eventSuccessAssignmentDraftDocumentAssignmentOrganizerId,
+    'eventSuccessAssignmentDraftDocument.assignment.peerUids': eventSuccessAssignmentDraftDocumentAssignmentPeerUids,
+    'eventSuccessAssignmentDraftDocument.assignment.peerUids.items': eventSuccessAssignmentDraftDocumentAssignmentPeerUidsItems,
+    'eventSuccessAssignmentDraftDocument.assignment.rotationFairness.assignedRoundCount': eventSuccessAssignmentDraftDocumentAssignmentRotationFairnessAssignedRoundCount,
+    'eventSuccessAssignmentDraftDocument.assignment.rotationFairness.repeatPeerCount': eventSuccessAssignmentDraftDocumentAssignmentRotationFairnessRepeatPeerCount,
+    'eventSuccessAssignmentDraftDocument.assignment.rotationFairness.sitOutRoundCount': eventSuccessAssignmentDraftDocumentAssignmentRotationFairnessSitOutRoundCount,
+    'eventSuccessAssignmentDraftDocument.assignment.rotationFairness.uniquePeerCount': eventSuccessAssignmentDraftDocumentAssignmentRotationFairnessUniquePeerCount,
+    'eventSuccessAssignmentDraftDocument.assignment.rotationSlots': eventSuccessAssignmentDraftDocumentAssignmentRotationSlots,
+    'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.compatibility': eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsCompatibility,
+    'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.endsAt._nanoseconds': eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsEndsAtNanoseconds,
+    'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.endsAt._seconds': eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsEndsAtSeconds,
+    'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.label': eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsLabel,
+    'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.peerCount': eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsPeerCount,
+    'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.peerUid': eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsPeerUid,
+    'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.roundIndex': eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsRoundIndex,
+    'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.slotId': eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsSlotId,
+    'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.startsAt._nanoseconds': eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsStartsAtNanoseconds,
+    'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.startsAt._seconds': eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsStartsAtSeconds,
+    'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.unitIndex': eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsUnitIndex,
+    'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.unitKind': eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsUnitKind,
+    'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.whyCodes': eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsWhyCodes,
+    'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.whyCodes.items': eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsWhyCodesItems,
+    'eventSuccessAssignmentDraftDocument.assignment.rotationSlots.items.whySummary': eventSuccessAssignmentDraftDocumentAssignmentRotationSlotsItemsWhySummary,
+    'eventSuccessAssignmentDraftDocument.assignment.scenario': eventSuccessAssignmentDraftDocumentAssignmentScenario,
+    'eventSuccessAssignmentDraftDocument.assignment.seedPrefix': eventSuccessAssignmentDraftDocumentAssignmentSeedPrefix,
+    'eventSuccessAssignmentDraftDocument.assignment.sitOutSlots': eventSuccessAssignmentDraftDocumentAssignmentSitOutSlots,
+    'eventSuccessAssignmentDraftDocument.assignment.sitOutSlots.items.endsAt._nanoseconds': eventSuccessAssignmentDraftDocumentAssignmentSitOutSlotsItemsEndsAtNanoseconds,
+    'eventSuccessAssignmentDraftDocument.assignment.sitOutSlots.items.endsAt._seconds': eventSuccessAssignmentDraftDocumentAssignmentSitOutSlotsItemsEndsAtSeconds,
+    'eventSuccessAssignmentDraftDocument.assignment.sitOutSlots.items.label': eventSuccessAssignmentDraftDocumentAssignmentSitOutSlotsItemsLabel,
+    'eventSuccessAssignmentDraftDocument.assignment.sitOutSlots.items.roundIndex': eventSuccessAssignmentDraftDocumentAssignmentSitOutSlotsItemsRoundIndex,
+    'eventSuccessAssignmentDraftDocument.assignment.sitOutSlots.items.startsAt._nanoseconds': eventSuccessAssignmentDraftDocumentAssignmentSitOutSlotsItemsStartsAtNanoseconds,
+    'eventSuccessAssignmentDraftDocument.assignment.sitOutSlots.items.startsAt._seconds': eventSuccessAssignmentDraftDocumentAssignmentSitOutSlotsItemsStartsAtSeconds,
+    'eventSuccessAssignmentDraftDocument.assignment.sitOutSlots.items.whyCodes': eventSuccessAssignmentDraftDocumentAssignmentSitOutSlotsItemsWhyCodes,
+    'eventSuccessAssignmentDraftDocument.assignment.sitOutSlots.items.whyCodes.items': eventSuccessAssignmentDraftDocumentAssignmentSitOutSlotsItemsWhyCodesItems,
+    'eventSuccessAssignmentDraftDocument.assignment.sitOutSlots.items.whySummary': eventSuccessAssignmentDraftDocumentAssignmentSitOutSlotsItemsWhySummary,
+    'eventSuccessAssignmentDraftDocument.assignment.source': eventSuccessAssignmentDraftDocumentAssignmentSource,
+    'eventSuccessAssignmentDraftDocument.assignment.synthetic': eventSuccessAssignmentDraftDocumentAssignmentSynthetic,
+    'eventSuccessAssignmentDraftDocument.assignment.uid': eventSuccessAssignmentDraftDocumentAssignmentUid,
+    'eventSuccessAssignmentDraftDocument.assignment.unitIndex': eventSuccessAssignmentDraftDocumentAssignmentUnitIndex,
+    'eventSuccessAssignmentDraftDocument.assignment.unitKind': eventSuccessAssignmentDraftDocumentAssignmentUnitKind,
+    'eventSuccessAssignmentDraftDocument.assignment.unitLabel': eventSuccessAssignmentDraftDocumentAssignmentUnitLabel,
+    'eventSuccessAssignmentDraftDocument.assignment.updatedAt._nanoseconds': eventSuccessAssignmentDraftDocumentAssignmentUpdatedAtNanoseconds,
+    'eventSuccessAssignmentDraftDocument.assignment.updatedAt._seconds': eventSuccessAssignmentDraftDocumentAssignmentUpdatedAtSeconds,
+    'eventSuccessAssignmentDraftDocument.assignment.whyCodes': eventSuccessAssignmentDraftDocumentAssignmentWhyCodes,
+    'eventSuccessAssignmentDraftDocument.assignment.whyCodes.items': eventSuccessAssignmentDraftDocumentAssignmentWhyCodesItems,
+    'eventSuccessAssignmentDraftDocument.assignment.whySummary': eventSuccessAssignmentDraftDocumentAssignmentWhySummary,
+    'eventSuccessAssignmentDraftDocument.baseAssignmentRevision': eventSuccessAssignmentDraftDocumentBaseAssignmentRevision,
+    'eventSuccessAssignmentDraftDocument.clubId': eventSuccessAssignmentDraftDocumentClubId,
+    'eventSuccessAssignmentDraftDocument.createdAt._nanoseconds': eventSuccessAssignmentDraftDocumentCreatedAtNanoseconds,
+    'eventSuccessAssignmentDraftDocument.createdAt._seconds': eventSuccessAssignmentDraftDocumentCreatedAtSeconds,
+    'eventSuccessAssignmentDraftDocument.eventId': eventSuccessAssignmentDraftDocumentEventId,
+    'eventSuccessAssignmentDraftDocument.moduleId': eventSuccessAssignmentDraftDocumentModuleId,
+    'eventSuccessAssignmentDraftDocument.organizerId': eventSuccessAssignmentDraftDocumentOrganizerId,
+    'eventSuccessAssignmentDraftDocument.roundIndex': eventSuccessAssignmentDraftDocumentRoundIndex,
+    'eventSuccessAssignmentDraftDocument.uid': eventSuccessAssignmentDraftDocumentUid,
+    'eventSuccessAssignmentDraftDocument.updatedAt._nanoseconds': eventSuccessAssignmentDraftDocumentUpdatedAtNanoseconds,
+    'eventSuccessAssignmentDraftDocument.updatedAt._seconds': eventSuccessAssignmentDraftDocumentUpdatedAtSeconds,
     'eventSuccessCompatibilityResponseDocument.answerIds': eventSuccessCompatibilityResponseDocumentAnswerIds,
     'eventSuccessCompatibilityResponseDocument.answerIds.items': eventSuccessCompatibilityResponseDocumentAnswerIdsItems,
     'eventSuccessCompatibilityResponseDocument.clubId': eventSuccessCompatibilityResponseDocumentClubId,
@@ -39800,8 +40648,15 @@ abstract final class CatchContractConstraints {
     'eventSuccessFeedbackDocument.updatedAt._nanoseconds': eventSuccessFeedbackDocumentUpdatedAtNanoseconds,
     'eventSuccessFeedbackDocument.updatedAt._seconds': eventSuccessFeedbackDocumentUpdatedAtSeconds,
     'eventSuccessFeedbackDocument.welcomeRating': eventSuccessFeedbackDocumentWelcomeRating,
+    'eventSuccessLiveActionCallablePayload.action': eventSuccessLiveActionCallablePayloadAction,
+    'eventSuccessLiveActionCallablePayload.activeStepIndex': eventSuccessLiveActionCallablePayloadActiveStepIndex,
+    'eventSuccessLiveActionCallablePayload.confirmed': eventSuccessLiveActionCallablePayloadConfirmed,
+    'eventSuccessLiveActionCallablePayload.eventId': eventSuccessLiveActionCallablePayloadEventId,
+    'eventSuccessLiveActionCallablePayload.expectedRevision': eventSuccessLiveActionCallablePayloadExpectedRevision,
+    'eventSuccessLiveActionCallablePayload.roundIndex': eventSuccessLiveActionCallablePayloadRoundIndex,
     'eventSuccessPlanDocument.activeRevealRoundIndex': eventSuccessPlanDocumentActiveRevealRoundIndex,
     'eventSuccessPlanDocument.activeStepIndex': eventSuccessPlanDocumentActiveStepIndex,
+    'eventSuccessPlanDocument.assignmentDraftRevision': eventSuccessPlanDocumentAssignmentDraftRevision,
     'eventSuccessPlanDocument.attendeePrompt': eventSuccessPlanDocumentAttendeePrompt,
     'eventSuccessPlanDocument.clubId': eventSuccessPlanDocumentClubId,
     'eventSuccessPlanDocument.compatibilityAffectsRanking': eventSuccessPlanDocumentCompatibilityAffectsRanking,
@@ -39817,8 +40672,11 @@ abstract final class CatchContractConstraints {
     'eventSuccessPlanDocument.frozenAt._nanoseconds': eventSuccessPlanDocumentFrozenAtNanoseconds,
     'eventSuccessPlanDocument.frozenAt._seconds': eventSuccessPlanDocumentFrozenAtSeconds,
     'eventSuccessPlanDocument.hostGoal': eventSuccessPlanDocumentHostGoal,
+    'eventSuccessPlanDocument.liveControlRevision': eventSuccessPlanDocumentLiveControlRevision,
     'eventSuccessPlanDocument.organizerId': eventSuccessPlanDocumentOrganizerId,
     'eventSuccessPlanDocument.playbookId': eventSuccessPlanDocumentPlaybookId,
+    'eventSuccessPlanDocument.publishedRevealRoundIndex': eventSuccessPlanDocumentPublishedRevealRoundIndex,
+    'eventSuccessPlanDocument.publishedRotationRoundIndex': eventSuccessPlanDocumentPublishedRotationRoundIndex,
     'eventSuccessPlanDocument.questionnaireConfig.customQuestions': eventSuccessPlanDocumentQuestionnaireConfigCustomQuestions,
     'eventSuccessPlanDocument.questionnaireConfig.customQuestions.items.id': eventSuccessPlanDocumentQuestionnaireConfigCustomQuestionsItemsId,
     'eventSuccessPlanDocument.questionnaireConfig.customQuestions.items.options': eventSuccessPlanDocumentQuestionnaireConfigCustomQuestionsItemsOptions,
@@ -41848,6 +42706,7 @@ abstract final class CatchContractConstraints {
     'overrideEventSuccessGroupsCallablePayload.rounds.items.groups.items.participantUids.items': overrideEventSuccessGroupsCallablePayloadRoundsItemsGroupsItemsParticipantUidsItems,
     'overrideEventSuccessGroupsCallablePayload.rounds.items.roundIndex': overrideEventSuccessGroupsCallablePayloadRoundsItemsRoundIndex,
     'overrideEventSuccessRotationsCallablePayload.eventId': overrideEventSuccessRotationsCallablePayloadEventId,
+    'overrideEventSuccessRotationsCallablePayload.expectedRevision': overrideEventSuccessRotationsCallablePayloadExpectedRevision,
     'overrideEventSuccessRotationsCallablePayload.rounds': overrideEventSuccessRotationsCallablePayloadRounds,
     'overrideEventSuccessRotationsCallablePayload.rounds.items.pairings': overrideEventSuccessRotationsCallablePayloadRoundsItemsPairings,
     'overrideEventSuccessRotationsCallablePayload.rounds.items.pairings.items.uidA': overrideEventSuccessRotationsCallablePayloadRoundsItemsPairingsItemsUidA,
@@ -41902,6 +42761,8 @@ abstract final class CatchContractConstraints {
     'placesAutocompleteCallableResponse.predictions.items.mainText': placesAutocompleteCallableResponsePredictionsItemsMainText,
     'placesAutocompleteCallableResponse.predictions.items.placeId': placesAutocompleteCallableResponsePredictionsItemsPlaceId,
     'placesAutocompleteCallableResponse.predictions.items.secondaryText': placesAutocompleteCallableResponsePredictionsItemsSecondaryText,
+    'prepareEventSuccessRotationDraftCallablePayload.eventId': prepareEventSuccessRotationDraftCallablePayloadEventId,
+    'prepareEventSuccessRotationDraftCallablePayload.expectedRevision': prepareEventSuccessRotationDraftCallablePayloadExpectedRevision,
     'profilePhoto.createdAt._nanoseconds': profilePhotoCreatedAtNanoseconds,
     'profilePhoto.createdAt._seconds': profilePhotoCreatedAtSeconds,
     'profilePhoto.id': profilePhotoId,
@@ -42024,6 +42885,10 @@ abstract final class CatchContractConstraints {
     'publicRouteReservationDocument.targetPath': publicRouteReservationDocumentTargetPath,
     'publicRouteReservationDocument.updatedAt._nanoseconds': publicRouteReservationDocumentUpdatedAtNanoseconds,
     'publicRouteReservationDocument.updatedAt._seconds': publicRouteReservationDocumentUpdatedAtSeconds,
+    'publishEventSuccessRotationRoundCallablePayload.confirmed': publishEventSuccessRotationRoundCallablePayloadConfirmed,
+    'publishEventSuccessRotationRoundCallablePayload.eventId': publishEventSuccessRotationRoundCallablePayloadEventId,
+    'publishEventSuccessRotationRoundCallablePayload.expectedRevision': publishEventSuccessRotationRoundCallablePayloadExpectedRevision,
+    'publishEventSuccessRotationRoundCallablePayload.roundIndex': publishEventSuccessRotationRoundCallablePayloadRoundIndex,
     'rateLimitDocument.action': rateLimitDocumentAction,
     'rateLimitDocument.count': rateLimitDocumentCount,
     'rateLimitDocument.expiresAt._nanoseconds': rateLimitDocumentExpiresAtNanoseconds,

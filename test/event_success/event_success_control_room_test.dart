@@ -11,6 +11,68 @@ import 'package:flutter_test/flutter_test.dart';
 import '../events/events_test_helpers.dart' show buildEvent;
 
 void main() {
+  testWidgets('restart mid-round resumes the correct persisted beat', (
+    tester,
+  ) async {
+    final event = buildEvent(
+      id: 'restart-control-room',
+      eventFormat: const EventFormatSnapshot(
+        activityKind: ActivityKind.pubQuiz,
+        interactionModel: EventInteractionModel.hostLedProgram,
+        customActivityLabel: 'host-led social',
+        defaultPlaybookId: 'host_led_social',
+      ),
+    );
+    final persisted =
+        EventSuccessPlan.defaultForEvent(event, now: event.startTime).copyWith(
+          status: EventSuccessPlanStatus.live,
+          activeStepIndex: 2,
+          liveControlRevision: 9,
+          assignmentDraftRevision: 3,
+          publishedRotationRoundIndex: 1,
+          publishedRevealRoundIndex: 1,
+        );
+
+    Future<void> pumpControlRoom(EventSuccessPlan plan) => tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: EventSuccessHostPanel(
+              event: event,
+              plan: plan,
+              planIsPersisted: true,
+              roster: EventParticipationRoster.empty(),
+              initialTab: EventSuccessHostTab.live,
+              showTabs: false,
+              compactLiveControls: true,
+              fixtureActions: EventSuccessHostFixtureActions(
+                onPreviousStep: () {},
+                onNextStep: () {},
+                onCompletePlan: () {},
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await pumpControlRoom(persisted);
+    expect(find.textContaining('Step 3 of 4'), findsOneWidget);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    final restarted = EventSuccessPlan.fromJson({
+      ...persisted.toJson(),
+      'id': persisted.id,
+    });
+    await pumpControlRoom(restarted);
+
+    expect(restarted.liveControlRevision, 9);
+    expect(restarted.publishedRotationRoundIndex, 1);
+    expect(find.textContaining('Step 3 of 4'), findsOneWidget);
+    expect(find.textContaining('Step 1 of 4'), findsNothing);
+  });
+
   testWidgets(
     'compact Control Room fits the first viewport with an external-only roster',
     (tester) async {

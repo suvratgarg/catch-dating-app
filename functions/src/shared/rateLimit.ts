@@ -152,6 +152,8 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   fetchEventSuccessWingmanCandidates: {maxRequests: 30, windowMs: 60 * 1000},
   submitEventSuccessWingmanRequest: {maxRequests: 10, windowMs: 60 * 1000},
   withdrawEventSuccessWingmanRequest: {maxRequests: 10, windowMs: 60 * 1000},
+  controlEventSuccessLive: {maxRequests: 120, windowMs: 60 * 1000},
+  publishEventSuccessRotationRound: {maxRequests: 30, windowMs: 60 * 1000},
   // Places is keystroke-driven, so it needs a higher cap than mutations.
   placesAutocomplete: {maxRequests: 60, windowMs: 60 * 1000},
   placeDetails: {maxRequests: 30, windowMs: 60 * 1000},

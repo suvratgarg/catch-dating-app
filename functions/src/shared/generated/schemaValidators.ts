@@ -77,6 +77,7 @@ import {CrossPathsPairHoldDocument} from "./crossPathsPairHoldDocument";
 import {EventBroadcastDocument} from "./eventBroadcastDocument";
 import {EventWaitlistOfferDocument} from "./eventWaitlistOfferDocument";
 import {EventSuccessPlanDocument} from "./eventSuccessPlanDocument";
+import {EventSuccessAssignmentDraftDocument} from "./eventSuccessAssignmentDraftDocument";
 import {EventSuccessFeedbackDocument} from "./eventSuccessFeedbackDocument";
 import {EventSuccessPreferenceDocument} from "./eventSuccessPreferenceDocument";
 import {EventSuccessCompatibilityResponseDocument} from "./eventSuccessCompatibilityResponseDocument";
@@ -253,6 +254,9 @@ import {UnmergeOrganizerContactsCallablePayload} from "./unmergeOrganizerContact
 import {MutateOrganizerContactMergeCallableResponse} from "./mutateOrganizerContactMergeCallableResponse";
 import {EventJoinRequestDecisionCallablePayload} from "./eventJoinRequestDecisionCallablePayload";
 import {OverrideEventSuccessRotationsCallablePayload} from "./overrideEventSuccessRotationsCallablePayload";
+import {PrepareEventSuccessRotationDraftCallablePayload} from "./prepareEventSuccessRotationDraftCallablePayload";
+import {PublishEventSuccessRotationRoundCallablePayload} from "./publishEventSuccessRotationRoundCallablePayload";
+import {EventSuccessLiveActionCallablePayload} from "./eventSuccessLiveActionCallablePayload";
 import {OverrideEventSuccessGroupsCallablePayload} from "./overrideEventSuccessGroupsCallablePayload";
 import {SubmitEventSuccessWingmanRequestCallablePayload} from "./submitEventSuccessWingmanRequestCallablePayload";
 import {StartEventSuccessFirstHelloMissionCallablePayload} from "./startEventSuccessFirstHelloMissionCallablePayload";
@@ -399,6 +403,7 @@ import {
   eventBroadcastDocumentSchema,
   eventWaitlistOfferDocumentSchema,
   eventSuccessPlanDocumentSchema,
+  eventSuccessAssignmentDraftDocumentSchema,
   eventSuccessFeedbackDocumentSchema,
   eventSuccessPreferenceDocumentSchema,
   eventSuccessCompatibilityResponseDocumentSchema,
@@ -575,6 +580,9 @@ import {
   mutateOrganizerContactMergeCallableResponseSchema,
   eventJoinRequestDecisionCallablePayloadSchema,
   overrideEventSuccessRotationsCallablePayloadSchema,
+  prepareEventSuccessRotationDraftCallablePayloadSchema,
+  publishEventSuccessRotationRoundCallablePayloadSchema,
+  eventSuccessLiveActionCallablePayloadSchema,
   overrideEventSuccessGroupsCallablePayloadSchema,
   submitEventSuccessWingmanRequestCallablePayloadSchema,
   startEventSuccessFirstHelloMissionCallablePayloadSchema,
@@ -944,6 +952,10 @@ export const validateEventSuccessPlanDocument:
   ValidateFunction<EventSuccessPlanDocument> =
     ajv.compile(eventSuccessPlanDocumentSchema) as
       ValidateFunction<EventSuccessPlanDocument>;
+export const validateEventSuccessAssignmentDraftDocument:
+  ValidateFunction<EventSuccessAssignmentDraftDocument> =
+    ajv.compile(eventSuccessAssignmentDraftDocumentSchema) as
+      ValidateFunction<EventSuccessAssignmentDraftDocument>;
 export const validateEventSuccessFeedbackDocument:
   ValidateFunction<EventSuccessFeedbackDocument> =
     ajv.compile(eventSuccessFeedbackDocumentSchema) as
@@ -1648,6 +1660,18 @@ export const validateOverrideEventSuccessRotationsCallablePayload:
   ValidateFunction<OverrideEventSuccessRotationsCallablePayload> =
     ajv.compile(overrideEventSuccessRotationsCallablePayloadSchema) as
       ValidateFunction<OverrideEventSuccessRotationsCallablePayload>;
+export const validatePrepareEventSuccessRotationDraftCallablePayload:
+  ValidateFunction<PrepareEventSuccessRotationDraftCallablePayload> =
+    ajv.compile(prepareEventSuccessRotationDraftCallablePayloadSchema) as
+      ValidateFunction<PrepareEventSuccessRotationDraftCallablePayload>;
+export const validatePublishEventSuccessRotationRoundCallablePayload:
+  ValidateFunction<PublishEventSuccessRotationRoundCallablePayload> =
+    ajv.compile(publishEventSuccessRotationRoundCallablePayloadSchema) as
+      ValidateFunction<PublishEventSuccessRotationRoundCallablePayload>;
+export const validateEventSuccessLiveActionCallablePayload:
+  ValidateFunction<EventSuccessLiveActionCallablePayload> =
+    ajv.compile(eventSuccessLiveActionCallablePayloadSchema) as
+      ValidateFunction<EventSuccessLiveActionCallablePayload>;
 export const validateOverrideEventSuccessGroupsCallablePayload:
   ValidateFunction<OverrideEventSuccessGroupsCallablePayload> =
     ajv.compile(overrideEventSuccessGroupsCallablePayloadSchema) as

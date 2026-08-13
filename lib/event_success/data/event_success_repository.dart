@@ -8,6 +8,9 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
         EventIdCallableRequest,
         OverrideEventSuccessGroupsCallableRequest,
         OverrideEventSuccessRotationsCallableRequest,
+        PrepareEventSuccessRotationDraftCallableRequest,
+        PublishEventSuccessRotationRoundCallableRequest,
+        EventSuccessLiveActionCallableRequest,
         StartEventSuccessFirstHelloMissionCallableRequest,
         SubmitEventSuccessWingmanRequestCallableRequest;
 import 'package:catch_dating_app/event_success/data/event_success_callable_responses.dart';
@@ -40,11 +43,22 @@ part 'event_success_repository/providers.dart';
 const _plansPath = 'eventSuccessPlans';
 const _feedbackPath = 'eventSuccessFeedback';
 const _assignmentsPath = 'eventSuccessAssignments';
+const _assignmentDraftsPath = 'eventSuccessAssignmentDrafts';
 const _preferencesPath = 'eventSuccessPreferences';
 const _wingmanRequestsPath = 'eventSuccessWingmanRequests';
 const _arrivalMissionsPath = 'eventSuccessArrivalMissions';
 const _compatibilityResponsesPath = 'eventSuccessCompatibilityResponses';
 const _scorecardsPath = 'eventSuccessScorecards';
+
+Map<String, dynamic> _eventSuccessPlanToClientJson(EventSuccessPlan plan) {
+  final data = plan.toJson();
+  // These fields are authored only by revision-fenced backend live controls.
+  data.remove('liveControlRevision');
+  data.remove('assignmentDraftRevision');
+  data.remove('publishedRotationRoundIndex');
+  data.remove('publishedRevealRoundIndex');
+  return data;
+}
 
 abstract class _EventSuccessRepositoryCore {
   const _EventSuccessRepositoryCore();
@@ -54,6 +68,7 @@ abstract class _EventSuccessRepositoryCore {
 
   CollectionReference<EventSuccessFeedback> get _feedbackRef;
   CollectionReference<EventSuccessAssignment> get _assignmentsRef;
+  CollectionReference<EventSuccessAssignmentDraft> get _assignmentDraftsRef;
   CollectionReference<EventSuccessPreference> get _preferencesRef;
   CollectionReference<EventSuccessWingmanRequest> get _wingmanRequestsRef;
 
@@ -114,7 +129,7 @@ class EventSuccessRepository extends _EventSuccessRepositoryCore
       .withDocumentIdConverter<EventSuccessPlan>(
         idField: 'id',
         fromJson: EventSuccessPlan.fromJson,
-        toJson: (plan) => plan.toJson(),
+        toJson: _eventSuccessPlanToClientJson,
       );
 
   @override
@@ -134,6 +149,17 @@ class EventSuccessRepository extends _EventSuccessRepositoryCore
         fromJson: EventSuccessAssignment.fromJson,
         toJson: (assignment) => assignment.toJson(),
       );
+
+  @override
+  CollectionReference<EventSuccessAssignmentDraft> get _assignmentDraftsRef =>
+      _db
+          .collection(_assignmentDraftsPath)
+          .withDocumentIdConverter<EventSuccessAssignmentDraft>(
+            idField: 'id',
+            fromJson: EventSuccessAssignmentDraft.fromJson,
+            toJson: (_) =>
+                throw UnsupportedError('Assignment drafts are server-owned.'),
+          );
 
   @override
   CollectionReference<EventSuccessPreference> get _preferencesRef => _db

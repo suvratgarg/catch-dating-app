@@ -745,6 +745,90 @@ final class WatchEventSuccessRotationAssignmentsFamily extends $Family
   String toString() => r'watchEventSuccessRotationAssignmentsProvider';
 }
 
+@ProviderFor(watchEventSuccessRotationDrafts)
+final watchEventSuccessRotationDraftsProvider =
+    WatchEventSuccessRotationDraftsFamily._();
+
+final class WatchEventSuccessRotationDraftsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<EventSuccessAssignmentDraft>>,
+          List<EventSuccessAssignmentDraft>,
+          Stream<List<EventSuccessAssignmentDraft>>
+        >
+    with
+        $FutureModifier<List<EventSuccessAssignmentDraft>>,
+        $StreamProvider<List<EventSuccessAssignmentDraft>> {
+  WatchEventSuccessRotationDraftsProvider._({
+    required WatchEventSuccessRotationDraftsFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'watchEventSuccessRotationDraftsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$watchEventSuccessRotationDraftsHash();
+
+  @override
+  String toString() {
+    return r'watchEventSuccessRotationDraftsProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<List<EventSuccessAssignmentDraft>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<List<EventSuccessAssignmentDraft>> create(Ref ref) {
+    final argument = this.argument as String;
+    return watchEventSuccessRotationDrafts(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is WatchEventSuccessRotationDraftsProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$watchEventSuccessRotationDraftsHash() =>
+    r'2065ae868b8051f08abea70046ee8ba80dc2f9e0';
+
+final class WatchEventSuccessRotationDraftsFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          Stream<List<EventSuccessAssignmentDraft>>,
+          String
+        > {
+  WatchEventSuccessRotationDraftsFamily._()
+    : super(
+        retry: null,
+        name: r'watchEventSuccessRotationDraftsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  WatchEventSuccessRotationDraftsProvider call(String eventId) =>
+      WatchEventSuccessRotationDraftsProvider._(argument: eventId, from: this);
+
+  @override
+  String toString() => r'watchEventSuccessRotationDraftsProvider';
+}
+
 @ProviderFor(watchUserEventSuccessPreference)
 final watchUserEventSuccessPreferenceProvider =
     WatchUserEventSuccessPreferenceFamily._();

@@ -1308,7 +1308,9 @@ service cloud.firestore {
           'targetAttendeeCount', 'structureConfig', 'hostGoal', 'wingmanRequestsEnabled',
           'contextualOpenersEnabled', 'compatibilityAffectsRanking',
           'questionnaireConfig',
-          'activeStepIndex', 'status',
+          'activeStepIndex', 'liveControlRevision',
+          'assignmentDraftRevision', 'publishedRotationRoundIndex',
+          'publishedRevealRoundIndex', 'status',
           'revealStatus', 'activeRevealRoundIndex', 'revealStartedAt',
           'attendeePrompt', 'createdAt', 'updatedAt', 'frozenAt',
           'completedAt'
@@ -1471,6 +1473,10 @@ service cloud.firestore {
         && !eventSuccessSetupBlockedByEvent(eventId)
         && request.resource.data.status == 'setup'
         && request.resource.data.activeStepIndex == 0
+        && !request.resource.data.keys().hasAny([
+          'liveControlRevision', 'assignmentDraftRevision',
+          'publishedRotationRoundIndex', 'publishedRevealRoundIndex'
+        ])
         && (
           !request.resource.data.keys().hasAny(['revealStatus'])
           || request.resource.data.revealStatus == 'idle'
@@ -1493,35 +1499,21 @@ service cloud.firestore {
         );
     }
 
-    function isEventSuccessLiveOnlyUpdate() {
-      return eventSuccessPlanChangedKeys().hasOnly([
-        'activeStepIndex', 'status', 'revealStatus',
-        'activeRevealRoundIndex', 'revealStartedAt',
-        'updatedAt', 'frozenAt', 'completedAt'
-      ]);
-    }
-
-    function isEventSuccessSetupOrLiveUpdate() {
+    function isEventSuccessSetupUpdate() {
       return eventSuccessPlanChangedKeys().hasOnly([
         'playbookId', 'selectedModuleIds', 'targetAttendeeCount',
         'structureConfig', 'hostGoal', 'wingmanRequestsEnabled',
         'contextualOpenersEnabled', 'compatibilityAffectsRanking',
-        'questionnaireConfig', 'attendeePrompt',
-        'activeStepIndex', 'status', 'revealStatus',
-        'activeRevealRoundIndex', 'revealStartedAt',
-        'updatedAt', 'frozenAt', 'completedAt'
+        'questionnaireConfig', 'attendeePrompt', 'updatedAt'
       ]);
     }
 
     function isEventSuccessPlanUpdateAllowed(eventId) {
-      return isValidEventSuccessPlan(eventId, request.resource.data)
-        && eventSuccessPlanImmutableFieldsUnchanged()
-        && (
-          eventSuccessSetupBlockedByEvent(eventId)
-            || eventSuccessPlanSetupFrozen()
-            ? isEventSuccessLiveOnlyUpdate()
-            : isEventSuccessSetupOrLiveUpdate()
-        );
+      return eventSuccessPlanImmutableFieldsUnchanged()
+        && !eventSuccessSetupBlockedByEvent(eventId)
+        && !eventSuccessPlanSetupFrozen()
+        && isEventSuccessSetupUpdate()
+        && isValidEventSuccessPlan(eventId, request.resource.data);
     }
 
     function isValidEventSuccessFeedback(feedbackId, data) {
@@ -1752,6 +1744,14 @@ service cloud.firestore {
       allow list: if isAuthed()
         && resource.data.eventId is string
         && resource.data.moduleId is string
+        && isClubHostForEvent(resource.data.eventId);
+      allow write: if false;
+    }
+
+    match /eventSuccessAssignmentDrafts/{assignmentDraftId} {
+      allow get, list: if isAuthed()
+        && resource.data.eventId is string
+        && resource.data.moduleId == 'guided_rotations'
         && isClubHostForEvent(resource.data.eventId);
       allow write: if false;
     }

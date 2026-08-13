@@ -13,6 +13,7 @@ const schemaOverrideEventSuccessRotationsCallablePayloadSchema = <String, Object
   'additionalProperties': false,
   'required': <Object?>[
     'eventId',
+    'expectedRevision',
     'rounds',
   ],
   'properties': <String, Object?>{
@@ -20,6 +21,11 @@ const schemaOverrideEventSuccessRotationsCallablePayloadSchema = <String, Object
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+    },
+    'expectedRevision': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'maximum': 2147483647,
     },
     'rounds': <String, Object?>{
       'type': 'array',
