@@ -40,6 +40,7 @@ import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
+import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/presentation/host_app_shell.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
@@ -123,6 +124,7 @@ import 'package:catch_dating_app/explore/presentation/widgets/catch_cover_story.
 import 'package:catch_dating_app/health_activity/data/health_activity_repository.dart';
 import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
 import 'package:catch_dating_app/hosts/data/host_analytics_repository.dart';
+import 'package:catch_dating_app/hosts/data/host_attendance_outbox.dart';
 import 'package:catch_dating_app/hosts/data/host_profile_repository.dart';
 import 'package:catch_dating_app/hosts/domain/host_profile.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_controller.dart';
@@ -209,6 +211,7 @@ import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_sliver_header.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -1608,6 +1611,10 @@ final _dashboardEditableHostEvent = _dashboardHostEvent.copyWith(
   bookedCount: 0,
   waitlistedCount: 0,
   checkedInCount: 0,
+);
+final _dashboardScheduleLockedHostEvent = _dashboardHostEvent.copyWith(
+  id: 'event-host-schedule-locked',
+  bookedCount: 1,
 );
 final _dashboardPrivateAccessHostEvent = _dashboardEditableHostEvent.copyWith(
   id: 'event-host-private-access',
@@ -3676,8 +3683,11 @@ List<Object> _hostManageRouteProviderOverrides({
   List<PublicProfile> wingmanProfiles = const <PublicProfile>[],
   List<EventParticipation>? participations,
 }) {
-  final effectiveUid = uid ?? HostOperationsFixtures.hostUid;
   final effectiveClub = club ?? HostOperationsFixtures.primaryClub;
+  final effectiveUid =
+      uid ??
+      effectiveClub.ownerOrPrimaryHostUserId ??
+      HostOperationsFixtures.hostUid;
   final effectiveEvent = event ?? HostOperationsFixtures.privateEvent;
   final effectiveParticipations =
       participations ?? HostOperationsFixtures.participations;
@@ -3706,8 +3716,33 @@ List<Object> _hostManageRouteProviderOverrides({
       if (defaultProfiles.containsKey(profileId))
         profileId: defaultProfiles[profileId]!,
   };
+  final firestore = FakeFirebaseFirestore();
+  final functions = _CaptureFirebaseFunctions({
+    'listEventStaff': <String, Object?>{
+      'eventId': effectiveEvent.id,
+      'members': const <Object?>[],
+    },
+    'getEventRosterInsights': <String, Object?>{
+      'eventId': effectiveEvent.id,
+      'organizerId': effectiveClub.id,
+      'cutoffAtMillis': effectiveEvent.startTime.millisecondsSinceEpoch,
+      'sourceCoverage': 'exact',
+      'spendCoverage': 'catchPaymentsOnly',
+      'rows': const <Object?>[],
+      'computedAtMillis': _captureNow.millisecondsSinceEpoch,
+    },
+  });
   return [
     uidProvider.overrideWithValue(AsyncData<String?>(effectiveUid)),
+    firebaseFirestoreProvider.overrideWithValue(firestore),
+    firebaseFunctionsProvider.overrideWithValue(functions),
+    appConnectivityProvider.overrideWith(
+      (ref) =>
+          Stream.value(const <ConnectivityResult>[ConnectivityResult.wifi]),
+    ),
+    hostAttendanceOutboxStoreProvider.overrideWithValue(
+      _CaptureHostAttendanceOutboxStore(),
+    ),
     fetchClubProvider(
       effectiveClub.id,
     ).overrideWithValue(clubValue ?? AsyncData<Club?>(effectiveClub)),
@@ -3770,6 +3805,52 @@ List<Object> _hostManageRouteProviderOverrides({
         eventSuccessPeerUidsKey(_hostManageWingmanProfileUids(wingmanRequests)),
       ).overrideWith((ref) async => wingmanProfiles),
   ];
+}
+
+final class _CaptureHostAttendanceOutboxStore
+    implements HostAttendanceOutboxStore {
+  final Map<String, List<HostAttendanceOutboxEntry>> _entries = {};
+
+  @override
+  Future<List<HostAttendanceOutboxEntry>> load(String accountId) async =>
+      List<HostAttendanceOutboxEntry>.of(_entries[accountId] ?? const []);
+
+  @override
+  Future<void> save(
+    String accountId,
+    List<HostAttendanceOutboxEntry> entries,
+  ) async {
+    _entries[accountId] = List<HostAttendanceOutboxEntry>.of(entries);
+  }
+}
+
+final class _CaptureFirebaseFunctions extends Fake
+    implements FirebaseFunctions {
+  _CaptureFirebaseFunctions(this.responses);
+
+  final Map<String, Object?> responses;
+
+  @override
+  HttpsCallable httpsCallable(String name, {HttpsCallableOptions? options}) =>
+      _CaptureHttpsCallable(responses[name]);
+}
+
+final class _CaptureHttpsCallable extends Fake implements HttpsCallable {
+  _CaptureHttpsCallable(this.response);
+
+  final Object? response;
+
+  @override
+  Future<HttpsCallableResult<T>> call<T>([dynamic parameters]) async =>
+      _CaptureHttpsCallableResult<T>(response as T);
+}
+
+final class _CaptureHttpsCallableResult<T> extends Fake
+    implements HttpsCallableResult<T> {
+  _CaptureHttpsCallableResult(this.data);
+
+  @override
+  final T data;
 }
 
 List<EventSuccessAssignment> _hostManageMicroPodAssignments({
@@ -4056,11 +4137,61 @@ Widget _hostManageLiveSectionCapture({Event? event}) {
   final effectiveEvent = event ?? HostOperationsFixtures.privateEvent;
   return _AppRoleCapture(
     role: AppRole.host,
-    child: EventSuccessHostSection(
-      event: effectiveEvent,
-      initialTab: EventSuccessHostTab.live,
-      showTabs: false,
+    child: SingleChildScrollView(
+      key: const ValueKey<String>('host_manage_live_section_capture_scroll'),
+      padding: CatchInsets.contentRelaxed,
+      child: EventSuccessHostSection(
+        event: effectiveEvent,
+        initialTab: EventSuccessHostTab.live,
+        showTabs: false,
+      ),
     ),
+  );
+}
+
+Future<void> _scrollHostManageLiveSectionTo(
+  WidgetTester tester,
+  Finder target,
+) async {
+  await tester.scrollUntilVisible(
+    target,
+    320,
+    scrollable: find
+        .descendant(
+          of: find.byKey(
+            const ValueKey<String>('host_manage_live_section_capture_scroll'),
+          ),
+          matching: find.byType(Scrollable),
+        )
+        .first,
+  );
+  await pumpFeatureUi(tester);
+}
+
+Future<void> _openHostManageCheckInQr(WidgetTester tester) async {
+  final scrollable = find
+      .descendant(
+        of: find.byKey(const Key('host_event_manage_scroll_view')),
+        matching: find.byType(Scrollable),
+      )
+      .first;
+  final disclosure = find.text('Check-in QR');
+  await tester.scrollUntilVisible(disclosure, 320, scrollable: scrollable);
+  await tester.tap(disclosure);
+  await pumpFeatureUi(tester);
+  await tester.scrollUntilVisible(
+    find.text('Share attendee link'),
+    320,
+    scrollable: scrollable,
+  );
+  await pumpFeatureUi(tester);
+}
+
+Future<void> _verifyScheduleLockedCapture(WidgetTester tester) async {
+  expect(find.text('Schedule locked'), findsOneWidget);
+  expect(
+    find.byType(ReadOnlyHostedEventScheduleCard, skipOffstage: false),
+    findsOneWidget,
   );
 }
 
@@ -4081,11 +4212,18 @@ EventSuccessPlan _hostManageLivePlanForModule({
   required Event event,
   required DateTime now,
   required String moduleId,
+  String? playbookId,
 }) {
-  final basePlan = EventSuccessPlan.defaultForEvent(
-    event,
-    now: now,
-  ).copyWith(status: EventSuccessPlanStatus.live, frozenAt: now);
+  final defaultPlan = EventSuccessPlan.defaultForEvent(event, now: now);
+  final basePlan = defaultPlan.copyWith(
+    playbookId: playbookId ?? defaultPlan.playbookId,
+    selectedModuleIds: <String>{
+      ...defaultPlan.selectedModuleIds,
+      moduleId,
+    }.toList(growable: false),
+    status: EventSuccessPlanStatus.live,
+    frozenAt: now,
+  );
   final runtime = EventSuccessRuntime(plan: basePlan, event: event, now: now);
   final steps = runtime.runOfShowSteps;
   final activeIndex = steps.indexWhere(
@@ -5586,6 +5724,22 @@ final _hostLivePlan =
       status: EventSuccessPlanStatus.live,
       frozenAt: _captureNow,
     );
+final _hostManageCheckInEvent = _hostEvent.copyWith(
+  eventOrigin: const EventOrigin(
+    mode: EventOriginMode.externalCompanion,
+    bookingAuthority: EventBookingAuthority.external,
+    rosterAuthority: EventRosterAuthority.hostImport,
+    provider: ExternalBookingProvider.luma,
+    externalEventId: 'capture-host-check-in-event',
+    adapterVersion: 'luma-v1',
+  ),
+  runtimeAccess: const EventRuntimeAccess(
+    enabled: true,
+    publicRuntimeId: 'runtime_capturehostcheckin',
+    walkInPolicy: EventRuntimeWalkInPolicy.hostApproval,
+    termsVersion: 'event-runtime-v1',
+  ),
+);
 final _hostManageOverrideEvent = HostOperationsFixtures.privateEvent.copyWith(
   startTime: DateTime(2026, 6, 9, 20),
   endTime: DateTime(2026, 6, 9, 22),
@@ -5594,9 +5748,27 @@ final _hostManageOverrideEvent = HostOperationsFixtures.privateEvent.copyWith(
   waitlistedCount: 3,
 );
 final _hostManageCheckInPlan = _hostManageLivePlanForModule(
-  event: _hostEvent,
+  event: _hostManageCheckInEvent,
   now: _captureNow,
   moduleId: EventSuccessModuleCatalog.checkIn.id,
+);
+final _hostManageWingmanPlan = _hostManageLivePlanForModule(
+  event: _hostEvent,
+  now: _captureNow,
+  moduleId: EventSuccessModuleCatalog.wingmanRequests.id,
+  playbookId: 'social_run_light',
+);
+final _hostManageMicroPodsPlan = _hostManageLivePlanForModule(
+  event: _hostEvent,
+  now: _captureNow,
+  moduleId: EventSuccessModuleCatalog.microPods.id,
+  playbookId: 'social_run_light',
+);
+final _hostManageRotationsPlan = _hostManageLivePlanForModule(
+  event: _hostEvent,
+  now: _captureNow,
+  moduleId: EventSuccessModuleCatalog.guidedRotations.id,
+  playbookId: 'pickleball_rotations',
 );
 final _hostManageCuePlan = _hostManageLivePlanForModule(
   event: _hostEvent,
@@ -11153,14 +11325,15 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['hostAppEditEventScreen'],
     device: CaptureDevice.iphone17Pro,
     providerOverrides: _hostEditEventProviderOverrides(
-      event: _dashboardHostEvent,
+      event: _dashboardScheduleLockedHostEvent,
     ),
     builder: (context) => EditHostedEventScreen(
       club: _dashboardHostClub,
-      event: _dashboardHostEvent,
+      event: _dashboardScheduleLockedHostEvent,
       loadMapTiles: false,
       now: () => _captureNow,
     ),
+    drive: _verifyScheduleLockedCapture,
   ),
   ScreenCaptureEntry(
     id: 'edit_hosted_event_cancelled',
@@ -11844,7 +12017,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       club: _dashboardHostClub,
       event: _hostEvent,
       participations: _hostParticipations,
-      planValue: AsyncData<EventSuccessPlan?>(_hostLivePlan),
+      planValue: AsyncData<EventSuccessPlan?>(_hostManageWingmanPlan),
       wingmanRequests: _hostManageWingmanRequests(
         event: _hostEvent,
         now: _captureNow,
@@ -11855,10 +12028,10 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         ),
       ),
     ),
-    builder: (context) => _hostManageRouteCapture(
-      club: _dashboardHostClub,
-      event: _hostEvent,
-      initialSection: HostEventManageSection.live,
+    builder: (context) => _hostManageLiveSectionCapture(event: _hostEvent),
+    drive: (tester) => _scrollHostManageLiveSectionTo(
+      tester,
+      find.byType(WingmanRequestsHostCard, skipOffstage: false),
     ),
   ),
   ScreenCaptureEntry(
@@ -11867,15 +12040,16 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.iphone17Pro,
     providerOverrides: _hostManageRouteProviderOverrides(
       club: _dashboardHostClub,
-      event: _hostEvent,
+      event: _hostManageCheckInEvent,
       participations: _hostParticipations,
       planValue: AsyncData<EventSuccessPlan?>(_hostManageCheckInPlan),
     ),
     builder: (context) => _hostManageRouteCapture(
       club: _dashboardHostClub,
-      event: _hostEvent,
+      event: _hostManageCheckInEvent,
       initialSection: HostEventManageSection.guests,
     ),
+    drive: _openHostManageCheckInQr,
   ),
   ScreenCaptureEntry(
     id: 'host_manage_live_conversation_cues',
@@ -11897,7 +12071,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       club: _dashboardHostClub,
       event: _hostEvent,
       participations: _hostParticipations,
-      planValue: AsyncData<EventSuccessPlan?>(_hostLivePlan),
+      planValue: AsyncData<EventSuccessPlan?>(_hostManageMicroPodsPlan),
       assignments: _hostManageMicroPodAssignments(
         event: _hostEvent,
         now: _captureNow,
@@ -11909,10 +12083,10 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       ),
       preferences: _hostManagePreferences(event: _hostEvent, now: _captureNow),
     ),
-    builder: (context) => _hostManageRouteCapture(
-      club: _dashboardHostClub,
-      event: _hostEvent,
-      initialSection: HostEventManageSection.live,
+    builder: (context) => _hostManageLiveSectionCapture(event: _hostEvent),
+    drive: (tester) => _scrollHostManageLiveSectionTo(
+      tester,
+      find.text('Small starter groups'),
     ),
   ),
   ScreenCaptureEntry(
@@ -11963,7 +12137,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       club: _dashboardHostClub,
       event: _hostEvent,
       participations: _hostParticipations,
-      planValue: AsyncData<EventSuccessPlan?>(_hostLivePlan),
+      planValue: AsyncData<EventSuccessPlan?>(_hostManageRotationsPlan),
       rotationAssignments: _hostManageRotationAssignments(
         event: _hostEvent,
         now: _captureNow,
@@ -11975,10 +12149,10 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       ),
       preferences: _hostManagePreferences(event: _hostEvent, now: _captureNow),
     ),
-    builder: (context) => _hostManageRouteCapture(
-      club: _dashboardHostClub,
-      event: _hostEvent,
-      initialSection: HostEventManageSection.live,
+    builder: (context) => _hostManageLiveSectionCapture(event: _hostEvent),
+    drive: (tester) => _scrollHostManageLiveSectionTo(
+      tester,
+      find.text('Timed partner rotations'),
     ),
   ),
   ScreenCaptureEntry(

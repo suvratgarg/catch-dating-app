@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.components.schema.json",
   "version": 4,
-  "updated": "2026-08-11",
+  "updated": "2026-08-13",
   "sourceOfTruth": {
     "behavior": "Flutter implementations in lib/core/widgets/catch_*.dart own runtime behavior, accessibility, layout, and state.",
     "tokens": "design/tokens/catch.tokens.json owns primitive token values; generated Dart/CSS and Figma variables mirror it.",
@@ -328,7 +328,20 @@
               "decisionRef": "contract-family:catch.badge"
             }
           }
-        ]
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [],
@@ -432,7 +445,20 @@
           "CatchTextStyles.kicker",
           "CatchIcon.md"
         ],
-        "goldens": []
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [],
@@ -682,7 +708,20 @@
               "decisionRef": "contract-family:catch.button"
             }
           }
-        ]
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [],
@@ -936,7 +975,20 @@
               "decisionRef": "contract-family:catch.chip"
             }
           }
-        ]
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [],
@@ -1131,7 +1183,20 @@
               "decisionRef": "contract-family:catch.empty_state"
             }
           }
-        ]
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [
@@ -1188,7 +1253,7 @@
       "design": {
         "figma": {
           "status": "unmapped",
-          "componentName": "Catch/ErrorState",
+          "componentName": "Catch/Recovery State",
           "componentUrl": null
         },
         "codeConnect": {
@@ -1431,7 +1496,20 @@
               "decisionRef": "contract-family:catch.error_state"
             }
           }
-        ]
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [
@@ -1483,7 +1561,7 @@
       "design": {
         "figma": {
           "status": "unmapped",
-          "componentName": "Catch/ErrorBanner",
+          "componentName": "Catch/Feedback Banner",
           "componentUrl": null
         },
         "codeConnect": {
@@ -1598,7 +1676,20 @@
               "decisionRef": "contract-family:catch.error_banner"
             }
           }
-        ]
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [
@@ -1750,7 +1841,20 @@
               "decisionRef": "contract-family:catch.notice"
             }
           }
-        ]
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [
@@ -2778,7 +2882,20 @@
               "decisionRef": "contract-family:catch.field"
             }
           }
-        ]
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [
@@ -3298,7 +3415,20 @@
               "decisionRef": "contract-family:catch.section"
             }
           }
-        ]
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [
@@ -3526,7 +3656,20 @@
               "decisionRef": "pattern-family:loading-concept-decompression"
             }
           }
-        ]
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [
@@ -3615,7 +3758,20 @@
           "CircularProgressIndicator",
           "Center"
         ],
-        "goldens": []
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [],
@@ -3793,7 +3949,20 @@
               "decisionRef": "pattern-family:loading-concept-decompression"
             }
           }
-        ]
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [
@@ -3875,7 +4044,20 @@
           "CatchLoadingIndicator",
           "CatchMotion.startupIndicatorDelay"
         ],
-        "goldens": []
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [
@@ -4026,7 +4208,20 @@
               "decisionRef": "contract-family:catch.typography"
             }
           }
-        ]
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [],
@@ -4144,7 +4339,20 @@
           "CatchInsets.contentDense",
           "CatchRadius.xs"
         ],
-        "goldens": []
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [],
@@ -4406,7 +4614,20 @@
               "decisionRef": "contract-family:catch.metric_strip"
             }
           }
-        ]
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [],
@@ -4672,7 +4893,20 @@
               "decisionRef": "contract-family:catch.sheet"
             }
           }
-        ]
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [
@@ -4829,7 +5063,20 @@
           "CatchElevation.iconButtonFloat",
           "CatchCountBadge"
         ],
-        "goldens": []
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [],
@@ -4993,7 +5240,20 @@
               "decisionRef": "contract-family:catch.menu"
             }
           }
-        ]
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [
@@ -5123,7 +5383,20 @@
           "CatchRadius.sm",
           "CatchRadius.md"
         ],
-        "goldens": []
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [],
@@ -5299,7 +5572,20 @@
           "CatchElevation.focusRing",
           "CatchStroke.underline"
         ],
-        "goldens": []
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [
@@ -5449,7 +5735,20 @@
           "CatchIcons.removeRounded",
           "CatchIcons.addRounded"
         ],
-        "goldens": []
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [],
@@ -5560,7 +5859,20 @@
           "CatchTextStyles.bodyS",
           "CatchIcon.lg"
         ],
-        "goldens": []
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [],
@@ -5783,7 +6095,20 @@
               "decisionRef": "contract-family:catch.surface"
             }
           }
-        ]
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [
@@ -6141,7 +6466,20 @@
               "decisionRef": "contract-family:catch.top_bar"
             }
           }
-        ]
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [
@@ -6240,7 +6578,20 @@
           "CatchPrivacyBadgeKind",
           "AppLocalizations"
         ],
-        "goldens": []
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [],
@@ -6360,7 +6711,20 @@
               "decisionRef": "contract-family:catch.journey_steps"
             }
           }
-        ]
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [],
@@ -6554,7 +6918,20 @@
               "decisionRef": "contract-family:catch.screen_body"
             }
           }
-        ]
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [
@@ -6716,7 +7093,20 @@
               "decisionRef": "contract-family:catch.section_stack"
             }
           }
-        ]
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [
@@ -6829,7 +7219,20 @@
           "CatchOpacity.calloutFill",
           "CatchOpacity.subtleBorder"
         ],
-        "goldens": []
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [],
@@ -6978,7 +7381,20 @@
           "CatchButton",
           "CatchPersonAvatar"
         ],
-        "goldens": []
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [
@@ -7110,7 +7526,20 @@
           "CatchTextStyles.bodyS",
           "CatchIcon.md"
         ],
-        "goldens": []
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [
@@ -7256,7 +7685,20 @@
           "CatchLayout.activityArtGlyphScale",
           "CatchOpacity.activityArtDim"
         ],
-        "goldens": []
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [
@@ -7413,7 +7855,20 @@
               "decisionRef": "contract-family:catch.network_image"
             }
           }
-        ]
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [],
@@ -7534,7 +7989,20 @@
               "decisionRef": "contract-family:catch.distance_ring"
             }
           }
-        ]
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [],
@@ -7734,7 +8202,20 @@
               "decisionRef": "contract-family:catch.code_input"
             }
           }
-        ]
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [],
@@ -7895,7 +8376,20 @@
               "decisionRef": "contract-family:catch.option_group"
             }
           }
-        ]
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [
@@ -8023,7 +8517,20 @@
               "decisionRef": "concept-boundary:option-group-tab-rail"
             }
           }
-        ]
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [
@@ -8189,7 +8696,20 @@
           "CatchTextStyles.bodyM",
           "CatchLayout.searchFieldClearSize"
         ],
-        "goldens": []
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [],
@@ -8330,7 +8850,20 @@
           "RoundRangeSliderThumbShape",
           "CatchTextStyles.supporting"
         ],
-        "goldens": []
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [],
@@ -8443,7 +8976,20 @@
           "CatchFieldTokens.focusRingWidth",
           "CatchElevation.toggleKnob"
         ],
-        "goldens": []
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [],
@@ -8549,7 +9095,20 @@
           "CatchFonts.mono",
           "CatchIcons.statusBattery"
         ],
-        "goldens": []
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [],
@@ -8721,7 +9280,20 @@
               "decisionRef": "contract-family:catch.step_header"
             }
           }
-        ]
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [
@@ -8873,7 +9445,20 @@
               "decisionRef": "contract-family:catch.tab_bar"
             }
           }
-        ]
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [
@@ -8979,7 +9564,20 @@
         ],
         "dartRoles": [],
         "goldens": [],
-        "members": []
+        "members": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [
@@ -9088,7 +9686,20 @@
           "CatchTextStyles.titleL",
           "CatchTextStyles.supporting"
         ],
-        "goldens": []
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [
@@ -9209,7 +9820,20 @@
           "CatchLayout.confirmDialogMaxWidth",
           "CatchTextStyles.titleL"
         ],
-        "goldens": []
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [
@@ -9339,7 +9963,20 @@
           "CatchIconButton.defaultSize",
           "CatchCountBadge"
         ],
-        "goldens": []
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [],
@@ -9461,7 +10098,20 @@
           "CatchMotion.easeOutCubicCurve",
           "CatchOpacity.pageDotInactive"
         ],
-        "goldens": []
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [],
@@ -9623,7 +10273,20 @@
           "CatchIconButton",
           "ActivityPalette.resolve"
         ],
-        "goldens": []
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [
@@ -9800,7 +10463,20 @@
           "CatchTextStyles.kickerLg",
           "CatchLayout.coverStoryGhostGlyphSize"
         ],
-        "goldens": []
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [
@@ -10101,7 +10777,20 @@
               "decisionRef": "contract-family:catch.person_avatar"
             }
           }
-        ]
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [],
@@ -10200,7 +10889,20 @@
         "tokens": [],
         "dartRoles": [],
         "goldens": [],
-        "members": []
+        "members": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [],
@@ -10401,7 +11103,20 @@
               "decisionRef": "contract-family:catch.person_row"
             }
           }
-        ]
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [
@@ -10768,7 +11483,20 @@
               "decisionRef": "contract-family:catch.event_card"
             }
           }
-        ]
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [
@@ -10872,7 +11600,20 @@
           "CatchGrade",
           "CatchNetworkImage"
         ],
-        "goldens": []
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [
@@ -11008,7 +11749,20 @@
               "decisionRef": "contract-family:catch.detail_media"
             }
           }
-        ]
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [
@@ -11143,7 +11897,20 @@
           "ActivityPalette",
           "CatchIcons.pin"
         ],
-        "goldens": []
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [],
@@ -11574,7 +12341,20 @@
               "decisionRef": "contract-kind:screen-contract"
             }
           }
-        ]
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [
@@ -11731,7 +12511,20 @@
           "CatchTextStyles.fieldRowTitle",
           "CatchTextStyles.monoLabelS"
         ],
-        "goldens": []
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [],
@@ -11876,7 +12669,20 @@
           "CatchSpacing.screenPx",
           "TextFieldTapRegion"
         ],
-        "goldens": []
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [
@@ -12102,7 +12908,20 @@
               "decisionRef": "contract-family:catch.tabbed_screen"
             }
           }
-        ]
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [
@@ -12294,7 +13113,20 @@
               "decisionRef": "contract-family:catch.bottom_action"
             }
           }
-        ]
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [
@@ -12461,7 +13293,20 @@
           "ActivityPalette"
         ],
         "goldens": [],
-        "members": []
+        "members": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [
@@ -12588,7 +13433,20 @@
           "LocationCoordinate"
         ],
         "goldens": [],
-        "members": []
+        "members": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [],
@@ -12702,7 +13560,20 @@
           "CatchTextStyles.labelM",
           "CatchIcon.sm"
         ],
-        "goldens": []
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "governance": {
         "role": "atom",
@@ -12828,7 +13699,20 @@
           "CatchTextStyles.titleL",
           "CatchLayout.eventTypeIndexRowHeight"
         ],
-        "goldens": []
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [
@@ -13050,7 +13934,20 @@
               "decisionRef": "contract-family:catch.organizer_poster"
             }
           }
-        ]
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [
@@ -13195,7 +14092,20 @@
           "ProfilePhoto",
           "CatchSurface"
         ],
-        "goldens": []
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [
@@ -13297,7 +14207,20 @@
           "CatchNetworkImage",
           "OrganizerPosterArtwork"
         ],
-        "goldens": []
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [],

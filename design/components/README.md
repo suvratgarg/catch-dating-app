@@ -20,6 +20,11 @@ concept from a member, composition, or screen while preserving useful public
 handoff contracts. It does not attempt to generate Dart widget
 implementations from JSX, CSS, or Figma node geometry.
 
+Every component contract also carries executable cross-surface accessibility
+acceptance metadata. The registry requires support for text scale 2.0, a stable
+reduced-motion resting state, and both Light and Dark semantic themes. A
+component-specific policy may be stricter, but it cannot omit those baselines.
+
 It is also the exhaustive UI-enforcement source. Every component must declare
 either `enforcement` or an expiring `waiver`. Steering entries generate the
 analyzer plugin constructor tables and violation probes; all other plugin/API/
@@ -37,7 +42,8 @@ checker codes still map back to an owning component through `code`/`codes`.
 
 1. Add or change the Flutter primitive in `lib/core/widgets`.
 2. Update the matching contract entry here, including props, states, slots, and
-   DTCG token references.
+   DTCG token references. Confirm its accessibility policy preserves primary
+   meaning and actions at text scale 2.0 and does not depend on motion.
 3. Add or revise the enforcement decision; new waivers need a reason, owner,
    and review expiry.
 4. Run `node tool/design/build_lint_enforcement_tables.mjs`, then
