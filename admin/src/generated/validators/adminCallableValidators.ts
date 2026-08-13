@@ -548,6 +548,53 @@ const model = {
             "allowWhenExhausted"
           ]
         },
+        "eventSuccessTopology": {
+          "type": "string",
+          "enum": [
+            "set",
+            "sequence",
+            "adjacency"
+          ]
+        },
+        "eventSuccessResourceLabelId": {
+          "type": "string",
+          "enum": [
+            "court",
+            "table",
+            "lane",
+            "board"
+          ]
+        },
+        "eventSuccessResourceCapacity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "concurrentUnits",
+            "resourceLabelId",
+            "seatsPerUnit"
+          ],
+          "properties": {
+            "concurrentUnits": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 200
+            },
+            "resourceLabelId": {
+              "$ref": "#/definitions/eventSuccessResourceLabelId"
+            },
+            "seatsPerUnit": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 1000
+            }
+          }
+        },
         "eventSuccessActivityAssignmentAttribute": {
           "type": "string",
           "enum": [
@@ -594,6 +641,26 @@ const model = {
             "questionnaireClueOnly"
           ]
         },
+        "eventSuccessMatchingObjective": {
+          "type": "string",
+          "enum": [
+            "coverage",
+            "romantic",
+            "affinity",
+            "novelty",
+            "balance",
+            "spread"
+          ]
+        },
+        "eventSuccessUnitOutcome": {
+          "type": "string",
+          "enum": [
+            "none",
+            "completion",
+            "score",
+            "rank"
+          ]
+        },
         "eventSuccessFormatPrimitives": {
           "type": "object",
           "additionalProperties": false,
@@ -610,6 +677,12 @@ const model = {
             },
             "compatibilityPolicy": {
               "$ref": "#/definitions/eventSuccessCompatibilityPolicy"
+            },
+            "matchingObjective": {
+              "$ref": "#/definitions/eventSuccessMatchingObjective"
+            },
+            "unitOutcome": {
+              "$ref": "#/definitions/eventSuccessUnitOutcome"
             }
           }
         },
@@ -646,6 +719,19 @@ const model = {
               "minimum": 5,
               "maximum": 180
             },
+            "topology": {
+              "$ref": "#/definitions/eventSuccessTopology"
+            },
+            "resourceCapacity": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/eventSuccessResourceCapacity"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "revealCountdownSeconds": {
               "type": "integer",
               "minimum": 0,
@@ -675,7 +761,39 @@ const model = {
                 "$ref": "#/definitions/eventSuccessActivityAssignmentAttribute"
               }
             }
-          }
+          },
+          "allOf": [
+            {
+              "if": {
+                "required": [
+                  "resourceCapacity"
+                ],
+                "properties": {
+                  "resourceCapacity": {
+                    "type": "object",
+                    "required": [
+                      "seatsPerUnit"
+                    ],
+                    "properties": {
+                      "seatsPerUnit": {
+                        "type": "integer"
+                      }
+                    }
+                  }
+                }
+              },
+              "then": {
+                "required": [
+                  "topology"
+                ],
+                "properties": {
+                  "topology": {
+                    "const": "adjacency"
+                  }
+                }
+              }
+            }
+          ]
         },
         "eventSuccessQuestionnaireConfig": {
           "type": "object",
@@ -1325,6 +1443,13 @@ const model = {
           "properties": {
             "enabled": {
               "type": "boolean"
+            },
+            "layoutId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
             },
             "playbookId": {
               "type": "string",
