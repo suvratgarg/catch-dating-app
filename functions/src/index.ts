@@ -70,6 +70,7 @@ export {
   onEventParticipationRosterProjected,
 } from "./events/eventAttendeeProjection";
 export {selfCheckInAttendance} from "./events/selfCheckInAttendance";
+export {createEventVenueSession} from "./events/venueSessions";
 export {
   createEvent,
   updateEvent,

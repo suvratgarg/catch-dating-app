@@ -645,8 +645,7 @@ class FakeEventRepository extends Fake implements EventRepository {
   @override
   Future<void> selfCheckInAttendance({
     required String eventId,
-    required double? latitude,
-    required double? longitude,
+    required String venueSessionToken,
   }) async {
     if (selfCheckInError != null) {
       throw selfCheckInError!;

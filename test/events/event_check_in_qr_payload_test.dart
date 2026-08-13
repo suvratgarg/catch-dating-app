@@ -23,7 +23,7 @@ void main() {
 
       expect(
         classifyEventCheckInQrCode(payload.encode(), eventId: 'event-1'),
-        EventCheckInQrScanResult.matched,
+        EventCheckInQrScanResult.printableJoinOnly,
       );
       expect(
         classifyEventCheckInQrCode(payload.encode(), eventId: 'event-2'),
@@ -39,4 +39,23 @@ void main() {
       );
     },
   );
+
+  test('only a live venue-session QR yields attendance authority', () {
+    const token =
+        'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
+    const livePayload = EventVenueSessionQrPayload(
+      eventId: 'event-1',
+      venueSessionToken: token,
+    );
+
+    final scan = parseEventCheckInQrCode(
+      livePayload.encode(
+        runtimeJoinUri: Uri.parse('https://catch.example/join/runtime-id'),
+      ),
+      eventId: 'event-1',
+    );
+
+    expect(scan.result, EventCheckInQrScanResult.matchedVenueSession);
+    expect(scan.venueSessionToken, token);
+  });
 }

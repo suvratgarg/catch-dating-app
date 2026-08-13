@@ -9,11 +9,14 @@
 final class CheckInEventRuntimeCallableRequest {
   const CheckInEventRuntimeCallableRequest({
     required this.publicRuntimeId,
+    required this.venueSessionToken,
   });
 
   final String publicRuntimeId;
+  final String venueSessionToken;
 
   Map<String, Object?> toJson() => {
     'publicRuntimeId': publicRuntimeId,
+    'venueSessionToken': venueSessionToken,
   };
 }

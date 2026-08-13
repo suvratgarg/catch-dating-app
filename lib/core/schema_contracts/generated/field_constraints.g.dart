@@ -4013,6 +4013,14 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9_-]{20,80}\$',
   );
 
+  static const checkInEventRuntimeCallablePayloadVenueSessionToken = CatchContractFieldConstraints(
+    path: 'checkInEventRuntimeCallablePayload.venueSessionToken',
+    maxLength: 2048,
+    minLength: 64,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const checkInEventRuntimeCallableResponseAlreadyCheckedIn = CatchContractFieldConstraints(
     path: 'checkInEventRuntimeCallableResponse.alreadyCheckedIn',
     required: true,
@@ -6071,20 +6079,6 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
-  );
-
-  static const completeEventSuccessFirstHelloMissionCallablePayloadLatitude = CatchContractFieldConstraints(
-    path: 'completeEventSuccessFirstHelloMissionCallablePayload.latitude',
-    valueTypes: <String>['number'],
-    minimum: -90,
-    maximum: 90,
-  );
-
-  static const completeEventSuccessFirstHelloMissionCallablePayloadLongitude = CatchContractFieldConstraints(
-    path: 'completeEventSuccessFirstHelloMissionCallablePayload.longitude',
-    valueTypes: <String>['number'],
-    minimum: -180,
-    maximum: 180,
   );
 
   static const completeOrganizerWhatsappConnectionCallablePayloadAuthorizationCode = CatchContractFieldConstraints(
@@ -8286,6 +8280,46 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['available', 'providerSetupRequired'],
+  );
+
+  static const createEventVenueSessionCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'createEventVenueSessionCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventVenueSessionCallableResponseEventId = CatchContractFieldConstraints(
+    path: 'createEventVenueSessionCallableResponse.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventVenueSessionCallableResponseExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'createEventVenueSessionCallableResponse.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const createEventVenueSessionCallableResponseRefreshAfterMillis = CatchContractFieldConstraints(
+    path: 'createEventVenueSessionCallableResponse.refreshAfterMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const createEventVenueSessionCallableResponseVenueSessionToken = CatchContractFieldConstraints(
+    path: 'createEventVenueSessionCallableResponse.venueSessionToken',
+    maxLength: 2048,
+    minLength: 64,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const createEventWaitlistOffersCallablePayloadEventId = CatchContractFieldConstraints(
@@ -14519,6 +14553,20 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const eventSuccessArrivalMissionDocumentVenueSessionId = CatchContractFieldConstraints(
+    path: 'eventSuccessArrivalMissionDocument.venueSessionId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{24,80}\$',
+  );
+
+  static const eventSuccessArrivalMissionDocumentVenueSessionRedemptionId = CatchContractFieldConstraints(
+    path: 'eventSuccessArrivalMissionDocument.venueSessionRedemptionId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const eventSuccessAssignmentDocumentClubId = CatchContractFieldConstraints(
     path: 'eventSuccessAssignmentDocument.clubId',
     maxLength: 180,
@@ -17744,6 +17792,130 @@ abstract final class CatchContractConstraints {
     path: 'eventSuccessWingmanRequestDocument.updatedAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
+  );
+
+  static const eventVenueSessionDocumentCreatedBy = CatchContractFieldConstraints(
+    path: 'eventVenueSessionDocument.createdBy',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventVenueSessionDocumentEventId = CatchContractFieldConstraints(
+    path: 'eventVenueSessionDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventVenueSessionDocumentExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventVenueSessionDocument.expiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventVenueSessionDocumentExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'eventVenueSessionDocument.expiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventVenueSessionDocumentIssuedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventVenueSessionDocument.issuedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventVenueSessionDocumentIssuedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventVenueSessionDocument.issuedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventVenueSessionDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventVenueSessionDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventVenueSessionRedemptionDocumentConsumedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventVenueSessionRedemptionDocument.consumedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventVenueSessionRedemptionDocumentConsumedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventVenueSessionRedemptionDocument.consumedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventVenueSessionRedemptionDocumentEventId = CatchContractFieldConstraints(
+    path: 'eventVenueSessionRedemptionDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventVenueSessionRedemptionDocumentExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventVenueSessionRedemptionDocument.expiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventVenueSessionRedemptionDocumentExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'eventVenueSessionRedemptionDocument.expiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventVenueSessionRedemptionDocumentPurpose = CatchContractFieldConstraints(
+    path: 'eventVenueSessionRedemptionDocument.purpose',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['attendance', 'firstHello'],
+  );
+
+  static const eventVenueSessionRedemptionDocumentRedeemedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventVenueSessionRedemptionDocument.redeemedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventVenueSessionRedemptionDocumentRedeemedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventVenueSessionRedemptionDocument.redeemedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventVenueSessionRedemptionDocumentSessionId = CatchContractFieldConstraints(
+    path: 'eventVenueSessionRedemptionDocument.sessionId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{24,80}\$',
+  );
+
+  static const eventVenueSessionRedemptionDocumentUid = CatchContractFieldConstraints(
+    path: 'eventVenueSessionRedemptionDocument.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const eventWaitlistOfferDocumentClubId = CatchContractFieldConstraints(
@@ -34626,18 +34798,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
-  static const selfCheckInAttendanceCallablePayloadLatitude = CatchContractFieldConstraints(
-    path: 'selfCheckInAttendanceCallablePayload.latitude',
-    valueTypes: <String>['number'],
-    minimum: -90,
-    maximum: 90,
-  );
-
-  static const selfCheckInAttendanceCallablePayloadLongitude = CatchContractFieldConstraints(
-    path: 'selfCheckInAttendanceCallablePayload.longitude',
-    valueTypes: <String>['number'],
-    minimum: -180,
-    maximum: 180,
+  static const selfCheckInAttendanceCallablePayloadVenueSessionToken = CatchContractFieldConstraints(
+    path: 'selfCheckInAttendanceCallablePayload.venueSessionToken',
+    maxLength: 2048,
+    minLength: 64,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const sendCrossPathsInvitationCallablePayloadEventId = CatchContractFieldConstraints(
@@ -35042,18 +35208,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
-  static const startEventSuccessFirstHelloMissionCallablePayloadLatitude = CatchContractFieldConstraints(
-    path: 'startEventSuccessFirstHelloMissionCallablePayload.latitude',
-    valueTypes: <String>['number'],
-    minimum: -90,
-    maximum: 90,
-  );
-
-  static const startEventSuccessFirstHelloMissionCallablePayloadLongitude = CatchContractFieldConstraints(
-    path: 'startEventSuccessFirstHelloMissionCallablePayload.longitude',
-    valueTypes: <String>['number'],
-    minimum: -180,
-    maximum: 180,
+  static const startEventSuccessFirstHelloMissionCallablePayloadVenueSessionToken = CatchContractFieldConstraints(
+    path: 'startEventSuccessFirstHelloMissionCallablePayload.venueSessionToken',
+    maxLength: 2048,
+    minLength: 64,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const startOrganizerContactConversationCallablePayloadContactId = CatchContractFieldConstraints(
@@ -40882,6 +41042,7 @@ abstract final class CatchContractConstraints {
     'chatMessageDocument.synthetic': chatMessageDocumentSynthetic,
     'chatMessageDocument.text': chatMessageDocumentText,
     'checkInEventRuntimeCallablePayload.publicRuntimeId': checkInEventRuntimeCallablePayloadPublicRuntimeId,
+    'checkInEventRuntimeCallablePayload.venueSessionToken': checkInEventRuntimeCallablePayloadVenueSessionToken,
     'checkInEventRuntimeCallableResponse.alreadyCheckedIn': checkInEventRuntimeCallableResponseAlreadyCheckedIn,
     'checkInEventRuntimeCallableResponse.status': checkInEventRuntimeCallableResponseStatus,
     'claimEventRuntimeAccessCallablePayload.attendeeToken': claimEventRuntimeAccessCallablePayloadAttendeeToken,
@@ -41172,8 +41333,6 @@ abstract final class CatchContractConstraints {
     'clubScheduleLockDocument.synthetic': clubScheduleLockDocumentSynthetic,
     'completeEventSuccessFirstHelloMissionCallablePayload.answerId': completeEventSuccessFirstHelloMissionCallablePayloadAnswerId,
     'completeEventSuccessFirstHelloMissionCallablePayload.eventId': completeEventSuccessFirstHelloMissionCallablePayloadEventId,
-    'completeEventSuccessFirstHelloMissionCallablePayload.latitude': completeEventSuccessFirstHelloMissionCallablePayloadLatitude,
-    'completeEventSuccessFirstHelloMissionCallablePayload.longitude': completeEventSuccessFirstHelloMissionCallablePayloadLongitude,
     'completeOrganizerWhatsappConnectionCallablePayload.authorizationCode': completeOrganizerWhatsappConnectionCallablePayloadAuthorizationCode,
     'completeOrganizerWhatsappConnectionCallablePayload.businessId': completeOrganizerWhatsappConnectionCallablePayloadBusinessId,
     'completeOrganizerWhatsappConnectionCallablePayload.organizerId': completeOrganizerWhatsappConnectionCallablePayloadOrganizerId,
@@ -41479,6 +41638,11 @@ abstract final class CatchContractConstraints {
     'createEventRosterHandoffCallableResponse.whatsappMessage': createEventRosterHandoffCallableResponseWhatsappMessage,
     'createEventRosterHandoffCallableResponse.whatsappNumber': createEventRosterHandoffCallableResponseWhatsappNumber,
     'createEventRosterHandoffCallableResponse.whatsappStatus': createEventRosterHandoffCallableResponseWhatsappStatus,
+    'createEventVenueSessionCallablePayload.eventId': createEventVenueSessionCallablePayloadEventId,
+    'createEventVenueSessionCallableResponse.eventId': createEventVenueSessionCallableResponseEventId,
+    'createEventVenueSessionCallableResponse.expiresAtMillis': createEventVenueSessionCallableResponseExpiresAtMillis,
+    'createEventVenueSessionCallableResponse.refreshAfterMillis': createEventVenueSessionCallableResponseRefreshAfterMillis,
+    'createEventVenueSessionCallableResponse.venueSessionToken': createEventVenueSessionCallableResponseVenueSessionToken,
     'createEventWaitlistOffersCallablePayload.eventId': createEventWaitlistOffersCallablePayloadEventId,
     'createEventWaitlistOffersCallablePayload.expiresInMinutes': createEventWaitlistOffersCallablePayloadExpiresInMinutes,
     'createEventWaitlistOffersCallablePayload.userIds': createEventWaitlistOffersCallablePayloadUserIds,
@@ -42342,6 +42506,8 @@ abstract final class CatchContractConstraints {
     'eventSuccessArrivalMissionDocument.targetUid': eventSuccessArrivalMissionDocumentTargetUid,
     'eventSuccessArrivalMissionDocument.updatedAt._nanoseconds': eventSuccessArrivalMissionDocumentUpdatedAtNanoseconds,
     'eventSuccessArrivalMissionDocument.updatedAt._seconds': eventSuccessArrivalMissionDocumentUpdatedAtSeconds,
+    'eventSuccessArrivalMissionDocument.venueSessionId': eventSuccessArrivalMissionDocumentVenueSessionId,
+    'eventSuccessArrivalMissionDocument.venueSessionRedemptionId': eventSuccessArrivalMissionDocumentVenueSessionRedemptionId,
     'eventSuccessAssignmentDocument.clubId': eventSuccessAssignmentDocumentClubId,
     'eventSuccessAssignmentDocument.confirmedLayoutUnitId': eventSuccessAssignmentDocumentConfirmedLayoutUnitId,
     'eventSuccessAssignmentDocument.createdAt._nanoseconds': eventSuccessAssignmentDocumentCreatedAtNanoseconds,
@@ -42783,6 +42949,23 @@ abstract final class CatchContractConstraints {
     'eventSuccessWingmanRequestDocument.targetUid': eventSuccessWingmanRequestDocumentTargetUid,
     'eventSuccessWingmanRequestDocument.updatedAt._nanoseconds': eventSuccessWingmanRequestDocumentUpdatedAtNanoseconds,
     'eventSuccessWingmanRequestDocument.updatedAt._seconds': eventSuccessWingmanRequestDocumentUpdatedAtSeconds,
+    'eventVenueSessionDocument.createdBy': eventVenueSessionDocumentCreatedBy,
+    'eventVenueSessionDocument.eventId': eventVenueSessionDocumentEventId,
+    'eventVenueSessionDocument.expiresAt._nanoseconds': eventVenueSessionDocumentExpiresAtNanoseconds,
+    'eventVenueSessionDocument.expiresAt._seconds': eventVenueSessionDocumentExpiresAtSeconds,
+    'eventVenueSessionDocument.issuedAt._nanoseconds': eventVenueSessionDocumentIssuedAtNanoseconds,
+    'eventVenueSessionDocument.issuedAt._seconds': eventVenueSessionDocumentIssuedAtSeconds,
+    'eventVenueSessionDocument.organizerId': eventVenueSessionDocumentOrganizerId,
+    'eventVenueSessionRedemptionDocument.consumedAt._nanoseconds': eventVenueSessionRedemptionDocumentConsumedAtNanoseconds,
+    'eventVenueSessionRedemptionDocument.consumedAt._seconds': eventVenueSessionRedemptionDocumentConsumedAtSeconds,
+    'eventVenueSessionRedemptionDocument.eventId': eventVenueSessionRedemptionDocumentEventId,
+    'eventVenueSessionRedemptionDocument.expiresAt._nanoseconds': eventVenueSessionRedemptionDocumentExpiresAtNanoseconds,
+    'eventVenueSessionRedemptionDocument.expiresAt._seconds': eventVenueSessionRedemptionDocumentExpiresAtSeconds,
+    'eventVenueSessionRedemptionDocument.purpose': eventVenueSessionRedemptionDocumentPurpose,
+    'eventVenueSessionRedemptionDocument.redeemedAt._nanoseconds': eventVenueSessionRedemptionDocumentRedeemedAtNanoseconds,
+    'eventVenueSessionRedemptionDocument.redeemedAt._seconds': eventVenueSessionRedemptionDocumentRedeemedAtSeconds,
+    'eventVenueSessionRedemptionDocument.sessionId': eventVenueSessionRedemptionDocumentSessionId,
+    'eventVenueSessionRedemptionDocument.uid': eventVenueSessionRedemptionDocumentUid,
     'eventWaitlistOfferDocument.clubId': eventWaitlistOfferDocumentClubId,
     'eventWaitlistOfferDocument.cohortAtOffer': eventWaitlistOfferDocumentCohortAtOffer,
     'eventWaitlistOfferDocument.createdAt._nanoseconds': eventWaitlistOfferDocumentCreatedAtNanoseconds,
@@ -45137,8 +45320,7 @@ abstract final class CatchContractConstraints {
     'seedEventManifestDocument.seedPrefix': seedEventManifestDocumentSeedPrefix,
     'seedEventManifestDocument.synthetic': seedEventManifestDocumentSynthetic,
     'selfCheckInAttendanceCallablePayload.eventId': selfCheckInAttendanceCallablePayloadEventId,
-    'selfCheckInAttendanceCallablePayload.latitude': selfCheckInAttendanceCallablePayloadLatitude,
-    'selfCheckInAttendanceCallablePayload.longitude': selfCheckInAttendanceCallablePayloadLongitude,
+    'selfCheckInAttendanceCallablePayload.venueSessionToken': selfCheckInAttendanceCallablePayloadVenueSessionToken,
     'sendCrossPathsInvitationCallablePayload.eventId': sendCrossPathsInvitationCallablePayloadEventId,
     'sendCrossPathsInvitationCallablePayload.recipientUid': sendCrossPathsInvitationCallablePayloadRecipientUid,
     'sendCrossPathsInvitationCallablePayload.suggestionToken': sendCrossPathsInvitationCallablePayloadSuggestionToken,
@@ -45193,8 +45375,7 @@ abstract final class CatchContractConstraints {
     'startClubHostConversationCallablePayload.eventId': startClubHostConversationCallablePayloadEventId,
     'startClubHostConversationCallablePayload.hostUid': startClubHostConversationCallablePayloadHostUid,
     'startEventSuccessFirstHelloMissionCallablePayload.eventId': startEventSuccessFirstHelloMissionCallablePayloadEventId,
-    'startEventSuccessFirstHelloMissionCallablePayload.latitude': startEventSuccessFirstHelloMissionCallablePayloadLatitude,
-    'startEventSuccessFirstHelloMissionCallablePayload.longitude': startEventSuccessFirstHelloMissionCallablePayloadLongitude,
+    'startEventSuccessFirstHelloMissionCallablePayload.venueSessionToken': startEventSuccessFirstHelloMissionCallablePayloadVenueSessionToken,
     'startOrganizerContactConversationCallablePayload.contactId': startOrganizerContactConversationCallablePayloadContactId,
     'startOrganizerContactConversationCallablePayload.organizerId': startOrganizerContactConversationCallablePayloadOrganizerId,
     'startOrganizerConversationCallablePayload.eventId': startOrganizerConversationCallablePayloadEventId,

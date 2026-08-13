@@ -1088,7 +1088,11 @@ The React marketing runtime owns two non-SEO transactional routes:
 - `/join/:publicRuntimeId` resolves only a bounded event projection before
   Firebase phone OTP. After authentication it claims or requests one roster
   identity, collects display name plus only the optional fields required by the
-  configured preference-aware behavior, and exposes self check-in, First
+  configured preference-aware behavior. A static route can never check an
+  attendee in. The Host's live QR adds a short-lived signed venue session in
+  the URL fragment; the route shell consumes and clears it before the controller
+  redeems attendance. Without that fragment, a ready attendee sees the venue
+  scan gate. After attendance, the route exposes First
   Hello, wingman, questionnaire, private assignment/rotation/group state and
   feedback without creating a Consumer profile or booking edge.
 - `/invite/:inviteToken` resolves an opaque bearer token server-side, records a

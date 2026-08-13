@@ -8,7 +8,6 @@ import 'package:catch_dating_app/event_success/domain/event_success_layout.dart'
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_presence.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_standings.dart';
-import 'package:catch_dating_app/events/data/event_check_in_location_service.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -223,17 +222,16 @@ class EventSuccessController extends _$EventSuccessController {
         );
   }
 
-  Future<void> startFirstHelloMission({required Event event}) async {
+  Future<void> startFirstHelloMission({
+    required Event event,
+    required String venueSessionToken,
+  }) async {
     requireSignedInUid(ref, action: 'start First Hello check-in');
-    final position = await ref
-        .read(eventCheckInLocationServiceProvider)
-        .getCurrentLocation();
     await ref
         .read(eventSuccessRepositoryProvider)
         .startFirstHelloMission(
           event: event,
-          latitude: position.latitude,
-          longitude: position.longitude,
+          venueSessionToken: venueSessionToken,
         );
   }
 
@@ -246,17 +244,9 @@ class EventSuccessController extends _$EventSuccessController {
     if (mission.eventId != event.id) {
       throw StateError('First Hello mission does not belong to this event.');
     }
-    final position = await ref
-        .read(eventCheckInLocationServiceProvider)
-        .getCurrentLocation();
     await ref
         .read(eventSuccessRepositoryProvider)
-        .completeFirstHelloMission(
-          event: event,
-          answerId: answerId,
-          latitude: position.latitude,
-          longitude: position.longitude,
-        );
+        .completeFirstHelloMission(event: event, answerId: answerId);
   }
 
   Future<void> saveWingmanRequest({

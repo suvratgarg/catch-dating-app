@@ -2,17 +2,53 @@ import 'package:catch_dating_app/events/domain/event_check_in_qr_payload.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
-enum EventCheckInQrScanResult { ignored, invalid, wrongEvent, matched }
+enum EventCheckInQrScanResult {
+  ignored,
+  invalid,
+  wrongEvent,
+  printableJoinOnly,
+  matchedVenueSession,
+}
+
+class EventCheckInQrScan {
+  const EventCheckInQrScan(this.result, {this.venueSessionToken});
+
+  final EventCheckInQrScanResult result;
+  final String? venueSessionToken;
+}
 
 EventCheckInQrScanResult classifyEventCheckInQrCode(
   String? rawValue, {
   required String eventId,
 }) {
-  if (rawValue == null) return EventCheckInQrScanResult.ignored;
-  final payload = EventCheckInQrPayload.tryParse(rawValue);
-  if (payload == null) return EventCheckInQrScanResult.invalid;
-  if (payload.eventId != eventId) return EventCheckInQrScanResult.wrongEvent;
-  return EventCheckInQrScanResult.matched;
+  return parseEventCheckInQrCode(rawValue, eventId: eventId).result;
+}
+
+EventCheckInQrScan parseEventCheckInQrCode(
+  String? rawValue, {
+  required String eventId,
+}) {
+  if (rawValue == null) {
+    return const EventCheckInQrScan(EventCheckInQrScanResult.ignored);
+  }
+  final venuePayload = EventVenueSessionQrPayload.tryParse(rawValue);
+  if (venuePayload != null) {
+    if (venuePayload.eventId != eventId) {
+      return const EventCheckInQrScan(EventCheckInQrScanResult.wrongEvent);
+    }
+    return EventCheckInQrScan(
+      EventCheckInQrScanResult.matchedVenueSession,
+      venueSessionToken: venuePayload.venueSessionToken,
+    );
+  }
+  final printablePayload = EventCheckInQrPayload.tryParse(rawValue);
+  if (printablePayload == null) {
+    return const EventCheckInQrScan(EventCheckInQrScanResult.invalid);
+  }
+  if (printablePayload.eventId != eventId) {
+    return const EventCheckInQrScan(EventCheckInQrScanResult.wrongEvent);
+  }
+  return const EventCheckInQrScan(EventCheckInQrScanResult.printableJoinOnly);
 }
 
 class EventCheckInQrScanner extends StatefulWidget {
@@ -23,7 +59,7 @@ class EventCheckInQrScanner extends StatefulWidget {
   });
 
   final String eventId;
-  final ValueChanged<EventCheckInQrScanResult> onResult;
+  final ValueChanged<EventCheckInQrScan> onResult;
 
   @override
   State<EventCheckInQrScanner> createState() => _EventCheckInQrScannerState();
@@ -49,15 +85,15 @@ class _EventCheckInQrScannerState extends State<EventCheckInQrScanner> {
   void _handleCapture(BarcodeCapture capture) {
     if (_matched) return;
     for (final barcode in capture.barcodes) {
-      final result = classifyEventCheckInQrCode(
+      final scan = parseEventCheckInQrCode(
         barcode.rawValue,
         eventId: widget.eventId,
       );
-      if (result == EventCheckInQrScanResult.ignored) continue;
-      if (result == EventCheckInQrScanResult.matched) {
+      if (scan.result == EventCheckInQrScanResult.ignored) continue;
+      if (scan.result == EventCheckInQrScanResult.matchedVenueSession) {
         _matched = true;
       }
-      widget.onResult(result);
+      widget.onResult(scan);
       if (_matched) return;
     }
   }

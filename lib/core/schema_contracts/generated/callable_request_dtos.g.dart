@@ -63,6 +63,7 @@ export 'callables/create_event_callable_request.g.dart';
 export 'callables/create_event_invite_link_callable_request.g.dart';
 export 'callables/create_event_review_callable_request.g.dart';
 export 'callables/create_event_roster_handoff_callable_request.g.dart';
+export 'callables/create_event_venue_session_callable_request.g.dart';
 export 'callables/create_event_waitlist_offers_callable_request.g.dart';
 export 'callables/create_organizer_callable_request.g.dart';
 export 'callables/create_organizer_contact_callable_request.g.dart';

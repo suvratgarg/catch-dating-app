@@ -3,6 +3,7 @@ import test from "node:test";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import {eventAttendeeId} from "../events/eventAttendees";
+import {eventVenueSessionRedemptionId} from "../events/venueSessions";
 import {
   approveEventRuntimeClaimHandler,
   checkInEventRuntimeHandler,
@@ -16,6 +17,10 @@ import {
 } from "./eventRuntime";
 
 type FakeData = Record<string, unknown>;
+
+const venueSessionId = "session_123456789012345678901234";
+const venueSessionToken =
+  "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 
 class FakeDocRef {
   constructor(readonly firestore: FakeFirestore, readonly path: string) {}
@@ -301,6 +306,18 @@ function harness(initial: Record<string, FakeData | undefined>) {
       ) => {
         limits.push(`${uid}:${action}`);
       },
+      verifyVenueSessionToken: (params: {
+        token: string;
+        eventId: string;
+        nowMillis: number;
+      }) => ({
+        version: 1 as const,
+        eventId: params.eventId,
+        organizerId: "organizer-1",
+        sessionId: venueSessionId,
+        issuedAtMillis: timestamp("2026-08-11T09:59:00.000Z").toMillis(),
+        expiresAtMillis: timestamp("2026-08-11T10:01:00.000Z").toMillis(),
+      }),
     },
   };
 }
@@ -503,16 +520,27 @@ test("bootstrap upgrades legacy demographic-gated participants", async () => {
 test("ready runtime attendance checks in without a Consumer booking edge",
   async () => {
     const h = harness({
-      "events/event-1": event({checkedInCount: 2}),
+      "events/event-1": event({
+        checkedInCount: 2,
+        startTime: timestamp("2026-08-11T10:05:00.000Z"),
+      }),
       "eventRuntimeParticipants/event-1_runner-1": participant(),
       "eventAttendees/attendee-1": attendee({
         linkedUid: "runner-1",
         status: "registered",
       }),
+      [`eventVenueSessions/${venueSessionId}`]: {
+        eventId: "event-1",
+        organizerId: "organizer-1",
+        createdBy: "host-1",
+        issuedAt: timestamp("2026-08-11T09:59:00.000Z"),
+        expiresAt: timestamp("2026-08-11T10:01:00.000Z"),
+      },
     });
 
     const result = await checkInEventRuntimeHandler(request("runner-1", {
       publicRuntimeId: "runtime_123456789012345678901234",
+      venueSessionToken,
     }), h.deps);
 
     assert.deepEqual(result, {
@@ -527,6 +555,70 @@ test("ready runtime attendance checks in without a Consumer booking edge",
       h.firestore.get("eventParticipations/event-1_runner-1"),
       undefined
     );
+  });
+
+test("static runtime link cannot write attendance", async () => {
+  const h = harness({
+    "events/event-1": event({
+      startTime: timestamp("2026-08-11T10:05:00.000Z"),
+    }),
+    "eventRuntimeParticipants/event-1_runner-1": participant(),
+    "eventAttendees/attendee-1": attendee({
+      linkedUid: "runner-1",
+      status: "registered",
+    }),
+  });
+
+  await assert.rejects(
+    () => checkInEventRuntimeHandler(request("runner-1", {
+      publicRuntimeId: "runtime_123456789012345678901234",
+    }), h.deps),
+    (error) => code(error, "invalid-argument")
+  );
+  assert.equal(h.firestore.get("eventAttendees/attendee-1")?.status,
+    "registered");
+});
+
+test("venue session replay is rejected without a second attendance write",
+  async () => {
+    const redemptionId = eventVenueSessionRedemptionId({
+      eventId: "event-1",
+      sessionId: venueSessionId,
+      uid: "runner-1",
+    });
+    const h = harness({
+      "events/event-1": event({
+        checkedInCount: 3,
+        startTime: timestamp("2026-08-11T10:05:00.000Z"),
+      }),
+      "eventRuntimeParticipants/event-1_runner-1": participant(),
+      "eventAttendees/attendee-1": attendee({
+        linkedUid: "runner-1",
+        status: "checkedIn",
+      }),
+      [`eventVenueSessions/${venueSessionId}`]: {
+        eventId: "event-1",
+        organizerId: "organizer-1",
+        createdBy: "host-1",
+        issuedAt: timestamp("2026-08-11T09:59:00.000Z"),
+        expiresAt: timestamp("2026-08-11T10:01:00.000Z"),
+      },
+      [`eventVenueSessionRedemptions/${redemptionId}`]: {
+        eventId: "event-1",
+        sessionId: venueSessionId,
+        uid: "runner-1",
+        purpose: "attendance",
+      },
+    });
+
+    await assert.rejects(
+      () => checkInEventRuntimeHandler(request("runner-1", {
+        publicRuntimeId: "runtime_123456789012345678901234",
+        venueSessionToken,
+      }), h.deps),
+      (error) => code(error, "already-exists")
+    );
+    assert.equal(h.firestore.get("events/event-1")?.checkedInCount, 3);
   });
 
 test("Host approval binds only a candidate from the same event", async () => {

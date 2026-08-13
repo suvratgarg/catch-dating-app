@@ -2186,7 +2186,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostEventAttendancePanelBodyCheckInQr =>
-      'Show this code to attendees as they arrive.';
+      'Keep this live code on screen as attendees arrive. It refreshes automatically and cannot be printed for later check-in.';
 
   @override
   String get hostsHostEventAttendancePanelRuntimeShareLabel =>
@@ -2200,7 +2200,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String hostsHostEventAttendancePanelRuntimeShareText({
     required String runtimeUrl,
   }) {
-    return 'Open this link when you arrive to check in and join the Event Success experience: $runtimeUrl';
+    return 'Open this link to join the event companion. Scan the Host\'s live QR at the venue to check in: $runtimeUrl';
   }
 
   @override
@@ -4643,7 +4643,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String
   get eventSuccessEventSuccessCompanionLiveCardsTextLocationStillVerifiesThe =>
-      'Location still verifies the venue after the QR is scanned.';
+      'Only the Host\'s current live QR confirms venue presence. Printed and shared join codes cannot check you in.';
 
   @override
   String get eventSuccessEventSuccessCompanionLiveCardsMessageCopyOpener =>

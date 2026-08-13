@@ -67,6 +67,8 @@ import {
   eventAttendeeImportDocumentSchema,
   eventRosterHandoffDocumentSchema,
   eventRuntimeParticipantDocumentSchema,
+  eventVenueSessionDocumentSchema,
+  eventVenueSessionRedemptionDocumentSchema,
   eventSuccessPresenceDocumentSchema,
   eventSuccessLateArrivalDocumentSchema,
   eventRuntimeClaimRequestDocumentSchema,
@@ -244,6 +246,8 @@ import {
   submitEventRuntimeProfileCallableResponseSchema,
   checkInEventRuntimeCallablePayloadSchema,
   checkInEventRuntimeCallableResponseSchema,
+  createEventVenueSessionCallablePayloadSchema,
+  createEventVenueSessionCallableResponseSchema,
   approveEventRuntimeClaimCallablePayloadSchema,
   approveEventRuntimeClaimCallableResponseSchema,
   createEventRosterHandoffCallablePayloadSchema,
@@ -437,6 +441,8 @@ export const validateEventAttendeeAttendanceReceiptDocument = ajv.compile(eventA
 export const validateEventAttendeeImportDocument = ajv.compile(eventAttendeeImportDocumentSchema);
 export const validateEventRosterHandoffDocument = ajv.compile(eventRosterHandoffDocumentSchema);
 export const validateEventRuntimeParticipantDocument = ajv.compile(eventRuntimeParticipantDocumentSchema);
+export const validateEventVenueSessionDocument = ajv.compile(eventVenueSessionDocumentSchema);
+export const validateEventVenueSessionRedemptionDocument = ajv.compile(eventVenueSessionRedemptionDocumentSchema);
 export const validateEventSuccessPresenceDocument = ajv.compile(eventSuccessPresenceDocumentSchema);
 export const validateEventSuccessLateArrivalDocument = ajv.compile(eventSuccessLateArrivalDocumentSchema);
 export const validateEventRuntimeClaimRequestDocument = ajv.compile(eventRuntimeClaimRequestDocumentSchema);
@@ -614,6 +620,8 @@ export const validateSubmitEventRuntimeProfileCallablePayload = ajv.compile(subm
 export const validateSubmitEventRuntimeProfileCallableResponse = ajv.compile(submitEventRuntimeProfileCallableResponseSchema);
 export const validateCheckInEventRuntimeCallablePayload = ajv.compile(checkInEventRuntimeCallablePayloadSchema);
 export const validateCheckInEventRuntimeCallableResponse = ajv.compile(checkInEventRuntimeCallableResponseSchema);
+export const validateCreateEventVenueSessionCallablePayload = ajv.compile(createEventVenueSessionCallablePayloadSchema);
+export const validateCreateEventVenueSessionCallableResponse = ajv.compile(createEventVenueSessionCallableResponseSchema);
 export const validateApproveEventRuntimeClaimCallablePayload = ajv.compile(approveEventRuntimeClaimCallablePayloadSchema);
 export const validateApproveEventRuntimeClaimCallableResponse = ajv.compile(approveEventRuntimeClaimCallableResponseSchema);
 export const validateCreateEventRosterHandoffCallablePayload = ajv.compile(createEventRosterHandoffCallablePayloadSchema);

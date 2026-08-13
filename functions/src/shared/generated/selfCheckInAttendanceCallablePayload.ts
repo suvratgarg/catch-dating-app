@@ -7,6 +7,5 @@
  */
 export interface SelfCheckInAttendanceCallablePayload {
   eventId: string;
-  latitude?: number | null;
-  longitude?: number | null;
+  venueSessionToken: string;
 }

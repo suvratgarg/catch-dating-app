@@ -1470,6 +1470,8 @@ describe("firestore.rules", () => {
         ["eventShareIntents", "intent-1"],
         ["eventInviteAttributions", "attribution-1"],
         ["eventAttendeeAttendanceReceipts", "receipt-1"],
+        ["eventVenueSessions", "session-1"],
+        ["eventVenueSessionRedemptions", "redemption-1"],
         ["organizerProviderConnections", "connection-1"],
         ["externalEventMappings", "mapping-1"],
         ["providerSyncRuns", "sync-1"],

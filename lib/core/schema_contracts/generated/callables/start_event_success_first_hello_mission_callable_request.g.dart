@@ -9,17 +9,14 @@
 final class StartEventSuccessFirstHelloMissionCallableRequest {
   const StartEventSuccessFirstHelloMissionCallableRequest({
     required this.eventId,
-    this.latitude,
-    this.longitude,
+    required this.venueSessionToken,
   });
 
   final String eventId;
-  final double? latitude;
-  final double? longitude;
+  final String venueSessionToken;
 
   Map<String, Object?> toJson() => {
     'eventId': eventId,
-    'latitude': ?latitude,
-    'longitude': ?longitude,
+    'venueSessionToken': venueSessionToken,
   };
 }

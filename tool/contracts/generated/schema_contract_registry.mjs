@@ -22743,6 +22743,195 @@ export const eventRuntimeParticipantDocumentSchema = {
   }
 };
 
+export const eventVenueSessionDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_venue_sessions.schema.json",
+  "title": "EventVenueSessionDocument",
+  "description": "Short-lived server-owned venue-presence authority shown only in the Host live QR.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventVenueSessions",
+  "x-firestore-path": "eventVenueSessions/{sessionId}",
+  "x-document-id-field": "sessionId",
+  "x-owner": "createEventVenueSession callable; no client reads or writes",
+  "required": [
+    "eventId",
+    "organizerId",
+    "createdBy",
+    "issuedAt",
+    "expiresAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "createdBy": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "issuedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  }
+};
+
+export const eventVenueSessionRedemptionDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_venue_session_redemptions.schema.json",
+  "title": "EventVenueSessionRedemptionDocument",
+  "description": "Server-only single-use receipt binding one attendee to one live venue session.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventVenueSessionRedemptions",
+  "x-firestore-path": "eventVenueSessionRedemptions/{redemptionId}",
+  "x-document-id-field": "redemptionId",
+  "x-owner": "attendance and First Hello callables; no client reads or writes",
+  "required": [
+    "eventId",
+    "sessionId",
+    "uid",
+    "purpose",
+    "redeemedAt",
+    "consumedAt",
+    "expiresAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "sessionId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{24,80}$"
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "purpose": {
+      "type": "string",
+      "enum": [
+        "attendance",
+        "firstHello"
+      ]
+    },
+    "redeemedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "consumedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  }
+};
+
 export const eventSuccessPresenceDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/event_success_presence.schema.json",
@@ -26831,6 +27020,8 @@ export const eventSuccessArrivalMissionDocumentSchema = {
     "targetContext",
     "question",
     "answerOptions",
+    "venueSessionId",
+    "venueSessionRedemptionId",
     "status",
     "createdAt",
     "updatedAt"
@@ -26908,6 +27099,16 @@ export const eventSuccessArrivalMissionDocumentSchema = {
           }
         }
       },
+      "x-catch-ownership": "callable-owned"
+    },
+    "venueSessionId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{24,80}$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "venueSessionRedemptionId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
       "x-catch-ownership": "callable-owned"
     },
     "status": {
@@ -50112,12 +50313,18 @@ export const checkInEventRuntimeCallablePayloadSchema = {
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "publicRuntimeId"
+    "publicRuntimeId",
+    "venueSessionToken"
   ],
   "properties": {
     "publicRuntimeId": {
       "type": "string",
       "pattern": "^[A-Za-z0-9_-]{20,80}$"
+    },
+    "venueSessionToken": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 2048
     }
   }
 };
@@ -50139,6 +50346,62 @@ export const checkInEventRuntimeCallableResponseSchema = {
     },
     "alreadyCheckedIn": {
       "type": "boolean"
+    }
+  }
+};
+
+export const createEventVenueSessionCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/create_event_venue_session_payload.schema.json",
+  "title": "CreateEventVenueSessionCallablePayload",
+  "description": "Requests a short-lived signed venue-presence session for the Host live QR.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const createEventVenueSessionCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/create_event_venue_session_response.schema.json",
+  "title": "CreateEventVenueSessionCallableResponse",
+  "description": "Short-lived signed venue session returned only to an authorized Host manager.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "venueSessionToken",
+    "expiresAtMillis",
+    "refreshAfterMillis"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "venueSessionToken": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 2048
+    },
+    "expiresAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "refreshAfterMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
     }
   }
 };
@@ -53101,7 +53364,8 @@ export const startEventSuccessFirstHelloMissionCallablePayloadSchema = {
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "eventId"
+    "eventId",
+    "venueSessionToken"
   ],
   "properties": {
     "eventId": {
@@ -53109,21 +53373,10 @@ export const startEventSuccessFirstHelloMissionCallablePayloadSchema = {
       "minLength": 1,
       "maxLength": 180
     },
-    "latitude": {
-      "type": [
-        "number",
-        "null"
-      ],
-      "minimum": -90,
-      "maximum": 90
-    },
-    "longitude": {
-      "type": [
-        "number",
-        "null"
-      ],
-      "minimum": -180,
-      "maximum": 180
+    "venueSessionToken": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 2048
     }
   }
 };
@@ -53149,22 +53402,6 @@ export const completeEventSuccessFirstHelloMissionCallablePayloadSchema = {
       "type": "string",
       "minLength": 1,
       "maxLength": 64
-    },
-    "latitude": {
-      "type": [
-        "number",
-        "null"
-      ],
-      "minimum": -90,
-      "maximum": 90
-    },
-    "longitude": {
-      "type": [
-        "number",
-        "null"
-      ],
-      "minimum": -180,
-      "maximum": 180
     }
   }
 };
@@ -53194,7 +53431,8 @@ export const selfCheckInAttendanceCallablePayloadSchema = {
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "eventId"
+    "eventId",
+    "venueSessionToken"
   ],
   "properties": {
     "eventId": {
@@ -53202,21 +53440,10 @@ export const selfCheckInAttendanceCallablePayloadSchema = {
       "minLength": 1,
       "maxLength": 180
     },
-    "latitude": {
-      "type": [
-        "number",
-        "null"
-      ],
-      "minimum": -90,
-      "maximum": 90
-    },
-    "longitude": {
-      "type": [
-        "number",
-        "null"
-      ],
-      "minimum": -180,
-      "maximum": 180
+    "venueSessionToken": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 2048
     }
   }
 };

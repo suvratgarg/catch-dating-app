@@ -282,10 +282,19 @@ class CompanionMessage extends StatelessWidget {
 }
 
 Future<void> _noopFuture() async {}
+Future<void> _noopVenueCheckIn(String _) async {}
 Future<void> _noopSaveCompatibilityAnswers(List<String> answerIds) async {}
 void _noopIncludeChange(bool include) {}
 Future<void> _noopSaveWingmanRequest(PublicProfile target, String note) async {}
 Future<void> _noopSubmitFeedback(EventSuccessFeedback feedback) async {}
+
+Future<String?> showEventVenueSessionScanner({
+  required BuildContext context,
+  required String eventId,
+}) => showCatchBottomSheet<String>(
+  context: context,
+  builder: (context) => EventCheckInQrScannerSheet(eventId: eventId),
+);
 
 CatchAsyncState<T> _catchAsyncState<T>(AsyncValue<T> value) {
   return catchAsyncStateFromAsyncValue(value);
@@ -696,11 +705,19 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
           isSaving: feedbackMutation.isPending,
         ),
         onStartArrivalMission: () async {
+          final venueSessionToken = await showCatchBottomSheet<String>(
+            context: context,
+            builder: (context) => EventCheckInQrScannerSheet(eventId: event.id),
+          );
+          if (venueSessionToken == null || !context.mounted) return;
           await EventSuccessController.firstHelloStartMutation.run(
             ref,
             (tx) => tx
                 .get(eventSuccessControllerProvider.notifier)
-                .startFirstHelloMission(event: event),
+                .startFirstHelloMission(
+                  event: event,
+                  venueSessionToken: venueSessionToken,
+                ),
           );
         },
         onCompleteArrivalMission: (mission, answerId) async {
@@ -715,12 +732,20 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
                 ),
           );
         },
-        onSkipArrivalMission: () {
-          EventBookingController.selfCheckInMutation.run(
+        onSkipArrivalMission: () async {
+          final venueSessionToken = await showCatchBottomSheet<String>(
+            context: context,
+            builder: (context) => EventCheckInQrScannerSheet(eventId: event.id),
+          );
+          if (venueSessionToken == null || !context.mounted) return;
+          await EventBookingController.selfCheckInMutation.run(
             ref,
             (tx) => tx
                 .get(eventBookingControllerProvider.notifier)
-                .selfCheckIn(eventId: event.id),
+                .selfCheckIn(
+                  eventId: event.id,
+                  venueSessionToken: venueSessionToken,
+                ),
           );
         },
         onSetMicroPodsIncluded: (include) {
@@ -763,7 +788,7 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
                 .submitFeedback(feedback),
           );
         },
-        onSelfCheckIn: () async {
+        onSelfCheckIn: (venueSessionToken) async {
           unawaited(
             ref
                 .read(eventSuccessLiveEffectsControllerProvider)
@@ -773,7 +798,10 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
             ref,
             (tx) => tx
                 .get(eventBookingControllerProvider.notifier)
-                .selfCheckIn(eventId: event.id),
+                .selfCheckIn(
+                  eventId: event.id,
+                  venueSessionToken: venueSessionToken,
+                ),
           );
         },
         onPlayLiveEffect: (kind) =>

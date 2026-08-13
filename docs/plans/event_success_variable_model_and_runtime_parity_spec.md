@@ -707,7 +707,7 @@ docs are updated. Update this table in the same commit as the tranche.
 - [x] T6 `resourceCapacity` and `sequence` topology
 - [x] T7 `unitOutcome` and live standings
 - [x] T8 Presence and late arrivals
-- [ ] T9 Signed venue session replaces GPS
+- [x] T9 Signed venue session replaces GPS
 - [ ] T10 Conversation graph
 - [ ] T11 `accountability` sweep
 - [ ] T12 Presentation contract and parity foundation

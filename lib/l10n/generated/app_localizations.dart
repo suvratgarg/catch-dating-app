@@ -3822,7 +3822,7 @@ abstract class AppLocalizations {
   /// Supporting copy for the host attendee check-in QR disclosure.
   ///
   /// In en, this message translates to:
-  /// **'Show this code to attendees as they arrive.'**
+  /// **'Keep this live code on screen as attendees arrive. It refreshes automatically and cannot be printed for later check-in.'**
   String get hostsHostEventAttendancePanelBodyCheckInQr;
 
   /// Button label for sharing the no-download attendee runtime link.
@@ -3840,7 +3840,7 @@ abstract class AppLocalizations {
   /// Message used when a host shares the no-download attendee runtime link.
   ///
   /// In en, this message translates to:
-  /// **'Open this link when you arrive to check in and join the Event Success experience: {runtimeUrl}'**
+  /// **'Open this link to join the event companion. Scan the Host\'\'s live QR at the venue to check in: {runtimeUrl}'**
   String hostsHostEventAttendancePanelRuntimeShareText({
     required String runtimeUrl,
   });
@@ -7492,7 +7492,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart (Text).
   ///
   /// In en, this message translates to:
-  /// **'Location still verifies the venue after the QR is scanned.'**
+  /// **'Only the Host\'\'s current live QR confirms venue presence. Printed and shared join codes cannot check you in.'**
   String
   get eventSuccessEventSuccessCompanionLiveCardsTextLocationStillVerifiesThe;
 

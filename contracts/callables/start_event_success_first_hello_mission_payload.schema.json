@@ -5,10 +5,9 @@
   "description": "Callable payload accepted by startEventSuccessFirstHelloMission.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["eventId"],
+  "required": ["eventId", "venueSessionToken"],
   "properties": {
     "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-    "latitude": {"$ref": "../shared/event_common.schema.json#/definitions/latitude"},
-    "longitude": {"$ref": "../shared/event_common.schema.json#/definitions/longitude"}
+    "venueSessionToken": {"type": "string", "minLength": 64, "maxLength": 2048}
   }
 }

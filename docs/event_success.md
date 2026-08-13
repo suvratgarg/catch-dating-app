@@ -211,6 +211,8 @@ rather than embedded in event-type logic.
 | `eventSuccessCompatibilityResponses/{eventId_uid}` | Attendee-owned compatibility answers. Hosts cannot read individual answers. |
 | `eventSuccessWingmanRequests/{eventId_uid}` | Attendee consent document for host-visible introduction help. Target is not notified by this surface. |
 | `eventSuccessArrivalMissions/{eventId_uid}` | Server-owned First Hello mission. Attendee can read only their own mission; clients cannot create, update, list, or delete. |
+| `eventVenueSessions/{sessionId}` | Short-lived server-owned Host venue authority. Direct client reads/writes are denied; TTL uses `expiresAt`. |
+| `eventVenueSessionRedemptions/{sha256(eventId_sessionId_uid)}` | Server-only single-use receipt. One live session may admit multiple attendees, but the same authenticated attendee cannot replay it. TTL uses `expiresAt`. |
 | `eventSuccessAssignments/{eventId_moduleId_uid}` | Server-owned assignment docs for micro-pods/guided rotations. |
 | `eventSuccessAssignmentDrafts/{eventId_moduleId_uid}` | Server-owned, Host-readable next-round rotation drafts. Participants cannot read or write this collection. |
 | `eventSuccessPresence/{eventId_uid}` | Server-owned heartbeat timestamps for checked-in Flutter and no-download runtime attendees. Every direct read/write is denied; Host summaries are callable-derived. |
@@ -251,11 +253,12 @@ the attendee for the next round with a visible reason. It writes only
 
 First Hello check-in is modeled as an optional arrival module with server-owned
 mission assignment/completion. `startEventSuccessFirstHelloMission` verifies the
-attendee is signed up, the check-in window is open, the caller is within the
-tighter First Hello venue radius, the module is selected, and a compatible
-checked-in target exists. `completeEventSuccessFirstHelloMission` verifies the
-active mission and answer, rechecks location/block state, records only the
-observer's answer on the mission, and marks attendance.
+attendee is signed up, the check-in window is open, a current signed Host venue
+session is redeemed, the module is selected, and a compatible checked-in target
+exists. The mission persists that venue proof. `completeEventSuccessFirstHelloMission`
+verifies the active mission, unconsumed proof, answer, and block state, records
+only the observer's answer on the mission, consumes the proof, and marks
+attendance without a second location or QR claim.
 
 ### Live Control Robustness
 
@@ -526,13 +529,17 @@ window, capability, hidden safety state and deterministic ids.
 | `submitEventRuntimeProfile` | Accept only required fields, validate consent/version, recompute completeness and optionally fill missing onboarding draft fields. |
 | `heartbeatEventSuccessPresence` | Accept only a checked-in caller and record a server-timestamped liveness heartbeat. Return the active configurable cadence and thresholds. |
 | `setEventRuntimeModuleOptOut` | Purpose-scoped opt-out that does not cancel attendance or identity. |
-| `checkInEventRuntimeParticipant` | Apply absolute desired attendance after Host approval, valid venue session or allowed self-check-in; never a blind toggle. |
+| `checkInEventRuntime` | Redeem a current signed Host venue session after identity/profile readiness and apply absolute attendance; never a blind toggle. |
 | `approveEventRuntimeClaim` | Host approves one pending UID-to-attendee claim or rejects it with a bounded reason. |
 
 Static join URLs use opaque `publicRuntimeId`, never event id plus phone. An
 attendee token is random, single-purpose, revocable and hashed at rest. A venue
-check-in QR uses a short-lived signed session; a printable join QR cannot prove
-physical attendance.
+check-in QR uses a configurable, bounded short-lived signed session and refreshes
+automatically on the Host screen. The token travels in the guest URL fragment,
+is cleared after route intake, and is verified against a server-owned session
+row inside the attendance transaction. A printable or shared join QR has no
+token and cannot prove physical attendance. Location fields are rejected by all
+three attendee attendance schemas.
 
 ### Unified Event Success participant resolver
 
@@ -672,10 +679,10 @@ Current theatrical implementation state:
 - the attendee companion stage redesign, invite loop, and private afterglow
   recap are implemented for visual review;
 - First Hello check-in is implemented as an optional arrival module with
-  server-owned mission assignment/completion, production Host/attendee coverage,
-  and a 100m venue radius;
-- QR check-in now has a host QR surface and attendee scanner entry point; the
-  existing GPS self-check-in callable remains the attendance write path;
+  server-owned mission assignment/completion and signed venue-session proof;
+- the Host check-in QR is live, signed, short-lived, and auto-refreshing;
+  printable/static join links grant no attendance, and Consumer plus guest-web
+  attendance callables reject GPS/location claims;
 - invite sharing now routes through shared event-invite copy across event
   detail, payment confirmation, and host private-link surfaces;
 - post-event companion follow-up now starts with a private in-app afterglow

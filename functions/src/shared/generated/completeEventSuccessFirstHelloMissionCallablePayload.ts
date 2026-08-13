@@ -8,6 +8,4 @@
 export interface CompleteEventSuccessFirstHelloMissionCallablePayload {
   eventId: string;
   answerId: string;
-  latitude?: number | null;
-  longitude?: number | null;
 }

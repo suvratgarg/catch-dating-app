@@ -13,6 +13,7 @@ const schemaSelfCheckInAttendanceCallablePayloadSchema = <String, Object?>{
   'additionalProperties': false,
   'required': <Object?>[
     'eventId',
+    'venueSessionToken',
   ],
   'properties': <String, Object?>{
     'eventId': <String, Object?>{
@@ -20,21 +21,10 @@ const schemaSelfCheckInAttendanceCallablePayloadSchema = <String, Object?>{
       'minLength': 1,
       'maxLength': 180,
     },
-    'latitude': <String, Object?>{
-      'type': <Object?>[
-        'number',
-        'null',
-      ],
-      'minimum': -90,
-      'maximum': 90,
-    },
-    'longitude': <String, Object?>{
-      'type': <Object?>[
-        'number',
-        'null',
-      ],
-      'minimum': -180,
-      'maximum': 180,
+    'venueSessionToken': <String, Object?>{
+      'type': 'string',
+      'minLength': 64,
+      'maxLength': 2048,
     },
   },
 };

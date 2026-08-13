@@ -747,23 +747,26 @@ void main() {
     test('selfCheckInAttendance calls the matching Cloud Function', () async {
       await repository.selfCheckInAttendance(
         eventId: 'event-9',
-        latitude: 19.076,
-        longitude: 72.8777,
+        venueSessionToken: 'signed-live-session',
       );
 
       expect(functions.callables['selfCheckInAttendance']!.calls, [
-        {'eventId': 'event-9', 'latitude': 19.076, 'longitude': 72.8777},
+        {'eventId': 'event-9', 'venueSessionToken': 'signed-live-session'},
       ]);
     });
 
-    test('selfCheckInAttendance omits missing coordinates', () async {
-      await repository.selfCheckInAttendance(
-        eventId: 'event-9',
-        latitude: null,
-        longitude: null,
-      );
+    test('createVenueSession parses the signed Host session', () async {
+      (functions.httpsCallable('createEventVenueSession') as TestHttpsCallable)
+          .resultData = {
+        'eventId': 'event-9',
+        'venueSessionToken': 'signed-live-session',
+        'expiresAtMillis': 2000,
+        'refreshAfterMillis': 1000,
+      };
+      final session = await repository.createVenueSession(eventId: 'event-9');
 
-      expect(functions.callables['selfCheckInAttendance']!.calls, [
+      expect(session.venueSessionToken, 'signed-live-session');
+      expect(functions.callables['createEventVenueSession']!.calls, [
         {'eventId': 'event-9'},
       ]);
     });

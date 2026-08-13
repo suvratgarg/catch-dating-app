@@ -13,11 +13,17 @@ const schemaCheckInEventRuntimeCallablePayloadSchema = <String, Object?>{
   'additionalProperties': false,
   'required': <Object?>[
     'publicRuntimeId',
+    'venueSessionToken',
   ],
   'properties': <String, Object?>{
     'publicRuntimeId': <String, Object?>{
       'type': 'string',
       'pattern': '^[A-Za-z0-9_-]{20,80}\$',
+    },
+    'venueSessionToken': <String, Object?>{
+      'type': 'string',
+      'minLength': 64,
+      'maxLength': 2048,
     },
   },
 };

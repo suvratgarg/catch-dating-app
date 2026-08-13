@@ -71,6 +71,10 @@ describe("useEventRuntimeController", () => {
     vi.clearAllMocks();
     runtime.user = null;
     getEventRuntimeBootstrap.mockResolvedValue(bootstrap());
+    checkInEventRuntime.mockResolvedValue({
+      status: "checkedIn",
+      alreadyCheckedIn: false,
+    });
     createEventRuntimeAttendeeInviteLink.mockResolvedValue({
       eventId: "event-1",
       inviteLinkId: "invite-1",
@@ -124,6 +128,74 @@ describe("useEventRuntimeController", () => {
     expect(watchEventRuntimeLiveState).toHaveBeenCalled();
     await waitFor(() => expect(heartbeatEventRuntimePresence)
       .toHaveBeenCalledWith("event-1"));
+  });
+
+  it("does not grant attendance from a static runtime link", async () => {
+    runtime.user = {uid: "guest-1"};
+    getEventRuntimeBootstrap.mockResolvedValue(bootstrap({
+      accessStatus: "ready",
+      attendanceStatus: "registered",
+      eventId: "event-1",
+      clubId: "club-1",
+      organizerId: "club-1",
+      requiredFieldIds: ["displayName"],
+      completedFieldIds: ["displayName"],
+      runtimeProfile: {
+        displayName: "Ari",
+        gender: null,
+        interestedInGenders: [],
+        relationshipGoal: null,
+        dateOfBirthMillis: null,
+      },
+    }));
+
+    const {result} = renderHook(
+      () => useEventRuntimeController("runtime_123456789012345678901234"),
+      {wrapper: wrapper()}
+    );
+
+    await waitFor(() => expect(result.current.stage).toBe("venue"));
+    expect(checkInEventRuntime).not.toHaveBeenCalled();
+    expect(watchEventRuntimeLiveState).not.toHaveBeenCalled();
+  });
+
+  it("redeems a live venue session before opening runtime tools", async () => {
+    runtime.user = {uid: "guest-1"};
+    let checkedIn = false;
+    getEventRuntimeBootstrap.mockImplementation(async () => bootstrap({
+      accessStatus: "ready",
+      attendanceStatus: checkedIn ? "checkedIn" : "registered",
+      eventId: "event-1",
+      clubId: "club-1",
+      organizerId: "club-1",
+      requiredFieldIds: ["displayName"],
+      completedFieldIds: ["displayName"],
+      runtimeProfile: {
+        displayName: "Ari",
+        gender: null,
+        interestedInGenders: [],
+        relationshipGoal: null,
+        dateOfBirthMillis: null,
+      },
+    }));
+    checkInEventRuntime.mockImplementation(async () => {
+      checkedIn = true;
+      return {status: "checkedIn", alreadyCheckedIn: false};
+    });
+
+    const {result} = renderHook(
+      () => useEventRuntimeController(
+        "runtime_123456789012345678901234",
+        "signed-live-session"
+      ),
+      {wrapper: wrapper()}
+    );
+
+    await waitFor(() => expect(result.current.stage).toBe("runtime"));
+    expect(checkInEventRuntime).toHaveBeenCalledWith({
+      publicRuntimeId: "runtime_123456789012345678901234",
+      venueSessionToken: "signed-live-session",
+    });
   });
 
   it("shares a stable attendee link and records only the Catch share action", async () => {

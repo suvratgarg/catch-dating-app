@@ -4410,7 +4410,7 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.widgets.host_event_attendance_panel"
   },
-  "hostsHostEventAttendancePanelBodyCheckInQr": "Show this code to attendees as they arrive.",
+  "hostsHostEventAttendancePanelBodyCheckInQr": "Keep this live code on screen as attendees arrive. It refreshes automatically and cannot be printed for later check-in.",
   "@hostsHostEventAttendancePanelBodyCheckInQr": {
     "description": "Supporting copy for the host attendee check-in QR disclosure.",
     "x-audience": "host",
@@ -4431,7 +4431,7 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.widgets.host_event_attendance_panel"
   },
-  "hostsHostEventAttendancePanelRuntimeShareText": "Open this link when you arrive to check in and join the Event Success experience: {runtimeUrl}",
+  "hostsHostEventAttendancePanelRuntimeShareText": "Open this link to join the event companion. Scan the Host''s live QR at the venue to check in: {runtimeUrl}",
   "@hostsHostEventAttendancePanelRuntimeShareText": {
     "description": "Message used when a host shares the no-download attendee runtime link.",
     "placeholders": {
@@ -8827,7 +8827,7 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.companion_parts.event_success_companion_live_cards"
   },
-  "eventSuccessEventSuccessCompanionLiveCardsTextLocationStillVerifiesThe": "Location still verifies the venue after the QR is scanned.",
+  "eventSuccessEventSuccessCompanionLiveCardsTextLocationStillVerifiesThe": "Only the Host''s current live QR confirms venue presence. Printed and shared join codes cannot check you in.",
   "@eventSuccessEventSuccessCompanionLiveCardsTextLocationStillVerifiesThe": {
     "description": "Product copy used by lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart (Text).",
     "x-audience": "consumer",
