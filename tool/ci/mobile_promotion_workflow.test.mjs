@@ -48,7 +48,7 @@ function artifactMatchesAuthority(metadata, selected) {
     metadata.expired === false;
 }
 
-test("promotion is a confirmed manual-only operation with one queue per exact target", () => {
+test("promotion accepts exact automatic or confirmed recovery dispatches with one queue per target", () => {
   const trigger = workflow.slice(0, workflow.indexOf("permissions:"));
   assert.match(trigger, /on:\n\s+workflow_dispatch:/u);
   assert.doesNotMatch(trigger, /\n\s+(?:push|pull_request|workflow_run|schedule):/u);
@@ -76,6 +76,8 @@ test("promotion is a confirmed manual-only operation with one queue per exact ta
   ));
   assert.match(workflow, /timeout-minutes: 90/u);
   assert.match(workflow, /test "\$GITHUB_RUN_ATTEMPT" = "1"/u);
+  assert.match(workflow, /for wait_attempt in \{1\.\.60\}/u);
+  assert.match(workflow, /Timed out waiting for the automatically dispatching producer to complete/u);
 });
 
 test("producer attempt and current promoter implementation are fail-closed", () => {
@@ -91,7 +93,9 @@ test("producer attempt and current promoter implementation are fail-closed", () 
     ".status == \"completed\"",
     ".conclusion == \"success\"",
     "ref: ${{ github.sha }}",
-    "test \"$GITHUB_SHA\" = \"$(git rev-parse refs/remotes/origin/main)\"",
+    "git merge-base --is-ancestor \"$GITHUB_SHA\" refs/remotes/origin/main",
+    "git diff --quiet \"$GITHUB_SHA\"..refs/remotes/origin/main",
+    "tool/platform/distribute_testflight_build.mjs",
   ]) assert.ok(workflow.includes(binding), `missing producer/promoter binding: ${binding}`);
 
   const requested = {id: "7001", attempt: 3, repository: "catch/repo"};
@@ -190,6 +194,8 @@ test("prior claims are exact, attempt-bound, and ambiguous Apple identity fails 
   ]) assert.ok(workflow.includes(binding), `missing exact replay binding: ${binding}`);
   assert.doesNotMatch(workflow, /operator-reconciled-identity/u);
   assert.match(workflow, /existing-valid\|existing-processing[\s\S]*PRIOR_RECEIPT[\s\S]*PRIOR_REMOTE_ID/u);
+  assert.match(workflow,
+    /\.conclusion == "success" or[\s\S]*\.conclusion == "failure" or[\s\S]*\.conclusion == "cancelled"/u);
 });
 
 test("fresh source, artifact, and package verification immediately precedes credentials", () => {
@@ -212,7 +218,7 @@ test("fresh source, artifact, and package verification immediately precedes cred
   ]) assert.ok(finalSlice.includes(binding), `missing immediate final binding: ${binding}`);
 });
 
-test("promotion uses one exact Play authority and never rebuilds, archives, or signs", () => {
+test("promotion uses one exact store authority and never rebuilds, archives, or signs", () => {
   assert.match(workflow,
     /xcrun altool[\s\S]*--upload-package "\$IPA_PATH"[\s\S]*--bundle-id "\$BUNDLE_IDENTIFIER"/u);
   assert.match(workflow, new RegExp(
@@ -247,16 +253,47 @@ test("promotion uses one exact Play authority and never rebuilds, archives, or s
   assert.doesNotMatch(workflow, /actions\/setup-java|ANDROID_UPLOAD_KEYSTORE|build appbundle|build ios/u);
 });
 
-test("credentials are removed before one immutable 90-day claim is persisted", () => {
+test("iOS promotion assigns exact VALID builds only to existing internal groups with testers", () => {
+  const store = workflow.indexOf("Verify the exact TestFlight postcondition");
+  const distribution = workflow.indexOf(
+    "Grant the exact build to existing internal TestFlight testers",
+  );
+  assert.ok(store >= 0 && distribution > store);
+  const section = workflow.slice(distribution, workflow.indexOf(
+    "Remove rematerialized App Store Connect distribution credentials",
+  ));
+  for (const marker of [
+    "distribute_testflight_build.mjs",
+    "--build-id \"$REMOTE_BUILD_ID\"",
+    "--package-artifact-id \"$PACKAGE_ARTIFACT_ID\"",
+    "--signed-artifact-sha256 \"$SIGNED_ARTIFACT_SHA256\"",
+    "--apply",
+    "--allow-prod",
+    "all-existing-internal-groups-with-testers",
+    ".testerCount > 0",
+    ".hasBuildAccess == true",
+  ]) assert.ok(section.includes(marker), `missing TestFlight distribution binding: ${marker}`);
+  assert.match(workflow, /testflight-distribution-v1-/u);
+  assert.match(workflow, /testflight-distribution-receipt\.json/u);
+});
+
+test("upload claim is durable before idempotent distribution and credentials are removed", () => {
   const iosCleanup = workflow.indexOf("Remove App Store Connect credentials");
   const playCleanup = workflow.indexOf("Remove Play credentials");
   const receipt = workflow.indexOf("Create the immutable exact-promotion receipt");
-  const upload = workflow.indexOf("uses: actions/upload-artifact@v7");
-  const postconditions = workflow.indexOf("Record credential-free exact promotion postconditions");
+  const claimUpload = workflow.indexOf("Persist the immutable exact-promotion claim before distribution");
+  const distribution = workflow.indexOf("Grant the exact build to existing internal TestFlight testers");
+  const distributionCleanup = workflow.indexOf(
+    "Remove rematerialized App Store Connect distribution credentials",
+  );
+  const postconditions = workflow.indexOf(
+    "Record credential-free exact promotion and distribution postconditions",
+  );
   assert.ok(iosCleanup < receipt && playCleanup < receipt && receipt < postconditions);
-  assert.ok(postconditions < upload,
-    "claim publication must be the final substantive step for unambiguous reuse");
-  assert.equal((workflow.match(/uses: actions\/upload-artifact@v7/gu) ?? []).length, 1);
+  assert.ok(receipt < claimUpload && claimUpload < distribution,
+    "the exact upload claim must be durable before tester-group distribution");
+  assert.ok(distribution < distributionCleanup && distributionCleanup < postconditions);
+  assert.equal((workflow.match(/uses: actions\/upload-artifact@v7/gu) ?? []).length, 2);
   assert.match(workflow, /name: \$\{\{ steps\.claim\.outputs\.claim_artifact_name \}\}/u);
   assert.match(workflow, /retention-days: 90/u);
   assert.match(workflow, /--evidence-level exact-artifact/u);

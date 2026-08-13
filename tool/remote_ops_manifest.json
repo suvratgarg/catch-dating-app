@@ -682,7 +682,7 @@
       "environments": [
         "prod-mobile"
       ],
-      "purpose": "Track the CI-authorized Consumer/Host signed-package producer, manual exact-artifact TestFlight and Play-internal promoter, store authentication, legacy Xcode Cloud retirement, and guarded Play enablement.",
+      "purpose": "Track the CI-authorized Consumer/Host signed-package producer, automatic exact-artifact TestFlight and recovery Play-internal promoter, store authentication, legacy Xcode Cloud retirement, and guarded Play enablement.",
       "entrypoints": [
         {
           "kind": "tool-id",
@@ -723,6 +723,10 @@
         {
           "kind": "tool-id",
           "ref": "platform:verify-app-store-build"
+        },
+        {
+          "kind": "tool-id",
+          "ref": "platform:distribute-testflight-build"
         },
         {
           "kind": "tool-id",
@@ -770,10 +774,10 @@
         },
         {
           "kind": "manual",
-          "ref": "App Store Connect TestFlight group assignment and install/launch proof",
+          "ref": "App Store Connect TestFlight install/launch proof",
           "owner": "docs/release_operations.md",
           "ticket": "https://github.com/suvratgarg/catch-dating-app/issues/218",
-          "guardrail": "Both GitHub uploads processed and both legacy workflows are disabled; close APP-TARGET-IOS-GITHUB-CUTOVER-001 only after intended group assignment and install/launch proof exists."
+          "guardrail": "Automatic promotion assigns each exact VALID build only to existing internal groups with testers; close APP-TARGET-IOS-GITHUB-CUTOVER-001 only after live assignment receipts and install/launch proof exist."
         },
         {
           "kind": "manual",
@@ -784,10 +788,11 @@
         }
       ],
       "requiredChecks": [
-        "node tool/run.mjs check ci:mobile-release-package ci:mobile-release-workflow ci:mobile-promotion-core ci:mobile-promotion-workflow platform:app-targets platform:mobile-build-number platform:verify-ios-release-identity platform:verify-app-store-build platform:verify-android-release-identity platform:upload-google-play-bundle",
-        "Successful same-repository main CI authorities fan out only exact Consumer/Host role-platform targets under approval-free, main-only prod-mobile signing credentials; the producer performs no store mutation, and the manual promoter serializes each exact target without rebuilding or resigning.",
+        "node tool/run.mjs check ci:mobile-release-package ci:mobile-release-workflow ci:mobile-promotion-core ci:mobile-promotion-workflow platform:app-targets platform:mobile-build-number platform:verify-ios-release-identity platform:verify-app-store-build platform:distribute-testflight-build platform:verify-android-release-identity platform:upload-google-play-bundle",
+        "Successful same-repository main CI authorities fan out only exact Consumer/Host role-platform targets under approval-free, main-only prod-mobile signing credentials; the producer automatically dispatches every authorized iOS target, while recovery dispatches remain available without rebuilding or resigning.",
         "Each ephemeral iOS runner must import the same dedicated prod-mobile Apple Development PKCS#12, verify its team, fingerprint, and validity floor, and remove the decoded identity and temporary keychain after the job while leaving automatic signing enabled.",
         "Verify iOS archive/export identity and Android AAB signature/certificate/compiled role/Firebase/Maps/version identity before package authority; verify the current producer attempt, exact artifact id/digest, packaged bytes, and store response before claiming internal delivery.",
+        "After each exact iOS upload claim is durable, assign the VALID build to every existing internal TestFlight group that already has testers; never create groups or alter tester membership automatically, and require relationship readback plus a 90-day distribution receipt.",
         "Play publishing is limited to the qa track and forbidden for production.",
         "Before any AAB upload, the promotion workflow creates an edit, reads qa and Google Group testers, and deletes the edit for both app records without uploading or committing.",
         "Consumer requires HealthKit/Health Connect and public links; Host must not inherit them."
@@ -795,8 +800,8 @@
       "notes": [
         "GitHub Actions is canonical for both roles and both mobile platforms; package production and internal-store mutation are separate workflows, and public store promotion remains separate.",
         "Mobile Internal Release consumes successful main CI authority, writes binary-bound identity/policy/provenance receipts, retains exact packages for 90 days, and publishes post-comparison build authority without touching either store.",
-        "Mobile Internal Exact Promotion persists one 90-day exact-package claim only after store verification and credential removal; Apple identity without that prior exact claim fails closed and requires a new build, while Play retries require exact completed qa digest readback.",
-        "Final analyzer-clean producer run 31435724862 selected source 9c3633095464778a1d5734d742ab3036e5f7cde7; exact promotion runs 31436879851 and 31436882152 processed Consumer and Host iOS build 202608100000030201 as VALID and persisted claim artifacts 9081579386 and 9081563645; issue #218 owns group assignment and installed-device proof.",
+        "Mobile Internal Exact Promotion persists the 90-day exact-package upload claim before idempotent TestFlight distribution; Apple identity without that prior exact claim fails closed, while group-assignment retries reuse the exact claim and Play retries require completed qa digest readback.",
+        "Final analyzer-clean producer run 31435724862 selected source 9c3633095464778a1d5734d742ab3036e5f7cde7; exact promotion runs 31436879851 and 31436882152 processed Consumer and Host iOS build 202608100000030201 as VALID and persisted claim artifacts 9081579386 and 9081563645; issue #218 owns installed-device proof and historical group-assignment closure evidence.",
         "Final flag-free Android promotion runs 31423759477 and 31423765422 failed closed before upload because Play developer account 5956684998834594943 is unverified and has zero app records; issue #199 owns the required account and app-record setup.",
         "Mobile Internal Release run 29168074271 is historical pre-split evidence: it processed Consumer and Host build 202607110000000301 as VALID; retirement run 29168662623 verified those receipts and disabled both app-scoped Default workflows.",
         "Run 29388936845 exposed an ephemeral-runner Apple Development certificate leak. Nineteen verified-unused certificates were revoked on 2026-07-15, three working human identities were preserved, and dedicated reusable CI certificate 7P698XNLRP was stored in prod-mobile pending repaired main-run proof.",

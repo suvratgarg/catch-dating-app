@@ -126,6 +126,12 @@ export function validateManifestShape(manifest) {
     if (!roleConfig.packageEntrypoint) {
       findings.push(`${role}: packageEntrypoint is required`);
     }
+    if (roleConfig.storeProduct?.testFlightDistributionPolicy !==
+        "all-existing-internal-groups-with-testers") {
+      findings.push(
+        `${role}: TestFlight distribution policy must target all existing internal groups with testers`,
+      );
+    }
   }
   for (const environment of expectedEnvironments) {
     if (!manifest?.environments?.[environment]) {
@@ -346,10 +352,19 @@ export function validateReleaseOwnership({
       "successful-main-ci-exact-artifact-authority",
     ],
     ["release environment", policy.environment, "prod-mobile"],
-    ["release approval mode", policy.approvalMode, "build-only-no-store-mutation"],
+    [
+      "release approval mode",
+      policy.approvalMode,
+      "automatic-ios-exact-artifact-internal-promotion",
+    ],
     ["release branch policy", policy.branchPolicy, "main-only"],
     ["iOS channel", policy.ios?.channel, "testflight"],
     ["iOS upload mode", policy.ios?.uploadMode, "separate-promotion-workflow"],
+    [
+      "iOS distribution policy",
+      policy.ios?.distributionPolicy,
+      "all-existing-internal-groups-with-testers",
+    ],
     ["iOS signing style", policy.ios?.signingStyle, "automatic"],
     [
       "iOS development identity source",
@@ -374,8 +389,8 @@ export function validateReleaseOwnership({
   if (JSON.stringify(policy.roles) !== JSON.stringify(expectedRoles)) {
     findings.push("release policy roles must be [consumer, host]");
   }
-  if (JSON.stringify(policy.ios?.automaticRoles) !== JSON.stringify([])) {
-    findings.push("mobile package producer iOS automatic roles must be empty");
+  if (JSON.stringify(policy.ios?.automaticRoles) !== JSON.stringify(expectedRoles)) {
+    findings.push("mobile package producer iOS automatic roles must be [consumer, host]");
   }
   if (!/^[A-F0-9]{64}$/u.test(policy.android?.uploadCertificateSha256 ?? "")) {
     findings.push("Android upload certificate SHA-256 must be a checked 64-digit hex value");
@@ -389,8 +404,8 @@ export function validateReleaseOwnership({
     if (target.release?.githubMode !== "automatic-exact-artifact") {
       findings.push(`${target.id}: githubMode must be automatic-exact-artifact`);
     }
-    if (target.release?.automaticTestFlightOnMain !== false) {
-      findings.push(`${target.id}: automaticTestFlightOnMain must be false`);
+    if (target.release?.automaticTestFlightOnMain !== true) {
+      findings.push(`${target.id}: automaticTestFlightOnMain must be true`);
     }
     if (target.release?.githubWorkflow !== workflow) {
       findings.push(`${target.id}: release workflow must be ${workflow}`);

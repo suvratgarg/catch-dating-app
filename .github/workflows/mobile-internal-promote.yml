@@ -91,8 +91,24 @@ jobs:
               (.path | split("@")[0]) == ".github/workflows/mobile-internal-release.yml"
             ) | .id
           ' <<< "$canonical_workflow")"
-          current_run="$(gh api \
-            "repos/$GITHUB_REPOSITORY/actions/runs/$PRODUCER_RUN_ID")"
+          current_run=""
+          for wait_attempt in {1..60}; do
+            current_run="$(gh api \
+              "repos/$GITHUB_REPOSITORY/actions/runs/$PRODUCER_RUN_ID")"
+            status="$(jq -er '.status' <<< "$current_run")"
+            if [[ "$status" == "completed" ]]; then break; fi
+            if [[ "$status" != "in_progress" && "$status" != "queued" &&
+                  "$status" != "pending" && "$status" != "requested" &&
+                  "$status" != "waiting" ]]; then
+              echo "Producer entered unsupported status: $status"
+              exit 64
+            fi
+            if [[ "$wait_attempt" == "60" ]]; then
+              echo "Timed out waiting for the automatically dispatching producer to complete."
+              exit 64
+            fi
+            sleep 10
+          done
           binding="$(jq -ce \
             --arg repository "$GITHUB_REPOSITORY" \
             --arg run_id "$PRODUCER_RUN_ID" \
@@ -158,7 +174,17 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           git fetch origin main:refs/remotes/origin/main --no-tags
-          test "$GITHUB_SHA" = "$(git rev-parse refs/remotes/origin/main)"
+          git merge-base --is-ancestor "$GITHUB_SHA" refs/remotes/origin/main
+          git diff --quiet "$GITHUB_SHA"..refs/remotes/origin/main -- \
+            .github/workflows/mobile-internal-promote.yml \
+            tool/app_targets.json \
+            tool/ci/mobile_promotion_core.mjs \
+            tool/ci/package_mobile_release.mjs \
+            tool/platform/distribute_testflight_build.mjs \
+            tool/platform/probe_google_play_access.mjs \
+            tool/platform/resolve_app_target.mjs \
+            tool/platform/upload_google_play_bundle.mjs \
+            tool/platform/verify_app_store_build.mjs
 
       - id: toolchain
         uses: ./.github/actions/load-toolchain
@@ -457,7 +483,17 @@ jobs:
             ' <<< "$current_run" > /dev/null
 
           git fetch origin main:refs/remotes/origin/main --no-tags
-          test "$GITHUB_SHA" = "$(git rev-parse refs/remotes/origin/main)"
+          git merge-base --is-ancestor "$GITHUB_SHA" refs/remotes/origin/main
+          git diff --quiet "$GITHUB_SHA"..refs/remotes/origin/main -- \
+            .github/workflows/mobile-internal-promote.yml \
+            tool/app_targets.json \
+            tool/ci/mobile_promotion_core.mjs \
+            tool/ci/package_mobile_release.mjs \
+            tool/platform/distribute_testflight_build.mjs \
+            tool/platform/probe_google_play_access.mjs \
+            tool/platform/resolve_app_target.mjs \
+            tool/platform/upload_google_play_bundle.mjs \
+            tool/platform/verify_app_store_build.mjs
           git merge-base --is-ancestor "$SOURCE_SHA" refs/remotes/origin/main
 
           canonical_ci="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/ci.yml")"
@@ -711,7 +747,9 @@ jobs:
               .head_branch == "main" and
               .head_repository.full_name == $repository and
               .status == "completed" and
-              .conclusion == "success"
+              (.conclusion == "success" or
+               .conclusion == "failure" or
+               .conclusion == "cancelled")
             ' <<< "$prior_exact" > /dev/null
           {
             echo "claim_artifact_name=$claim_name"
@@ -772,7 +810,17 @@ jobs:
           }
 
           git fetch origin main:refs/remotes/origin/main --no-tags
-          test "$GITHUB_SHA" = "$(git rev-parse refs/remotes/origin/main)"
+          git merge-base --is-ancestor "$GITHUB_SHA" refs/remotes/origin/main
+          git diff --quiet "$GITHUB_SHA"..refs/remotes/origin/main -- \
+            .github/workflows/mobile-internal-promote.yml \
+            tool/app_targets.json \
+            tool/ci/mobile_promotion_core.mjs \
+            tool/ci/package_mobile_release.mjs \
+            tool/platform/distribute_testflight_build.mjs \
+            tool/platform/probe_google_play_access.mjs \
+            tool/platform/resolve_app_target.mjs \
+            tool/platform/upload_google_play_bundle.mjs \
+            tool/platform/verify_app_store_build.mjs
           git merge-base --is-ancestor "$SOURCE_SHA" refs/remotes/origin/main
 
           producer="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$PRODUCER_RUN_ID")"
@@ -1197,12 +1245,116 @@ jobs:
             build/mobile-promotion/claim/mobile-promotion-receipt.json)" = \
             "${{ steps.claim.outputs.claim_artifact_name }}"
 
-      - name: Record credential-free exact promotion postconditions
+      - name: Persist the immutable exact-promotion claim before distribution
+        if: ${{ success() && steps.claim.outputs.prior_receipt == 'false' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.claim.outputs.claim_artifact_name }}
+          path: build/mobile-promotion/claim/mobile-promotion-receipt.json
+          if-no-files-found: error
+          retention-days: 90
+
+      - id: ios-distribution-auth
+        name: Rematerialize App Store Connect credentials only for distribution
+        if: ${{ endsWith(inputs.release_target, '-ios') }}
+        env:
+          ASC_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          ASC_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
+          ASC_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+        run: |
+          set -euo pipefail
+          test -n "$ASC_KEY_ID"
+          test -n "$ASC_ISSUER_ID"
+          test -n "$ASC_KEY_BASE64"
+          key_dir="$HOME/.appstoreconnect/private_keys"
+          key_path="$key_dir/AuthKey_${ASC_KEY_ID}.p8"
+          test ! -e "$key_path"
+          mkdir -p "$key_dir"
+          printf '%s' "$ASC_KEY_BASE64" | /usr/bin/base64 -D > "$key_path"
+          chmod 600 "$key_path"
+          echo "key_path=$key_path" >> "$GITHUB_OUTPUT"
+
+      - id: ios-distribution
+        name: Grant the exact build to existing internal TestFlight testers
+        if: ${{ endsWith(inputs.release_target, '-ios') }}
+        env:
+          APP_STORE_CONNECT_APP_ID: ${{ steps.store.outputs.app_store_connect_app_id }}
+          ASC_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          ASC_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          BUILD_NUMBER: ${{ steps.final.outputs.build }}
+          KEY_PATH: ${{ steps.ios-distribution-auth.outputs.key_path }}
+          PACKAGE_ARTIFACT_ID: ${{ steps.authority.outputs.package_artifact_id }}
+          RELEASE_TARGET: ${{ inputs.release_target }}
+          REMOTE_BUILD_ID: ${{ steps.ios-store.outputs.remote_id }}
+          SIGNED_ARTIFACT_SHA256: ${{ steps.final.outputs.artifact_sha256 }}
+        run: |
+          set -euo pipefail
+          mkdir -p build/mobile-promotion/distribution
+          distribution="$(node tool/platform/distribute_testflight_build.mjs \
+            --app-id "$APP_STORE_CONNECT_APP_ID" \
+            --build-id "$REMOTE_BUILD_ID" \
+            --build-number "$BUILD_NUMBER" \
+            --release-target "$RELEASE_TARGET" \
+            --package-artifact-id "$PACKAGE_ARTIFACT_ID" \
+            --signed-artifact-sha256 "$SIGNED_ARTIFACT_SHA256" \
+            --promotion-run-id "$GITHUB_RUN_ID" \
+            --promotion-run-attempt "$GITHUB_RUN_ATTEMPT" \
+            --key-id "$ASC_KEY_ID" \
+            --issuer-id "$ASC_ISSUER_ID" \
+            --key-path "$KEY_PATH" \
+            --receipt build/mobile-promotion/distribution/testflight-distribution-receipt.json \
+            --apply \
+            --allow-prod)"
+          jq -e \
+            --arg app_id "$APP_STORE_CONNECT_APP_ID" \
+            --arg build_id "$REMOTE_BUILD_ID" \
+            --arg build_number "$BUILD_NUMBER" \
+            --arg package_artifact_id "$PACKAGE_ARTIFACT_ID" \
+            --arg release_target "$RELEASE_TARGET" \
+            --arg signed_sha256 "$SIGNED_ARTIFACT_SHA256" '
+              .applied == true and
+              .policy == "all-existing-internal-groups-with-testers" and
+              .releaseTarget == $release_target and
+              .appId == $app_id and
+              .buildId == $build_id and
+              .buildNumber == $build_number and
+              .packageArtifactId == $package_artifact_id and
+              .signedArtifactSha256 == $signed_sha256 and
+              .selectedGroupCount > 0 and
+              (.groups | length) == .selectedGroupCount and
+              all(.groups[]; .testerCount > 0 and .hasBuildAccess == true)
+            ' <<< "$distribution" > /dev/null
+          {
+            echo "group_count=$(jq -er '.selectedGroupCount' <<< "$distribution")"
+            echo "group_names=$(jq -r '[.groups[].name] | join(", ")' <<< "$distribution")"
+            echo "operation=$(jq -er '.operation' <<< "$distribution")"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Remove rematerialized App Store Connect distribution credentials
+        if: ${{ always() && endsWith(inputs.release_target, '-ios') }}
+        env:
+          ASC_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          ASC_KEY_PATH: ${{ steps.ios-distribution-auth.outputs.key_path }}
+        run: |
+          set -euo pipefail
+          if [[ -z "$ASC_KEY_PATH" && -n "$ASC_KEY_ID" ]]; then
+            ASC_KEY_PATH="$HOME/.appstoreconnect/private_keys/AuthKey_${ASC_KEY_ID}.p8"
+          fi
+          if [[ -n "$ASC_KEY_PATH" ]]; then
+            case "$ASC_KEY_PATH" in
+              "$HOME/.appstoreconnect/private_keys/"AuthKey_*.p8) ;;
+              *) echo "Unexpected App Store Connect key path."; exit 64 ;;
+            esac
+            rm -f -- "$ASC_KEY_PATH"
+            test ! -e "$ASC_KEY_PATH"
+          fi
+
+      - name: Record credential-free exact promotion and distribution postconditions
         if: ${{ success() }}
         env:
           ARTIFACT_PATH: ${{ steps.final.outputs.artifact_path }}
           ARTIFACT_SHA256: ${{ steps.final.outputs.artifact_sha256 }}
-          ASC_KEY_PATH: ${{ steps.ios-auth.outputs.key_path }}
+          ASC_KEY_PATH: ${{ steps.ios-distribution-auth.outputs.key_path || steps.ios-auth.outputs.key_path }}
           CREDENTIAL_FILE: ${{ steps.play-auth.outputs.credentials_file_path }}
           RELEASE_TARGET: ${{ inputs.release_target }}
         run: |
@@ -1222,14 +1374,18 @@ jobs:
             echo "- Signed-byte SHA-256: \`$ARTIFACT_SHA256\`"
             echo "- Exact claim: \`${{ steps.claim.outputs.claim_artifact_name }}\`"
             echo "- Prior exact claim reused: \`${{ steps.claim.outputs.prior_receipt }}\`"
+            if [[ "$RELEASE_TARGET" == *-ios ]]; then
+              echo "- Internal TestFlight groups: \`${{ steps.ios-distribution.outputs.group_names }}\`"
+              echo "- Internal tester-group operation: \`${{ steps.ios-distribution.outputs.operation }}\`"
+            fi
             echo "- Operator reason: recorded in protected dispatch inputs"
           } >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Persist the immutable exact-promotion claim as the final substantive step
-        if: ${{ success() && steps.claim.outputs.prior_receipt == 'false' }}
+      - name: Persist the immutable TestFlight distribution receipt
+        if: ${{ success() && endsWith(inputs.release_target, '-ios') }}
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ steps.claim.outputs.claim_artifact_name }}
-          path: build/mobile-promotion/claim/mobile-promotion-receipt.json
+          name: testflight-distribution-v1-${{ inputs.release_target }}-${{ steps.authority.outputs.package_artifact_id }}-${{ steps.ios-store.outputs.remote_id }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: build/mobile-promotion/distribution/testflight-distribution-receipt.json
           if-no-files-found: error
           retention-days: 90

@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 2.0.19
-updated: 2026-08-12
+version: 2.1.0
+updated: 2026-08-13
 owner: recursive_audit_loop
 status: active
 ---
@@ -222,8 +222,8 @@ The current workflows are:
 | `.github/workflows/admin-website.yml` | Validates Admin source and live callable dependencies, then calls the exact build/promote adapters for the production `admin` target. |
 | `.github/workflows/host-website.yml` | Validates the Host target, standalone roster tests, and Host-owned Flutter surfaces, then builds and promotes the independent production `host` target. |
 | `.github/workflows/release-readiness.yml` | Manual staging/prod release gate. |
-| `.github/workflows/mobile-internal-release.yml` | Producer-only signed package matrix. It consumes a successful `main` CI authority, builds only exact role/platform targets, and publishes 90-day IPA/AAB packages plus a post-comparison build authority without mutating either store. |
-| `.github/workflows/mobile-internal-promote.yml` | Manual exact-artifact promoter. It verifies one current successful producer attempt and its authority/package ids, digests, provenance, and target before uploading the already-signed IPA to TestFlight or AAB to Play `qa`; it never rebuilds or resigns. |
+| `.github/workflows/mobile-internal-release.yml` | Signed package matrix and automatic iOS handoff. It consumes a successful `main` CI authority, builds only exact role/platform targets, publishes 90-day IPA/AAB packages plus a post-comparison build authority, and dispatches one exact promoter for every authorized iOS target without mutating either store itself. |
+| `.github/workflows/mobile-internal-promote.yml` | Exact-artifact promoter. Automatic iOS dispatches and manual recovery dispatches both verify the current producer and authority/package ids, digests, provenance, and target before uploading the already-signed IPA to TestFlight or AAB to Play `qa`; it never rebuilds or resigns. After an iOS upload claim is durable, it grants the VALID build to existing internal groups that already contain testers. |
 | `.github/workflows/observability-evidence.yml` | Manual Crashlytics and Analytics evidence capture. |
 | `.github/workflows/website-production-observability.yml` | Scheduled and manual production website status, canonical-metadata, and launch-content probes. |
 | `.github/workflows/branch-hygiene.yml` | Daily semantic branch audit, supervised integrated-ref candidates, and an issue plus failed run for stale code outside `main` without an open PR. |
@@ -328,8 +328,9 @@ approval-free and limited to the automatic marketing and admin Firebase
 Hosting workflows. `prod-mobile` is approval-free and `main`-only; it contains
 only mobile signing, Maps, App Store Connect, and Play-publisher credentials.
 The producer has a matching fail-closed ref guard. Store mutation is isolated in
-the manual exact promoter, whose four role/platform targets each have their own
-bounded non-cancelling queue. Keep required reviewers on shared `prod`, which owns
+the exact promoter, whose four role/platform targets each have their own bounded
+non-cancelling queue. Every authorized iOS target is dispatched automatically;
+manual dispatch remains a recovery surface. Keep required reviewers on shared `prod`, which owns
 backend production deploys and production data operations. This gives all four
 user-facing products merge-driven deployment without broadening approval-free
 access to backend/data authority.
@@ -714,17 +715,29 @@ receipt for 90 days. Cross-role comparisons finish before it publishes the
 aggregate mobile build authority. The producer performs no TestFlight or Play
 mutation.
 
-Store mutation is a separate, manual exact-artifact operation in
-`.github/workflows/mobile-internal-promote.yml`. The operator supplies one
-release target, the current successful producer run id/attempt, the exact build
-authority artifact id/digest, a reason, and explicit confirmation. The promoter
+Store mutation remains a separate exact-artifact operation in
+`.github/workflows/mobile-internal-promote.yml`. After the aggregate authority is
+published, the producer uses its narrowly scoped `actions: write` job to dispatch
+one promoter for every authorized iOS target, passing the current producer
+run/attempt and exact authority artifact id/digest. GitHub runs the promoter from
+`main`; it waits for the dispatching producer to reach terminal success, then
 derives the package artifact only from that authority, downloads it by immutable
-id, verifies the GitHub digest and every packaged byte, then deletes and freshly
-re-extracts it for a final verification before store credentials are created.
-It uploads the already-signed IPA to TestFlight or the already-signed AAB to the
-Play `qa` track without Flutter, Gradle, Xcode archive/export, or signing work.
-Play additionally requires the two-app live readiness gate to pass in the same
-promotion attempt; public store promotion remains outside this workflow.
+id, verifies the GitHub digest and every packaged byte, and freshly re-extracts it
+for final verification before credentials are created. Manual dispatch accepts
+the same inputs and remains available for exact recovery.
+
+The promoter uploads the already-signed IPA to TestFlight or the already-signed
+AAB to the Play `qa` track without Flutter, Gradle, Xcode archive/export, or
+signing work. For iOS, it waits for the exact build to reach `VALID`, removes the
+upload credential, persists the immutable exact-upload claim, then rematerializes
+the credential only for an idempotent distribution step. That step selects every
+existing internal TestFlight group for the app that already contains testers,
+adds the exact build to groups that do not yet have it, reads every relationship
+back, and persists a separate 90-day distribution receipt. It never creates a
+group, adds a tester, or grants access to an external group. The run fails closed
+when no existing internal group contains testers. Play additionally requires the
+two-app live readiness gate to pass; public store promotion remains outside this
+workflow.
 
 The mobile package receipt intentionally reports two repository-controlled
 measurements: compressed bytes in the signed IPA/AAB and the sum of raw archive
@@ -930,8 +943,8 @@ CI certificate `7P698XNLRP` was installed in `prod-mobile`. Current
 final analyzer-clean producer run `31435724862` used the repaired reusable-keychain
 path for both roles, and exact promotion runs `31436879851` and `31436882152`
 processed the Consumer and Host IPAs as `VALID`. Mobile store distribution still needs
-external product-release evidence: current TestFlight group assignment/install
-proof for both roles and Play account verification, enrollment, processing,
+external product-release evidence: current automatic TestFlight distribution
+receipts plus install proof for both roles, and Play account verification, enrollment, processing,
 tester, signing-fingerprint, install, and launch proof.
 
 Verified setup state:
@@ -956,8 +969,8 @@ Verified setup state:
   stapled, and Gatekeeper accepted.
 - Consumer TestFlight upload/install/launch and iOS Maps behavior have legacy
   Xcode Cloud proof. GitHub Actions is now the canonical owner for both roles;
-  both current GitHub builds have processed, while tester-group assignment and
-  install/launch proof remain pending for each role.
+  both current GitHub builds have processed, while the repaired automatic
+  tester-group receipt and install/launch proof remain pending for each role.
 
 Still outside this setup verdict:
 
@@ -1550,37 +1563,52 @@ Analytics proof, and GA4 BigQuery export status.
 
 ## Mobile Internal Release Ownership
 
-Decision updated 2026-08-07: GitHub Actions remains the canonical internal
+Decision updated 2026-08-13: GitHub Actions remains the canonical internal
 mobile release owner for both Consumer and Host, but package production and
 store mutation are separate authorities:
 
-- `Mobile Internal Release` is a producer-only `workflow_run` consumer. It
+- `Mobile Internal Release` is a signed-package `workflow_run` consumer. It
   accepts a successful same-repository `main` CI authority, builds only exact
   role/platform targets, and publishes verified 90-day packages plus a strict
-  aggregate build authority. It has no manual dispatch and no store mutation.
-- `Mobile Internal Exact Promotion` is manual-only. It accepts one exact target
-  and current producer attempt, derives the package id/digest from the verified
-  aggregate authority, then uploads those already-signed bytes to TestFlight or
-  Play `qa` without rebuilding or resigning.
+  aggregate build authority, then automatically hands authorized iOS targets to
+  the separate promoter. It has no manual dispatch and no store mutation.
+- `Mobile Internal Exact Promotion` receives an automatic dispatch for every
+  authorized iOS target. It accepts one exact target and current producer
+  attempt, derives the package id/digest from the verified aggregate authority,
+  then uploads those already-signed bytes to TestFlight without rebuilding or
+  resigning. Manual exact dispatch remains available for iOS or Play recovery.
 
 `tool/app_targets.json` therefore declares
 `successful-main-ci-exact-artifact-authority`,
-`build-only-no-store-mutation`, and `separate-promotion-workflow` for both
-platforms. CI impact routing produces exact `consumer-ios`,
+`automatic-ios-exact-artifact-internal-promotion`, and
+`separate-promotion-workflow` for both platforms. CI impact routing produces
+exact `consumer-ios`,
 `consumer-android`, `host-ios`, and `host-android` intersections; it never turns
 one role into a two-platform matrix. The promoter serializes only the selected
 target with a bounded non-cancelling queue and rejects ref, rerun-attempt,
 producer-attempt, authority, package, or target substitution before credentials.
+An unrelated `main` commit may land after dispatch: the promoter permits that
+only when its dispatch SHA remains an ancestor of `main` and none of the exact
+promotion workflow, manifest, package verifier, or store-operation sources
+changed. Relevant release-code drift fails closed and waits for a fresh dispatch.
 Public App Store or Play production promotion is never automatic in either
-workflow.
+workflow; only internal TestFlight distribution is automatic.
 
 After a verified store result and credential cleanup, the promoter writes one
 `mobile-promotion-claim-v1-<target>-<package-artifact-id>-<signed-sha256>`
 artifact containing only `mobile-promotion-receipt.json` and retains it for 90
-days. A later dispatch may reuse that claim only when the successful promotion
+days. For iOS this claim is persisted before group distribution, so a transient
+group API failure can retry without creating a fresh build. A later dispatch may
+reuse that claim only when the successful promotion
 attempt, source CI and producer attempts, authority/package ids and digests,
 signed-byte SHA-256, store target/version/build, and remote result all match.
-For Apple, an existing App Store Connect version/build identity is not proof of
+The prior run may have succeeded, failed, or been cancelled after publishing the
+claim; the claim is reusable because its exact upload postcondition was already
+verified and persisted before the separate distribution operation began.
+The separate `testflight-distribution-v1-...` artifact binds the remote build id,
+exact package artifact id and signed-byte digest, selected internal group ids and
+names, tester counts, relationship readback, and promotion attempt. For Apple,
+an existing App Store Connect version/build identity is not proof of
 which IPA bytes were uploaded. If `altool` succeeds but the exact claim cannot
 be persisted, automatic exact recovery fails closed and a new build is
 required; any operator reconciliation must remain explicitly non-exact and
@@ -1652,9 +1680,11 @@ Before archive, the workflow checks the proposed Apple build against the latest
 200 App Store Connect builds for that app. Canonical GitHub iOS releases use an
 18-digit `<UTC YYYYMMDD><8-digit GitHub run><2-digit attempt>` number, which is
 above the legacy date/build namespace and unique to the source CI attempt. The
-producer does not upload. A later exact promotion must record the selected
-producer attempt and store response; App Store processing, TestFlight group,
-install, and launch remain separate remote evidence.
+producer does not upload. Its post-authority handoff automatically dispatches
+every authorized iOS target, and the exact promoter records the producer attempt,
+store response, and internal group relationship readback. App Store processing
+and TestFlight distribution are machine-verifiable; install and launch remain
+physical-device evidence.
 
 Android uses `100000 + workflow run number * 100 + attempt`; two reserved retry
 digits prevent adjacent-run collisions. The verifier uses checksum-pinned
@@ -1665,12 +1695,13 @@ debuggable, version-name, and version-code identity before any Play edit.
 ## TestFlight Status
 
 Both roles have checked local/native composition, Firebase identity, distinct
-store identity, App Store Connect records, and manifest-resolved GitHub
-archive and exact-promotion paths. The producer deliberately stops at signed
-package authority. The manual exact promoter owns upload; TestFlight group
-assignment, install, and launch remain separate remote evidence.
-`APP-TARGET-IOS-GITHUB-CUTOVER-001` remains open only until the intended groups,
-installation, and launch proof are recorded in GitHub issue `#218`.
+store identity, App Store Connect records, and manifest-resolved GitHub archive
+and exact-promotion paths. The producer deliberately stops at signed package
+authority, then automatically dispatches the exact promoter for authorized iOS
+targets. The promoter owns upload and existing-internal-group assignment;
+installation and launch remain physical-device evidence.
+`APP-TARGET-IOS-GITHUB-CUTOVER-001` remains open until current distribution
+receipts plus installation and launch proof are recorded in GitHub issue `#218`.
 `tool/app_target_external_gates.json` owns that stable external gate and the
 matching Play gate without carrying run receipts. Update live evidence here and
 in the owning Issues; an evidence-only update must never authorize new signed
@@ -1688,8 +1719,10 @@ artifact `9081248527`, uploaded version `1.0.2`, build
 app `6778927317`, remote build `0e37ff07-3f88-40fc-be88-fd23e36de60a`, and
 persisted exact claim artifact `9081563645`.
 Both postconditions reached `VALID`; neither promotion rebuilt, re-exported, or
-re-signed its producer package. These claims prove upload and processing, not
-TestFlight group assignment or installed-device behavior.
+re-signed its producer package. These historical claims prove upload and
+processing, not TestFlight group assignment or installed-device behavior.
+Promotions after the 2026-08-13 automation change also persist the separate
+distribution receipt.
 
 Consumer `1.0.2` is the first live proof of the split architecture. Main CI run
 `31266032614` authorized source `c7be024a4e272d4a21759127a4fdd19e5752e30a`;
@@ -1705,9 +1738,10 @@ behavior.
 Consumer manual recovery run `30523657375` uploaded commit
 `1cf9739e858e3e458cf1bf70e10d0d496938defe` after PR `#133`; build
 `202607300000005101` reached App Store Connect `VALID`. That is historical
-processing proof, not authority for automatic future uploads and not
-tester-group assignment or installation. The 2026-08-07 policy intentionally
-requires a separate exact-artifact promotion dispatch for both roles.
+processing proof, not authority for automatic future uploads, tester-group
+assignment, or installation. The 2026-08-13 policy automatically dispatches
+exact iOS promotions from the verified producer while retaining a separate
+manual recovery dispatch.
 
 The pre-cutover Consumer dispatch `29161431098` successfully signed and archived
 `com.catchdates.app`, then stopped before export because Xcode's archive
@@ -1760,18 +1794,19 @@ Historical pre-split cutover status (completed on 2026-07-12):
    `1F97B043-9337-427B-854C-6F88F2110020` are disabled. GitHub/App Store status
    surfaces may prefix them as `Catch | Default` and `Runner | Default`; the
    app-scoped API name is `Default` for each app.
-4. Pending: record and assign the intended internal TestFlight groups.
+4. Superseded by automation: the exact promoter now records and assigns every
+   existing internal TestFlight group that already contains testers.
 5. Pending: install and launch both GitHub-owned builds with App Check, Maps,
    phone auth, push, and role-specific entrypoint proof.
 
 Items 1-3 describe the earlier combined workflow and remain historical evidence
-only. The current split producer and manual promoter are now exercised for both
+only. The current split producer and exact promoter are now exercised for both
 iOS roles: producer run `31435724862` created the exact packages, Consumer
 promotion `31436879851` and Host promotion `31436882152` uploaded those packages
 without rebuilding, both App Store Connect builds reached `VALID`, and exact
-claim artifacts `9081579386` and `9081563645` bind the remote results. Only the
-owner-controlled TestFlight group assignment, installation, and device smoke
-proof remain open in issue `#218`. Google Play remains externally blocked by
+claim artifacts `9081579386` and `9081563645` bind the remote results. Only live
+distribution receipt evidence, installation, and device smoke proof remain open
+in issue `#218`. Google Play remains externally blocked by
 developer-account verification and missing app records in issue `#199`; the
 exact Consumer and Host Android packages are retained for promotion after that
 account gate clears.
@@ -1871,13 +1906,16 @@ check will reject any later build number that is not above the resulting build.
 ## GitHub-Only Migration Status
 
 The repository migration is implemented as two Actions authorities: the
-CI-triggered producer owns exact role/platform signed iOS/Android packages, and
-the manual promoter owns one verified TestFlight or Play `qa` mutation without
-rebuilding. Neither role uploads automatically from a `main` push.
+CI-triggered producer owns exact role/platform signed iOS/Android packages and
+automatically dispatches authorized iOS targets, while the exact promoter owns
+one verified TestFlight or Play `qa` mutation without rebuilding. Consumer and
+Host iOS both upload automatically from an affected successful `main` push;
+Android Play remains a manual recovery dispatch while its external account gate
+is open.
 
 Consumer and Host exact upload and processing plus legacy-owner retirement are
-complete. `APP-TARGET-IOS-GITHUB-CUTOVER-001` remains open only for both intended
-TestFlight groups and install/launch proof in issue `#218`.
+complete. `APP-TARGET-IOS-GITHUB-CUTOVER-001` remains open only for current
+automatic distribution receipt and install/launch proof in issue `#218`.
 `APP-TARGET-ANDROID-PLAY-001` remains blocked in issue `#199` on Play developer
 account verification, app-record creation, App Signing, publisher access,
 processing, testers, and device proof.
@@ -1889,8 +1927,8 @@ Cutover checklist:
 2. Complete: both legacy Xcode Cloud workflows disabled.
 3. Complete: current analyzer-clean Consumer and Host exact promotions processed
    in runs `31436879851` and `31436882152` with 90-day exact claims.
-4. Record both TestFlight group assignments and install/launch proofs in issue
-   `#218`.
+4. Record both automatic TestFlight distribution receipts and install/launch
+   proofs in issue `#218`.
 5. Complete the Play owner-verification, app-record, App Signing, tester, and
    publisher-access steps in issue `#199`, then rerun the exact promoter.
 6. Record both Play internal
@@ -1899,9 +1937,10 @@ Cutover checklist:
 
 The repository can verify that the GitHub `prod-mobile` environment has the
 required App Store Connect secret names and that the local/Xcode Cloud scripts fail
-loudly when required release secrets are missing. It cannot prove App Store
-Connect account settings, TestFlight group membership, export-compliance,
-privacy, or review metadata state without direct App Store Connect access.
+loudly when required release secrets are missing. The exact promoter can prove
+TestFlight group membership and build access through App Store Connect API
+readback. It cannot prove installed-device behavior, export-compliance prompts,
+privacy, or review metadata state without direct account or device evidence.
 
 ## Human Release Evidence
 
@@ -1918,8 +1957,8 @@ Already confirmed outside repository checks:
 
 These still require human confirmation outside repository checks:
 
-- Intended-group assignment, install, and launch through the GitHub-owned
-  Consumer and Host pipeline.
+- Install and launch through the GitHub-owned Consumer and Host pipeline; group
+  assignment itself is now API-verified by the automatic distribution receipt.
 - Consumer and Host Play internal-testing evidence.
 - Crashlytics visibility and symbolication evidence.
 - Analytics DebugView event evidence.
