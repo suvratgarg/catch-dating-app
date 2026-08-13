@@ -956,21 +956,7 @@ void main() {
             watchEventSuccessAssignmentsProvider(
               event.id,
             ).overrideWith((ref) => Stream.value(const [])),
-            watchEventSuccessRotationAssignmentsProvider(
-              event.id,
-            ).overrideWith((ref) => Stream.value(const [])),
-            watchEventSuccessRotationDraftsProvider(
-              event.id,
-            ).overrideWith((ref) => Stream.value(const [])),
-            watchEventSuccessStandingsProvider(
-              event.id,
-            ).overrideWith((ref) => Stream.value(null)),
-            watchEventSuccessPreferencesProvider(
-              event.id,
-            ).overrideWith((ref) => Stream.value(const [])),
-            watchEventSuccessWingmanRequestsProvider(
-              event.id,
-            ).overrideWith((ref) => Stream.value(const [])),
+            ...emptyEventSuccessLiveOverrides(event.id),
           ],
           signedInUid: 'host-1',
         );

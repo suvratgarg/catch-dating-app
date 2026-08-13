@@ -1,8 +1,10 @@
+import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:riverpod/misc.dart' show Override;
 
 import '../test_pump_helpers.dart';
 
@@ -35,6 +37,24 @@ List<EventAttendee> buildOperationalAttendees({
     createdAt: now,
     updatedAt: now,
   ),
+];
+
+List<Override> emptyEventSuccessLiveOverrides(String eventId) => [
+  watchEventSuccessRotationAssignmentsProvider(
+    eventId,
+  ).overrideWith((ref) => Stream.value(const [])),
+  watchEventSuccessRotationDraftsProvider(
+    eventId,
+  ).overrideWith((ref) => Stream.value(const [])),
+  watchEventSuccessStandingsProvider(
+    eventId,
+  ).overrideWith((ref) => Stream.value(null)),
+  watchEventSuccessPreferencesProvider(
+    eventId,
+  ).overrideWith((ref) => Stream.value(const [])),
+  watchEventSuccessWingmanRequestsProvider(
+    eventId,
+  ).overrideWith((ref) => Stream.value(const [])),
 ];
 
 Future<void> acceptInitialTime(WidgetTester tester) async {

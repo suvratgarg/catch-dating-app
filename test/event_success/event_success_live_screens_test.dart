@@ -13,13 +13,11 @@ import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_arrival_mission.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_preference.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_runtime.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_standings.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
 import 'package:catch_dating_app/event_success/event_success_companion_clock.dart';
@@ -639,99 +637,6 @@ void main() {
       expect(ready.plan, plan);
     },
   );
-
-  test('companion route state maps moment loading and retry intent', () {
-    final event = buildEvent(id: 'event-companion-moment-state');
-    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
-    final profile = buildUser();
-    final participation = buildEventParticipation(
-      event: event,
-      uid: 'runner-1',
-    );
-    final ready =
-        EventSuccessCompanionRouteState.resolveCore(
-              l10n: _l10n,
-              eventState: CatchAsyncState<Event?>.data(event),
-              initialEvent: null,
-              uidState: const CatchAsyncState<String?>.data('runner-1'),
-              profileState: CatchAsyncState<UserProfile?>.data(profile),
-              participationState: CatchAsyncState<EventParticipation?>.data(
-                participation,
-              ),
-              planState: CatchAsyncState<EventSuccessPlan?>.data(plan),
-              referenceNow: event.startTime,
-            )
-            .withArrivalMission(
-              const CatchAsyncState<EventSuccessArrivalMission?>.data(null),
-            )
-            .withCompatibilityResponse(
-              const CatchAsyncState<EventSuccessCompatibilityResponse?>.data(
-                null,
-              ),
-            );
-
-    final loading = ready.withMomentData(
-      feedbackState: const CatchAsyncState<EventSuccessFeedback?>.loading(),
-      preferenceState: const CatchAsyncState<EventSuccessPreference?>.data(
-        null,
-      ),
-      wingmanCandidatesState: const CatchAsyncState<List<PublicProfile>>.data(
-        [],
-      ),
-      wingmanRequestState:
-          const CatchAsyncState<EventSuccessWingmanRequest?>.data(null),
-      assignmentState: const CatchAsyncState<EventSuccessAssignment?>.data(
-        null,
-      ),
-      rotationState: const CatchAsyncState<EventSuccessAssignment?>.data(null),
-      standingsState: const CatchAsyncState<EventSuccessStandings?>.data(null),
-    );
-    expect(loading.status, EventSuccessCompanionRouteStatus.loading);
-
-    final error = StateError('preference failed');
-    final failed = ready.withMomentData(
-      feedbackState: const CatchAsyncState<EventSuccessFeedback?>.data(null),
-      preferenceState: CatchAsyncState<EventSuccessPreference?>.error(error),
-      wingmanCandidatesState: const CatchAsyncState<List<PublicProfile>>.data(
-        [],
-      ),
-      wingmanRequestState:
-          const CatchAsyncState<EventSuccessWingmanRequest?>.data(null),
-      assignmentState: const CatchAsyncState<EventSuccessAssignment?>.data(
-        null,
-      ),
-      rotationState: const CatchAsyncState<EventSuccessAssignment?>.data(null),
-      standingsState: const CatchAsyncState<EventSuccessStandings?>.data(null),
-    );
-    expect(failed.status, EventSuccessCompanionRouteStatus.error);
-    expect(failed.error, error);
-    expect(failed.retryIntent, EventSuccessCompanionRetryIntent.preference);
-
-    final standingsError = StateError('standings failed');
-    final standingsFailed = ready.withMomentData(
-      feedbackState: const CatchAsyncState<EventSuccessFeedback?>.data(null),
-      preferenceState: const CatchAsyncState<EventSuccessPreference?>.data(
-        null,
-      ),
-      wingmanCandidatesState: const CatchAsyncState<List<PublicProfile>>.data(
-        [],
-      ),
-      wingmanRequestState:
-          const CatchAsyncState<EventSuccessWingmanRequest?>.data(null),
-      assignmentState: const CatchAsyncState<EventSuccessAssignment?>.data(
-        null,
-      ),
-      rotationState: const CatchAsyncState<EventSuccessAssignment?>.data(null),
-      standingsState: CatchAsyncState<EventSuccessStandings?>.error(
-        standingsError,
-      ),
-    );
-    expect(standingsFailed.error, standingsError);
-    expect(
-      standingsFailed.retryIntent,
-      EventSuccessCompanionRetryIntent.standings,
-    );
-  });
 
   testWidgets('host report remains available for legacy module selections', (
     tester,

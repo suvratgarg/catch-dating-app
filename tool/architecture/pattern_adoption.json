@@ -793,6 +793,11 @@
           "status": "aligned"
         },
         {
+          "path": "test/hosts/host_events_screen_state_test.dart",
+          "role": "Host Events lifecycle, grouping, featured-event exclusion, attention-task, and async display-state behavior coverage",
+          "status": "aligned"
+        },
+        {
           "path": "lib/hosts/presentation/customers/host_customers_screen_state.dart",
           "role": "provider-free Host Customers directory request, cursor state, lifecycle-filter mapping, and conversation-availability adapter",
           "providerFree": true,

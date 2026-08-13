@@ -43,7 +43,8 @@ options when specific functions need higher or lower limits.
 | `getEventRuntimeBootstrap` / `claimEventRuntimeAccess` / `submitEventRuntimeProfile` / `checkInEventRuntime` / `approveEventRuntimeClaim` | `src/eventSuccess/eventRuntime.ts` | Run the no-download attendee bootstrap, verified roster claim or Host approval, event-scoped intake, and check-in workflow |
 | `getOrganizerCrmSummary` | `src/organizers/organizerCrm.ts` | Privacy-bounded, deduplicated past-attendee and channel-readiness counts for organizer managers |
 | `getEventRosterInsights` | `src/organizers/eventRosterInsights.ts` | Manager-only, event-relative customer labels for the live operational roster; incomplete identity/history fails closed and spend is limited to completed Catch payments |
-| `listOrganizerContacts` / `getOrganizerContactDetail` / `mutateOrganizerContact` / `exportOrganizerContacts` | `src/organizers/organizerContacts.ts` | Search, inspect, safely update, and export the organizer-owned audience directory |
+| `listOrganizerContacts` / `getOrganizerContactDetail` / `createOrganizerContact` / `mutateOrganizerContact` / `exportOrganizerContacts` | `src/organizers/organizerContacts.ts` | Search, inspect, manually add, safely update, and export the organizer-owned audience directory |
+| `startOrganizerContactConversation` | `src/clubs/clubHostConversations.ts` | Start or resume a conversation with a verified, unambiguous linked organizer contact |
 | `mergeOrganizerContacts` / `unmergeOrganizerContacts` | `src/organizers/organizerContactMerges.ts` | Reversible manager-reviewed contact identity reconciliation |
 | `getOrganizerMessagingSetup` / `completeOrganizerWhatsappConnection` / `syncOrganizerWhatsappTemplates` / `sendOrganizerWhatsappTest` / `disconnectOrganizerWhatsappConnection` | `src/organizers/organizerMessagingSetup.ts` | Connect and verify an organizer-owned Meta WhatsApp sender and synchronize approved templates |
 | `upsertOrganizerCampaign` / `previewOrganizerCampaign` / `approveOrganizerCampaign` / `cancelOrganizerCampaign` / `getOrganizerCampaignReport` | `src/organizers/organizerCampaigns.ts` | Draft, freeze, approve, cancel, and report consent-gated organizer campaigns |
@@ -57,6 +58,8 @@ options when specific functions need higher or lower limits.
 | `generateEventSuccessPods` | `src/eventSuccess/` | Generate event-success pod suggestions |
 | `generateEventSuccessRotations` / `overrideEventSuccessRotations` | `src/eventSuccess/` | Generate or override revision-fenced Host-only rotation drafts |
 | `controlEventSuccessLive` / `publishEventSuccessRotationRound` | `src/eventSuccess/liveControl.ts` | Revision-fenced live state and confirmed, idempotent prepared-round publication |
+| `upsertEventSuccessLayout` / `getEventSuccessSpatialLayout` / `controlEventSuccessSpatial` | `src/eventSuccess/layoutAssets.ts` | Persist reusable room layouts, resolve event spatial state, and control revision-fenced live reveal placement |
+| `recordEventSuccessUnitOutcomes` | `src/eventSuccess/unitOutcomes.ts` | Record revision-safe unit outcomes used by standings-backed event formats |
 | `fetchEventSuccessWingmanCandidates` / `submitEventSuccessWingmanRequest` / `withdrawEventSuccessWingmanRequest` | `src/eventSuccess/` | Wingman candidate and request workflow |
 | `fetchSwipeCandidates` | `src/matching/` | Resolve privacy-filtered post-event matching candidates without exposing event rosters |
 | `setCrossPathsEventConsent` | `src/crossPaths/` | Store or revoke private event-level Cross Paths consent after confirmed booking |
