@@ -15,8 +15,8 @@ function option(name) {
 }
 
 function normalizedProviderParams(environment = process.env) {
-  const enabled = (environment.META_WHATSAPP_ENABLED ?? "false")
-    .trim().toLowerCase();
+  const enabled = environment.META_WHATSAPP_ENABLED?.trim().toLowerCase() ||
+    "false";
   assert(enabled === "true" || enabled === "false",
     "META_WHATSAPP_ENABLED must be true or false");
 
@@ -81,4 +81,3 @@ function runCli() {
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) runCli();
-

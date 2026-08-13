@@ -32,6 +32,28 @@ test("disabled legacy Meta params remain visibly unconfigured", () => {
   assert.equal(fs.statSync(result.outputPath).mode & 0o777, 0o600);
 });
 
+test("empty GitHub repository variables default Meta to disabled", () => {
+  const functionsDir = fixture();
+  const result = prepareFunctionsParamsForDeploy({
+    functionsDir,
+    projectId: "catchdates-staging",
+    environment: {
+      META_WHATSAPP_ENABLED: "",
+      META_WHATSAPP_APP_ID: "",
+      META_WHATSAPP_EMBEDDED_SIGNUP_CONFIG_ID: "",
+      META_WHATSAPP_GRAPH_VERSION: "",
+    },
+  });
+  assert.equal(result.enabled, false);
+  assert.equal(fs.readFileSync(result.outputPath, "utf8"), [
+    "META_WHATSAPP_APP_ID=\" \"",
+    "META_WHATSAPP_EMBEDDED_SIGNUP_CONFIG_ID=\" \"",
+    "META_WHATSAPP_GRAPH_VERSION=\"v23.0\"",
+    "META_WHATSAPP_ENABLED=\"false\"",
+    "",
+  ].join("\n"));
+});
+
 test("enabled provider requires and preserves real non-secret ids", () => {
   const functionsDir = fixture();
   const environment = {
@@ -71,4 +93,3 @@ test("invalid project names and parameter shapes are rejected", () => {
     environment: {META_WHATSAPP_GRAPH_VERSION: "latest"},
   }), /must look like v23.0/);
 });
-
