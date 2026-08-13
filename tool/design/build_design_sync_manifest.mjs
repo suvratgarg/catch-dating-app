@@ -170,7 +170,7 @@ export function buildDesignSyncManifest({
         "Figma component exists with variable-bound states",
         "a LIBRARY_PUBLISH webhook is hydrated from the Figma file API and normalized without hand editing",
         "registry componentName resolves to exactly one published component node",
-        "Figma property definitions match generated contract props and review states",
+        "Figma property definitions match the generated design projection; governed review states remain evidence unless the projection explicitly makes them variants",
         "contract digest matches the generated Claude context",
         "Claude Design returns a current receipt for the same concept ids and supported-state digests",
         "Code Connect is mapped only when the account tier supports publication",
@@ -256,6 +256,7 @@ function buildMapping({
   reviewSnapshotByNodeId,
 }) {
   const expectedProperties = expectedFigmaProperties(component);
+  const propertyProjection = component.design?.figma?.propertyProjection;
   const declaredUrl = component.design?.figma?.componentUrl ?? null;
   const declaredNodeId = nodeIdFromUrl(declaredUrl);
   let figmaStatus = "missing";
@@ -291,6 +292,13 @@ function buildMapping({
     dartSymbol: component.dart?.symbol,
     dartFile: component.dart?.file,
     figmaName: component.design?.figma?.componentName,
+    figmaPropertyProjectionMode: propertyProjection?.mode ?? "inferred",
+    figmaReviewStatePolicy: propertyProjection?.reviewStates ?? "variant",
+    figmaPropertySources: Object.fromEntries(
+      (propertyProjection?.properties ?? [])
+        .map((property) => [property.name, [...(property.sourceProps ?? [])]])
+        .sort(([a], [b]) => a.localeCompare(b)),
+    ),
     figmaDeclaredStatus: component.design?.figma?.status ?? "missing",
     figmaDeclaredUrl: declaredUrl,
     figmaStatus,
@@ -320,6 +328,10 @@ function buildMapping({
 }
 
 export function expectedFigmaProperties(component) {
+  const projection = component.design?.figma?.propertyProjection;
+  if (projection?.mode === "explicit") {
+    return explicitFigmaProperties(component, projection);
+  }
   const result = [];
   for (const prop of component.contract?.props ?? []) {
     const type = figmaPropertyType(prop.type);
@@ -340,6 +352,58 @@ export function expectedFigmaProperties(component) {
       defaultValue: component.contract.states[0],
       variantOptions: [...component.contract.states].map(String).sort(),
     });
+  }
+  return result.sort((a, b) => a.normalizedName.localeCompare(b.normalizedName));
+}
+
+function explicitFigmaProperties(component, projection) {
+  const result = [];
+  const contractPropNames = new Set(
+    (component.contract?.props ?? []).map((property) => property.name),
+  );
+  for (const property of projection.properties ?? []) {
+    for (const sourceProp of property.sourceProps ?? []) {
+      if (!contractPropNames.has(sourceProp)) {
+        throw new Error(
+          `${component.id}: Figma property ${property.name} references unknown source prop ${sourceProp}`,
+        );
+      }
+    }
+    if (property.type === "VARIANT" && !(property.variantOptions?.length > 0)) {
+      throw new Error(`${component.id}: Figma variant ${property.name} requires variantOptions`);
+    }
+    if (property.type !== "VARIANT" && (property.variantOptions?.length ?? 0) > 0) {
+      throw new Error(
+        `${component.id}: non-variant Figma property ${property.name} cannot declare variantOptions`,
+      );
+    }
+    result.push({
+      name: property.name,
+      normalizedName: normalizePropertyName(property.name),
+      type: property.type,
+      defaultValue: property.defaultValue ?? null,
+      variantOptions: property.type === "VARIANT"
+        ? [...property.variantOptions].map(String).sort()
+        : [],
+    });
+  }
+  if (projection.reviewStates === "variant" && (component.contract?.states ?? []).length > 0) {
+    result.push({
+      name: "reviewState",
+      normalizedName: "review_state",
+      type: "VARIANT",
+      defaultValue: component.contract.states[0],
+      variantOptions: [...component.contract.states].map(String).sort(),
+    });
+  }
+  const normalizedNames = new Set();
+  for (const property of result) {
+    if (normalizedNames.has(property.normalizedName)) {
+      throw new Error(
+        `${component.id}: duplicate explicit Figma property namespace ${property.name}`,
+      );
+    }
+    normalizedNames.add(property.normalizedName);
   }
   return result.sort((a, b) => a.normalizedName.localeCompare(b.normalizedName));
 }

@@ -1,7 +1,7 @@
 ---
 doc_id: design_sync_pipeline
-version: 1.3.0
-updated: 2026-07-19
+version: 1.4.0
+updated: 2026-08-11
 owner: design_system
 status: active
 ---
@@ -28,8 +28,10 @@ The manifest records a digest per contract, generated mapping metadata, Figma
 property drift, concept metrics, Claude eligibility, and the Badge + Field
 spike. A Figma mapping is current only when the registry component name resolves
 to exactly one captured component node and its property definitions match the
-generated contract projection. A Code Connect mapping is valid only when the
-registry points to a template.
+generated contract projection. Badge and Field use explicit projections:
+optional icon slots become visibility plus instance-swap controls, and governed
+review states remain gallery evidence rather than public variant axes. A Code
+Connect mapping is valid only when the registry points to a template.
 
 `figma_library_snapshot.json` is generated evidence. A `LIBRARY_PUBLISH`
 webhook contains the trigger and changed library item keys/names; the receiver
@@ -57,9 +59,10 @@ captured variable binding, one review snapshot, and a published Code Connect
 template for each component; planned metadata cannot satisfy it.
 
 Current live discovery is stored in `live_capabilities.json`. It is operational
-evidence, not a credential file. The current Starter plan permits library work
-but does not satisfy the Organization/Enterprise prerequisite for published
-Code Connect, so the repository prepares that seam without claiming it is live.
+evidence, not a credential file. The current Professional Full seat and approved
+Foundations file permit library work but do not satisfy the Organization or
+Enterprise prerequisite for published Code Connect, so the repository keeps
+that seam blocked without claiming it is live.
 
 ## Deterministic loop
 

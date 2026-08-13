@@ -108,6 +108,58 @@ test("known-bad Figma property drift is deterministic", () => {
   assert.match(drift, /missing Figma property reviewState/u);
 });
 
+test("explicit Figma projection keeps review states as evidence and supports optional instance swaps", () => {
+  const projected = component("catch.badge");
+  projected.contract.props = [
+    {name: "label", type: "string"},
+    {name: "icon", type: "object"},
+    {name: "tone", type: "enum", values: ["neutral", "danger"]},
+  ];
+  projected.contract.states = ["metadata", "functional"];
+  projected.design.figma.propertyProjection = {
+    mode: "explicit",
+    reviewStates: "evidence",
+    properties: [
+      {name: "Label", type: "TEXT", defaultValue: "Badge", sourceProps: ["label"]},
+      {name: "Show Icon", type: "BOOLEAN", defaultValue: false, sourceProps: ["icon"]},
+      {name: "Icon", type: "INSTANCE_SWAP", defaultValue: null, sourceProps: ["icon"]},
+      {
+        name: "Tone",
+        type: "VARIANT",
+        defaultValue: "Neutral",
+        variantOptions: ["Neutral", "Danger"],
+        sourceProps: ["tone"],
+      },
+    ],
+  };
+  const expected = expectedFigmaProperties(projected);
+  assert.equal(expected.length, 4);
+  assert.equal(expected.some((property) => property.normalizedName === "review_state"), false);
+  assert.equal(
+    expected.find((property) => property.normalizedName === "icon")?.type,
+    "INSTANCE_SWAP",
+  );
+  assert.equal(
+    expected.find((property) => property.normalizedName === "show_icon")?.type,
+    "BOOLEAN",
+  );
+});
+
+test("explicit Figma projection rejects unknown source props", () => {
+  const projected = component("catch.field");
+  projected.design.figma.propertyProjection = {
+    mode: "explicit",
+    reviewStates: "evidence",
+    properties: [
+      {name: "Title", type: "TEXT", defaultValue: "Title", sourceProps: ["missing"]},
+    ],
+  };
+  assert.throws(
+    () => expectedFigmaProperties(projected),
+    /Figma property Title references unknown source prop missing/u,
+  );
+});
+
 test("known-bad stale Claude context fails", () => {
   const componentsDocument = {
     components: [component("catch.badge"), component("catch.field")],
@@ -263,11 +315,26 @@ test("real Badge and Field contract projection round-trips and fails on one remo
   });
   assert.deepEqual(validateDesignSyncManifest(manifest, {requireLive: true}), []);
   assert.equal(manifest.metrics.figmaMappingStates.current, 2);
+  assert.equal(
+    manifest.mappings.find((entry) => entry.contractId === "catch.badge")
+      ?.figmaExpectedPropertyCount,
+    5,
+  );
+  assert.equal(
+    manifest.mappings.find((entry) => entry.contractId === "catch.field")
+      ?.figmaExpectedPropertyCount,
+    11,
+  );
+  assert.equal(
+    manifest.mappings.find((entry) => entry.contractId === "catch.field")
+      ?.figmaReviewStatePolicy,
+    "evidence",
+  );
 
   const knownBadSnapshot = structuredClone(snapshot);
   knownBadSnapshot.components[0].propertyDefinitions =
     knownBadSnapshot.components[0].propertyDefinitions
-      .filter((property) => property.normalizedName !== "review_state");
+      .filter((property) => property.normalizedName !== "show_icon");
   const knownBad = buildDesignSyncManifest({
     componentsDocument: realDocument,
     claudeContextDocument: realDocument,
@@ -278,7 +345,7 @@ test("real Badge and Field contract projection round-trips and fails on one remo
   });
   const badge = knownBad.mappings.find((entry) => entry.contractId === "catch.badge");
   assert.equal(badge.figmaStatus, "stale");
-  assert.match(badge.figmaDrift.join("\n"), /missing Figma property reviewState/u);
+  assert.match(badge.figmaDrift.join("\n"), /missing Figma property Show Icon/u);
   assert.match(
     validateDesignSyncManifest(knownBad, {requireLive: true}).join("\n"),
     /catch\.badge: current live Figma mapping is required/u,
