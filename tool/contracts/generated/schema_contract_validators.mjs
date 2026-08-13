@@ -67,6 +67,8 @@ import {
   eventAttendeeImportDocumentSchema,
   eventRosterHandoffDocumentSchema,
   eventRuntimeParticipantDocumentSchema,
+  eventSuccessPresenceDocumentSchema,
+  eventSuccessLateArrivalDocumentSchema,
   eventRuntimeClaimRequestDocumentSchema,
   eventCrossPathsConsentDocumentSchema,
   crossPathsShowcaseEligibilityDocumentSchema,
@@ -270,6 +272,11 @@ import {
   eventSuccessLiveActionCallablePayloadSchema,
   recordEventSuccessUnitOutcomesCallablePayloadSchema,
   recordEventSuccessUnitOutcomesCallableResponseSchema,
+  heartbeatEventSuccessPresenceCallablePayloadSchema,
+  heartbeatEventSuccessPresenceCallableResponseSchema,
+  getEventSuccessPresenceSummaryCallableResponseSchema,
+  resolveEventSuccessLateArrivalCallablePayloadSchema,
+  resolveEventSuccessLateArrivalCallableResponseSchema,
   overrideEventSuccessGroupsCallablePayloadSchema,
   submitEventSuccessWingmanRequestCallablePayloadSchema,
   startEventSuccessFirstHelloMissionCallablePayloadSchema,
@@ -430,6 +437,8 @@ export const validateEventAttendeeAttendanceReceiptDocument = ajv.compile(eventA
 export const validateEventAttendeeImportDocument = ajv.compile(eventAttendeeImportDocumentSchema);
 export const validateEventRosterHandoffDocument = ajv.compile(eventRosterHandoffDocumentSchema);
 export const validateEventRuntimeParticipantDocument = ajv.compile(eventRuntimeParticipantDocumentSchema);
+export const validateEventSuccessPresenceDocument = ajv.compile(eventSuccessPresenceDocumentSchema);
+export const validateEventSuccessLateArrivalDocument = ajv.compile(eventSuccessLateArrivalDocumentSchema);
 export const validateEventRuntimeClaimRequestDocument = ajv.compile(eventRuntimeClaimRequestDocumentSchema);
 export const validateEventCrossPathsConsentDocument = ajv.compile(eventCrossPathsConsentDocumentSchema);
 export const validateCrossPathsShowcaseEligibilityDocument = ajv.compile(crossPathsShowcaseEligibilityDocumentSchema);
@@ -633,6 +642,11 @@ export const validatePublishEventSuccessRotationRoundCallablePayload = ajv.compi
 export const validateEventSuccessLiveActionCallablePayload = ajv.compile(eventSuccessLiveActionCallablePayloadSchema);
 export const validateRecordEventSuccessUnitOutcomesCallablePayload = ajv.compile(recordEventSuccessUnitOutcomesCallablePayloadSchema);
 export const validateRecordEventSuccessUnitOutcomesCallableResponse = ajv.compile(recordEventSuccessUnitOutcomesCallableResponseSchema);
+export const validateHeartbeatEventSuccessPresenceCallablePayload = ajv.compile(heartbeatEventSuccessPresenceCallablePayloadSchema);
+export const validateHeartbeatEventSuccessPresenceCallableResponse = ajv.compile(heartbeatEventSuccessPresenceCallableResponseSchema);
+export const validateGetEventSuccessPresenceSummaryCallableResponse = ajv.compile(getEventSuccessPresenceSummaryCallableResponseSchema);
+export const validateResolveEventSuccessLateArrivalCallablePayload = ajv.compile(resolveEventSuccessLateArrivalCallablePayloadSchema);
+export const validateResolveEventSuccessLateArrivalCallableResponse = ajv.compile(resolveEventSuccessLateArrivalCallableResponseSchema);
 export const validateOverrideEventSuccessGroupsCallablePayload = ajv.compile(overrideEventSuccessGroupsCallablePayloadSchema);
 export const validateSubmitEventSuccessWingmanRequestCallablePayload = ajv.compile(submitEventSuccessWingmanRequestCallablePayloadSchema);
 export const validateStartEventSuccessFirstHelloMissionCallablePayload = ajv.compile(startEventSuccessFirstHelloMissionCallablePayloadSchema);

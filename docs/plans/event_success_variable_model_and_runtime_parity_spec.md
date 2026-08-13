@@ -1,7 +1,7 @@
 ---
 doc_id: event_success_variable_model_and_runtime_parity_spec
-version: 1.4.0
-updated: 2026-08-13
+version: 1.5.0
+updated: 2026-08-14
 owner: event_success
 status: active
 ---
@@ -706,7 +706,7 @@ docs are updated. Update this table in the same commit as the tranche.
 - [x] T5 Spatial layout model and control room
 - [x] T6 `resourceCapacity` and `sequence` topology
 - [x] T7 `unitOutcome` and live standings
-- [ ] T8 Presence and late arrivals
+- [x] T8 Presence and late arrivals
 - [ ] T9 Signed venue session replaces GPS
 - [ ] T10 Conversation graph
 - [ ] T11 `accountability` sweep
@@ -880,3 +880,8 @@ D.6 and D.7.
    not required.
 8. Resolved in T5: all five contracted shapes ship together: `round`, `rect`,
    `row`, `court`, and `zone`.
+9. Resolved in T8: checked-in companion sessions heartbeat every 30 seconds;
+   server-derived presence is `present` through 90 seconds, `idle` through five
+   minutes, and `likelyDeparted` after five minutes. These are bounded deployment
+   defaults rather than hard-coded client policy. Hosts explicitly confirm
+   regeneration or late placement, and published rounds remain immutable.

@@ -375,6 +375,18 @@ const schemaSpecs = [
       "functions/src/shared/generated/eventRuntimeParticipantDocument.ts",
   },
   {
+    name: "EventSuccessPresenceDocument",
+    source: "firestore/event_success_presence.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventSuccessPresenceDocument.ts",
+  },
+  {
+    name: "EventSuccessLateArrivalDocument",
+    source: "firestore/event_success_late_arrivals.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventSuccessLateArrivalDocument.ts",
+  },
+  {
     name: "EventRuntimeClaimRequestDocument",
     source: "firestore/event_runtime_claim_requests.schema.json",
     typeOutput:
@@ -1678,6 +1690,49 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "recordEventSuccessUnitOutcomesCallableResponse.ts",
+  },
+  {
+    name: "HeartbeatEventSuccessPresenceCallablePayload",
+    source:
+      "callables/heartbeat_event_success_presence_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "heartbeatEventSuccessPresenceCallablePayload.ts",
+  },
+  {
+    name: "HeartbeatEventSuccessPresenceCallableResponse",
+    source:
+      "callable_responses/" +
+      "heartbeat_event_success_presence_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "heartbeatEventSuccessPresenceCallableResponse.ts",
+  },
+  {
+    name: "GetEventSuccessPresenceSummaryCallableResponse",
+    source:
+      "callable_responses/" +
+      "get_event_success_presence_summary_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "getEventSuccessPresenceSummaryCallableResponse.ts",
+  },
+  {
+    name: "ResolveEventSuccessLateArrivalCallablePayload",
+    source:
+      "callables/resolve_event_success_late_arrival_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "resolveEventSuccessLateArrivalCallablePayload.ts",
+  },
+  {
+    name: "ResolveEventSuccessLateArrivalCallableResponse",
+    source:
+      "callable_responses/" +
+      "resolve_event_success_late_arrival_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "resolveEventSuccessLateArrivalCallableResponse.ts",
   },
   {
     name: "OverrideEventSuccessGroupsCallablePayload",

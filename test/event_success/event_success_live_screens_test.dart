@@ -17,6 +17,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_models.dart'
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_preference.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_presence.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_runtime.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
@@ -52,6 +53,85 @@ import 'event_success_live_test_helpers.dart';
 final _l10n = AppLocalizationsEn();
 
 void main() {
+  testWidgets('host confirms presence changes before the next round', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(430, 1800);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    final event = buildEvent(bookedCount: 3, checkedInCount: 3);
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
+    var regenerateCount = 0;
+    String? placedUid;
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: EventSuccessHostPanel(
+              event: event,
+              plan: plan,
+              planIsPersisted: true,
+              initialTab: EventSuccessHostTab.live,
+              showTabs: false,
+              roster: const EventParticipationRoster(
+                bookedIds: ['guest-1', 'guest-2', 'late-1'],
+                checkedInIds: ['guest-1', 'guest-2', 'late-1'],
+                waitlistedIds: [],
+              ),
+              presenceSummary: const EventSuccessPresenceSummary(
+                serverTimeMillis: 10,
+                liveControlRevision: 4,
+                nextRoundIndex: 1,
+                policy: EventSuccessPresencePolicy(
+                  heartbeatIntervalSeconds: 30,
+                  presentWindowSeconds: 90,
+                  likelyDepartedAfterSeconds: 300,
+                ),
+                entries: [
+                  EventSuccessPresenceEntry(
+                    uid: 'guest-1',
+                    displayName: 'Ari',
+                    state: EventSuccessPresenceState.likelyDeparted,
+                    heartbeatAtMillis: 1,
+                  ),
+                ],
+                lateArrivals: [
+                  EventSuccessLateArrivalCandidate(
+                    uid: 'late-1',
+                    displayName: 'Mina',
+                    checkedInAtMillis: 9,
+                  ),
+                ],
+              ),
+              onGenerateGuidedRotations: () async => regenerateCount += 1,
+              onResolveLateArrival: (uid) async => placedUid = uid,
+            ),
+          ),
+        ),
+      ),
+    );
+    await pumpFeatureUi(tester);
+
+    expect(find.textContaining('1 guests may have left'), findsOneWidget);
+    expect(
+      find.textContaining('Published rounds stay unchanged'),
+      findsOneWidget,
+    );
+    expect(find.text('Ari'), findsOneWidget);
+    expect(find.text('Mina'), findsOneWidget);
+
+    await tester.tap(find.text('Regenerate next round'));
+    await tester.pump();
+    await tester.tap(find.text('Place next round'));
+    await tester.pump();
+
+    expect(regenerateCount, 1);
+    expect(placedUid, 'late-1');
+  });
+
   testWidgets('question progress rail uses stage press without Material ink', (
     tester,
   ) async {

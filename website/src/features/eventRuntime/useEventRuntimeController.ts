@@ -9,6 +9,7 @@ import {
   createEventRuntimeAttendeeInviteLink,
   fetchEventRuntimeWingmanCandidates,
   getEventRuntimeBootstrap,
+  heartbeatEventRuntimePresence,
   recordEventInviteLinkOpen,
   recordEventRuntimeShareIntent,
   saveEventRuntimeCompatibilityAnswers,
@@ -56,6 +57,7 @@ const emptyLiveState: EventRuntimeLiveState = {
   compatibilityAnswerIds: [],
   feedback: null,
   mission: null,
+  lateArrival: null,
   plan: null,
   standings: null,
   wingmanTargetUid: null,
@@ -234,6 +236,39 @@ export function useEventRuntimeController(publicRuntimeId: string) {
       unsubscribe();
     };
   }, [bootstrap, questionnaire.questions, stage, user]);
+
+  useEffect(() => {
+    const participant = bootstrap?.participant;
+    if (
+      stage !== "runtime" ||
+      participant?.attendanceStatus !== "checkedIn" ||
+      !bootstrap ||
+      Date.now() > bootstrap.event.endTimeMillis
+    ) return undefined;
+    let disposed = false;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const sendHeartbeat = async () => {
+      if (Date.now() > bootstrap.event.endTimeMillis) return;
+      try {
+        const response = await heartbeatEventRuntimePresence(
+          participant.eventId
+        );
+        if (!disposed) {
+          timer = setTimeout(
+            sendHeartbeat,
+            response.heartbeatIntervalSeconds * 1000
+          );
+        }
+      } catch {
+        if (!disposed) timer = setTimeout(sendHeartbeat, 10_000);
+      }
+    };
+    void sendHeartbeat();
+    return () => {
+      disposed = true;
+      if (timer !== undefined) clearTimeout(timer);
+    };
+  }, [bootstrap, stage]);
 
   useEffect(() => {
     const participant = bootstrap?.participant;

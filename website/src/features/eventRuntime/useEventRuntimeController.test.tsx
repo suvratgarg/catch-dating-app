@@ -6,6 +6,7 @@ import {beforeEach, describe, expect, it, vi} from "vitest";
 const runtime = vi.hoisted(() => ({user: null as null | {uid: string}}));
 const getEventRuntimeBootstrap = vi.hoisted(() => vi.fn());
 const checkInEventRuntime = vi.hoisted(() => vi.fn());
+const heartbeatEventRuntimePresence = vi.hoisted(() => vi.fn());
 const createEventRuntimeAttendeeInviteLink = vi.hoisted(() => vi.fn());
 const recordEventRuntimeShareIntent = vi.hoisted(() => vi.fn());
 const watchEventRuntimeAuthState = vi.hoisted(() => vi.fn(
@@ -24,6 +25,7 @@ vi.mock("../../firebase", () => ({
   createEventRuntimeAttendeeInviteLink,
   fetchEventRuntimeWingmanCandidates: vi.fn(),
   getEventRuntimeBootstrap,
+  heartbeatEventRuntimePresence,
   recordEventInviteLinkOpen: vi.fn(),
   recordEventRuntimeShareIntent,
   saveEventRuntimeCompatibilityAnswers: vi.fn(),
@@ -52,7 +54,7 @@ function bootstrap(participant: unknown = null) {
       publicRuntimeId: "runtime_123456789012345678901234",
       title: "Courtyard Social",
       startTimeMillis: 1,
-      endTimeMillis: 2,
+      endTimeMillis: Date.now() + 3_600_000,
       locationName: "The Courtyard",
       runtimeTermsVersion: "event-runtime-v1",
       moduleIds: [],
@@ -77,6 +79,13 @@ describe("useEventRuntimeController", () => {
       source: "runtime_web",
     });
     recordEventRuntimeShareIntent.mockResolvedValue({recorded: true});
+    heartbeatEventRuntimePresence.mockResolvedValue({
+      presenceState: "present",
+      serverTimeMillis: 1,
+      heartbeatIntervalSeconds: 30,
+      presentWindowSeconds: 90,
+      likelyDepartedAfterSeconds: 300,
+    });
   });
 
   it("opens phone verification for an anonymous guest", async () => {
@@ -113,6 +122,8 @@ describe("useEventRuntimeController", () => {
     await waitFor(() => expect(result.current.stage).toBe("runtime"));
     expect(checkInEventRuntime).not.toHaveBeenCalled();
     expect(watchEventRuntimeLiveState).toHaveBeenCalled();
+    await waitFor(() => expect(heartbeatEventRuntimePresence)
+      .toHaveBeenCalledWith("event-1"));
   });
 
   it("shares a stable attendee link and records only the Catch share action", async () => {

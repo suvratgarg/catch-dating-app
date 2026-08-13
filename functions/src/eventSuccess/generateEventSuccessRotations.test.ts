@@ -67,6 +67,11 @@ class FakeCollectionRef {
     ]);
   }
 
+  limit(count: number) {
+    void count;
+    return this;
+  }
+
   async get() {
     return {
       docs: this.firestore.query(this.path, this.filters),
@@ -245,9 +250,47 @@ function harness(overrides: Record<string, FakeData | undefined> = {}) {
       ) => {
         rateLimitCalls.push(`${uid}:${action}`);
       },
+      nowMillis: () => Date.parse("2026-05-21T08:10:01.000Z"),
+      environment: {},
     },
   };
 }
+
+test(
+  "excludes a monitored likely-departed attendee from the next draft",
+  async () => {
+    const {firestore, deps} = harness({
+      ...participation("present-1", "attended"),
+      ...participation("present-2", "attended"),
+      ...participation("present-3", "attended"),
+      ...participation("departed-1", "attended"),
+      "users/present-1": user("man", ["woman"]),
+      "users/present-2": user("woman", ["man"]),
+      "users/present-3": user("man", ["woman"]),
+      "users/departed-1": user("woman", ["man"]),
+      "eventSuccessPresence/event-1_departed-1": {
+        eventId: "event-1",
+        uid: "departed-1",
+        heartbeatAt: fakeTimestamp("2026-05-21T08:00:00.000Z"),
+      },
+    });
+
+    await generateEventSuccessRotationsHandler(
+      callableRequest("host-1"),
+      deps
+    );
+
+    assert.equal(
+      firestore.get(
+        "eventSuccessAssignmentDrafts/event-1_guided_rotations_departed-1"
+      ),
+      undefined
+    );
+    assert.ok(firestore.get(
+      "eventSuccessAssignmentDrafts/event-1_guided_rotations_present-1"
+    ));
+  }
+);
 
 test("pickleball defaults to profile-free coverage schedules", async () => {
   const {firestore, deps, rateLimitCalls} = harness({
@@ -1135,12 +1178,17 @@ test(
   }
 );
 
-function participation(uid: string): Record<string, FakeData> {
+function participation(
+  uid: string,
+  status: "signedUp" | "attended" = "signedUp"
+): Record<string, FakeData> {
   return {
     [`eventParticipations/event-1_${uid}`]: {
       eventId: "event-1",
       uid,
-      status: "signedUp",
+      status,
+      attendedAt: status === "attended" ?
+        fakeTimestamp("2026-05-21T08:01:00.000Z") : null,
     },
   };
 }

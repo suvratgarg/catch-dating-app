@@ -794,6 +794,39 @@
       ]
     },
     {
+      "id": "eventSuccessPresence",
+      "path": "eventSuccessPresence/{presenceId}",
+      "rulesMatch": "/eventSuccessPresence/{presenceId}",
+      "typescriptInterface": "EventSuccessPresenceDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "Event Success attendee heartbeat callable",
+      "read": "server only; Hosts receive a derived callable summary",
+      "write": "server only",
+      "exportedFunctions": [
+        "heartbeatEventSuccessPresence",
+        "getEventSuccessPresenceSummary"
+      ],
+      "migrationNotes": [
+        "Presence state is derived from heartbeatAt with deployment-configured windows; it is never persisted as a stale enum."
+      ]
+    },
+    {
+      "id": "eventSuccessLateArrivals",
+      "path": "eventSuccessLateArrivals/{resolutionId}",
+      "rulesMatch": "/eventSuccessLateArrivals/{resolutionId}",
+      "typescriptInterface": "EventSuccessLateArrivalDocument",
+      "dartModel": "lib/event_success/domain/event_success_presence.dart",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "Event Success Host late-arrival callable",
+      "read": "attendee own deterministic eventId_uid document or authorized event Host; no list",
+      "write": "server only",
+      "exportedFunctions": ["resolveEventSuccessLateArrival"],
+      "migrationNotes": [
+        "The resolution may patch only a Host-only unpublished draft; published assignments are immutable."
+      ]
+    },
+    {
       "id": "eventRuntimeClaimRequests",
       "path": "eventRuntimeClaimRequests/{requestId}",
       "rulesMatch": "/eventRuntimeClaimRequests/{requestId}",

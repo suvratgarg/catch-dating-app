@@ -23,6 +23,10 @@ class LiveTab extends StatelessWidget {
     required this.rotationParticipantProfiles,
     required this.preferences,
     this.standings,
+    this.presenceSummary,
+    this.presenceError,
+    this.resolvingLateArrival = false,
+    this.lateArrivalError,
     required this.wingmanRequests,
     required this.wingmanProfiles,
     required this.compactLiveControls,
@@ -36,6 +40,7 @@ class LiveTab extends StatelessWidget {
     required this.rotationsGenerationState,
     required this.onGenerateMicroPods,
     required this.onGenerateGuidedRotations,
+    this.onResolveLateArrival,
     required this.onPublishGuidedRotationRound,
     required this.onOverrideGroupAssignments,
     required this.onOverrideGuidedRotations,
@@ -67,6 +72,10 @@ class LiveTab extends StatelessWidget {
   final List<PublicProfile> rotationParticipantProfiles;
   final List<EventSuccessPreference> preferences;
   final EventSuccessStandings? standings;
+  final EventSuccessPresenceSummary? presenceSummary;
+  final Object? presenceError;
+  final bool resolvingLateArrival;
+  final Object? lateArrivalError;
   final List<EventSuccessWingmanRequest> wingmanRequests;
   final List<PublicProfile> wingmanProfiles;
   final bool compactLiveControls;
@@ -80,6 +89,7 @@ class LiveTab extends StatelessWidget {
   final EventSuccessAssignmentGenerationActionState rotationsGenerationState;
   final Future<void> Function()? onGenerateMicroPods;
   final Future<void> Function()? onGenerateGuidedRotations;
+  final Future<void> Function(String uid)? onResolveLateArrival;
   final Future<void> Function(int roundIndex)? onPublishGuidedRotationRound;
   final Future<void> Function(List<EventSuccessGroupOverrideRound> rounds)?
   onOverrideGroupAssignments;
@@ -238,6 +248,30 @@ class LiveTab extends StatelessWidget {
       onOverride: onOverrideGuidedRotations,
     );
 
+    Widget? presenceCard() {
+      final summary = presenceSummary;
+      if (summary == null &&
+          presenceError == null &&
+          lateArrivalError == null) {
+        return null;
+      }
+      if (summary != null &&
+          summary.likelyDeparted.isEmpty &&
+          summary.lateArrivals.isEmpty &&
+          presenceError == null &&
+          lateArrivalError == null) {
+        return null;
+      }
+      return _EventSuccessPresenceCard(
+        summary: summary,
+        presenceError: presenceError,
+        lateArrivalError: lateArrivalError,
+        resolvingLateArrival: resolvingLateArrival,
+        onRegenerate: onGenerateGuidedRotations,
+        onResolveLateArrival: onResolveLateArrival,
+      );
+    }
+
     Widget liveRevealCard() => EventSuccessLiveRevealHostCard(
       event: event,
       plan: plan,
@@ -304,8 +338,9 @@ class LiveTab extends StatelessWidget {
         runtime.liveRevealEnabled &&
         (runtime.guidedRotationsEnabled || runtime.microPodsEnabled);
     final currentStepCards = compactLiveControls
-        ? <Widget>[?spatialMapCard()]
+        ? <Widget>[?presenceCard(), ?spatialMapCard()]
         : <Widget>[
+            ?presenceCard(),
             if (runtime.wingmanRequestsEnabled &&
                 activeStepHas(EventSuccessModuleCatalog.wingmanRequests.id))
               wingmanCard(),
@@ -458,6 +493,113 @@ class LiveTab extends StatelessWidget {
           ),
         ],
       ],
+    );
+  }
+}
+
+class _EventSuccessPresenceCard extends StatelessWidget {
+  const _EventSuccessPresenceCard({
+    required this.summary,
+    required this.presenceError,
+    required this.lateArrivalError,
+    required this.resolvingLateArrival,
+    required this.onRegenerate,
+    required this.onResolveLateArrival,
+  });
+
+  final EventSuccessPresenceSummary? summary;
+  final Object? presenceError;
+  final Object? lateArrivalError;
+  final bool resolvingLateArrival;
+  final Future<void> Function()? onRegenerate;
+  final Future<void> Function(String uid)? onResolveLateArrival;
+
+  @override
+  Widget build(BuildContext context) {
+    final likelyDeparted = summary?.likelyDeparted ?? const [];
+    final lateArrivals = summary?.lateArrivals ?? const [];
+    return CatchSurface.card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          CatchSectionHeader(
+            padding: EdgeInsets.zero,
+            title:
+                context.l10n.eventSuccessEventSuccessHostLiveTitleGuestPresence,
+            subtitle: context
+                .l10n
+                .eventSuccessEventSuccessHostLiveSubtitlePresenceNeverChangesPublished,
+          ),
+          if (presenceError != null) ...[
+            gapH10,
+            CatchErrorBanner.fromError(
+              presenceError!,
+              context: AppErrorContext.event,
+            ),
+          ],
+          if (likelyDeparted.isNotEmpty) ...[
+            gapH12,
+            Text(
+              context.l10n
+                  .eventSuccessEventSuccessHostLiveTextGuestsMayHaveLeft(
+                    count: likelyDeparted.length,
+                  ),
+              style: CatchTextStyles.bodyM(context),
+            ),
+            gapH4,
+            Text(likelyDeparted.map((entry) => entry.displayName).join(', ')),
+            gapH10,
+            CatchButton(
+              label: context
+                  .l10n
+                  .eventSuccessEventSuccessHostLiveLabelRegenerateNextRound,
+              onPressed: onRegenerate == null
+                  ? null
+                  : () => unawaited(onRegenerate!()),
+              variant: CatchButtonVariant.secondary,
+              size: CatchButtonSize.sm,
+            ),
+          ],
+          if (lateArrivals.isNotEmpty) ...[
+            gapH16,
+            Text(
+              context.l10n.eventSuccessEventSuccessHostLiveTitleLateArrivals,
+              style: CatchTextStyles.bodyM(context),
+            ),
+            gapH4,
+            ...lateArrivals.map(
+              (candidate) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s1),
+                child: Row(
+                  children: [
+                    Expanded(child: Text(candidate.displayName)),
+                    gapW8,
+                    CatchButton(
+                      label: context
+                          .l10n
+                          .eventSuccessEventSuccessHostLiveLabelPlaceNextRound,
+                      size: CatchButtonSize.sm,
+                      isLoading: resolvingLateArrival,
+                      onPressed:
+                          resolvingLateArrival || onResolveLateArrival == null
+                          ? null
+                          : () =>
+                                unawaited(onResolveLateArrival!(candidate.uid)),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+          if (lateArrivalError != null) ...[
+            gapH10,
+            CatchErrorBanner.fromError(
+              lateArrivalError!,
+              context: AppErrorContext.event,
+            ),
+          ],
+        ],
+      ),
     );
   }
 }

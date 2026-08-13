@@ -4885,6 +4885,34 @@ class AppLocalizationsEn extends AppLocalizations {
       'Close with one suggested first message after mutual matches.';
 
   @override
+  String get eventSuccessEventSuccessHostLiveTitleGuestPresence =>
+      'Guest presence';
+
+  @override
+  String
+  get eventSuccessEventSuccessHostLiveSubtitlePresenceNeverChangesPublished =>
+      'Presence can update the next prepared round. Published rounds stay unchanged.';
+
+  @override
+  String eventSuccessEventSuccessHostLiveTextGuestsMayHaveLeft({
+    required int count,
+  }) {
+    return '$count guests may have left. Regenerate the next round before publishing?';
+  }
+
+  @override
+  String get eventSuccessEventSuccessHostLiveLabelRegenerateNextRound =>
+      'Regenerate next round';
+
+  @override
+  String get eventSuccessEventSuccessHostLiveTitleLateArrivals =>
+      'Late arrivals';
+
+  @override
+  String get eventSuccessEventSuccessHostLiveLabelPlaceNextRound =>
+      'Place next round';
+
+  @override
   String get eventSuccessEventSuccessHostLiveTitleSupportingControls =>
       'Supporting controls';
 
@@ -8371,6 +8399,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String
   get eventSuccessEventSuccessCompanionBodyScreenVisiblecopySelfCheckIn =>
       'self-check-in';
+
+  @override
+  String get eventSuccessEventSuccessCompanionBodyScreenTitleLateArrival =>
+      'Your next round';
 
   @override
   String get eventSuccessEventSuccessCompanionBodyScreenVisiblecopyFirstHello =>

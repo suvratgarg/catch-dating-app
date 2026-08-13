@@ -7835,6 +7835,45 @@ abstract class AppLocalizations {
   /// **'Close with one suggested first message after mutual matches.'**
   String get eventSuccessEventSuccessHostLiveSubtitleCloseWithOneSuggested;
 
+  /// Title for the Host presence and late-arrival control.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest presence'**
+  String get eventSuccessEventSuccessHostLiveTitleGuestPresence;
+
+  /// Explains the immutable published-round boundary.
+  ///
+  /// In en, this message translates to:
+  /// **'Presence can update the next prepared round. Published rounds stay unchanged.'**
+  String
+  get eventSuccessEventSuccessHostLiveSubtitlePresenceNeverChangesPublished;
+
+  /// Host prompt when monitored guest heartbeats expire.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} guests may have left. Regenerate the next round before publishing?'**
+  String eventSuccessEventSuccessHostLiveTextGuestsMayHaveLeft({
+    required int count,
+  });
+
+  /// Host action after reviewing likely departed guests.
+  ///
+  /// In en, this message translates to:
+  /// **'Regenerate next round'**
+  String get eventSuccessEventSuccessHostLiveLabelRegenerateNextRound;
+
+  /// Host late-arrival section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Late arrivals'**
+  String get eventSuccessEventSuccessHostLiveTitleLateArrivals;
+
+  /// Host action to place or hold a late attendee.
+  ///
+  /// In en, this message translates to:
+  /// **'Place next round'**
+  String get eventSuccessEventSuccessHostLiveLabelPlaceNextRound;
+
   /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (title).
   ///
   /// In en, this message translates to:
@@ -13164,6 +13203,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'self-check-in'**
   String get eventSuccessEventSuccessCompanionBodyScreenVisiblecopySelfCheckIn;
+
+  /// Attendee title for a Host-resolved late-arrival outcome.
+  ///
+  /// In en, this message translates to:
+  /// **'Your next round'**
+  String get eventSuccessEventSuccessCompanionBodyScreenTitleLateArrival;
 
   /// Product copy used by lib/event_success/presentation/event_success_companion_body_screen.dart (visibleCopy).
   ///

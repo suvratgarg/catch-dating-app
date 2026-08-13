@@ -39,6 +39,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_models.dart'
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_preference.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_presence.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_runtime.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_standings.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
@@ -451,6 +452,20 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
     final profile = routeState.profile!;
     final participation = routeState.participation!;
     final plan = routeState.plan!;
+    final attendeeIsPresent =
+        participation.status == EventParticipationStatus.attended;
+    if (attendeeIsPresent && !routeState.eventEnded) {
+      ref.watch(maintainEventSuccessPresenceProvider(eventId));
+    }
+    final AsyncValue<EventSuccessLateArrivalResolution?>
+    lateArrivalResolutionAsync = attendeeIsPresent
+        ? ref.watch(
+            watchUserEventSuccessLateArrivalResolutionProvider(
+              eventId: eventId,
+              uid: uid,
+            ),
+          )
+        : const AsyncData<EventSuccessLateArrivalResolution?>(null);
     final AsyncValue<EventSuccessLayout?> spatialLayoutAsync =
         plan.layoutId != null &&
             plan.structureConfig.unitKind != EventSuccessUnitKind.wholeGroup
@@ -655,6 +670,7 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
             rotationPeersAsync.asData?.value ?? const <PublicProfile>[],
         rotationPeersLoading: rotationPeersAsync.isLoading,
         guidedRotationsOptedOut: routeState.guidedRotationsOptedOut,
+        lateArrivalResolution: lateArrivalResolutionAsync.asData?.value,
         arrivalMission: routeState.activeArrivalMission,
         now: routeState.referenceNow!,
         compatibilityActionState: CompatibilityQuestionnaireActionState(
