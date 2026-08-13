@@ -16,6 +16,32 @@ const deployGroupTargets = Object.freeze({
   "firestore-rules": ["firestore:rules"],
   "storage-rules": ["storage"],
 });
+export const firebaseFunctionDeployBatchSize = 10;
+
+export function batchFirebaseFunctionTargets(
+  targetsCsv,
+  {batchSize = firebaseFunctionDeployBatchSize} = {},
+) {
+  if (!Number.isSafeInteger(batchSize) || batchSize < 1 || batchSize > 20) {
+    throw new Error("Firebase Function batch size must be between 1 and 20.");
+  }
+  const targets = [...new Set(String(targetsCsv).split(",").map((target) =>
+    target.trim()).filter(Boolean))];
+  if (targets.length === 0) {
+    throw new Error("No Firebase Function targets were resolved for batching.");
+  }
+  for (const target of targets) {
+    if (!target.startsWith("functions:") ||
+        !firebaseTargetPattern.test(target) || target === "functions:") {
+      throw new Error(`Invalid Firebase Function deploy target: ${target}`);
+    }
+  }
+  const batches = [];
+  for (let index = 0; index < targets.length; index += batchSize) {
+    batches.push(targets.slice(index, index + batchSize).join(","));
+  }
+  return batches;
+}
 
 function rejectUnsafeTarget(target) {
   if (!firebaseTargetPattern.test(target)) {
@@ -104,7 +130,8 @@ function currentFunctionTargets() {
 
 function main() {
   const args = process.argv.slice(2);
-  const format = args.includes("--json") ? "json" : "tsv";
+  const format = args.includes("--function-batches") ?
+    "function-batches" : args.includes("--json") ? "json" : "tsv";
   const groupsIndex = args.indexOf("--groups");
   const positionalTargets = args.filter((arg, index) =>
     !arg.startsWith("--") &&
@@ -126,6 +153,17 @@ function main() {
   const plans = groupsCsv
     ? planFirebaseDeployGroups(groupsCsv.split(",").filter(Boolean), options)
     : planFirebaseDeployTargets(targetsCsv, options);
+  if (format === "function-batches") {
+    if (plans.length !== 1 || plans[0].phase !== "functions") {
+      throw new Error(
+        "Function batch output requires exactly one Functions deployment phase.",
+      );
+    }
+    for (const batch of batchFirebaseFunctionTargets(plans[0].deployOnly)) {
+      process.stdout.write(`${batch}\n`);
+    }
+    return;
+  }
   if (format === "json") {
     process.stdout.write(`${JSON.stringify(plans, null, 2)}\n`);
     return;

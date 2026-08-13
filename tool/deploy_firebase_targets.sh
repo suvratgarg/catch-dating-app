@@ -56,8 +56,36 @@ plan_output="$(
 
 while IFS=$'\t' read -r phase deploy_only; do
   [[ -z "$phase" || -z "$deploy_only" ]] && continue
-  deploy_target "$phase" "$deploy_only" "$@"
   if [[ "$phase" == "functions" ]]; then
+    function_batches="$(
+      CATCH_FIREBASE_SOURCE_ROOT="${CATCH_FIREBASE_SOURCE_ROOT:-$repo_root}" \
+        node "$repo_root/tool/firebase/plan_firebase_deploy_targets.mjs" \
+          "$deploy_only" --function-batches
+    )"
+    [[ -n "$function_batches" ]]
+    while IFS= read -r function_batch; do
+      [[ -z "$function_batch" ]] && continue
+      function_batch_status=1
+      for function_batch_attempt in 1 2 3; do
+        function_batch_status=0
+        deploy_target "$phase" "$function_batch" "$@" || \
+          function_batch_status=$?
+        if [[ "$function_batch_status" == "0" ]]; then
+          break
+        fi
+        echo "Firebase Function batch attempt ${function_batch_attempt} failed; cooling down before the same exact retry." >&2
+        sleep 60
+      done
+      if [[ "$function_batch_status" != "0" ]]; then
+        exit "$function_batch_status"
+      fi
+      # Firebase CLI currently starts up to 40 mutations at once. Keeping each
+      # invocation at ten exact targets avoids the per-region mutation and
+      # temporary Cloud Run CPU limits without changing the authorized set.
+      sleep 10
+    done <<< "$function_batches"
     sync_callable_invokers
+  else
+    deploy_target "$phase" "$deploy_only" "$@"
   fi
 done <<< "$plan_output"
