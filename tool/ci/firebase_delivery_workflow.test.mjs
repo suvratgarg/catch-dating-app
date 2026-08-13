@@ -471,7 +471,7 @@ test("promotion keeps the verified package immutable and reverifies its deploy c
   );
   assert.match(
     promotion,
-    /--indexes build\/delivery\/deploy-tree\/firestore\.indexes\.json[\s\S]*--current-indexes firestore\.indexes\.json/,
+    /indexes=build\/delivery\/deploy-tree\/firestore\.indexes\.json[\s\S]*if \[\[ -f "\$indexes" \]\][\s\S]*--indexes "\$indexes"[\s\S]*--current-indexes firestore\.indexes\.json/,
   );
   assert.doesNotMatch(
     promotion,
@@ -486,7 +486,10 @@ test("promotion keeps the verified package immutable and reverifies its deploy c
     promotion.indexOf("- id: promote"),
   );
   assert.match(paramsStep, /prepare_functions_params_for_deploy\.mjs/);
-  assert.match(paramsStep, /--functions-dir build\/delivery\/deploy-tree\/functions/);
+  assert.match(
+    paramsStep,
+    /functions_dir=build\/delivery\/deploy-tree\/functions[\s\S]*if \[\[ -d "\$functions_dir" \]\][\s\S]*--functions-dir "\$functions_dir"/,
+  );
   assert.match(paramsStep, /--project "\$\{\{ steps\.verify\.outputs\.project_id \}\}"/);
   assert.match(paramsStep, /META_WHATSAPP_APP_ID: \$\{\{ vars\.META_WHATSAPP_APP_ID \}\}/);
   assert.match(
@@ -497,6 +500,18 @@ test("promotion keeps the verified package immutable and reverifies its deploy c
   assert.match(paramsStep, /META_WHATSAPP_ENABLED: \$\{\{ vars\.META_WHATSAPP_ENABLED \}\}/);
   assert.doesNotMatch(paramsStep, /META_WHATSAPP_APP_SECRET:/);
   assert.doesNotMatch(promoteStep, /META_WHATSAPP_/);
+});
+
+test("promotion guards optional deploy-group payloads", () => {
+  const promotion = workflow("_firebase-promote.yml");
+  assert.match(
+    promotion,
+    /Verified package has no Firestore index payload; skipping index sanitization\./,
+  );
+  assert.match(
+    promotion,
+    /Verified package has no Functions payload; skipping Functions parameter materialization\./,
+  );
 });
 
 test("automatic target planning rejects broad and unrelated Firebase products", () => {
