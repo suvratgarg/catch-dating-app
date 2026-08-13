@@ -46,7 +46,7 @@ jobs:
   promote:
     name: Firebase ${{ inputs.environment }}
     runs-on: ubuntu-latest
-    timeout-minutes: 75
+    timeout-minutes: 240
     environment: ${{ inputs.environment }}
     concurrency:
       group: firebase-${{ inputs.environment }}

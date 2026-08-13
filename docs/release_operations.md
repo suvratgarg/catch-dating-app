@@ -1152,7 +1152,11 @@ Host event broadcasts completed their backend-first rollout in August 2026:
 Delivery and an operator-only recovery helper. It plans selected targets in the
 same index → Functions → Firestore-rules → Storage-rules order regardless of
 the caller's CSV order. The logical `functions` target expands current exports
-from `functions/src/index.ts` into explicit `functions:<name>` targets. This
+from `functions/src/index.ts` into explicit `functions:<name>` targets. The
+executor promotes those exact targets in sequential batches of ten with a
+short cooldown because Firebase CLI otherwise fans out up to forty mutations,
+which can exceed regional Cloud Functions mutation and temporary Cloud Run CPU
+quotas for this repository's large function inventory. This
 keeps legacy live Functions, such as old run/run-club callables, deployed until
 a deliberate cleanup plan removes them. Exact `functions:<name>` requests use
 the same Functions phase. Planner errors and empty or malformed target sets fail

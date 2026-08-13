@@ -125,6 +125,7 @@ test("Delivery keeps the current immutable control plane separate from an older 
   assert.equal((delivery.match(/control_plane_sha: \$\{\{ github\.workflow_sha \}\}/g) ?? []).length, 3);
 
   assert.match(promotion, /control_plane_sha:[\s\S]*required: true/);
+  assert.match(promotion, /timeout-minutes: 240/);
   assert.match(promotion, /name: Checkout the immutable Delivery control plane[\s\S]*ref: \$\{\{ inputs\.control_plane_sha \}\}/);
   assert.match(promotion, /name: Checkout the exact CI-approved source as verification input[\s\S]*path: build\/delivery\/source-checkout/);
   assert.match(promotion, /test "\$control_project_id" = "\$project_id"/);
@@ -132,6 +133,13 @@ test("Delivery keeps the current immutable control plane separate from an older 
   assert.match(promotion, /CATCH_FIREBASE_SOURCE_ROOT="\$SOURCE_CHECKOUT"/);
   assert.match(promotion, /\.\/tool\/deploy_firebase_targets\.sh/);
   assert.doesNotMatch(promotion, /build\/delivery\/source-checkout\/tool\/deploy_firebase_targets\.sh/);
+  const executor = fs.readFileSync(
+    path.join(repoRoot, "tool/deploy_firebase_targets.sh"),
+    "utf8",
+  );
+  assert.match(executor, /--function-batches/);
+  assert.match(executor, /sleep 10/);
+  assert.match(executor, /sleep 60/);
 });
 
 test("Delivery consumes the always-present plan before deciding package or no-op", () => {

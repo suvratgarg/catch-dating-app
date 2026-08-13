@@ -6,6 +6,8 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 import test from "node:test";
 import {
+  batchFirebaseFunctionTargets,
+  firebaseFunctionDeployBatchSize,
   planFirebaseDeployGroups,
   planFirebaseDeployTargets,
 } from "./plan_firebase_deploy_targets.mjs";
@@ -87,6 +89,40 @@ test("logical functions expands all source exports", () => {
   assert.equal(plan.phase, "functions");
   assert.match(plan.deployOnly, /functions:sendEventBroadcast/);
   assert.equal(plan.deployOnly.split(",").length, 3);
+});
+
+test("large Function deployments are split into quota-safe exact batches", () => {
+  const targets = Array.from(
+    {length: firebaseFunctionDeployBatchSize * 2 + 1},
+    (_, index) => `functions:function${index}`,
+  );
+  const batches = batchFirebaseFunctionTargets(targets.join(","));
+  assert.deepEqual(batches.map((batch) => batch.split(",").length), [10, 10, 1]);
+  assert.deepEqual(batches.flatMap((batch) => batch.split(",")), targets);
+
+  const cli = spawnSync(
+    process.execPath,
+    [cliPath, targets.join(","), "--function-batches"],
+    {encoding: "utf8"},
+  );
+  assert.equal(cli.status, 0, cli.stderr);
+  const cliBatches = cli.stdout.trim().split("\n");
+  assert.deepEqual(cliBatches.map((batch) => batch.split(",").length), [10, 10, 1]);
+  assert.deepEqual(
+    cliBatches.flatMap((batch) => batch.split(",")).sort(),
+    [...targets].sort(),
+  );
+});
+
+test("Function batching rejects broad targets and unsafe batch sizes", () => {
+  assert.throws(
+    () => batchFirebaseFunctionTargets("functions"),
+    /Invalid Firebase Function deploy target/,
+  );
+  assert.throws(
+    () => batchFirebaseFunctionTargets("functions:one", {batchSize: 21}),
+    /between 1 and 20/,
+  );
 });
 
 test("deduplicates whitespace and exact targets", () => {
