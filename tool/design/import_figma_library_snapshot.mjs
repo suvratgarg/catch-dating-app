@@ -48,13 +48,74 @@ export function normalizeFigmaLibrarySnapshot({
     status: "captured",
     capturedAt: webhook.timestamp ?? new Date().toISOString(),
     source: {
+      captureMethod: "library-publish-webhook",
       eventType: webhook.event_type,
       fileKey: webhook.file_key,
       fileName: webhook.file_name ?? fileResponse.name ?? null,
       fileVersion: fileResponse.version ?? null,
       lastModified: fileResponse.lastModified ?? null,
       webhookId: webhook.webhook_id === undefined ? null : String(webhook.webhook_id),
+      versionHistoryId: null,
       publishedComponentKeys,
+    },
+    components,
+    reviewSnapshots: snapshotRows,
+  };
+  return {...core, snapshotDigest: digest(core)};
+}
+
+export function normalizeFigmaMcpSnapshot({
+  capture,
+  reviewSnapshots = {},
+}) {
+  if (capture?.version !== 1) throw new Error("MCP capture version must be 1");
+  if (!capture.capturedAt) throw new Error("MCP capture capturedAt is required");
+  if (!capture.source?.fileKey) throw new Error("MCP capture source.fileKey is required");
+  if (!(capture.components?.length > 0)) {
+    throw new Error("MCP capture requires at least one component");
+  }
+  const components = capture.components.map((component) => {
+    const boundVariableIds = [...new Set(
+      (component.boundVariableIds ?? []).map(String).filter(Boolean),
+    )].sort();
+    return {
+      nodeId: String(component.nodeId ?? ""),
+      componentKey: component.componentKey ?? null,
+      name: String(component.name ?? ""),
+      type: component.type,
+      description: component.description ?? "",
+      publishStatus: component.publishStatus ?? null,
+      propertyDefinitions: normalizeCapturedPropertyDefinitions(
+        component.propertyDefinitions ?? [],
+      ),
+      boundVariableRefs: [],
+      boundVariableIds,
+      boundVariableCount: component.boundVariableCount ?? 0,
+      variantCount: component.variantCount ?? null,
+    };
+  }).sort((a, b) => a.name.localeCompare(b.name) || a.nodeId.localeCompare(b.nodeId));
+  const snapshotRows = components
+    .filter((component) => reviewSnapshots[component.nodeId])
+    .map((component) => ({
+      nodeId: component.nodeId,
+      ...normalizeReviewSnapshot(reviewSnapshots[component.nodeId]),
+    }));
+  const core = {
+    version: 1,
+    status: "captured",
+    capturedAt: capture.capturedAt,
+    source: {
+      captureMethod: "figma-mcp",
+      eventType: null,
+      fileKey: capture.source.fileKey,
+      fileName: capture.source.fileName ?? null,
+      fileVersion: capture.source.fileVersion ?? null,
+      lastModified: capture.source.lastModified ?? null,
+      webhookId: null,
+      versionHistoryId: capture.source.versionHistoryId ?? null,
+      publishedComponentKeys: [...new Set(
+        (capture.source.publishedComponentKeys ?? []).map(String).filter(Boolean),
+      )].sort(),
     },
     components,
     reviewSnapshots: snapshotRows,
@@ -71,6 +132,12 @@ export function validateFigmaLibrarySnapshot(snapshot) {
   if (snapshot?.status === "captured") {
     if (!snapshot.source?.fileKey) problems.push("captured snapshot requires source.fileKey");
     if (!snapshot.capturedAt) problems.push("captured snapshot requires capturedAt");
+    if (![
+      "figma-mcp",
+      "library-publish-webhook",
+    ].includes(snapshot.source?.captureMethod)) {
+      problems.push("captured snapshot requires a supported source.captureMethod");
+    }
     const comparable = {...snapshot};
     delete comparable.snapshotDigest;
     if (snapshot.snapshotDigest !== digest(comparable)) {
@@ -88,10 +155,27 @@ export function validateFigmaLibrarySnapshot(snapshot) {
     if (!["COMPONENT", "COMPONENT_SET"].includes(component.type)) {
       problems.push(`${component.nodeId}: unsupported component type ${component.type}`);
     }
-    const bindingCount = (component.boundVariableRefs ?? [])
-      .reduce((total, reference) => total + (reference.variableIds?.length ?? 0), 0);
-    if (component.boundVariableCount !== bindingCount) {
-      problems.push(`${component.nodeId}: bound variable count is stale`);
+    if (
+      component.publishStatus !== null &&
+      component.publishStatus !== undefined &&
+      !/^[A-Z_]+$/u.test(component.publishStatus)
+    ) {
+      problems.push(`${component.nodeId}: invalid publish status ${component.publishStatus}`);
+    }
+    if (snapshot.source?.captureMethod === "figma-mcp") {
+      const distinctIds = new Set(component.boundVariableIds ?? []);
+      if (distinctIds.size !== (component.boundVariableIds ?? []).length) {
+        problems.push(`${component.nodeId}: duplicate bound variable id`);
+      }
+      if (component.boundVariableCount < distinctIds.size) {
+        problems.push(`${component.nodeId}: bound variable count is smaller than distinct ids`);
+      }
+    } else {
+      const bindingCount = (component.boundVariableRefs ?? [])
+        .reduce((total, reference) => total + (reference.variableIds?.length ?? 0), 0);
+      if (component.boundVariableCount !== bindingCount) {
+        problems.push(`${component.nodeId}: bound variable count is stale`);
+      }
     }
   }
   for (const review of snapshot?.reviewSnapshots ?? []) {
@@ -115,13 +199,28 @@ function collectComponentNodes(node, output, metadataByNodeId) {
       name: node.name,
       type: node.type,
       description: node.description ?? metadata.description ?? "",
+      publishStatus: "CURRENT",
       propertyDefinitions: normalizePropertyDefinitions(node.componentPropertyDefinitions ?? {}),
       boundVariableRefs,
+      boundVariableIds: [...new Set(
+        boundVariableRefs.flatMap((reference) => reference.variableIds),
+      )].sort(),
       boundVariableCount: boundVariableRefs
         .reduce((total, reference) => total + reference.variableIds.length, 0),
     });
   }
   for (const child of node.children ?? []) collectComponentNodes(child, output, metadataByNodeId);
+}
+
+function normalizeCapturedPropertyDefinitions(definitions) {
+  return definitions.map((definition) => ({
+    name: String(definition.name ?? ""),
+    normalizedName: normalizePropertyName(definition.name ?? ""),
+    type: definition.type,
+    defaultValue: definition.defaultValue ?? null,
+    variantOptions: [...(definition.variantOptions ?? [])].map(String).sort(),
+  })).sort((a, b) =>
+    a.normalizedName.localeCompare(b.normalizedName) || a.name.localeCompare(b.name));
 }
 
 function normalizePropertyDefinitions(definitions) {
@@ -167,7 +266,8 @@ function normalizePropertyName(value) {
 function normalizeReviewSnapshot(value) {
   const snapshotPath = typeof value === "string" ? value : value.path;
   const suppliedDigest = typeof value === "string" ? null : value.sha256;
-  if (suppliedDigest) return {path: snapshotPath, sha256: suppliedDigest};
+  const sourceNodeId = typeof value === "string" ? null : value.sourceNodeId ?? null;
+  if (suppliedDigest) return {path: snapshotPath, sha256: suppliedDigest, sourceNodeId};
   const absolutePath = fromRepo(snapshotPath);
   if (!fs.existsSync(absolutePath)) {
     throw new Error(`${snapshotPath}: review snapshot file is missing`);
@@ -175,6 +275,7 @@ function normalizeReviewSnapshot(value) {
   return {
     path: snapshotPath,
     sha256: crypto.createHash("sha256").update(fs.readFileSync(absolutePath)).digest("hex"),
+    sourceNodeId,
   };
 }
 
@@ -225,6 +326,36 @@ function runSelfTest() {
   if (snapshot.components[0]?.boundVariableCount !== 1) {
     throw new Error("descendant bound-variable evidence was not captured");
   }
+  const mcpSnapshot = normalizeFigmaMcpSnapshot({
+    capture: {
+      version: 1,
+      capturedAt: "2026-08-13T00:00:00Z",
+      source: {fileKey: "file-key", fileName: "Catch Foundations"},
+      components: [{
+        nodeId: "2:1",
+        componentKey: "component-key",
+        name: "Catch/Field",
+        type: "COMPONENT_SET",
+        publishStatus: "UNPUBLISHED",
+        propertyDefinitions: [{name: "Title#42", type: "TEXT", defaultValue: "Title"}],
+        boundVariableIds: ["VariableID:surface"],
+        boundVariableCount: 12,
+      }],
+    },
+    reviewSnapshots: {
+      "2:1": {
+        path: "design/sync/snapshots/field.png",
+        sha256: "b".repeat(64),
+        sourceNodeId: "2:9",
+      },
+    },
+  });
+  if (validateFigmaLibrarySnapshot(mcpSnapshot).length > 0) {
+    throw new Error("valid Figma MCP snapshot failed validation");
+  }
+  if (mcpSnapshot.components[0]?.propertyDefinitions[0]?.normalizedName !== "title") {
+    throw new Error("MCP property suffix/name normalization failed");
+  }
   let knownBadFailed = false;
   try {
     normalizeFigmaLibrarySnapshot({webhook: {event_type: "PING"}, fileResponse: {document: {}}});
@@ -243,18 +374,25 @@ function valueAfter(args, flag) {
   return value;
 }
 
+function resolveInputPath(value) {
+  return path.isAbsolute(value) ? value : fromRepo(value);
+}
+
 function main() {
   const args = process.argv.slice(2);
   if (args.includes("--help") || args.includes("-h")) {
     console.log(`Usage:
   node tool/design/import_figma_library_snapshot.mjs --check
   node tool/design/import_figma_library_snapshot.mjs --self-test
+  node tool/design/import_figma_library_snapshot.mjs --mcp-capture <json> [--review-snapshots <json>] [--out <json>]
   node tool/design/import_figma_library_snapshot.mjs --webhook <json> --file-response <json> [--review-snapshots <json>] [--out <json>]
 
-The LIBRARY_PUBLISH webhook is the trigger. Because its component entries only
-contain keys and names, the receiver must also supply the hydrated GET-file or
-GET-file-nodes response. Mapping to Catch contract ids remains generated by the
-sync manifest from deterministic component names.
+Use --mcp-capture for a read-only Figma MCP discovery receipt. It records live
+component properties, bindings, review evidence, and publication status without
+claiming that an unpublished component is a published library item. The
+LIBRARY_PUBLISH path still requires a hydrated GET-file or GET-file-nodes
+response. Mapping to Catch contract ids remains generated from deterministic
+component names.
 `);
     return;
   }
@@ -269,17 +407,27 @@ sync manifest from deterministic component names.
   }
   const webhookPath = valueAfter(args, "--webhook");
   const fileResponsePath = valueAfter(args, "--file-response");
-  if (!webhookPath || !fileResponsePath) {
-    throw new Error("--webhook and --file-response are required");
+  const mcpCapturePath = valueAfter(args, "--mcp-capture");
+  if (mcpCapturePath && (webhookPath || fileResponsePath)) {
+    throw new Error("--mcp-capture cannot be combined with --webhook or --file-response");
+  }
+  if (!mcpCapturePath && (!webhookPath || !fileResponsePath)) {
+    throw new Error("--mcp-capture or both --webhook and --file-response are required");
   }
   const reviewPath = valueAfter(args, "--review-snapshots");
-  const snapshot = normalizeFigmaLibrarySnapshot({
-    webhook: JSON.parse(fs.readFileSync(fromRepo(webhookPath), "utf8")),
-    fileResponse: JSON.parse(fs.readFileSync(fromRepo(fileResponsePath), "utf8")),
-    reviewSnapshots: reviewPath
-      ? JSON.parse(fs.readFileSync(fromRepo(reviewPath), "utf8"))
-      : {},
-  });
+  const reviewSnapshots = reviewPath
+    ? JSON.parse(fs.readFileSync(resolveInputPath(reviewPath), "utf8"))
+    : {};
+  const snapshot = mcpCapturePath
+    ? normalizeFigmaMcpSnapshot({
+      capture: JSON.parse(fs.readFileSync(resolveInputPath(mcpCapturePath), "utf8")),
+      reviewSnapshots,
+    })
+    : normalizeFigmaLibrarySnapshot({
+      webhook: JSON.parse(fs.readFileSync(resolveInputPath(webhookPath), "utf8")),
+      fileResponse: JSON.parse(fs.readFileSync(resolveInputPath(fileResponsePath), "utf8")),
+      reviewSnapshots,
+    });
   const problems = validateFigmaLibrarySnapshot(snapshot);
   if (problems.length > 0) throw new Error(problems.join("\n"));
   fs.mkdirSync(path.dirname(output), {recursive: true});

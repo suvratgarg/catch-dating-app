@@ -66,13 +66,17 @@ export function buildDesignSyncManifest({
     entry?.figmaStatus === "current" &&
     entry.figmaVariableBindingCount > 0 &&
     entry.figmaReviewSnapshot !== null);
+  const spikeFigmaPublished = spikeMappings.every((entry) =>
+    entry?.figmaPublishStatus === "CURRENT");
   const spikeStatus = !capabilities.figma.fileKey
     ? "awaiting-figma-file-approval"
     : !spikeFigmaReady
-      ? "awaiting-figma-publish-snapshot"
-      : claudeReceiptStatus !== "current"
-        ? "awaiting-claude-design-receipt"
-        : "figma-claude-round-trip-ready";
+      ? "awaiting-figma-evidence"
+      : !spikeFigmaPublished
+        ? "awaiting-figma-library-publication"
+        : claudeReceiptStatus !== "current"
+          ? "awaiting-claude-design-receipt"
+          : "figma-claude-round-trip-ready";
   const liveBlockers = [];
   if (!capabilities.figma.fileKey) {
     liveBlockers.push({
@@ -86,6 +90,13 @@ export function buildDesignSyncManifest({
       id: "figma-spike-evidence-incomplete",
       owner: "design-system-owner",
       detail: "Badge and Field do not yet have current variable-bound component and review-snapshot evidence.",
+    });
+  }
+  if (spikeFigmaReady && !spikeFigmaPublished) {
+    liveBlockers.push({
+      id: "figma-library-publication-incomplete",
+      owner: "design-system-owner",
+      detail: "Badge and Field are mapped with current review and variable evidence, but their Figma publish status is not CURRENT.",
     });
   }
   if (claudeReceiptStatus !== "current") {
@@ -141,7 +152,10 @@ export function buildDesignSyncManifest({
     figmaSnapshot: {
       status: figmaSnapshot.status,
       capturedAt: figmaSnapshot.capturedAt ?? null,
+      captureMethod: figmaSnapshot.source?.captureMethod ?? null,
       fileKey: figmaSnapshot.source?.fileKey ?? null,
+      fileVersion: figmaSnapshot.source?.fileVersion ?? null,
+      versionHistoryId: figmaSnapshot.source?.versionHistoryId ?? null,
       digest: figmaSnapshot.snapshotDigest ?? null,
       componentCount: figmaSnapshot.components?.length ?? 0,
       reviewSnapshotCount: figmaSnapshot.reviewSnapshots?.length ?? 0,
@@ -153,6 +167,7 @@ export function buildDesignSyncManifest({
       figmaPropertyDriftCount: mappings.reduce((sum, entry) => sum + entry.figmaDrift.length, 0),
       figmaVariableBoundMappings: mappings.filter((entry) => entry.figmaVariableBindingCount > 0).length,
       figmaReviewSnapshotMappings: mappings.filter((entry) => entry.figmaReviewSnapshot !== null).length,
+      figmaPublishedMappings: mappings.filter((entry) => entry.figmaPublishStatus === "CURRENT").length,
       codeConnectMappingStates: codeConnectStates,
       claudeAllowed: mappings.filter((entry) => entry.claudeAllowed).length,
       claudeContextState: claudeContextStatus,
@@ -168,9 +183,10 @@ export function buildDesignSyncManifest({
       codeConnectStatus: capabilities.codeConnect.status,
       acceptance: [
         "Figma component exists with variable-bound states",
-        "a LIBRARY_PUBLISH webhook is hydrated from the Figma file API and normalized without hand editing",
-        "registry componentName resolves to exactly one published component node",
+        "a Figma MCP discovery receipt or hydrated LIBRARY_PUBLISH webhook is normalized without hand editing",
+        "registry componentName resolves to exactly one captured component node",
         "Figma property definitions match the generated design projection; governed review states remain evidence unless the projection explicitly makes them variants",
+        "the live gate requires Figma publish status CURRENT in addition to a current mapping",
         "contract digest matches the generated Claude context",
         "Claude Design returns a current receipt for the same concept ids and supported-state digests",
         "Code Connect is mapped only when the account tier supports publication",
@@ -218,6 +234,9 @@ export function validateDesignSyncManifest(manifest, {requireLive = false} = {})
     }
     if (requireLive && !(entry?.figmaVariableBindingCount > 0)) {
       problems.push(`${spikeId}: variable-bound Figma evidence is required`);
+    }
+    if (requireLive && entry?.figmaPublishStatus !== "CURRENT") {
+      problems.push(`${spikeId}: published Figma component evidence is required`);
     }
     if (requireLive && !entry?.figmaReviewSnapshot) {
       problems.push(`${spikeId}: review snapshot evidence is required`);
@@ -305,9 +324,15 @@ function buildMapping({
     figmaUrl: generatedUrl ?? declaredUrl,
     figmaNodeId: figmaNode?.nodeId ?? declaredNodeId,
     figmaComponentKey: figmaNode?.componentKey ?? null,
+    figmaPublishStatus: figmaNode?.publishStatus ?? null,
+    figmaSnapshotCaptureMethod: figmaSnapshot.source?.captureMethod ?? null,
     figmaVariableBindingCount: figmaNode?.boundVariableCount ?? 0,
     figmaVariableBindingDigest: figmaNode
-      ? digest(figmaNode.boundVariableRefs ?? [])
+      ? digest({
+        refs: figmaNode.boundVariableRefs ?? [],
+        ids: figmaNode.boundVariableIds ?? [],
+        count: figmaNode.boundVariableCount ?? 0,
+      })
       : null,
     figmaReviewSnapshot: figmaNode
       ? reviewSnapshotByNodeId.get(figmaNode.nodeId) ?? null
@@ -556,7 +581,12 @@ function countBy(values, keyFor) {
 }
 
 function unavailableFigmaSnapshot() {
-  return {status: "unavailable", source: {fileKey: null}, components: [], reviewSnapshots: []};
+  return {
+    status: "unavailable",
+    source: {captureMethod: null, fileKey: null},
+    components: [],
+    reviewSnapshots: [],
+  };
 }
 
 function unavailableClaudeDesignReceipt() {
