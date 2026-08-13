@@ -21,6 +21,7 @@ import {
   activityGroupPlacementCost,
   activityPairScoreAdjustment,
   activityValue,
+  assignmentExclusionMinutes,
   canJoinHostConstrainedGroup,
   evaluateHostConstraints,
   hostConstrainedParticipantRank,
@@ -106,6 +107,9 @@ export interface AssignmentEngineExplainability {
   activityMissingAttributeValueCount: number;
   activityBalanceSkew: number;
   activityClusterMixedGroupCount: number;
+  exclusionAlertThresholdMinutes: number;
+  maximumExclusionMinutes: number;
+  attendeesAtOrAboveExclusionThreshold: number;
   generatedGroupRoundCount: number;
   generatedStaticGroupCount: number;
   blockedPairCount: number;
@@ -162,7 +166,15 @@ export interface AssignmentEngineResult<T extends AssignmentParticipant> {
   groups: Array<OptimizedGroup<T>>;
   groupRounds: Array<OptimizedGroupRound<T>>;
   rotationRounds: Array<OptimizedRotationRound<T>>;
+  exclusionLedger: AssignmentExclusionLedger;
   explainability: AssignmentEngineExplainability;
+}
+
+export interface AssignmentExclusionLedger {
+  cumulativeMinutesByUid: Record<string, number>;
+  maximumMinutes: number;
+  alertThresholdMinutes: number;
+  attendeeUidsAtOrAboveAlertThreshold: string[];
 }
 
 export type OptimizedAssignmentPlan<T extends AssignmentParticipant> =
@@ -227,7 +239,10 @@ export function runAssignmentEngine<
     params.questionnaireMode ?? "icebreaker",
     compatibilityPolicy
   );
-  const constraints = normalizeAssignmentConstraints(params.constraints);
+  const constraints = normalizeAssignmentConstraints(
+    params.constraints,
+    params.topology.rotationIntervalMinutes ?? 0
+  );
   const rotationPolicy = normalizeRotationPolicy(params.rotationPolicy);
   const assignmentResolution = eventSuccessVariableResolutionFor({
     assignmentAlgorithm,
@@ -302,6 +317,12 @@ export function runAssignmentEngine<
     };
   }
 
+  const exclusionLedger = projectAssignmentExclusionLedger({
+    plan,
+    participants: params.participants,
+    constraints,
+  });
+
   return {
     ...plan,
     assignmentAlgorithm,
@@ -309,6 +330,7 @@ export function runAssignmentEngine<
     matchingObjective,
     effectiveMatchingObjective: effectiveMatchingObjective.objective,
     assignmentResolution,
+    exclusionLedger,
     explainability: buildAssignmentEngineExplainability({
       plan,
       participants: params.participants,
@@ -320,6 +342,7 @@ export function runAssignmentEngine<
       effectiveMatchingObjective,
       assignmentResolution,
       constraints,
+      exclusionLedger,
       rotationPolicy,
       requestedRotationRoundCount: params.rotationRoundCount ?? 0,
     }),
@@ -431,6 +454,95 @@ export function assignmentPairKey(uidA: string, uidB: string): string {
 }
 
 /**
+ * Projects the cumulative exclusion ledger through the generated assignment
+ * rounds. Assigned attendees retain their current total; every attendee left
+ * out of a round accrues that round's configured duration.
+ * @param {object} params Ledger projection inputs.
+ * @return {AssignmentExclusionLedger} Projected per-attendee totals.
+ */
+function projectAssignmentExclusionLedger<
+  T extends AssignmentParticipant
+>(params: {
+  plan: AssignmentPlanCore<T>;
+  participants: T[];
+  constraints: NormalizedAssignmentConstraints;
+}): AssignmentExclusionLedger {
+  const minutesByUid = new Map<string, number>();
+  for (const participant of params.participants) {
+    minutesByUid.set(
+      participant.uid,
+      assignmentExclusionMinutes(participant.uid, params.constraints)
+    );
+  }
+
+  const assignedUidsByRound: Set<string>[] = [];
+  for (const round of params.plan.rotationRounds) {
+    assignedUidsByRound.push(new Set(round.pairs.flatMap((pair) => [
+      pair.a.uid,
+      pair.b.uid,
+    ])));
+  }
+  for (const round of params.plan.groupRounds) {
+    assignedUidsByRound.push(new Set(round.groups.flatMap((group) =>
+      group.participants.map((participant) => participant.uid)
+    )));
+  }
+  if (
+    assignedUidsByRound.length === 0 &&
+    params.plan.groups.length > 0
+  ) {
+    assignedUidsByRound.push(new Set(params.plan.groups.flatMap((group) =>
+      group.participants.map((participant) => participant.uid)
+    )));
+  }
+
+  for (const assignedUids of assignedUidsByRound) {
+    accrueRoundExclusion({
+      participantUids: params.participants.map((participant) =>
+        participant.uid
+      ),
+      assignedUids,
+      minutesByUid,
+      intervalMinutes: params.constraints.exclusionIntervalMinutes,
+    });
+  }
+
+  const orderedEntries = [...minutesByUid.entries()]
+    .sort(([uidA], [uidB]) => uidA.localeCompare(uidB));
+  const maximumMinutes = orderedEntries.reduce(
+    (maximum, [, minutes]) => Math.max(maximum, minutes),
+    0
+  );
+  const alertThresholdMinutes =
+    params.constraints.exclusionAlertThresholdMinutes;
+  return {
+    cumulativeMinutesByUid: Object.fromEntries(orderedEntries),
+    maximumMinutes,
+    alertThresholdMinutes,
+    attendeeUidsAtOrAboveAlertThreshold: orderedEntries
+      .filter(([, minutes]) => minutes >= alertThresholdMinutes)
+      .map(([uid]) => uid),
+  };
+}
+
+/** Adds one interval to every attendee not assigned in the round. */
+function accrueRoundExclusion(params: {
+  participantUids: string[];
+  assignedUids: Set<string>;
+  minutesByUid: Map<string, number>;
+  intervalMinutes: number;
+}): void {
+  if (params.intervalMinutes <= 0) return;
+  for (const uid of params.participantUids) {
+    if (params.assignedUids.has(uid)) continue;
+    params.minutesByUid.set(
+      uid,
+      (params.minutesByUid.get(uid) ?? 0) + params.intervalMinutes
+    );
+  }
+}
+
+/**
  * Builds assignment metrics that explain engine output and relaxations.
  * @param {object} params Explainability inputs.
  * @return {AssignmentEngineExplainability} Engine output metrics.
@@ -448,6 +560,7 @@ function buildAssignmentEngineExplainability<
   effectiveMatchingObjective: EffectiveMatchingObjective;
   assignmentResolution: EventSuccessVariableResolution;
   constraints: NormalizedAssignmentConstraints;
+  exclusionLedger: AssignmentExclusionLedger;
   rotationPolicy: NormalizedAssignmentRotationPolicy;
   requestedRotationRoundCount: number;
 }): AssignmentEngineExplainability {
@@ -551,6 +664,11 @@ function buildAssignmentEngineExplainability<
       activityStats.missingAttributeValueCount,
     activityBalanceSkew: activityStats.balanceSkew,
     activityClusterMixedGroupCount: activityStats.clusterMixedGroupCount,
+    exclusionAlertThresholdMinutes:
+      params.exclusionLedger.alertThresholdMinutes,
+    maximumExclusionMinutes: params.exclusionLedger.maximumMinutes,
+    attendeesAtOrAboveExclusionThreshold:
+      params.exclusionLedger.attendeeUidsAtOrAboveAlertThreshold.length,
     generatedGroupRoundCount: params.plan.groupRounds.length,
     generatedStaticGroupCount: params.plan.groups.length,
     blockedPairCount: params.blockedPairs.size,
@@ -1490,6 +1608,15 @@ function buildRotationRoundsForOptimizer<
   const breakCounts = new Map(
     params.participants.map((participant) => [participant.uid, 0])
   );
+  const exclusionMinutesByUid = new Map(
+    params.participants.map((participant) => [
+      participant.uid,
+      assignmentExclusionMinutes(participant.uid, params.constraints),
+    ])
+  );
+  const participantUids = params.participants.map((participant) =>
+    participant.uid
+  );
   const rounds: Array<OptimizedRotationRound<T>> = [];
 
   for (let roundIndex = 0; roundIndex < params.roundCount; roundIndex++) {
@@ -1507,40 +1634,29 @@ function buildRotationRoundsForOptimizer<
       rotationPolicy: params.rotationPolicy,
       candidateMode: "uniqueOnly",
     });
-    selectPairsByCompatibilityTier({
-      candidates: candidatePairs.filter((pair) => pair.mutualInterest),
-      usedUids,
-      roundPairs,
-      seenPairs,
-      pairMeetingCounts,
-      meetingCounts,
-      breakCounts,
-    });
+    const selectCandidates = (candidates: Array<OptimizedPair<T>>) =>
+      selectRotationPairsForRound({
+        candidates,
+        usedUids,
+        roundPairs,
+        seenPairs,
+        pairMeetingCounts,
+        meetingCounts,
+        breakCounts,
+        exclusionMinutesByUid,
+        exclusionIntervalMinutes: params.constraints.exclusionIntervalMinutes,
+        participantUids,
+      });
+    selectCandidates(candidatePairs.filter((pair) => pair.mutualInterest));
     if (params.allowOrientationFallback) {
-      selectPairsByCompatibilityTier({
-        candidates: candidatePairs.filter((pair) =>
-          !pair.mutualInterest && pair.compatibility !== "social"
-        ),
-        usedUids,
-        roundPairs,
-        seenPairs,
-        pairMeetingCounts,
-        meetingCounts,
-        breakCounts,
-      });
-      selectPairsByCompatibilityTier({
-        candidates: candidatePairs.filter((pair) =>
-          pair.compatibility === "social" &&
-          (params.matchingObjective !== "romantic" ||
-            pairNeedsFirstConnection(pair, meetingCounts))
-        ),
-        usedUids,
-        roundPairs,
-        seenPairs,
-        pairMeetingCounts,
-        meetingCounts,
-        breakCounts,
-      });
+      selectCandidates(candidatePairs.filter((pair) =>
+        !pair.mutualInterest && pair.compatibility !== "social"
+      ));
+      selectCandidates(candidatePairs.filter((pair) =>
+        pair.compatibility === "social" &&
+        (params.matchingObjective !== "romantic" ||
+          pairNeedsFirstConnection(pair, meetingCounts))
+      ));
     }
     const repeatCandidates = allCandidatePairs({
       participants: params.participants,
@@ -1554,38 +1670,14 @@ function buildRotationRoundsForOptimizer<
       rotationPolicy: params.rotationPolicy,
       candidateMode: "repeatOnly",
     });
-    selectPairsByCompatibilityTier({
-      candidates: repeatCandidates.filter((pair) => pair.mutualInterest),
-      usedUids,
-      roundPairs,
-      seenPairs,
-      pairMeetingCounts,
-      meetingCounts,
-      breakCounts,
-    });
+    selectCandidates(repeatCandidates.filter((pair) => pair.mutualInterest));
     if (params.allowOrientationFallback) {
-      selectPairsByCompatibilityTier({
-        candidates: repeatCandidates.filter((pair) =>
-          !pair.mutualInterest && pair.compatibility !== "social"
-        ),
-        usedUids,
-        roundPairs,
-        seenPairs,
-        pairMeetingCounts,
-        meetingCounts,
-        breakCounts,
-      });
-      selectPairsByCompatibilityTier({
-        candidates: repeatCandidates.filter((pair) =>
-          pair.compatibility === "social"
-        ),
-        usedUids,
-        roundPairs,
-        seenPairs,
-        pairMeetingCounts,
-        meetingCounts,
-        breakCounts,
-      });
+      selectCandidates(repeatCandidates.filter((pair) =>
+        !pair.mutualInterest && pair.compatibility !== "social"
+      ));
+      selectCandidates(repeatCandidates.filter((pair) =>
+        pair.compatibility === "social"
+      ));
     }
     if (roundPairs.length === 0) break;
     for (const participant of params.participants) {
@@ -1596,6 +1688,12 @@ function buildRotationRoundsForOptimizer<
         );
       }
     }
+    accrueRoundExclusion({
+      participantUids,
+      assignedUids: usedUids,
+      minutesByUid: exclusionMinutesByUid,
+      intervalMinutes: params.constraints.exclusionIntervalMinutes,
+    });
     rounds.push({roundIndex, pairs: roundPairs});
   }
   return rounds;
@@ -1620,6 +1718,7 @@ function buildGroupUnitsForOptimizer<
   constraints: NormalizedAssignmentConstraints;
   rotationPolicy: NormalizedAssignmentRotationPolicy;
   pairMeetingCounts?: Map<string, number>;
+  exclusionMinutesByUid?: Map<string, number>;
 }): Array<OptimizedGroup<T>> {
   if (params.participants.length === 0) return [];
   const groups = Array.from(
@@ -1632,7 +1731,8 @@ function buildGroupUnitsForOptimizer<
     params.questionnaireMode,
     params.compatibilityPolicy,
     params.matchingObjective,
-    params.constraints
+    params.constraints,
+    params.exclusionMinutesByUid ?? params.constraints.exclusionMinutesByUid
   );
 
   for (const participant of orderedParticipants) {
@@ -1720,6 +1820,15 @@ function buildGroupRoundsForOptimizer<
   if (params.participants.length === 0 || params.roundCount <= 0) return [];
   const seenPairs = new Set<string>();
   const pairMeetingCounts = new Map<string, number>();
+  const exclusionMinutesByUid = new Map(
+    params.participants.map((participant) => [
+      participant.uid,
+      assignmentExclusionMinutes(participant.uid, params.constraints),
+    ])
+  );
+  const participantUids = params.participants.map((participant) =>
+    participant.uid
+  );
   const rounds: Array<OptimizedGroupRound<T>> = [];
   for (let roundIndex = 0; roundIndex < params.roundCount; roundIndex++) {
     const groups = buildGroupUnitsForOptimizer({
@@ -1734,6 +1843,7 @@ function buildGroupRoundsForOptimizer<
       constraints: params.constraints,
       rotationPolicy: params.rotationPolicy,
       pairMeetingCounts,
+      exclusionMinutesByUid,
     });
     if (groups.length === 0) break;
     for (const group of groups) {
@@ -1742,16 +1852,24 @@ function buildGroupRoundsForOptimizer<
         pairMeetingCounts.set(key, (pairMeetingCounts.get(key) ?? 0) + 1);
       }
     }
+    accrueRoundExclusion({
+      participantUids,
+      assignedUids: new Set(groups.flatMap((group) =>
+        group.participants.map((participant) => participant.uid)
+      )),
+      minutesByUid: exclusionMinutesByUid,
+      intervalMinutes: params.constraints.exclusionIntervalMinutes,
+    });
     rounds.push({roundIndex, groups});
   }
   return rounds;
 }
 
 /**
- * Selects compatible candidate pairs for one rotation tier.
+ * Selects candidate pairs for one round under the fairness-first objective.
  * @param {object} params Selection inputs.
  */
-function selectPairsByCompatibilityTier<T extends AssignmentParticipant>(
+function selectRotationPairsForRound<T extends AssignmentParticipant>(
   params: {
   candidates: Array<OptimizedPair<T>>;
   usedUids: Set<string>;
@@ -1760,6 +1878,9 @@ function selectPairsByCompatibilityTier<T extends AssignmentParticipant>(
   pairMeetingCounts: Map<string, number>;
   meetingCounts: Map<string, number>;
   breakCounts: Map<string, number>;
+  exclusionMinutesByUid: Map<string, number>;
+  exclusionIntervalMinutes: number;
+  participantUids: string[];
 }): void {
   let available = params.candidates.filter((pair) =>
     !params.usedUids.has(pair.a.uid) &&
@@ -1774,6 +1895,9 @@ function selectPairsByCompatibilityTier<T extends AssignmentParticipant>(
         usedUids: params.usedUids,
         meetingCounts: params.meetingCounts,
         breakCounts: params.breakCounts,
+        exclusionMinutesByUid: params.exclusionMinutesByUid,
+        exclusionIntervalMinutes: params.exclusionIntervalMinutes,
+        participantUids: params.participantUids,
       })
     )[0];
     params.roundPairs.push(pair);
@@ -1965,61 +2089,123 @@ function compareRotationPairsForRound<T extends AssignmentParticipant>(params: {
   usedUids: Set<string>;
   meetingCounts: Map<string, number>;
   breakCounts: Map<string, number>;
+  exclusionMinutesByUid: Map<string, number>;
+  exclusionIntervalMinutes: number;
+  participantUids: string[];
 }): number {
-  const capacityDelta = params.candidates.length <=
-    ROUND_CAPACITY_LOOKAHEAD_LIMIT ?
-    remainingRoundCapacity(params.b, params.candidates, params.usedUids) -
-      remainingRoundCapacity(params.a, params.candidates, params.usedUids) :
-    0;
-  return capacityDelta ||
+  const aProjection = projectRoundExclusionAfterPair({
+    selected: params.a,
+    candidates: params.candidates,
+    usedUids: params.usedUids,
+    participantUids: params.participantUids,
+    exclusionMinutesByUid: params.exclusionMinutesByUid,
+    intervalMinutes: params.exclusionIntervalMinutes,
+  });
+  const bProjection = projectRoundExclusionAfterPair({
+    selected: params.b,
+    candidates: params.candidates,
+    usedUids: params.usedUids,
+    participantUids: params.participantUids,
+    exclusionMinutesByUid: params.exclusionMinutesByUid,
+    intervalMinutes: params.exclusionIntervalMinutes,
+  });
+  return aProjection.maximumMinutes - bProjection.maximumMinutes ||
+    aProjection.unassignedCount - bProjection.unassignedCount ||
+    aProjection.totalMinutes - bProjection.totalMinutes ||
     pairMinMeetings(params.a, params.meetingCounts) -
     pairMinMeetings(params.b, params.meetingCounts) ||
-    params.b.score - params.a.score ||
     pairBreakLoad(params.b, params.breakCounts) -
     pairBreakLoad(params.a, params.breakCounts) ||
     pairLoad(params.a, params.meetingCounts) -
     pairLoad(params.b, params.meetingCounts) ||
+    params.b.score - params.a.score ||
     assignmentPairKey(params.a.a.uid, params.a.b.uid)
       .localeCompare(assignmentPairKey(params.b.a.uid, params.b.b.uid));
 }
 
+interface ProjectedRoundExclusion {
+  maximumMinutes: number;
+  totalMinutes: number;
+  unassignedCount: number;
+}
+
 /**
- * Estimates how many more non-overlapping pairs remain after choosing a pair.
- * @param {OptimizedPair<T>} selected Pair being considered.
- * @param {Array<OptimizedPair<T>>} candidates Same-tier candidate pool.
- * @param {Set<string>} usedUids Uids already used in this round.
- * @return {number} Additional pair capacity.
+ * Projects the end-of-round exclusion tuple after choosing one pair. The
+ * bounded lookahead fills the remaining round using exclusion only, so score
+ * cannot influence the fairness objective it is ordered behind.
  */
-function remainingRoundCapacity<T extends AssignmentParticipant>(
-  selected: OptimizedPair<T>,
-  candidates: Array<OptimizedPair<T>>,
-  usedUids: Set<string>
-): number {
-  const unavailableUids = new Set(usedUids);
-  unavailableUids.add(selected.a.uid);
-  unavailableUids.add(selected.b.uid);
-  let capacity = 0;
-  let available = candidates.filter((pair) =>
-    !unavailableUids.has(pair.a.uid) &&
-    !unavailableUids.has(pair.b.uid)
-  );
-  while (available.length > 0) {
-    const degrees = participantPairDegrees(available);
-    const pair = available.sort((a, b) =>
-      pairDegreeLoad(a, degrees) - pairDegreeLoad(b, degrees) ||
-      b.score - a.score ||
-      assignmentPairKey(a.a.uid, a.b.uid)
-        .localeCompare(assignmentPairKey(b.a.uid, b.b.uid))
-    )[0];
-    unavailableUids.add(pair.a.uid);
-    unavailableUids.add(pair.b.uid);
-    capacity++;
-    available = candidates.filter((candidate) =>
-      !unavailableUids.has(candidate.a.uid) &&
-      !unavailableUids.has(candidate.b.uid)
+function projectRoundExclusionAfterPair<
+  T extends AssignmentParticipant
+>(params: {
+  selected: OptimizedPair<T>;
+  candidates: Array<OptimizedPair<T>>;
+  usedUids: Set<string>;
+  participantUids: string[];
+  exclusionMinutesByUid: Map<string, number>;
+  intervalMinutes: number;
+}): ProjectedRoundExclusion {
+  const assignedUids = new Set(params.usedUids);
+  assignedUids.add(params.selected.a.uid);
+  assignedUids.add(params.selected.b.uid);
+
+  if (params.candidates.length <= ROUND_CAPACITY_LOOKAHEAD_LIMIT) {
+    let available = params.candidates.filter((pair) =>
+      !assignedUids.has(pair.a.uid) &&
+      !assignedUids.has(pair.b.uid)
     );
+    while (available.length > 0) {
+      const degrees = participantPairDegrees(available);
+      const next = available.sort((a, b) =>
+        pairMaximumExclusion(b, params.exclusionMinutesByUid) -
+          pairMaximumExclusion(a, params.exclusionMinutesByUid) ||
+        pairExclusionLoad(b, params.exclusionMinutesByUid) -
+          pairExclusionLoad(a, params.exclusionMinutesByUid) ||
+        pairDegreeLoad(a, degrees) - pairDegreeLoad(b, degrees) ||
+        assignmentPairKey(a.a.uid, a.b.uid)
+          .localeCompare(assignmentPairKey(b.a.uid, b.b.uid))
+      )[0];
+      assignedUids.add(next.a.uid);
+      assignedUids.add(next.b.uid);
+      available = params.candidates.filter((pair) =>
+        !assignedUids.has(pair.a.uid) &&
+        !assignedUids.has(pair.b.uid)
+      );
+    }
   }
-  return capacity;
+
+  let maximumMinutes = 0;
+  let totalMinutes = 0;
+  let unassignedCount = 0;
+  for (const uid of params.participantUids) {
+    const currentMinutes = params.exclusionMinutesByUid.get(uid) ?? 0;
+    const assigned = assignedUids.has(uid);
+    const projectedMinutes = currentMinutes +
+      (assigned ? 0 : params.intervalMinutes);
+    if (!assigned) unassignedCount++;
+    maximumMinutes = Math.max(maximumMinutes, projectedMinutes);
+    totalMinutes += projectedMinutes;
+  }
+  return {maximumMinutes, totalMinutes, unassignedCount};
+}
+
+/** Returns the larger current exclusion total inside a candidate pair. */
+function pairMaximumExclusion<T extends AssignmentParticipant>(
+  pair: OptimizedPair<T>,
+  minutesByUid: Map<string, number>
+): number {
+  return Math.max(
+    minutesByUid.get(pair.a.uid) ?? 0,
+    minutesByUid.get(pair.b.uid) ?? 0
+  );
+}
+
+/** Returns the combined current exclusion total inside a candidate pair. */
+function pairExclusionLoad<T extends AssignmentParticipant>(
+  pair: OptimizedPair<T>,
+  minutesByUid: Map<string, number>
+): number {
+  return (minutesByUid.get(pair.a.uid) ?? 0) +
+    (minutesByUid.get(pair.b.uid) ?? 0);
 }
 
 /**
@@ -2125,11 +2311,14 @@ function constrainedParticipantsFirst<T extends AssignmentParticipant>(
   questionnaireMode: QuestionnaireScoringMode,
   compatibilityPolicy: EventSuccessCompatibilityPolicy,
   matchingObjective: EventSuccessMatchingObjective,
-  constraints: NormalizedAssignmentConstraints
+  constraints: NormalizedAssignmentConstraints,
+  exclusionMinutesByUid: Map<string, number>
 ): T[] {
   return [...participants].sort((a, b) =>
     hostConstrainedParticipantRank(a.uid, constraints) -
     hostConstrainedParticipantRank(b.uid, constraints) ||
+    (exclusionMinutesByUid.get(b.uid) ?? 0) -
+      (exclusionMinutesByUid.get(a.uid) ?? 0) ||
     mutualPeerCount(
       a,
       participants,

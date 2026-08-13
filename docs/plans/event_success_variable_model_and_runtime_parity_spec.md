@@ -701,7 +701,7 @@ docs are updated. Update this table in the same commit as the tranche.
 
 - [x] T1 `matchingObjective` and `coverage`
 - [x] T2 `affinityConstraint` and `arrivalGroup`
-- [ ] T3 Exclusion ledger
+- [x] T3 Exclusion ledger
 - [ ] T4 Live control robustness
 - [ ] T5 Spatial layout model and control room
 - [ ] T6 `resourceCapacity` and `sequence` topology
@@ -867,8 +867,8 @@ D.6 and D.7.
 
 1. Rive versus Lottie-plus-contracted-CSS, pending the B.3 spike result.
 2. Whether `sweep` should hard-block event completion or warn loudly.
-3. Exclusion-ledger alert threshold, and whether it is time-based or
-   rounds-based per format.
+3. Resolved in T3: the exclusion ledger is time-based for every format, with a
+   configurable threshold and a 40-minute default.
 4. Whether the conversation graph is opt-in or opt-out for attendees.
 5. Host analytics anonymity threshold (carried over from
    [docs/event_success.md](../event_success.md), still open): 3, 5, or dynamic

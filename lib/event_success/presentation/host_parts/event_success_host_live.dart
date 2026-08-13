@@ -40,6 +40,8 @@ class LiveTab extends StatelessWidget {
     required this.onRevealRound,
     required this.onResetReveal,
     required this.fixtureActions,
+    required this.exclusionAlertThreshold,
+    this.exclusionReferenceNow,
     required this.embedded,
   });
 
@@ -75,6 +77,8 @@ class LiveTab extends StatelessWidget {
   final Future<void> Function(int roundIndex)? onRevealRound;
   final Future<void> Function()? onResetReveal;
   final EventSuccessHostFixtureActions? fixtureActions;
+  final Duration exclusionAlertThreshold;
+  final DateTime? exclusionReferenceNow;
   final bool embedded;
 
   @override
@@ -263,6 +267,15 @@ class LiveTab extends StatelessWidget {
 
     final actionFailed =
         actionState.stepError != null || actionState.completeError != null;
+    final exclusionAlert = _EventSuccessExclusionAlertCard(
+      attendeeUids: roster.checkedInIds,
+      trackingStartedAtByUid: roster.checkedInAtByUid,
+      assignments: [...assignments, ...rotationAssignments],
+      trackingStartedAt: event.startTime,
+      trackingEndedAt: event.endTime,
+      alertThreshold: exclusionAlertThreshold,
+      referenceNow: exclusionReferenceNow,
+    );
     final console = LiveNowConsole(
       plan: livePlan,
       event: event,
@@ -275,6 +288,7 @@ class LiveTab extends StatelessWidget {
           ? EventSuccessControlRoomSyncState.syncing
           : EventSuccessControlRoomSyncState.synced,
       isPrimaryLoading: actionState.isChangingStep || actionState.isCompleting,
+      exclusionAlert: exclusionAlert,
       onOpenGuests: onOpenGuests,
       onPrevious:
           actionState.isChangingStep ||
@@ -384,6 +398,7 @@ class LiveNowConsole extends StatelessWidget {
     this.operationalRosterSummary,
     this.syncState = EventSuccessControlRoomSyncState.synced,
     this.isPrimaryLoading = false,
+    this.exclusionAlert,
   });
 
   final EventSuccessLivePlan plan;
@@ -397,6 +412,7 @@ class LiveNowConsole extends StatelessWidget {
   final EventSuccessOperationalRosterSummary? operationalRosterSummary;
   final EventSuccessControlRoomSyncState syncState;
   final bool isPrimaryLoading;
+  final Widget? exclusionAlert;
 
   @override
   Widget build(BuildContext context) {
@@ -443,6 +459,7 @@ class LiveNowConsole extends StatelessWidget {
           attendeeExperience: compactCopy ? null : attendeeExperience,
           showVenue: showVenue,
         ),
+        if (exclusionAlert case final alert?) alert,
         DecoratedBox(
           decoration: BoxDecoration(color: t.surface),
           child: CatchSection.fieldRows(
@@ -541,6 +558,107 @@ class LiveNowConsole extends StatelessWidget {
           ),
         ],
       ],
+    );
+  }
+}
+
+class _EventSuccessExclusionAlertCard extends StatefulWidget {
+  const _EventSuccessExclusionAlertCard({
+    required this.attendeeUids,
+    required this.trackingStartedAtByUid,
+    required this.assignments,
+    required this.trackingStartedAt,
+    required this.trackingEndedAt,
+    required this.alertThreshold,
+    required this.referenceNow,
+  });
+
+  final List<String> attendeeUids;
+  final Map<String, DateTime> trackingStartedAtByUid;
+  final List<EventSuccessAssignment> assignments;
+  final DateTime trackingStartedAt;
+  final DateTime trackingEndedAt;
+  final Duration alertThreshold;
+  final DateTime? referenceNow;
+
+  @override
+  State<_EventSuccessExclusionAlertCard> createState() =>
+      _EventSuccessExclusionAlertCardState();
+}
+
+class _EventSuccessExclusionAlertCardState
+    extends State<_EventSuccessExclusionAlertCard> {
+  Timer? _thresholdTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _scheduleThreshold());
+  }
+
+  @override
+  void didUpdateWidget(covariant _EventSuccessExclusionAlertCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _scheduleThreshold();
+  }
+
+  @override
+  void dispose() {
+    _thresholdTimer?.cancel();
+    super.dispose();
+  }
+
+  DateTime get _now => widget.referenceNow ?? DateTime.now();
+
+  EventSuccessExclusionLedgerSnapshot _snapshot() =>
+      buildEventSuccessExclusionLedger(
+        attendeeUids: widget.attendeeUids,
+        assignments: widget.assignments,
+        trackingStartedAt: widget.trackingStartedAt,
+        trackingStartedAtByUid: widget.trackingStartedAtByUid,
+        trackingEndedAt: widget.trackingEndedAt,
+        now: _now,
+        alertThreshold: widget.alertThreshold,
+      );
+
+  void _scheduleThreshold() {
+    _thresholdTimer?.cancel();
+    if (!mounted || widget.referenceNow != null) return;
+    final delay = _snapshot().nextAlertDelay;
+    if (delay == null) return;
+    _thresholdTimer = Timer(delay + const Duration(milliseconds: 1), () {
+      if (!mounted) return;
+      setState(() {});
+      _scheduleThreshold();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final alertCount = _snapshot().alertEntries.length;
+    if (alertCount == 0) return const SizedBox.shrink();
+    final thresholdMinutes = widget.alertThreshold.inMinutes;
+    return Semantics(
+      liveRegion: true,
+      child: ColoredBox(
+        color: CatchTokens.of(context).surface,
+        child: Padding(
+          padding: CatchInsets.pageHorizontal.copyWith(
+            top: CatchSpacing.s3,
+            bottom: CatchSpacing.s2,
+          ),
+          child: CatchSurface.message(
+            key: const ValueKey('event_success.exclusion_alert'),
+            messageIcon: CatchIcons.personSearchOutlined,
+            messageTone: CatchSurfaceMessageTone.warning,
+            title: context.l10n.eventSuccessControlRoomExclusionAlertTitle,
+            message: context.l10n.eventSuccessControlRoomExclusionAlertBody(
+              count: alertCount,
+              minutes: thresholdMinutes,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

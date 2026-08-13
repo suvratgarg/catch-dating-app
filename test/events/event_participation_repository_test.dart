@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -100,6 +101,25 @@ void main() {
         expect(participations.single.status, EventParticipationStatus.signedUp);
       },
     );
+
+    test('roster retains the attendee check-in clock for live fairness', () {
+      final createdAt = DateTime(2026, 5, 1, 9);
+      final attendedAt = DateTime(2026, 5, 1, 10);
+      final roster = EventParticipationRoster.fromParticipations([
+        EventParticipation(
+          id: 'event-1_runner-1',
+          eventId: 'event-1',
+          clubId: 'club-1',
+          uid: 'runner-1',
+          status: EventParticipationStatus.attended,
+          createdAt: createdAt,
+          updatedAt: attendedAt,
+          attendedAt: attendedAt,
+        ),
+      ]);
+
+      expect(roster.checkedInAtByUid, {'runner-1': attendedAt});
+    });
   });
 }
 

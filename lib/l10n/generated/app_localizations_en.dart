@@ -10241,6 +10241,24 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get eventSuccessControlRoomExclusionAlertTitle =>
+      'Guests need an introduction';
+
+  @override
+  String eventSuccessControlRoomExclusionAlertBody({
+    required int count,
+    required int minutes,
+  }) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count people have',
+      one: '1 person has',
+    );
+    return '$_temp0 not been assigned to anyone in $minutes minutes.';
+  }
+
+  @override
   String get eventSuccessControlRoomHelpFallback => 'Help & fallback';
 
   @override

@@ -5,6 +5,7 @@ class EventParticipationRoster {
     required this.bookedIds,
     required this.checkedInIds,
     required this.waitlistedIds,
+    this.checkedInAtByUid = const {},
   });
 
   factory EventParticipationRoster.fromParticipations(
@@ -44,6 +45,11 @@ class EventParticipationRoster {
       bookedIds: List.unmodifiable(_uniqueUids(bookedParticipations)),
       checkedInIds: List.unmodifiable(_uniqueUids(checkedInParticipations)),
       waitlistedIds: List.unmodifiable(_uniqueUids(waitlistedParticipations)),
+      checkedInAtByUid: Map.unmodifiable({
+        for (final participation in checkedInParticipations)
+          participation.uid:
+              participation.attendedAt ?? participation.createdAt,
+      }),
     );
   }
 
@@ -56,6 +62,7 @@ class EventParticipationRoster {
   final List<String> bookedIds;
   final List<String> checkedInIds;
   final List<String> waitlistedIds;
+  final Map<String, DateTime> checkedInAtByUid;
 
   int get bookedCount => bookedIds.length;
   int get checkedInCount => checkedInIds.length;

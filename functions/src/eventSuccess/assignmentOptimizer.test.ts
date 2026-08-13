@@ -15,10 +15,101 @@ import {
   EventSuccessMatchingObjective,
 } from "./formatPrimitives";
 import {
+  DEFAULT_EVENT_SUCCESS_EXCLUSION_ALERT_THRESHOLD_MINUTES,
   affinityConstraintScopeForPair,
   affinityRepeatPairScoreAdjustment,
   normalizeAssignmentConstraints,
 } from "./assignmentConstraints";
+
+test("minimizes maximum exclusion time ahead of assignment score", () => {
+  const plan = runAssignmentEngine({
+    participants: [
+      participant("excluded", "person", [], ["common"]),
+      participant("high-score-a", "person", [], ["common", "extra"]),
+      participant("high-score-b", "person", [], ["common", "extra"]),
+    ],
+    blockedPairs: new Set(),
+    topology: pairTopology(1),
+    assignmentAlgorithm: "pairRotations",
+    compatibilityPolicy: "questionnaireClueOnly",
+    matchingObjective: "affinity",
+    rotationRoundCount: 1,
+    constraints: {
+      exclusionLedger: {
+        cumulativeMinutesByUid: {excluded: 35},
+        intervalMinutes: 10,
+      },
+    },
+  });
+
+  const selectedUids = pairUids(plan.rotationRounds[0].pairs[0]);
+  assert.ok(selectedUids.includes("excluded"));
+  assert.notDeepEqual(selectedUids, ["high-score-a", "high-score-b"]);
+  assert.equal(plan.exclusionLedger.maximumMinutes, 35);
+  assert.equal(plan.explainability.maximumExclusionMinutes, 35);
+});
+
+test("exclusion ledger accrues only for attendees omitted from a round", () => {
+  const plan = runAssignmentEngine({
+    participants: ["a", "b", "c"].map(profileFreeParticipant),
+    blockedPairs: new Set(),
+    topology: pairTopology(1),
+    assignmentAlgorithm: "pairRotations",
+    compatibilityPolicy: "none",
+    matchingObjective: "coverage",
+    rotationRoundCount: 2,
+    constraints: {
+      exclusionLedger: {intervalMinutes: 15},
+    },
+  });
+
+  assert.equal(plan.rotationRounds.length, 2);
+  assert.deepEqual(
+    Object.values(plan.exclusionLedger.cumulativeMinutesByUid).sort(
+      (a, b) => a - b
+    ),
+    [0, 15, 15]
+  );
+  assert.equal(plan.exclusionLedger.maximumMinutes, 15);
+});
+
+test("exclusion configuration uses safe defaults", () => {
+  const defaults = normalizeAssignmentConstraints();
+  assert.equal(
+    defaults.exclusionAlertThresholdMinutes,
+    DEFAULT_EVENT_SUCCESS_EXCLUSION_ALERT_THRESHOLD_MINUTES
+  );
+
+  const configured = normalizeAssignmentConstraints({
+    exclusionLedger: {
+      alertThresholdMinutes: 12.5,
+      intervalMinutes: 7.5,
+      cumulativeMinutesByUid: {
+        valid: 9,
+        negative: -4,
+        invalid: Number.NaN,
+      },
+    },
+  }, 15);
+  assert.equal(configured.exclusionAlertThresholdMinutes, 12.5);
+  assert.equal(configured.exclusionIntervalMinutes, 7.5);
+  assert.deepEqual(
+    Object.fromEntries(configured.exclusionMinutesByUid),
+    {valid: 9, negative: 0}
+  );
+
+  const invalid = normalizeAssignmentConstraints({
+    exclusionLedger: {
+      alertThresholdMinutes: 0,
+      intervalMinutes: Number.NaN,
+    },
+  }, 15);
+  assert.equal(
+    invalid.exclusionAlertThresholdMinutes,
+    DEFAULT_EVENT_SUCCESS_EXCLUSION_ALERT_THRESHOLD_MINUTES
+  );
+  assert.equal(invalid.exclusionIntervalMinutes, 15);
+});
 
 test("groups sparse mutual-orientation attendees together", () => {
   const groups = buildOptimizedGroups({

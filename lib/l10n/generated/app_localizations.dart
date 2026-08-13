@@ -15963,6 +15963,21 @@ abstract class AppLocalizations {
   /// **'{checkedIn} checked in'**
   String eventSuccessControlRoomGuestsCheckedInOnly({required int checkedIn});
 
+  /// Live Control Room intervention title when checked-in attendees reach the exclusion threshold.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests need an introduction'**
+  String get eventSuccessControlRoomExclusionAlertTitle;
+
+  /// Aggregate-only live alert for attendees at or above the configured cumulative exclusion threshold.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1 {1 person has} other {{count} people have}} not been assigned to anyone in {minutes} minutes.'**
+  String eventSuccessControlRoomExclusionAlertBody({
+    required int count,
+    required int minutes,
+  });
+
   /// Control Room destination for lightweight recovery guidance.
   ///
   /// In en, this message translates to:

@@ -64,10 +64,17 @@ export interface AssignmentActivityConstraints {
   clusterAttributes?: string[];
 }
 
+export interface AssignmentExclusionLedgerConfig {
+  cumulativeMinutesByUid?: Record<string, number>;
+  intervalMinutes?: number;
+  alertThresholdMinutes?: number;
+}
+
 export interface AssignmentConstraintConfig {
   affinityConstraints?: AssignmentAffinityConstraint[];
   host?: AssignmentHostConstraints;
   activity?: AssignmentActivityConstraints;
+  exclusionLedger?: AssignmentExclusionLedgerConfig;
 }
 
 export interface AssignmentConstraintParticipant {
@@ -101,7 +108,12 @@ export interface NormalizedAssignmentConstraints {
   anchorUidsByGroupIndex: Map<number, Set<string>>;
   balanceActivityAttributes: string[];
   clusterActivityAttributes: string[];
+  exclusionMinutesByUid: Map<string, number>;
+  exclusionIntervalMinutes: number;
+  exclusionAlertThresholdMinutes: number;
 }
+
+export const DEFAULT_EVENT_SUCCESS_EXCLUSION_ALERT_THRESHOLD_MINUTES = 40;
 
 const HOST_ANCHOR_MATCH_REWARD = -120;
 const HOST_ANCHOR_MISMATCH_PENALTY = 450;
@@ -134,7 +146,8 @@ export function assignmentConstraintPairKey(
  * @return {NormalizedAssignmentConstraints} Normalized constraints.
  */
 export function normalizeAssignmentConstraints(
-  config?: AssignmentConstraintConfig
+  config?: AssignmentConstraintConfig,
+  defaultExclusionIntervalMinutes = 0
 ): NormalizedAssignmentConstraints {
   const keepTogetherPairs = new Set<string>();
   const keepApartPairs = new Set<string>();
@@ -152,6 +165,17 @@ export function normalizeAssignmentConstraints(
   );
   const clusterActivityAttributes = normalizeAttributeNames(
     config?.activity?.clusterAttributes
+  );
+  const exclusionMinutesByUid = normalizeExclusionMinutesByUid(
+    config?.exclusionLedger?.cumulativeMinutesByUid
+  );
+  const exclusionIntervalMinutes = nonNegativeFiniteNumber(
+    config?.exclusionLedger?.intervalMinutes,
+    defaultExclusionIntervalMinutes
+  );
+  const exclusionAlertThresholdMinutes = positiveFiniteNumber(
+    config?.exclusionLedger?.alertThresholdMinutes,
+    DEFAULT_EVENT_SUCCESS_EXCLUSION_ALERT_THRESHOLD_MINUTES
   );
 
   for (const constraint of config?.affinityConstraints ?? []) {
@@ -224,7 +248,23 @@ export function normalizeAssignmentConstraints(
     anchorUidsByGroupIndex,
     balanceActivityAttributes,
     clusterActivityAttributes,
+    exclusionMinutesByUid,
+    exclusionIntervalMinutes,
+    exclusionAlertThresholdMinutes,
   };
+}
+
+/**
+ * Returns one attendee's current cumulative exclusion time.
+ * @param {string} uid Participant uid.
+ * @param {NormalizedAssignmentConstraints} constraints Constraint lookups.
+ * @return {number} Non-negative cumulative minutes.
+ */
+export function assignmentExclusionMinutes(
+  uid: string,
+  constraints: NormalizedAssignmentConstraints
+): number {
+  return constraints.exclusionMinutesByUid.get(uid) ?? 0;
 }
 
 /**
@@ -562,6 +602,45 @@ function normalizeAttributeNames(attributes?: string[]): string[] {
       .map((attribute) => attribute.trim())
       .filter((attribute) => attribute.length > 0)
   )].sort();
+}
+
+/**
+ * Normalizes a JSON-shaped exclusion ledger into finite non-negative values.
+ */
+function normalizeExclusionMinutesByUid(
+  raw?: Record<string, number>
+): Map<string, number> {
+  const normalized = new Map<string, number>();
+  for (const [rawUid, rawMinutes] of Object.entries(raw ?? {})) {
+    const uid = rawUid.trim();
+    if (uid.length === 0 || !Number.isFinite(rawMinutes)) continue;
+    normalized.set(uid, Math.max(0, rawMinutes));
+  }
+  return normalized;
+}
+
+/** Resolves a finite non-negative number or a sanitized fallback. */
+function nonNegativeFiniteNumber(
+  value: number | undefined,
+  fallback: number
+): number {
+  const safeFallback = Number.isFinite(fallback) ? Math.max(0, fallback) : 0;
+  if (value === undefined || !Number.isFinite(value)) return safeFallback;
+  return Math.max(0, value);
+}
+
+/** Resolves a finite positive number or a sanitized positive fallback. */
+function positiveFiniteNumber(
+  value: number | undefined,
+  fallback: number
+): number {
+  const safeFallback = Number.isFinite(fallback) && fallback > 0 ?
+    fallback :
+    DEFAULT_EVENT_SUCCESS_EXCLUSION_ALERT_THRESHOLD_MINUTES;
+  if (value === undefined || !Number.isFinite(value) || value <= 0) {
+    return safeFallback;
+  }
+  return value;
 }
 
 /**

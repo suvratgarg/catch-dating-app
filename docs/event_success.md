@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.7.0
+version: 1.8.0
 updated: 2026-08-13
 owner: recursive_audit_loop
 status: active
@@ -154,6 +154,16 @@ The assignment engine accepts pairwise `affinityConstraint` values
 the live-control owner is responsible for consuming `thisRound` after one
 round and retaining `pinned` until explicit release. Safety block edges are
 evaluated first and always override `mustPair`.
+
+Assignment fairness also carries a format-neutral exclusion ledger. It tracks
+cumulative minutes that each assignment participant is unassigned, starting at
+the later of event start or attendee check-in and subtracting merged assignment
+intervals. The optimizer minimizes the maximum projected exclusion before
+assignment score within the active compatibility and safety tier. The Host
+control room raises only an aggregate intervention prompt at the inclusive
+threshold; it does not reveal attendee names. Forty minutes is the shared
+default, exposed as configuration at both the optimizer input and Host surface
+rather than embedded in event-type logic.
 
 ## Code Map
 

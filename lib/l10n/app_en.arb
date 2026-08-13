@@ -18669,6 +18669,24 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_live"
   },
+  "eventSuccessControlRoomExclusionAlertTitle": "Guests need an introduction",
+  "@eventSuccessControlRoomExclusionAlertTitle": {
+    "description": "Live Control Room intervention title when checked-in attendees reach the exclusion threshold.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
+  "eventSuccessControlRoomExclusionAlertBody": "{count, plural, =1 {1 person has} other {{count} people have}} not been assigned to anyone in {minutes} minutes.",
+  "@eventSuccessControlRoomExclusionAlertBody": {
+    "description": "Aggregate-only live alert for attendees at or above the configured cumulative exclusion threshold.",
+    "placeholders": {
+      "count": {"type": "int"},
+      "minutes": {"type": "int"}
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
+  },
   "eventSuccessControlRoomHelpFallback": "Help & fallback",
   "@eventSuccessControlRoomHelpFallback": {
     "description": "Control Room destination for lightweight recovery guidance.",

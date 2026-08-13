@@ -32,6 +32,7 @@ import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_exclusion_ledger.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
@@ -90,7 +91,8 @@ class EventSuccessHostSection extends ConsumerStatefulWidget {
     this.operationalRosterSummary,
     this.onOpenGuests,
     this.fixtureActions,
-  });
+    this.exclusionAlertThreshold = defaultEventSuccessExclusionAlertThreshold,
+  }) : assert(exclusionAlertThreshold > Duration.zero);
 
   final Event event;
   final EventSuccessHostTab initialTab;
@@ -99,6 +101,7 @@ class EventSuccessHostSection extends ConsumerStatefulWidget {
   final EventSuccessOperationalRosterSummary? operationalRosterSummary;
   final VoidCallback? onOpenGuests;
   final EventSuccessHostFixtureActions? fixtureActions;
+  final Duration exclusionAlertThreshold;
 
   @override
   ConsumerState<EventSuccessHostSection> createState() =>
@@ -367,6 +370,7 @@ class _EventSuccessHostSectionState
           _revealEventSuccessRound(eventId: event.id, roundIndex: roundIndex),
       onResetReveal: () => _resetEventSuccessReveal(eventId: event.id),
       fixtureActions: fixtureActions,
+      exclusionAlertThreshold: widget.exclusionAlertThreshold,
     );
   }
 
@@ -774,7 +778,9 @@ class EventSuccessHostPanel extends StatefulWidget {
     this.onRevealRound,
     this.onResetReveal,
     this.fixtureActions,
-  });
+    this.exclusionAlertThreshold = defaultEventSuccessExclusionAlertThreshold,
+    this.exclusionReferenceNow,
+  }) : assert(exclusionAlertThreshold > Duration.zero);
 
   final Event event;
   final EventSuccessPlan plan;
@@ -816,6 +822,8 @@ class EventSuccessHostPanel extends StatefulWidget {
   final Future<void> Function(int roundIndex)? onRevealRound;
   final Future<void> Function()? onResetReveal;
   final EventSuccessHostFixtureActions? fixtureActions;
+  final Duration exclusionAlertThreshold;
+  final DateTime? exclusionReferenceNow;
 
   @override
   State<EventSuccessHostPanel> createState() => _EventSuccessHostPanelState();
@@ -893,6 +901,8 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
         onRevealRound: _revealRoundCallback(),
         onResetReveal: _resetRevealCallback(),
         fixtureActions: widget.fixtureActions,
+        exclusionAlertThreshold: widget.exclusionAlertThreshold,
+        exclusionReferenceNow: widget.exclusionReferenceNow,
         embedded: widget.embedded,
       ),
       EventSuccessHostTab.report => ReportTab(
