@@ -68,6 +68,8 @@ import {EventAttendeeAttendanceReceiptDocument} from "./eventAttendeeAttendanceR
 import {EventAttendeeImportDocument} from "./eventAttendeeImportDocument";
 import {EventRosterHandoffDocument} from "./eventRosterHandoffDocument";
 import {EventRuntimeParticipantDocument} from "./eventRuntimeParticipantDocument";
+import {EventVenueSessionDocument} from "./eventVenueSessionDocument";
+import {EventVenueSessionRedemptionDocument} from "./eventVenueSessionRedemptionDocument";
 import {EventSuccessPresenceDocument} from "./eventSuccessPresenceDocument";
 import {EventSuccessLateArrivalDocument} from "./eventSuccessLateArrivalDocument";
 import {EventRuntimeClaimRequestDocument} from "./eventRuntimeClaimRequestDocument";
@@ -245,6 +247,8 @@ import {SubmitEventRuntimeProfileCallablePayload} from "./submitEventRuntimeProf
 import {SubmitEventRuntimeProfileCallableResponse} from "./submitEventRuntimeProfileCallableResponse";
 import {CheckInEventRuntimeCallablePayload} from "./checkInEventRuntimeCallablePayload";
 import {CheckInEventRuntimeCallableResponse} from "./checkInEventRuntimeCallableResponse";
+import {CreateEventVenueSessionCallablePayload} from "./createEventVenueSessionCallablePayload";
+import {CreateEventVenueSessionCallableResponse} from "./createEventVenueSessionCallableResponse";
 import {ApproveEventRuntimeClaimCallablePayload} from "./approveEventRuntimeClaimCallablePayload";
 import {ApproveEventRuntimeClaimCallableResponse} from "./approveEventRuntimeClaimCallableResponse";
 import {CreateEventRosterHandoffCallablePayload} from "./createEventRosterHandoffCallablePayload";
@@ -415,6 +419,8 @@ import {
   eventAttendeeImportDocumentSchema,
   eventRosterHandoffDocumentSchema,
   eventRuntimeParticipantDocumentSchema,
+  eventVenueSessionDocumentSchema,
+  eventVenueSessionRedemptionDocumentSchema,
   eventSuccessPresenceDocumentSchema,
   eventSuccessLateArrivalDocumentSchema,
   eventRuntimeClaimRequestDocumentSchema,
@@ -592,6 +598,8 @@ import {
   submitEventRuntimeProfileCallableResponseSchema,
   checkInEventRuntimeCallablePayloadSchema,
   checkInEventRuntimeCallableResponseSchema,
+  createEventVenueSessionCallablePayloadSchema,
+  createEventVenueSessionCallableResponseSchema,
   approveEventRuntimeClaimCallablePayloadSchema,
   approveEventRuntimeClaimCallableResponseSchema,
   createEventRosterHandoffCallablePayloadSchema,
@@ -958,6 +966,14 @@ export const validateEventRuntimeParticipantDocument:
   ValidateFunction<EventRuntimeParticipantDocument> =
     ajv.compile(eventRuntimeParticipantDocumentSchema) as
       ValidateFunction<EventRuntimeParticipantDocument>;
+export const validateEventVenueSessionDocument:
+  ValidateFunction<EventVenueSessionDocument> =
+    ajv.compile(eventVenueSessionDocumentSchema) as
+      ValidateFunction<EventVenueSessionDocument>;
+export const validateEventVenueSessionRedemptionDocument:
+  ValidateFunction<EventVenueSessionRedemptionDocument> =
+    ajv.compile(eventVenueSessionRedemptionDocumentSchema) as
+      ValidateFunction<EventVenueSessionRedemptionDocument>;
 export const validateEventSuccessPresenceDocument:
   ValidateFunction<EventSuccessPresenceDocument> =
     ajv.compile(eventSuccessPresenceDocumentSchema) as
@@ -1666,6 +1682,14 @@ export const validateCheckInEventRuntimeCallableResponse:
   ValidateFunction<CheckInEventRuntimeCallableResponse> =
     ajv.compile(checkInEventRuntimeCallableResponseSchema) as
       ValidateFunction<CheckInEventRuntimeCallableResponse>;
+export const validateCreateEventVenueSessionCallablePayload:
+  ValidateFunction<CreateEventVenueSessionCallablePayload> =
+    ajv.compile(createEventVenueSessionCallablePayloadSchema) as
+      ValidateFunction<CreateEventVenueSessionCallablePayload>;
+export const validateCreateEventVenueSessionCallableResponse:
+  ValidateFunction<CreateEventVenueSessionCallableResponse> =
+    ajv.compile(createEventVenueSessionCallableResponseSchema) as
+      ValidateFunction<CreateEventVenueSessionCallableResponse>;
 export const validateApproveEventRuntimeClaimCallablePayload:
   ValidateFunction<ApproveEventRuntimeClaimCallablePayload> =
     ajv.compile(approveEventRuntimeClaimCallablePayloadSchema) as

@@ -11,10 +11,14 @@ class DashboardEventFocusController {
   static final Mutation<void> selfCheckInMutation =
       EventBookingController.selfCheckInMutation;
 
-  Future<void> selfCheckIn(MutationTransaction tx, Event event) {
+  Future<void> selfCheckIn(
+    MutationTransaction tx,
+    Event event,
+    String venueSessionToken,
+  ) {
     return tx
         .get(eventBookingControllerProvider.notifier)
-        .selfCheckIn(eventId: event.id);
+        .selfCheckIn(eventId: event.id, venueSessionToken: venueSessionToken);
   }
 
   void resetSelfCheckInError() {

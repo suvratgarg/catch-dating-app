@@ -89,7 +89,7 @@ class EventSuccessCompanionScreen extends StatefulWidget {
   onSaveWingmanRequest;
   final Future<void> Function()? onWithdrawWingmanRequest;
   final Future<void> Function(EventSuccessFeedback feedback)? onSubmitFeedback;
-  final Future<void> Function()? onSelfCheckIn;
+  final Future<void> Function(String venueSessionToken)? onSelfCheckIn;
   final Future<void> Function(EventSuccessLiveEffectKind kind)?
   onPlayLiveEffect;
   final Future<void> Function(EventSuccessAmbientBed bed)? onPlayAmbientBed;
@@ -185,7 +185,7 @@ class _EventSuccessCompanionScreenState
         SelfCheckInCard(
           event: event,
           actionState: selfCheckInActionState,
-          onSelfCheckIn: widget.onSelfCheckIn ?? _noopFuture,
+          onSelfCheckIn: widget.onSelfCheckIn ?? _noopVenueCheckIn,
         ),
         momentKey: screenState.transitionKey(
           context
@@ -498,7 +498,7 @@ class _EventSuccessCompanionScreenState
         showSelfCheckIn: attendeeMoment.showSelfCheckIn,
         eventEnded: screenState.eventEnded,
         selfCheckInActionState: selfCheckInActionState,
-        onSelfCheckIn: widget.onSelfCheckIn ?? _noopFuture,
+        onSelfCheckIn: widget.onSelfCheckIn ?? _noopVenueCheckIn,
       );
     }
 

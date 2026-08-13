@@ -2994,6 +2994,30 @@ export interface EventRuntimeParticipantDocument {
 }
 
 /**
+ * Short-lived server-owned venue-presence authority shown only in the Host live QR.
+ */
+export interface EventVenueSessionDocument {
+  eventId: string;
+  organizerId: string;
+  createdBy: string;
+  issuedAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Server-only single-use receipt binding one attendee to one live venue session.
+ */
+export interface EventVenueSessionRedemptionDocument {
+  eventId: string;
+  sessionId: string;
+  uid: string;
+  purpose: "attendance" | "firstHello";
+  redeemedAt: FirebaseFirestore.Timestamp;
+  consumedAt: FirebaseFirestore.Timestamp | null;
+  expiresAt: FirebaseFirestore.Timestamp;
+}
+
+/**
  * Server-owned liveness heartbeat stored at eventSuccessPresence/{eventId_uid}; presence state is derived from heartbeatAt and deployment policy rather than persisted.
  */
 export interface EventSuccessPresenceDocument {
@@ -3447,6 +3471,8 @@ export interface EventSuccessArrivalMissionDocument {
     id: string;
     label: string;
   }[];
+  venueSessionId: string;
+  venueSessionRedemptionId: string;
   status: "active" | "completed" | "skipped";
   selectedAnswerId?: string;
   createdAt: FirebaseFirestore.Timestamp;

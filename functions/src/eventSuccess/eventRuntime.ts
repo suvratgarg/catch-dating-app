@@ -3,7 +3,10 @@ import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
 import {requireAuth} from "../shared/auth";
-import {appCheckCallableOptions} from "../shared/callableOptions";
+import {
+  appCheckCallableOptions,
+  appCheckCallableOptionsWithSecrets,
+} from "../shared/callableOptions";
 import {
   EventAttendeeDocument,
   EventDocument,
@@ -54,6 +57,15 @@ import {
   onboardingDraftSeed,
 } from "../events/eventAttendees";
 import {resolveInviteAttributionToken} from "../events/inviteLinks";
+import {
+  assertEventCheckInWindow,
+  eventVenueSessionRedemptionDocument,
+  eventVenueSessionRedemptionId,
+  eventVenueSessionSigningKey,
+  rejectVenueSessionReplay,
+  requireEventVenueSessionDocument,
+  verifyEventVenueSessionToken,
+} from "../events/venueSessions";
 import {eventSuccessPrimitivesFor} from "./formatPrimitives";
 import {
   organizerEventSuccessLayoutDocumentId,
@@ -69,6 +81,7 @@ interface EventRuntimeDeps {
   checkRateLimit: typeof checkRateLimit;
   timestamp: () => FirebaseFirestore.Timestamp;
   timestampFromMillis: (millis: number) => FirebaseFirestore.Timestamp;
+  verifyVenueSessionToken?: typeof verifyEventVenueSessionToken;
 }
 
 const defaultDeps: EventRuntimeDeps = {
@@ -77,6 +90,7 @@ const defaultDeps: EventRuntimeDeps = {
   timestamp: () => admin.firestore.Timestamp.now(),
   timestampFromMillis: (millis) =>
     admin.firestore.Timestamp.fromMillis(millis),
+  verifyVenueSessionToken: verifyEventVenueSessionToken,
 };
 
 const PREFERENCE_AWARE_MODULE_IDS = new Set([
@@ -445,12 +459,37 @@ export async function checkInEventRuntimeHandler(
   const db = deps.firestore();
   await deps.checkRateLimit(db, uid, "checkInEventRuntime");
   const resolved = await resolveRuntimeEvent(db, payload.publicRuntimeId);
+  const now = deps.timestamp();
+  const claims = (deps.verifyVenueSessionToken ??
+    verifyEventVenueSessionToken)({
+    token: payload.venueSessionToken,
+    eventId: resolved.eventId,
+    nowMillis: now.toMillis(),
+  });
   const participantRef = db.collection("eventRuntimeParticipants")
     .doc(eventRuntimeParticipantId(resolved.eventId, uid));
   const eventRef = db.collection("events").doc(resolved.eventId);
+  const sessionRef = db.collection("eventVenueSessions")
+    .doc(claims.sessionId);
+  const redemptionRef = db.collection("eventVenueSessionRedemptions")
+    .doc(eventVenueSessionRedemptionId({
+      eventId: resolved.eventId,
+      sessionId: claims.sessionId,
+      uid,
+    }));
 
   return db.runTransaction(async (tx) => {
-    const participantSnap = await tx.get(participantRef);
+    const [participantSnap, eventSnap, sessionSnap, redemptionSnap] =
+      await Promise.all([
+        tx.get(participantRef),
+        tx.get(eventRef),
+        tx.get(sessionRef),
+        tx.get(redemptionRef),
+      ]);
+    if (!eventSnap.exists) {
+      throw new HttpsError("not-found", "Event not found.");
+    }
+    const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
     const participant = requireRuntimeParticipant(
       participantSnap,
       resolved.eventId,
@@ -482,10 +521,19 @@ export async function checkInEventRuntimeHandler(
         "This guest-list entry cannot be checked in."
       );
     }
+    rejectVenueSessionReplay(redemptionSnap);
     if (attendee.status === "checkedIn") {
       return {status: "checkedIn", alreadyCheckedIn: true};
     }
-    const now = deps.timestamp();
+    assertEventCheckInWindow(event, now.toMillis());
+    requireEventVenueSessionDocument(sessionSnap, claims, now.toMillis());
+    tx.create(redemptionRef, eventVenueSessionRedemptionDocument({
+      claims,
+      uid,
+      purpose: "attendance",
+      now,
+      retentionBaseMillis: now.toMillis(),
+    }));
     tx.update(attendeeRef, {
       status: "checkedIn",
       checkedInAt: now,
@@ -1096,7 +1144,7 @@ export const submitEventRuntimeProfile = onCall(
 );
 
 export const checkInEventRuntime = onCall(
-  appCheckCallableOptions,
+  appCheckCallableOptionsWithSecrets([eventVenueSessionSigningKey]),
   (request) => checkInEventRuntimeHandler(request)
 );
 

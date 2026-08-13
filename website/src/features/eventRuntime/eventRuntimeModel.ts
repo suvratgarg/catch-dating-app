@@ -31,6 +31,14 @@ export interface NormalizedEventRuntimeLayoutUnit {
   height: number;
 }
 
+export function eventVenueSessionTokenFromFragment(
+  fragment: string
+): string | null {
+  const normalized = fragment.startsWith("#") ? fragment.slice(1) : fragment;
+  const token = new URLSearchParams(normalized).get("venueSession")?.trim();
+  return token || null;
+}
+
 export function normalizeEventRuntimeLayoutUnits(
   units: readonly EventRuntimeLayoutUnit[]
 ): NormalizedEventRuntimeLayoutUnit[] {

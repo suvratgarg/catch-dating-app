@@ -8,8 +8,6 @@
   "required": ["eventId", "answerId"],
   "properties": {
     "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-    "answerId": {"type": "string", "minLength": 1, "maxLength": 64},
-    "latitude": {"$ref": "../shared/event_common.schema.json#/definitions/latitude"},
-    "longitude": {"$ref": "../shared/event_common.schema.json#/definitions/longitude"}
+    "answerId": {"type": "string", "minLength": 1, "maxLength": 64}
   }
 }

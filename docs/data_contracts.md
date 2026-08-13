@@ -480,6 +480,8 @@ Root-level edge/action documents are the source of truth for many-to-many state:
 | Unified Host operational roster row | `eventAttendees/{attendeeId}` |
 | Roster import audit and idempotency receipt | `eventAttendeeImports/{importId}` |
 | Private no-download Event Success identity | server-owned `eventRuntimeParticipants/{eventId_uid}` |
+| Short-lived Host venue authority | server-only `eventVenueSessions/{sessionId}` |
+| Per-attendee venue redemption | server-only `eventVenueSessionRedemptions/{sha256(eventId_sessionId_uid)}` |
 | Ambiguous or walk-in Event Success claim review | server-owned `eventRuntimeClaimRequests/{eventId_uid}` |
 | Organizer-scoped communication permission | server-only `organizerCommunicationPreferences/{organizerId_uid}` |
 | Organizer-scoped operational contact | server-only `organizerContacts/{contactId}` |
@@ -596,6 +598,16 @@ Consumer `users/{uid}`, `publicProfiles/{uid}`, `eventParticipations/{eventId_ui
 dating match, or marketing grant. Clients may get only their own deterministic
 edge; list and direct writes are denied. Event Success modules authorize a
 `ready` runtime edge independently of the Consumer booking/network edge.
+
+Attendance authority is separate from runtime identity and joinability.
+`eventVenueSessions/{sessionId}` backs a short-lived signed token issued only to
+an organizer manager during the check-in window. The Host screen refreshes it
+before expiry. `eventVenueSessionRedemptions/{sha256(eventId_sessionId_uid)}`
+atomically binds one authenticated attendee to one displayed session and rejects
+replay by that attendee; different attendees may redeem the same live display.
+Both collections deny all direct client access and use `expiresAt` TTL. A static
+`publicRuntimeId` URL, printable event QR, or latitude/longitude claim carries no
+attendance authority.
 
 When the verified phone cannot be matched unambiguously, or when the event's
 walk-in policy requires review, the server writes

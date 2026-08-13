@@ -10,19 +10,13 @@ final class CompleteEventSuccessFirstHelloMissionCallableRequest {
   const CompleteEventSuccessFirstHelloMissionCallableRequest({
     required this.eventId,
     required this.answerId,
-    this.latitude,
-    this.longitude,
   });
 
   final String eventId;
   final String answerId;
-  final double? latitude;
-  final double? longitude;
 
   Map<String, Object?> toJson() => {
     'eventId': eventId,
     'answerId': answerId,
-    'latitude': ?latitude,
-    'longitude': ?longitude,
   };
 }

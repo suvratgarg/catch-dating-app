@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_venue_session_redemptions.schema.json",
+  "title": "EventVenueSessionRedemptionDocument",
+  "description": "Server-only single-use receipt binding one attendee to one live venue session.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventVenueSessionRedemptions",
+  "x-firestore-path": "eventVenueSessionRedemptions/{redemptionId}",
+  "x-document-id-field": "redemptionId",
+  "x-owner": "attendance and First Hello callables; no client reads or writes",
+  "required": ["eventId", "sessionId", "uid", "purpose", "redeemedAt", "consumedAt", "expiresAt"],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "sessionId": {"type": "string", "pattern": "^[A-Za-z0-9_-]{24,80}$"},
+    "uid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "purpose": {"type": "string", "enum": ["attendance", "firstHello"]},
+    "redeemedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "consumedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
+    "expiresAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}
+  }
+}

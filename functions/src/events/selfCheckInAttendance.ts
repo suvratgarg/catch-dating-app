@@ -1,28 +1,7 @@
-/**
- * Participant self-check-in for event attendance with GPS verification.
- *
- * This removes the single-host dependency from the attendance flow.
- * Previously, only the club host could call `markEventAttendance`. If
- * the host forgot, every participant got zero swipe windows and the
- * product loop was dead. Now participants can check themselves in.
- *
- * ## Validation gates (all must pass)
- *
- *   1. Caller must be authenticated.
- *   2. Caller must have a signed-up eventParticipation edge.
- *   3. Check-in window: configured in tool/contracts/business_rules.json.
- *      Outside this window, only the host can mark attendance.
- *   4. GPS proximity: caller must be within the configured distance of the
- *      meeting point. Events without coordinates skip this check (graceful
- *      degradation for existing events created before this feature).
- *
- * ## Idempotent
- *
- * Calling twice returns `{attended: true}` with no error — the user is
- * already attended.
- */
+/** Participant self-check-in backed by a live, signed Host venue session. */
 
-import {onCall, HttpsError} from "firebase-functions/v2/https";
+import {CallableRequest, HttpsError, onCall} from
+  "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {requireAuth} from "../shared/auth";
@@ -31,238 +10,177 @@ import {SelfCheckInAttendanceCallablePayload} from
 import {validateSelfCheckInAttendanceCallablePayload} from
   "../shared/generated/schemaValidators";
 import {validateCallableWithAjv} from "../shared/validation";
-import {checkRateLimit} from "../shared/rateLimit";
-import {
-  EventDocument,
-} from "../shared/generated/firestoreAdminTypes";
-import {appCheckCallableOptions} from "../shared/callableOptions";
+import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
+import {EventDocument} from "../shared/generated/firestoreAdminTypes";
+import {appCheckCallableOptionsWithSecrets} from
+  "../shared/callableOptions";
 import {
   eventParticipationId,
   eventParticipationPatch,
 } from "../shared/relationshipDocuments";
-import {
-  EVENT_SELF_CHECK_IN_MAX_DISTANCE_METERS,
-  EVENT_SELF_CHECK_IN_WINDOW_AFTER_MINUTES,
-  EVENT_SELF_CHECK_IN_WINDOW_BEFORE_MINUTES,
-} from "../shared/businessRules";
 import {normalizeEventIdPayload} from "./eventPayloadNormalization";
 import {buildAttendanceSignalFact} from "../marketplace/signalBuilders";
+import {recordParticipantSignalFactsBestEffort} from
+  "../marketplace/participantSignals";
+import {incrementInviteLinkCounterBestEffort} from "./inviteLinks";
 import {
-  recordParticipantSignalFactsBestEffort,
-} from "../marketplace/participantSignals";
-import {
-  incrementInviteLinkCounterBestEffort,
-} from "./inviteLinks";
+  assertEventCheckInWindow,
+  eventVenueSessionRedemptionDocument,
+  eventVenueSessionRedemptionId,
+  eventVenueSessionSigningKey,
+  rejectVenueSessionReplay,
+  requireEventVenueSessionDocument,
+  verifyEventVenueSessionToken,
+} from "./venueSessions";
 
-// ── Constants ──────────────────────────────────────────────────────────────
-
-/** Earth's mean radius in metres — used by the Haversine formula. */
-const EARTH_RADIUS_M = 6_371_000;
-
-// ── GPS proximity ──────────────────────────────────────────────────────────
-
-/**
- * Haversine distance between two lat/lng points, in metres.
- *
- * We inline this rather than adding a geo dependency so the function has
- * zero cold-start overhead — same algorithm as the `latlong2` Dart package.
- * @param {number} lat1 First point latitude.
- * @param {number} lng1 First point longitude.
- * @param {number} lat2 Second point latitude.
- * @param {number} lng2 Second point longitude.
- * @return {number} Distance in metres.
- */
-function haversineDistanceM(
-  lat1: number, lng1: number,
-  lat2: number, lng2: number
-): number {
-  const dLat = toRad(lat2 - lat1);
-  const dLng = toRad(lng2 - lng1);
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-    Math.sin(dLng / 2) * Math.sin(dLng / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return EARTH_RADIUS_M * c;
+interface SelfCheckInDeps {
+  firestore: () => FirebaseFirestore.Firestore;
+  now: () => FirebaseFirestore.Timestamp;
+  checkRateLimit?: (
+    db: FirebaseFirestore.Firestore,
+    uid: string,
+    action: string
+  ) => Promise<void>;
+  verifyToken?: typeof verifyEventVenueSessionToken;
+  recordSignalFacts?: typeof recordParticipantSignalFactsBestEffort;
+  incrementInviteLink?: typeof incrementInviteLinkCounterBestEffort;
 }
 
-/**
- * Converts degrees to radians.
- * @param {number} deg Angle in degrees.
- * @return {number} Angle in radians.
- */
-function toRad(deg: number): number {
-  return (deg * Math.PI) / 180;
-}
+const defaultDeps: SelfCheckInDeps = {
+  firestore: () => admin.firestore(),
+  now: () => admin.firestore.Timestamp.now(),
+  checkRateLimit: defaultCheckRateLimit,
+  verifyToken: verifyEventVenueSessionToken,
+  recordSignalFacts: recordParticipantSignalFactsBestEffort,
+  incrementInviteLink: incrementInviteLinkCounterBestEffort,
+};
 
-// ── Handler ────────────────────────────────────────────────────────────────
-
-export const selfCheckInAttendance = onCall(appCheckCallableOptions, async (
-  request
-) => {
+/** Redeems a live Host venue session and marks a Consumer booking attended. */
+export async function selfCheckInAttendanceHandler(
+  request: CallableRequest<unknown>,
+  deps: SelfCheckInDeps = defaultDeps
+): Promise<{userId: string; attended: true}> {
   const userId = requireAuth(request);
-  const {eventId, latitude, longitude} = validateCallableWithAjv<
+  const {eventId, venueSessionToken} = validateCallableWithAjv<
     SelfCheckInAttendanceCallablePayload
   >(
     request,
     validateSelfCheckInAttendanceCallablePayload,
     normalizeEventIdPayload
   );
-
-  await checkRateLimit(admin.firestore(), userId, "selfCheckInAttendance");
-
-  const db = admin.firestore();
+  const db = deps.firestore();
+  await deps.checkRateLimit?.(db, userId, "selfCheckInAttendance");
+  const now = deps.now();
+  const claims = deps.verifyToken!({
+    token: venueSessionToken,
+    eventId,
+    nowMillis: now.toMillis(),
+  });
   const eventRef = db.collection("events").doc(eventId);
-  const eventSnap = await eventRef.get();
-
-  if (!eventSnap.exists) {
-    throw new HttpsError("not-found", "Event not found.");
-  }
-
-  const event = eventSnap.data() as EventDocument;
-  if (event.status === "cancelled") {
-    throw new HttpsError(
-      "failed-precondition",
-      "This event has been cancelled."
-    );
-  }
-  const participationRef = db
-    .collection("eventParticipations")
+  const participationRef = db.collection("eventParticipations")
     .doc(eventParticipationId(eventId, userId));
-  const participationSnap = await participationRef.get();
-  const existingParticipation = participationSnap.exists ?
-    participationSnap.data() as {
-      status?: string;
-      inviteLinkId?: string | null;
-    } :
-    null;
+  const sessionRef = db.collection("eventVenueSessions")
+    .doc(claims.sessionId);
+  const redemptionId = eventVenueSessionRedemptionId({
+    eventId,
+    sessionId: claims.sessionId,
+    uid: userId,
+  });
+  const redemptionRef = db.collection("eventVenueSessionRedemptions")
+    .doc(redemptionId);
 
-  // ── 1. Must be signed up ────────────────────────────────────────────────
-
-  if (
-    existingParticipation?.status !== "signedUp" &&
-    existingParticipation?.status !== "attended"
-  ) {
-    throw new HttpsError(
-      "failed-precondition",
-      "You must be signed up for this event to check in."
-    );
-  }
-
-  // ── 2. Idempotent — already checked in ───────────────────────────────────
-
-  if (existingParticipation?.status === "attended") {
-    return {userId, attended: true};
-  }
-
-  // ── 3. Check-in window ──────────────────────────────────────────────────
-
-  const startTime = (event.startTime as FirebaseFirestore.Timestamp).toDate();
-  const windowStart = new Date(
-    startTime.getTime() - EVENT_SELF_CHECK_IN_WINDOW_BEFORE_MINUTES * 60 * 1000
-  );
-  const windowEnd = new Date(
-    startTime.getTime() + EVENT_SELF_CHECK_IN_WINDOW_AFTER_MINUTES * 60 * 1000
-  );
-  const now = new Date();
-
-  if (now < windowStart) {
-    throw new HttpsError(
-      "failed-precondition",
-      `Check-in opens ${EVENT_SELF_CHECK_IN_WINDOW_BEFORE_MINUTES} min ` +
-      "before the event starts."
-    );
-  }
-
-  if (now > windowEnd) {
-    throw new HttpsError(
-      "failed-precondition",
-      "Check-in closed. " +
-      `The ${EVENT_SELF_CHECK_IN_WINDOW_AFTER_MINUTES}-min post-event ` +
-      "window ended. " +
-      "Contact the host."
-    );
-  }
-
-  // ── 4. GPS proximity ────────────────────────────────────────────────────
-
-  const eventLat = event.meetingLocation?.latitude ?? event.startingPointLat;
-  const eventLng = event.meetingLocation?.longitude ?? event.startingPointLng;
-
-  if (eventLat == null || eventLng == null) {
-    throw new HttpsError(
-      "failed-precondition",
-      "This event has no exact meeting location. Contact the host."
-    );
-  }
-  if (latitude == null || longitude == null) {
-    throw new HttpsError(
-      "invalid-argument",
-      "Location is required to check in. Please enable GPS and try again."
-    );
-  }
-
-  const distance = haversineDistanceM(
-    latitude, longitude,
-    eventLat, eventLng
-  );
-
-  if (distance > EVENT_SELF_CHECK_IN_MAX_DISTANCE_METERS) {
-    throw new HttpsError(
-      "failed-precondition",
-      `You must be within ${EVENT_SELF_CHECK_IN_MAX_DISTANCE_METERS} m ` +
-      "of the meeting point to check in. You appear to be " +
-      `${Math.round(distance)} m away.`
-    );
-  }
-  // If the event has no coordinates, skip GPS check — graceful degradation
-  // for events created before this feature was added.
-
-  // ── 5. Mark attendance ──────────────────────────────────────────────────
-
-  // Re-read the status and apply the count delta in one transaction so
-  // concurrent or retried self-check-ins only increment on the
-  // signedUp -> attended edge (idempotent; no double-count).
+  let inviteLinkId: string | null | undefined;
+  let signalClubId: string | null = null;
+  let signalOrganizerId: string | null = null;
+  let changed = false;
   await db.runTransaction(async (tx) => {
-    const currentSnap = await tx.get(participationRef);
-    const currentStatus = currentSnap.exists ?
-      (currentSnap.data() as {status?: string}).status :
-      undefined;
-    if (currentStatus === "attended") return;
+    const [eventSnap, participationSnap, sessionSnap, redemptionSnap] =
+      await Promise.all([
+        tx.get(eventRef),
+        tx.get(participationRef),
+        tx.get(sessionRef),
+        tx.get(redemptionRef),
+      ]);
+    if (!eventSnap.exists) {
+      throw new HttpsError("not-found", "Event not found.");
+    }
+    const event = eventSnap.data() as EventDocument;
+    if (event.status === "cancelled") {
+      throw new HttpsError(
+        "failed-precondition",
+        "This event has been cancelled."
+      );
+    }
+    const participation = participationSnap.exists ?
+      participationSnap.data() as {
+        status?: string;
+        inviteLinkId?: string | null;
+        genderAtSignup?: string | null;
+        cohortAtSignup?: string | null;
+        paymentId?: string | null;
+      } : null;
+    if (
+      participation?.status !== "signedUp" &&
+      participation?.status !== "attended"
+    ) {
+      throw new HttpsError(
+        "failed-precondition",
+        "You must be signed up for this event to check in."
+      );
+    }
+    inviteLinkId = participation.inviteLinkId;
+    rejectVenueSessionReplay(redemptionSnap);
+    if (participation.status === "attended") return;
+    assertEventCheckInWindow(event, now.toMillis());
+    requireEventVenueSessionDocument(sessionSnap, claims, now.toMillis());
+    tx.create(redemptionRef, eventVenueSessionRedemptionDocument({
+      claims,
+      uid: userId,
+      purpose: "attendance",
+      now,
+      retentionBaseMillis: now.toMillis(),
+    }));
     tx.update(eventRef, {
       checkedInCount: admin.firestore.FieldValue.increment(1),
     });
     tx.set(participationRef, eventParticipationPatch({
-      exists: currentSnap.exists,
+      exists: participationSnap.exists,
       eventId,
       clubId: event.clubId,
-
       organizerId: event.organizerId ?? event.clubId,
       uid: userId,
       status: "attended",
+      genderAtSignup: participation.genderAtSignup ?? undefined,
+      cohortAtSignup: participation.cohortAtSignup ?? undefined,
+      paymentId: participation.paymentId ?? undefined,
     }), {merge: true});
-  });
-  await incrementInviteLinkCounterBestEffort({
-    db,
-    inviteLinkId: existingParticipation?.inviteLinkId,
-    field: "checkedInCount",
+    signalClubId = event.clubId;
+    signalOrganizerId = event.organizerId ?? event.clubId;
+    changed = true;
   });
 
-  await recordParticipantSignalFactsBestEffort(db, [
-    buildAttendanceSignalFact({
-      eventId,
-      clubId: event.clubId,
-
-      organizerId: event.organizerId ?? event.clubId,
-      uid: userId,
-      attended: true,
-      sourceId: `self_check_in_${eventId}_${userId}`,
-    }),
-  ]);
-
-  logger.info(
-    `[attendance] Self-check-in: user ${userId} → event ${eventId}`
-  );
-
+  if (changed && signalClubId != null && signalOrganizerId != null) {
+    await deps.incrementInviteLink?.({
+      db,
+      inviteLinkId,
+      field: "checkedInCount",
+    });
+    await deps.recordSignalFacts?.(db, [
+      buildAttendanceSignalFact({
+        eventId,
+        clubId: signalClubId,
+        organizerId: signalOrganizerId,
+        uid: userId,
+        attended: true,
+        sourceId: `self_check_in_${eventId}_${userId}`,
+      }),
+    ]);
+  }
+  logger.info("[attendance] Signed venue check-in", {eventId, userId});
   return {userId, attended: true};
-});
+}
+
+export const selfCheckInAttendance = onCall(
+  appCheckCallableOptionsWithSecrets([eventVenueSessionSigningKey]),
+  (request) => selfCheckInAttendanceHandler(request)
+);

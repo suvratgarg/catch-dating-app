@@ -123,7 +123,7 @@ class CompanionPaperScaffold extends StatelessWidget {
   final bool showSelfCheckIn;
   final bool eventEnded;
   final SelfCheckInActionState selfCheckInActionState;
-  final Future<void> Function() onSelfCheckIn;
+  final Future<void> Function(String venueSessionToken) onSelfCheckIn;
 
   @override
   Widget build(BuildContext context) {
@@ -730,7 +730,7 @@ class PaperSelfCheckInBar extends StatelessWidget {
 
   final Event event;
   final SelfCheckInActionState actionState;
-  final Future<void> Function() onSelfCheckIn;
+  final Future<void> Function(String venueSessionToken) onSelfCheckIn;
 
   @override
   Widget build(BuildContext context) {
@@ -741,10 +741,20 @@ class PaperSelfCheckInBar extends StatelessWidget {
       isLoading: actionState.isCheckingIn,
       onPressed: actionState.isCheckingIn
           ? null
-          : () => unawaited(onSelfCheckIn()),
+          : () => unawaited(_scanAndCheckIn(context)),
       fullWidth: true,
       size: CatchButtonSize.lg,
     );
+  }
+
+  Future<void> _scanAndCheckIn(BuildContext context) async {
+    final venueSessionToken = await showCatchBottomSheet<String>(
+      context: context,
+      builder: (context) => EventCheckInQrScannerSheet(eventId: event.id),
+    );
+    if (venueSessionToken != null && context.mounted) {
+      await onSelfCheckIn(venueSessionToken);
+    }
   }
 }
 

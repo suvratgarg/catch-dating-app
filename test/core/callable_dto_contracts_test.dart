@@ -142,8 +142,8 @@ void main() {
         'SelfCheckInAttendanceCallablePayload',
         const SelfCheckInAttendanceCallableRequest(
           eventId: 'event-1',
-          latitude: 12.9763,
-          longitude: 77.5929,
+          venueSessionToken:
+              'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
         ).toJson(),
       );
     });

@@ -7,6 +7,16 @@ import {
   startEventSuccessFirstHelloMissionHandler,
 } from "./firstHelloCheckIn";
 import {isHttpsError} from "../shared/testUtils";
+import {eventVenueSessionRedemptionId} from "../events/venueSessions";
+
+const venueSessionId = "session_123456789012345678901234";
+const venueSessionToken =
+  "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+const venueRedemptionId = eventVenueSessionRedemptionId({
+  eventId: "event-1",
+  sessionId: venueSessionId,
+  uid: "runner-1",
+});
 
 type FakeData = Record<string, unknown>;
 
@@ -88,6 +98,15 @@ class FakeTransaction {
     });
   }
 
+  create(ref: FakeDocRef, data: FakeData) {
+    this.writes.push(() => {
+      if (this.firestore.get(ref.path) !== undefined) {
+        throw new Error(`Document exists: ${ref.path}`);
+      }
+      this.firestore.set(ref.path, data);
+    });
+  }
+
   update(ref: FakeDocRef, data: FakeData) {
     this.writes.push(() => this.firestore.merge(ref.path, data));
   }
@@ -164,6 +183,13 @@ function harness(overrides: Record<string, FakeData | undefined> = {}) {
       clubId: "club-1",
       selectedModuleIds: ["first_hello_check_in"],
     },
+    [`eventVenueSessions/${venueSessionId}`]: {
+      eventId: "event-1",
+      organizerId: "club-1",
+      createdBy: "host-1",
+      issuedAt: ts("2026-05-02T01:34:00.000Z"),
+      expiresAt: ts("2026-05-02T01:36:00.000Z"),
+    },
     "eventParticipations/event-1_runner-1": {
       eventId: "event-1",
       clubId: "club-1",
@@ -205,6 +231,14 @@ function harness(overrides: Record<string, FakeData | undefined> = {}) {
         ({__serverTimestamp: true} as unknown as
           FirebaseFirestore.FieldValue),
       nowMillis: () => Date.parse("2026-05-02T01:35:00.000Z"),
+      verifyVenueSessionToken: () => ({
+        version: 1 as const,
+        eventId: "event-1",
+        organizerId: "club-1",
+        sessionId: venueSessionId,
+        issuedAtMillis: Date.parse("2026-05-02T01:34:00.000Z"),
+        expiresAtMillis: Date.parse("2026-05-02T01:36:00.000Z"),
+      }),
       checkRateLimit: async (
         _db: FirebaseFirestore.Firestore,
         uid: string,
@@ -228,8 +262,7 @@ test("start First Hello writes a private arrival mission", async () => {
   const result = await startEventSuccessFirstHelloMissionHandler(
     request("runner-1", {
       eventId: " event-1 ",
-      latitude: 19.076,
-      longitude: 72.8777,
+      venueSessionToken,
     }),
     deps
   );
@@ -244,8 +277,16 @@ test("start First Hello writes a private arrival mission", async () => {
   assert.equal(mission?.observerUid, "runner-1");
   assert.equal(mission?.targetUid, "runner-2");
   assert.equal(mission?.targetDisplayName, "Rhea");
+  assert.equal(mission?.venueSessionId, venueSessionId);
+  assert.equal(mission?.venueSessionRedemptionId, venueRedemptionId);
   assert.equal(mission?.status, "active");
   assert.equal(Array.isArray(mission?.answerOptions), true);
+  assert.equal(
+    firestore.get(
+      `eventVenueSessionRedemptions/${venueRedemptionId}`
+    )?.purpose,
+    "firstHello"
+  );
 });
 
 test(
@@ -285,8 +326,7 @@ test(
     const result = await startEventSuccessFirstHelloMissionHandler(
       request("runner-1", {
         eventId: "event-1",
-        latitude: 19.076,
-        longitude: 72.8777,
+        venueSessionToken,
       }),
       deps
     );
@@ -334,8 +374,7 @@ test("First Hello uses neutral fallback without profile answers", async () => {
 
   await startEventSuccessFirstHelloMissionHandler(request("runner-1", {
     eventId: "event-1",
-    latitude: 19.076,
-    longitude: 72.8777,
+    venueSessionToken,
   }), deps);
 
   assert.equal(firestore.get(
@@ -361,8 +400,7 @@ test(
       () => startEventSuccessFirstHelloMissionHandler(
         request("runner-1", {
           eventId: "event-1",
-          latitude: 19.076,
-          longitude: 72.8777,
+          venueSessionToken,
         }),
         deps
       ),
@@ -388,9 +426,20 @@ test("complete First Hello marks attendance", async () => {
         {id: "people", label: "The people"},
         {id: "activity", label: "The activity"},
       ],
+      venueSessionId,
+      venueSessionRedemptionId: venueRedemptionId,
       status: "active",
       createdAt: "created",
       updatedAt: "created",
+    },
+    [`eventVenueSessionRedemptions/${venueRedemptionId}`]: {
+      eventId: "event-1",
+      sessionId: venueSessionId,
+      uid: "runner-1",
+      purpose: "firstHello",
+      redeemedAt: "created",
+      consumedAt: null,
+      expiresAt: ts("2026-05-03T01:35:00.000Z"),
     },
   });
 
@@ -398,8 +447,6 @@ test("complete First Hello marks attendance", async () => {
     request("runner-1", {
       eventId: "event-1",
       answerId: "people",
-      latitude: 19.076,
-      longitude: 72.8777,
     }),
     deps
   );
@@ -412,6 +459,12 @@ test("complete First Hello marks attendance", async () => {
   ]);
   assert.equal(mission?.status, "completed");
   assert.equal(mission?.selectedAnswerId, "people");
+  assert.notEqual(
+    firestore.get(
+      `eventVenueSessionRedemptions/${venueRedemptionId}`
+    )?.consumedAt,
+    null
+  );
   assert.equal(participation?.status, "attended");
   assert.equal(participation?.paymentId, "payment-1");
   assert.equal(recordedSignals.length, 1);
@@ -428,9 +481,20 @@ test("complete First Hello rejects invalid answers", async () => {
       targetContext: "They are checked in and ready for the same room.",
       question: "Ask them: what made this event sound fun?",
       answerOptions: [{id: "people", label: "The people"}],
+      venueSessionId,
+      venueSessionRedemptionId: venueRedemptionId,
       status: "active",
       createdAt: "created",
       updatedAt: "created",
+    },
+    [`eventVenueSessionRedemptions/${venueRedemptionId}`]: {
+      eventId: "event-1",
+      sessionId: venueSessionId,
+      uid: "runner-1",
+      purpose: "firstHello",
+      redeemedAt: "created",
+      consumedAt: null,
+      expiresAt: ts("2026-05-03T01:35:00.000Z"),
     },
   });
 
@@ -439,8 +503,6 @@ test("complete First Hello rejects invalid answers", async () => {
       request("runner-1", {
         eventId: "event-1",
         answerId: "venue",
-        latitude: 19.076,
-        longitude: 72.8777,
       }),
       deps
     ),

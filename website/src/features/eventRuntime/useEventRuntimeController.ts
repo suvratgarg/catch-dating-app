@@ -43,6 +43,7 @@ export type EventRuntimeStage =
   | "otp"
   | "profile"
   | "approval"
+  | "venue"
   | "runtime"
   | "unavailable";
 
@@ -63,7 +64,10 @@ const emptyLiveState: EventRuntimeLiveState = {
   wingmanTargetUid: null,
 };
 
-export function useEventRuntimeController(publicRuntimeId: string) {
+export function useEventRuntimeController(
+  publicRuntimeId: string,
+  venueSessionToken: string | null = null
+) {
   const reactId = useId();
   const recaptchaContainerId = `event-runtime-recaptcha-${reactId.replace(/:/gu, "")}`;
   const verificationRef = useRef<PublicEventPhoneVerification | null>(null);
@@ -131,12 +135,22 @@ export function useEventRuntimeController(publicRuntimeId: string) {
         let next = await getEventRuntimeBootstrap({publicRuntimeId});
         setBootstrap(next);
         hydrateProfile(next);
-        const nextStage = eventRuntimeStageForParticipant(next.participant);
+        let nextStage: EventRuntimeStage = eventRuntimeStageForParticipant(next.participant);
         if (nextStage === "runtime" && next.participant?.attendanceStatus !== "checkedIn") {
-          await checkInEventRuntime({publicRuntimeId});
-          next = await getEventRuntimeBootstrap({publicRuntimeId});
-          setBootstrap(next);
-          hydrateProfile(next);
+          if (!venueSessionToken) {
+            nextStage = "venue";
+          } else {
+            try {
+              await checkInEventRuntime({publicRuntimeId, venueSessionToken});
+              next = await getEventRuntimeBootstrap({publicRuntimeId});
+              setBootstrap(next);
+              hydrateProfile(next);
+              nextStage = eventRuntimeStageForParticipant(next.participant);
+            } catch (error) {
+              setStatus({message: eventRuntimeError(error), tone: "is-error"});
+              nextStage = "venue";
+            }
+          }
         }
         if (userRef.current?.uid === activeUser.uid) setStage(nextStage);
       } catch (error) {
@@ -150,7 +164,7 @@ export function useEventRuntimeController(publicRuntimeId: string) {
     } finally {
       if (loadingRef.current === request) loadingRef.current = null;
     }
-  }, [publicRuntimeId]);
+  }, [publicRuntimeId, venueSessionToken]);
 
   useEffect(() => {
     let cancelled = false;
@@ -474,9 +488,15 @@ export function useEventRuntimeController(publicRuntimeId: string) {
   async function startFirstHello() {
     const participant = bootstrap?.participant;
     if (!participant || pending) return;
+    if (!venueSessionToken) {
+      setStatus({message: eventRuntimeCopy.venueBody, tone: "is-error"});
+      return;
+    }
     await actionMutation.mutateAsync(async () => {
-      const position = await browserPosition();
-      await startEventRuntimeFirstHello({eventId: participant.eventId, ...position});
+      await startEventRuntimeFirstHello({
+        eventId: participant.eventId,
+        venueSessionToken,
+      });
     }).catch(() => undefined);
   }
 
@@ -484,11 +504,9 @@ export function useEventRuntimeController(publicRuntimeId: string) {
     const participant = bootstrap?.participant;
     if (!participant || pending) return;
     await actionMutation.mutateAsync(async () => {
-      const position = await browserPosition();
       await completeEventRuntimeFirstHello({
         eventId: participant.eventId,
         answerId,
-        ...position,
       });
     }).catch(() => undefined);
   }
@@ -612,23 +630,4 @@ function answerMapForIds(
     if (selected) next[question.id] = selected.id;
   }
   return next;
-}
-
-async function browserPosition(): Promise<{latitude: number | null; longitude: number | null}> {
-  if (!("geolocation" in navigator)) return {latitude: null, longitude: null};
-  try {
-    const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-      navigator.geolocation.getCurrentPosition(resolve, reject, {
-        enableHighAccuracy: false,
-        maximumAge: 60_000,
-        timeout: 8_000,
-      });
-    });
-    return {
-      latitude: position.coords.latitude,
-      longitude: position.coords.longitude,
-    };
-  } catch {
-    return {latitude: null, longitude: null};
-  }
 }

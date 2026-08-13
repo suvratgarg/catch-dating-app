@@ -1150,6 +1150,16 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Live venue-session authority and redemption receipts are callable-only.
+    // Printable join links never read or write either collection.
+    match /eventVenueSessions/{sessionId} {
+      allow read, write: if false;
+    }
+
+    match /eventVenueSessionRedemptions/{redemptionId} {
+      allow read, write: if false;
+    }
+
     // The no-download identity edge is private to the authenticated owner.
     // It is not a roster-list surface and every mutation is callable-owned.
     match /eventRuntimeParticipants/{participantId} {

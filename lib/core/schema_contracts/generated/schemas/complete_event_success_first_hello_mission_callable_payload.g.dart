@@ -26,21 +26,5 @@ const schemaCompleteEventSuccessFirstHelloMissionCallablePayloadSchema = <String
       'minLength': 1,
       'maxLength': 64,
     },
-    'latitude': <String, Object?>{
-      'type': <Object?>[
-        'number',
-        'null',
-      ],
-      'minimum': -90,
-      'maximum': 90,
-    },
-    'longitude': <String, Object?>{
-      'type': <Object?>[
-        'number',
-        'null',
-      ],
-      'minimum': -180,
-      'maximum': 180,
-    },
   },
 };

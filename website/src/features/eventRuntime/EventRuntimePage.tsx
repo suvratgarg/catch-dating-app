@@ -1,3 +1,4 @@
+import {useEffect, useState} from "react";
 import {useParams} from "react-router";
 import {
   eventRuntimeCopy,
@@ -32,13 +33,28 @@ import {
 import {useEventRuntimeController} from "./useEventRuntimeController";
 import {
   normalizeEventRuntimeLayoutUnits,
+  eventVenueSessionTokenFromFragment,
   shouldRenderEventRuntimeRoomMap,
   visibleEventRuntimeStandingRound,
 } from "./eventRuntimeModel";
 
 export function EventRuntimePage() {
   const {publicRuntimeId = ""} = useParams<{publicRuntimeId: string}>();
-  const controller = useEventRuntimeController(publicRuntimeId);
+  const [venueSessionToken] = useState(() =>
+    eventVenueSessionTokenFromFragment(window.location.hash)
+  );
+  useEffect(() => {
+    if (!venueSessionToken) return;
+    window.history.replaceState(
+      null,
+      "",
+      `${window.location.pathname}${window.location.search}`
+    );
+  }, [venueSessionToken]);
+  const controller = useEventRuntimeController(
+    publicRuntimeId,
+    venueSessionToken
+  );
   const event = controller.bootstrap?.event ?? null;
 
   if (controller.stage === "loading") {
@@ -186,6 +202,16 @@ export function EventRuntimePage() {
           >
             {eventRuntimeCopy.refreshAction}
           </Button>
+          <FormStatus status={controller.status} />
+        </EventRuntimePanel>
+      ) : null}
+
+      {controller.stage === "venue" ? (
+        <EventRuntimePanel
+          kicker={eventRuntimeCopy.venueKicker}
+          title={eventRuntimeCopy.venueTitle}
+          body={eventRuntimeCopy.venueBody}
+        >
           <FormStatus status={controller.status} />
         </EventRuntimePanel>
       ) : null}

@@ -4,6 +4,7 @@ import {describe, expect, it} from "vitest";
 import type {EventRuntimeLiveState} from "../../firebase";
 import {
   eventRuntimeStageForParticipant,
+  eventVenueSessionTokenFromFragment,
   normalizeEventRuntimeLayoutUnits,
   normalizeRuntimePhone,
   resolveEventRuntimeQuestionnaire,
@@ -40,6 +41,13 @@ describe("eventRuntimeModel", () => {
 
   it("normalizes display-formatted E.164 phone numbers", () => {
     expect(normalizeRuntimePhone("+91 (98765) 43210")).toBe("+919876543210");
+  });
+
+  it("reads venue authority only from the URL fragment", () => {
+    expect(eventVenueSessionTokenFromFragment(
+      "#eventId=event-1&venueSession=signed-live-session"
+    )).toBe("signed-live-session");
+    expect(eventVenueSessionTokenFromFragment("")).toBeNull();
   });
 
   it("derives the shared normalized room-map contract for all five shapes", () => {

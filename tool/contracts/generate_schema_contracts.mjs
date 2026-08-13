@@ -375,6 +375,18 @@ const schemaSpecs = [
       "functions/src/shared/generated/eventRuntimeParticipantDocument.ts",
   },
   {
+    name: "EventVenueSessionDocument",
+    source: "firestore/event_venue_sessions.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventVenueSessionDocument.ts",
+  },
+  {
+    name: "EventVenueSessionRedemptionDocument",
+    source: "firestore/event_venue_session_redemptions.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventVenueSessionRedemptionDocument.ts",
+  },
+  {
     name: "EventSuccessPresenceDocument",
     source: "firestore/event_success_presence.schema.json",
     typeOutput:
@@ -1501,6 +1513,19 @@ const schemaSpecs = [
       "callable_responses/check_in_event_runtime_response.schema.json",
     typeOutput:
       "functions/src/shared/generated/checkInEventRuntimeCallableResponse.ts",
+  },
+  {
+    name: "CreateEventVenueSessionCallablePayload",
+    source: "callables/create_event_venue_session_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/createEventVenueSessionCallablePayload.ts",
+  },
+  {
+    name: "CreateEventVenueSessionCallableResponse",
+    source:
+      "callable_responses/create_event_venue_session_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/createEventVenueSessionCallableResponse.ts",
   },
   {
     name: "ApproveEventRuntimeClaimCallablePayload",
