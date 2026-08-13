@@ -928,6 +928,7 @@ function runtimeAttendeeDocument(params: {
     phoneE164: params.phone,
     email: null,
     externalReference: null,
+    arrivalGroup: null,
     ticketType: null,
     importId: null,
     sourceRowId: null,

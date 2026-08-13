@@ -17,6 +17,7 @@ import {
   AssignmentConstraintEvaluation,
   AssignmentConstraintStatus,
   NormalizedAssignmentConstraints,
+  affinityRepeatPairScoreAdjustment,
   activityGroupPlacementCost,
   activityPairScoreAdjustment,
   activityValue,
@@ -32,6 +33,7 @@ import {
 
 export interface AssignmentParticipant {
   uid: string;
+  arrivalGroup?: string | null;
   gender?: string;
   interestedInGenders: string[];
   compatibilityAnswerIds?: string[];
@@ -1905,6 +1907,12 @@ function repeatPairScoreAdjustment(params: {
 }): number {
   if (params.previousMeetingCount === 0) return 0;
   return -140 * params.previousMeetingCount +
+    affinityRepeatPairScoreAdjustment(
+      params.uidA,
+      params.uidB,
+      params.previousMeetingCount,
+      params.constraints
+    ) +
     hostRequestedRepeatPairScoreAdjustment(
       params.uidA,
       params.uidB,
@@ -1931,6 +1939,12 @@ function groupRepeatPairPlacementPenalty(params: {
   return Math.max(
     0,
     basePenalty * params.previousMeetingCount -
+      affinityRepeatPairScoreAdjustment(
+        params.uidA,
+        params.uidB,
+        params.previousMeetingCount,
+        params.constraints
+      ) -
       hostRequestedRepeatPairScoreAdjustment(
         params.uidA,
         params.uidB,

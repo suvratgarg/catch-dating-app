@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.16.0
+version: 1.17.0
 updated: 2026-08-13
 owner: recursive_audit_loop
 status: active
@@ -434,6 +434,10 @@ replaces `eventParticipations`:
 - deterministic contact/source keys make retry and re-import idempotent inside
   one event. A phone/email match may converge rows inside that event only; it
   does not build a cross-event identity graph;
+- `arrivalGroup` retains an optional provider booking/order/group or
+  ticket-buyer key shared by guests expected to arrive together. Adapters keep
+  it separate from attendee-level external references, imports include it in
+  their canonical payload hash, and it remains private roster data;
 - `eventAttendeeImports` records actor, event, client idempotency key, format,
   canonical payload hash, counts, bounded row errors and terminal state. It is
   not a copy of the uploaded file.

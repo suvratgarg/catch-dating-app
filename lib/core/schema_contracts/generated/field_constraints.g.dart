@@ -10157,6 +10157,13 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const eventAttendeeDocumentArrivalGroup = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.arrivalGroup',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
   static const eventAttendeeDocumentAttendanceRevision = CatchContractFieldConstraints(
     path: 'eventAttendeeDocument.attendanceRevision',
     valueTypes: <String>['integer'],
@@ -20205,6 +20212,12 @@ abstract final class CatchContractConstraints {
     itemValueTypes: <String>['object'],
     minItems: 1,
     maxItems: 250,
+  );
+
+  static const importEventAttendeesCallablePayloadRowsItemsArrivalGroup = CatchContractFieldConstraints(
+    path: 'importEventAttendeesCallablePayload.rows.items.arrivalGroup',
+    maxLength: 180,
+    valueTypes: <String>['string'],
   );
 
   static const importEventAttendeesCallablePayloadRowsItemsDisplayName = CatchContractFieldConstraints(
@@ -39100,6 +39113,7 @@ abstract final class CatchContractConstraints {
     'eventAttendeeAttendanceReceiptDocument.expiresAt._seconds': eventAttendeeAttendanceReceiptDocumentExpiresAtSeconds,
     'eventAttendeeAttendanceReceiptDocument.organizerId': eventAttendeeAttendanceReceiptDocumentOrganizerId,
     'eventAttendeeAttendanceReceiptDocument.priorRevision': eventAttendeeAttendanceReceiptDocumentPriorRevision,
+    'eventAttendeeDocument.arrivalGroup': eventAttendeeDocumentArrivalGroup,
     'eventAttendeeDocument.attendanceRevision': eventAttendeeDocumentAttendanceRevision,
     'eventAttendeeDocument.cancelledAt._nanoseconds': eventAttendeeDocumentCancelledAtNanoseconds,
     'eventAttendeeDocument.cancelledAt._seconds': eventAttendeeDocumentCancelledAtSeconds,
@@ -40491,6 +40505,7 @@ abstract final class CatchContractConstraints {
     'importEventAttendeesCallablePayload.format': importEventAttendeesCallablePayloadFormat,
     'importEventAttendeesCallablePayload.importKey': importEventAttendeesCallablePayloadImportKey,
     'importEventAttendeesCallablePayload.rows': importEventAttendeesCallablePayloadRows,
+    'importEventAttendeesCallablePayload.rows.items.arrivalGroup': importEventAttendeesCallablePayloadRowsItemsArrivalGroup,
     'importEventAttendeesCallablePayload.rows.items.displayName': importEventAttendeesCallablePayloadRowsItemsDisplayName,
     'importEventAttendeesCallablePayload.rows.items.email': importEventAttendeesCallablePayloadRowsItemsEmail,
     'importEventAttendeesCallablePayload.rows.items.externalReference': importEventAttendeesCallablePayloadRowsItemsExternalReference,

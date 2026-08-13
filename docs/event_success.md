@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.6.0
+version: 1.7.0
 updated: 2026-08-13
 owner: recursive_audit_loop
 status: active
@@ -140,6 +140,20 @@ Algorithms without a dedicated engine, including `none`, `teamBalancer`, and
 an implemented neighbouring behavior or rewrite existing assignments. True
 table-seating, team-balancing, doubles/court-aware, and dance-partner engines
 remain future backend work.
+
+Operational roster imports now retain an optional `arrivalGroup` from reviewed
+provider booking, order, group, or ticket-buyer columns. Provider adapters keep
+the attendee-level reference distinct from that shared arrival group, so two
+guests on one booking do not collapse into one import identity. The value stays
+private on `eventAttendees` and is carried into the server-side Event Success
+roster; it is never returned as public roster data.
+
+The assignment engine accepts pairwise `affinityConstraint` values
+`mustPair`, `mustSplit`, `avoidRepeat`, and `neutral`, each scoped to
+`thisRound` or `pinned`. The engine applies the active constraints it is given;
+the live-control owner is responsible for consuming `thisRound` after one
+round and retaining `pinned` until explicit release. Safety block edges are
+evaluated first and always override `mustPair`.
 
 ## Code Map
 
@@ -759,8 +773,9 @@ Implemented host-facing proof points:
   `catchRate`. Hosts never see target identities for private catches.
 - The assignment engine is primitive-driven. It accepts group size, rotations,
   gender/orientation fit, questionnaire signal, blocks, opt-outs, host
-  keep-together/keep-apart/anchor constraints, activity attributes, repeat
-  strategy, maximum pair meetings, and richer slot metadata.
+  keep-together/keep-apart/anchor constraints, scoped pairwise affinity
+  constraints, activity attributes, repeat strategy, maximum pair meetings,
+  and richer slot metadata.
 - Assignment docs carry unit kind/index/label, reason summaries, reason codes,
   rotation fairness counts, slot ids, peer counts, and sit-out slots.
 - Host setup persists repeat strategy, max pair meetings, balance/cluster

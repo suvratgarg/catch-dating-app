@@ -25,6 +25,7 @@ String hostRosterImportKey({
           'phone': row.phone,
           'email': row.email,
           'externalReference': row.externalReference,
+          'arrivalGroup': row.arrivalGroup,
           'ticketType': row.ticketType,
           'status': row.status.name,
         },
@@ -73,7 +74,10 @@ HostRosterTable parseHostRosterFile({
     format: format,
     headers: headers,
     rows: rows,
-    suggestedMapping: suggestHostRosterMapping(headers),
+    suggestedMapping: suggestHostRosterMapping(
+      headers,
+      adapterId: adapter.adapterId,
+    ),
     adapter: adapter,
   );
 }
@@ -169,7 +173,11 @@ HostRosterAdapterDetection? _adapterForProvider(
   required List<String> headers,
   required List<List<String>> rows,
 }) {
-  if (suggestHostRosterMapping(headers)[HostRosterField.displayName] != null) {
+  if (suggestHostRosterMapping(
+        headers,
+        adapterId: HostRosterAdapterId.eventbriteV1,
+      )[HostRosterField.displayName] !=
+      null) {
     return (headers: headers, rows: rows);
   }
   final firstNameIndex = headers.indexWhere(

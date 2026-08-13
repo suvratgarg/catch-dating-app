@@ -435,6 +435,7 @@ async function loadEligibleRotationParticipants(
     status: participant.status,
     gender: participant.gender,
     interestedInGenders: participant.interestedInGenders,
+    arrivalGroup: participant.arrivalGroup,
     compatibilityAnswerIds: [],
     activityAttributes: activityAttributesForProfile(participant.profile),
   }));

@@ -33,6 +33,7 @@ enum HostRosterField {
   phone,
   email,
   externalReference,
+  arrivalGroup,
   ticketType,
   status,
 }
@@ -116,6 +117,10 @@ class HostRosterTable {
             source,
             mapping[HostRosterField.externalReference],
           ),
+          arrivalGroup: _nullableValueAt(
+            source,
+            mapping[HostRosterField.arrivalGroup],
+          ),
           ticketType: _nullableValueAt(
             source,
             mapping[HostRosterField.ticketType],
@@ -164,7 +169,10 @@ List<String> uniqueHostRosterHeaders(List<String> rawHeaders) {
   ];
 }
 
-Map<HostRosterField, int?> suggestHostRosterMapping(List<String> headers) {
+Map<HostRosterField, int?> suggestHostRosterMapping(
+  List<String> headers, {
+  HostRosterAdapterId adapterId = HostRosterAdapterId.genericV1,
+}) {
   int? firstAlias(Set<String> aliases) {
     for (var index = 0; index < headers.length; index += 1) {
       final normalized = _normalizeHeader(headers[index]);
@@ -201,18 +209,10 @@ Map<HostRosterField, int?> suggestHostRosterMapping(List<String> headers) {
       'guestemail',
       'attendeeemail',
     }),
-    HostRosterField.externalReference: firstAlias({
-      'id',
-      'reference',
-      'bookingid',
-      'orderid',
-      'ticketid',
-      'guestkey',
-      'ticketkey',
-      'attendeeid',
-      'order',
-      'ordernumber',
-    }),
+    HostRosterField.externalReference: firstAlias(
+      _externalReferenceAliases(adapterId),
+    ),
+    HostRosterField.arrivalGroup: firstAlias(_arrivalGroupAliases(adapterId)),
     HostRosterField.ticketType: firstAlias({
       'ticket',
       'tickettype',
@@ -229,6 +229,55 @@ Map<HostRosterField, int?> suggestHostRosterMapping(List<String> headers) {
       'attendeestatus',
       'checkinstatus',
     }),
+  };
+}
+
+Set<String> _externalReferenceAliases(HostRosterAdapterId adapterId) =>
+    switch (adapterId) {
+      HostRosterAdapterId.eventbriteV1 || HostRosterAdapterId.poshV1 => {
+        'attendeeid',
+        'ticketid',
+        'ticketkey',
+        'id',
+      },
+      HostRosterAdapterId.lumaV1 => {'guestkey', 'guestid', 'attendeeid', 'id'},
+      HostRosterAdapterId.genericV1 ||
+      HostRosterAdapterId.partifulV1 ||
+      HostRosterAdapterId.sampleRequired => {
+        'id',
+        'reference',
+        'bookingid',
+        'orderid',
+        'ticketid',
+        'guestkey',
+        'ticketkey',
+        'attendeeid',
+        'order',
+        'ordernumber',
+      },
+    };
+
+Set<String> _arrivalGroupAliases(HostRosterAdapterId adapterId) {
+  const common = {
+    'arrivalgroup',
+    'groupid',
+    'partyid',
+    'bookinggroup',
+    'buyeremail',
+    'ticketbuyeremail',
+  };
+  return switch (adapterId) {
+    HostRosterAdapterId.eventbriteV1 || HostRosterAdapterId.poshV1 => {
+      'orderid',
+      'ordernumber',
+      'order',
+      'bookingid',
+      ...common,
+    },
+    HostRosterAdapterId.genericV1 ||
+    HostRosterAdapterId.lumaV1 ||
+    HostRosterAdapterId.partifulV1 ||
+    HostRosterAdapterId.sampleRequired => common,
   };
 }
 

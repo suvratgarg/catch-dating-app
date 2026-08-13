@@ -79,6 +79,7 @@ interface PreparedRow {
   phoneE164: string | null;
   email: string | null;
   externalReference: string | null;
+  arrivalGroup: string | null;
   ticketType: string | null;
   status: "invited" | "registered" | "waitlisted";
 }
@@ -191,6 +192,7 @@ export async function importEventAttendeesForHost(
       email: row.email ?? existing?.email ?? null,
       externalReference:
         row.externalReference ?? existing?.externalReference ?? null,
+      arrivalGroup: row.arrivalGroup ?? existing?.arrivalGroup ?? null,
       ticketType: row.ticketType ?? existing?.ticketType ?? null,
       importId,
       sourceRowId: row.rowId,
@@ -576,6 +578,7 @@ export async function registerPublicEventHandler(
       phoneE164: phone,
       email: existing?.email ?? null,
       externalReference: existing?.externalReference ?? null,
+      arrivalGroup: existing?.arrivalGroup ?? null,
       ticketType: existing?.ticketType ?? null,
       importId: existing?.importId ?? null,
       sourceRowId: existing?.sourceRowId ?? null,
@@ -789,8 +792,11 @@ export function prepareImportRows(params: {
       continue;
     }
     const externalReference = stringOrNull(row.externalReference);
+    const arrivalGroup = stringOrNull(row.arrivalGroup);
     let stableKey = `row:${params.importKey}:${row.rowId}`;
-    if (phoneResult.value !== null) {
+    if (arrivalGroup !== null && externalReference !== null) {
+      stableKey = `external:${externalReference.toLowerCase()}`;
+    } else if (phoneResult.value !== null) {
       stableKey = `phone:${phoneResult.value}`;
     } else if (email !== null) {
       stableKey = `email:${email}`;
@@ -815,6 +821,7 @@ export function prepareImportRows(params: {
       phoneE164: phoneResult.value,
       email,
       externalReference,
+      arrivalGroup,
       ticketType: stringOrNull(row.ticketType),
       status: row.status,
     });
@@ -870,6 +877,7 @@ function canonicalImportPayload(
       phone: row.phone ?? null,
       email: row.email ?? null,
       externalReference: row.externalReference ?? null,
+      arrivalGroup: row.arrivalGroup ?? null,
       ticketType: row.ticketType ?? null,
       status: row.status,
     })),
@@ -893,7 +901,7 @@ function normalizeImportPayload(data: unknown): unknown {
       const row = {...rawRow} as Record<string, unknown>;
       for (const field of [
         "rowId", "displayName", "phone", "email", "externalReference",
-        "ticketType",
+        "arrivalGroup", "ticketType",
       ]) {
         if (typeof row[field] === "string") row[field] = row[field].trim();
       }

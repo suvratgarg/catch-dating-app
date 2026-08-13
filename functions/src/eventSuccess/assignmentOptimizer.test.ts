@@ -14,6 +14,11 @@ import {
   EVENT_SUCCESS_VARIABLE_RESOLUTION_TABLE,
   EventSuccessMatchingObjective,
 } from "./formatPrimitives";
+import {
+  affinityConstraintScopeForPair,
+  affinityRepeatPairScoreAdjustment,
+  normalizeAssignmentConstraints,
+} from "./assignmentConstraints";
 
 test("groups sparse mutual-orientation attendees together", () => {
   const groups = buildOptimizedGroups({
@@ -469,6 +474,148 @@ test("host constraint relaxations are explicit when impossible", () => {
     "host_keep_together_relaxed"
   ));
   assert.equal(plan.explainability.relaxedConstraintCount, 1);
+});
+
+test("affinity constraints retain value and this-round or pinned scope", () => {
+  const constraints = normalizeAssignmentConstraints({
+    affinityConstraints: [
+      {
+        aUid: "a",
+        bUid: "b",
+        value: "mustPair",
+        scope: "pinned",
+      },
+      {
+        aUid: "c",
+        bUid: "d",
+        value: "avoidRepeat",
+        scope: "thisRound",
+      },
+      {
+        aUid: "e",
+        bUid: "f",
+        value: "neutral",
+        scope: "thisRound",
+      },
+    ],
+  });
+
+  assert.equal(affinityConstraintScopeForPair("b", "a", constraints),
+    "pinned");
+  assert.equal(affinityConstraintScopeForPair("c", "d", constraints),
+    "thisRound");
+  assert.equal(constraints.keepTogetherPairs.has("a__b"), true);
+  assert.equal(constraints.avoidRepeatPairs.has("c__d"), true);
+  assert.equal(constraints.keepTogetherPairs.has("e__f"), false);
+  assert.equal(affinityRepeatPairScoreAdjustment("c", "d", 0, constraints),
+    0);
+  assert.ok(affinityRepeatPairScoreAdjustment("c", "d", 1, constraints) < 0);
+});
+
+test("must-split affinity is enforced as a hard host constraint", () => {
+  const plan = runAssignmentEngine({
+    participants: [
+      participant("a", "person", []),
+      participant("b", "person", []),
+      participant("c", "person", []),
+      participant("d", "person", []),
+    ],
+    blockedPairs: new Set(),
+    topology: {
+      unitKind: "pods",
+      unitSize: 2,
+      groupCount: 2,
+      maxGroupSize: 2,
+      rotationIntervalMinutes: null,
+      rotationsEnabled: false,
+    },
+    assignmentAlgorithm: "socialPods",
+    compatibilityPolicy: "none",
+    matchingObjective: "coverage",
+    constraints: {
+      affinityConstraints: [{
+        aUid: "a",
+        bUid: "b",
+        value: "mustSplit",
+        scope: "pinned",
+      }],
+    },
+  });
+
+  assert.equal(sameGroup(plan.groups, "a", "b"), false);
+  assert.equal(constraintStatus(plan, "host_keep_apart", ["a", "b"]),
+    "satisfied");
+});
+
+test("must-pair affinity keeps a feasible pair in one unit", () => {
+  const plan = runAssignmentEngine({
+    participants: [
+      participant("a", "person", []),
+      participant("b", "person", []),
+      participant("c", "person", []),
+      participant("d", "person", []),
+    ],
+    blockedPairs: new Set(),
+    topology: {
+      unitKind: "pods",
+      unitSize: 2,
+      groupCount: 2,
+      maxGroupSize: 2,
+      rotationIntervalMinutes: null,
+      rotationsEnabled: false,
+    },
+    assignmentAlgorithm: "socialPods",
+    compatibilityPolicy: "none",
+    matchingObjective: "coverage",
+    constraints: {
+      affinityConstraints: [{
+        aUid: "a",
+        bUid: "b",
+        value: "mustPair",
+        scope: "pinned",
+      }],
+    },
+  });
+
+  assert.equal(sameGroup(plan.groups, "a", "b"), true);
+  assert.equal(constraintStatus(plan, "host_keep_together", ["a", "b"]),
+    "satisfied");
+});
+
+test("safety keep-apart wins over must-pair affinity", () => {
+  const plan = runAssignmentEngine({
+    participants: [
+      participant("a", "person", []),
+      participant("b", "person", []),
+      participant("c", "person", []),
+      participant("d", "person", []),
+    ],
+    blockedPairs: new Set(["a__b"]),
+    topology: {
+      unitKind: "pods",
+      unitSize: 2,
+      groupCount: 2,
+      maxGroupSize: 2,
+      rotationIntervalMinutes: null,
+      rotationsEnabled: false,
+    },
+    assignmentAlgorithm: "socialPods",
+    compatibilityPolicy: "none",
+    matchingObjective: "coverage",
+    constraints: {
+      affinityConstraints: [{
+        aUid: "a",
+        bUid: "b",
+        value: "mustPair",
+        scope: "pinned",
+      }],
+    },
+  });
+
+  assert.equal(sameGroup(plan.groups, "a", "b"), false);
+  assert.equal(constraintStatus(plan, "blocked_pair", []), "satisfied");
+  assert.equal(constraintStatus(plan, "host_keep_together", ["a", "b"]),
+    "relaxed");
 });
 
 test("balance objective distributes skill across micro-pods", () => {

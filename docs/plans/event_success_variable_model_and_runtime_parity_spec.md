@@ -700,7 +700,7 @@ Tick a tranche only when it is implemented, its named tests pass, and its owner
 docs are updated. Update this table in the same commit as the tranche.
 
 - [x] T1 `matchingObjective` and `coverage`
-- [ ] T2 `affinityConstraint` and `arrivalGroup`
+- [x] T2 `affinityConstraint` and `arrivalGroup`
 - [ ] T3 Exclusion ledger
 - [ ] T4 Live control robustness
 - [ ] T5 Spatial layout model and control room

@@ -39,6 +39,19 @@ export interface AssignmentPairConstraint {
   bUid: string;
 }
 
+export type AssignmentAffinityConstraintValue =
+  "mustPair" |
+  "mustSplit" |
+  "avoidRepeat" |
+  "neutral";
+
+export type AssignmentAffinityConstraintScope = "thisRound" | "pinned";
+
+export interface AssignmentAffinityConstraint extends AssignmentPairConstraint {
+  value: AssignmentAffinityConstraintValue;
+  scope: AssignmentAffinityConstraintScope;
+}
+
 export interface AssignmentHostConstraints {
   keepTogetherPairs?: AssignmentPairConstraint[];
   keepApartPairs?: AssignmentPairConstraint[];
@@ -52,12 +65,14 @@ export interface AssignmentActivityConstraints {
 }
 
 export interface AssignmentConstraintConfig {
+  affinityConstraints?: AssignmentAffinityConstraint[];
   host?: AssignmentHostConstraints;
   activity?: AssignmentActivityConstraints;
 }
 
 export interface AssignmentConstraintParticipant {
   uid: string;
+  arrivalGroup?: string | null;
   activityAttributes?: Record<string, string | number | boolean | null>;
 }
 
@@ -78,7 +93,9 @@ export interface AssignmentConstraintPair<
 export interface NormalizedAssignmentConstraints {
   keepTogetherPairs: Set<string>;
   keepApartPairs: Set<string>;
+  avoidRepeatPairs: Set<string>;
   requestedRepeatPairs: Set<string>;
+  affinityConstraintsByPair: Map<string, AssignmentAffinityConstraint>;
   keepTogetherPeersByUid: Map<string, Set<string>>;
   anchorGroupByUid: Map<string, number>;
   anchorUidsByGroupIndex: Map<number, Set<string>>;
@@ -92,6 +109,7 @@ const HOST_KEEP_TOGETHER_MATCH_REWARD = -180;
 const HOST_KEEP_TOGETHER_SPLIT_PENALTY = 260;
 const HOST_KEEP_TOGETHER_PAIR_SCORE = 150;
 const HOST_REQUESTED_REPEAT_PAIR_SCORE = 260;
+const HOST_AVOID_REPEAT_PAIR_SCORE = -260;
 const ACTIVITY_BALANCE_SAME_VALUE_PENALTY = 55;
 const ACTIVITY_CLUSTER_MISMATCH_PENALTY = 95;
 const ACTIVITY_CLUSTER_MATCH_REWARD = 35;
@@ -120,7 +138,12 @@ export function normalizeAssignmentConstraints(
 ): NormalizedAssignmentConstraints {
   const keepTogetherPairs = new Set<string>();
   const keepApartPairs = new Set<string>();
+  const avoidRepeatPairs = new Set<string>();
   const requestedRepeatPairs = new Set<string>();
+  const affinityConstraintsByPair = new Map<
+    string,
+    AssignmentAffinityConstraint
+  >();
   const keepTogetherPeersByUid = new Map<string, Set<string>>();
   const anchorGroupByUid = new Map<string, number>();
   const anchorUidsByGroupIndex = new Map<number, Set<string>>();
@@ -130,6 +153,32 @@ export function normalizeAssignmentConstraints(
   const clusterActivityAttributes = normalizeAttributeNames(
     config?.activity?.clusterAttributes
   );
+
+  for (const constraint of config?.affinityConstraints ?? []) {
+    if (constraint.aUid === constraint.bUid) continue;
+    const key = assignmentConstraintPairKey(
+      constraint.aUid,
+      constraint.bUid
+    );
+    affinityConstraintsByPair.set(key, constraint);
+  }
+  for (const [key, constraint] of affinityConstraintsByPair) {
+    switch (constraint.value) {
+    case "mustPair":
+      keepTogetherPairs.add(key);
+      addPeer(keepTogetherPeersByUid, constraint.aUid, constraint.bUid);
+      addPeer(keepTogetherPeersByUid, constraint.bUid, constraint.aUid);
+      break;
+    case "mustSplit":
+      keepApartPairs.add(key);
+      break;
+    case "avoidRepeat":
+      avoidRepeatPairs.add(key);
+      break;
+    case "neutral":
+      break;
+    }
+  }
 
   for (const pair of config?.host?.keepTogetherPairs ?? []) {
     if (pair.aUid === pair.bUid) continue;
@@ -167,7 +216,9 @@ export function normalizeAssignmentConstraints(
   return {
     keepTogetherPairs,
     keepApartPairs,
+    avoidRepeatPairs,
     requestedRepeatPairs,
+    affinityConstraintsByPair,
     keepTogetherPeersByUid,
     anchorGroupByUid,
     anchorUidsByGroupIndex,
@@ -186,6 +237,7 @@ export function hasHostConstraints(
 ): boolean {
   return constraints.keepTogetherPairs.size > 0 ||
     constraints.keepApartPairs.size > 0 ||
+    constraints.avoidRepeatPairs.size > 0 ||
     constraints.requestedRepeatPairs.size > 0 ||
     constraints.anchorGroupByUid.size > 0;
 }
@@ -414,6 +466,38 @@ export function hostRequestedRepeatPairScoreAdjustment(
   return isHostRequestedRepeatPair(uidA, uidB, constraints) ?
     HOST_REQUESTED_REPEAT_PAIR_SCORE :
     0;
+}
+
+/**
+ * Deprioritizes regrouping a host-declared avoid-repeat pair. Fresh meetings
+ * remain neutral; the penalty applies only after a prior shared occurrence.
+ * @param {string} uidA First uid.
+ * @param {string} uidB Second uid.
+ * @param {number} previousMeetingCount Prior shared occurrence count.
+ * @param {NormalizedAssignmentConstraints} constraints Constraint lookups.
+ * @return {number} Score delta where higher is better.
+ */
+export function affinityRepeatPairScoreAdjustment(
+  uidA: string,
+  uidB: string,
+  previousMeetingCount: number,
+  constraints: NormalizedAssignmentConstraints
+): number {
+  if (previousMeetingCount <= 0) return 0;
+  return constraints.avoidRepeatPairs.has(
+    assignmentConstraintPairKey(uidA, uidB)
+  ) ? HOST_AVOID_REPEAT_PAIR_SCORE * previousMeetingCount : 0;
+}
+
+/** Returns the persisted scope for one active affinity constraint. */
+export function affinityConstraintScopeForPair(
+  uidA: string,
+  uidB: string,
+  constraints: NormalizedAssignmentConstraints
+): AssignmentAffinityConstraintScope | null {
+  return constraints.affinityConstraintsByPair.get(
+    assignmentConstraintPairKey(uidA, uidB)
+  )?.scope ?? null;
 }
 
 /**

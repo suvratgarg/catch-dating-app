@@ -1,7 +1,7 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.12.0
-updated: 2026-08-12
+version: 1.13.0
+updated: 2026-08-13
 owner: recursive_audit_loop
 status: active
 ---
@@ -186,7 +186,7 @@ is `docs/migrations/clubs_to_organizers.md`.
 | `joinEventWaitlist` | Callable | `EventRepository.joinWaitlistViaFunction` | `eventParticipations/{eventId_uid}`, `events/{eventId}.waitlistedCount` | Rate-limited before transaction work; server checks block boundary without exposing block state in rules. |
 | `leaveEventWaitlist` | Callable | `EventRepository.leaveWaitlist` | `eventParticipations/{eventId_uid}`, `events/{eventId}.waitlistedCount` | Rate-limited before transaction work; marks the caller's waitlist edge cancelled. |
 | `markEventAttendance` | Callable | `EventRepository.markAttendance` | `eventParticipations/{eventId_uid}`, `events/{eventId}.checkedInCount` | Host-only attendance toggle. |
-| `importEventAttendees` | Callable | `EventAttendeeRepository.importAttendees` from Host Guests | `eventAttendees/{attendeeId}`, `eventAttendeeImports/{importId}` | App-Check-protected and rate-limited. Organizer-manager-only bounded import (250 rows/request); normalizes contact data, deduplicates event-scoped identity, preserves checked-in/Catch-linked state, and uses the client import key plus canonical payload hash for safe retry. |
+| `importEventAttendees` | Callable | `EventAttendeeRepository.importAttendees` from Host Guests | `eventAttendees/{attendeeId}`, `eventAttendeeImports/{importId}` | App-Check-protected and rate-limited. Organizer-manager-only bounded import (250 rows/request); normalizes contact data, keeps attendee-level provider references distinct from optional shared `arrivalGroup` booking/order data, deduplicates event-scoped identity, preserves checked-in/Catch-linked state, and includes the group value in the client import key and canonical payload hash for safe retry. |
 | `markEventAttendeeAttendance` | Callable | Released Host clients only | `eventAttendees/{attendeeId}` | Compatibility-only replay-unsafe toggle retained while installed clients migrate. New Host code must not call it. |
 | `setEventAttendeeAttendance` | Callable | `EventAttendeeRepository.setAttendance` from Host Guests | `eventAttendees/{attendeeId}`, event checked-in aggregate and `eventAttendeeAttendanceReceipts/{receiptId}` | App-Check-protected and rate-limited organizer-manager absolute mutation. It compares an expected attendance revision, preserves the pre-check-in roster state for undo, stores a 30-day idempotency receipt, returns exact replay/conflict state, and never synthesizes a Consumer participation or profile. |
 | `getEventRuntimeBootstrap` | Callable | No-download Event Success web runtime | Reads one `events` public-runtime projection and the caller's optional `eventRuntimeParticipants/{eventId_uid}` / linked `eventAttendees/{attendeeId}` state | App-Check-protected opaque-id resolver. It may run before authentication but returns only the event title, schedule, location label, and authenticated caller's own sanitized state. It never enumerates the roster or treats the public runtime id as authorization. |

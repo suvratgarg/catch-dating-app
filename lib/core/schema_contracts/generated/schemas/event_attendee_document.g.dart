@@ -27,6 +27,7 @@ const schemaEventAttendeeDocumentSchema = <String, Object?>{
     'phoneE164',
     'email',
     'externalReference',
+    'arrivalGroup',
     'ticketType',
     'importId',
     'sourceRowId',
@@ -115,6 +116,15 @@ const schemaEventAttendeeDocumentSchema = <String, Object?>{
       ],
       'minLength': 1,
       'maxLength': 180,
+    },
+    'arrivalGroup': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 1,
+      'maxLength': 180,
+      'description': 'Provider or import-supplied booking/arrival group shared by guests who are expected to arrive together.',
     },
     'ticketType': <String, Object?>{
       'type': <Object?>[

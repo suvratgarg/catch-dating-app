@@ -11834,6 +11834,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsOperationalRosterFieldReference => 'Booking reference';
 
   @override
+  String get hostsOperationalRosterFieldArrivalGroup => 'Arrival group';
+
+  @override
   String get hostsOperationalRosterFieldTicket => 'Ticket type';
 
   @override

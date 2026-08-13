@@ -18452,6 +18452,12 @@ abstract class AppLocalizations {
   /// **'Booking reference'**
   String get hostsOperationalRosterFieldReference;
 
+  /// Roster mapping field for guests who share one booking or arrive together.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrival group'**
+  String get hostsOperationalRosterFieldArrivalGroup;
+
   /// Roster mapping field for ticket type.
   ///
   /// In en, this message translates to:

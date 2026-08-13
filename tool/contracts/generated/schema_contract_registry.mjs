@@ -20972,6 +20972,7 @@ export const eventAttendeeDocumentSchema = {
     "phoneE164",
     "email",
     "externalReference",
+    "arrivalGroup",
     "ticketType",
     "importId",
     "sourceRowId",
@@ -21060,6 +21061,15 @@ export const eventAttendeeDocumentSchema = {
       ],
       "minLength": 1,
       "maxLength": 180
+    },
+    "arrivalGroup": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Provider or import-supplied booking/arrival group shared by guests who are expected to arrive together."
     },
     "ticketType": {
       "type": [
@@ -45378,6 +45388,13 @@ export const importEventAttendeesCallablePayloadSchema = {
             "maxLength": 320
           },
           "externalReference": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 180
+          },
+          "arrivalGroup": {
             "type": [
               "string",
               "null"

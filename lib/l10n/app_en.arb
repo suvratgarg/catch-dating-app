@@ -20519,6 +20519,8 @@
   "@hostsOperationalRosterFieldEmail": {"description": "Roster mapping field for guest email.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.widgets.host_roster_import_sheet"},
   "hostsOperationalRosterFieldReference": "Booking reference",
   "@hostsOperationalRosterFieldReference": {"description": "Roster mapping field for an external booking reference.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.widgets.host_roster_import_sheet"},
+  "hostsOperationalRosterFieldArrivalGroup": "Arrival group",
+  "@hostsOperationalRosterFieldArrivalGroup": {"description": "Roster mapping field for guests who share one booking or arrive together.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.widgets.host_roster_import_sheet"},
   "hostsOperationalRosterFieldTicket": "Ticket type",
   "@hostsOperationalRosterFieldTicket": {"description": "Roster mapping field for ticket type.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.widgets.host_roster_import_sheet"},
   "hostsOperationalRosterFieldStatus": "Registration status",

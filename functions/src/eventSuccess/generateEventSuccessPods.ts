@@ -275,6 +275,7 @@ export async function generateEventSuccessPodsHandler(
       status: participant.status,
       gender: participant.gender,
       interestedInGenders: participant.interestedInGenders,
+      arrivalGroup: participant.arrivalGroup,
       activityAttributes: activityAttributesForProfile(participant.profile),
     }))
     .filter((participant) => !optedOutUids.has(participant.uid))
@@ -367,6 +368,7 @@ export async function overrideEventSuccessGroupsHandler(
       status: participant.status,
       gender: participant.gender,
       interestedInGenders: participant.interestedInGenders,
+      arrivalGroup: participant.arrivalGroup,
       activityAttributes: activityAttributesForProfile(participant.profile),
     }))
     .filter((participant) => !optedOutUids.has(participant.uid))

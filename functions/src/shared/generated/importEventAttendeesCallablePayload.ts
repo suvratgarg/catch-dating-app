@@ -20,6 +20,7 @@ export interface ImportEventAttendeesCallablePayload {
     phone?: string | null;
     email?: string | null;
     externalReference?: string | null;
+    arrivalGroup?: string | null;
     ticketType?: string | null;
     status: "invited" | "registered" | "waitlisted";
   }[];

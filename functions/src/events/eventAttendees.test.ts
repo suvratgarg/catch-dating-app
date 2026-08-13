@@ -176,6 +176,7 @@ test("prepareImportRows deduplicates event-scoped contact identity", () => {
         phone: "+91 98765 43210",
         email: null,
         externalReference: null,
+        arrivalGroup: null,
         ticketType: "General",
         status: "registered",
       },
@@ -185,6 +186,7 @@ test("prepareImportRows deduplicates event-scoped contact identity", () => {
         phone: "9876543210",
         email: null,
         externalReference: null,
+        arrivalGroup: null,
         ticketType: null,
         status: "registered",
       },
@@ -198,6 +200,49 @@ test("prepareImportRows deduplicates event-scoped contact identity", () => {
     "duplicate-row",
   ]);
 });
+
+test(
+  "prepareImportRows preserves group tickets with shared buyer contact",
+  () => {
+    const result = prepareImportRows({
+      eventId: "event-1",
+      importKey: "eventbrite-import",
+      rows: [
+        {
+          rowId: "2",
+          displayName: "Asha Shah",
+          phone: null,
+          email: "buyer@example.com",
+          externalReference: "attendee-7a",
+          arrivalGroup: "order-7",
+          ticketType: "General",
+          status: "registered",
+        },
+        {
+          rowId: "3",
+          displayName: "Ravi Rao",
+          phone: null,
+          email: "buyer@example.com",
+          externalReference: "attendee-7b",
+          arrivalGroup: "order-7",
+          ticketType: "General",
+          status: "registered",
+        },
+      ],
+    });
+
+    assert.equal(result.errors.length, 0);
+    assert.equal(result.prepared.length, 2);
+    assert.notEqual(
+      result.prepared[0].attendeeId,
+      result.prepared[1].attendeeId
+    );
+    assert.deepEqual(
+      result.prepared.map((row) => row.arrivalGroup),
+      ["order-7", "order-7"]
+    );
+  }
+);
 
 test("eventAttendeeId is stable and event-isolated", () => {
   const stable = eventAttendeeId("event-1", "email:asha@example.com");
